@@ -117,7 +117,7 @@ import java.util.ListIterator;
  *
  *</pre>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.36 $ $Date: 2004-06-16 02:53:20 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.37 $ $Date: 2004-06-17 15:22:31 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
  * @author Bug fixes by Emil Ivov, Antonis Karydas.
@@ -127,7 +127,7 @@ import java.util.ListIterator;
  */
 public class SIPServerTransaction
 extends SIPTransaction
-implements SIPServerRequestInterface, javax.sip.ServerTransaction {
+implements SIPServerRequestInterface, javax.sip.ServerTransaction, PendingRecord {
     
     protected boolean toListener; // Hack alert - if this is set to true then force the listener to see transaction
 
@@ -461,14 +461,15 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
 
 	// Can only process a single request directed to the 
 	// transaction at a time.
-	synchronized (this.pendingRequests) {
-          if (this.eventPending ) {
-              if (this.pendingRequests.size() < 4)
-                  this.pendingRequests.add
-                   (new PendingRequest(transactionRequest,sourceChannel));
+        if (this.eventPending ) {
+	     synchronized (this.pendingRequests) {
+                 if (this.pendingRequests.size() < 4)
+                     this.pendingRequests.add
+                     (new PendingRequest(transactionRequest,sourceChannel));
+	      }
+	      sipStack.putPending(this);
               return;
-           }
-	}
+        }
         
         try {
             
@@ -1137,7 +1138,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
 		toNotify = true;
 	   }
 	}
-        if (toNotify) sipStack.notifyPendingRequestScanner(); 
+        if (toNotify) sipStack.notifyPendingRecordScanner(); 
     }
 
     /** Start the timer task.
@@ -1151,6 +1152,10 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.36  2004/06/16 02:53:20  mranga
+ * Submitted by:  mranga
+ * Reviewed by:   implement re-entrant multithreaded listener model.
+ *
  * Revision 1.35  2004/06/15 09:54:45  mranga
  * Reviewed by:   mranga
  * re-entrant listener model added.
