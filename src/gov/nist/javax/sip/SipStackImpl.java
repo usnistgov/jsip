@@ -7,6 +7,7 @@ import javax.sip.message.*;
 import gov.nist.javax.sip.stack.*;
 import java.lang.reflect.*;
 import gov.nist.core.*;
+import gov.nist.core.net.NetworkLayer;
 
 //ifdef SIMULATION
 /*
@@ -141,9 +142,19 @@ import sim.java.net.*;
  * the client can be as slow as it wants to be.
  *
  *</li>
+
+ *<li> <b>gov.nist.javax.sip.NETWORK_LAYER = classpath </b> <br/>
+ * This is an EXPERIMENTAL property (still under active devlopment).
+ * Defines a network layer that allows a client to have control over socket
+ * allocations and monitoring of socket activity. A network layer should
+ * implement gov.nist.core.net.NetworkLayer. The default implementation simply
+ * acts as a wrapper for the standard java.net socket layer. This functionality
+ * is still under active development (may be extended to support security and
+ * other features).
+ *</li>
  *</ul>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.28 $ $Date: 2004-06-16 02:53:17 $
+ * @version JAIN-SIP-1.1 $Revision: 1.29 $ $Date: 2004-08-30 16:04:47 $
  * 
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -241,6 +252,22 @@ public class SipStackImpl
 				ex);
 		}
 
+		/* gets the NetworkLayer implementation, if any */
+		
+		final String NETWORK_LAYER_KEY = "gov.nist.javax.sip.NetworkLayer";
+		
+		if (configurationProperties.containsKey(NETWORK_LAYER_KEY)) {
+		    String path = configurationProperties.getProperty(NETWORK_LAYER_KEY);
+		    try {
+		        Class clazz = Class.forName(path);
+		        Constructor c = clazz.getConstructor(new Class[0]);
+		        networkLayer = (NetworkLayer) c.newInstance(new Object[0]);
+		    } catch (Exception e) {
+		        throw new PeerUnavailableException("can't find or instantiate NetworkLayer implementation: " + path);
+		    }
+		} 
+		
+		
 		/* Retrieve the EXTENSION Methods. These are used for instantiation
 		* of Dialogs.
 		*/
@@ -711,6 +738,10 @@ public class SipStackImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.28  2004/06/16 02:53:17  mranga
+ * Submitted by:  mranga
+ * Reviewed by:   implement re-entrant multithreaded listener model.
+ *
  * Revision 1.27  2004/06/15 09:54:42  mranga
  * Reviewed by:   mranga
  * re-entrant listener model added.

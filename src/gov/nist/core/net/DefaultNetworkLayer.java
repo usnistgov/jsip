@@ -22,19 +22,25 @@ public class DefaultNetworkLayer implements NetworkLayer {
 
     public ServerSocket createServerSocket(int port, int backlog,
             InetAddress bindAddress) throws IOException {
-        System.out.println("DefaultNetworkLayer.createServerSocket(" + port + ", " + backlog + ", "
-                + bindAddress + ")");
+	    /**
+            System.out.println
+		("DefaultNetworkLayer.createServerSocket (" 
+			+ port + ", " + backlog + ", " + bindAddress + ")");
+	    **/
         return new ServerSocket(port, backlog, bindAddress);
     }
 
     public DatagramSocket createDatagramSocket() throws SocketException {
-        System.out.println("DefaultNetworkLayer.createDatagramSocket()");
+        // System.out.println("DefaultNetworkLayer.createDatagramSocket()");
         return new DatagramSocket();
     }
 
     public DatagramSocket createDatagramSocket(int port, InetAddress laddr)
             throws SocketException {
-        System.out.println("DefaultNetworkLayer.createDatagramSocket(" + port + ", " + laddr + ")");
+	/**
+        System.out.println("DefaultNetworkLayer.createDatagramSocket(" 
+		+ port + ", " + laddr + ")");
+	**/
         return new DatagramSocket(port, laddr);
     }
 

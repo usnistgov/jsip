@@ -6,6 +6,8 @@ package gov.nist.javax.sip.stack;
 import java.io.IOException;
 
 import gov.nist.core.*;
+import gov.nist.core.net.DefaultNetworkLayer;
+import gov.nist.core.net.NetworkLayer;
 import gov.nist.javax.sip.address.*;
 import gov.nist.javax.sip.header.*;
 import gov.nist.javax.sip.message.*;
@@ -30,7 +32,7 @@ import sim.java.net.*;
  * get the stack the process messages.
  * This will start the necessary threads that wait for incoming SIP messages.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2004-06-21 05:42:31 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-08-30 16:04:47 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * 
@@ -158,6 +160,16 @@ public abstract class SIPMessageStack {
 	*/
 	protected int readTimeout;
 
+	protected NetworkLayer networkLayer;
+	
+	public NetworkLayer getNetworkLayer() {
+	    if (networkLayer == null) {
+	        return DefaultNetworkLayer.SINGLETON;
+	    } else {
+	        return networkLayer;
+	    }
+	}
+	
 	/**
 	 * Log a bad message (invoked when a parse exception arises).
 	 *
@@ -731,6 +743,10 @@ public abstract class SIPMessageStack {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/06/21 05:42:31  mranga
+ * Reviewed by:  mranga
+ * more code smithing
+ *
  * Revision 1.2  2004/06/21 05:32:21  mranga
  * Submitted by:  
  * Reviewed by:

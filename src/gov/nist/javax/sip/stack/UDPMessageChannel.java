@@ -46,7 +46,7 @@ import sim.java.net.*;
  * this code that was sending it into an infinite loop when a bad incoming
  * message was parsed.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.23 $ $Date: 2004-07-16 17:13:56 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.24 $ $Date: 2004-08-30 16:04:48 $
  */
 public class UDPMessageChannel
 extends MessageChannel
@@ -682,7 +682,7 @@ implements ParseExceptionListener, Runnable {
                    sock.setLocalAddress(stack.stackInetAddress);
 //else
  */
-                   sock = new DatagramSocket();
+                   sock = stack.getNetworkLayer().createDatagramSocket();
 //endif
 //
                 }
@@ -849,6 +849,12 @@ implements ParseExceptionListener, Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.23  2004/07/16 17:13:56  mranga
+ * Submitted by:  Damand Joost
+ * Reviewed by:   mranga
+ *
+ * Make threads into daemon threads, use address for received = parameter on via
+ *
  * Revision 1.22  2004/06/21 05:42:33  mranga
  * Reviewed by:  mranga
  * more code smithing
