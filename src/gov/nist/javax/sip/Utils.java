@@ -3,7 +3,6 @@
  *******************************************************************************/
 package gov.nist.javax.sip;
 
-import java.util.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -11,7 +10,9 @@ import java.security.NoSuchAlgorithmException;
  * A few utilities that are used in various places by the stack.
  * This is used to convert byte arrays to hex strings etc. Generate
  * tags and branch identifiers and odds and ends.
- * @version JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2004-03-07 22:25:22 $
+ * 
+ * @author mranga
+ * @version JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2004-07-23 06:50:04 $
  */
 public class Utils {
 	/**
@@ -134,6 +135,13 @@ public class Utils {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/03/07 22:25:22  mranga
+ * Reviewed by:   mranga
+ * Added a new configuration parameter that instructs the stack to
+ * drop a server connection after server transaction termination
+ * set gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false for this
+ * Default behavior is true.
+ *
  * Revision 1.4  2004/01/22 13:26:28  sverker
  * Issue number:
  * Obtained from:
