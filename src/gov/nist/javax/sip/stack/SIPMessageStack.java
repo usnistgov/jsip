@@ -30,7 +30,7 @@ import sim.java.net.*;
  * get the stack the process messages.
  * This will start the necessary threads that wait for incoming SIP messages.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.2 $ $Date: 2004-06-21 05:32:21 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2004-06-21 05:42:31 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * 
@@ -455,7 +455,7 @@ public abstract class SIPMessageStack {
 	 * we want to generate the SIPServerRequest
 	 * @return Generated SIPServerRequest.
 	 */
-	protected SIPServerRequestInterface newSIPServerRequest(
+	protected ServerRequestInterface newSIPServerRequest(
 		SIPRequest siprequest,
 		MessageChannel msgchan) {
 		return sipMessageFactory.newSIPServerRequest(siprequest, msgchan);
@@ -469,7 +469,7 @@ public abstract class SIPMessageStack {
 	 * @param msgchan Message channel for the SIPServerResponse
 	 * @return SIPServerResponse generated from this SIP Response
 	 */
-	protected SIPServerResponseInterface newSIPServerResponse(
+	protected ServerResponseInterface newSIPServerResponse(
 		SIPResponse sipresponse,
 		MessageChannel msgchan) {
 		return sipMessageFactory.newSIPServerResponse(sipresponse, msgchan);
@@ -731,6 +731,10 @@ public abstract class SIPMessageStack {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/06/21 05:32:21  mranga
+ * Submitted by:  
+ * Reviewed by:
+ *
  * Revision 1.1  2004/06/21 04:59:51  mranga
  * Refactored code - no functional changes.
  *

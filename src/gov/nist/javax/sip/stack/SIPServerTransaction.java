@@ -117,7 +117,7 @@ import java.util.ListIterator;
  *
  *</pre>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.38 $ $Date: 2004-06-21 04:59:51 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.39 $ $Date: 2004-06-21 05:42:32 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
  * @author Bug fixes by Emil Ivov, Antonis Karydas.
@@ -127,14 +127,14 @@ import java.util.ListIterator;
  */
 public class SIPServerTransaction
 extends SIPTransaction
-implements SIPServerRequestInterface, javax.sip.ServerTransaction, PendingRecord {
+implements ServerRequestInterface, javax.sip.ServerTransaction, PendingRecord {
     
     protected boolean toListener; // Hack alert - if this is set to true then force the listener to see transaction
 
     private LinkedList pendingRequests;
     
     // Real RequestInterface to pass messages to
-    private SIPServerRequestInterface requestOf;
+    private ServerRequestInterface requestOf;
 
     class PendingRequest {
         protected SIPRequest sipRequest;
@@ -268,7 +268,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction, PendingRecord
      *
      * @param newRequestOf RequestInterface to send messages to.
      */
-    public void setRequestInterface(SIPServerRequestInterface newRequestOf) {
+    public void setRequestInterface(ServerRequestInterface newRequestOf) {
         
         requestOf = newRequestOf;
         
@@ -1152,6 +1152,9 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction, PendingRecord
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.38  2004/06/21 04:59:51  mranga
+ * Refactored code - no functional changes.
+ *
  * Revision 1.37  2004/06/17 15:22:31  mranga
  * Reviewed by:   mranga
  *

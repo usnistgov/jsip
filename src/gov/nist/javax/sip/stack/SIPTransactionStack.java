@@ -27,7 +27,7 @@ import sim.java.net.*;
  * @author Jeff Keyser (original) 
  * @author M. Ranganathan <mranga@nist.gov>  <br/> (Added Dialog table).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.35 $ $Date: 2004-06-21 05:32:22 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.36 $ $Date: 2004-06-21 05:42:32 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public abstract class SIPTransactionStack
@@ -449,7 +449,7 @@ public abstract class SIPTransactionStack
 	 *
 	 * @return A server transaction.
 	 */
-	protected SIPServerRequestInterface newSIPServerRequest(
+	protected ServerRequestInterface newSIPServerRequest(
 		SIPRequest requestReceived,
 		MessageChannel requestMessageChannel) {
 
@@ -547,7 +547,7 @@ public abstract class SIPTransactionStack
 	 *
 	 *	@return A client transaction.
 	 */
-	protected SIPServerResponseInterface newSIPServerResponse(
+	protected ServerResponseInterface newSIPServerResponse(
 		SIPResponse responseReceived,
 		MessageChannel responseMessageChannel) {
 		//	System.out.println("response = " + responseReceived.encode());
@@ -846,6 +846,10 @@ public abstract class SIPTransactionStack
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.35  2004/06/21 05:32:22  mranga
+ * Submitted by:  
+ * Reviewed by:
+ *
  * Revision 1.34  2004/06/21 04:59:52  mranga
  * Refactored code - no functional changes.
  *

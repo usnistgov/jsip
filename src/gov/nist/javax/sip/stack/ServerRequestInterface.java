@@ -13,14 +13,14 @@ import gov.nist.javax.sip.message.*;
  * It is the applications responsibility to take care of what needs to be
  * done to actually process the request.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2004-06-16 16:31:07 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.1 $ $Date: 2004-06-21 05:42:32 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
  */
-public interface SIPServerRequestInterface {
+public interface ServerRequestInterface {
 
 	/**
 	 * Process the message.  This incorporates a feature request
@@ -43,6 +43,9 @@ public interface SIPServerRequestInterface {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/06/16 16:31:07  mranga
+ * Sequence number checking for in-dialog messages
+ *
  * Revision 1.5  2004/05/18 15:26:43  mranga
  * Reviewed by:   mranga
  * Attempted fix at race condition bug. Remove redundant exception (never thrown).
