@@ -16,9 +16,6 @@
     <fileobject name="URIFieldParser.java">
         <attr name="class_dependency_gov.nist.javax.sdp.parser.SDPParser" stringvalue="URIFieldParser"/>
     </fileobject>
-    <fileobject name="AttributeFieldParser.java">
-        <attr name="class_dependency_gov.nist.javax.sdp.parser.SDPParser" stringvalue="AttributeFieldParser"/>
-    </fileobject>
     <fileobject name="PhoneFieldParser.java">
         <attr name="class_dependency_gov.nist.javax.sdp.parser.SDPParser" stringvalue="PhoneFieldParser"/>
     </fileobject>
@@ -40,11 +37,11 @@
     <fileobject name="InformationFieldParser.java">
         <attr name="class_dependency_gov.nist.javax.sdp.parser.SDPParser" stringvalue="InformationFieldParser"/>
     </fileobject>
-    <fileobject name="KeyFieldParser.java">
-        <attr name="class_dependency_gov.nist.javax.sdp.parser.SDPParser" stringvalue="KeyFieldParser"/>
-    </fileobject>
     <fileobject name="RepeatFieldParser.java">
         <attr name="class_dependency_gov.nist.javax.sdp.parser.SDPParser" stringvalue="RepeatFieldParser"/>
+    </fileobject>
+    <fileobject name="KeyFieldParser.java">
+        <attr name="class_dependency_gov.nist.javax.sdp.parser.SDPParser" stringvalue="KeyFieldParser"/>
     </fileobject>
     <fileobject name="ProtoVersionFieldParser.java">
         <attr name="class_dependency_gov.nist.javax.sdp.parser.SDPParser" stringvalue="ProtoVersionFieldParser"/>

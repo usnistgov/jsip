@@ -55,8 +55,8 @@ public class ListeningPointImpl implements javax.sip.ListeningPoint {
     /** Get the key for this strucut
      * @return  get the host
      */    
-    protected String getKey() {
-        return makeKey(host,port,transport);
+    protected String getKey() {        
+        return makeKey(host,port,transport);        
     }
     
     
@@ -64,7 +64,7 @@ public class ListeningPointImpl implements javax.sip.ListeningPoint {
      * @param sipProviderImpl provider to set
      */    
     protected void setSipProvider(SipProviderImpl sipProviderImpl) {
-        this.sipProviderImpl = sipProviderImpl;
+        this.sipProviderImpl = sipProviderImpl;        
     }
     
     /** remove the sip provider from this listening point.
@@ -76,9 +76,11 @@ public class ListeningPointImpl implements javax.sip.ListeningPoint {
     /** Constructor
      * @param sipStack Our sip stack
      */    
-    protected  ListeningPointImpl(SipStack sipStack) {
+    protected  ListeningPointImpl(SipStack sipStack,int port,String transport) {
         this.sipStack = (SipStackImpl) sipStack;
 	this.host = sipStack.getIPAddress();
+        this.port=port;
+        this.transport=transport;
     }
     
     
@@ -90,7 +92,7 @@ public class ListeningPointImpl implements javax.sip.ListeningPoint {
      */    
     public Object clone() {
         
-        ListeningPointImpl lip = new ListeningPointImpl(this.sipStack);
+        ListeningPointImpl lip = new ListeningPointImpl(this.sipStack,this.port,this.transport);
         lip.sipStack = this.sipStack;
         lip.port  = this.port;
         lip.transport = null;
