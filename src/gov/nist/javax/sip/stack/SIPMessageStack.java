@@ -27,7 +27,7 @@ import java.util.Iterator;
  * get the stack the process messages.
  * This will start the necessary threads that wait for incoming SIP messages.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2004-12-01 19:05:15 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2004-12-12 23:47:19 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * 
@@ -320,6 +320,13 @@ public abstract class SIPMessageStack {
 		else
 			this.savedStackAddress = stackAddress;
 		this.savedStackInetAddress = InetAddress.getByName(stackAddress);
+	}
+
+	/**
+	* Get the saved host address.
+	*/
+	protected InetAddress getRealIPAddress() {
+		return this.savedStackInetAddress;
 	}
 
 	/**
@@ -726,6 +733,11 @@ public abstract class SIPMessageStack {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/12/01 19:05:15  mranga
+ * Reviewed by:   mranga
+ * Code cleanup remove the unused SIMULATION code to reduce the clutter.
+ * Fix bug in Dialog state machine.
+ *
  * Revision 1.5  2004/10/28 19:02:51  mranga
  * Submitted by:  Daniel Martinez
  * Reviewed by:   M. Ranganathan

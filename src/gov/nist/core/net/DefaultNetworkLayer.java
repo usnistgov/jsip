@@ -64,4 +64,16 @@ public class DefaultNetworkLayer implements NetworkLayer {
     {
         return (SSLSocket) sslSocketFactory.createSocket(address, port);
     }
+
+    /* Added by Daniel J. Martinez Manzano <dani@dif.um.es> */
+    public SSLSocket createSSLSocket(InetAddress address, int port, InetAddress myAddress) throws IOException
+    {
+        return (SSLSocket) sslSocketFactory.createSocket(address, port, myAddress,0);
+    }
+
+   public Socket createSocket(InetAddress address, int port, InetAddress myAddress )  throws IOException {
+	return new Socket(address, port, myAddress, 0 );
+   }
+
+   
 }
