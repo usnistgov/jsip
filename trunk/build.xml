@@ -74,7 +74,7 @@ c:/jakarta-ant/bin/ant all
 	<property name="href.distribution" value="http://www-x.antd.nist.gov/proj/iptel/nist-sip-requestform/nist-sip-1.2-requestform.htm"/>
 	<!-- where the src lives -->
 	<property name= "srcroot" value = "${root}/src" />
-
+	<property name="debug" value="true"/>
 	<!-- where are the lib -->
 	<property name="xerceslib" value="${root}/lib/xerces/xerces.jar" />
 	<property name= "jain_api_jar" value = "JainSipApi1.1.jar" />
