@@ -110,8 +110,7 @@ public class LogWriter {
 	}
 
 	public synchronized void logMessage(String message, String logFileName) {
-		if (needsLogging) {
-			
+		if (LogWriter.needsLogging) {
 			try {
 				File logFile = new File(logFileName);
 				if (!logFile.exists()) {
@@ -122,11 +121,11 @@ public class LogWriter {
 				FileWriter fw = new FileWriter(logFileName, true);
 				PrintWriter printWriter = new PrintWriter(fw, true);
 				printWriter.println(
-				" ---------------------------------------------- ");
+					" ---------------------------------------------- ");
 				printWriter.println(message);
 				printWriter.close();
 				fw.close();
-				
+
 			} catch (IOException ex) {
 				ex.printStackTrace();
 			}
@@ -195,11 +194,6 @@ public class LogWriter {
 }
 /*
  * $Log: not supported by cvs2svn $
- * Revision 1.2.2.1  2004/04/02 15:02:09  thomas.froment
- * Ticket #17048 -  log files are created in var/log instead of instance name directory
- *
- * Revision 1.2  2004/02/13 15:29:45  thomas.froment
- * - merge from NIST CVS version 28012004 - add traceviewer
  *
  * Revision 1.5  2004/01/22 13:26:27  sverker
  * Issue number:
