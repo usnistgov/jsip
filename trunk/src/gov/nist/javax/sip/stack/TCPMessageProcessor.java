@@ -23,7 +23,7 @@ import java.util.*;
  * object that creates new TCP MessageChannels (one for each new
  * accept socket).  
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.15 $ $Date: 2004-03-30 15:38:18 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2004-03-30 16:40:30 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Acknowledgement: Jeff Keyser suggested that a
@@ -62,6 +62,8 @@ public class TCPMessageProcessor extends MessageProcessor {
 	private SimMessageObject msgObject;
 //endif
 */
+
+	protected int useCount;
 
 	/**
 	 * The SIP Stack Structure.
@@ -341,7 +343,7 @@ public class TCPMessageProcessor extends MessageProcessor {
 	}
 
 	public boolean inUse() {
-		return tcpMessageChannels.size() != 0;
+		return this.useCount != 0;
 	}
 
 	/**
@@ -360,6 +362,10 @@ public class TCPMessageProcessor extends MessageProcessor {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2004/03/30 15:38:18  mranga
+ * Reviewed by:   mranga
+ * Name the threads so as to facilitate debugging.
+ *
  * Revision 1.14  2004/03/25 19:01:44  mranga
  * Reviewed by:   mranga
  * check for key before removing it from cache
