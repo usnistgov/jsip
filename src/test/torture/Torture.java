@@ -150,16 +150,13 @@ TokenValues, ConfigurationSwitches
 	
 	public void characters( char[] ch, int start, int length) {
 		String str = new String(ch, start,length);
-		//if (str.trim().equals("")) return;
+		if (str.trim() == "") return;
 		if (messageContext) {
 			if (testMessage == null) testMessage =  str; 
 			else testMessage += str;
 		} else if (descriptionContext) {
-			if (debug) {
-			System.out.println(" testDescription = " + str);
 			if (testDescription == null) testDescription = str;
 			else testDescription += str;
-			}
 		} else if (exceptionTextContext) {
 		       if (exceptionHeader == null)  
 					exceptionHeader = str;
@@ -319,7 +316,7 @@ TokenValues, ConfigurationSwitches
 				  encodedMessage = sipHeader.encode();
 				} else if (testMessageType.equals(SIP_URL)) {
 				  sipURL = 
-				   stringParser.parseSIPUrl(testMessage);
+				   stringParser.parseSIPUrl(testMessage.trim());
 				  encodedMessage = sipURL.encode();
 				} else throw 
 				  new SAXException("Torture: Internal error");
@@ -396,13 +393,15 @@ TokenValues, ConfigurationSwitches
 		} else if (name.compareTo(EXCEPTION_TEXT) == 0 )  	     {
 			exceptionTextContext = false;
 		} else if (name.compareTo(EXPECT_EXCEPTION) == 0 )   {
-			   expectExceptionContext = false;
+			expectExceptionContext = false;
                         ExpectedException ex = 
 				new ExpectedException(exceptionClassName, 
 							exceptionHeader);
-			if (exceptionHeader != null) 
-			    this.exceptionTable.put(exceptionHeader,ex);
-			else this.exceptionTable.put(testMessage.trim(),ex);
+			if (exceptionHeader != null)  {
+			    this.exceptionTable.put(exceptionHeader.trim(),ex);
+			} else {
+			    this.exceptionTable.put(testMessage.trim(),ex); 
+			}
 			exceptionHeader = null;
 		} else if (name.compareTo(EXCEPTION_MESSAGE)  == 0 ) {
 			exceptionMessageContext = false;
