@@ -9,6 +9,9 @@ import java.net.*;
 import java.util.Hashtable;
 import java.util.Enumeration;
 
+// Added by Daniel J. Martinez Manzano <dani@dif.um.es>
+import javax.net.ssl.SSLSocket;
+
 //ifdef SIMULATION
 /*
 import sim.java.net.*;
@@ -23,6 +26,7 @@ import sim.java.*;
  * @version  JAIN-SIP-1.1
  *
  *@author M. Ranganathan <mranga@nist.gov>  <br/>
+ * TLS support Added by Daniel J. Martinez Manzano <dani@dif.um.es>
  *
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
@@ -35,6 +39,9 @@ class IOHandler {
 
 	private static String UDP = "udp";
 	private static String TCP = "tcp";
+
+	// Added by Daniel J. Martinez Manzano <dani@dif.um.es>
+	private static String TLS = "tls";
 
 	// A cache of client sockets that can be re-used for 
 	// sending tcp messages.
@@ -251,6 +258,48 @@ class IOHandler {
 			} else
 				return clientSock;
 
+	// Added by Daniel J. Martinez Manzano <dani@dif.um.es>
+	// Copied and modified from the former section for TCP
+		} else if (transport.compareToIgnoreCase(TLS) == 0) {
+			String key = makeKey(inaddr, contactPort);
+			SSLSocket clientSock = (SSLSocket) getSocket(key);
+			while (retry_count < max_retry) {
+				if (clientSock == null) {
+					if (LogWriter.needsLogging) {
+						sipStack.logWriter.logMessage("inaddr = " + inaddr);
+						sipStack.logWriter.logMessage("port = " + contactPort);
+					}
+					clientSock = sipStack.getNetworkLayer().createSSLSocket(inaddr,contactPort);
+					OutputStream outputStream = clientSock.getOutputStream();
+					writeChunks(outputStream, bytes,length);
+					putSocket(key, clientSock);
+					break;
+				} else {
+					try {
+						OutputStream outputStream =
+							clientSock.getOutputStream();
+						writeChunks(outputStream,bytes,length);
+						break;
+					} catch (IOException ex) {
+						if (LogWriter.needsLogging)
+							sipStack.logWriter.logException(ex);
+						// old connection is bad.
+						// remove from our table.
+						removeSocket(key);
+						try {
+						    clientSock.close();
+						} catch (Exception e) {}
+						clientSock = null;
+						retry_count++;
+					}
+				}
+			}
+			if (clientSock == null) {
+				throw new IOException(
+					"Could not connect to " + inaddr + ":" + contactPort);
+			} else
+				return clientSock;
+
 		} else {
 			// This is a UDP transport...
 			DatagramSocket datagramSock = sipStack.getNetworkLayer().createDatagramSocket();
@@ -287,6 +336,45 @@ class IOHandler {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.25  2004/09/01 02:04:15  xoba
+ * Issue number:  no particular issue number.
+ *
+ * this code passes TCK
+ *
+ * fixed multiple javadoc errors throughout javax.* and gov.nist.*
+ *
+ * added junit and log4j jars to cvs module, although log4j is not being used yet.
+ *
+ * modified and expanded build.xml and fixed javadoc reference to outdated jre documentation (now
+ * javadocs hyperlink to jre api documentation). since
+ * top-level 'docs' directory already contains cvs-controlled files, i redirected output of javadocs to their
+ * own separate directories, which are 'cleaned' along with 'clean' target. also created other javadoc
+ * which just outputs javax.* classes for those wishing to develop sip applications without reference to nist.gov.*.
+ *
+ * completed switchover to NetworkLayer for network access.
+ *
+ * DID NOT modify makefile's.... so, developers beware.
+ *
+ *
+ *
+ *
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.24  2004/08/30 16:04:47  mranga
  * Submitted by:  Mike Andrews
  * Reviewed by:   mranga

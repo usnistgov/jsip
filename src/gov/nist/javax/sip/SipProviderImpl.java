@@ -24,7 +24,7 @@ import java.text.ParseException;
 /**
  * Implementation of the JAIN-SIP provider interface.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.27 $ $Date: 2004-09-28 04:07:04 $
+ * @version JAIN-SIP-1.1 $Revision: 1.28 $ $Date: 2004-10-28 19:02:49 $
  * 
  * @author M. Ranganathan <mranga@nist.gov><br/>
  * 
@@ -584,15 +584,28 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
             host = via.getHost();
 
         //TODO Need to check for transport before setting port.
-        if (port == -1)
-            port = 5060;
-        Hop hop = new HopImpl(host + ":" + port + "/" + transport);
+        if (port == -1) {
+	   if (transport.equalsIgnoreCase("TLS")) port = 5061;
+	   else port = 5060;
+	}
+
+	// Added by Daniel J. Martinez Manzano <dani@dif.um.es>
+	// for correct management of IPv6 addresses.
+	if(host.indexOf(":") > 0)
+		if(host.indexOf("[") < 0)
+			host = "[" + host + "]";
+
+	// Changed by Daniel J. Martinez Manzano <dani@dif.um.es>
+	// Original line called constructor with concatenated
+	// parameters, which didn't work for IPv6 addresses.
+	Hop hop = new HopImpl(host, port, transport);
+
         try {
             MessageChannel messageChannel = sipStack
                     .createRawMessageChannel(hop);
             messageChannel.sendMessage(sipResponse);
         } catch (IOException ex) {
-            throw new SipException(ex.getMessage());
+	         throw new SipException(ex.getMessage());
         }
     }
 
@@ -750,7 +763,28 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
     }
 }
 /*
- * $Log: not supported by cvs2svn $ Revision 1.26 2004/08/10 23:21:58 mranga Issue
+ * $Log: not supported by cvs2svn $
+ * Revision 1.27  2004/09/28 04:07:04  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  mranga
+ * Reviewed by:
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ * Revision 1.26 2004/08/10 23:21:58 mranga Issue
  * number: 35 Reviewed by: mranga
  * 
  * Revision 1.25 2004/06/21 04:59:48 mranga Refactored code - no functional

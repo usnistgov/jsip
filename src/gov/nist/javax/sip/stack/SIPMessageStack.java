@@ -32,7 +32,7 @@ import sim.java.net.*;
  * get the stack the process messages.
  * This will start the necessary threads that wait for incoming SIP messages.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-08-30 16:04:47 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2004-10-28 19:02:51 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * 
@@ -54,6 +54,7 @@ public abstract class SIPMessageStack {
 
 	protected boolean tcpFlag;
 	protected boolean udpFlag;
+	protected boolean tlsFlag;
 
 //ifdef SIMULATION
 /*
@@ -62,7 +63,7 @@ public abstract class SIPMessageStack {
 */
 
 	/**
-	 * Class that handles caching of TCP connections.
+	 * Class that handles caching of TCP/TLS connections.
 	 */
 	protected IOHandler ioHandler;
 
@@ -669,6 +670,12 @@ public abstract class SIPMessageStack {
 			this.addMessageProcessor(tcpMessageProcessor);
 			this.tcpFlag = true;
 			return tcpMessageProcessor;
+		} else if (transport.equalsIgnoreCase("tls")) {
+			TLSMessageProcessor tlsMessageProcessor =
+				new TLSMessageProcessor(this, port);
+			this.addMessageProcessor(tlsMessageProcessor);
+			this.tlsFlag = true;
+			return tlsMessageProcessor;
 		} else {
 			throw new IllegalArgumentException("bad transport");
 		}
@@ -743,6 +750,12 @@ public abstract class SIPMessageStack {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/08/30 16:04:47  mranga
+ * Submitted by:  Mike Andrews
+ * Reviewed by:   mranga
+ *
+ * Added a network layer.
+ *
  * Revision 1.3  2004/06/21 05:42:31  mranga
  * Reviewed by:  mranga
  * more code smithing

@@ -118,13 +118,13 @@ import java.util.LinkedList;
  * 
  * </pre>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.48 $ $Date: 2004-10-06 18:56:07 $
+ * @version JAIN-SIP-1.1 $Revision: 1.49 $ $Date: 2004-10-28 19:02:51 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
- * @author Bug fixes by Emil Ivov, Antonis Karydas.
- * @author Performance enhancements contributed by Thomas Froment and Pierre De
- *         Rop. <a href=" {@docRoot}/uncopyright.html">This code is in the
- *         public domain. </a>
+ * @author Bug fixes by Emil Ivov, Antonis Karydas, Daniel Martinez.
+ * @author Performance enhancements contributed by Thomas Froment 
+ * and Pierre De Rop.  <br/>
+ *<a href=" {@docRoot}/uncopyright.html">This code is in the  public domain. </a>
  * 
  *  
  */
@@ -239,9 +239,15 @@ public class SIPServerTransaction extends SIPTransaction implements
             if (port == -1)
                 port = 5060;
             String transport = via.getTransport();
-            HopImpl hop = new HopImpl(host + ":" + port + "/" + transport);
-            MessageChannel messageChannel = ((SIPTransactionStack) getSIPStack())
-                    .createRawMessageChannel(hop);
+
+	    // Changed by Daniel J. Martinez Manzano <dani@dif.um.es>
+	    // Original code called constructor with concatenated
+	    // parameters, which didn't work for IPv6 addresses.
+            HopImpl hop = new HopImpl(host, port, transport);
+
+            MessageChannel messageChannel =
+            ((SIPTransactionStack) getSIPStack()).createRawMessageChannel(
+            hop);
             messageChannel.sendMessage(transactionResponse);
         }
     }
@@ -1175,6 +1181,9 @@ public class SIPServerTransaction extends SIPTransaction implements
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.48  2004/10/06 18:56:07  mranga
+ * *** empty log message ***
+ *
  * Revision 1.47  2004/10/06 16:57:50  mranga
  * Issue number:
  * Obtained from:

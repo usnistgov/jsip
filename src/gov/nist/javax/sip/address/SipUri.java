@@ -12,7 +12,7 @@ import java.text.ParseException;
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Includes a bug fix by Stefan Marx.
- * @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-09-26 14:48:03 $
+ * @version JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2004-10-28 19:02:50 $
  *
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
@@ -915,6 +915,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 		if (transport == null)
 			throw new NullPointerException("null arg");
 		if (transport.compareToIgnoreCase("UDP") == 0
+			|| transport.compareToIgnoreCase("TLS") == 0 // Added by Daniel J. Martinez Manzano <dani@dif.um.es>
 			|| transport.compareToIgnoreCase("TCP") == 0) {
 			NameValue nv = new NameValue(TRANSPORT, transport.toLowerCase());
 			uriParms.delete(TRANSPORT);
@@ -944,6 +945,12 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/09/26 14:48:03  mranga
+ * Submitted by:  John Martin
+ * Reviewed by:   mranga
+ *
+ * Remove unnecssary synchronization.
+ *
  * Revision 1.3  2004/07/22 14:22:52  mranga
  * Submitted by:  Dave Stuart
  * Reviewed by:   mranga

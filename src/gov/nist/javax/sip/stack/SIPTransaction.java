@@ -20,8 +20,9 @@ import javax.sip.message.*;
  * and creation of the Via header for a message.
  *
  * @author Jeff Keyser 
- * @author M. Ranganathan (modified Jeff's original source and aligned with JAIN-SIP 1.1)
- * @version  JAIN-SIP-1.1 $Revision: 1.32 $ $Date: 2004-10-04 16:03:53 $
+ * @author M. Ranganathan (modified Jeff's original source and aligned with JAIN-SIP 1.1) 
+*  @author Modifications for TLS Support added by Daniel J. Martinez Manzano <dani@dif.um.es>
+ * @version  JAIN-SIP-1.1 $Revision: 1.33 $ $Date: 2004-10-28 19:02:51 $
  */
 public abstract class SIPTransaction
 	extends MessageChannel
@@ -225,12 +226,26 @@ public abstract class SIPTransaction
 			   	   && -- ((TCPMessageChannel) transaction.encapsulatedChannel).useCount == 0 ) {
 				  // Close the encapsulated socket if stack is configured 
 				    transaction.close();
+				} else
+				if (  ( ! this.sipStack.cacheServerConnections )
+				   && transaction.encapsulatedChannel instanceof TLSMessageChannel
+			   	   && -- ((TLSMessageChannel) transaction.encapsulatedChannel).useCount == 0 ) {
+				  // Close the encapsulated socket if stack is configured 
+				    transaction.close();
 				} else {
 				   if (LogWriter.needsLogging
 				      &&  ( ! this.sipStack.cacheServerConnections )
 			              && transaction.isReliable())
-				      sipStack.logWriter.logMessage( "Use Count = " +
-			   	      ((TCPMessageChannel) transaction.encapsulatedChannel).useCount);
+				      {
+					int UseCount;
+
+					if(transaction.encapsulatedChannel instanceof TCPMessageChannel)
+						UseCount = ((TCPMessageChannel) transaction.encapsulatedChannel).useCount;
+					else
+						UseCount = ((TLSMessageChannel) transaction.encapsulatedChannel).useCount;
+
+				      	sipStack.logWriter.logMessage( "Use Count = " + UseCount);
+				      }
 				}
 			}
 		}
@@ -257,10 +272,20 @@ public abstract class SIPTransaction
 		this.peerInetAddress = newEncapsulatedChannel.getPeerInetAddress();
 		this.peerProtocol = newEncapsulatedChannel.getPeerProtocol();
 		if (this.isReliable()) {
-			((TCPMessageChannel)encapsulatedChannel).useCount++;
-			if (LogWriter.needsLogging)
-			    sipStack.logWriter.logMessage("use count for encapsulated channel" +    this + " " +
-				((TCPMessageChannel)encapsulatedChannel).useCount);
+			if(encapsulatedChannel instanceof TLSMessageChannel) 
+			{
+				((TLSMessageChannel)encapsulatedChannel).useCount++;
+				if (LogWriter.needsLogging)
+				    sipStack.logWriter.logMessage("use count for encapsulated channel" +    this + " " +
+					((TLSMessageChannel)encapsulatedChannel).useCount);
+			}
+			else
+			{
+				((TCPMessageChannel)encapsulatedChannel).useCount++;
+				if (LogWriter.needsLogging)
+				    sipStack.logWriter.logMessage("use count for encapsulated channel" +    this + " " +
+					((TCPMessageChannel)encapsulatedChannel).useCount);
+			}
 		}
 
 		this.currentState = null;
@@ -1010,6 +1035,10 @@ public abstract class SIPTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.32  2004/10/04 16:03:53  mranga
+ * Reviewed by:   mranga
+ * attempted fix for memory leak
+ *
  * Revision 1.31  2004/10/04 14:43:20  mranga
  * Reviewed by:   mranga
  *
