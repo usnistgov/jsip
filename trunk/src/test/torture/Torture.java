@@ -20,9 +20,10 @@ import gov.nist.javax.sip.message.*;
 import java.io.*;
 import java.util.Hashtable;
 import java.util.Enumeration;
-// import javax.xml.parsers.SAXParserFactory;  
-// import javax.xml.parsers.ParserConfigurationException;  
-// import org.xml.sax.helpers.ParserFactory;
+//ifdef J2SDK1.4
+import javax.xml.parsers.SAXParserFactory;  
+import javax.xml.parsers.ParserConfigurationException;  
+//endif
 import org.xml.sax.Attributes;
 import org.xml.sax.XMLReader; 
 import org.xml.sax.SAXException; 
@@ -588,9 +589,19 @@ TokenValues, ConfigurationSwitches
             		System.exit (1);
         	}
         	try {
-			XMLReader saxParser = (XMLReader)Class.forName
-			    ("org.apache.xerces.parsers.SAXParser").
-			    newInstance();
+//ifdef J2SDK1.4
+			SAXParserFactory saxParserFactory=SAXParserFactory.newInstance();
+			XMLReader saxParser = saxParserFactory.newSAXParser().getXMLReader();
+//else
+//			
+//			 /** enable if you are using 1.3 */
+//
+//			XMLReader saxParser = (XMLReader)Class.forName
+//			    ("org.apache.xerces.parsers.SAXParser").
+//			    newInstance();
+//			
+//endif
+
 			saxParser.setContentHandler(new Torture());
 			saxParser.setFeature
 			  ("http://xml.org/sax/features/validation",true);
