@@ -162,6 +162,7 @@ clean: emacsclean
 	cd $(SRCROOT)/gov/nist/javax/sip/message;$(MAKE) clean
 	cd $(SRCROOT)/gov/nist/core;$(MAKE) clean
 	cd $(SRCROOT)/examples/shootist; $(MAKE) clean
+	cd $(SRCROOT)/examples/subsnotify; $(MAKE) clean
 	$(RM) -rf classes
 	$(RM) -f $(RI_JAR)
 	$(RM) -f $(SDP_JAR)
@@ -185,6 +186,7 @@ backup:
 	./src/gov/nist/javax				\
 	./src/gov/nist/core				\
 	./src/examples/shootist		        	\
+	./src/examples/subsnotify	        	\
 	./src/tools/tracesviewer	        
 	
 
@@ -204,6 +206,7 @@ zipfile:
 	-r ./$(PROJECT_ROOT)/src/tools/tracesviewer	        \
 	-r ./$(PROJECT_ROOT)/src/tools/sniffer		        \
 	-r ./$(PROJECT_ROOT)/src/examples/shootist	       	\
+	-r ./$(PROJECT_ROOT)/src/examples/subsnotify	       	\
 	-r ./$(PROJECT_ROOT)/src/javax				\
 	-r ./$(PROJECT_ROOT)/src/test/tck			\
 	-r ./$(PROJECT_ROOT)/src/test/torture			\
@@ -243,6 +246,7 @@ srctar: stamp
 	./$(PROJECT_ROOT)/src/tools/tracesviewer	      	\
 	./$(PROJECT_ROOT)/src/tools/sniffer		        \
 	./$(PROJECT_ROOT)/src/examples/shootist		        \
+	./$(PROJECT_ROOT)/src/examples/subsnotify	        \
 	./$(PROJECT_ROOT)/src/test/tck		        	\
 	./$(PROJECT_ROOT)/README				\
 	./$(PROJECT_ROOT)/makefile				\
@@ -262,6 +266,7 @@ srczip: stamp
 	-r ./$(PROJECT_ROOT)/src/tools/tracesviewer	        \
 	-r ./$(PROJECT_ROOT)/src/tools/sniffer		        \
 	-r ./$(PROJECT_ROOT)/src/examples/shootist        	\
+	-r ./$(PROJECT_ROOT)/src/examples/subsnotify        	\
 	-r ./$(PROJECT_ROOT)/src/test/tck	        	\
 	-r ./$(PROJECT_ROOT)/src/javax				\
 	-r ./$(PROJECT_ROOT)/README				\
@@ -303,6 +308,7 @@ tarfile:
 	./$(PROJECT_ROOT)/src/tools/tracesviewer		        \
 	./$(PROJECT_ROOT)/src/tools/sniffer		        \
 	./$(PROJECT_ROOT)/src/examples/shootist		        \
+	./$(PROJECT_ROOT)/src/examples/subsnotify	        \
 	./$(PROJECT_ROOT)/classes					\
 	./$(PROJECT_ROOT)/README					\
 	./$(PROJECT_ROOT)/makefile					\
@@ -371,6 +377,7 @@ export:
 	./src/tools/tracesviewer	        \
 	./src/tools/sniffer		        \
 	./src/examples/shootist		        \
+	./src/examples/subsnotify	        \
 	./src/test/tck		        	\
 	./README				\
 	./makefile				\
