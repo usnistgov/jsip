@@ -24,7 +24,7 @@ import java.text.ParseException;
  * retrieve this structure from the SipStack. Bugs against route set 
  * management were reported by Antonis Karydas and Brad Templeton.
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.25 $ $Date: 2004-03-12 23:26:42 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.26 $ $Date: 2004-03-30 17:53:55 $
  *
  *@author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -1321,6 +1321,16 @@ public class DialogImpl implements javax.sip.Dialog {
 		try {
 			MessageChannel messageChannel =
 				sipStack.createRawMessageChannel(hop);
+			if ( ((SIPClientTransaction) clientTransactionId).encapsulatedChannel
+				instanceof TCPMessageChannel )  {
+			      // Remove this from the connection cache if it is in the connection
+			      // cache and is not yet active.
+			      TCPMessageChannel oldChannel = (TCPMessageChannel)
+				   ((SIPClientTransaction)clientTransactionId).encapsulatedChannel;
+			      if (oldChannel.isCached && ! oldChannel.isRunning) {
+				   oldChannel.uncache();
+			      }
+			}
 			((SIPClientTransaction) clientTransactionId).encapsulatedChannel =
 				messageChannel;
 
@@ -1460,6 +1470,10 @@ public class DialogImpl implements javax.sip.Dialog {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.25  2004/03/12 23:26:42  mranga
+ * Reviewed by:   mranga
+ * Fixed a synchronization problem
+ *
  * Revision 1.24  2004/03/09 00:34:44  mranga
  * Reviewed by:   mranga
  * Added TCP connection management for client and server side
