@@ -19,7 +19,7 @@ import gov.nist.core.*;
  * NIST-SIP stack and event model with the JAIN-SIP stack. Implementors
  * of JAIN services need not concern themselves with this class.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.11 $ $Date: 2004-02-04 22:07:24 $
+ * @version JAIN-SIP-1.1 $Revision: 1.12 $ $Date: 2004-02-05 10:58:12 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Bug fix Contributions by Lamine Brahimi and  Andreas Bystrom. <br/>
@@ -265,12 +265,13 @@ public class NistSipMessageHandlerImpl
 
 			if (dialog != null && 
 				transaction != null && 
-				! sipRequest.getMethod().equals(Request.BYE)) {
+				! sipRequest.getMethod().equals(Request.BYE) &&
+				! sipRequest.getMethod().equals(Request.CANCEL) &&
+				! sipRequest.getMethod().equals(Request.ACK)) {
 				// already dealt with bye above.
 				// Note that route updates are only effective until
 				// Dialog is in the confirmed state.
-				if ( ( ! sipRequest.getMethod().equals(Request.ACK)) &&
-				      dialog.getRemoteSequenceNumber() >= 
+				if (  dialog.getRemoteSequenceNumber() >= 
 				      sipRequest.getCSeq().getSequenceNumber() ) {
 				      if (LogWriter.needsLogging) {
 					sipStackImpl.logMessage
@@ -485,6 +486,10 @@ public class NistSipMessageHandlerImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/02/04 22:07:24  mranga
+ * Reviewed by:   mranga
+ * Fix for handling of out of order sequence numbers in the dialog layer.
+ *
  * Revision 1.10  2004/02/04 18:44:18  mranga
  * Reviewed by:   mranga
  * check sequence number before delivering event to application.
