@@ -154,7 +154,7 @@ import sim.java.net.*;
  *</li>
  *</ul>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.29 $ $Date: 2004-08-30 16:04:47 $
+ * @version JAIN-SIP-1.1 $Revision: 1.30 $ $Date: 2004-09-01 11:18:30 $
  * 
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -254,7 +254,7 @@ public class SipStackImpl
 
 		/* gets the NetworkLayer implementation, if any */
 		
-		final String NETWORK_LAYER_KEY = "gov.nist.javax.sip.NetworkLayer";
+		final String NETWORK_LAYER_KEY = "gov.nist.javax.sip.NETWORK_LAYER";
 		
 		if (configurationProperties.containsKey(NETWORK_LAYER_KEY)) {
 		    String path = configurationProperties.getProperty(NETWORK_LAYER_KEY);
@@ -738,6 +738,12 @@ public class SipStackImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.29  2004/08/30 16:04:47  mranga
+ * Submitted by:  Mike Andrews
+ * Reviewed by:   mranga
+ *
+ * Added a network layer.
+ *
  * Revision 1.28  2004/06/16 02:53:17  mranga
  * Submitted by:  mranga
  * Reviewed by:   implement re-entrant multithreaded listener model.
