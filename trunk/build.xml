@@ -82,7 +82,7 @@ c:/jakarta-ant/bin/ant all
 	<property name= "ri_jar" value = "nist-sip-1.2.jar" />
 	<property name= "sdp_jar" value = "nist-sdp-1.0.jar" />
 	<property name= "sip-sdp-jar" value = "sip-sdp.jar" />
-	<property name = 'junit_jar' value = 'lib/junit3.8.1/junit.jar'/>
+	<property name = 'junit_jar' value = 'lib/junit.jar'/>
 	<property name = 'tck_jar' value = 'tck.jar'/>
 	
 	<property name ='j2se_api' value='http://java.sun.com/j2se/1.4.2/docs/api'/>
