@@ -72,7 +72,7 @@ public class ObjectInUseException extends SipException {
 
      *
 
-     * @param <var>message</var> the detailed error message
+     * @param message the detailed error message
 
      */
 

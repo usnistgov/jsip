@@ -93,7 +93,7 @@ public interface Message extends Cloneable, Serializable {
      * This method should not be used to remove required Headers, required 
      * Headers should be replaced using the {@link Message#setHeader(Header)}. 
      *
-     * @param headername the new string value name of the Header to be 
+     * @param headerName the new string value name of the Header to be 
      * removed.
      */
     public void removeHeader(String headerName);         
@@ -347,7 +347,7 @@ public interface Message extends Cloneable, Serializable {
     /**
      * Compare this SIP Message for equality with another.
      *
-     * @param obj the object to compare this Message with.
+     * @param object the object to compare this Message with.
      * @return <code>true</code> if <code>obj</code> is an instance of this class
      * representing the same SIP Message as this, <code>false</code> otherwise.
      */

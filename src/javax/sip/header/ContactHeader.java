@@ -124,7 +124,7 @@ public interface ContactHeader extends HeaderAddress, Parameters, Header {
      * field is present with a value of "0". The "*" value can be determined
      * if "this.getNameAddress().isWildcard() = = true".
      *
-     * @param seconds - new relative value of the expires parameter.
+     * @param expires new relative value of the expires parameter.
      * 0 implies removal of Registration specified in Contact Header.
      * @throws InvalidArgumentException if supplied value is less than zero.
      * @since v1.1

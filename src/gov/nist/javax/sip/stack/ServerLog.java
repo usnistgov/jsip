@@ -25,7 +25,7 @@ import sim.java.*;
  * later access via RMI. The trace can be viewed with a trace viewer (see
  * tools.traceviewerapp).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.14 $ $Date: 2004-07-07 15:46:59 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.15 $ $Date: 2004-09-01 02:04:16 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -338,7 +338,7 @@ public class ServerLog {
 				status,
 				tid,
 				callId,
-				logWriter.lineCount);
+				logWriter.getLineCount());
 		logMessage(log.flush());
 	}
 
@@ -364,7 +364,7 @@ public class ServerLog {
 				status,
 				tid,
 				callId,
-				logWriter.lineCount);
+				logWriter.getLineCount());
 		logMessage(log.flush());
 	}
 
@@ -699,6 +699,10 @@ public class ServerLog {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/07/07 15:46:59  mranga
+ * Submitted by:  Al Straub
+ * Reviewed by:   mranga
+ *
  * Revision 1.13  2004/06/21 04:59:53  mranga
  * Refactored code - no functional changes.
  *

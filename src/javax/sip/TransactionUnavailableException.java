@@ -48,7 +48,7 @@ public class TransactionUnavailableException extends SipException {
      * Constructs a new <code>TransactionUnavailableException</code> with
      * the specified error message.
      *
-     * @param <var>message</var> the error message of this Exception.
+     * @param message the error message of this Exception.
      */
     public TransactionUnavailableException(String message) {
         super(message);

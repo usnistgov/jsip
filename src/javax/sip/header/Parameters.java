@@ -43,7 +43,7 @@ public interface Parameters {
      * Returns the value of the named parameter, or null if it is not set. A
      * zero-length String indicates flag parameter.
      *
-     * @param <var>name</var> name of parameter to retrieve
+     * @param name name of parameter to retrieve
      * @return the value of specified parameter
      */
     public String getParameter(String name);

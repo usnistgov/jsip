@@ -87,7 +87,7 @@ public interface ContentLengthHeader extends Header {
 
      *
 
-     * @param <var>contentLength</var> the content-length of the message body
+     * @param contentLength the content-length of the message body
 
      * as a decimal number of octets.
 

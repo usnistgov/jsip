@@ -48,7 +48,7 @@ public class TransportNotSupportedException extends SipException {
      * Constructs a new <code>TransportNotSupportedException</code> with
      * the specified error message.
      *
-     * @param <var>message</var> the error message of this Exception.
+     * @param message the error message of this Exception.
      */
     public TransportNotSupportedException(String message) {
         super(message);
