@@ -24,7 +24,7 @@ import java.text.ParseException;
  * retrieve this structure from the SipStack. Bugs against route set 
  * management were reported by Antonis Karydas and Brad Templeton.
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.14 $ $Date: 2004-01-27 13:52:11 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.15 $ $Date: 2004-01-27 15:11:06 $
  *
  *@author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -182,6 +182,7 @@ public class DialogImpl implements javax.sip.Dialog {
 			if (st.getCSeq() == sipRequest.getCSeq().getSequenceNumber()) {
 				st.setState(SIPTransaction.TERMINATED_STATE);
 				this.ackSeen = true;
+				this.lastAck = sipRequest;
 			}
 
 			if (LogWriter.needsLogging)
@@ -191,6 +192,19 @@ public class DialogImpl implements javax.sip.Dialog {
 			if (st == null)
 				return;
 		}
+	}
+
+	/** Return true if the dialog has already seen the ack.
+	*@return flag that records if the ack has been seen.
+	*/
+	public boolean isAckSeen() {
+		return this.ackSeen;
+	}
+
+	/** Get the last ACK for this transaction.
+	*/
+	public SIPRequest getLastAck() {
+		return this.lastAck;
 	}
 
 	/** Get the transaction that created this dialog.
@@ -631,14 +645,6 @@ public class DialogImpl implements javax.sip.Dialog {
 		this.remoteSequenceNumber = rCseq;
 	}
 
-	/**
-	 * Increment the Remote cseq # for the dialog.
-	 *
-	 * @return the incremented remote sequence number.
-	public int  incrementRemoteSequenceNumber() {
-	    return ++this.remoteSequenceNumber;
-	}
-	 */
 
 	/**
 	 * Increment the local CSeq # for the dialog.
@@ -1413,6 +1419,11 @@ public class DialogImpl implements javax.sip.Dialog {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/01/27 13:52:11  mranga
+ * Reviewed by:   mranga
+ * Fixed server/user-agent parser.
+ * suppress sending ack to TU when retransFilter is enabled and ack is retransmitted.
+ *
  * Revision 1.13  2004/01/22 13:26:33  sverker
  * Issue number:
  * Obtained from:
