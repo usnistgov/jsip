@@ -60,7 +60,7 @@ implements SIPMessageListener, Runnable {
     private Thread mythread;
 //else
 /*
-    private SimThread myThread;
+    private SimThread mythread;
 //endif
 */
     
@@ -90,19 +90,19 @@ implements SIPMessageListener, Runnable {
      *
      * @param sipStack Ptr to SIP Stack
      */
+
 //ifndef SIMULATION
 //
-    protected TCPMessageChannel( Socket sock, SIPStack sipStack, 
-		TCPMessageProcessor msgProcessor ) {
+    protected TCPMessageChannel( 
+	       Socket sock, 
+	       SIPStack sipStack, 
+		TCPMessageProcessor msgProcessor )  throws IOException {
         mySock = sock;
         myAddress = sipStack.getHostAddress();
-        try {
-            myClientInputStream = mySock.getInputStream();
-            myClientOutputStream = mySock.getOutputStream();
-        } catch ( IOException ex) {
-            InternalErrorHandler.handleException(ex);
-        }
-        mythread = new Thread(this);
+        myClientInputStream = mySock.getInputStream();
+        myClientOutputStream = mySock.getOutputStream();
+	mythread = new Thread(this);
+	mythread.setName("TCPMessageChannelThread");
         // Stash away a pointer to our stack structure.
         stack = sipStack;
         this.tcpMessageProcessor = msgProcessor;
@@ -113,25 +113,23 @@ implements SIPMessageListener, Runnable {
     }
 //else
 /*
-    protected TCPMessageChannel( SimSocket sock, SIPStack sipStack, 
-		TCPMessageProcessor msgProcessor ) {
+    protected TCPMessageChannel( 
+	       SimSocket sock, 
+	       SIPStack sipStack, 
+	       TCPMessageProcessor msgProcessor )  throws IOException {
         mySock = sock;
         myAddress = sipStack.getHostAddress();
-        try {
-            myClientInputStream = mySock.getInputStream();
-            myClientOutputStream = mySock.getOutputStream();
-        } catch ( IOException ex) {
-            InternalErrorHandler.handleException(ex);
-        }
-        myThread = new SimThread( this );
-	myThread.setName("TCPMessageChannelThread");
+        myClientInputStream = mySock.getInputStream();
+        myClientOutputStream = mySock.getOutputStream();
+        mythread = new SimThread( this );
+	mythread.setName("TCPMessageChannelThread");
         // Stash away a pointer to our stack structure.
         stack = sipStack;
         this.tcpMessageProcessor = msgProcessor;
         this.myPort = this.tcpMessageProcessor.getPort();
 	// Bug report by Vishwashanti Raj Kadiayl 
 	super.messageProcessor =  msgProcessor;
-        myThread.start();
+        mythread.start();
     }
 //endif
 */
@@ -224,8 +222,25 @@ implements SIPMessageListener, Runnable {
      * Uses the topmost via address to send to.
      *@param message is the message to send.
      */
-
-//ifdef SIMULATION
+//ifndef SIMULATION
+//
+    private void sendMessage(byte[] msg) throws IOException {
+        Socket sock = this.stack.ioHandler.sendBytes(this.peerAddress,
+        this.peerPort,this.peerProtocol,msg);
+        // Created a new socket so close the old one and s
+        if (sock != mySock) {
+            try {
+                if (mySock != null)
+                    mySock.close();
+            } catch (IOException ex) {  }
+            mySock = sock;
+            this.myClientInputStream = mySock.getInputStream();
+            this.myClientOutputStream = mySock.getOutputStream();
+	    Thread thread = new Thread(this);
+            thread.start();
+        }
+    }
+//else
 /*
     private void sendMessage(byte[] msg) throws IOException {
         SimSocket sock = this.stack.ioHandler.sendBytes(this.peerAddress,
@@ -237,41 +252,15 @@ implements SIPMessageListener, Runnable {
                     mySock.close();
             } catch (IOException ex) {  }
             mySock = sock;
-            try {
-                this.myClientInputStream = mySock.getInputStream();
-                this.myClientOutputStream = mySock.getOutputStream();
-            } catch ( IOException ex) {
-                InternalErrorHandler.handleException(ex);
-            }
+            this.myClientInputStream = mySock.getInputStream();
+            this.myClientOutputStream = mySock.getOutputStream();
             SimThread thread = new SimThread(this);
             thread.start();
         }
     }
-
-//else
-*/
-    private void sendMessage(byte[] msg) throws IOException {
-        Socket sock = this.stack.ioHandler.sendBytes(this.peerAddress,
-        this.peerPort,this.peerProtocol,msg);
-        // Created a new socket so close the old one and s
-        if (sock != mySock) {
-            try {
-                if (mySock != null)
-                    mySock.close();
-            } catch (IOException ex) {  }
-            mySock = sock;
-            try {
-                this.myClientInputStream = mySock.getInputStream();
-                this.myClientOutputStream = mySock.getOutputStream();
-            } catch ( IOException ex) {
-                InternalErrorHandler.handleException(ex);
-            }
-            Thread thread = new Thread(this);
-            thread.start();
-        }
-    }
 //endif
-//
+*/
+
     
     /** Return a formatted message to the client.
      * We try to re-connect with the peer on the other end if possible.
@@ -328,20 +317,16 @@ implements SIPMessageListener, Runnable {
                 /* ignore */
             }
             mySock = sock;
-            try {
-                this.myClientInputStream = mySock.getInputStream();
-                this.myClientOutputStream = mySock.getOutputStream();
-            } catch ( IOException ex) {
-                InternalErrorHandler.handleException(ex);
-            }
+            this.myClientInputStream = mySock.getInputStream();
+            this.myClientOutputStream = mySock.getOutputStream();
             // start a new reader on this end of the pipe.
 //ifdef SIMULATION
 /*
             SimThread mythread = new SimThread(this);
-	    myThread.setName("TCPMessageChannelThread");
+	    mythread.setName("TCPMessageChannelThread");
 //else
 */
-           mythread = new Thread(this);
+           Thread mythread = new Thread(this);
 //endif
 //
 

@@ -151,8 +151,10 @@ public class TCPMessageProcessor extends MessageProcessor  {
             } catch (SocketException ex) {
                 this.isRunning = false;
             }  catch (IOException ex) {
-                ex.printStackTrace();
-                this.isRunning = false;
+		// Problem accepting connection.
+                if (getSIPStack().logWriter.needsLogging) 
+			getSIPStack().logWriter.logException(ex);
+		continue;
             } catch (Exception ex) {
                 InternalErrorHandler.handleException(ex);
             }
