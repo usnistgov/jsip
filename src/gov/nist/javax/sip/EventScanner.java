@@ -11,7 +11,7 @@ import java.io.*;
 /**
  * Event Scanner to deliver events to the Listener.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.19 $ $Date: 2005-03-18 20:19:21 $
+ * @version JAIN-SIP-1.1 $Revision: 1.20 $ $Date: 2005-03-29 03:50:02 $
  * 
  * @author M. Ranganathan <mranga@nist.gov><br/>
  * bug fixes SIPQuest communications and Shu-Lin Chen. <br/>
@@ -178,11 +178,14 @@ class EventScanner implements Runnable {
 
 				if (LogWriter.needsLogging) {
 					sipStackImpl.logMessage("Calling listener "
-							+ sipRequest.getRequestURI());
+							+ sipRequest.getFirstLine());
 					sipStackImpl.logMessage("Calling listener " + eventWrapper.transaction);
                                 }
 				if (sipListener != null)
 					sipListener.processRequest((RequestEvent) sipEvent);
+				if ( LogWriter.needsLogging) {
+				    sipStackImpl.logMessage("Done processing Message " + sipRequest.getFirstLine());
+				}
 				sipStackImpl
 						.removePendingTransaction((SIPServerTransaction) eventWrapper.transaction);
 				if (eventWrapper.transaction != null) {
