@@ -44,6 +44,12 @@ import sim.java.net.*;
  * the tools/tracesviewer directory. 
  *<font color=red> Mail this to us with bug reports.  </font>
  * </li>
+ *
+ *<li><b>gov.nist.javax.sip.LOG_MESSAGE_CONTENT = true|false </b><br/>
+ * Set true if you want to capture content into the log. Default is true.
+ * A bad idea to log content if you are using SIP to push a lot of 
+ * bytes through TCP.
+ *</li>
  *    
  *<li><b>gov.nist.javax.sip.BAD_MESSAGE_LOG = fileName </b><br/>
  *  Messages that do not contain the required headers are dropped.
@@ -95,7 +101,7 @@ import sim.java.net.*;
  *  (Was mis-spelled - Documentation bug fix by Bob Johnson)</li>
  *</ul>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.19 $ $Date: 2004-03-18 14:40:38 $
+ * @version JAIN-SIP-1.1 $Revision: 1.20 $ $Date: 2004-03-25 15:15:03 $
  * 
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -598,6 +604,14 @@ public class SipStackImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2004/03/18 14:40:38  mranga
+ * Reviewed by:   mranga
+ * Removed event scanning thread from provider and added a single class that
+ * scans for events and delivers to the listener (previously each provider had
+ * its own scanning thread).
+ * Added code in stack finalization to exit all threads and release all resources
+ * held by the stack.
+ *
  * Revision 1.18  2004/03/09 00:34:43  mranga
  * Reviewed by:   mranga
  * Added TCP connection management for client and server side

@@ -20,7 +20,7 @@ import java.text.ParseException;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  *
- * @version JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2004-03-01 12:37:27 $
+ * @version JAIN-SIP-1.1 $Revision: 1.8 $ $Date: 2004-03-25 15:15:04 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -121,6 +121,29 @@ public abstract class SIPMessage
 		}
 		return retval;
 	}
+
+	/** Encode only the message and exclude the contents (for debugging);
+	*@return a string with all the headers encoded.
+	*/
+	protected String encodeSIPHeaders()  {
+		StringBuffer encoding = new StringBuffer();
+		synchronized (this.headers) {
+			ListIterator it = this.headers.listIterator();
+
+			while (it.hasNext()) {
+				SIPHeader siphdr = (SIPHeader) it.next();
+				if (!(siphdr instanceof ContentLength))
+					encoding.append(siphdr.encode());
+			}
+		}
+
+		return 
+		encoding.append(contentLengthHeader.encode()).append(NEWLINE).toString();
+	}
+
+	/** Encode all the headers except the contents. For debug logging.
+	*/
+	public abstract String encodeMessage();
 
 	/**
 	 * Get A dialog identifier constructed from this messsage.
@@ -1732,6 +1755,11 @@ public abstract class SIPMessage
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/03/01 12:37:27  mranga
+ * Submitted by:  Watanabe Masafumi
+ * Reviewed by:   mranga
+ * Allow for double byte characters when setting content length.
+ *
  * Revision 1.6  2004/02/29 00:46:33  mranga
  * Reviewed by:   mranga
  * Added new configuration property to limit max message size for TCP transport.

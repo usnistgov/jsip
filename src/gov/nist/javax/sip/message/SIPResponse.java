@@ -16,7 +16,7 @@ import java.text.ParseException;
 /**
  * SIP Response structure.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2004-02-18 14:33:02 $
+ * @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-03-25 15:15:05 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -378,6 +378,22 @@ public final class SIPResponse
 		return retval ;
 	}
 
+	/** Encode the message except for the body.
+	*
+	*@return The string except for the body.
+	*/
+
+	public String encodeMessage() {
+		String retval;
+		if (statusLine != null)
+			retval = statusLine.encode() + super.encodeSIPHeaders();
+		else
+			retval = super.encodeSIPHeaders();
+		return retval ;
+	}
+
+		
+
 	/** Get this message as a list of encoded strings.
 	 *@return LinkedList containing encoded strings for each header in
 	 *   the message.
@@ -668,6 +684,13 @@ public final class SIPResponse
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/02/18 14:33:02  mranga
+ * Submitted by:  Bruno Konik
+ * Reviewed by:   mranga
+ * Remove extraneous newline in encoding messages. Test for empty sdp announce
+ * rather than die with null when null is passed to sdp announce parser.
+ * Fixed bug in checking for \n\n when looking for message end.
+ *
  * Revision 1.2  2004/01/22 13:26:31  sverker
  * Issue number:
  * Obtained from:
