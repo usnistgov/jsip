@@ -516,8 +516,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
 		     ((DialogImpl) this.getDialog()).ackReceived
 			(transactionRequest);
                      requestOf.processRequest( transactionRequest, this );
-		} else if (LogWriter.needsLogging)
-			if (transactionRequest.getMethod().equals 
+		} else if (transactionRequest.getMethod().equals 
 				(Request.CANCEL)) {
                                 if (LogWriter.needsLogging)
                                     LogWriter.logMessage
