@@ -48,6 +48,8 @@ set to null?
 <li>How do you identify the listening point for an incoming 
 server transaction in the case where you are supporting multiple
 listening points?
+<li>Why is my application getting Server Transaction timeouts even
+after I send response?
 </ul>
 <br><hr SIZE=2  NOSHADE>
 <ul>
@@ -231,6 +233,14 @@ listening points?</br>
 <li>  <it> ListeningPoint lp = sipProvider.getListeningPoint(); </it> </li>
 </ul>
 
+<li>Why is my application getting Server Transaction timeouts even
+after I send response? <br/>
+If the stack configuration property 
+javax.sip.RETRANSMISSION_FILTER is "false" or "off", for INVITE
+Transactions, your application is alerted to send response periodically
+until ACK is received from the client side. This happens through the
+mechanism of your application fielding a Timeout Event.
+</li>
 <br><hr SIZE=2  NOSHADE>
 
 <h2> Frequently Questionable Questions (List likely to grow in time) </h2>
