@@ -15,7 +15,7 @@ import gov.nist.javax.sip.address.*;
  *
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
- * @version JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2004-01-22 13:26:29 $
+ * @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-04-15 16:20:38 $
  *
  */
 public abstract class ParametersHeader
@@ -423,7 +423,7 @@ public abstract class ParametersHeader
 		} else if (val instanceof Boolean) {
 			return ((Boolean) val).booleanValue();
 		} else if (val instanceof String) {
-			return Boolean.getBoolean((String) val);
+			return Boolean.valueOf((String) val).booleanValue();
 		} else
 			return false;
 	}
@@ -442,4 +442,28 @@ public abstract class ParametersHeader
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/01/22 13:26:29  sverker
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  sverker
+ * Reviewed by:   mranga
+ *
+ * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  */
