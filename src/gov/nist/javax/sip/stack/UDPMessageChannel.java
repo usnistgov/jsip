@@ -487,16 +487,23 @@ implements  ParseExceptionListener, Runnable {
         try {
             DatagramSocket sock;
             if (stack.udpFlag) {
+		// Use the socket from the message processor (for firewall
+		// support use the same socket as the message processor 
+	        // socket -- feature request # 18 from java.net). This also
+		// makes the whole thing run faster!
+
+		sock = ((UDPMessageProcessor)messageProcessor).sock;
+
                 // Bind the socket to the stack address in case there
                 // are multiple interfaces on the machine (feature reqeust
                 // by Will Scullin) 0 binds to an ephemeral port.
-                sock = new DatagramSocket(0,stack.stackInetAddress);
+                // sock = new DatagramSocket(0,stack.stackInetAddress);
             } else {
                 // bind to any interface and port.
                 sock = new DatagramSocket();
             }
             sock.send(reply);
-            sock.close();
+	    if (! stack.udpFlag) sock.close();
         } catch (IOException ex) {
             throw ex;
         } catch (Exception ex) {
