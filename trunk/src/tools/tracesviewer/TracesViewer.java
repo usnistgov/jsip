@@ -331,8 +331,84 @@ public class TracesViewer extends javax.swing.JFrame {
         this.show();
 
     }
+    
+/*********************************************************************************/
+    
+    
+         // Constructor for the daemon only!!!!!
+    public TracesViewer( String port,String logFile,Hashtable traces, String logName, 
+        String logDescription,String auxInfo,String title,
+		String back, String faces, String actors, String logoNist) {
+        super(title);
+        this.logFile=logFile;
+
+        try{
+                        
+             Toolkit toolkit=Toolkit.getDefaultToolkit();
+             URL url = TracesViewer.class.getResource(back); 
+             this.backgroundImage=toolkit.getImage(url);
+             url = TracesViewer.class.getResource(actors); 
+             this.actorsImage=toolkit.getImage(url);
+             url = TracesViewer.class.getResource(faces);
+             this.facesImage=toolkit.getImage(url);
+             url = TracesViewer.class.getResource(logoNist);
+             this.logoNist=toolkit.getImage(url);
+        }
+        catch(Exception e) {
+            backgroundImage=null;
+            actorsImage=null;
+            facesImage=null;
+            logoNist=null;
+            System.out.println("Images are not loaded.");
+        
+            e.printStackTrace();
+        }
+      
+        TracesSessions tss = new TracesSessions();
+        tss.setName(logName);
+        if (traces!=null) {
+            Enumeration elements = traces.elements();
+            while(elements.hasMoreElements()) {
+                MessageLogList mll = (MessageLogList) elements.nextElement();
+                TracesSession ts = new TracesSession(mll) ;
+                ts.setName(logName);
+                ts.setInfo(auxInfo);
+                ts.setLogDescription(logDescription);
+                tss.add(ts);
+            }
+        }
+        if (tss.isEmpty()) {
+            TracesSession ts = new TracesSession();
+            ts.setName("No available session, refresh") ;
+            tss.add(ts) ;
+        }
+            
+        listenerTracesViewer=new ListenerTracesViewer(this);
+        
+        this.tracesSessions = tss;
+        initComponents();
+        // Initialisation of the tracesSessionsList:
+        tracesSessionsList.setTracesSessions(this.tracesSessions);
+        // Initialisation of the Thread for the animations:
+        animationThread=new TracesAnimationThread(tracesCanvas);
+        
+        // width, height
+        this.setSize(670,620);
+        this.setLocation(0,0);
+        
+        try{
+            // Try to open a connection:
+            TracesSocket ts=new TracesSocket(logFile,port);
+            ts.start();
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+        this.show();
+    }
  
- 
+/*********************************************************************************/
+    
     public TracesSessions refreshTracesSessions(){
             TracesSessions retval = null ;
             TracesSessions tss = new TracesSessions() ;
@@ -840,6 +916,38 @@ public class TracesViewer extends javax.swing.JFrame {
 		new TracesViewer
 		      (fileName,traces,parser.logName,parser.logDescription,
 			parser.auxInfo,"traces viewer","images/back.gif",
+                        "images/faces.jpg",
+                        "images/comp.gif",
+                        "images/nistBanner.jpg").show();
+                
+		return;
+		
+            } 
+            else
+            if(args[0].equals("-daemon")){
+	
+                int length=args.length;
+               
+                String port="10000";
+                String fileName ="NOT SET";
+                for (int k = 0; k < length; k++) {
+		   
+                     if(args[k].equals("-server_file")) {
+			fileName= args[k+1] ;
+			k++;
+		     } 
+                     else
+                     if (args[k].equals("-port")) {
+			port = args[k+1] ;
+			k++;
+		     } 
+                }
+              	LogFileParser parser = new LogFileParser();
+		Hashtable traces = parser.parseLogsFromFile(fileName);
+                
+		new TracesViewer
+		      (port,fileName,traces,parser.logName,parser.logDescription,
+			parser.auxInfo,"traces viewer daemon","images/back.gif",
                         "images/faces.jpg",
                         "images/comp.gif",
                         "images/nistBanner.jpg").show();
