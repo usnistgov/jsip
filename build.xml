@@ -159,11 +159,6 @@ c:/jakarta-ant/bin/ant all
              <pathelement location="${jain_api_jar}"/>
          </classpath>
     </javac>
-    <rmic classname="gov.nist.javax.sip.stack.MessageLogTableImpl" base="${classes}">
-         <classpath>
-             <pathelement location="${classes}"/>
-         </classpath>
-    </rmic>
     <jar destfile="${ri_jar}" basedir="${classes}" includes="gov/nist/**/*.class"/>
 </target>
 
