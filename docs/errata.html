@@ -1,0 +1,44 @@
+<h1> Spec documentation Errata </h1>
+
+These errors and ommisions are to be corrected in a future maintenance release. 
+They were discovered too late to be incorporated into the current release.
+The RI does incorporate these assumptions.
+
+<ul>
+<li><it>javax.sip.message.SipRequest.clone() </it> The message contents are 
+cloned as follows:
+<ul>
+<li> If the content is of type byte[] a new byte[] array is allocated and
+the original contents are copied over to the cloned request. 
+<li> If the content is of type String then a new String equal to the old
+String is allocated and assigned to the cloned request.
+<li> If the content is of type Object and it  has a public 
+clone method then it is invoked and the resultant Object is used in the new
+cloned SipRequest.
+</ul>
+<li><it>javax.sip.MessageFactory.createSipRequest(String ) </it> 
+If the argument is null then an empty SipRequest is created. </li>
+<li><it>javax.sip.Dialog.sendAck </it> is used for sending both ACK and
+PRACK messages. </li>
+
+<li><it>javax.sip.message.Message.getUnrecognizedHeaders </it>
+Gets a ListIterator over all the UnrecognizedHeaders in this Message. Note
+the order of the UnrecognizedHeaders in the ListIterator is the same as
+order in which they appeared in the SIP Message. UnrecognizedHeaders are
+headers that the underlying implementation does not recognize, a required
+header (From, To, Call-ID, CSeq, Via) the entire message willl be dropped
+by the underlying implementation and the header will not be included in
+the list. Other headers that are part of the supported set of headers but
+are not properly formatted will  be included in this list. Headers that
+are not part of the supported set of headers are retrieved as Extension
+headers. These must have a name:value format else they will be rejected
+by the underling implementation and included in this list. A Proxy should
+not delete UnrecognizedHeaders and should add these Headers to the end
+of the header list of the Message that is being forwarded. A User Agent
+may display these unrecognized headers to the user.
+</li>
+
+</ul>
+
+
+
