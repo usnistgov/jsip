@@ -5,7 +5,7 @@
  */
 
 package javax.sdp;
-import java.util.*;
+
 import java.io.*;
 /** A SdpEncoder serializes SessionDescription objects in a customizable manner.
  * @author deruelle

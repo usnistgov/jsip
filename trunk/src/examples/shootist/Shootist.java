@@ -4,7 +4,7 @@ import javax.sip.address.*;
 import javax.sip.header.*;
 import javax.sip.message.*;
 import java.util.*;
-import java.io.*;
+
 
 //ifdef SIMULATION
 /*
@@ -52,15 +52,15 @@ public class Shootist implements SipListener {
 		     	} catch (InterruptedException e) {
 		     	}
 			System.out.println("nulling reference");
-			this.sipStack.deleteListeningPoint(tcpListeningPoint);
-			this.sipStack.deleteListeningPoint(udpListeningPoint);
+			sipStack.deleteListeningPoint(tcpListeningPoint);
+			sipStack.deleteListeningPoint(udpListeningPoint);
 			// This will close down the stack and exit all threads
 			tcpProvider.removeSipListener(this);
 			udpProvider.removeSipListener(this);
 			while (true) {
 			  try {
-			      this.sipStack.deleteSipProvider(udpProvider);
-			      this.sipStack.deleteSipProvider(tcpProvider);
+			      sipStack.deleteSipProvider(udpProvider);
+			      sipStack.deleteSipProvider(tcpProvider);
 			      break;
 			    } catch (ObjectInUseException  ex)  {
 			        try {  
@@ -70,14 +70,14 @@ public class Shootist implements SipListener {
 			     	}
 			   }
 			}
-			this.sipStack = null;
-			this.tcpProvider = null;
-			this.udpProvider = null;
+			sipStack = null;
+			tcpProvider = null;
+			udpProvider = null;
 			this.inviteTid = null;
 			this.contactHeader = null;
-			this.addressFactory = null;
-			this.headerFactory = null;
-			this.messageFactory = null;
+			addressFactory = null;
+			headerFactory = null;
+			messageFactory = null;
 			this.udpListeningPoint = null;
 			this.tcpListeningPoint = null;
 			this.reInviteCount = 0;
@@ -449,6 +449,12 @@ public class Shootist implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.29  2004/06/27 00:41:51  mranga
+ * Submitted by:  Thomas Froment and Pierre De Rop
+ * Reviewed by:   mranga
+ * Performance improvements
+ * (auxiliary data structure for fast lookup of transactions).
+ *
  * Revision 1.28  2004/06/15 09:54:38  mranga
  * Reviewed by:   mranga
  * re-entrant listener model added.

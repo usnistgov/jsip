@@ -21,10 +21,11 @@ http://www.cs.columbia.edu/%7Ehgs/sip/bakeoff/testmsg.html
 -->
 
 <torture
-	output-parsed-structures = "false" 
-	output-results = "false"
+	output-parsed-structures = "true" 
+	output-results = "true"
 	abort-on-fail = "true"
-	debug = "false"
+	testlog = "testout.xml"
+	debug = "true"
 >
 
 <testcase>

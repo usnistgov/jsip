@@ -4,10 +4,8 @@
 package gov.nist.javax.sip.stack;
 
 import gov.nist.core.*;
-import gov.nist.javax.sip.message.*;
 import java.io.*;
 import java.net.*;
-import gov.nist.javax.sip.header.*;
 import java.util.Hashtable;
 import java.util.Enumeration;
 
@@ -208,7 +206,7 @@ class IOHandler {
 		int max_retry = retry ? 2 : 1;
 		// Server uses TCP transport. TCP client sockets are cached
 		int length = bytes.length;
-		if (sipStack.logWriter.needsLogging)  {
+		if (LogWriter.needsLogging)  {
 			sipStack.logWriter.logMessage
 			("sendBytes " + transport + " inAddr " + inaddr.getHostAddress() +
 				" port = " + contactPort  +  " length = " + length );
@@ -289,6 +287,9 @@ class IOHandler {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.22  2004/06/21 04:59:50  mranga
+ * Refactored code - no functional changes.
+ *
  * Revision 1.21  2004/04/16 21:30:22  mranga
  * Reviewed by:   mranga
  * ignore close exception.
