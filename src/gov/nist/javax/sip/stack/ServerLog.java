@@ -25,7 +25,7 @@ import sim.java.*;
  * later access via RMI. The trace can be viewed with a trace viewer (see
  * tools.traceviewerapp).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.9 $ $Date: 2004-03-25 15:15:05 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.10 $ $Date: 2004-03-25 16:37:01 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -298,7 +298,7 @@ public class ServerLog {
 	 * @param status Status information (generated while processing message).
 	 * @param time the reception time (or date).
 	 */
-	public synchronized void logMessage(
+	private synchronized void logMessage(
 		String message,
 		String from,
 		String to,
@@ -324,7 +324,7 @@ public class ServerLog {
 		logMessage(log.flush());
 	}
 
-	public synchronized void logMessage(
+	private synchronized void logMessage(
 		String message,
 		String from,
 		String to,
@@ -361,7 +361,7 @@ public class ServerLog {
 	 * @param status Status information (generated while processing message).
 	 * @param tid    is the transaction id for the message.
 	 */
-	public void logMessage(
+	private void logMessage(
 		String message,
 		String from,
 		String to,
@@ -681,6 +681,10 @@ public class ServerLog {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/03/25 15:15:05  mranga
+ * Reviewed by:   mranga
+ * option to log message content added.
+ *
  * Revision 1.8  2004/02/20 16:36:43  mranga
  * Reviewed by:   mranga
  * Minor changes to debug logging -- record the properties with which the stack

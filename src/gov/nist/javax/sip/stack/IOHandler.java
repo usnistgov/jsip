@@ -294,16 +294,11 @@ class IOHandler {
 			message instanceof SIPRequest);
 
 		if (sipStack.serverLog.needsLogging(ServerLog.TRACE_MESSAGES)) {
-			String status = null;
 			sipStack.serverLog.logMessage(
-				message.encode(),
+				message,
 				sipStack.getHostAddress() + ":" + sipStack.getPort(transport),
 				host + ":" + transport + port,
-				true,
-				((CallID) message.getCallId()).encodeBody(),
-				firstLine,
-				status,
-				message.getTransactionId());
+				true);
 		}
 
 	}
@@ -327,6 +322,10 @@ class IOHandler {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2004/03/23 16:16:51  mranga
+ * Reviewed by:   mranga
+ * more TCP IO performance hacking.
+ *
  * Revision 1.15  2004/03/22 12:53:36  mranga
  * Reviewed by:   mranga
  * Add back synchronization on output stream for writes.

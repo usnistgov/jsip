@@ -16,7 +16,7 @@ import gov.nist.core.*;
  * Message channel abstraction for the SIP stack.
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2004-03-19 17:06:19 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2004-03-25 16:37:00 $
  *
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
@@ -264,17 +264,11 @@ public abstract class MessageChannel {
 		if (port == -1)
 			port = 5060;
 		if (getSIPStack().serverLog.needsLogging(ServerLog.TRACE_MESSAGES)) {
-			String status = null;
 			getSIPStack().serverLog.logMessage(
-				sipMessage.encode(),
+				sipMessage,
 				this.getHost() + ":" + this.getPort(),
 				address.getHostAddress().toString() + ":" + port,
-				true,
-				callidBody,
-				firstLine,
-				status,
-				sipMessage.getTransactionId(),
-				time);
+				true,time);
 		}
 	}
 
@@ -317,6 +311,11 @@ public abstract class MessageChannel {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/03/19 17:06:19  mranga
+ * Reviewed by:   mranga
+ * Fixed some stack cleanup issues. Stack should release all resources when
+ * finalized.
+ *
  * Revision 1.5  2004/01/22 13:26:33  sverker
  * Issue number:
  * Obtained from:
