@@ -18,11 +18,14 @@ public class Shootme implements SipListener {
 	private static MessageFactory messageFactory;
 	private static HeaderFactory headerFactory;
 	private static SipStack sipStack;
-	private int ackCount;
 
 	protected ServerTransaction inviteTid;
 
 	Dialog dialog;
+
+	class ApplicationData {
+		protected int ackCount;
+	}
 
 	protected static final String usageString =
 		"java "
@@ -65,17 +68,19 @@ public class Shootme implements SipListener {
 		ServerTransaction serverTransaction) {
 		SipProvider sipProvider = (SipProvider) requestEvent.getSource();
 		try {
-			System.out.println("shootme: got an ACK -- sending bye! ");
 			System.out.println("shootme: got an ACK " 
 				+ requestEvent.getRequest());
+			int ackCount = 
+				((ApplicationData ) dialog.getApplicationData()).ackCount;
 			if (ackCount == 1) {
 			   dialog = inviteTid.getDialog();
 			   Request byeRequest = dialog.createRequest(Request.BYE);
 			   ClientTransaction tr =
 				sipProvider.getNewClientTransaction(byeRequest);
+			   System.out.println("shootme: got an ACK -- sending bye! ");
 			   dialog.sendRequest(tr);
 			   System.out.println("Dialog State = " + dialog.getState());
-			} else this.ackCount ++;
+			} else ((ApplicationData) dialog.getApplicationData()).ackCount ++;
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.exit(0);
@@ -112,6 +117,9 @@ public class Shootme implements SipListener {
 
 			if (st == null) {
 				st = sipProvider.getNewServerTransaction(request);
+			        if (st.getDialog().getApplicationData() == null) {
+					st.getDialog().setApplicationData(new ApplicationData());
+				}
 			} else {
 				System.out.println("This is a RE INVITE ");
 				if (st.getDialog() != dialog) {
@@ -237,6 +245,7 @@ public class Shootme implements SipListener {
 			"gov.nist.javax.sip.SERVER_LOG",
 			"shootmelog.txt");
 		properties.setProperty("gov.nist.javax.sip.MAX_MESSAGE_SIZE", "4096");
+		properties.setProperty("gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS", "false");
 
 		try {
 			// Create SipStack object
@@ -284,6 +293,10 @@ public class Shootme implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/03/05 20:36:54  mranga
+ * Reviewed by:   mranga
+ * put in some debug printfs and cleaned some things up.
+ *
  * Revision 1.10  2004/02/26 14:28:50  mranga
  * Reviewed by:   mranga
  * Moved some code around (no functional change) so that dialog state is set

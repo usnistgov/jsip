@@ -27,7 +27,7 @@ import sim.java.net.*;
  * @author Jeff Keyser (original) 
  * @author M. Ranganathan <mranga@nist.gov>  <br/> (Added Dialog table).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.21 $ $Date: 2004-02-13 13:55:32 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.22 $ $Date: 2004-03-07 22:25:25 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public abstract class SIPTransactionStack
@@ -94,12 +94,12 @@ public abstract class SIPTransactionStack
 		// Start the timer event thread.
 //ifdef SIMULATION
 /*
-		SimThread simThread =	new SimThread( new TransactionScanner( ));
+		SimThread simThread =	new SimThread( new TransactionScanner(this));
 		simThread.setName("TransactionScanner");
 		simThread.start();
 //else
 */
-		new Thread(new TransactionScanner()).start();
+		new Thread(new TransactionScanner(this)).start();
 //endif
 //
 
@@ -344,6 +344,11 @@ public abstract class SIPTransactionStack
 		private int prevSTCount;
 		private int prevCTCount;
 		private int scanCount;
+		private SIPStack sipStack;
+
+		protected TransactionScanner( SIPStack sipStack) {
+			this.sipStack = sipStack;
+		}
 
 		public void run() {
 
@@ -395,10 +400,14 @@ public abstract class SIPTransactionStack
 										logWriter.logMessage(
 											"removing" + nextTransaction);
 									transactionIterator.remove();
+									if (  ( ! this.sipStack.cacheServerConnections )
+									   && nextTransaction.encapsulatedChannel instanceof TCPMessageChannel
+									   && ((TCPMessageChannel) nextTransaction.encapsulatedChannel).acceptedConnection) {
+									  // Close the encapsulated socket if stack is configured 
+									   nextTransaction.close();
+									}
 								} else {
-									(
-										(
-											SIPServerTransaction) nextTransaction)
+									( ( SIPServerTransaction) nextTransaction)
 												.collectionTime--;
 								}
 								// If this transaction has not
@@ -850,6 +859,10 @@ public abstract class SIPTransactionStack
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.21  2004/02/13 13:55:32  mranga
+ * Reviewed by:   mranga
+ * per the spec, Transactions must always have a valid dialog pointer. Assigned a dummy dialog for transactions that are not assigned to any dialog (such as Message).
+ *
  * Revision 1.20  2004/02/11 20:22:30  mranga
  * Reviewed by:   mranga
  * tighten up the sequence number checks for BYE processing.
