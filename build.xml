@@ -197,6 +197,24 @@ c:/jakarta-ant/bin/ant all
      </javac>
 </target>
 
+<!-- compile to traces viewer jar -->
+<target name="viewerjar">
+    <copy todir="${classes}/tools/tracesviewer/images">
+        <fileset dir="${srcroot}/tools/tracesviewer/images"/>
+    </copy>
+
+    <jar compress="false" destfile="tracesviewer.jar">
+        <fileset dir="${classes}">
+            <include name="tools/tracesviewer/**/*.*"/>
+        </fileset>
+        <manifest>
+            <attribute name="Built-By" value="${user.name}"/>
+            <attribute name="Main-Class" value="tools.tracesviewer.TracesViewer"/>
+        </manifest>
+        <zipfileset src="${xerceslib}"/>
+    </jar>
+</target>
+
 <!-- Compile the tools -->
 <target name="compiletools" depends="init">
     <javac debug="${debug}" deprecation="${deprecation}" optimize="${optimize}" srcdir="${srcroot}/tools/tracesviewer" destdir= "${classes}">
