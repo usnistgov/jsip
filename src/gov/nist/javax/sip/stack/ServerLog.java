@@ -25,7 +25,7 @@ import sim.java.*;
  * later access via RMI. The trace can be viewed with a trace viewer (see
  * tools.traceviewerapp).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.11 $ $Date: 2004-04-16 16:04:35 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.12 $ $Date: 2004-04-27 17:18:54 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -140,7 +140,7 @@ public class ServerLog {
 			if (printWriter == null) {
 				String s = configurationProperties.getProperty
 						("gov.nist.javax.sip.LOG_MESSAGE_CONTENT");
-				this.logContent =  (s == null  || s.equals("true"));
+				this.logContent =  (s != null && s.equals("true"));
 				FileWriter fw = new FileWriter(logFileName, true);
 				printWriter = new PrintWriter(fw, true);
 				printWriter.println(
@@ -684,6 +684,11 @@ public class ServerLog {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/04/16 16:04:35  mranga
+ * Submitted by:  Thomas Froment
+ * Reviewed by:   mranga
+ * Do not create a log file if logging is disabled.
+ *
  * Revision 1.10  2004/03/25 16:37:01  mranga
  * Reviewed by:   mranga
  * Fix up for logging messages.

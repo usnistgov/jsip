@@ -46,7 +46,7 @@ import sim.java.net.*;
  * </li>
  *
  *<li><b>gov.nist.javax.sip.LOG_MESSAGE_CONTENT = true|false </b><br/>
- * Set true if you want to capture content into the log. Default is true.
+ * Set true if you want to capture content into the log. Default is false.
  * A bad idea to log content if you are using SIP to push a lot of 
  * bytes through TCP.
  *</li>
@@ -101,7 +101,7 @@ import sim.java.net.*;
  *  (Was mis-spelled - Documentation bug fix by Bob Johnson)</li>
  *</ul>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.22 $ $Date: 2004-04-19 21:51:03 $
+ * @version JAIN-SIP-1.1 $Revision: 1.23 $ $Date: 2004-04-27 17:18:53 $
  * 
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -635,6 +635,11 @@ public class SipStackImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.22  2004/04/19 21:51:03  mranga
+ * Submitted by:  mranga
+ * Reviewed by:  ivov
+ * Support for stun.
+ *
  * Revision 1.21  2004/03/30 15:17:37  mranga
  * Reviewed by:   mranga
  * Added reInitialization for stack in support of applets.
