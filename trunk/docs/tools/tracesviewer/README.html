@@ -23,13 +23,33 @@ visualizing SIP signaling traces
 </li>
 <li>
    or the using makefile
-   When viewing traces from a file use the command (assuming the class paths
-   are properly set).
-   <font color = red > java tools.tracesviewer.TracesViewer -f serverlogfile
+   When viewing server log traces from a file use the
+   command (assuming the class paths are properly set). 
+   <br/>
+   <font color = red > java tools.tracesviewer.TracesViewer -server_file serverlogfile
    </font>
+   <br/>
    You can generate this log from the stack using the following property:
    <it>gov.nist.javax.sip.SERVER_LOG</it>. Set this property to serverlogfile
-   and feed the generated trace to the tracesviewer.
+   and feed the generated trace to the tracesviewer. 
+   Additionally, the <it>gov.nist.javax.sip.TRACE_LEVEL</it> should be 16 or higher.
+</li>
+<li>
+   When viewing server log traces from a file use the
+   command (assuming the class paths are properly set). <br/>
+   <font color = red > java tools.tracesviewer.TracesViewer -debug_file debugLogfile
+   </font>
+   <br/>
+   You can generate this log from the stack using the following property:
+   <it>gov.nist.javax.sip.DEBUG_LOG</it>. 
+   Set this property to debugLogfile and feed the generated 
+   trace to the tracesviewer as above.
+   Additionally, the <it>gov.nist.javax.sip.TRACE_LEVEL</it> 
+   property should be 32 for debugging to be enabled. 
+   A lot of debug information is generated so your application will 
+   slow down when debug logs are being gathered. The Trace Viewer allows
+   you to browse the debug log and message trace using the same UI when 
+   this option is used.
 </li>
 <li> To obtain the trace file from a stack that has exported its trace file
 via RMI invoke the tool as follows:
