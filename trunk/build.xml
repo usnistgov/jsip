@@ -16,6 +16,8 @@ Revisions and fixes by:
 
         Jean Deruelle		 <jeand@nist.gov>
 
+        Dan Muresan		 <muresan@gmail.com>
+
 Ant is a platform independent build tool.
 Get the tool from www.apache.org and install. Set your path to the ant shell
 (batch) file.
@@ -50,12 +52,16 @@ c:/jakarta-ant/bin/ant all
 -->
 
 <project name="NIST-SIP" default="all" >
-	<property name="deprecation" value="true"/>
-	<property name="optimize" value="false"/>
-
-
 	<!-- Allow user to override defaults -->
 	<property file="ant-build-config.properties" />
+
+	<!-- javac compilation options -->
+	<property name="javac.deprecation" value="true"/>
+	<property name="javac.optimize" value="true"/>
+	<property name="javac.debug" value="true"/>
+	<property name="javac.nowarn" value="false"/>
+	<property name="javac.source" value="1.4"/>
+	<property name="javac.target" value="${javac.source}"/>
 
 	<!-- set global properties for this build -->
 	<property name="root" value="." />
@@ -76,7 +82,6 @@ c:/jakarta-ant/bin/ant all
 	
 	<!-- where the src lives -->
 	<property name= "srcroot" value = "${root}/src" />
-	<property name="debug" value="true"/>
 	
 	<!-- where are the lib -->
 	<property name= "jain_api_jar" value = "JainSipApi1.1.jar" />
@@ -206,69 +211,44 @@ c:/jakarta-ant/bin/ant all
 	
 	<!-- Compile the stack and libraries -->
 	<target name="compilestack" depends="init">
-		<javac	debug="${debug}"
-				deprecation="${deprecation}"
-				optimize="${optimize}"
-				srcdir="${srcroot}/javax/sip"
+		<javac	debug="${javac.debug}"
+				source="${javac.source}" target="${javac.target}"
+				nowarn="${javac.nowarn}"
+				deprecation="${javac.deprecation}"
+				optimize="${javac.optimize}"
+				srcdir="${srcroot}"
+				includes="javax/sip/**/*.java"
 				destdir= "${classes}"/>
 		<jar destfile="${jain_api_jar}" basedir="${classes}" includes="javax/sip/**/*.class"/>
 	</target>
 
 	<target name="compileri"  depends="init">
-		<javac 	debug="${debug}"
-				deprecation="${deprecation}"
-				optimize="${optimize}"
-				sourcepath="${srcroot}"
-				srcdir="${srcroot}/gov/nist/core"
+		<javac 	debug="${javac.debug}"
+				source="${javac.source}" target="${javac.target}"
+				nowarn="${javac.nowarn}"
+				deprecation="${javac.deprecation}"
+				optimize="${javac.optimize}"
+				srcdir="${srcroot}"
+				includes="gov/nist/core/**/*.java, gov/nist/javax/sip/**/*.java"
 				destdir= "${classes}">
-			<classpath>
-				<pathelement location="${classes}"/>
-				<pathelement location="${jain_api_jar}"/>
-			</classpath>
-		</javac>
-		<javac 	debug="${debug}"
-				deprecation="${deprecation}"
-				optimize="${optimize}"
-				sourcepath="${srcroot}"
-				srcdir="${srcroot}/gov/nist/javax/sip"
-				destdir= "${classes}">
-			<classpath>
-				<pathelement location="${classes}"/>
-				<pathelement location="${jain_api_jar}"/>
-			</classpath>
 		</javac>
 		<jar destfile="${ri_jar}" basedir="${classes}" includes="gov/nist/**/*.class"/>
 	</target>
 
 	<target name="compilesdp"  depends="init">
-		<javac	debug="${debug}"
-				deprecation="${deprecation}"
-				optimize="${optimize}"
-				sourcepath="${srcroot}"
-				srcdir="${srcroot}/javax/sdp"
+		<javac	debug="${javac.debug}"
+				source="${javac.source}" target="${javac.target}"
+				nowarn="${javac.nowarn}"
+				deprecation="${javac.deprecation}"
+				optimize="${javac.optimize}"
+				srcdir="${srcroot}"
+				includes="javax/sdp/**/*.java, gov/nist/javax/sdp/**/*.java"
 				destdir= "${classes}">
-			<classpath>
-				<pathelement location="${classes}"/>
-				<pathelement location="${jain_api_jar}"/>
-				<pathelement location="${ri_jar}"/>
-			</classpath>
-		</javac>
-		<javac 	debug="${debug}"
-				deprecation="${deprecation}"
-				optimize="${optimize}"
-				sourcepath="${srcroot}"
-				srcdir="${srcroot}/gov/nist/javax/sdp"
-				destdir= "${classes}">
-			<classpath>
-				<pathelement location="${classes}"/>
-				<pathelement location="${jain_api_jar}"/>
-				<pathelement location="${ri_jar}"/>
-			</classpath>
 		</javac>
 		<jar destfile="${sdp_jar}" basedir="${classes}" includes="gov/nist/javax/sdp/**/*.class,javax/sdp/**/*.class"/>
 	</target>
 
-	<target name="sip-sdp-jar"  depends="init">
+	<target name="sip-sdp-jar"  depends="compilejain">
 		<jar destfile="${sip-sdp-jar}" basedir="${classes}" 
 			includes="javax/**/*.class,gov/nist/**/*.class"/>
 	</target>
@@ -277,33 +257,31 @@ c:/jakarta-ant/bin/ant all
 	
 	<!-- Compile the examples -->
 	<target name="compileexamples" depends="init">
-		<javac 	debug="${debug}"
-				deprecation="${deprecation}"
-				optimize="${optimize}"
-				sourcepath="${srcroot}"
-				srcdir="${srcroot}/examples/"
+		<javac 	debug="${javac.debug}"
+				source="${javac.source}" target="${javac.target}"
+				nowarn="${javac.nowarn}"
+				deprecation="${javac.deprecation}"
+				optimize="${javac.optimize}"
+				srcdir="${srcroot}"
+				includes="examples/**/*.java"
 				destdir= "${classes}">
 			<classpath>
 				<pathelement location="${jakarta_regexp_jar}" />
-				<pathelement location="${jain_api_jar}"/>
-				<pathelement location="${ri_jar}"/>
-				<pathelement location="${classes}"/>
 			</classpath>
 		</javac>
 	</target>
 
 	<!-- Compile the tck -->
 	<target name="compiletck" depends="init,compilestack,compileri,compilesdp">
-		<javac 	debug="${debug}"
-				deprecation="${deprecation}"
-				optimize="${optimize}"
-				sourcepath="${srcroot}"
-				srcdir="${srcroot}/test/tck"
+		<javac 	debug="${javac.debug}"
+				source="${javac.source}" target="${javac.target}"
+				nowarn="${javac.nowarn}"
+				deprecation="${javac.deprecation}"
+				optimize="${javac.optimize}"
+				srcdir="${srcroot}"
+				includes="test/tck/**/*.java"
 				destdir= "${classes}">
 			<classpath>
-				<pathelement location="${jain_api_jar}"/>
-				<pathelement location="${ri_jar}"/>
-				<pathelement location="${classes}"/>
 				<pathelement location='${junit_jar}'/>
 			</classpath>
 		</javac>
@@ -357,7 +335,7 @@ c:/jakarta-ant/bin/ant all
 
 	<!-- Compile the tools -->
 	<target name="compiletools" depends="init">
-		<javac debug="${debug}" deprecation="${deprecation}" optimize="${optimize}" srcdir="${srcroot}/tools/tracesviewer" destdir= "${classes}">
+		<javac debug="${javac.debug}" source="${javac.source}" target="${javac.target}" nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="${srcroot}" includes="tools/tracesviewer/**/*.java" destdir= "${classes}">
 			<classpath>
 				<pathelement location="${classes}"/>
 			</classpath>
@@ -365,7 +343,7 @@ c:/jakarta-ant/bin/ant all
 		<copy todir="${classes}/tools/tracesviewer/images">
 			<fileset dir="${srcroot}/tools/tracesviewer/images"/>
 		</copy>
-		<javac debug="${debug}" deprecation="${deprecation}" optimize="${optimize}" srcdir="${srcroot}/tools/sniffer" destdir= "${classes}">
+		<javac debug="${javac.debug}" source="${javac.source}" target="${javac.target}" nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="${srcroot}" includes="tools/sniffer/**/*.java" destdir= "${classes}">
 			<classpath>
 				<pathelement location="${classes}"/>
 			</classpath>
@@ -405,4 +383,3 @@ c:/jakarta-ant/bin/ant all
     </target>
 	
 </project>
-
