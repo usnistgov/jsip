@@ -19,7 +19,7 @@ import sim.java.net.*;
  */
 /** Event Scanner to deliver events to the Listener.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.9 $ $Date: 2004-06-15 09:54:39 $
+ * @version JAIN-SIP-1.1 $Revision: 1.10 $ $Date: 2004-06-16 16:31:06 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -208,6 +208,11 @@ class EventScanner implements Runnable {
 				sipStackImpl.logMessage("Calling listener " + sipRequest.getRequestURI());
 			if (sipListener != null) sipListener.processRequest((RequestEvent) sipEvent);
                         sipStackImpl.removePendingTransaction((SIPServerTransaction)eventWrapper.transaction);
+			if (eventWrapper.transaction != null)  {
+				DialogImpl dialog = (DialogImpl) eventWrapper.transaction.getDialog();
+				// Tell the dialog that request has been consumed - this copies the remote seqno
+				if (dialog != null) dialog.requestConsumed();
+			}
                     }
                     catch (Exception ex) {
                         // We cannot let this thread die under any

@@ -12,7 +12,7 @@ import gov.nist.javax.sip.message.*;
  * It is the applications responsibility to take care of what needs to be
  * done to actually process the response.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2004-05-18 15:26:44 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2004-06-16 16:31:08 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -30,12 +30,6 @@ public interface SIPServerResponseInterface {
 		SIPResponse sipResponse,
 		MessageChannel incomingChannel);
 
-	/**
-	 * Get the Channel for the sender. 
-	 * @return the MessageChannel through which you can send a
-	 * new request to the responder.
-	 */
-	public MessageChannel getRequestChannel();
 
 	/**
 	 * Get auxiliary information that is generated while logging for
@@ -45,6 +39,11 @@ public interface SIPServerResponseInterface {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/05/18 15:26:44  mranga
+ * Reviewed by:   mranga
+ * Attempted fix at race condition bug. Remove redundant exception (never thrown).
+ * Clean up some extraneous junk.
+ *
  * Revision 1.4  2004/01/22 13:26:33  sverker
  * Issue number:
  * Obtained from:
