@@ -120,7 +120,7 @@ import sim.java.*;
  *@author Bug fixes by Emil Ivov.
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.27 $ $Date: 2004-05-18 15:26:43 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.28 $ $Date: 2004-05-20 13:59:22 $
  */
 public class SIPClientTransaction
 	extends SIPTransaction
@@ -479,18 +479,17 @@ public class SIPClientTransaction
 					// state. To tag is MANDATORY for the response.
 					dialog.setRemoteTag(transactionResponse.getToTag());
 					dialog.setState(DialogImpl.CONFIRMED_STATE);
-				} else if (  (  transactionResponse.getStatusCode() / 100 == 3				  ||
-						transactionResponse.getStatusCode() / 100 == 4				  ||
-				 	        transactionResponse.getStatusCode() / 100 == 5				  ||
-					 	transactionResponse.getStatusCode() / 100 == 6) 
-						&& (dialog.getState() == null || dialog.getState().getValue()
+				} else if ( transactionResponse.getStatusCode()  >= 300 &&
+					    transactionResponse.getStatusCode() <= 699
+					    && (dialog.getState() == null || dialog.getState().getValue()
 								== DialogImpl.EARLY_STATE)) {
+					// This case handles 3xx, 4xx, 5xx and 6xx responses.
 					// RFC 3261 Section 12.3 - dialog termination.
 					// Independent of the method, if a request outside of a dialog generates
    					// a non-2xx final response, any early dialogs created through
    					// provisional responses to that request are terminated. 
 					dialog.setState(DialogImpl.TERMINATED_STATE);
-				}
+				} 
 			}
 
 			// Only terminate the dialog on 200 OK response to BYE
@@ -1011,6 +1010,11 @@ public class SIPClientTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.27  2004/05/18 15:26:43  mranga
+ * Reviewed by:   mranga
+ * Attempted fix at race condition bug. Remove redundant exception (never thrown).
+ * Clean up some extraneous junk.
+ *
  * Revision 1.26  2004/05/17 01:00:01  mranga
  * Reviewed by:   mranga
  * Dialog State assignment fix. Terminate dialog on non 2xx final response.
