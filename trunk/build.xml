@@ -4,17 +4,17 @@ Authors:
 Initial: Olivier Deruelle deruelle@nist.gov
 Revisions and fixes by:
 
-	M. Ranganathan 		 <mranga@nist.gov>
+        M. Ranganathan 		 <mranga@nist.gov>
 
         Gordon Ledgard 		 <gledgard@iperiea.com>
 
-   	Steven Lass    		 <slass@wcomnet.com>
+        Steven Lass    		 <slass@wcomnet.com>
 
-	Sverker Abrahamsson	 <sverker@aspiro.com>
+        Sverker Abrahamsson	 <sverker@aspiro.com>
 
-	Majdi Abuelbassal 	 <majdi.abuelbassal@bbumail.com>
+        Majdi Abuelbassal 	 <majdi.abuelbassal@bbumail.com>
 
-	Jean Deruelle		 <jeand@nist.gov>
+        Jean Deruelle		 <jeand@nist.gov>
 
 Ant is a platform independent build tool.
 Get the tool from www.apache.org and install. Set your path to the ant shell
@@ -25,23 +25,25 @@ ant -Djmf.home=jmfhome target
 
 Where avaliable targets are:
 
-	- ship -> Compiles all and wraps up this whole project into a tar file.
+    - ship -> Compiles all and wraps up this whole project into a tar file.
 
-	- all -> Builds everything: stack, tools, examples and docs.
+    - all -> Builds everything: stack, tools, examples and docs.
 
-	- javadoc -> Builds java documentation.
+    - javadoc -> Builds java documentation.
 
-	- compiletools -> Compiles the tools directory.
+    - compiletools -> Compiles the tools directory.
 
-	- compileexamples -> Compiles the examples directory.
+    - compileexamples -> Compiles the examples directory.
 
-	- compileri -> Compiles the reference implementation.
+    - compileri -> Compiles the reference implementation.
 
-	- compilesdp -> Compiles the sdp
+    - compilesdp -> Compiles the sdp
 
-	- compilestack -> Compiles the jainapi
+    - compilestack -> Compiles the jainapi
 
-	- clean   -> cleans everything: All the built stuff and temp files.
+    - clean   -> cleans everything: All the built stuff and temp files.
+
+    - init	-> create the classes directory
 
 On my machine I run this as follows:
 c:/jakarta-ant/bin/ant all
@@ -94,28 +96,33 @@ c:/jakarta-ant/bin/ant all
     <delete file="./${sdp_jar}"/>
 </target>
 
+<!-- Create ${classes} -->
+<target name="init">
+    <mkdir dir="${classes}"/>
+</target>
+
 <target name="cleandocs">
     <delete dir="${docdir}" />
 </target>
 
 <target name="javadoc" >
     <javadoc packagenames="javax.sip.*,javax.sip.header.*,javax.sip.message.*,javax.sip.address.*,gov.nist.javax.sip.*,gov.nist.javax.sip.address.*,gov.nist.javax.sip.message.*,gov.nist.javax.sip.header.*,gov.nist.javax.sip.stack.*,gov.nist.javax.sip.parser.*"
-	sourcepath="${srcroot}"
-      overview="${docdir}/overview.html"
-	destdir="${docdir}"
-	use="true"
-	splitindex="true"
-	windowtitle="JAIN-SIP-1.1 RI For the People !"
-	doctitle="NIST SIP/SDP Parser and Stack (v1.2)"
-      public="true"
-	author="true"
-      version="true"
-      defaultexcludes="yes"
-	additionalparam="-breakiterator">
+    sourcepath="${srcroot}"
+    overview="${docdir}/overview.html"
+    destdir="${docdir}"
+    use="true"
+    splitindex="true"
+    windowtitle="JAIN-SIP-1.1 RI For the People !"
+    doctitle="NIST SIP/SDP Parser and Stack (v1.2)"
+    public="true"
+    author="true"
+    version="true"
+    defaultexcludes="yes"
+    additionalparam="-breakiterator">
         <classpath>
              <pathelement location="${jain_api_jar}"/>
         </classpath>
-    	<link href="http://java.sun.com/products/j2se/1.4.1/docs/api" />
+        <link href="http://java.sun.com/products/j2se/1.4.1/docs/api" />
     <header>
             <![CDATA[
                 <b> NIST SIP Parser and Stack (v1.2) </b>
@@ -134,12 +141,12 @@ c:/jakarta-ant/bin/ant all
 </target>
 
 <!-- Compile the stack and libraries -->
-<target name="compilestack"  >
+<target name="compilestack" depends="init">
     <javac debug="${debug}" deprecation="${deprecation}" optimize="${optimize}" srcdir="${srcroot}/javax/sip" destdir= "${classes}"/>
     <jar destfile="${jain_api_jar}" basedir="${classes}" includes="javax/sip/**/*.class"/>
 </target>
 
-<target name="compileri"  >
+<target name="compileri"  depends="init">
     <javac debug="${debug}" deprecation="${deprecation}" optimize="${optimize}" sourcepath="${srcroot}" srcdir="${srcroot}/gov/nist/core" destdir= "${classes}">
          <classpath>
              <pathelement location="${classes}"/>
@@ -160,7 +167,7 @@ c:/jakarta-ant/bin/ant all
     <jar destfile="${ri_jar}" basedir="${classes}" includes="gov/nist/**/*.class"/>
 </target>
 
-<target name="compilesdp"  >
+<target name="compilesdp"  depends="init">
     <javac debug="${debug}" deprecation="${deprecation}" optimize="${optimize}" sourcepath="${srcroot}" srcdir="${srcroot}/javax/sdp" destdir= "${classes}">
          <classpath>
              <pathelement location="${classes}"/>
@@ -179,7 +186,7 @@ c:/jakarta-ant/bin/ant all
 </target>
 
 <!-- Compile the examples -->
-<target name="compileexamples" >
+<target name="compileexamples" depends="init">
     <javac debug="${debug}" deprecation="${deprecation}" optimize="${optimize}" sourcepath="${srcroot}" srcdir="${srcroot}/examples/shootist" destdir= "${classes}">
          <classpath>
              <pathelement location="${xerceslib}"/>
@@ -191,7 +198,7 @@ c:/jakarta-ant/bin/ant all
 </target>
 
 <!-- Compile the tools -->
-<target name="compiletools">
+<target name="compiletools" depends="init">
     <javac debug="${debug}" deprecation="${deprecation}" optimize="${optimize}" srcdir="${srcroot}/tools/tracesviewer" destdir= "${classes}">
          <classpath>
              <pathelement location="${xerceslib}"/>
@@ -206,3 +213,4 @@ c:/jakarta-ant/bin/ant all
      </javac>
 </target>
 </project>
+
