@@ -71,7 +71,7 @@ import sim.java.net.*;
  *  (Was mis-spelled - Documentation bug fix by Bob Johnson)</li>
  *  </ul>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.11 $ $Date: 2004-01-22 13:26:28 $
+ * @version JAIN-SIP-1.1 $Revision: 1.12 $ $Date: 2004-01-22 14:23:45 $
  * 
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -267,7 +267,7 @@ public class SipStackImpl
 
 		//ifdef SIMULATION
 		/*
-			SimProcess.hold((double) 100);
+		SimProcess.hold((double) 100);
 		//endif
 		*/
 
@@ -302,7 +302,7 @@ public class SipStackImpl
 			ListeningPointImpl.makeKey(super.stackAddress, port, transport);
 		//ifdef SIMULATION
 		/*
-			System.out.println("key = " + key);
+		System.out.println("key = " + key);
 		//endif
 		*/
 
@@ -525,4 +525,28 @@ public class SipStackImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/01/22 13:26:28  sverker
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  sverker
+ * Reviewed by:   mranga
+ *
+ * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  */

@@ -167,6 +167,21 @@ clean: emacsclean
 	$(RM) -f $(SDP_JAR)
 	$(RM) -f $(JAIN_API)
 	$(RM) -f timestamp
+
+backup:
+	tar -cvzf $(SRCTAR)  --exclude CVS			\
+	--exclude filesystem.attributes				\
+	--exclude .cvsignore					\
+	--exclude \.#*						\
+	--exclude \#*						\
+	--exclude \*~						\
+	--exclude *.log						\
+	--exclude debug.txt					\
+	--exclude api						\
+	./src/gov/nist/javax			\
+	./src/gov/nist/core			\
+	./src/examples/shootist		        \
+	./src/tools/tracesviewer	        
 	
 
 

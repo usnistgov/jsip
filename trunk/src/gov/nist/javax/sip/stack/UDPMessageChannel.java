@@ -46,7 +46,7 @@ import sim.java.net.*;
  * this code that was sending it into an infinite loop when a bad incoming
  * message was parsed.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.12 $ $Date: 2004-01-22 13:26:33 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2004-01-22 14:23:45 $
  */
 public class UDPMessageChannel
 	extends MessageChannel
@@ -109,8 +109,8 @@ public class UDPMessageChannel
 		Thread mythread = new Thread(this);
 		//else
 		/*
-			SimThread mythread = new SimThread(this);
-			mythread.setName("UDPMessageChannelThread");
+		SimThread mythread = new SimThread(this);
+		mythread.setName("UDPMessageChannelThread");
 		//endif
 		*/
 		mythread.start();
@@ -196,8 +196,8 @@ public class UDPMessageChannel
 			if (stack.threadPoolSize != -1) {
 				//ifdef SIMULATION
 				/*
-						((UDPMessageProcessor)messageProcessor).
-						messageQueueShadow.enterCriticalSection();
+				((UDPMessageProcessor)messageProcessor).
+				messageQueueShadow.enterCriticalSection();
 				//else
 				*/
 				synchronized (
@@ -215,8 +215,8 @@ public class UDPMessageChannel
 						try {
 							//ifdef SIMULATION
 							/*
-							                            ((UDPMessageProcessor)messageProcessor).
-											messageQueueShadow.doWait();
+							((UDPMessageProcessor)messageProcessor).
+									messageQueueShadow.doWait();
 							//else
 							*/
 							((UDPMessageProcessor) messageProcessor)
@@ -239,8 +239,8 @@ public class UDPMessageChannel
 				}
 				//ifdef SIMULATION
 				/*
-						((UDPMessageProcessor)messageProcessor).
-						messageQueueShadow.leaveCriticalSection();
+				((UDPMessageProcessor)messageProcessor).
+				messageQueueShadow.leaveCriticalSection();
 				//endif
 				*/
 				this.incomingPacket = packet;
@@ -273,9 +273,9 @@ public class UDPMessageChannel
 
 				//ifdef SIMULATION
 				/*
-				                this.receptionTime = SimSystem.currentTimeMillis();
-					        // local delay for processing message.
-					        SimSystem.hold(this.stack.stackProcessingTime);
+			       this.receptionTime = SimSystem.currentTimeMillis();
+			        // local delay for processing message.
+			        SimSystem.hold(this.stack.stackProcessingTime);
 				//else
 				*/
 				this.receptionTime = System.currentTimeMillis();
@@ -562,7 +562,7 @@ public class UDPMessageChannel
 
 		//ifdef SIMULATION
 		/*
-		        long time = SimSystem.currentTimeMillis();
+		long time = SimSystem.currentTimeMillis();
 		//else
 		*/
 		long time = System.currentTimeMillis();
@@ -620,7 +620,7 @@ public class UDPMessageChannel
 		try {
 			//ifdef SIMULATION
 			/*
-				    SimDatagramSocket sock;
+	 		SimDatagramSocket sock;
 			//else
 			*/
 			DatagramSocket sock;
@@ -642,8 +642,8 @@ public class UDPMessageChannel
 				// bind to any interface and port.
 				//ifdef SIMULATION
 				/*
-						sock = new SimDatagramSocket();
-						sock.setLocalAddress(stack.stackInetAddress);
+				sock = new SimDatagramSocket();
+				sock.setLocalAddress(stack.stackInetAddress);
 				//else
 				*/
 				sock = new DatagramSocket();
@@ -703,7 +703,7 @@ public class UDPMessageChannel
 			try {
 				//ifdef SIMULATION
 				/*
-						SimDatagramSocket sock;
+				SimDatagramSocket sock;
 				//else
 				*/
 				DatagramSocket sock;
@@ -717,8 +717,8 @@ public class UDPMessageChannel
 					// bind to any interface and port.
 					//ifdef SIMULATION
 					/*
-							    sock = new SimDatagramSocket();
-							    sock.setLocalAddress(stack.stackInetAddress);
+			 		sock = new SimDatagramSocket();
+					sock.setLocalAddress(stack.stackInetAddress);
 					//else
 					*/
 					sock = new DatagramSocket();
@@ -739,7 +739,7 @@ public class UDPMessageChannel
 			// System.out.println("peerAddress " + peerPort);
 			//ifdef SIMULATION
 			/*
-				    SimSocket outputSocket = new SimSocket(peerAddress,peerPort);
+		   	 SimSocket outputSocket = new SimSocket(peerAddress,peerPort);
 			//else
 			*/
 			Socket outputSocket =
@@ -860,13 +860,6 @@ public class UDPMessageChannel
 		return getKey(peerAddress, peerPort, "UDP");
 	}
 
-	/*
-	    private void sendMessage(String msg)
-	    throws IOException {
-	        sendMessage(msg.getBytes(),peerAddress,
-	        peerPort,peerProtocol);
-	    }
-	*/
 
 	private void sendMessage(byte[] msg, boolean retry) throws IOException {
 		sendMessage(msg, peerAddress, peerPort, peerProtocol, retry);
@@ -914,4 +907,28 @@ public class UDPMessageChannel
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/01/22 13:26:33  sverker
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  sverker
+ * Reviewed by:   mranga
+ *
+ * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  */

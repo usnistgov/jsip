@@ -332,7 +332,10 @@ public class LexerCore extends StringTokenizer {
 		}
 	}
 
-	// Assume the cursor is at a quote.
+	/** Parse a comment string cursor is at a ". Leave cursor at closing "
+	*@return the substring containing the quoted string excluding the
+	* closing quote.
+	*/
 	public String quotedString() throws ParseException {
 		StringBuffer retval = new StringBuffer();
 		if (lookAhead(0) != '\"')
@@ -358,7 +361,10 @@ public class LexerCore extends StringTokenizer {
 		return retval.toString();
 	}
 
-	// Assume the cursor is at a "("
+	/** Parse a comment string cursor is at a "(". Leave cursor at )
+	*@return the substring containing the comment excluding the
+	* closing brace.
+	*/
 	public String comment() throws ParseException {
 		StringBuffer retval = new StringBuffer();
 		if (lookAhead(0) != '(')
@@ -387,6 +393,9 @@ public class LexerCore extends StringTokenizer {
 		return retval.toString();
 	}
 
+	/** Return a substring containing no semicolons.
+	*@return a substring containing no semicolons.
+	*/
 	public String byteStringNoSemicolon() {
 		StringBuffer retval = new StringBuffer();
 		try {
@@ -404,6 +413,10 @@ public class LexerCore extends StringTokenizer {
 		}
 		return retval.toString();
 	}
+
+	/** Return a substring containing no commas
+	*@return a substring containing no commas.
+	*/
 
 	public String byteStringNoComma() {
 		StringBuffer retval = new StringBuffer();
@@ -444,6 +457,8 @@ public class LexerCore extends StringTokenizer {
 	}
 
 	/** Get and consume the next number.
+	 *@return a substring corresponding to a number 
+	 *(i.e. sequence of digits).
 	 */
 	public String number() throws ParseException {
 
@@ -471,19 +486,21 @@ public class LexerCore extends StringTokenizer {
 	}
 
 	/** Mark the position for backtracking.
+	 *@return the current location of the pointer.
 	 */
 	public int markInputPosition() {
 		return ptr;
 	}
 
 	/** Rewind the input ptr to the marked position.
+	 *@param position - the position to rewind the parser to.
 	 */
 	public void rewindInputPosition(int position) {
 		this.ptr = position;
 	}
 
 	/** Get the rest of the String
-	 * @return String
+	 * @return rest of the buffer.
 	 */
 	public String getRest() {
 		if (ptr >= buffer.length())
@@ -493,8 +510,8 @@ public class LexerCore extends StringTokenizer {
 	}
 
 	/** Get the sub-String until the character is encountered
-	 * @param char c the character to match
-	 * @return String
+	 * @param c the character to match
+	 * @return the substring that matches.
 	 */
 	public String getString(char c) throws ParseException {
 		StringBuffer retval = new StringBuffer();
@@ -549,4 +566,28 @@ public class LexerCore extends StringTokenizer {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/01/22 13:26:27  sverker
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  sverker
+ * Reviewed by:   mranga
+ *
+ * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  */

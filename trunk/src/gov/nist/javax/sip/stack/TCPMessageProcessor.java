@@ -22,7 +22,7 @@ import java.net.*;
  * object that creates new TCP MessageChannels (one for each new
  * accept socket).  
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2004-01-22 13:26:33 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.8 $ $Date: 2004-01-22 14:23:45 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Acknowledgement: Jeff Keyser suggested that a
@@ -35,7 +35,7 @@ public class TCPMessageProcessor extends MessageProcessor {
 
 	//ifdef SIMULATION
 	/*
-	    protected SimThread thread;
+	protected SimThread thread;
 	//else
 	*/
 	protected Thread thread;
@@ -55,8 +55,8 @@ public class TCPMessageProcessor extends MessageProcessor {
 	private ServerSocket sock;
 	//else
 	/*
-	    private SimServerSocket sock;
-	    private SimMessageObject msgObject;
+	private SimServerSocket sock;
+	private SimMessageObject msgObject;
 	//endif
 	*/
 
@@ -90,9 +90,8 @@ public class TCPMessageProcessor extends MessageProcessor {
 		this.sock = new ServerSocket(this.port, 0, sipStack.stackInetAddress);
 		//else 
 		/*
-			this.sock = new SimServerSocket (sipStack.stackInetAddress,this.port);
-			thread = new SimThread(this);
-		        
+		this.sock = new SimServerSocket (sipStack.stackInetAddress,this.port);
+		thread = new SimThread(this);
 		//endif
 		*/
 		this.isRunning = true;
@@ -113,8 +112,8 @@ public class TCPMessageProcessor extends MessageProcessor {
 				synchronized (this)
 					//else
 					/*
-							this.msgObject.enterCriticalSection();
-							try
+					this.msgObject.enterCriticalSection();
+					try
 					//endif
 					*/ {
 					// sipStack.maxConnections == -1 means we are
@@ -130,7 +129,7 @@ public class TCPMessageProcessor extends MessageProcessor {
 							this.wait();
 							//else
 							/*
-										    this.msgObject.doWait();
+					 		this.msgObject.doWait();
 							//endif
 							*/
 
@@ -144,7 +143,7 @@ public class TCPMessageProcessor extends MessageProcessor {
 				}
 				//ifdef SIMULATION
 				/*
-						finally { this.msgObject.leaveCriticalSection(); }
+				finally { this.msgObject.leaveCriticalSection(); }
 				//endif
 				*/
 
@@ -153,7 +152,7 @@ public class TCPMessageProcessor extends MessageProcessor {
 				Socket newsock = sock.accept();
 				//else
 				/*
-				                SimSocket newsock = sock.accept();
+				SimSocket newsock = sock.accept();
 				//endif
 				*/
 				if (LogWriter.needsLogging) {
@@ -213,7 +212,7 @@ public class TCPMessageProcessor extends MessageProcessor {
 		}
 		//ifdef SIMULATION
 		/*
-			this.msgObject.doNotify();
+		this.msgObject.doNotify();
 		//else
 		*/
 		this.notify();
@@ -280,4 +279,28 @@ public class TCPMessageProcessor extends MessageProcessor {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/01/22 13:26:33  sverker
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  sverker
+ * Reviewed by:   mranga
+ *
+ * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  */
