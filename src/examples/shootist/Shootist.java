@@ -136,7 +136,7 @@ public class Shootist implements SipListener {
 
 			// so that the finalization method will run 
 			// and exit all resources.
-			//this.shutDown();
+			this.shutDown();
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -163,14 +163,6 @@ public class Shootist implements SipListener {
 		System.out.println("Dialog = " + tid.getDialog());
 		System.out.println("Dialog State is " + tid.getDialog().getState());
 
-		/**
-		if (response.getStatusCode() == 100 || response.getStatusCode() == 180) {
-				try {
-				    Thread.sleep(500);
-				} catch (Exception ex) {
-				}
-		}
-		**/
 		try {
 			if (response.getStatusCode() == Response.OK
 				&& ((CSeqHeader) response.getHeader(CSeqHeader.NAME))
@@ -224,34 +216,33 @@ public class Shootist implements SipListener {
 		Properties properties = new Properties();
 		// If you want to try TCP transport change the following to
 		String transport = "udp";
-//ifdef SIMULATION
-/*
-		        properties.setProperty("javax.sip.IP_ADDRESS"
-		        ,"129.6.55.61");
-		        properties.setProperty("javax.sip.OUTBOUND_PROXY"
-		        ,"129.6.55.62:5070/" + transport);
-//else
-*/
+		String peerHostPort = "127.0.0.1:5070";
 		properties.setProperty("javax.sip.IP_ADDRESS", "127.0.0.1");
 		properties.setProperty(
-			"javax.sip.OUTBOUND_PROXY",
-			"127.0.0.1:5070/" + transport);
+			"javax.sip.OUTBOUND_PROXY", 
+			peerHostPort + "/" + transport);
 		// If you want to use UDP then uncomment this.
-//endif
-//
-
 		properties.setProperty(
 			"javax.sip.ROUTER_PATH",
 			"examples.shootist.MyRouter");
 		properties.setProperty("javax.sip.STACK_NAME", "shootist");
-		properties.setProperty("javax.sip.RETRANSMISSION_FILTER", "true");
-		properties.setProperty("javax.sip.MAX_MESSAGE_SIZE", "1048576");
+		properties.setProperty("javax.sip.RETRANSMISSION_FILTER", 
+				"on");
+
+		// The following properties are specific to nist-sip
+		// and are not necessarily part of any other jain-sip
+		// implementation.
+		// You can set a max message size for tcp transport to 
+		// guard against denial of service attack.
+		properties.setProperty("gov.nist.javax.sip.MAX_MESSAGE_SIZE", 
+					"1048576");
 		properties.setProperty(
 			"gov.nist.javax.sip.DEBUG_LOG",
 			"shootistdebug.txt");
 		properties.setProperty(
 			"gov.nist.javax.sip.SERVER_LOG",
 			"shootistlog.txt");
+
 		// Drop the client connection after we are done with the transaction.
 		properties.setProperty("gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS", "false");
 		// Set to 0 in your production code for max speed.
@@ -276,19 +267,22 @@ public class Shootist implements SipListener {
 			headerFactory = sipFactory.createHeaderFactory();
 			addressFactory = sipFactory.createAddressFactory();
 			messageFactory = sipFactory.createMessageFactory();
-			udpListeningPoint = sipStack.createListeningPoint(5060, "udp");
-			udpProvider = sipStack.createSipProvider(udpListeningPoint);
+			udpListeningPoint = sipStack.createListeningPoint
+							(5060, "udp");
+			udpProvider = sipStack.createSipProvider
+							(udpListeningPoint);
 			Shootist listener = this;
 			udpProvider.addSipListener(listener);
 
 
 
 
-			tcpListeningPoint = sipStack.createListeningPoint(5060, "tcp");
+			tcpListeningPoint = sipStack.createListeningPoint
+								(5060, "tcp");
 			tcpProvider = sipStack.createSipProvider(tcpListeningPoint);
 			tcpProvider.addSipListener(listener);
 
-			SipProvider sipProvider = transport.equals("udp")? 
+			SipProvider sipProvider = transport.equalsIgnoreCase("udp")? 
 					udpProvider: tcpProvider;
 
 			String fromName = "BigGuy";
@@ -318,7 +312,7 @@ public class Shootist implements SipListener {
 
 			// create Request URI
 			SipURI requestURI =
-				addressFactory.createSipURI(toUser, toSipAddress);
+				addressFactory.createSipURI(toUser, peerHostPort);
 
 			// Create ViaHeaders
 
@@ -449,6 +443,12 @@ public class Shootist implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.30  2004/07/23 06:50:04  mranga
+ * Submitted by:  mranga
+ * Reviewed by:   mranga
+ *
+ * Clean up - Get rid of annoying eclipse warnings.
+ *
  * Revision 1.29  2004/06/27 00:41:51  mranga
  * Submitted by:  Thomas Froment and Pierre De Rop
  * Reviewed by:   mranga
