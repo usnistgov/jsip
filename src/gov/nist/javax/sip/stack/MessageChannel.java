@@ -16,7 +16,7 @@ import gov.nist.core.*;
  * Message channel abstraction for the SIP stack.
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2004-03-25 16:37:00 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.8 $ $Date: 2004-05-18 15:26:42 $
  *
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
@@ -68,12 +68,11 @@ public abstract class MessageChannel {
 	 */
 	public abstract String getPeerAddress();
 
-	/**
-	 * Get the name of the machine that sent us this message.
-	 * @return  a string contianing the ip address or host name of the sender
-	 *  of the message.
-	 */
-	public abstract String getPeerName();
+
+	protected abstract InetAddress getPeerInetAddress();
+
+	protected abstract String getPeerProtocol();
+
 
 	/**
 	 * Get the sender port ( the port of the other end that sent me 
@@ -131,8 +130,8 @@ public abstract class MessageChannel {
 	}
 	/**
 	 * Handle an exception.
-	 */
 	public abstract void handleException(SIPServerException ex);
+	 */
 
 	/**
 	 * Send a message given SIP message.
@@ -311,6 +310,10 @@ public abstract class MessageChannel {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/03/25 16:37:00  mranga
+ * Reviewed by:   mranga
+ * Fix up for logging messages.
+ *
  * Revision 1.6  2004/03/19 17:06:19  mranga
  * Reviewed by:   mranga
  * Fixed some stack cleanup issues. Stack should release all resources when

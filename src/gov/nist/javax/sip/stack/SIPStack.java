@@ -29,15 +29,10 @@ import sim.java.net.*;
  * to create message processors and then start these message processors to
  * get the stack the process messages.
  * This will start the necessary threads that wait for incoming SIP messages.
- * A general note about the handler structures -- handlers are expected to
- * returnResponse  for successful message processing and throw
- * SIPServerException for unsuccessful message processing.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.19 $ $Date: 2004-05-16 14:13:23 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.20 $ $Date: 2004-05-18 15:26:44 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
- * 
- * Acknowledgement: Marc Bednarek added code in support of firewall. 
  * 
  * Jeff Keyser suggested that MessageProcessors be accessible and applications
  * should have control over message processors.
@@ -736,6 +731,11 @@ public abstract class SIPStack {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2004/05/16 14:13:23  mranga
+ * Reviewed by:   mranga
+ * Fixed the use-count issue reported by Peter Parnes.
+ * Added property to prevent against content-length dos attacks.
+ *
  * Revision 1.18  2004/05/14 20:20:03  mranga
  *
  * Submitted by:  Dave Stuart

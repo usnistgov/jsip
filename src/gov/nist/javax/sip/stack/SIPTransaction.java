@@ -21,7 +21,7 @@ import javax.sip.message.*;
  *
  * @author Jeff Keyser 
  * @author M. Ranganathan (modified Jeff's original source and aligned with JAIN-SIP 1.1)
- * @version  JAIN-SIP-1.1 $Revision: 1.20 $ $Date: 2004-04-07 00:19:24 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.21 $ $Date: 2004-05-18 15:26:44 $
  */
 public abstract class SIPTransaction
 	extends MessageChannel
@@ -129,6 +129,18 @@ public abstract class SIPTransaction
 	// Underlying channel being used to send messages for this transaction
 	protected MessageChannel encapsulatedChannel;
 
+	// Port of peer
+	protected int peerPort;
+
+	// Address of peer
+	protected InetAddress peerInetAddress;
+
+	// Address of peer as a string
+	protected String peerAddress;
+
+	// Protocol of peer
+	protected String peerProtocol;
+
 	// Transaction branch ID
 	private String branch;
 
@@ -190,6 +202,12 @@ public abstract class SIPTransaction
 
 		parentStack = newParentStack;
 		encapsulatedChannel = newEncapsulatedChannel;
+		// Record this to check if the address has changed before sending
+		// message to avoid possible race condition.
+		this.peerPort = newEncapsulatedChannel.getPeerPort();
+		this.peerAddress = newEncapsulatedChannel.getPeerAddress();
+		this.peerInetAddress = newEncapsulatedChannel.getPeerInetAddress();
+		this.peerProtocol = newEncapsulatedChannel.getPeerProtocol();
 		if (encapsulatedChannel instanceof TCPMessageChannel ) {
 			((TCPMessageChannel)encapsulatedChannel).useCount++;
 		}
@@ -512,15 +530,20 @@ public abstract class SIPTransaction
 	}
 
 	public String getPeerAddress() {
-		return encapsulatedChannel.getPeerAddress();
+		return this.peerAddress; 
 	}
 
 	public int getPeerPort() {
-		return encapsulatedChannel.getPeerPort();
+		return this.peerPort;
 	}
 
-	public String getPeerName() {
-		return encapsulatedChannel.getPeerName();
+		
+	protected InetAddress getPeerInetAddress() {
+		return this.peerInetAddress;
+	}
+
+	protected String getPeerProtocol() {
+		return this.peerProtocol;
 	}
 
 	public String getTransport() {
@@ -551,9 +574,6 @@ public abstract class SIPTransaction
 
 	}
 
-	public void handleException(SIPServerException ex) {
-		encapsulatedChannel.handleException(ex);
-	}
 
 	/**
 	 * Process the message through the transaction and sends it to the SIP
@@ -561,8 +581,18 @@ public abstract class SIPTransaction
 	 *
 	 * @param messageToSend Message to send to the SIP peer.
 	 */
-	abstract public void sendMessage(SIPMessage messageToSend)
-		throws IOException;
+	public void sendMessage(SIPMessage messageToSend)
+		throws IOException
+	{
+	    // Use the peer address, port and transport 
+	    // that was specified when the transaction was
+	    // created. Bug was noted by Bruce Evangelder
+	    // soleo communications.
+	    byte[] msg = messageToSend.encodeAsBytes();
+	    encapsulatedChannel.sendMessage
+		(msg, this.peerInetAddress,
+		this.peerPort, messageToSend instanceof SIPRequest);
+	}
 
 	/**
 	 * Parse the byte array as a message, process it through the 
@@ -900,6 +930,11 @@ public abstract class SIPTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.20  2004/04/07 00:19:24  mranga
+ * Reviewed by:   mranga
+ * Fixes a potential race condition for client transactions.
+ * Handle re-invites statefully within an established dialog.
+ *
  * Revision 1.19  2004/03/09 00:34:44  mranga
  * Reviewed by:   mranga
  * Added TCP connection management for client and server side
