@@ -803,6 +803,20 @@ javax.sip.SipProvider, SIPTransactionEventListener {
                 sipStackImpl.logMessage
                 ("TransportError occured on " + transaction);
             }
+            // Treat this like a timeout event. (Suggestion from Christophe).
+            Object errorObject = transactionErrorEvent.getSource();
+            Timeout timeout = Timeout.TRANSACTION;
+            TimeoutEvent ev = null;
+            
+            if (errorObject instanceof SIPServerTransaction) {
+                ev = new TimeoutEvent(this,(ServerTransaction)
+                			errorObject,timeout);
+            } else {
+                ev = new TimeoutEvent(this,(ClientTransaction) errorObject,
+                timeout);
+            }
+	    // Handling transport error like timeout
+            this.handleEvent(ev,(SIPTransaction) errorObject);
         } else if (transactionErrorEvent.getErrorID() == 
             SIPTransactionErrorEvent.TIMEOUT_ERROR) {
             // This is a timeout event.

@@ -276,7 +276,8 @@ class IOHandler
 				 }
 				 break;
 			       } catch (IOException ex) {
-				  ex.printStackTrace();
+				  if (sipStack.logWriter.needsLogging)
+					sipStack.logWriter.logException(ex);
 				  // old connection is bad.
 				  // remove from our table.
 				  removeSocket(key);
@@ -287,7 +288,11 @@ class IOHandler
 			       }
 			   }
 			}
-                        return clientSock;
+			if (clientSock == null) {
+				throw new IOException
+				("Could not connect to " + 
+					inaddr + ":" + contactPort );
+			} else return clientSock;
 
 		} else {
 			// This is a UDP transport...
