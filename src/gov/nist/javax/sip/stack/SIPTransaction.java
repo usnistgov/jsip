@@ -21,7 +21,7 @@ import javax.sip.message.*;
  *
  * @author Jeff Keyser 
  * @author M. Ranganathan (modified Jeff's original source and aligned with JAIN-SIP 1.1)
- * @version  JAIN-SIP-1.1 $Revision: 1.31 $ $Date: 2004-10-04 14:43:20 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.32 $ $Date: 2004-10-04 16:03:53 $
  */
 public abstract class SIPTransaction
 	extends MessageChannel
@@ -437,9 +437,9 @@ public abstract class SIPTransaction
 				"Transaction:setState " + newState + " " + this);
 			sipStack.logWriter.logStackTrace();
 		}
-		if (newState == TransactionState.TERMINATED) 
-			this.clearPending();
 	}
+
+
 
 	/**
 	 * Gets the current state of this transaction.
@@ -561,7 +561,7 @@ public abstract class SIPTransaction
 	 *
 	 *	@return Trus if this transaction is terminated, false if not.
 	 */
-	protected final boolean isTerminated() {
+	public final boolean isTerminated() {
 		return  getState() == TERMINATED_STATE;
 	}
 
@@ -1010,6 +1010,11 @@ public abstract class SIPTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.31  2004/10/04 14:43:20  mranga
+ * Reviewed by:   mranga
+ *
+ * Remove transaction from pending list when terminated.
+ *
  * Revision 1.30  2004/09/27 18:51:18  mranga
  * Reviewed by:   mranga
  *
