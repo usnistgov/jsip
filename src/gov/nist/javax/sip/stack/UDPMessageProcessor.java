@@ -23,7 +23,7 @@ import  sim.java.net.*;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size). 
  * Each UDP message is processed in its own thread). 
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.10 $ $Date: 2004-01-22 13:26:33 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.11 $ $Date: 2004-01-22 18:39:42 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -57,11 +57,11 @@ public class UDPMessageProcessor extends MessageProcessor {
 	 */
 	protected LinkedList messageQueue;
 
-	//ifdef SIMULATION
-	/*
+//ifdef SIMULATION
+/*
 	    protected SimMessageObject messageQueueShadow;
-	//endif
-	*/
+//endif
+*/
 
 	/**
 	 * A list of message channels that we have started.
@@ -83,14 +83,14 @@ public class UDPMessageProcessor extends MessageProcessor {
 	 */
 	protected SIPStack sipStack;
 
-	//ifdef SIMULATION
-	/*
+//ifdef SIMULATION
+/*
 	    protected SimDatagramSocket sock;
-	//else
-	*/
+//else
+*/
 	protected DatagramSocket sock;
-	//endif
-	//
+//endif
+//
 
 	/**
 	 * A flag that is set to false to exit the message processor
@@ -105,11 +105,11 @@ public class UDPMessageProcessor extends MessageProcessor {
 	protected UDPMessageProcessor(SIPStack sipStack, int port) {
 		this.sipStack = sipStack;
 		this.messageQueue = new LinkedList();
-		//ifdef SIMULATION
-		/*
-			this.messageQueueShadow = new SimMessageObject();
-		//endif
-		*/
+//ifdef SIMULATION
+/*
+		this.messageQueueShadow = new SimMessageObject();
+//endif
+*/
 		this.port = port;
 		this.mappedPort = port;
 	}
@@ -125,9 +125,9 @@ public class UDPMessageProcessor extends MessageProcessor {
 	/**
 	 * Start our processor thread.
 	 */
-	//ifdef SIMULATION
-	/*
-	    public void start() throws IOException {
+//ifdef SIMULATION
+/*
+    public void start() throws IOException {
 	        // Create a new datagram socket.
 		// Bug uncovered by
 	        this.sock =
@@ -138,8 +138,8 @@ public class UDPMessageProcessor extends MessageProcessor {
 	        SimThread thread = new SimThread(this);
 	        thread.start();
 	    }
-	//else
-	*/
+//else
+*/
 	public void start() throws IOException {
 		// Create a new datagram socket.
 		this.sock = new DatagramSocket(port, sipStack.stackInetAddress);
@@ -208,8 +208,8 @@ public class UDPMessageProcessor extends MessageProcessor {
 		Thread thread = new Thread(this);
 		thread.start();
 	}
-	//endif
-	//
+//endif
+//
 
 	/**
 	 * Thread main routine.
@@ -244,32 +244,32 @@ public class UDPMessageProcessor extends MessageProcessor {
 					// not empty. As soon as you introduce some other
 					// condition you will have to call notifyAll instead of 
 					// notify below.
-					//ifdef SIMULATION
-					/*
-							this.messageQueueShadow.enterCriticalSection();
-							try 
-					//else
-					*/
+//ifdef SIMULATION
+/*
+					this.messageQueueShadow.enterCriticalSection();
+					try 
+//else
+*/
 
 					synchronized (this.messageQueue)
-						//endif
-						//
+//endif
+//
 						{
 						this.messageQueue.addLast(packet);
-						//ifdef SIMULATION
-						/*
-								     this.messageQueueShadow.doNotify();
-						//else
-						*/
+//ifdef SIMULATION
+/*
+					        this.messageQueueShadow.doNotify();
+//else
+*/
 						this.messageQueue.notify();
-						//endif
-						//
+//endif
+//
 					}
-					//ifdef SIMULATION
-					/*
-							finally { this.messageQueueShadow.leaveCriticalSection(); }
-					//endif
-					*/
+//ifdef SIMULATION
+/*
+					finally { this.messageQueueShadow.leaveCriticalSection(); }
+//endif
+*/
 				} else {
 					new UDPMessageChannel(sipStack, this, packet);
 				}
@@ -280,30 +280,30 @@ public class UDPMessageProcessor extends MessageProcessor {
 				isRunning = false;
 				// The notifyAll should be in a synchronized block.
 				// ( bug report by Niklas Uhrberg ).
-				//ifdef SIMULATION
-				/*
-						this.messageQueueShadow.enterCriticalSection();
-						try
-				//else
-				*/
+//ifdef SIMULATION
+/*
+				this.messageQueueShadow.enterCriticalSection();
+				try
+//else
+*/
 				synchronized (this.messageQueue)
-					//endif
-					//
+//endif
+//
 					{
-					//ifdef SIMULATION
-					/*
-								this.messageQueueShadow.doNotifyAll();
-					//else
-					*/
+//ifdef SIMULATION
+/*
+					this.messageQueueShadow.doNotifyAll();
+//else
+*/
 					this.messageQueue.notifyAll();
-					//endif
-					//
+//endif
+//
 				}
-				//ifdef SIMULATION
-				/*
-						finally { this.messageQueueShadow.leaveCriticalSection(); }
-				//endif
-				*/
+//ifdef SIMULATION
+/*
+				finally { this.messageQueueShadow.leaveCriticalSection(); }
+//endif
+*/
 			} catch (IOException ex) {
 				isRunning = false;
 				ex.printStackTrace();
@@ -325,26 +325,26 @@ public class UDPMessageProcessor extends MessageProcessor {
 	 * incoming messages.
 	 */
 	public void stop() {
-		//ifdef SIMULATION
-		/*
+//ifdef SIMULATION
+/*
 			this.messageQueueShadow.enterCriticalSection();
 			try 
-		//else
-		*/
+//else
+*/
 		synchronized (this.messageQueue)
-			//endif
-			//
+//endif
+//
 			{
 			this.isRunning = false;
 			this.messageQueue.notifyAll();
 			this.listeningPoint = null;
 			sock.close();
 		}
-		//ifdef SIMULATION
-		/*
-			finally { this.messageQueueShadow.leaveCriticalSection(); }
-		//endif
-		*/
+//ifdef SIMULATION
+/*
+		finally { this.messageQueueShadow.leaveCriticalSection(); }
+//endif
+*/
 	}
 
 	/**
@@ -411,4 +411,28 @@ public class UDPMessageProcessor extends MessageProcessor {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/01/22 13:26:33  sverker
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  sverker
+ * Reviewed by:   mranga
+ *
+ * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  */

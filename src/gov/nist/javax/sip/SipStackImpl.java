@@ -71,7 +71,7 @@ import sim.java.net.*;
  *  (Was mis-spelled - Documentation bug fix by Bob Johnson)</li>
  *  </ul>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.12 $ $Date: 2004-01-22 14:23:45 $
+ * @version JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2004-01-22 18:39:41 $
  * 
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -257,19 +257,19 @@ public class SipStackImpl
 
 		// Get the address of the stun server.
 
-		//ifndef SIMULATION
-		//
+//ifndef SIMULATION
+//
 		super.stunServerAddress =
 			configurationProperties.getProperty(
 				"gov.nist.javax.sip.STUN_SERVER");
-		//endif
-		//
+//endif
+//
 
-		//ifdef SIMULATION
-		/*
+//ifdef SIMULATION
+/*
 		SimProcess.hold((double) 100);
-		//endif
-		*/
+//endif
+*/
 
 	}
 
@@ -300,11 +300,11 @@ public class SipStackImpl
 
 		String key =
 			ListeningPointImpl.makeKey(super.stackAddress, port, transport);
-		//ifdef SIMULATION
-		/*
+//ifdef SIMULATION
+/*
 		System.out.println("key = " + key);
-		//endif
-		*/
+//endif
+*/
 
 		ListeningPointImpl lip = (ListeningPointImpl) listeningPoints.get(key);
 		if (lip != null) {
@@ -525,6 +525,10 @@ public class SipStackImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/01/22 14:23:45  mranga
+ * Reviewed by:   mranga
+ * Fixed some minor formatting issues.
+ *
  * Revision 1.11  2004/01/22 13:26:28  sverker
  * Issue number:
  * Obtained from:

@@ -22,7 +22,7 @@ import java.net.*;
  * object that creates new TCP MessageChannels (one for each new
  * accept socket).  
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.8 $ $Date: 2004-01-22 14:23:45 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.9 $ $Date: 2004-01-22 18:39:42 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Acknowledgement: Jeff Keyser suggested that a
@@ -33,14 +33,14 @@ import java.net.*;
  */
 public class TCPMessageProcessor extends MessageProcessor {
 
-	//ifdef SIMULATION
-	/*
+//ifdef SIMULATION
+/*
 	protected SimThread thread;
-	//else
-	*/
+//else
+*/
 	protected Thread thread;
-	//endif
-	//
+//endif
+//
 
 	protected int useCount;
 
@@ -50,15 +50,15 @@ public class TCPMessageProcessor extends MessageProcessor {
 
 	private boolean isRunning;
 
-	//ifndef SIMULATION
-	//
+//ifndef SIMULATION
+//
 	private ServerSocket sock;
-	//else
-	/*
+//else
+/*
 	private SimServerSocket sock;
 	private SimMessageObject msgObject;
-	//endif
-	*/
+//endif
+*/
 
 	/**
 	 * The SIP Stack Structure.
@@ -73,27 +73,27 @@ public class TCPMessageProcessor extends MessageProcessor {
 	protected TCPMessageProcessor(SIPStack sipStack, int port) {
 		this.sipStack = sipStack;
 		this.port = port;
-		//ifdef SIMULATION
-		/*
-			this.msgObject = new SimMessageObject();
-		//endif
-		*/
+//ifdef SIMULATION
+/*
+		this.msgObject = new SimMessageObject();
+//endif
+*/
 	}
 
 	/**
 	 * Start the processor.
 	 */
 	public void start() throws IOException {
-		//ifndef SIMULATION
-		//
+//ifndef SIMULATION
+//
 		thread = new Thread(this);
 		this.sock = new ServerSocket(this.port, 0, sipStack.stackInetAddress);
-		//else 
-		/*
+//else 
+/*
 		this.sock = new SimServerSocket (sipStack.stackInetAddress,this.port);
 		thread = new SimThread(this);
-		//endif
-		*/
+//endif
+*/
 		this.isRunning = true;
 		thread.start();
 
@@ -107,15 +107,16 @@ public class TCPMessageProcessor extends MessageProcessor {
 		// Accept new connectins on our socket.
 		while (this.isRunning) {
 			try {
-				//ifndef SIMULATION
-				//
+//ifndef SIMULATION
+//
 				synchronized (this)
-					//else
-					/*
-					this.msgObject.enterCriticalSection();
-					try
-					//endif
-					*/ {
+//else
+/*
+				this.msgObject.enterCriticalSection();
+				try
+//endif
+*/ 
+				{
 					// sipStack.maxConnections == -1 means we are
 					// willing to handle an "infinite" number of
 					// simultaneous connections (no resource limitation).
@@ -124,14 +125,14 @@ public class TCPMessageProcessor extends MessageProcessor {
 						&& sipStack.maxConnections != -1
 						&& this.nConnections >= sipStack.maxConnections) {
 						try {
-							//ifndef SIMULATION
-							//
+//ifndef SIMULATION
+//
 							this.wait();
-							//else
-							/*
-					 		this.msgObject.doWait();
-							//endif
-							*/
+//else
+/*
+				 			this.msgObject.doWait();
+//endif
+*/
 
 							if (!this.isRunning)
 								return;
@@ -141,20 +142,20 @@ public class TCPMessageProcessor extends MessageProcessor {
 					}
 					this.nConnections++;
 				}
-				//ifdef SIMULATION
-				/*
+//ifdef SIMULATION
+/*
 				finally { this.msgObject.leaveCriticalSection(); }
-				//endif
-				*/
+//endif
+*/
 
-				//ifndef SIMULATION
-				//
+//ifndef SIMULATION
+//
 				Socket newsock = sock.accept();
-				//else
-				/*
+//else
+/*
 				SimSocket newsock = sock.accept();
-				//endif
-				*/
+//endif
+*/
 				if (LogWriter.needsLogging) {
 					getSIPStack().logWriter.logMessage(
 						"Accepting new connection!");
@@ -210,14 +211,14 @@ public class TCPMessageProcessor extends MessageProcessor {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		//ifdef SIMULATION
-		/*
+//ifdef SIMULATION
+/*
 		this.msgObject.doNotify();
-		//else
-		*/
+//else
+*/
 		this.notify();
-		//endif
-		//
+//endif
+//
 
 	}
 
@@ -279,6 +280,10 @@ public class TCPMessageProcessor extends MessageProcessor {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/01/22 14:23:45  mranga
+ * Reviewed by:   mranga
+ * Fixed some minor formatting issues.
+ *
  * Revision 1.7  2004/01/22 13:26:33  sverker
  * Issue number:
  * Obtained from:

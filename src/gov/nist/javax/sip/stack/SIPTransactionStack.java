@@ -27,7 +27,7 @@ import sim.java.net.*;
  * @author Jeff Keyser (original) 
  * @author M. Ranganathan <mranga@nist.gov>  <br/> (Added Dialog table).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.15 $ $Date: 2004-01-22 14:23:45 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2004-01-22 18:39:41 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public abstract class SIPTransactionStack
@@ -82,16 +82,16 @@ public abstract class SIPTransactionStack
 		// Dialog dable.
 		this.dialogTable = new Hashtable();
 		// Start the timer event thread.
-		//ifdef SIMULATION
-		/*
+//ifdef SIMULATION
+/*
 		SimThread simThread =	new SimThread( new TransactionScanner( ));
 		simThread.setName("TransactionScanner");
 		simThread.start();
-		//else
-		*/
+//else
+*/
 		new Thread(new TransactionScanner()).start();
-		//endif
-		//
+//endif
+//
 
 	}
 
@@ -348,14 +348,14 @@ public abstract class SIPTransactionStack
 				try {
 
 					// Sleep for one timer "tick"
-					//ifndef SIMULATION
-					//
+//ifndef SIMULATION
+//
 					Thread.sleep(BASE_TIMER_INTERVAL);
-					//else
-					/*
+//else
+/*
 					SimThread.sleep((double) BASE_TIMER_INTERVAL);
-					//endif
-					*/
+//endif
+*/
 
 					// Check all client transactions
 
@@ -444,12 +444,12 @@ public abstract class SIPTransactionStack
 					prevCTCount = prevCTCount + activeClientTransactionCount;
 					this.scanCount++;
 
-					//ifdef SIMULATION
-					/*
+//ifdef SIMULATION
+/*
 					 System.out.println
 				   	( stackName + " tsize " + activeClientTransactionCount );
-					//endif
-					*/
+//endif
+*/
 
 					synchronized (dialogTable) {
 						Collection values = dialogTable.values();
@@ -825,6 +825,10 @@ public abstract class SIPTransactionStack
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2004/01/22 14:23:45  mranga
+ * Reviewed by:   mranga
+ * Fixed some minor formatting issues.
+ *
  * Revision 1.14  2004/01/22 13:26:33  sverker
  * Issue number:
  * Obtained from:

@@ -26,7 +26,7 @@ import sim.java.net.*;
  * This can be accessed from the SIPMessage using the getContent and
  * getContentBytes methods provided by the SIPMessage class. 
  *
- * @version JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2004-01-22 14:23:45 $
+ * @version JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2004-01-22 18:39:41 $
  *
  * @author <A href=mailto:mranga@nist.gov > M. Ranganathan  </A>
  *
@@ -56,14 +56,14 @@ public final class PipelinedMsgParser implements Runnable {
 	 * and erroneous messages.)
 	 */
 	protected SIPMessageListener sipMessageListener;
-	//ifdef SIMULATION
-	/*
+//ifdef SIMULATION
+/*
 	private SimThread mythread; // Preprocessor thread
-	//else
-	*/
+//else
+*/
 	private Thread mythread; // Preprocessor thread
-	//endif
-	//
+//endif
+//
 	private byte[] messageBody;
 	private boolean errorFlag;
 	private InputStream rawInputStream;
@@ -97,15 +97,15 @@ public final class PipelinedMsgParser implements Runnable {
 		this();
 		this.sipMessageListener = sipMessageListener;
 		rawInputStream = in;
-		//ifndef SIMULATION
-		//
+//ifndef SIMULATION
+//
 		mythread = new Thread(this);
 		mythread.setName("PipelineThread-" + getNewUid());
-		//else
-		/*
+//else
+/*
 		mythread = new SimThread(this);
-		//endif
-		*/
+//endif
+*/
 
 	}
 
@@ -147,14 +147,14 @@ public final class PipelinedMsgParser implements Runnable {
 
 		p.rawInputStream = this.rawInputStream;
 		p.sipMessageListener = this.sipMessageListener;
-		//ifdef SIMULATION
-		/*
+//ifdef SIMULATION
+/*
 		SimThread mythread = new SimThread(p);
-		//else
-		*/
+//else
+*/
 		Thread mythread = new Thread(p);
-		//endif
-		//
+//endif
+//
 		mythread.setName("PipelineThread");
 		return p;
 	}
@@ -342,6 +342,10 @@ public final class PipelinedMsgParser implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/01/22 14:23:45  mranga
+ * Reviewed by:   mranga
+ * Fixed some minor formatting issues.
+ *
  * Revision 1.4  2004/01/22 13:26:31  sverker
  * Issue number:
  * Obtained from:
