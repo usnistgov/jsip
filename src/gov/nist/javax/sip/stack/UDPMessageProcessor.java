@@ -146,32 +146,50 @@ public class UDPMessageProcessor  extends MessageProcessor {
 	  try {
 	    // TODO
 	    String stunServer = sipStack.stunServerAddress;
+	    Class stunAddressClass = 
+		Class.forName("net.java.stun4j.StunAddress");
+	    // TODO - define a configuration property for this.
+
+	    // Define stun address for the stun server.
+	    int stunServerPort = 3478;
+	    Class parm[]  =  new Class[2];
+	    parm[0] = String.class;
+	    parm[1] = Integer.TYPE;
+	    Constructor cons =  stunAddressClass.getConstructor(parm);
+	    Object ca[] = new Object[2];
+	    ca[0] = sipStack.stunServerAddress;
+	    ca[1] = new Integer(stunServerPort);
+	    Object stunAddress = cons.newInstance(ca);
+	    
+	    // Get the  Simple Address Detector instance.
 	    Class sadClass = Class.forName
 		("net.java.stun4j.client.SimpleAddressDetector");
-	    Class[] parms = new Class[2];
-	    parms[0] = String.class;
-	    parms[1] = Integer.TYPE;
-	    Constructor cons = sadClass.getConstructor(parms);
-	    // TODO - define a configuration property for this.
-	    int stunServerPort = 3478;
-	    Object cargs[] = new Object[2];
-	    cargs[0] = sipStack.stunServerAddress;
-	    cargs[1] = new Integer(stunServerPort);
-	    Object simpleAddressDetector = 
-			cons.newInstance(cargs);
+	    Class[] parms = new Class[1];
+	    parms[0] = stunAddressClass;
+	    cons = sadClass.getConstructor(parms);
+	    Object cargs[] = new Object[1];
+	    cargs[0] = stunAddress;
+	    Object simpleAddressDetector = cons.newInstance(cargs);
+		
+	    // Start the detector
+	    Method meth = sadClass.getMethod("start",null);
+	    meth.invoke(simpleAddressDetector,null);
+	    
+
+	    // Invoke the method to get the mapping.
 	    Class parms1[] = new Class[1];
 	    parms1[0] = DatagramSocket.class;
-	    Method meth = sadClass.getMethod("getMappingFor",parms1);
+	    meth = sadClass.getMethod("getMappingFor",parms1);
 	    Object args[] = new Object[1];
 	    args[0] = this.sock;
-	    Object stunAddress = meth.invoke(simpleAddressDetector,args);
-	    Class stunAddressClass = stunAddress.getClass();
+	    stunAddress = meth.invoke(simpleAddressDetector,args);
 	    meth = stunAddressClass.getMethod("getHostName",null);
 	    String hostName = (String) meth.invoke(stunAddress,null);
 	    meth = stunAddressClass.getMethod("getPort",null);
 	    Character port = (Character) meth.invoke(stunAddress,null);
 	    this.mappedPort = (int) port.charValue();
 	    sipStack.setHostAddress(hostName);
+
 	  } catch (Exception ex) {
 		ex.printStackTrace();
 	        System.out.println("Stun stack initialization failed!");
