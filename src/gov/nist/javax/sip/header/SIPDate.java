@@ -28,7 +28,7 @@ import java.lang.IllegalArgumentException;
 *       Date: Tue, 15 Nov 1994 08:12:31 GMT
 *</pre>
 *
-*@version JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2004-04-05 21:46:08 $
+*@version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-07-28 14:41:53 $
 *
 *@author M. Ranganathan <mranga@nist.gov>  <br/>
 *
@@ -97,7 +97,23 @@ public class SIPDate {
 
 	/** javaCal member
 	*/
-	protected java.util.Calendar javaCal;
+	private java.util.Calendar javaCal;
+	
+	/** equality check.
+	 *
+	 *@return true if the two date fields are equals
+	 */
+	public boolean equals(Object that){
+		if (that.getClass() != this.getClass())return false;
+		SIPDate other = (SIPDate)that;
+		return this.wkday == other.wkday &&
+		this.day == other.day && 
+		this.month == other.month && 
+		this.year == other.year &&
+		this.hour == other.hour && 
+		this.minute == other.minute && 
+		this.second == other.second;
+	}
 
 	/**
 	 * Initializer, sets all the fields to invalid values. 
@@ -470,6 +486,10 @@ public class SIPDate {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/04/05 21:46:08  mranga
+ * Submitted by:  Bruno Konik
+ * Reviewed by:   mranga
+ *
  * Revision 1.2  2004/01/22 13:26:29  sverker
  * Issue number:
  * Obtained from:
