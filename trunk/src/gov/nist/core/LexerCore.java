@@ -265,6 +265,7 @@ public class LexerCore extends StringTokenizer {
 					|| nextChar == '`'
 					|| nextChar == '\''
 					|| nextChar == '~'
+					|| nextChar == '%' // bug fix by Bruno Konik
 					|| nextChar == '.'
 					|| nextChar == '*');
 		} catch (ParseException ex) {
@@ -287,6 +288,7 @@ public class LexerCore extends StringTokenizer {
 					|| nextChar == '`'
 					|| nextChar == '\''
 					|| nextChar == '~'
+					|| nextChar == '%' // bug fix by Bruno Konik
 					|| nextChar == '.'
 					|| nextChar == '*') {
 					consume(1);
@@ -566,6 +568,10 @@ public class LexerCore extends StringTokenizer {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/01/22 14:23:45  mranga
+ * Reviewed by:   mranga
+ * Fixed some minor formatting issues.
+ *
  * Revision 1.6  2004/01/22 13:26:27  sverker
  * Issue number:
  * Obtained from:
