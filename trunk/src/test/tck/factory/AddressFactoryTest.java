@@ -69,7 +69,10 @@ public class AddressFactoryTest extends FactoryTestHarness {
 		TelURL tiTelURL) {
 		TelURL telUrl = null;
 		try {
-			String phoneNumber = tiTelURL.getPhoneNumber();
+			// The API has a bug here - there is no way to retrieve the
+			// phone-context parameter. This will be fixed in the next release.
+			int start = tiTelURL.toString().indexOf(':');
+			String phoneNumber = tiTelURL.toString().substring(start).trim();
 			telUrl = riAddressFactory.createTelURL(phoneNumber);
 			telUrl.setGlobal(tiTelURL.isGlobal());
 		} catch (Exception ex) {
@@ -224,6 +227,8 @@ public class AddressFactoryTest extends FactoryTestHarness {
 				String phone = telUrl.getPhoneNumber();
 				javax.sip.address.TelURL tiTelUrl = this.createTiTelURL(phone);
 				tiTelUrl.setGlobal(telUrl.isGlobal());
+				System.out.println(telUrl);
+				System.out.println(tiTelUrl);
 				assertTrue(telUrl.equals(tiTelUrl));
 			}
 		} catch (Exception ex) {
