@@ -199,6 +199,10 @@ it was fixed.
 	gov.nist.javax.sip.MAX_MESSAGE_SIZE was added to limit the max
 	size of messages.
 
+<li>Venkatesh from CMU noticed that there were threads hanging around even 
+after all stack resources had been released. This was corrected by adding
+a stack finalization method that exits all threads.
+
 </ul>
 
 
