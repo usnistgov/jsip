@@ -23,7 +23,7 @@ import  sim.java.net.*;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size). 
  * Each UDP message is processed in its own thread). 
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2004-04-19 21:51:04 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.14 $ $Date: 2004-05-16 14:13:23 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -40,7 +40,7 @@ public class UDPMessageProcessor extends MessageProcessor {
 	 * Increment this when a message comes in and decrement after
 	 * processing is done.
 	 */
-	int useCount;
+	// int useCount;
 
 	/**
 	 * port on which to listen for incoming messaes.
@@ -242,7 +242,7 @@ public class UDPMessageProcessor extends MessageProcessor {
 				sock.receive(packet);
 
 				// Count of # of packets in process.
-				this.useCount++;
+				// this.useCount++;
 				if (sipStack.threadPoolSize != -1) {
 					// Note: the only condition watched for by threads 
 					// synchronizing on the messageQueue member is that it is 
@@ -410,12 +410,19 @@ public class UDPMessageProcessor extends MessageProcessor {
 	 * Return true if there are any messages in use.
 	 */
 	public boolean inUse() {
-		return useCount != 0;
+		synchronized (messageQueue) {
+		   return messageQueue.size() != 0;
+		}
 	}
 
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2004/04/19 21:51:04  mranga
+ * Submitted by:  mranga
+ * Reviewed by:  ivov
+ * Support for stun.
+ *
  * Revision 1.12  2004/04/03 12:30:53  mranga
  * Reviewed by:   mranga
  * fix potential race condition.

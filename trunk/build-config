@@ -40,7 +40,7 @@ SRCROOT = $(ROOT)/src/
 DESTINATION = $(ROOT)/classes/
 
 ifeq (${OS},Windows_NT) 
-	JDK_HOME=c:/java/j2sdk1.4.2_04
+	JDK_HOME=c:/j2sdk_nb/j2sdk1.4.2
 else
 	JDK_HOME=/home/nist-sip/j2sdk1.4.2
 endif

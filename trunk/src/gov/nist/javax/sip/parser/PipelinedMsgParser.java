@@ -26,7 +26,7 @@ import sim.java.net.*;
  * This can be accessed from the SIPMessage using the getContent and
  * getContentBytes methods provided by the SIPMessage class. 
  *
- * @version JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2004-03-19 04:22:22 $
+ * @version JAIN-SIP-1.1 $Revision: 1.14 $ $Date: 2004-05-16 14:13:22 $
  *
  * @author <A href=mailto:mranga@nist.gov > M. Ranganathan  </A>
  *
@@ -66,7 +66,7 @@ public final class PipelinedMsgParser implements Runnable {
 //
 	private byte[] messageBody;
 	private boolean errorFlag;
-	private InputStream rawInputStream;
+	private     Pipeline rawInputStream;
 	private int maxMessageSize;
 	private int sizeCounter;
 	private int messageSize;
@@ -95,7 +95,7 @@ public final class PipelinedMsgParser implements Runnable {
 	 */
 	public PipelinedMsgParser(
 		SIPMessageListener sipMessageListener,
-		InputStream in,
+		Pipeline in,
 		boolean debug,
 		int maxMessageSize ) {
 		this();
@@ -123,7 +123,7 @@ public final class PipelinedMsgParser implements Runnable {
 	 */
 
 	public PipelinedMsgParser(SIPMessageListener mhandler, 
-		InputStream in, int maxMsgSize) {
+		Pipeline in, int maxMsgSize) {
 		this(mhandler, in, false,maxMsgSize);
 	}
 
@@ -132,7 +132,7 @@ public final class PipelinedMsgParser implements Runnable {
 	 * @param in - An input stream to read messages from.
 	 */
 
-	public PipelinedMsgParser(InputStream in) {
+	public PipelinedMsgParser(Pipeline in) {
 		this(null, in, false,0);
 	}
 
@@ -264,10 +264,10 @@ public final class PipelinedMsgParser implements Runnable {
 				String line1;
 				String line2 = null;
 
-				// ignore blank lines.
 				while (true) {
 					try {
 						line1 = readLine(inputStream);
+						// ignore blank lines.
 						if (line1.equals("\n")) {
 							if (Debug.parserDebug) 
 							    Debug.println("Discarding " + line1);
@@ -276,12 +276,16 @@ public final class PipelinedMsgParser implements Runnable {
 							break;
 					} catch (IOException ex) {
 						Debug.printStackTrace(ex);
+                                                this.rawInputStream.stopTimer();
 						return;
 
 					}
 				}
 
 				inputBuffer.append(line1);
+				// Guard against bad guys.
+                                this.rawInputStream.startTimer();
+				
 
 				while (true) {
 					try {
@@ -290,26 +294,32 @@ public final class PipelinedMsgParser implements Runnable {
 						if (line2.trim().equals(""))
 							break;
 					} catch (IOException ex) {
+                                                this.rawInputStream.stopTimer();
 						Debug.printStackTrace(ex);
 						return;
 
-					}
+					} 
 				}
+
+				// Stop the timer that will kill the read.
+                               	this.rawInputStream.stopTimer();
 				inputBuffer.append(line2);
 				StringMsgParser smp = new StringMsgParser(sipMessageListener);
 				smp.readBody = false;
 				SIPMessage sipMessage = null;
+                               
 				try {
 					sipMessage = smp.parseSIPMessage(inputBuffer.toString());
-					if (sipMessage == null)
+					if (sipMessage == null) {
+                                                this.rawInputStream.stopTimer();
 						continue;
+                                        }
 				} catch (ParseException ex) {
 					// Just ignore the parse exception.
 					continue;
 				}
 
 				if (Debug.parserDebug) Debug.println("Completed parsing message");
-
 				ContentLength cl =
 					(ContentLength) sipMessage.getContentLength();
 				int contentLength = 0;
@@ -326,9 +336,7 @@ public final class PipelinedMsgParser implements Runnable {
 				}
 
 
-				// TODO Add a timeout to this read so clients 
-				// that lie about content length will not hang this
-				// thread.
+				
 
 				if (contentLength == 0) {
 					sipMessage.removeContent();
@@ -337,7 +345,16 @@ public final class PipelinedMsgParser implements Runnable {
 					byte[] message_body = new byte[contentLength];
 					int nread = 0;
 					while (nread < contentLength ) {
+						// Start my starvation timer.
+                                                //This ensures that the other end 
+                                                //writes at least some data in 
+                                                //or we will close the pipe from
+                                                //him. This prevents DOS attack
+                                                //that takes up all our connections.
+                                                this.rawInputStream.startTimer();
 						try {
+                                                        
+                                                        
 							int readlength =
 								inputStream.read(
 									message_body,
@@ -351,6 +368,9 @@ public final class PipelinedMsgParser implements Runnable {
 						} catch (IOException ex) {
 							ex.printStackTrace();
 							break;
+						} finally {
+							// Stop my starvation timer.
+                                                        this.rawInputStream.stopTimer();
 						}
 					}
 					sipMessage.setMessageContent(message_body);
@@ -377,6 +397,11 @@ public final class PipelinedMsgParser implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2004/03/19 04:22:22  mranga
+ * Reviewed by:   mranga
+ * Added IO Pacing for long writes - split write into chunks and flush after each
+ * chunk to avoid socket back pressure.
+ *
  * Revision 1.12  2004/03/18 22:01:19  mranga
  * Reviewed by:   mranga
  * Get rid of the PipedInputStream from pipelined parser to avoid a copy.
