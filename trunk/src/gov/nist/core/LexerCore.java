@@ -16,6 +16,7 @@ public class LexerCore extends StringTokenizer {
 	public static final int END = START + 2048;
 	// IMPORTANT -- This should be < END
 	public static final int ID = END - 1;
+	public static final int SAFE = END - 2;
 	// Individial token classes.
 	public static final int WHITESPACE = END + 1;
 	public static final int DIGIT = END + 2;
@@ -191,6 +192,13 @@ public class LexerCore extends StringTokenizer {
 				this.currentMatch = new Token();
 				this.currentMatch.tokenValue = id;
 				this.currentMatch.tokenType = ID;
+			} else if (tok == SAFE) {
+				if (!startsSafeToken())
+					throw new ParseException(buffer + "\nID expected", ptr);
+				String id = ttokenSafe();
+				this.currentMatch = new Token();
+				this.currentMatch.tokenValue = id;
+				this.currentMatch.tokenType = SAFE;
 			} else {
 				String nexttok = getNextId();
 				Integer cur = (Integer) currentLexer.get(nexttok.toUpperCase());
@@ -273,6 +281,40 @@ public class LexerCore extends StringTokenizer {
 		}
 	}
 
+	public boolean startsSafeToken() {
+		try {
+			char nextChar = lookAhead(0);
+			return ( isAlpha(nextChar)
+				|| isDigit(nextChar)
+				|| nextChar == '_'
+				|| nextChar == '+'
+				|| nextChar == '-'
+				|| nextChar == '!'
+				|| nextChar == '`'
+				|| nextChar == '\''
+				|| nextChar == '~'
+				|| nextChar == '.'
+				|| nextChar == '/'
+				|| nextChar == '}'
+				|| nextChar == '{'
+				|| nextChar == ']'
+				|| nextChar == '['
+				|| nextChar == '^'
+				|| nextChar == '|'
+				|| nextChar == '~'
+				|| nextChar == '#'
+				|| nextChar == '@'
+				|| nextChar == '$'
+				|| nextChar == ':'
+				|| nextChar == ';'
+				|| nextChar == '?'
+				|| nextChar == '\"'
+				|| nextChar == '*' ) ;
+		} catch (ParseException ex) {
+			return false;
+		}
+	}
+
 	public String ttoken() {
 		StringBuffer nextId = new StringBuffer();
 		try {
@@ -322,6 +364,49 @@ public class LexerCore extends StringTokenizer {
 					|| nextChar == ' '
 					|| nextChar == '\t'
 					|| nextChar == '*') {
+					nextId.append(nextChar);
+					consume(1);
+				} else
+					break;
+
+			}
+			return nextId.toString();
+		} catch (ParseException ex) {
+			return nextId.toString();
+		}
+	}
+
+	public String ttokenSafe() {
+		StringBuffer nextId = new StringBuffer();
+		try {
+			while (hasMoreChars()) {
+				char nextChar = lookAhead(0);
+				if (isAlpha(nextChar)
+					|| isDigit(nextChar)
+					|| nextChar == '_'
+					|| nextChar == '+'
+					|| nextChar == '-'
+					|| nextChar == '!'
+					|| nextChar == '`'
+					|| nextChar == '\''
+					|| nextChar == '~'
+					|| nextChar == '.'
+					|| nextChar == '/'
+					|| nextChar == '}'
+					|| nextChar == '{'
+					|| nextChar == ']'
+					|| nextChar == '['
+					|| nextChar == '^'
+					|| nextChar == '|'
+					|| nextChar == '~'
+					|| nextChar == '#'
+					|| nextChar == '@'
+					|| nextChar == '$'
+					|| nextChar == ':'
+					|| nextChar == ';'
+					|| nextChar == '?'
+					|| nextChar == '\"'
+					|| nextChar == '*' ) {
 					nextId.append(nextChar);
 					consume(1);
 				} else
@@ -569,6 +654,10 @@ public class LexerCore extends StringTokenizer {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/08/10 23:15:50  mranga
+ * Reviewed by:    mranga
+ * improved error message
+ *
  * Revision 1.9  2004/03/10 03:37:25  mranga
  * Submitted by:  Ben Evans
  * Reviewed by:  mranga
