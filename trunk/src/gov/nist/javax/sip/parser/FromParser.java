@@ -6,7 +6,7 @@ import gov.nist.core.*;
 
 /** From header parser.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2004-04-22 22:51:17 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2004-08-10 21:35:44 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -50,33 +50,16 @@ public class FromParser extends AddressParametersParser {
 
 	}
 
-	/**
 	
-	        public static void main(String args[]) throws ParseException {
-		String from[] = {
-		"From: foobar at com<sip:4855@166.34.120.100 >;tag=1024181795\n",
-		"From: sip:user@company.com\n",
-		"From: sip:caller@university.edu\n",
-	        "From: sip:localhost\n",
-	        "From: \"A. G. Bell\" <sip:agb@bell-telephone.com> ;tag=a48s\n"
-	         };
-				
-			for (int i = 0; i < from.length; i++ ) {
-			    try {
-			       FromParser fp = new FromParser(from[i]);
-			       From f = (From) fp.parse();
-			       System.out.println("encoded = " + f.encode());
-			    } catch (ParseException ex) {
-				System.out.println(ex.getMessage());
-			    } 
-			}
-				
-		}
-	
-	**/
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/04/22 22:51:17  mranga
+ * Submitted by:  Thomas Froment
+ * Reviewed by:   mranga
+ *
+ * Fixed corner cases.
+ *
  * Revision 1.5  2004/01/22 13:26:31  sverker
  * Issue number:
  * Obtained from:
