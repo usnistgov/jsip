@@ -189,7 +189,13 @@ class IOHandler {
 	}
 
 
-	/** Send a bunch of bytes to the other side.
+	/** Send an array of bytes.
+	*
+	*@param inaddr -- inet address
+	*@param contactPort -- port to connect to.
+	*@param transport -- tcp or udp.
+	*@param retry -- retry to connect if the other end closed connection
+	*@throws IOException -- if there is an IO exception sending message.
 	*/
 
 	public Socket sendBytes(
@@ -263,45 +269,6 @@ class IOHandler {
 //endif
 //
 
-	/**
-	 * Send a request when you have a host and port string 
-	 * @param host is the host name/address
-	 * @param port is the port
-	 * @param stack is the sipStack from where this message is originating (for logging purposes).
-	 * @param message is the SIP message that we are forwardiong.
-	 */
-	public void sendRequest(
-		String host,
-		int port,
-		String transport,
-		SIPMessage message)
-		throws IOException {
-
-		String firstLine = null;
-		if (message instanceof SIPRequest) {
-			SIPRequest request = (SIPRequest) message;
-			firstLine = request.getRequestLine().encode();
-		} else {
-			SIPResponse response = (SIPResponse) message;
-			firstLine = response.getStatusLine().encode();
-		}
-		InetAddress inetAddr = InetAddress.getByName(host);
-		sendBytes(
-			inetAddr,
-			port,
-			transport,
-			message.encodeAsBytes(),
-			message instanceof SIPRequest);
-
-		if (sipStack.serverLog.needsLogging(ServerLog.TRACE_MESSAGES)) {
-			sipStack.serverLog.logMessage(
-				message,
-				sipStack.getHostAddress() + ":" + sipStack.getPort(transport),
-				host + ":" + transport + port,
-				true);
-		}
-
-	}
 
 	/**
 	 * Close all the cached connections.
@@ -322,6 +289,10 @@ class IOHandler {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2004/03/25 16:37:00  mranga
+ * Reviewed by:   mranga
+ * Fix up for logging messages.
+ *
  * Revision 1.16  2004/03/23 16:16:51  mranga
  * Reviewed by:   mranga
  * more TCP IO performance hacking.
