@@ -23,7 +23,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.8 $ $Date: 2004-11-18 18:59:40 $
+ * @version JAIN-SIP-1.1 $Revision: 1.9 $ $Date: 2004-11-19 16:22:56 $
  * 
  * @author M. Ranganathan <mranga@nist.gov><br/>Bugs were reported by Antonis
  *         Karydas, Brad Templeton and Alex Rootham.
@@ -1537,7 +1537,7 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
 				sipStack.logWriter.logMessage("oldChannel: useCount " + oldTLSChannel.useCount);
                 }
             }
-            ((SIPClientTransaction) clientTransactionId).encapsulatedChannel = messageChannel;
+            ((SIPClientTransaction) clientTransactionId).setEncapsulatedChannel(messageChannel);
 
             if (messageChannel == null) {
                 // Bug fix from Antonis Karydas
@@ -1566,7 +1566,7 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
                     throw new SipException("No route found!");
                 messageChannel = sipStack
                         .createRawMessageChannel(outboundProxy);
-                ((SIPClientTransaction) clientTransactionId).encapsulatedChannel = messageChannel;
+                ((SIPClientTransaction) clientTransactionId).setEncapsulatedChannel (messageChannel);
             } else {
 		if (LogWriter.needsLogging) 
 			sipStack.logWriter.logMessage("using message channel " + messageChannel );
@@ -1745,6 +1745,11 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/11/18 18:59:40  mranga
+ *
+ * Reviewed by:   mranga
+ * added debug
+ *
  * Revision 1.7  2004/10/28 19:02:51  mranga
  * Submitted by:  Daniel Martinez
  * Reviewed by:   M. Ranganathan

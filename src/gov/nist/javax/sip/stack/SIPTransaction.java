@@ -22,7 +22,7 @@ import javax.sip.message.*;
  * @author Jeff Keyser 
  * @author M. Ranganathan (modified Jeff's original source and aligned with JAIN-SIP 1.1) 
 *  @author Modifications for TLS Support added by Daniel J. Martinez Manzano <dani@dif.um.es>
- * @version  JAIN-SIP-1.1 $Revision: 1.33 $ $Date: 2004-10-28 19:02:51 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.34 $ $Date: 2004-11-19 16:22:56 $
  */
 public abstract class SIPTransaction
 	extends MessageChannel
@@ -1028,6 +1028,19 @@ public abstract class SIPTransaction
 	}
 
 
+	/**
+	* Set the encapsuated channel. The peer inet address and port are
+	* set equal to the message channel.
+	*/
+	public void setEncapsulatedChannel( MessageChannel messageChannel) {
+		this.encapsulatedChannel  = messageChannel;
+		this.peerInetAddress = messageChannel.getPeerInetAddress();
+		this.peerPort = messageChannel.getPeerPort();
+	}
+
+	
+
+
 	protected abstract void startTransactionTimer();
 
 	public abstract void processPending();
@@ -1035,6 +1048,12 @@ public abstract class SIPTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.33  2004/10/28 19:02:51  mranga
+ * Submitted by:  Daniel Martinez
+ * Reviewed by:   M. Ranganathan
+ *
+ * Added changes for TLS support contributed by Daniel Martinez
+ *
  * Revision 1.32  2004/10/04 16:03:53  mranga
  * Reviewed by:   mranga
  * attempted fix for memory leak
