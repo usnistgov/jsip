@@ -116,7 +116,7 @@ import java.util.LinkedList;
  *
  *</pre>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.43 $ $Date: 2004-10-01 16:05:08 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.44 $ $Date: 2004-10-04 14:43:20 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
  * @author Bug fixes by Emil Ivov, Antonis Karydas.
@@ -1127,7 +1127,8 @@ implements ServerRequestInterface, javax.sip.ServerTransaction, PendingRecord {
     
     public boolean hasPending() {
 	synchronized (this.pendingRequests) {
-		return ! this.pendingRequests.isEmpty();
+		return    this.getState() != TransactionState.TERMINATED && 
+			! this.pendingRequests.isEmpty();
 	}
     }
 
@@ -1161,6 +1162,10 @@ implements ServerRequestInterface, javax.sip.ServerTransaction, PendingRecord {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.43  2004/10/01 16:05:08  mranga
+ * Submitted by:  mranga
+ * Fixed memory leak
+ *
  * Revision 1.42  2004/09/10 13:35:13  mranga
  * Submitted by:  Bill Roome
  * Reviewed by:   mranga

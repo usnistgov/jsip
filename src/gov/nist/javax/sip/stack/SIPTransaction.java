@@ -21,7 +21,7 @@ import javax.sip.message.*;
  *
  * @author Jeff Keyser 
  * @author M. Ranganathan (modified Jeff's original source and aligned with JAIN-SIP 1.1)
- * @version  JAIN-SIP-1.1 $Revision: 1.30 $ $Date: 2004-09-27 18:51:18 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.31 $ $Date: 2004-10-04 14:43:20 $
  */
 public abstract class SIPTransaction
 	extends MessageChannel
@@ -437,6 +437,8 @@ public abstract class SIPTransaction
 				"Transaction:setState " + newState + " " + this);
 			sipStack.logWriter.logStackTrace();
 		}
+		if (newState == TransactionState.TERMINATED) 
+			this.clearPending();
 	}
 
 	/**
@@ -1008,6 +1010,11 @@ public abstract class SIPTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.30  2004/09/27 18:51:18  mranga
+ * Reviewed by:   mranga
+ *
+ * Additional config flag for proxy servers (dialog is not tracked by stack).
+ *
  * Revision 1.29  2004/09/01 18:09:06  mranga
  * Reviewed by:   mranga
  * Allow application to see route header on incoming request though
