@@ -18,8 +18,11 @@ public class Shootme implements SipListener {
 	private static MessageFactory messageFactory;
 	private static HeaderFactory headerFactory;
 	private static SipStack sipStack;
+	private int ackCount;
 
 	protected ServerTransaction inviteTid;
+
+	Dialog dialog;
 
 	protected static final String usageString =
 		"java "
@@ -65,12 +68,14 @@ public class Shootme implements SipListener {
 			System.out.println("shootme: got an ACK -- sending bye! ");
 			System.out.println("shootme: got an ACK " 
 				+ requestEvent.getRequest());
-			Dialog dialog = inviteTid.getDialog();
-			Request byeRequest = dialog.createRequest(Request.BYE);
-			ClientTransaction tr =
+			if (ackCount == 1) {
+			   dialog = inviteTid.getDialog();
+			   Request byeRequest = dialog.createRequest(Request.BYE);
+			   ClientTransaction tr =
 				sipProvider.getNewClientTransaction(byeRequest);
-			dialog.sendRequest(tr);
-			System.out.println("Dialog State = " + dialog.getState());
+			   dialog.sendRequest(tr);
+			   System.out.println("Dialog State = " + dialog.getState());
+			} else this.ackCount ++;
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.exit(0);
@@ -103,18 +108,32 @@ public class Shootme implements SipListener {
 			ContactHeader contactHeader =
 				headerFactory.createContactHeader(address);
 			response.addHeader(contactHeader);
-			ServerTransaction st = sipProvider.getNewServerTransaction(request);
+			ServerTransaction st = requestEvent.getServerTransaction();
+
+			if (st == null) {
+				st = sipProvider.getNewServerTransaction(request);
+			} else {
+				System.out.println("This is a RE INVITE ");
+				if (st.getDialog() != dialog) {
+				   System.out.println("Whoopsa Daisy Dialog Mismatch");
+				   System.exit(0);
+				}
+			}
+
 			// Thread.sleep(5000);
 			System.out.println("got a server tranasaction " + st);
 			byte[] content = request.getRawContent();
-			//System.out.println("Content = " + new String(content));
-			ContentTypeHeader contentTypeHeader =
+			if (content != null) {
+			    ContentTypeHeader contentTypeHeader =
 				headerFactory.createContentTypeHeader("application", "sdp");
-			System.out.println("response = " + response);
-			response.setContent(content, contentTypeHeader);
-			Dialog dialog = st.getDialog();
-			if (dialog != null)
+			    System.out.println("response = " + response);
+			    response.setContent(content, contentTypeHeader);
+			}
+			dialog = st.getDialog();
+			if (dialog != null) {
+				System.out.println("Dialog " + dialog);
 				System.out.println("Dialog state " + dialog.getState());
+			}
 			st.sendResponse(response);
 			this.inviteTid = st;
 		} catch (Exception ex) {
@@ -217,6 +236,7 @@ public class Shootme implements SipListener {
 		properties.setProperty(
 			"gov.nist.javax.sip.SERVER_LOG",
 			"shootmelog.txt");
+		properties.setProperty("gov.nist.javax.sip.MAX_MESSAGE_SIZE", "4096");
 
 		try {
 			// Create SipStack object
@@ -264,6 +284,12 @@ public class Shootme implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/02/26 14:28:50  mranga
+ * Reviewed by:   mranga
+ * Moved some code around (no functional change) so that dialog state is set
+ * when the transaction is added to the dialog.
+ * Cleaned up the Shootist example a bit.
+ *
  * Revision 1.9  2004/02/13 13:55:31  mranga
  * Reviewed by:   mranga
  * per the spec, Transactions must always have a valid dialog pointer. Assigned a dummy dialog for transactions that are not assigned to any dialog (such as Message).

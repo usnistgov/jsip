@@ -828,35 +828,18 @@ public class TracesViewer extends javax.swing.JFrame {
 		System.out.println("***************************************");
 		System.out.println("*** missing or incorrect parameters ***");
 		System.out.println("*************************************\n");
-		System.out.println("Usage (if classpath correctly set) :");
-		System.out.println("When viewing from a file:");
+		System.out.println("When you create your SIP Stack specify");
+		System.out.println("gov.nist.javax.sip.stack.SERVER_LOG = fileName\n");
+		System.out.println("gov.nist.javax.sip.stack.DEBUG_LOG = debugFileName\n");
+		System.out.println("*************************************");
 		System.out.println(
-			"java tools.tracesviewer.tracesViewer " + "-f tracesfile");
-		System.out.println("*************************************\n");
-		System.out.println(
-			"When viewing from an RMI connection:"
-				+ "java tools.tracesviewer.tracesViewer "
-				+ "-rmihost rmihost -rmiport rmiport -stackId stackId");
-		System.out.println(
-			"rmihost is the host name/address for the RMI registry");
-		System.out.println("rmiport is the port for the rmi registry");
-		System.out.println(
-			"stackId is an identifier registered by the stack -- usually "
-				+ " the hostAddress:udpPort for the stack");
-		System.out.println(
-			"The values are defaulted to rmihost == 127.0.0.1 "
-				+ " rmiport ==  1099 and stackId == 127.0.0.1:5060");
-		System.out.println(
-			"If no parameters are set, it is equivalent to running :");
-		System.out.println(
-			"java tools.tracesviewer.tracesViewer -rmihost 127.0.0.1"
-				+ "  -rmiport 1099 -stackId 127.0.0.1:5060 \n");
-
-		System.out.println("To view a trace logged in a set of files: ");
-		System.out.println(
-			" --> java tools.tracesviewer.tracesViewer -debug_file files");
-		System.out.println(
-			" --> java tools.tracesviewer.tracesViewer -server_file files");
+		"Use this tool to view the signaling trace as a sequence Diagram");
+		System.out.println( "Usage (if classpath correctly set):\n\n");
+		System.out.println("When viewing from a server file:\n" +
+		" --> java tools.tracesviewer.tracesViewer -debug_file debugFileName\n");
+		System.out.println("When viewing from a debug file:\n" +
+			" --> java tools.tracesviewer.tracesViewer -server_file fileName");
+		System.out.println("*************************************\n" );
 		System.exit(0);
 	}
 

@@ -33,7 +33,7 @@ import sim.java.net.*;
  * Niklas Uhrberg suggested that a mechanism be added to limit the number
  * of simultaneous open connections.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.11 $ $Date: 2004-02-29 15:32:59 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.12 $ $Date: 2004-03-05 20:36:55 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public final class TCPMessageChannel
@@ -93,6 +93,11 @@ public final class TCPMessageChannel
 		SIPStack sipStack,
 		TCPMessageProcessor msgProcessor)
 		throws IOException {
+		if (LogWriter.needsLogging)  {
+			sipStack.logWriter.logMessage(
+			"creating new TCPMessageChannel ");
+			sipStack.logWriter.logStackTrace();
+		}
 		mySock = sock;
 		myAddress = sipStack.getHostAddress();
 		myClientInputStream = mySock.getInputStream();
@@ -144,6 +149,11 @@ public final class TCPMessageChannel
 		SIPStack sipStack,
 		TCPMessageProcessor messageProcessor)
 		throws IOException {
+		if (LogWriter.needsLogging)  {
+			sipStack.logWriter.logMessage(
+			"creating new TCPMessageChannel ");
+			sipStack.logWriter.logStackTrace();
+		}
 		this.peerAddress = inetAddr;
 		this.peerPort = port;
 		this.myPort = messageProcessor.getPort();
@@ -756,6 +766,10 @@ public final class TCPMessageChannel
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/02/29 15:32:59  mranga
+ * Reviewed by:   mranga
+ * bug fixes on limiting the max message size.
+ *
  * Revision 1.10  2004/02/29 00:46:35  mranga
  * Reviewed by:   mranga
  * Added new configuration property to limit max message size for TCP transport.
