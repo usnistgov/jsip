@@ -38,7 +38,7 @@ DOCTITLE=$(subst DATE,$(DATE),$(TITLE))
 BOTTOM='<font size="-1"> \
 <a href="http://www-x.antd.nist.gov/"> A product of the NIST/ITL Advanced Networking Technologies Division. </a><br>  \
 <a href="{@docRoot}/uncopyright.html"> See conditions of use. </a> <br> \
-<a href="http://www-x.antd.nist.gov/proj/iptel/nist-sip-requestform/nist-sip-1.2-requestform.htm"> Get the latest distribution. </a><br>  \
+<a href="https://jain-sip.dev.java.net/servlets/ProjectDocumentList">Get the latest source snapshot. </a><br>  \
 <a href="mailto:nist-sip-dev@antd.nist.gov">Submit a bug report or feature request. </a><br> \
 </font>'
 
@@ -239,14 +239,15 @@ srctar: stamp
 	./$(PROJECT_ROOT)/src/javax				\
 	./$(PROJECT_ROOT)/src/gov/nist/javax			\
 	./$(PROJECT_ROOT)/src/gov/nist/core		        \
-	./$(PROJECT_ROOT)/src/tools/tracesviewer		        \
+	./$(PROJECT_ROOT)/src/tools/tracesviewer	      	\
 	./$(PROJECT_ROOT)/src/tools/sniffer		        \
 	./$(PROJECT_ROOT)/src/examples/shootist		        \
 	./$(PROJECT_ROOT)/src/test/tck		        	\
-	./$(PROJECT_ROOT)/README					\
-	./$(PROJECT_ROOT)/makefile					\
+	./$(PROJECT_ROOT)/README				\
+	./$(PROJECT_ROOT)/makefile				\
 	./$(PROJECT_ROOT)/build.xml				\
 	./$(PROJECT_ROOT)/build-config				\
+	./$(PROJECT_ROOT)/www					\
 	./$(PROJECT_ROOT)/docs					
 
 srczip: stamp
@@ -254,27 +255,28 @@ srczip: stamp
 	$(RM) $(SRCZIP);					\
 	zip $(SRCZIP)			        		\
 	-r  ./$(PROJECT_ROOT)/timestamp				\
-	-r ./$(PROJECT_ROOT)/manifest.tck				\
+	-r ./$(PROJECT_ROOT)/manifest.tck			\
 	-r ./$(PROJECT_ROOT)/src/gov/nist/javax			\
 	-r ./$(PROJECT_ROOT)/src/gov/nist/core		        \
 	-r ./$(PROJECT_ROOT)/src/tools/tracesviewer	        \
 	-r ./$(PROJECT_ROOT)/src/tools/sniffer		        \
-	-r ./$(PROJECT_ROOT)/src/examples/shootist	        	\
-	-r ./$(PROJECT_ROOT)/src/test/tck		        	\
+	-r ./$(PROJECT_ROOT)/src/examples/shootist        	\
+	-r ./$(PROJECT_ROOT)/src/test/tck	        	\
 	-r ./$(PROJECT_ROOT)/src/javax				\
 	-r ./$(PROJECT_ROOT)/README				\
 	-r ./$(PROJECT_ROOT)/makefile				\
 	-r ./$(PROJECT_ROOT)/build.xml				\
-	-r ./$(PROJECT_ROOT)/build-config				\
-	-r ./$(PROJECT_ROOT)/docs					\
+	-r ./$(PROJECT_ROOT)/build-config			\
+	-r ./$(PROJECT_ROOT)/docs				\
+	-r ./$(PROJECT_ROOT)/www				\
 	-x \*.nbattrs						\
 	-x \*CVS\*					        \
 	-x \*filesystem.attributes				\
 	-x \*.log				       		\
 	-x \*debug.txt						\
 	-x \*~							\
-	-r \#*						\
-	-r \.#*						\
+	-r \#*							\
+	-r \.#*							\
 	-x \*log.txt						\
 	-x \*.cvsignore						
 
@@ -305,6 +307,7 @@ tarfile:
 	./$(PROJECT_ROOT)/build.xml				\
 	./$(PROJECT_ROOT)/build-config				\
 	./$(PROJECT_ROOT)/docs					\
+	./$(PROJECT_ROOT)/www					\
 	./$(PROJECT_ROOT)/$(RI_JAR)				\
 	./$(PROJECT_ROOT)/$(SDP_JAR)				\
 	./$(PROJECT_ROOT)/$(JAIN_API_JAR)
