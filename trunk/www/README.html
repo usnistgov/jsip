@@ -190,6 +190,15 @@ it was fixed.
 	a dialog. This was fixed - now a static dummy dialog is assigned to a
 	transaction that has no possibility of being assigned to any dialog.
 
+<li> Mafasumi Watanabe noted that setting message content as a string should
+	compute content length after converting to byte rather than directly
+	take length() to allow for double byte character set.
+
+<li> Emmanuel Proulx noticed a bug when trying to send large amounts of 
+	data via TCP transport. A new configuration parameter 
+	gov.nist.javax.sip.MAX_MESSAGE_SIZE was added to limit the max
+	size of messages.
+
 </ul>
 
 
