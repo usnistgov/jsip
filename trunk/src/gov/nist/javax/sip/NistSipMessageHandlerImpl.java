@@ -21,7 +21,7 @@ import java.io.IOException;
  * NIST-SIP stack and event model with the JAIN-SIP stack. Implementors
  * of JAIN services need not concern themselves with this class.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.30 $ $Date: 2004-05-18 15:26:42 $
+ * @version JAIN-SIP-1.1 $Revision: 1.31 $ $Date: 2004-06-15 09:54:40 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Bug fix Contributions by Lamine Brahimi and  Andreas Bystrom. <br/>
@@ -116,7 +116,8 @@ public class NistSipMessageHandlerImpl
 					transaction =
 						sipStackImpl.findTransaction(sipRequest, true);
 				} else if (dialog.getLastAck()!= null &&
-					   dialog.getLastAck().equals(sipRequest) ){
+					   dialog.getLastAck().getCSeq().getSequenceNumber()  == 
+					   sipRequest.getCSeq().getSequenceNumber() ) {
 					if (sipStackImpl.isRetransmissionFilterActive() ) {
 							dialog.ackReceived(sipRequest);
 							transaction.setDialog(dialog);
@@ -144,13 +145,16 @@ public class NistSipMessageHandlerImpl
 					if (tr instanceof SIPServerTransaction 
 						&& sipResponse != null
 						&& sipResponse.getStatusCode() / 100 == 2
+						&& sipResponse.getCSeq().getMethod().equals(Request.INVITE) 
 						&& sipResponse.getCSeq().getSequenceNumber()
 							== sipRequest.getCSeq().getSequenceNumber()) {
 
 						transaction.setDialog(dialog);
-						dialog.ackReceived(sipRequest);
+
 						if (sipStackImpl.isRetransmissionFilterActive() &&
-							tr.ackSeen()) {
+							dialog.getLastAck() != null 		&&
+							dialog.getLastAck().getCSeq().getSequenceNumber()  == 
+							sipRequest.getCSeq().getSequenceNumber() ) {
 							if (LogWriter.needsLogging)
 								sipStackImpl.logMessage(
 								"ACK retransmission for 2XX response --- "
@@ -158,11 +162,10 @@ public class NistSipMessageHandlerImpl
 							return;
 						} else {
 							// record that we already saw an ACK for
-							// this transaction.
-							tr.setAckSeen();
+							// this dialog.
+						        dialog.ackReceived(sipRequest);
 							sipStackImpl.logMessage(
-								"ACK retransmission for 2XX response --- "
-									+ "sending to TU ");
+								"ACK for 2XX response --- sending to TU ");
 						}
 							
 							
@@ -199,7 +202,8 @@ public class NistSipMessageHandlerImpl
 					DialogImpl dialog = sipStackImpl.getDialog(dialogId);
 					if (dialog != null) {
 						dialog.addTransaction(transaction);
-					} else {
+					}  
+					/** else {
 						dialogId = sipRequest.getDialogId(false);
 						if (LogWriter.needsLogging)
 							sipStackImpl.getLogWriter().logMessage(
@@ -211,7 +215,8 @@ public class NistSipMessageHandlerImpl
 							transaction = null; // pass up to provider for
 							// stateless handling.
 						}
-					}
+					} 
+					**/
 			
 				} else if (transaction != null)  {
 					// This is an out of sequence BYE
@@ -274,7 +279,70 @@ public class NistSipMessageHandlerImpl
 				} else {
 					transaction = serverTransaction;
 				}
-			}
+			}  else if (sipRequest.getMethod().equals(Request.INVITE) )  {
+				String dialogId = sipRequest.getDialogId(true);
+				DialogImpl dialog = sipStack.getDialog(dialogId);
+				SIPTransaction lastTransaction = dialog == null? null: dialog.getLastTransaction();
+
+				// RFC 3261 Chapter 14.
+ 				// A UAS that receives a second INVITE before it sends the final
+   				// response to a first INVITE with a lower CSeq sequence number on the
+   				// same dialog MUST return a 500 (Server Internal Error) response to the
+   				// second INVITE and MUST include a Retry-After header field with a
+   				// randomly chosen value of between 0 and 10 seconds.
+
+				
+				if (dialog != null 				   		   &&
+					transaction != null 			   		   &&
+					lastTransaction != null 		   		   &&
+					sipRequest.getCSeq().getSequenceNumber() > dialog.getRemoteSequenceNumber()  &&
+					lastTransaction instanceof SIPServerTransaction 	   &&
+				 	lastTransaction.isInviteTransaction() 			   &&
+				 	lastTransaction.getState() != TransactionState.COMPLETED   &&
+				 	lastTransaction.getState() != TransactionState.TERMINATED  &&
+				 	lastTransaction.getState() != TransactionState.CONFIRMED  ) {
+				
+					
+				        if (LogWriter.needsLogging) 
+					   sipStackImpl.logMessage ("Sending 500 response for out of sequence message" );
+					SIPResponse sipResponse = sipRequest.createResponse(Response.SERVER_INTERNAL_ERROR);
+					RetryAfter retryAfter = new RetryAfter();
+					try {
+						retryAfter.setRetryAfter( (int) ( 10 * Math.random() ) );
+					} catch (InvalidArgumentException ex) {
+						ex.printStackTrace();
+					}
+					sipResponse.addHeader(retryAfter);
+					try {
+					    transaction.sendMessage(sipResponse);
+					} catch ( IOException ex) {
+						// Ignore.
+					}
+					return;
+				}
+
+				// RFC 3261 Chapter 14.
+ 				// A UAS that receives a second INVITE before it sends the final
+				// A UAS that receives an INVITE on a dialog while an INVITE it had sent
+  				// on that dialog is in progress MUST return a 491 (Request Pending)
+   				// response to the received INVITE.
+
+				if (dialog != null 				   		&&
+				 	dialog.getLastTransaction() != null 			&&
+				 	lastTransaction.isInviteTransaction() 			&&
+					lastTransaction instanceof SIPClientTransaction         &&
+				 	lastTransaction.getState() != TransactionState.TERMINATED) {
+					if (LogWriter.needsLogging) 
+					      sipStackImpl.logMessage ("Sending 491 response for out of sequence message" );
+				 	SIPResponse sipResponse = sipRequest.createResponse(Response.REQUEST_PENDING);
+				 	try {
+				    		transaction.sendMessage(sipResponse);
+				 	} catch ( IOException ex) {
+						// Ignore.
+				 	}
+					return;
+				}
+			} 
 
 			if (LogWriter.needsLogging) {
 				sipStackImpl.logMessage("-----------------");
@@ -504,6 +572,11 @@ public class NistSipMessageHandlerImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.30  2004/05/18 15:26:42  mranga
+ * Reviewed by:   mranga
+ * Attempted fix at race condition bug. Remove redundant exception (never thrown).
+ * Clean up some extraneous junk.
+ *
  * Revision 1.29  2004/05/12 20:48:54  mranga
  * Reviewed by:   mranga
  *
