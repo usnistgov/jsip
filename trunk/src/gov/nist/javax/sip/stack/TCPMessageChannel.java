@@ -33,7 +33,7 @@ import sim.java.net.*;
  * Niklas Uhrberg suggested that a mechanism be added to limit the number
  * of simultaneous open connections.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.15 $ $Date: 2004-03-18 22:01:20 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2004-03-19 04:22:22 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public final class TCPMessageChannel
@@ -672,9 +672,6 @@ public final class TCPMessageChannel
 					}
 					return;
 				}
-				if (LogWriter.needsLogging) {
-					stack.logWriter.logMessage(new String(msg, 0, nbytes));
-				}
 				hispipe.write(msg, 0, nbytes);
 				
 			} catch (IOException ex) {
@@ -687,7 +684,7 @@ public final class TCPMessageChannel
 
 				try {
 					if (LogWriter.needsLogging)
-						stack.logWriter.logMessage("IOException  closing sock");
+						stack.logWriter.logMessage("IOException  closing sock " + ex);
 					try {
 						if (stack.maxConnections != -1) {
 							synchronized (tcpMessageProcessor) {
@@ -773,6 +770,10 @@ public final class TCPMessageChannel
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2004/03/18 22:01:20  mranga
+ * Reviewed by:   mranga
+ * Get rid of the PipedInputStream from pipelined parser to avoid a copy.
+ *
  * Revision 1.14  2004/03/09 00:34:45  mranga
  * Reviewed by:   mranga
  * Added TCP connection management for client and server side

@@ -20,7 +20,7 @@ public class Pipeline extends  InputStream {
 			this.bytes = bytes;
 		}
 		public int getNextByte() {
-		    int retval =  (int) bytes[ptr ++ ];
+		    int retval =   bytes[ptr ++ ] & 0xFF;
 		    return retval;
 		}
 			
@@ -60,7 +60,7 @@ public class Pipeline extends  InputStream {
 		}
 	}
 
-	public int read() {
+	public int read() throws IOException {
 		if (this.isClosed) return -1;
 		synchronized (this.buffList) {
 		    if (currentBuffer != null && currentBuffer.ptr <
@@ -82,10 +82,10 @@ public class Pipeline extends  InputStream {
 				this.currentBuffer = null;
 			return retval;
 		     } catch (InterruptedException ex) {
-			return -1;
+			  throw new IOException(ex.getMessage());
 		     } catch (NoSuchElementException ex ) {
 			ex.printStackTrace();
-			return -1;
+		        throw new IOException(ex.getMessage());
 		     }
 		}
 	}
