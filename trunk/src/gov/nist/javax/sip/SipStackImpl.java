@@ -9,11 +9,6 @@ import java.lang.reflect.*;
 import gov.nist.core.*;
 import gov.nist.core.net.NetworkLayer;
 
-//ifdef SIMULATION
-/*
-import sim.java.net.*;
-//endif
-*/
 
 /**
  * Implementation of SipStack.
@@ -171,7 +166,7 @@ import sim.java.net.*;
  *
  *</ul>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.38 $ $Date: 2004-10-28 19:02:49 $
+ * @version JAIN-SIP-1.1 $Revision: 1.39 $ $Date: 2004-12-01 19:05:14 $
  * 
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -437,8 +432,6 @@ public class SipStackImpl
 
 		// Get the address of the stun server.
 
-//ifndef SIMULATION
-//
 	        String stunAddr = 
 			configurationProperties.getProperty(
 				"gov.nist.javax.sip.STUN_SERVER");
@@ -459,8 +452,6 @@ public class SipStackImpl
           	   }
 		}
 
-//endif
-//
 
 		String maxMsgSize = configurationProperties.getProperty(
 				"gov.nist.javax.sip.MAX_MESSAGE_SIZE");
@@ -492,11 +483,6 @@ public class SipStackImpl
 		this.dialogSupport = (dialogSupportStr == null ? true : !("false".equals(dialogSupportStr)));
 
 		
-//ifdef SIMULATION
-/*
-		SimProcess.hold((double) 100);
-//endif
-*/
 
 	}
 
@@ -534,11 +520,6 @@ public class SipStackImpl
 
 		String key =
 			ListeningPointImpl.makeKey(super.stackAddress, port, transport);
-//ifdef SIMULATION
-/*
-		System.out.println("key = " + key);
-//endif
-*/
 
 		ListeningPointImpl lip = (ListeningPointImpl) listeningPoints.get(key);
 		if (lip != null) {
@@ -770,6 +751,12 @@ public class SipStackImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.38  2004/10/28 19:02:49  mranga
+ * Submitted by:  Daniel Martinez
+ * Reviewed by:   M. Ranganathan
+ *
+ * Added changes for TLS support contributed by Daniel Martinez
+ *
  * Revision 1.37  2004/10/01 16:05:08  mranga
  * Submitted by:  mranga
  * Fixed memory leak

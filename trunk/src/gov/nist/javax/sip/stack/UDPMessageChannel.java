@@ -40,7 +40,7 @@ import java.text.ParseException;
  * this code that was sending it into an infinite loop when a bad incoming
  * message was parsed.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.26 $ $Date: 2004-11-28 17:32:26 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.27 $ $Date: 2004-12-01 19:05:16 $
  */
 public class UDPMessageChannel
 extends MessageChannel
@@ -99,17 +99,9 @@ implements ParseExceptionListener, Runnable {
     UDPMessageProcessor messageProcessor) {
         super.messageProcessor = messageProcessor;
         this.stack = stack;
-//ifndef SIMULATION
-//
         Thread mythread = new Thread(this);
         mythread.setName("UDPMessageChannelThread");
 	mythread.setDaemon(true);
-//else
-/*
-                SimThread mythread = new SimThread(this);
-                mythread.setName("UDPMessageChannelThread");
-//endif
- */
         mythread.start();
         
     }
@@ -133,16 +125,8 @@ implements ParseExceptionListener, Runnable {
         this.stack = stack;
         this.myAddress = stack.getHostAddress();
         this.myPort = messageProcessor.getPort();
-//ifndef SIMULATION
-//
         Thread mythread = new Thread(this);
 	mythread.setDaemon(true);
-//else
-/*
-                        SimThread mythread = new SimThread(this);
-                        mythread.setName("UDPMessageChannelThread");
-//endif
-*/
         mythread.start();
         
     }
@@ -192,17 +176,8 @@ implements ParseExceptionListener, Runnable {
             DatagramPacket packet;
             
             if (stack.threadPoolSize != -1) {
-//ifdef SIMULATION
-/*
-                                ((UDPMessageProcessor)messageProcessor).
-                                messageQueueShadow.enterCriticalSection();
-//else
-*/
                 synchronized (
-                ((UDPMessageProcessor) messageProcessor).messageQueue)
-//endif
-//
-                {
+                ((UDPMessageProcessor) messageProcessor).messageQueue) {
                     while (((UDPMessageProcessor) messageProcessor)
                     .messageQueue
                     .isEmpty()) {
@@ -211,16 +186,7 @@ implements ParseExceptionListener, Runnable {
                         .isRunning)
                             return;
                         try {
-//ifdef SIMULATION
-/*
-                                                        ((UDPMessageProcessor)messageProcessor).
-                                                                        messageQueueShadow.doWait();
-//else
- */
-                            ((UDPMessageProcessor) messageProcessor)
-                            .messageQueue.wait();
-//endif
-//
+                            ((UDPMessageProcessor) messageProcessor).messageQueue.wait();
                         } catch (InterruptedException ex) {
                             if (!((UDPMessageProcessor) messageProcessor)
                             .isRunning)
@@ -234,12 +200,6 @@ implements ParseExceptionListener, Runnable {
                     .removeFirst();
                     
                 }
-//ifdef SIMULATION
-/*
-                                ((UDPMessageProcessor)messageProcessor).
-                                messageQueueShadow.leaveCriticalSection();
-//endif
-*/
                 this.incomingPacket = packet;
             } else {
                 packet = this.incomingPacket;
@@ -268,17 +228,7 @@ implements ParseExceptionListener, Runnable {
             SIPMessage sipMessage = null;
             try {
                 
-//ifdef SIMULATION
-/*
-                               this.receptionTime = SimSystem.currentTimeMillis();
-                                // local delay for processing message.
-                                SimSystem.hold(this.stack.stackProcessingTime);
-//else
- */
                 this.receptionTime = System.currentTimeMillis();
-//endif
-//
-                
                 sipMessage = myParser.parseSIPMessage(msgBytes);
                 myParser = null;
             } catch (ParseException ex) {
@@ -528,17 +478,7 @@ implements ParseExceptionListener, Runnable {
             this.stack.logWriter.logStackTrace();
         byte[] msg = sipMessage.encodeAsBytes();
         
-//ifdef SIMULATION
-/*
-	
- 	long time = SimSystem.currentTimeMillis();
-//else
-*/
-
- 
       	long time = System.currentTimeMillis();
-//endif
-//
         
         sendMessage( msg, peerAddress, peerPort, peerProtocol, 
 			sipMessage instanceof SIPRequest);
@@ -560,7 +500,6 @@ implements ParseExceptionListener, Runnable {
     int peerPort,
     boolean reConnect)
     throws IOException {
-        // msg += "\r\n\r\n";
         // Via is not included in the request so silently drop the reply.
         if (LogWriter.needsLogging)
             this.stack.logWriter.logStackTrace();
@@ -587,14 +526,7 @@ implements ParseExceptionListener, Runnable {
         DatagramPacket reply =
         new DatagramPacket(msg, msg.length, peerAddress, peerPort);
         try {
-//ifdef SIMULATION
-/*
-                        SimDatagramSocket sock;
-//else
- */
           	DatagramSocket sock;
-//endif
-//
             if (stack.udpFlag) {
                 // Use the socket from the message processor (for firewall
                 // support use the same socket as the message processor
@@ -609,15 +541,7 @@ implements ParseExceptionListener, Runnable {
                 // sock = new DatagramSocket(0,stack.stackInetAddress);
             } else {
                 // bind to any interface and port.
-//ifdef SIMULATION
-/*
-                                sock = new SimDatagramSocket();
-                                sock.setLocalAddress(stack.stackInetAddress);
-//else
-*/
               	sock = new DatagramSocket();
-//endif
-//
             }
             sock.send(reply);
             if (!stack.udpFlag)
@@ -644,7 +568,6 @@ implements ParseExceptionListener, Runnable {
     String peerProtocol,
     boolean retry)
     throws IOException {
-        // msg += "\r\n\r\n";
         // Via is not included in the request so silently drop the reply.
         if (peerPort == -1) {
             if (LogWriter.needsLogging) {
@@ -670,28 +593,13 @@ implements ParseExceptionListener, Runnable {
             new DatagramPacket(msg, msg.length, peerAddress, peerPort);
             
             try {
-//ifdef SIMULATION
-/*
-                                SimDatagramSocket sock;
-//else
-*/
                 DatagramSocket sock;
-//endif
-//
                 if (stack.udpFlag) {
                     sock = ((UDPMessageProcessor) messageProcessor).sock;
                     
                 } else {
                     // bind to any interface and port.
-//ifdef SIMULATION
-/*
-                   sock = new SimDatagramSocket();
-                   sock.setLocalAddress(stack.stackInetAddress);
-//else
- */
                    sock = stack.getNetworkLayer().createDatagramSocket();
-//endif
-//
                 }
                 sock.send(reply);
                 if (!stack.udpFlag)
@@ -704,12 +612,6 @@ implements ParseExceptionListener, Runnable {
             
         } else {
             // Use TCP to talk back to the sender.
-            // System.out.println("peerAddress " + peerPort);
-//ifdef SIMULATION
-/*
-                         SimSocket outputSocket = new SimSocket(peerAddress,peerPort);
-//else
- */
             Socket outputSocket =
             stack.ioHandler.sendBytes(
             peerAddress,
@@ -717,8 +619,6 @@ implements ParseExceptionListener, Runnable {
             "tcp",
             msg,
             retry);
-//endif
-//
             OutputStream myOutputStream = outputSocket.getOutputStream();
             myOutputStream.write(msg, 0, msg.length);
             myOutputStream.flush();
@@ -860,6 +760,12 @@ implements ParseExceptionListener, Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.26  2004/11/28 17:32:26  mranga
+ * Submitted by:  hagai sela
+ * Reviewed by:   mranga
+ *
+ * Support for symmetric nats
+ *
  * Revision 1.25  2004/09/07 20:13:06  mranga
  * Submitted by:  mranga
  * Reviewed by:   mranga

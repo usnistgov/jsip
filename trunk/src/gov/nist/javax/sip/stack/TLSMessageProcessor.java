@@ -8,15 +8,8 @@
  * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).      *
  ******************************************************************************/
 package gov.nist.javax.sip.stack;
-//ifndef SIMULATION
-//
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLServerSocket;
-//else
-/*
-import sim.java.net.*;
-//endif
-*/
 import java.io.IOException;
 import java.net.SocketException;
 import gov.nist.core.*;
@@ -29,7 +22,7 @@ import java.util.*;
  * object that creates new TLS MessageChannels (one for each new
  * accept socket).  
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.1 $ $Date: 2004-10-28 19:02:52 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.2 $ $Date: 2004-12-01 19:05:16 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Acknowledgement: Jeff Keyser suggested that a
@@ -42,14 +35,7 @@ import java.util.*;
  */
 public class TLSMessageProcessor extends MessageProcessor {
 
-//ifdef SIMULATION
-/*
-	protected SimThread thread;
-//else
-*/
 	protected Thread thread;
-//endif
-//
 
 
 	protected int port;
@@ -61,15 +47,7 @@ public class TLSMessageProcessor extends MessageProcessor {
 
 	private Hashtable tlsMessageChannels;
 
-//ifndef SIMULATION
-//
 	private SSLServerSocket sock;
-//else
-/*
-	private SimServerSocket sock;
-	private SimMessageObject msgObject;
-//endif
-*/
 
 	protected int useCount=0;
 
@@ -87,29 +65,16 @@ public class TLSMessageProcessor extends MessageProcessor {
 		this.sipStack = sipStack;
 		this.port = port;
 		this.tlsMessageChannels = new Hashtable();
-//ifdef SIMULATION
-/*
-		this.msgObject = new SimMessageObject();
-//endif
-*/
 	}
 
 	/**
 	 * Start the processor.
 	 */
 	public void start() throws IOException {
-//ifndef SIMULATION
-//
 		thread = new Thread(this);
 		thread.setName("TLSMessageProcessorThread");
 		thread.setDaemon(true);
 		this.sock = sipStack.getNetworkLayer().createSSLServerSocket(this.port, 0, sipStack.savedStackInetAddress);
-//else 
-/*
-		this.sock = new SimServerSocket (sipStack.stackInetAddress,this.port);
-		thread = new SimThread(this);
-//endif
-*/
 		this.isRunning = true;
 		thread.start();
 
@@ -133,15 +98,7 @@ public class TLSMessageProcessor extends MessageProcessor {
 		// Accept new connectins on our socket.
 		while (this.isRunning) {
 			try {
-//ifndef SIMULATION
-//
 				synchronized (this)
-//else
-/*
-				this.msgObject.enterCriticalSection();
-				try
-//endif
-*/ 
 				{
 					// sipStack.maxConnections == -1 means we are
 					// willing to handle an "infinite" number of
@@ -151,14 +108,7 @@ public class TLSMessageProcessor extends MessageProcessor {
 						&& sipStack.maxConnections != -1
 						&& this.nConnections >= sipStack.maxConnections) {
 						try {
-//ifndef SIMULATION
-//
 							this.wait();
-//else
-/*
-				 			this.msgObject.doWait();
-//endif
-*/
 
 							if (!this.isRunning)
 								return;
@@ -168,20 +118,8 @@ public class TLSMessageProcessor extends MessageProcessor {
 					}
 					this.nConnections++;
 				}
-//ifdef SIMULATION
-/*
-				finally { this.msgObject.leaveCriticalSection(); }
-//endif
-*/
 
-//ifndef SIMULATION
-//
 				SSLSocket newsock = (SSLSocket) sock.accept();
-//else
-/*
-				SimSocket newsock = sock.accept();
-//endif
-*/
 				if (LogWriter.needsLogging) {
 					getSIPStack().logWriter.logMessage(
 						"Accepting new connection!");
@@ -246,14 +184,7 @@ public class TLSMessageProcessor extends MessageProcessor {
 				(TLSMessageChannel)it.next() ;
 			next.close();
 		}
-//ifdef SIMULATION
-/*
-		this.msgObject.doNotify();
-//else
-*/
 		this.notify();
-//endif
-//
 
 	}
 
@@ -381,6 +312,12 @@ public class TLSMessageProcessor extends MessageProcessor {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2004/10/28 19:02:52  mranga
+ * Submitted by:  Daniel Martinez
+ * Reviewed by:   M. Ranganathan
+ *
+ * Added changes for TLS support contributed by Daniel Martinez
+ *
  * Revision 1.21  2004/09/04 14:59:54  mranga
  * Reviewed by:   mranga
  *

@@ -12,12 +12,6 @@ import java.util.Enumeration;
 // Added by Daniel J. Martinez Manzano <dani@dif.um.es>
 import javax.net.ssl.SSLSocket;
 
-//ifdef SIMULATION
-/*
-import sim.java.net.*;
-import sim.java.*;
-//endif
-*/
 
 /** 
  * Low level Input output to a socket. Caches TCP connections and takes care
@@ -57,118 +51,17 @@ class IOHandler {
 		this.socketTable = new Hashtable();
 	}
 
-//ifdef SIMULATION
-/*
-		private synchronized SimSocket getSocket(String key) {
-			return (SimSocket) socketTable.get(key);
-		}
-	        protected synchronized void putSocket(String key, 
-	                SimSocket sock) {
-			//System.out.println("putSocket " + key + ":" + sock);
-			socketTable.put(key,sock);
-		}
-//else
-*/
 	protected synchronized void putSocket(String key, Socket sock) {
 		socketTable.put(key, sock);
 	}
 	private synchronized Socket getSocket(String key) {
 		return (Socket) socketTable.get(key);
 	}
-//endif
-//
 
 	private void removeSocket(String key) {
 		socketTable.remove(key);
 	}
 
-	/**
-	 * Forward a given request to the address given. This caches
-	 * connections for tcp sends.
-	 * @param inaddr is the address to which to send the request.
-	 * @param port is the port to send to.
-	 * @param transport is the transport string udp or tcp.
-	 * @param nrequest is the request that is being forwarded	    
-	 * For udp we do a connect and a send as specified in tbe RFC 
-	 * so that an error is returned immediately if the other end is 
-	 * not listening
-	 * @throws IOException If the message could not be sent for any reason
-	 */
-//ifdef SIMULATION
-/*
-	
-		public 
-	        SimSocket 
-	        sendBytes( InetAddress inaddr, 
-			int contactPort, 
-	                String transport, 
-	                byte[] bytes, boolean retry ) 
-	        throws IOException {
-			 int retry_count = 0;
-			 int max_retry = retry? 2: 1;
-			// Server uses TCP transport. TCP client sockets are cached
-			int length = bytes.length;
-			if (transport.compareToIgnoreCase(TCP) == 0 ) {
-			   String key = makeKey(inaddr,contactPort);
-	                   SimSocket    clientSock = getSocket(key);
-			    retry:
-				while(retry_count < max_retry) {
-				    if (clientSock == null) {
-					if (sipStack.logWriter.needsLogging) {
-					   sipStack.logWriter.logMessage
-					    ("inaddr = " + inaddr);
-					   sipStack.logWriter.logMessage
-					    ("port = " + contactPort);
-					}
-				        clientSock = new SimSocket
-						(inaddr,contactPort);
-				        OutputStream outputStream  = 
-						clientSock.getOutputStream();
-					synchronized(outputStream) {
-				          outputStream.write(bytes,0,length);
-				          outputStream.flush();
-					}
-					putSocket (key,clientSock);
-				        break;
-				    } else {
-				       try {
-				          OutputStream outputStream  = 
-						clientSock.getOutputStream();
-					 synchronized(outputStream) {
-				            outputStream.write(bytes,0,length);
-				            outputStream.flush();
-					 }
-					 break;
-				       } catch (IOException ex) {
-					  System.out.println("key = " + key);
-					  ex.printStackTrace();
-					  // old connection is bad.
-					  // remove from our table.
-					  removeSocket(key);
-					  clientSock.close();
-				          clientSock = null;
-					  retry_count ++;
-				          break retry;
-				       }
-				   }
-				}
-	                        return clientSock;
-	
-			} else {
-				// This is a UDP transport...
-				DatagramSocket datagramSock = new DatagramSocket();
-				datagramSock.connect(inaddr, contactPort);
-				DatagramPacket dgPacket = 
-					new DatagramPacket
-					  (bytes, 0, length, inaddr, contactPort);
-				datagramSock.send(dgPacket);
-				datagramSock.close();
-	                        return null;
-			}
-	
-		}
-//else
-*/
 
 	/** A private function to write things out.
 	* This needs to be syncrhonized as writes can occur from
@@ -336,6 +229,12 @@ class IOHandler {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.26  2004/10/28 19:02:51  mranga
+ * Submitted by:  Daniel Martinez
+ * Reviewed by:   M. Ranganathan
+ *
+ * Added changes for TLS support contributed by Daniel Martinez
+ *
  * Revision 1.25  2004/09/01 02:04:15  xoba
  * Issue number:  no particular issue number.
  *

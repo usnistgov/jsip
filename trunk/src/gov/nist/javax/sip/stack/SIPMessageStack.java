@@ -17,11 +17,6 @@ import javax.sip.address.*;
 import java.util.Collection;
 import java.util.ArrayList;
 import java.util.Iterator;
-//ifdef SIMULATION
-/*
-import sim.java.net.*;
-//endif
-*/
 
 /**
  * This class defines a SIP Stack. In order to build a SIP server (UAS/UAC or
@@ -32,7 +27,7 @@ import sim.java.net.*;
  * get the stack the process messages.
  * This will start the necessary threads that wait for incoming SIP messages.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2004-10-28 19:02:51 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2004-12-01 19:05:15 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * 
@@ -56,11 +51,6 @@ public abstract class SIPMessageStack {
 	protected boolean udpFlag;
 	protected boolean tlsFlag;
 
-//ifdef SIMULATION
-/*
-	    protected int stackProcessingTime;
-//endif
-*/
 
 	/**
 	 * Class that handles caching of TCP/TLS connections.
@@ -442,13 +432,6 @@ public abstract class SIPMessageStack {
 		// The read time out is infinite.
 		this.readTimeout = -1;
 
-//ifdef SIMULATION
-/*
-		// Time taken to process the message through the stack from
-		// the time of receipt on the wire.
-		this.stackProcessingTime = 5;
-//endif
-*/
 
 	}
 
@@ -581,14 +564,7 @@ public abstract class SIPMessageStack {
 
 			try {
 
-//ifndef SIMULATION
-//
 				Thread.sleep(500);
-//else
-/*
-				                SimThread.sleep((double)500.0);
-//endif
-*/
 
 			} catch (InterruptedException ex) {
 			}
@@ -750,6 +726,12 @@ public abstract class SIPMessageStack {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/10/28 19:02:51  mranga
+ * Submitted by:  Daniel Martinez
+ * Reviewed by:   M. Ranganathan
+ *
+ * Added changes for TLS support contributed by Daniel Martinez
+ *
  * Revision 1.4  2004/08/30 16:04:47  mranga
  * Submitted by:  Mike Andrews
  * Reviewed by:   mranga

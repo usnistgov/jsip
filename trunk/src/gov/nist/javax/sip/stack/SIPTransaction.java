@@ -22,7 +22,7 @@ import javax.sip.message.*;
  * @author Jeff Keyser 
  * @author M. Ranganathan (modified Jeff's original source and aligned with JAIN-SIP 1.1) 
 *  @author Modifications for TLS Support added by Daniel J. Martinez Manzano <dani@dif.um.es>
- * @version  JAIN-SIP-1.1 $Revision: 1.35 $ $Date: 2004-11-28 17:32:26 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.36 $ $Date: 2004-12-01 19:05:16 $
  */
 public abstract class SIPTransaction
 	extends MessageChannel
@@ -207,7 +207,6 @@ public abstract class SIPTransaction
 		return this.branch;
 	}
 
-//ifndef SIMULATION
 	class LingerTimer extends TimerTask {
 		private SIPTransaction transaction;
 		private SIPTransactionStack sipStack;
@@ -256,7 +255,6 @@ public abstract class SIPTransaction
 			}
 		}
 	}
-//endif
 
 	/**
 	 *	Transaction constructor.
@@ -1065,6 +1063,12 @@ public abstract class SIPTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.35  2004/11/28 17:32:26  mranga
+ * Submitted by:  hagai sela
+ * Reviewed by:   mranga
+ *
+ * Support for symmetric nats
+ *
  * Revision 1.34  2004/11/19 16:22:56  mranga
  * Submitted by:  mranga
  * Reviewed by:   mranga
