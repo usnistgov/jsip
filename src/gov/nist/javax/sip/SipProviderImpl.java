@@ -22,7 +22,7 @@ import sim.java.net.*;
 
 /** Implementation of the JAIN-SIP provider interface.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.15 $ $Date: 2004-01-25 16:06:24 $
+ * @version JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2004-03-18 14:40:38 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -30,17 +30,10 @@ import sim.java.net.*;
  *
  */
 public final class SipProviderImpl
-	implements Runnable, javax.sip.SipProvider, SIPTransactionEventListener {
+	implements javax.sip.SipProvider, SIPTransactionEventListener {
 
 	protected SipListener sipListener;
 
-	private LinkedList pendingEvents;
-
-//ifdef SIMULATION
-/*
-	private     SimMessageObject pendingEventsShadow;
-//endif
-*/
 
 	protected boolean isActive;
 
@@ -50,6 +43,8 @@ public final class SipProviderImpl
 
 	protected ListeningPointImpl listeningPoint;
 
+	protected EventScanner eventScanner;
+
 	/** Stop processing messages for this provider. Post an empty message to our
 	 *message processing queue that signals us to quit.
 	 */
@@ -57,35 +52,8 @@ public final class SipProviderImpl
 		// Put an empty event in the queue and post ourselves a message.
 		if (LogWriter.needsLogging)
 			sipStackImpl.logMessage("Exiting provider");
-		synchronized (this) {
-			listeningPoint.removeSipProvider();
-		}
-//ifndef SIMULATION
-//
-		synchronized (this.pendingEvents)
-//else
-/*
-			this.pendingEventsShadow.enterCriticalSection();
-			try
-//endif
-*/ 
-		  {
-			EventWrapper eventWrapper = new EventWrapper();
-			this.pendingEvents.add(eventWrapper);
-//ifdef SIMULATION
-/*
-			this.pendingEventsShadow.doNotify();
-//else
-*/
-			this.pendingEvents.notify();
-//endif
-//
-		}
-//ifdef SIMULATION
-/*
-		finally { this.pendingEventsShadow.leaveCriticalSection(); }
-//endif
-*/
+		listeningPoint.removeSipProvider();
+		this.eventScanner.stop();
 
 	}
 
@@ -106,7 +74,10 @@ public final class SipProviderImpl
 					+ "currentTransaction = "
 					+ transaction
 					+ "this.sipListener = "
-					+ this.sipListener);
+					+ this.sipListener
+					+ "sipEvent.source = "
+					+ sipEvent.getSource()
+					);
 			sipStackImpl.logStackTrace();
 		}
 
@@ -118,49 +89,16 @@ public final class SipProviderImpl
 			return;
 		}
 
-//ifndef SIMULATION
-//
-		synchronized (this.pendingEvents)
-//else
-/*
-			this.pendingEventsShadow.enterCriticalSection();
-			try
-//endif
-*/ 
-			{
-			EventWrapper eventWrapper = new EventWrapper();
-			eventWrapper.sipEvent = sipEvent;
-			eventWrapper.transaction = transaction;
-			this.pendingEvents.add(eventWrapper);
-//ifdef SIMULATION
-/*
-			this.pendingEventsShadow.doNotify();
-//else
-*/
-			this.pendingEvents.notify();
-//endif
-//
-		}
-//ifdef SIMULATION
-/*
-			finally { this.pendingEventsShadow.leaveCriticalSection(); }
-//endif
-*/
+		EventWrapper eventWrapper = new EventWrapper();
+		eventWrapper.sipEvent = sipEvent;
+		eventWrapper.transaction = transaction;
+		this.eventScanner.addEvent(eventWrapper);
 	}
 
 	/** Creates a new instance of SipProviderImpl */
-	protected SipProviderImpl() {
-		this.pendingEvents = new LinkedList();
-//ifdef SIMULATION
-/*
-		this.pendingEventsShadow = new SimMessageObject();
-		SimThread myThread = new SimThread(this);
-//else
-*/
-		Thread myThread = new Thread(this);
-//endif
-//
-		myThread.start();
+	protected SipProviderImpl( EventScanner eventScanner ) {
+		this.eventScanner = eventScanner;
+		this.eventScanner.refCount ++;
 	}
 
 	protected Object clone() throws java.lang.CloneNotSupportedException {
@@ -171,132 +109,6 @@ public final class SipProviderImpl
 		return super.equals(obj);
 	}
 
-	public void run() {
-		while (true) {
-			EventObject sipEvent = null;
-			EventWrapper eventWrapper = null;
-//ifndef SIMULATION
-//
-			synchronized (this.pendingEvents)
-//else
-/*
-				this.pendingEventsShadow.enterCriticalSection();
-				try 
-//endif
-*/ 
-				{
-				if (pendingEvents.isEmpty()) {
-					try {
-//ifdef SIMULATION
-/*
-						this.pendingEventsShadow.doWait();
-//else
-*/
-						this.pendingEvents.wait();
-//endif
-//
-					} catch (InterruptedException ex) {
-						sipStackImpl.logMessage("Interrupted!");
-						continue;
-					}
-				}
-				ListIterator iterator = pendingEvents.listIterator();
-				while (iterator.hasNext()) {
-					eventWrapper = (EventWrapper) iterator.next();
-					sipEvent = eventWrapper.sipEvent;
-					if (LogWriter.needsLogging) {
-						sipStackImpl.logMessage(
-							"Processing "
-								+ sipEvent
-								+ "nevents "
-								+ pendingEvents.size());
-					}
-					if (sipEvent == null) {
-						if (LogWriter.needsLogging)
-							sipStackImpl.logMessage("Exiting provider thread!");
-						listeningPoint.removeSipProvider();
-						return;
-					}
-					if (sipEvent instanceof RequestEvent) {
-						// this.currentTransaction =
-						// (SIPServerTransaction) eventWrapper.transaction;
-						// Check if this request has already created a 
-						// transaction
-						SIPRequest sipRequest =
-							(SIPRequest) ((RequestEvent) sipEvent).getRequest();
-						if (sipStack.isDialogCreated(sipRequest.getMethod())) {
-							SIPTransaction tr =
-								sipStack.findTransaction(sipRequest, true);
-							// If transaction already exists bail.
-							if (tr != null) {
-								if (LogWriter.needsLogging)
-									sipStackImpl.logMessage(
-										"transaction already exists!");
-								continue;
-							}
-						}
-						// Set up a pointer to the transaction.
-						sipRequest.setTransaction(eventWrapper.transaction);
-						// Processing incoming CANCEL.
-						if (sipRequest.getMethod().equals(Request.CANCEL)) {
-							SIPTransaction tr =
-								sipStack.findTransaction(sipRequest, true);
-							if (tr != null
-								&& tr.getState()
-									== SIPTransaction.TERMINATED_STATE) {
-								// If transaction already exists but it is
-								// too late to cancel the transaction then 
-								// just respond OK to the CANCEL and bail.
-								if (LogWriter.needsLogging)
-									sipStackImpl.logMessage(
-										"Too late to cancel Transaction");
-								// send OK and just ignore the CANCEL.
-								try {
-									tr.sendMessage(
-										sipRequest.createResponse(Response.OK));
-								} catch (IOException ex) {
-									// Ignore?
-								}
-								continue;
-							}
-						}
-
-						sipListener.processRequest((RequestEvent) sipEvent);
-						
-					} else if (sipEvent instanceof ResponseEvent) {
-						sipListener.processResponse((ResponseEvent) sipEvent);
-						// The original request is not needed except for INVITE
-						// transactions -- null the pointers to the transactions so
-						// that state may be released.
-					        SIPClientTransaction ct = (SIPClientTransaction) 
-											eventWrapper.transaction;
-						if ( ct != null 
-							&& TransactionState.COMPLETED == ct.getState()
-							&& ct.getOriginalRequest() != null
-							&& !ct.getOriginalRequest().getMethod().equals
-							 	(Request.INVITE)) {
-							// reduce the state to minimum
-							// This assumes that the application will not need
-							// to access the request once the transaction is 
-							// completed. 
-							ct.clearState() ;
-						}
-					} else if (sipEvent instanceof TimeoutEvent) {
-						sipListener.processTimeout((TimeoutEvent) sipEvent);
-					} else {
-						if (LogWriter.needsLogging)
-							sipStackImpl.logMessage("bad event" + sipEvent);
-					}
-				} // Bug report by Laurent Schwitzer
-				pendingEvents.clear();
-			} // end of Synchronized block
-//ifdef SIMULATION
-/*
-			finally { this.pendingEventsShadow.leaveCriticalSection(); }
-//endif
-*/
-		} // end While
-	}
 
 	/** This method registers the SipListener object to this SipProvider, once
 	 * registered the SIP Listener can send events on the SipProvider and
@@ -875,6 +687,12 @@ public final class SipProviderImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2004/01/25 16:06:24  mranga
+ * Reviewed by:   M. Ranganathan
+ *
+ * Clean up setting state (Use TransactionState instead of integer). Convert to UNIX file format.
+ * Remove extraneous methods.
+ *
  * Revision 1.14  2004/01/22 20:15:32  mranga
  * Reviewed by:  mranga
  * Fixed a possible race condition in  nulling out the transaction Request (earlier added for scalability).

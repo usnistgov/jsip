@@ -95,7 +95,7 @@ import sim.java.net.*;
  *  (Was mis-spelled - Documentation bug fix by Bob Johnson)</li>
  *</ul>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.18 $ $Date: 2004-03-09 00:34:43 $
+ * @version JAIN-SIP-1.1 $Revision: 1.19 $ $Date: 2004-03-18 14:40:38 $
  * 
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -113,6 +113,8 @@ public class SipStackImpl
 	private String outboundProxy;
 	protected String routerPath;
 
+	protected EventScanner eventScanner;
+
 	/** Creates a new instance of SipStackImpl.
 	*/
 
@@ -123,6 +125,7 @@ public class SipStackImpl
 		super.setMessageFactory(msgFactory);
 		this.listeningPoints = new Hashtable();
 		this.sipProviders = new LinkedList();
+		this.eventScanner = new EventScanner(this);
 	}
 
 	public SipStackImpl(Properties configurationProperties)
@@ -412,7 +415,7 @@ public class SipStackImpl
 		if (listeningPointImpl.sipProviderImpl != null)
 			throw new ObjectInUseException("Provider already attached!");
 
-		SipProviderImpl provider = new SipProviderImpl();
+		SipProviderImpl provider = new SipProviderImpl(this.eventScanner);
 		provider.setSipStack(this);
 		provider.setListeningPoint(listeningPointImpl);
 		listeningPointImpl.sipProviderImpl = provider;
@@ -585,9 +588,25 @@ public class SipStackImpl
 		else
 			return null;
 	}
+
+	/** Finalization -- stop the stack on finalization.
+	* Exit the transaction scanner and release all resources.
+	*/
+	public void finalize() {
+		this.stopStack();
+	}
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2004/03/09 00:34:43  mranga
+ * Reviewed by:   mranga
+ * Added TCP connection management for client and server side
+ * Transactions. See configuration parameter
+ * gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false
+ * Releases Server TCP Connections after linger time
+ * gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS=false
+ * Releases Client TCP Connections after linger time
+ *
  * Revision 1.17  2004/03/07 22:25:22  mranga
  * Reviewed by:   mranga
  * Added a new configuration parameter that instructs the stack to
