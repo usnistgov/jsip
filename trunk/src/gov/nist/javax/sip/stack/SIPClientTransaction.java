@@ -783,6 +783,7 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
 		 }
 	       }
         } catch( IOException e ) {
+	    this.setState(TERMINATED_STATE);
             raiseErrorEvent(SIPTransactionErrorEvent.TRANSPORT_ERROR );
         }
         
