@@ -117,11 +117,12 @@ import sim.java.net.*;
  *
  *
  *<li> <b>gov.nist.javax.sip.REENTRANT_LISTENER = true|false </b> <br/>
- * TBD!  Default is false. Set to true if the listener is re-entrant. 
+ *  Default is false. Set to true if the listener is re-entrant. 
  * If the listener is re-entrant then the stack manages a thread pool
- *  is assigned for each active (not completed) transaction 
- * and incoming events directed to that transaction are processed 
- * in the context of that thread.
+ * and synchronously calls the listener from the same thread which read the
+ * message. Multiple transactions may concurrently receive messages and
+ * this will result in multiple threads being active in the listener at
+ * the same time. The listener has to be written with this in mind.
  * </li>
  *
  *<li> <b>gov.nist.javax.sip.MAX_CONNECTIONS = integer </b> <br/>
@@ -142,7 +143,7 @@ import sim.java.net.*;
  *</li>
  *</ul>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.27 $ $Date: 2004-06-15 09:54:42 $
+ * @version JAIN-SIP-1.1 $Revision: 1.28 $ $Date: 2004-06-16 02:53:17 $
  * 
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -710,6 +711,11 @@ public class SipStackImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.27  2004/06/15 09:54:42  mranga
+ * Reviewed by:   mranga
+ * re-entrant listener model added.
+ * (see configuration property gov.nist.javax.sip.REENTRANT_LISTENER)
+ *
  * Revision 1.26  2004/05/16 14:13:21  mranga
  * Reviewed by:   mranga
  * Fixed the use-count issue reported by Peter Parnes.
