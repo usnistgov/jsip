@@ -297,8 +297,10 @@ by the following people:
      The ACK MUST contain a single Via header field, and this MUST 
      be equal to the top Via header field of the original request.  
 
-21. Sylvian Corre <sylvain.corre@rd.francetelecom.com> sent in  a bug
-	fix for parsing User Agent Header.
+21. Sylvain Corre <sylvain.corre@rd.francetelecom.com> sent in  a bug
+	fix for parsing User Agent Header. Sylvain sent in a bug fix
+	for encoding sdp fields (which were being encoded in the wrong
+	order).
 
 ----------------------------------------------------------------------------
 
