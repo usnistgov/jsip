@@ -23,7 +23,7 @@ import java.util.*;
  * object that creates new TCP MessageChannels (one for each new
  * accept socket).  
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.10 $ $Date: 2004-03-19 17:06:20 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.11 $ $Date: 2004-03-19 23:41:30 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Acknowledgement: Jeff Keyser suggested that a
@@ -164,6 +164,8 @@ public class TCPMessageProcessor extends MessageProcessor {
 					getSIPStack().logWriter.logMessage(
 						"Accepting new connection!");
 				}
+				// Note that for an incoming message channel, the
+				// thread is already running
 				TCPMessageChannel tcpMessageChannel =
 					new TCPMessageChannel(newsock, sipStack, this);
 			} catch (SocketException ex) {
@@ -238,20 +240,22 @@ public class TCPMessageProcessor extends MessageProcessor {
 		(TCPMessageChannel tcpMessageChannel) {
 
 		String key = tcpMessageChannel.getKey();
-		System.out.println("removing " + key);
+		if (LogWriter.needsLogging) {
+		   sipStack.logWriter.logMessage	
+		   ( Thread.currentThread() + " removing " + key);
+		}
 		this.tcpMessageChannels.remove(key);
 	}
 
 
-	/**
-	 * Create and return new TCPMessageChannel for the given host/port.
-	 */
-	public MessageChannel createMessageChannel(HostPort targetHostPort)
+
+	public synchronized  
+		MessageChannel createMessageChannel(HostPort targetHostPort)
 		throws IOException {
 		String key = MessageChannel.getKey(targetHostPort,"TCP");
 		if (tcpMessageChannels.get(key) != null)  {
 			return (TCPMessageChannel) 
-				this.tcpMessageChannels.get(key);
+			this.tcpMessageChannels.get(key);
 		} else {
 		     TCPMessageChannel retval = new TCPMessageChannel(
 			targetHostPort.getInetAddress(),
@@ -259,13 +263,29 @@ public class TCPMessageProcessor extends MessageProcessor {
 			sipStack,
 			this);
 		     this.tcpMessageChannels.put(key,retval);
-		     System.out.println("key " + key);
-		     System.out.println("Creating " + retval);
+		     retval.isCached = true;
+		     if (LogWriter.needsLogging ) {
+			  sipStack.logWriter.logMessage
+				("key " + key);
+		          sipStack.logWriter.logMessage("Creating " + retval);
+		      }
 		     return retval;
 		}
 	}
 
-	public MessageChannel createMessageChannel(InetAddress host, int port)
+	protected synchronized  void cacheMessageChannel 
+		(TCPMessageChannel messageChannel) {
+		String key = messageChannel.getKey();
+		if (this.tcpMessageChannels.get(key) == null) {
+		    this.tcpMessageChannels.put(key,messageChannel);
+		}  else {
+			new Exception().printStackTrace();
+		}
+
+	}
+
+	public  synchronized MessageChannel 
+	       createMessageChannel(InetAddress host, int port)
 		throws IOException {
 		try {
 		   String key = MessageChannel.getKey(host,port,"TCP");
@@ -275,14 +295,19 @@ public class TCPMessageProcessor extends MessageProcessor {
 		   } else {
 		        TCPMessageChannel retval  = new TCPMessageChannel(host, port, sipStack, this);
 			this.tcpMessageChannels.put(key,retval);
-		        System.out.println("key " + key);
-		        System.out.println("Creating " + retval);
+		        retval.isCached = true;
+			if (LogWriter.needsLogging) {
+		        	sipStack.logMessage("key " + key);
+		        	sipStack.logMessage("Creating " + retval);
+			}
 			return retval;
 		   }
 		} catch (UnknownHostException ex) {
 			throw new IOException (ex.getMessage());
 		}
 	}
+
+
 
 	/**
 	 * TCP can handle an unlimited number of bytes.
@@ -325,6 +350,11 @@ public class TCPMessageProcessor extends MessageProcessor {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/03/19 17:06:20  mranga
+ * Reviewed by:   mranga
+ * Fixed some stack cleanup issues. Stack should release all resources when
+ * finalized.
+ *
  * Revision 1.9  2004/01/22 18:39:42  mranga
  * Reviewed by:   M. Ranganathan
  * Moved the ifdef SIMULATION and associated tags to the first column so Prep preprocessor can deal with them.
