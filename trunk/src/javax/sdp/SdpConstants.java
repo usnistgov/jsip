@@ -196,7 +196,8 @@ public interface SdpConstants {
                                                 "DVI4_22050",
                                                 "G729",
                                                 "CN_DEPRECATED",
-                                                "H263",
+                                                //"H263",
+                                                "UNASSIGNED",
                                                 "UNASSIGNED",
                                                 "UNASSIGNED",
                                                 "UNASSIGNED",
@@ -210,6 +211,7 @@ public interface SdpConstants {
                                                 "H261",
                                                 "MPV",
                                                 "MP2T",
+                                                "H263",
                                                 };
     
     /** Clock rates for various AVP payload types indexed by their static payload
@@ -249,6 +251,7 @@ public interface SdpConstants {
                                                 90000,
                                                 90000,
                                                 90000,
+						-1
                                                 };
     
     /** Channels per static type.
