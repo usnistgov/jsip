@@ -79,7 +79,7 @@ public class Event extends ParametersHeader implements EventHeader{
     public String encodeBody() {
             StringBuffer retval = new StringBuffer();
            
-            if (eventType!=null) retval.append(SP + eventType + SP);
+            if (eventType!=null) retval.append(SP + eventType);
             
             if (!parameters.isEmpty()) retval.append(SEMICOLON + 
                         this.parameters.encode());
