@@ -105,17 +105,11 @@ public abstract class GenericObject implements Serializable {
 		if (obj == null)
 			throw new NullPointerException("null obj!");
 		Object clone_obj = obj;
-		if (obj instanceof String) {
-			String string = (String) obj;
-			clone_obj = (Object) new String(string);
-		} else if (obj instanceof Integer) {
-			clone_obj = new Integer(((Integer) obj).intValue());
-		} else if (obj instanceof Float) {
-			clone_obj = new Float(((Float) obj).floatValue());
-		} else if (obj instanceof Double) {
-			clone_obj = new Double(((Double) obj).doubleValue());
-		} else if (obj instanceof Long) {
-			clone_obj = new Long(((Long) obj).longValue());
+		if (obj instanceof String || obj instanceof Boolean
+		  || obj instanceof Integer || obj instanceof Short || obj instanceof Long
+		  || obj instanceof Float || obj instanceof Double)
+		{
+			return obj;
 		} else {
 			// If a clone method exists for the object, then
 			// invoke it
@@ -124,15 +118,11 @@ public abstract class GenericObject implements Serializable {
 				Method meth = cl.getMethod("clone", null);
 				clone_obj = meth.invoke(obj, null);
 			} catch (SecurityException ex) {
-				clone_obj = obj;
 			} catch (IllegalArgumentException ex) {
 				InternalErrorHandler.handleException(ex);
 			} catch (IllegalAccessException ex) {
-				clone_obj = obj;
 			} catch (InvocationTargetException ex) {
-				clone_obj = obj;
 			} catch (NoSuchMethodException ex) {
-				clone_obj = obj;
 			}
 		}
 		return clone_obj;
@@ -933,6 +923,9 @@ public abstract class GenericObject implements Serializable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2005/04/04 09:51:37  dmuresan
+ * Optimized getIndentation() implementations (previously used String concatenation in a loop).
+ *
  * Revision 1.6  2005/04/04 08:27:02  dmuresan
  * Optimized GenericObject.sprint() for primitive types.
  *
