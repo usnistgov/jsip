@@ -77,31 +77,12 @@ the existing distribution.
 CVS Access
 ----------
 
-As the source is subject to frequent updates, you may also wish to access
-our public CVS repository regularly. In order to do this:
+The "stable" cvs reposiotory is located on java.net. To download from CVS
+(higly recommended), visit 
 
-1. Install cvs (if you are using windows, please install cygwin 
-and this gets you cvs).
+http://jain-sip.dev.java.net/source/browse/jain-sip/
 
-2. Log into cvs:
-
-cvs -d :pserver:anonymous@is2.antd.nist.gov:/home/nist-sip/nist-siprepository login
-
-Supply a password when prompted.
-
-Password: nist-sip
-
-3. check out the repository:
-
-cvs -d :pserver:anonymous@is2.antd.nist.gov:/home/nist-sip/nist-siprepository co nist-sip-1.2
-
-This will download all the files you need to build the source.
-
-Read nist-sip-1.2/README (this file) and follow the build instructions.
-
-4. To make an update to your copy of the source
-
-cvs -d :pserver:anonymous@is2.antd.nist.gov:/home/nist-sip/nist-siprepository update -P -d nist-sip-1.2
+And follow the instructions there.
 
 
 
