@@ -18,7 +18,10 @@ public class Shootme implements SipListener {
 	private static MessageFactory messageFactory;
 	private static HeaderFactory headerFactory;
 	private static SipStack sipStack;
-	private static final String myAddress = "127.0.0.1";
+
+
+	// To run on two machines change these to suit.
+	public static final String myAddress = "127.0.0.1";
 	private static final int myPort    = 5070;
 
 	protected ServerTransaction inviteTid;
@@ -299,6 +302,10 @@ public class Shootme implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.22  2005/01/20 17:31:12  mranga
+ * Reviewed by:   mranga
+ * added something to get content in example
+ *
  * Revision 1.21  2004/12/01 19:05:14  mranga
  * Reviewed by:   mranga
  * Code cleanup remove the unused SIMULATION code to reduce the clutter.

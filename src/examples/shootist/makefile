@@ -9,13 +9,8 @@ clean: emacsclean
 	$(RM) -f *log*
 	$(RM) -f *debug*
 
-all:  prep
-ifeq (${SIMULATION},true)
-	echo "${SIMULATION}"
-	$(JAVAC) *.java
-else
+all: 
 	$(JAVAC) Shootist.java Shootme.java MyRouter.java
-endif
 
 
 
