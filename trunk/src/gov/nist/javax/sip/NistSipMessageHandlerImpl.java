@@ -372,13 +372,6 @@ implements SIPServerRequestInterface, SIPServerResponseInterface {
         
         this.rawMessageChannel = incomingMessageChannel;
 
-        // SIPTransactionStack sipStack = (SIPTransactionStack)
-        // transactionChannel.getSIPStack();
-        
-        
-        
-        
-        String method = sipResponse.getCSeq().getMethod();
         // Retrieve the client transaction for which we are getting
         // this response.
         SIPClientTransaction clientTransaction =
@@ -391,16 +384,14 @@ implements SIPServerRequestInterface, SIPServerResponseInterface {
                 LogWriter.logMessage("dialog not found for " +
                 sipResponse.getFirstLine());
             }
-        }
-        
+         }
             
+         SipListener sipListener = sipProvider.sipListener;
             
-            SipListener sipListener = sipProvider.sipListener;
-            
-            ResponseEvent responseEvent = new javax.sip.ResponseEvent
+         ResponseEvent responseEvent = new javax.sip.ResponseEvent
                 (sipProvider,(ClientTransaction)transaction,
 			(Response)sipResponse);
-             sipProvider.handleEvent(responseEvent,transaction);
+         sipProvider.handleEvent(responseEvent,transaction);
             
         }
         /** Get the sender channel.

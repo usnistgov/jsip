@@ -62,7 +62,11 @@ public class Shootist implements SipListener {
     public void processBye
     (Request request, ServerTransaction serverTransactionId ) {
         try {
-            System.out.println("shootme:  got a bye sending OK.");
+            System.out.println("shootist:  got a bye sending OK.");
+	    if (serverTransactionId == null)  {
+               System.out.println("shootist:  null TID.");
+		return;
+	    }
             Response response = messageFactory.createResponse(200,request);
             serverTransactionId.sendResponse(response);
             

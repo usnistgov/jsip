@@ -64,12 +64,6 @@ implements SIPStackMessageFactory
         retval.sipStack = theStack;
 	SipStackImpl sipStackImpl = (SipStackImpl)theStack;
 	retval.sipStackImpl = sipStackImpl;
-	/**
-	ListeningPointImpl listeningPoint = (ListeningPointImpl)
-		sipStackImpl.getListeningPoint
-		(messageChannel.getPort(),
-		 messageChannel.getTransport());
-	**/
 	retval.listeningPoint = 
 		messageChannel.getMessageProcessor().getListeningPoint();
 	if (retval.listeningPoint == null) return null;
@@ -107,11 +101,6 @@ implements SIPStackMessageFactory
 
         retval.transactionChannel = tr;
 
-	/**
-	retval.listeningPoint = (ListeningPointImpl)
-		sipStackImpl.getListeningPoint
-		(messageChannel.getPort(),messageChannel.getTransport());
-	**/
 	retval.listeningPoint = 
 		messageChannel.getMessageProcessor().getListeningPoint();
         return  retval;
