@@ -23,7 +23,7 @@ import java.io.IOException;
  * JAIN-SIP stack. Implementors of JAIN services need not concern themselves
  * with this class.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.43 $ $Date: 2005-03-18 20:19:21 $
+ * @version JAIN-SIP-1.1 $Revision: 1.44 $ $Date: 2005-03-25 17:01:00 $
  * 
  * @author M. Ranganathan <mranga@nist.gov><br/>Bug fix Contributions by
  *         Lamine Brahimi and Andreas Bystrom. <br/><a href=" {@docRoot}
@@ -399,6 +399,9 @@ public class NistSipMessageHandlerImpl implements ServerRequestInterface,
                 // equal the requests being acknowledged or cancelled).
                 // For efficient processing put in the pending queue
                 // and re-process later. It would be equally valid to drop here.
+               /*
+                * There's a bug with this optimization so I have removed it for now. Ranga
+                * Experiment here if you want to re-enable this optimization.
                 if (LogWriter.needsLogging)
                     sipStackImpl
                             .logMessage("sequence number is too large - putting pending!");
@@ -406,6 +409,7 @@ public class NistSipMessageHandlerImpl implements ServerRequestInterface,
                 this.pendingMessageChannel = incomingMessageChannel;
                 dialog.putPending(this, sipRequest.getCSeq()
                         .getSequenceNumber());
+               */
                 return;
 
             }
@@ -554,6 +558,12 @@ public class NistSipMessageHandlerImpl implements ServerRequestInterface,
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.43  2005/03/18 20:19:21  mranga
+ * Submitted by:  Shu-Lin Chen
+ * Reviewed by:   M. Ranganathan
+ *
+ * Fixes post-processing after timeout
+ *
  * Revision 1.42  2005/03/16 21:13:09  mranga
  * Issue number:
  * Obtained from:
