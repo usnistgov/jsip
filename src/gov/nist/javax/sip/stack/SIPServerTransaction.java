@@ -775,10 +775,14 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
         try {
             
             // Resend the last response sent by this transaction
-	    if (isInviteTransaction() && 
-	        ((SIPTransactionStack)getSIPStack()).retransmissionFilter ) 
-                getMessageChannel( ).sendMessage( lastResponse );
-            
+	    if (isInviteTransaction())   {
+		if(((SIPTransactionStack)getSIPStack()).retransmissionFilter) { 
+                   getMessageChannel( ).sendMessage( lastResponse );
+	        } else {
+		   // Inform the application to retransmit the last response.
+		   raiseErrorEvent(SIPTransactionErrorEvent.TIMEOUT_RETRANSMIT);
+		}
+	     }
         } catch( IOException e ) {
 	    if (parentStack.logWriter.needsLogging)
 		   parentStack.logWriter.logException(e);

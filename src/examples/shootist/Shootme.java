@@ -246,6 +246,8 @@ public class Shootme implements SipListener {
 
             SipProvider sipProvider = sipStack.createSipProvider(lp);
             sipProvider.addSipListener(listener);
+            sipProvider = sipStack.createSipProvider(lp1);
+            sipProvider.addSipListener(listener);
 
         } catch (Exception ex) {
             System.out.println(ex.getMessage());

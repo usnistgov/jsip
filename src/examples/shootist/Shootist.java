@@ -163,7 +163,7 @@ public class Shootist implements SipListener  {
         properties.setProperty("javax.sip.IP_ADDRESS"
         ,"127.0.0.1");
         properties.setProperty("javax.sip.OUTBOUND_PROXY"
-        ,"127.0.0.1:5070/UDP");
+        ,"127.0.0.1:5070/TCP");
 //endif
 //
 

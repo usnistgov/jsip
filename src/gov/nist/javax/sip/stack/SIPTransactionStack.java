@@ -480,27 +480,30 @@ extends SIPStack implements  SIPTransactionEventListener {
                             }
 			    // If I ACK has not been seen on Dialog,
 			    // resend last response.
-			    if (retransmissionFilter &&
-				d.isServer() && (! d.ackSeen) &&
+			    if ( d.isServer() && (! d.ackSeen) &&
 				d.isInviteDialog()  ) {
 				SIPTransaction transaction = 
 					d.getLastTransaction();
 				// If stack is managing the transaction
 				// then retransmit the last response.
-				if (transaction.getState().getValue() ==
+				if ( transaction.getState().getValue() ==
 				    SIPTransaction.TERMINATED_STATE &&
 				     ((SIPServerTransaction) transaction).
 					isMapped ) {
 				     SIPResponse response = 
 					  transaction.getLastResponse();
 				     // Retransmit to 200 until ack received.
-				     if (response.getStatusCode() == 200) {
+				     if ( response.getStatusCode() == 200) {
 					try {
-					   if (d.toRetransmitFinalResponse()) 
+					   // If retransmission filter is
+					   // enabled, send the last response.
+					   if ( retransmissionFilter &&
+					      d.toRetransmitFinalResponse()) 
 				              transaction.sendMessage(response);
 					} catch (IOException ex) {
 					   /* Will eventully time out */
-					    d.setState (DialogImpl.TERMINATED_STATE);
+					    d.setState 
+						(DialogImpl.TERMINATED_STATE);
 					} finally {
 					    // Need to fire the timer so
 					    // transaction will eventually
@@ -510,7 +513,7 @@ extends SIPStack implements  SIPTransactionEventListener {
 					    // by Christophe).
 				            fireList.add(transaction);
 					}
-				     }
+				     } 
 				}
 			    }
                         }

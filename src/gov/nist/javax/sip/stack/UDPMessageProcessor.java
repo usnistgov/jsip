@@ -14,6 +14,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import gov.nist.core.*;
 import gov.nist.javax.sip.*;
+import java.lang.reflect.*;
 //ifdef SIMULATION
 /*
 import  sim.java.net.*;
@@ -135,10 +136,46 @@ public class UDPMessageProcessor  extends MessageProcessor {
         new DatagramSocket(port,sipStack.stackInetAddress);
          sock.setReceiveBufferSize
         (MAX_DATAGRAM_SIZE);
+	// The following code is all done using introspection and looks
+	// pretty ugly. It was written this way 
+	// in order to keep it essentially independent of STUN implementation.
+	// You need the stun4J stack in your classpath to enable this code. 
+	// The stack can be configured with or without stun support.
+	// TODO Test this code.
 	if (sipStack.stunServerAddress  != null )  {
-	  // TODO
-	  // If NAT STUN support is enabled then find the public NAT address
-	  // and record it here. (RESUME HERE).
+	  try {
+	    // TODO
+	    String stunServer = sipStack.stunServerAddress;
+	    Class sadClass = Class.forName
+		("net.java.stun4j.client.SimpleAddressDetector");
+	    Class[] parms = new Class[2];
+	    parms[0] = String.class;
+	    parms[1] = Integer.TYPE;
+	    Constructor cons = sadClass.getConstructor(parms);
+	    // TODO - define a configuration property for this.
+	    int stunServerPort = 3478;
+	    Object cargs[] = new Object[2];
+	    cargs[0] = sipStack.stunServerAddress;
+	    cargs[1] = new Integer(stunServerPort);
+	    Object simpleAddressDetector = 
+			cons.newInstance(cargs);
+	    Class parms1[] = new Class[1];
+	    parms1[0] = DatagramSocket.class;
+	    Method meth = sadClass.getMethod("getMappingFor",parms1);
+	    Object args[] = new Object[1];
+	    args[0] = this.sock;
+	    Object stunAddress = meth.invoke(simpleAddressDetector,args);
+	    Class stunAddressClass = stunAddress.getClass();
+	    meth = stunAddressClass.getMethod("getHostName",null);
+	    String hostName = (String) meth.invoke(stunAddress,null);
+	    meth = stunAddressClass.getMethod("getPort",null);
+	    Character port = (Character) meth.invoke(stunAddress,null);
+	    this.mappedPort = (int) port.charValue();
+	    sipStack.setHostAddress(hostName);
+	  } catch (Exception ex) {
+		ex.printStackTrace();
+	        System.out.println("Stun stack initialization failed!");
+	  }
 	}
 		
         this.isRunning = true;
