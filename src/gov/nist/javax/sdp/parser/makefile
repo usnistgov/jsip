@@ -51,3 +51,6 @@ uri: URIFieldParser.class
 
 timeparse: TimeFieldParser.class
 	$(JAVA)    gov.nist.javax.sdp.parser.TimeFieldParser
+
+sdpparse: SDPAnnounceParser.class
+	$(JAVA)    gov.nist.javax.sdp.parser.SDPAnnounceParser
