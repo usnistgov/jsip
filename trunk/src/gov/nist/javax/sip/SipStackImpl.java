@@ -163,7 +163,7 @@ import sim.java.net.*;
  *
  *</ul>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.32 $ $Date: 2004-09-01 18:09:05 $
+ * @version JAIN-SIP-1.1 $Revision: 1.33 $ $Date: 2004-09-07 18:25:53 $
  * 
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -472,7 +472,7 @@ public class SipStackImpl
 
 		String flagStr = configurationProperties.getProperty("gov.nist.javax.sip.STRIP_ROUTE_HEADER");
 		this.stripRouteHeader = true;
-		this.stripRouteHeader = (flagStr == null? true : "false".equals(flagStr));
+		this.stripRouteHeader = (flagStr == null? true : "true".equals(flagStr));
 
 		
 //ifdef SIMULATION
@@ -755,6 +755,11 @@ public class SipStackImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.32  2004/09/01 18:09:05  mranga
+ * Reviewed by:   mranga
+ * Allow application to see route header on incoming request though
+ * use of a configuration parameter.
+ *
  * Revision 1.31  2004/09/01 12:07:40  xoba
  * fixed html documentation bug --- removed an extra 'ul' tag... now html javadocs formatted correctly.
  *
