@@ -19,7 +19,7 @@ import gov.nist.core.*;
  * NIST-SIP stack and event model with the JAIN-SIP stack. Implementors
  * of JAIN services need not concern themselves with this class.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.23 $ $Date: 2004-03-25 15:15:03 $
+ * @version JAIN-SIP-1.1 $Revision: 1.24 $ $Date: 2004-03-31 20:30:46 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Bug fix Contributions by Lamine Brahimi and  Andreas Bystrom. <br/>
@@ -198,10 +198,15 @@ public class NistSipMessageHandlerImpl
 					// transaction was allocated but
 					// not mapped to the stack so
 					// just discard it.
-					if (LogWriter.needsLogging)
-					    sipStackImpl.logMessage
+					String dialogId = sipRequest.getDialogId(true);
+					DialogImpl dialog = sipStack.getDialog(dialogId);
+					if (dialog != null) {
+						if (LogWriter.needsLogging)
+						sipStackImpl.logMessage
 						("Dropping out of sequence BYE");
-					return;
+						return;
+					} else transaction = null;
+					
 				}
 				// note that the transaction may be null (which 
 				// happens when no dialog for the bye was fund.
@@ -212,7 +217,7 @@ public class NistSipMessageHandlerImpl
 				// The ID refers to a previously sent
 				// INVITE therefore it refers to the
 				// server transaction table.
-				// Bug reported by Andreas Byström
+				// Bug reported by Andreas Bystrï¿½m
 				// Find the transaction to cancel.
 				// Send a 487 for the cancel to inform the
 				// other side that we've seen it but do not send the
@@ -474,6 +479,10 @@ public class NistSipMessageHandlerImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.23  2004/03/25 15:15:03  mranga
+ * Reviewed by:   mranga
+ * option to log message content added.
+ *
  * Revision 1.22  2004/03/05 20:36:55  mranga
  * Reviewed by:   mranga
  * put in some debug printfs and cleaned some things up.
