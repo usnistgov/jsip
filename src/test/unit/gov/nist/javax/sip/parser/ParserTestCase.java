@@ -46,7 +46,7 @@ private HeaderParser createParser(Class parserClass, String header) {
 				HeaderParser hp = createParser(parserClass, headers[i]);
 				SIPHeader hdr = (SIPHeader) hp.parse();
 				hp = createParser(parserClass, hdr.encode().trim()+"\n");
-				//System.out.println(hdr.encode());
+				System.out.println(hdr.encode());
 				assertEquals(hdr, hp.parse());
 
 			}
