@@ -24,7 +24,7 @@ import java.text.ParseException;
  * retrieve this structure from the SipStack. Bugs against route set 
  * management were reported by Antonis Karydas and Brad Templeton.
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.24 $ $Date: 2004-03-09 00:34:44 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.25 $ $Date: 2004-03-12 23:26:42 $
  *
  *@author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -247,7 +247,7 @@ public class DialogImpl implements javax.sip.Dialog {
 		}
 	}
 
-	private RouteList getRouteList() {
+	private synchronized RouteList getRouteList() {
 		if (LogWriter.needsLogging)
 			sipStack.logWriter.logMessage("getRouteList " + this);
 		// Find the top via in the route list.
@@ -894,7 +894,7 @@ public class DialogImpl implements javax.sip.Dialog {
 	 * @throws SipException if implementation cannot send the ACK Request for
 	 * any other reason
 	 */
-	public synchronized void sendAck(Request request) throws SipException {
+	public void sendAck(Request request) throws SipException {
 		SIPRequest ackRequest = (SIPRequest) request;
 		if (LogWriter.needsLogging)
 			sipStack.logWriter.logMessage("sendAck" + this);
@@ -1460,6 +1460,15 @@ public class DialogImpl implements javax.sip.Dialog {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.24  2004/03/09 00:34:44  mranga
+ * Reviewed by:   mranga
+ * Added TCP connection management for client and server side
+ * Transactions. See configuration parameter
+ * gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false
+ * Releases Server TCP Connections after linger time
+ * gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS=false
+ * Releases Client TCP Connections after linger time
+ *
  * Revision 1.23  2004/02/26 14:28:51  mranga
  * Reviewed by:   mranga
  * Moved some code around (no functional change) so that dialog state is set
