@@ -206,6 +206,7 @@ public class Shootist implements SipListener {
 	public void processTimeout(javax.sip.TimeoutEvent timeoutEvent) {
 
 		System.out.println("Transaction Time out" );
+		System.out.println("TimeoutEvent " + timeoutEvent.getTimeout());
 	}
 
 	public void init() {
@@ -215,7 +216,7 @@ public class Shootist implements SipListener {
 		sipFactory.setPathName("gov.nist");
 		Properties properties = new Properties();
 		// If you want to try TCP transport change the following to
-		String transport = "tcp";
+		String transport = "udp";
 		String peerHostPort = PEER_ADDRESS+":5070";
 		properties.setProperty("javax.sip.IP_ADDRESS", myAddress
 );
@@ -429,6 +430,11 @@ public class Shootist implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.34  2005/03/07 19:05:04  mranga
+ * Submitted by:  mranga
+ * Reviewed by:   mranga
+ * change ip address and port to be manifest constants
+ *
  * Revision 1.33  2005/01/20 17:31:12  mranga
  * Reviewed by:   mranga
  * added something to get content in example
