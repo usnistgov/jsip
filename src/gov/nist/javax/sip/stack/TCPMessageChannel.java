@@ -33,7 +33,7 @@ import sim.java.net.*;
  * Niklas Uhrberg suggested that a mechanism be added to limit the number
  * of simultaneous open connections.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.21 $ $Date: 2004-03-30 16:40:30 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.22 $ $Date: 2004-03-30 17:53:56 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public final class TCPMessageChannel
@@ -54,6 +54,7 @@ public final class TCPMessageChannel
 
 	private String key ;
 	protected boolean isCached;
+	protected boolean isRunning;
 
 
 
@@ -666,8 +667,9 @@ public final class TCPMessageChannel
 		myParser.processInput();
 		// bug fix by Emmanuel Proulx
 		int bufferSize = 4096;
+	   	this.tcpMessageProcessor.useCount ++;
+	    	this.isRunning = true;
 		try { 
-		    this.tcpMessageProcessor.useCount ++;
 		    while (true) {
 			try {
 				byte[] msg = new byte[bufferSize];
@@ -722,10 +724,16 @@ public final class TCPMessageChannel
 			} 
 		} 
 	      } finally {
+		 this.isRunning = false;
 		 this.tcpMessageProcessor.remove(this);
 		 this.tcpMessageProcessor.useCount --;
 	      }
 
+	}
+
+
+	protected void uncache() {
+		this.tcpMessageProcessor.remove(this);
 	}
 
 	/**
@@ -795,6 +803,10 @@ public final class TCPMessageChannel
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.21  2004/03/30 16:40:30  mranga
+ * Reviewed by:   mranga
+ * more tweaks to reference counting for cleanup.
+ *
  * Revision 1.20  2004/03/30 15:38:18  mranga
  * Reviewed by:   mranga
  * Name the threads so as to facilitate debugging.
