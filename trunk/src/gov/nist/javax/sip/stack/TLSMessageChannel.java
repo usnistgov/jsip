@@ -19,12 +19,6 @@ import java.text.ParseException;
 
 import javax.net.ssl.SSLSocket;
 
-//ifdef SIMULATION
-/*
-import sim.java.*;
-import sim.java.net.*;
-//endif
- */
 /**
  * This is stack for TCP connections. This abstracts a stream of parsed
  * messages. The SIP stack starts this from
@@ -40,23 +34,17 @@ import sim.java.net.*;
  * Acknowedgement: Ahmet Uyar  <auyar@csit.fsu.edu> sent in a bug report
  * for TCP operation of the JAIN stack.
  * Niklas Uhrberg suggested that a mechanism be added to limit the number
- * of simultaneous open connections.
+ * of simultaneous open connections. The TLS Adaptations were contributed
+ * by Daniel Martinez. Hagai Sela contributed a bug fix for symmetric nat.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.1 $ $Date: 2004-10-28 19:02:51 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.2 $ $Date: 2004-11-28 17:32:26 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public final class TLSMessageChannel
 extends MessageChannel
 implements SIPMessageListener, Runnable {
     
-    //ifndef SIMULATION
-    //
     private SSLSocket mySock;
-    //else
-/*
-        private SimSocket mySock;
-//endif
- */
     private PipelinedMsgParser myParser;
     private InputStream myClientInputStream; // just to pass to thread.
     private OutputStream myClientOutputStream;
@@ -67,14 +55,7 @@ implements SIPMessageListener, Runnable {
     
     
     
-    //ifndef SIMULATION
-    //
     private Thread mythread;
-    //else
-/*
-        private SimThread mythread;
-//endif
- */
     
     private SIPMessageStack stack;
     
@@ -109,8 +90,6 @@ implements SIPMessageListener, Runnable {
      * @param sipStack Ptr to SIP Stack
      */
     
-    //ifndef SIMULATION
-    //
     protected TLSMessageChannel(
     SSLSocket sock,
     SIPMessageStack sipStack,
@@ -138,28 +117,6 @@ implements SIPMessageListener, Runnable {
         // Can drop this after response is sent potentially.
         mythread.start();
     }
-    //else
-/*
-            protected TCPMessageChannel(
-                       SimSocket sock,
-                       SIPStack sipStack,
-                       TCPMessageProcessor msgProcessor )  throws IOException {
-                mySock = sock;
-                myAddress = sipStack.getHostAddress();
-                myClientInputStream = mySock.getInputStream();
-                myClientOutputStream = mySock.getOutputStream();
-                mythread = new SimThread( this );
-                mythread.setName("TCPMessageChannelThread");
-                // Stash away a pointer to our stack structure.
-                stack = sipStack;
-                this.tcpMessageProcessor = msgProcessor;
-                this.myPort = this.tcpMessageProcessor.getPort();
-                // Bug report by Vishwashanti Raj Kadiayl
-                super.messageProcessor =  msgProcessor;
-                mythread.start();
-            }
-//endif
- */
     
     /**
      * Constructor - connects to the given inet address.
@@ -260,8 +217,6 @@ implements SIPMessageListener, Runnable {
      * @param msg is the message to send.
      * @param retry
      */
-    //ifndef SIMULATION
-    //
     private void sendMessage(byte[] msg, boolean retry) throws IOException {
         SSLSocket sock = (SSLSocket)
         this.stack.ioHandler.sendBytes(
@@ -289,26 +244,6 @@ implements SIPMessageListener, Runnable {
         }
         
     }
-    //else
-/*
-            private void sendMessage(byte[] msg, boolean retry ) throws IOException {
-                SimSocket sock = this.stack.ioHandler.sendBytes(this.peerAddress,
-                this.peerPort,this.peerProtocol,msg, retry );
-                // Created a new socket so close the old one and s
-                if (sock != mySock && sock != null ) {
-                    try {
-                        if (mySock != null)
-                            mySock.close();
-                    } catch (IOException ex) {  }
-                    mySock = sock;
-                    this.myClientInputStream = mySock.getInputStream();
-                    this.myClientOutputStream = mySock.getOutputStream();
-                    SimThread thread = new SimThread(this);
-                    thread.start();
-                }
-            }
-//endif
- */
     
     /**
      * Return a formatted message to the client.
@@ -319,14 +254,7 @@ implements SIPMessageListener, Runnable {
     public void sendMessage(SIPMessage sipMessage) throws IOException {
         byte[] msg = sipMessage.encodeAsBytes();
         
-        //ifdef SIMULATION
-/*
-                long time = SimSystem.currentTimeMillis();
-//else
- */
         long time = System.currentTimeMillis();
-        //endif
-        //
         
         this.sendMessage(msg, sipMessage instanceof SIPRequest);
 
@@ -365,18 +293,9 @@ implements SIPMessageListener, Runnable {
             this.myClientInputStream = mySock.getInputStream();
             this.myClientOutputStream = mySock.getOutputStream();
             // start a new reader on this end of the pipe.
-//ifdef SIMULATION
-/*
-                        SimThread mythread = new SimThread(this);
-                                    mythread.setName("TCPMessageChannelThread");
-//else
- */
             Thread mythread = new Thread(this);
 	    mythread.setDaemon(true);
             mythread.setName("TLSMessageChannelThread");
-//endif
-//
-            
             mythread.start();
         }
         
@@ -461,10 +380,15 @@ implements SIPMessageListener, Runnable {
                     if (!v
                     .getSentBy()
                     .getInetAddress()
-                    .equals(this.peerAddress))
+                    .equals(this.peerAddress)) {
                         v.setParameter(
                         Via.RECEIVED,
                         this.peerAddress.getHostAddress());
+                        //@@@ hagai
+                        v.setParameter(
+                                Via.RPORT,
+                                new Integer(this.peerPort).toString());
+                    }
                 } catch (java.net.UnknownHostException ex) {
                     // Could not resolve the sender address.
                     if (LogWriter.needsLogging) {
@@ -713,6 +637,16 @@ implements SIPMessageListener, Runnable {
     public int getPeerPort() {
         return peerPort;
     }
+
+    public int getPeerPacketSourcePort()
+    {
+        return this.peerPort;
+    }
+
+    public InetAddress getPeerPacketSourceAddress()
+    {
+        return this.peerAddress;
+    }
     
     /**
      * TLS Is a secure protocol.
@@ -723,6 +657,12 @@ implements SIPMessageListener, Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2004/10/28 19:02:51  mranga
+ * Submitted by:  Daniel Martinez
+ * Reviewed by:   M. Ranganathan
+ *
+ * Added changes for TLS support contributed by Daniel Martinez
+ *
  * Revision 1.31  2004/08/23 23:56:20  mranga
  * Reviewed by:   mranga
  * forgot to set isDaemon in one or two places where threads were being
