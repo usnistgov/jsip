@@ -56,7 +56,7 @@ class MessageLog {
     public MessageLog(String message, String source, String destination,
 		      String timeStamp, boolean isSender, 
 		      String firstLine, String statusMessage, 
-		      String tid, String callId) {
+		      String tid, String callId, int lineCount) {
 	if (message == null
 	  || message.equals("")) 
 		throw new IllegalArgumentException("null msg");
@@ -76,7 +76,7 @@ class MessageLog {
 	this.statusMessage = statusMessage;
 	this.tid = tid;
 	this.callId = callId;
-	this.debugLine = LogWriter.lineCount;
+	this.debugLine = lineCount;
     }
 
     protected long getTimeStamp() { 
@@ -86,7 +86,7 @@ class MessageLog {
     public MessageLog(String message, String source, String destination,
 		      long timeStamp, boolean isSender,
 		      String firstLine, String statusMessage, 
-		      String tid, String callId) {
+		      String tid, String callId, int lineCount) {
 	if (message == null
 	  || message.equals("")) 
 		throw new IllegalArgumentException("null msg");
@@ -100,7 +100,7 @@ class MessageLog {
 	this.statusMessage = statusMessage;
 	this.tid = tid;
 	this.callId = callId;
-	this.debugLine = LogWriter.lineCount;
+	this.debugLine = lineCount;
     }
 
     public String flush(long startTime) {

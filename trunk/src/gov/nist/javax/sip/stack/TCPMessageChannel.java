@@ -14,6 +14,7 @@ import java.lang.reflect.*;
 import java.text.ParseException;
 //ifdef SIMULATION
 /*
+import sim.java.*;
 import sim.java.net.*;
 //endif
 */
@@ -279,7 +280,16 @@ implements SIPMessageListener, Runnable {
      */
     public void sendMessage(SIPMessage sipMessage) throws IOException {
         byte[] msg = sipMessage.encodeAsBytes();
+
+//ifdef SIMULATION
+/*
+        long time = SimSystem.currentTimeMillis();
+//else
+*/
         long time = System.currentTimeMillis();
+//endif
+//
+
         this.sendMessage(msg);
         if (this.stack.serverLog.needsLogging
 	    (this.stack.serverLog.TRACE_MESSAGES))
@@ -467,7 +477,16 @@ implements SIPMessageListener, Runnable {
             // System.out.println("receiver address = " + receiverAddress);
             
             // Foreach part of the request header, fetch it and process it
+
+//ifdef SIMULATION
+/*
+            long receptionTime = SimSystem.currentTimeMillis();
+//else
+*/
             long receptionTime = System.currentTimeMillis();
+//endif
+//
+
             if ( sipMessage instanceof SIPRequest) {
                 // This is a request - process the request.
                 SIPRequest sipRequest = (SIPRequest)sipMessage;

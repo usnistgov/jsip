@@ -65,6 +65,12 @@ public abstract class SIPStack {
     protected boolean tcpFlag;
     protected boolean udpFlag;
 
+//ifdef SIMULATION
+/*
+    protected int stackProcessingTime;
+//endif
+*/
+
 
    /** Class that handles caching of TCP connections.
     */
@@ -380,7 +386,16 @@ public abstract class SIPStack {
 	// To log debug messages.
 	this.logWriter = new LogWriter();
 	// Server log file.
-	this.serverLog = new ServerLog(this.logWriter);
+	this.serverLog = new ServerLog(this);
+	// Default simulation delays.
+
+//ifdef SIMULATION
+/*
+	// Time taken to process the message through the stack from
+	// the time of receipt on the wire.
+	this.stackProcessingTime = 5;
+//endif
+*/
 	
     }
 
@@ -686,14 +701,5 @@ public abstract class SIPStack {
         return newChannel;
     }
 
-//ifdef SIMULATION
-/*
-    public static double clock() {
-		return SimMachine.clock();
-    }
-
-
-//endif
-*/
 
 }

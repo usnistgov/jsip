@@ -892,9 +892,11 @@ public class DialogImpl implements javax.sip.Dialog {
 	}
 	try {
 	       if (sipStack.logWriter.needsLogging) {
-		  sipStack.logWriter.logMessage("setting from tag For outgoing ACK= "  
+		  sipStack.logWriter.logMessage
+			("setting from tag For outgoing ACK= "  
 			+ this.getLocalTag());
-		  sipStack.logWriter.logMessage("setting To tag for outgoing ACK = "
+		  sipStack.logWriter.logMessage
+			("setting To tag for outgoing ACK = "
 			+ this.getRemoteTag());
 	       }
 	       if (this.getLocalTag() != null) 
