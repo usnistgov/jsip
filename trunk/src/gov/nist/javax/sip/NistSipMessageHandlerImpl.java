@@ -21,7 +21,7 @@ import java.io.IOException;
  * NIST-SIP stack and event model with the JAIN-SIP stack. Implementors
  * of JAIN services need not concern themselves with this class.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.32 $ $Date: 2004-06-16 02:53:17 $
+ * @version JAIN-SIP-1.1 $Revision: 1.33 $ $Date: 2004-06-16 16:31:07 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Bug fix Contributions by Lamine Brahimi and  Andreas Bystrom. <br/>
@@ -31,7 +31,6 @@ public class NistSipMessageHandlerImpl
 	implements SIPServerRequestInterface, SIPServerResponseInterface {
 
 	protected SIPTransaction transactionChannel;
-	protected MessageChannel rawMessageChannel;
 	protected ListeningPointImpl listeningPoint;
 	protected SipStackImpl sipStackImpl;
 
@@ -53,7 +52,6 @@ public class NistSipMessageHandlerImpl
 				"Dropping message: No listening point registered!");
 			return;
 		}
-		this.rawMessageChannel = incomingMessageChannel;
 
 		SIPTransactionStack sipStack =
 			(SIPTransactionStack) transactionChannel.getSIPStack();
@@ -365,15 +363,22 @@ public class NistSipMessageHandlerImpl
 					}
 				     } 
 				     return;
-				} else if ( dialog.getRemoteSequenceNumber()  + 1 != 
-					sipRequest.getCSeq().getSequenceNumber() )  {
+				} else if ( ! dialog.isRequestConsumable(sipRequest) ) {
+					// Bug noticed by Bruce Evangelder
+					// Check if sequence number of the request allows it to be consumed.
+   					// Requests within a dialog MUST contain strictly monotonically
+   					// increasing and contiguous CSeq sequence numbers (increasing-by-one)
+   					// in each direction (excepting ACK and CANCEL of course, whose numbers
+   					// equal the requests being acknowledged or cancelled). 
 					// The sequence number is too large - just drop the message silently and wait
-					// for a retransmit in the right order.
+					// for a retransmit in the right order. For efficient processing I should queue this
+					// and re-process later but for now we drop the message.
 				        if (LogWriter.needsLogging) 
 					   sipStackImpl.logMessage ("sequence number is too large - dropping!" );
 					return;
 					
 				} 
+				// This will set the remote sequence number.
 				dialog.addTransaction(transaction);
 				dialog.addRoute(sipRequest);
 			}
@@ -468,7 +473,6 @@ public class NistSipMessageHandlerImpl
 			}
 			return;
 		}
-		this.rawMessageChannel = incomingMessageChannel;
 
 		SIPTransactionStack sipStack =
 			(SIPTransactionStack) sipProvider.sipStackImpl;
@@ -527,23 +531,6 @@ public class NistSipMessageHandlerImpl
 		sipProvider.handleEvent(responseEvent, transaction);
 
 	}
-	/** Get the sender channel.
-	 */
-	public MessageChannel getRequestChannel() {
-		return this.transactionChannel;
-	}
-
-	/** Get the channel if we want to initiate a new transaction to
-	 * the sender of  a response.
-	 *@return a message channel that points to the place from where we got
-	 * the response.
-	 */
-	public MessageChannel getResponseChannel() {
-		if (this.transactionChannel != null)
-			return this.transactionChannel;
-		else
-			return this.rawMessageChannel;
-	}
 
 	/** Just a placeholder. This is called from the stack
 	 * for message logging. Auxiliary processing information can
@@ -557,6 +544,10 @@ public class NistSipMessageHandlerImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.32  2004/06/16 02:53:17  mranga
+ * Submitted by:  mranga
+ * Reviewed by:   implement re-entrant multithreaded listener model.
+ *
  * Revision 1.31  2004/06/15 09:54:40  mranga
  * Reviewed by:   mranga
  * re-entrant listener model added.
