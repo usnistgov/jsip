@@ -71,7 +71,7 @@ import sim.java.net.*;
  *  (Was mis-spelled - Documentation bug fix by Bob Johnson)</li>
  *  </ul>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2004-01-22 18:39:41 $
+ * @version JAIN-SIP-1.1 $Revision: 1.14 $ $Date: 2004-02-20 16:36:42 $
  * 
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -179,7 +179,8 @@ public class SipStackImpl
 			configurationProperties.getProperty(
 				"javax.sip.RETRANSMISSION_FILTER");
 		if (rf != null
-			&& ("true".equalsIgnoreCase(rf) || "on".equalsIgnoreCase(rf))) {
+			&& ("true".equalsIgnoreCase(rf.trim()) 
+			|| "on".equalsIgnoreCase(rf.trim()))) {
 			this.retransmissionFilter = true;
 		}
 
@@ -216,8 +217,8 @@ public class SipStackImpl
 		String serverLog =
 			configurationProperties.getProperty(
 				"gov.nist.javax.sip.SERVER_LOG");
-		if (serverLog != null)
-			super.setLogFileName(serverLog);
+		if (serverLog != null) 
+		     super.serverLog.setProperties (configurationProperties);
 		super.serverLog.checkLogFile();
 		String maxConnections =
 			configurationProperties.getProperty(
@@ -525,6 +526,10 @@ public class SipStackImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2004/01/22 18:39:41  mranga
+ * Reviewed by:   M. Ranganathan
+ * Moved the ifdef SIMULATION and associated tags to the first column so Prep preprocessor can deal with them.
+ *
  * Revision 1.12  2004/01/22 14:23:45  mranga
  * Reviewed by:   mranga
  * Fixed some minor formatting issues.
