@@ -77,7 +77,10 @@ an incoming INVITE?</a> </li>
   <li><a href="#31"> I see a SIP message headed for my machine on Ethereal but my application (Listener) does not see it. Why ?</a> </li> 
    <li><a href="#32"> How do I ensure that the stack closes TCP connections after transaction completion? <br/> </li>
    <li><a href="#33"> How do I limit the maximum size of messages that the stack will accept? <br/> </li>
-   <li><a href="#questionables"> I have some questionable questions. Where do I look? <br/> </li>
+ <li><a href="#34">While sending ACK request for 200 OK should I use transaction.createAck() or Dialog.createRequest(Request.ACK)?
+<br/></li>
+ <li><a href="#35">Can I run the stack in an applet? </li>
+<li><a href="#questionables"> I have some questionable questions. Where do I look? <br/> </li>
 </ol>
 <br>
 <hr size="2" noshade="noshade">
@@ -437,8 +440,22 @@ gov.nist.javax.sip.MAX_MESSAGE_SIZE=number <br/>
 default for this property is inifinity (no limit).
 </li>
 <hr size="2" noshade="noshade">
-   
-   
+<li>
+<a name="34"></a>
+While sending ACK request for 200 OK should I use transaction.createAck() 
+or Dialog.createRequest(Request.ACK)? <br/>
+Use the following when ACKing final responses <br/>
+request = dialog.createRequest(Request.ACK); <br/>
+ct  = sipProvider.createNewRequest(request);<br/>
+dialog.sendRequest(ClientTransaction); <br/>
+</li>
+<li>
+<a name="35"></a>
+Can I run the stack in an applet?<br/>
+Yes - take a look at jain-sip-applet-phone.dev.java.net. If your server
+caches connections, you can use TCP sip transactions to transport chunks of
+binary data and thereby construct an applet phone.
+</li>
 </ol>
 <a name="questionables"></a>
 <h2> Frequently Questionable Questions (List likely to grow in time) </h2>
