@@ -66,10 +66,6 @@ http://is2.antd.nist.gov/pub/nist-sip/nist-sip-1.2.src.tar.gz
 
 http://is2.antd.nist.gov/pub/nist-sip/nist-sip-1.2.src.zip 
 
-To build from this snapshot you need to grab the xerces library from
-apache and install it in the lib/xerces directory. If you started with
-the tar/zip file, just untar/unzip the source and you will overwrite
-the existing distribution.
 
 ----------------------------------------------------------------------------
 CVS Access
