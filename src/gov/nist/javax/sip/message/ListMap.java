@@ -8,7 +8,7 @@ import java.util.Hashtable;
 
 /**
  * A map of which of the standard headers may appear as a list 
- * @version JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2004-07-25 19:26:44 $
+ * @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2005-02-24 16:14:30 $
  */
 class ListMap   {
 	private final static String SIPHEADERS_PACKAGE = 
@@ -126,6 +126,12 @@ class ListMap   {
 
 	    headerListTable.put(
 		GenericObject.getClassFromName
+			(SIPHEADERS_PACKAGE + ".ProxyAuthorization"),
+		GenericObject.getClassFromName
+			(SIPHEADERS_PACKAGE +".ProxyAuthorizationList"));
+
+	    headerListTable.put(
+		GenericObject.getClassFromName
 			(SIPHEADERS_PACKAGE + ".Authorization"),
 		GenericObject.getClassFromName
 			(SIPHEADERS_PACKAGE +".AuthorizationList"));
@@ -223,6 +229,10 @@ class ListMap   {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/07/25 19:26:44  mranga
+ * Reviewed by:   mranga
+ * Allows multiple Authorization headers in a message. Some minor cleanup.
+ *
  * Revision 1.2  2004/01/22 13:26:31  sverker
  * Issue number:
  * Obtained from:
