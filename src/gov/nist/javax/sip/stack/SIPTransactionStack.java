@@ -27,7 +27,7 @@ import sim.java.net.*;
  * @author Jeff Keyser (original) 
  * @author M. Ranganathan <mranga@nist.gov>  <br/> (Added Dialog table).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.18 $ $Date: 2004-02-04 18:44:18 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.19 $ $Date: 2004-02-05 15:40:31 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public abstract class SIPTransactionStack
@@ -481,9 +481,8 @@ public abstract class SIPTransactionStack
 								// then retransmit the last response.
 								if (TransactionState.TERMINATED
 									== transaction.getState()
-									&& (
-										(
-											SIPServerTransaction) transaction)
+									&& transaction instanceof SIPServerTransaction
+									&& ( ( SIPServerTransaction) transaction)
 												.isMapped) {
 									SIPResponse response =
 										transaction.getLastResponse();
@@ -833,6 +832,10 @@ public abstract class SIPTransactionStack
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2004/02/04 18:44:18  mranga
+ * Reviewed by:   mranga
+ * check sequence number before delivering event to application.
+ *
  * Revision 1.17  2004/01/27 13:52:11  mranga
  * Reviewed by:   mranga
  * Fixed server/user-agent parser.
