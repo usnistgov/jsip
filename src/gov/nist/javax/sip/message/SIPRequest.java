@@ -26,7 +26,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.8 $ $Date: 2004-06-15 09:54:43 $
+ * @version JAIN-SIP-1.1 $Revision: 1.9 $ $Date: 2004-06-16 02:53:19 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -47,6 +47,27 @@ public final class SIPRequest
 	private Object transactionPointer;
 
 	protected RequestLine requestLine;
+
+	/** Set to standard constants to speed up processing.
+	* this makes equals comparisons run much faster in the
+	* stack because then it is just identity comparision.
+	* Character by char comparison is not required.
+	*/
+	public static String getCannonicalName(String method) {
+		if (method.equalsIgnoreCase(Request.INVITE)) return(Request.INVITE);
+		else if (method.equalsIgnoreCase(Request.BYE)) return(Request.BYE);
+		else if (method.equalsIgnoreCase(Request.ACK)) return Request.ACK;
+		else if (method.equalsIgnoreCase(Request.PRACK)) return Request.PRACK;
+		else if (method.equalsIgnoreCase(Request.INFO)) return Request.INFO;
+		else if (method.equalsIgnoreCase(Request.UPDATE)) return Request.UPDATE;
+		else if (method.equalsIgnoreCase(Request.REFER)) return Request.REFER;
+		else if (method.equalsIgnoreCase(Request.MESSAGE)) return Request.MESSAGE;
+		else if (method.equalsIgnoreCase(Request.SUBSCRIBE)) return Request.SUBSCRIBE;
+		else if (method.equalsIgnoreCase(Request.NOTIFY)) return Request.NOTIFY;
+		else if (method.equalsIgnoreCase(Request.REGISTER)) return Request.REGISTER;
+		else if (method.equalsIgnoreCase(Request.OPTIONS)) return Request.OPTIONS;
+		else return method;
+	}
 
 	/**
 	* Replace a portion of this response with a new structure (given by
@@ -244,43 +265,9 @@ public final class SIPRequest
 		// Set to standard constants to speed up processing.
 		// this makes equals compares run much faster in the
 		// stack because then it is just identity comparision
-		if (method.equalsIgnoreCase(Request.INVITE))
-		    this.requestLine.setMethod(Request.INVITE);
 
-		else if (method.equalsIgnoreCase(Request.BYE))
-		    this.requestLine.setMethod(Request.BYE);
-
-		else if (method.equalsIgnoreCase(Request.ACK))
-		    this.requestLine.setMethod(Request.ACK);
-
-		else if (method.equalsIgnoreCase(Request.PRACK))
-		    this.requestLine.setMethod(Request.PRACK);
-
-		else if (method.equalsIgnoreCase(Request.INFO))
-		    this.requestLine.setMethod(Request.INFO);
-
-		else if (method.equalsIgnoreCase(Request.UPDATE))
-		    this.requestLine.setMethod(Request.UPDATE);
-		
-		else if (method.equalsIgnoreCase(Request.REFER))
-		    this.requestLine.setMethod(Request.REFER);
-
-		else if (method.equalsIgnoreCase(Request.MESSAGE))
-		    this.requestLine.setMethod(Request.MESSAGE);
-		
-		else if (method.equalsIgnoreCase(Request.SUBSCRIBE))
-		    this.requestLine.setMethod(Request.SUBSCRIBE);
-
-		else if (method.equalsIgnoreCase(Request.NOTIFY))
-		    this.requestLine.setMethod(Request.NOTIFY);
-
-		else if (method.equalsIgnoreCase(Request.REGISTER))
-		    this.requestLine.setMethod(Request.REGISTER);
-
-		else if (method.equalsIgnoreCase(Request.OPTIONS))
-		    this.requestLine.setMethod(Request.OPTIONS);
-
-		else this.requestLine.setMethod(method);
+		String meth = getCannonicalName(method);
+		this.requestLine.setMethod(meth);
 
 		if (this.cSeqHeader != null) {
 			try {
@@ -958,6 +945,11 @@ public final class SIPRequest
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/06/15 09:54:43  mranga
+ * Reviewed by:   mranga
+ * re-entrant listener model added.
+ * (see configuration property gov.nist.javax.sip.REENTRANT_LISTENER)
+ *
  * Revision 1.7  2004/03/25 15:15:04  mranga
  * Reviewed by:   mranga
  * option to log message content added.

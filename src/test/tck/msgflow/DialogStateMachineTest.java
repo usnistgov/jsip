@@ -267,6 +267,11 @@ public class DialogStateMachineTest extends MessageFlowHarness {
 				eventCollector.extractCollectedResponseEvent();
 			if (okRespEvt == null || okRespEvt.getResponse() == null)
 				throw new TiUnexpectedError("The TI did not send an OK response.");
+			ClientTransaction ct = okRespEvt.getClientTransaction();
+			Dialog clientDialog = ct.getDialog();
+			Request ackReq = clientDialog.createRequest(Request.ACK);
+			clientDialog.sendAck(ackReq);
+			waitForMessage();
 			//The dialog should now be in its CONFIRMED state.
 			assertEquals(
 				"The Dialog did not pass into the CONFIRMED state upon reception of an OK response",
@@ -286,13 +291,9 @@ public class DialogStateMachineTest extends MessageFlowHarness {
 				// Ranga - use the dialog here.
 				Dialog d = inviteTransaction.getDialog();
 				Request bye = d.createRequest(Request.BYE);
-				ClientTransaction ct =
-					riSipProvider.getNewClientTransaction(bye);
+				ct = riSipProvider.getNewClientTransaction(bye);
 				d.sendRequest(ct);
 
-				//Request bye = (Request)invite.clone();
-				//bye.setMethod(Request.BYE);
-				//riSipProvider.sendRequest(bye);
 			} catch (Exception e) {
 				throw new TckInternalError(
 					"Failed to create and send a BYE request using a dialog.",

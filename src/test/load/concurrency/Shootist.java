@@ -36,7 +36,7 @@ public class Shootist implements SipListener {
 	private String transport;
 	int byeCount;
 	int ackCount;
-	private static int NDIALOGS = 100;
+	private static int NDIALOGS = 500;
 
 	// Keeps track of successful dialog completion.
 	private static Timer timer;
@@ -224,20 +224,6 @@ public class Shootist implements SipListener {
 				Appdata appData = (Appdata) 
 					dialog.getApplicationData();
 				appData.ackCount ++;
-				if (appData.reInviteCount == 0) {
-				    // Indicates that a dialog was established
-				    this.ackCount ++;
-				    Request inviteRequest = 
-					dialog.createRequest(Request.INVITE);
-				    ((SipURI)inviteRequest.getRequestURI()).removeParameter("transport");
-				    ((ViaHeader)inviteRequest.getHeader(ViaHeader.NAME)).setTransport("udp");
-				    inviteRequest.addHeader(contactHeader);
-				    try {Thread.sleep(100); } catch (Exception ex) {} 
-				    ClientTransaction ct = 
-					udpProvider.getNewClientTransaction(inviteRequest);
-				    dialog.sendRequest(ct);
-				    appData.reInviteCount ++;
-				}
 
 			}
 		} catch (Exception ex) {
@@ -298,7 +284,7 @@ public class Shootist implements SipListener {
 			"examples.shootist.MyRouter");
 		properties.setProperty("javax.sip.STACK_NAME", "shootist");
 		properties.setProperty("javax.sip.RETRANSMISSION_FILTER", "true");
-		properties.setProperty("javax.sip.REENTRANT_LISTENER", "true");
+		properties.setProperty("gov.nist.javax.sip.REENTRANT_LISTENER", "true");
 		properties.setProperty("javax.sip.MAX_MESSAGE_SIZE", "1048576");
 		properties.setProperty(
 			"gov.nist.javax.sip.DEBUG_LOG",
@@ -515,14 +501,23 @@ public class Shootist implements SipListener {
 	public static void main(String args[]) {
 		Shootist shootist = new Shootist();
 		shootist.init();
-		for (int i = 0 ; i < NDIALOGS; i++ ) 
+		for (int i = 0 ; i < NDIALOGS; i++ )  {
+			try {
+				Thread.sleep(100);
+			 } catch (Exception ex) {}
 			shootist.sendInvite();
+		}
 		
 
 	}
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2004/06/15 09:54:47  mranga
+ * Reviewed by:   mranga
+ * re-entrant listener model added.
+ * (see configuration property gov.nist.javax.sip.REENTRANT_LISTENER)
+ *
  * Revision 1.27  2004/05/30 18:55:56  mranga
  * Reviewed by:   mranga
  * Move to timers and eliminate the Transaction scanner Thread

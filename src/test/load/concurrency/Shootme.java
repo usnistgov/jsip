@@ -72,17 +72,11 @@ public class Shootme implements SipListener {
 			// maybe a late arriving ack.
 			if (serverTransaction == null) return;
 			Dialog dialog = serverTransaction.getDialog();
-			int ackCount = 
-				((ApplicationData ) dialog.getApplicationData()).ackCount;
-			if (ackCount == 1) {
-			   dialog = serverTransaction.getDialog();
-			   Request byeRequest = dialog.createRequest(Request.BYE);
-			   ClientTransaction tr =
+		        dialog = serverTransaction.getDialog();
+			Request byeRequest = dialog.createRequest(Request.BYE);
+			ClientTransaction tr =
 				sipProvider.getNewClientTransaction(byeRequest);
-			   //System.out.println("shootme: got an ACK -- sending bye! ");
-			   dialog.sendRequest(tr);
-			   //System.out.println("Dialog State = " + dialog.getState());
-			} else ((ApplicationData) dialog.getApplicationData()).ackCount ++;
+			dialog.sendRequest(tr);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.exit(0);
@@ -171,6 +165,10 @@ public class Shootme implements SipListener {
 	public void processResponse(ResponseEvent responseReceivedEvent) {
 		Response response = (Response) responseReceivedEvent.getResponse();
 		Transaction tid = responseReceivedEvent.getClientTransaction();
+		if (tid == null)  {
+			System.out.println("Stray response -- dropping!");
+			return;
+		}
 
 		try {
 			if (response.getStatusCode() == Response.OK
@@ -206,7 +204,7 @@ public class Shootme implements SipListener {
 			"dialogState = " + transaction.getDialog().getState());
 		System.out.println("Transaction Time out");
 		System.out.println("Transaction " + transaction);
-		System.out.println("request " + request);
+		System.out.println("request " + transaction.getRequest());
 		System.exit(0);
 	}
 
@@ -225,7 +223,7 @@ public class Shootme implements SipListener {
 //endif
 //
 		properties.setProperty("javax.sip.RETRANSMISSION_FILTER", "true");
-		properties.setProperty("javax.sip.REENTRANT_LISTENER", "true");
+		properties.setProperty("gov.nist.javax.sip.REENTRANT_LISTENER", "true");
 		properties.setProperty("javax.sip.STACK_NAME", "shootme");
 		// You need  16 for logging traces. 32 for debug + traces.
 		// Your code will limp at 32 but it is best for debugging.

@@ -198,7 +198,7 @@ public class Shootme implements SipListener {
 			}
 			Dialog dialog = tid.getDialog();
 			System.out.println("Dalog State = " + dialog.getState());
-		} catch (SipException ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.exit(0);
 		}
@@ -296,6 +296,11 @@ public class Shootme implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2004/06/15 09:54:39  mranga
+ * Reviewed by:   mranga
+ * re-entrant listener model added.
+ * (see configuration property gov.nist.javax.sip.REENTRANT_LISTENER)
+ *
  * Revision 1.17  2004/05/16 14:13:20  mranga
  * Reviewed by:   mranga
  * Fixed the use-count issue reported by Peter Parnes.

@@ -82,9 +82,9 @@ JAIN-SIP, the stack supports the following configuration Parameters :
    so as to allow inbound signaling to the client.
  </li>
  <li><b>gov.nist.javax.sip.STUN_SERVER = ipaddress[:port] </b> <br/>
-Stun server address:port. Default is null (no stun support). To enable
-this feature, download and install the stun4j package and make sure 
-stun4j.jar is in your class path.
+	Stun server address:port. Default is null (no stun support). To enable
+	this feature, download and install the stun4j package from stun4j.dev.java.net 
+	and make sure stun4j.jar is in your class path.
 </li>
 
  <li><b>gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS = [true|false] </b> <br/>
@@ -102,6 +102,15 @@ stun4j.jar is in your class path.
  <li> <b>gov.nist.javax.sip.MAX_CONNECTIONS = integer </b> <br/>
     Max number of simultaneous incoming TCP connections handled by stack. 
  </li>
+
+ <li> <b>gov.nist.javax.sip.REENTRANT_LISTENER = true|false </b> <br/>
+   Default is false. Set to true if the listener is re-entrant. 
+  If the listener is re-entrant then the stack manages a thread pool
+  and synchronously calls the listener from the same thread which read the
+  message. Multiple transactions may concurrently receive messages and
+  this will result in multiple threads being active in the listener at
+  the same time. The listener has to be written with this in mind.
+  </li>
 
  <li> <b>gov.nist.javax.sip.READ_TIMEOUT = integer </b> <br/>
   This is relevant for incoming TCP connections to prevent starvation at
