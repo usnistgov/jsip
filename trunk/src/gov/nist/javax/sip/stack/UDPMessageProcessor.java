@@ -23,7 +23,7 @@ import  sim.java.net.*;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size). 
  * Each UDP message is processed in its own thread). 
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2004-06-27 00:41:52 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.18 $ $Date: 2004-07-16 17:13:56 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -216,6 +216,7 @@ public class UDPMessageProcessor extends MessageProcessor {
 
 		this.isRunning = true;
 		Thread thread = new Thread(this);
+		thread.setDaemon(true);
 		// Issue #32 on java.net
 		thread.setName("UDPMessageProcessorThread");
 		thread.start();
@@ -425,6 +426,12 @@ public class UDPMessageProcessor extends MessageProcessor {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2004/06/27 00:41:52  mranga
+ * Submitted by:  Thomas Froment and Pierre De Rop
+ * Reviewed by:   mranga
+ * Performance improvements
+ * (auxiliary data structure for fast lookup of transactions).
+ *
  * Revision 1.16  2004/06/21 04:59:54  mranga
  * Refactored code - no functional changes.
  *

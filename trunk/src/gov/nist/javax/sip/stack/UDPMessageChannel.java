@@ -46,7 +46,7 @@ import sim.java.net.*;
  * this code that was sending it into an infinite loop when a bad incoming
  * message was parsed.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.22 $ $Date: 2004-06-21 05:42:33 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.23 $ $Date: 2004-07-16 17:13:56 $
  */
 public class UDPMessageChannel
 extends MessageChannel
@@ -105,6 +105,7 @@ implements ParseExceptionListener, Runnable {
 //
         Thread mythread = new Thread(this);
         mythread.setName("UDPMessageChannelThread");
+	mythread.setDaemon(true);
 //else
 /*
                 SimThread mythread = new SimThread(this);
@@ -137,6 +138,7 @@ implements ParseExceptionListener, Runnable {
 //ifndef SIMULATION
 //
         Thread mythread = new Thread(this);
+	mythread.setDaemon(true);
 //else
 /*
                         SimThread mythread = new SimThread(this);
@@ -847,6 +849,10 @@ implements ParseExceptionListener, Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.22  2004/06/21 05:42:33  mranga
+ * Reviewed by:  mranga
+ * more code smithing
+ *
  * Revision 1.21  2004/06/21 04:59:53  mranga
  * Refactored code - no functional changes.
  *
