@@ -26,7 +26,7 @@ import sim.java.net.*;
  * This can be accessed from the SIPMessage using the getContent and
  * getContentBytes methods provided by the SIPMessage class. 
  *
- * @version JAIN-SIP-1.1 $Revision: 1.9 $ $Date: 2004-02-29 00:46:34 $
+ * @version JAIN-SIP-1.1 $Revision: 1.10 $ $Date: 2004-02-29 15:32:58 $
  *
  * @author <A href=mailto:mranga@nist.gov > M. Ranganathan  </A>
  *
@@ -258,7 +258,9 @@ public final class PipelinedMsgParser implements Runnable {
 				this.sizeCounter = this.maxMessageSize;
 				this.messageSize = 0;
 				StringBuffer inputBuffer = new StringBuffer();
-				Debug.println("Starting parse!");
+
+				if (Debug.parserDebug) Debug.println("Starting parse!");
+
 				String line1;
 				String line2 = null;
 
@@ -267,7 +269,8 @@ public final class PipelinedMsgParser implements Runnable {
 					try {
 						line1 = readLine(inputStream);
 						if (line1.equals("\n")) {
-							Debug.println("Discarding " + line1);
+							if (Debug.parserDebug) 
+							    Debug.println("Discarding " + line1);
 							continue;
 						} else
 							break;
@@ -304,7 +307,9 @@ public final class PipelinedMsgParser implements Runnable {
 					// Just ignore the parse exception.
 					continue;
 				}
-				Debug.println("Completed parsing message");
+
+				if (Debug.parserDebug) Debug.println("Completed parsing message");
+
 				ContentLength cl =
 					(ContentLength) sipMessage.getContentLength();
 				int contentLength = 0;
@@ -314,7 +319,11 @@ public final class PipelinedMsgParser implements Runnable {
 					contentLength = 0;
 				}
 
-				//System.out.println("contentLength " + contentLength);
+				if (Debug.parserDebug) {
+				   Debug.println("contentLength " + contentLength);
+				   Debug.println("sizeCounter " + this.sizeCounter);
+				   Debug.println("maxMessageSize " + this.maxMessageSize);
+				}
 
 
 				// TODO Add a timeout to this read so clients 
@@ -327,7 +336,8 @@ public final class PipelinedMsgParser implements Runnable {
 					contentLength < this.sizeCounter ) {
 					byte[] message_body = new byte[contentLength];
 					int nread = 0;
-					while (nread < contentLength) {
+					int retry_count = 0;
+					while (nread < contentLength && retry_count < 1) {
 						try {
 							int readlength =
 								inputStream.read(
@@ -337,7 +347,11 @@ public final class PipelinedMsgParser implements Runnable {
 							if (readlength >= 0) {
 								nread += readlength;
 							} else {
-								break;
+								if (readlength <= 0) {
+								    Thread.yield();
+								    retry_count++;
+								    continue;
+								} 
 							}
 						} catch (IOException ex) {
 							ex.printStackTrace();
@@ -368,6 +382,11 @@ public final class PipelinedMsgParser implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/02/29 00:46:34  mranga
+ * Reviewed by:   mranga
+ * Added new configuration property to limit max message size for TCP transport.
+ * The property is gov.nist.javax.sip.MAX_MESSAGE_SIZE
+ *
  * Revision 1.8  2004/02/25 21:43:03  mranga
  * Reviewed by:   mranga
  * Added a couple of todo's and removed some debug printlns that could slow

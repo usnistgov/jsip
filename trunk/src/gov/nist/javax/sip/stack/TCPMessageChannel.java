@@ -33,7 +33,7 @@ import sim.java.net.*;
  * Niklas Uhrberg suggested that a mechanism be added to limit the number
  * of simultaneous open connections.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.10 $ $Date: 2004-02-29 00:46:35 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.11 $ $Date: 2004-02-29 15:32:59 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public final class TCPMessageChannel
@@ -569,6 +569,7 @@ public final class TCPMessageChannel
 				}
 			} else {
 				SIPResponse sipResponse = (SIPResponse) sipMessage;
+				// This is a response message - process it.
 				// Check the size of the response.
 				// If it is too large dump it silently.
 				if ( stack.getMaxMessageSize() > 0 &&
@@ -576,9 +577,11 @@ public final class TCPMessageChannel
 				     (sipResponse.getContentLength() == null? 0 :
 					sipResponse.getContentLength().getContentLength() ) >
 				     stack.getMaxMessageSize() ) {
-				     throw new Exception("Message size exceeded");
+				     if (LogWriter.needsLogging) 
+					this.stack.logWriter.logMessage ("Message size exceeded");
+				     return;
+					
 				}
-				// This is a response message - process it.
 				SIPServerResponseInterface sipServerResponse =
 					stack.newSIPServerResponse(sipResponse, this);
 				try {
@@ -753,6 +756,11 @@ public final class TCPMessageChannel
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/02/29 00:46:35  mranga
+ * Reviewed by:   mranga
+ * Added new configuration property to limit max message size for TCP transport.
+ * The property is gov.nist.javax.sip.MAX_MESSAGE_SIZE
+ *
  * Revision 1.9  2004/01/22 18:39:41  mranga
  * Reviewed by:   M. Ranganathan
  * Moved the ifdef SIMULATION and associated tags to the first column so Prep preprocessor can deal with them.
