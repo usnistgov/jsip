@@ -99,7 +99,12 @@ public class Shootist implements SipListener {
                 if (tid != this.inviteTid) {
                     new Exception().printStackTrace();
                     System.exit(0);
+
                 }
+	       // Request cancel = inviteTid.createCancel();
+	       // ClientTransaction ct = 
+	       //	sipProvider.getNewClientTransaction(cancel);
+	       // ct.sendRequest();
                 Dialog dialog = tid.getDialog();
 		Request ackRequest = dialog.createRequest(Request.ACK);
 		// Bug report by Andreas Bystrom.
