@@ -99,3 +99,4 @@ emacsclean:
 default: 
 	$(MAKE) all
 
+prep:
