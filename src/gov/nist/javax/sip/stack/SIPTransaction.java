@@ -21,7 +21,7 @@ import javax.sip.message.*;
  *
  * @author Jeff Keyser 
  * @author M. Ranganathan (modified Jeff's original source and aligned with JAIN-SIP 1.1)
- * @version  JAIN-SIP-1.1 $Revision: 1.15 $ $Date: 2004-02-05 14:43:21 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2004-02-13 13:55:32 $
  */
 public abstract class SIPTransaction
 	extends MessageChannel
@@ -665,7 +665,9 @@ public abstract class SIPTransaction
 	 * @see Dialog
 	 */
 	public Dialog getDialog() {
-		return (Dialog) this.dialog;
+		return this.dialog == null?  
+			(Dialog) parentStack.dummyDialog : 
+			(Dialog) this.dialog;
 	}
 
 	/**
@@ -858,6 +860,11 @@ public abstract class SIPTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2004/02/05 14:43:21  mranga
+ * Reviewed by:   mranga
+ * Fixed for correct reporting of transaction state.
+ * Remove contact headers from ack
+ *
  * Revision 1.14  2004/01/25 16:06:24  mranga
  * Reviewed by:   M. Ranganathan
  *

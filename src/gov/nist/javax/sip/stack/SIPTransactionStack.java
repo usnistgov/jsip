@@ -27,7 +27,7 @@ import sim.java.net.*;
  * @author Jeff Keyser (original) 
  * @author M. Ranganathan <mranga@nist.gov>  <br/> (Added Dialog table).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.20 $ $Date: 2004-02-11 20:22:30 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.21 $ $Date: 2004-02-13 13:55:32 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public abstract class SIPTransactionStack
@@ -61,6 +61,10 @@ public abstract class SIPTransactionStack
 	private int activeClientTransactionCount;
 	private int activeServerTransactionCount;
 
+	// All transactions that do not belong to any dialog
+	// are assigned to this dummy dialog.
+	protected DialogImpl dummyDialog;
+
 	/**
 	 *	Default constructor.
 	 */
@@ -81,6 +85,12 @@ public abstract class SIPTransactionStack
 		serverTransactions = Collections.synchronizedSet(new HashSet());
 		// Dialog dable.
 		this.dialogTable = new Hashtable();
+
+		// Dummy dialog assigned for transactions that do not belong to a
+		// dialog.
+		this.dummyDialog = new DialogImpl();
+		this.dummyDialog.setDialogId("DUMMY-DIALOG");
+
 		// Start the timer event thread.
 //ifdef SIMULATION
 /*
@@ -596,7 +606,7 @@ public abstract class SIPTransactionStack
 							currentTransaction);
 						serverTransactions.add(currentTransaction);
 						currentTransaction.isMapped = true;
-					}
+					} 
 				} else {
 					// Create the transaction but dont map it.
 					currentTransaction.setOriginalRequest(requestReceived);
@@ -840,6 +850,10 @@ public abstract class SIPTransactionStack
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.20  2004/02/11 20:22:30  mranga
+ * Reviewed by:   mranga
+ * tighten up the sequence number checks for BYE processing.
+ *
  * Revision 1.19  2004/02/05 15:40:31  mranga
  * Reviewed by:   mranga
  * Add check for type when casting to SIPServerTransaction in TransactionScanner

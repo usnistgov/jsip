@@ -114,7 +114,7 @@ import java.util.TimerTask;
  *
  *</pre>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.20 $ $Date: 2004-02-05 14:43:21 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.21 $ $Date: 2004-02-13 13:55:32 $
  * @author Jeff Keyser 
  * @author M. Ranganathan <mranga@nist.gov>  
  * @author Bug fixes by Emil Ivov, Antonis Karydas.
@@ -498,7 +498,7 @@ public class SIPServerTransaction
 					&& getRealState() == TransactionState.TERMINATED
 					&& transactionRequest.getMethod().equals(Request.ACK)
 					&& requestOf != null) {
-					DialogImpl thisDialog = (DialogImpl) this.getDialog();
+					DialogImpl thisDialog = (DialogImpl) this.dialog;
 					thisDialog.ackReceived(transactionRequest);
 			
 					if  ( ((SIPTransactionStack) getSIPStack())
@@ -600,7 +600,7 @@ public class SIPServerTransaction
 			}
 		} else if (
 			transactionResponse.getCSeq().getMethod().equals(Request.BYE)
-				&& statusCode / 100 == 2) {
+				&& statusCode / 100 == 2 && dialog != null ) {
 			// Dialog will be terminated when the transction is terminated.
 			if (!isReliable())
 				this.dialog.setState(DialogImpl.COMPLETED_STATE);
@@ -654,7 +654,7 @@ public class SIPServerTransaction
 
 						this.setState(TransactionState.TERMINATED);
 						if (!isReliable()) {
-							((DialogImpl) this.getDialog())
+							((DialogImpl) this.dialog)
 								.setRetransmissionTicks();
 							enableRetransmissionTimer();
 
@@ -778,7 +778,7 @@ public class SIPServerTransaction
 					+ " method = "
 					+ this.getOriginalRequest().getMethod());
 
-		DialogImpl dialog = (DialogImpl) this.getDialog();
+		DialogImpl dialog = (DialogImpl) this.dialog;
 		if (((SIPTransactionStack) getSIPStack())
 			.isDialogCreated(this.getOriginalRequest().getMethod())
 			&& (TransactionState.CALLING == this.getRealState()
@@ -860,7 +860,7 @@ public class SIPServerTransaction
 	 */
 	public void sendResponse(Response response) throws SipException {
 
-		DialogImpl dialog = (DialogImpl) this.getDialog();
+		DialogImpl dialog = this.dialog;
 		// Fix up the response if the dialog has already been established.
 		try {
 			SIPResponse responseImpl = (SIPResponse) response;
@@ -902,6 +902,7 @@ public class SIPServerTransaction
 
 			if (responseImpl.getCSeq().getMethod().equalsIgnoreCase("CANCEL")
 				&& responseImpl.getStatusCode() == 200
+				&& dialog != null 
 				&& (!dialog.isReInvite())
 				&& parentStack.isDialogCreated(getOriginalRequest().getMethod())
 				&& (dialog.getState() == null
@@ -977,6 +978,11 @@ public class SIPServerTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.20  2004/02/05 14:43:21  mranga
+ * Reviewed by:   mranga
+ * Fixed for correct reporting of transaction state.
+ * Remove contact headers from ack
+ *
  * Revision 1.19  2004/01/27 13:52:11  mranga
  * Reviewed by:   mranga
  * Fixed server/user-agent parser.
