@@ -120,7 +120,7 @@ import sim.java.*;
  *@author Bug fixes by Emil Ivov.
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.38 $ $Date: 2004-08-31 19:32:58 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.39 $ $Date: 2004-10-04 16:03:53 $
  */
 public class SIPClientTransaction
 extends SIPTransaction
@@ -1092,11 +1092,12 @@ PendingRecord{
 	}
     }
 
+            
     public void clearPending() {
 	boolean toNotify  = false;
-	synchronized(pendingResponses) {
-	  super.clearPending();
-          if ( !pendingResponses.isEmpty() ) {
+	 synchronized(pendingResponses) {
+	 super.clearPending();
+          if ( this.isTerminated() || !pendingResponses.isEmpty() ) {
 	     if (LogWriter.needsLogging) 
 		sipStack.logWriter.logMessage("signaling pending response scanner!");
 	     // Clear the pending response and process it.
@@ -1105,7 +1106,6 @@ PendingRecord{
 	}
 	if (toNotify) sipStack.notifyPendingRecordScanner(); 
      }
-            
     
     /** Start the timer task.
      */
@@ -1118,6 +1118,12 @@ PendingRecord{
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.38  2004/08/31 19:32:58  mranga
+ * Submitted by:  Matt Keller
+ * Reviewed by:   mranga
+ *
+ * Ack for 300-699 sent to wrong location.
+ *
  * Revision 1.37  2004/07/01 05:42:22  mranga
  * Submitted by:  Pierre De Rop and Thomas Froment
  * Reviewed by:    M. Ranganathan

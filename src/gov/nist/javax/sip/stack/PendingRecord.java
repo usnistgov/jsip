@@ -9,4 +9,8 @@ public interface PendingRecord {
 	/** Process the pending request.
 	*/
 	public void processPending();
+
+	/** Signal that we are done with this record.
+	*/
+	public boolean isTerminated();
 }
