@@ -120,7 +120,7 @@ import sim.java.*;
  *@author Bug fixes by Emil Ivov.
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.30 $ $Date: 2004-06-01 11:42:59 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.31 $ $Date: 2004-06-02 13:09:57 $
  */
 public class SIPClientTransaction
 extends SIPTransaction
@@ -176,7 +176,11 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
                     sipStack.clientTransactions.remove(clientTransaction);
 		    
                 }
-		this.cancel();
+		try {
+		    this.cancel();
+		} catch (IllegalStateException ex) {
+			if ( ! this.sipStack.isAlive()) return;
+		}
 
                 
                 // Client transaction terminated. Kill connection if
@@ -1073,6 +1077,10 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.30  2004/06/01 11:42:59  mranga
+ * Reviewed by:   mranga
+ * timer fix missed starting the transaction timer in a couple of places.
+ *
  * Revision 1.29  2004/05/30 18:55:57  mranga
  * Reviewed by:   mranga
  * Move to timers and eliminate the Transaction scanner Thread
