@@ -12,7 +12,6 @@
 */
 
 package test.torture;
-import gov.nist.javax.sip.*;
 import gov.nist.javax.sip.address.*;
 import gov.nist.javax.sip.parser.*;
 import gov.nist.javax.sip.header.*;
@@ -22,14 +21,12 @@ import java.util.Hashtable;
 import java.util.Enumeration;
 //ifdef J2SDK1.4
 import javax.xml.parsers.SAXParserFactory;  
-import javax.xml.parsers.ParserConfigurationException;  
 //endif
 import org.xml.sax.Attributes;
 import org.xml.sax.XMLReader; 
 import org.xml.sax.SAXException; 
 import org.xml.sax.SAXParseException; 
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.Attributes;
 import java.text.ParseException;
 	
 
@@ -39,7 +36,7 @@ TokenValues, ConfigurationSwitches
 {
 
 	// variables that I read from the xml file header.
-	protected static boolean debug	= false;
+	protected static boolean debug	= true;
 	protected static long		startTime;
 	protected static int 		counter = 0;
 	protected String 	testMessage;
@@ -125,7 +122,7 @@ TokenValues, ConfigurationSwitches
 		   if(debugFlag) throw ex;
 		} else {
 		   ExpectedException e = (ExpectedException) 
-			exceptionTable.get(headerText);
+			exceptionTable.get(headerText.trim());
 		   if (e == null) {
 			// Check if there is an exception handler for 
 			// wildcard match.
@@ -153,7 +150,7 @@ TokenValues, ConfigurationSwitches
 	
 	public void characters( char[] ch, int start, int length) {
 		String str = new String(ch, start,length);
-		if (str.trim().equals("")) return;
+		//if (str.trim().equals("")) return;
 		if (messageContext) {
 			if (testMessage == null) testMessage =  str; 
 			else testMessage += str;
@@ -327,6 +324,7 @@ TokenValues, ConfigurationSwitches
 				} else throw 
 				  new SAXException("Torture: Internal error");
 			} catch (ParseException ex) {
+			     ex.printStackTrace();
 			     try {
 				handleException(ex,null,new SipUri().getClass(),testMessage,null);
 			     } catch (ParseException ex1) {

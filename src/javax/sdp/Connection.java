@@ -5,7 +5,7 @@
  */
 
 package javax.sdp;
-import javax.sdp.*;
+
 /** A Connection represents the c= field associated with a SessionDescription or with an individual
  * MediaDescription and is used to identify a network address on which media can be received.
  *

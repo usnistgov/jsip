@@ -11,7 +11,7 @@ import java.text.ParseException;
 import java.io.IOException;
 //ifndef SIMULATION
 //
-import java.util.Timer;
+// import java.util.Timer;
 //else
 /*
 import sim.java.util.SimTimer;
@@ -21,7 +21,6 @@ import sim.java.util.SimTimer;
 import java.util.TimerTask;
 
 import java.util.LinkedList;
-import java.util.ListIterator;
 
 /**
  * Represents a server transaction. Implements the following
@@ -117,7 +116,7 @@ import java.util.ListIterator;
  *
  *</pre>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.40 $ $Date: 2004-07-01 05:42:22 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.41 $ $Date: 2004-07-23 06:50:04 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
  * @author Bug fixes by Emil Ivov, Antonis Karydas.
@@ -1153,6 +1152,12 @@ implements ServerRequestInterface, javax.sip.ServerTransaction, PendingRecord {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.40  2004/07/01 05:42:22  mranga
+ * Submitted by:  Pierre De Rop and Thomas Froment
+ * Reviewed by:    M. Ranganathan
+ *
+ * More performance hacks.
+ *
  * Revision 1.39  2004/06/21 05:42:32  mranga
  * Reviewed by:  mranga
  * more code smithing

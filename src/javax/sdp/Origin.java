@@ -6,7 +6,6 @@
 
 package javax.sdp;
 
-import java.util.*;
 
 /**
  * An Origin represents the o= fields contained within a SessionDescription.

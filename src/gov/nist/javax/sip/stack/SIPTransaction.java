@@ -1,6 +1,5 @@
 package gov.nist.javax.sip.stack;
 
-import gov.nist.javax.sip.parser.*;
 import gov.nist.javax.sip.header.*;
 import gov.nist.javax.sip.message.*;
 import gov.nist.javax.sip.*;
@@ -9,7 +8,6 @@ import gov.nist.core.*;
 import java.io.IOException;
 import java.util.*;
 import java.net.InetAddress;
-import java.text.ParseException;
 
 
 import javax.sip.*;
@@ -23,7 +21,7 @@ import javax.sip.message.*;
  *
  * @author Jeff Keyser 
  * @author M. Ranganathan (modified Jeff's original source and aligned with JAIN-SIP 1.1)
- * @version  JAIN-SIP-1.1 $Revision: 1.27 $ $Date: 2004-07-01 05:42:22 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.28 $ $Date: 2004-07-23 06:50:05 $
  */
 public abstract class SIPTransaction
 	extends MessageChannel
@@ -257,7 +255,7 @@ public abstract class SIPTransaction
 		this.peerProtocol = newEncapsulatedChannel.getPeerProtocol();
 		if (this.isReliable()) {
 			((TCPMessageChannel)encapsulatedChannel).useCount++;
-			if (sipStack.logWriter.needsLogging)
+			if (LogWriter.needsLogging)
 			    sipStack.logWriter.logMessage("use count for encapsulated channel" +    this + " " +
 				((TCPMessageChannel)encapsulatedChannel).useCount);
 		}
@@ -976,6 +974,12 @@ public abstract class SIPTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.27  2004/07/01 05:42:22  mranga
+ * Submitted by:  Pierre De Rop and Thomas Froment
+ * Reviewed by:    M. Ranganathan
+ *
+ * More performance hacks.
+ *
  * Revision 1.26  2004/06/27 00:41:52  mranga
  * Submitted by:  Thomas Froment and Pierre De Rop
  * Reviewed by:   mranga
