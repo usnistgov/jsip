@@ -36,6 +36,7 @@ import java.text.ParseException;
  */
 
 public class DialogImpl implements javax.sip.Dialog {
+    private boolean reInviteFlag;
     private Object applicationData; // Opaque pointer to application data.
     private SIPTransaction firstTransaction;
     private SIPTransaction lastTransaction;
@@ -500,6 +501,15 @@ public class DialogImpl implements javax.sip.Dialog {
         return this.firstTransaction instanceof SIPServerTransaction;
         
     }
+
+
+    /** Return true if this is a re-establishment of the dialog.
+     *
+     *@return true if the reInvite flag is set.
+     */
+     protected boolean isReInvite() {
+		return this.reInviteFlag;
+     }
     
     
     
@@ -539,6 +549,15 @@ public class DialogImpl implements javax.sip.Dialog {
 	
          SIPRequest sipRequest =
             (SIPRequest) transaction.getOriginalRequest();
+
+	// Proessing a re-invite.
+	if ( firstTransaction != null &&
+	     firstTransaction != transaction &&
+	     transaction.getOriginalRequest().getMethod().
+	     equals(firstTransaction.getOriginalRequest().getMethod())) {
+	     this.reInviteFlag = true;
+	}
+
         if (firstTransaction == null   ) {
             // Record the local and remote sequenc
             // numbers and the from and to tags for future
