@@ -89,9 +89,10 @@ with this stack? </li>
 to fix bugs and customize it. It now works but lately I noticed some strange
 bug. I am afraid of your changes so can you help me fix that vintage version? 
 </li>
- <li><a href="#39">How can I take advantage of my multi-processor 
+<li><a href="#39">How can I take advantage of my multi-processor 
 mutli-threaded machine with dual headed monitors to get better 
 performance out of NIST-SIP? </li>
+<li><a href="#40">What dialog support is provided by JAIN SIP ? </li>
 <li><a href="#questionables"> I have some questionable questions. Where do I look? <br/> </li>
 </ol>
 <br>
@@ -164,15 +165,15 @@ sipProvider.createNewClientTransaction(inviteRequest); <br>
 dialog.sendRequest(ct);<br>
   </li>
   <br>
-  <hr size="2" noshade="noshade"> <li><a name="9"></a> Is JAIN-SIP 1.1
-Stateful/Stateless or DialogStateful <br>
-All of the above! You have the option to create a dialog for the first
-(dialog
-creating) transaction. Once a dialog is created, however, all incoming
-requests
+  <hr size="2" noshade="noshade"> 
+<li><a name="9"></a> 
+Is JAIN-SIP 1.1 Stateful/Stateless or DialogStateful? <br/>
+All of the above! You
+have the option to create a dialog for the first (dialog creating)
+transaction. Once a dialog is created, however, all incoming requests
 that belong to the dialog are automatically given a server transaction
-and
-are hence handled statefully. </li>
+and are hence handled statefully. 
+</li>
   <br>
   <hr size="2" noshade="noshade"> <li><a name="10"></a>Why does my
 application get null transaction ID for INVITE transactions
@@ -483,6 +484,7 @@ Note also that the Router is only used to route requests out of dialog -
 which is to say it is used for pre-dialog establishment, requests that
 dont belong to any particular dialog and stateless requests.
 </li>
+<hr size="2" noshade="noshade"> 
 <a name="37"> </a>
 <li> The stack seems to be slow. Can you  do something to improve performance?  <br/>
 This is a reference implementation. As such, the emphasis is on clarity
@@ -492,9 +494,11 @@ work by way of performance tuning to get it to work well in a high
 performance server setting. In particular, you may wish to fine tune
 object allocation, transaction location (searching for a transaction
 that corresponds to an incoming message) and other such details.  </li>
+<hr size="2" noshade="noshade"> 
 <a name="38"> </a>
- <li> I downloaded a version some time ago and worked long and hard
-to fix bugs and customize it. It now works but lately I noticed a strange
+ <li> I downloaded a version of NIST-SIP some time ago and worked long 
+and hard to fix bugs and customize it. 
+It now works but lately I noticed a strange
 bug. I am afraid of your changes so can you help me fix that vintage version?
 <br/>
 This one's easy. NO. I do not have the time for this and even if I did, I
@@ -503,6 +507,7 @@ your code and make sure you are up to date with the latest version before
 you post bug reports. I cannot fix back level code.  
 </li>
 
+<hr size="2" noshade="noshade"> 
 <a name= "39"> </a>
 <li>How can I take advantage of my multi-processor mutli-threaded machine
 with dual headed monitors to get better performance out of NIST-SIP? <br/>
@@ -514,6 +519,23 @@ gov.nist.javax.sip.stack.THREAD_POOL_SIZE=number configuration property.
 Be careful that your listener is indeed re-entrant.  The stack will parse,
 manage the transaction state machine and call your listener code in the
 same thread avoiding queueing.
+</li>
+<hr size="2" noshade="noshade"> 
+<a name= "40"> </a>
+<li>What dialog support is provided in JAIN-SIP? <br/>
+JAIN-SIP allows for stateless or dialog stateful processing. Under
+dialog stateful processing. Dialog support is provided to facilitate
+in-dialog request generation,  maintenance of route sets, maintenance
+of sequence numbers and other dialog functionality that is specified in
+Chapter 12 of the SIP RFC. Additionally, the dialog layer will shield your
+application from out of sequence messages and generate appropriate error
+responses when necessary.   ( An implementation may choose to buffer early
+arriving messages and deliver to the application at a later time.) No
+dialog support is provided for authentication. This is an application
+responsibility. In dialog requests are delvered to the application in
+strict sequentially increasing order as specified in Chapter 12 of the
+RFC 3261.
+
 </li>
 
 </ol>
