@@ -12,9 +12,14 @@ import java.security.NoSuchAlgorithmException;
  * tags and branch identifiers and odds and ends.
  * 
  * @author mranga
- * @version JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2004-07-23 06:50:04 $
+ * @version JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2005-03-05 03:38:19 $
  */
 public class Utils {
+
+    private static MessageDigest digester = null;
+    private static java.util.Random rand = new java.util.Random();
+    private static long counter = 0;
+    
 	/**
 	* to hex converter
 	*/
@@ -117,24 +122,26 @@ public class Utils {
 	*@return a cryptographically random gloablly unique string that
 	*	can be used as a branch identifier.
 	*/
-	public static String generateBranchId() {
-		String b =
-			new Integer((int) (Math.random() * 10000)).toString()
-				+ System.currentTimeMillis();
-		try {
-			MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-			byte bid[] = messageDigest.digest(b.getBytes());
-			// cryptographically random string.
-			// prepend with a magic cookie to indicate we
-			// are bis09 compatible.
-			return SIPConstants.BRANCH_MAGIC_COOKIE + Utils.toHexString(bid);
-		} catch (NoSuchAlgorithmException ex) {
-			return null;
-		}
+    public static String generateBranchId() {		
+	try {
+	    if(null == digester) digester = MessageDigest.getInstance("MD5");
+	    long num = ++counter * rand.nextLong() * System.currentTimeMillis();	    
+	    byte bid[] = digester.digest( Long.toString(num).getBytes() );
+	    // prepend with a magic cookie to indicate we are bis09 compatible.
+	    return SIPConstants.BRANCH_MAGIC_COOKIE + Utils.toHexString(bid);
+	} catch (NoSuchAlgorithmException ex) {
+	    return null;
 	}
+    }
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/07/23 06:50:04  mranga
+ * Submitted by:  mranga
+ * Reviewed by:   mranga
+ *
+ * Clean up - Get rid of annoying eclipse warnings.
+ *
  * Revision 1.5  2004/03/07 22:25:22  mranga
  * Reviewed by:   mranga
  * Added a new configuration parameter that instructs the stack to
