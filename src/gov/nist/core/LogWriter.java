@@ -87,7 +87,7 @@ public class LogWriter {
 	    return lineCount;
 	}
 	
-	public void logException(Exception ex) {
+	public void logException(Throwable ex) {
 		if (needsLogging) {
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
@@ -216,6 +216,45 @@ public class LogWriter {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/09/01 02:04:33  xoba
+ * Issue number:  no particular issue number.
+ *
+ * this code passes TCK
+ *
+ * fixed multiple javadoc errors throughout javax.* and gov.nist.*
+ *
+ * added junit and log4j jars to cvs module, although log4j is not being used yet.
+ *
+ * modified and expanded build.xml and fixed javadoc reference to outdated jre documentation (now
+ * javadocs hyperlink to jre api documentation). since
+ * top-level 'docs' directory already contains cvs-controlled files, i redirected output of javadocs to their
+ * own separate directories, which are 'cleaned' along with 'clean' target. also created other javadoc
+ * which just outputs javax.* classes for those wishing to develop sip applications without reference to nist.gov.*.
+ *
+ * completed switchover to NetworkLayer for network access.
+ *
+ * DID NOT modify makefile's.... so, developers beware.
+ *
+ *
+ *
+ *
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.7  2004/04/19 18:23:48  mranga
  * Reviewed by:   mranga
  * Fixed the tck (reset factories before getting the TI factories)

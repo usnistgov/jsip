@@ -23,7 +23,7 @@ import  sim.java.net.*;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size). 
  * Each UDP message is processed in its own thread). 
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.20 $ $Date: 2004-09-04 14:59:54 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.21 $ $Date: 2004-09-26 14:48:03 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -172,14 +172,11 @@ public class UDPMessageProcessor extends MessageProcessor {
 		// in order to keep it essentially independent of STUN implementation.
 		// You need the stun4J stack in your classpath to enable this code. 
 		// The stack can be configured with or without stun support.
-		// TODO Test this code.
 		if (sipStack.stunServerAddress != null) {
 			try {
-				// TODO
 				String stunServer = sipStack.stunServerAddress;
 				Class stunAddressClass =
 					Class.forName("net.java.stun4j.StunAddress");
-				// TODO - define a configuration property for this.
 
 				// Define stun address for the stun server.
 				Class parm[] = new Class[2];
@@ -220,8 +217,11 @@ public class UDPMessageProcessor extends MessageProcessor {
 				this.mappedPort = (int) port.charValue();
 				sipStack.setHostAddress(hostName);
 
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			} catch (Throwable ex) {
+				if (LogWriter.needsLogging) {
+					sipStack.getLogWriter().logMessage("Stun initializationFailed" );
+					sipStack.getLogWriter().logException(ex);
+				}
 				System.out.println("Stun stack initialization failed!");
 			}
 		}
@@ -438,6 +438,13 @@ public class UDPMessageProcessor extends MessageProcessor {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.20  2004/09/04 14:59:54  mranga
+ * Reviewed by:   mranga
+ *
+ * Added a method to expose the Thread for the message processors so that
+ * stack.stop() can join to wait for the threads to die rather than sleep().
+ * Feature requested by Mike Andrews.
+ *
  * Revision 1.19  2004/08/30 16:04:48  mranga
  * Submitted by:  Mike Andrews
  * Reviewed by:   mranga
