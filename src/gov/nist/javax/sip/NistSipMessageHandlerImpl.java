@@ -23,7 +23,7 @@ import java.io.IOException;
  * JAIN-SIP stack. Implementors of JAIN services need not concern themselves
  * with this class.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.42 $ $Date: 2005-03-16 21:13:09 $
+ * @version JAIN-SIP-1.1 $Revision: 1.43 $ $Date: 2005-03-18 20:19:21 $
  * 
  * @author M. Ranganathan <mranga@nist.gov><br/>Bug fix Contributions by
  *         Lamine Brahimi and Andreas Bystrom. <br/><a href=" {@docRoot}
@@ -131,12 +131,14 @@ public class NistSipMessageHandlerImpl implements ServerRequestInterface,
                 // Bug reported by Antonis Karydas
                 transaction = sipStackImpl.findTransaction(sipRequest, true);
             } else if (dialog.isAckSeen() &&
-                     dialog.getRemoteSequenceNumber() == sipRequest.getCSeq().getSequenceNumber()) {
+                dialog.getRemoteSequenceNumber() == 
+		sipRequest.getCSeq().getSequenceNumber()) {
                 if (sipStackImpl.isRetransmissionFilterActive()) {
                     if (LogWriter.needsLogging) {
                         sipStackImpl
-                                .logMessage("Retransmission Filter enabled - dropping Ack"
-                                        + " retransmission");
+                         .logMessage
+			("Retransmission Filter enabled - dropping Ack"
+                           + " retransmission");
                     }
                     return;
                 }
@@ -552,6 +554,29 @@ public class NistSipMessageHandlerImpl implements ServerRequestInterface,
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.42  2005/03/16 21:13:09  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  mranga
+ * Reviewed by:   mranga
+ *
+ * Fixes ACK not seen on re-invite bug reported by Hagai Sela
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.41  2004/09/28 04:07:03  mranga
  * Issue number:
  * Obtained from:

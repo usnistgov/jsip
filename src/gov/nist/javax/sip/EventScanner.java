@@ -11,12 +11,12 @@ import java.io.*;
 /**
  * Event Scanner to deliver events to the Listener.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.18 $ $Date: 2005-03-16 21:13:09 $
+ * @version JAIN-SIP-1.1 $Revision: 1.19 $ $Date: 2005-03-18 20:19:21 $
  * 
  * @author M. Ranganathan <mranga@nist.gov><br/>
- * 
- * <a href=" {@docRoot}/uncopyright.html">This code is in the public domain.
- * </a>
+ * bug fixes SIPQuest communications and Shu-Lin Chen. <br/>
+ *
+ * <a href=" {@docRoot}/uncopyright.html">This code is in the public domain. </a>
  *  
  */
 class EventScanner implements Runnable {
@@ -255,6 +255,11 @@ class EventScanner implements Runnable {
 				// circumstances. Protect ourselves by logging
 				// errors to the console but continue.
 				ex.printStackTrace();
+			}
+			//Mark that TImeout event has been processed
+			//Bug fix by Shu-Lin
+			if (eventWrapper.transaction != null) {
+			   eventWrapper.transaction.clearPending();
 			}
 		} else {
 			if (LogWriter.needsLogging)

@@ -22,7 +22,7 @@ import javax.sip.message.*;
  * @author Jeff Keyser 
  * @author M. Ranganathan (modified Jeff's original source and aligned with JAIN-SIP 1.1) 
 *  @author Modifications for TLS Support added by Daniel J. Martinez Manzano <dani@dif.um.es>
- * @version  JAIN-SIP-1.1 $Revision: 1.36 $ $Date: 2004-12-01 19:05:16 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.37 $ $Date: 2005-03-18 20:19:22 $
  */
 public abstract class SIPTransaction
 	extends MessageChannel
@@ -1014,7 +1014,7 @@ public abstract class SIPTransaction
 	/** Clear the mark that there is a pending event for this
 	* transaction.
 	*/
-	protected void clearPending() {
+	public void clearPending() {
 		this.eventPending = false;
 	}
 
@@ -1063,6 +1063,11 @@ public abstract class SIPTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.36  2004/12/01 19:05:16  mranga
+ * Reviewed by:   mranga
+ * Code cleanup remove the unused SIMULATION code to reduce the clutter.
+ * Fix bug in Dialog state machine.
+ *
  * Revision 1.35  2004/11/28 17:32:26  mranga
  * Submitted by:  hagai sela
  * Reviewed by:   mranga
