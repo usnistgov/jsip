@@ -101,7 +101,7 @@ import sim.java.net.*;
  *  (Was mis-spelled - Documentation bug fix by Bob Johnson)</li>
  *</ul>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.23 $ $Date: 2004-04-27 17:18:53 $
+ * @version JAIN-SIP-1.1 $Revision: 1.24 $ $Date: 2004-04-29 19:27:46 $
  * 
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -325,22 +325,23 @@ public class SipStackImpl
 	        String stunAddr = 
 			configurationProperties.getProperty(
 				"gov.nist.javax.sip.STUN_SERVER");
-		if (stunAddr != null) {
-		    int k = stunAddr.indexOf(':');
-		    if  ( k  == -1) {
-		   	super.stunServerAddress = stunAddr;
-		   	super.stunServerPort = 3478;
-		    } else  {
-		   	super.stunServerAddress = stunAddr.substring(0, k-1);
-		   	String portString = stunAddr.substring(k+1).trim();
-			try {
-			    super.stunServerPort = Integer.parseInt( portString);
-			} catch (NumberFormatException ex) {
-				super.stunServerPort = 3478;
-			}
-			
-		    }
+       		if (stunAddr != null) {
+           	  int k = stunAddr.indexOf(':');
+           	  if  ( k  == -1) {
+              		super.stunServerAddress = stunAddr;
+              		super.stunServerPort = 3478;
+           	   } else  {
+              		super.stunServerAddress = stunAddr.substring(0, k); 
+			// Bug fix by Dave Stuart
+              		String portString = stunAddr.substring(k+1).trim();
+           		try {
+               		   super.stunServerPort = Integer.parseInt( portString);
+           		} catch (NumberFormatException ex) {
+               			super.stunServerPort = 3478;
+           		}
+          	   }
 		}
+
 //endif
 //
 
@@ -635,6 +636,10 @@ public class SipStackImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.23  2004/04/27 17:18:53  mranga
+ * Reviewed by:   mranga
+ * Turn off logging of content  by default.
+ *
  * Revision 1.22  2004/04/19 21:51:03  mranga
  * Submitted by:  mranga
  * Reviewed by:  ivov
