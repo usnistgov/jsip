@@ -27,6 +27,7 @@ import gov.nist.core.*;
 //ifdef SIMULATION
 /*
 import sim.java.net.*;
+import sim.java.*;
 //endif
 */
 

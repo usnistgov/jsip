@@ -8,7 +8,7 @@ import java.io.*;
 import java.net.*;
 //ifdef SIMULATION
 /*
-import sim.java.net.*;
+import sim.java.*;
 //endif
 */
 
@@ -79,7 +79,8 @@ public class Shootist implements SipListener  {
 
 //ifdef SIMULATION
 /*
-	    System.out.println("End time = " + SimMachine.clock());
+	    System.out.println("End time = " 
+			+ SimSystem.currentTimeMillis());
 //endif
 */
 
@@ -152,9 +153,9 @@ public class Shootist implements SipListener  {
         sipFactory.setPathName("gov.nist");
         Properties properties = new Properties();
         properties.setProperty("javax.sip.IP_ADDRESS"
-        ,"127.0.0.1");
+        ,"129.6.55.61");
         properties.setProperty("javax.sip.OUTBOUND_PROXY"
-        ,"127.0.0.1:5070/UDP");
+        ,"129.6.55.62:5070/UDP");
         properties.setProperty("javax.sip.ROUTER_PATH",
         "examples.shootist.MyRouter");
         properties.setProperty("javax.sip.STACK_NAME",

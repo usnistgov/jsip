@@ -73,6 +73,7 @@ javax.sip.SipProvider, SIPTransactionEventListener {
 //else
 /*
 	this.pendingEventsShadow.enterCriticalSection();
+	try
 //endif
 */
 	{
@@ -89,7 +90,7 @@ javax.sip.SipProvider, SIPTransactionEventListener {
         }
 //ifdef SIMULATION
 /*
-	this.pendingEventsShadow.leaveCriticalSection();
+	finally { this.pendingEventsShadow.leaveCriticalSection(); }
 //endif
 */
     }
@@ -127,6 +128,7 @@ javax.sip.SipProvider, SIPTransactionEventListener {
 //else
 /*
 	this.pendingEventsShadow.enterCriticalSection();
+	try
 //endif
 */
       {
@@ -145,7 +147,7 @@ javax.sip.SipProvider, SIPTransactionEventListener {
         }
 //ifdef SIMULATION
 /*
-	this.pendingEventsShadow.leaveCriticalSection();
+	finally { this.pendingEventsShadow.leaveCriticalSection(); }
 //endif
 */
     }
