@@ -63,6 +63,7 @@ class MessageLogTableImpl extends UnicastRemoteObject
     private Hashtable timeOut;
     private String logRootName;
     private String rmiHostName;
+    protected ServerLog serverLog;
 
 
     /**
@@ -131,7 +132,7 @@ class MessageLogTableImpl extends UnicastRemoteObject
     */
     public synchronized String flush() throws RemoteException {
 	try {
-	  File file = new File (ServerLog.getLogFileName());
+	  File file = new File (serverLog.getLogFileName());
 	  long length = file.length();
 	  char[] cbuf = new char[(int)length];
 	  FileReader fr = new FileReader( file );

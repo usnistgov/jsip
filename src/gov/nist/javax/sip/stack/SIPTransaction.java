@@ -187,8 +187,8 @@ public abstract class SIPTransaction
 		newBranch = ( (Via)newOriginalRequest.getViaHeaders( ).
 				getFirst( ) ).getBranch( );
 		if( newBranch != null ) {
-			if (LogWriter.needsLogging) 
-			   LogWriter.logMessage("Setting Branch id : " 
+			if (parentStack.logWriter.needsLogging) 
+			   parentStack.logWriter.logMessage("Setting Branch id : " 
 				+ newBranch);
 
 			// Override the default branch with the one 
@@ -196,7 +196,7 @@ public abstract class SIPTransaction
 			setBranch( newBranch );
 
 		} else {
-			LogWriter.logMessage("Branch id is null!"
+			parentStack.logWriter.logMessage("Branch id is null!"
 			+ newOriginalRequest.encode());
 
 
@@ -323,15 +323,15 @@ public abstract class SIPTransaction
 	) {
 
 		currentState = newState;
-		if (LogWriter.needsLogging)  {
-		    LogWriter.logMessage
+		if (parentStack.logWriter.needsLogging)  {
+		    parentStack.logWriter.logMessage
 		    ("setState " + this + " " + newState);
 		}
 
 		// If this transaction is being terminated,
 		if( newState == TERMINATED_STATE ) {
-			if (LogWriter.needsLogging) {
-			   LogWriter.logStackTrace();
+			if (parentStack.logWriter.needsLogging) {
+			   parentStack.logWriter.logStackTrace();
 			}
 
 		}
@@ -891,8 +891,8 @@ public abstract class SIPTransaction
 		
                 ) {
                     transactionMatches = true;
-                    if (LogWriter.needsLogging)
-                        LogWriter.logMessage
+                    if (parentStack.logWriter.needsLogging)
+                        parentStack.logWriter.logMessage
                         ("returning  true");
                 }
                 
@@ -901,8 +901,8 @@ public abstract class SIPTransaction
                 // If RequestURI, To tag, From tag,
                 // CallID, CSeq number, and top Via
                 // headers are the same,
-		if (LogWriter.needsLogging)
-			LogWriter.logMessage("testing against " +
+		if (parentStack.logWriter.needsLogging)
+			parentStack.logWriter.logMessage("testing against " +
 				getOriginalRequest());
                 
                 

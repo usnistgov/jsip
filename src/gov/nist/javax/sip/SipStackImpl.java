@@ -9,6 +9,11 @@ import gov.nist.javax.sip.header.*;
 import java.net.UnknownHostException;
 import java.lang.reflect.*;
 import gov.nist.core.*;
+//ifdef SIMULATION
+/*
+import sim.java.net.*;
+//endif
+*/
 
 /** Implementation of SipStack.
 *
@@ -115,6 +120,8 @@ implements javax.sip.SipStack {
         this.listeningPoints = new Hashtable();
         this.sipProviders = new LinkedList();
     }
+
+
 
     public SipStackImpl(Properties configurationProperties) 
         throws PeerUnavailableException {
@@ -233,7 +240,8 @@ implements javax.sip.SipStack {
 	 }
 	 String debugLog =  configurationProperties.getProperty
 			("gov.nist.javax.sip.DEBUG_LOG");
-	 if (debugLog != null) LogWriter.setLogFileName(debugLog);
+
+	 if (debugLog != null) setDebugLogFileName(debugLog);
 
 	 String logLevel = configurationProperties.getProperty
 			("gov.nist.javax.sip.TRACE_LEVEL");
@@ -242,11 +250,11 @@ implements javax.sip.SipStack {
 	   try {
 	      int ll = Integer.parseInt(logLevel);
 	     if (ll == 32) LogWriter.needsLogging = true;
-	     ServerLog.setTraceLevel(ll);
+	     serverLog.setTraceLevel(ll);
 	   } catch (NumberFormatException ex) {
 		System.out.println("WARNING Bad integer " + logLevel);
 		System.out.println("logging dislabled ");
-	        ServerLog.setTraceLevel(0);
+	        serverLog.setTraceLevel(0);
 	    }
 	 }
 	  
@@ -256,8 +264,8 @@ implements javax.sip.SipStack {
           
          String serverLog = configurationProperties.getProperty
 			("gov.nist.javax.sip.SERVER_LOG");
-	 if (serverLog!= null) ServerLog.setLogFileName(serverLog);
-	 ServerLog.checkLogFile();
+	 if (serverLog!= null) super.setLogFileName(serverLog);
+	 super.serverLog.checkLogFile();
 	  String maxConnections = 
 		configurationProperties.getProperty
 			("gov.nist.javax.sip.MAX_CONNECTIONS");
@@ -291,6 +299,12 @@ implements javax.sip.SipStack {
 		("transaction table size - bad value " + ex.getMessage());
 	    }
 	}
+
+//ifdef SIMULATION
+/*
+	SimProcess.hold((double) 100);
+//endif
+*/
 	
 	 
 	
@@ -325,6 +339,11 @@ implements javax.sip.SipStack {
         
         String key = ListeningPointImpl.makeKey
 			(super.stackAddress,port,transport);
+//ifdef SIMULATION
+/*
+	System.out.println("key = " + key);
+//endif
+*/
         
         ListeningPointImpl lip = (ListeningPointImpl)listeningPoints.get(key);
         if (lip != null) {
@@ -333,6 +352,8 @@ implements javax.sip.SipStack {
             try {
                 MessageProcessor messageProcessor =
                 this.createMessageProcessor(port,transport);
+		//System.out.println("createMessageProcessor " + port + "/"
+		//+ transport);
                 lip = new ListeningPointImpl(this,port,transport);
 		lip.messageProcessor = messageProcessor;
 		messageProcessor.setListeningPoint(lip);
@@ -551,6 +572,7 @@ implements javax.sip.SipStack {
                     (SIPTransaction) transactionErrorEvent.getSource();
             
     }
+
     
  
     

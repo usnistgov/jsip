@@ -14,6 +14,11 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import gov.nist.core.*;
 import gov.nist.javax.sip.*;
+//ifdef SIMULATION
+/*
+import  sim.java.net.*;
+//endif
+*/
 
 /**
 * Sit in a loop and handle incoming udp datagram messages. For each Datagram
@@ -44,6 +49,12 @@ public class UDPMessageProcessor  extends MessageProcessor {
     /** Incoming messages are queued here. */
     
     protected LinkedList messageQueue;
+	
+//ifdef SIMULATION
+/*
+    protected SimMessageObject messageQueueShadow;
+//endif
+*/
     
     
     /** A list of message channels that we have started. */
@@ -60,10 +71,14 @@ public class UDPMessageProcessor  extends MessageProcessor {
     /** Our stack (that created us).  */
     protected SIPStack sipStack; 
 
-     /** Channel notifier (not very useful for UDP).  */
-    protected ChannelNotifier notifier;
-    
+//ifdef SIMULATION
+/*
+    protected SimDatagramSocket sock;
+//else
+*/
     protected DatagramSocket sock;
+//endif
+//
     
     /** A flag that is set to false to exit the message processor
      *(suggestion by Jeff Keyser).
@@ -73,13 +88,15 @@ public class UDPMessageProcessor  extends MessageProcessor {
     /**
      * Constructor.
      * @param sipStack pointer to the stack.
-     * @param channelNotifier channel notifier.
      */
-    protected  UDPMessageProcessor( SIPStack sipStack,
-    ChannelNotifier channelNotifier, int port ) {
+    protected  UDPMessageProcessor( SIPStack sipStack, int port ) {
         this.sipStack = sipStack;
-        this.notifier = channelNotifier;
 	this.messageQueue = new LinkedList();
+//ifdef SIMULATION
+/*
+	this.messageQueueShadow = new SimMessageObject();
+//endif
+*/
 	this.port =  port;
     }
 
@@ -93,6 +110,21 @@ public class UDPMessageProcessor  extends MessageProcessor {
     /**
      * Start our processor thread.
      */
+//ifdef SIMULATION
+/*
+    public void start() throws IOException {
+        // Create a new datagram socket.
+	// Bug uncovered by
+        this.sock =
+        new SimDatagramSocket(port,sipStack.stackInetAddress);
+         sock.setReceiveBufferSize
+        (MAX_DATAGRAM_SIZE);
+        this.isRunning = true;
+        SimThread thread = new SimThread(this);
+        thread.start();
+    }
+//else
+*/
     public void start() throws IOException {
         // Create a new datagram socket.
 	// Bug uncovered by
@@ -104,7 +136,8 @@ public class UDPMessageProcessor  extends MessageProcessor {
         Thread thread = new Thread(this);
         thread.start();
     }
-    
+//endif
+//
     
     /**
      * Thread main routine.
@@ -118,7 +151,7 @@ public class UDPMessageProcessor  extends MessageProcessor {
             for (int i = 0; i < sipStack.threadPoolSize; i++) {
                 UDPMessageChannel channel =
                  new UDPMessageChannel
-                    (sipStack,notifier,this);
+                    (sipStack,this);
                  this.messageChannels.add(channel);
              
             }
@@ -141,31 +174,67 @@ public class UDPMessageProcessor  extends MessageProcessor {
 		// not empty. As soon as you introduce some other
 		// condition you will have to call notifyAll instead of 
 		// notify below.
-                 synchronized(this.messageQueue) {
+
+                 synchronized(
+//ifdef SIMULATION
+/*
+			this.messageQueueShadow
+//else
+*/
+
+			this.messageQueue
+//endif
+//
+
+		) {
                      this.messageQueue.addLast(packet);
+//ifdef SIMULATION
+/*
+		     this.messageQueueShadow.doNotify();
+//else
+*/
                      this.messageQueue.notify();
+//endif
+//
                   }
 		} else {
-                   new UDPMessageChannel(sipStack,notifier,this,packet);
+                   new UDPMessageChannel(sipStack,this,packet);
                 }
             } catch (SocketException ex) {
-		if (LogWriter.needsLogging)
-                	LogWriter.logMessage("UDPMessageProcessor: Stopping");
+		if (getSIPStack().logWriter.needsLogging)
+                   getSIPStack().logWriter.logMessage
+			("UDPMessageProcessor: Stopping");
                 isRunning = false;
 		// The notifyAll should be in a synchronized block.
 		// ( bug report by Niklas Uhrberg ).
-		synchronized (this.messageQueue) {
+		synchronized (
+//ifdef SIMULATION
+/*
+			this.messageQueueShadow
+//else
+*/
+			this.messageQueue
+//endif
+//
+		) {
+//ifdef SIMULATION
+/*
+			this.messageQueueShadow.doNotifyAll();
+//else
+*/
                 	this.messageQueue.notifyAll();
+//endif
+//
 		}
             } catch (IOException ex) {
                 isRunning = false;
                 ex.printStackTrace();
-		if (LogWriter.needsLogging)
-                   LogWriter.logMessage
+		if (getSIPStack().logWriter.needsLogging)
+                   getSIPStack().logWriter.logMessage
 		  ("UDPMessageProcessor: Got an IO Exception");
             } catch (Exception ex) {
-		if (LogWriter.needsLogging)
-		LogWriter.logMessage
+		if (getSIPStack().logWriter.needsLogging)
+		getSIPStack().logWriter.logMessage
                 ("UDPMessageProcessor: Unexpected Exception - quitting");
                 InternalErrorHandler.handleException(ex);
                 return;

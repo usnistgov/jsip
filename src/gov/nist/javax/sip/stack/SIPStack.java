@@ -25,6 +25,11 @@ import java.util.Hashtable;
 import java.util.Collection;
 import java.util.ArrayList;
 import java.util.Iterator;
+//ifdef SIMULATION
+/*
+import sim.java.net.*;
+//endif
+*/
 
 /**
  * This class defines a SIP Stack. In order to build a SIP server (UAS/UAC or
@@ -52,12 +57,18 @@ import java.util.Iterator;
 
 public abstract class SIPStack {
 
+
+    protected  LogWriter logWriter;
+
+    protected  ServerLog serverLog;
+
     protected boolean tcpFlag;
     protected boolean udpFlag;
 
 
-    protected ChannelNotifier notifier;
-
+   /** Class that handles caching of TCP connections.
+    */
+    protected IOHandler ioHandler;
 
     /** Flag that indicates that the stack is active.
      */
@@ -86,9 +97,6 @@ public abstract class SIPStack {
      */
     protected SIPStackMessageFactory sipMessageFactory;
 
-    /** Stack function */
-    protected String stackFunction;
-
     /** Default UDP port (5060)
      */
     public static final int DEFAULT_PORT = 5060;
@@ -116,9 +124,36 @@ public abstract class SIPStack {
      */
     public void logBadMessage(String message) {
         if (badMessageLog != null)
-            LogWriter.logMessage(message, badMessageLog);
+            logWriter.logMessage(message, badMessageLog);
 
     }
+
+
+    /** debug log writer.
+    *
+    *@param message is the message to log.
+    *
+    */
+    public void logMessage(String message) {
+	this.logWriter.logMessage(message);
+    }
+
+
+    public LogWriter getLogWriter() { 
+		return this.logWriter; 
+    }
+
+    public ServerLog getServerLog() { 
+		return this.serverLog; 
+    }
+
+
+  
+    /** Log the stack trace.
+     */
+     public void logStackTrace() {
+		this.logWriter.logStackTrace();
+     }
 
     /**
      * Get the file name of the bad message log.
@@ -167,24 +202,7 @@ public abstract class SIPStack {
         return router.getNextHops(sipRequest);
     }
 
-    /**
-     * Construcor for the stack. Registers the request and response
-     * factories for the stack.
-     * @param messageFactory User-implemented factory for processing
-     * 		messages.
-     * @param stackAddress -- IP address or host name of the stack.
-     * @param stackName -- descriptive name for the stack.
-     * @param notifier -- Callback that gets invoked when a channel is
-     *	closed. This is used primarily to notify when a tcp connection
-     *	is closed.
-     */
-    public SIPStack(SIPStackMessageFactory messageFactory,
-                    String stackAddress,
-                    String stackName,
-                    ChannelNotifier notifier) throws UnknownHostException {
-        this(messageFactory, stackAddress, stackName);
-        this.notifier = notifier;
-    }
+
 
     /**
      * Construcor for the stack. Registers the request and response
@@ -208,8 +226,8 @@ public abstract class SIPStack {
         this.stackInetAddress = InetAddress.getByName(stackAddress);
 
         // Set a descriptive name for the message trace logger.
-        ServerLog.description = stackName;
-	ServerLog.stackIpAddress = stackAddress;
+        serverLog.setDescription(stackName);
+	serverLog.setStackIpAddress (stackAddress);
     }
 
     /**
@@ -227,8 +245,8 @@ public abstract class SIPStack {
      */
     public void setStackName(String stackName) {
         this.stackName = stackName;
-        ServerLog.setDescription(stackName);
-	ServerLog.stackIpAddress = stackAddress;
+        serverLog.setDescription(stackName);
+	serverLog.setStackIpAddress (stackAddress);
     }
 
 
@@ -240,7 +258,7 @@ public abstract class SIPStack {
     public void exportServerLog
             (String logRootName, int rmiPort, int lifetime) {
         try {
-            ServerLog.initMessageLogTable(this.getHostAddress(),
+            serverLog.initMessageLogTable(this.getHostAddress(),
                     rmiPort, logRootName, lifetime);
         } catch (java.rmi.RemoteException ex) {
             System.out.println("could not export log");
@@ -357,6 +375,22 @@ public abstract class SIPStack {
         this.maxConnections = -1;
         // Array of message processors.
         messageProcessors = new ArrayList();
+	// Handle IO for this process.
+	this.ioHandler = new IOHandler(this);
+	// To log debug messages.
+	this.logWriter = new LogWriter();
+	// Server log file.
+	this.serverLog = new ServerLog(this.logWriter);
+	
+    }
+
+
+    protected void setLogFileName (String logFileName) {
+		this.serverLog.setLogFileName(logFileName);
+    }
+
+    protected void setDebugLogFileName(String logFileName) {
+	this.logWriter.setLogFileName(logFileName);
     }
 
 
@@ -387,7 +421,8 @@ public abstract class SIPStack {
      * Response
      */
     protected SIPServerResponseInterface
-            newSIPServerResponse(SIPResponse sipresponse, MessageChannel msgchan) {
+            newSIPServerResponse(SIPResponse sipresponse, 
+		MessageChannel msgchan) {
         return sipMessageFactory.newSIPServerResponse
                 (sipresponse, msgchan);
     }
@@ -414,12 +449,6 @@ public abstract class SIPStack {
         return this.router.getOutboundProxy();
     }
 
-    /** Get the stack function. A descriptive name that gives you the
-     * function of the stack.
-     */
-    public String getStackFunction() {
-        return this.stackFunction;
-    }
 
     /**
      * Get the route header for this hop.
@@ -485,8 +514,18 @@ public abstract class SIPStack {
                 removeMessageProcessor(processorList[processorIndex]);
             }
 // Let the processing complete.
+
             try {
+
+//ifndef SIMULATION
+//
                 Thread.sleep(500);
+//else
+/*
+                SimThread.sleep((double)500.0);
+//endif
+*/
+
             } catch (InterruptedException ex) {
             }
         }
@@ -563,14 +602,14 @@ public abstract class SIPStack {
         if (transport.equalsIgnoreCase("udp")) {
             UDPMessageProcessor
                     udpMessageProcessor =
-                    new UDPMessageProcessor(this, notifier, port);
+                    new UDPMessageProcessor(this,  port);
             this.addMessageProcessor(udpMessageProcessor);
             this.udpFlag = true;
             return udpMessageProcessor;
         } else if (transport.equalsIgnoreCase("tcp")) {
             TCPMessageProcessor
                     tcpMessageProcessor =
-                    new TCPMessageProcessor(this, notifier, port);
+                    new TCPMessageProcessor(this,  port);
             this.addMessageProcessor(tcpMessageProcessor);
             this.tcpFlag = true;
             return tcpMessageProcessor;
@@ -632,12 +671,12 @@ public abstract class SIPStack {
                     newChannel = nextProcessor.
                             createMessageChannel(targetHostPort);
 		} catch (UnknownHostException ex) {
-		    if (LogWriter.needsLogging) 
-		        LogWriter.logException(ex);
+		    if (logWriter.needsLogging) 
+		        logWriter.logException(ex);
 		    throw ex;
                 } catch (IOException e) {
-		    if (LogWriter.needsLogging) 
-		        LogWriter.logException(e);
+		    if (logWriter.needsLogging) 
+		        logWriter.logException(e);
                     // Ignore channel creation error -
                     // try next processor
                 }
@@ -646,5 +685,15 @@ public abstract class SIPStack {
         // Return the newly-created channel
         return newChannel;
     }
+
+//ifdef SIMULATION
+/*
+    public static double clock() {
+		return SimMachine.clock();
+    }
+
+
+//endif
+*/
 
 }

@@ -91,7 +91,7 @@ public class Shootme implements SipListener {
 				response.getHeader(ToHeader.NAME);
 		toHeader.setTag("4321"); // Application is supposed to set.
 		Address address = addressFactory.createAddress(
-			"Shootme <sip:127.0.0.1:5070>");
+			"Shootme <sip:129.6.55.62:5070>");
 		ContactHeader contactHeader = 
 			headerFactory.createContactHeader(address);
 		response.addHeader(contactHeader);
@@ -175,15 +175,13 @@ public class Shootme implements SipListener {
     }
     
     
-    
-    
-    public static void main(String args[])  {
+    public void init( ) {
         SipFactory sipFactory = null;
         sipStack = null;
         sipFactory = SipFactory.getInstance();
         sipFactory.setPathName("gov.nist");
         Properties properties = new Properties();
-        properties.setProperty("javax.sip.IP_ADDRESS","127.0.0.1");
+        properties.setProperty("javax.sip.IP_ADDRESS","129.6.55.62");
         properties.setProperty("javax.sip.RETRANSMISSION_FILTER", "true");
         properties.setProperty("javax.sip.STACK_NAME", "shootme");
 	// You need  16 for logging traces. 32 for debug + traces.
@@ -198,6 +196,7 @@ public class Shootme implements SipListener {
         try {
             // Create SipStack object
             sipStack = sipFactory.createSipStack(properties);
+	    System.out.println("sipStack = " + sipStack);
         } catch(PeerUnavailableException e) {
             // could not find
             // gov.nist.jain.protocol.ip.sip.SipStackImpl
@@ -219,20 +218,22 @@ public class Shootme implements SipListener {
             ListeningPoint lp1  = 
 			sipStack.createListeningPoint (5070,"tcp");
             
-            Shootme listener = new Shootme();
+            Shootme listener = this;
 
             SipProvider sipProvider = sipStack.createSipProvider(lp);
             sipProvider.addSipListener(listener);
 
-            sipProvider = sipStack.createSipProvider(lp1);
-            sipProvider.addSipListener(listener);
-            
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             ex.printStackTrace();
             usage();
         }
-        
+
+    }
+    
+    
+    public static void main(String args[])  {
+	new Shootme().init();
     }
     
 }

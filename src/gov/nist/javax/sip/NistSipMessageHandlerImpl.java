@@ -49,11 +49,11 @@ implements SIPServerRequestInterface, SIPServerResponseInterface {
     throws SIPServerException {
         // Generate the wrapper JAIN-SIP object.
         if (LogWriter.needsLogging)
-            LogWriter.logMessage
+            sipStackImpl.logMessage
             ("PROCESSING INCOMING REQUEST " + sipRequest.getFirstLine());
         if (listeningPoint == null) {
             if (LogWriter.needsLogging)
-                LogWriter.logMessage
+                sipStackImpl.logMessage
                 ("Dropping message: No listening point " +
                 "registered!");
             return;
@@ -66,35 +66,31 @@ implements SIPServerRequestInterface, SIPServerResponseInterface {
         SipProviderImpl sipProvider = listeningPoint.getProvider();
 	if (sipProvider == null)  {
                 if (LogWriter.needsLogging)
-		   System.out.println("No provider - dropping !!");
+		   sipStackImpl.logMessage("No provider - dropping !!");
 		return;
 	}
 	SipListener sipListener = sipProvider.sipListener;
-
-/**
-
-	if (sipListener == null)  {
-                if (LogWriter.needsLogging)
-		   LogWriter.logMessage("No listener - dropping !!");
-		return;
-	}
-**/
 		
         SIPTransaction transaction = transactionChannel;
         // Look for the registered SIPListener for the message channel.
+//ifndef SIMULATION
+//
 	synchronized(sipProvider) {
+//endif
+//
             if (sipRequest.getMethod().equalsIgnoreCase(Request.ACK)) {
                 // Could not find transaction. Generate an event
                 // with a null transaction identifier.
                 String dialogId = sipRequest.getDialogId(true);
                 DialogImpl dialog = sipStackImpl.getDialog(dialogId) ;
 		if (LogWriter.needsLogging)
-		    LogWriter.logMessage("Processing ACK for dialog " +
+		    sipStackImpl.logMessage
+			("Processing ACK for dialog " +
 				dialog);
 
                 if (dialog == null) {
                     if (LogWriter.needsLogging) {
-                        LogWriter.logMessage(
+                        sipStackImpl.logMessage(
                         "Dialog does not exist "
                         + sipRequest.getFirstLine() +
                         " isServerTransaction = " + true);
@@ -115,27 +111,27 @@ implements SIPServerRequestInterface, SIPServerResponseInterface {
 		    == sipRequest.getCSeq().getSequenceNumber()  )  {
                     
                     if (LogWriter.needsLogging)
-                        LogWriter.logMessage(
+                        sipStackImpl.logMessage(
                         "ACK retransmission for 2XX response " +
                         "Sending ACK to the TU");
                     dialog.ackReceived(sipRequest);
 		    transaction.setDialog(dialog);
                 } else {
                     if (LogWriter.needsLogging)
-                        LogWriter.logMessage(
+                        sipStackImpl.logMessage(
                         "ACK retransmission for non 2XX response " +
                         "Discarding ACK");
                    // Could not find a transaction.
                    if (tr == null) {
                       if (LogWriter.needsLogging)
-                        LogWriter.logMessage
+                        sipStackImpl.logMessage
                         ("Could not find transaction ACK dropped");
                       return;
                    }  
 		   transaction = tr;
 		   if (transaction instanceof SIPClientTransaction)  {
 			if (LogWriter.needsLogging)
-			   LogWriter.logMessage
+			   sipStackImpl.logMessage
 			   ("Dropping late ACK");
 			return;
 		   }
@@ -147,7 +143,7 @@ implements SIPServerRequestInterface, SIPServerResponseInterface {
                 // Get the dialog identifier for the bye request.
                 String dialogId = sipRequest.getDialogId(true);
                 if (LogWriter.needsLogging)
-                    LogWriter.logMessage
+                    sipStackImpl.logMessage
                     ("dialogId = " + dialogId);
                 // Find the dialog identifier in the SIP stack and
                 // mark it for garbage collection.
@@ -168,7 +164,7 @@ implements SIPServerRequestInterface, SIPServerResponseInterface {
                     } else {
                         dialogId = sipRequest.getDialogId(false);
                         if (LogWriter.needsLogging)
-                            LogWriter.logMessage
+                            sipStackImpl.getLogWriter().logMessage
                             ("dialogId = " +
                             dialogId);
                         dialog = sipStackImpl.getDialog(dialogId);
@@ -216,7 +212,7 @@ implements SIPServerRequestInterface, SIPServerResponseInterface {
                 if (serverTransaction == null) {
                     // Could not find the invite transaction.
                     if (LogWriter.needsLogging) {
-                        LogWriter.logMessage(
+                        sipStackImpl.logMessage(
                         "transaction " +
                         " does not exist " + sipRequest.getFirstLine()   +
                         "isServerTransaction = " + true);
@@ -229,8 +225,8 @@ implements SIPServerRequestInterface, SIPServerResponseInterface {
 
         
         if (LogWriter.needsLogging) {
-            LogWriter.logMessage("-----------------");
-            LogWriter.logMessage(sipRequest.toString());
+            sipStackImpl.logMessage("-----------------");
+            sipStackImpl.logMessage(sipRequest.toString());
         }
 	// If the transaction is found then it is already managed so
 	// dont call the listener.
@@ -287,7 +283,11 @@ implements SIPServerRequestInterface, SIPServerResponseInterface {
 		(sipProvider, null, (Request) sipRequest);
 	}
         sipProvider.handleEvent(sipEvent,  transaction); 
+//ifndef SIMULATION
+//
 	}
+//endif
+//
 
     }
     
@@ -302,12 +302,12 @@ implements SIPServerRequestInterface, SIPServerResponseInterface {
     MessageChannel incomingMessageChannel )
     throws SIPServerException {
         if (LogWriter.needsLogging) {
-            LogWriter.logMessage("PROCESSING INCOMING RESPONSE" +
+            sipStackImpl.logMessage("PROCESSING INCOMING RESPONSE" +
             sipResponse.encode());
         }
         if (listeningPoint == null) {
             if (LogWriter.needsLogging)
-                LogWriter.logMessage
+                sipStackImpl.logMessage
                 ("Dropping message: No listening point"
                 + " registered!");
             return;
@@ -317,7 +317,7 @@ implements SIPServerRequestInterface, SIPServerResponseInterface {
         SipProviderImpl sipProvider = listeningPoint.getProvider();
 	if (sipProvider == null) {
 	    if (LogWriter.needsLogging)  {
-		System.out.println
+		sipStackImpl.logMessage
                 ("Dropping message:  no provider");
 	    }
 	    return;
@@ -328,7 +328,7 @@ implements SIPServerRequestInterface, SIPServerResponseInterface {
         SipStackImpl sipStackImpl = (SipStackImpl) sipStack;
 
         if (LogWriter.needsLogging)
-            LogWriter.logMessage("Transaction = " + transaction);
+            sipStackImpl.logMessage("Transaction = " + transaction);
 
         if (this.transactionChannel == null) {
 	    String dialogId = sipResponse.getDialogId(false);
@@ -381,7 +381,7 @@ implements SIPServerRequestInterface, SIPServerResponseInterface {
         if (transaction != null) {
             dialog = (DialogImpl) transaction.getDialog();
             if (LogWriter.needsLogging && dialog == null) {
-                LogWriter.logMessage("dialog not found for " +
+                sipStackImpl.logMessage("dialog not found for " +
                 sipResponse.getFirstLine());
             }
          }

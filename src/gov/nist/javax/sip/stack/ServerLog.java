@@ -36,7 +36,10 @@ import java.util.ListIterator;
  */
 
 public class ServerLog {
+
     
+    protected LogWriter logWriter;
+
     /** Dont trace */
     public static int TRACE_NONE = 0;
 
@@ -50,31 +53,37 @@ public class ServerLog {
     /** Name of the log file in which the trace is written out
      * (default is null)
      */
-    private static String   logFileName;
+    private String   logFileName;
     /** Name of the log directory in which the messages are written out
      */
-    private static MessageLogTableImpl messageLogTable;
+    private MessageLogTableImpl messageLogTable;
     /** Print writer that is used to write out the log file.
      */
-    protected static PrintWriter printWriter;
+    protected PrintWriter printWriter;
     /** print stream for writing out trace
      */
-    protected static PrintStream traceWriter = System.out;
+    protected PrintStream traceWriter = System.out;
     
     /** Name to assign for the log.
      */
-    protected static String logRootName;
+    protected String logRootName;
     
     /** Set auxililary information to log with this trace.
      */
-    protected static String auxInfo;
+    protected String auxInfo;
     
-    protected static String description;
+    protected String description;
 
-    protected static String stackIpAddress;
+    protected String stackIpAddress;
 
-    private static boolean initialized;
     
+    public ServerLog(LogWriter logWriter) {
+	this.logWriter = logWriter;
+    }
+
+     public void setStackIpAddress(String ipAddress) {
+		this.stackIpAddress = ipAddress;
+     }
     
     //public static boolean isWebTesterCatchException=false;
     //public static String webTesterLogFile=null;
@@ -82,12 +91,12 @@ public class ServerLog {
     /**
      *  Debugging trace stream.
      */
-    private    static  PrintStream trace = System.out;
+    private    PrintStream trace = System.out;
     /** default trace level
      */
-    protected     static int traceLevel = TRACE_MESSAGES;
+    protected    int traceLevel = TRACE_MESSAGES;
     
-    public static void checkLogFile()  {
+    public void checkLogFile()  {
         if (logFileName == null) return;
         try {
             File  logFile = new File(logFileName);
@@ -110,30 +119,30 @@ public class ServerLog {
 			"\"\n name=\"" + stackIpAddress  + 
 			"\"\n auxInfo=\"" + auxInfo  + 
 			"\"/>\n ");
-			if ( LogWriter.needsLogging) {
-			  LogWriter.logMessage(" ]]> ");
-			  LogWriter.logMessage("</debug>");
-			  LogWriter.logMessage
+			if ( logWriter.needsLogging) {
+			  logWriter.logMessage(" ]]> ");
+			  logWriter.logMessage("</debug>");
+			  logWriter.logMessage
 			  ("<description\n logDescription=\""+description+
 			  "\"\n name=\"" + stackIpAddress  + 
 			  "\"\n auxInfo=\"" + auxInfo  + 
 			  "\"/>\n ");
-			  LogWriter.logMessage("<debug>");
-			  LogWriter.logMessage("<![CDATA[ ");
+			  logWriter.logMessage("<debug>");
+			  logWriter.logMessage("<![CDATA[ ");
 			}
 	        } else  {
 		    printWriter.println("<description\n logDescription=\""
 			+description+ "\"\n name=\"" + stackIpAddress  + 
 			"\" />\n");
-		    if (LogWriter.needsLogging)  {
-			 LogWriter.logMessage(" ]]>");
-			  LogWriter.logMessage("</debug>");
-		         LogWriter.logMessage
+		    if (logWriter.needsLogging)  {
+			 logWriter.logMessage(" ]]>");
+			  logWriter.logMessage("</debug>");
+		         logWriter.logMessage
 			 ("<description\n logDescription=\""
 			+description+ "\"\n name=\"" + stackIpAddress  + 
 			"\" />\n");
-			LogWriter.logMessage("<debug>");
-		        LogWriter.logMessage("<![CDATA[ ");
+			logWriter.logMessage("<debug>");
+		        logWriter.logMessage("<![CDATA[ ");
 		   }
 		}
             }
@@ -148,7 +157,7 @@ public class ServerLog {
      * unecessary message formatting.
      *@param logLevel level at which to check.
      */
-    public static boolean needsLogging(int logLevel) {
+    public boolean needsLogging(int logLevel) {
         return traceLevel >= logLevel;
     }
     
@@ -160,26 +169,26 @@ public class ServerLog {
      *
      */
     
-    public static boolean needsLogging() {
+    public boolean needsLogging() {
         return logFileName != null;
     }
     
     /** Set the log file name
      *@param name is the name of the log file to set.
      */
-    public static void setLogFileName(String name) {
+    public void setLogFileName(String name) {
         logFileName = name;
     }
     
     /** return the name of the log file.
      */
-    public static String getLogFileName() { return logFileName; }
+    public String getLogFileName() { return logFileName; }
     
     
     /** Log a message into the log file.
      * @param message message to log into the log file.
      */
-    private static void logMessage( String message) {
+    private void logMessage( String message) {
         // String tname = Thread.currentThread().getName();
         checkLogFile();
         String logInfo = message;
@@ -188,12 +197,12 @@ public class ServerLog {
         } else {
             printWriter.println(logInfo);
         }
-        if (LogWriter.needsLogging) {
-	    LogWriter.logMessage(" ]]>");
-	    LogWriter.logMessage("</debug>");
-            LogWriter.logMessage(logInfo);
-	    LogWriter.logMessage("<debug>");
-	    LogWriter.logMessage("<![CDATA[ ");
+        if (logWriter.needsLogging) {
+	    logWriter.logMessage(" ]]>");
+	    logWriter.logMessage("</debug>");
+            logWriter.logMessage(logInfo);
+	    logWriter.logMessage("<debug>");
+	    logWriter.logMessage("<![CDATA[ ");
         }
     }
     
@@ -207,7 +216,7 @@ public class ServerLog {
      * @param status Status information (generated while processing message).
      * @param time the reception time (or date).
      */
-    public synchronized static void logMessage(String message,
+    public synchronized void logMessage(String message,
     String from,
     String to,
     boolean sender,
@@ -222,7 +231,7 @@ public class ServerLog {
         logMessage(log.flush());
     }
 
-    public synchronized static void logMessage(String message,
+    public synchronized void logMessage(String message,
     String from,
     String to,
     boolean sender,
@@ -248,7 +257,7 @@ public class ServerLog {
      * @param status Status information (generated while processing message).
      * @param tid    is the transaction id for the message.
      */
-    public static void logMessage(String message,
+    public  void logMessage(String message,
     String from, String to,
     boolean sender,
     String callId,
@@ -269,7 +278,7 @@ public class ServerLog {
      * @param sender is the server the sender
      * @param time is the time to associate with the message.
      */
-    public static void logMessage(SIPMessage message, String from,
+    public void logMessage(SIPMessage message, String from,
     String to, boolean sender, String time) {
         checkLogFile();
         CallID cid = (CallID)message.getCallId();
@@ -289,7 +298,7 @@ public class ServerLog {
      * @param sender is the server the sender
      * @param time is the time to associate with the message.
      */
-    public static void logMessage(SIPMessage message, String from,
+    public void logMessage(SIPMessage message, String from,
     String to, boolean sender, long time) {
         checkLogFile();
         CallID cid =(CallID )message.getCallId();
@@ -310,7 +319,7 @@ public class ServerLog {
      * @param to to header of the message to log into the log directory
      * @param sender is the server the sender
      */
-    public static void logMessage(SIPMessage message, String from,
+    public void logMessage(SIPMessage message, String from,
     String to, boolean sender) {
         logMessage(message,from,to,sender,
         new Long(System.currentTimeMillis()).toString());
@@ -324,7 +333,7 @@ public class ServerLog {
      * @param sender is the server the sender or receiver (true if sender).
      * @param time is the reception time.
      */
-    public static void logMessage(SIPMessage message, String from,
+    public  void logMessage(SIPMessage message, String from,
     String to, String status,
     boolean sender, String time) {
         checkLogFile();
@@ -345,7 +354,7 @@ public class ServerLog {
      * @param sender is the server the sender or receiver (true if sender).
      * @param time is the reception time.
      */
-    public static void logMessage(SIPMessage message, String from,
+    public  void logMessage(SIPMessage message, String from,
     String to, String status,
     boolean sender, long time) {
         checkLogFile();
@@ -367,7 +376,7 @@ public class ServerLog {
      * @param status the status to log.
      * @param sender is the server the sender or receiver (true if sender).
      */
-    public static void logMessage(SIPMessage message, String from,
+    public void logMessage(SIPMessage message, String from,
     String to, String status,
     boolean sender) {
         logMessage(message,from,to,status,sender,
@@ -379,7 +388,7 @@ public class ServerLog {
      * @param msgLevel Logging level for this message.
      * @param tracemsg message to write out.
      */
-    public static void traceMsg(int msgLevel, String tracemsg) {
+    public void traceMsg(int msgLevel, String tracemsg) {
         if (needsLogging(msgLevel))   {
             traceWriter.println(tracemsg);
             logMessage(tracemsg);
@@ -390,39 +399,18 @@ public class ServerLog {
      * @param ex Exception to log into the log file
      */
     
-    public static void logException(Exception ex) {
+    public void logException(Exception ex) {
         if (traceLevel >= TRACE_EXCEPTION) {
             checkLogFile();
             ex.printStackTrace();
             if (printWriter != null) ex.printStackTrace(printWriter);
             
         }
-            /*
-            if (isWebTesterCatchException) {
-                try {
-                    PrintWriter printWriterWeb=null;
-                    File  logFile = new File(webTesterLogFile);
-                    if (! logFile.exists()) {
-                        logFile.createNewFile();
-                        printWriterWeb = null;
-                    }
-                    // Append buffer to the end of the file.
-                    if (printWriterWeb == null) {
-                        FileWriter fw =
-                        new FileWriter(webTesterLogFile,true);
-                        printWriterWeb = new PrintWriter(fw,true);
-                        ex.printStackTrace(printWriterWeb);
-                    }
-                } catch (IOException ex) {
-                    ServerInternalError.handleException(ex);
-                }
-             
-            }*/
     }
     
     /** Set the name to assign for the log.
      */
-    public static void setLogName(String name) {
+    public void setLogName(String name) {
         logRootName = name;
     }
     
@@ -436,7 +424,7 @@ public class ServerLog {
      * logRootName is host:udpPort or host:tcpPort for the machine from
      * where the log originated.
      */
-    public static void initMessageLogTable(
+    public  void initMessageLogTable(
     String stackAddress,
     int rmiPort,
     String rootName ,
@@ -444,6 +432,7 @@ public class ServerLog {
     throws RemoteException {
         logRootName = rootName;
         messageLogTable = new MessageLogTableImpl(rmiPort);
+	messageLogTable.serverLog = this;
         messageLogTable.init(stackAddress, rmiPort,
         logRootName, traceLifeTime);
     }
@@ -451,14 +440,14 @@ public class ServerLog {
     /** Return the message log table.
      *@return the messageLogTable member.
      */
-    public static MessageLogTableImpl getMessageLogTable() {
+    public  MessageLogTableImpl getMessageLogTable() {
         return messageLogTable;
     }
     
     /** print a line to stdout if the traceLevel is TRACE_DEBUG.
      * @param s String to print out.
      */
-    public static void println( String s) {
+    public  void println( String s) {
         if (traceLevel == TRACE_DEBUG) System.out.println(s);
     }
     
@@ -481,7 +470,7 @@ public class ServerLog {
      *
      *</ul>
      */
-    public static void setTraceLevel(int level) {
+    public  void setTraceLevel(int level) {
         traceLevel = level;
     }
     
@@ -489,7 +478,7 @@ public class ServerLog {
      *
      *@return the trace level
      */
-    public static int getTraceLevel() { return traceLevel; }
+    public  int getTraceLevel() { return traceLevel; }
     
     
     /** Set aux information. Auxiliary information may be associated
@@ -498,15 +487,15 @@ public class ServerLog {
      *@param auxInfo -- auxiliary information.
      *
      */
-    public static void setAuxInfo(String auxInfo) {
-        ServerLog.auxInfo = auxInfo;
+    public  void setAuxInfo(String auxInfo) {
+        this.auxInfo = auxInfo;
     }
     
     /** Set the descriptive String for the log.
      *
      *@param desc is the descriptive string.
      */
-    public static void setDescription(String desc) {
+    public  void setDescription(String desc) {
 		description = desc;
     }
     

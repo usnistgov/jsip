@@ -5,7 +5,8 @@ package gov.nist.core;
 import java.lang.reflect.*;
 import java.util.LinkedList;
 import java.io.Serializable;
-/**
+
+ /**
  * The base class from which all the other classes in the
  * sipheader, sdpfields and sipmessage packages are extended.
  * Provides a few utility funcitons such as indentation and
@@ -19,7 +20,8 @@ import java.io.Serializable;
  *
  */
 
-public abstract class GenericObject  implements Serializable {
+public abstract class GenericObject  
+	implements Serializable {
     // Useful constants.
     protected static final String SEMICOLON= Separators.SEMICOLON;
     protected static final String COLON= Separators.COLON;

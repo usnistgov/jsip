@@ -2,8 +2,15 @@
  * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).      *
  ******************************************************************************/
 package gov.nist.javax.sip.stack;
+//ifndef SIMULATION
+//
 import java.net.Socket;
 import java.net.ServerSocket;
+//else
+/*
+import sim.java.net.*;
+//endif
+*/
 import java.io.IOException;
 import java.net.SocketException;
 import gov.nist.core.*;
@@ -28,6 +35,15 @@ import java.net.*;
 */
 public class TCPMessageProcessor extends MessageProcessor  {
 
+//ifdef SIMULATION
+/*
+    protected SimThread thread;
+//else
+*/
+    protected Thread thread;
+//endif
+//
+    
 
     protected int useCount;
 	
@@ -37,32 +53,49 @@ public class TCPMessageProcessor extends MessageProcessor  {
     
     private boolean isRunning;
     
+//ifndef SIMULATION
+//
     private ServerSocket sock;
+//else
+/*
+    private SimServerSocket sock;
+    private SimMessageObject msgObject;
+//endif
+*/
+
+
     /** The SIP Stack Structure.
      */
     protected SIPStack sipStack;
-    /** Optional channel notifier (method gets invoked on channel open
-     * and close).
-     */
-    protected ChannelNotifier notifier;
     
     /** Constructor.
      * @param sipStack SIPStack structure.
-     * @param channelNotifier Optional channel notifier.
+     * @param port port where this message processor listens.
      */
-    protected TCPMessageProcessor(SIPStack sipStack, 
-    	ChannelNotifier channelNotifier , int port) {
+    protected TCPMessageProcessor(SIPStack sipStack, int port) {
         this.sipStack = sipStack;
-        notifier = channelNotifier;
 	this.port = port;
-    }
-    
+//ifdef SIMULATION
+/*
+	this.msgObject = new SimMessageObject();
+//endif
+*/
+    }    
     /**
      * Start the processor.
      */
     public void start() throws IOException {
-        Thread thread = new Thread(this);
+//ifndef SIMULATION
+//
+        thread = new Thread(this);
         this.sock = new ServerSocket(this.port,0,sipStack.stackInetAddress);
+//else 
+/*
+	this.sock = new SimServerSocket (sipStack.stackInetAddress,this.port);
+	thread = new SimThread(this);
+        
+//endif
+*/
         this.isRunning = true;
         thread.start();
         
@@ -84,7 +117,15 @@ public class TCPMessageProcessor extends MessageProcessor  {
                     sipStack.maxConnections != -1 &&
                     this.nConnections >= sipStack.maxConnections)  {
                         try {
+//ifndef SIMULATION
+//
                             this.wait();
+//else
+/*
+			    this.msgObject.doWait();
+//endif
+*/
+			   
                             if (! this.isRunning)  return;
                         } catch (InterruptedException ex) {
                             break;
@@ -92,18 +133,21 @@ public class TCPMessageProcessor extends MessageProcessor  {
                     }
                     this.nConnections ++;
                 }
+//ifndef SIMULATION
+//
                 Socket newsock = sock.accept();
-                if (LogWriter.needsLogging) {
-                    LogWriter.logMessage(
+//else
+/*
+                SimSocket newsock = sock.accept();
+//endif
+*/
+                if (getSIPStack().logWriter.needsLogging) {
+                    getSIPStack().logWriter.logMessage(
                     "Accepting new connection!");
                 }
                 TCPMessageChannel tcpMessageChannel =
                 new TCPMessageChannel
-                (newsock,sipStack,notifier,this);
-                
-                if (notifier != null) {
-                    notifier.notifyOpen(tcpMessageChannel);
-                }
+                (newsock,sipStack,this);
             } catch (SocketException ex) {
                 this.isRunning = false;
             }  catch (IOException ex) {
@@ -150,7 +194,15 @@ public class TCPMessageProcessor extends MessageProcessor  {
         } catch(IOException e) {
             e.printStackTrace();
         }
+//ifdef SIMULATION
+/*
+	this.msgObject.doNotify();
+//else
+*/
         this.notify();
+//endif
+//
+
         
     }
     
@@ -161,13 +213,13 @@ public class TCPMessageProcessor extends MessageProcessor  {
     throws IOException {
         return new
         TCPMessageChannel(targetHostPort.getInetAddress(),
-        targetHostPort.getPort(), sipStack, notifier,this);
+        targetHostPort.getPort(), sipStack, this);
     }
     
     public MessageChannel createMessageChannel(InetAddress host,
     int port ) throws IOException {
         return new
-        TCPMessageChannel(host,port,sipStack,notifier,this);
+        TCPMessageChannel(host,port,sipStack,this);
     }
     
     
