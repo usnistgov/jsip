@@ -33,33 +33,33 @@ import sim.java.net.*;
  * Niklas Uhrberg suggested that a mechanism be added to limit the number
  * of simultaneous open connections.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.8 $ $Date: 2004-01-22 13:26:33 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.9 $ $Date: 2004-01-22 18:39:41 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public final class TCPMessageChannel
 	extends MessageChannel
 	implements SIPMessageListener, Runnable {
 
-	//ifndef SIMULATION
-	//
+//ifndef SIMULATION
+//
 	private Socket mySock;
-	//else
-	/*
-	    private SimSocket mySock;
-	//endif
-	*/
+//else
+/*
+	private SimSocket mySock;
+//endif
+*/
 	private PipelinedMsgParser myParser;
 	private InputStream myClientInputStream; // just to pass to thread.
 	private OutputStream myClientOutputStream;
 
-	//ifndef SIMULATION
-	//
+//ifndef SIMULATION
+//
 	private Thread mythread;
-	//else
-	/*
-	    private SimThread mythread;
-	//endif
-	*/
+//else
+/*
+	private SimThread mythread;
+//endif
+*/
 
 	private SIPStack stack;
 
@@ -86,8 +86,8 @@ public final class TCPMessageChannel
 	 * @param sipStack Ptr to SIP Stack
 	 */
 
-	//ifndef SIMULATION
-	//
+//ifndef SIMULATION
+//
 	protected TCPMessageChannel(
 		Socket sock,
 		SIPStack sipStack,
@@ -107,8 +107,8 @@ public final class TCPMessageChannel
 		super.messageProcessor = msgProcessor;
 		mythread.start();
 	}
-	//else
-	/*
+//else
+/*
 	    protected TCPMessageChannel( 
 		       SimSocket sock, 
 		       SIPStack sipStack, 
@@ -127,8 +127,8 @@ public final class TCPMessageChannel
 		super.messageProcessor =  msgProcessor;
 	        mythread.start();
 	    }
-	//endif
-	*/
+//endif
+*/
 
 	/**
 	 * Constructor - connects to the given inet address.
@@ -219,8 +219,8 @@ public final class TCPMessageChannel
 	 * @param msg is the message to send.
 	 * @param retry
 	 */
-	//ifndef SIMULATION
-	//
+//ifndef SIMULATION
+//
 	private void sendMessage(byte[] msg, boolean retry) throws IOException {
 		Socket sock =
 			this.stack.ioHandler.sendBytes(
@@ -245,8 +245,8 @@ public final class TCPMessageChannel
 			thread.start();
 		}
 	}
-	//else
-	/*
+//else
+/*
 	    private void sendMessage(byte[] msg, boolean retry ) throws IOException {
 	        SimSocket sock = this.stack.ioHandler.sendBytes(this.peerAddress,
 	        this.peerPort,this.peerProtocol,msg, retry );
@@ -263,8 +263,8 @@ public final class TCPMessageChannel
 	            thread.start();
 	        }
 	    }
-	//endif
-	*/
+//endif
+*/
 
 	/**
 	 * Return a formatted message to the client.
@@ -275,14 +275,14 @@ public final class TCPMessageChannel
 	public void sendMessage(SIPMessage sipMessage) throws IOException {
 		byte[] msg = sipMessage.encodeAsBytes();
 
-		//ifdef SIMULATION
-		/*
-		        long time = SimSystem.currentTimeMillis();
-		//else
-		*/
+//ifdef SIMULATION
+/*
+	        long time = SimSystem.currentTimeMillis();
+//else
+*/
 		long time = System.currentTimeMillis();
-		//endif
-		//
+//endif
+//
 
 		this.sendMessage(msg, sipMessage instanceof SIPRequest);
 		if (this
@@ -307,13 +307,13 @@ public final class TCPMessageChannel
 		throws IOException {
 		if (message == null || receiverAddress == null)
 			throw new IllegalArgumentException("Null argument");
-		//ifdef SIMULATION
-		/*
-		        SimSocket sock = this.stack.ioHandler.sendBytes
+//ifdef SIMULATION
+/*
+	        SimSocket sock = this.stack.ioHandler.sendBytes
 						(receiverAddress,receiverPort,
 		        			"TCP",message,retry);
-		//else
-		*/
+//else
+*/
 		Socket sock =
 			this.stack.ioHandler.sendBytes(
 				receiverAddress,
@@ -321,7 +321,7 @@ public final class TCPMessageChannel
 				"TCP",
 				message,
 				retry);
-		//endif
+//endif
 		//
 		// Created a new socket so close the old one and s
 		// Check for null (bug fix sent in by Christophe)
@@ -336,15 +336,15 @@ public final class TCPMessageChannel
 			this.myClientInputStream = mySock.getInputStream();
 			this.myClientOutputStream = mySock.getOutputStream();
 			// start a new reader on this end of the pipe.
-			//ifdef SIMULATION
-			/*
-			            SimThread mythread = new SimThread(this);
+//ifdef SIMULATION
+/*
+			SimThread mythread = new SimThread(this);
 				    mythread.setName("TCPMessageChannelThread");
-			//else
-			*/
+//else
+*/
 			Thread mythread = new Thread(this);
-			//endif
-			//
+//endif
+//
 
 			mythread.start();
 		}
@@ -483,14 +483,14 @@ public final class TCPMessageChannel
 
 			// Foreach part of the request header, fetch it and process it
 
-			//ifdef SIMULATION
-			/*
-			            long receptionTime = SimSystem.currentTimeMillis();
-			//else
-			*/
+//ifdef SIMULATION
+/*
+ 			long receptionTime = SimSystem.currentTimeMillis();
+//else
+*/
 			long receptionTime = System.currentTimeMillis();
-			//endif
-			//
+//endif
+//
 
 			if (sipMessage instanceof SIPRequest) {
 				// This is a request - process the request.
@@ -729,4 +729,28 @@ public final class TCPMessageChannel
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/01/22 13:26:33  sverker
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  sverker
+ * Reviewed by:   mranga
+ *
+ * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  */

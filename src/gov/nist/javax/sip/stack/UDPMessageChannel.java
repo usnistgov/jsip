@@ -46,7 +46,7 @@ import sim.java.net.*;
  * this code that was sending it into an infinite loop when a bad incoming
  * message was parsed.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2004-01-22 14:23:45 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.14 $ $Date: 2004-01-22 18:39:42 $
  */
 public class UDPMessageChannel
 	extends MessageChannel
@@ -104,15 +104,15 @@ public class UDPMessageChannel
 		UDPMessageProcessor messageProcessor) {
 		super.messageProcessor = messageProcessor;
 		this.stack = stack;
-		//ifndef SIMULATION
-		//
+//ifndef SIMULATION
+//
 		Thread mythread = new Thread(this);
-		//else
-		/*
+//else
+/*
 		SimThread mythread = new SimThread(this);
 		mythread.setName("UDPMessageChannelThread");
-		//endif
-		*/
+//endif
+*/
 		mythread.start();
 
 	}
@@ -136,15 +136,15 @@ public class UDPMessageChannel
 		this.stack = stack;
 		this.myAddress = stack.getHostAddress();
 		this.myPort = messageProcessor.getPort();
-		//ifndef SIMULATION
-		//
+//ifndef SIMULATION
+//
 		Thread mythread = new Thread(this);
-		//else
-		/*
+//else
+/*
 			SimThread mythread = new SimThread(this);
 			mythread.setName("UDPMessageChannelThread");
-		//endif
-		*/
+//endif
+*/
 		mythread.start();
 
 	}
@@ -194,16 +194,16 @@ public class UDPMessageChannel
 			DatagramPacket packet;
 
 			if (stack.threadPoolSize != -1) {
-				//ifdef SIMULATION
-				/*
+//ifdef SIMULATION
+/*
 				((UDPMessageProcessor)messageProcessor).
 				messageQueueShadow.enterCriticalSection();
-				//else
-				*/
+//else
+*/
 				synchronized (
 					((UDPMessageProcessor) messageProcessor).messageQueue)
-					//endif
-					//
+//endif
+//
 					{
 					while (((UDPMessageProcessor) messageProcessor)
 						.messageQueue
@@ -213,17 +213,16 @@ public class UDPMessageChannel
 							.isRunning)
 							return;
 						try {
-							//ifdef SIMULATION
-							/*
+//ifdef SIMULATION
+/*
 							((UDPMessageProcessor)messageProcessor).
 									messageQueueShadow.doWait();
-							//else
-							*/
+//else
+*/
 							((UDPMessageProcessor) messageProcessor)
-								.messageQueue
-								.wait();
-							//endif
-							//
+								.messageQueue.wait();
+//endif
+//
 						} catch (InterruptedException ex) {
 							if (!((UDPMessageProcessor) messageProcessor)
 								.isRunning)
@@ -237,12 +236,12 @@ public class UDPMessageChannel
 							.removeFirst();
 
 				}
-				//ifdef SIMULATION
-				/*
+//ifdef SIMULATION
+/*
 				((UDPMessageProcessor)messageProcessor).
 				messageQueueShadow.leaveCriticalSection();
-				//endif
-				*/
+//endif
+*/
 				this.incomingPacket = packet;
 			} else {
 				packet = this.incomingPacket;
@@ -271,16 +270,16 @@ public class UDPMessageChannel
 			SIPMessage sipMessage = null;
 			try {
 
-				//ifdef SIMULATION
-				/*
+//ifdef SIMULATION
+/*
 			       this.receptionTime = SimSystem.currentTimeMillis();
 			        // local delay for processing message.
 			        SimSystem.hold(this.stack.stackProcessingTime);
-				//else
-				*/
+//else
+*/
 				this.receptionTime = System.currentTimeMillis();
-				//endif
-				//
+//endif
+//
 
 				sipMessage = myParser.parseSIPMessage(msgBytes);
 				myParser = null;
@@ -560,14 +559,14 @@ public class UDPMessageChannel
 			this.stack.logWriter.logStackTrace();
 		byte[] msg = sipMessage.encodeAsBytes();
 
-		//ifdef SIMULATION
-		/*
+//ifdef SIMULATION
+/*
 		long time = SimSystem.currentTimeMillis();
-		//else
-		*/
+//else
+*/
 		long time = System.currentTimeMillis();
-		//endif
-		//
+//endif
+//
 
 		sendMessage(
 			msg,
@@ -618,14 +617,14 @@ public class UDPMessageChannel
 		DatagramPacket reply =
 			new DatagramPacket(msg, msg.length, peerAddress, peerPort);
 		try {
-			//ifdef SIMULATION
-			/*
-	 		SimDatagramSocket sock;
-			//else
-			*/
+//ifdef SIMULATION
+/*
+			SimDatagramSocket sock;
+//else
+*/
 			DatagramSocket sock;
-			//endif
-			//
+//endif
+//
 			if (stack.udpFlag) {
 				// Use the socket from the message processor (for firewall
 				// support use the same socket as the message processor 
@@ -640,15 +639,15 @@ public class UDPMessageChannel
 				// sock = new DatagramSocket(0,stack.stackInetAddress);
 			} else {
 				// bind to any interface and port.
-				//ifdef SIMULATION
-				/*
+//ifdef SIMULATION
+/*
 				sock = new SimDatagramSocket();
 				sock.setLocalAddress(stack.stackInetAddress);
-				//else
-				*/
+//else
+*/
 				sock = new DatagramSocket();
-				//endif
-				//
+//endif
+//
 			}
 			sock.send(reply);
 			if (!stack.udpFlag)
@@ -701,29 +700,28 @@ public class UDPMessageChannel
 				new DatagramPacket(msg, msg.length, peerAddress, peerPort);
 
 			try {
-				//ifdef SIMULATION
-				/*
+//ifdef SIMULATION
+/*
 				SimDatagramSocket sock;
-				//else
-				*/
+//else
+*/
 				DatagramSocket sock;
-				//endif
-				//
+//endif
+//
 				if (stack.udpFlag) {
 					sock = ((UDPMessageProcessor) messageProcessor).sock;
 
-					//sock = new DatagramSocket(0,stack.stackInetAddress);
 				} else {
 					// bind to any interface and port.
-					//ifdef SIMULATION
-					/*
+//ifdef SIMULATION
+/*
 			 		sock = new SimDatagramSocket();
 					sock.setLocalAddress(stack.stackInetAddress);
-					//else
-					*/
+//else
+*/
 					sock = new DatagramSocket();
-					//endif
-					//
+//endif
+//
 				}
 				sock.send(reply);
 				if (!stack.udpFlag)
@@ -737,11 +735,11 @@ public class UDPMessageChannel
 		} else {
 			// Use TCP to talk back to the sender.
 			// System.out.println("peerAddress " + peerPort);
-			//ifdef SIMULATION
-			/*
+//ifdef SIMULATION
+/*
 		   	 SimSocket outputSocket = new SimSocket(peerAddress,peerPort);
-			//else
-			*/
+//else
+*/
 			Socket outputSocket =
 				stack.ioHandler.sendBytes(
 					peerAddress,
@@ -749,8 +747,8 @@ public class UDPMessageChannel
 					"tcp",
 					msg,
 					retry);
-			//endif
-			//
+//endif
+//
 			OutputStream myOutputStream = outputSocket.getOutputStream();
 			myOutputStream.write(msg, 0, msg.length);
 			myOutputStream.flush();
@@ -907,6 +905,10 @@ public class UDPMessageChannel
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2004/01/22 14:23:45  mranga
+ * Reviewed by:   mranga
+ * Fixed some minor formatting issues.
+ *
  * Revision 1.12  2004/01/22 13:26:33  sverker
  * Issue number:
  * Obtained from:

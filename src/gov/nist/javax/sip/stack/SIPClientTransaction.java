@@ -120,7 +120,7 @@ import sim.java.*;
  *@author Bug fixes by Emil Ivov.
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.12 $ $Date: 2004-01-22 14:23:45 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2004-01-22 18:39:41 $
  */
 public class SIPClientTransaction
 	extends SIPTransaction
@@ -270,11 +270,11 @@ public class SIPClientTransaction
 		// Message typecast as a request
 		SIPRequest transactionRequest;
 
-		//ifdef SIMULATION
-		/*
+//ifdef SIMULATION
+/*
 		SimSystem.hold(getSIPStack().stackProcessingTime);
-		//endif
-		*/
+//endif
+*/
 
 		transactionRequest = (SIPRequest) messageToSend;
 
@@ -361,14 +361,14 @@ public class SIPClientTransaction
 			.needsLogging(ServerLog.TRACE_MESSAGES))
 			this.logResponse(transactionResponse,
 
-			//ifdef SIMULATION
-			/*
+//ifdef SIMULATION
+/*
 			SimSystem.currentTimeMillis(),
-			//else
-			*/
+//else
+*/
 			System.currentTimeMillis(),
-			//endif
-			//
+//endif
+//
 
 			"normal processing");
 		// If the state has not yet been assigned then this is a
@@ -944,6 +944,10 @@ public class SIPClientTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/01/22 14:23:45  mranga
+ * Reviewed by:   mranga
+ * Fixed some minor formatting issues.
+ *
  * Revision 1.11  2004/01/22 13:26:33  sverker
  * Issue number:
  * Obtained from:
