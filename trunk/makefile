@@ -261,27 +261,6 @@ srczip: stamp
 	-x \*.cvsignore						
 
 
-improxysrc:
-	cd ../;							\
-	$(RM) $(PROXY_IM_ZIP);					\
-	zip $(PROXY_IM_ZIP)			        	\
-	-r ./$(PROJECT_ROOT)/src/examples/proxy		        \
-	-r ./$(PROJECT_ROOT)/src/examples/instantmessaging	        \
-	-r ./$(PROJECT_ROOT)/README				\
-	-r ./$(PROJECT_ROOT)/makefile				\
-	-r ./$(PROJECT_ROOT)/build.xml				\
-	-r ./$(PROJECT_ROOT)/build-config				\
-	-r ./$(PROJECT_ROOT)/docs/examples				\
-	-x \*.nbattrs						\
-	-x \*CVS\*					        \
-	-x \*filesystem.attributes				\
-	-x \*.log				       		\
-	-x \*debug.txt						\
-	-x \*~							\
-	-r \#*							\
-	-r \.#*							\
-	-x \*log.txt						\
-	-x \*.cvsignore						
 
 tarfile: 
 	cd ../;							\
