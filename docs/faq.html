@@ -74,9 +74,10 @@ after I send response?</a> </li>
 execption on
 an incoming INVITE?</a> </li>
   <li><a href="#30">Why dont you use log4j for logging?</a> </li>
-  <li><a href="#31"> I see a SIP message headed for my machine on Ethereal but my application (Listener) does not see it. Why ?</a> </li> <li>
+  <li><a href="#31"> I see a SIP message headed for my machine on Ethereal but my application (Listener) does not see it. Why ?</a> </li> 
    <li><a href="#32"> How do I ensure that the stack closes TCP connections after transaction completion? <br/> </li>
    <li><a href="#33"> How do I limit the maximum size of messages that the stack will accept? <br/> </li>
+   <li><a href="#questionables"> I have some questionable questions. Where do I look? <br/> </li>
 </ol>
 <br>
 <hr size="2" noshade="noshade">
@@ -428,16 +429,18 @@ appropriate not to close server connections).
    Defaults for these are true - which may be appropriate to do if you are burrowing through firewalls using tcp.
 </li>
 <hr size="2" noshade="noshade">
+<li>
 <a name="33"></a>
 How do I limit the size of messages that the stack will accept? <br/>
 For UDP this is not an issue. For TCP, <br/>
 gov.nist.javax.sip.MAX_MESSAGE_SIZE=number <br/>
 default for this property is inifinity (no limit).
+</li>
 <hr size="2" noshade="noshade">
    
    
 </ol>
-<!--
+<a name="questionables"></a>
 <h2> Frequently Questionable Questions (List likely to grow in time) </h2>
 
 We have provided links to external web pages in this section because
@@ -472,7 +475,7 @@ No and No - just making something.
 <li> Do you control government policy/procurement/purchasing? <br/> 
 NO NO and NO </li>
 
-<li><a href="http://www.advfilms.com/favorites/neoranga/main.html"> Who is Neo Ranga ? </a> <br/>
+<li> Who is Neo Ranga ? <br/>
 "Overall, Neo Ranga is a refreshing take on the giant monster genre,
 more the story of why we feel the need for great gods who fight for
 justice in a world where justice seems another commodity to be bought and
@@ -481,17 +484,16 @@ and power he represents, while his thoughts and purpose are expressed
 only in his eyes and actions....." [dvd review] 
 </li>
 
-
-</ul>
-
+<li> What should I do if something does not work? <br/>
 <a href="http://www.popcultmag.com/obsessions/profilesingreatness/mad/alfred.jpg">Happy Coding! If anything breaks, 
 don't worry (what? me?? worry???) </a>, 
 be happy and let us know  at
 <a href=mailto:nist-sip-dev@antd.nist.gov>nist-sip-dev@antd.nist.gov</a> <br/>
+</ul>
 
 <br>
--->
+<hr size="2" noshade="noshade">
 M. Ranganathan, Olivier Deruelle and Emil Ivov.
-<hr size="2" noshade="noshade"></li>
+<hr size="2" noshade="noshade">
 </body>
 </html>
