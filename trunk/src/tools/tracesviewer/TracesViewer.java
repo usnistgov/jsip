@@ -13,6 +13,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.rmi.*;
 import java.util.*;
+import java.net.*;
 import gov.nist.javax.sip.stack.*;
 import java.io.*;
 
@@ -69,7 +70,7 @@ public class TracesViewer extends javax.swing.JFrame {
     protected static Image actorsImage=null;
     protected static Image backgroundImage=null;
     protected static Image facesImage=null;
-    protected static String logoNist=null;
+    protected static Image logoNist=null;
     
     protected TracesAnimationThread animationThread=null;
 
@@ -120,11 +121,27 @@ public class TracesViewer extends javax.swing.JFrame {
 	(String title, String rmiHost, String rmiPort, String stackId) {
         super(title);
         try{
+            /*
                 Toolkit toolkit=Toolkit.getDefaultToolkit();
                 backgroundImage=toolkit.getImage("./images/back.gif");
                 actorsImage=toolkit.getImage("./images/comp.gif");
                 facesImage=toolkit.getImage("./images/faces.jpg");
-                logoNist="./images/nistBanner.jpg";
+                logoNist=toolkit.getImage("./images/nistBanner.jpg");
+             */
+            
+             Toolkit toolkit=Toolkit.getDefaultToolkit();
+                        // this.backgroundImage=toolkit.getImage(back);
+             URL url = TracesViewer.class.getResource("images/back.gif");
+            // System.out.println("url:"+url.toString());
+             this.backgroundImage=toolkit.getImage(url);
+             url = TracesViewer.class.getResource("images/comp.gif");
+             this.actorsImage=toolkit.getImage(url);
+             url = TracesViewer.class.getResource("images/faces.jpg");
+             this.facesImage=toolkit.getImage(url);
+             url = TracesViewer.class.getResource("images/nistBanner.jpg");
+             this.logoNist=toolkit.getImage(url);
+            
+            
         }
         catch(Exception e) {
             backgroundImage=null;
@@ -163,11 +180,19 @@ public class TracesViewer extends javax.swing.JFrame {
 		String back, String faces, String actors, String logoNist) {
         super(title);
         try{
-               Toolkit toolkit=Toolkit.getDefaultToolkit();
-               backgroundImage=toolkit.getImage(back);
-               actorsImage=toolkit.getImage(actors);
-               facesImage=toolkit.getImage(faces);
-               this.logoNist=logoNist;
+             Toolkit toolkit=Toolkit.getDefaultToolkit();
+             //System.out.println("back:"+back);
+            // this.backgroundImage=toolkit.getImage(back);
+             URL url = TracesViewer.class.getResource(back); 
+           //  System.out.println("url:"+url.toString());
+            this.backgroundImage=toolkit.getImage(url);
+             url = TracesViewer.class.getResource(actors); 
+             this.actorsImage=toolkit.getImage(url);
+             url = TracesViewer.class.getResource(faces);
+             this.facesImage=toolkit.getImage(url);
+             url = TracesViewer.class.getResource(logoNist);
+             this.logoNist=toolkit.getImage(url);
+            
         }
         catch(Exception e) {
             backgroundImage=null;
@@ -208,12 +233,29 @@ public class TracesViewer extends javax.swing.JFrame {
 		String back, String faces, String actors, String logoNist) {
         super(title);
         this.logFile=logFile;
+         //System.out.println("back:"+back);
         try{
+                        
+             Toolkit toolkit=Toolkit.getDefaultToolkit();
+             //System.out.println("back:"+back);
+            // this.backgroundImage=toolkit.getImage(back);
+             URL url = TracesViewer.class.getResource(back); 
+           //  System.out.println("url:"+url.toString());
+            this.backgroundImage=toolkit.getImage(url);
+             url = TracesViewer.class.getResource(actors); 
+             this.actorsImage=toolkit.getImage(url);
+             url = TracesViewer.class.getResource(faces);
+             this.facesImage=toolkit.getImage(url);
+             url = TracesViewer.class.getResource(logoNist);
+             this.logoNist=toolkit.getImage(url);
+            
+            /*
                Toolkit toolkit=Toolkit.getDefaultToolkit();
                backgroundImage=toolkit.getImage(back);
                actorsImage=toolkit.getImage(actors);
                facesImage=toolkit.getImage(faces);
                this.logoNist=logoNist;
+             */
         }
         catch(Exception e) {
             backgroundImage=null;
@@ -781,10 +823,10 @@ public class TracesViewer extends javax.swing.JFrame {
                 
 		new TracesViewer
 		      (fileName,traces,parser.logName,parser.logDescription,
-			parser.auxInfo,"traces viewer","./images/back.gif",
-                        "./images/faces.jpg",
-                        "./images/comp.gif",
-                        "./images/nistBanner.jpg").show();
+			parser.auxInfo,"traces viewer","images/back.gif",
+                        "images/faces.jpg",
+                        "images/comp.gif",
+                        "images/nistBanner.jpg").show();
                 
 		return;
 		
@@ -797,10 +839,10 @@ public class TracesViewer extends javax.swing.JFrame {
                 
 		new TracesViewer
 		      (fileName,traces,parser.logName,parser.logDescription,
-			parser.auxInfo,"traces viewer","./images/back.gif",
-                        "./images/faces.jpg",
-                        "./images/comp.gif",
-                        "./images/nistBanner.jpg").show();
+			parser.auxInfo,"traces viewer","images/back.gif",
+                        "images/faces.jpg",
+                        "images/comp.gif",
+                        "images/nistBanner.jpg").show();
                 
 		return;
 		

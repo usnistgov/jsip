@@ -188,28 +188,6 @@ c:/jakarta-ant/bin/ant all
              <pathelement location="${classes}"/>
          </classpath>
      </javac>
-     <javac debug="${debug}" deprecation="${deprecation}" optimize="${optimize}" sourcepath="${srcroot}" srcdir="${srcroot}/examples/proxy" destdir= "${classes}">
-         <classpath>
-             <pathelement location="${xerceslib}"/>
-             <pathelement location="${jain_api_jar}"/>
-             <pathelement location="${ri_jar}"/>
-             <pathelement location="${classes}"/>
-         </classpath>
-     </javac>
-     <rmic classname="examples.proxy.registrar.Registrar" base="${classes}">
-         <classpath>
-             <pathelement location="${classes}"/>
-         </classpath>
-     </rmic>
-
-     <javac debug="${debug}" deprecation="${deprecation}" optimize="${optimize}" sourcepath="${srcroot}" srcdir="${srcroot}/examples/instantmessaging" destdir= "${classes}">
-         <classpath>
-             <pathelement location="${xerceslib}"/>
-             <pathelement location="${jain_api_jar}"/>
-             <pathelement location="${ri_jar}"/>
-             <pathelement location="${classes}"/>
-         </classpath>
-     </javac>
 </target>
 
 <!-- Compile the tools -->
