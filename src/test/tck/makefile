@@ -29,4 +29,9 @@ tck-gui:
 	$(JAVA) test.tck.Tck -mode gui -path gov.nist -abortonfail \
 		-logfile tcklog.txt
 
+
+cleanlogs:
+	$(RM) *Log.txt
+	$(RM) *log.txt
+
 		
