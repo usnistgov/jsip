@@ -24,7 +24,7 @@ import java.text.ParseException;
  * retrieve this structure from the SipStack. Bugs against route set
  * management were reported by Antonis Karydas and Brad Templeton.
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.29 $ $Date: 2004-06-01 11:42:58 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.30 $ $Date: 2004-06-02 13:09:57 $
  *
  *@author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -128,7 +128,12 @@ public class DialogImpl implements javax.sip.Dialog {
 			}
 		    }
 		    // cancel the associated dialog timer.
-                    this.cancel();
+		    try {
+                       this.cancel();
+		    } catch (IllegalStateException ex) {
+			// If the stack has been killed, then return.
+			if (!stack.isAlive()) return;
+		    }
                 }
             }
             // If I ACK has not been seen on Dialog,
@@ -1574,6 +1579,10 @@ public class DialogImpl implements javax.sip.Dialog {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.29  2004/06/01 11:42:58  mranga
+ * Reviewed by:   mranga
+ * timer fix missed starting the transaction timer in a couple of places.
+ *
  * Revision 1.28  2004/05/30 18:55:57  mranga
  * Reviewed by:   mranga
  * Move to timers and eliminate the Transaction scanner Thread

@@ -114,7 +114,7 @@ import java.util.TimerTask;
  *
  *</pre>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.33 $ $Date: 2004-05-30 18:55:58 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.34 $ $Date: 2004-06-02 13:09:58 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
  * @author Bug fixes by Emil Ivov, Antonis Karydas.
@@ -182,7 +182,11 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
                         // Note that the transaction record is actually removed in 
                         // the connection linger timer.
 			// Note - BUG report from Antonis Karydas
-			this.cancel();
+			try {
+			   this.cancel();
+			} catch (IllegalStateException ex) {
+				if ( ! sipStack.isAlive() ) return;
+			}
 			myTransaction.myTimer = new LingerTimer(this.myTransaction);
 			// Oneshot timer.
 			sipStack.timer.schedule(myTimer, SIPTransactionStack.CONNECTION_LINGER_TIME*1000);
@@ -1060,6 +1064,11 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.33  2004/05/30 18:55:58  mranga
+ * Reviewed by:   mranga
+ * Move to timers and eliminate the Transaction scanner Thread
+ * to improve scalability and reduce cpu usage.
+ *
  * Revision 1.32  2004/05/20 13:59:23  mranga
  * Reviewed by:   mranga
  * Cleaned up slighly ugly code.
