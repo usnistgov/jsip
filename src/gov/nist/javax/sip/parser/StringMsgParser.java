@@ -732,10 +732,20 @@ public class StringMsgParser {
      */
     public int getCurrentLineNumber() { return currentLine; }
     
-/**
     
+/**
     public static void main(String[] args) throws ParseException {
         String messages[] = {
+"SIP/2.0 180 Ringing\r\n"+
+"Via: SIP/2.0/UDP 172.18.1.29:5060;branch=z9hG4bK43fc10fb4446d55fc5c8f969607991f4\r\n"+
+"To: \"0440\" <sip:0440@212.209.220.131>;tag=2600\r\n"+
+"From: \"Andreas\" <sip:andreas@e-horizon.se>;tag=8524\r\n"+
+"Call-ID: f51a1851c5f570606140f14c8eb64fd3@172.18.1.29\r\n"+
+"CSeq: 1 INVITE\r\n" +
+"Max-Forwards: 70\r\n"+
+"Record-Route: <sip:212.209.220.131:5060>\r\n"+
+"Content-Length: 0\r\n\r\n",
+
     "INVITE sip:littleguy@there.com:5060 SIP/2.0\r\n"+
     "Via: SIP/2.0/UDP 65.243.118.100:5050\r\n" +
     "From: M. Ranganathan  <sip:M.Ranganathan@sipbakeoff.com>;tag=1234\r\n"+
@@ -761,7 +771,7 @@ public class StringMsgParser {
             StringMsgParser smp = new StringMsgParser();
             SIPMessage sipMessage = smp.parseSIPMessage(messages[i]);
             System.out.println("encoded " + sipMessage.toString());
-	    System.out.println(sipMessage.getFrom().getTag());
+	    System.out.println("dialog id = " + sipMessage.getDialogId(false));
         }
         
         
