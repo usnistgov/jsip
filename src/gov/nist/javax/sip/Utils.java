@@ -12,7 +12,7 @@ import java.security.NoSuchAlgorithmException;
  * tags and branch identifiers and odds and ends.
  * 
  * @author mranga
- * @version JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2005-03-05 03:38:19 $
+ * @version JAIN-SIP-1.1 $Revision: 1.8 $ $Date: 2005-03-22 18:34:55 $
  */
 public class Utils {
 
@@ -70,7 +70,8 @@ public class Utils {
 	}
 
 	/**
-	* Squeeze out all white space from a string and return the reduced string.
+	* Squeeze out all white space from a string and return the 
+	* reduced string.
 	*
 	* @param input input string to sqeeze.
 	* @return String a reduced string.	
@@ -91,7 +92,8 @@ public class Utils {
 	/** Generate a call  identifier. This is useful when we want
 	 * to generate a call identifier in advance of generating a message.
 	 */
-	public static String generateCallIdentifier(String address) {
+	public static synchronized 
+		String generateCallIdentifier(String address) {
 		 String date =
 		 new Long(System.currentTimeMillis()).toString() 
 		 + new Double(Math.random()).toString();
@@ -136,6 +138,12 @@ public class Utils {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2005/03/05 03:38:19  mranga
+ * Submitted by:  Greg D
+ * Reviewed by:   mranga
+ *
+ * Unique branch id generation
+ *
  * Revision 1.6  2004/07/23 06:50:04  mranga
  * Submitted by:  mranga
  * Reviewed by:   mranga
