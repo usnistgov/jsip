@@ -120,7 +120,7 @@ import sim.java.*;
  *@author Bug fixes by Emil Ivov.
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.14 $ $Date: 2004-01-22 20:15:32 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.15 $ $Date: 2004-01-23 18:26:10 $
  */
 public class SIPClientTransaction
 	extends SIPTransaction
@@ -878,10 +878,12 @@ public class SIPClientTransaction
 
 			ackRequest.addHeader(routeList);
 		} else {
-			javax.sip.address.URI uri =
+			if (contact != null) {
+				javax.sip.address.URI uri =
 				(javax.sip.address.URI) contact.getAddress().getURI().clone();
-			ackRequest.setRequestURI(uri);
-			ackRequest.addHeader(routeList);
+				ackRequest.setRequestURI(uri);
+				ackRequest.addHeader(routeList);
+			}
 		}
 		return ackRequest;
 
@@ -946,6 +948,10 @@ public class SIPClientTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/01/22 20:15:32  mranga
+ * Reviewed by:  mranga
+ * Fixed a possible race condition in  nulling out the transaction Request (earlier added for scalability).
+ *
  * Revision 1.13  2004/01/22 18:39:41  mranga
  * Reviewed by:   M. Ranganathan
  * Moved the ifdef SIMULATION and associated tags to the first column so Prep preprocessor can deal with them.
