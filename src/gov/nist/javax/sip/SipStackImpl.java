@@ -152,9 +152,18 @@ import sim.java.net.*;
  * is still under active development (may be extended to support security and
  * other features).
  *</li>
+ *
+ * <li> <b> gov.nist.javax.sip.STRIP_ROUTE_HEADER = [ true| false ] </b>
+ * If set to true (default behavior), 
+ * stack will strip topmpost route header on an incoming request
+ * if the route header matches the listening point on which it was received.
+ * If set to false, the route header is passed up to the application and it is
+ * the application layer's responsibility to strip the route header. 
+ *</li>
+ *
  *</ul>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.31 $ $Date: 2004-09-01 12:07:40 $
+ * @version JAIN-SIP-1.1 $Revision: 1.32 $ $Date: 2004-09-01 18:09:05 $
  * 
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -176,6 +185,10 @@ public class SipStackImpl
 	// All the methods of the listener must be synchronized for
 	// this to work.
 	protected boolean reEntrantListener;
+
+	// Flag to indicate whether stack or application will handle
+	// removal of topmost route header.
+	protected boolean stripRouteHeader;
 
 
 	/** Creates a new instance of SipStackImpl.
@@ -456,6 +469,10 @@ public class SipStackImpl
 
 	 	String rel = configurationProperties.getProperty("gov.nist.javax.sip.REENTRANT_LISTENER");
 	        this.reEntrantListener = (rel != null && "true".equals(rel));
+
+		String flagStr = configurationProperties.getProperty("gov.nist.javax.sip.STRIP_ROUTE_HEADER");
+		this.stripRouteHeader = true;
+		this.stripRouteHeader = (flagStr == null? true : "false".equals(flagStr));
 
 		
 //ifdef SIMULATION
@@ -738,6 +755,9 @@ public class SipStackImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.31  2004/09/01 12:07:40  xoba
+ * fixed html documentation bug --- removed an extra 'ul' tag... now html javadocs formatted correctly.
+ *
  * Revision 1.30  2004/09/01 11:18:30  xoba
  * fixed network layer property name
  *

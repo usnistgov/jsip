@@ -23,7 +23,7 @@ import java.io.IOException;
  * NIST-SIP stack and event model with the JAIN-SIP stack. Implementors
  * of JAIN services need not concern themselves with this class. 
  *
- * @version JAIN-SIP-1.1 $Revision: 1.38 $ $Date: 2004-06-21 05:43:16 $
+ * @version JAIN-SIP-1.1 $Revision: 1.39 $ $Date: 2004-09-01 18:09:05 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Bug fix Contributions by Lamine Brahimi and  Andreas Bystrom. <br/>
@@ -80,9 +80,13 @@ public class NistSipMessageHandlerImpl
 
 		// Section 16.4 If the first value in the Route header 
 		// field indicates this proxy,the proxy MUST remove that
-		// value from the request .
+		// value from the request . Note: Bill Roome from AT&T 
+		// noted that it may be necessary for the route header
+		// to be passed up to the application as the application
+		// may wish to extract some information from it. Thus
+		// a new configuration parameter was added. 
 		
-		if (sipRequest.getHeader(Route.NAME) != null) {
+		if (sipRequest.getHeader(Route.NAME) != null && sipStackImpl.stripRouteHeader ) {
 		      RouteList routes = sipRequest.getRouteHeaders();
 		       Route route = (Route) routes.getFirst();
 		       SipUri uri = (SipUri) route.getAddress().getURI();
@@ -196,20 +200,6 @@ public class NistSipMessageHandlerImpl
 							return;
 						}
 					}  
-					/** else {
-						dialogId = sipRequest.getDialogId(false);
-						if (LogWriter.needsLogging)
-							sipStackImpl.getLogWriter().logMessage(
-							"dialogId = " + dialogId);
-						dialog = sipStackImpl.getDialog(dialogId);
-						if (dialog != null) {
-							dialog.addTransaction(transaction);
-						} else {
-							transaction = null; // pass up to provider for
-							// stateless handling.
-						}
-					} 
-					**/
 			
 				} else if (transaction != null)  {
 					// This is an out of sequence BYE
@@ -568,6 +558,11 @@ public class NistSipMessageHandlerImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.38  2004/06/21 05:43:16  mranga
+ * Reviewed by:  mranga
+ *
+ * code smithing
+ *
  * Revision 1.37  2004/06/21 04:59:48  mranga
  * Refactored code - no functional changes.
  *
