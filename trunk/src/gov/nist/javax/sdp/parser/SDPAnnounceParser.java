@@ -22,16 +22,18 @@ public class SDPAnnounceParser extends ParserCore {
 	}
 
 	/** Create a new SDPAnnounceParser.
-	*@param sdpMessage message containing the sdp announce message.
+	*@param message  string containing the sdp announce message.
 	*
 	*/
-	public SDPAnnounceParser(String sdpAnnounce) {
+	public SDPAnnounceParser(String message) {
 		int start = 0;
 		String line = null;
-		sdpMessage = new Vector();
 		// Return trivially if there is no sdp announce message
 		// to be parsed. Bruno Konik noticed this bug.
-		if (sdpAnnounce == null ) return;
+		if (message == null ) return;
+		sdpMessage = new Vector();
+		// Strip off leading and trailing junk.
+		String sdpAnnounce = message.trim() + "\r\n";
 		// Bug fix by Andreas Bystrom.
 		while (start < sdpAnnounce.length()) {
 			int add = 0;
@@ -73,9 +75,39 @@ public class SDPAnnounceParser extends ParserCore {
 
 	}
 
+	public static void main( String [] args )  throws Exception {
+		String sdpData = "\r\n    " +
+		"v=0\r\n"
+		+ "o=4855 13760799956958020 13760799956958020"
+		+ " IN IP4  129.6.55.78\r\n"
+		+ "s=mysession session\r\n"
+	        + "p=+46 8 52018010\r\n"
+		+ "c=IN IP4  129.6.55.78\r\n"
+		+ "t=0 0\r\n"
+		+ "m=audio 6022 RTP/AVP 0 4 18\r\n"
+		+ "a=rtpmap:0 PCMU/8000\r\n"
+		+ "a=rtpmap:4 G723/8000\r\n"
+		+ "a=rtpmap:18 G729A/8000\r\n"
+		+ "a=ptime:20\r\n";
+
+
+		SDPAnnounceParser parser = new SDPAnnounceParser (sdpData);
+		SessionDescriptionImpl sessiondescription = parser.parse();
+		System.out.println("Encoded structure = " +
+			sessiondescription.toString() );
+
+	}
+
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/02/18 14:33:02  mranga
+ * Submitted by:  Bruno Konik
+ * Reviewed by:   mranga
+ * Remove extraneous newline in encoding messages. Test for empty sdp announce
+ * rather than die with null when null is passed to sdp announce parser.
+ * Fixed bug in checking for \n\n when looking for message end.
+ *
  * Revision 1.3  2004/01/22 13:26:28  sverker
  * Issue number:
  * Obtained from:
