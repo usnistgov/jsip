@@ -61,6 +61,7 @@ public  class ZoneField  extends SDPField
 		   ZoneAdjustment za = (ZoneAdjustment)li.next();
 		   if (num > 0) retval += Separators.SP;
 		   retval += za.encode();
+		   num++;
 		}
 		retval += Separators.NEWLINE;
 		return retval;
