@@ -9,6 +9,7 @@ import gov.nist.javax.sip.stack.*;
 import gov.nist.javax.sip.message.*;
 import gov.nist.javax.sip.header.*;
 import gov.nist.core.*;
+import java.io.IOException;
 
 /**
  * An adapter class from the JAIN implementation objects to the NIST-SIP stack.
@@ -19,7 +20,7 @@ import gov.nist.core.*;
  * NIST-SIP stack and event model with the JAIN-SIP stack. Implementors
  * of JAIN services need not concern themselves with this class.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.27 $ $Date: 2004-04-22 22:51:16 $
+ * @version JAIN-SIP-1.1 $Revision: 1.28 $ $Date: 2004-05-10 21:11:19 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Bug fix Contributions by Lamine Brahimi and  Andreas Bystrom. <br/>
@@ -260,15 +261,6 @@ public class NistSipMessageHandlerImpl
 			}
 			// If the transaction is found then it is already managed so
 			// dont call the listener.
-			/**
-			if (sipStack.isDialogCreated(sipRequest.getMethod())) {
-				if ((SIPServerTransaction) sipStack
-					.findTransaction(sipRequest, true) 
-				!= null) {
-					return;
-				} 
-			}
-			**/
 			String dialogId = sipRequest.getDialogId(true);
 			DialogImpl dialog = sipStackImpl.getDialog(dialogId);
 
@@ -288,8 +280,25 @@ public class NistSipMessageHandlerImpl
 				          dialog.getRemoteSequenceNumber() + 
 					  " "  + sipRequest.getCSeq());
 				     }
-				      
-				      return;
+				     // "UAS Behavior" section (12.2.2): 
+				     // If the remote sequence number was not empty, but the sequence number
+  				     // of the request is lower than the remote sequence number, the request
+  				     // is out of order and MUST be rejected with a 500 (Server Internal
+  				     // Error) response. 
+				     // This is rather strange because the error is on the side of the
+				     // client and not the server but thats what the spec says....
+				     if (dialog.getRemoteSequenceNumber() > 
+					sipRequest.getCSeq().getSequenceNumber() ) {
+				        if (LogWriter.needsLogging) 
+					   sipStackImpl.logMessage ("Sending 500 response for out of sequence message" );
+					SIPResponse sipResponse = sipRequest.createResponse(Response.SERVER_INTERNAL_ERROR);
+					try {
+					    transaction.sendMessage(sipResponse);
+					} catch ( IOException ex) {
+						// Ignore.
+					}
+				     } 
+				     return;
 				}
 				dialog.addTransaction(transaction);
 				dialog.addRoute(sipRequest);
@@ -475,6 +484,12 @@ public class NistSipMessageHandlerImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.27  2004/04/22 22:51:16  mranga
+ * Submitted by:  Thomas Froment
+ * Reviewed by:   mranga
+ *
+ * Fixed corner cases.
+ *
  * Revision 1.26  2004/04/07 00:19:22  mranga
  * Reviewed by:   mranga
  * Fixes a potential race condition for client transactions.
