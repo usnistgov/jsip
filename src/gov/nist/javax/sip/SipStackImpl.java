@@ -101,7 +101,7 @@ import sim.java.net.*;
  *  (Was mis-spelled - Documentation bug fix by Bob Johnson)</li>
  *</ul>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.21 $ $Date: 2004-03-30 15:17:37 $
+ * @version JAIN-SIP-1.1 $Revision: 1.22 $ $Date: 2004-04-19 21:51:03 $
  * 
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -322,9 +322,25 @@ public class SipStackImpl
 
 //ifndef SIMULATION
 //
-		super.stunServerAddress =
+	        String stunAddr = 
 			configurationProperties.getProperty(
 				"gov.nist.javax.sip.STUN_SERVER");
+		if (stunAddr != null) {
+		    int k = stunAddr.indexOf(':');
+		    if  ( k  == -1) {
+		   	super.stunServerAddress = stunAddr;
+		   	super.stunServerPort = 3478;
+		    } else  {
+		   	super.stunServerAddress = stunAddr.substring(0, k-1);
+		   	String portString = stunAddr.substring(k+1).trim();
+			try {
+			    super.stunServerPort = Integer.parseInt( portString);
+			} catch (NumberFormatException ex) {
+				super.stunServerPort = 3478;
+			}
+			
+		    }
+		}
 //endif
 //
 
@@ -619,6 +635,10 @@ public class SipStackImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.21  2004/03/30 15:17:37  mranga
+ * Reviewed by:   mranga
+ * Added reInitialization for stack in support of applets.
+ *
  * Revision 1.20  2004/03/25 15:15:03  mranga
  * Reviewed by:   mranga
  * option to log message content added.

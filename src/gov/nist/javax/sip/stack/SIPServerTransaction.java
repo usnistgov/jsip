@@ -114,7 +114,7 @@ import java.util.TimerTask;
  *
  *</pre>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.27 $ $Date: 2004-04-07 00:19:23 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.28 $ $Date: 2004-04-19 21:51:04 $
  * @author Jeff Keyser 
  * @author M. Ranganathan <mranga@nist.gov>  
  * @author Bug fixes by Emil Ivov, Antonis Karydas.
@@ -491,7 +491,7 @@ public class SIPServerTransaction
 					if (toTu)
 						requestOf.processRequest(transactionRequest, this);
 				} else {
-					requestOf.processRequest(transactionRequest, this);
+					if (requestOf != null) requestOf.processRequest(transactionRequest, this);
 				}
 			} else {
 				// This seems like a common bug so I am allowing it through!
@@ -513,7 +513,7 @@ public class SIPServerTransaction
 					  }
 					}  else {
 					  // Duplicate ACKs are seen by the application.
-					  requestOf.processRequest(transactionRequest, this);
+					  if (requestOf != null) requestOf.processRequest(transactionRequest, this);
 					}
 				} else if (
 					transactionRequest.getMethod().equals(Request.CANCEL)) {
@@ -1019,6 +1019,11 @@ public class SIPServerTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.27  2004/04/07 00:19:23  mranga
+ * Reviewed by:   mranga
+ * Fixes a potential race condition for client transactions.
+ * Handle re-invites statefully within an established dialog.
+ *
  * Revision 1.26  2004/03/09 00:34:44  mranga
  * Reviewed by:   mranga
  * Added TCP connection management for client and server side
