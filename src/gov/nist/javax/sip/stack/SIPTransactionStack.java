@@ -325,8 +325,8 @@ extends SIPStack implements  SIPTransactionEventListener {
             Iterator		transactionIterator;
             // One transaction in the set
             SIPTransaction	nextTransaction;
-            
-            
+            LinkedList fireList = new LinkedList();
+            Iterator iterator;
             // Loop while this stack is running
             while( isAlive( ) ) {
                 
@@ -341,7 +341,7 @@ extends SIPStack implements  SIPTransactionEventListener {
 		    // serverTransactions.size());
                     // Check all client transactions
 
-                    LinkedList fireList = new LinkedList();
+                    
                     
                     // Check all server transactions
                     synchronized(serverTransactions) {
@@ -422,7 +422,7 @@ extends SIPStack implements  SIPTransactionEventListener {
                     
                     synchronized (dialogTable) {
                         Collection values = dialogTable.values();
-                        Iterator iterator = values.iterator();
+                        iterator = values.iterator();
                         while (iterator.hasNext()) {
                             DialogImpl d = (DialogImpl) iterator.next();
 			    // System.out.println("dialogState = " +
@@ -479,7 +479,9 @@ extends SIPStack implements  SIPTransactionEventListener {
                         transactionIterator.next();
                         nextTransaction.fireTimer();
                     }
-                    
+                    fireList.clear();
+                    transactionIterator = null;
+                    System.gc();
                     
                 } catch( InterruptedException e ) {
                     
