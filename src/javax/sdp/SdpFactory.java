@@ -556,7 +556,7 @@ public class SdpFactory extends Object {
     throws SdpException {
       
 	    // Bug report by Brian J. Collins
-            return createConnection("IN","IPV4",addr);
+            return createConnection("IN","IP4",addr);
                 
     }
     
