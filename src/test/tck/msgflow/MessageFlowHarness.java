@@ -556,9 +556,9 @@ public class MessageFlowHarness extends TestHarness
         properties.setProperty("javax.sip.RETRANSMISSION_FILTER", "true");
 	riRetransmissionFilterEnabled = true;
 
-	// properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL","0");
+	properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL","0");
 
-	properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL","32");
+	//properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL","32");
 	properties.setProperty("gov.nist.javax.sip.DEBUG_LOG","riDebugLog.txt");
 	properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
 				"riMessageLog.txt");
