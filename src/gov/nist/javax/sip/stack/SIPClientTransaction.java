@@ -120,11 +120,13 @@ import sim.java.*;
  *@author Bug fixes by Emil Ivov.
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.21 $ $Date: 2004-04-06 01:19:00 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.22 $ $Date: 2004-04-07 00:19:23 $
  */
 public class SIPClientTransaction
 	extends SIPTransaction
 	implements SIPServerResponseInterface, javax.sip.ClientTransaction {
+
+	private LinkedList pendingResponses;
 
 	private SIPRequest lastRequest;
 
@@ -134,6 +136,17 @@ public class SIPClientTransaction
 
 	// Real ResponseInterface to pass messages to
 	private SIPServerResponseInterface respondTo;
+
+
+	class PendingResponse {
+		protected SIPResponse sipResponse;
+		protected MessageChannel messageChannel;
+		public PendingResponse(SIPResponse sipResponse,
+				MessageChannel messageChannel) {
+			this.sipResponse = sipResponse;
+			this.messageChannel = messageChannel;
+		}
+	}
 
 	/**
 	 *	Creates a new client transaction.
@@ -155,6 +168,7 @@ public class SIPClientTransaction
 				"Creating clientTransaction " + this);
 			parentStack.logWriter.logStackTrace();
 		}
+		this.pendingResponses = new LinkedList();
 
 	}
 
@@ -372,6 +386,7 @@ public class SIPClientTransaction
 //
 
 			"normal processing");
+
 		// If the state has not yet been assigned then this is a
 		// spurious response.
 		if (getState() == null)
@@ -385,6 +400,13 @@ public class SIPClientTransaction
 			 && transactionResponse.getStatusCode() == 100 ) { 
 			// Ignore 100 if received after 180
 			// bug report from Peter Parnes.
+			return;
+		}
+		// Defer processing if a previous event has been placed in the processing queue.
+		// bug shows up on fast dual processor machines where a subsequent response
+		// arrives before a previous one completes processing.
+		if (this.eventPending) {
+			this.pendingResponses.add(new PendingResponse(transactionResponse,sourceChannel));
 			return;
 		}
 
@@ -965,9 +987,31 @@ public class SIPClientTransaction
 			}
 			super.setState(newState);
 	}
+
+	/** Run any pending responses - gets called at the end of the event loop.
+	*/
+	public synchronized void processPendingResponses( ) {
+		if (pendingResponses.isEmpty() ) return;
+		try {
+		    PendingResponse pr = 
+				(PendingResponse) this.pendingResponses.removeFirst();
+		    this.processResponse(pr.sipResponse,pr.messageChannel);
+		} catch (SIPServerException ex) { 
+			// Should never happen.
+			ex.printStackTrace();
+		}
+	}
+
+	public synchronized boolean hasResponsesPending() {
+		return !pendingResponses.isEmpty();
+	}
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.21  2004/04/06 01:19:00  mranga
+ * Reviewed by:   mranga
+ * suppress 100 if invite client transaction is in the Proceeding state
+ *
  * Revision 1.20  2004/03/09 00:34:44  mranga
  * Reviewed by:   mranga
  * Added TCP connection management for client and server side

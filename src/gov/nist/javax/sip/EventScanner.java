@@ -19,7 +19,7 @@ import sim.java.net.*;
 */
 /** Event Scanner to deliver events to the Listener.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-04-02 19:36:18 $
+ * @version JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2004-04-07 00:19:22 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -182,10 +182,19 @@ class EventScanner implements Runnable {
 						// you to handle the request statefully or statelessly.
 						// An example of the latter case is REGISTER and an example
 						// of the former case is INVITE.
-						if (sipStackImpl.isDialogCreated(sipRequest.getMethod()) ||
-						    ( (!sipRequest.getMethod().equals(Request.CANCEL)) &&
-						      sipStackImpl.getDialog(sipRequest.getDialogId(true)) 
-						       == null) ) {
+						if (sipStackImpl.isDialogCreated(sipRequest.getMethod())) {
+					            SIPServerTransaction tr =  (SIPServerTransaction) sipStackImpl.findTransaction(sipRequest, true);
+						    DialogImpl dialog = sipStackImpl.getDialog(sipRequest.getDialogId(true)) ;
+						    if (tr != null  &&  ! tr.passToListener() ) {
+								if (LogWriter.needsLogging)
+									sipStackImpl.logMessage(
+										"transaction already exists!");
+								continue;
+						    }
+				                } else if  ( (!sipRequest.getMethod().equals(Request.CANCEL)) &&
+						      sipStackImpl.getDialog(sipRequest.getDialogId(true)) == null)  {
+							// not dialog creating and not a cancel. 
+							// transaction already processed this message.
 						       SIPTransaction tr = sipStackImpl.findTransaction(sipRequest, true);
 							// If transaction already exists bail.
 							if (tr != null) {
@@ -222,6 +231,7 @@ class EventScanner implements Runnable {
 						}
 
 						sipListener.processRequest((RequestEvent) sipEvent);
+						if (eventWrapper.transaction != null) eventWrapper.transaction.clearEventPending();
 						
 					} else if (sipEvent instanceof ResponseEvent) {
 						sipListener.processResponse((ResponseEvent) sipEvent);
@@ -240,6 +250,15 @@ class EventScanner implements Runnable {
 							// to access the request once the transaction is 
 							// completed. 
 							ct.clearState() ;
+						}
+						// mark no longer in the event queue.
+						if (ct != null ) {
+						   ct.clearEventPending();
+						   // If responses have been received in the window
+						   // notify the pending response thread so he can take care of it.
+						   // cannot do this in the context of the current thread else it
+						   // will deadlock.
+						   if (ct.hasResponsesPending()) sipStackImpl.notify();
 						}
 					} else if (sipEvent instanceof TimeoutEvent) {
 						sipListener.processTimeout((TimeoutEvent) sipEvent);
