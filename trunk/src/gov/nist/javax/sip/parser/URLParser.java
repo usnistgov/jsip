@@ -7,7 +7,7 @@ import java.util.Vector;
 /**
  * Parser For SIP and Tel URLs. Other kinds of URL's are handled by the 
  * J2SE 1.4 URL class.
- * @version JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2004-04-22 22:51:18 $
+ * @version JAIN-SIP-1.1 $Revision: 1.8 $ $Date: 2004-07-28 14:13:55 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -704,50 +704,17 @@ public class URLParser extends Parser {
 	}
 
 	/**
-	static private String urls[] = 
-	{ 
-	   "sip:conference=1234@sip.convedia.com;xyz=pqd",
-	   "sip:herbivore.ncsl.nist.gov:5070;maddr=129.6.55.251;lc",
-	  "sip:1-301-975-3664@foo.bar.com;user=phone", "sip:129.6.55.181",
-	  "sip:herbivore.ncsl.nist.gov:5070;maddr=129.6.55.251?method=INVITE&contact=sip:foo.bar.com",
-	  "sip:j.doe@big.com", 
-	  "sip:j.doe:secret@big.com;transport=tcp",
-	  "sip:j.doe@big.com?subject=project",  
-	  "sip:+1-212-555-1212:1234@gateway.com;user=phone" ,
-	  "sip:1212@gateway.com",
-	  "sip:alice@10.1.2.3",
-	  "sip:alice@example.com",
-	  "sip:alice",
-	  "sip:alice@registrar.com;method=REGISTER",
-	  "sip:annc@10.10.30.186:6666;early=no;play=http://10.10.30.186:8080/examples/pin.vxml",
-	"tel:+463-1701-4291" ,
-	"tel:46317014291" ,
-	"http://10.10.30.186:8080/examples/pin.vxml" 
-	};
 	
-	    public static void main(String[] args) {
-	        
-	        try {
-	            for (int i = 0; i < urls.length; i++) {
-	                
-	                String url = urls[i];
-	                System.out.println("URI = " + url);
-	                URLParser urlParser = new URLParser(url);
-	                GenericURI uri = urlParser.parse();
-			System.out.println("class = " + uri.getClass());
-	                System.out.println("encoded URI = " + uri.toString());
-	                System.out.println("cloned encoded URI = " + 
-					uri.clone().toString());
-	            }
-	        } catch (Exception ex) {
-	            ex.printStackTrace();
-	        }
-	        
-	    }
 	**/
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/04/22 22:51:18  mranga
+ * Submitted by:  Thomas Froment
+ * Reviewed by:   mranga
+ *
+ * Fixed corner cases.
+ *
  * Revision 1.6  2004/02/06 20:15:55  mranga
  * Submitted by:  Bruno Konik
  * Reviewed by:   mranga
