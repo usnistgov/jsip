@@ -15,8 +15,6 @@ import  java.text.ParseException;
 */
 class AddressParametersParser  extends ParametersParser {
 
-	protected AddressParametersHeader addressParametersHeader;
-
 	protected AddressParametersParser(Lexer lexer) {
 		super(lexer);
 	}
@@ -29,7 +27,6 @@ class AddressParametersParser  extends ParametersParser {
 		throws ParseException {
 		dbg_enter("AddressParametersParser.parse");
 		try {
-		this.addressParametersHeader  = addressParametersHeader;
 		AddressParser addressParser = new AddressParser
 				(this.getLexer());
 		AddressImpl addr = addressParser.address();
