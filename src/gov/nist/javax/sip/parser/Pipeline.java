@@ -71,8 +71,11 @@ public class Pipeline extends  InputStream {
 			return retval;
 		     }
 		     try {
-			if (this.buffList.isEmpty()) this.buffList.wait();
-			if (this.isClosed) return -1;
+			// wait till something is posted.
+			while (this.buffList.isEmpty()) {
+				this.buffList.wait();
+				if (this.isClosed) return -1;
+			}
 			currentBuffer = (Buffer) this.buffList.removeFirst();
 			int retval =   currentBuffer.getNextByte();
 		        if (currentBuffer.ptr == currentBuffer.length )
