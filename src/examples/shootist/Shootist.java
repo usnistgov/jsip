@@ -25,6 +25,7 @@ public class Shootist implements SipListener {
 	private static MessageFactory messageFactory;
 	private static HeaderFactory headerFactory;
 	private static SipStack sipStack;
+	private int reInviteCount;
 
 	protected ClientTransaction inviteTid;
 
@@ -112,21 +113,26 @@ public class Shootist implements SipListener {
 					.getMethod()
 					.equals(
 					Request.INVITE)) {
-				if (tid != this.inviteTid) {
-					new Exception().printStackTrace();
-					System.exit(0);
-
-				}
 				// Request cancel = inviteTid.createCancel();
 				// ClientTransaction ct = 
 				//	sipProvider.getNewClientTransaction(cancel);
 				// ct.sendRequest();
 				Dialog dialog = tid.getDialog();
 				Request ackRequest = dialog.createRequest(Request.ACK);
-				// Bug report by Andreas Bystrom.
 				System.out.println("Sending ACK");
 				dialog.sendAck(ackRequest);
-				//dialog.sendAck(ackRequest);
+
+				// Send a Re INVITE
+				if (reInviteCount == 0) {
+				    Request inviteRequest = 
+					dialog.createRequest(Request.INVITE);
+				    try {Thread.sleep(100); } catch (Exception ex) {} 
+				    ClientTransaction ct = 
+					sipProvider.getNewClientTransaction(inviteRequest);
+				    dialog.sendRequest(ct);
+				    reInviteCount ++;
+				}
+
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -158,7 +164,7 @@ public class Shootist implements SipListener {
 		properties.setProperty("javax.sip.IP_ADDRESS", "127.0.0.1");
 		// If you want to try TCP transport change the following to
 		// transport = "tcp";
-		String transport = "udp";
+		String transport = "tcp";
 		properties.setProperty(
 			"javax.sip.OUTBOUND_PROXY",
 			"127.0.0.1:5070/" + transport);
@@ -171,6 +177,7 @@ public class Shootist implements SipListener {
 			"examples.shootist.MyRouter");
 		properties.setProperty("javax.sip.STACK_NAME", "shootist");
 		properties.setProperty("javax.sip.RETRANSMISSION_FILTER", "true");
+		properties.setProperty("javax.sip.MAX_MESSAGE_SIZE", "1048576");
 		properties.setProperty(
 			"gov.nist.javax.sip.DEBUG_LOG",
 			"shootistdebug.txt");
@@ -326,13 +333,13 @@ public class Shootist implements SipListener {
 					+ "a=rtpmap:4 G723/8000\r\n"
 					+ "a=rtpmap:18 G729A/8000\r\n"
 					+ "a=ptime:20\r\n";
-			/**
+/**
 			StringBuffer sdpBuff = new StringBuffer();
 			for (int i = 0; i < 50; i++)  {
 				sdpBuff.append(sdp);
 			}
 			String sdpData = sdpBuff.toString();
-			**/
+**/
 
 			request.setContent(sdpData, contentTypeHeader);
 
@@ -369,6 +376,12 @@ public class Shootist implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2004/02/26 14:28:50  mranga
+ * Reviewed by:   mranga
+ * Moved some code around (no functional change) so that dialog state is set
+ * when the transaction is added to the dialog.
+ * Cleaned up the Shootist example a bit.
+ *
  * Revision 1.15  2004/02/13 13:55:31  mranga
  * Reviewed by:   mranga
  * per the spec, Transactions must always have a valid dialog pointer. Assigned a dummy dialog for transactions that are not assigned to any dialog (such as Message).
