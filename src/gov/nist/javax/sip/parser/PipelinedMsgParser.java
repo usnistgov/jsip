@@ -26,7 +26,7 @@ import sim.java.net.*;
  * This can be accessed from the SIPMessage using the getContent and
  * getContentBytes methods provided by the SIPMessage class. 
  *
- * @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-01-22 13:26:31 $
+ * @version JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2004-01-22 14:23:45 $
  *
  * @author <A href=mailto:mranga@nist.gov > M. Ranganathan  </A>
  *
@@ -58,7 +58,7 @@ public final class PipelinedMsgParser implements Runnable {
 	protected SIPMessageListener sipMessageListener;
 	//ifdef SIMULATION
 	/*
-		private SimThread mythread; // Preprocessor thread
+	private SimThread mythread; // Preprocessor thread
 	//else
 	*/
 	private Thread mythread; // Preprocessor thread
@@ -103,7 +103,7 @@ public final class PipelinedMsgParser implements Runnable {
 		mythread.setName("PipelineThread-" + getNewUid());
 		//else
 		/*
-				mythread = new SimThread(this);
+		mythread = new SimThread(this);
 		//endif
 		*/
 
@@ -149,7 +149,7 @@ public final class PipelinedMsgParser implements Runnable {
 		p.sipMessageListener = this.sipMessageListener;
 		//ifdef SIMULATION
 		/*
-				SimThread mythread = new SimThread(p);
+		SimThread mythread = new SimThread(p);
 		//else
 		*/
 		Thread mythread = new Thread(p);
@@ -342,4 +342,28 @@ public final class PipelinedMsgParser implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/01/22 13:26:31  sverker
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  sverker
+ * Reviewed by:   mranga
+ *
+ * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  */
