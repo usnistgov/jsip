@@ -23,7 +23,7 @@ import  sim.java.net.*;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size). 
  * Each UDP message is processed in its own thread). 
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.11 $ $Date: 2004-01-22 18:39:42 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.12 $ $Date: 2004-04-03 12:30:53 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -102,7 +102,8 @@ public class UDPMessageProcessor extends MessageProcessor {
 	 * Constructor.
 	 * @param sipStack pointer to the stack.
 	 */
-	protected UDPMessageProcessor(SIPStack sipStack, int port) {
+	protected UDPMessageProcessor(SIPStack sipStack, int port)  
+		throws IOException {
 		this.sipStack = sipStack;
 		this.messageQueue = new LinkedList();
 //ifdef SIMULATION
@@ -112,6 +113,14 @@ public class UDPMessageProcessor extends MessageProcessor {
 */
 		this.port = port;
 		this.mappedPort = port;
+		try  {
+		  this.sock = new DatagramSocket
+				(port, sipStack.stackInetAddress);
+		   // Create a new datagram socket.
+		   sock.setReceiveBufferSize(MAX_DATAGRAM_SIZE);
+		} catch (SocketException ex) {
+			throw new IOException (ex.getMessage());
+		}
 	}
 
 	/**
@@ -141,9 +150,6 @@ public class UDPMessageProcessor extends MessageProcessor {
 //else
 */
 	public void start() throws IOException {
-		// Create a new datagram socket.
-		this.sock = new DatagramSocket(port, sipStack.stackInetAddress);
-		sock.setReceiveBufferSize(MAX_DATAGRAM_SIZE);
 		// The following code is all done using introspection and looks
 		// pretty ugly. It was written this way 
 		// in order to keep it essentially independent of STUN implementation.
@@ -411,6 +417,10 @@ public class UDPMessageProcessor extends MessageProcessor {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/01/22 18:39:42  mranga
+ * Reviewed by:   M. Ranganathan
+ * Moved the ifdef SIMULATION and associated tags to the first column so Prep preprocessor can deal with them.
+ *
  * Revision 1.10  2004/01/22 13:26:33  sverker
  * Issue number:
  * Obtained from:
