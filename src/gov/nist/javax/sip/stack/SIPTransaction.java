@@ -115,7 +115,7 @@ public abstract class SIPTransaction
 	private String			branch;
 
 	// Method of the Request used to create the transaction.
-	private String 			method;
+	protected String 			method;
 	// Sequence number of request used to create the transaction
 	private int			cSeq;
 
@@ -129,9 +129,18 @@ public abstract class SIPTransaction
 	protected int		timeoutTimerTicksLeft;
 	// List of event listeners for this transaction
 	private Set		eventListeners;
-     
 	// Flag to indcate that this has been cancelled.
 	protected boolean	isCancelled;
+
+	// Hang on to these - we clear out the request URI after 
+	// transaction goes to final state.
+	protected From		from;
+	
+	protected To		to;
+
+	protected Event		event;
+
+	protected CallID	callId;
 
 	// Back ptr to the JAIN layer.
 	private Object		wrapper;
@@ -184,13 +193,26 @@ public abstract class SIPTransaction
 		// Branch value of topmost Via header
 		String	newBranch;
 
+		// This will be cleared later.
 
 		this.originalRequest = newOriginalRequest;
 
+		// just cache the control information so the
+		// original request can be released later.
+
 		this.method = newOriginalRequest.getMethod();
+
+		this.from = (From) newOriginalRequest.getFrom();
+	
+		this.to = (To) newOriginalRequest.getTo();
+
+		this.callId  = (CallID) newOriginalRequest.getCallId();
 		
 		this.cSeq = 
 			newOriginalRequest.getCSeq().getSequenceNumber();
+
+		this.event = 
+			(Event) newOriginalRequest.getHeader("Event");
 
 		originalRequest.setTransaction(this);
 
@@ -603,11 +625,6 @@ public abstract class SIPTransaction
 
 	}
 
-	/** Clear the original request (to reduce the stack size) 
-        protected void clearOriginalRequest() {
-		this.originalRequest = null;
-	}
-	*/
 
 
 	/**
@@ -829,12 +846,6 @@ public abstract class SIPTransaction
             
         }
         
-        /** Get the user from the original request.
-        public String getUser() {
-            return 
-                (this.getOriginalRequest().getRequestURI()).getUser();
-       }
-         */
         
         /** Get the last response.
          */

@@ -8,8 +8,8 @@ EXTRA_LIBS=$(ROOT)/lib/junit/junit.jar
 
 
 clean: emacsclean
-	\rm -f *.class
-	\rm -f $(ROOT)/classes/test/tck/*.class
+	$(RM)  *.class
+	$(RM) $(ROOT)/classes/test/tck/*.class
 
 
 all: 
@@ -20,12 +20,12 @@ all:
 	
 
 tck-text:
-	\rm -f tcklog.txt
+	$(RM) tcklog.txt
 	$(JAVA)  test.tck.Tck -mode text -path gov.nist -abortonfail  \
 		-logfile tcklog.txt
 
 tck-gui:
-	\rm -f tcklog.txt
+	$(RM) tcklog.txt
 	$(JAVA) test.tck.Tck -mode gui -path gov.nist -abortonfail \
 		-logfile tcklog.txt
 

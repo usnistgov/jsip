@@ -204,18 +204,17 @@ extends SIPStack implements  SIPTransactionEventListener {
 		while(it.hasNext()) {
 		     SIPClientTransaction ct = 
 				(SIPClientTransaction)it.next();
-		     SIPRequest sipRequest = ct.getOriginalRequest();
-		     String fromTag = sipRequest.getFrom().getTag();
-		     Event hisEvent = 
-			(Event)sipRequest.getHeader(EventHeader.NAME);
+		     //SIPRequest sipRequest = ct.getOriginalRequest();
+		     String fromTag = ct.from.getTag();
+		     Event hisEvent = ct.event;
 		     // Event header is mandatory but some slopply clients
 		     // dont include it.
 		     if (hisEvent == null) continue;
-		     if (sipRequest.getMethod().equals(Request.SUBSCRIBE) &&
+		     if (ct.method.equals(Request.SUBSCRIBE) &&
 			 fromTag.equalsIgnoreCase(thisToTag) &&
 			 hisEvent != null && eventHdr.match(hisEvent) &&
 			 notifyMessage.getCallId().getCallId().
-			 equalsIgnoreCase(sipRequest.getCallId().getCallId()))
+			 equalsIgnoreCase(ct.callId.getCallId()) )
 			 return ct;
 		}	
 

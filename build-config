@@ -27,7 +27,7 @@ MAKE=make
 
 MKDIR=mkdir -p
 
-RM = \rm -f
+RM = rm -f
 
 ifeq (${OS},)
 	OS=$(OSTYPE)
