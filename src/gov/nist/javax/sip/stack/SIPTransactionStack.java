@@ -1,5 +1,6 @@
 package gov.nist.javax.sip.stack;
 
+import gov.nist.javax.sip.*;
 import gov.nist.javax.sip.message.*;
 import gov.nist.javax.sip.header.*;
 import gov.nist.core.*;
@@ -27,7 +28,7 @@ import sim.java.net.*;
  * @author Jeff Keyser (original) 
  * @author M. Ranganathan <mranga@nist.gov>  <br/> (Added Dialog table).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.36 $ $Date: 2004-06-21 05:42:32 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.37 $ $Date: 2004-06-27 00:41:52 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public abstract class SIPTransactionStack
@@ -44,9 +45,9 @@ public abstract class SIPTransactionStack
         public static final int CONNECTION_LINGER_TIME = 32;
 
 	// Collection of current client transactions
-	protected List clientTransactions;
+	private List clientTransactions;
 	// Collection or current server transactions
-	protected List serverTransactions;
+	private List serverTransactions;
 	// Table of dialogs.
 	protected Hashtable dialogTable;
 
@@ -71,6 +72,12 @@ public abstract class SIPTransactionStack
 
 	protected List pendingRecords;
 
+	// hashtable for fast lookup 
+	private Hashtable clientTransactionTable;
+
+	private Hashtable serverTransactionTable;
+	
+
 
 	/**
 	 *	Default constructor.
@@ -92,6 +99,9 @@ public abstract class SIPTransactionStack
 		serverTransactions = Collections.synchronizedList(new ArrayList());
 		// Dialog dable.
 		this.dialogTable = new Hashtable();
+
+		clientTransactionTable = new Hashtable();
+		serverTransactionTable = new Hashtable();
 
 
 		// Start the timer event thread.
@@ -125,6 +135,8 @@ public abstract class SIPTransactionStack
 		serverTransactions = Collections.synchronizedList(new ArrayList());
 		pendingTransactions = Collections.synchronizedList(new ArrayList());
 		pendingRecords      = Collections.synchronizedList(new ArrayList());
+		clientTransactionTable = new Hashtable();
+		serverTransactionTable = new Hashtable();
 		// Dialog dable.
 		this.dialogTable = new Hashtable();
 
@@ -307,14 +319,21 @@ public abstract class SIPTransactionStack
 	public SIPTransaction findTransaction(
 		SIPMessage sipMessage,
 		boolean isServer) {
+		SIPTransaction retval = null;
 
 		if (isServer) {
-			if (LogWriter.needsLogging)
-				logWriter.logMessage(
-					"searching server transaction for "
-						+ sipMessage
-						+ " size =  "
-						+ this.serverTransactions.size());
+			Via via = sipMessage.getTopmostVia();
+			if (via.getBranch() != null ) {
+			    String key = sipMessage.getTransactionId();
+			     
+			    synchronized(this.serverTransactionTable) {
+				retval =  (SIPTransaction) serverTransactionTable.get(key);
+				 if (LogWriter.needsLogging)
+					logMessage("looking for key " + key);
+				if (retval != null && retval.isMessagePartOfTransaction(sipMessage)) return retval;
+			    }
+			}
+			// Need to scan the table for old style transactions (RFC 2543 style)
 			synchronized (this.serverTransactions) {
 				Iterator it = serverTransactions.iterator();
 				while (it.hasNext()) {
@@ -326,6 +345,15 @@ public abstract class SIPTransactionStack
 				}
 			}
 		} else {
+			Via via = sipMessage.getTopmostVia();
+			if (via.getBranch() != null ) {
+			    String key = sipMessage.getTransactionId();
+			    synchronized(this.clientTransactionTable) {
+				retval =  (SIPTransaction) clientTransactionTable.get(key);
+				if (retval != null && retval.isMessagePartOfTransaction(sipMessage)) return retval;
+			    }
+			}
+			// Need to scan the table for old style transactions (RFC 2543 style)
 			synchronized (this.clientTransactions) {
 				Iterator it = clientTransactions.iterator();
 				while (it.hasNext()) {
@@ -518,6 +546,8 @@ public abstract class SIPTransactionStack
 				      	    requestReceived.getCSeq().getSequenceNumber()
 				     		> dialog.getRemoteSequenceNumber()) {
 						currentTransaction.map(); 
+					        if (LogWriter.needsLogging)
+							logWriter.logMessage("adding server transaction " +  currentTransaction);
 						serverTransactions.add(0,currentTransaction);
 						currentTransaction.startTransactionTimer();
 						currentTransaction.toListener = true;
@@ -723,7 +753,32 @@ public abstract class SIPTransactionStack
 		synchronized (clientTransactions) {
 			clientTransactions.add(0,clientTransaction);
 		}
+	
+	        addTransactionHash(clientTransaction);
 		clientTransaction.startTransactionTimer();
+	}
+	
+
+	/** Remove transaction.
+	*/
+	protected void removeTransaction(SIPTransaction sipTransaction) {
+	     if (sipTransaction instanceof SIPServerTransaction) {
+		synchronized (serverTransactions) {
+			serverTransactions.remove(sipTransaction);
+		}
+		synchronized(serverTransactionTable) {
+			String key = sipTransaction.getTransactionId();
+			serverTransactionTable.remove(key);
+		}
+	    } else {
+		synchronized (clientTransactions) {
+			clientTransactions.remove(sipTransaction);
+		}
+		synchronized(clientTransactionTable) {
+			String key = sipTransaction.getTransactionId();
+			clientTransactionTable.remove(key);
+		}
+	    }
 	}
 
 	/**
@@ -742,8 +797,55 @@ public abstract class SIPTransactionStack
 			this.serverTransactions.add(0,serverTransaction);
 			serverTransaction.map();
 		}
+		addTransactionHash(serverTransaction);
 		serverTransaction.startTransactionTimer();
 	}
+
+
+	/** Hash table for quick lookup of transactions.
+	*/
+	protected void addTransactionHash(SIPTransaction sipTransaction) {
+		SIPRequest sipRequest = sipTransaction.getOriginalRequest();
+		Via via = sipRequest.getTopmostVia();
+		// Cannot cache old style requests.
+		if (via.getBranch() == null   || 
+		      ! via.getBranch().toUpperCase().startsWith
+		      (SIPConstants.BRANCH_MAGIC_COOKIE.toUpperCase())){
+			return;
+		 }
+		if (sipTransaction instanceof SIPClientTransaction) {
+		  synchronized(clientTransactionTable) {
+		      String key = sipRequest.getTransactionId();
+		      clientTransactionTable.put(key,sipTransaction);
+		  }
+		} else {
+		  synchronized(serverTransactionTable) {
+		      String key = sipRequest.getTransactionId();
+		      serverTransactionTable.put(key,sipTransaction);
+		  }
+	      }
+
+	}
+
+	/** Remove the transaction from transaction hash.
+	*/
+	protected void removeTransactionHash(SIPTransaction sipTransaction) {
+		SIPRequest sipRequest = sipTransaction.getOriginalRequest();
+		if (sipRequest == null) return;
+		if (sipTransaction instanceof SIPClientTransaction) {
+		    synchronized(clientTransactionTable) {
+			String key = sipTransaction.getTransactionId();
+			clientTransactionTable.remove(key);
+		    }
+		} else if (sipTransaction instanceof SIPServerTransaction) {
+		    synchronized(serverTransactionTable) {
+			String key = sipTransaction.getTransactionId();
+			serverTransactionTable.remove(key);
+		    }
+		}
+	}
+
+		
 
 	public boolean hasResources() {
 		if (transactionTableSize == -1)
@@ -846,6 +948,10 @@ public abstract class SIPTransactionStack
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.36  2004/06/21 05:42:32  mranga
+ * Reviewed by:  mranga
+ * more code smithing
+ *
  * Revision 1.35  2004/06/21 05:32:22  mranga
  * Submitted by:  
  * Reviewed by:

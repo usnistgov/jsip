@@ -136,7 +136,7 @@ public class Shootist implements SipListener {
 
 			// so that the finalization method will run 
 			// and exit all resources.
-			this.shutDown();
+			//this.shutDown();
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -449,6 +449,11 @@ public class Shootist implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.28  2004/06/15 09:54:38  mranga
+ * Reviewed by:   mranga
+ * re-entrant listener model added.
+ * (see configuration property gov.nist.javax.sip.REENTRANT_LISTENER)
+ *
  * Revision 1.27  2004/05/30 18:55:56  mranga
  * Reviewed by:   mranga
  * Move to timers and eliminate the Transaction scanner Thread

@@ -120,7 +120,7 @@ import sim.java.*;
  *@author Bug fixes by Emil Ivov.
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.35 $ $Date: 2004-06-21 05:42:30 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.36 $ $Date: 2004-06-27 00:41:52 $
  */
 public class SIPClientTransaction
 extends SIPTransaction
@@ -169,14 +169,12 @@ PendingRecord{
             // If the transaction has terminated,
             if (clientTransaction.isTerminated()) {
                 
-                synchronized(sipStack.clientTransactions) {
-                    if (LogWriter.needsLogging) {
-                        sipStack.logWriter.logMessage( "removing  = " + clientTransaction + " isReliable " +
-                        clientTransaction.isReliable() );
-                    }
-                    sipStack.clientTransactions.remove(clientTransaction);
-                    
+                if (LogWriter.needsLogging) {
+                    sipStack.logWriter.logMessage( "removing  = " + clientTransaction + " isReliable " +
+                      clientTransaction.isReliable() );
                 }
+                sipStack.removeTransaction(clientTransaction);
+                    
                 try {
                     this.cancel();
                 } catch (IllegalStateException ex) {
@@ -1108,6 +1106,10 @@ PendingRecord{
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.35  2004/06/21 05:42:30  mranga
+ * Reviewed by:  mranga
+ * more code smithing
+ *
  * Revision 1.34  2004/06/21 04:59:50  mranga
  * Refactored code - no functional changes.
  *

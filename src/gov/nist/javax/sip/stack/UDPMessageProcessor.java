@@ -23,11 +23,16 @@ import  sim.java.net.*;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size). 
  * Each UDP message is processed in its own thread). 
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2004-06-21 04:59:54 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2004-06-27 00:41:52 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+ *
+ * <a href="{@docRoot}/../uml/udp-request-processing-sequence-diagram.jpg">
+ * See the implementation sequence diagram for processing incoming requests.
+ * </a>
+ * 
  *
  * Acknowledgement: Jeff Keyser contributed ideas on
  * starting and stoppping the stack that were incorporated into this code.
@@ -420,6 +425,9 @@ public class UDPMessageProcessor extends MessageProcessor {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2004/06/21 04:59:54  mranga
+ * Refactored code - no functional changes.
+ *
  * Revision 1.15  2004/06/02 15:32:12  mranga
  * Submitted by:  bdupras2
  * Reviewed by:   mranga
