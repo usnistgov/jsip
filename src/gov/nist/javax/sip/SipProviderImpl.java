@@ -22,7 +22,7 @@ import sim.java.net.*;
 
 /** Implementation of the JAIN-SIP provider interface.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2004-03-18 14:40:38 $
+ * @version JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2004-04-07 00:19:22 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -92,6 +92,7 @@ public final class SipProviderImpl
 		EventWrapper eventWrapper = new EventWrapper();
 		eventWrapper.sipEvent = sipEvent;
 		eventWrapper.transaction = transaction;
+		if (transaction != null) transaction.setEventPending(); 
 		this.eventScanner.addEvent(eventWrapper);
 	}
 
@@ -687,6 +688,14 @@ public final class SipProviderImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2004/03/18 14:40:38  mranga
+ * Reviewed by:   mranga
+ * Removed event scanning thread from provider and added a single class that
+ * scans for events and delivers to the listener (previously each provider had
+ * its own scanning thread).
+ * Added code in stack finalization to exit all threads and release all resources
+ * held by the stack.
+ *
  * Revision 1.15  2004/01/25 16:06:24  mranga
  * Reviewed by:   M. Ranganathan
  *

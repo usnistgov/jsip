@@ -114,7 +114,7 @@ import java.util.TimerTask;
  *
  *</pre>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.26 $ $Date: 2004-03-09 00:34:44 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.27 $ $Date: 2004-04-07 00:19:23 $
  * @author Jeff Keyser 
  * @author M. Ranganathan <mranga@nist.gov>  
  * @author Bug fixes by Emil Ivov, Antonis Karydas.
@@ -125,6 +125,8 @@ import java.util.TimerTask;
 public class SIPServerTransaction
 	extends SIPTransaction
 	implements SIPServerRequestInterface, javax.sip.ServerTransaction {
+
+	protected boolean toListener; // Hack alert - if this is set to true then force the listener to see transaction
 
 
 	// Real RequestInterface to pass messages to
@@ -1005,9 +1007,27 @@ public class SIPServerTransaction
 			super.setState(newState);
 	}
 
+	/** This is a hack to force the listener to process the transaction.
+	* This hack is necessary to get around a potential race condition
+	* when the dialog creating request arrives (see check in EventScanner).
+	*/
+
+	public boolean passToListener () {
+			return toListener;
+	}
+
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.26  2004/03/09 00:34:44  mranga
+ * Reviewed by:   mranga
+ * Added TCP connection management for client and server side
+ * Transactions. See configuration parameter
+ * gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false
+ * Releases Server TCP Connections after linger time
+ * gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS=false
+ * Releases Client TCP Connections after linger time
+ *
  * Revision 1.25  2004/03/07 22:25:24  mranga
  * Reviewed by:   mranga
  * Added a new configuration parameter that instructs the stack to

@@ -33,7 +33,7 @@ import sim.java.net.*;
  * returnResponse  for successful message processing and throw
  * SIPServerException for unsuccessful message processing.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.15 $ $Date: 2004-03-30 15:17:39 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2004-04-07 00:19:23 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * 
@@ -530,9 +530,12 @@ public abstract class SIPStack {
 	 * peculiar bugs as messages are prcessed asynchronously by the stack.
 	 */
 	public void stopStack() {
+		this.toExit = true;
+		synchronized (this) {
+			this.notifyAll();
+		}
 		synchronized (this.messageProcessors) {
 			// Threads must periodically check this flag.
-			this.toExit = true;
 			MessageProcessor[] processorList;
 			processorList = getMessageProcessors();
 			for (int processorIndex = 0;
@@ -708,6 +711,10 @@ public abstract class SIPStack {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2004/03/30 15:17:39  mranga
+ * Reviewed by:   mranga
+ * Added reInitialization for stack in support of applets.
+ *
  * Revision 1.14  2004/03/12 23:26:42  mranga
  * Reviewed by:   mranga
  * Fixed a synchronization problem
