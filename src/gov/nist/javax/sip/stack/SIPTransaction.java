@@ -21,7 +21,7 @@ import javax.sip.message.*;
  *
  * @author Jeff Keyser 
  * @author M. Ranganathan (modified Jeff's original source and aligned with JAIN-SIP 1.1)
- * @version  JAIN-SIP-1.1 $Revision: 1.28 $ $Date: 2004-07-23 06:50:05 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.29 $ $Date: 2004-09-01 18:09:06 $
  */
 public abstract class SIPTransaction
 	extends MessageChannel
@@ -69,6 +69,9 @@ public abstract class SIPTransaction
 	protected static final int TIMER_D = 32000 / BASE_TIMER_INTERVAL;
 
 	protected static final int TIMER_C = 3 * 60 * 1000 / BASE_TIMER_INTERVAL;
+
+	// Proposed feature for next release.
+	protected Object      applicationData;
 
 	protected SIPResponse lastResponse;
 
@@ -957,15 +960,59 @@ public abstract class SIPTransaction
 		return this.isAckSeen;
 	}
 
+
+	/**
+	* Mark that there is a pending event for this transaction.
+	*/
 	public void setEventPending ( ) {
 			this.eventPending = true;
 	}
 
 	
+	/** Clear the mark that there is a pending event for this
+	* transaction.
+	*/
 	protected void clearPending() {
 		this.eventPending = false;
 	}
 
+	/** Set the application data pointer. This is un-interpreted
+	* by the stack. This is provided as a conveniant way of keeping
+	* book-keeping data for applications. Note that null clears the
+	* application data pointer (releases it).
+	* 
+	* @param applicationData -- application data pointer to set. null 
+	* clears the applicationd data pointer.
+	*
+	*/
+	
+	public void setApplicationData (Object applicationData) {
+		this.applicationData = applicationData; 
+	}
+
+
+	/** Get the application data associated with this 
+	* transaction.
+	*
+	*  @return stored application data.
+	*/
+	public Object getApplicationData () {
+		return this.applicationData;
+	}
+
+	/** Remove the dialog association.
+	* This feature is meant for proxy servers who do not want to pay
+	* the dialog overhead. 
+	* Dialogs 
+	*
+	*/
+	public void removeDialogAssociation()  {
+		if (this.dialog != null) {
+		   // mark this dialog for deletion.
+		   this.dialog.delete();
+		   this.dialog = null;
+		}
+	}
 
 	protected abstract void startTransactionTimer();
 
@@ -974,6 +1021,12 @@ public abstract class SIPTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.28  2004/07/23 06:50:05  mranga
+ * Submitted by:  mranga
+ * Reviewed by:   mranga
+ *
+ * Clean up - Get rid of annoying eclipse warnings.
+ *
  * Revision 1.27  2004/07/01 05:42:22  mranga
  * Submitted by:  Pierre De Rop and Thomas Froment
  * Reviewed by:    M. Ranganathan
