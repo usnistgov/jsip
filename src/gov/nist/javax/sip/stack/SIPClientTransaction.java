@@ -268,6 +268,7 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
         
         // Message typecast as a request
         SIPRequest	transactionRequest;
+	boolean flag = false;
         
         
         transactionRequest = (SIPRequest)messageToSend;
@@ -282,34 +283,10 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
         } catch (java.text.ParseException ex) {}
         
         // If this is the first request for this transaction,
-        if( getState( ) == null ) {
-            // Save this request as the one this transaction
-            // is handling
-            setOriginalRequest( transactionRequest );
             
-            // Change to trying/calling state
-            if (transactionRequest.getMethod().equals(Request.INVITE)) {
-                setState(CALLING_STATE);
-            } else if (transactionRequest.getMethod().equals(Request.ACK)) {
-		// Acks are never retransmitted.
-                setState(TERMINATED_STATE);
-	    } else {
-                setState( TRYING_STATE );
-            }
-            if( !isReliable( ) ) {
-                
-                enableRetransmissionTimer( );
-                
-            }
-            
-            if (isInviteTransaction()) {
-                enableTimeoutTimer( TIMER_B );
-            }  else {
-                enableTimeoutTimer( TIMER_F );
-            }
-            
-        } else if  (getState().getValue() == PROCEEDING_STATE ||
-        getState().getValue() == CALLING_STATE ) {
+        if  ( getState() != null 
+	&& (getState().getValue() == PROCEEDING_STATE ||
+        getState().getValue() == CALLING_STATE ) ) {
             
             // If this is a TU-generated ACK request,
             if( transactionRequest.getMethod().equals( Request.ACK ) ) {
@@ -333,6 +310,32 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
             // Send the message to the server
             lastRequest = transactionRequest;
             getMessageChannel( ).sendMessage( transactionRequest );
+	    if (getState() == null ) {
+               // Save this request as the one this transaction
+               // is handling
+               setOriginalRequest( transactionRequest );
+            
+               // Change to trying/calling state
+               if (transactionRequest.getMethod().equals(Request.INVITE)) {
+                  setState(CALLING_STATE);
+              } else if (transactionRequest.getMethod().equals(Request.ACK)) {
+		// Acks are never retransmitted.
+                setState(TERMINATED_STATE);
+	      } else {
+                setState( TRYING_STATE );
+              }
+              if( !isReliable( ) ) {
+                
+                enableRetransmissionTimer( );
+                
+              }
+            
+              if (isInviteTransaction()) {
+                enableTimeoutTimer( TIMER_B );
+              }  else {
+                enableTimeoutTimer( TIMER_F );
+              }
+	   }
             
         } catch( IOException e ) {
             
