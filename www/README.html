@@ -254,15 +254,14 @@ some make file bugs.
 <li> John Martin from RockSteady noticed some uncessary synchronization
 in the MessageHandler that was removed. 
 
-<<<<<<< README.html
 <li> Xavi Ferró from Vida Software helped debug a memory leak when 4xx 
 responses are sent in response to dialog creating requests.
 
-=======
 <li> Daniel Martinez contributed TLS support. </li>
 
 <li> Hagai Sela added support for symmetric NAT (rport parameter handling
- in via header). </li>
+ in via header). Hagai Reported a bug where ACK was not seen by application
+on re-invite. </li>
 
 <li> Rob Daugherty (Lucent) detected a bug in handling of TCP messages
 and contributed a fix for this. </li>
@@ -273,12 +272,14 @@ Jeff submitted a patch for setting the timer on the Transaction Timer. </li>
 <li> Pierre Sandström submitted a bug fix for the Trace Viewer to fix a 
 problem where some messages were not showing up in the viewer. </li>
 
-<li> Banibrata Dutta submitted suggestions for code cleanup </li>
 
 <li> S. R. Jeyashankher (Jeyashankher) from Lucent Submitted a bug fix
 for error conditions where one cannot bind to local port </li>
 
->>>>>>> 1.30
+<li> Banibrata Dutta submitted suggestions for code cleanup </li>
+
+
+
 </ul>
 
 
