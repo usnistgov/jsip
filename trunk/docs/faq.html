@@ -177,6 +177,13 @@ Event. This may change in the next revision where an explicit IOException
 Event may be included in the architecture to avoid overloading the semantics
 of a TIMEOUT event.
 </br>
+<li> Why is the Transacton Request set to null? </br> The client
+transaction is only obliged to hold a reference to the Request until the
+transaction goes to COMPLETED state. After that, the reference to the
+Request is nulled out to save heap space and ehance scalability of the
+implementation. If you want to hold a long term reference to the request,
+then please do this in your application.
+</br>
 
 
 </ul>
@@ -203,17 +210,20 @@ No and No - just making something.
 <li> Do you control government policy/procurement/purchasing? <br/> 
 NO NO and NO </li>
 
-<li>Who is Neo Ranga ? <br/>
-"Overall, Neo Ranga is a refreshing take on the giant monster genre, 
-more the story of why we feel the need for great gods who fight for 
-justice in a world where justice seems another commodity to be bought and 
-sold." [dvd review] 
+<li><a href="http://www.advfilms.com/favorites/neoranga/main.html"> Who is Neo Ranga ? </a> <br/>
+"Overall, Neo Ranga is a refreshing take on the giant monster genre,
+more the story of why we feel the need for great gods who fight for
+justice in a world where justice seems another commodity to be bought and
+sold....Neo-Ranga himself is wonderful, fully expressing the sheer mass
+and power he represents, while his thoughts and purpose are expressed
+only in his eyes and actions....." [dvd review] 
 </li>
 
 
 </ul>
 
-Happy Coding! If anything breaks, don't worry (what? me?? worry???), 
+<a href="http://www.popcultmag.com/obsessions/profilesingreatness/mad/alfred.jpg">Happy Coding! If anything breaks, 
+don't worry (what? me?? worry???) </a>, 
 be happy and let us know  at
 <a href=mailto:nist-sip-dev@antd.nist.gov>nist-sip-dev@antd.nist.gov</a> <br/>
 
