@@ -148,21 +148,22 @@ by the following people:
 <li> Willem Romijn AT&T corrected the payload type constant for H.263 codecs
 	in SdpConstants.java
 
-<li> Peter Parnes noted a bug in handling null messages. Null messages could
-	be sent to keep alive firewall NAT mappings.
+<li> Peter Parnes noted a bug in handling null messages. Null messages
+could be sent to keep alive firewall NAT mappings. Peter tested
+the stack on a dual multiprocessor hyperthreaded machine and
+uncovered some race conditions in the transaction state machine
+implementation that were later fixed.
 
 <li> Christophe at yahoo.fr noticed a bug in the transaction state
-machine when
-the retransmission filter is enabled. Christophe noted a bug
-in IOHandler when an IO Exception occurs while transmitting
-via TCP.  Christophe noted a stack bug when IOException occurs
-(timer tick needs to be updated). Christophe tested the stack
-for Exception conditions under TCP Transport and uncovered
-some bugs in retransmission filter implementation under these
-conditions.  Christophe noted that the stack was trying to
-retry connections for sending responses. This is against the
-SIP RFC (request/response should use the same connection) and
-it was fixed.
+machine when the retransmission filter is enabled. Christophe noted a
+bug in IOHandler when an IO Exception occurs while transmitting via TCP.
+Christophe noted a stack bug when IOException occurs (timer tick needs
+to be updated). Christophe tested the stack for Exception conditions
+under TCP Transport and uncovered some bugs in retransmission filter
+implementation under these conditions.  Christophe noted that the stack
+was trying to retry connections for sending responses. This is against
+the SIP RFC (request/response should use the same connection) and it
+was fixed.
 
 
 <li> Gareth Deli noticed a bug in TCP transport. 
@@ -198,13 +199,15 @@ it was fixed.
 	take length() to allow for double byte character set.
 
 <li> Emmanuel Proulx noticed a bug when trying to send large amounts of 
-	data via TCP transport. A new configuration parameter 
-	gov.nist.javax.sip.MAX_MESSAGE_SIZE was added to limit the max
-	size of messages.
+	data via TCP transport that was caused by a race condition in
+	the coded that caches threads and connections. 
+	A new configuration parameter gov.nist.javax.sip.MAX_MESSAGE_SIZE 
+	was added to limit the max size of messages.
 
 <li>Venkatesh from CMU noticed that there were threads hanging around even 
 after all stack resources had been released. This was corrected by adding
-a stack finalization method that exits all threads.
+a stack finalization method that exits all threads. The stack now
+runs happily as an applet.
 
 </ul>
 
