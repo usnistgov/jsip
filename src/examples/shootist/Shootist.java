@@ -103,10 +103,48 @@ public class Shootist implements SipListener {
 				+ " with server transaction id "
 				+ serverTransactionId);
 
-		// We are the UAC so the only request we get is the BYE.
 		if (request.getMethod().equals(Request.BYE))
 			processBye(request, serverTransactionId);
+		else if (request.getMethod().equals(Request.INVITE))
+			processInvite(request, serverTransactionId);
+		else if ( request.getMethod().equals(Request.ACK) ) 
+			processAck(request, serverTransactionId);
 
+	}
+
+	public void processInvite( Request request, ServerTransaction st ) {
+		try {
+			Dialog dialog = st.getDialog();
+			Response response = messageFactory.createResponse(Response.OK,request);
+			((ToHeader) response.getHeader(ToHeader.NAME)).setTag(((ToHeader)request.getHeader(ToHeader.NAME)).getTag());
+
+
+
+			Address address =
+				addressFactory.createAddress("Shootme <sip:" + myAddress+ ":" + myPort + ">");
+			ContactHeader contactHeader =
+				headerFactory.createContactHeader(address);
+			response.addHeader(contactHeader);
+			st.sendResponse( response );
+		} catch ( Exception ex ) {
+			ex.printStackTrace();
+			System.exit(0);
+		}
+	}
+
+
+	public void processAck( Request request, ServerTransaction tid ) {
+	   try {
+		System.out.println("Got an ACK! sending bye : " + tid);
+		Dialog dialog = tid.getDialog();
+		Request bye = dialog.createRequest(Request.BYE);
+		SipProvider provider =  udpProvider;
+		ClientTransaction ct = provider.getNewClientTransaction(bye);
+		dialog.sendRequest(ct);
+	   } catch ( Exception ex) {
+		ex.printStackTrace();
+		System.exit(0);
+	   }
 	}
 
 	public void processBye(
@@ -126,16 +164,6 @@ public class Shootist implements SipListener {
 			System.out.println("shootist:  Sending OK.");
 			System.out.println("Dialog State = " + dialog.getState());
 
-//ifdef SIMULATION
-/*
-				    System.out.println("End time = " 
-						+ SimSystem.currentTimeMillis());
-//endif
-*/
-
-
-			// so that the finalization method will run 
-			// and exit all resources.
 			this.shutDown();
 
 		} catch (Exception ex) {
@@ -172,7 +200,6 @@ public class Shootist implements SipListener {
 				// Request cancel = inviteTid.createCancel();
 				// ClientTransaction ct = 
 				//	sipProvider.getNewClientTransaction(cancel);
-				// ct.sendRequest();
 				Dialog dialog = tid.getDialog();
 				Request ackRequest = dialog.createRequest(Request.ACK);
 				System.out.println("Sending ACK");
@@ -195,6 +222,12 @@ public class Shootist implements SipListener {
 				    reInviteCount ++;
 				}
 
+			} else if ( response.getStatusCode() == Response.OK
+				&& ((CSeqHeader) response.getHeader(CSeqHeader.NAME))
+					.getMethod()
+					.equals(
+					Request.BYE)) {
+			         this.shutDown();
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -430,6 +463,12 @@ public class Shootist implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.35  2005/03/14 15:39:53  mranga
+ * Submitted by:  mranga
+ * Reviewed by:   mranga
+ *
+ * Minor tweak
+ *
  * Revision 1.34  2005/03/07 19:05:04  mranga
  * Submitted by:  mranga
  * Reviewed by:   mranga

@@ -26,6 +26,8 @@ public class Shootme implements SipListener {
 
 	protected ServerTransaction inviteTid;
 
+	protected ClientTransaction clientTid;
+
 	Dialog dialog;
 
 	class ApplicationData {
@@ -79,12 +81,15 @@ public class Shootme implements SipListener {
 				((ApplicationData ) dialog.getApplicationData()).ackCount;
 			if (ackCount == 1) {
 			   dialog = inviteTid.getDialog();
+			   this.sendReInvite(sipProvider);
+			   /*
 			   Request byeRequest = dialog.createRequest(Request.BYE);
 			   ClientTransaction tr =
 				sipProvider.getNewClientTransaction(byeRequest);
 			   System.out.println("shootme: got an ACK -- sending bye! ");
 			   dialog.sendRequest(tr);
 			   System.out.println("Dialog State = " + dialog.getState());
+			   */
 			} else ((ApplicationData) dialog.getApplicationData()).ackCount ++;
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -121,6 +126,8 @@ public class Shootme implements SipListener {
 					st.getDialog().setApplicationData(new ApplicationData());
 				}
 			} else {
+				// If Server transaction is not null, then
+				// this is a re-invite.
 				System.out.println("This is a RE INVITE ");
 				if (st.getDialog() != dialog) {
 				   System.out.println("Whoopsa Daisy Dialog Mismatch");
@@ -146,7 +153,8 @@ public class Shootme implements SipListener {
 			st.sendResponse(response);
 			response = messageFactory.createResponse(200, request);
 			toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
-			toHeader.setTag("4321"); // Application is supposed to set.
+			toHeader.setTag("4321"); 
+			// Application is supposed to set.
 			response.addHeader(contactHeader);
 			st.sendResponse(response);
 			this.inviteTid = st;
@@ -154,6 +162,20 @@ public class Shootme implements SipListener {
 			ex.printStackTrace();
 			System.exit(0);
 		}
+	}
+
+	public void sendReInvite(SipProvider sipProvider)  throws Exception{
+	    Request inviteRequest = dialog.createRequest(Request.INVITE);
+	       ((SipURI)inviteRequest.getRequestURI()).removeParameter("transport");
+	    ((ViaHeader)inviteRequest.getHeader(ViaHeader.NAME)).setTransport("udp");
+	     Address address = addressFactory.createAddress
+			("Shootme <sip:" + myAddress+ ":" + myPort + ">");
+			ContactHeader contactHeader =
+				headerFactory.createContactHeader(address);
+	     inviteRequest.addHeader(contactHeader);
+	     ClientTransaction ct = sipProvider.getNewClientTransaction(inviteRequest);
+	    this.clientTid = ct;
+	    dialog.sendRequest(ct);
 	}
 
 	/** Process the bye request.
@@ -166,7 +188,7 @@ public class Shootme implements SipListener {
 		try {
 			System.out.println("shootme:  got a bye sending OK.");
 			Response response =
-				messageFactory.createResponse(200, request, null, null);
+				messageFactory.createResponse(200, request);
 			serverTransactionId.sendResponse(response);
 			System.out.println("Dialog State is " + serverTransactionId.getDialog().getState());
 
@@ -193,13 +215,8 @@ public class Shootme implements SipListener {
 					.getMethod()
 					.equals(
 					Request.INVITE)) {
-				if (tid != this.inviteTid) {
-					new Exception().printStackTrace();
-					System.exit(0);
-				}
 				Dialog dialog = tid.getDialog();
-				// Save the tags for the dialog here.
-				Request request = tid.getRequest();
+				Request request = dialog.createRequest(Request.ACK);
 				dialog.sendAck(request);
 			}
 			Dialog dialog = tid.getDialog();
@@ -231,14 +248,7 @@ public class Shootme implements SipListener {
 		sipFactory = SipFactory.getInstance();
 		sipFactory.setPathName("gov.nist");
 		Properties properties = new Properties();
-//ifdef SIMULATION
-/*
-		        properties.setProperty("javax.sip.IP_ADDRESS","129.6.55.62");
-//else
-*/
 		properties.setProperty("javax.sip.IP_ADDRESS", myAddress );
-//endif
-//
 		properties.setProperty("javax.sip.RETRANSMISSION_FILTER", "true");
 		properties.setProperty("javax.sip.STACK_NAME", "shootme");
 		// You need  16 for logging traces. 32 for debug + traces.
@@ -302,6 +312,11 @@ public class Shootme implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.23  2005/03/07 19:05:04  mranga
+ * Submitted by:  mranga
+ * Reviewed by:   mranga
+ * change ip address and port to be manifest constants
+ *
  * Revision 1.22  2005/01/20 17:31:12  mranga
  * Reviewed by:   mranga
  * added something to get content in example
