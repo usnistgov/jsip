@@ -33,7 +33,7 @@ import sim.java.net.*;
  * Niklas Uhrberg suggested that a mechanism be added to limit the number
  * of simultaneous open connections.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.28 $ $Date: 2004-06-21 04:59:53 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.29 $ $Date: 2004-06-21 05:42:33 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public final class TCPMessageChannel
@@ -517,7 +517,7 @@ implements SIPMessageListener, Runnable {
                         throw new Exception("Message size exceeded");
                     }
                     
-                    SIPServerRequestInterface sipServerRequest =
+                    ServerRequestInterface sipServerRequest =
                     stack.newSIPServerRequest(sipRequest, this);
                     sipServerRequest.processRequest(sipRequest, this);
                     if (this
@@ -564,7 +564,7 @@ implements SIPMessageListener, Runnable {
                         return;
                         
                     }
-                    SIPServerResponseInterface sipServerResponse =
+                    ServerResponseInterface sipServerResponse =
                     stack.newSIPServerResponse(sipResponse, this);
                     sipServerResponse.processResponse(sipResponse, this);
             }
@@ -725,6 +725,9 @@ implements SIPMessageListener, Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.28  2004/06/21 04:59:53  mranga
+ * Refactored code - no functional changes.
+ *
  * Revision 1.27  2004/05/30 18:55:58  mranga
  * Reviewed by:   mranga
  * Move to timers and eliminate the Transaction scanner Thread
