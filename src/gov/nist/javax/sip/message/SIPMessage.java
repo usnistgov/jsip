@@ -419,7 +419,12 @@ implements javax.sip.message.Message {
      * clone this message (create a new deep physical copy).
      * All headers in the message are cloned.
      * You can modify the cloned copy without affecting
-     * the original.
+     * the original. The content is handled as follows:
+     * If the content is a String, or a byte array, a
+     * new copy of the content is allocated and copied over. If the
+     * content is an Object that supports the clone method, then the
+     * clone method is invoked and the cloned content is the new content.
+     * Otherwise, the content of the new message is set equal to null.
      *
      * @return A cloned copy of this object.
      */
@@ -451,7 +456,7 @@ implements javax.sip.message.Message {
         
         if (this.getContent() != null) {
             try {
-		Object newContent ;
+		Object newContent  = null;
 		Object currentContent = this.getContent();
 		// Check the type of the returned content.
 		if (currentContent instanceof String ) {
@@ -477,11 +482,11 @@ implements javax.sip.message.Message {
 			  newContent = currentContent;
 		      }
 		    } catch (Exception ex) {
-			newContent = currentContent;
+			newContent = null;
 		    }
 		}
-                retval.setContent
-                (newContent,this.getContentTypeHeader());
+		if (newContent != null) retval.setContent
+                 	(newContent,this.getContentTypeHeader());
             } catch (ParseException ex) { /** Ignore **/ }
         }
         
