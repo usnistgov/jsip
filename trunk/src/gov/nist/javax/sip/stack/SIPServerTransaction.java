@@ -110,11 +110,12 @@ import java.util.LinkedList;
  * 
  * </pre>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.52 $ $Date: 2004-12-01 19:05:15 $
+ * @version JAIN-SIP-1.1 $Revision: 1.53 $ $Date: 2004-12-03 16:36:06 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
  * @author Bug fixes by Emil Ivov, Antonis Karydas, Daniel Martinez.
- * @author Performance enhancements contributed by Thomas Froment 
+ * @author Performance enhancements and bug fixes contributed by Thomas Froment 
+ * 
  * and Pierre De Rop.  <br/>
  *<a href=" {@docRoot}/uncopyright.html">This code is in the  public domain. </a>
  * 
@@ -217,6 +218,79 @@ public class SIPServerTransaction extends SIPTransaction implements
 
     }
 
+
+   /** 
+    * Send a response.
+    */
+
+   private void sendResponse(SIPResponse transactionResponse)
+   throws IOException {
+
+   // RFC18.2.2. Sending Responses
+   //  The server transport uses the value of the top Via header field in order 
+   //  to determine where to send a response.  
+   //  It MUST follow the following process:
+   //  If the "sent-protocol" is a reliable transport 
+   //  protocol such as TCP or SCTP, 
+   //  or TLS over those, the response MUST be 
+   //  sent using the existing connection 
+   //  to the source of the original request
+   //  that created the transaction, if that connection is still open.
+   if (isReliable()) {
+       getMessageChannel().sendMessage(transactionResponse);          
+       // If that connection attempt fails, the server SHOULD 
+       // use SRV 3263 procedures
+       // for servers in order to determine the IP address 
+       // and port to open the connection and send the response to.
+
+   } else {
+       Via via = transactionResponse.getTopmostVia();
+       String transport = via.getTransport();
+       if (transport == null) throw new IOException ("missing transport!");
+       //@@@ hagai Symmetric NAT support
+       int port = via.getrport();
+       if (port == -1) port = via.getPort();            
+       if (port == -1) {
+           if (transport.equalsIgnoreCase("TLS")) port = 5061;
+           else port = 5060;                
+	}
+
+        // Otherwise, if the Via header field value contains a 
+	// "maddr" parameter, the response MUST be forwarded to 
+	// the address listed there, using the port indicated in "sent-by",
+        // or port 5060 if none is present.  If the address is a multicast 
+	// address, the response SHOULD be sent using 
+	// the TTL indicated in the "ttl" parameter, or with a 
+	// TTL of 1 if that parameter is not present.
+        Host maddr= via.getMaddr();              
+	String host=null;
+        if (maddr!=null) {
+           host = maddr.getHostname();
+        } else {
+            // Otherwise (for unreliable unicast transports), 
+	    // if the top Via has a "received" parameter, the response MUST be sent to the
+            // address in the "received" parameter, using the port indicated in the 
+	    // "sent-by" value, or using port 5060 if none is specified explicitly.
+            host = via.getParameter(Via.RECEIVED);
+            if (host==null) {
+               // Otherwise, if it is not receiver-tagged, the response MUST be 
+	       // sent to the address indicated by the "sent-by" value, 
+	       // using the procedures in Section 5
+               // RFC 3263 PROCEDURE TO BE DONE HERE
+               host = via.getHost();
+           }
+       }
+       // Changed by Daniel J. Martinez Manzano <dani@dif.um.es>
+       // Original code called constructor with concatenated
+       // parameters, which didn't work for IPv6 addresses.
+       HopImpl hop = new HopImpl(host,port,transport);
+       MessageChannel messageChannel =    ((SIPTransactionStack) getSIPStack()).createRawMessageChannel(hop);
+       messageChannel.sendMessage(transactionResponse);
+     }
+   }
+    
+
+    /**
     private void sendResponse(SIPResponse transactionResponse)
             throws IOException {
         // Bug report by Shanti Kadiyala
@@ -246,6 +320,7 @@ public class SIPServerTransaction extends SIPTransaction implements
             messageChannel.sendMessage(transactionResponse);
         }
     }
+    **/
 
     /**
      * Creates a new server transaction.
@@ -1162,6 +1237,11 @@ public class SIPServerTransaction extends SIPTransaction implements
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.52  2004/12/01 19:05:15  mranga
+ * Reviewed by:   mranga
+ * Code cleanup remove the unused SIMULATION code to reduce the clutter.
+ * Fix bug in Dialog state machine.
+ *
  * Revision 1.51  2004/11/28 17:32:26  mranga
  * Submitted by:  hagai sela
  * Reviewed by:   mranga
