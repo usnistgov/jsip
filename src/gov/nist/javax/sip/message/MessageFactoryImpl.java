@@ -584,11 +584,15 @@ public class MessageFactoryImpl implements MessageFactory {
      *supplied to this method.
      *
      *@param requestString -- string from which to create the message
+     *		null string returns an empty message.
+     *
      *
      */
     
     public javax.sip.message.Request createRequest(String requestString) 
     throws java.text.ParseException {
+	if (requestString == null) 
+		return new SIPRequest();
         
         StringMsgParser smp = new StringMsgParser();
         
