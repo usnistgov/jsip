@@ -23,7 +23,7 @@ import java.io.IOException;
  * NIST-SIP stack and event model with the JAIN-SIP stack. Implementors
  * of JAIN services need not concern themselves with this class. 
  *
- * @version JAIN-SIP-1.1 $Revision: 1.36 $ $Date: 2004-06-17 17:27:00 $
+ * @version JAIN-SIP-1.1 $Revision: 1.37 $ $Date: 2004-06-21 04:59:48 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Bug fix Contributions by Lamine Brahimi and  Andreas Bystrom. <br/>
@@ -110,7 +110,7 @@ public class NistSipMessageHandlerImpl
 				// Could not find transaction. Generate an event
 				// with a null transaction identifier.
 				String dialogId = sipRequest.getDialogId(true);
-				DialogImpl dialog = sipStackImpl.getDialog(dialogId);
+				SIPDialog dialog = sipStackImpl.getDialog(dialogId);
 				if (LogWriter.needsLogging)
 					sipStackImpl.logMessage(
 						"Processing ACK for dialog " + dialog);
@@ -185,7 +185,7 @@ public class NistSipMessageHandlerImpl
 					String dialogId = sipRequest.getDialogId(true);
 					if (LogWriter.needsLogging)
 						sipStackImpl.logMessage("dialogId = " + dialogId);
-					DialogImpl dialog = sipStackImpl.getDialog(dialogId);
+					SIPDialog dialog = sipStackImpl.getDialog(dialogId);
 					if (dialog != null) {
 					       // check if request is in dialog sequence.
 					       if ( dialog.isRequestConsumable(sipRequest) )  {
@@ -217,7 +217,7 @@ public class NistSipMessageHandlerImpl
 					// not mapped to the stack so
 					// just discard it.
 					String dialogId = sipRequest.getDialogId(true);
-					DialogImpl dialog = sipStack.getDialog(dialogId);
+					SIPDialog dialog = sipStack.getDialog(dialogId);
 					if (dialog != null) {
 						if (LogWriter.needsLogging)
 						sipStackImpl.logMessage
@@ -274,7 +274,7 @@ public class NistSipMessageHandlerImpl
 				}
 			}  else if (sipRequest.getMethod().equals(Request.INVITE) )  {
 				String dialogId = sipRequest.getDialogId(true);
-				DialogImpl dialog = sipStack.getDialog(dialogId);
+				SIPDialog dialog = sipStack.getDialog(dialogId);
 				SIPTransaction lastTransaction = dialog == null? null: dialog.getInviteTransaction();
 
 				// RFC 3261 Chapter 14.
@@ -347,7 +347,7 @@ public class NistSipMessageHandlerImpl
 			// If the transaction is found then it is already managed so
 			// dont call the listener.
 			String dialogId = sipRequest.getDialogId(true);
-			DialogImpl dialog = sipStackImpl.getDialog(dialogId);
+			SIPDialog dialog = sipStackImpl.getDialog(dialogId);
 
 			// Sequence numbers are supposed to be incremented
 			// sequentially within a dialog for RFC 3261
@@ -418,7 +418,7 @@ public class NistSipMessageHandlerImpl
 				// aleady has a dialog attached to it then just assign the
 				// notify to this dialog and pass it up. 
 				if (ct != null) {
-					transaction.setDialog((DialogImpl) ct.getDialog());
+					transaction.setDialog((SIPDialog) ct.getDialog());
 					if (ct.getDialog().getState() == null) {
 						sipEvent =
 							new RequestEvent(
@@ -507,7 +507,7 @@ public class NistSipMessageHandlerImpl
 
 		if (this.transactionChannel == null) {
 			String dialogId = sipResponse.getDialogId(false);
-			DialogImpl dialog = sipStack.getDialog(dialogId);
+			SIPDialog dialog = sipStack.getDialog(dialogId);
 			//  Have a dialog but could not find transaction.
 			if (sipProvider.sipListener == null) {
 				return;
@@ -568,6 +568,10 @@ public class NistSipMessageHandlerImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.36  2004/06/17 17:27:00  mranga
+ * Reviewed by:   mranga
+ * null ptr fix
+ *
  * Revision 1.35  2004/06/17 15:22:29  mranga
  * Reviewed by:   mranga
  *

@@ -46,7 +46,7 @@ import sim.java.net.*;
  * this code that was sending it into an infinite loop when a bad incoming
  * message was parsed.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.20 $ $Date: 2004-05-30 18:55:58 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.21 $ $Date: 2004-06-21 04:59:53 $
  */
 public class UDPMessageChannel
 extends MessageChannel
@@ -55,7 +55,7 @@ implements ParseExceptionListener, Runnable {
     /**
      * SIP Stack structure for this channel.
      */
-    protected SIPStack stack;
+    protected SIPMessageStack stack;
     
     /**
      * The parser we are using for messages received from this channel.
@@ -97,7 +97,7 @@ implements ParseExceptionListener, Runnable {
      * @param notifier Channel notifier (not very useful for UDP).
      */
     protected UDPMessageChannel(
-    SIPStack stack,
+    SIPMessageStack stack,
     UDPMessageProcessor messageProcessor) {
         super.messageProcessor = messageProcessor;
         this.stack = stack;
@@ -125,7 +125,7 @@ implements ParseExceptionListener, Runnable {
      * @param packet is the incoming datagram packet.
      */
     protected UDPMessageChannel(
-    SIPStack stack,
+    SIPMessageStack stack,
     UDPMessageProcessor messageProcessor,
     DatagramPacket packet) {
         
@@ -157,7 +157,7 @@ implements ParseExceptionListener, Runnable {
     protected UDPMessageChannel(
     InetAddress targetAddr,
     int port,
-    SIPStack sipStack,
+    SIPMessageStack sipStack,
     UDPMessageProcessor messageProcessor) {
         peerAddress = targetAddr;
         peerPort = port;
@@ -353,7 +353,7 @@ implements ParseExceptionListener, Runnable {
                         this.peerPort = v.getPort();
                     }
                 } else
-                    this.peerPort = SIPStack.DEFAULT_PORT;
+                    this.peerPort = SIPMessageStack.DEFAULT_PORT;
                 this.peerProtocol = v.getTransport();
                 try {
                     this.peerAddress = packet.getAddress();
@@ -721,7 +721,7 @@ implements ParseExceptionListener, Runnable {
      * get the stack pointer.
      * @return The sip stack for this channel.
      */
-    public SIPStack getSIPStack() {
+    public SIPMessageStack getSIPStack() {
         return stack;
     }
     
@@ -847,6 +847,11 @@ implements ParseExceptionListener, Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.20  2004/05/30 18:55:58  mranga
+ * Reviewed by:   mranga
+ * Move to timers and eliminate the Transaction scanner Thread
+ * to improve scalability and reduce cpu usage.
+ *
  * Revision 1.19  2004/05/18 15:26:45  mranga
  * Reviewed by:   mranga
  * Attempted fix at race condition bug. Remove redundant exception (never thrown).
