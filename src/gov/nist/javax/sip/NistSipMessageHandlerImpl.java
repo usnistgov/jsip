@@ -23,14 +23,14 @@ import java.io.IOException;
  * NIST-SIP stack and event model with the JAIN-SIP stack. Implementors
  * of JAIN services need not concern themselves with this class. 
  *
- * @version JAIN-SIP-1.1 $Revision: 1.37 $ $Date: 2004-06-21 04:59:48 $
+ * @version JAIN-SIP-1.1 $Revision: 1.38 $ $Date: 2004-06-21 05:43:16 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Bug fix Contributions by Lamine Brahimi and  Andreas Bystrom. <br/>
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public class NistSipMessageHandlerImpl
-	implements SIPServerRequestInterface, SIPServerResponseInterface {
+	implements ServerRequestInterface, ServerResponseInterface {
 
 	protected SIPTransaction transactionChannel;
 	protected ListeningPointImpl listeningPoint;
@@ -568,6 +568,9 @@ public class NistSipMessageHandlerImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.37  2004/06/21 04:59:48  mranga
+ * Refactored code - no functional changes.
+ *
  * Revision 1.36  2004/06/17 17:27:00  mranga
  * Reviewed by:   mranga
  * null ptr fix
