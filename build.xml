@@ -108,6 +108,8 @@ c:/jakarta-ant/bin/ant all
 		<delete file='./tcklog.txt'/>
 		<delete file='./tiDebugLog.txt'/>
 		<delete file='./tiMessageLog.txt'/>
+		<delete file='./shootistlog.txt'/>
+		<delete file='./shootmelog.txt'/>
 		
 	</target>
 
