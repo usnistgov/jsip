@@ -110,23 +110,26 @@ public class LogWriter {
 	}
 
 	public synchronized void logMessage(String message, String logFileName) {
-		try {
-			File logFile = new File(logFileName);
-			if (!logFile.exists()) {
-				logFile.createNewFile();
-				printWriter = null;
-			}
-			// Append buffer to the end of the file.
-			FileWriter fw = new FileWriter(logFileName, true);
-			PrintWriter printWriter = new PrintWriter(fw, true);
-			printWriter.println(
+		if (needsLogging) {
+			
+			try {
+				File logFile = new File(logFileName);
+				if (!logFile.exists()) {
+					logFile.createNewFile();
+					printWriter = null;
+				}
+				// Append buffer to the end of the file.
+				FileWriter fw = new FileWriter(logFileName, true);
+				PrintWriter printWriter = new PrintWriter(fw, true);
+				printWriter.println(
 				" ---------------------------------------------- ");
-			printWriter.println(message);
-			printWriter.close();
-			fw.close();
-
-		} catch (IOException ex) {
-			ex.printStackTrace();
+				printWriter.println(message);
+				printWriter.close();
+				fw.close();
+				
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
 		}
 	}
 
@@ -192,4 +195,34 @@ public class LogWriter {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.2.2.1  2004/04/02 15:02:09  thomas.froment
+ * Ticket #17048 -  log files are created in var/log instead of instance name directory
+ *
+ * Revision 1.2  2004/02/13 15:29:45  thomas.froment
+ * - merge from NIST CVS version 28012004 - add traceviewer
+ *
+ * Revision 1.5  2004/01/22 13:26:27  sverker
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  sverker
+ * Reviewed by:   mranga
+ *
+ * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  */
