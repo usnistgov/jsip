@@ -30,7 +30,7 @@ import sim.java.net.*;
  * get the stack the process messages.
  * This will start the necessary threads that wait for incoming SIP messages.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.20 $ $Date: 2004-05-18 15:26:44 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.1 $ $Date: 2004-06-21 04:59:51 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * 
@@ -44,7 +44,7 @@ import sim.java.net.*;
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 
-public abstract class SIPStack {
+public abstract class SIPMessageStack {
 
 	protected LogWriter logWriter;
 
@@ -254,7 +254,7 @@ public abstract class SIPStack {
 	 * @param stackName -- descriptive name for the stack.
 	 */
 
-	public SIPStack(
+	public SIPMessageStack(
 		SIPStackMessageFactory messageFactory,
 		String stackAddress,
 		String stackName)
@@ -406,7 +406,7 @@ public abstract class SIPStack {
 	/**
 	 * Default constructor.
 	 */
-	public SIPStack() {
+	public SIPMessageStack() {
 		this.toExit = false;
 		// Set an infinite thread pool size.
 		this.threadPoolSize = -1;
@@ -731,6 +731,11 @@ public abstract class SIPStack {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.20  2004/05/18 15:26:44  mranga
+ * Reviewed by:   mranga
+ * Attempted fix at race condition bug. Remove redundant exception (never thrown).
+ * Clean up some extraneous junk.
+ *
  * Revision 1.19  2004/05/16 14:13:23  mranga
  * Reviewed by:   mranga
  * Fixed the use-count issue reported by Peter Parnes.

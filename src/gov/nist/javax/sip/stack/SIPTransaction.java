@@ -23,7 +23,7 @@ import javax.sip.message.*;
  *
  * @author Jeff Keyser 
  * @author M. Ranganathan (modified Jeff's original source and aligned with JAIN-SIP 1.1)
- * @version  JAIN-SIP-1.1 $Revision: 1.24 $ $Date: 2004-06-15 09:54:45 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.25 $ $Date: 2004-06-21 04:59:52 $
  */
 public abstract class SIPTransaction
 	extends MessageChannel
@@ -74,7 +74,7 @@ public abstract class SIPTransaction
 
 	protected SIPResponse lastResponse;
 
-	protected DialogImpl dialog;
+	protected SIPDialog dialog;
 
 	protected boolean isMapped;
 
@@ -575,7 +575,7 @@ public abstract class SIPTransaction
 		return encapsulatedChannel.getPort();
 	}
 
-	public SIPStack getSIPStack() {
+	public SIPMessageStack getSIPStack() {
 		return sipStack;
 	}
 
@@ -724,7 +724,7 @@ public abstract class SIPTransaction
 			if (this instanceof SIPServerTransaction
 				&& this.isByeTransaction()
 				&& this.dialog != null)
-				this.dialog.setState(DialogImpl.TERMINATED_STATE);
+				this.dialog.setState(SIPDialog.TERMINATED_STATE);
 		}
 	}
 
@@ -755,7 +755,7 @@ public abstract class SIPTransaction
 	 * set the dialog object.
 	 * @param dialog -- the dialog to set.
 	 */
-	public void setDialog(DialogImpl dialog) {
+	public void setDialog(SIPDialog dialog) {
 		this.dialog = dialog;
 	}
 
@@ -968,6 +968,11 @@ public abstract class SIPTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.24  2004/06/15 09:54:45  mranga
+ * Reviewed by:   mranga
+ * re-entrant listener model added.
+ * (see configuration property gov.nist.javax.sip.REENTRANT_LISTENER)
+ *
  * Revision 1.23  2004/06/01 11:42:59  mranga
  * Reviewed by:   mranga
  * timer fix missed starting the transaction timer in a couple of places.

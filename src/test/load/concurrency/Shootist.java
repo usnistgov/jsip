@@ -65,7 +65,7 @@ public class Shootist implements SipListener {
 					appData.reInviteCount);
 			  
 			  System.out.println("ackCount " + appData.ackCount);
-			  ((gov.nist.javax.sip.stack.DialogImpl) dialog).printDebugInfo();
+			  ((gov.nist.javax.sip.stack.SIPDialog) dialog).printDebugInfo();
 			  System.exit(0);
 		     }
 		}
@@ -513,6 +513,9 @@ public class Shootist implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/06/16 19:04:29  mranga
+ * Check for out of sequence bye processing.
+ *
  * Revision 1.2  2004/06/16 02:53:20  mranga
  * Submitted by:  mranga
  * Reviewed by:   implement re-entrant multithreaded listener model.

@@ -117,7 +117,7 @@ import java.util.ListIterator;
  *
  *</pre>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.37 $ $Date: 2004-06-17 15:22:31 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.38 $ $Date: 2004-06-21 04:59:51 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
  * @author Bug fixes by Emil Ivov, Antonis Karydas.
@@ -569,7 +569,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction, PendingRecord
                 && getRealState() == TransactionState.TERMINATED
                 && transactionRequest.getMethod().equals(Request.ACK)
                 && requestOf != null) {
-                    DialogImpl thisDialog = (DialogImpl) this.dialog;
+                    SIPDialog thisDialog = (SIPDialog) this.dialog;
                     thisDialog.ackReceived(transactionRequest);
                     
                     if  ( ((SIPTransactionStack) getSIPStack())
@@ -625,7 +625,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction, PendingRecord
         transactionResponse = (SIPResponse) messageToSend;
         statusCode = transactionResponse.getStatusCode();
         
-        DialogImpl dialog = this.dialog;
+        SIPDialog dialog = this.dialog;
         
         try {
             // Provided we have set the banch id for this we set the BID for the
@@ -663,7 +663,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction, PendingRecord
                 this.dialog.setRemoteTag(transactionResponse.getTo().getTag());
                 ((SIPTransactionStack) this.getSIPStack()).putDialog(this.dialog);
                 if (statusCode / 100 == 1)
-                    this.dialog.setState(DialogImpl.EARLY_STATE);
+                    this.dialog.setState(SIPDialog.EARLY_STATE);
             } else if (((SIPTransactionStack) this.getSIPStack()).isDialogCreated(
             transactionResponse.getCSeq().getMethod())
             && transactionResponse.getCSeq().getMethod().equals(
@@ -672,21 +672,21 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction, PendingRecord
 		    // The state changes when the ACK is received for an invite transaction
 		    // For other dialogs, the state changes when you send out the response.
 		    if (!this.isInviteTransaction()) {
-                       this.dialog.setState(DialogImpl.CONFIRMED_STATE);
+                       this.dialog.setState(SIPDialog.CONFIRMED_STATE);
 		    } else {
 			if (this.dialog.getState() == null) 
-                       	    this.dialog.setState(DialogImpl.EARLY_STATE);
+                       	    this.dialog.setState(SIPDialog.EARLY_STATE);
 		    }
                 } else if (statusCode >= 300 && statusCode  <= 699) {
-                    this.dialog.setState(DialogImpl.TERMINATED_STATE);
+                    this.dialog.setState(SIPDialog.TERMINATED_STATE);
                 }
             } else if ( transactionResponse.getCSeq().getMethod().equals(Request.BYE)
             && statusCode / 100 == 2 && dialog != null ) {
                 // Dialog will be terminated when the transction is terminated.
                 if (!isReliable())
-                    this.dialog.setState(DialogImpl.COMPLETED_STATE);
+                    this.dialog.setState(SIPDialog.COMPLETED_STATE);
                 else
-                    this.dialog.setState(DialogImpl.TERMINATED_STATE);
+                    this.dialog.setState(SIPDialog.TERMINATED_STATE);
             }
         }
         
@@ -861,15 +861,15 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction, PendingRecord
             + " method = "
             + this.getOriginalRequest().getMethod());
         
-        DialogImpl dialog = (DialogImpl) this.dialog;
+        SIPDialog dialog = (SIPDialog) this.dialog;
         if (((SIPTransactionStack) getSIPStack())
         .isDialogCreated(this.getOriginalRequest().getMethod())
         && (TransactionState.CALLING == this.getRealState()
         || TransactionState.TRYING == this.getRealState())) {
-            dialog.setState(DialogImpl.TERMINATED_STATE);
+            dialog.setState(SIPDialog.TERMINATED_STATE);
         } else if (getOriginalRequest().getMethod().equals(Request.BYE)) {
             if (dialog != null)
-                dialog.setState(DialogImpl.TERMINATED_STATE);
+                dialog.setState(SIPDialog.TERMINATED_STATE);
         }
         
         if (TransactionState.COMPLETED == this.getRealState()
@@ -898,7 +898,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction, PendingRecord
             // Bug report sent in by Christophe
             raiseErrorEvent(SIPTransactionErrorEvent.TIMEOUT_ERROR);
             if (dialog != null)
-                dialog.setState(DialogImpl.TERMINATED_STATE);
+                dialog.setState(SIPDialog.TERMINATED_STATE);
         }
         
     }
@@ -943,7 +943,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction, PendingRecord
      */
     public void sendResponse(Response response) throws SipException {
         
-        DialogImpl dialog = this.dialog;
+        SIPDialog dialog = this.dialog;
         // Fix up the response if the dialog has already been established.
         try {
             SIPResponse responseImpl = (SIPResponse) response;
@@ -989,8 +989,8 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction, PendingRecord
             && (!dialog.isReInvite())
             && sipStack.isDialogCreated(getOriginalRequest().getMethod())
             && (dialog.getState() == null
-            || dialog.getState().getValue() == DialogImpl.EARLY_STATE)) {
-                dialog.setState(DialogImpl.TERMINATED_STATE);
+            || dialog.getState().getValue() == SIPDialog.EARLY_STATE)) {
+                dialog.setState(SIPDialog.TERMINATED_STATE);
             }
             // See if the dialog needs to be inserted into the dialog table
             // or if the state of the dialog needs to be changed.
@@ -1001,14 +1001,14 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction, PendingRecord
                     // 200 OK is returned for the BYE. Other
                     // status codes just result in leaving the
                     // state in COMPLETED state.
-                    dialog.setState(DialogImpl.TERMINATED_STATE);
+                    dialog.setState(SIPDialog.TERMINATED_STATE);
                 } else if (
                 responseImpl.getCSeq().getMethod().equalsIgnoreCase(
                 Request.CANCEL)) {
                     if (dialog.getState() == null
                     || dialog.getState().getValue()
-                    == DialogImpl.EARLY_STATE) {
-                        dialog.setState(DialogImpl.TERMINATED_STATE);
+                    == SIPDialog.EARLY_STATE) {
+                        dialog.setState(SIPDialog.TERMINATED_STATE);
                     }
                 } else if (
                 dialog.getLocalTag() == null
@@ -1018,7 +1018,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction, PendingRecord
                     if (sipStack
                     .isDialogCreated(responseImpl.getCSeq().getMethod())) {
                         if (response.getStatusCode() / 100 == 1) {
-                            dialog.setState(DialogImpl.EARLY_STATE);
+                            dialog.setState(SIPDialog.EARLY_STATE);
                         }
                         // Enter into our dialog table provided this is a
                         // dialog creating method.
@@ -1028,10 +1028,10 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction, PendingRecord
 			if (responseImpl.getStatusCode()/ 100 ==  2 ) {
 			    if (responseImpl.getCSeq().getMethod().equals
 				(Request.INVITE) ) {
-			        if (dialog.getState() == null) dialog.setState(DialogImpl.EARLY_STATE);
+			        if (dialog.getState() == null) dialog.setState(SIPDialog.EARLY_STATE);
 			        dialog.startTimer(this);
 			    } else  {
-			        dialog.setState(DialogImpl.CONFIRMED_STATE);
+			        dialog.setState(SIPDialog.CONFIRMED_STATE);
 			    }
 			}
 			
@@ -1040,12 +1040,12 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction, PendingRecord
                     if (sipStack
                     .isDialogCreated(responseImpl.getCSeq().getMethod())) {
 			if ( ! responseImpl.getCSeq().getMethod().equals(Request.INVITE)) {
-                        	dialog.setState(DialogImpl.CONFIRMED_STATE);
+                        	dialog.setState(SIPDialog.CONFIRMED_STATE);
 			} else {
 				if (this.dialog.getState() == null)  {
 			    		// On the server side of the dialog,
 			    		// go to confirmed state only after ACK.
-                       	    		this.dialog.setState(DialogImpl.EARLY_STATE);
+                       	    		this.dialog.setState(SIPDialog.EARLY_STATE);
 			    
 		    		}
 				
@@ -1152,6 +1152,12 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction, PendingRecord
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.37  2004/06/17 15:22:31  mranga
+ * Reviewed by:   mranga
+ *
+ * Added buffering of out-of-order in-dialog requests for more efficient
+ * processing of such requests (this is a performance optimization ).
+ *
  * Revision 1.36  2004/06/16 02:53:20  mranga
  * Submitted by:  mranga
  * Reviewed by:   implement re-entrant multithreaded listener model.

@@ -13,7 +13,7 @@ import java.text.*;
  * or ServerResponse object. The main job of the message processor is
  * to instantiate message channels for the given transport.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2004-03-07 22:25:24 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2004-06-21 04:59:50 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * 
@@ -47,7 +47,7 @@ public abstract class MessageProcessor implements Runnable {
 	 * Get the SIP Stack.
 	 * @return the sip stack.
 	 */
-	public abstract SIPStack getSIPStack();
+	public abstract SIPMessageStack getSIPStack();
 
 	/**
 	 * Create a message channel for the specified host/port.
@@ -132,6 +132,13 @@ public abstract class MessageProcessor implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/03/07 22:25:24  mranga
+ * Reviewed by:   mranga
+ * Added a new configuration parameter that instructs the stack to
+ * drop a server connection after server transaction termination
+ * set gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false for this
+ * Default behavior is true.
+ *
  * Revision 1.5  2004/01/22 13:26:33  sverker
  * Issue number:
  * Obtained from:

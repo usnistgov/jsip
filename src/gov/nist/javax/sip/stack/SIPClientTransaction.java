@@ -120,7 +120,7 @@ import sim.java.*;
  *@author Bug fixes by Emil Ivov.
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.33 $ $Date: 2004-06-17 15:22:31 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.34 $ $Date: 2004-06-21 04:59:50 $
  */
 public class SIPClientTransaction
 extends SIPTransaction
@@ -540,31 +540,31 @@ PendingRecord{
                 // Make  a final tag assignment.
                 if ( dialog.getState() == null &&
                 transactionResponse.getStatusCode() / 100 == 1) {
-                    dialog.setState(DialogImpl.EARLY_STATE);
+                    dialog.setState(SIPDialog.EARLY_STATE);
                 }  else if (transactionResponse.getToTag() != null
                 && transactionResponse.getStatusCode() / 100 == 2) {
                     // This is a dialog creating method (such as INVITE).
                     // 2xx response -- set the state to the confirmed
                     // state. To tag is MANDATORY for the response.
                     dialog.setRemoteTag(transactionResponse.getToTag());
-                    dialog.setState(DialogImpl.CONFIRMED_STATE);
+                    dialog.setState(SIPDialog.CONFIRMED_STATE);
                 } else if ( transactionResponse.getStatusCode()  >= 300 &&
                 transactionResponse.getStatusCode() <= 699
                 && (dialog.getState() == null || dialog.getState().getValue()
-                == DialogImpl.EARLY_STATE)) {
+                == SIPDialog.EARLY_STATE)) {
                     // This case handles 3xx, 4xx, 5xx and 6xx responses.
                     // RFC 3261 Section 12.3 - dialog termination.
                     // Independent of the method, if a request outside of a dialog generates
                     // a non-2xx final response, any early dialogs created through
                     // provisional responses to that request are terminated.
-                    dialog.setState(DialogImpl.TERMINATED_STATE);
+                    dialog.setState(SIPDialog.TERMINATED_STATE);
                 }
             }
             
             // Only terminate the dialog on 200 OK response to BYE
             if ( this.getMethod().equals(Request.BYE) &&
             transactionResponse.getStatusCode() == 200 ) {
-                dialog.setState(DialogImpl.TERMINATED_STATE);
+                dialog.setState(SIPDialog.TERMINATED_STATE);
             }
         }
         try {
@@ -875,7 +875,7 @@ PendingRecord{
         if (LogWriter.needsLogging)
             sipStack.logWriter.logMessage("fireTimeoutTimer " + this);
         
-        DialogImpl dialogImpl =  this.dialog;
+        SIPDialog dialogImpl =  this.dialog;
         if (TransactionState.CALLING == this.getState()
         || TransactionState.TRYING == this.getState()
         || TransactionState.PROCEEDING == this.getState()) {
@@ -885,12 +885,12 @@ PendingRecord{
                 if (((SIPTransactionStack) getSIPStack())
                 .isDialogCreated(this.getOriginalRequest().getMethod())) {
                     // terminate the enclosing dialog.
-                    dialogImpl.setState(DialogImpl.TERMINATED_STATE);
+                    dialogImpl.setState(SIPDialog.TERMINATED_STATE);
                 } else if (
                 getOriginalRequest().getMethod().equalsIgnoreCase(
                 Request.BYE)) {
                     // Terminate the associated dialog on BYE Timeout.
-                    dialogImpl.setState(DialogImpl.TERMINATED_STATE);
+                    dialogImpl.setState(SIPDialog.TERMINATED_STATE);
                 }
             }
         }
@@ -1108,6 +1108,12 @@ PendingRecord{
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.33  2004/06/17 15:22:31  mranga
+ * Reviewed by:   mranga
+ *
+ * Added buffering of out-of-order in-dialog requests for more efficient
+ * processing of such requests (this is a performance optimization ).
+ *
  * Revision 1.32  2004/06/15 09:54:44  mranga
  * Reviewed by:   mranga
  * re-entrant listener model added.
