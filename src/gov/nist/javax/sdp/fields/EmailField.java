@@ -14,56 +14,63 @@ import javax.sdp.*;
 *
 *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
 */
-public class EmailField extends SDPField  implements javax.sdp.EMail {
+public class EmailField extends SDPField implements javax.sdp.EMail {
 
-    protected EmailAddress emailAddress;
-    
-    public EmailField() {
-	super(SDPFieldNames.EMAIL_FIELD);
-	emailAddress = new EmailAddress();
-    }
-    
-    public	 EmailAddress getEmailAddress() 
-    { return emailAddress ; } 
-    /**
-     * Set the emailAddress member  
-     */
-    public	 void setEmailAddress(EmailAddress emailAddress) 
-    { this.emailAddress = emailAddress ; } 
-    
-    /**
-     *  Get the string encoded version of this object
-     * @since v1.0
-     */
-    public String encode() {
-	return EMAIL_FIELD + emailAddress.encode() + Separators.NEWLINE;
-    }
+	protected EmailAddress emailAddress;
 
+	public EmailField() {
+		super(SDPFieldNames.EMAIL_FIELD);
+		emailAddress = new EmailAddress();
+	}
 
-    public String toString() { return this.encode(); }
+	public EmailAddress getEmailAddress() {
+		return emailAddress;
+	}
+	/**
+	 * Set the emailAddress member  
+	 */
+	public void setEmailAddress(EmailAddress emailAddress) {
+		this.emailAddress = emailAddress;
+	}
 
-     /** Returns the value.
-      * @throws SdpParseException
-      * @return the value
-      */
-    public String getValue() throws SdpParseException {
-        if (emailAddress==null) return null;
-        else {
-            return emailAddress.getDisplayName(); 
-        }
-    }
-    
-    /** Set the value.
-     * @param value to set
-     * @throws SdpException if the value is null
-     */
-    public void setValue(String value) throws SdpException {
-        if (value==null) throw new SdpException("The value is null");
-        else {
-	     
-             emailAddress.setDisplayName(value);
-        }
-    }
+	/**
+	 *  Get the string encoded version of this object
+	 * @since v1.0
+	 */
+	public String encode() {
+		return EMAIL_FIELD + emailAddress.encode() + Separators.NEWLINE;
+	}
 
+	public String toString() {
+		return this.encode();
+	}
+
+	/** Returns the value.
+	 * @throws SdpParseException
+	 * @return the value
+	 */
+	public String getValue() throws SdpParseException {
+		if (emailAddress == null)
+			return null;
+		else {
+			return emailAddress.getDisplayName();
+		}
+	}
+
+	/** Set the value.
+	 * @param value to set
+	 * @throws SdpException if the value is null
+	 */
+	public void setValue(String value) throws SdpException {
+		if (value == null)
+			throw new SdpException("The value is null");
+		else {
+
+			emailAddress.setDisplayName(value);
+		}
+	}
 
 }
+/*
+ * $Log: not supported by cvs2svn $
+ */

@@ -4,13 +4,12 @@
 package gov.nist.javax.sip.message;
 import gov.nist.core.*;
 import gov.nist.javax.sip.header.*;
-import gov.nist.javax.sip.*;
 import java.util.Hashtable;
 
 /**
-* A map of which of the standard headers may appear as a list 
-*/
-
+ * A map of which of the standard headers may appear as a list 
+ * @version JAIN-SIP-1.1 $Revision: 1.2 $ $Date: 2004-01-22 13:26:31 $
+ */
 class ListMap   {
 	private final static String SIPHEADERS_PACKAGE = 
 			PackageNames.SIPHEADERS_PACKAGE;
@@ -25,9 +24,9 @@ class ListMap   {
 
        static private void initializeListMap() {
 	    /* 
-	    * Build a table mapping between objects that have a list form
-	    * and the class of such objects.
-	    */
+	     * Build a table mapping between objects that have a list form
+	     * and the class of such objects.
+	     */
 	    headerListTable = new Hashtable();
 	    headerListTable.put(
 		GenericObject.getClassFromName
@@ -168,8 +167,8 @@ class ListMap   {
 	}
 
 	/**
-	* return true if this has an associated list object.
-	*/
+	 * return true if this has an associated list object.
+	 */
 	static  protected boolean hasList(SIPHeader sipHeader) {
 		if (sipHeader instanceof SIPHeaderList) return false;
 	        else {
@@ -179,25 +178,25 @@ class ListMap   {
 	}
 
 	/**
-	* Return true if this has an associated list object.
-	*/
+	 * Return true if this has an associated list object.
+	 */
 	static  protected boolean hasList(Class sipHdrClass) {
 		if (!initialized) initializeListMap();
 		return headerListTable.get(sipHdrClass) != null;
 	}
 
 	/**
-	* Get the associated list class.
-	*/
+	 * Get the associated list class.
+	 */
 	static protected Class getListClass(Class sipHdrClass) {
                 if (!initialized) initializeListMap();
 		return (Class) headerListTable.get(sipHdrClass);
 	}
 
 	/**
-	* Return a list object for this header if it has an associated
-	* list object.
-	*/
+	 * Return a list object for this header if it has an associated
+	 * list object.
+	 */
 	static protected 
 		SIPHeaderList getList(SIPHeader sipHeader) {
 		if (!initialized) initializeListMap();
@@ -216,3 +215,6 @@ class ListMap   {
 	}
 
 }
+/*
+ * $Log: not supported by cvs2svn $
+ */

@@ -4,22 +4,23 @@ import gov.nist.javax.sip.header.*;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
-/** Allows for uniform removal handling for singleton headers.
-*/
+/**
+ * Allows for uniform removal handling for singleton headers.
+ * @version JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2004-01-22 13:26:31 $
+ */
 public class HeaderIterator implements ListIterator {
-	private boolean  toRemove;
-	private int index; 
+	private boolean toRemove;
+	private int index;
 	private SIPMessage sipMessage;
 	private SIPHeader sipHeader;
-	
-	protected HeaderIterator( SIPMessage sipMessage, SIPHeader sipHeader) {
+
+	protected HeaderIterator(SIPMessage sipMessage, SIPHeader sipHeader) {
 		this.sipMessage = sipMessage;
 		this.sipHeader = sipHeader;
 	}
-	
-	
+
 	public Object next() throws NoSuchElementException {
-		if (sipHeader == null || index == 1) 
+		if (sipHeader == null || index == 1)
 			throw new NoSuchElementException();
 		toRemove = true;
 		index = 1;
@@ -27,23 +28,22 @@ public class HeaderIterator implements ListIterator {
 	}
 
 	public Object previous() throws NoSuchElementException {
-		if (sipHeader == null || index == 0) 
+		if (sipHeader == null || index == 0)
 			throw new NoSuchElementException();
 		toRemove = true;
 		index = 0;
 		return (Object) sipHeader;
 	}
-	
 
 	public int nextIndex() {
 		return 1;
 	}
 
 	public int previousIndex() {
-		return index == 0 ? -1: 0;
+		return index == 0 ? -1 : 0;
 	}
 
-	public void set(Object header)  {
+	public void set(Object header) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -51,13 +51,13 @@ public class HeaderIterator implements ListIterator {
 		throw new UnsupportedOperationException();
 	}
 
-	
 	public void remove() throws IllegalStateException {
-		if (this.sipHeader == null) throw new IllegalStateException();
+		if (this.sipHeader == null)
+			throw new IllegalStateException();
 		if (toRemove) {
 			this.sipHeader = null;
 			this.sipMessage.removeHeader(sipHeader.getName());
-		}  else {
+		} else {
 			throw new IllegalStateException();
 		}
 	}
@@ -69,5 +69,7 @@ public class HeaderIterator implements ListIterator {
 	public boolean hasPrevious() {
 		return index == 1;
 	}
-
 }
+/*
+ * $Log: not supported by cvs2svn $
+ */

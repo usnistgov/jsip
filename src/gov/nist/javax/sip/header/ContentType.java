@@ -3,10 +3,8 @@
 *******************************************************************************/
 package gov.nist.javax.sip.header;
 
-import gov.nist.core.*;
-import javax.sip.header.*;
-import java.util.*;
 import java.text.ParseException;
+
 /**
 *  ContentType SIP Header 
 * <pre>
@@ -33,74 +31,79 @@ import java.text.ParseException;
 *
 *@author M. Ranganathan <mranga@nist.gov>  <br/>
 *@author Olivier Deruelle <deruelle@nist.gov><br/>
+*@version JAIN-SIP-1.1 $Revision: 1.2 $ $Date: 2004-01-22 13:26:29 $
 *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
 *
 */
-public class ContentType extends ParametersHeader
-implements javax.sip.header.ContentTypeHeader {
-    
-        /** mediaRange field.
-         */    
+public class ContentType
+	extends ParametersHeader
+	implements javax.sip.header.ContentTypeHeader {
+
+	/** mediaRange field.
+	 */
 	protected MediaRange mediaRange;
 
-        /** Default constructor.        
-         */        
-        public ContentType() {
-            super(CONTENT_TYPE);
-        }
+	/** Default constructor.        
+	 */
+	public ContentType() {
+		super(CONTENT_TYPE);
+	}
 
 	/** Constructor given a content type and subtype.
 	*@param contentType is the content type.
 	*@param contentSubtype is the content subtype
 	*/
 	public ContentType(String contentType, String contentSubtype) {
-	    this();
-	    this.setContentType(contentType,contentSubtype);
-	}
-        
-        /** compare two MediaRange headers.
-         * @param media String to set
-         * @return int.
-         */        
-	public int compareMediaRange (String media ) {
-		return (mediaRange.type+"/"+mediaRange.subtype).
-				compareToIgnoreCase(media);
-	}
-        
-        /**
-         * Encode into a canonical string.
-         * @return String.
-         */    
-        public String encodeBody() { 
-		if (hasParameters()) 
-		return new StringBuffer( mediaRange.encode())
-		 .append(SEMICOLON)
-	         .append(parameters.encode()).toString();
-		else return mediaRange.encode();
+		this();
+		this.setContentType(contentType, contentSubtype);
 	}
 
-        /** get the mediaRange field.
-         * @return MediaRange.
-         */        
-        public MediaRange getMediaRange() {
-            return mediaRange;
-        }
-        
-        /** get the Media Type.
-         * @return String.
-         */        
-	public String getMediaType() { 
-            return mediaRange.type;
-        }
+	/** compare two MediaRange headers.
+	 * @param media String to set
+	 * @return int.
+	 */
+	public int compareMediaRange(String media) {
+		return (
+			mediaRange.type + "/" + mediaRange.subtype).compareToIgnoreCase(
+			media);
+	}
 
-        /** get the MediaSubType field.
-         * @return String.
-         */        
-	public String getMediaSubType() { 
-            return mediaRange.subtype;
-        }
-        
-       /** Get the content subtype.
+	/**
+	 * Encode into a canonical string.
+	 * @return String.
+	 */
+	public String encodeBody() {
+		if (hasParameters())
+			return new StringBuffer(mediaRange.encode())
+				.append(SEMICOLON)
+				.append(parameters.encode())
+				.toString();
+		else
+			return mediaRange.encode();
+	}
+
+	/** get the mediaRange field.
+	 * @return MediaRange.
+	 */
+	public MediaRange getMediaRange() {
+		return mediaRange;
+	}
+
+	/** get the Media Type.
+	 * @return String.
+	 */
+	public String getMediaType() {
+		return mediaRange.type;
+	}
+
+	/** get the MediaSubType field.
+	 * @return String.
+	 */
+	public String getMediaSubType() {
+		return mediaRange.subtype;
+	}
+
+	/** Get the content subtype.
 	*@return the content subtype string (or null if not set).
 	*/
 	public String getContentSubType() {
@@ -115,21 +118,19 @@ implements javax.sip.header.ContentTypeHeader {
 		return mediaRange == null ? null : mediaRange.getType();
 	}
 
-	
 	/** Get the charset parameter.
 	*/
 	public String getCharset() {
 		return this.getParameter("charset");
 	}
 
-        
-        /**
-         * Set the mediaRange member
-         * @param m mediaRange field.
-         */
+	/**
+	 * Set the mediaRange member
+	 * @param m mediaRange field.
+	 */
 	public void setMediaRange(MediaRange m) {
-            mediaRange = m ;
-        } 
+		mediaRange = m;
+	}
 
 	/**
 	* set the content type and subtype.
@@ -137,7 +138,8 @@ implements javax.sip.header.ContentTypeHeader {
 	*@param contentSubType content subtype string
 	*/
 	public void setContentType(String contentType, String contentSubType) {
-		if (mediaRange == null) mediaRange = new MediaRange();
+		if (mediaRange == null)
+			mediaRange = new MediaRange();
 		mediaRange.setType(contentType);
 		mediaRange.setSubtype(contentSubType);
 	}
@@ -147,24 +149,26 @@ implements javax.sip.header.ContentTypeHeader {
 	*@param contentType Content type string.
 	*/
 
-	public void setContentType(String contentType) throws ParseException{
-		if (contentType==null) throw new  
-		NullPointerException( "null arg");
-		if (mediaRange == null) mediaRange = new MediaRange();
+	public void setContentType(String contentType) throws ParseException {
+		if (contentType == null)
+			throw new NullPointerException("null arg");
+		if (mediaRange == null)
+			mediaRange = new MediaRange();
 		mediaRange.setType(contentType);
 
 	}
 
 	/** Set the content subtype.
-         * @param contentType String to set
-         */
+	     * @param contentType String to set
+	     */
 	public void setContentSubType(String contentType) throws ParseException {
-		if (contentType==null) throw new  
-		NullPointerException( "null arg");
-		if (mediaRange == null) mediaRange = new MediaRange();
+		if (contentType == null)
+			throw new NullPointerException("null arg");
+		if (mediaRange == null)
+			mediaRange = new MediaRange();
 		mediaRange.setSubtype(contentType);
-
 	}
-
-	
 }
+/*
+ * $Log: not supported by cvs2svn $
+ */

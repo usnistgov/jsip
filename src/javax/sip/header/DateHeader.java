@@ -27,13 +27,7 @@
  */
 package javax.sip.header;
 
-
-
 import java.util.*;
-
-import javax.sip.*;
-
-
 
 /**
  * The Date header field reflects the time when the request or response is

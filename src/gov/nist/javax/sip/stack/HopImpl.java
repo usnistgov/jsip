@@ -4,21 +4,16 @@
 package gov.nist.javax.sip.stack;
 
 import java.util.StringTokenizer;
-import java.util.NoSuchElementException;
 
-import gov.nist.javax.sip.address.*;
-import gov.nist.javax.sip.header.*;
-import gov.nist.core.*;
-
-
-/** Routing algorithms return a list of hops to which the request is
+/** 
+ * Routing algorithms return a list of hops to which the request is
  * routed.
  *
- *@version  JAIN-SIP-1.1
+ * @version  JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-01-22 13:26:33 $
  *
- *@author M. Ranganathan <mranga@nist.gov>  <br/>
+ * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
- *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+ * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
  * IPv6 Support added by Emil Ivov (emil_ivov@yahoo.com)<br/>
  * Network Research Team (http://www-r2.u-strasbg.fr))<br/>
@@ -26,166 +21,162 @@ import gov.nist.core.*;
  *
  */
 public class HopImpl extends Object implements javax.sip.address.Hop {
-    protected String host;
-    protected int port;
-    protected String transport;
-    protected boolean explicitRoute; // this is generated from a ROUTE header.
-    protected boolean defaultRoute; // This is generated from the proxy addr
-    protected boolean uriRoute; // This is extracted from the requestURI.
+	protected String host;
+	protected int port;
+	protected String transport;
+	protected boolean explicitRoute; // this is generated from a ROUTE header.
+	protected boolean defaultRoute; // This is generated from the proxy addr
+	protected boolean uriRoute; // This is extracted from the requestURI.
 
+	/**
+	 * Debugging println.
+	 */
+	public String toString() {
+		return host + ":" + port + "/" + transport;
+	}
 
-    /**
-     * Debugging println.
-     */
-    public String toString() {
-        return host + ":" + port + "/" + transport;
-    }
+	/**
+	 * Create new hop given host, port and transport.
+	 * @param hostName hostname
+	 * @param portNumber port
+	 * @param trans transport
+	 */
+	public HopImpl(String hostName, int portNumber, String trans) {
+		host = hostName;
+		port = portNumber;
+		transport = trans;
+	}
 
+	/**
+	 * Creates new Hop
+	 * @param hop is a hop string in the form of host:port/Transport
+	 * @throws IllegalArgument exception if string is not properly formatted or null.
+	 */
+	public HopImpl(String hop) throws IllegalArgumentException {
+		if (hop == null)
+			throw new IllegalArgumentException("Null arg!");
+		// System.out.println("hop = " + hop);
+		StringTokenizer stringTokenizer = new StringTokenizer(hop + "/");
+		String hostPort = stringTokenizer.nextToken("/").trim();
+		transport = stringTokenizer.nextToken().trim();
+		// System.out.println("Hop: transport = " + transport);
+		if (transport == null)
+			transport = "UDP";
+		else if (transport == "")
+			transport = "UDP";
+		if (transport.compareToIgnoreCase("UDP") != 0
+			&& transport.compareToIgnoreCase("TCP") != 0) {
+			System.out.println("Bad transport string " + transport);
+			throw new IllegalArgumentException(hop);
+		}
 
-    /** Create new hop given host, port and transport.
-     *@param hostName hostname
-     *@param portNumber port
-     *@param trans transport
-     */
-    public HopImpl(String hostName, int portNumber, String trans) {
-        host = hostName;
-        port = portNumber;
-        transport = trans;
-    }
+		String portString = null;
+		//IPv6 hostport
+		if (hostPort.charAt(0) == '[') {
+			int rightSqBrackIndex = hostPort.indexOf(']');
+			if (rightSqBrackIndex == -1)
+				throw new IllegalArgumentException("Bad IPv6 reference spec");
 
-    /** Creates new Hop
-     *@param hop is a hop string in the form of host:port/Transport
-     *@throws IllegalArgument exception if string is not properly formatted or
-     * null.
-     */
-    public HopImpl(String hop) throws IllegalArgumentException {
-        if (hop == null) throw new IllegalArgumentException("Null arg!");
-        // System.out.println("hop = " + hop);
-        StringTokenizer stringTokenizer = new StringTokenizer(hop + "/");
-        String hostPort = stringTokenizer.nextToken("/").trim();
-        transport = stringTokenizer.nextToken().trim();
-        // System.out.println("Hop: transport = " + transport);
-        if (transport == null)
-            transport = "UDP";
-        else if (transport == "") transport = "UDP";
-        if (transport.compareToIgnoreCase("UDP") != 0 &&
-                transport.compareToIgnoreCase("TCP") != 0) {
-            System.out.println("Bad transport string " + transport);
-            throw new IllegalArgumentException(hop);
-        }
+			host = hostPort.substring(0, rightSqBrackIndex + 1);
 
-        String portString = null;
-        //IPv6 hostport
-        if( hostPort.charAt(0) == '[' ){
-            int rightSqBrackIndex = hostPort.indexOf(']');
-            if(rightSqBrackIndex == -1)
-                throw new IllegalArgumentException("Bad IPv6 reference spec");
+			int portColon = hostPort.indexOf(':', rightSqBrackIndex);
+			if (portColon != -1)
+				try {
+					portString = hostPort.substring(portColon + 1).trim();
+				} catch (IndexOutOfBoundsException exc) {
+					//Do nothing - handled later
+				}
+		}
+		//IPv6 address and no port
+		else if (hostPort.indexOf(':') != hostPort.lastIndexOf(":")) {
+			host = '[' + hostPort + ']';
+		} else //no square brackets and a single or zero colons => IPv4 hostPort
+			{
+			int portColon = hostPort.indexOf(':');
+			if (portColon == -1)
+				host = hostPort;
+			else {
+				host = hostPort.substring(0, portColon).trim();
+				try {
+					portString = hostPort.substring(portColon + 1).trim();
+				} catch (IndexOutOfBoundsException exc) {
+					//Do nothing - handled later
+				}
+			}
+		}
 
-            host = hostPort.substring(0, rightSqBrackIndex + 1);
+		if (host == null || host.equals(""))
+			throw new IllegalArgumentException("no host!");
+		if (portString == null || portString.equals("")) {
+			port = 5060;
+		} else {
+			try {
+				port = Integer.parseInt(portString);
+			} catch (NumberFormatException ex) {
+				throw new IllegalArgumentException("Bad port spec");
+			}
+		}
+	}
 
-            int portColon = hostPort.indexOf(':', rightSqBrackIndex);
-            if(portColon != -1)
-                try{
-                    portString = hostPort.substring(portColon+1).trim();
-                }catch(IndexOutOfBoundsException exc)
-                {
-                    //Do nothing - handled later
-                }
-        }
-        //IPv6 address and no port
-        else if( hostPort.indexOf(':') != hostPort.lastIndexOf(":"))
-        {
-            host = '[' + hostPort + ']';
-        }
-        else //no square brackets and a single or zero colons => IPv4 hostPort
-        {
-            int portColon = hostPort.indexOf(':');
-            if(portColon == -1)
-                host = hostPort;
-            else
-            {
-                host = hostPort.substring(0, portColon).trim();
-                try{
-                    portString = hostPort.substring(portColon + 1).trim();
-                }catch(IndexOutOfBoundsException exc)
-                {
-                    //Do nothing - handled later
-                }
-            }
-        }
+	/**
+	 * Retruns the host string.
+	 * @return host String
+	 */
+	public String getHost() {
+		return host;
+	}
 
-        if (host == null || host.equals(""))
-            throw new IllegalArgumentException("no host!");
-        if (portString == null || portString.equals("")) {
-            port = 5060;
-        } else {
-            try {
-                port = Integer.parseInt(portString);
-            } catch (NumberFormatException ex) {
-                throw new IllegalArgumentException("Bad port spec");
-            }
-        }
-    }
+	/**
+	 * Returns the port.
+	 * @return port integer.
+	 */
+	public int getPort() {
+		return port;
+	}
 
-    /**
-     *Retruns the host string.
-     *@return host String
-     */
-    public String getHost() {
-        return host;
-    }
+	/** returns the transport string.
+	 */
+	public String getTransport() {
+		return transport;
+	}
 
-    /**
-     *Returns the port.
-     *@return port integer.
-     */
-    public int getPort() {
-        return port;
-    }
+	/** Return true if this is an explicit route (ie. extrcted from a ROUTE
+	 * Header)
+	 */
+	public boolean isExplicitRoute() {
+		return explicitRoute;
+	}
 
-    /** returns the transport string.
-     */
-    public String getTransport() {
-        return transport;
-    }
+	/** Return true if this is a default route (ie. next hop proxy address)
+	 */
+	public boolean isDefaultRoute() {
+		return defaultRoute;
+	}
 
-    /** Return true if this is an explicit route (ie. extrcted from a ROUTE
-     * Header)
-     */
-    public boolean isExplicitRoute() {
-        return explicitRoute;
-    }
+	/** Return true if this is uriRoute
+	 */
+	public boolean isURIRoute() {
+		return uriRoute;
+	}
 
-    /** Return true if this is a default route (ie. next hop proxy address)
-     */
-    public boolean isDefaultRoute() {
-        return defaultRoute;
-    }
+	/** Set the URIRoute flag.
+	 */
+	public void setURIRouteFlag() {
+		uriRoute = true;
+	}
 
-    /** Return true if this is uriRoute
-     */
-    public boolean isURIRoute() {
-        return uriRoute;
-    }
+	/** Set the defaultRouteFlag.
+	 */
+	public void setDefaultRouteFlag() {
+		defaultRoute = true;
+	}
 
-    /** Set the URIRoute flag.
-     */
-    public void setURIRouteFlag() {
-        uriRoute = true;
-    }
-
-
-    /** Set the defaultRouteFlag.
-     */
-    public void setDefaultRouteFlag() {
-        defaultRoute = true;
-    }
-
-    /** Set the explicitRoute flag.
-     */
-    public void setExplicitRouteFlag() {
-        explicitRoute = true;
-    }
-
-
+	/** Set the explicitRoute flag.
+	 */
+	public void setExplicitRouteFlag() {
+		explicitRoute = true;
+	}
 }
+/*
+ * $Log: not supported by cvs2svn $
+ */

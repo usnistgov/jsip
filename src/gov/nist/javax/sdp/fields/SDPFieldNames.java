@@ -29,6 +29,9 @@ public interface SDPFieldNames {
 	public static final String PROTO_VERSION_FIELD = "v=";
 	public static final String URI_FIELD = "u=";
 	public static final String MEDIA_FIELD = "m=";
-	public static final String REPEAT_FIELD="r=";
-	public static final String ZONE_FIELD= "z=";
+	public static final String REPEAT_FIELD = "r=";
+	public static final String ZONE_FIELD = "z=";
 }
+/*
+ * $Log: not supported by cvs2svn $
+ */

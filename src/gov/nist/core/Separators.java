@@ -10,15 +10,15 @@ package gov.nist.core;
 *
 */
 public interface Separators {
-	public static final String SEMICOLON=";" ;
-	public static final String COLON=":" ;
-	public static final String COMMA="," ;
-	public static final String SLASH="/" ;
-	public static final String SP=" " ;
-	public static final String EQUALS="=" ;
-	public static final String STAR= "*";
+	public static final String SEMICOLON = ";";
+	public static final String COLON = ":";
+	public static final String COMMA = ",";
+	public static final String SLASH = "/";
+	public static final String SP = " ";
+	public static final String EQUALS = "=";
+	public static final String STAR = "*";
 	public static final String NEWLINE = "\r\n";
-	public static final String RETURN="\n";
+	public static final String RETURN = "\n";
 	public static final String LESS_THAN = "<";
 	public static final String GREATER_THAN = ">";
 	public static final String AT = "@";
@@ -30,6 +30,9 @@ public interface Separators {
 	public static final String RPAREN = ")";
 	public static final String DOUBLE_QUOTE = "\"";
 	public static final String QUOTE = "\'";
-        public static final String HT = "\t";
-        public static final String PERCENT = "%";
+	public static final String HT = "\t";
+	public static final String PERCENT = "%";
 }
+/*
+ * $Log: not supported by cvs2svn $
+ */

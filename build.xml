@@ -10,7 +10,7 @@ Revisions and fixes by:
 
         Steven Lass    		 <slass@wcomnet.com>
 
-        Sverker Abrahamsson	 <sverker@aspiro.com>
+        Sverker Abrahamsson	 <sverker@abrahamsson.com>
 
         Majdi Abuelbassal 	 <majdi.abuelbassal@bbumail.com>
 
@@ -49,188 +49,232 @@ On my machine I run this as follows:
 c:/jakarta-ant/bin/ant all
 -->
 
-
-
 <project name="NIST-SIP" default="all" >
-    <property name="deprecation" value="true"/>
-    <property name="optimize" value="false"/>
+	<property name="deprecation" value="true"/>
+	<property name="optimize" value="false"/>
 
-    <!-- Allow user to override defaults -->
-    <property file="ant-build-config.properties" />
+	<!-- Allow user to override defaults -->
+	<property file="ant-build-config.properties" />
 
-    <!-- set global properties for this build -->
-    <property name="root" value="." />
+	<!-- set global properties for this build -->
+	<property name="root" value="." />
 
-    <!-- <property name="jmf.home" value="../jmf"/> -->
+	<!-- <property name="jmf.home" value="../jmf"/> -->
 
-    <!-- Where the classes are built -->
-    <property name="classes" value="${root}/classes" />
+	<!-- Where the classes are built -->
+	<property name="classes" value="${root}/classes" />
 
-    <!-- where the docs live -->
-    <property name="docdir" value="${root}/docs/api" />
+	<!-- where the docs live -->
+	<property name="docdir" value="${root}/docs/api" />
 
-    <!-- javadoc properties-->
-    <property name="href.nist.homepage" value="http://www-x.antd.nist.gov/" />
-    <property name="href.uncopyright" value="../uncopyright.html" />
-    <property name="href.mailto" value="mailto:nist-sip-dev@antd.nist.gov" />
-    <property name="href.distribution" value="http://www-x.antd.nist.gov/proj/iptel/nist-sip-requestform/nist-sip-1.2-requestform.htm"/>
-    <!-- where the src lives -->
-    <property name= "srcroot" value = "${root}/src" />
+	<!-- javadoc properties-->
+	<property name="href.nist.homepage" value="http://www-x.antd.nist.gov/" />
+	<property name="href.uncopyright" value="../uncopyright.html" />
+	<property name="href.mailto" value="mailto:nist-sip-dev@antd.nist.gov" />
+	<property name="href.distribution" value="http://www-x.antd.nist.gov/proj/iptel/nist-sip-requestform/nist-sip-1.2-requestform.htm"/>
+	<!-- where the src lives -->
+	<property name= "srcroot" value = "${root}/src" />
 
-    <!-- where are the lib -->
-    <property name="xerceslib" value="${root}/lib/xerces/xerces.jar" />
-    <property name= "jain_api_jar" value = "JainSipApi1.1.jar" />
-    <property name= "ri_jar" value = "nist-sip-1.2.jar" />
-    <property name= "sdp_jar" value = "nist-sdp-1.0.jar" />
+	<!-- where are the lib -->
+	<property name="xerceslib" value="${root}/lib/xerces/xerces.jar" />
+	<property name= "jain_api_jar" value = "JainSipApi1.1.jar" />
+	<property name= "ri_jar" value = "nist-sip-1.2.jar" />
+	<property name= "sdp_jar" value = "nist-sdp-1.0.jar" />
 
-<target name="all"  depends="clean,compilestack,compileri,compilesdp,compileexamples,compiletools,javadoc" />
+	<target name="all" depends="clean,compilestack,compileri,compilesdp,compileexamples,compiletools,javadoc" />
 
-<!-- Clean everything -->
-<target name="clean">
-    <delete dir="${classes}/examples" />
-    <delete dir="${classes}/tools" />
-    <delete dir="${classes}/gov" />
-    <delete dir="${classes}/javax" />
-    <delete file="./${jain_api_jar}"/>
-    <delete file="./${ri_jar}"/>
-    <delete file="./${sdp_jar}"/>
-</target>
+	<!-- Clean everything -->
+	<target name="clean">
+		<delete dir="${classes}/examples" />
+		<delete dir="${classes}/tools" />
+		<delete dir="${classes}/gov" />
+		<delete dir="${classes}/javax" />
+		<delete file="./${jain_api_jar}"/>
+		<delete file="./${ri_jar}"/>
+		<delete file="./${sdp_jar}"/>
+	</target>
 
-<!-- Create ${classes} -->
-<target name="init">
-    <mkdir dir="${classes}"/>
-</target>
+	<!-- Create ${classes} -->
+	<target name="init">
+		<mkdir dir="${classes}"/>
+	</target>
 
-<target name="cleandocs">
-    <delete dir="${docdir}" />
-</target>
+	<target name="cleandocs">
+		<delete dir="${docdir}" />
+	</target>
 
-<target name="javadoc" >
-    <javadoc packagenames="javax.sip.*,javax.sip.header.*,javax.sip.message.*,javax.sip.address.*,gov.nist.javax.sip.*,gov.nist.javax.sip.address.*,gov.nist.javax.sip.message.*,gov.nist.javax.sip.header.*,gov.nist.javax.sip.stack.*,gov.nist.javax.sip.parser.*"
-    sourcepath="${srcroot}"
-    overview="${docdir}/overview.html"
-    destdir="${docdir}"
-    use="true"
-    splitindex="true"
-    windowtitle="JAIN-SIP-1.1 RI For the People !"
-    doctitle="NIST SIP/SDP Parser and Stack (v1.2)"
-    public="true"
-    author="true"
-    version="true"
-    defaultexcludes="yes"
-    additionalparam="-breakiterator">
-        <classpath>
-             <pathelement location="${jain_api_jar}"/>
-        </classpath>
-        <link href="http://java.sun.com/products/j2se/1.4.1/docs/api" />
-    <header>
-            <![CDATA[
-                <b> NIST SIP Parser and Stack (v1.2) </b>
-            ]]>
-    </header>
-    <bottom>
-            <![CDATA[
-                <font size="-1">
-                <a href="${href.nist.homepage}"> A product of the NIST/ITL Advanced Networking Technologies Division. </a><br>
-                <a href="${href.uncopyright}"> See conditions of use. </a> <br>
-                <a href="${href.mailto}">Submit a bug report or feature request. </a><br>
-                </font>
-            ]]>
-    </bottom>
-    </javadoc>
-</target>
+	<target name="javadoc" >
+		<javadoc packagenames="javax.sip.*,javax.sip.header.*,javax.sip.message.*,javax.sip.address.*,gov.nist.javax.sip.*,gov.nist.javax.sip.address.*,gov.nist.javax.sip.message.*,gov.nist.javax.sip.header.*,gov.nist.javax.sip.stack.*,gov.nist.javax.sip.parser.*"
+				sourcepath="${srcroot}"
+				overview="${docdir}/overview.html"
+				destdir="${docdir}"
+				use="true"
+				splitindex="true"
+				windowtitle="JAIN-SIP-1.1 RI For the People !"
+				doctitle="NIST SIP/SDP Parser and Stack (v1.2)"
+				public="true"
+				author="true"
+				version="true"
+				defaultexcludes="yes"
+				additionalparam="-breakiterator">
+			<classpath>
+				<pathelement location="${jain_api_jar}"/>
+			</classpath>
+			<link href="http://java.sun.com/products/j2se/1.4.1/docs/api" />
+			<header>
+				<![CDATA[
+					<b> NIST SIP Parser and Stack (v1.2) </b>
+				]]>
+			</header>
+			<bottom>
+				<![CDATA[
+					<font size="-1">
+						<a href="${href.nist.homepage}"> A product of the NIST/ITL Advanced Networking Technologies Division. </a><br>
+						<a href="${href.uncopyright}"> See conditions of use. </a> <br>
+						<a href="${href.mailto}">Submit a bug report or feature request. </a><br>
+					</font>
+				]]>
+			</bottom>
+		</javadoc>
+	</target>
 
-<!-- Compile the stack and libraries -->
-<target name="compilestack" depends="init">
-    <javac debug="${debug}" deprecation="${deprecation}" optimize="${optimize}" srcdir="${srcroot}/javax/sip" destdir= "${classes}"/>
-    <jar destfile="${jain_api_jar}" basedir="${classes}" includes="javax/sip/**/*.class"/>
-</target>
+	<!-- Compile the stack and libraries -->
+	<target name="compilestack" depends="init">
+		<javac	debug="${debug}"
+				deprecation="${deprecation}"
+				optimize="${optimize}"
+				srcdir="${srcroot}/javax/sip"
+				destdir= "${classes}"/>
+		<jar destfile="${jain_api_jar}" basedir="${classes}" includes="javax/sip/**/*.class"/>
+	</target>
 
-<target name="compileri"  depends="init">
-    <javac debug="${debug}" deprecation="${deprecation}" optimize="${optimize}" sourcepath="${srcroot}" srcdir="${srcroot}/gov/nist/core" destdir= "${classes}">
-         <classpath>
-             <pathelement location="${classes}"/>
-             <pathelement location="${jain_api_jar}"/>
-         </classpath>
-    </javac>
-    <javac debug="${debug}" deprecation="${deprecation}" optimize="${optimize}" sourcepath="${srcroot}" srcdir="${srcroot}/gov/nist/javax/sip" destdir= "${classes}">
-         <classpath>
-             <pathelement location="${classes}"/>
-             <pathelement location="${jain_api_jar}"/>
-         </classpath>
-    </javac>
-    <jar destfile="${ri_jar}" basedir="${classes}" includes="gov/nist/**/*.class"/>
-</target>
+	<target name="compileri"  depends="init">
+		<javac 	debug="${debug}"
+				deprecation="${deprecation}"
+				optimize="${optimize}"
+				sourcepath="${srcroot}"
+				srcdir="${srcroot}/gov/nist/core"
+				destdir= "${classes}">
+			<classpath>
+				<pathelement location="${classes}"/>
+				<pathelement location="${jain_api_jar}"/>
+			</classpath>
+		</javac>
+		<javac 	debug="${debug}"
+				deprecation="${deprecation}"
+				optimize="${optimize}"
+				sourcepath="${srcroot}"
+				srcdir="${srcroot}/gov/nist/javax/sip"
+				destdir= "${classes}">
+			<classpath>
+				<pathelement location="${classes}"/>
+				<pathelement location="${jain_api_jar}"/>
+			</classpath>
+		</javac>
+		<jar destfile="${ri_jar}" basedir="${classes}" includes="gov/nist/**/*.class"/>
+	</target>
 
-<target name="compilesdp"  depends="init">
-    <javac debug="${debug}" deprecation="${deprecation}" optimize="${optimize}" sourcepath="${srcroot}" srcdir="${srcroot}/javax/sdp" destdir= "${classes}">
-         <classpath>
-             <pathelement location="${classes}"/>
-             <pathelement location="${jain_api_jar}"/>
-             <pathelement location="${ri_jar}"/>
-         </classpath>
-    </javac>
-    <javac debug="${debug}" deprecation="${deprecation}" optimize="${optimize}" sourcepath="${srcroot}" srcdir="${srcroot}/gov/nist/javax/sdp" destdir= "${classes}">
-         <classpath>
-             <pathelement location="${classes}"/>
-             <pathelement location="${jain_api_jar}"/>
-             <pathelement location="${ri_jar}"/>
-         </classpath>
-    </javac>
-    <jar destfile="${sdp_jar}" basedir="${classes}" includes="gov/nist/core/**/*.class,gov/nist/javax/sdp/**/*.class,javax/sdp/**/*.class"/>
-</target>
+	<target name="compilesdp"  depends="init">
+		<javac	debug="${debug}"
+				deprecation="${deprecation}"
+				optimize="${optimize}"
+				sourcepath="${srcroot}"
+				srcdir="${srcroot}/javax/sdp"
+				destdir= "${classes}">
+			<classpath>
+				<pathelement location="${classes}"/>
+				<pathelement location="${jain_api_jar}"/>
+				<pathelement location="${ri_jar}"/>
+			</classpath>
+		</javac>
+		<javac 	debug="${debug}"
+				deprecation="${deprecation}"
+				optimize="${optimize}"
+				sourcepath="${srcroot}"
+				srcdir="${srcroot}/gov/nist/javax/sdp"
+				destdir= "${classes}">
+			<classpath>
+				<pathelement location="${classes}"/>
+				<pathelement location="${jain_api_jar}"/>
+				<pathelement location="${ri_jar}"/>
+			</classpath>
+		</javac>
+		<jar destfile="${sdp_jar}" basedir="${classes}" includes="gov/nist/core/**/*.class,gov/nist/javax/sdp/**/*.class,javax/sdp/**/*.class"/>
+	</target>
 
-<!-- Compile the examples -->
-<target name="compileexamples" depends="init">
-    <javac debug="${debug}" deprecation="${deprecation}" optimize="${optimize}" sourcepath="${srcroot}" srcdir="${srcroot}/examples/shootist" destdir= "${classes}">
-         <classpath>
-             <pathelement location="${xerceslib}"/>
-             <pathelement location="${jain_api_jar}"/>
-             <pathelement location="${ri_jar}"/>
-             <pathelement location="${classes}"/>
-         </classpath>
-     </javac>
-</target>
+	<!-- Compile the examples -->
+	<target name="compileexamples" depends="init">
+		<javac 	debug="${debug}"
+				deprecation="${deprecation}"
+				optimize="${optimize}"
+				sourcepath="${srcroot}"
+				srcdir="${srcroot}/examples/shootist"
+				destdir= "${classes}">
+			<classpath>
+				<pathelement location="${xerceslib}"/>
+				<pathelement location="${jain_api_jar}"/>
+				<pathelement location="${ri_jar}"/>
+				<pathelement location="${classes}"/>
+			</classpath>
+		</javac>
+	</target>
 
-<!-- download and unzip the libs.zip -->
-<target name="getlibs">
-    <get src="http://is2.antd.nist.gov/pub/nist-sip/libs.zip"
-         dest="./libs.zip" verbose="on"/>
-    <unzip src="libs.zip" dest="./"/>
-</target>
+	<!-- Compile the tck -->
+	<target name="compiletck" depends="init,compilestack,compileri,compilesdp">
+		<javac 	debug="${debug}"
+				deprecation="${deprecation}"
+				optimize="${optimize}"
+				sourcepath="${srcroot}"
+				srcdir="${srcroot}/test/tck"
+				destdir= "${classes}">
+			<classpath>
+				<pathelement location="${xerceslib}"/>
+				<pathelement location="${jain_api_jar}"/>
+				<pathelement location="${ri_jar}"/>
+				<pathelement location="${classes}"/>
+			</classpath>
+		</javac>
+	</target>
 
-<!-- compile to traces viewer jar -->
-<target name="viewerjar">
-    <copy todir="${classes}/tools/tracesviewer/images">
-        <fileset dir="${srcroot}/tools/tracesviewer/images"/>
-    </copy>
+	<!-- download and unzip the libs.zip -->
+	<target name="getlibs">
+		<get src="http://is2.antd.nist.gov/pub/nist-sip/libs.zip"
+			dest="./libs.zip" verbose="on"/>
+		<unzip src="libs.zip" dest="./"/>
+	</target>
 
-    <jar compress="false" destfile="tracesviewer.jar">
-        <fileset dir="${classes}">
-            <include name="tools/tracesviewer/**/*.*"/>
-        </fileset>
-        <manifest>
-            <attribute name="Built-By" value="${user.name}"/>
-            <attribute name="Main-Class" value="tools.tracesviewer.TracesViewer"/>
-        </manifest>
-        <zipfileset src="${xerceslib}"/>
-    </jar>
-</target>
+	<!-- compile to traces viewer jar -->
+	<target name="viewerjar">
+		<copy todir="${classes}/tools/tracesviewer/images">
+			<fileset dir="${srcroot}/tools/tracesviewer/images"/>
+		</copy>
 
-<!-- Compile the tools -->
-<target name="compiletools" depends="init">
-    <javac debug="${debug}" deprecation="${deprecation}" optimize="${optimize}" srcdir="${srcroot}/tools/tracesviewer" destdir= "${classes}">
-         <classpath>
-             <pathelement location="${xerceslib}"/>
-             <pathelement location="${classes}"/>
-         </classpath>
-     </javac>
-    <javac debug="${debug}" deprecation="${deprecation}" optimize="${optimize}" srcdir="${srcroot}/tools/sniffer" destdir= "${classes}">
-         <classpath>
-             <pathelement location="${xerceslib}"/>
-             <pathelement location="${classes}"/>
-         </classpath>
-     </javac>
-</target>
+		<jar compress="false" destfile="tracesviewer.jar">
+			<fileset dir="${classes}">
+				<include name="tools/tracesviewer/**/*.*"/>
+			</fileset>
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Main-Class" value="tools.tracesviewer.TracesViewer"/>
+			</manifest>
+			<zipfileset src="${xerceslib}"/>
+		</jar>
+	</target>
+
+	<!-- Compile the tools -->
+	<target name="compiletools" depends="init">
+		<javac debug="${debug}" deprecation="${deprecation}" optimize="${optimize}" srcdir="${srcroot}/tools/tracesviewer" destdir= "${classes}">
+			<classpath>
+				<pathelement location="${xerceslib}"/>
+				<pathelement location="${classes}"/>
+			</classpath>
+		</javac>
+		<javac debug="${debug}" deprecation="${deprecation}" optimize="${optimize}" srcdir="${srcroot}/tools/sniffer" destdir= "${classes}">
+			<classpath>
+				<pathelement location="${xerceslib}"/>
+				<pathelement location="${classes}"/>
+			</classpath>
+		</javac>
+	</target>
 </project>
 

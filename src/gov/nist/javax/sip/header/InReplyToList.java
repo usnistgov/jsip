@@ -7,7 +7,7 @@ import javax.sip.header.*;
 /**
 * In-Reply-To SIP header. Keeps a list of CallIdentifiers
 *
-*@version  JAIN-SIP-1.1
+* @version JAIN-SIP-1.1 $Revision: 1.2 $ $Date: 2004-01-22 13:26:29 $
 *
 *@author M. Ranganathan <mranga@nist.gov>  <br/>
 *
@@ -15,11 +15,14 @@ import javax.sip.header.*;
 *
 */
 public final class InReplyToList extends SIPHeaderList {
-    
-        /** Default constructor
-         */    
+
+	/** Default constructor
+	 */
 	public InReplyToList() {
-		super( InReplyTo.class, InReplyToHeader.NAME);
+		super(InReplyTo.class, InReplyToHeader.NAME);
 	}
-        
+
 }
+/*
+ * $Log: not supported by cvs2svn $
+ */

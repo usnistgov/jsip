@@ -2,7 +2,6 @@
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
 *******************************************************************************/
 package gov.nist.javax.sdp.fields;
-import gov.nist.core.*;
 
 /**
 * A context sensitive list of keyowrds for SDP Headers.
@@ -16,3 +15,6 @@ public interface SDPKeywords {
 	public static final String IPV6="IP6";
 	public static final String IN="IN";
 }
+/*
+ * $Log: not supported by cvs2svn $
+ */

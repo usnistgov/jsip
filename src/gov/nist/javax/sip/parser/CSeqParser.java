@@ -4,15 +4,16 @@ import java.text.ParseException;
 import javax.sip.*;
 import gov.nist.core.*;
 
-/** Parser for CSeq headers.
-*
-*@version  JAIN-SIP-1.1
-*
-*@author M. Ranganathan <mranga@nist.gov>  
-*@author Olivier Deruelle <deruelle@nist.gov>
-*<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
-*
-*/
+/** 
+ * Parser for CSeq headers.
+ *
+ * @version  JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-01-22 13:26:31 $
+ *
+ * @author M. Ranganathan <mranga@nist.gov>  
+ * @author Olivier Deruelle <deruelle@nist.gov>
+ * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+ *
+ */
 public class CSeqParser extends HeaderParser {
 
        public   CSeqParser(String cseq) {
@@ -68,7 +69,7 @@ public class CSeqParser extends HeaderParser {
 			
 	}
 **/
-	
-       
-
 }
+/*
+ * $Log: not supported by cvs2svn $
+ */

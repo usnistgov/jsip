@@ -1,5 +1,5 @@
 package gov.nist.core;
-import java.util.Vector;
+
 import java.text.ParseException;
 
 /** Generic parser class.
@@ -98,17 +98,14 @@ public abstract class ParserCore {
 		return nameValue('=');
 	}
 	
-
-	
 	protected void peekLine(String rule) {
-		if (this.debug) {
+		if (debug) {
 			Debug.println(rule +" " + lexer.peekLine());
 		}
-	
 	}
-
-
-	
 }
 
 
+/*
+ * $Log: not supported by cvs2svn $
+ */

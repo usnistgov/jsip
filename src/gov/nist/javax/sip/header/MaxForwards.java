@@ -4,69 +4,70 @@
 package gov.nist.javax.sip.header;
 import javax.sip.header.*;
 import javax.sip.InvalidArgumentException;
+
 /**
-* MaxForwards SIPHeader
-*
-*@version  JAIN-SIP-1.1
-*
-*@author M. Ranganathan <mranga@nist.gov>  <br/>
-*@author Olivier Deruelle <deruelle@nist.gov><br/>
-*<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
-*
-*/
-public  class MaxForwards extends SIPHeader
-implements MaxForwardsHeader {
-    
-        /** maxForwards field.
-         */    
+ * MaxForwards SIPHeader
+ *
+ * @version JAIN-SIP-1.1 $Revision: 1.2 $ $Date: 2004-01-22 13:26:29 $
+ *
+ * @author M. Ranganathan <mranga@nist.gov>  <br/>
+ * @author Olivier Deruelle <deruelle@nist.gov><br/>
+ * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+ */
+public class MaxForwards extends SIPHeader implements MaxForwardsHeader {
+
+	/** maxForwards field.
+	 */
 	protected int maxForwards;
-        
-        /** Default constructor.
-         */        
+
+	/** Default constructor.
+	 */
 	public MaxForwards() {
-            super(NAME);
-        }
-        
-        /** get the MaxForwards field.
-         * @return the maxForwards member.
-         */        
-	public int getMaxForwards() {
-            return maxForwards;
-        }
-	
-	/**
-         * Set the maxForwards member
-         * @param maxForwards maxForwards parameter to set
-         */
-	public void setMaxForwards(int maxForwards)  
-	  throws InvalidArgumentException{
-            if (maxForwards<0 || maxForwards>255) 
-	    throw new InvalidArgumentException
-	    ("bad max forwards value " + maxForwards);
-            this.maxForwards= maxForwards ;
-        }
-        
-	/**
-         * Encode into a string.
-         * @return encoded string.
-         *
-         */	
-         public String encodeBody() {
-		return new Integer(maxForwards).toString() ;
+		super(NAME);
 	}
-          
-        /** Boolean function
-         * @return true if MaxForwards field reached zero.
-         */        
-        public boolean hasReachedZero() {
-            return maxForwards==0;
-        }
-        
-        /** decrement MaxForwards field one by one.
-         */        
-        public void decrementMaxForwards()  {
-	    if (maxForwards >= 0) maxForwards--;
-        }
-	
-        
+
+	/** get the MaxForwards field.
+	 * @return the maxForwards member.
+	 */
+	public int getMaxForwards() {
+		return maxForwards;
+	}
+
+	/**
+	     * Set the maxForwards member
+	     * @param maxForwards maxForwards parameter to set
+	     */
+	public void setMaxForwards(int maxForwards)
+		throws InvalidArgumentException {
+		if (maxForwards < 0 || maxForwards > 255)
+			throw new InvalidArgumentException(
+				"bad max forwards value " + maxForwards);
+		this.maxForwards = maxForwards;
+	}
+
+	/**
+	     * Encode into a string.
+	     * @return encoded string.
+	     *
+	     */
+	public String encodeBody() {
+		return new Integer(maxForwards).toString();
+	}
+
+	/** Boolean function
+	 * @return true if MaxForwards field reached zero.
+	 */
+	public boolean hasReachedZero() {
+		return maxForwards == 0;
+	}
+
+	/** decrement MaxForwards field one by one.
+	 */
+	public void decrementMaxForwards() {
+		if (maxForwards >= 0)
+			maxForwards--;
+	}
 }
+/*
+ * $Log: not supported by cvs2svn $
+ */

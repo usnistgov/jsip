@@ -2,7 +2,6 @@
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
 *******************************************************************************/
 package gov.nist.javax.sdp.fields;
-import gov.nist.core.*;
 
 /**
 * Placeholder root class for SDP headers.
@@ -15,27 +14,37 @@ import gov.nist.core.*;
 *
 */
 
-public abstract class SDPField extends SDPObject  {
+public abstract class SDPField extends SDPObject {
 	protected String fieldName;
 
 	public abstract String encode();
 
-	protected SDPField( String hname ) {
+	protected SDPField(String hname) {
 		fieldName = hname;
 	}
 
-	public String getFieldName() { return fieldName; }
+	public String getFieldName() {
+		return fieldName;
+	}
 
-       /** Returns the type character for the field.
-       * @return the type character for the field.
-       */
-       public char getTypeChar() {
-	if (fieldName == null) return  '\0';
-	else return fieldName.charAt(0);
-      }
+	/** Returns the type character for the field.
+	* @return the type character for the field.
+	*/
+	public char getTypeChar() {
+		if (fieldName == null)
+			return '\0';
+		else
+			return fieldName.charAt(0);
+	}
 
-	public SDPField() {}
+	public SDPField() {
+	}
 
-	public String toString() { return this.encode(); }
+	public String toString() {
+		return this.encode();
+	}
 
-} 
+}
+/*
+ * $Log: not supported by cvs2svn $
+ */
