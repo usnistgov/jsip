@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE attributes PUBLIC "-//NetBeans//DTD DefaultAttributes 1.0//EN" "http://www.netbeans.org/dtds/attributes-1_0.dtd">
 <attributes version="1.0">
-    <fileobject name="AuthenticationHeader.java">
-        <attr name="class_dependency_gov.nist.javax.sip.header.ParametersHeader" stringvalue="AuthenticationHeader"/>
-    </fileobject>
     <fileobject name="AuthenticationInfo.java">
         <attr name="class_dependency_javax.sip.header.AuthenticationInfoHeader" stringvalue="AuthenticationInfo"/>
-        <attr name="class_dependency_gov.nist.javax.sip.header.ParametersHeader" stringvalue="AuthenticationInfo"/>
-    </fileobject>
-    <fileobject name="HeaderFactoryImpl.java">
-        <attr name="class_dependency_javax.sip.header.HeaderFactory" stringvalue="HeaderFactoryImpl"/>
     </fileobject>
 </attributes>

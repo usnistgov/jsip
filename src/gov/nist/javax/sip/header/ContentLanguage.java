@@ -60,7 +60,9 @@ public class ContentLanguage extends SIPHeader implements
          */    
 	protected Locale locale;
 
-	public ContentLanguage() {}
+	public ContentLanguage() {
+            super (CONTENT_LANGUAGE);
+        }
 
         /** Default constructor.
          * @param lang String to set
