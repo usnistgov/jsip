@@ -72,7 +72,7 @@ public class AddressFactoryTest extends FactoryTestHarness {
 			// The API has a bug here - there is no way to retrieve the
 			// phone-context parameter. This will be fixed in the next release.
 			int start = tiTelURL.toString().indexOf(':');
-			String phoneNumber = tiTelURL.toString().substring(start).trim();
+			String phoneNumber = tiTelURL.toString().substring(start+1).trim();
 			telUrl = riAddressFactory.createTelURL(phoneNumber);
 			telUrl.setGlobal(tiTelURL.isGlobal());
 		} catch (Exception ex) {
@@ -224,11 +224,10 @@ public class AddressFactoryTest extends FactoryTestHarness {
 				javax.sip.address.TelURL telUrl =
 					(TelURL) this.createTiURI(telUrls[i]);
 				assertTrue(telUrl != null);
-				String phone = telUrl.getPhoneNumber();
+			        int start = telUrl.toString().indexOf(':');
+			        String phone = telUrl.toString().substring(start+1).trim();
 				javax.sip.address.TelURL tiTelUrl = this.createTiTelURL(phone);
 				tiTelUrl.setGlobal(telUrl.isGlobal());
-				System.out.println(telUrl);
-				System.out.println(tiTelUrl);
 				assertTrue(telUrl.equals(tiTelUrl));
 			}
 		} catch (Exception ex) {

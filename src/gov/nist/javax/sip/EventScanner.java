@@ -19,7 +19,7 @@ import sim.java.net.*;
  */
 /** Event Scanner to deliver events to the Listener.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2004-04-16 02:53:08 $
+ * @version JAIN-SIP-1.1 $Revision: 1.8 $ $Date: 2004-04-19 18:23:49 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -256,7 +256,9 @@ class EventScanner implements Runnable {
                     
                     // Change made by SIPquest
                     try {
-                        sipListener.processRequest((RequestEvent) sipEvent);
+			if (LogWriter.needsLogging)
+				sipStackImpl.logMessage("Calling listener " + sipRequest.getRequestURI());
+			if (sipListener != null) sipListener.processRequest((RequestEvent) sipEvent);
                     }
                     catch (Exception ex) {
                         // We cannot let this thread die under any
@@ -269,7 +271,7 @@ class EventScanner implements Runnable {
                 } else if (sipEvent instanceof ResponseEvent) {
                     // Change made by SIPquest
                     try {
-                        sipListener.processResponse((ResponseEvent) sipEvent);
+			if (sipListener != null) sipListener.processResponse((ResponseEvent) sipEvent);
                     }
                     catch (Exception ex) {
                         // We cannot let this thread die under any
@@ -307,7 +309,8 @@ class EventScanner implements Runnable {
                 } else if (sipEvent instanceof TimeoutEvent) {
                     // Change made by SIPquest
                     try {
-                        sipListener.processTimeout((TimeoutEvent) sipEvent);
+			// Check for null as listener could be removed.
+			if (sipListener != null) sipListener.processTimeout((TimeoutEvent) sipEvent);
                     }
                     catch (Exception ex) {
                         // We cannot let this thread die under any
