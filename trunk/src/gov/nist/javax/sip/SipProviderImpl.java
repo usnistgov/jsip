@@ -22,7 +22,7 @@ import sim.java.net.*;
 
 /** Implementation of the JAIN-SIP provider interface.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.21 $ $Date: 2004-05-12 20:48:54 $
+ * @version JAIN-SIP-1.1 $Revision: 1.22 $ $Date: 2004-05-18 15:26:42 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -501,20 +501,6 @@ public final class SipProviderImpl
 				Via via = sipRequest.getTopmostVia();
 				via.setBranch(bid);
 				SIPRequest newRequest;
-				/**
-				// This needs to be done at the receiver.
-				// Do not create a transaction for this request. If it has
-				// Mutliple route headers then take the first one off the
-				// list and copy into the request URI.
-				if (sipRequest.getHeader(RouteHeader.NAME) != null) {
-					newRequest = (SIPRequest) sipRequest.clone();
-					ListIterator rl = newRequest.getHeaders(RouteHeader.NAME);
-					Route route = (Route) rl.next();
-					//newRequest.setRequestURI(route.getAddress().getURI());
-					rl.remove();
-					if (! rl.hasNext()) newRequest.removeHeader(RouteHeader.NAME);
-				} else
-				**/
 
 				newRequest = sipRequest;
 				MessageChannel messageChannel =
@@ -717,6 +703,13 @@ public final class SipProviderImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.21  2004/05/12 20:48:54  mranga
+ * Reviewed by:   mranga
+ *
+ *
+ * When request is sent. The receiver is supposed to
+ * strip the route header not sender.  Previously sender was stripping it.
+ *
  * Revision 1.20  2004/04/26 21:30:47  mranga
  * Reviewed by:   mranga
  * Corrected test for STUN support.

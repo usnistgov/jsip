@@ -120,7 +120,7 @@ import sim.java.*;
  *@author Bug fixes by Emil Ivov.
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.26 $ $Date: 2004-05-17 01:00:01 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.27 $ $Date: 2004-05-18 15:26:43 $
  */
 public class SIPClientTransaction
 	extends SIPTransaction
@@ -137,6 +137,7 @@ public class SIPClientTransaction
 	private int viaPort;
 
 	private String viaHost;
+
 
 	// Real ResponseInterface to pass messages to
 	private SIPServerResponseInterface respondTo;
@@ -318,7 +319,7 @@ public class SIPClientTransaction
 				} else {
 					this.setState(TransactionState.COMPLETED);
 				}
-				getMessageChannel().sendMessage(transactionRequest);
+				super.sendMessage(transactionRequest);
 				return;
 
 			}
@@ -352,7 +353,7 @@ public class SIPClientTransaction
 				}
 			}
 			// Set state first to avoid race condition..
-			getMessageChannel().sendMessage(transactionRequest);
+			super.sendMessage(transactionRequest);
 
 		} catch (IOException e) {
 
@@ -372,8 +373,7 @@ public class SIPClientTransaction
 	 */
 	public synchronized void processResponse(
 		SIPResponse transactionResponse,
-		MessageChannel sourceChannel)
-		throws SIPServerException {
+		MessageChannel sourceChannel) {
 		// Log the incoming response in our log file.
 		if (parentStack
 			.serverLog
@@ -562,7 +562,7 @@ public class SIPClientTransaction
 	private void nonInviteClientTransaction(
 		SIPResponse transactionResponse,
 		MessageChannel sourceChannel)
-		throws IOException, SIPServerException {
+		throws IOException {
 		int statusCode = transactionResponse.getStatusCode();
 		if (TransactionState.TRYING == this.getState()) {
 			if (statusCode / 100 == 1) {
@@ -654,7 +654,7 @@ public class SIPClientTransaction
 	private void inviteClientTransaction(
 		SIPResponse transactionResponse,
 		MessageChannel sourceChannel)
-		throws IOException, SIPServerException {
+		throws IOException {
 		int statusCode = transactionResponse.getStatusCode();
 		if (TransactionState.TERMINATED == this.getState()) {
 			// Do nothing in the terminated state.
@@ -789,7 +789,7 @@ public class SIPClientTransaction
 					// Could have allocated the transaction but not yet
 					// sent out a request (Bug report by Dave Stuart).
 					if (lastRequest != null)
-						getMessageChannel().sendMessage(lastRequest);
+						super.sendMessage(lastRequest);
 				}
 			}
 		} catch (IOException e) {
@@ -1000,14 +1000,9 @@ public class SIPClientTransaction
 	*/
 	public synchronized void processPendingResponses( ) {
 		if (pendingResponses.isEmpty() ) return;
-		try {
-		    PendingResponse pr = 
+	   	PendingResponse pr = 
 				(PendingResponse) this.pendingResponses.removeFirst();
-		    this.processResponse(pr.sipResponse,pr.messageChannel);
-		} catch (SIPServerException ex) { 
-			// Should never happen.
-			ex.printStackTrace();
-		}
+	    	this.processResponse(pr.sipResponse,pr.messageChannel);
 	}
 
 	public synchronized boolean hasResponsesPending() {
@@ -1016,6 +1011,10 @@ public class SIPClientTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.26  2004/05/17 01:00:01  mranga
+ * Reviewed by:   mranga
+ * Dialog State assignment fix. Terminate dialog on non 2xx final response.
+ *
  * Revision 1.25  2004/05/06 15:45:52  mranga
  * Reviewed by:   mranga
  * delete dialog when 4xx other than 401 or 407 are received in the early state.

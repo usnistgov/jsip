@@ -12,7 +12,7 @@ import gov.nist.javax.sip.message.*;
  * It is the applications responsibility to take care of what needs to be
  * done to actually process the response.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-01-22 13:26:33 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2004-05-18 15:26:44 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -22,17 +22,13 @@ import gov.nist.javax.sip.message.*;
 public interface SIPServerResponseInterface {
 	/**
 	 * Process the Response.
-	 * @throws SIPServerException Exception that gets thrown by 
-	 * this processor when an exception is encountered in the
-	 * message processing.
 	 * @param  incomingChannel is the incoming message channel (parameter
 	 * added in response to a request by Salvador Rey Calatayud.)
 	 * @param sipResponse is the responseto process.
 	 */
 	public void processResponse(
 		SIPResponse sipResponse,
-		MessageChannel incomingChannel)
-		throws SIPServerException;
+		MessageChannel incomingChannel);
 
 	/**
 	 * Get the Channel for the sender. 
@@ -49,4 +45,28 @@ public interface SIPServerResponseInterface {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/01/22 13:26:33  sverker
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  sverker
+ * Reviewed by:   mranga
+ *
+ * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  */
