@@ -9,15 +9,15 @@ clean:
 	$(shell find javax -name "*.html" -print -exec rm {} \;)
 	$(shell find class-use -name "*.html" -print -exec rm {} \;)
 	$(shell find index-files -use -name "*.html" -print -exec rm {} \;)
-	\rm  -f  allclasses-frame.html
-	\rm  -f  allclasses-noframe.html
-	\rm  -f  constant-values.html
-	\rm  -f  deprecated-list.html 
-	\rm  -f  sdp_announceParser.html  
-	\rm  -f  serialized-form.html  
-	\rm  -f  overview-*.html 
-	\rm  -f  help-doc.html
-	\rm  -f  packages.html
-	\rm  -f  stylesheet.css 
-	\rm  -f  index.html 
-	\rm  -f  package-list
+	$(RM)  allclasses-frame.html
+	$(RM)  allclasses-noframe.html
+	$(RM)  constant-values.html
+	$(RM)  deprecated-list.html 
+	$(RM)  sdp_announceParser.html  
+	$(RM)  serialized-form.html  
+	$(RM)  overview-*.html 
+	$(RM)  help-doc.html
+	$(RM)  packages.html
+	$(RM)  stylesheet.css 
+	$(RM)  index.html 
+	$(RM)  package-list
