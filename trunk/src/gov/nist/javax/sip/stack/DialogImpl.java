@@ -24,7 +24,7 @@ import java.text.ParseException;
  * retrieve this structure from the SipStack. Bugs against route set 
  * management were reported by Antonis Karydas and Brad Templeton.
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.21 $ $Date: 2004-02-15 20:49:10 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.22 $ $Date: 2004-02-24 22:39:34 $
  *
  *@author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -1397,8 +1397,8 @@ public class DialogImpl implements javax.sip.Dialog {
 				((SIPClientTransaction) clientTransactionId).sendMessage(
 					dialogRequest);
 				// go directly to terminated state.
-				if (dialogRequest.getMethod().equalsIgnoreCase(Request.BYE))
-					this.delete();
+				 if (dialogRequest.getMethod().equalsIgnoreCase(Request.BYE))
+			        		this.setState(COMPLETED_STATE);
 			} catch (IOException ex) {
 				if (LogWriter.needsLogging)
 					sipStack.logWriter.logException(ex);
@@ -1442,6 +1442,10 @@ public class DialogImpl implements javax.sip.Dialog {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.21  2004/02/15 20:49:10  mranga
+ * Reviewed by:   mranga
+ * Return an empty iterator if the route set is empty.
+ *
  * Revision 1.20  2004/02/13 13:55:31  mranga
  * Reviewed by:   mranga
  * per the spec, Transactions must always have a valid dialog pointer. Assigned a dummy dialog for transactions that are not assigned to any dialog (such as Message).
