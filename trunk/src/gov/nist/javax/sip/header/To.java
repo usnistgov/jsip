@@ -10,7 +10,7 @@ import java.text.ParseException;
 /**  
 *To SIP Header.
 *
-*@version JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2004-01-22 13:26:30 $
+*@version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-06-17 15:22:29 $
 *
 *@author M. Ranganathan <mranga@nist.gov>  <br/>
 *@author Olivier Deruelle <deruelle@nist.gov><br/>
@@ -121,7 +121,9 @@ public final class To
 	public String getTag() {
 		if (parameters == null)
 			return null;
-		return getParameter(ParameterNames.TAG);
+		synchronized (this.parameters) {
+			return getParameter(ParameterNames.TAG);
+		}
 	}
 
 	/** Boolean function
@@ -130,14 +132,18 @@ public final class To
 	public boolean hasTag() {
 		if (parameters == null)
 			return false;
-		return hasParameter(ParameterNames.TAG);
+	        synchronized (this.parameters) {
+		   return hasParameter(ParameterNames.TAG);
+		}
 	}
 
 	/** remove Tag member
 	 */
 	public void removeTag() {
+	      synchronized (this.parameters) {
 		if (parameters != null)
 			parameters.delete(ParameterNames.TAG);
+	      }
 	}
 
 	/**
@@ -146,11 +152,13 @@ public final class To
 	 * @param t tag String to set.
 	 */
 	public void setTag(String t) throws ParseException {
-		if (t == null)
+		synchronized (this.parameters) {
+		   if (t == null)
 			throw new NullPointerException("null tag ");
-		else if (t.trim().equals(""))
+		   else if (t.trim().equals(""))
 			throw new ParseException("bad tag", 0);
-		this.setParameter(ParameterNames.TAG, t);
+		   this.setParameter(ParameterNames.TAG, t);
+		}
 	}
 
 	/** Get the user@host port string.
@@ -161,7 +169,8 @@ public final class To
 		return address.getUserAtHostPort();
 	}
 
-	/** Gets a string representation of the Header. This method overrides the
+	/** Gets a string representation of the Header. 
+	 * This method overrides the
 	 * toString method in java.lang.Object.
 	 *
 	 * @return string representation of Header
@@ -172,4 +181,28 @@ public final class To
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/01/22 13:26:30  sverker
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  sverker
+ * Reviewed by:   mranga
+ *
+ * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  */
