@@ -21,7 +21,7 @@ import javax.sip.message.*;
  *
  * @author Jeff Keyser 
  * @author M. Ranganathan (modified Jeff's original source and aligned with JAIN-SIP 1.1)
- * @version  JAIN-SIP-1.1 $Revision: 1.29 $ $Date: 2004-09-01 18:09:06 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.30 $ $Date: 2004-09-27 18:51:18 $
  */
 public abstract class SIPTransaction
 	extends MessageChannel
@@ -1000,19 +1000,6 @@ public abstract class SIPTransaction
 		return this.applicationData;
 	}
 
-	/** Remove the dialog association.
-	* This feature is meant for proxy servers who do not want to pay
-	* the dialog overhead. 
-	* Dialogs 
-	*
-	*/
-	public void removeDialogAssociation()  {
-		if (this.dialog != null) {
-		   // mark this dialog for deletion.
-		   this.dialog.delete();
-		   this.dialog = null;
-		}
-	}
 
 	protected abstract void startTransactionTimer();
 
@@ -1021,6 +1008,11 @@ public abstract class SIPTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.29  2004/09/01 18:09:06  mranga
+ * Reviewed by:   mranga
+ * Allow application to see route header on incoming request though
+ * use of a configuration parameter.
+ *
  * Revision 1.28  2004/07/23 06:50:05  mranga
  * Submitted by:  mranga
  * Reviewed by:   mranga
