@@ -22,7 +22,7 @@ import sim.java.net.*;
 
 /** Implementation of the JAIN-SIP provider interface.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.25 $ $Date: 2004-06-21 04:59:48 $
+ * @version JAIN-SIP-1.1 $Revision: 1.26 $ $Date: 2004-08-10 23:21:58 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -483,6 +483,9 @@ public final class SipProviderImpl
 		Iterator it = sipStack.getRouter().getNextHops(request);
 		if (it == null || !it.hasNext())
 			throw new SipException("could not determine next hop!");
+		// Bug reported by Rhys Ulerich
+	        if (((SIPRequest)request).getTopmostVia() == null) 
+			throw new SipException ("Invalid SipRequest -- no via header!");
 		// Will slow down the implementation because it involves
 		// a search to see if a transaction exists.
 		// This is a common bug so adding some assertion
@@ -490,7 +493,7 @@ public final class SipProviderImpl
 		SIPTransaction tr =
 			sipStack.findTransaction((SIPRequest) request, false);
 		if (tr != null)
-			throw new SipException("Cannot send statelssly Transaction found!");
+			throw new SipException("Cannot send statelessly Transaction found!");
 
 		while (it.hasNext()) {
 			Hop nextHop = (Hop) it.next();
@@ -702,6 +705,9 @@ public final class SipProviderImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.25  2004/06/21 04:59:48  mranga
+ * Refactored code - no functional changes.
+ *
  * Revision 1.24  2004/06/16 19:04:28  mranga
  * Check for out of sequence bye processing.
  *
