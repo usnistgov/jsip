@@ -120,7 +120,7 @@ import sim.java.*;
  *@author Bug fixes by Emil Ivov.
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.25 $ $Date: 2004-05-06 15:45:52 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.26 $ $Date: 2004-05-17 01:00:01 $
  */
 public class SIPClientTransaction
 	extends SIPTransaction
@@ -436,7 +436,7 @@ public class SIPClientTransaction
 			SIPTransactionStack sipStackImpl =
 				(SIPTransactionStack) getSIPStack();
 
-			// A tag just got assigned  or changed.
+			// A tag just got assigned  or changed. To tag is mandatory for final response
 			if (dialog.getRemoteTag() == null
 				&& transactionResponse.getTo().getTag() != null) {
 
@@ -449,10 +449,6 @@ public class SIPClientTransaction
 				if (sipStackImpl.isDialogCreated(method)
 					&& transactionResponse.getStatusCode() != 100) {
 					sipStackImpl.putDialog(dialog);
-					if (transactionResponse.getStatusCode() / 100 == 1)
-						dialog.setState(DialogImpl.EARLY_STATE);
-					else if (transactionResponse.getStatusCode() / 100 == 2)
-						dialog.setState(DialogImpl.CONFIRMED_STATE);
 					added = true;
 				}
 
@@ -470,29 +466,29 @@ public class SIPClientTransaction
 				}
 			}
 
+			// Adjust state of the Dialog state machine.
 			if (sipStackImpl.isDialogCreated(method)) {
 				// Make  a final tag assignment.
-				if (transactionResponse.getToTag() != null
+			        if ( dialog.getState() == null && 
+				     transactionResponse.getStatusCode() / 100 == 1) {
+				     dialog.setState(DialogImpl.EARLY_STATE);
+			        }  else if (transactionResponse.getToTag() != null
 					&& transactionResponse.getStatusCode() / 100 == 2) {
 					// This is a dialog creating method (such as INVITE).
 					// 2xx response -- set the state to the confirmed
-					// state.
+					// state. To tag is MANDATORY for the response.
 					dialog.setRemoteTag(transactionResponse.getToTag());
 					dialog.setState(DialogImpl.CONFIRMED_STATE);
-				} else if  (transactionResponse.getStatusCode() == 401 && 
-						transactionResponse.getStatusCode() == 407)  {
-					// Note that if the status code is 401 or 407, the app needs to
-					// re-issue the invite with the same call id so we keep the 
-					// dialog running.
-					if (dialog.getState() == null) 
-						dialog.setState(DialogImpl.EARLY_STATE);
-				} else if (  ( transactionResponse.getStatusCode() / 100 == 4				  ||
+				} else if (  (  transactionResponse.getStatusCode() / 100 == 3				  ||
+						transactionResponse.getStatusCode() / 100 == 4				  ||
 				 	        transactionResponse.getStatusCode() / 100 == 5				  ||
 					 	transactionResponse.getStatusCode() / 100 == 6) 
 						&& (dialog.getState() == null || dialog.getState().getValue()
 								== DialogImpl.EARLY_STATE)) {
-					// Invite transaction generated an error.
-					// Kill the associated dialog.
+					// RFC 3261 Section 12.3 - dialog termination.
+					// Independent of the method, if a request outside of a dialog generates
+   					// a non-2xx final response, any early dialogs created through
+   					// provisional responses to that request are terminated. 
 					dialog.setState(DialogImpl.TERMINATED_STATE);
 				}
 			}
@@ -1020,6 +1016,10 @@ public class SIPClientTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.25  2004/05/06 15:45:52  mranga
+ * Reviewed by:   mranga
+ * delete dialog when 4xx other than 401 or 407 are received in the early state.
+ *
  * Revision 1.24  2004/04/19 21:51:04  mranga
  * Submitted by:  mranga
  * Reviewed by:  ivov
