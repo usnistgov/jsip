@@ -67,7 +67,7 @@ javadoc:
 		-header $(HEADER)			\
 		-public					\
 		-bottom $(BOTTOM)			\
-		-link http://java.sun.com/products/j2se/1.4/docs/api \
+		-link http://java.sun.com/products/j2se/1.4.2/docs/api \
 		javax.sip					\
 		javax.sip.header				\
 		javax.sip.message				\
