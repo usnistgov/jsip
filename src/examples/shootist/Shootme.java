@@ -18,6 +18,8 @@ public class Shootme implements SipListener {
 	private static MessageFactory messageFactory;
 	private static HeaderFactory headerFactory;
 	private static SipStack sipStack;
+	private static final String myAddress = "127.0.0.1";
+	private static final int myPort    = 5070;
 
 	protected ServerTransaction inviteTid;
 
@@ -102,7 +104,7 @@ public class Shootme implements SipListener {
 			ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
 			toHeader.setTag("4321"); // Application is supposed to set.
 			Address address =
-				addressFactory.createAddress("Shootme <sip:127.0.0.1:5070>");
+				addressFactory.createAddress("Shootme <sip:" + myAddress+ ":" + myPort + ">");
 //endif
 //
 			ContactHeader contactHeader =
@@ -230,7 +232,7 @@ public class Shootme implements SipListener {
 		        properties.setProperty("javax.sip.IP_ADDRESS","129.6.55.62");
 //else
 */
-		properties.setProperty("javax.sip.IP_ADDRESS", "127.0.0.1");
+		properties.setProperty("javax.sip.IP_ADDRESS", myAddress );
 //endif
 //
 		properties.setProperty("javax.sip.RETRANSMISSION_FILTER", "true");
@@ -296,6 +298,10 @@ public class Shootme implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2004/06/16 02:53:17  mranga
+ * Submitted by:  mranga
+ * Reviewed by:   implement re-entrant multithreaded listener model.
+ *
  * Revision 1.18  2004/06/15 09:54:39  mranga
  * Reviewed by:   mranga
  * re-entrant listener model added.
