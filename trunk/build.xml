@@ -95,6 +95,8 @@ c:/jakarta-ant/bin/ant all
 		<delete dir="${classes}/tools" />
 		<delete dir="${classes}/gov" />
 		<delete dir="${classes}/javax" />
+		<delete dir='${classes}'/>
+		
 		<delete file="./${jain_api_jar}"/>
 		<delete file="./${ri_jar}"/>
 		<delete file="./${sdp_jar}"/>
