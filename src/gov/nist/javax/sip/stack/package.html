@@ -2,11 +2,13 @@
 This package contains the classes for building a SIP stack.  An incoming
 message is passed through the parser and generates a SIPServerRequestImp
 or SIPServerResponseImpl. These are interfaces that are implemented by the
-application. There are two main classes here.  SIPStack:  is quite simple
+application. There are two main classes here.  SIPMessageStack:  is quite simple
 and stripped down in its goals (for example, it does not provide any
 transaction support). It is essentially a messaging layer that utilizes
 the nist-sip parser and defines abstractions for message processing and
 I/O handling.  The transaction layer is provided by SIPTransactionStack.
+Note that the major protocol processors / protocol objects start with SIPXXX.
+In this respect I have deviated from the normal java naming convention.
 
 <h2> Operation of SIPStack </h2>
 
