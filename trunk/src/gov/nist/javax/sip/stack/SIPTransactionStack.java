@@ -656,9 +656,14 @@ extends SIPStack implements  SIPTransactionEventListener {
             
             // Create a new client transaction around the
             // superclass' message channel
+	    MessageChannel mc = super.createMessageChannel(nextHop);
+
+	    // Superclass will return null if no message processor
+	    // available for the transport.
+	    if (mc == null) return null;
+	    
             returnChannel =
-            createClientTransaction
-            ( super.createMessageChannel( nextHop ) );
+            createClientTransaction ( mc );
             clientTransactions.add( returnChannel );
             ((SIPClientTransaction)returnChannel).setViaPort(nextHop.getPort());
             ((SIPClientTransaction)returnChannel).setViaHost(nextHop.getHost());
