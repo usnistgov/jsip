@@ -722,7 +722,10 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
                     raiseErrorEvent
 			(SIPTransactionErrorEvent.TIMEOUT_RETRANSMIT);
 		 } else {
-                   getMessageChannel( ).sendMessage( lastRequest );
+		   // Could have allocated the transaction but not yet
+		   // sent out a request (Bug report by Dave Stuart).
+		   if (lastRequest != null) 
+                   	getMessageChannel( ).sendMessage( lastRequest );
 		 }
 	       }
         } catch( IOException e ) {
