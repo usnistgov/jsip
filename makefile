@@ -168,6 +168,9 @@ clean: emacsclean
 	$(RM) -f $(JAIN_API)
 	$(RM) -f timestamp
 
+cleandocs:
+	cd docs/api/;make clean
+
 backup:
 	tar -cvzf $(SRCTAR)  --exclude CVS			\
 	--exclude filesystem.attributes				\
