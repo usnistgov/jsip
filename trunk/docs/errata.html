@@ -1,12 +1,14 @@
-<h1> Spec documentation Errata </h1>
+<h1> Spec Errata and enhancements </h1>
 
 These errors and ommisions are to be corrected in a future maintenance release. 
 They were discovered too late to be incorporated into the current release or
-were unearthed as a result of use. The RI does incorporate these assumptions.
+were unearthed as a result of use.  A formal change list will be prepared
+for these and submitted for approval for the next spec revision.
 
 <ul>
-<li><it>javax.sip.message.SipRequest.clone() </it> The message contents are 
-cloned as follows:
+<li><b><it>javax.sip.message.SipRequest.clone() </it> -- clarify behavior </b>
+<br/>
+The message contents are cloned as follows:
 <ul>
 <li> If the content is of type byte[] a new byte[] array is allocated and
 the original contents are copied over to the cloned request. 
@@ -17,47 +19,201 @@ clone method then it is invoked and the resultant Object is used in the new
 cloned SipRequest.
 </ul>
 
-<li><it>javax.sip.MessageFactory.createSipRequest(String ) </it> 
+<li><b><it>javax.sip.MessageFactory.createSipRequest(String )</it> 
+- clarify behavior </b> <br/>
 If the argument is null then an empty SipRequest is created. </li>
 
-<li><it>javax.sip.Dialog.sendAck </it> is used for sending both ACK and
-PRACK messages. </li>
+<li><b><it>javax.sip.Dialog.sendAck </it> -- clarify behavior </b>  <br/>
+Note that it is used is used for sending both ACK and PRACK messages. 
+</li>
 
-<li><it>javax.sip.message.Message.getUnrecognizedHeaders </it><br/>
+<li><b><it>javax.sip.message.Message.getUnrecognizedHeaders - clarify behavior </it><br/> </b>
 Gets a ListIterator over all the UnrecognizedHeaders in this Message. Note
 the order of the UnrecognizedHeaders in the ListIterator is the same as
 order in which they appeared in the SIP Message. UnrecognizedHeaders are
-headers that the underlying implementation does not recognize, a required
-header (From, To, Call-ID, CSeq, Via) the entire message willl be dropped
-by the underlying implementation and the header will not be included in
-the list. Other headers that are part of the supported set of headers but
-are not properly formatted will  be included in this list. Headers that
-are not part of the supported set of headers are retrieved as Extension
-headers. These must have a name:value format else they will be rejected
-by the underling implementation and included in this list. A Proxy should
-not delete UnrecognizedHeaders and should add these Headers to the end
-of the header list of the Message that is being forwarded. A User Agent
-may display these unrecognized headers to the user.
+headers that the underlying implementation does not recognize.  If the
+message is missing a required header (From, To, Call-ID, CSeq, Via)
+the entire message willl be dropped by the underlying implementation and
+the header will not be included in the list. Headers that are part of the
+supported set of headers but are not properly formatted will  be included
+in this list. Note that Headers that are not part of the supported set of
+headers are retrieved as Extension Headers. These must have a name:value
+format else they will be rejected by the underling implementation and
+included in this list. A Proxy should not delete UnrecognizedHeaders and
+should add these Headers to the end of the header list of the Message
+that is being forwarded. A User Agent may display these unrecognized
+headers to the user.  </li>
+
+<li><b><it>javax.sip.Transaction.getDialog </it>  - clarify behavior<br/> </b>
+If the transaction is associated with an existing Dialog or could result
+in a Dialog being created in the future (ie. the stack is configured
+to recognize the method as a Dialog creating method or is one of the
+natively supported dialog creating methods such as INVITE, SUBSCRIBE or
+NOTIFY), then the implementation must either associate the transaction
+with the existing Dialog or create a Dialog with null state. However,
+if the Transaction is neither dialog creating nor can be associated with
+an existing dialog, then the implementation must return null when the
+application issues getDialog on the transaction.  
 </li>
 
-<li><it>javax.sip.Transaction.getDialog </it> <br/> If the transaction
-is associated with an existing Dialog or could result in a Dialog being
-created in the future (ie. the stack is configured to recognize the
-method as a Dialog creating method or is one of the natively supported
-dialog creating methods such as INVITE, SUBSCRIBE or NOTIFY), then the
-implementation must either associate the transaction with the existing
-Dialog or create a Dialog with null state. However, if the Transaction is
-neither dialog creating nor can be associated with an existing dialog,
-then the implementation must return null when the application issues
-getDialog on the transaction.
-</li>
-
-<li><it>javax.sip.header.HeaderFactory.createToHeader </it> <br/>
+<li><b><it>javax.sip.header.HeaderFactory.createToHeader </it> --
+null tag. <br/>
+</b>
 Document that Null is accepted for the tag value.
 </li>
 
+<li><b>Enhance the dialog package to allow for dialog free operation of the
+stack </b><br/>
+
+The stack will support a new optional configuration parameter: <br/>
+<it>
+javax.sip.AUTOMATIC_DIALOG_SUPPORT  =  [ true | false ] <br/>
+</it>
+
+<b>The default will be true.  </b>
+If set to true, the stack will behave as it currently does. 
+
+<it>if javax.sip.AUTOMATIC_DIALOG_SUPPORT  = true </it> <br/>
+
+This is summarized here:
+
+<ul>
+<li>
+A dialog will ge created on a Dialog - creating  transaction.
+</li>
+<li>
+The first 2xx response to the transaction will drive the dialog to the 
+CONFIRMED state.
+</li>
+
+<li>
+Additional 2xx responses to the transaction will be acked automatically if 
+the RETRANSMISSION_FILTER is enabled.
+</li>
+
+<li>
+Additional 2xx responses to the transaction will be presented to 
+the application with a null transaction id if  
+RETRANSMISSION_FILTER is disabled.
+</li>
 
 </ul>
 
+The default behavior  represents a common use case and will allow the
+construction of simple user agents with ease ( which is the common use
+case for JAIN-SIP). This is how the dialog support currently works.
+The following new behavior will be added when the following configuration
+parameter is set.
+
+<p><it>javax.sip.AUTOMATIC_DIALOG_SUPPORT =  false </it><br/>
+This is motivated by the following use cases:
+<ul>
+<li>
+Dialog free servers (such as proxy servers) that do not 
+want to pay the overhead of the dialog layer.
+</li>
+<li>
+UACs that may want to create multiple Dialogs for a single Invite (as
+a result of forking by proxy servers).
+</li>
+</ul>
+
+
+<p>The application is responsible to create the Dialog if it wishes to do so. 
+The application may Create a Dialog and associate it with a response when a 
+response (provisional or final)  of a dialog-creating  request.
+
+The provider will support the following new methods:
+<br/>
+
+<it>
+Dialog getNewServerDialog (Response)  throws DialogAlreadyExistsException <br/>
+
+Dialog getNewClientDialog (Response) throws DialogAlreadyExistsException
+</it> 
+
+<p>
+
+The RequestEvent and ResponseEvent will support a new method <br/>
+<it> Dialog getDialog ( ) </it>
+
+
+<p>Here is a fragment of code that indicates how UACs may use this support:
+
+
+<pre>
+try {
+   if ( responseEvent.getDialog() == null ) {
+        clientDialog = sipProvider.getNewClientDialog();
+   } else {
+       clientDialog = responseEvent.getDialog();
+   }
+} catch ( DialogAlreadyExistsException ex ) {
+    ex.printStackTrace();
+}
+</pre>
+<br/>
+As this is intended primarily for proxy servers, RETRANSMISSION_FILTER
+will be automatically disabled when AUTOMATIC_DIALOG_SUPPORT is set to
+false.If AUTMATIC_DIALOG_SUPPORT = false then RETRANSMISSION_FILTER = false;
+</li>
+
+<li><b>The stack needs to support only one Provider -- not a provider for
+each transport </b> <br/> The IP address and port of the stack is known when 
+sending outbound messages thus the documentation will note that there
+will be a single provider instance. This implicitly assumes that the
+server will use the same transport for sending responses as the outbound
+request.
+</li>
+
+<li><b>Add support for multi-homed hosts -- allow the IP address to be
+specified as part of the listening point </b> 
+
+Use case:
+
+In a multi-homed host, we may want to create a different dialogs each with its
+own IP address and port.
+
+Add a method <br/>
+<it>
+ListeningPoit createListeningPoint(String ipAddress, int port, StringTransport)
+</it>
+<br/>
+To the javax.sip.SipStack interface. When this method is called, the
+listening point will be created with the specified IP address and the
+default IP address of the stack is ignored.
+The original (current) method that does not specify the ip address as a 
+parameter will use the default address of the stack.
+</li>
+
+<li><b>Add support for a Network Layer</b> <br/> Some classes of
+Applications need access to the sockets that are used by the stack to
+send out messages. For example the STUN stack needs to be able to access
+this. To support the requirements of such extensions, a new optional
+configuration parameter will be supported and a socket factory network
+layer will be supported.
+
+<p>
+To support this behavior. An application may implement an interface: <br/>
+<it>
+javax.sip.NetworkLayer
+</it>
+
+And <b> optionally </b> register it as a property when the stack is created
+The reserved property name for registering an implementation of this 
+interface will be <br/>
+
+</it>
+javax.sip.NETWORK_LAYER
+</lit>
+
+</li>
+
+<li><b>javax.sip.header.MaxForwardsHeader should throw exception 
+if decrement is attempted when the value is already 0 </b>
+Fix this in the interface.
+</li>
+
+</ul>
 
 
