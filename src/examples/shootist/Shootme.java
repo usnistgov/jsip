@@ -100,16 +100,16 @@ public class Shootme implements SipListener {
 			Response response = messageFactory.createResponse(200, request);
 			ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
 			toHeader.setTag("4321"); // Application is supposed to set.
-			//ifdef SIMULATION
-			/*
+//ifdef SIMULATION
+/*
 					Address address = addressFactory.createAddress(
-						"Shootme <sip:129.6.55.62:5070>");
-			//else
-			*/
+					"Shootme <sip:129.6.55.62:5070>");
+//else
+*/
 			Address address =
 				addressFactory.createAddress("Shootme <sip:127.0.0.1:5070>");
-			//endif
-			//
+//endif
+//
 			ContactHeader contactHeader =
 				headerFactory.createContactHeader(address);
 			response.addHeader(contactHeader);
@@ -225,14 +225,14 @@ public class Shootme implements SipListener {
 		sipFactory = SipFactory.getInstance();
 		sipFactory.setPathName("gov.nist");
 		Properties properties = new Properties();
-		//ifdef SIMULATION
-		/*
+//ifdef SIMULATION
+/*
 		        properties.setProperty("javax.sip.IP_ADDRESS","129.6.55.62");
-		//else
-		*/
+//else
+*/
 		properties.setProperty("javax.sip.IP_ADDRESS", "127.0.0.1");
-		//endif
-		//
+//endif
+//
 		properties.setProperty("javax.sip.RETRANSMISSION_FILTER", "true");
 		properties.setProperty("javax.sip.STACK_NAME", "shootme");
 		// You need  16 for logging traces. 32 for debug + traces.
@@ -293,6 +293,13 @@ public class Shootme implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/03/07 22:25:22  mranga
+ * Reviewed by:   mranga
+ * Added a new configuration parameter that instructs the stack to
+ * drop a server connection after server transaction termination
+ * set gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false for this
+ * Default behavior is true.
+ *
  * Revision 1.11  2004/03/05 20:36:54  mranga
  * Reviewed by:   mranga
  * put in some debug printfs and cleaned some things up.
