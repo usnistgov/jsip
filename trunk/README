@@ -219,7 +219,10 @@ by the following people:
     found documentation bugs and reported problems and incompleteness with
     the TCK.  Andreas noticed problems with Acking 487. Ack should be sent
     before the TU gets called. Andreas noted that CANCEL should not 
-    contain content.
+    contain content. Andreas noted that a dialog can change from client to
+    server in the middle of the dialog (for example client sends a re-invite
+    and puts caller on hold -- see sipping service examples draft). The
+    RI was not allowing this. This was fixed and tested by Andreas.
 
 4. Antonis Karydas reported bugs in the implementation of the JAIN transaction
     model. Server transactions were being created with non-null TID
