@@ -24,7 +24,10 @@ baboon:
 
 local:
 	$(JAVA) tools.tracesviewer.TracesViewer -rmihost 127.0.0.1 -stackId nist-proxy
-			
+
+server:
+	touch daemon-logs.txt
+	$(JAVA) tools.tracesviewer.TracesViewer -daemon -server_file daemon-logs.txt -port 5500
 
 clean: emacsclean
 	\rm  -f *.class
