@@ -1,321 +1,382 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-    
   <meta http-equiv="Content-Type"
  content="text/html; charset=iso-8859-1">
-    
   <meta name="Author" content="M. Ranganathan">
-    
   <meta name="GENERATOR"
  content="Mozilla/4.75 [en] (X11; U; Linux 2.2.14-5.0 i686) [Netscape]">
   <title>Frequently Asked Questions (List likely to grow with time)</title>
 </head>
-  <body text="#000000" background="back.gif" link="#0000ff"
+<body text="#000000" background="back.gif" link="#0000ff"
  vlink="#ff0000" alink="#000088">
-   
 <h2>Frequently Asked questions </h2>
-<ul>
-<li>Who owns NIST-SIP ?
-<li>What are the restrictions on its use? 
-<li>What is its intended use? 
-<li>Show me a quick how-to.
-<li>Why do I see a lot of strange exceptions in the log file?
-<li>Why is there only superficial resemblance between JAIN SIP 1.0  and
-<li>How involved is it to port applications between JAIN-SIP 1.0 and  JAIN-SIP
-1.1 JAIN SIP 1.1?  
-<li> Does the RI support Re-Invite and how do I issue a re-invite?
-<li>Is JAIN-SIP 1.1 Stateful/Stateless or DialogStateful ?
-<li>Why does my application get null transaction ID for  INVITE transactions?
-<li> What is the difference between Transaction.sendRequest,
-Dialog.sendRequest and SipProvider.sendRequest  ?
-<li>Who manages From/To tags  ?
-<li>Why Dialog.sendRequest but no Dialog.sendResponse ?
-<li> What is the difference between Trasaction.sendAck 
-and  Dialog.sendAck ? 
-<li>Does the SIP Communicator Softphone work on Linux?
-<li>How do I cancel a transaction ?
-<li>What does the Router do?
-<li>Why is there no Provider method for creating dialogs? 
-<li>I am constructing a stateful proxy/B2BUA. I forward the request
-after modifying it and then respond statefully. 
-Why are the tags/headers/something else modified in the response ? 
-<li>How to set up MSN messenger for SIP?
-<li>Does NIST-SIP do eager or lazy parsing? I see no parse exceptions on
-get methods. What happened to all the JAIN SIP lazy parsing stuff?
-<li>What support is provided for sending out-of-dialog requests? 
-<li>How do I communicate with the Router from the application?
-<li>How are IO Exceptions reported to the Application? 
-<li>Why is the Transacton Request returned from transaction.getRequest() 
-set to null? 
-<li>How do you identify the listening point for an incoming 
-server transaction in the case where you are supporting multiple
-listening points?
-<li>Why is my application getting Server Transaction timeouts even
-after I send response?
-<li>Why am I getting a "Transaction not available" sip execption on
-an incoming INVITE?
-<li>Why dont you use log4j for logging?
-</ul>
-<br><hr SIZE=2  NOSHADE>
 <ol>
- <li>Who owns NIST-SIP? <br/>
+  <li><a href="#1">Who owns NIST-SIP ?</a> </li>
+  <li><a href="#2">What are the restrictions on its use?</a> </li>
+  <li><a href="#3">What is its intended use?</a> </li>
+  <li><a href="#4">Show me a quick how-to</a>. </li>
+  <li><a href="#5">Why do I see a lot of strange exceptions in the log
+file?</a> </li>
+  <li><a href="#6">Why is there only superficial resemblance between
+JAIN SIP 1.0 and</a> </li>
+  <li><a href="#7">How involved is it to port applications between
+JAIN-SIP 1.0 and JAIN-SIP
+1.1 JAIN SIP 1.1?</a> </li>
+  <li><a href="#8"> Does the RI support Re-Invite and how do I issue a
+re-invite?</a> </li>
+  <li><a href="#9">Is JAIN-SIP 1.1 Stateful/Stateless or DialogStateful
+?</a> </li>
+  <li><a href="#10">Why does my application get null transaction ID for
+INVITE transactions?</a> </li>
+  <li><a href="#11">Who manages From/To tags ?</a> </li>
+  <li><a href="#12">Why Dialog.sendRequest but no Dialog.sendResponse ?</a>
+  </li>
+  <li><a href="#13">Does the SIP Communicator Softphone work on Linux?</a>
+  </li>
+  <li><a href="#14">How do I cancel a transaction ?</a> </li>
+  <li><a href="#15"> What is the difference between
+Transaction.sendRequest,
+Dialog.sendRequest and SipProvider.sendRequest ?</a> </li>
+  <li><a href="#16">What does the javax.sip.Router interface do?</a></li>
+  <li><a href="#17">How much compatibility with RFC 2543 do you support?</a><br>
+  </li>
+  <li><a href="#18">What is the difference between sending ack for a
+transaction and
+Dialog.sendRequest(Request.ACK)?</a> </li>
+  <li><a href="#19">Why is there no Provider method for creating
+dialogs?</a> </li>
+  <li><a href="#20">I am constructing a stateful proxy/B2BUA. I forward
+the request
+after modifying it and then respond statefully. Why are the
+tags/headers/something else modified in the response ?</a> </li>
+  <li><a href="#21">How to set up MSN messenger for SIP?</a> </li>
+  <li><a href="#22">Does NIST-SIP do eager or lazy parsing? I see no
+parse exceptions
+on
+get methods. What happened to all the JAIN SIP lazy parsing stuff?</a> </li>
+  <li><a href="#23">What support is provided for sending out-of-dialog
+requests?</a> </li>
+  <li><a href="#24">How do I communicate with the Router from the
+application?</a> </li>
+  <li><a href="#25">How are IO Exceptions reported to the Application?</a>
+  </li>
+  <li><a href="#26">Why is the Transacton Request returned from
+transaction.getRequest() set to null?</a> </li>
+  <li><a href="#27">How do you identify the listening point for an
+incoming server
+transaction in the case where you are supporting multiple
+listening points?</a> </li>
+  <li><a href="#28">Why is my application getting Server Transaction
+timeouts even
+after I send response?</a> </li>
+  <li><a href="#29">Why am I getting a "Transaction not available" sip
+execption on
+an incoming INVITE?</a> </li>
+  <li><a href="#30">Why dont you use log4j for logging?</a> </li>
+</ol>
+<br>
+<hr size="2" noshade="noshade">
+<ol>
+  <li><a name="1"></a>Who owns NIST-SIP? <br>
 NIST owns it and has released it to the public domain as required
 by act of U.S. Congress.
-This includes the stack (gov.nist....) the SDP implementation, 
-the proxy, the trace viewer tool IM client and the TCK. 
-Specific copyrights apply everything else. These are noted in the code
-and copyright statements included with the documents.   </li>
-
-<br><hr SIZE=2  NOSHADE>
-
-<li>What are the restrictions on its use? <br>
- Do whatever you want with it but just dont demand support. If you do use 
-it in your product or project, be aware that it is experimental code and is
-therefore subject to frequent changes.   Do acknowledge that your code was
+This includes the stack (gov.nist....) the SDP implementation, the
+proxy, the trace viewer tool IM client and the TCK. Specific copyrights
+apply everything else. These are noted in the code
+and copyright statements included with the documents. </li>
+  <br>
+  <hr size="2" noshade="noshade"><li><a name="2"></a>What are the
+restrictions on its use? <br>
+Do whatever you want with it but just dont demand support. If you do
+use it in your product or project, be aware that it is experimental
+code and is
+therefore subject to frequent changes. Do acknowledge that your code
+was
 derived from NIST-SIP. It helps us keep the project alive. </li>
-<br><hr SIZE=2  NOSHADE>
-<li>What is its intended use? <br/>
-JAIN-SIP/ NIST-SIP is meant for SIP developers. 
-As such it is not a stand-alone product.
-Its primary use is for integrating SIP into your applications.  If you
+  <br>
+  <hr size="2" noshade="noshade"><li><a name="3"></a>What is its
+intended use? <br>
+JAIN-SIP/ NIST-SIP is meant for SIP developers. As such it is not a
+stand-alone product.
+Its primary use is for integrating SIP into your applications. If you
 have an applicaton already and wish to SIP-enable it, JAIN-SIP/NIST-SIP
-is a reasonable choice.
-</li>
-<br><hr SIZE=2  NOSHADE>
-<li>Show me a quick how-to <br/>
-See examples/shootist. We'll be working several examples as time permits.
-</li>
-<br><hr SIZE=2  NOSHADE>
-<li> Why do I see a lot of strange exceptions in the log file?<br/>
+is a reasonable choice. </li>
+  <br>
+  <hr size="2" noshade="noshade"><li><a name="4"></a>Show me a quick
+how-to <br>
+See examples/shootist. We'll be working several examples as time
+permits. </li>
+  <br>
+  <hr size="2" noshade="noshade"><li><a name="5"></a> Why do I see a
+lot of strange exceptions in the log file?<br>
 These are just for stack tracing (ok there are better ways to do this
-under 1.4.2 but we want to be 1.3.1 and above compatible). The implementation
+under 1.4.2 but we want to be 1.3.1 and above compatible). The
+implementation
 does new Exception().printStack trace and captures the execution trace
 in a file for later use. </li>
-<br><hr SIZE=2  NOSHADE>
-<li>Why is there only superficial resemblance between JAIN SIP 1.0  and
-JAIN SIP 1.1?  
- <ul>
- <li>The previous API had a few problems.
+  <br>
+  <hr size="2" noshade="noshade"><li><a name="6"></a>Why is there only
+superficial resemblance between JAIN SIP 1.0 and
+JAIN SIP 1.1?
+    <ul>
+      <li>The previous API had a few problems.
 These are documented in the JAIN-SIP-INTEREST
-discussion list  </li>
- <li>The scope of the specification was made broader  (support for dialogs,
+discussion list </li>
+      <li>The scope of the specification was made broader (support for
+dialogs,
 Routers, support for SIMPLE REFER etc.). </li>
- <li>The RFC changed a lot over between  2543 and 3261. </li>
+      <li>The RFC changed a lot over between 2543 and 3261. </li>
     </ul>
   </li>
-<br><hr SIZE=2  NOSHADE>
-  <li>How involved is it to port applications between JAIN-SIP 1.0 and  JAIN-SIP
+  <br>
+  <hr size="2" noshade="noshade"> <li><a name="7"></a>How involved is
+it to port applications between JAIN-SIP 1.0 and JAIN-SIP
 1.1 <br>
- It is not difficult but it is not trivial. Anecdotal evidence indicates several
-hours  or maybe a day or two of effort.  </li>
-
-<br><hr SIZE=2  NOSHADE>
-
-<li> Does the RI support Re-Invite and how do I issue a re-invite? <br/>
-Request inviteRequest = dialog.createRequest(Request.INVITE); <br/>
-ClientTransaction ct = sipProvider.createNewClientTransaction(inviteRequest); <br/>
-dialog.sendRequest(ct);<br/>
-</li>
-
-<br><hr SIZE=2  NOSHADE>
-
-  <li> Is JAIN-SIP 1.1 Stateful/Stateless or DialogStateful <br>
- All of the above! You have the option to create a dialog for the first (dialog
-creating) transaction. Once a dialog is created, however, all incoming requests
-that belong to the dialog are automatically given a server transaction and
+It is not difficult but it is not trivial. Anecdotal evidence indicates
+several
+hours or maybe a day or two of effort. </li>
+  <br>
+  <hr size="2" noshade="noshade"><li><a name="8"></a> Does the RI
+support Re-Invite and how do I issue a re-invite? <br>
+Request inviteRequest = dialog.createRequest(Request.INVITE); <br>
+ClientTransaction ct =
+sipProvider.createNewClientTransaction(inviteRequest); <br>
+dialog.sendRequest(ct);<br>
+  </li>
+  <br>
+  <hr size="2" noshade="noshade"> <li><a name="9"></a> Is JAIN-SIP 1.1
+Stateful/Stateless or DialogStateful <br>
+All of the above! You have the option to create a dialog for the first
+(dialog
+creating) transaction. Once a dialog is created, however, all incoming
+requests
+that belong to the dialog are automatically given a server transaction
+and
 are hence handled statefully. </li>
-<br><hr SIZE=2  NOSHADE>
-  <li>Why does my application get null transaction ID for  INVITE transactions
-?   <br>
- In order to support both  statefull and stateless modes of operation, the
-INIVITE request gets delivered to your application with a null TID. You can
- choose to create a ServerTransacton and associated dialog using <it>provider.createNewServerTransaction(inviteRequest)</it>
+  <br>
+  <hr size="2" noshade="noshade"> <li><a name="10"></a>Why does my
+application get null transaction ID for INVITE transactions
+? <br>
+In order to support both statefull and stateless modes of operation,
+the
+INIVITE request gets delivered to your application with a null TID. You
+can choose to create a ServerTransacton and associated dialog using <it>provider.createNewServerTransaction(inviteRequest)</it>
   </li>
-<br><hr SIZE=2  NOSHADE>
-
-   <li>Who manages From/To tags   <br>
- From the client side, for the initial outgoing transaction,  the application
-needs to specify a From tag. From the server side, the application specifies
-the initial To tag when responding to the request. After that, the stack
-manages things. Transactions are assigned to dialogs based on tags in requests/respomses.
-  </li>
-<br><hr SIZE=2  NOSHADE>
-<li>Why Dialog.sendRequest but no Dialog.sendResponse <br/>
- Dialog.sendRequest uses route set and other dialog specific information. 
-Responses take all the information they need from the transaction.</li>
-<br><hr SIZE=2  NOSHADE>
-<li>Does the Softphone work on Linux?<br/>
-Yes. You need a 2.4 Kernel and the latest version of the Java Media Framework.
-</li>
-<br><hr SIZE=2  NOSHADE>
-<li>How do I cancel a transaction. <br>
-<ul>
- <li> cancelreq = originalClientTransaction.createCancelRequest() </li>
-      <li> ClientTransaction ct = sipProvider.getNewClientTransaction(cancelreq) 
-      </li>
+  <br>
+  <hr size="2" noshade="noshade"> <li><a name="11"></a>Who manages
+From/To tags <br>
+From the client side, for the initial outgoing transaction, the
+application
+needs to specify a From tag. From the server side, the application
+specifies
+the initial To tag when responding to the request. After that, the
+stack
+manages things. Transactions are assigned to dialogs based on tags in
+requests/respomses. </li>
+  <br>
+  <hr size="2" noshade="noshade"><li><a name="12"></a>Why
+Dialog.sendRequest but no Dialog.sendResponse <br>
+Dialog.sendRequest uses route set and other dialog specific
+information. Responses take all the information they need from the
+transaction.</li>
+  <br>
+  <hr size="2" noshade="noshade"><li><a name="13"></a>Does the
+Softphone work on Linux?<br>
+Yes. You need a 2.4 Kernel and the latest version of the Java Media
+Framework. </li>
+  <br>
+  <hr size="2" noshade="noshade"><li><a name="14"></a>How do I cancel a
+transaction. <br>
+    <ul>
+      <li> cancelreq = originalClientTransaction.createCancelRequest() </li>
+      <li> ClientTransaction ct =
+sipProvider.getNewClientTransaction(cancelreq) </li>
       <li> ct.sendRequest()</li>
     </ul>
- </li>
-
-<br><hr SIZE=2  NOSHADE>
-<li> What is the difference between Transaction.sendRequest,
-Dialog.sendRequest and SipProvider.sendRequest <br/>
-Dialog.sendRequest stamps the outgoing request with dialog state. This includes
-the local sequence number, Request URI and Route set. For requests within
-a dialog you should use Dialog.sendRequest. For sending request for a 
-transaction that is not associated with a Dialog, you should use 
-Transaction.sendRequest. For sending requests statelessly, you should use
-SipProvider.sendRequest. Stateless requests do not result in the creation
+  </li>
+  <br>
+  <hr size="2" noshade="noshade"><li><a name="15"></a> What is the
+difference between Transaction.sendRequest,
+Dialog.sendRequest and SipProvider.sendRequest <br>
+Dialog.sendRequest stamps the outgoing request with dialog state. This
+includes
+the local sequence number, Request URI and Route set. For requests
+within
+a dialog you should use Dialog.sendRequest. For sending request for a
+transaction that is not associated with a Dialog, you should use
+Transaction.sendRequest. For sending requests statelessly, you should
+use
+SipProvider.sendRequest. Stateless requests do not result in the
+creation
 of a new Transaction or Dialog.</li>
-<br><hr SIZE=2  NOSHADE>
-
-<li> What does the Router do? <br/>
-The router routes requests outside a dialog. 
-</li>
-<br><hr SIZE=2  NOSHADE>
-
-<li> How much backward compatibility with 2543 do you support <br/>
-We do not guarantee complete backward compatibility with RFC 2543. We support
-it to the extent that the implementation does not break. If there is a life
+  <br>
+  <hr size="2" noshade="noshade"><li><a name="16"></a> What does the
+javax.sip.Router do? <br>
+The router routes requests outside a dialog. This would be a good place
+to add customizations like
+looking up in a location database or registry for forwarding requests
+out of dialog. </li>
+  <br>
+  <hr size="2" noshade="noshade"><li><a name="17"></a> How much
+backward compatibility with 2543 do you support <br>
+We do not guarantee complete backward compatibility with RFC 2543. We
+support
+it to the extent that the implementation does not break. If there is a
+life
 threatening conflict between RFC 2543 and RFC 3261, then RFC 3261 wins.
-</li>
-
-<br><hr SIZE=2  NOSHADE>
-<li> What is the difference between Trasaction.sendAck 
-and  Dialog.sendRequest(Request.ACK) ? <br/>
-The latter includes dialog state and places a fresh branch id in the Via.
-This ensures it will not match any transaction on the server. Use this when
-ACKing 2xx responses and the former when ACKing error directed towards a 
-transction (3xx) and the like. </li>
-
-<br><hr SIZE=2  NOSHADE>
-<li> Why is there no Provider method for creating dialogs? <br/>
-Dialog creation and destruction is managed by the stack. When the 
+  </li>
+  <br>
+  <hr size="2" noshade="noshade"><li><a name="18"></a> What is the
+difference between sending ACK for a transaction
+and Dialog.sendRequest(Request.ACK) ? <br>
+The latter includes dialog state and places a fresh branch id in the
+Via.
+This ensures it will not match any transaction on the server. Use this
+when
+ACKing 2xx responses and the former when ACKing error directed towards
+a transction (3xx) and the like. </li>
+  <br>
+  <hr size="2" noshade="noshade"><li><a name="19"></a> Why is there no
+Provider method for creating dialogs? <br>
+Dialog creation and destruction is managed by the stack. When the
 client transcaction is created, a Dialog is associated with it but
-not mapped (its state is null). When you complete the transaction 
-successfully it actually gets mapped and a valid state is assigned to it.
-On the server side, when you get the request, provided the method of the
-request has the ability to create a Dialog, you can elect to create a 
+not mapped (its state is null). When you complete the transaction
+successfully it actually gets mapped and a valid state is assigned to
+it.
+On the server side, when you get the request, provided the method of
+the
+request has the ability to create a Dialog, you can elect to create a
 Dialog by creating a new Server Transaction at which point the stack
-automatically creates a Dialog for transaction but defers actually mapping
+automatically creates a Dialog for transaction but defers actually
+mapping
 it until a final response is sent out. </li>
-<br><hr SIZE=2  NOSHADE>
-
-<li>I am constructing a stateful proxy/B2BUA. I forward the request
-after modifying it and then respond statefully. 
-Why are the tags/headers/something else modified in the response ? <br/>
-NIST-SIP does not copy the request when it hands it over to the listener. 
-This is for efficiency. If you want to modify an outgoing request  (for example
-if you are building a stateful proxy server or B2BUA)  clone it. JAIN-SIP
+  <br>
+  <hr size="2" noshade="noshade"><li><a name="20"></a>I am constructing
+a stateful proxy/B2BUA. I forward the request
+after modifying it and then respond statefully. Why are the
+tags/headers/something else modified in the response ? <br>
+NIST-SIP does not copy the request when it hands it over to the
+listener. This is for efficiency. If you want to modify an outgoing
+request (for example
+if you are building a stateful proxy server or B2BUA) clone it.
+JAIN-SIP
 specifies a Deep cloning operation for this purpose.</li>
-<br><hr SIZE=2  NOSHADE>
-
-<li> How to set up MSN messenger for SIP?<br/>
+  <br>
+  <hr size="2" noshade="noshade"><li><a name="21"></a> How to set up
+MSN messenger for SIP?<br>
 MSN Messenger 4.7 (on windows XP) supports SIP but SIP support
 is not working well on MSN 5.0 (on Win2K).
-Enable communications services in Accounts tab. Go to Advanced and set your 
-proxy from there.
-</li>
-<br><hr SIZE=2  NOSHADE>
-
-<li>Does NIST-SIP do eager or lazy parsing? I see no parse exceptions on
-get methods. What happened to all the JAIN SIP lazy parsing stuff? <br/>
-The new JAIN Spec does not specify the type of parser to be employed. An
-implementation may employ lazy parsing. Parse failures are silent. 
-If  something
+Enable communications services in Accounts tab. Go to Advanced and set
+your proxy from there. </li>
+  <br>
+  <hr size="2" noshade="noshade"><li><a name="22"></a>Does NIST-SIP do
+eager or lazy parsing? I see no parse exceptions on
+get methods. What happened to all the JAIN SIP lazy parsing stuff? <br>
+The new JAIN Spec does not specify the type of parser to be employed.
+An
+implementation may employ lazy parsing. Parse failures are silent. If
+something
 parsing fails then the header is silently added
 to the uparseable header list and null is returned to the application.
-The application can later retrieve it as a String as an Unparseable header.
-This can happen either lazily or eagerly; however, Lazy/eager parsing is
-not exposed at the API level. NIST-SIP employs an eager strategy (mostly
-because of implementation ease). This is likely to be revised but your app
-does not get affected. 
-</li>
-<br><hr SIZE=2  NOSHADE>
-
-<li>What support is provided for sending out-of-dialog requests? <br/>
-Use clientTransaction.sendRequest(). This will get the next hop from the
+The application can later retrieve it as a String as an Unparseable
+header.
+This can happen either lazily or eagerly; however, Lazy/eager parsing
+is
+not exposed at the API level. NIST-SIP employs an eager strategy
+(mostly
+because of implementation ease). This is likely to be revised but your
+app
+does not get affected. </li>
+  <br>
+  <hr size="2" noshade="noshade"><li><a name="23"></a>What support is
+provided for sending out-of-dialog requests? <br>
+Use clientTransaction.sendRequest(). This will get the next hop from
+the
 Router and use that to send the request. If you use dialog.sendRequest,
-the next hop is obtained from the Dialog route set if one exists.
-</li>
-<br><hr SIZE=2  NOSHADE>
-
-<li> How do I communicate with the Router from the application? </br>
+the next hop is obtained from the Dialog route set if one exists. </li>
+  <br>
+  <hr size="2" noshade="noshade"><li><a name="24"></a> How do I
+communicate with the Router from the application? <br>
 This issue may arise when you want to use Loose or Strict routing. Only
-the Application knows whether to use Loose or Strict Routing but the Router
-needs to decide the Next Hops. Thus we need to communicate with the router.
-Currently, it is a bit hacky. Use an extension header and place it in the
+the Application knows whether to use Loose or Strict Routing but the
+Router
+needs to decide the Next Hops. Thus we need to communicate with the
+router.
+Currently, it is a bit hacky. Use an extension header and place it in
+the
 Request then examine it in the Router. For example, use a header like
-IS-STRICT-ROUTE which the router will see as an extension header and strip 
-off before deciding the next hop set.
-</li>
-<br><hr SIZE=2  NOSHADE>
-
-<li> How are IO Exceptions reported to the Application? </br>
+IS-STRICT-ROUTE which the router will see as an extension header and
+strip off before deciding the next hop set. </li>
+  <br>
+  <hr size="2" noshade="noshade"><li><a name="25"></a> How are IO
+Exceptions reported to the Application? <br>
 This case arises when using RETRANSMISSION FILTER.
-Currently, IOExceptions will be reported to the application as a TIMEOUT
-Event. This may change in the next revision where an explicit IOException 
-Event may be included in the architecture to avoid overloading the semantics
-of a TIMEOUT event.
-</br>
-<br><hr SIZE=2  NOSHADE>
-<li> Why is the Transacton Request returned from transaction.getRequest() 
-set to null? </br> The client
-transaction is only obliged to hold a reference to the Request until the
+Currently, IOExceptions will be reported to the application as a
+TIMEOUT
+Event. This may change in the next revision where an explicit
+IOException Event may be included in the architecture to avoid
+overloading the semantics
+of a TIMEOUT event. <br>
+    <br>
+    <hr size="2" noshade="noshade"></li>
+  <li>&nbsp;<a name="26"></a>Why is the Transacton Request returned
+from transaction.getRequest() set to null? <br>
+The client
+transaction is only obliged to hold a reference to the Request until
+the
 transaction goes to COMPLETED state. After that, the reference to the
 Request is nulled out to save heap space and ehance scalability of the
-implementation. If you want to hold a long term reference to the request,
-then please do this in your application.
-</br>
-<br><hr SIZE=2  NOSHADE>
-
-<li>Why are you not using standard logging API like log4j? </br> The RI
-was constructed to be small and independent of other libraries. 
-You just need j2sdk to build it. Features like log4j can be easily added by 
-just extending gov.nist.core.LogWriter.java. 
-</br>
-<br><hr SIZE=2  NOSHADE>
-
-<li>How do you identify the listening point for an incoming 
-server transaction in the case where you are supporting multiple
-listening points?</br>
-<ul>
-<li> <it> SipProvider sipProvider = sipEvent.getSource();  </it> </li>
-<li>  <it> ListeningPoint lp = sipProvider.getListeningPoint(); </it> </li>
-</ul>
-<br><hr SIZE=2  NOSHADE>
-
-<li>Why is my application getting Server Transaction timeouts even
-after I send response? <br/>
-If the stack configuration property 
-javax.sip.RETRANSMISSION_FILTER is "false" or "off", for INVITE
+implementation. If you want to hold a long term reference to the
+request,
+then please do this in your application. <br>
+    <br>
+    <hr size="2" noshade="noshade"></li>
+  <li><a name="27"></a>How do you identify the listening point for an
+incoming server transaction in the case where you are supporting
+multiple
+listening points?<br>
+    <ul>
+      <li> <it> SipProvider sipProvider = sipEvent.getSource(); </it>
+      </li>
+      <li> <it> ListeningPoint lp = sipProvider.getListeningPoint(); </it>
+      </li>
+    </ul>
+    <br>
+    <hr size="2" noshade="noshade"></li>
+  <li><a name="28"></a>Why is my application getting Server Transaction
+timeouts even
+after I send response? <br>
+If the stack configuration property javax.sip.RETRANSMISSION_FILTER is
+"false" or "off", for INVITE
 Transactions, your application is alerted to send response periodically
 until ACK is received from the client side. This happens through the
 mechanism of your application fielding a Timeout Event. </li>
-<br><hr SIZE=2  NOSHADE>
-<li>Why am I getting a "Transaction not available" sip execption on
-an incoming INVITE?<br/>
-Check your application to see if you cloned the request before you 
+  <br>
+  <hr size="2" noshade="noshade"><li><a name="29"></a>Why am I getting
+a "Transaction not available" sip execption on
+an incoming INVITE?<br>
+Check your application to see if you cloned the request before you
 requested the server transaction. A Server transaction can only be
 created for the incoming request that is identitically equal to the
 incoming request that was received by the stack and not for a cloned
 request. Further, you cannot cache the request and ask that a server
-transaction be created at some future time. You must create the 
-server transaction synchronously when the request is delivered to
-your application and not later.
-</li>
-<br><hr SIZE=2  NOSHADE>
-
-<li>Why dont you use log4j for logging? <br/>
+transaction be created at some future time. You must create the server
+transaction synchronously when the request is delivered to
+your application and not later. </li>
+  <br>
+  <hr size="2" noshade="noshade"><li><a name="30"></a>Why dont you use
+log4j for logging? <br>
 To keep the RI as independent of external dependencies as possible, all
 you need for the RI is j2se 1.3.1 or above. A configuration switch
 to allow you to log using log4j may be added in the future.
-</li>
-<br><hr SIZE=2  NOSHADE>
-
+Features like log4j can be easily added by just extending
+gov.nist.core.LogWriter.java. <br>
+    <br>
+    <hr size="2" noshade="noshade"></li>
+  <br>
+  <hr size="2" noshade="noshade">
 </ol>
-
 <!--
 <h2> Frequently Questionable Questions (List likely to grow in time) </h2>
 
@@ -370,8 +431,6 @@ be happy and let us know  at
 
 <br>
 -->
-
-
 M. Ranganathan, Olivier Deruelle and Emil Ivov.
 </body>
 </html>
