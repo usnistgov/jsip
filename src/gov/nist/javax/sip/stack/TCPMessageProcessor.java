@@ -108,7 +108,16 @@ public class TCPMessageProcessor extends MessageProcessor  {
         // Accept new connectins on our socket.
         while(this.isRunning) {
             try {
-                synchronized(this) {
+//ifndef SIMULATION
+//
+                synchronized(this) 
+//else
+/*
+		this.msgObject.enterCriticalSection();
+		try
+//endif
+*/
+		 {
                     // sipStack.maxConnections == -1 means we are
                     // willing to handle an "infinite" number of
                     // simultaneous connections (no resource limitation).
@@ -132,7 +141,13 @@ public class TCPMessageProcessor extends MessageProcessor  {
                         }
                     }
                     this.nConnections ++;
-                }
+                } 
+//ifdef SIMULATION
+/*
+		finally { this.msgObject.leaveCriticalSection(); }
+//endif
+*/
+
 //ifndef SIMULATION
 //
                 Socket newsock = sock.accept();

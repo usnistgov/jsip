@@ -129,7 +129,7 @@ public class Shootist implements SipListener  {
 		Request ackRequest = dialog.createRequest(Request.ACK);
 		// Bug report by Andreas Bystrom.
 		System.out.println("Sending ACK");
-                dialog.sendAck(ackRequest);
+               // dialog.sendAck(ackRequest);
             }
         } catch (Exception ex) {
             ex.printStackTrace();

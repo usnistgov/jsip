@@ -178,7 +178,16 @@ public class Shootme implements SipListener {
     }
     
     public void processTimeout(javax.sip.TimeoutEvent timeoutEvent) {
-        
+	Transaction transaction;
+	if (timeoutEvent.isServerTransaction()) {
+            transaction = timeoutEvent.getServerTransaction();
+	} else {
+            transaction = timeoutEvent.getClientTransaction();
+	}
+	System.out.println("state = " + transaction.getState());
+	System.out.println("dialog = " + transaction.getDialog());
+	System.out.println("dialogState = " 
+			+ transaction.getDialog().getState());
         System.out.println("Transaction Time out");
     }
     

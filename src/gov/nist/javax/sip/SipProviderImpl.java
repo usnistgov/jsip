@@ -191,6 +191,7 @@ javax.sip.SipProvider, SIPTransactionEventListener {
 //else
 /*
 	    this.pendingEventsShadow.enterCriticalSection();
+	    try 
 //endif
 */
 		{
@@ -283,7 +284,7 @@ javax.sip.SipProvider, SIPTransactionEventListener {
             }// end of Synchronized block
 //ifdef SIMULATION
 /*
-	    this.pendingEventsShadow.leaveCriticalSection();
+	    finally { this.pendingEventsShadow.leaveCriticalSection(); }
 //endif
 */
         } // end While
@@ -493,6 +494,10 @@ javax.sip.SipProvider, SIPTransactionEventListener {
                 }
             }
         }
+	if (LogWriter.needsLogging) {
+		sipStackImpl.logMessage
+			("Error processing " + sipRequest);
+	}
         throw new TransactionUnavailableException
         ("Could not resolve next hop or listening point unavailable! ");
         
