@@ -155,13 +155,14 @@ public class LogFileParser extends DefaultHandler {
 			return;
 
 		if (currentTag.equalsIgnoreCase("message")) {
-			StringBuffer s = new StringBuffer();
-			s.append(new String(buf, offset, len));
-			String str = s.toString().trim();
+			// StringBuffer s = new StringBuffer();
+			// s.append(new String(buf, offset, len));
+
+			String str = new String(buf,offset,len); //s.toString().trim();
 
 			if (str.equals(""))
 				return;
-			message = s;
+			message.append(str);
 
 		}
 

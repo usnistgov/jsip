@@ -27,7 +27,7 @@ import sim.java.net.*;
  * @author Jeff Keyser (original) 
  * @author M. Ranganathan <mranga@nist.gov>  <br/> (Added Dialog table).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.27 $ $Date: 2004-04-07 13:46:30 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.28 $ $Date: 2004-05-30 18:55:58 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public abstract class SIPTransactionStack
@@ -38,18 +38,20 @@ public abstract class SIPTransactionStack
 	 * Number of milliseconds between timer ticks (500).
 	 **/
 	public static final int BASE_TIMER_INTERVAL = 500;
+        
+        /** Connection linger time (seconds) 
+         */
+        public static final int CONNECTION_LINGER_TIME = 32;
 
 	// Collection of current client transactions
-	private Set clientTransactions;
+	protected Set clientTransactions;
 	// Collection or current server transactions
-	private Set serverTransactions;
+	protected Set serverTransactions;
 	// Table of dialogs.
-	private Hashtable dialogTable;
+	protected Hashtable dialogTable;
 
 	// Max number of server transactions concurrent.
 	protected int transactionTableSize;
-
-	// A table of assigned dialogs.
 
 	// Retransmissio{n filter - indicates the stack will retransmit 200 OK
 	// for invite transactions.
@@ -60,10 +62,8 @@ public abstract class SIPTransactionStack
 
 	private int activeClientTransactionCount;
 	private int activeServerTransactionCount;
+	protected Timer timer;
 
-	// All transactions that do not belong to any dialog
-	// are assigned to this dummy dialog.
-	protected DialogImpl dummyDialog;
 
 	/**
 	 *	Default constructor.
@@ -86,10 +86,6 @@ public abstract class SIPTransactionStack
 		// Dialog dable.
 		this.dialogTable = new Hashtable();
 
-		// Dummy dialog assigned for transactions that do not belong to a
-		// dialog.
-		this.dummyDialog = new DialogImpl();
-		this.dummyDialog.setDialogId("DUMMY-DIALOG");
 
 		// Start the timer event thread.
 //ifdef SIMULATION
@@ -99,9 +95,8 @@ public abstract class SIPTransactionStack
 		simThread.start();
 //else
 */
-		Thread scanner = new Thread(new TransactionScanner(this));
-		scanner.setName("TransactionScanner");
-		scanner.start();
+		
+            	this.timer =   new Timer();
 		Thread pendingResponseScanner = new Thread(new PendingResponseScanner(this));
 		pendingResponseScanner.setName("ResponseScanner");
 		pendingResponseScanner.start();
@@ -122,11 +117,6 @@ public abstract class SIPTransactionStack
 		// Dialog dable.
 		this.dialogTable = new Hashtable();
 
-		// Dummy dialog assigned for transactions that do not belong to a
-		// dialog.
-		this.dummyDialog = new DialogImpl();
-		this.dummyDialog.setDialogId("DUMMY-DIALOG");
-
 		// Start the timer event thread.
 //ifdef SIMULATION
 /*
@@ -135,9 +125,7 @@ public abstract class SIPTransactionStack
 		simThread.start();
 //else
 */
-		Thread scanner = new Thread(new TransactionScanner(this));
-		scanner.setName("TransactionScanner");
-		scanner.start();
+            	this.timer =   new Timer();
 		Thread pendingResponseScanner = new Thread(new PendingResponseScanner(this));
 		pendingResponseScanner.setName("ResponseScanner");
 		pendingResponseScanner.start();
@@ -194,6 +182,7 @@ public abstract class SIPTransactionStack
 		synchronized (dialogTable) {
 			dialogTable.put(dialogId, dialog);
 		}
+		dialog.startTimer();
 
 	}
 
@@ -420,6 +409,7 @@ public abstract class SIPTransactionStack
 	/**
 	 *	Thread used to throw timer events for all transactions.
 	 */
+/*
 	class TransactionScanner implements Runnable {
 		private int prevSTCount;
 		private int prevCTCount;
@@ -443,18 +433,10 @@ public abstract class SIPTransactionStack
 				try {
 
 					// Sleep for one timer "tick"
-//ifndef SIMULATION
-//
-					Thread.sleep(BASE_TIMER_INTERVAL);
-//else
-/*
 					SimThread.sleep((double) BASE_TIMER_INTERVAL);
-//endif
-*/
-
-					// Check all client transactions
-
 					LinkedList fireList = new LinkedList();
+
+
 
 					activeServerTransactionCount = 0;
 					activeClientTransactionCount = 0;
@@ -580,13 +562,8 @@ public abstract class SIPTransactionStack
 					prevSTCount = prevSTCount + activeServerTransactionCount;
 					prevCTCount = prevCTCount + activeClientTransactionCount;
 					this.scanCount++;
-
-//ifdef SIMULATION
-/*
 					 System.out.println
 				   	( stackName + " tsize " + activeClientTransactionCount );
-//endif
-*/
 
 					synchronized (dialogTable) {
 						Collection values = dialogTable.values();
@@ -632,7 +609,6 @@ public abstract class SIPTransactionStack
 												transaction.sendMessage(
 													response);
 										} catch (IOException ex) {
-											/* Will eventully time out */
 											d.setState(
 												DialogImpl.TERMINATED_STATE);
 										} finally {
@@ -668,6 +644,7 @@ public abstract class SIPTransactionStack
 		}
 
 	}
+*/
 
 	/**
 	 * Handles a new SIP request.
@@ -853,6 +830,8 @@ public abstract class SIPTransactionStack
 				nextHop.getPort());
 			((SIPClientTransaction) returnChannel).setViaHost(
 				nextHop.getHost());
+			// Add the transaction timer for the state machine.
+			returnChannel.startTransactionTimer();
 			return returnChannel;
 		}
 
@@ -891,6 +870,8 @@ public abstract class SIPTransactionStack
 				transaction.getViaPort());
 			((SIPClientTransaction) returnChannel).setViaHost(
 				transaction.getViaHost());
+			// Add the transaction timer for the state machine.
+			returnChannel.startTransactionTimer();
 			return returnChannel;
 		}
 	}
@@ -938,6 +919,7 @@ public abstract class SIPTransactionStack
 		synchronized (clientTransactions) {
 			clientTransactions.add(clientTransaction);
 		}
+		clientTransaction.startTransactionTimer();
 	}
 
 	/**
@@ -954,6 +936,7 @@ public abstract class SIPTransactionStack
 			this.serverTransactions.add(serverTransaction);
 			serverTransaction.map();
 		}
+		serverTransaction.startTransactionTimer();
 	}
 
 	public boolean hasResources() {
@@ -985,9 +968,20 @@ public abstract class SIPTransactionStack
 			transaction.disableRetransmissionTimer();
 		}
 	}
+
+	/** Stop stack.  Clear all the timer stuff.
+	*/
+	public void stopStack() {
+		this.timer.cancel();
+		super.stopStack();
+	}
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.27  2004/04/07 13:46:30  mranga
+ * Reviewed by:   mranga
+ * move processing of delayed responses outside the synchronized block.
+ *
  * Revision 1.26  2004/04/07 00:19:24  mranga
  * Reviewed by:   mranga
  * Fixes a potential race condition for client transactions.

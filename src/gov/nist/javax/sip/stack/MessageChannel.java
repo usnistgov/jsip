@@ -16,7 +16,7 @@ import gov.nist.core.*;
  * Message channel abstraction for the SIP stack.
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.8 $ $Date: 2004-05-18 15:26:42 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.9 $ $Date: 2004-05-30 18:55:57 $
  *
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
@@ -254,6 +254,7 @@ public abstract class MessageChannel {
 		InetAddress address,
 		int port,
 		long time) {
+		if (! getSIPStack().serverLog.needsLogging(ServerLog.TRACE_MESSAGES)) return;
 		String firstLine = sipMessage.getFirstLine();
 		CSeq cseq = (CSeq) sipMessage.getCSeq();
 		CallID callid = (CallID) sipMessage.getCallId();
@@ -262,13 +263,11 @@ public abstract class MessageChannel {
 		// Default port.
 		if (port == -1)
 			port = 5060;
-		if (getSIPStack().serverLog.needsLogging(ServerLog.TRACE_MESSAGES)) {
-			getSIPStack().serverLog.logMessage(
-				sipMessage,
-				this.getHost() + ":" + this.getPort(),
-				address.getHostAddress().toString() + ":" + port,
-				true,time);
-		}
+		getSIPStack().serverLog.logMessage(
+			sipMessage,
+			this.getHost() + ":" + this.getPort(),
+			address.getHostAddress().toString() + ":" + port,
+			true,time);
 	}
 
 	/**
@@ -310,6 +309,11 @@ public abstract class MessageChannel {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/05/18 15:26:42  mranga
+ * Reviewed by:   mranga
+ * Attempted fix at race condition bug. Remove redundant exception (never thrown).
+ * Clean up some extraneous junk.
+ *
  * Revision 1.7  2004/03/25 16:37:00  mranga
  * Reviewed by:   mranga
  * Fix up for logging messages.
