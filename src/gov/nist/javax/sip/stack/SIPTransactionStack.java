@@ -27,7 +27,7 @@ import java.net.*;
  * @author M. Ranganathan <mranga@nist.gov><br/>(Added Dialog table).
  * @author performance enhacements added by Pierre De Rop and Thomas Froment.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.44 $ $Date: 2004-10-05 16:22:38 $ <a
+ * @version JAIN-SIP-1.1 $Revision: 1.45 $ $Date: 2004-10-06 16:57:50 $ <a
  *          href=" {@docRoot}/uncopyright.html">This code is in the public
  *          domain. </a>
  */
@@ -905,6 +905,15 @@ public abstract class SIPTransactionStack extends SIPMessageStack implements
 			transaction.disableRetransmissionTimer();
 		}
 	}
+	
+	
+	/**
+	 * Scan the list of pending records and redispatch the pending requests on these pending
+	 * records. Pending records are queued on transactions when a listener is referencing the
+	 * transaction. Pending records are queued on Dialogs when requests arrive out of sequence.
+	 *
+	 */
+	
 	class PendingRecordScanner implements Runnable {
 	    SIPTransactionStack myStack;
 
@@ -948,7 +957,7 @@ public abstract class SIPTransactionStack extends SIPMessageStack implements
 	       
 	    }
 	}
-
+   
 	   
 
 	    public void putPending(PendingRecord pendingRecord) {
@@ -967,24 +976,24 @@ public abstract class SIPTransactionStack extends SIPMessageStack implements
 			}
 		}
 	
+	    
+	    /**
 	
-/**
 	class PendingRecordScanner implements Runnable {
 		SIPTransactionStack myStack;
 
 		protected PendingRecordScanner(SIPTransactionStack myStack) {
 			this.myStack = myStack;
 		}
-		public void run() {
-		    
-		}
+		
 		public void run() {
 			try {
 				while (true) {
 					LinkedList ll = new LinkedList();
 					synchronized (pendingRecords) {
 						try {
-							pendingRecords.wait();
+						    if (pendingRecords.size() == 0) 
+						        pendingRecords.wait();
 							if (!isAlive())
 								return;
 						} catch (InterruptedException ex) {
@@ -1017,21 +1026,9 @@ public abstract class SIPTransactionStack extends SIPMessageStack implements
 			}
 		}
 	}
-    
+    **/
 	
-	public void putPending(PendingRecord pendingRecord) {
-		synchronized (this.pendingRecords) {
-			this.pendingRecords.add(pendingRecord);
-		}
-	}
-
-	public void removePending(PendingRecord pendingRecord) {
-		synchronized (this.pendingRecords) {
-			this.pendingRecords.remove(pendingRecord);
-		}
-	}
 	
-	*/
 	    
 
 	/**
@@ -1057,6 +1054,29 @@ public abstract class SIPTransactionStack extends SIPMessageStack implements
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.44  2004/10/05 16:22:38  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  Xavi Ferro
+ * Reviewed by:   mranga
+ *
+ * Another attempted fix for memory leak.
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.43  2004/10/04 16:03:53  mranga
  * Reviewed by:   mranga
  * attempted fix for memory leak
