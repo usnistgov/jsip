@@ -19,7 +19,7 @@ import gov.nist.core.*;
  * NIST-SIP stack and event model with the JAIN-SIP stack. Implementors
  * of JAIN services need not concern themselves with this class.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.12 $ $Date: 2004-02-05 10:58:12 $
+ * @version JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2004-02-11 20:22:30 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Bug fix Contributions by Lamine Brahimi and  Andreas Bystrom. <br/>
@@ -157,47 +157,57 @@ public class NistSipMessageHandlerImpl
 						}
 					}
 				}
-			} else if (sipRequest.getMethod().equals(Request.BYE)) {
+			} else if (sipRequest.getMethod().equals(Request.BYE) ) {
 				transaction = this.transactionChannel;
-
-				// Get the dialog identifier for the bye request.
-				String dialogId = sipRequest.getDialogId(true);
-				if (LogWriter.needsLogging)
-					sipStackImpl.logMessage("dialogId = " + dialogId);
-				// Find the dialog identifier in the SIP stack and
-				// mark it for garbage collection.
-				DialogImpl dialog = sipStackImpl.getDialog(dialogId);
-				if (dialog != null) {
-					// Remove dialog marks all
-					// outstanding transactions for
-					// garbage collection. Note that the dialog is alive
-					// until the final response for the BYE is sent out.
-					dialog.addTransaction(transaction);
-
-				} else {
-					dialog = sipStackImpl.getDialog(dialogId);
-					if (dialog != null ) {
+				// If the stack has not mapped this transaction because
+				// of sequence number problem then just drop the BYE
+				if (transaction != null &&
+				     ((SIPServerTransaction)transaction).isTransactionMapped()) {
+				    // Get the dialog identifier for the bye request.
+					String dialogId = sipRequest.getDialogId(true);
+					if (LogWriter.needsLogging)
+						sipStackImpl.logMessage("dialogId = " + dialogId);
+					// Find the dialog identifier in the SIP stack and
+					// mark it for garbage collection.
+					DialogImpl dialog = sipStackImpl.getDialog(dialogId);
+					if (dialog != null) {
+						// Remove dialog marks all
+						// outstanding transactions for
+						// garbage collection. Note that the dialog is alive
+						// until the final response for the BYE is sent out.
 						dialog.addTransaction(transaction);
-						// sipStackImpl.removeDialog(dialog); // see provider
 					} else {
-						dialogId = sipRequest.getDialogId(false);
-						if (LogWriter.needsLogging)
-							sipStackImpl.getLogWriter().logMessage(
-								"dialogId = " + dialogId);
 						dialog = sipStackImpl.getDialog(dialogId);
-						if (dialog != null) {
+						if (dialog != null ) {
 							dialog.addTransaction(transaction);
+							// sipStackImpl.removeDialog(dialog); // see provider
 						} else {
+							dialogId = sipRequest.getDialogId(false);
+							if (LogWriter.needsLogging)
+								sipStackImpl.getLogWriter().logMessage(
+								"dialogId = " + dialogId);
 							dialog = sipStackImpl.getDialog(dialogId);
 							if (dialog != null) {
 								dialog.addTransaction(transaction);
-
+							} else {
+								transaction = null; // pass up to provider for
+								// stateless handling.
 							}
-							transaction = null; // pass up to provider for
-							// stateless handling.
 						}
 					}
+			
+				} else if (transaction != null)  {
+					// This is an out of sequence BYE
+					// transaction was allocated but
+					// not mapped to the stack so
+					// just discard it.
+					if (LogWriter.needsLogging)
+					    sipStackImpl.logMessage
+						("Dropping out of sequence BYE");
+					return;
 				}
+				// note that the transaction may be null (which 
+				// happens when no dialog for the bye was fund.
 			} else if (
 				sipRequest.getRequestLine().getMethod().equals(
 					Request.CANCEL)) {
@@ -486,6 +496,12 @@ public class NistSipMessageHandlerImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/02/05 10:58:12  mranga
+ * Reviewed by:   mranga
+ * Fixed a another bug caused by previous fix that restricted request
+ * consumption in a dialog based on increasing sequence
+ * numbers.
+ *
  * Revision 1.11  2004/02/04 22:07:24  mranga
  * Reviewed by:   mranga
  * Fix for handling of out of order sequence numbers in the dialog layer.

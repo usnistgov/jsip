@@ -27,7 +27,7 @@ import sim.java.net.*;
  * @author Jeff Keyser (original) 
  * @author M. Ranganathan <mranga@nist.gov>  <br/> (Added Dialog table).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.19 $ $Date: 2004-02-05 15:40:31 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.20 $ $Date: 2004-02-11 20:22:30 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public abstract class SIPTransactionStack
@@ -75,7 +75,6 @@ public abstract class SIPTransactionStack
 		this.dialogCreatingMethods.add(Request.SUBSCRIBE);
 		// Notify may or may not create a dialog. This is handled in 
 		// the code.
-		// this.dialogCreatingMethods.add(Request.MESSAGE);
 		// Create the transaction collections
 
 		clientTransactions = Collections.synchronizedSet(new HashSet());
@@ -592,6 +591,9 @@ public abstract class SIPTransactionStack
 				      		|| requestReceived.getCSeq().getSequenceNumber()
 				     		> dialog.getRemoteSequenceNumber())) {
 						// Found a dialog.
+					        if (LogWriter.needsLogging)
+							logWriter.logMessage("adding server transaction " + 
+							currentTransaction);
 						serverTransactions.add(currentTransaction);
 						currentTransaction.isMapped = true;
 					}
@@ -782,18 +784,24 @@ public abstract class SIPTransactionStack
 	 * @param clientTransaction -- client transaction to add to the set.
 	 */
 	public void addTransaction(SIPClientTransaction clientTransaction) {
+		if (LogWriter.needsLogging)
+		    logWriter.logMessage("added transaction " + 
+				clientTransaction );
 		synchronized (clientTransactions) {
 			clientTransactions.add(clientTransaction);
 		}
 	}
 
 	/**
-	 * Add a new client transaction to the set of existing transactions.
+	 * Add a new server transaction to the set of existing transactions.
 	 *
 	 * @param serverTransaction -- server transaction to add to the set.
 	 */
 	public void addTransaction(SIPServerTransaction serverTransaction)
 		throws IOException {
+		if (LogWriter.needsLogging)
+		    logWriter.logMessage("added transaction " + 
+				serverTransaction );
 		synchronized (serverTransactions) {
 			this.serverTransactions.add(serverTransaction);
 			serverTransaction.map();
@@ -832,6 +840,10 @@ public abstract class SIPTransactionStack
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2004/02/05 15:40:31  mranga
+ * Reviewed by:   mranga
+ * Add check for type when casting to SIPServerTransaction in TransactionScanner
+ *
  * Revision 1.18  2004/02/04 18:44:18  mranga
  * Reviewed by:   mranga
  * check sequence number before delivering event to application.
