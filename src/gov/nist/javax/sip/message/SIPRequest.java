@@ -26,7 +26,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2004-02-18 14:33:02 $
+ * @version JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2004-03-25 15:15:04 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -274,6 +274,19 @@ public final class SIPRequest
 		} else
 			retval = super.encode();
 		return retval;
+	}
+
+	/** Encode only the headers and not the content.
+	*/
+	public String encodeMessage() {
+		String retval;
+		if (requestLine != null) {
+			this.setRequestLineDefaults();
+			retval = requestLine.encode() + super.encodeSIPHeaders();
+		} else
+			retval = super.encodeSIPHeaders();
+		return retval;
+
 	}
 
 	/** ALias for encode above.
@@ -904,6 +917,13 @@ public final class SIPRequest
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/02/18 14:33:02  mranga
+ * Submitted by:  Bruno Konik
+ * Reviewed by:   mranga
+ * Remove extraneous newline in encoding messages. Test for empty sdp announce
+ * rather than die with null when null is passed to sdp announce parser.
+ * Fixed bug in checking for \n\n when looking for message end.
+ *
  * Revision 1.5  2004/02/05 14:43:21  mranga
  * Reviewed by:   mranga
  * Fixed for correct reporting of transaction state.

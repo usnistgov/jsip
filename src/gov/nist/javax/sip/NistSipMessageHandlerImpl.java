@@ -19,7 +19,7 @@ import gov.nist.core.*;
  * NIST-SIP stack and event model with the JAIN-SIP stack. Implementors
  * of JAIN services need not concern themselves with this class.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.22 $ $Date: 2004-03-05 20:36:55 $
+ * @version JAIN-SIP-1.1 $Revision: 1.23 $ $Date: 2004-03-25 15:15:03 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Bug fix Contributions by Lamine Brahimi and  Andreas Bystrom. <br/>
@@ -253,7 +253,7 @@ public class NistSipMessageHandlerImpl
 
 			if (LogWriter.needsLogging) {
 				sipStackImpl.logMessage("-----------------");
-				sipStackImpl.logMessage(sipRequest.toString());
+				sipStackImpl.logMessage(sipRequest.encodeMessage());
 			}
 			// If the transaction is found then it is already managed so
 			// dont call the listener.
@@ -364,7 +364,7 @@ public class NistSipMessageHandlerImpl
 		throws SIPServerException {
 		if (LogWriter.needsLogging) {
 			sipStackImpl.logMessage(
-				"PROCESSING INCOMING RESPONSE" + sipResponse.encode());
+				"PROCESSING INCOMING RESPONSE" + sipResponse.encodeMessage());
 		}
 		if (listeningPoint == null) {
 			if (LogWriter.needsLogging)
@@ -474,6 +474,10 @@ public class NistSipMessageHandlerImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.22  2004/03/05 20:36:55  mranga
+ * Reviewed by:   mranga
+ * put in some debug printfs and cleaned some things up.
+ *
  * Revision 1.21  2004/02/26 14:28:50  mranga
  * Reviewed by:   mranga
  * Moved some code around (no functional change) so that dialog state is set

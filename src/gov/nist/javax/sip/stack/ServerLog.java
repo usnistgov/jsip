@@ -25,13 +25,15 @@ import sim.java.*;
  * later access via RMI. The trace can be viewed with a trace viewer (see
  * tools.traceviewerapp).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.8 $ $Date: 2004-02-20 16:36:43 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.9 $ $Date: 2004-03-25 15:15:05 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public class ServerLog {
+
+	private boolean logContent;
 
 	protected LogWriter logWriter;
 
@@ -133,6 +135,9 @@ public class ServerLog {
 			}
 			// Append buffer to the end of the file.
 			if (printWriter == null) {
+				String s = configurationProperties.getProperty
+						("gov.nist.javax.sip.LOG_MESSAGE_CONTENT");
+				this.logContent =  (s == null  || s.equals("true"));
 				FileWriter fw = new FileWriter(logFileName, true);
 				printWriter = new PrintWriter(fw, true);
 				printWriter.println(
@@ -405,7 +410,7 @@ public class ServerLog {
 		if (cid != null)
 			callId = ((CallID) message.getCallId()).getCallId();
 		String firstLine = message.getFirstLine().trim();
-		String inputText = message.encode();
+		String inputText = (logContent ? message.encode() : message.encodeMessage() ) ;
 		String tid = message.getTransactionId();
 		logMessage(
 			inputText,
@@ -439,7 +444,7 @@ public class ServerLog {
 		if (cid != null)
 			callId = cid.getCallId();
 		String firstLine = message.getFirstLine().trim();
-		String inputText = message.encode();
+		String inputText = (logContent ? message.encode() : message.encodeMessage() ) ;
 		String tid = message.getTransactionId();
 		logMessage(
 			inputText,
@@ -502,7 +507,7 @@ public class ServerLog {
 		if (cid != null)
 			callId = cid.getCallId();
 		String firstLine = message.getFirstLine().trim();
-		String encoded = message.encode();
+		String encoded = (logContent ? message.encode() : message.encodeMessage() ) ;
 		String tid = message.getTransactionId();
 		logMessage(
 			encoded,
@@ -538,7 +543,7 @@ public class ServerLog {
 		if (cid != null)
 			callId = cid.getCallId();
 		String firstLine = message.getFirstLine().trim();
-		String encoded = message.encode();
+		String encoded = (logContent ? message.encode() : message.encodeMessage() ) ;
 		String tid = message.getTransactionId();
 		logMessage(
 			encoded,
@@ -676,6 +681,12 @@ public class ServerLog {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/02/20 16:36:43  mranga
+ * Reviewed by:   mranga
+ * Minor changes to debug logging -- record the properties with which the stack
+ * was created. Be slightly more forgiving when checking for retransmission
+ * filter when configuring stack.
+ *
  * Revision 1.7  2004/01/22 18:39:41  mranga
  * Reviewed by:   M. Ranganathan
  * Moved the ifdef SIMULATION and associated tags to the first column so Prep preprocessor can deal with them.
