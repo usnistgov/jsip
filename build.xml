@@ -100,6 +100,7 @@ c:/jakarta-ant/bin/ant all
 		<delete file="./${jain_api_jar}"/>
 		<delete file="./${ri_jar}"/>
 		<delete file="./${sdp_jar}"/>
+		<delete file="./${sip-sdp-jar}"/>
 		<delete file="./${tck_jar}"/>
 		
 		<delete dir='javadoc'/>
