@@ -1,10 +1,10 @@
 package test.load.concurrency;
+
 import javax.sip.*;
 import javax.sip.address.*;
 import javax.sip.header.*;
 import javax.sip.message.*;
 import java.util.*;
-import java.io.*;
 
 
 
@@ -23,12 +23,13 @@ import sim.java.*;
 
 public class Shootist implements SipListener {
 
-	private static SipProvider tcpProvider;
-	private static SipProvider udpProvider;
-	private static AddressFactory addressFactory;
-	private static MessageFactory messageFactory;
-	private static HeaderFactory headerFactory;
-	private static SipStack sipStack;
+	private SipProvider tcpProvider;
+	private SipProvider udpProvider;
+	private AddressFactory addressFactory;
+	private MessageFactory messageFactory;
+	private HeaderFactory headerFactory;
+	private SipStack sipStack;
+	
 	private ContactHeader contactHeader;
 	private ListeningPoint tcpListeningPoint;
 	private ListeningPoint udpListeningPoint;
@@ -513,6 +514,9 @@ public class Shootist implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/06/21 04:59:55  mranga
+ * Refactored code - no functional changes.
+ *
  * Revision 1.3  2004/06/16 19:04:29  mranga
  * Check for out of sequence bye processing.
  *

@@ -226,7 +226,7 @@ public interface SipProvider {
      * Removes the specified SipListener from this SipProvider. This method 
      * returns silently if the SipListener is not registered with the SipProvider.
      *
-     * @param SipListener the SipListener to be removed from this SipProvider.
+     * @param sipListener the SipListener to be removed from this SipProvider.
      */
     public void removeSipListener(SipListener sipListener);
 

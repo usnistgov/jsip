@@ -28,7 +28,6 @@
 package javax.sip.header;
 
 import java.io.Serializable;
-import java.text.ParseException;
 
 /**
  * This interface is the super interface of all SIP headers supported explicitly

@@ -83,7 +83,7 @@ public interface AddressFactory {
      * Creates a TelURL based on given URI string. The scheme or '+' should 
      * not be included in the phoneNumber string argument.
      *
-     * @param uri - the new string value of the phoneNumber.
+     * @param phoneNumber the new string value of the phoneNumber.
      * @throws ParseException if the URI string is malformed. 
      */
     public TelURL createTelURL(String phoneNumber) throws ParseException;

@@ -57,7 +57,7 @@ public interface TimeStampHeader extends Header {
      * Sets the timestamp value of this TimeStampHeader to the new timestamp
      * value passed to this method.
      *
-     * @param timestamp - the new float timestamp value
+     * @param timeStamp - the new float timestamp value
      * @throws InvalidArgumentException if the timestamp value argument is a
      * negative value.
      */

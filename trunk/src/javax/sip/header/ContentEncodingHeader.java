@@ -27,7 +27,6 @@
  */
 package javax.sip.header;
 
-import java.text.ParseException;
 
 /**
  * A ContentEncodingHeader is used as a modifier to the "media-type". When

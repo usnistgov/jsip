@@ -65,7 +65,7 @@ public final class DialogState implements Serializable{
      * This method returns the object value of the DialogState
      *
      * @return  The DialogState Object
-     * @param timeout The integer value of the DialogState
+     * @param dialogState The integer value of the DialogState
      */
     public static DialogState getObject(int dialogState){
         if (dialogState >= 0 && dialogState < m_size) {

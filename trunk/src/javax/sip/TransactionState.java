@@ -253,7 +253,7 @@ public final class TransactionState implements Serializable{
 
      * @return  The TransactionState Object
 
-     * @param timeout The integer value of the TransactionState
+     * @param transactionState The integer value of the TransactionState
 
      */
 

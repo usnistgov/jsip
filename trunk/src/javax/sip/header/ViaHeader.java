@@ -28,7 +28,6 @@
 package javax.sip.header;
 
 
-import javax.sip.address.SipURI;
 import java.text.ParseException;
 import javax.sip.InvalidArgumentException;
 
@@ -249,7 +248,7 @@ public interface ViaHeader extends Parameters, Header {
      * maddr parameter indicates the server address to be contacted for this
      * user, overriding any address derived from the host field. 
      *
-     * @param  method - new value of the <code>maddr</code> parameter
+     * @param  mAddr new value of the <code>mAddr</code> parameter
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the mAddr value.
      */

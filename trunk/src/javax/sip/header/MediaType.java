@@ -27,7 +27,6 @@
  */
 package javax.sip.header;
 
-import javax.sip.*;
 import java.text.ParseException;
 
 /**

@@ -6,7 +6,6 @@
 
 package javax.sdp;
 
-import javax.sdp.*;
 import java.io.*;
 import java.util.*;
 

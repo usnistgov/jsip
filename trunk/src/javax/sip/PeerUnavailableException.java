@@ -48,7 +48,7 @@ public class PeerUnavailableException extends SipException {
      * Constructs a new <code>PeerUnavailableException</code> with
      * the specified error message.
      *
-     * @param <var>message</var> the error message of this Exception.
+     * @param message the error message of this Exception.
      */
     public PeerUnavailableException(String message) {
         super(message);

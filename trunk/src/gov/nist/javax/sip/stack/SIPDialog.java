@@ -24,7 +24,7 @@ import java.text.ParseException;
  * message structure to extract a dialog identifier that can be used to
  * retrieve this structure from the SipStack. 
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2004-08-04 18:42:52 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-09-01 02:04:14 $
  *
  *@author M. Ranganathan <mranga@nist.gov>  <br/>
  *Bugs were reported by Antonis Karydas, Brad Templeton and Alex Rootham.
@@ -312,7 +312,7 @@ public class SIPDialog implements javax.sip.Dialog , PendingRecord {
                 if (LogWriter.needsLogging) {
                    sipStack.logWriter.logMessage(
                     "ackReceived for " + ((SIPTransaction) tr).getMethod());
-		    this.ackLine = sipStack.logWriter.lineCount;
+		    this.ackLine = sipStack.logWriter.getLineCount();
 		    this.printDebugInfo();
 	        }
 		this.setState(CONFIRMED_STATE);
@@ -1677,6 +1677,11 @@ public class SIPDialog implements javax.sip.Dialog , PendingRecord {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/08/04 18:42:52  mranga
+ * Submitted by:  alex rootham
+ * Reviewed by:   mranga
+ * fix null ptr.
+ *
  * Revision 1.2  2004/07/29 20:26:15  mranga
  * Submitted by:  Alex Rootham
  * Reviewed by:   mranga
