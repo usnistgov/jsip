@@ -133,6 +133,12 @@ implements SIPServerRequestInterface, SIPServerResponseInterface {
                       return;
                    }  
 		   transaction = tr;
+		   if (transaction instanceof SIPClientTransaction)  {
+			if (LogWriter.needsLogging)
+			   LogWriter.logMessage
+			   ("Dropping late ACK");
+			return;
+		   }
                 }
 		}
             } else if (sipRequest.getMethod().equals(Request.BYE)) {
