@@ -112,7 +112,7 @@ import java.util.LinkedList;
  *  
  * </pre>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.54 $ $Date: 2004-12-03 17:01:29 $
+ * @version JAIN-SIP-1.1 $Revision: 1.55 $ $Date: 2004-12-07 18:33:16 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
  * @author Bug fixes by Emil Ivov, Antonis Karydas, Daniel Martinez.
@@ -300,27 +300,6 @@ public class SIPServerTransaction extends SIPTransaction implements
             messageChannel.sendMessage(transactionResponse);
         }
     }
-
-    /**
-     * private void sendResponse(SIPResponse transactionResponse) throws
-     * IOException { // Bug report by Shanti Kadiyala if
-     * (transactionResponse.getTopmostVia().getParameter(Via.RECEIVED) == null) { //
-     * Send the response back on the same peer as received.
-     * super.sendMessage(transactionResponse); } else { // Respond to the host
-     * name in the received parameter. Via via =
-     * transactionResponse.getTopmostVia(); String host =
-     * via.getParameter(Via.RECEIVED); //@@@ hagai Symmetric NAT support int
-     * port = via.getrport(); if (port == -1) port = via.getPort(); if (port ==
-     * -1) port = 5060; String transport = via.getTransport();
-     *  // Changed by Daniel J. Martinez Manzano <dani@dif.um.es>// Original
-     * code called constructor with concatenated // parameters, which didn't
-     * work for IPv6 addresses. HopImpl hop = new HopImpl(host, port,
-     * transport);
-     * 
-     * MessageChannel messageChannel = ((SIPTransactionStack)
-     * getSIPStack()).createRawMessageChannel( hop);
-     * messageChannel.sendMessage(transactionResponse); } }
-     */
 
     /**
      * Creates a new server transaction.
@@ -1237,7 +1216,30 @@ public class SIPServerTransaction extends SIPTransaction implements
 
 }
 /*
- * $Log: not supported by cvs2svn $ Revision 1.53 2004/12/03 16:36:06 mranga
+ * $Log: not supported by cvs2svn $
+ * Revision 1.54  2004/12/03 17:01:29  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
+ * Reformat
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ * Revision 1.53 2004/12/03 16:36:06 mranga
  * Submitted by: Thomas Froment Reviewed by: mranga
  * 
  * Fix sendresponse in server transactions.
