@@ -391,7 +391,7 @@ public class LexerCore extends StringTokenizer  {
         try  {
             while(true) {
                 char next = lookAhead(0);
-                if (next == '\n' || next == ';' ) {
+                if ( next == '\0' || next == '\n' || next == ';' ) {
                     break;
                 } else {
                     consume(1);
@@ -400,9 +400,8 @@ public class LexerCore extends StringTokenizer  {
             }
         } catch (ParseException ex) {
             return retval.toString();
-        } finally {
-            return retval.toString();
-        }
+        } 
+        return retval.toString();
     }
     
     public String byteStringNoComma() {
@@ -418,9 +417,8 @@ public class LexerCore extends StringTokenizer  {
                 }
             }
         } catch (ParseException ex) {
-        }  finally {
-            return retval.toString();
-        }
+        } 
+        return retval.toString();
     }
     
     
@@ -496,9 +494,8 @@ public class LexerCore extends StringTokenizer  {
      */
     public String getString(char c) throws ParseException {
         StringBuffer retval = new StringBuffer();
-        try {
-            while(true) {
-                char next = lookAhead(0);
+         while(true) {
+               char next = lookAhead(0);
 		//System.out.println(" next = [" + next + ']' + "ptr = " + ptr);
 		//System.out.println(next == '\0');
 		
@@ -522,10 +519,8 @@ public class LexerCore extends StringTokenizer  {
                     consume(1);
                     retval.append(next);
                 }
-            }
-        }  finally {
-            return retval.toString();
         }
+        return retval.toString();
     }
     
     
