@@ -240,9 +240,9 @@ public void sendMessage(SIPMessage sipMessage,
 	String callidBody = callid.encodeBody();
 	// Default port.
 	if (port == -1) port = 5060;
-	if (ServerLog.needsLogging(ServerLog.TRACE_MESSAGES)) {
+	if (getSIPStack().serverLog.needsLogging(ServerLog.TRACE_MESSAGES)) {
 	    String status = null;
-	    ServerLog.logMessage(sipMessage.encode(), 
+	    getSIPStack().serverLog.logMessage(sipMessage.encode(), 
 			     this.getHost()+":"+this.getPort(),
 			     address.getHostAddress().toString() + 
 			     ":" + port, true, callidBody, 
@@ -272,7 +272,7 @@ public void sendMessage(SIPMessage sipMessage,
 	}
         String from = getPeerAddress().toString() + ":" + peerport;
 	String to = this.getHost() + ":" + getPort();
-        ServerLog.logMessage(sipResponse,
+        this.getSIPStack().serverLog.logMessage(sipResponse,
                           from, to, status, false, receptionTime);
    }
 

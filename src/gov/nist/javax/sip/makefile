@@ -2,7 +2,7 @@
 ROOT=../../../../../
 include  $(ROOT)/build-config
 
-all: 
+all: prep
 	$(JAVAC) *.java
 
 clean:  emacsclean

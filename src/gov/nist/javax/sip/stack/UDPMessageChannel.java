@@ -17,6 +17,11 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Collection;
 import java.text.ParseException;
+//ifdef SIMULATION
+/*
+import sim.java.net.*;
+//endif
+*/
 
 /**
  * This is the UDP Message handler that gets created when a UDP message
@@ -53,9 +58,6 @@ implements  ParseExceptionListener, Runnable {
     public static final String SIPHEADERS_PACKAGE = 
             PackageNames.SIPHEADERS_PACKAGE;
     
-    /** Channel notifier (gets called on new channel creates).
-     */
-    protected ChannelNotifier notifier;
     /** SIP Stack structure for this channel.
      */
     protected SIPStack stack;
@@ -102,12 +104,20 @@ implements  ParseExceptionListener, Runnable {
      * @param notifier Channel notifier (not very useful for UDP).
      *
      */
+
     protected UDPMessageChannel(SIPStack stack,
-    ChannelNotifier notifier,
     UDPMessageProcessor messageProcessor ) {
         super.messageProcessor = messageProcessor;
         this.stack = stack;
+//ifndef SIMULATION
+//
         Thread mythread = new Thread(this);
+//else
+/*
+	SimThread mythread = new SimThread(this);
+	mythread.setName("UDPMessageChannelThread");
+//endif
+*/
         mythread.start();
         
     }
@@ -122,7 +132,6 @@ implements  ParseExceptionListener, Runnable {
      *@param packet is the incoming datagram packet.
      */
     protected UDPMessageChannel(SIPStack stack,
-    ChannelNotifier notifier,
     UDPMessageProcessor messageProcessor,
     DatagramPacket packet) {
         
@@ -131,7 +140,15 @@ implements  ParseExceptionListener, Runnable {
         this.stack = stack;
         this.myAddress = stack.getHostAddress();
         this.myPort = messageProcessor.getPort();
+//ifndef SIMULATION
+//
         Thread mythread = new Thread(this);
+//else
+/*
+	SimThread mythread = new SimThread(this);
+	mythread.setName("UDPMessageChannelThread");
+//endif
+*/
         mythread.start();
         
     }
@@ -146,17 +163,17 @@ implements  ParseExceptionListener, Runnable {
      */
     protected UDPMessageChannel(InetAddress targetAddr, int port,
     SIPStack sipStack, UDPMessageProcessor messageProcessor ) {
-        if (LogWriter.needsLogging) {
-            LogWriter.logMessage( "Creating message channel " +
-            targetAddr.getHostAddress() + "/" + port);
-        }
         peerAddress = targetAddr;
         peerPort = port;
         peerProtocol = "UDP";
         super.messageProcessor = messageProcessor;
         this.myAddress = sipStack.getHostAddress();
         this.myPort = messageProcessor.getPort();
-        stack = sipStack;
+        this.stack = sipStack;
+        if (getSIPStack().logWriter.needsLogging) {
+            getSIPStack().logWriter.logMessage( "Creating message channel " +
+            targetAddr.getHostAddress() + "/" + port);
+        }
     }
     
     /**
@@ -164,10 +181,7 @@ implements  ParseExceptionListener, Runnable {
      */
     
     public void run() {
-        // Notify application that a new message channel has been created.
-        if (notifier != null ) {
-            notifier.notifyOpen(this);
-        }
+      
         while(true) {
             // Create a new string message parser to parse the list of messages.
             // This is a huge performance hit -- need to optimize by pre-create
@@ -181,15 +195,36 @@ implements  ParseExceptionListener, Runnable {
             
             if ( stack.threadPoolSize != -1 ) {
                 synchronized
-		   (((UDPMessageProcessor)messageProcessor).messageQueue) {
+		   (
+
+//ifdef SIMULATION
+/*
+			((UDPMessageProcessor)messageProcessor).messageQueueShadow
+//else
+*/
+
+			((UDPMessageProcessor)messageProcessor).messageQueue
+//endif
+//
+
+
+		    ) {
                     while (((UDPMessageProcessor)messageProcessor).
 			    messageQueue.isEmpty()) {
                         // Check to see if we need to exit.
                         if (!((UDPMessageProcessor)messageProcessor).isRunning)
 				 return;
                         try {
+//ifdef SIMULATION
+/*
+                            ((UDPMessageProcessor)messageProcessor).
+				messageQueueShadow.doWait();
+//else
+*/
                             ((UDPMessageProcessor)messageProcessor).
 				messageQueue.wait();
+//endif
+//
                         } catch (InterruptedException ex) {
                            if (!((UDPMessageProcessor) messageProcessor).isRunning) 
 				return;
@@ -212,14 +247,15 @@ implements  ParseExceptionListener, Runnable {
             byte[] bytes =  packet.getData();
             byte[] msgBytes = new byte[packetLength];
             System.arraycopy(bytes,0,msgBytes,0,packetLength);
+	
             
             // Do debug logging.
-            if (LogWriter.needsLogging) {
-                LogWriter.logMessage( "UDPMessageChannel: peerAddress = " +
+            if (getSIPStack().logWriter.needsLogging) {
+                getSIPStack().logWriter.logMessage( "UDPMessageChannel: peerAddress = " +
                 peerAddress.getHostAddress() + "/" + packet.getPort());
-                LogWriter.logMessage( "Length = " + packetLength);
+                getSIPStack().logWriter.logMessage( "Length = " + packetLength);
                 String msgString = new String(msgBytes,0,packetLength);
-                LogWriter.logMessage(msgString);
+                getSIPStack().logWriter.logMessage(msgString);
             }
             
             
@@ -231,12 +267,12 @@ implements  ParseExceptionListener, Runnable {
                 myParser  = null;
             } catch ( ParseException ex) {
                 myParser  = null; // let go of the parser reference.
-                if (LogWriter.needsLogging) {
-                    LogWriter.logMessage( "Rejecting message !  " 
+                if (getSIPStack().logWriter.needsLogging) {
+                    getSIPStack().logWriter.logMessage( "Rejecting message !  " 
 			+ new String(msgBytes));
-                    LogWriter.logMessage("error message " +
+                    getSIPStack().logWriter.logMessage("error message " +
                     ex.getMessage());
-                    LogWriter.logException(ex);
+                    getSIPStack().logWriter.logException(ex);
                 }
                 stack.logBadMessage(new String(msgBytes));
                 if (stack.threadPoolSize == -1) return;
@@ -254,9 +290,9 @@ implements  ParseExceptionListener, Runnable {
                sipMessage.getViaHeaders()    == null	 
            ){
                String badmsg = new String(msgBytes);
-                if (LogWriter.needsLogging)  {
-                       LogWriter.logMessage("bad message " + badmsg);
-                       LogWriter.logMessage(">>> Dropped Bad Msg " + 
+                if (getSIPStack().logWriter.needsLogging)  {
+                       getSIPStack().logWriter.logMessage("bad message " + badmsg);
+                       getSIPStack().logWriter.logMessage(">>> Dropped Bad Msg " + 
 			"From = " + sipMessage.getFrom() 	+
 			"To = " + sipMessage.getTo() 		+
 			"CallId = " + sipMessage.getCallId() 	+
@@ -292,16 +328,16 @@ implements  ParseExceptionListener, Runnable {
                         // this.peerAddress = v.getSentBy().getInetAddress();
                     } catch (java.net.UnknownHostException ex) {
                         // Could not resolve the sender address.
-                        if (ServerLog.needsLogging(ServerLog.TRACE_MESSAGES)) {
-                            ServerLog.logMessage(sipMessage,
+                        if (stack.serverLog.needsLogging(stack.serverLog.TRACE_MESSAGES)) {
+                            getSIPStack().serverLog.logMessage(sipMessage,
                             this.getViaHost() + ":" + this.getViaPort(),
                             stack.getHostAddress()  + ":" +
                             stack.getPort(this.getTransport()),
                             "Dropped -- " +
                             "Could not resolve VIA header address!", false);
                         }
-                        if ( LogWriter.needsLogging) {
-                            LogWriter.logMessage
+                        if ( getSIPStack().logWriter.needsLogging) {
+                            getSIPStack().logWriter.logMessage
                             ("Rejecting message -- "+
                             "could not resolve Via Address");
                         }
@@ -321,35 +357,36 @@ implements  ParseExceptionListener, Runnable {
                     stack.newSIPServerRequest(sipRequest,this);
                     // Drop it if there is no request returned
                     if (sipServerRequest == null) {
-                        if (LogWriter.needsLogging) {
-                            LogWriter.logMessage
+                        if (getSIPStack().logWriter.needsLogging) {
+                            getSIPStack().logWriter.logMessage
                             ("Null request interface returned");
                         }
                         continue;
                     }
                     try {
-                        if (LogWriter.needsLogging)
-                            LogWriter.logMessage("About to process " +
+                        if (getSIPStack().logWriter.needsLogging)
+                            getSIPStack().logWriter.logMessage("About to process " +
                             sipRequest.getFirstLine() + "/" +
                             sipServerRequest);
                         sipServerRequest.processRequest(sipRequest,this);
-                        if (LogWriter.needsLogging)
-                            LogWriter.logMessage("Done processing " +
+                        if (getSIPStack().logWriter.needsLogging)
+                            getSIPStack().logWriter.logMessage("Done processing " +
                             sipRequest.getFirstLine() + "/" +
                             sipServerRequest);
                         
                         // So far so good -- we will commit this message if
                         // all processing is OK.
-                        if ( ServerLog.needsLogging(ServerLog.TRACE_MESSAGES)) {
+                        if ( stack.serverLog.needsLogging
+				(ServerLog.TRACE_MESSAGES)) {
                             if (sipServerRequest.getProcessingInfo() == null) {
-                                ServerLog.logMessage(sipMessage,
+                                getSIPStack().serverLog.logMessage(sipMessage,
                                 sipRequest.getViaHost() + ":" +
                                 sipRequest.getViaPort(),
                                 stack.getHostAddress()  + ":" +
                                 stack.getPort(this.getTransport()),false,
                                 new Long(receptionTime).toString());
                             } else {
-                                ServerLog.logMessage(sipMessage,
+                                getSIPStack().serverLog.logMessage(sipMessage,
                                 sipRequest.getViaHost() + ":" +
                                 sipRequest.getViaPort(),
                                 stack.getHostAddress()  + ":" +
@@ -361,8 +398,9 @@ implements  ParseExceptionListener, Runnable {
                     } catch (SIPServerException ex) {
                         // So far so good -- we will commit this message if
                         // all processing is OK.
-                        if ( ServerLog.needsLogging(ServerLog.TRACE_MESSAGES)) {
-                            ServerLog.logMessage(sipMessage,
+                        if ( stack.serverLog.needsLogging
+				(ServerLog.TRACE_MESSAGES)) {
+                            getSIPStack().serverLog.logMessage(sipMessage,
                             sipRequest.getViaHost() + ":" +
                             sipRequest.getViaPort(),
                             stack.getHostAddress()  + ":" +
@@ -382,24 +420,24 @@ implements  ParseExceptionListener, Runnable {
                             sipServerResponse.processResponse(sipResponse,this);
                             // Normal processing of message.
                         } else {
-                            if (LogWriter.needsLogging) {
-                                LogWriter.logMessage("null sipServerResponse!");
+                            if (getSIPStack().logWriter.needsLogging) {
+                                getSIPStack().logWriter.logMessage("null sipServerResponse!");
                             }
                         }
                         
                     } catch (SIPServerException ex) {
-                        if (LogWriter.needsLogging)
-                            LogWriter.logMessage(">>>>>Message  = " +
+                        if (getSIPStack().logWriter.needsLogging)
+                            getSIPStack().logWriter.logMessage(">>>>>Message  = " +
                             new String(msgBytes));
                         
-                        if (ServerLog.needsLogging
-                        (ServerLog.TRACE_MESSAGES)){
+                        if (stack.serverLog.needsLogging
+                        (stack.serverLog.TRACE_MESSAGES)){
                             this.logResponse(sipResponse,
                             receptionTime,
                             ex.getMessage()+ "-- Dropped!");
                         }
                         
-                        ServerLog.logException(ex);
+                        getSIPStack().serverLog.logException(ex);
                     }
                 }
             ((UDPMessageProcessor)messageProcessor).useCount --;
@@ -421,7 +459,7 @@ implements  ParseExceptionListener, Runnable {
     SIPMessage sipMessage,
     Class hdrClass, String header, String message )
     throws ParseException {
-        if (LogWriter.needsLogging) LogWriter.logException(ex);
+        if (getSIPStack().logWriter.needsLogging) getSIPStack().logWriter.logException(ex);
         // Log the bad message for later reference.
         if ( hdrClass.equals(From.class)||
              hdrClass.equals(To.class )      ||
@@ -446,18 +484,18 @@ implements  ParseExceptionListener, Runnable {
      * message.
      */
     public void sendMessage(SIPMessage sipMessage) throws IOException {
-	if (LogWriter.needsLogging) 
-		LogWriter.logStackTrace();
+	if (getSIPStack().logWriter.needsLogging) 
+		getSIPStack().logWriter.logStackTrace();
         byte[] msg = sipMessage.encodeAsBytes();
         long time = System.currentTimeMillis();
         sendMessage(msg, peerAddress, peerPort,peerProtocol);
-        if (ServerLog.needsLogging(ServerLog.TRACE_MESSAGES))
+        if (stack.serverLog.needsLogging(stack.serverLog.TRACE_MESSAGES))
             logMessage(sipMessage,peerAddress,peerPort,time);
     }
     
     
     /** Send a message to a specified receiver address.
-     * @param msg message string to send.
+     * @param msgmessage string to send.
      * @param peerAddress Address of the place to send it to.
      * @param peerPort the port to send it to.
      * @throws IOException If there is trouble sending this message.
@@ -466,26 +504,35 @@ implements  ParseExceptionListener, Runnable {
     int peerPort) throws IOException {
         // msg += "\r\n\r\n";
         // Via is not included in the request so silently drop the reply.
-        if (LogWriter.needsLogging) LogWriter.logStackTrace();
+        if (getSIPStack().logWriter.needsLogging) 
+	   getSIPStack().logWriter.logStackTrace();
         if (peerPort == -1) {
-            if (LogWriter.needsLogging) {
-                LogWriter.logMessage(getClass().getName()+
+            if (getSIPStack().logWriter.needsLogging) {
+                getSIPStack().logWriter.logMessage(getClass().getName()+
                 ":sendMessage: Dropping reply!");
             }
             throw new IOException("Receiver port not set ");
         } else {
-            if (LogWriter.needsLogging) {
-                LogWriter.logMessage(
+            if (getSIPStack().logWriter.needsLogging) {
+                getSIPStack().logWriter.logMessage(
                 getClass().getName()+":sendMessage "
                 + peerAddress.getHostAddress() + "/" +
                 peerPort + "\n" + new String(msg));
-                LogWriter.logMessage( "*******************\n");
+                getSIPStack().logWriter.logMessage
+		( "*******************\n");
             }
         }
         DatagramPacket reply = new DatagramPacket(msg,
         msg.length, peerAddress, peerPort);
         try {
+//ifdef SIMULATION
+/*
+	    SimDatagramSocket sock;
+//else
+*/
             DatagramSocket sock;
+//endif
+//
             if (stack.udpFlag) {
 		// Use the socket from the message processor (for firewall
 		// support use the same socket as the message processor 
@@ -500,7 +547,15 @@ implements  ParseExceptionListener, Runnable {
                 // sock = new DatagramSocket(0,stack.stackInetAddress);
             } else {
                 // bind to any interface and port.
+//ifdef SIMULATION
+/*
+		sock = new SimDatagramSocket();
+		sock.setLocalAddress(stack.stackInetAddress);
+//else
+*/
                 sock = new DatagramSocket();
+//endif
+//
             }
             sock.send(reply);
 	    if (! stack.udpFlag) sock.close();
@@ -522,18 +577,18 @@ implements  ParseExceptionListener, Runnable {
         // msg += "\r\n\r\n";
         // Via is not included in the request so silently drop the reply.
         if (peerPort == -1) {
-            if (LogWriter.needsLogging) {
-                LogWriter.logMessage(
+            if (getSIPStack().logWriter.needsLogging) {
+                getSIPStack().logWriter.logMessage(
                 getClass().getName()+":sendMessage: Dropping reply!");
             }
             throw new IOException("Receiver port not set ");
         } else {
-            if (LogWriter.needsLogging) {
-                LogWriter.logMessage(
+            if (getSIPStack().logWriter.needsLogging) {
+                getSIPStack().logWriter.logMessage(
                 getClass().getName()+":sendMessage "
                 + peerAddress.getHostAddress() + "/" +
                 peerPort + "\n" + new String(msg));
-                LogWriter.logMessage("*******************\n");
+                getSIPStack().logWriter.logMessage("*******************\n");
             }
         }
         if (peerProtocol.compareToIgnoreCase("UDP") == 0) {
@@ -541,14 +596,29 @@ implements  ParseExceptionListener, Runnable {
             msg.length, peerAddress, peerPort);
             
             try {
+//ifdef SIMULATION
+/*
+		SimDatagramSocket sock;
+//else
+*/
                 DatagramSocket sock;
+//endif
+//
                 if (stack.udpFlag) {
 		    sock = ((UDPMessageProcessor)messageProcessor).sock;
 			
                     //sock = new DatagramSocket(0,stack.stackInetAddress);
                 } else {
                     // bind to any interface and port.
+//ifdef SIMULATION
+/*
+		    sock = new SimDatagramSocket();
+		    sock.setLocalAddress(stack.stackInetAddress);
+//else
+*/
                     sock = new DatagramSocket();
+//endif
+//
                 }
                 sock.send(reply);
 		if ( ! stack.udpFlag) sock.close();
@@ -561,7 +631,14 @@ implements  ParseExceptionListener, Runnable {
         } else {
             // Use TCP to talk back to the sender.
 	    // System.out.println("peerAddress " + peerPort);
+//ifdef SIMULATION
+/*
+	    SimSocket outputSocket = new SimSocket(peerAddress,peerPort);
+//else
+*/
             Socket outputSocket = new Socket(peerAddress,peerPort);
+//endif
+//
             OutputStream myOutputStream = outputSocket.getOutputStream();
             myOutputStream.write(msg, 0, msg.length);
             myOutputStream.flush();
@@ -621,14 +698,14 @@ implements  ParseExceptionListener, Runnable {
             try {
                 sendMessage(response);
             } catch (IOException ioex) {
-                ServerLog.logException(ioex);
+                getSIPStack().serverLog.logException(ioex);
             }
         }  else {
             // Assume that the message has already been formatted.
             try {
                 sendMessage(msgString);
             } catch (IOException ioex) {
-                ServerLog.logException(ioex);
+                getSIPStack().serverLog.logException(ioex);
             }
         }
     }

@@ -12,14 +12,19 @@ import java.net.*;
 import java.io.*;
 import java.lang.reflect.*;
 import java.text.ParseException;
-/**
+//ifdef SIMULATION
+/*
+import sim.java.net.*;
+//endif
+*/
+ /**
  * This is stack for TCP connections. This abstracts a stream of parsed
  * messages. The SIP stack starts this from
  * the main SIPStack class for each connection that it accepts. It starts
  * a message parser in its own thread and talks to the message parser via
  * a pipe. The message parser calls back via the parseError or processMessage
  * functions that are defined as part of the SIPMessageListener interface.
-*
+ *
  * @see gov.nist.javax.sip.parser.PipelinedMsgParser
  *
  *
@@ -37,14 +42,26 @@ public final class TCPMessageChannel
 extends MessageChannel
 implements SIPMessageListener, Runnable {
     
-    /** Channel notifier (method of this gets called on channel open/close)
-     */
-    protected ChannelNotifier notifier;
-    
+//ifndef SIMULATION
+//
     private Socket mySock;
+//else
+/*
+    private SimSocket mySock;
+//endif
+*/
     private PipelinedMsgParser myParser;
     private InputStream myClientInputStream;   // just to pass to thread.
     private OutputStream myClientOutputStream;
+
+//ifndef SIMULATION
+//
+    private Thread mythread;
+//else
+/*
+    private SimThread myThread;
+//endif
+*/
     
     
     private SIPStack stack;
@@ -71,13 +88,11 @@ implements SIPMessageListener, Runnable {
      *   is already connected (was created as a result of an accept).
      *
      * @param sipStack Ptr to SIP Stack
-     * @param channelNotifier Notifier (optinal) that gets called when
-     * the channel is opened or closed.
      */
-    protected TCPMessageChannel( Socket sock, SIPStack sipStack,
-    ChannelNotifier channelNotifier, TCPMessageProcessor msgProcessor ) {
-        // new Exception().printStackTrace();
-        // System.out.println("this = " + this );
+//ifndef SIMULATION
+//
+    protected TCPMessageChannel( Socket sock, SIPStack sipStack, 
+		TCPMessageProcessor msgProcessor ) {
         mySock = sock;
         myAddress = sipStack.getHostAddress();
         try {
@@ -86,16 +101,40 @@ implements SIPMessageListener, Runnable {
         } catch ( IOException ex) {
             InternalErrorHandler.handleException(ex);
         }
-        Thread mythread = new Thread(this);
+        mythread = new Thread(this);
         // Stash away a pointer to our stack structure.
         stack = sipStack;
-        notifier = channelNotifier;
         this.tcpMessageProcessor = msgProcessor;
         this.myPort = this.tcpMessageProcessor.getPort();
 	// Bug report by Vishwashanti Raj Kadiayl 
 	super.messageProcessor =  msgProcessor;
         mythread.start();
     }
+//else
+/*
+    protected TCPMessageChannel( SimSocket sock, SIPStack sipStack, 
+		TCPMessageProcessor msgProcessor ) {
+        mySock = sock;
+        myAddress = sipStack.getHostAddress();
+        try {
+            myClientInputStream = mySock.getInputStream();
+            myClientOutputStream = mySock.getOutputStream();
+        } catch ( IOException ex) {
+            InternalErrorHandler.handleException(ex);
+        }
+        myThread = new SimThread( this );
+	myThread.setName("TCPMessageChannelThread");
+        // Stash away a pointer to our stack structure.
+        stack = sipStack;
+        this.tcpMessageProcessor = msgProcessor;
+        this.myPort = this.tcpMessageProcessor.getPort();
+	// Bug report by Vishwashanti Raj Kadiayl 
+	super.messageProcessor =  msgProcessor;
+        myThread.start();
+    }
+//endif
+*/
+
     
     /**
      *Constructor - connects to the given inet address.
@@ -103,15 +142,12 @@ implements SIPMessageListener, Runnable {
      * bug fix for this method. A thread was being uncessarily created.
      *@param inetAddr inet address to connect to.
      *@param sipStack is the sip stack from which we are created.
-     *@param channelNotifier is the channel notifier that is called
-     *   when we are closed.
      *@throws IOException if we cannot connect.
      */
     protected TCPMessageChannel
     ( InetAddress inetAddr,
     int port,
     SIPStack sipStack,
-    ChannelNotifier channelNotifier,
     TCPMessageProcessor messageProcessor )
     throws IOException {
         this.peerAddress = inetAddr;
@@ -119,7 +155,6 @@ implements SIPMessageListener, Runnable {
         this.myPort = messageProcessor.getPort();
         this.peerProtocol = "TCP";
         this.stack = sipStack;
-        this.notifier = channelNotifier;
         this.tcpMessageProcessor = messageProcessor;
         this.myAddress = sipStack.getHostAddress();
 	// Bug report by Vishwashanti Raj Kadiayl 
@@ -188,15 +223,41 @@ implements SIPMessageListener, Runnable {
      * Uses the topmost via address to send to.
      *@param message is the message to send.
      */
+
+//ifdef SIMULATION
+/*
     private void sendMessage(byte[] msg) throws IOException {
-        Socket sock = IOHandler.sendBytes(this.peerAddress,
+        SimSocket sock = this.stack.ioHandler.sendBytes(this.peerAddress,
         this.peerPort,this.peerProtocol,msg);
         // Created a new socket so close the old one and s
         if (sock != mySock) {
             try {
                 if (mySock != null)
                     mySock.close();
-            } catch (IOException ex) { /* Ignore */ }
+            } catch (IOException ex) {  }
+            mySock = sock;
+            try {
+                this.myClientInputStream = mySock.getInputStream();
+                this.myClientOutputStream = mySock.getOutputStream();
+            } catch ( IOException ex) {
+                InternalErrorHandler.handleException(ex);
+            }
+            SimThread thread = new SimThread(this);
+            thread.start();
+        }
+    }
+
+//else
+*/
+    private void sendMessage(byte[] msg) throws IOException {
+        Socket sock = this.stack.ioHandler.sendBytes(this.peerAddress,
+        this.peerPort,this.peerProtocol,msg);
+        // Created a new socket so close the old one and s
+        if (sock != mySock) {
+            try {
+                if (mySock != null)
+                    mySock.close();
+            } catch (IOException ex) {  }
             mySock = sock;
             try {
                 this.myClientInputStream = mySock.getInputStream();
@@ -208,6 +269,8 @@ implements SIPMessageListener, Runnable {
             thread.start();
         }
     }
+//endif
+//
     
     /** Return a formatted message to the client.
      * We try to re-connect with the peer on the other end if possible.
@@ -218,8 +281,9 @@ implements SIPMessageListener, Runnable {
         byte[] msg = sipMessage.encodeAsBytes();
         long time = System.currentTimeMillis();
         this.sendMessage(msg);
-        if (ServerLog.needsLogging(ServerLog.TRACE_MESSAGES))
-            logMessage(sipMessage,peerAddress,peerPort,time);
+        if (this.stack.serverLog.needsLogging
+	    (this.stack.serverLog.TRACE_MESSAGES))
+            logMessage (sipMessage,peerAddress,peerPort,time);
     }
     
     
@@ -234,8 +298,17 @@ implements SIPMessageListener, Runnable {
     throws IOException{
         if (message == null || receiverAddress == null)
             throw new IllegalArgumentException("Null argument");
-        Socket sock = IOHandler.sendBytes(receiverAddress,receiverPort,
-        "TCP",message);
+//ifdef SIMULATION
+/*
+        SimSocket sock = this.stack.ioHandler.sendBytes
+				(receiverAddress,receiverPort,
+        			"TCP",message);
+//else
+*/
+        Socket sock = this.stack.ioHandler.sendBytes
+		(receiverAddress,receiverPort, "TCP",message);
+//endif
+//
         // Created a new socket so close the old one and s
         if (sock != mySock) {
             try {
@@ -252,7 +325,16 @@ implements SIPMessageListener, Runnable {
                 InternalErrorHandler.handleException(ex);
             }
             // start a new reader on this end of the pipe.
-            Thread mythread = new Thread(this);
+//ifdef SIMULATION
+/*
+            SimThread mythread = new SimThread(this);
+	    myThread.setName("TCPMessageChannelThread");
+//else
+*/
+           mythread = new Thread(this);
+//endif
+//
+
             mythread.start();
         }
     }
@@ -275,8 +357,8 @@ implements SIPMessageListener, Runnable {
             try {
                 sendMessage(response);
             } catch (IOException ioex) {
-                if (LogWriter.needsLogging)
-                    LogWriter.logException(ioex);
+                if (this.stack.logWriter.needsLogging)
+                    stack.logWriter.logException(ioex);
             }
         } else {
             // Otherwise, message is already formatted --
@@ -284,8 +366,8 @@ implements SIPMessageListener, Runnable {
             try {
                 sendMessage(msgString.getBytes());
             } catch (IOException ioex) {
-                if (LogWriter.needsLogging)
-                    LogWriter.logException(ioex);
+                if (this.stack.logWriter.needsLogging)
+                    stack.logWriter.logException(ioex);
             }
         }
     }
@@ -304,7 +386,7 @@ implements SIPMessageListener, Runnable {
     String header,
     String message)
     throws ParseException {
-        if (LogWriter.needsLogging) LogWriter.logException(ex);
+        if (this.stack.logWriter.needsLogging) stack.logWriter.logException(ex);
         // Log the bad message for later reference.
         if (hdrClass .equals(From.class)||
             hdrClass.equals(To.class)       ||
@@ -338,9 +420,9 @@ implements SIPMessageListener, Runnable {
             sipMessage.getCSeq() == null 	  ||
             sipMessage.getViaHeaders()  == null   ) {
                 String badmsg = sipMessage.encode();
-                if (LogWriter.needsLogging)  {
-                    LogWriter.logMessage("bad message " + badmsg);
-                    LogWriter.logMessage(">>> Dropped Bad Msg");
+                if (this.stack.logWriter.needsLogging)  {
+                    stack.logWriter.logMessage("bad message " + badmsg);
+                    stack.logWriter.logMessage(">>> Dropped Bad Msg");
                 }
                 stack.logBadMessage(badmsg);
                 return;
@@ -368,8 +450,8 @@ implements SIPMessageListener, Runnable {
 			this.peerAddress.getHostName());
                 } catch (java.net.UnknownHostException ex) {
                     // Could not resolve the sender address.
-                    if (LogWriter.needsLogging) {
-                        LogWriter.logMessage(
+                    if (this.stack.logWriter.needsLogging) {
+                        stack.logWriter.logMessage(
                         "Rejecting message -- could not resolve Via Address");
                     }
                     return;
@@ -379,7 +461,7 @@ implements SIPMessageListener, Runnable {
                 String key = IOHandler.makeKey
                 (mySock.getInetAddress(), this.peerPort);
                 // Use this for outgoing messages as well.
-                IOHandler.putSocket(key,mySock);
+                stack.ioHandler.putSocket(key,mySock);
             }
             
             // System.out.println("receiver address = " + receiverAddress);
@@ -392,24 +474,25 @@ implements SIPMessageListener, Runnable {
                 // Create a new sever side request processor for this
                 // message and let it handle the rest.
                 
-                if (LogWriter.needsLogging) {
-                    LogWriter.logMessage("----Processing Message---");
+                if (this.stack.logWriter.needsLogging) {
+                    stack.logWriter.logMessage("----Processing Message---");
                 }
                 
                 SIPServerRequestInterface sipServerRequest =
                 stack.newSIPServerRequest(sipRequest,this);
                 try {
                     sipServerRequest.processRequest(sipRequest,this);
-                    if ( ServerLog.needsLogging(ServerLog.TRACE_MESSAGES)) {
+                    if ( this.stack.serverLog.needsLogging
+			(this.stack.serverLog.TRACE_MESSAGES)) {
                         if (sipServerRequest.getProcessingInfo() == null) {
-                            ServerLog.logMessage(sipMessage,
+                            stack.serverLog.logMessage(sipMessage,
                             sipRequest.getViaHost() + ":" +
                             sipRequest.getViaPort(),
                             stack.getHostAddress()  + ":" +
                             stack.getPort(this.getTransport()),false,
                             receptionTime);
                         } else {
-                            ServerLog.logMessage(sipMessage,
+                            this.stack.serverLog.logMessage(sipMessage,
                             sipRequest.getViaHost() + ":" +
                             sipRequest.getViaPort(),
                             stack.getHostAddress()  + ":" +
@@ -419,8 +502,9 @@ implements SIPMessageListener, Runnable {
                         }
                     }
                 } catch (SIPServerException ex) {
-                    if ( ServerLog.needsLogging(ServerLog.TRACE_MESSAGES)) {
-                      ServerLog.logMessage(sipMessage,
+                    if ( this.stack.serverLog.needsLogging
+			(this.stack.serverLog.TRACE_MESSAGES)) {
+                      this.stack.serverLog.logMessage(sipMessage,
                       sipRequest.getViaHost() + ":" + sipRequest.getViaPort(),
                       stack.getHostAddress()  + ":" +
                       stack.getPort(this.getTransport()),
@@ -437,8 +521,9 @@ implements SIPMessageListener, Runnable {
                     sipServerResponse.processResponse(sipResponse,this);
                 } catch (SIPServerException ex) {
                     // An error occured processing the message -- just log it.
-                    if ( ServerLog.needsLogging(ServerLog.TRACE_MESSAGES)) {
-                    ServerLog.logMessage(sipMessage,
+                    if ( this.stack.serverLog.needsLogging
+			(this.stack.serverLog.TRACE_MESSAGES)) {
+                    this.stack.serverLog.logMessage(sipMessage,
                     getPeerAddress().toString() + ":" + getPeerPort(),
                     stack.getHostAddress()  + ":" +
                     stack.getPort(this.getTransport()),
@@ -471,7 +556,6 @@ implements SIPMessageListener, Runnable {
         // Create a pipelined message parser to read and parse
         // messages that we write out to him.
         myParser = new PipelinedMsgParser( this ,hispipe);
-        // Enable the flag to parse message content.
         // Start running the parser thread.
         myParser.processInput();
         byte[] msg = new byte[8192];
@@ -495,8 +579,8 @@ implements SIPMessageListener, Runnable {
                     } catch (IOException ioex) {}
                     return;
                 }
-                if (LogWriter.needsLogging)  {
-                    LogWriter.logMessage( new String(msg,0,nbytes));
+                if (this.stack.logWriter.needsLogging)  {
+                    stack.logWriter.logMessage( new String(msg,0,nbytes));
                 }
                 mypipe.write(msg,0,nbytes);
                 mypipe.flush();
@@ -510,8 +594,9 @@ implements SIPMessageListener, Runnable {
                 }
                 
                 try {
-                    if(LogWriter.needsLogging)
-                        LogWriter.logMessage("IOException  closing sock");
+                    if(this.stack.logWriter.needsLogging)
+                        stack.logWriter.logMessage
+			("IOException  closing sock");
                     try {
                         if (stack.maxConnections != -1) {
                             synchronized(tcpMessageProcessor) {
@@ -523,8 +608,6 @@ implements SIPMessageListener, Runnable {
                         mySock.close();
                         mypipe.close();
                     } catch (IOException ioex) {}
-                    if (notifier != null)
-                        notifier.notifyClose(this);
                 } catch (Exception ex1) {
                     // Do nothing.
                 }

@@ -488,53 +488,40 @@ public class LexerCore extends StringTokenizer  {
         else return buffer.substring(ptr);
     }
     
-    /** Get the sub-String until the character is encountered.
-     * Acknowledgement - Sylvian Corre submitted a bug fix for this
-     * method.
+    /** Get the sub-String until the character is encountered
      * @param char c the character to match
-     * @return matching string.
+     * @return String
      */
- public String getString(char c) throws ParseException {
-        int savedPtr = ptr;
+    public String getString(char c) throws ParseException {
         StringBuffer retval = new StringBuffer();
          while(true) {
                char next = lookAhead(0);
-                //System.out.println(" next = [" + next + ']' + "ptr = " + ptr);
-                //System.out.println(next == '\0');
-               
-                if (next == '\0' )  {
-                    ParseException exception = 
-			new ParseException( this.buffer  +
-                        "unexpected EOL", this.ptr);
-                    ptr = savedPtr;
-                    throw exception;
-                } else if ( next == c ) {
+		//System.out.println(" next = [" + next + ']' + "ptr = " + ptr);
+		//System.out.println(next == '\0');
+		
+		if (next == '\0' )  {
+		    throw new ParseException( this.buffer  + 
+			"unexpected EOL", this.ptr);
+		} else if ( next == c ) {
                     consume(1);
                     break;
                 } else if (next == '\\')  {
                     consume(1);
-                    char nextchar = lookAhead(0);
-                    if (nextchar == '\0')  {
-                        ParseException exception = 
-			    new ParseException( this.buffer  +
-                            "unexpected EOL", this.ptr);
-                        ptr = savedPtr;
-                        throw exception;
-                    } else {
-                        consume(1);
-                        retval.append(nextchar);
-                    }
-                } else {
+		    char nextchar = lookAhead(0);
+		    if (nextchar == '\0')  {
+		       throw new ParseException( this.buffer + 
+				"unexpected EOL", this.ptr);
+		    } else {
+			consume(1);
+		        retval.append(nextchar);
+		    }
+		} else {
                     consume(1);
                     retval.append(next);
                 }
         }
         return retval.toString();
     }
-
-
-
-
     
     
     

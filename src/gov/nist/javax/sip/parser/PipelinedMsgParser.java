@@ -8,6 +8,12 @@ import gov.nist.javax.sip.message.*;
 import gov.nist.javax.sip.header.*;
 import java.text.ParseException;
 import java.io.*;
+//ifdef SIMULATION
+/*
+import sim.java.net.*;
+//endif
+*/
+
 /**
 * This implements a pipelined message parser suitable for use
 * with a stream - oriented input such as TCP. The client uses
@@ -49,7 +55,14 @@ public final class PipelinedMsgParser
 	 * and erroneous messages.)
 	 */
 	protected SIPMessageListener sipMessageListener;
+//ifdef SIMULATION
+/*
+	private SimThread mythread; // Preprocessor thread
+//else
+*/
 	private Thread mythread; // Preprocessor thread
+//endif
+//
 	private byte[] messageBody;
 	private boolean errorFlag;
 	private InputStream rawInputStream;
@@ -82,8 +95,15 @@ public final class PipelinedMsgParser
 		this();
 		this.sipMessageListener = sipMessageListener;
 		rawInputStream = in;
+//ifndef SIMULATION
+//
 		mythread = new Thread(this);
 		mythread.setName("PipelineThread-" + getNewUid());
+//else
+/*
+		mythread = new SimThread(this);
+//endif
+*/
 
 	}
 
@@ -126,7 +146,14 @@ public final class PipelinedMsgParser
 		
 		p.rawInputStream = this.rawInputStream;
 		p.sipMessageListener = this.sipMessageListener;
+//ifdef SIMULATION
+/*
+		SimThread mythread = new SimThread(p);
+//else
+*/
 		Thread mythread = new Thread(p);
+//endif
+//
 		mythread.setName("PipelineThread");
 		return p;
 	}

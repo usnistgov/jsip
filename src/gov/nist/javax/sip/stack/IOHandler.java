@@ -24,38 +24,64 @@ import gov.nist.javax.sip.header.*;
 import java.util.LinkedList;
 import java.util.Hashtable;
 import gov.nist.core.*;
+//ifdef SIMULATION
+/*
+import sim.java.net.*;
+//endif
+*/
 
 /**
 *  Class that is used for forwarding SIP requests. 
 */
 
-public class IOHandler
+class IOHandler
 {
+
+	private SIPStack sipStack;
 
 	private static String UDP = "udp";
 	private static String TCP = "tcp";
 
 	// A cache of client sockets that can be re-used for 
 	// sending tcp messages.
-	private static Hashtable socketTable;
+	private Hashtable socketTable;
 
-	static { socketTable = new Hashtable(); }
 
 	protected static String makeKey(InetAddress addr, int port) {
-		return addr.toString() +":"+port;
+		return addr.getHostAddress() +":"+port;
 
 	}
 
-	protected static synchronized void putSocket(String key, Socket sock) {
+	protected IOHandler(SIPStack sipStack) {
+		this.sipStack = sipStack;
+		this.socketTable = new Hashtable();
+	}
+
+	
+
+//ifdef SIMULATION
+/*
+	private synchronized SimSocket getSocket(String key) {
+		return (SimSocket) socketTable.get(key);
+	}
+        protected synchronized void putSocket(String key, 
+                SimSocket sock) {
 		//System.out.println("putSocket " + key + ":" + sock);
 		socketTable.put(key,sock);
 	}
-
-	private static synchronized Socket getSocket(String key) {
+//else
+*/
+        protected synchronized void putSocket(String key, Socket sock) {
+		//System.out.println("putSocket " + key + ":" + sock);
+		socketTable.put(key,sock);
+	}
+	private synchronized Socket getSocket(String key) {
 		return (Socket) socketTable.get(key);
 	}
+//endif
+//
 	
-	private static synchronized void removeSocket(String key) {
+	private void removeSocket(String key) {
 		socketTable.remove(key);
 	}
 
@@ -71,7 +97,7 @@ public class IOHandler
          * @throws IOException If the message could not be sent for any
          * reason
          */
-	public static void sendRequest(AddressImpl addr, 
+	public void sendRequest(AddressImpl addr, 
        					String request) throws IOException 
 	{
 		HostPort hostPort = addr.getHostPort();
@@ -83,8 +109,9 @@ public class IOHandler
 				sendRequest(hostPort,transport,request); 
 			} catch (IOException ex) {
 				if (LogWriter.needsLogging) {
-				   LogWriter.logException(ex);
-				   LogWriter.logMessage("UDP Send failed!");
+				   sipStack.logWriter.logException(ex);
+				   sipStack.logWriter.logMessage
+					("UDP Send failed!");
 				}
 				sendRequest(hostPort, TCP, request);
 			}
@@ -109,7 +136,7 @@ public class IOHandler
          * @throws IOException If the message could not be sent for any reason
          */
 	
-	public static void sendRequest(HostPort addr, 
+	public void sendRequest(HostPort addr, 
 				String transport,
 				String nrequest)  throws IOException 
 	{      
@@ -123,6 +150,7 @@ public class IOHandler
 		}
 		sendRequest(inaddr,contactPort,transport,request);
 	}
+
 	/**
          * Forward a given request to the address given. This caches
 	 * connections for tcp sends.
@@ -135,8 +163,81 @@ public class IOHandler
          * not listening
          * @throws IOException If the message could not be sent for any reason
          */
+//ifdef SIMULATION
+/*
 
-	public static Socket sendBytes(InetAddress inaddr, 
+	public 
+        SimSocket 
+        sendBytes( InetAddress inaddr, 
+		int contactPort, 
+                String transport, 
+                byte[] bytes) 
+        throws IOException {
+		 int retry_count = 0;
+		// Server uses TCP transport. TCP client sockets are cached
+		int length = bytes.length;
+		if (transport.compareToIgnoreCase(TCP) == 0 ) {
+		   String key = makeKey(inaddr,contactPort);
+                   SimSocket    clientSock = getSocket(key);
+		    retry:
+			while(retry_count < 2) {
+			    if (clientSock == null) {
+				if (LogWriter.needsLogging) {
+				   sipStack.logWriter.logMessage
+				    ("inaddr = " + inaddr);
+				   sipStack.logWriter.logMessage
+				    ("port = " + contactPort);
+				}
+			        clientSock = new SimSocket
+					(inaddr,contactPort);
+			        OutputStream outputStream  = 
+					clientSock.getOutputStream();
+				synchronized(outputStream) {
+			          outputStream.write(bytes,0,length);
+			          outputStream.flush();
+				}
+				putSocket (key,clientSock);
+			        break;
+			    } else {
+			       try {
+			          OutputStream outputStream  = 
+					clientSock.getOutputStream();
+				 synchronized(outputStream) {
+			            outputStream.write(bytes,0,length);
+			            outputStream.flush();
+				 }
+				 break;
+			       } catch (IOException ex) {
+				  System.out.println("key = " + key);
+				  ex.printStackTrace();
+				  // old connection is bad.
+				  // remove from our table.
+				  removeSocket(key);
+				  clientSock.close();
+			          clientSock = null;
+				  retry_count ++;
+			          break retry;
+			       }
+			   }
+			}
+                        return clientSock;
+
+		} else {
+			// This is a UDP transport...
+			DatagramSocket datagramSock = new DatagramSocket();
+			datagramSock.connect(inaddr, contactPort);
+			DatagramPacket dgPacket = 
+				new DatagramPacket
+				  (bytes, 0, length, inaddr, contactPort);
+			datagramSock.send(dgPacket);
+			datagramSock.close();
+                        return null;
+		}
+
+	}
+//else
+*/
+	public  Socket sendBytes(InetAddress inaddr, 
 			int contactPort, 
                         String transport, 
                         byte[] bytes) 
@@ -151,8 +252,9 @@ public class IOHandler
 			while(retry_count < 2) {
 			    if (clientSock == null) {
 				if (LogWriter.needsLogging) {
-				   LogWriter.logMessage("inaddr = " + inaddr);
-				   LogWriter.logMessage("port = " 
+				   sipStack.logWriter.logMessage
+				   ("inaddr = " + inaddr);
+				   sipStack.logWriter.logMessage("port = " 
 					+ contactPort);
 				}
 			        clientSock = new Socket(inaddr,contactPort);
@@ -202,6 +304,10 @@ public class IOHandler
 
 	}
 
+//endif
+//
+
+
 	/**
          * Forward a given request to the address given. 
          * The address has information on
@@ -216,7 +322,7 @@ public class IOHandler
          * @throws IOException If the message could not be sent for any reason
          */
 
-	public static void sendRequest(InetAddress inaddr, 
+	public void sendRequest(InetAddress inaddr, 
 			int contactPort, 
                         String transport, 
                         String request) 
@@ -225,7 +331,7 @@ public class IOHandler
 		byte bytes[] = request.getBytes();
                 // Log some debugging information.
                 if (LogWriter.needsLogging) {
-                    LogWriter.logMessage("sendRequest: " 
+                    sipStack.logWriter.logMessage("sendRequest: " 
 			+  inaddr.getHostAddress() + ":"+  contactPort + "/" + 
 			  transport + "length" + length);
                 }
@@ -242,8 +348,8 @@ public class IOHandler
         *@param message is the SIP message that we are forwardiong.
 	*/
 
-	public static void sendRequest(String host, int port, String 
-				transport, SIPStack stack,
+	public void sendRequest(String host, int port, String 
+				transport, 
 				SIPMessage message) 
         throws IOException {
 	   
@@ -258,11 +364,11 @@ public class IOHandler
 	   InetAddress inetAddr = InetAddress.getByName(host);
 	   sendRequest(inetAddr,port,transport,message.encode());
 	   
-	   if (ServerLog.needsLogging(ServerLog.TRACE_MESSAGES)) {
+	   if (sipStack.serverLog.needsLogging(ServerLog.TRACE_MESSAGES)) {
                String status = null;
-	       ServerLog.logMessage(message.encode(), 
-				    stack.getHostAddress() + ":" +
-				     stack.getPort(transport), 
+	       sipStack.serverLog.logMessage(message.encode(), 
+				    sipStack.getHostAddress() + ":" +
+				     sipStack.getPort(transport), 
 				     host+":" +transport +port,
 				     true,
 				     ((CallID)message.getCallId()).encodeBody(),

@@ -41,13 +41,13 @@ public class LogWriter
 /** Name of the log file in which the trace is written out
  * (default is /tmp/sipserverlog.txt)
  */        
-	private static String   logFileName="debuglog.txt";
+	private  String   logFileName="debuglog.txt";
 /** Print writer that is used to write out the log file.
  */        
-	public static PrintWriter printWriter;
+	public  PrintWriter printWriter;
 /** print stream for writing out trace
  */        
-	public static PrintStream traceWriter = System.out;
+	public  PrintStream traceWriter = System.out;
 
 /** Flag to indicate that logging is enabled. This needs to be
 * static and public in order to globally turn logging on or off.
@@ -71,7 +71,7 @@ public class LogWriter
 
 	/** log a stack trace..
 	*/
-	public static void logStackTrace() {
+	public  void logStackTrace() {
 		if (needsLogging) {
 		   checkLogFile();
 		   if (printWriter != null)  {
@@ -83,7 +83,7 @@ public class LogWriter
 	}
 
 	
-	public static void logException(Exception ex) {
+	public void logException(Exception ex) {
 	    if (needsLogging)  {
 	      StringWriter sw = new StringWriter();
 	      PrintWriter pw = new PrintWriter( sw);
@@ -99,7 +99,7 @@ public class LogWriter
 	*
 	*@param sframe - frame to log grace.
 	*/
-	public static void logTrace(Throwable sframe) {
+	public void logTrace(Throwable sframe) {
 	    if (needsLogging)  {
 	     checkLogFile();
              logException(new Exception(sframe.getMessage()) );
@@ -110,11 +110,11 @@ public class LogWriter
 	/** Set the log file name 
 	*@param name is the name of the log file to set. 
 	*/
-	public static void setLogFileName(String name) {
+	public void setLogFileName(String name) {
 		logFileName = name;
 	}
 
-	public synchronized static void 
+	public synchronized void 
 	logMessage(String message, String logFileName) {
 		try {
 			File  logFile = new File(logFileName);
@@ -137,7 +137,7 @@ public class LogWriter
 		}
 	}
 	
-	private static void checkLogFile() {
+	private void checkLogFile() {
 		
 		if (printWriter != null) return;
 		if (logFileName == null) return;
@@ -159,7 +159,7 @@ public class LogWriter
 		}
 	}
  
-	private static void println(String message) {
+	private void println(String message) {
 	   for (int i = 0; i < message.length(); i++) {
 		if (message.charAt(i) == '\n') 
 			lineCount ++;
@@ -175,13 +175,7 @@ public class LogWriter
 	/** Log a message into the log file.
          * @param message message to log into the log file.
          */
-	public static void logMessage(int level, String message) {
-		if (! needsLogging) return;
-	}
-	/** Log a message into the log file.
-         * @param message message to log into the log file.
-         */
-	public static void logMessage(String message) {
+	public  void logMessage(String message) {
                 if (! needsLogging) return;
 		checkLogFile();
 	        println(message);	
@@ -191,13 +185,13 @@ public class LogWriter
 	
         /** Set the trace level for the stack.
          */
-        public static void setTraceLevel(int level) {
+        public void setTraceLevel(int level) {
             traceLevel = level;
         }
         
         /** Get the trace level for the stack.
          */
-        public static int getTraceLevel() { return traceLevel; }
+        public int getTraceLevel() { return traceLevel; }
 	
 
 }

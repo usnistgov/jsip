@@ -68,7 +68,8 @@ implements SIPStackMessageFactory
 		messageChannel.getMessageProcessor().getListeningPoint();
 	if (retval.listeningPoint == null) return null;
 	if (LogWriter.needsLogging) 
-	    LogWriter.logMessage("Returning request interface for " +
+	    sipStackImpl.getLogWriter().logMessage
+		("Returning request interface for " +
 			sipRequest.getFirstLine() + " " + retval + 
 			" messageChannel = " + messageChannel );
         return  retval;
@@ -96,7 +97,8 @@ implements SIPStackMessageFactory
 		((SIPTransactionStack)theStack).
 		findTransaction(sipResponse,false);
 	if (LogWriter.needsLogging)
-	    LogWriter.logMessage("Found Transaction " + tr + " for " +
+	    sipStackImpl.getLogWriter().logMessage
+			("Found Transaction " + tr + " for " +
 			sipResponse);
 
         retval.transactionChannel = tr;

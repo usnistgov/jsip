@@ -57,6 +57,8 @@ XERCES_LIB=$(XERCES_HOME)/xerces.jar
 
 RI=$(ROOT)/$(RI_JAR)
 
+
+
 # Pointer to the source for the JAIN API (for building documentation).
 #JAIN_API_SOURCE = ./src
 
@@ -94,3 +96,5 @@ emacsclean:
 
 default: 
 	make all
+
+prep:
