@@ -24,7 +24,7 @@ import java.text.ParseException;
  * retrieve this structure from the SipStack. Bugs against route set 
  * management were reported by Antonis Karydas and Brad Templeton.
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.15 $ $Date: 2004-01-27 15:11:06 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2004-02-03 15:43:48 $
  *
  *@author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -1029,7 +1029,9 @@ public class DialogImpl implements javax.sip.Dialog {
 		else if (
 			this.getState() == null
 				|| (this.getState().getValue() == TERMINATED_STATE
-					&& !method.equalsIgnoreCase(Request.BYE)))
+					&& !method.equalsIgnoreCase(Request.BYE))
+				|| (this.getState().getValue() == EARLY_STATE 
+					&& method.equalsIgnoreCase(Request.BYE)))
 			throw new SipException(
 				"Dialog  "
 					+ getDialogId()
@@ -1102,7 +1104,9 @@ public class DialogImpl implements javax.sip.Dialog {
 			Route route = (Route) rl.getFirst();
 			SipURI sipUri = (SipUri) route.getAddress().getURI();
 			if (sipUri.hasLrParam()) {
-				sipRequest.setRequestURI(this.getRemoteTarget().getURI());
+			      	if (this.getRemoteTarget() != null) 
+					sipRequest.setRequestURI
+					(this.getRemoteTarget().getURI());
 				sipRequest.addHeader(rl);
 			} else {
 				// First route is not a lr 
@@ -1419,6 +1423,12 @@ public class DialogImpl implements javax.sip.Dialog {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2004/01/27 15:11:06  mranga
+ * Submitted by:  jeand
+ * Reviewed by:   mranga
+ * If retrans filter enabled then ack should be seen only once by
+ * application. Else each retransmitted ack is seen by application.
+ *
  * Revision 1.14  2004/01/27 13:52:11  mranga
  * Reviewed by:   mranga
  * Fixed server/user-agent parser.
