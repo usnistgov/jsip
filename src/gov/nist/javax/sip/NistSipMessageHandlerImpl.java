@@ -334,9 +334,9 @@ implements SIPServerRequestInterface, SIPServerResponseInterface {
 	    String dialogId = sipResponse.getDialogId(false);
 	    DialogImpl dialog = sipStack.getDialog(dialogId);
 	    //  Have a dialog but could not find transaction.
-	    if (sipProvider.sipListener == null)
+	    if (sipProvider.sipListener == null) {
 		 return;
-	    else if ( dialog != null  ) {
+	    } else if ( dialog != null  ) {
 		// Bug report by Emil Ivov
 		if ( sipResponse.getStatusCode() != Response.OK ) {
 			return;
@@ -346,7 +346,11 @@ implements SIPServerRequestInterface, SIPServerResponseInterface {
 			   dialog.getFirstTransaction().getRequest().
 				getHeader(SIPHeaderNames.CSEQ)) ) {
 			  try {
+			       // Found the dialog - resend the ACK and
+			       // dont pass up the null transaction
+			       // bug noticed by Joe Provino.
 			       dialog.resendAck();
+			       return;
 			   } catch (SipException ex) {
 				// What to do here ?? kill the dialog?
 			   }
