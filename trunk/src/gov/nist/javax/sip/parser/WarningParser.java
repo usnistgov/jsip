@@ -63,7 +63,19 @@ public class WarningParser extends   HeaderParser{
                     // Parsing the agent
                     this.lexer.match(TokenTypes.ID);
                     token=lexer.getNextToken();
-                    warning.setAgent(token.getTokenValue() );
+		    // Bug reported by zvali@dev.java.net
+                    if(lexer.lookAhead(0) == ':'){
+                        this.lexer.match(':');
+                        this.lexer.match(TokenTypes.ID);
+                        Token token2 = lexer.getNextToken();
+                        warning.setAgent
+				(token.getTokenValue() + ":" 
+				+token2.getTokenValue());
+                    } else{
+                      warning.setAgent(token.getTokenValue() );
+                    }
+
+
                     this.lexer.SPorHT();
                     
                     // Parsing the text
@@ -95,7 +107,20 @@ public class WarningParser extends   HeaderParser{
                         // Parsing the agent
                         this.lexer.match(TokenTypes.ID);
                         tok=lexer.getNextToken();
-                        warning.setAgent(tok.getTokenValue() );
+
+			// Bug reported by zvali@dev.java.net
+
+                        if(lexer.lookAhead(0) == ':'){
+                            this.lexer.match(':');
+                            this.lexer.match(TokenTypes.ID);
+                            Token token2 = lexer.getNextToken();
+                            warning.setAgent
+				(tok.getTokenValue() + ":" 
+					+token2.getTokenValue());
+                        } else{
+                          warning.setAgent(tok.getTokenValue() );
+                        }
+			
                         this.lexer.SPorHT();
                         
                         // Parsing the text
@@ -114,13 +139,14 @@ public class WarningParser extends   HeaderParser{
             return warningList;
         }
         
-        /** 
+/**
         public static void main(String args[]) throws ParseException {
 		String warning[] = {
                 "Warning: 307 isi.edu \"Session parameter 'foo' not understood\"\n",
                 "Warning: 301 isi.edu \"Incompatible network address type 'E.164'\"\n",
                 "Warning: 312 ii.edu \"Soda\", "+
-                " 351 i.edu \"I network address 'E.164'\" , 323 ii.edu \"Sodwea\"\n"
+                " 351 i.edu \"I network address 'E.164'\" , 323 ii.edu \"Sodwea\"\n",
+"Warning: 392 192.168.89.71:5060 \"Noisy feedback tells: pid=936 req_src_ip=192.168.89.20 in_uri=sip:xxx@yyyy.org:5061 out_uri=sip:xxx@yyyy.org:5061 via_cnt==1\"\n" 
                 };
 			
 		for (int i = 0; i < warning.length; i++ ) {
@@ -131,6 +157,6 @@ public class WarningParser extends   HeaderParser{
 		}
 			
 	}
-         */
+**/
        
 }
