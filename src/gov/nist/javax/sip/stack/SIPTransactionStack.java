@@ -22,7 +22,7 @@ import java.net.*;
  * @author M. Ranganathan <mranga@nist.gov><br/>(Added Dialog table).
  * @author performance enhacements added by Pierre De Rop and Thomas Froment.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.48 $ $Date: 2005-01-28 00:23:38 $ <a
+ * @version JAIN-SIP-1.1 $Revision: 1.49 $ $Date: 2005-03-25 17:01:00 $ <a
  *          href=" {@docRoot}/uncopyright.html">This code is in the public
  *          domain. </a>
  */
@@ -69,7 +69,7 @@ public abstract class SIPTransactionStack extends SIPMessageStack implements
 	/** List of pending dialog creating transactions. */
 	private HashSet pendingTransactions;
 
-	protected List pendingRecords;
+	private List pendingRecords;
 
 	// hashtable for fast lookup
 	private Hashtable clientTransactionTable;
@@ -1038,6 +1038,10 @@ public abstract class SIPTransactionStack extends SIPMessageStack implements
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.48  2005/01/28 00:23:38  mranga
+ * Reviewed by:   mranga
+ * minor cleanup
+ *
  * Revision 1.47  2004/12/01 19:05:16  mranga
  * Reviewed by:   mranga
  * Code cleanup remove the unused SIMULATION code to reduce the clutter.
