@@ -253,7 +253,7 @@ class IOHandler {
 
 		} else {
 			// This is a UDP transport...
-			DatagramSocket datagramSock = new DatagramSocket();
+			DatagramSocket datagramSock = sipStack.getNetworkLayer().createDatagramSocket();
 			datagramSock.connect(inaddr, contactPort);
 			DatagramPacket dgPacket =
 				new DatagramPacket(bytes, 0, length, inaddr, contactPort);
@@ -287,6 +287,12 @@ class IOHandler {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.23  2004/07/23 06:50:04  mranga
+ * Submitted by:  mranga
+ * Reviewed by:   mranga
+ *
+ * Clean up - Get rid of annoying eclipse warnings.
+ *
  * Revision 1.22  2004/06/21 04:59:50  mranga
  * Refactored code - no functional changes.
  *

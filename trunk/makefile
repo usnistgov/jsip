@@ -80,6 +80,7 @@ javadoc:
 		javax.sdp					\
 		gov.nist.javax.sdp				\
 		gov.nist.core					\
+		gov.nist.core.net
 
 		
 
@@ -133,6 +134,7 @@ jainapi:
 ri: 
 	mkdir -p $(DESTINATION)
 	cd $(SRCROOT)/gov/nist/core;$(MAKE) all
+	cd $(SRCROOT)/gov/nist/core/net;$(MAKE) all
 	cd $(SRCROOT)/gov/nist/javax/sip/;$(MAKE)  all
 	cd $(SRCROOT)/gov/nist/javax/sip/parser;$(MAKE) all
 	cd $(SRCROOT)/gov/nist/javax/sip/address;$(MAKE) all
@@ -150,7 +152,7 @@ classfiles: ri examples tools sdp
 jarfile:
 	$(RM) $(RI_JAR)
 	cd classes;	\
-	$(JAR) -cvf ../$(RI_JAR) ./gov/nist/javax/sip ./gov/nist/core
+	$(JAR) -cvf ../$(RI_JAR) ./gov/nist/javax/sip ./gov/nist/core 
 
 
 # A single jar that has everything.
@@ -169,6 +171,7 @@ clean: emacsclean
 	cd $(SRCROOT)/gov/nist/javax/sip/parser;$(MAKE) clean
 	cd $(SRCROOT)/gov/nist/javax/sip/message;$(MAKE) clean
 	cd $(SRCROOT)/gov/nist/core;$(MAKE) clean
+	cd $(SRCROOT)/gov/nist/core/net;$(MAKE) clean
 	cd $(SRCROOT)/examples/shootist; $(MAKE) clean
 	cd $(SRCROOT)/examples/subsnotify; $(MAKE) clean
 	$(RM) -rf classes
@@ -194,6 +197,7 @@ backup:
 	./src/test/					\
 	./src/gov/nist/javax				\
 	./src/gov/nist/core				\
+	./src/gov/nist/core/net				\
 	./src/examples/shootist		        	\
 	./src/examples/subsnotify	        	\
 	./src/tools/tracesviewer	        
@@ -211,6 +215,7 @@ zipfile:
 	-r ./$(PROJECT_ROOT)/lib/junit/junit.jar	        \
 	-r ./$(PROJECT_ROOT)/src/gov/nist/javax			\
 	-r ./$(PROJECT_ROOT)/src/gov/nist/core		        \
+	-r ./$(PROJECT_ROOT)/src/gov/nist/core/net	        \
 	-r ./$(PROJECT_ROOT)/src/tools/tracesviewer	        \
 	-r ./$(PROJECT_ROOT)/src/tools/sniffer		        \
 	-r ./$(PROJECT_ROOT)/src/examples/shootist	       	\
@@ -252,6 +257,7 @@ srctar: stamp
 	./$(PROJECT_ROOT)/src/javax				\
 	./$(PROJECT_ROOT)/src/gov/nist/javax			\
 	./$(PROJECT_ROOT)/src/gov/nist/core		        \
+	./$(PROJECT_ROOT)/src/gov/nist/core/net		        \
 	./$(PROJECT_ROOT)/src/tools/tracesviewer	      	\
 	./$(PROJECT_ROOT)/src/tools/sniffer		        \
 	./$(PROJECT_ROOT)/src/examples/shootist		        \
@@ -272,6 +278,7 @@ srczip: stamp
 	-r ./$(PROJECT_ROOT)/manifest.tck			\
 	-r ./$(PROJECT_ROOT)/src/gov/nist/javax			\
 	-r ./$(PROJECT_ROOT)/src/gov/nist/core		        \
+	-r ./$(PROJECT_ROOT)/src/gov/nist/core/net	        \
 	-r ./$(PROJECT_ROOT)/src/tools/tracesviewer	        \
 	-r ./$(PROJECT_ROOT)/src/tools/sniffer		        \
 	-r ./$(PROJECT_ROOT)/src/examples/shootist        	\
@@ -313,13 +320,14 @@ tarfile:
 	./$(PROJECT_ROOT)/src/test/torture			\
 	./$(PROJECT_ROOT)/src/gov/nist/javax			\
 	./$(PROJECT_ROOT)/src/gov/nist/core		        \
-	./$(PROJECT_ROOT)/src/tools/tracesviewer		        \
+	./$(PROJECT_ROOT)/src/gov/nist/core/net	        	\
+	./$(PROJECT_ROOT)/src/tools/tracesviewer	        \
 	./$(PROJECT_ROOT)/src/tools/sniffer		        \
 	./$(PROJECT_ROOT)/src/examples/shootist		        \
 	./$(PROJECT_ROOT)/src/examples/subsnotify	        \
-	./$(PROJECT_ROOT)/classes					\
-	./$(PROJECT_ROOT)/README					\
-	./$(PROJECT_ROOT)/makefile					\
+	./$(PROJECT_ROOT)/classes				\
+	./$(PROJECT_ROOT)/README				\
+	./$(PROJECT_ROOT)/makefile				\
 	./$(PROJECT_ROOT)/build.xml				\
 	./$(PROJECT_ROOT)/build-config				\
 	./$(PROJECT_ROOT)/docs					\
@@ -348,6 +356,7 @@ tck:
 	-C ./classes test/tck/ 				\
 	-C ./classes gov/nist/javax/sip 		\
 	-C ./classes gov/nist/core 			\
+	-C ./classes gov/nist/core/net 			\
 	-C ./classes javax/sip/ 			
 
 libzip:
@@ -377,6 +386,7 @@ export:
 	./src/javax				\
 	./src/gov/nist/javax			\
 	./src/gov/nist/core		        \
+	./src/gov/nist/core/net		        \
 	./src/tools/tracesviewer	        \
 	./src/tools/sniffer		        \
 	./src/examples/shootist		        \
