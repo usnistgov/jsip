@@ -20,7 +20,7 @@ import java.text.ParseException;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  *
- * @version JAIN-SIP-1.1 $Revision: 1.9 $ $Date: 2004-07-25 19:26:44 $
+ * @version JAIN-SIP-1.1 $Revision: 1.10 $ $Date: 2004-09-10 18:26:08 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -168,9 +168,8 @@ public abstract class SIPMessage
 		if (!other.getClass().equals(this.getClass()))
 			return false;
 		SIPMessage matchObj = (SIPMessage) other;
-		LinkedList matchHeaders = matchObj.headers;
-		ListIterator li = matchHeaders.listIterator();
-		topOfLoop : while (li.hasNext()) {
+		ListIterator li = matchObj.getHeaders();
+		while (li.hasNext()) {
 			SIPHeader hisHeaders = (SIPHeader) li.next();
 			LinkedList myHeaders =
 				this.getHeaderList(hisHeaders.getHeaderName());
@@ -182,27 +181,31 @@ public abstract class SIPMessage
 			if (hisHeaders instanceof SIPHeaderList) {
 				ListIterator outerIterator =
 					((SIPHeaderList) hisHeaders).listIterator();
-				outer : while (outerIterator.hasNext()) {
+				while (outerIterator.hasNext()) {
 					SIPHeader hisHeader = (SIPHeader) outerIterator.next();
 					ListIterator innerIterator = myHeaders.listIterator();
+					boolean found  = false;
 					while (innerIterator.hasNext()) {
 						SIPHeader myHeader = (SIPHeader) innerIterator.next();
 						if (myHeader.match(hisHeader)) {
-							break outer;
+							found = true;
+							break;
 						}
 					}
-					return false;
+					if (! found)  return false;
 				}
 			} else {
 				SIPHeader hisHeader = hisHeaders;
 				ListIterator innerIterator = myHeaders.listIterator();
+				boolean found = false;
 				while (innerIterator.hasNext()) {
 					SIPHeader myHeader = (SIPHeader) innerIterator.next();
-					if (myHeader.match(hisHeader))
-						break topOfLoop;
+					if (myHeader.match(hisHeader)) {
+						found = true;
+						break;
+					}
 				}
-				// No match found.
-				return false;
+				if (! found)  return false;
 			}
 		}
 		return true;
@@ -1697,6 +1700,10 @@ public abstract class SIPMessage
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/07/25 19:26:44  mranga
+ * Reviewed by:   mranga
+ * Allows multiple Authorization headers in a message. Some minor cleanup.
+ *
  * Revision 1.8  2004/03/25 15:15:04  mranga
  * Reviewed by:   mranga
  * option to log message content added.
