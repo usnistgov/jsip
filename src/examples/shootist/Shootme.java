@@ -96,7 +96,7 @@ public class Shootme implements SipListener {
 		Request request = requestEvent.getRequest();
 		try {
 			System.out.println("shootme: got an Invite sending OK");
-			System.out.println("shootme:  " + request);
+			//System.out.println("shootme:  " + request);
 			Response response = messageFactory.createResponse(200, request);
 			ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
 			toHeader.setTag("4321"); // Application is supposed to set.
@@ -244,7 +244,7 @@ public class Shootme implements SipListener {
 		properties.setProperty(
 			"gov.nist.javax.sip.SERVER_LOG",
 			"shootmelog.txt");
-		properties.setProperty("gov.nist.javax.sip.MAX_MESSAGE_SIZE", "4096");
+		// properties.setProperty("gov.nist.javax.sip.MAX_MESSAGE_SIZE", "4096");
 		properties.setProperty("gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS", "false");
 
 		try {
@@ -293,6 +293,10 @@ public class Shootme implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2004/03/12 21:53:08  mranga
+ * Reviewed by:   mranga
+ * moved some comments around for ifdef support.
+ *
  * Revision 1.12  2004/03/07 22:25:22  mranga
  * Reviewed by:   mranga
  * Added a new configuration parameter that instructs the stack to
