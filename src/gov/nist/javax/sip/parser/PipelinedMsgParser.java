@@ -26,7 +26,7 @@ import sim.java.net.*;
  * This can be accessed from the SIPMessage using the getContent and
  * getContentBytes methods provided by the SIPMessage class. 
  *
- * @version JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2004-01-22 18:39:41 $
+ * @version JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2004-02-25 20:52:46 $
  *
  * @author <A href=mailto:mranga@nist.gov > M. Ranganathan  </A>
  *
@@ -306,6 +306,7 @@ public final class PipelinedMsgParser implements Runnable {
 				} else { // deal with the message body.
 					contentLength = cl.getContentLength();
 					Debug.println("content length " + contentLength);
+					
 					byte[] message_body = new byte[contentLength];
 					int nread = 0;
 					while (nread < contentLength) {
@@ -315,7 +316,7 @@ public final class PipelinedMsgParser implements Runnable {
 									message_body,
 									nread,
 									contentLength - nread);
-							if (readlength > 0) {
+							if (readlength >= 0) {
 								nread += readlength;
 								Debug.println("read " + nread);
 							} else {
@@ -342,6 +343,10 @@ public final class PipelinedMsgParser implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/01/22 18:39:41  mranga
+ * Reviewed by:   M. Ranganathan
+ * Moved the ifdef SIMULATION and associated tags to the first column so Prep preprocessor can deal with them.
+ *
  * Revision 1.5  2004/01/22 14:23:45  mranga
  * Reviewed by:   mranga
  * Fixed some minor formatting issues.
