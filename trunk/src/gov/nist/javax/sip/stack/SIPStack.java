@@ -33,7 +33,7 @@ import sim.java.net.*;
  * returnResponse  for successful message processing and throw
  * SIPServerException for unsuccessful message processing.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2004-03-09 00:34:44 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.14 $ $Date: 2004-03-12 23:26:42 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * 
@@ -507,7 +507,7 @@ public abstract class SIPStack {
 	 * return the status of the toExit flag.
 	 * @return true if the stack object is alive and false otherwise.
 	 */
-	public synchronized boolean isAlive() {
+	public boolean isAlive() {
 		return !toExit;
 	}
 
@@ -696,6 +696,15 @@ public abstract class SIPStack {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2004/03/09 00:34:44  mranga
+ * Reviewed by:   mranga
+ * Added TCP connection management for client and server side
+ * Transactions. See configuration parameter
+ * gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false
+ * Releases Server TCP Connections after linger time
+ * gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS=false
+ * Releases Client TCP Connections after linger time
+ *
  * Revision 1.12  2004/03/07 22:25:24  mranga
  * Reviewed by:   mranga
  * Added a new configuration parameter that instructs the stack to
