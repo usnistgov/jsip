@@ -402,16 +402,38 @@ gov.nist.core.LogWriter.java. <br>
    <a name="32"></a>
    <li>
    How do I ensure that the stack closes TCP connections after transaction completion? <br/>
-   gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS = false
-   gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS = false <br/>
+The following two configuration parameters instruct the stack to close 
+TCP connections after a linger period: 
+<p/>
+
+gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false 
+
+<p/>
+Default is true. Does reference counting for server transactions if  
+false and releases resources after refcount goes to 0.
+
+<p/>
+
+gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS=false<br/>
+
+<p/>
+Default is true.  Does reference counting for client transactions and 
+releases socket and thread resources after refcount goes to 0.
+
+Setting to false will close the connection and release any threads and 
+buffers after all transactions that use the connection have terminated 
+and  a keepalive period (currently 32 sec) has expired. In some 
+circumstances (eg. if you are supporting NAT via tcp, then it may be 
+appropriate not to close server connections).
    Defaults for these are true - which may be appropriate to do if you are burrowing through firewalls using tcp.
-   </li>
-  <hr size="2" noshade="noshade">
-   <a name="33"></a>
-   How do I limit the size of messages that the stack will accept? <br/>
-   For UDP this is not an issue. For TCP, <br/>
-   gov.nist.javax.sip.MAX_MESSAGE_SIZE=number <br/>
-   default for this property is inifinity (no limit).
+</li>
+<hr size="2" noshade="noshade">
+<a name="33"></a>
+How do I limit the size of messages that the stack will accept? <br/>
+For UDP this is not an issue. For TCP, <br/>
+gov.nist.javax.sip.MAX_MESSAGE_SIZE=number <br/>
+default for this property is inifinity (no limit).
+<hr size="2" noshade="noshade">
    
    
 </ol>
