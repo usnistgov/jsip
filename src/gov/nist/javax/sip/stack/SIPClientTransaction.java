@@ -233,7 +233,7 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
 	**/
         
         transactionMatches = false;
-	if ( getState() != null &&  getState().getValue() == COMPLETED_STATE) {
+	if (  TransactionState.COMPLETED == this.getState() ) {
 	  if ( rfc3261Compliant ) {
              transactionMatches =   getBranch().equals
                     (((Via)viaHeaders.getFirst()).
@@ -312,9 +312,8 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
         } catch (java.text.ParseException ex) {}
         
         // If this is the first request for this transaction,
-        if( getState( ) != null  &&
-         (getState().getValue() == PROCEEDING_STATE ||
-        getState().getValue() == CALLING_STATE )  ){
+        if(  TransactionState.PROCEEDING == getState() ||
+             TransactionState.CALLING  == getState() )  {
             
             // If this is a TU-generated ACK request,
             if( transactionRequest.getMethod().equals( Request.ACK ) ) {
@@ -402,13 +401,13 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
 	if (getState() == null) return;
 
 	// Ignore 1xx 
-	if (getState().getValue() == COMPLETED_STATE  && 
+	if ( TransactionState.COMPLETED== this.getState()  && 
 		transactionResponse.getStatusCode()/100 == 1) return;
 
 	if (parentStack.logWriter.needsLogging) 
 	    parentStack.logWriter.logMessage("processing " + 
 	    transactionResponse.getFirstLine() + "current state = " 
-	   + getState().getValue());
+	   + getState());
 
         this.lastResponse = transactionResponse;
 
@@ -484,10 +483,13 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
 	    // The original request is not needed except for INVITE
 	    // transactions -- null the pointers to the transactions so
 	    // that state may be released.
-	    if (getState().getValue() == COMPLETED_STATE &&  
+	    if (   TransactionState.COMPLETED == this.getState() &&  
 		    this.originalRequest != null &&
 		    ! this.originalRequest.getMethod().equals(Request.INVITE)) {
 		    // reduce the state to minimum
+		    // This assumes that the application will not need
+		    // to access the request once the transaction is 
+		    // completed. 
 		    this.lastRequest = null;
 		    this.originalRequest = null;
 		    this.lastResponse = null;
@@ -552,9 +554,8 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
     SIPResponse transactionResponse,
     MessageChannel sourceChannel)
     throws IOException, SIPServerException  {
-        int currentState = getState().getValue();
         int statusCode = transactionResponse.getStatusCode();
-        if (currentState == TRYING_STATE) {
+        if ( TransactionState.TRYING == this.getState() ) {
             if (statusCode / 100 == 1) {
                 setState(PROCEEDING_STATE);
                 enableRetransmissionTimer
@@ -573,7 +574,7 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
                     setState(TERMINATED_STATE);
                 }
             }
-        } else  if (currentState == PROCEEDING_STATE ) { 
+        } else  if ( TransactionState.PROCEEDING == this.getState()  ) { 
 	  // Bug fixes by Emil Ivov
 	  if ( statusCode / 100 == 1) {
 	    respondTo.processResponse(transactionResponse,this);
@@ -648,11 +649,10 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
     SIPResponse transactionResponse,
     MessageChannel sourceChannel) throws IOException, SIPServerException {
         int statusCode = transactionResponse.getStatusCode();
-        int currentState = getState().getValue();
-        if (currentState == TERMINATED_STATE) {
+        if ( TransactionState.TERMINATED == this.getState() ) {
             // Do nothing in the terminated state.
             return;
-        } else if (currentState == CALLING_STATE )  {
+        } else if ( TransactionState.CALLING  == this.getState() )  {
             if (statusCode/100 == 2) {
 	        // 200 responses are always seen by TU.
                 respondTo.processResponse( transactionResponse, this );
@@ -690,7 +690,7 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
                     setState(TERMINATED_STATE);
                 }
             }
-        } else if (currentState == PROCEEDING_STATE) {
+        } else if ( TransactionState.PROCEEDING == this.getState() ) {
 	    if (statusCode / 100 == 1) {
                 respondTo.processResponse( transactionResponse, this);
             } else if (statusCode / 100 == 2) {
@@ -712,7 +712,7 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
                     setState(TERMINATED_STATE);
                 }
             }
-        } else if (currentState == COMPLETED_STATE) {
+        } else if (TransactionState.COMPLETED == this.getState() ) {
             if (300 <= statusCode  &&  statusCode <= 699) {
                 // Send back an ACK request
 		try {
@@ -770,8 +770,8 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
         try {
              // Resend the last request sent
 	     if ( this.getState() == null || ! this.isMapped ) return;
-	     if ( this.getState().getValue()    == CALLING_STATE  ||
-		 this.getState().getValue()    == TRYING_STATE ) {
+	     if ( TransactionState.CALLING == this.getState()   ||
+		  TransactionState.TRYING  == this.getState()  ) {
 		 // If the retransmission filter is disabled then
 		 // retransmission of the INVITE is the application
 		 // responsibility.
@@ -805,9 +805,9 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
 		("fireTimeoutTimer " + this);
         
          DialogImpl dialogImpl = (DialogImpl) this.getDialog();
-         if( getState().getValue() == CALLING_STATE ||
-            getState().getValue() == TRYING_STATE   ||
-            getState().getValue() == PROCEEDING_STATE ) {
+         if( TransactionState.CALLING  == this.getState()   ||
+             TransactionState.TRYING  == this.getState()    ||
+             TransactionState.PROCEEDING  == this.getState() ) {
             // Timeout occured. If this is asociated with a transaction
             // creation then kill the dialog.
 	    if (dialogImpl != null) {
@@ -822,7 +822,7 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
               }
 	    }
         }
-        if ( getState().getValue() != COMPLETED_STATE ) {
+        if ( TransactionState.COMPLETED  != this.getState() ) {
             raiseErrorEvent(SIPTransactionErrorEvent.TIMEOUT_ERROR);
         } else {
             setState(TERMINATED_STATE);
