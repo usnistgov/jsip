@@ -24,7 +24,7 @@ import java.text.ParseException;
  * retrieve this structure from the SipStack. Bugs against route set 
  * management were reported by Antonis Karydas and Brad Templeton.
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2004-02-03 15:43:48 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2004-02-03 16:31:50 $
  *
  *@author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -1023,14 +1023,18 @@ public class DialogImpl implements javax.sip.Dialog {
 	 * @throws SipException if the Dialog is not yet established.
 	 */
 	public Request createRequest(String method) throws SipException {
-		// Set the dialog back pointer.
+		// Check if the dialog is in the right state (RFC 3261 section 15).
+		// The caller's UA MAY send a BYE for either
+                // CONFIRMED or EARLY dialogs, and the callee's UA MAY send a BYE on
+        	// CONFIRMED dialogs, but MUST NOT send a BYE on EARLY dialogs.
 		if (method == null)
 			throw new NullPointerException("null method");
 		else if (
 			this.getState() == null
 				|| (this.getState().getValue() == TERMINATED_STATE
 					&& !method.equalsIgnoreCase(Request.BYE))
-				|| (this.getState().getValue() == EARLY_STATE 
+				|| (this.isServer() &&
+				        this.getState().getValue() == EARLY_STATE 
 					&& method.equalsIgnoreCase(Request.BYE)))
 			throw new SipException(
 				"Dialog  "
@@ -1178,7 +1182,8 @@ public class DialogImpl implements javax.sip.Dialog {
 			throw new SipException("Bad dialog state " + this.getState());
 
 		}
-		if (dialogRequest.getMethod().equalsIgnoreCase(Request.BYE)
+		if (this.isServer() &&
+			dialogRequest.getMethod().equalsIgnoreCase(Request.BYE)
 			&& this.getState().getValue() == EARLY_STATE) {
 			throw new SipException("Bad dialog state " + this.getState());
 		}
@@ -1423,6 +1428,10 @@ public class DialogImpl implements javax.sip.Dialog {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2004/02/03 15:43:48  mranga
+ * Reviewed by:   mranga
+ * check for dialog state when creating bye request.
+ *
  * Revision 1.15  2004/01/27 15:11:06  mranga
  * Submitted by:  jeand
  * Reviewed by:   mranga
