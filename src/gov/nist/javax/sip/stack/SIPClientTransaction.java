@@ -123,7 +123,7 @@ import java.io.IOException;
  * @author Bug fixes by Emil Ivov. <a href=" {@docRoot}/uncopyright.html">This
  *         code is in the public domain. </a>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.41 $ $Date: 2004-10-28 19:02:51 $
+ * @version JAIN-SIP-1.1 $Revision: 1.42 $ $Date: 2004-10-31 02:19:07 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
         ServerResponseInterface, javax.sip.ClientTransaction, PendingRecord {
@@ -305,23 +305,12 @@ public class SIPClientTransaction extends SIPTransaction implements
                 && getBranch().startsWith(SIPConstants.BRANCH_MAGIC_COOKIE)
                 && messageBranch.startsWith(SIPConstants.BRANCH_MAGIC_COOKIE);
 
-        /**
-         * if (parentStack.logWriter.needsLogging) {
-         * sipStack.logWriter.logMessage("--------- TEST ------------");
-         * sipStack.logWriter.logMessage(" testing " +
-         * this.getOriginalRequest()); sipStack.logWriter.logMessage("Against " +
-         * messageToTest); sipStack.logWriter.logMessage("isTerminated = " +
-         * isTerminated()); sipStack.logWriter.logMessage("messageBranch = " +
-         * messageBranch); sipStack.logWriter.logMessage("viaList = " +
-         * messageToTest.getViaHeaders());
-         * sipStack.logWriter.logMessage("myBranch = " + getBranch()); }
-         */
 
         transactionMatches = false;
         if (TransactionState.COMPLETED == this.getState()) {
             if (rfc3261Compliant) {
-                transactionMatches = getBranch().equals(
-                        ((Via) viaHeaders.getFirst()).getBranch());
+                transactionMatches = getBranch().equals(((Via) viaHeaders.getFirst()).getBranch()) &&
+				getMethod().equals (messageToTest.getCSeq().getMethod());
             } else {
                 transactionMatches = getBranch().equals(
                         messageToTest.getTransactionId());
@@ -333,7 +322,8 @@ public class SIPClientTransaction extends SIPTransaction implements
                     //same as this transaction and the method is the same,
                     if (getBranch().equals(
                             ((Via) viaHeaders.getFirst()).getBranch())) {
-                        transactionMatches = getOriginalRequest().getCSeq()
+                        transactionMatches = 
+				getOriginalRequest().getCSeq()
                                 .getMethod().equals(
                                         messageToTest.getCSeq().getMethod());
 
@@ -1161,6 +1151,12 @@ public class SIPClientTransaction extends SIPTransaction implements
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.41  2004/10/28 19:02:51  mranga
+ * Submitted by:  Daniel Martinez
+ * Reviewed by:   M. Ranganathan
+ *
+ * Added changes for TLS support contributed by Daniel Martinez
+ *
  * Revision 1.40  2004/10/05 16:22:38  mranga
  * Issue number:
  * Obtained from:

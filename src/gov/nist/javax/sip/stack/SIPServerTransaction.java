@@ -118,7 +118,7 @@ import java.util.LinkedList;
  * 
  * </pre>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.49 $ $Date: 2004-10-28 19:02:51 $
+ * @version JAIN-SIP-1.1 $Revision: 1.50 $ $Date: 2004-10-31 02:19:08 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
  * @author Bug fixes by Emil Ivov, Antonis Karydas, Daniel Martinez.
@@ -318,15 +318,6 @@ public class SIPServerTransaction extends SIPTransaction implements
         boolean transactionMatches;
 
         transactionMatches = false;
-        /**
-         * if (LogWriter.needsLogging) {
-         * sipStack.logWriter.logMessage("--------- TEST ------------");
-         * sipStack.logWriter.logMessage( " testing " +
-         * this.getOriginalRequest().encodeMessage());
-         * sipStack.logWriter.logMessage("Against " +
-         * messageToTest.encodeMessage()); sipStack.logWriter.logMessage(
-         * "isTerminated = " + isTerminated()); }
-         */
 
         // Compensation for retransmits after OK has been dispatched
         // as suggested by Antonis Karydas. Cancel Processing is
@@ -1181,6 +1172,12 @@ public class SIPServerTransaction extends SIPTransaction implements
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.49  2004/10/28 19:02:51  mranga
+ * Submitted by:  Daniel Martinez
+ * Reviewed by:   M. Ranganathan
+ *
+ * Added changes for TLS support contributed by Daniel Martinez
+ *
  * Revision 1.48  2004/10/06 18:56:07  mranga
  * *** empty log message ***
  *
