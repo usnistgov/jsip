@@ -23,7 +23,7 @@ import java.util.*;
  * object that creates new TCP MessageChannels (one for each new
  * accept socket).  
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.12 $ $Date: 2004-03-25 15:15:05 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2004-03-25 18:08:15 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Acknowledgement: Jeff Keyser suggested that a
@@ -273,17 +273,20 @@ public class TCPMessageProcessor extends MessageProcessor {
 		}
 	}
 
+
 	protected synchronized  void cacheMessageChannel 
 		(TCPMessageChannel messageChannel) {
 		String key = messageChannel.getKey();
-		if (this.tcpMessageChannels.get(key) == null) {
-		    if (LogWriter.needsLogging) 
-			sipStack.logWriter.logMessage("Caching " + key);
-		    this.tcpMessageChannels.put(key,messageChannel);
-		}  else {
-			sipStack.logWriter.logMessage("Already Cached " + key);
-			new Exception().printStackTrace();
+		TCPMessageChannel currentChannel = 
+			(TCPMessageChannel) tcpMessageChannels.get(key);
+		if (currentChannel != null)  {
+		        if (LogWriter.needsLogging) 
+				sipStack.logWriter.logMessage("Closing " + key);
+			currentChannel.close();
 		}
+		if (LogWriter.needsLogging) 
+			sipStack.logWriter.logMessage("Caching " + key);
+	        this.tcpMessageChannels.put(key,messageChannel);
 
 	}
 
@@ -353,6 +356,10 @@ public class TCPMessageProcessor extends MessageProcessor {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/03/25 15:15:05  mranga
+ * Reviewed by:   mranga
+ * option to log message content added.
+ *
  * Revision 1.11  2004/03/19 23:41:30  mranga
  * Reviewed by:   mranga
  * Fixed connection and thread caching.
