@@ -120,7 +120,7 @@ import sim.java.*;
  *@author Bug fixes by Emil Ivov.
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2004-01-25 16:06:24 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2004-02-13 13:55:32 $
  */
 public class SIPClientTransaction
 	extends SIPTransaction
@@ -764,7 +764,7 @@ public class SIPClientTransaction
 		if (LogWriter.needsLogging)
 			parentStack.logWriter.logMessage("fireTimeoutTimer " + this);
 
-		DialogImpl dialogImpl = (DialogImpl) this.getDialog();
+		DialogImpl dialogImpl =  this.dialog;
 		if (TransactionState.CALLING == this.getState()
 			|| TransactionState.TRYING == this.getState()
 			|| TransactionState.PROCEEDING == this.getState()) {
@@ -938,6 +938,12 @@ public class SIPClientTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2004/01/25 16:06:24  mranga
+ * Reviewed by:   M. Ranganathan
+ *
+ * Clean up setting state (Use TransactionState instead of integer). Convert to UNIX file format.
+ * Remove extraneous methods.
+ *
  * Revision 1.15  2004/01/23 18:26:10  mranga
  * Reviewed by:   M. Ranganathan
  * Check for presence of contact header when creating ACK for a transaction.
