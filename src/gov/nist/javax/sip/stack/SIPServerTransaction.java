@@ -114,7 +114,7 @@ import java.util.TimerTask;
  *
  *</pre>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.31 $ $Date: 2004-05-18 15:26:44 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.32 $ $Date: 2004-05-20 13:59:23 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
  * @author Bug fixes by Emil Ivov, Antonis Karydas.
@@ -600,7 +600,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
             getOriginalRequest().getMethod())) {
                 if (statusCode / 100 == 2) {
                     this.dialog.setState(DialogImpl.CONFIRMED_STATE);
-                } else if (statusCode / 100 >= 3 && statusCode / 100 <= 6) {
+                } else if (statusCode >= 300 && statusCode  <= 699) {
                     this.dialog.setState(DialogImpl.TERMINATED_STATE);
                 }
             } else if ( transactionResponse.getCSeq().getMethod().equals(Request.BYE)
@@ -1017,6 +1017,11 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.31  2004/05/18 15:26:44  mranga
+ * Reviewed by:   mranga
+ * Attempted fix at race condition bug. Remove redundant exception (never thrown).
+ * Clean up some extraneous junk.
+ *
  * Revision 1.30  2004/05/14 20:20:03  mranga
  *
  * Submitted by:  Dave Stuart
