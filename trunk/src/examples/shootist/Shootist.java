@@ -140,7 +140,7 @@ public class Shootist implements SipListener {
         "examples.shootist.MyRouter");
         properties.setProperty("javax.sip.STACK_NAME",
         "shootist");
-        //properties.setProperty("javax.sip.RETRANSMISSION_FILTER", "true");
+        properties.setProperty("javax.sip.RETRANSMISSION_FILTER", "true");
         properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
 		"shootistdebug.txt");
         properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
