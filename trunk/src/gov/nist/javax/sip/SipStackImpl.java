@@ -402,7 +402,12 @@ implements javax.sip.SipStack {
             throw new ObjectInUseException("Provider in use");
         }
         sipProviderImpl.sipListener = null;
+	//Bug reported by Rafael Barriuso
+	sipProviderImpl.stop();
         sipProviders.remove(sipProvider);
+	if (sipProviders.isEmpty()) {
+	    this.stopStack();
+	}
     }
     
     /** Gets the IP Address that identifies this SipStack instance. Every Sip
