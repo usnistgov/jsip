@@ -174,15 +174,18 @@ class IOHandler {
 	    (OutputStream outputStream, byte[] bytes, int length) 
 		throws IOException {
 		// Chunk size is 16K - does chunking buy you anything?
-		int chunksize = 16*1024;
 		synchronized(outputStream) {
+		    outputStream.write(bytes,0,length);
+		/**
+		    int chunksize = 16*1024;
 		   for (int p = 0; p < length; p += chunksize )  {
 			int chunk = 
 				p + chunksize < length? chunksize: length - p;
 			outputStream.write(bytes, p, chunk);
-		        outputStream.flush();
 		   }
+		 **/
 		}
+	        outputStream.flush();
 	}
 
 
@@ -324,6 +327,10 @@ class IOHandler {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2004/03/22 12:53:36  mranga
+ * Reviewed by:   mranga
+ * Add back synchronization on output stream for writes.
+ *
  * Revision 1.14  2004/03/19 23:41:30  mranga
  * Reviewed by:   mranga
  * Fixed connection and thread caching.
