@@ -20,7 +20,7 @@ import java.text.ParseException;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  *
- * @version JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2004-02-29 00:46:33 $
+ * @version JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2004-03-01 12:37:27 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -1268,8 +1268,10 @@ public abstract class SIPMessage
 		this.messageContent = messageContent;
 		this.messageContentBytes = null;
 		this.messageContentObject = null;
+		// Could be  double byte so we need to compute length
+		// after converting to byte[]
 		try {
-			this.contentLengthHeader.setContentLength(messageContent.length());
+			this.contentLengthHeader.setContentLength(messageContent.getBytes().length);
 		} catch (InvalidArgumentException ex) {
 		}
 
@@ -1355,7 +1357,9 @@ public abstract class SIPMessage
 	 * @param content Message body as a string.
 	 */
 	public void setMessageContent(String content) {
-		int clength = (content == null ? 0 : content.length());
+		// Note that that this could be a double byte character
+		// set - bug report by Masafumi Watanabe
+		int clength = (content == null ? 0 : content.getBytes().length);
 		try {
 			this.contentLengthHeader.setContentLength(clength);
 		} catch (InvalidArgumentException ex) {
@@ -1728,6 +1732,11 @@ public abstract class SIPMessage
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/02/29 00:46:33  mranga
+ * Reviewed by:   mranga
+ * Added new configuration property to limit max message size for TCP transport.
+ * The property is gov.nist.javax.sip.MAX_MESSAGE_SIZE
+ *
  * Revision 1.5  2004/02/18 14:33:02  mranga
  * Submitted by:  Bruno Konik
  * Reviewed by:   mranga
