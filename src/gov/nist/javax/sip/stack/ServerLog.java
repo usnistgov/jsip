@@ -25,7 +25,7 @@ import sim.java.*;
  * later access via RMI. The trace can be viewed with a trace viewer (see
  * tools.traceviewerapp).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.10 $ $Date: 2004-03-25 16:37:01 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.11 $ $Date: 2004-04-16 16:04:35 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -125,8 +125,11 @@ public class ServerLog {
 	protected int traceLevel = TRACE_MESSAGES;
 
 	public void checkLogFile() {
-		if (logFileName == null)
+		if (logFileName == null || traceLevel < TRACE_MESSAGES) {
+			// Dont create a log file if tracing is
+			// disabled.
 			return;
+		}
 		try {
 			File logFile = new File(logFileName);
 			if (!logFile.exists()) {
@@ -681,6 +684,10 @@ public class ServerLog {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/03/25 16:37:01  mranga
+ * Reviewed by:   mranga
+ * Fix up for logging messages.
+ *
  * Revision 1.9  2004/03/25 15:15:05  mranga
  * Reviewed by:   mranga
  * option to log message content added.
