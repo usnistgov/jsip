@@ -377,6 +377,11 @@ public class SdpFactory extends Object {
             mediaImpl.setPortCount(numPorts);
             mediaImpl.setProtocol(transport);
             mediaDescriptionImpl.setMedia(mediaImpl);
+	    // Bug fix contributed by Paloma Ortega.
+	    Vector payload=new Vector();
+ 	    for (int i=0;i<staticRtpAvpTypes.length;i++)
+   		payload.add(new Integer(staticRtpAvpTypes[i]).toString());
+ 	    mediaImpl.setMediaFormats(payload);
             return mediaDescriptionImpl;                                     
     }
     
