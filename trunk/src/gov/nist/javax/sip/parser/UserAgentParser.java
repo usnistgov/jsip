@@ -6,7 +6,7 @@ import java.text.ParseException;
 /**
  * Parser for UserAgent header.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2004-01-27 13:52:11 $
+ * @version JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2004-01-30 17:10:47 $
  *
  * @author Olivier Deruelle <deruelle@nist.gov>  <br/>
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
@@ -62,7 +62,7 @@ public class UserAgentParser extends HeaderParser {
 						userAgent.addProductToken(tok);
 					} catch (ParseException ex) {
 						this.lexer.rewindInputPosition(marker);
-						tok = this.lexer.getRest();
+						tok = this.lexer.getRest().trim();
 						userAgent.addProductToken(tok);
 						break;
 					}
@@ -97,6 +97,11 @@ public class UserAgentParser extends HeaderParser {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/01/27 13:52:11  mranga
+ * Reviewed by:   mranga
+ * Fixed server/user-agent parser.
+ * suppress sending ack to TU when retransFilter is enabled and ack is retransmitted.
+ *
  * Revision 1.5  2004/01/22 13:26:32  sverker
  * Issue number:
  * Obtained from:
