@@ -175,6 +175,11 @@ class IOHandler {
 		int max_retry = retry ? 2 : 1;
 		// Server uses TCP transport. TCP client sockets are cached
 		int length = bytes.length;
+		if (sipStack.logWriter.needsLogging)  {
+			sipStack.logWriter.logMessage
+			("sendBytes " + transport + " inAddr " + inaddr.getHostAddress() +
+				" port = " + contactPort  +  " length = " + length );
+		}
 		if (transport.compareToIgnoreCase(TCP) == 0) {
 			String key = makeKey(inaddr, contactPort);
 			Socket clientSock = getSocket(key);
@@ -186,20 +191,20 @@ class IOHandler {
 					}
 					clientSock = new Socket(inaddr, contactPort);
 					OutputStream outputStream = clientSock.getOutputStream();
-					synchronized (outputStream) {
+					//synchronized (outputStream) {
 						outputStream.write(bytes, 0, length);
 						outputStream.flush();
-					}
+					//}
 					putSocket(key, clientSock);
 					break;
 				} else {
 					try {
 						OutputStream outputStream =
 							clientSock.getOutputStream();
-						synchronized (outputStream) {
+						//synchronized (outputStream) {
 							outputStream.write(bytes, 0, length);
 							outputStream.flush();
-						}
+						//}
 						break;
 					} catch (IOException ex) {
 						if (LogWriter.needsLogging)
@@ -300,6 +305,10 @@ class IOHandler {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/01/22 18:39:41  mranga
+ * Reviewed by:   M. Ranganathan
+ * Moved the ifdef SIMULATION and associated tags to the first column so Prep preprocessor can deal with them.
+ *
  * Revision 1.9  2004/01/22 13:26:33  sverker
  * Issue number:
  * Obtained from:

@@ -120,7 +120,7 @@ import sim.java.*;
  *@author Bug fixes by Emil Ivov.
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.18 $ $Date: 2004-02-24 22:39:34 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.19 $ $Date: 2004-03-07 22:25:24 $
  */
 public class SIPClientTransaction
 	extends SIPTransaction
@@ -310,7 +310,6 @@ public class SIPClientTransaction
 
 			// Send the message to the server
 			lastRequest = transactionRequest;
-			getMessageChannel().sendMessage(transactionRequest);
 			if (getState() == null) {
 				// Save this request as the one this transaction
 				// is handling
@@ -334,6 +333,8 @@ public class SIPClientTransaction
 					enableTimeoutTimer(TIMER_F);
 				}
 			}
+			// Set state first to avoid race condition..
+			getMessageChannel().sendMessage(transactionRequest);
 
 		} catch (IOException e) {
 
@@ -944,6 +945,11 @@ public class SIPClientTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2004/02/24 22:39:34  mranga
+ * Reviewed by:   mranga
+ * Only terminate the client side dialog when the bye Terminates or times out
+ * and not when the bye is initially sent out.
+ *
  * Revision 1.17  2004/02/13 13:55:32  mranga
  * Reviewed by:   mranga
  * per the spec, Transactions must always have a valid dialog pointer. Assigned a dummy dialog for transactions that are not assigned to any dialog (such as Message).

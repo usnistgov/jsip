@@ -26,6 +26,7 @@ public class Shootist implements SipListener {
 	private static HeaderFactory headerFactory;
 	private static SipStack sipStack;
 	private int reInviteCount;
+	private ContactHeader contactHeader;
 
 	protected ClientTransaction inviteTid;
 
@@ -126,6 +127,7 @@ public class Shootist implements SipListener {
 				if (reInviteCount == 0) {
 				    Request inviteRequest = 
 					dialog.createRequest(Request.INVITE);
+				    inviteRequest.addHeader(contactHeader);
 				    try {Thread.sleep(100); } catch (Exception ex) {} 
 				    ClientTransaction ct = 
 					sipProvider.getNewClientTransaction(inviteRequest);
@@ -311,7 +313,7 @@ public class Shootist implements SipListener {
 			// Add the contact address.
 			contactAddress.setDisplayName(fromName);
 
-			ContactHeader contactHeader =
+			contactHeader =
 				headerFactory.createContactHeader(contactAddress);
 			request.addHeader(contactHeader);
 
@@ -376,6 +378,10 @@ public class Shootist implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2004/03/05 20:36:54  mranga
+ * Reviewed by:   mranga
+ * put in some debug printfs and cleaned some things up.
+ *
  * Revision 1.16  2004/02/26 14:28:50  mranga
  * Reviewed by:   mranga
  * Moved some code around (no functional change) so that dialog state is set

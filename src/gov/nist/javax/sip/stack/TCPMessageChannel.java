@@ -33,7 +33,7 @@ import sim.java.net.*;
  * Niklas Uhrberg suggested that a mechanism be added to limit the number
  * of simultaneous open connections.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.12 $ $Date: 2004-03-05 20:36:55 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2004-03-07 22:25:25 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public final class TCPMessageChannel
@@ -71,6 +71,8 @@ public final class TCPMessageChannel
 
 	private String peerProtocol;
 
+	protected boolean acceptedConnection;
+
 	private TCPMessageProcessor tcpMessageProcessor;
 
 	/**
@@ -98,6 +100,7 @@ public final class TCPMessageChannel
 			"creating new TCPMessageChannel ");
 			sipStack.logWriter.logStackTrace();
 		}
+		this.acceptedConnection  = true;
 		mySock = sock;
 		myAddress = sipStack.getHostAddress();
 		myClientInputStream = mySock.getInputStream();
@@ -110,6 +113,7 @@ public final class TCPMessageChannel
 		this.myPort = this.tcpMessageProcessor.getPort();
 		// Bug report by Vishwashanti Raj Kadiayl 
 		super.messageProcessor = msgProcessor;
+		// Can drop this after response is sent potentially.
 		mythread.start();
 	}
 //else
@@ -179,7 +183,13 @@ public final class TCPMessageChannel
  	public void close() {
 		try {
 			mySock.close();
+			if (LogWriter.needsLogging)
+				stack.logWriter.logMessage
+				("Closing message Channel " + this);
 		} catch (IOException ex) {
+			if (LogWriter.needsLogging)
+				stack.logWriter.logMessage
+				("Error closing socket " + ex);
 		}
 	}
 
@@ -251,9 +261,14 @@ public final class TCPMessageChannel
 			mySock = sock;
 			this.myClientInputStream = mySock.getInputStream();
 			this.myClientOutputStream = mySock.getOutputStream();
-			Thread thread = new Thread(this);
+		    	Thread thread = new Thread(this);
 			thread.start();
 		}
+		if ( retry ) {
+			// sending out a request so this is not accepted connection.
+			this.acceptedConnection = false;
+		}
+
 	}
 //else
 /*
@@ -358,6 +373,9 @@ public final class TCPMessageChannel
 
 			mythread.start();
 		}
+
+		// Sending out a request - treated like an outgoing connection.
+		if ( retry ) this.acceptedConnection = false;
 	}
 
 	/**
@@ -766,6 +784,10 @@ public final class TCPMessageChannel
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/03/05 20:36:55  mranga
+ * Reviewed by:   mranga
+ * put in some debug printfs and cleaned some things up.
+ *
  * Revision 1.11  2004/02/29 15:32:59  mranga
  * Reviewed by:   mranga
  * bug fixes on limiting the max message size.
