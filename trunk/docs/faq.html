@@ -160,6 +160,24 @@ Router and use that to send the request. If you use dialog.sendRequest,
 the next hop is obtained from the Dialog route set if one exists.
 </li>
 
+<li> How do I communicate with the Router from the application? </br>
+This issue may arise when you want to use Loose or Strict routing. Only
+the Application knows whether to use Loose or Strict Routing but the Router
+needs to decide the Next Hops. Thus we need to communicate with the router.
+Currently, it is a bit hacky. Use an extension header and place it in the
+Request then examine it in the Router. For example, use a header like
+IS-STRICT-ROUTE which the router will see as an extension header and strip 
+off before deciding the next hop set.
+</li>
+
+<li> How are IO Exceptions reported to the Application? </br>
+This case arises when using RETRANSMISSION FILTER.
+Currently, IOExceptions will be reported to the application as a TIMEOUT
+Event. This may change in the next revision where an explicit IOException 
+Event may be included in the architecture to avoid overloading the semantics
+of a TIMEOUT event.
+</br>
+
 
 </ul>
 
@@ -178,8 +196,8 @@ Sub-committee on SIP and other signaling protocols (or cat them 3 times
 to dev/null if you prefer).
 </li>
 
-<li>Are you selling/buying something? <br/>
-No - just making something. 
+<li>Are you selling or buying something? <br/>
+No and No - just making something. 
 </li>
 
 <li> Do you control government policy/procurement/purchasing? <br/> 
@@ -191,6 +209,7 @@ more the story of why we feel the need for great gods who fight for
 justice in a world where justice seems another commodity to be bought and 
 sold." [dvd review] 
 </li>
+
 
 </ul>
 
