@@ -73,7 +73,7 @@ public class AddressFactoryTest  extends FactoryTestHarness {
         TelURL telUrl = null;
         try {
             String phoneNumber = tiTelURL.getPhoneNumber();
-            telUrl =  tiAddressFactory.createTelURL(phoneNumber);
+            telUrl =  riAddressFactory.createTelURL(phoneNumber);
             telUrl.setGlobal(tiTelURL.isGlobal());
         } catch (Exception ex) {
             throw new TiUnexpectedError(ex.getMessage());
