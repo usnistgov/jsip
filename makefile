@@ -154,7 +154,7 @@ jarfile:
 
 
 # A single jar that has everything.
-sipsdpjar: classfiles
+sipsdpjar: 
 	$(RM) sip-sdp.jar
 	cd classes;	\
 	$(JAR) -cvf ../sip-sdp.jar  ./gov ./javax 
