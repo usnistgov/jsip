@@ -397,6 +397,10 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
 //
 
 	    "normal processing");
+	// If the state has not yet been assigned then this is a
+	// spurious response.
+	if (getState() == null) return;
+
 	// Ignore 1xx 
 	if (getState().getValue() == COMPLETED_STATE  && 
 		transactionResponse.getStatusCode()/100 == 1) return;
