@@ -227,7 +227,7 @@ lookup was added based on their suggestions.
 <li>Alex Rootham from Blue Slice noticed that out of sequence messages
 directed to a Dialog should be responded to with a 500 (Internal Server
 Error) by a UAS.  This is decidedly strange but the spec does say so. This
-support was added to the stack.
+support was added to the dialog layer of the stack.
 
 <li>Bruce Evangelder from Soleo communications found a race condition
 with the UDP message processor.
@@ -255,6 +255,10 @@ in the MessageHandler that was removed.
 
 <li> Hagai Sela added support for symmetric NAT (rport parameter handling
  in via header). </li>
+
+<li> Rob Daugherty (Lucent) detected a bug in handling of TCP messages
+and contributed a fix for this. </li>
+
 
 </ul>
 
