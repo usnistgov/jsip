@@ -120,7 +120,7 @@ import sim.java.*;
  *@author Bug fixes by Emil Ivov.
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.15 $ $Date: 2004-01-23 18:26:10 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2004-01-25 16:06:24 $
  */
 public class SIPClientTransaction
 	extends SIPTransaction
@@ -296,9 +296,9 @@ public class SIPClientTransaction
 				// transport and close this transaction
 				// Bug fix by Emil Ivov
 				if (isReliable()) {
-					setState(TERMINATED_STATE);
+					this.setState(TransactionState.TERMINATED);
 				} else {
-					setState(COMPLETED_STATE);
+					this.setState(TransactionState.COMPLETED);
 				}
 				getMessageChannel().sendMessage(transactionRequest);
 				return;
@@ -317,13 +317,13 @@ public class SIPClientTransaction
 				setOriginalRequest(transactionRequest);
 				// Change to trying/calling state
 				if (transactionRequest.getMethod().equals(Request.INVITE)) {
-					setState(CALLING_STATE);
+					this.setState(TransactionState.CALLING);
 				} else if (
 					transactionRequest.getMethod().equals(Request.ACK)) {
 					// Acks are never retransmitted.
-					setState(TERMINATED_STATE);
+					this.setState(TransactionState.TERMINATED);
 				} else {
-					setState(TRYING_STATE);
+					this.setState(TransactionState.TRYING);
 				}
 				if (!isReliable()) {
 					enableRetransmissionTimer();
@@ -337,7 +337,7 @@ public class SIPClientTransaction
 
 		} catch (IOException e) {
 
-			setState(TERMINATED_STATE);
+			this.setState(TransactionState.TERMINATED);
 			throw e;
 
 		}
@@ -462,7 +462,7 @@ public class SIPClientTransaction
 			else
 				nonInviteClientTransaction(transactionResponse, sourceChannel);
 		} catch (IOException ex) {
-			setState(TERMINATED_STATE);
+			this.setState(TransactionState.TERMINATED);
 			raiseErrorEvent(SIPTransactionErrorEvent.TRANSPORT_ERROR);
 		}
 	}
@@ -523,7 +523,7 @@ public class SIPClientTransaction
 		int statusCode = transactionResponse.getStatusCode();
 		if (TransactionState.TRYING == this.getState()) {
 			if (statusCode / 100 == 1) {
-				setState(PROCEEDING_STATE);
+				this.setState(TransactionState.PROCEEDING);
 				enableRetransmissionTimer(MAXIMUM_RETRANSMISSION_TICK_COUNT);
 				enableTimeoutTimer(TIMER_F);
 				// According to RFC, the TU has to be informed on 
@@ -533,10 +533,10 @@ public class SIPClientTransaction
 				// Send the response up to the TU.
 				respondTo.processResponse(transactionResponse, this);
 				if (!isReliable()) {
-					setState(COMPLETED_STATE);
+					this.setState(TransactionState.COMPLETED);
 					enableTimeoutTimer(TIMER_K);
 				} else {
-					setState(TERMINATED_STATE);
+					this.setState(TransactionState.TERMINATED);
 				}
 			}
 		} else if (TransactionState.PROCEEDING == this.getState()) {
@@ -548,10 +548,10 @@ public class SIPClientTransaction
 				disableRetransmissionTimer();
 				disableTimeoutTimer();
 				if (!isReliable()) {
-					setState(COMPLETED_STATE);
+					this.setState(TransactionState.COMPLETED);
 					enableTimeoutTimer(TIMER_K);
 				} else {
-					setState(TERMINATED_STATE);
+					this.setState(TransactionState.TERMINATED);
 				}
 			}
 		} else {
@@ -622,12 +622,12 @@ public class SIPClientTransaction
 				respondTo.processResponse(transactionResponse, this);
 				disableRetransmissionTimer();
 				disableTimeoutTimer();
-				setState(TERMINATED_STATE);
+				this.setState(TransactionState.TERMINATED);
 			} else if (statusCode / 100 == 1) {
 				disableRetransmissionTimer();
 				disableTimeoutTimer();
 				respondTo.processResponse(transactionResponse, this);
-				setState(PROCEEDING_STATE);
+				this.setState(TransactionState.PROCEEDING);
 			} else if (300 <= statusCode && statusCode <= 699) {
 				// Send back an ACK request (do this before calling the
 				// application (bug noticed by Andreas Bystrom).
@@ -647,18 +647,18 @@ public class SIPClientTransaction
 				respondTo.processResponse(transactionResponse, this);
 
 				if (!isReliable()) {
-					setState(COMPLETED_STATE);
+					this.setState(TransactionState.COMPLETED);
 					enableTimeoutTimer(TIMER_D);
 				} else {
 					//Proceed immediately to the TERMINATED state.
-					setState(TERMINATED_STATE);
+					this.setState(TransactionState.TERMINATED);
 				}
 			}
 		} else if (TransactionState.PROCEEDING == this.getState()) {
 			if (statusCode / 100 == 1) {
 				respondTo.processResponse(transactionResponse, this);
 			} else if (statusCode / 100 == 2) {
-				setState(TERMINATED_STATE);
+				this.setState(TransactionState.TERMINATED);
 				respondTo.processResponse(transactionResponse, this);
 			} else if (300 <= statusCode && statusCode <= 699) {
 				// Send back an ACK request
@@ -670,10 +670,10 @@ public class SIPClientTransaction
 				// Pass up to the TU for processing.
 				respondTo.processResponse(transactionResponse, this);
 				if (!isReliable()) {
-					setState(COMPLETED_STATE);
+					this.setState(TransactionState.COMPLETED);
 					enableTimeoutTimer(TIMER_D);
 				} else {
-					setState(TERMINATED_STATE);
+					this.setState(TransactionState.TERMINATED);
 				}
 			}
 		} else if (TransactionState.COMPLETED == this.getState()) {
@@ -750,7 +750,7 @@ public class SIPClientTransaction
 				}
 			}
 		} catch (IOException e) {
-			this.setState(TERMINATED_STATE);
+			this.setState(TransactionState.TERMINATED);
 			raiseErrorEvent(SIPTransactionErrorEvent.TRANSPORT_ERROR);
 		}
 
@@ -786,7 +786,7 @@ public class SIPClientTransaction
 		if (TransactionState.COMPLETED != this.getState()) {
 			raiseErrorEvent(SIPTransactionErrorEvent.TIMEOUT_ERROR);
 		} else {
-			setState(TERMINATED_STATE);
+			this.setState(TransactionState.TERMINATED);
 		}
 
 	}
@@ -889,16 +889,6 @@ public class SIPClientTransaction
 
 	}
 
-	/** Set the state.
-	 */
-
-	public void setState(int newState) {
-		super.setState(newState);
-		// Get rid of the transaction identifiers to reduce the 
-		// footprint of the stack.
-
-	}
-
 	/** Set the port of the recipient.
 	 */
 	protected void setViaPort(int port) {
@@ -948,6 +938,10 @@ public class SIPClientTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2004/01/23 18:26:10  mranga
+ * Reviewed by:   M. Ranganathan
+ * Check for presence of contact header when creating ACK for a transaction.
+ *
  * Revision 1.14  2004/01/22 20:15:32  mranga
  * Reviewed by:  mranga
  * Fixed a possible race condition in  nulling out the transaction Request (earlier added for scalability).

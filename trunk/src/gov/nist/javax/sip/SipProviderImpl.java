@@ -22,7 +22,7 @@ import sim.java.net.*;
 
 /** Implementation of the JAIN-SIP provider interface.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.14 $ $Date: 2004-01-22 20:15:32 $
+ * @version JAIN-SIP-1.1 $Revision: 1.15 $ $Date: 2004-01-25 16:06:24 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -242,7 +242,7 @@ public final class SipProviderImpl
 							SIPTransaction tr =
 								sipStack.findTransaction(sipRequest, true);
 							if (tr != null
-								&& tr.getState().getValue()
+								&& tr.getState()
 									== SIPTransaction.TERMINATED_STATE) {
 								// If transaction already exists but it is
 								// too late to cancel the transaction then 
@@ -875,6 +875,10 @@ public final class SipProviderImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/01/22 20:15:32  mranga
+ * Reviewed by:  mranga
+ * Fixed a possible race condition in  nulling out the transaction Request (earlier added for scalability).
+ *
  * Revision 1.13  2004/01/22 18:39:41  mranga
  * Reviewed by:   M. Ranganathan
  * Moved the ifdef SIMULATION and associated tags to the first column so Prep preprocessor can deal with them.
