@@ -345,9 +345,10 @@ extends SIPStack implements  SIPTransactionEventListener {
                     
                     // Check all server transactions
                     synchronized(serverTransactions) {
-                        transactionIterator =
-                        serverTransactions.iterator( );
-                        while( transactionIterator.hasNext( ) ) {
+		        if (serverTransactions.size() > 0 ) {
+                           transactionIterator =
+                           serverTransactions.iterator( );
+                          while( transactionIterator.hasNext( ) ) {
                             
                             nextTransaction =
                             (SIPTransaction)
@@ -371,28 +372,24 @@ extends SIPStack implements  SIPTransactionEventListener {
 				}
                                 // If this transaction has not
                                 //terminated,
-                            } else {
+                             } else {
                                 // Add to the fire list -- needs to be moved
                                 // outside the synchronized block to prevent
                                 // deadlock.
-				/**
-				System.out.println("state = " +
-					nextTransaction.getState() + "/" +
-					nextTransaction.getOriginalRequest().
-					getMethod());
-				**/
                                 fireList.add(nextTransaction);
                                 
                             }
                             
-                        }
+                          }
+			}
                     }
                     
                     
                     synchronized(clientTransactions) {
-                        transactionIterator =
-                        clientTransactions.iterator( );
-                        while( transactionIterator.hasNext( ) ) {
+			if (clientTransactions.size() > 0) {
+                          transactionIterator =
+                          clientTransactions.iterator( );
+                          while( transactionIterator.hasNext( ) ) {
                             
                             nextTransaction = (SIPTransaction)
                             transactionIterator.next( );
@@ -417,13 +414,15 @@ extends SIPStack implements  SIPTransactionEventListener {
                                 fireList.add(nextTransaction);
                                 
 			   }
-                        }
+                          }
+			}
                     }
                     
                     synchronized (dialogTable) {
-                        Collection values = dialogTable.values();
-                        iterator = values.iterator();
-                        while (iterator.hasNext()) {
+		        if (dialogTable.size() > 0 )  {
+                          Collection values = dialogTable.values();
+                          iterator = values.iterator();
+                          while (iterator.hasNext()) {
                             DialogImpl d = (DialogImpl) iterator.next();
 			    // System.out.println("dialogState = " +
 			    //	d.getState() + 
@@ -466,22 +465,23 @@ extends SIPStack implements  SIPTransactionEventListener {
 				     }
 				}
 			    }
-                        }
+                          }
+			}
                     }
                     
                     // Clean up the assigned dialogs table.
                     
-                    
-                    transactionIterator = fireList.iterator();
-                    while (transactionIterator.hasNext()) {
-                        nextTransaction =
-                        (SIPTransaction)
-                        transactionIterator.next();
-                        nextTransaction.fireTimer();
-                    }
+		    if (fireList.size() > 0 ) {
+                       transactionIterator = fireList.iterator();
+                       while (transactionIterator.hasNext()) {
+                           nextTransaction = (SIPTransaction)
+                           transactionIterator.next();
+                           nextTransaction.fireTimer();
+                       }
+		    }
                     fireList.clear();
                     transactionIterator = null;
-                    System.gc();
+		    iterator = null;
                     
                 } catch( InterruptedException e ) {
                     
