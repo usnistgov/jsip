@@ -152,9 +152,9 @@ public class Shootist implements SipListener  {
         sipFactory.setPathName("gov.nist");
         Properties properties = new Properties();
         properties.setProperty("javax.sip.IP_ADDRESS"
-        ,"129.6.55.61");
+        ,"127.0.0.1");
         properties.setProperty("javax.sip.OUTBOUND_PROXY"
-        ,"129.6.55.62:5070/UDP");
+        ,"127.0.0.1:5070/UDP");
         properties.setProperty("javax.sip.ROUTER_PATH",
         "examples.shootist.MyRouter");
         properties.setProperty("javax.sip.STACK_NAME",
