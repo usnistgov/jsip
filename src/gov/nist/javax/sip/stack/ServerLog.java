@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import gov.nist.javax.sip.message.*;
 import gov.nist.javax.sip.header.*;
 import gov.nist.core.*;
+import java.util.Properties;
 //ifdef SIMULATION
 /*
 import sim.java.*;
@@ -24,7 +25,7 @@ import sim.java.*;
  * later access via RMI. The trace can be viewed with a trace viewer (see
  * tools.traceviewerapp).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2004-01-22 18:39:41 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.8 $ $Date: 2004-02-20 16:36:43 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -69,8 +70,8 @@ public class ServerLog {
 
 	/**
 	 * Name to assign for the log.
-	 */
 	protected String logRootName;
+	 */
 
 	/**
 	 * Set auxililary information to log with this trace.
@@ -81,13 +82,32 @@ public class ServerLog {
 
 	protected String stackIpAddress;
 
-	public ServerLog(SIPStack sipStack) {
+	private SIPStack sipStack;
+
+	private Properties configurationProperties;
+
+	public ServerLog(SIPStack sipStack ) {
 		this.logWriter = sipStack.logWriter;
+	}
+	
+	public void setProperties( Properties configurationProperties) {
+		this.configurationProperties = configurationProperties;
+		// Set a descriptive name for the message trace logger.
+		this.description = 
+			configurationProperties.getProperty
+			("javax.sip.STACK_NAME") ;
+		this.stackIpAddress = configurationProperties.getProperty
+			("javax.sip.IP_ADDRESS") ;
+		this.logFileName = 
+			 configurationProperties.getProperty
+			("gov.nist.javax.sip.SERVER_LOG") ;
 	}
 
 	public void setStackIpAddress(String ipAddress) {
 		this.stackIpAddress = ipAddress;
 	}
+
+	
 
 	//public static boolean isWebTesterCatchException=false;
 	//public static String webTesterLogFile=null;
@@ -117,8 +137,20 @@ public class ServerLog {
 				printWriter = new PrintWriter(fw, true);
 				printWriter.println(
 					"<!-- "
-						+ "Use the  Trace Viewer in src/tools/tracesviewer to"
-						+ " view this  trace  -->");
+						+ "Use the  Trace Viewer in src/tools/tracesviewer to"		 	+
+						" view this  trace  \n" 						+
+						"Here are the stack configuration properties \n"			+
+						"javax.sip.IP_ADDRESS= " 						+ 
+						configurationProperties.getProperty("javax.sip.IP_ADDRESS") + "\n" 	+
+						"javax.sip.STACK_NAME= " 						+ 
+						configurationProperties.getProperty("javax.sip.STACK_NAME") + "\n" 	+
+						"javax.sip.ROUTER_PATH= " 						+ 
+						configurationProperties.getProperty("javax.sip.ROUTER_PATH") + "\n" 	+
+						"javax.sip.OUTBOUND_PROXY= " 						+ 
+						configurationProperties.getProperty("javax.sip.OUTBOUND_PROXY") + "\n" 	+
+						"javax.sip.RETRANSMISSION_FILTER= " 					+ 
+						configurationProperties.getProperty("javax.sip.RETRANSMISSION_FILTER")  + "\n" 
+						+ "-->");
 				if (auxInfo != null) {
 					printWriter.println(
 						"<description\n logDescription=\""
@@ -129,6 +161,19 @@ public class ServerLog {
 							+ auxInfo
 							+ "\"/>\n ");
 					if (LogWriter.needsLogging) {
+					    	logWriter.logMessage(
+						"Here are the stack configuration properties \n"			+
+						"javax.sip.IP_ADDRESS= " 						+ 
+						configurationProperties.getProperty("javax.sip.IP_ADDRESS") + "\n" 	+
+						"javax.sip.IP_ADDRESS= " 						+ 
+						configurationProperties.getProperty("javax.sip.STACK_NAME") + "\n" 	+
+						"javax.sip.ROUTER_PATH= " 						+ 
+						configurationProperties.getProperty("javax.sip.ROUTER_PATH") + "\n" 	+
+						"javax.sip.OUTBOUND_PROXY= " 						+ 
+						configurationProperties.getProperty("javax.sip.OUTBOUND_PROXY") + "\n" 	+
+						"javax.sip.RETRANSMISSION_FILTER= " 					+ 
+						configurationProperties.getProperty("javax.sip.RETRANSMISSION_FILTER")  + 
+						"\n" );
 						logWriter.logMessage(" ]]> ");
 						logWriter.logMessage("</debug>");
 						logWriter.logMessage(
@@ -150,6 +195,18 @@ public class ServerLog {
 							+ stackIpAddress
 							+ "\" />\n");
 					if (LogWriter.needsLogging) {
+					    	logWriter.logMessage(
+						"Here are the stack configuration properties \n"			+
+						"javax.sip.IP_ADDRESS= " 						+ 
+						configurationProperties.getProperty("javax.sip.IP_ADDRESS") + "\n" 	+
+						"javax.sip.IP_ADDRESS= " 						+ 
+						configurationProperties.getProperty("javax.sip.STACK_NAME") + "\n" 	+
+						"javax.sip.ROUTER_PATH= " 						+ 
+						configurationProperties.getProperty("javax.sip.ROUTER_PATH") + "\n" 	+
+						"javax.sip.OUTBOUND_PROXY= " 						+ 
+						configurationProperties.getProperty("javax.sip.OUTBOUND_PROXY") + "\n"  +
+						"javax.sip.RETRANSMISSION_FILTER= " 					+ 
+						configurationProperties.getProperty("javax.sip.RETRANSMISSION_FILTER") + "\n" );
 						logWriter.logMessage(" ]]>");
 						logWriter.logMessage("</debug>");
 						logWriter.logMessage(
@@ -551,10 +608,10 @@ public class ServerLog {
 
 	/**
 	 * Set the name to assign for the log.
-	 */
 	public void setLogName(String name) {
 		logRootName = name;
 	}
+	 */
 
 	/**
 	 * print a line to stdout if the traceLevel is TRACE_DEBUG.
@@ -612,13 +669,17 @@ public class ServerLog {
 	 * Set the descriptive String for the log.
 	 *
 	 * @param desc is the descriptive string.
-	 */
 	public void setDescription(String desc) {
 		description = desc;
 	}
+	 */
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/01/22 18:39:41  mranga
+ * Reviewed by:   M. Ranganathan
+ * Moved the ifdef SIMULATION and associated tags to the first column so Prep preprocessor can deal with them.
+ *
  * Revision 1.6  2004/01/22 13:26:33  sverker
  * Issue number:
  * Obtained from:

@@ -33,7 +33,7 @@ import sim.java.net.*;
  * returnResponse  for successful message processing and throw
  * SIPServerException for unsuccessful message processing.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.9 $ $Date: 2004-01-22 18:39:41 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.10 $ $Date: 2004-02-20 16:36:42 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * 
@@ -233,9 +233,6 @@ public abstract class SIPStack {
 
 		this.stackInetAddress = InetAddress.getByName(stackAddress);
 
-		// Set a descriptive name for the message trace logger.
-		serverLog.setDescription(stackName);
-		serverLog.setStackIpAddress(stackAddress);
 	}
 
 	/**
@@ -253,8 +250,6 @@ public abstract class SIPStack {
 	 */
 	public void setStackName(String stackName) {
 		this.stackName = stackName;
-		serverLog.setDescription(stackName);
-		serverLog.setStackIpAddress(stackAddress);
 	}
 
 	/**
@@ -369,7 +364,6 @@ public abstract class SIPStack {
 		this.logWriter = new LogWriter();
 		// Server log file.
 		this.serverLog = new ServerLog(this);
-		// Default simulation delays.
 
 //ifdef SIMULATION
 /*
@@ -381,9 +375,6 @@ public abstract class SIPStack {
 
 	}
 
-	protected void setLogFileName(String logFileName) {
-		this.serverLog.setLogFileName(logFileName);
-	}
 
 	protected void setDebugLogFileName(String logFileName) {
 		this.logWriter.setLogFileName(logFileName);
@@ -673,6 +664,10 @@ public abstract class SIPStack {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/01/22 18:39:41  mranga
+ * Reviewed by:   M. Ranganathan
+ * Moved the ifdef SIMULATION and associated tags to the first column so Prep preprocessor can deal with them.
+ *
  * Revision 1.8  2004/01/22 13:26:33  sverker
  * Issue number:
  * Obtained from:
