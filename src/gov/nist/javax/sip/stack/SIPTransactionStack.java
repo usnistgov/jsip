@@ -27,7 +27,7 @@ import java.net.*;
  * @author M. Ranganathan <mranga@nist.gov><br/>(Added Dialog table).
  * @author performance enhacements added by Pierre De Rop and Thomas Froment.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.43 $ $Date: 2004-10-04 16:03:53 $ <a
+ * @version JAIN-SIP-1.1 $Revision: 1.44 $ $Date: 2004-10-05 16:22:38 $ <a
  *          href=" {@docRoot}/uncopyright.html">This code is in the public
  *          domain. </a>
  */
@@ -905,14 +905,79 @@ public abstract class SIPTransactionStack extends SIPMessageStack implements
 			transaction.disableRetransmissionTimer();
 		}
 	}
+	class PendingRecordScanner implements Runnable {
+	    SIPTransactionStack myStack;
 
+	    protected PendingRecordScanner(SIPTransactionStack myStack) {
+	        this.myStack = myStack;
+	    }
+
+	    public void run() {
+	        try {
+	            PendingRecord pr = null;
+
+	            while (true) {
+	                synchronized (pendingRecords) {
+	                    try {
+	                        if (pendingRecords.size() == 0)
+	                            pendingRecords.wait();
+
+	                        if (!isAlive()) {
+	                            return;
+	                        } else if (pendingRecords.size() != 0 ) {
+	    	                        pr = (PendingRecord) pendingRecords.get(0);
+	    	                        pendingRecords.remove(0);
+	                        } else continue;
+	                    }
+	                    catch (InterruptedException ex) {
+	                        if (!isAlive())
+	                            return;
+	                        else
+	                            continue;
+	                    }
+	                    
+	                }
+	                if (!pr.isTerminated())
+	                    pr.processPending();
+	            }
+	        }
+	        finally {
+	            if (LogWriter.needsLogging)
+	                logWriter.logMessage("exitting pendingRecordScanner!!");
+	        }
+	       
+	    }
+	}
+
+	   
+
+	    public void putPending(PendingRecord pendingRecord) {
+	        synchronized (pendingRecords) { 
+	            pendingRecords.add(pendingRecord);
+	        }
+	    }
+	    public void removePending(PendingRecord pendingRecord) {
+			synchronized (pendingRecords) {
+				pendingRecords.remove(pendingRecord);
+			}
+	    }
+	    public void notifyPendingRecordScanner() {
+			synchronized (this.pendingRecords) {
+				this.pendingRecords.notify();
+			}
+		}
+	
+	
+/**
 	class PendingRecordScanner implements Runnable {
 		SIPTransactionStack myStack;
 
 		protected PendingRecordScanner(SIPTransactionStack myStack) {
 			this.myStack = myStack;
 		}
-
+		public void run() {
+		    
+		}
 		public void run() {
 			try {
 				while (true) {
@@ -952,13 +1017,8 @@ public abstract class SIPTransactionStack extends SIPMessageStack implements
 			}
 		}
 	}
-
-	public void notifyPendingRecordScanner() {
-		synchronized (this.pendingRecords) {
-			this.pendingRecords.notify();
-		}
-	}
-
+    
+	
 	public void putPending(PendingRecord pendingRecord) {
 		synchronized (this.pendingRecords) {
 			this.pendingRecords.add(pendingRecord);
@@ -970,6 +1030,9 @@ public abstract class SIPTransactionStack extends SIPMessageStack implements
 			this.pendingRecords.remove(pendingRecord);
 		}
 	}
+	
+	*/
+	    
 
 	/**
 	 * Stop stack. Clear all the timer stuff.
@@ -994,6 +1057,10 @@ public abstract class SIPTransactionStack extends SIPMessageStack implements
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.43  2004/10/04 16:03:53  mranga
+ * Reviewed by:   mranga
+ * attempted fix for memory leak
+ *
  * Revision 1.42  2004/10/01 16:05:08  mranga
  * Submitted by:  mranga
  * Fixed memory leak
