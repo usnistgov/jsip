@@ -2,7 +2,9 @@
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
 *******************************************************************************/
 package gov.nist.core;
-import java.util.*;
+import java.util.ListIterator;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
 * Implements a simple NameValue association with a quick lookup 
@@ -18,18 +20,13 @@ import java.util.*;
 */
 
 public class NameValueList extends GenericObjectList  {
-	private  Hashtable nvHash;
 
 	public NameValueList( String listName ) {
 	    super(listName,NameValue.class);
-	    nvHash = new Hashtable();
 	}
 
 	public void add (NameValue nv ) {
 		if (nv == null) throw new NullPointerException("null nv");
-		if (nv.name != null )  {
-		  nvHash.put(nv.name.toLowerCase(),nv);
-		}
 		super.add((GenericObject)nv);
 	}
 
@@ -54,14 +51,6 @@ public class NameValueList extends GenericObjectList  {
 	
         
         
-        /**
-         *Generic add method (throws a class cast exception if anything
-         *but NameValue is added.
-         */
-        public boolean add (Object obj) { 
-            add((NameValue) obj);
-            return true;
-        }
 
 	/**
 	* Add a name value record to this list.
@@ -83,47 +72,32 @@ public class NameValueList extends GenericObjectList  {
 	 *@return true if the two objects compare for equality.
          */
         public boolean equals(Object otherObject) {
-	   int exit = 0;
-	    try {
             if (!otherObject.getClass().equals
                 (this.getClass())) {
-		exit = 1;
                 return false;
             }
             NameValueList other = (NameValueList) otherObject;
 
-            if (this.nvHash.size() != other.nvHash.size()) {
-		exit = 2;
+            if (this.size() != other.size()) {
 		return false;
 	    }
-            for (Enumeration keys = this.nvHash.keys();
-            keys.hasMoreElements(); ) {
-                String name     = (String) keys.nextElement();
-                Object obj = this.nvHash.get(name.toLowerCase());
-                NameValue nv = (NameValue) obj;
-                Object myvalue = nv.value;
-                Object obj1 =  other.nvHash.get(name.toLowerCase());
-                if (obj1 == null)  {
-		        exit = 3;
-			return false;
+	    ListIterator li = this.listIterator();
+	    
+	    while (li.hasNext()) {
+		NameValue nv = (NameValue) li.next();
+		boolean found = false;
+	        ListIterator li1 = other.listIterator();
+		while (li1.hasNext()) {
+			NameValue nv1  = (NameValue) li1.next();
+			// found a match so break;
+			if (nv.equals(nv1))   {
+			   found = true;
+			   break;
+			}
 		}
-                NameValue nv1 = (NameValue) obj1;
-                Object hisvalue =  nv1.value;
-                if (hisvalue == null && myvalue != null ||
-		    hisvalue != null && myvalue == null )  {
-		        exit = 4;
-			return false;
-		}
-                if (! myvalue.equals(hisvalue) ) {
-		        exit = 5;
-		        return false;
-		}
-            }
-	    exit = 6;
-            return true;
-	    } finally {
-		// System.out.println("NameValueList.equals() " + exit);
+		if (! found ) return false;
 	    }
+	    return true;
 	}
 	
 
@@ -131,7 +105,7 @@ public class NameValueList extends GenericObjectList  {
 	*  Do a lookup on a given name and return value associated with it.
 	*/
 	public Object  getValue(String name) {
-		NameValue nv = (NameValue) nvHash.get(name.toLowerCase());
+		NameValue nv = this.getNameValue(name);
 		if (nv != null ) return nv.value;
 		else return null;
 	}
@@ -141,7 +115,17 @@ public class NameValueList extends GenericObjectList  {
 	* @since 1.0
 	*/
 	public NameValue getNameValue (String name) {
-		return (NameValue) nvHash.get(name.toLowerCase());
+		ListIterator li = this.listIterator();
+	     
+		NameValue retval = null;
+		while (li.hasNext()) {
+		    NameValue nv = (NameValue) li.next();
+		    if (nv.getName().equalsIgnoreCase(name)) {
+		       retval = nv;
+		       break;
+		    }
+		}
+		return  retval;
 	}
 	
 	/**
@@ -150,8 +134,7 @@ public class NameValueList extends GenericObjectList  {
 	* @since 1.0
 	*/
 	public boolean hasNameValue (String name) {
-		NameValue nv = (NameValue) nvHash.get(name.toLowerCase()) ;
-		return nv != null ;
+		return  getNameValue(name) != null;
 	}
 
 	/**
@@ -159,11 +142,18 @@ public class NameValueList extends GenericObjectList  {
 	* @since 1.0
 	*/
 	public boolean delete( String name) {
-		NameValue nv = (NameValue) nvHash.get(name.toLowerCase());
-		if (nv == null) return false;
-		this.remove(nv);
-		nvHash.remove(name.toLowerCase());
-		return true;
+		ListIterator li = this.listIterator();
+		NameValue nv;
+		boolean removed = false;
+		while (li.hasNext()) {
+		    nv = (NameValue) li.next();
+		    if (nv.getName().equalsIgnoreCase(name))  {
+			li.remove();
+			removed = true;
+		    }
+		}
+		return  removed;
+		
 	}
         
         /**
@@ -189,7 +179,7 @@ public class NameValueList extends GenericObjectList  {
         /**
          *default constructor.
          */
-        public NameValueList() { nvHash = new Hashtable(); }
+        public NameValueList() { }
             
         
         public Object clone()   {
@@ -218,10 +208,6 @@ public class NameValueList extends GenericObjectList  {
             else return val.toString();
         }
 
-	/**
-	* Get the first element of the list.
-	*/
-	public GenericObject first() { return (NameValue) super.first(); }
 
 
 }
