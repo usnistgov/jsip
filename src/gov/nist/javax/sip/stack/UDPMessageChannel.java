@@ -675,13 +675,14 @@ implements  ParseExceptionListener, Runnable {
 	    SimSocket outputSocket = new SimSocket(peerAddress,peerPort);
 //else
 */
-            Socket outputSocket = new Socket(peerAddress,peerPort);
+            Socket outputSocket =  stack.ioHandler.sendBytes
+			(peerAddress,peerPort,"tcp",msg);
 //endif
 //
             OutputStream myOutputStream = outputSocket.getOutputStream();
             myOutputStream.write(msg, 0, msg.length);
             myOutputStream.flush();
-            outputSocket.close();
+	    // The socket is cached (dont close it!);
         }
     }
     

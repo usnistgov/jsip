@@ -512,6 +512,7 @@ public abstract class SIPStack {
                  processorIndex++) {
                 removeMessageProcessor(processorList[processorIndex]);
             }
+	    this.ioHandler.closeAll();
 // Let the processing complete.
 
             try {

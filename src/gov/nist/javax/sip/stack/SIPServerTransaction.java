@@ -780,6 +780,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
                 getMessageChannel( ).sendMessage( lastResponse );
             
         } catch( IOException e ) {
+	    e.printStackTrace();
             raiseErrorEvent
             ( SIPTransactionErrorEvent.TRANSPORT_ERROR );
             
