@@ -27,7 +27,7 @@ import java.text.ParseException;
  *  Accept-Language: da, en-gb;q=0.8, en;q=0.7
  *
  * @see AcceptLanguageList
- * @version  JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-01-22 13:26:31 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2004-07-28 14:13:54 $
  *
  * @author Olivier Deruelle <deruelle@nist.gov> 
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
@@ -108,24 +108,31 @@ public class AcceptLanguageParser extends HeaderParser {
 
 		return acceptLanguageList;
 	}
-	/*
-	        public static void main(String args[]) throws ParseException {
-			String acceptLanguage[] = {
-	        		"Accept-Language: da    \n",
-	        		"Accept-Language:\n",
-	        		"Accept-Language: da, en-gb;q=0.8\n",
-	        	        "Accept-Language: *\n" };
-	
-			for (int i =0 ; i < acceptLanguage.length; i++) {
-				AcceptLanguageParser alp = new AcceptLanguageParser
-					(acceptLanguage[i]);
-				AcceptLanguageList all = (AcceptLanguageList) 
-					alp.parse();
-				System.out.println(all.toString());
-			}
-		}
-	*/
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/01/22 13:26:31  sverker
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  sverker
+ * Reviewed by:   mranga
+ *
+ * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  */

@@ -6,7 +6,7 @@ import java.text.ParseException;
 /** 
  * A parser for The SIP contact header.
  * 
- * @version  JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2004-04-22 22:51:17 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2004-07-28 14:13:54 $
  */
 public class ContactParser extends AddressParametersParser {
 
@@ -44,37 +44,16 @@ public class ContactParser extends AddressParametersParser {
 		return retval;
 	}
 
-	        public static void main(String args[]) throws ParseException {
-			String contact[] = {
-			"Contact:<sip:utente@127.0.0.1:5000;transport=udp>;expires=3600\n",
-			"Contact:BigGuy<sip:utente@127.0.0.1:5000>;expires=3600\n",
-			"Contact: sip:4855@166.35.224.216:5060\n",
-			"Contact: sip:user@host.company.com\n",
-			"Contact: Bo Bob Biggs\n"+ 
-		"< sip:user@example.com?Route=%3Csip:sip.example.com%3E >\n",
-	                        "Contact: Joe Bob Briggs <sip:mranga@nist.gov>\n",
-	                        "Contact: \"Mr. Watson\" <sip:watson@worcester.bell-telephone.com>"+
-	                        " ; q=0.7; expires=3600,\"Mr. Watson\" <mailto:watson@bell-telephone.com>"+
-	                        ";q=0.1\n",
-	                        "Contact: LittleGuy <sip:UserB@there.com;user=phone>"+
-	                        ",<sip:+1-972-555-2222@gw1.wcom.com;user=phone>,tel:+1-972-555-2222"+
-	                        "\n",
-	                        "Contact:*\n",
-	                        "Contact:BigGuy<sip:utente@127.0.0.1;5000>;Expires=3600\n"
-	                };
-				
-			for (int i = 0; i < contact.length; i++ ) {
-			    ContactParser cp = 
-				  new ContactParser(contact[i]);
-			    ContactList cl = (ContactList) cp.parse(); 
-			    System.out.println("encoded = " + cl.encode());
-	                    System.out.println();
-			}
-				
-		}
+
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/04/22 22:51:17  mranga
+ * Submitted by:  Thomas Froment
+ * Reviewed by:   mranga
+ *
+ * Fixed corner cases.
+ *
  * Revision 1.4  2004/01/22 13:26:31  sverker
  * Issue number:
  * Obtained from:

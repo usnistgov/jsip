@@ -12,7 +12,7 @@ import javax.sip.*;
  *
  * @see ViaList
  *
- * @version JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2004-02-28 13:33:43 $
+ * @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-07-28 14:13:53 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -204,18 +204,12 @@ public class Via
 	protected String encodeBody() {
 		StringBuffer encoding = new StringBuffer();
 		encoding.append(sentProtocol.encode()).append(SP).append(
-			sentBy.encode());
-		// This breaks compatibility with some really old stacks.
-/**
-		if (!sentBy.hasPort()) {
-			encoding.append(COLON).append("5060");
-		}
-**/
-		if (comment != null) {
-			encoding.append(SP).append(LPAREN).append(comment).append(RPAREN);
-		}
+			sentBy.encode());	
 		if (!parameters.isEmpty()) {
 			encoding.append(SEMICOLON).append(parameters.encode());
+		}
+		if (comment != null) {
+			encoding.append(SP).append(LPAREN).append(comment).append(RPAREN);
 		}
 		return encoding.toString();
 	}
@@ -453,6 +447,10 @@ public class Via
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/02/28 13:33:43  mranga
+ * Reviewed by:   mranga
+ * fixed bug with removePort
+ *
  * Revision 1.2  2004/01/22 13:26:30  sverker
  * Issue number:
  * Obtained from:
