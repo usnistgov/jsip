@@ -38,7 +38,7 @@ DOCTITLE=$(subst DATE,$(DATE),$(TITLE))
 BOTTOM='<font size="-1"> \
 <a href="http://www-x.antd.nist.gov/"> A product of the NIST/ITL Advanced Networking Technologies Division. </a><br>  \
 <a href="{@docRoot}/uncopyright.html"> See conditions of use. </a> <br> \
-<a href="{@docRoot}/errata.html"> See Errata. </a> <br> \
+<a href="{@docRoot}/../errata.html"> See Errata. </a> <br> \
 <a href="https://jain-sip.dev.java.net/servlets/ProjectDocumentList">Get the latest source snapshot. </a><br>  \
 <a href="mailto:nist-sip-dev@antd.nist.gov">Submit a bug report or feature request. </a><br> \
 </font>'
