@@ -33,7 +33,7 @@ import sim.java.net.*;
  * Niklas Uhrberg suggested that a mechanism be added to limit the number
  * of simultaneous open connections.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.22 $ $Date: 2004-03-30 17:53:56 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.23 $ $Date: 2004-04-21 16:25:22 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public final class TCPMessageChannel
@@ -113,6 +113,7 @@ public final class TCPMessageChannel
 			sipStack.logWriter.logStackTrace();
 		}
 		mySock = sock;
+		peerAddress = mySock.getInetAddress();
 		myAddress = sipStack.getHostAddress();
 		myClientInputStream = mySock.getInputStream();
 		myClientOutputStream = mySock.getOutputStream();
@@ -803,6 +804,10 @@ public final class TCPMessageChannel
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.22  2004/03/30 17:53:56  mranga
+ * Reviewed by:   mranga
+ * more reference counting cleanup
+ *
  * Revision 1.21  2004/03/30 16:40:30  mranga
  * Reviewed by:   mranga
  * more tweaks to reference counting for cleanup.
