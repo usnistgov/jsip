@@ -3,9 +3,7 @@ ROOT=../../../
 
 include $(ROOT)/build-config
 
-EXTRA_LIBS=$(ROOT)/lib/junit/junit.jar
-
-
+EXTRA_LIBS=$(ROOT)/lib/junit.jar
 
 clean: emacsclean
 	$(RM)  *.class
