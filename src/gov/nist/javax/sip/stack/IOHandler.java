@@ -165,18 +165,24 @@ class IOHandler {
 //else
 */
 
-	/** Just a private function to write things out... can pace this
-	* if need be.
+	/** A private function to write things out.
+	* This needs to be syncrhonized as writes can occur from
+	* multiple threads. We write in chunks to allow the other side
+	* to synchronize for large sized writes.
 	*/
 	private void writeChunks
 	    (OutputStream outputStream, byte[] bytes, int length) 
 		throws IOException {
-		int chunksize = 8192;
-		for (int p = 0; p < length; p += chunksize )  {
-			int chunk = p + chunksize < length? chunksize: length - p;
+		// Chunk size is 16K - does chunking buy you anything?
+		int chunksize = 16*1024;
+		synchronized(outputStream) {
+		   for (int p = 0; p < length; p += chunksize )  {
+			int chunk = 
+				p + chunksize < length? chunksize: length - p;
 			outputStream.write(bytes, p, chunk);
+		        outputStream.flush();
+		   }
 		}
-		outputStream.flush();
 	}
 
 
@@ -318,6 +324,10 @@ class IOHandler {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/03/19 23:41:30  mranga
+ * Reviewed by:   mranga
+ * Fixed connection and thread caching.
+ *
  * Revision 1.13  2004/03/19 04:22:22  mranga
  * Reviewed by:   mranga
  * Added IO Pacing for long writes - split write into chunks and flush after each
