@@ -114,7 +114,7 @@ import java.util.TimerTask;
  *
  *</pre>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.18 $ $Date: 2004-01-25 16:06:24 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.19 $ $Date: 2004-01-27 13:52:11 $
  * @author Jeff Keyser 
  * @author M. Ranganathan <mranga@nist.gov>  
  * @author Bug fixes by Emil Ivov, Antonis Karydas.
@@ -496,9 +496,21 @@ public class SIPServerTransaction
 					&& getState() == TransactionState.TERMINATED
 					&& transactionRequest.getMethod().equals(Request.ACK)
 					&& requestOf != null) {
-					((DialogImpl) this.getDialog()).ackReceived(
-						transactionRequest);
-					requestOf.processRequest(transactionRequest, this);
+					DialogImpl thisDialog = (DialogImpl) this.getDialog();
+					thisDialog.ackReceived(transactionRequest);
+			
+					if  ( ((SIPTransactionStack) getSIPStack())
+						.retransmissionFilter ) { 
+					  if ( ! thisDialog.ackProcessed ) {
+					     // Filter out duplicate acks if retransmission filter
+					     // is enabled.
+					     thisDialog.ackProcessed = true;
+					     requestOf.processRequest(transactionRequest, this);
+					  }
+					}  else {
+					  // Duplicate ACKs are seen by the application.
+					  requestOf.processRequest(transactionRequest, this);
+					}
 				} else if (
 					transactionRequest.getMethod().equals(Request.CANCEL)) {
 					if (LogWriter.needsLogging)
@@ -623,10 +635,7 @@ public class SIPServerTransaction
 			if (isInviteTransaction()) {
 
 				// If the response is a failure message,
-				if (statusCode / 100 == 2
-					&& (
-						(SIPTransactionStack) getSIPStack())
-							.retransmissionFilter) {
+				if (statusCode / 100 == 2 ) {
 					// Set up to catch returning ACKs
 
 					// Antonis Karydas: Suggestion
@@ -946,6 +955,12 @@ public class SIPServerTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2004/01/25 16:06:24  mranga
+ * Reviewed by:   M. Ranganathan
+ *
+ * Clean up setting state (Use TransactionState instead of integer). Convert to UNIX file format.
+ * Remove extraneous methods.
+ *
  * Revision 1.17  2004/01/22 18:39:41  mranga
  * Reviewed by:   M. Ranganathan
  * Moved the ifdef SIMULATION and associated tags to the first column so Prep preprocessor can deal with them.

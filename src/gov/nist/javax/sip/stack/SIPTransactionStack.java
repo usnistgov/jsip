@@ -27,7 +27,7 @@ import sim.java.net.*;
  * @author Jeff Keyser (original) 
  * @author M. Ranganathan <mranga@nist.gov>  <br/> (Added Dialog table).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2004-01-22 18:39:41 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2004-01-27 13:52:11 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public abstract class SIPTransactionStack
@@ -75,8 +75,9 @@ public abstract class SIPTransactionStack
 		this.dialogCreatingMethods.add(Request.SUBSCRIBE);
 		// Notify may or may not create a dialog. This is handled in 
 		// the code.
-		this.dialogCreatingMethods.add(Request.MESSAGE);
+		// this.dialogCreatingMethods.add(Request.MESSAGE);
 		// Create the transaction collections
+
 		clientTransactions = Collections.synchronizedSet(new HashSet());
 		serverTransactions = Collections.synchronizedSet(new HashSet());
 		// Dialog dable.
@@ -825,6 +826,10 @@ public abstract class SIPTransactionStack
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2004/01/22 18:39:41  mranga
+ * Reviewed by:   M. Ranganathan
+ * Moved the ifdef SIMULATION and associated tags to the first column so Prep preprocessor can deal with them.
+ *
  * Revision 1.15  2004/01/22 14:23:45  mranga
  * Reviewed by:   mranga
  * Fixed some minor formatting issues.
