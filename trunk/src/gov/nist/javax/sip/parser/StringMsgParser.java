@@ -29,7 +29,7 @@ import gov.nist.core.*;
  * entire message is parsed in one feld swoop).
  *
  *
- * @version JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2004-02-13 19:20:09 $
+ * @version JAIN-SIP-1.1 $Revision: 1.8 $ $Date: 2004-02-18 14:33:02 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -98,10 +98,12 @@ public class StringMsgParser {
 			// guard against bad specifications.
 			if (endIndex > currentMessage.length()) {
 				endIndex = currentMessage.length();
-				body = currentMessage.substring(bufferPointer, endIndex);
+				body = currentMessage.substring
+					(bufferPointer, endIndex);
 				bufferPointer = endIndex;
 			} else {
-				body = currentMessage.substring(bufferPointer, endIndex);
+				body = currentMessage.substring
+					(bufferPointer, endIndex);
 				bufferPointer = endIndex + 1;
 			}
 			this.contentLength = 0;
@@ -233,8 +235,10 @@ public class StringMsgParser {
 			f += 4;
 		else {
 			// Could not find CRLFCRLF end of message so look for LFLF
+			// Bug noticed here by Bruno Konik
 			for (f = s; f < msgBuffer.length - 2; f++) {
-				if ((char) msgBuffer[f] == '\n' && (char) msgBuffer[f] == '\n')
+				if ((char) msgBuffer[f] == '\n' 
+					&& (char) msgBuffer[f+1] == '\n')
 					break;
 			}
 			if (f < msgBuffer.length)
@@ -330,11 +334,8 @@ public class StringMsgParser {
 	}
 
 	/**
-	 * Parse a buffer containing one or more SIP Messages  and return an array of
-	 * SIPMessage parsed structures. Note that the current limitation is that
-	 * this does not handle content encoding properly. The message content is
-	 * just assumed to be encoded using the same encoding as the sip message
-	 * itself (i.e. binary encodings such as gzip are not supported).
+	 * Parse a buffer containing one or more SIP Messages  
+	 * and return an array of SIPMessage parsed structures. 
 	 * @param sipMessages a String containing the messages to be parsed.
 	 *   This can consist of multiple SIP Messages concatenated together.
 	 * @return a SIPMessage structure (request or response)
@@ -732,6 +733,8 @@ public class StringMsgParser {
 		return currentLine;
 	}
 
+/**
+* Test code.
 	public static void main(String[] args) throws ParseException {
 		String messages[] =
 			{
@@ -782,9 +785,14 @@ public class StringMsgParser {
 			System.out.println("dialog id = " + sipMessage.getDialogId(false));
 		}
 	}
+**/
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/02/13 19:20:09  mranga
+ * Reviewed by:   mranga
+ * minor fix for error callback.
+ *
  * Revision 1.6  2004/01/22 13:26:32  sverker
  * Issue number:
  * Obtained from:

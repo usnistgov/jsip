@@ -15,27 +15,34 @@ import javax.sip.*;
 import javax.sip.header.*;
 import gov.nist.javax.sip.header.*;
 
+/**   Acknowledgements: Mark Bednarek made a few fixes to this code.
+ **   Jeff Keyser added two methods that create responses and generate
+ **   cancel requests from incoming orignial  requests without 
+ **   the additional overhead  of encoding and decoding messages.
+ **   Bruno Konik noticed an extraneous newline added to the end of the
+ **   buffer when encoding it. 
+ */
+
 /**
- * The SIP Request structure-- this belongs to the parser who fills it up.
- *  Acknowledgements: Mark Bednarek made a few fixes to this code.
- *   Jeff Keyser added two methods that create responses and generate
- *   cancel requests from incoming orignial  requests without 
- *   the additional overhead  of encoding and decoding messages.
+ * The SIP Request structure.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2004-02-05 14:43:21 $
+ * @version JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2004-02-18 14:33:02 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
  */
+
+
+
 public final class SIPRequest
 	extends SIPMessage
 	implements javax.sip.message.Request {
-	public static final String DEFAULT_USER = "ip";
-	public static final int DEFAULT_TTL = 1;
-	public static final String DEFAULT_TRANSPORT = "udp";
-	public static final String DEFAULT_METHOD = Request.INVITE;
+	private static final String DEFAULT_USER = "ip";
+	private static final int DEFAULT_TTL = 1;
+	private static final String DEFAULT_TRANSPORT = "udp";
+	private static final String DEFAULT_METHOD = Request.INVITE;
 
 	private Object transactionPointer;
 
@@ -254,7 +261,7 @@ public final class SIPRequest
 	}
 
 	/**
-	*  Encode the SIP Request as a string.
+	*  Encode the SIP Request as a string. 
 	*
 	*@return an encoded String containing the encoded SIP Message.
 	*/
@@ -266,7 +273,7 @@ public final class SIPRequest
 			retval = requestLine.encode() + super.encode();
 		} else
 			retval = super.encode();
-		return retval + NEWLINE;
+		return retval;
 	}
 
 	/** ALias for encode above.
@@ -897,6 +904,11 @@ public final class SIPRequest
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/02/05 14:43:21  mranga
+ * Reviewed by:   mranga
+ * Fixed for correct reporting of transaction state.
+ * Remove contact headers from ack
+ *
  * Revision 1.4  2004/01/22 13:26:31  sverker
  * Issue number:
  * Obtained from:
