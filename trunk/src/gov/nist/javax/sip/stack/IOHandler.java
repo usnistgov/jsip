@@ -73,7 +73,6 @@ class IOHandler
 //else
 */
         protected synchronized void putSocket(String key, Socket sock) {
-		//System.out.println("putSocket " + key + ":" + sock);
 		socketTable.put(key,sock);
 	}
 	private synchronized Socket getSocket(String key) {
@@ -109,7 +108,7 @@ class IOHandler
 			try {
 				sendRequest(hostPort,transport,request); 
 			} catch (IOException ex) {
-				if (LogWriter.needsLogging) {
+				if (sipStack.logWriter.needsLogging) {
 				   sipStack.logWriter.logException(ex);
 				   sipStack.logWriter.logMessage
 					("UDP Send failed!");
@@ -183,7 +182,7 @@ class IOHandler
 		    retry:
 			while(retry_count < 2) {
 			    if (clientSock == null) {
-				if (LogWriter.needsLogging) {
+				if (sipStack.logWriter.needsLogging) {
 				   sipStack.logWriter.logMessage
 				    ("inaddr = " + inaddr);
 				   sipStack.logWriter.logMessage
@@ -252,7 +251,7 @@ class IOHandler
 		    retry:
 			while(retry_count < 2) {
 			    if (clientSock == null) {
-				if (LogWriter.needsLogging) {
+				if (sipStack.logWriter.needsLogging) {
 				   sipStack.logWriter.logMessage
 				   ("inaddr = " + inaddr);
 				   sipStack.logWriter.logMessage("port = " 
@@ -277,7 +276,6 @@ class IOHandler
 				 }
 				 break;
 			       } catch (IOException ex) {
-				  System.out.println("key = " + key);
 				  ex.printStackTrace();
 				  // old connection is bad.
 				  // remove from our table.
@@ -331,7 +329,7 @@ class IOHandler
 		int length = request.getBytes().length;
 		byte bytes[] = request.getBytes();
                 // Log some debugging information.
-                if (LogWriter.needsLogging) {
+                if (sipStack.logWriter.needsLogging) {
                     sipStack.logWriter.logMessage("sendRequest: " 
 			+  inaddr.getHostAddress() + ":"+  contactPort + "/" + 
 			  transport + "length" + length);

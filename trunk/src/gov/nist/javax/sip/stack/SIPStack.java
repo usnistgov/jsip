@@ -123,6 +123,7 @@ public abstract class SIPStack {
     /** A collection of message processors.  */
     private Collection messageProcessors;
 
+    protected String   stunServerAddress;
 
     /** Log a bad message (invoked when a parse exception arises).
      *

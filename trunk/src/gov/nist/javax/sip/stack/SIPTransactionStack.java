@@ -59,6 +59,9 @@ extends SIPStack implements  SIPTransactionEventListener {
     // A set of methods that result in dialog creations.
     protected HashSet dialogCreatingMethods;
     
+
+    private int activeClientTransactionCount;
+    private int activeServerTransactionCount;
     
     
     
@@ -334,6 +337,9 @@ extends SIPStack implements  SIPTransactionEventListener {
      */
 
      class TransactionScanner implements  Runnable {
+     private int prevSTCount;
+     private int prevCTCount;
+     private int scanCount;
 
      public void run() {
             
@@ -361,6 +367,9 @@ extends SIPStack implements  SIPTransactionEventListener {
                     // Check all client transactions
 
                     LinkedList fireList = new LinkedList();
+
+	  	    activeServerTransactionCount = 0;
+	  	    activeClientTransactionCount = 0;
                     
                     // Check all server transactions
                     synchronized(serverTransactions) {
@@ -394,13 +403,8 @@ extends SIPStack implements  SIPTransactionEventListener {
                                 // Add to the fire list -- needs to be moved
                                 // outside the synchronized block to prevent
                                 // deadlock.
-				/**
-				System.out.println("state = " +
-					nextTransaction.getState() + "/" +
-					nextTransaction.getOriginalRequest().
-					getMethod());
-				**/
                                 fireList.add(nextTransaction);
+				activeServerTransactionCount ++;
                                 
                             }
                             
@@ -419,13 +423,14 @@ extends SIPStack implements  SIPTransactionEventListener {
                             // If the transaction has terminated,
                             if( nextTransaction.isTerminated( ) ) {
                                 
+                                transactionIterator.remove( );
                                 // Remove it from the set
                                 if (logWriter.needsLogging) {
                                     logWriter.logMessage
                                     ("Removing clientTransaction " +
-                                    nextTransaction);
+                                     nextTransaction  + " tableSize " + 
+				     clientTransactions.size());
                                 }
-                                transactionIterator.remove( );
                                 
                                 // If this transaction has not
                                 // terminated,
@@ -434,10 +439,24 @@ extends SIPStack implements  SIPTransactionEventListener {
                                 // outside the synchronized block to prevent
                                 // deadlock. 
                                 fireList.add(nextTransaction);
+				if ( nextTransaction.getState() == null ||
+				   ! nextTransaction.getState().equals
+				    (TransactionState.COMPLETED) )
+				    activeClientTransactionCount ++;
                                 
 			   }
                         }
                     }
+		    prevSTCount = prevSTCount + activeServerTransactionCount;
+		    prevCTCount = prevCTCount + activeClientTransactionCount;
+		    this.scanCount ++;
+
+//ifdef SIMULATION
+/*
+		    System.out.println
+		   ( stackName + " tsize " + activeClientTransactionCount );
+//endif
+*/
                     
                     synchronized (dialogTable) {
                         Collection values = dialogTable.values();
@@ -477,7 +496,8 @@ extends SIPStack implements  SIPTransactionEventListener {
 				     // Retransmit to 200 until ack received.
 				     if (response.getStatusCode() == 200) {
 					try {
-				           transaction.sendMessage(response);
+					   if (d.toRetransmitFinalResponse()) 
+				              transaction.sendMessage(response);
 				           transaction.fireTimer();
 					} catch (IOException ex) {
 					   /* Will eventully time out */
@@ -487,8 +507,6 @@ extends SIPStack implements  SIPTransactionEventListener {
 			    }
                         }
                     }
-                    
-                    // Clean up the assigned dialogs table.
                     
                     
                     transactionIterator = fireList.iterator();

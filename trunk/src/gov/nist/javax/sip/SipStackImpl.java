@@ -88,6 +88,7 @@ implements javax.sip.SipStack {
     
     private String     outboundProxy;
     protected String   routerPath;
+
     
     
    
@@ -253,6 +254,16 @@ implements javax.sip.SipStack {
 		("transaction table size - bad value " + ex.getMessage());
 	    }
 	}
+
+	// Get the address of the stun server.
+
+//ifndef SIMULATION
+//
+	super.stunServerAddress = configurationProperties.getProperty
+			("gov.nist.javax.sip.STUN_SERVER");
+//endif
+//
+
 
 //ifdef SIMULATION
 /*
@@ -532,13 +543,5 @@ implements javax.sip.SipStack {
             
     }
 
-    
- 
-    
-  
-    
-    
-    
-    
     
 }

@@ -33,7 +33,7 @@ import  sim.java.net.*;
 * Acknowledgement: Jeff Keyser contributed ideas on
 * starting and stoppping the stack that were incorporated into this code.
 * Niklas Uhrberg suggested that thread pooling be added to limit the number
-* of threads and improve performance.
+* of threads and improve performance. 
 */
 public class UDPMessageProcessor  extends MessageProcessor {
 
@@ -44,7 +44,10 @@ public class UDPMessageProcessor  extends MessageProcessor {
 	
     /** port on which to listen for incoming messaes. */
 
-    int port;
+    private int port;
+
+    /** The Mapped port (in case STUN suport is enabled) */
+    private int mappedPort;
 
     /** Incoming messages are queued here. */
     
@@ -98,13 +101,14 @@ public class UDPMessageProcessor  extends MessageProcessor {
 //endif
 */
 	this.port =  port;
+        this.mappedPort = port;
     }
 
     /** Get port on which to listen for incoming stuff.
      *@return port on which I am listening.
      */
     public int getPort() { 
-	return this.port; 
+	return this.mappedPort; 
     }
     
     /**
@@ -127,11 +131,16 @@ public class UDPMessageProcessor  extends MessageProcessor {
 */
     public void start() throws IOException {
         // Create a new datagram socket.
-	// Bug uncovered by
         this.sock =
         new DatagramSocket(port,sipStack.stackInetAddress);
          sock.setReceiveBufferSize
         (MAX_DATAGRAM_SIZE);
+	if (stack.stunServerAddress  != null )  {
+	  // TODO
+	  // If NAT STUN support is enabled then find the public NAT address
+	  // and record it here. (RESUME HERE).
+	}
+		
         this.isRunning = true;
         Thread thread = new Thread(this);
         thread.start();

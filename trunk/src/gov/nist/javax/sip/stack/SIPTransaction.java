@@ -108,11 +108,17 @@ public abstract class SIPTransaction
 	// Parent stack for this transaction
 	protected SIPTransactionStack	parentStack;
 	// Original request that is being handled by this transaction
-	private SIPRequest			originalRequest;
+	protected  SIPRequest			originalRequest;
 	// Underlying channel being used to send messages for this transaction
 	protected MessageChannel   encapsulatedChannel;
 	// Transaction branch ID
 	private String			branch;
+
+	// Method of the Request used to create the transaction.
+	private String 			method;
+	// Sequence number of request used to create the transaction
+	private int			cSeq;
+
 	// Current transaction state
 	private int			currentState;
 	// Number of ticks the retransmission timer was set to last
@@ -179,7 +185,12 @@ public abstract class SIPTransaction
 		String	newBranch;
 
 
-		originalRequest = newOriginalRequest;
+		this.originalRequest = newOriginalRequest;
+
+		this.method = newOriginalRequest.getMethod();
+		
+		this.cSeq = 
+			newOriginalRequest.getCSeq().getSequenceNumber();
 
 		originalRequest.setTransaction(this);
 
@@ -196,10 +207,11 @@ public abstract class SIPTransaction
 			setBranch( newBranch );
 
 		} else {
-			parentStack.logWriter.logMessage("Branch id is null!"
-			+ newOriginalRequest.encode());
-
-
+			if (parentStack.logWriter.needsLogging)
+			    parentStack.logWriter.logMessage
+				("Branch id is null - compute TID!"
+				+ newOriginalRequest.encode());
+			setBranch(newOriginalRequest.getTransactionId());
 		}
 
 	}
@@ -235,8 +247,7 @@ public abstract class SIPTransaction
 	protected final boolean isInviteTransaction(
 	) {
 
-		return originalRequest.getMethod( ).equals
-				( Request.INVITE );
+		return getMethod( ).equals ( Request.INVITE );
 
 	}
 
@@ -247,7 +258,7 @@ public abstract class SIPTransaction
 	protected final boolean isCancelTransaction(
 	) {
 
-		return originalRequest.getMethod( ).equals
+		return getMethod( ).equals
 				( Request.CANCEL );
 
 	}
@@ -258,8 +269,7 @@ public abstract class SIPTransaction
 	*/
 	protected final boolean isByeTransaction(
 	) {
-		return originalRequest.getMethod( ).equals
-				( Request.BYE );
+		return getMethod( ).equals( Request.BYE );
 	}
 		
 
@@ -312,6 +322,22 @@ public abstract class SIPTransaction
 
 	}
 
+	/** Get the method of the request used to create this transaction.
+	*
+	*@return the method of the request for the transaction.
+	*/
+	public final String getMethod() { return this.method; }
+
+
+	/** Get the Sequence number of the request used to create the 
+	* transaction.
+	*
+	*@return the cseq of the request used to create the transaction.
+	*/
+	public final int getCSeq() {
+		return this.cSeq;
+	}
+
 
 	/**
 	 *Changes the state of this transaction.
@@ -325,16 +351,10 @@ public abstract class SIPTransaction
 		currentState = newState;
 		if (parentStack.logWriter.needsLogging)  {
 		    parentStack.logWriter.logMessage
-		    ("setState " + this + " " + newState);
+		    ("Transaction:setState " + newState +  " " + this );
+		    parentStack.logWriter.logStackTrace();
 		}
 
-		// If this transaction is being terminated,
-		if( newState == TERMINATED_STATE ) {
-			if (parentStack.logWriter.needsLogging) {
-			   parentStack.logWriter.logStackTrace();
-			}
-
-		}
 
 	}
 
@@ -408,6 +428,12 @@ public abstract class SIPTransaction
 	protected final void enableTimeoutTimer(
 		int		tickCount
 	) {
+		if (parentStack.logWriter.needsLogging) 
+		    parentStack.logWriter.logMessage("enableTimeoutTimer " +
+			this + " tickCount " +
+			   tickCount  + 
+			" currentTickCount = " + timeoutTimerTicksLeft);
+
 
 		timeoutTimerTicksLeft = tickCount;
 
@@ -433,7 +459,6 @@ public abstract class SIPTransaction
 	 */
 	synchronized final void fireTimer(
 	) {
-
 		// If the timeout timer is enabled,
 		if( timeoutTimerTicksLeft != -1 ) {
 
@@ -577,6 +602,12 @@ public abstract class SIPTransaction
 		return encapsulatedChannel.isReliable( );
 
 	}
+
+	/** Clear the original request (to reduce the stack size) 
+        protected void clearOriginalRequest() {
+		this.originalRequest = null;
+	}
+	*/
 
 
 	/**
