@@ -23,7 +23,7 @@ import java.util.*;
  * object that creates new TCP MessageChannels (one for each new
  * accept socket).  
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.11 $ $Date: 2004-03-19 23:41:30 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.12 $ $Date: 2004-03-25 15:15:05 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Acknowledgement: Jeff Keyser suggested that a
@@ -277,8 +277,11 @@ public class TCPMessageProcessor extends MessageProcessor {
 		(TCPMessageChannel messageChannel) {
 		String key = messageChannel.getKey();
 		if (this.tcpMessageChannels.get(key) == null) {
+		    if (LogWriter.needsLogging) 
+			sipStack.logWriter.logMessage("Caching " + key);
 		    this.tcpMessageChannels.put(key,messageChannel);
 		}  else {
+			sipStack.logWriter.logMessage("Already Cached " + key);
 			new Exception().printStackTrace();
 		}
 
@@ -350,6 +353,10 @@ public class TCPMessageProcessor extends MessageProcessor {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/03/19 23:41:30  mranga
+ * Reviewed by:   mranga
+ * Fixed connection and thread caching.
+ *
  * Revision 1.10  2004/03/19 17:06:20  mranga
  * Reviewed by:   mranga
  * Fixed some stack cleanup issues. Stack should release all resources when
