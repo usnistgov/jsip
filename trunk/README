@@ -59,9 +59,9 @@ How to get Source Code Refreshes
 CVS Snapshot
 ------------
 
-For those who cannot access CVS thanks to paranoid administrative policies, 
-here is a HTTP url where a nightly source only snapshot is grabbed from
-the stable CVS repository and dumped:
+For those who cannot access CVS thanks to draconian or paranoid 
+administrative policies, here is a HTTP url where a nightly source 
+only snapshot is grabbed from the stable CVS repository and dumped:
 
 http://is2.antd.nist.gov/pub/nist-sip/nist-sip-1.2.src.tar.gz 
 
@@ -144,15 +144,20 @@ M. Ranganathan's layman interpretation of the preceeding blather
 
 This is public domain code. Do whatever you want with this software.
 That means you can incorporate it into any product you wish or use it
-as-is free of any royalty payments or license agreements.  You may not sue
-us (that includes me) even if it has bugs and does not work as advertised.
+as-is free of any royalty payments or license agreements.  You may even
+drop it on your foot. However, you may not sue us (that includes me)
+even if it has bugs and does not work as advertised.  You may not sue us (
+that includes me) even if you drop it on your foot and it hurts your toe.
+So be afraid. Be very afraid, because I am afraid.
+
 NIST (ie. the public - including you and I but neither you nor I) owns
 this software.  You may not grab ownership and get in the way of its
 free distribution even if you invest a lot of effort into fixing it.
 This is despite the fact that as it is in the public domain, you already
-own it. Once you own something, you own something and you may not own
-it again.  The software will remain in the public domain for now and ever
-more (ie. until the sun shall shine and stars shall twinkle in the sky)
+own it. Note that this follows from a simple application of reason -
+once you own something, you own something and you may not own it again.
+The software will remain in the public domain for now and ever more
+(ie. until the sun shall shine and stars shall twinkle in the sky)
 regardless of your use of it. Please be nice and acknowledge our efforts
 if you find this code to be of use.
 
@@ -175,6 +180,6 @@ Corollary 3:
 Do not ask me for permission to own this code. I cannot grant you ownership
 for something you, I and everybody else already owns.
 
-i.e. Once you had it you had it. You cannot have it again.
+i.e. Once you had it you had it. You cannot have it again. Owning is believing.
 
 Such is the logic of the non-legal mind. Nuff said! have fun with it. 
