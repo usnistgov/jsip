@@ -16,6 +16,8 @@ ifeq (${SIMULATION},true)
 	echo "${SIMULATION}"
 	$(JAVAC) *.java
 else
+	$(JAVAC) MyRouter.java
+	$(JAVAC) HopImpl.java
 	$(JAVAC) Shootist.java
 	$(JAVAC) Shootme.java
 endif
