@@ -8,6 +8,7 @@ clean:
 	$(shell find gov -name "*.html" -print -exec rm {} \;)
 	$(shell find javax -name "*.html" -print -exec rm {} \;)
 	$(shell find class-use -name "*.html" -print -exec rm {} \;)
+	$(shell find index-files -use -name "*.html" -print -exec rm {} \;)
 	\rm  -f  allclasses-frame.html
 	\rm  -f  allclasses-noframe.html
 	\rm  -f  constant-values.html
@@ -16,7 +17,6 @@ clean:
 	\rm  -f  serialized-form.html  
 	\rm  -f  overview-*.html 
 	\rm  -f  help-doc.html
-	\rm  -rf index-files
 	\rm  -f  packages.html
 	\rm  -f  stylesheet.css 
 	\rm  -f  index.html 
