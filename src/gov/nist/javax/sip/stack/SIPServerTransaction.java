@@ -819,22 +819,19 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
                     dialog.setState(DialogImpl.TERMINATED_STATE);
          }
 
-        if( ( getState( ).getValue() == CONFIRMED_STATE ||
-	      // Bug reported by Antonis Karydas
-	      getState( ).getValue() == COMPLETED_STATE) &&
-            isInviteTransaction() ) {
-	    // TIMER_I should not generate a timeout 
-	    // exception to the application when the 
-	    // Invite transaction is in completed state.
-	    // Ben Evans (Open cloud) submited a bug 
-	    // report.
-	    if ( getState( ).getValue() != COMPLETED_STATE) {
-               raiseErrorEvent
-               ( SIPTransactionErrorEvent.TIMEOUT_ERROR );
-	    }
-
+        if( (getState( ).getValue() == COMPLETED_STATE) 
+		&& isInviteTransaction() ) {
+            raiseErrorEvent( SIPTransactionErrorEvent.TIMEOUT_ERROR );            
+            
 	    setState( TERMINATED_STATE);
             
+        } else if (( getState( ).getValue() == CONFIRMED_STATE) 
+		&& isInviteTransaction()) {
+	    // TIMER_I should not generate a timeout 
+	    // exception to the application when the 
+	    // Invite transaction is in Confirmed state.
+            // Just transition to Terminated state.
+	    setState( TERMINATED_STATE);
         } else if(  ! isInviteTransaction() && (
 	   getState( ).getValue() == COMPLETED_STATE  ||
 	  getState().getValue() == CONFIRMED_STATE ) ) {
