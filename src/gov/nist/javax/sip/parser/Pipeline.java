@@ -63,7 +63,7 @@ public class Pipeline extends  InputStream {
         
         public void stopTimer() {
             if (this.readTimeout == -1) return;
-	    this.myTimerTask.cancel();
+	    if (this.myTimerTask != null) this.myTimerTask.cancel();
         }
 
 	public Pipeline (InputStream pipe,int readTimeout, Timer timer) {
