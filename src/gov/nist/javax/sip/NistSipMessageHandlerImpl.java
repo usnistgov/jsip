@@ -23,7 +23,7 @@ import java.io.IOException;
  * NIST-SIP stack and event model with the JAIN-SIP stack. Implementors
  * of JAIN services need not concern themselves with this class. 
  *
- * @version JAIN-SIP-1.1 $Revision: 1.35 $ $Date: 2004-06-17 15:22:29 $
+ * @version JAIN-SIP-1.1 $Revision: 1.36 $ $Date: 2004-06-17 17:27:00 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Bug fix Contributions by Lamine Brahimi and  Andreas Bystrom. <br/>
@@ -396,6 +396,8 @@ public class NistSipMessageHandlerImpl
 					// and re-process later. It would be equally valid to drop here.
 				        if (LogWriter.needsLogging) 
 					   sipStackImpl.logMessage ("sequence number is too large - putting pending!" );
+					this.pendingRequest = sipRequest;
+					this.pendingMessageChannel = incomingMessageChannel;
 					dialog.putPending(this,sipRequest.getCSeq().getSequenceNumber());
 					return;
 					
@@ -566,6 +568,12 @@ public class NistSipMessageHandlerImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.35  2004/06/17 15:22:29  mranga
+ * Reviewed by:   mranga
+ *
+ * Added buffering of out-of-order in-dialog requests for more efficient
+ * processing of such requests (this is a performance optimization ).
+ *
  * Revision 1.34  2004/06/16 19:04:27  mranga
  * Check for out of sequence bye processing.
  *
