@@ -22,7 +22,7 @@ import sim.java.net.*;
 
 /** Implementation of the JAIN-SIP provider interface.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.22 $ $Date: 2004-05-18 15:26:42 $
+ * @version JAIN-SIP-1.1 $Revision: 1.23 $ $Date: 2004-06-15 09:54:40 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -93,7 +93,14 @@ public final class SipProviderImpl
 		eventWrapper.sipEvent = sipEvent;
 		eventWrapper.transaction = transaction;
 		if (transaction != null) transaction.setEventPending(); 
-		this.eventScanner.addEvent(eventWrapper);
+		
+		if ( ! sipStackImpl.reEntrantListener  )  {
+		    // Run the event in the context of a single thread.
+		    this.eventScanner.addEvent(eventWrapper);
+		} else  {
+		    // just call the delivery method
+		    this.eventScanner.deliverEvent(eventWrapper);
+		}
 	}
 
 	/** Creates a new instance of SipProviderImpl */
@@ -703,6 +710,11 @@ public final class SipProviderImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.22  2004/05/18 15:26:42  mranga
+ * Reviewed by:   mranga
+ * Attempted fix at race condition bug. Remove redundant exception (never thrown).
+ * Clean up some extraneous junk.
+ *
  * Revision 1.21  2004/05/12 20:48:54  mranga
  * Reviewed by:   mranga
  *

@@ -27,7 +27,7 @@ import sim.java.net.*;
  * @author Jeff Keyser (original) 
  * @author M. Ranganathan <mranga@nist.gov>  <br/> (Added Dialog table).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.31 $ $Date: 2004-06-07 16:12:33 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.32 $ $Date: 2004-06-15 09:54:45 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public abstract class SIPTransactionStack
@@ -64,6 +64,11 @@ public abstract class SIPTransactionStack
 	private int activeServerTransactionCount;
 	protected Timer timer;
 
+	protected Thread pendingResponseScanner;
+	protected Thread pendingRequestScanner;
+        
+        protected List pendingTransactions;
+
 
 	/**
 	 *	Default constructor.
@@ -97,9 +102,13 @@ public abstract class SIPTransactionStack
 */
 		
             	this.timer =   new Timer();
-		Thread pendingResponseScanner = new Thread(new PendingResponseScanner(this));
+		this.pendingResponseScanner = new Thread(new PendingResponseScanner(this));
+		this.pendingRequestScanner = new Thread(new PendingRequestScanner(this));
+		this.pendingTransactions = Collections.synchronizedList(new ArrayList());
 		pendingResponseScanner.setName("ResponseScanner");
 		pendingResponseScanner.start();
+		pendingRequestScanner.setName("RequestScanner");
+		pendingRequestScanner.start();
 //endif
 //
 
@@ -114,6 +123,7 @@ public abstract class SIPTransactionStack
 		super.reInit();
 		clientTransactions = Collections.synchronizedList(new ArrayList());
 		serverTransactions = Collections.synchronizedList(new ArrayList());
+		pendingTransactions = Collections.synchronizedList(new ArrayList());
 		// Dialog dable.
 		this.dialogTable = new Hashtable();
 
@@ -126,9 +136,12 @@ public abstract class SIPTransactionStack
 //else
 */
             	this.timer =   new Timer();
-		Thread pendingResponseScanner = new Thread(new PendingResponseScanner(this));
+		pendingResponseScanner = new Thread(new PendingResponseScanner(this));
+		pendingRequestScanner = new Thread(new PendingRequestScanner(this));
 		pendingResponseScanner.setName("ResponseScanner");
+		pendingRequestScanner.setName("RequestScanner");
 		pendingResponseScanner.start();
+		pendingRequestScanner.start();
 //endif
 //
 
@@ -182,17 +195,44 @@ public abstract class SIPTransactionStack
 		synchronized (dialogTable) {
 			dialogTable.put(dialogId, dialog);
 		}
-		dialog.startTimer();
 
 	}
 
-	public synchronized DialogImpl createDialog(SIPTransaction transaction) {
+	public DialogImpl createDialog(SIPTransaction transaction) {
 		SIPRequest sipRequest = transaction.getOriginalRequest();
 
 		DialogImpl retval = new DialogImpl(transaction);
 
 		return retval;
 
+	}
+
+	/** This is for debugging.
+	*/
+	public Iterator getDialogs() {
+	     return dialogTable.values().iterator();
+
+	}
+
+	/** Remove the dialog from the dialog table.
+	*
+	*@param dialog -- dialog to remove.
+	*/
+	public void removeDialog(DialogImpl dialog) {
+                synchronized (dialogTable) {
+		    Iterator it = this.dialogTable.values().iterator();
+		    while (it.hasNext() ) {
+			DialogImpl d = (DialogImpl) it.next();
+			if (d == dialog ) {
+                		if (LogWriter.needsLogging) {
+                    			String dialogId = dialog.getDialogId();
+                    			logWriter.logMessage(
+                    			"Removing Dialog " + dialogId);
+                		}
+				it.remove();
+			}
+		    }
+                }
 	}
 
 	/**
@@ -367,44 +407,39 @@ public abstract class SIPTransactionStack
 		super.sipMessageFactory = messageFactory;
 	}
 
-	class PendingResponseScanner implements Runnable {
-	      SIPTransactionStack myStack;
-	      protected PendingResponseScanner (SIPTransactionStack myStack){
-			this.myStack = myStack;
-	      }
-	      public void run() {
-		try {
-		while (true) {
-		   synchronized (this.myStack) {
-		      try {
-		         this.myStack.wait();
-		         if (! isAlive() ) return;
-		      } catch (InterruptedException ex) {
-		         if (! isAlive() ) return;
-			 else continue;
-		      }
-		   }
-		   LinkedList ll = new LinkedList();
-		   synchronized (clientTransactions) {
-			Iterator ti = clientTransactions.iterator();
-			while (ti.hasNext()) {
-				SIPClientTransaction next = (SIPClientTransaction) ti.next();
-				if (next.hasResponsesPending()) ll.add(next);
+
+	public SIPServerTransaction findPendingTransaction(SIPRequest requestReceived) {
+		SIPServerTransaction currentTransaction;
+		Iterator transactionIterator;
+		synchronized(pendingTransactions) {
+			transactionIterator = pendingTransactions.iterator();
+			currentTransaction = null;
+			while (transactionIterator.hasNext()
+				&& currentTransaction == null) {
+
+				SIPServerTransaction nextTransaction =
+					(SIPServerTransaction) transactionIterator.next();
+
+				// If this transaction should handle this request,
+				if (nextTransaction
+					.isMessagePartOfTransaction(requestReceived)) {
+					// Mark this transaction as the one
+					// to handle this message
+					currentTransaction = nextTransaction;
+				}
 			}
-		   }
-		   Iterator it = ll.iterator();
-		   while (it.hasNext()) {
-			SIPClientTransaction next = (SIPClientTransaction) it.next();
-			next.processPendingResponses();
-		   }
-	        }
-	      } finally {
-		if (LogWriter.needsLogging)
-		   logWriter.logMessage
-				("exitting pendingResponsScanner!!");
-	      }
-	   }
+		}
+		return currentTransaction;
 	}
+
+
+	public void removePendingTransaction(SIPServerTransaction tr) {
+		synchronized (pendingTransactions) {
+			this.pendingTransactions.remove(tr);
+		}
+	}
+
+
 
 	/**
 	 * Handles a new SIP request.
@@ -448,6 +483,8 @@ public abstract class SIPTransactionStack
 
 			// If no transaction exists to handle this message
 			if (currentTransaction == null) {
+                                currentTransaction = findPendingTransaction(requestReceived);
+                                if (currentTransaction != null) return currentTransaction;
 				currentTransaction =
 					createServerTransaction(requestMessageChannel);
 				currentTransaction.setOriginalRequest(requestReceived);
@@ -486,7 +523,9 @@ public abstract class SIPTransactionStack
 						serverTransactions.add(0,currentTransaction);
 						currentTransaction.startTransactionTimer();
 						currentTransaction.toListener = true;
-					}
+					}  
+
+						
 				}
 			}
 
@@ -656,8 +695,9 @@ public abstract class SIPTransactionStack
 	 *
 	 * @param encapsulatedMessageChannel Message channel of the transport layer.
 	 */
-	public SIPServerTransaction createServerTransaction(MessageChannel encapsulatedMessageChannel) {
-		return new SIPServerTransaction(this, encapsulatedMessageChannel);
+	public SIPServerTransaction 
+	  createServerTransaction(MessageChannel encapsulatedMessageChannel) {
+	   return new SIPServerTransaction(this, encapsulatedMessageChannel);
 	}
 
 	/**
@@ -737,15 +777,108 @@ public abstract class SIPTransactionStack
 		}
 	}
 
+	class PendingResponseScanner implements Runnable {
+	      SIPTransactionStack myStack;
+	      protected PendingResponseScanner (SIPTransactionStack myStack){
+			this.myStack = myStack;
+	      }
+	      public void run() {
+		try {
+		while (true) {
+		   LinkedList ll = new LinkedList();
+		   synchronized (this.myStack.clientTransactions) {
+		      try {
+		         this.myStack.clientTransactions.wait();
+		         if (! isAlive() ) return;
+		      } catch (InterruptedException ex) {
+		         if (! isAlive() ) return;
+			 else continue;
+		      }
+		     Iterator ti = clientTransactions.iterator();
+		     while (ti.hasNext()) {
+				SIPClientTransaction next = (SIPClientTransaction) ti.next();
+				if (next.hasPending()) ll.add(next);
+			}
+		   }
+		   Iterator it = ll.iterator();
+		   while (it.hasNext()) {
+			SIPClientTransaction next = (SIPClientTransaction) it.next();
+			next.processPending();
+		   }
+	        }
+	      } finally {
+		if (LogWriter.needsLogging)
+		   logWriter.logMessage
+				("exitting pendingResponsScanner!!");
+	      }
+	   }
+	}
+
+	class PendingRequestScanner implements Runnable {
+	      SIPTransactionStack myStack;
+	      protected PendingRequestScanner (SIPTransactionStack myStack){
+			this.myStack = myStack;
+	      }
+	      public void run() {
+		try {
+		while (true) {
+		   LinkedList ll = new LinkedList();
+		   synchronized (serverTransactions) {
+		      try {
+		         serverTransactions.wait();
+		         if (! isAlive() ) return;
+		      } catch (InterruptedException ex) {
+		         if (! isAlive() ) return;
+			 else continue;
+		      }
+		      Iterator ti = serverTransactions.iterator();
+		      while (ti.hasNext()) {
+			SIPServerTransaction next = (SIPServerTransaction) ti.next();
+			if (next.hasPending()) ll.add(next);
+		      }
+		   }
+		   Iterator it = ll.iterator();
+		   while (it.hasNext()) {
+			SIPServerTransaction next = (SIPServerTransaction) it.next();
+			next.processPending();
+		   }
+	        }
+	      } finally {
+		if (LogWriter.needsLogging)
+		   logWriter.logMessage
+				("exitting pendingRequestScanner!!");
+	      }
+	   }
+	}
+
+        
+	public void notifyPendingRequestScanner() {
+		synchronized(this.serverTransactions) {
+			this.serverTransactions.notify();
+		}
+	}
+
+	public void notifyPendingResponseScanner() {
+		synchronized(this.clientTransactions) {
+			this.clientTransactions.notify();
+		}
+	}
+
 	/** Stop stack.  Clear all the timer stuff.
 	*/
 	public void stopStack() {
+		this.notifyPendingRequestScanner();
+		this.notifyPendingResponseScanner();
 		this.timer.cancel();
 		super.stopStack();
 	}
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.31  2004/06/07 16:12:33  mranga
+ * Reviewed by:   mranga
+ * removed commented out code
+ *
  * Revision 1.30  2004/06/01 11:42:59  mranga
  * Reviewed by:   mranga
  * timer fix missed starting the transaction timer in a couple of places.

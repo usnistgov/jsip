@@ -18,7 +18,7 @@ import javax.sip.*;
  * messageChannel, the NIST-SIP stack calls the SIPStackMessageFactory 
  * implementation that has been registered with it to process the request.)
  *
- * @version JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2004-04-06 12:28:22 $
+ * @version JAIN-SIP-1.1 $Revision: 1.8 $ $Date: 2004-06-15 09:54:39 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -93,8 +93,7 @@ public class NistSipMessageFactoryImpl implements SIPStackMessageFactory {
 		    // Prune unhealthy responses early if handling statefully.
 		    // If the state has not yet been assigned then this is a
 		    // spurious response. This was moved up from the transaction
-		    // layer because it helps catch errors early and also
-		    // avoids a possible allocation and race condition.
+		    // layer for efficiency.
 		    if (tr.getState() == null)  {
 			if (LogWriter.needsLogging)
 			   sipStackImpl.logMessage( "Dropping response - null transaction state" );
@@ -106,17 +105,9 @@ public class NistSipMessageFactoryImpl implements SIPStackMessageFactory {
 			    sipStackImpl.logMessage ( "Dropping response - late arriving "  
 				+ sipResponse.getStatusCode());
 			return null;
-		    } else if (TransactionState.PROCEEDING == tr.getState()
-			 && sipResponse.getStatusCode() == 100 ) { 
-			// Ignore 100 if received after 
-			// transaction is in the proceeding state.
-			// bug report from Peter Parnes.
-			if (LogWriter.needsLogging) 
-			    sipStackImpl.logMessage
-				("Dropping response - late arriving 100 in proceeding state");
-			return null;
-		    }
+		    } 
 		}
+
 
 		NistSipMessageHandlerImpl retval = new NistSipMessageHandlerImpl();
 		retval.sipStackImpl = (SipStackImpl) theStack;
@@ -134,6 +125,12 @@ public class NistSipMessageFactoryImpl implements SIPStackMessageFactory {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/04/06 12:28:22  mranga
+ * Reviewed by:   mranga
+ * changed locale to Locale.getDefault().getCountry()
+ * moved check for valid transaction state up in the stack so unfruitful responses
+ * are pruned early.
+ *
  * Revision 1.6  2004/01/22 13:26:28  sverker
  * Issue number:
  * Obtained from:

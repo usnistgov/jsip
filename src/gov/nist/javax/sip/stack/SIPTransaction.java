@@ -23,7 +23,7 @@ import javax.sip.message.*;
  *
  * @author Jeff Keyser 
  * @author M. Ranganathan (modified Jeff's original source and aligned with JAIN-SIP 1.1)
- * @version  JAIN-SIP-1.1 $Revision: 1.23 $ $Date: 2004-06-01 11:42:59 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.24 $ $Date: 2004-06-15 09:54:45 $
  */
 public abstract class SIPTransaction
 	extends MessageChannel
@@ -217,7 +217,7 @@ public abstract class SIPTransaction
 					sipStack.logWriter.logMessage(
 							"removing" + transaction);
 					synchronized(sipStack.serverTransactions) {
-						sipStack.serverTransactions.remove(this);
+						sipStack.serverTransactions.remove(this.transaction);
 					}
 				if (  ( ! this.sipStack.cacheServerConnections )
 				   && transaction.encapsulatedChannel instanceof TCPMessageChannel
@@ -348,7 +348,7 @@ public abstract class SIPTransaction
 	 *
 	 *	@return True if this is an INVITE request, false if not.
 	 */
-	protected final boolean isInviteTransaction() {
+	public final boolean isInviteTransaction() {
 		return getMethod().equals(Request.INVITE);
 	}
 
@@ -357,7 +357,7 @@ public abstract class SIPTransaction
 	 *
 	 * @return true if the transaciton is a CANCEL transaction.
 	 */
-	protected final boolean isCancelTransaction() {
+	public final boolean isCancelTransaction() {
 		return getMethod().equals(Request.CANCEL);
 	}
 
@@ -366,7 +366,7 @@ public abstract class SIPTransaction
 	 *
 	 * @return true if the transaciton is a BYE transaction.
 	 */
-	protected final boolean isByeTransaction() {
+	public final boolean isByeTransaction() {
 		return getMethod().equals(Request.BYE);
 	}
 
@@ -956,20 +956,22 @@ public abstract class SIPTransaction
 			this.eventPending = true;
 	}
 
-	public boolean isEventPending() {
-		return this.eventPending;
-	}
 	
-	public void clearEventPending() {
+	protected void clearPending() {
 		this.eventPending = false;
 	}
 
 	protected abstract void startTransactionTimer();
 
+	public abstract void processPending();
 
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.23  2004/06/01 11:42:59  mranga
+ * Reviewed by:   mranga
+ * timer fix missed starting the transaction timer in a couple of places.
+ *
  * Revision 1.22  2004/05/30 18:55:58  mranga
  * Reviewed by:   mranga
  * Move to timers and eliminate the Transaction scanner Thread

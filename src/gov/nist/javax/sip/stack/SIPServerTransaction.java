@@ -20,6 +20,9 @@ import sim.java.util.SimTimer;
 
 import java.util.TimerTask;
 
+import java.util.LinkedList;
+import java.util.ListIterator;
+
 /**
  * Represents a server transaction. Implements the following
  * state machines.
@@ -114,7 +117,7 @@ import java.util.TimerTask;
  *
  *</pre>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.34 $ $Date: 2004-06-02 13:09:58 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.35 $ $Date: 2004-06-15 09:54:45 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
  * @author Bug fixes by Emil Ivov, Antonis Karydas.
@@ -128,9 +131,20 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
     
     protected boolean toListener; // Hack alert - if this is set to true then force the listener to see transaction
 
+    private LinkedList pendingRequests;
     
     // Real RequestInterface to pass messages to
     private SIPServerRequestInterface requestOf;
+
+    class PendingRequest {
+        protected SIPRequest sipRequest;
+        protected MessageChannel messageChannel;
+        public PendingRequest (SIPRequest sipRequest,
+        MessageChannel messageChannel) {
+            this.sipRequest = sipRequest;
+            this.messageChannel = messageChannel;
+        }
+    }
     
     class SendTrying extends TimerTask {
         private SIPServerTransaction serverTransaction;
@@ -245,6 +259,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
             "Creating Server Transaction" + this);
             sipStack.logWriter.logStackTrace();
         }
+	this.pendingRequests = new LinkedList();
         
     }
     
@@ -294,6 +309,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
         boolean transactionMatches;
         
         transactionMatches = false;
+	/**
         if (LogWriter.needsLogging) {
             sipStack.logWriter.logMessage("--------- TEST ------------");
             sipStack.logWriter.logMessage(
@@ -302,6 +318,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
             sipStack.logWriter.logMessage(
             "isTerminated = " + isTerminated());
         }
+	**/
         
         // Compensation for retransmits after OK has been dispatched
         // as suggested by Antonis Karydas. Cancel Processing is
@@ -419,6 +436,8 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
                 isMapped = true;
             }
         }
+	// Pull it out of the pending transactions list.
+	sipStack.removePendingTransaction(this);
     }
     
     /**
@@ -439,6 +458,17 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
     SIPRequest transactionRequest,
     MessageChannel sourceChannel) {
         boolean toTu = false;
+
+	// Can only process a single request directed to the 
+	// transaction at a time.
+	synchronized (this.pendingRequests) {
+          if (this.eventPending ) {
+              if (this.pendingRequests.size() < 4)
+                  this.pendingRequests.add
+                   (new PendingRequest(transactionRequest,sourceChannel));
+              return;
+           }
+	}
         
         try {
             
@@ -638,7 +668,14 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
             && transactionResponse.getCSeq().getMethod().equals(
             getOriginalRequest().getMethod())) {
                 if (statusCode / 100 == 2) {
-                    this.dialog.setState(DialogImpl.CONFIRMED_STATE);
+		    // The state changes when the ACK is received for an invite transaction
+		    // For other dialogs, the state changes when you send out the response.
+		    if (!this.isInviteTransaction()) {
+                       this.dialog.setState(DialogImpl.CONFIRMED_STATE);
+		    } else {
+			if (this.dialog.getState() == null) 
+                       	    this.dialog.setState(DialogImpl.EARLY_STATE);
+		    }
                 } else if (statusCode >= 300 && statusCode  <= 699) {
                     this.dialog.setState(DialogImpl.TERMINATED_STATE);
                 }
@@ -957,11 +994,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
             // See if the dialog needs to be inserted into the dialog table
             // or if the state of the dialog needs to be changed.
             if (dialog != null) {
-                dialog.printTags();
-                if (responseImpl
-                .getCSeq()
-                .getMethod()
-                .equalsIgnoreCase(Request.BYE) &&
+                if (responseImpl.getCSeq().getMethod().equals(Request.BYE) &&
                 responseImpl.getStatusCode() == 200 ) {
                     // Only transition to terminated state when
                     // 200 OK is returned for the BYE. Other
@@ -1053,6 +1086,34 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
         return toListener;
     }
 
+    /** Run any pending responses - gets called at the end of the event loop.
+     */
+    public void processPending( ) {
+        PendingRequest pr;
+	synchronized (pendingRequests) {
+           	if (pendingRequests.isEmpty() ) return;
+           	pr = (PendingRequest) this.pendingRequests.removeFirst();
+	}
+        this.processRequest(pr.sipRequest,pr.messageChannel);
+    }
+    
+    public boolean hasPending() {
+	synchronized (this.pendingRequests) {
+		return ! this.pendingRequests.isEmpty();
+	}
+    }
+
+    public void clearPending () {
+	boolean toNotify = false;
+	synchronized (this.pendingRequests ) {
+	   super.clearPending();
+           if ( !pendingRequests.isEmpty() ) {
+		toNotify = true;
+	   }
+	}
+        if (toNotify) sipStack.notifyPendingRequestScanner(); 
+    }
+
     /** Start the timer task.
      */
      protected void startTransactionTimer() {
@@ -1064,6 +1125,11 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.34  2004/06/02 13:09:58  mranga
+ * Submitted by:  Peter Parnes
+ * Reviewed by:  mranga
+ * Fixed illegal state exception.
+ *
  * Revision 1.33  2004/05/30 18:55:58  mranga
  * Reviewed by:   mranga
  * Move to timers and eliminate the Transaction scanner Thread
