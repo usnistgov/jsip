@@ -101,7 +101,7 @@ import sim.java.net.*;
  *  (Was mis-spelled - Documentation bug fix by Bob Johnson)</li>
  *</ul>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.24 $ $Date: 2004-04-29 19:27:46 $
+ * @version JAIN-SIP-1.1 $Revision: 1.25 $ $Date: 2004-05-14 20:20:02 $
  * 
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -153,6 +153,8 @@ public class SipStackImpl
 			if (address == null)
 				throw new PeerUnavailableException("address not specified");
 			super.setHostAddress(address);
+			/** This is for STUN support  --  Stun overwrites the original adderess*/
+			super.setRealHostAddress(address);
 		} catch (java.net.UnknownHostException ex) {
 			throw new PeerUnavailableException("bad address " + address);
 		}
@@ -636,6 +638,12 @@ public class SipStackImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.24  2004/04/29 19:27:46  mranga
+ * Submitted by:  Dave Stuart (Sipquest).
+ * Reviewed by:  mranga
+ *
+ * Fix parsing of stun server address.
+ *
  * Revision 1.23  2004/04/27 17:18:53  mranga
  * Reviewed by:   mranga
  * Turn off logging of content  by default.
