@@ -615,6 +615,8 @@ public class InviteClientTransactionsStateMachineTest
 					riMessageFactory.createResponse(
 						Response.OK,
 						inviteReceivedEvent.getRequest());
+                // BUG: set contact header on dialog-creating response
+                ok.setHeader(createRiContact());
 				addStatus(inviteReceivedEvent.getRequest(), ok);
 				riSipProvider.sendResponse((Response) ok.clone());
 			} catch (Throwable ex) {
@@ -789,6 +791,8 @@ public class InviteClientTransactionsStateMachineTest
 					riMessageFactory.createResponse(
 						Response.OK,
 						inviteReceivedEvent.getRequest());
+                // BUG: set contact header on dialog-creating response
+                ok.setHeader(createRiContact());
 				addStatus(inviteReceivedEvent.getRequest(), ok);
 				riSipProvider.sendResponse(ok);
 			} catch (Throwable ex) {

@@ -345,6 +345,11 @@ public class MessageFactoryTest extends FactoryTestHarness {
             
 
     public void testGetHeaderNames() {
+        // BUG report by Ben Evans (opencloud)
+        //  This test assumed implementations will store header names
+        // using mixed case, eg. "Content-Type" not "content-type".
+        // Header names are not case sensitive in RFC3261 so this is not
+        // a real requirement. 
 	try {
          Request request = tiMessageFactory.createRequest
 		   (requestURI, method, callId,
@@ -352,7 +357,8 @@ public class MessageFactoryTest extends FactoryTestHarness {
                     contentType,
 		    contentObject);
 	  ListIterator li = request.getHeaderNames();
-	  HashSet set = new HashSet();
+        // Use a tree set with case insensitive ordering & comparison
+        TreeSet set = new TreeSet(String.CASE_INSENSITIVE_ORDER);
 	  while (li.hasNext()) {
 		String hdrName = (String) li.next();
 		set.add(hdrName);
@@ -369,7 +375,7 @@ public class MessageFactoryTest extends FactoryTestHarness {
              		cSeq,  from,  to,  via, 
 			maxForwards,  contentType, contentObject);
 	  li = request.getHeaderNames();
-	  set = new HashSet();
+        set.clear();
 	  while (li.hasNext()) {
 		String hdrName = (String)li.next();
 		set.add(hdrName);
