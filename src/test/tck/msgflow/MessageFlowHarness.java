@@ -61,7 +61,7 @@ public class MessageFlowHarness extends TestHarness
     protected SipEventCollector eventCollector	= new SipEventCollector();
 
     protected static boolean riRetransmissionFilterEnabled;
-	
+
     protected static boolean tiRetransmissionFilterEnabled;
 
     public MessageFlowHarness(String name)
@@ -69,22 +69,28 @@ public class MessageFlowHarness extends TestHarness
         super(name);
     }
 
-    protected void addStatus  ( Request request) {
-	try {
-	   Header extension = tiHeaderFactory.createHeader
-			(EXTENSION_HDR , new Integer(counter ++ ).toString() ); 
-	   request.addHeader(extension);
-	} catch ( ParseException ex) {}
-	
-   }
+	//issue 17 on dev.java.net specify the headerFactory to use
+    //report and fix thereof larryb@dev.java.net
+    protected void addStatus  ( HeaderFactory headerFactory, Request request)
+    {
+		try {
+		   Header extension = headerFactory.createHeader
+				(EXTENSION_HDR , new Integer(counter ++ ).toString() );
+			   request.addHeader(extension);
+		}
+        catch ( ParseException ex)
+        {
+        	//do nothing
+        }
+	}
 
    protected void addStatus (Request request, Response response) {
 	  Header extension = request.getHeader(EXTENSION_HDR);
 	  if (extension != null) response.addHeader(extension);
   }
 
-    
-    
+
+
     /**
      * Initialises both RI and TI sip stacks and stack factories.
      *
@@ -117,17 +123,19 @@ public class MessageFlowHarness extends TestHarness
         }
         // super.getFactories();
 
-        //init the TI
-        tiAddressFactory = sipFactory.createAddressFactory();
-        tiMessageFactory = sipFactory.createMessageFactory();
-        tiHeaderFactory = sipFactory.createHeaderFactory();
         String tiPathName = System.getProperty( IMPLEMENTATION_PATH );
         if ( tiPathName == null || tiPathName.trim().length() == 0 )
             tiPathName = "gov.nist";
 
+        //issue 15 on dev.java.net init factories after reseting sipFactory
+        //report and fix thereof - larryb@dev.java.net
         sipFactory.resetFactory();
         sipFactory.setPathName( tiPathName );
 
+        //init the TI
+        tiAddressFactory = sipFactory.createAddressFactory();
+        tiMessageFactory = sipFactory.createMessageFactory();
+        tiHeaderFactory = sipFactory.createHeaderFactory();
 
         tiSipStack = sipFactory.createSipStack( getTiProperties() );
 
@@ -331,7 +339,8 @@ public class MessageFlowHarness extends TestHarness
                 contentSubType );
             request.setContent( content, contentTypeHdr );
         }
-	addStatus(request);
+        //pass the headerFactory - issue17 by larryb@dev.java.net
+		addStatus(headerFactory, request);
         return request;
     }
 
@@ -449,7 +458,7 @@ public class MessageFlowHarness extends TestHarness
                                   riSipProvider,
                                   null,
                                   null, null );
-		
+
         }
         catch ( Throwable exc )
         {
