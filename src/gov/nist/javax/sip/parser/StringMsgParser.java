@@ -733,7 +733,6 @@ public class StringMsgParser {
     public int getCurrentLineNumber() { return currentLine; }
     
     
-/**
     public static void main(String[] args) throws ParseException {
         String messages[] = {
 "SIP/2.0 180 Ringing\r\n"+
@@ -745,6 +744,19 @@ public class StringMsgParser {
 "Max-Forwards: 70\r\n"+
 "Record-Route: <sip:212.209.220.131:5060>\r\n"+
 "Content-Length: 0\r\n\r\n",
+
+"REGISTER sip:nist.gov SIP/2.0\r\n"+
+"Via: SIP/2.0/UDP 129.6.55.182:14826\r\n"+
+"Max-Forwards: 70\r\n"+
+"From: <sip:mranga@nist.gov>;tag=6fcd5c7ace8b4a45acf0f0cd539b168b;epid=0d4c418ddf\r\n"+
+"To: <sip:mranga@nist.gov>\r\n"+
+"Call-ID: c5679907eb954a8da9f9dceb282d7230@129.6.55.182\r\n"+
+"CSeq: 1 REGISTER\r\n"+
+"Contact: <sip:129.6.55.182:14826>;methods=\"INVITE, MESSAGE, INFO, SUBSCRIBE, OPTIONS, BYE, CANCEL, NOTIFY, ACK, REFER\"\r\n"+
+"User-Agent: RTC/(Microsoft RTC)\r\n"+
+"Event:  registration\r\n"+
+"Allow-Events: presence\r\n"+
+"Content-Length: 0\r\n\r\n"+
 
     "INVITE sip:littleguy@there.com:5060 SIP/2.0\r\n"+
     "Via: SIP/2.0/UDP 65.243.118.100:5050\r\n" +
@@ -776,8 +788,6 @@ public class StringMsgParser {
         
         
     }
-**/
-    
     
 }
 
