@@ -25,7 +25,7 @@ public class TimeDescriptionImpl implements TimeDescription {
     }
 
       /** constructor
-       * @param TimeField to set
+       * @param timeField time field to create this descrition from
        */    
     public TimeDescriptionImpl(TimeField timeField) {
         this.timeImpl= timeField;
@@ -40,7 +40,7 @@ public class TimeDescriptionImpl implements TimeDescription {
     }
 
     /** Sets the Time field.
-     * @param t Time to set
+     * @param timeField Time to set
      * @throws SdpException if the time is null
      */    
     public void setTime(Time timeField)
