@@ -451,8 +451,37 @@ implements javax.sip.message.Message {
         
         if (this.getContent() != null) {
             try {
+		Object newContent ;
+		Object currentContent = this.getContent();
+		// Check the type of the returned content.
+		if (currentContent instanceof String ) {
+		   // If it is a string allocate a new string for the body
+		   newContent =  new String
+				(currentContent.toString());
+		} else if ( currentContent instanceof byte[] ) {
+		    // If it is raw bytes allocate a new array of bytes
+		    // and copy over the content.
+		    int cl = ((byte[])currentContent).length;
+		    byte[] nc = new byte[cl];
+		    System.arraycopy((byte[])currentContent,0,nc,0,cl);
+		    newContent = nc;
+		} else {
+		    // See if the object has a clone method that is public
+		    // If so invoke the clone method for the new content.
+		    Class cl = currentContent.getClass();
+		    try {
+		      Method meth = cl.getMethod("clone",null);
+		      if (Modifier.isPublic(meth.getModifiers())) {
+			  newContent = meth.invoke(currentContent,null);
+		      } else {
+			  newContent = currentContent;
+		      }
+		    } catch (Exception ex) {
+			newContent = currentContent;
+		    }
+		}
                 retval.setContent
-                (this.getContent(),this.getContentTypeHeader());
+                (newContent,this.getContentTypeHeader());
             } catch (ParseException ex) { /** Ignore **/ }
         }
         
