@@ -21,7 +21,7 @@ import javax.sip.message.*;
  *
  * @author Jeff Keyser 
  * @author M. Ranganathan (modified Jeff's original source and aligned with JAIN-SIP 1.1)
- * @version  JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2004-02-19 16:01:40 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.18 $ $Date: 2004-02-22 13:53:57 $
  */
 public abstract class SIPTransaction
 	extends MessageChannel
@@ -667,9 +667,12 @@ public abstract class SIPTransaction
 	 * @see Dialog
 	 */
 	public Dialog getDialog() {
-		return this.dialog == null?  
-			(Dialog) parentStack.dummyDialog : 
-			(Dialog) this.dialog;
+		return this.dialog;
+
+// 	return this.dialog == null?  (Dialog) parentStack.dummyDialog : 
+//			(Dialog) this.dialog;
+//
+
 	}
 
 	/**
@@ -874,6 +877,10 @@ public abstract class SIPTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2004/02/19 16:01:40  mranga
+ * Reviewed by:   mranga
+ * tighten up retransmission filter to deal with ack retransmissions.
+ *
  * Revision 1.16  2004/02/13 13:55:32  mranga
  * Reviewed by:   mranga
  * per the spec, Transactions must always have a valid dialog pointer. Assigned a dummy dialog for transactions that are not assigned to any dialog (such as Message).
