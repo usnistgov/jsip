@@ -17,6 +17,7 @@ import gov.nist.javax.sip.message.*;
 *
 *@author Tim Bardzil <bardzil@colorado.edu> (original)
 *@author M. Ranganathan <mranga@nist.gov> (ported to 1.2)
+*Jeff Adams submitted a patch for this file.
 *
 */
 
@@ -115,6 +116,8 @@ public class SniffMessage implements ParseExceptionListener {
 						+ "\r\n";
 			} else if (line.startsWith("Message Header")) {
 				//do nothing
+			} else if (line.startsWith("Message body")) {
+				//do nothing (start of SDP)
 			} else {
 				msgBuffer = msgBuffer + line.trim() + "\r\n";
 			}
