@@ -59,9 +59,6 @@ public class ServerLog {
      * (default is null)
      */
     private String   logFileName;
-    /** Name of the log directory in which the messages are written out
-     */
-    private MessageLogTableImpl messageLogTable;
     /** Print writer that is used to write out the log file.
      */
     protected PrintWriter printWriter;
@@ -443,35 +440,6 @@ public class ServerLog {
         logRootName = name;
     }
     
-    /** Initialize the table for RMI access to the log file.
-     * Call this function when the stack initializes to allow
-     * remote access to the message log.
-     *@param stacAddress is the address where the rmiRegistry will run.
-     *@param rmiPort is the RMI registry port.
-     *@param logRootName is the root name to assign to the log. Logs are
-     * stored as logRootName/logId where a good value to pick for
-     * logRootName is host:udpPort or host:tcpPort for the machine from
-     * where the log originated.
-     */
-    public  void initMessageLogTable(
-    String stackAddress,
-    int rmiPort,
-    String rootName ,
-    int traceLifeTime )
-    throws RemoteException {
-        logRootName = rootName;
-        messageLogTable = new MessageLogTableImpl(rmiPort);
-	messageLogTable.serverLog = this;
-        messageLogTable.init(stackAddress, rmiPort,
-        logRootName, traceLifeTime);
-    }
-    
-    /** Return the message log table.
-     *@return the messageLogTable member.
-     */
-    public  MessageLogTableImpl getMessageLogTable() {
-        return messageLogTable;
-    }
     
     /** print a line to stdout if the traceLevel is TRACE_DEBUG.
      * @param s String to print out.

@@ -48,26 +48,8 @@ import sim.java.net.*;
 *<li><b>gov.nist.javax.sip.BAD_MESSAGE_LOG = fileName </b><br/>
 *  Messages that do not contain the required headers are dropped.
 *  This file indicates where the bad (unprocessable) messages go. 
-*  Default is null (bad messages are not logged). </li>
+*  Default is null (bad messages are not logged in their own file). </li>
 *
-*<li><b>gov.nist.javax.sip.ACCESS_LOG_VIA_RMI = boolean</b>  <br/>
-*indicate whether log files should be accessible via RMI. Default (false).
-* A log root name for naming the log for remote access. The log can be
-*remotely  accessedas the following RMI URL <br/>
-*<it>
-*rmi://stackIPAddress:rmiPort/stackName/gov.nist.javax.sip.MessageLogTableImpl
-*</it> <br/>
-* Once the log has been collected, you can view it using the 
-* provided trace viewer application (in the tools/tracesviewer directory).
-*Note that you need ot specify TRACE_LEVEL=16  or above (see below) 
-*to enable message logging. You can view the log using  the trace viewer.
-*directly using the generated log table. 
-*</li>
-*    
-*<li><b>gov.nist.javax.sip.RMI_PORT = intetger</b> <br/>
-* This is <b>only relevant</b> if you want to allow remote access to the
-* log table via RMI.
-* Port where the rmi registry listens. (defaults to 1099). </li>
 *    
 *<li><b>gov.nist.javax.sip.DEBUG_LOG = fileName </b><br/>
 *  Where the debug log goes. 
@@ -209,35 +191,7 @@ implements javax.sip.SipStack {
 		this.retransmissionFilter = true;
 	}
 
-	/* Initialize the remote logging features. This is a NIST-SIP only
-	* feature (not part of the JAIN SPEC)
-	*/
-	String accessLogViaRMI = configurationProperties.getProperty
-			("gov.nist.javax.sip.ACCESS_LOG_VIA_RMI");
-	if (accessLogViaRMI != null && 
-		"true".equalsIgnoreCase(accessLogViaRMI)) {
-	   try {
-	      String logRootName =  this.stackName;
-	      int rmiPort = 1099;
-	      String rport = 
-			configurationProperties.getProperty
-			("gov.nist.javax.sip.RMI_PORT");
-	      if (rport != null) 
-			rmiPort = Integer.parseInt(rport);
-	      
-	      String lifetime = configurationProperties.getProperty
-			("gov.nist.javax.sip.LOG_LIFETIME");
-	      // Default log lifetime is 10 minutes.
-	      int loglife = 600;
-	      if (lifetime != null) 
-	      	    loglife = Integer.parseInt(lifetime);
-	        super.exportServerLog(logRootName,rmiPort,loglife);
-	   } catch (NumberFormatException ex) {
-			System.out.println
-			("remote log access disabled bad integer " + 
-				ex.getMessage());
-	    }
-	 }
+	/* Following are NIST-SIP only features.  */
 	 String debugLog =  configurationProperties.getProperty
 			("gov.nist.javax.sip.DEBUG_LOG");
 

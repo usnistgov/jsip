@@ -256,23 +256,6 @@ public abstract class SIPStack {
     }
 
 
-    /** Export the Server Log for Access via RMI.
-     *@param logRootName - the root name to assign to the log.
-     *@param rmiPort - the rmi port for the rmi registry (usually 1099)
-     *@param lifetime - the number of seconds to hold on to the log.
-     */
-    public void exportServerLog
-            (String logRootName, int rmiPort, int lifetime) {
-        try {
-            serverLog.initMessageLogTable(this.getHostAddress(),
-                    rmiPort, logRootName, lifetime);
-        } catch (java.rmi.RemoteException ex) {
-            System.out.println("could not export log");
-            System.out.println("Did you start rmi registry?");
-            ex.printStackTrace(); // not a fatal error.
-        }
-
-    }
 
 
     /** Get the Stack name.

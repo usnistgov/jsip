@@ -897,11 +897,12 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
             this.sendMessage((SIPResponse)response);
 	   // Transaction successfully cancelled but dialog has not yet
 	   // been established so delete the dialog.
+	   // Does not apply to re-invite (Bug report by Martin LeClerc )
 
 	   if (responseImpl.getCSeq().getMethod().equalsIgnoreCase
 	      ("CANCEL") && responseImpl.getStatusCode() == 200 &&
-		parentStack.
-		isDialogCreated(getOriginalRequest().getMethod()) &&
+	      (!dialog.isReInvite()) &&
+	      parentStack.isDialogCreated(getOriginalRequest().getMethod()) &&
 	      ( dialog.getState() == null ||
 	       dialog.getState().getValue() == DialogImpl.EARLY_STATE )) {
 	       dialog.setState(DialogImpl.TERMINATED_STATE);
