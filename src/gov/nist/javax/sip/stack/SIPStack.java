@@ -33,7 +33,7 @@ import sim.java.net.*;
  * returnResponse  for successful message processing and throw
  * SIPServerException for unsuccessful message processing.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.11 $ $Date: 2004-02-29 00:46:35 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.12 $ $Date: 2004-03-07 22:25:24 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * 
@@ -121,6 +121,11 @@ public abstract class SIPStack {
 	 * max number of simultaneous connections.
 	 */
 	protected int maxConnections;
+
+	/** 
+	* Close accept socket on completion.
+	*/
+	protected boolean cacheServerConnections;
 
 
 	/** 
@@ -368,8 +373,10 @@ public abstract class SIPStack {
 	 */
 	public SIPStack() {
 		this.toExit = false;
-		// Set an infinit thread pool size.
+		// Set an infinite thread pool size.
 		this.threadPoolSize = -1;
+		// Close response socket after infinte time.
+		this.cacheServerConnections = true;
 		// Max number of simultaneous connections.
 		this.maxConnections = -1;
 		// Array of message processors.
@@ -680,6 +687,11 @@ public abstract class SIPStack {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/02/29 00:46:35  mranga
+ * Reviewed by:   mranga
+ * Added new configuration property to limit max message size for TCP transport.
+ * The property is gov.nist.javax.sip.MAX_MESSAGE_SIZE
+ *
  * Revision 1.10  2004/02/20 16:36:42  mranga
  * Reviewed by:   mranga
  * Minor changes to debug logging -- record the properties with which the stack

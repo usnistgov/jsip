@@ -18,6 +18,73 @@ conurrency to lessen Denial of Service attacks.
 </li>
 </ul>
 
+In addition to the standard configuration Parameters supported by
+JAIN-SIP, the stack supports the following configuration Parameters :
+
+<ul>
+ <li><b>gov.nist.javax.sip.TRACE_LEVEL = integer </b><br/>
+ Currently only 16 and 32 is meaningful. 
+ If this is set to 16 or above, then incoming
+ valid messages are  logged in SERVER_LOG. If you set this to 32 and 
+ specify a DEBUG_LOG then vast amounts of trace information will be dumped
+ in to the specified DEBUG_LOG.  The server log accumulates the signaling
+ trace. 
+ <a href="{@docRoot}/tools/tracesviewer/tracesviewer.html">
+ This can be viewed using the trace viewer tool .</a>
+ Please send us both the server log and debug log 
+  when reporting non-obvious problems.</li>
+ 
+ <li><b>gov.nist.javax.sip.SERVER_LOG = fileName </b><br/>
+  Log valid incoming messages here. If this is left null AND the 
+  TRACE_LEVEL is above 16 then the messages are printed to stdout.
+  Otherwise messages are logged in a format that can later be viewed
+  using the trace viewer application which is located in 
+  the tools/tracesviewer directory. 
+ <font color=red> Mail this to us with bug reports.  </font>
+  </li>
+     
+ <li><b>gov.nist.javax.sip.BAD_MESSAGE_LOG = fileName </b><br/>
+   Messages that do not contain the required headers are dropped.
+   This file indicates where the bad (unprocessable) messages go. 
+   Default is null (bad messages are not logged in their own file). </li>
+ 
+     
+ <li><b>gov.nist.javax.sip.DEBUG_LOG = fileName </b><br/>
+   Where the debug log goes. 
+ 	<font color=red> Mail this to us with bug reports.  </font>
+ </li>
+ 
+ <li><b>gov.nist.javax.sip.MAX_MESSAGE_SIZE = integer</b> <br/>
+  Maximum size of content that a TCP connection can read. Must be
+  at least 4K. Default is "infinity" -- ie. no limit.
+  This is to prevent DOS attacks launched by writing to a
+  TCP connection until the server chokes.
+ </li>
+ 
+ 
+ <li><b>gov.nist.javax.sip.MAX_SERVER_TRANSACTIONS = integer</b> <br/>
+    Max number of open SERVER transactions in the transaction table - incoming
+   Requests that have the capability to create ServerTransactions will
+   not be processed if server transaction table exceeds this size
+   (default value is "infinity"). </li>
+ 
+ <li><b>gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS = [true|false] </b> <br/>
+   Default value is true. Setting this to false makes the Stack close the server socket after
+   a Server Transaction goes to the TERMINATED state. This allows a server to protectect against 
+   TCP based Denial of Service attacks launched by clients (ie. initiate hundreds of client gransactions).
+   If false (default action), the stack will keep the socket open so as to maximize performance at 
+   the expense of Thread and memory resources - leaving itself open to DOS attacks. 
+ </li>
+ 
+ <li> <b>gov.nist.javax.sip.THREAD_POOL_SIZE = integer </b> <br/>
+   Concurrency control for number of simultaneous active threads for
+   processing incoming UDP messages. 
+  </li>
+ 
+ <li> <b>gov.nist.javax.sip.MAX_CONNECTIONS = integer </b> <br/>
+    Max number of simultaneous incoming TCP connections handled by stack. 
+ </li>
+ </ul>
 
 </body>
 

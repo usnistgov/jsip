@@ -70,6 +70,14 @@ import sim.java.net.*;
  *  not be processed if server transaction table exceeds this size
  *  (default value is "infinity"). </li>
  *
+ *<li><b>gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS = [true|false] </b> <br/>
+ *  Default value is true. Setting this to true makes the Stack close the server socket after
+ *  a Server Transaction goes to the TERMINATED state. This allows a server to protectect against 
+ *  TCP based Denial of Service attacks launched by clients (ie. initiate hundreds of client gransactions).
+ *  If false (default action), the stack will keep the socket open so as to maximize performance at 
+*   the expense of Thread and memory resources - leaving itself open to DOS attacks. 
+ *</li>
+ *
  *<li> <b>gov.nist.javax.sip.THREAD_POOL_SIZE = integer </b> <br/>
  *  Concurrency control for number of simultaneous active threads for
  *  processing incoming UDP messages. 
@@ -80,7 +88,7 @@ import sim.java.net.*;
  *  (Was mis-spelled - Documentation bug fix by Bob Johnson)</li>
  *</ul>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2004-02-29 15:32:58 $
+ * @version JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2004-03-07 22:25:22 $
  * 
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -265,6 +273,15 @@ public class SipStackImpl
 				System.out.println(
 					"transaction table size - bad value " + ex.getMessage());
 			}
+		}
+
+		super.cacheServerConnections = true;
+                String flag = 
+		    configurationProperties.getProperty
+		     ("gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS");
+
+		if (flag != null && "false".equalsIgnoreCase(flag.trim())) {
+		        super.cacheServerConnections = false;
 		}
 
 		// Get the address of the stun server.
@@ -555,6 +572,10 @@ public class SipStackImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2004/02/29 15:32:58  mranga
+ * Reviewed by:   mranga
+ * bug fixes on limiting the max message size.
+ *
  * Revision 1.15  2004/02/29 00:46:33  mranga
  * Reviewed by:   mranga
  * Added new configuration property to limit max message size for TCP transport.

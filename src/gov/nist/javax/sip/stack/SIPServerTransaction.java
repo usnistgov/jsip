@@ -114,7 +114,7 @@ import java.util.TimerTask;
  *
  *</pre>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.24 $ $Date: 2004-02-26 17:30:21 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.25 $ $Date: 2004-03-07 22:25:24 $
  * @author Jeff Keyser 
  * @author M. Ranganathan <mranga@nist.gov>  
  * @author Bug fixes by Emil Ivov, Antonis Karydas.
@@ -624,9 +624,9 @@ public class SIPServerTransaction
 				if (!isInviteTransaction()) {
 					this.setState(TransactionState.COMPLETED);
 				} else {
-					if (statusCode / 100 == 2)
+					if (statusCode / 100 == 2) {
 						this.setState(TransactionState.TERMINATED);
-					else
+					} else
 						this.setState(TransactionState.COMPLETED);
 				}
 				if (!isReliable()) {
@@ -658,6 +658,7 @@ public class SIPServerTransaction
 						.getMethod()
 						.equals(Request.CANCEL)) {
 
+						this.collectionTime = TIMER_J;
 						this.setState(TransactionState.TERMINATED);
 						if (!isReliable() ) {
 							this.dialog
@@ -665,7 +666,6 @@ public class SIPServerTransaction
 							enableRetransmissionTimer();
 
 						}
-						this.collectionTime = TIMER_J;
 						enableTimeoutTimer(TIMER_J);
 					}
 				} else if (300 <= statusCode && statusCode <= 699) {
@@ -725,6 +725,7 @@ public class SIPServerTransaction
 		} catch (IOException e) {
 
 			this.setState(TransactionState.TERMINATED);
+			this.collectionTime = 0;
 			throw e;
 
 		}
@@ -986,9 +987,33 @@ public class SIPServerTransaction
 			return TransactionState.PROCEEDING;
 		else return super.getState();
 	}
+
+
+	/** Sets a timeout after which the connection is closed (provided the server does not
+	* use the connection for outgoing requests in this time period) 
+	* and  calls the superclass to set state.
+	*/
+	public void setState (TransactionState newState) {
+			// Set this timer for connection caching
+			// of incoming connections. 
+			if ( newState == TransactionState.TERMINATED && 
+				this.isReliable() && 
+			    ( ! getSIPStack().cacheServerConnections )  ){
+			    // Set a time after which the connection
+			    // is closed.
+			    this.collectionTime = TIMER_J;
+			}
+			super.setState(newState);
+	}
+
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.24  2004/02/26 17:30:21  mranga
+ * Submitted by:  jeand
+ * Reviewed by:  mranga
+ * Dont transition to terminated on anything but 200 ok receipt on the client side.
+ *
  * Revision 1.23  2004/02/25 19:17:55  mranga
  * Submitted by:  Bruce van Gelder
  * Reviewed by:  mranga

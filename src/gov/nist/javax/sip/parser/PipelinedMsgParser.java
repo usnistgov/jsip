@@ -26,7 +26,7 @@ import sim.java.net.*;
  * This can be accessed from the SIPMessage using the getContent and
  * getContentBytes methods provided by the SIPMessage class. 
  *
- * @version JAIN-SIP-1.1 $Revision: 1.10 $ $Date: 2004-02-29 15:32:58 $
+ * @version JAIN-SIP-1.1 $Revision: 1.11 $ $Date: 2004-03-07 22:25:23 $
  *
  * @author <A href=mailto:mranga@nist.gov > M. Ranganathan  </A>
  *
@@ -347,11 +347,9 @@ public final class PipelinedMsgParser implements Runnable {
 							if (readlength >= 0) {
 								nread += readlength;
 							} else {
-								if (readlength <= 0) {
-								    Thread.yield();
-								    retry_count++;
-								    continue;
-								} 
+							    Thread.yield();
+							    retry_count++;
+							    continue;
 							}
 						} catch (IOException ex) {
 							ex.printStackTrace();
@@ -382,6 +380,10 @@ public final class PipelinedMsgParser implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/02/29 15:32:58  mranga
+ * Reviewed by:   mranga
+ * bug fixes on limiting the max message size.
+ *
  * Revision 1.9  2004/02/29 00:46:34  mranga
  * Reviewed by:   mranga
  * Added new configuration property to limit max message size for TCP transport.
