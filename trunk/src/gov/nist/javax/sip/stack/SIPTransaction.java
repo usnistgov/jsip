@@ -970,4 +970,8 @@ public abstract class SIPTransaction
 	  return encapsulatedChannel.isSecure();
      }
 
+     public MessageProcessor getMessageProcessor() {
+		return this.encapsulatedChannel.getMessageProcessor();
+     }
+
 }

@@ -181,6 +181,7 @@ public class UDPMessageProcessor  extends MessageProcessor {
 	synchronized(this.messageQueue) {
            this.isRunning = false;
            this.messageQueue.notifyAll();
+	   this.listeningPoint = null;
            sock.close();
 	}
     }

@@ -58,8 +58,6 @@ public class AuthenticationInfoParser extends ParametersParser{
                     this.lexer.match(',');
                     this.lexer.SPorHT();
                     
-                    authenticationInfo= new AuthenticationInfo();
-                    
                     nv=super.nameValue();
                     authenticationInfo.setParameter(nv);
                     this.lexer.SPorHT();
@@ -84,7 +82,7 @@ public class AuthenticationInfoParser extends ParametersParser{
         for (int i = 0; i < r.length; i++ ) {
             AuthenticationInfoParser parser =
             new AuthenticationInfoParser(r[i]);
-            AuthenticationInfoList a= (AuthenticationInfoList) parser.parse();
+            AuthenticationInfo a= (AuthenticationInfo) parser.parse();
             System.out.println("encoded = " + a.encode());
         }    
     }

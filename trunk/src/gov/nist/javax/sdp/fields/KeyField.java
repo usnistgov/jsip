@@ -6,7 +6,8 @@ import gov.nist.core.*;
 import java.net.*;
 import javax.sdp.*;
 /**
-*   Key field part of an SDP header
+*   Key field part of an SDP header. 
+* Acknowledgement. Bug fix contributed by espen@java.net
 *
 *@version  JSR141-PUBLIC-REVIEW (subject to change)
 *
@@ -44,22 +45,17 @@ public class KeyField  extends SDPField   implements javax.sdp.Key {
      * @since v1.0
      */
     public String encode() {
-        String encoded_string; 
-	encoded_string = KEY_FIELD + type;
-	if (type.compareToIgnoreCase(SDPKeywords.PROMPT) == 0) {
-	    if (type.compareToIgnoreCase(SDPKeywords.URI) == 0) {
-	        encoded_string += Separators.COLON;
-		encoded_string += keyData;
-	    } else {
-		if (keyData != null) {
-	           encoded_string += Separators.COLON;
-		   encoded_string += keyData;
-		}
-	    }
-	}
-	encoded_string += Separators.NEWLINE;
-	return encoded_string;
-    }
+    String encoded_string;
+      encoded_string = KEY_FIELD + type;
+      if (keyData != null) {
+        encoded_string += Separators.COLON;
+        encoded_string += keyData;
+      }
+    encoded_string += Separators.NEWLINE;
+    return encoded_string;
+   }
+	
+
 
     /** Returns the name of this attribute
      * @throws SdpParseException
