@@ -392,23 +392,8 @@ public class Shootist implements SipListener {
 					+ "a=rtpmap:4 G723/8000\r\n"
 					+ "a=rtpmap:18 G729A/8000\r\n"
 					+ "a=ptime:20\r\n";
-/**
-			StringBuffer sdpBuff = new StringBuffer();
-			for (int i = 0; i < 500; i++)  {
-				sdpBuff.append(sdp);
-			}
-			String sdpData = sdpBuff.toString();
-			File dataFile = new File("data.txt");
-			long length = dataFile.length();
-		        FileInputStream fis = new FileInputStream(dataFile);
-			byte[] contents = new byte[(int)length];
-			fis.read(contents);
-			System.out.println("length = " + contents.length);
-**/
-			byte[]  contents = sdpData.getBytes();
-			//byte[]  contents = sdpBuff.toString().getBytes();
 
-			request.setContent(contents, contentTypeHeader);
+			request.setContent(sdpData, contentTypeHeader);
 
 			extensionHeader =
 				headerFactory.createHeader(
@@ -443,6 +428,11 @@ public class Shootist implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.32  2004/12/01 19:05:14  mranga
+ * Reviewed by:   mranga
+ * Code cleanup remove the unused SIMULATION code to reduce the clutter.
+ * Fix bug in Dialog state machine.
+ *
  * Revision 1.31  2004/08/30 14:33:53  mranga
  * Submitted by:  mranga
  * Reviewed by:   mranga
