@@ -24,7 +24,7 @@ import java.text.ParseException;
  * retrieve this structure from the SipStack. Bugs against route set 
  * management were reported by Antonis Karydas and Brad Templeton.
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.22 $ $Date: 2004-02-24 22:39:34 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.23 $ $Date: 2004-02-26 14:28:51 $
  *
  *@author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -549,13 +549,24 @@ public class DialogImpl implements javax.sip.Dialog {
 		// Idiot check.
 		if (this == sipStack.dummyDialog) return;
 
-		SIPRequest sipRequest = (SIPRequest) transaction.getOriginalRequest();
+		SIPRequest sipRequest = (SIPRequest) 
+				transaction.getOriginalRequest();
 
 		// Proessing a re-invite.
 		if (firstTransaction != null
 			&& firstTransaction != transaction
-			&& transaction.getMethod().equals(firstTransaction.getMethod())) {
+			&& transaction.getMethod().equals
+			(firstTransaction.getMethod())) {
 			this.reInviteFlag = true;
+		}
+
+		// Set state to Completed if we are processing a 
+		// BYE transaction for the dialog.
+		// Will be set to TERMINATED after the BYE 
+		// transaction completes.
+
+		if (sipRequest.getMethod().equals(Request.BYE)) {
+				this.setState(COMPLETED_STATE);
 		}
 
 		if (firstTransaction == null) {
@@ -1442,6 +1453,11 @@ public class DialogImpl implements javax.sip.Dialog {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.22  2004/02/24 22:39:34  mranga
+ * Reviewed by:   mranga
+ * Only terminate the client side dialog when the bye Terminates or times out
+ * and not when the bye is initially sent out.
+ *
  * Revision 1.21  2004/02/15 20:49:10  mranga
  * Reviewed by:   mranga
  * Return an empty iterator if the route set is empty.
