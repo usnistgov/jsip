@@ -586,7 +586,7 @@ javax.sip.SipProvider, SIPTransactionEventListener {
                     ListIterator rl =
                     newRequest.getHeaders(RouteHeader.NAME);
                     Route route = (Route) rl.next();
-                    newRequest.setRequestURI(route.getAddress().getURI());
+                    //newRequest.setRequestURI(route.getAddress().getURI());
                     rl.remove();
                 } else newRequest = sipRequest;
                 MessageChannel messageChannel =
