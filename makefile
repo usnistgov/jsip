@@ -325,7 +325,7 @@ viewerjar:
 	cd lib/xerces;jar -xvf xerces.jar	
 	jar  cvfm tracesviewer.jar  		\
 	 manifest.viewer  			\
-	-C ./classes tools/tracesviewer			\
+	-C ./classes ./tools/tracesviewer			\
 	-C ./lib/xerces      org				\
 	-C ./lib/xerces      javax				
 
