@@ -543,16 +543,15 @@ implements  ParseExceptionListener, Runnable {
             try {
                 DatagramSocket sock;
                 if (stack.udpFlag) {
-                    // Bind the socket to the stack address in case there
-                    // are multiple interfaces on the machine (feature reqeust
-                    // by Will Scullin) 0 binds to an ephemeral port.
-                    sock = new DatagramSocket(0,stack.stackInetAddress);
+		    sock = ((UDPMessageProcessor)messageProcessor).sock;
+			
+                    //sock = new DatagramSocket(0,stack.stackInetAddress);
                 } else {
                     // bind to any interface and port.
                     sock = new DatagramSocket();
                 }
                 sock.send(reply);
-                sock.close();
+		if ( ! stack.udpFlag) sock.close();
             } catch (IOException ex) {
                 throw ex;
             } catch (Exception ex) {
