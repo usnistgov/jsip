@@ -120,7 +120,7 @@ import sim.java.*;
  *@author Bug fixes by Emil Ivov.
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2004-02-13 13:55:32 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.18 $ $Date: 2004-02-24 22:39:34 $
  */
 public class SIPClientTransaction
 	extends SIPTransaction
@@ -454,6 +454,12 @@ public class SIPClientTransaction
 					// Invite transaction generated an error.
 					dialog.setState(DialogImpl.TERMINATED_STATE);
 				}
+			}
+
+			// Only terminate the dialog on 200 OK response to BYE
+			if ( this.getMethod().equals(Request.BYE) && 
+				transactionResponse.getStatusCode() == 200 ) {
+				dialog.setState(DialogImpl.TERMINATED_STATE);
 			}
 		}
 		try {
@@ -938,6 +944,10 @@ public class SIPClientTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2004/02/13 13:55:32  mranga
+ * Reviewed by:   mranga
+ * per the spec, Transactions must always have a valid dialog pointer. Assigned a dummy dialog for transactions that are not assigned to any dialog (such as Message).
+ *
  * Revision 1.16  2004/01/25 16:06:24  mranga
  * Reviewed by:   M. Ranganathan
  *
