@@ -80,8 +80,9 @@ c:/jakarta-ant/bin/ant all
 	<property name= "jain_api_jar" value = "JainSipApi1.1.jar" />
 	<property name= "ri_jar" value = "nist-sip-1.2.jar" />
 	<property name= "sdp_jar" value = "nist-sdp-1.0.jar" />
+	<property name= "sip-sdp-jar" value = "sip-sdp.jar" />
 
-	<target name="all" depends="clean,compilestack,compileri,compilesdp,compileexamples,compiletools,javadoc" />
+	<target name="all" depends="clean,compilestack,compileri,compilesdp,sip-sdp-jar,compileexamples,compiletools,javadoc" />
 
 	<!-- Clean everything -->
 	<target name="clean">
@@ -200,6 +201,11 @@ c:/jakarta-ant/bin/ant all
 			</classpath>
 		</javac>
 		<jar destfile="${sdp_jar}" basedir="${classes}" includes="gov/nist/javax/sdp/**/*.class,javax/sdp/**/*.class"/>
+	</target>
+
+	<target name="sip-sdp-jar"  depends="init">
+		<jar destfile="${sip-sdp-jar}" basedir="${classes}" 
+			includes="javax/**/*.class,gov/nist/**/*.class"/>
 	</target>
 
 	<!-- Compile the examples -->
