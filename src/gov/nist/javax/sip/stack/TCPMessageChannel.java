@@ -33,7 +33,7 @@ import sim.java.net.*;
  * Niklas Uhrberg suggested that a mechanism be added to limit the number
  * of simultaneous open connections.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.30 $ $Date: 2004-07-16 17:13:56 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.31 $ $Date: 2004-08-23 23:56:20 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public final class TCPMessageChannel
@@ -118,6 +118,7 @@ implements SIPMessageListener, Runnable {
         myClientInputStream = mySock.getInputStream();
         myClientOutputStream = mySock.getOutputStream();
         mythread = new Thread(this);
+	mythread.setDaemon(true);
         mythread.setName("TCPMessageChannelThread");
         // Stash away a pointer to our stack structure.
         stack = sipStack;
@@ -273,6 +274,7 @@ implements SIPMessageListener, Runnable {
             this.myClientInputStream = mySock.getInputStream();
             this.myClientOutputStream = mySock.getOutputStream();
             Thread thread = new Thread(this);
+	    thread.setDaemon(true);
             thread.setName("TCPMessageChannelThread");
             thread.start();
         }
@@ -362,16 +364,17 @@ implements SIPMessageListener, Runnable {
             this.myClientInputStream = mySock.getInputStream();
             this.myClientOutputStream = mySock.getOutputStream();
             // start a new reader on this end of the pipe.
-            //ifdef SIMULATION
+//ifdef SIMULATION
 /*
                         SimThread mythread = new SimThread(this);
                                     mythread.setName("TCPMessageChannelThread");
 //else
  */
             Thread mythread = new Thread(this);
+	    mythread.setDaemon(true);
             mythread.setName("TCPMessageChannelThread");
-            //endif
-            //
+//endif
+//
             
             mythread.start();
         }
@@ -727,6 +730,12 @@ implements SIPMessageListener, Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.30  2004/07/16 17:13:56  mranga
+ * Submitted by:  Damand Joost
+ * Reviewed by:   mranga
+ *
+ * Make threads into daemon threads, use address for received = parameter on via
+ *
  * Revision 1.29  2004/06/21 05:42:33  mranga
  * Reviewed by:  mranga
  * more code smithing
