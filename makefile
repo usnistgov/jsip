@@ -178,8 +178,8 @@ zipfile:
 	cd ../;		\
 	$(RM) $(ZIPFILE_NAME);	\
 	zip $(ZIPFILE_NAME)			        	\
-	-r ./$(PROJECT_ROOT)/lib/xerces			        \
-	-r ./$(PROJECT_ROOT)/lib/junit/junit.jar		        \
+	-r ./$(PROJECT_ROOT)/lib/xerces/xerces.jar	        \
+	-r ./$(PROJECT_ROOT)/lib/junit/junit.jar	        \
 	-r ./$(PROJECT_ROOT)/src/gov/nist/javax			\
 	-r ./$(PROJECT_ROOT)/src/gov/nist/core		        \
 	-r ./$(PROJECT_ROOT)/src/tools/tracesviewer	        \
@@ -293,7 +293,7 @@ tarfile:
 	--exclude *.log						\
 	--exclude debug.txt					\
 	./$(PROJECT_ROOT)/manifest.tck				\
-	./$(PROJECT_ROOT)/lib/xerces			        \
+	./$(PROJECT_ROOT)/lib/xerces/xerces.jar		        \
 	./$(PROJECT_ROOT)/lib/junit/junit.jar		        \
 	./$(PROJECT_ROOT)/src/javax				\
 	./$(PROJECT_ROOT)/src/test/tck				\
