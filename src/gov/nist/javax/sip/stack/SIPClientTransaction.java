@@ -406,6 +406,7 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
             		! dialog.getRemoteTag().equals
             		(transactionResponse.getToTag())) {
                 String dialogId = transactionResponse.getDialogId(false);
+		dialog.setRemoteTag(transactionResponse.getToTag());
                 dialog.setDialogId(dialogId);
                 if (sipStackImpl.isDialogCreated(method)) {
                     sipStackImpl.putDialog(dialog);

@@ -512,16 +512,10 @@ public class DialogImpl implements javax.sip.Dialog {
     public String getDialogId() {
 	
         if (firstTransaction instanceof SIPServerTransaction ) {
-            if (true || this.dialogId == null) {
                 SIPRequest sipRequest = (SIPRequest)
                 ((SIPServerTransaction) firstTransaction).getRequest();
                 this.dialogId = sipRequest.getDialogId(true,this.myTag);
-            }
-            
         } else {
-            // This is a server transaction. Compute the dialog id
-            // from the tag we have assigned to the outgoing
-            // response of the dialog creating transaction.
     		if (   this.getFirstTransaction() != null && 
 			((SIPClientTransaction)this.getFirstTransaction()).
 			getLastResponse() != null) {
