@@ -212,7 +212,7 @@ zipfile:
 	cd ../;		\
 	$(RM) $(ZIPFILE_NAME);	\
 	zip $(ZIPFILE_NAME)			        	\
-	-r ./$(PROJECT_ROOT)/lib/junit3.8.1/junit.jar	        \
+	-r ./$(PROJECT_ROOT)/lib/junit.jar	        \
 	-r ./$(PROJECT_ROOT)/src/gov/nist/javax			\
 	-r ./$(PROJECT_ROOT)/src/gov/nist/core		        \
 	-r ./$(PROJECT_ROOT)/src/gov/nist/core/net	        \
@@ -314,7 +314,7 @@ tarfile:
 	--exclude *.log						\
 	--exclude debug.txt					\
 	./$(PROJECT_ROOT)/manifest.tck				\
-	./$(PROJECT_ROOT)/lib/junit3.8.1/junit.jar		        \
+	./$(PROJECT_ROOT)/lib/junit.jar		        \
 	./$(PROJECT_ROOT)/src/javax				\
 	./$(PROJECT_ROOT)/src/test/tck				\
 	./$(PROJECT_ROOT)/src/test/torture			\
@@ -344,15 +344,15 @@ ship:  all
 	$(MAKE) tarfile
 
 
-#	$(JAIN_API_JAR) $(RI_JAR)  lib/junit3.8.1/junit.jar
+#	$(JAIN_API_JAR) $(RI_JAR)  lib/junit.jar
 
 # Build the jain api TCK
 tck:
 	cd src/test/tck;$(MAKE) all			
-	cd lib/junit3.8.1;jar -xvf junit.jar			
+	cd lib/;jar -xvf junit.jar			
 	jar  cvfm jain-sip-1.1.tck.jar  		\
 	 manifest.tck  					\
-	-C ./lib/junit3.8.1 junit				\
+	-C ./lib/ junit				\
 	-C ./classes test/tck/ 				\
 	-C ./classes gov/nist/javax/sip 		\
 	-C ./classes gov/nist/core 			\
@@ -361,7 +361,7 @@ tck:
 
 libzip:
 	zip libs.zip 		      			\
-	-r lib/junit3.8.1/junit.jar				
+	-r lib/junit.jar				
 
 #Builds the traces viewer jar file:
 viewerjar:
