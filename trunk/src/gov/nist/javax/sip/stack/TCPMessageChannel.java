@@ -33,7 +33,7 @@ import sim.java.net.*;
  * Niklas Uhrberg suggested that a mechanism be added to limit the number
  * of simultaneous open connections.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.23 $ $Date: 2004-04-21 16:25:22 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.24 $ $Date: 2004-04-22 22:51:19 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public final class TCPMessageChannel
@@ -437,13 +437,13 @@ public final class TCPMessageChannel
 		if (LogWriter.needsLogging)
 			stack.logWriter.logException(ex);
 		// Log the bad message for later reference.
-		if (hdrClass.equals(From.class)
+		if ((hdrClass!=null) && (hdrClass.equals(From.class)
 			|| hdrClass.equals(To.class)
 			|| hdrClass.equals(CSeq.class)
 			|| hdrClass.equals(Via.class)
 			|| hdrClass.equals(CallID.class)
 			|| hdrClass.equals(RequestLine.class)
-			|| hdrClass.equals(StatusLine.class)) {
+			|| hdrClass.equals(StatusLine.class))) {
 			stack.logBadMessage(message);
 			throw ex;
 		} else {
@@ -804,6 +804,11 @@ public final class TCPMessageChannel
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.23  2004/04/21 16:25:22  mranga
+ * Reviewed by:   mranga
+ * Record IP address of peer in TCP connection as soon as connection is made.
+ * Remove range check on Warning.java
+ *
  * Revision 1.22  2004/03/30 17:53:56  mranga
  * Reviewed by:   mranga
  * more reference counting cleanup

@@ -14,6 +14,9 @@ import java.text.ParseException;
  * IPv6 Support added by Emil Ivov (emil_ivov@yahoo.com)<br/>
  * Network Research Team (http://www-r2.u-strasbg.fr))<br/>
  * Louis Pasteur University - Strasbourg - France<br/>
+ *
+ *Bug fixes for corner cases were contributed by Thomas Froment.
+ *
  */
 
 public class HostNameParser extends ParserCore {
@@ -135,9 +138,10 @@ public class HostNameParser extends ParserCore {
 			HostPort hp = new HostPort();
 			hp.setHost(host);
 			// Has a port?
+			lexer.SPorHT(); // white space before ":port" should be accepted
 			if (lexer.hasMoreChars() && lexer.lookAhead(0) == ':') {
 				lexer.consume(1);
-				lexer.SPorHT(); // white space before port number should be accepted (CERT test)
+				lexer.SPorHT(); // white space before port number should be accepted
 				try {
 					String port = lexer.number();
 					hp.setPort(Integer.parseInt(port));
@@ -162,14 +166,15 @@ public class HostNameParser extends ParserCore {
 				"proxima.chaplin.bt.co.uk",
 				"129.6.55.181:2345",
 				":1234",
-				"foo.bar.com:         1234"
+				"foo.bar.com:         1234",
+				"foo.bar.com     :      1234   ",
 			};
 			
 		for (int i = 0; i < hostNames.length; i++) {
 			try {
 				HostNameParser hnp = new HostNameParser(hostNames[i]);
 				HostPort hp = hnp.hostPort();
-				System.out.println(hp.encode());
+				System.out.println("["+hp.encode()+"]");
 			} catch (ParseException ex) {
 				System.out.println("exception text = " + ex.getMessage());
 			}
@@ -179,8 +184,13 @@ public class HostNameParser extends ParserCore {
 
 }
 /*
- * $Log: not supported by cvs2svn $
-  * Revision 1.4  2004/01/22 13:26:27  sverker
+* $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/04/20 16:37:40  mranga
+ * Submitted by:  Thomas Froment
+ * Reviewed by:  mranga
+ * Fixes a parsing corner case.
+ *
+ * Revision 1.4  2004/01/22 13:26:27  sverker
  * Issue number:
  * Obtained from:
  * Submitted by:  sverker
