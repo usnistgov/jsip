@@ -43,7 +43,7 @@ javax.sip.SipProvider, SIPTransactionEventListener {
     
     protected  ListeningPointImpl listeningPoint;
     
-    private    SIPServerTransaction currentTransaction;
+    // private    SIPServerTransaction currentTransaction;
     
     
     /** Stop processing messages for this provider. Post an empty message to our
@@ -146,8 +146,8 @@ javax.sip.SipProvider, SIPTransactionEventListener {
                         return;
                     }
                     if (sipEvent instanceof RequestEvent) {
-                        this.currentTransaction =
-                        (SIPServerTransaction) eventWrapper.transaction;
+                        // this.currentTransaction =
+                        // (SIPServerTransaction) eventWrapper.transaction;
                         // Check if this request has already created a 
 			// transaction
                         SIPRequest sipRequest =
@@ -163,6 +163,8 @@ javax.sip.SipProvider, SIPTransactionEventListener {
                                 continue;
                             }
                         }
+			// Set up a pointer to the transaction.
+			sipRequest.setTransaction(eventWrapper.transaction);
 			// Processing incoming CANCEL.
 		        if (sipRequest.getMethod().equals(Request.CANCEL) ) {
                             SIPTransaction tr =
@@ -443,15 +445,19 @@ javax.sip.SipProvider, SIPTransactionEventListener {
             if (! sipStack.hasResources())
                 throw new TransactionUnavailableException
                 ("Resource Not available!");
-            transaction = (SIPServerTransaction) this.currentTransaction;
+            transaction = (SIPServerTransaction) 
+			  ( (SIPRequest) request).getTransaction();
 	    if (transaction == null) 
 		throw new  TransactionUnavailableException
 		("Transaction not available");
+	    /**
             if (!transaction.isMessagePartOfTransaction((SIPRequest) request)) {
                 throw new TransactionUnavailableException
                 ("Request Mismatch");
             }
-            transaction.setOriginalRequest(sipRequest);
+	    **/
+	    if (transaction.getOriginalRequest() == null) 
+            	transaction.setOriginalRequest(sipRequest);
             try {
                 sipStack.addTransaction(transaction);
             } catch (IOException ex) {
@@ -476,14 +482,13 @@ javax.sip.SipProvider, SIPTransactionEventListener {
             if (transaction != null)
                 throw new TransactionAlreadyExistsException
                 ("Transaction exists! ");
-            transaction = (SIPServerTransaction) this.currentTransaction;
+	    transaction = (SIPServerTransaction) 
+			  ( (SIPRequest) request).getTransaction();
             if (transaction == null)
                 throw new TransactionUnavailableException
                 ("Transaction not available!");
-            if (!transaction.isMessagePartOfTransaction((SIPRequest) request) )
-                throw new TransactionUnavailableException
-                ("Request Mismatch");
-            transaction.setOriginalRequest(sipRequest);
+	    if (transaction.getOriginalRequest() == null) 
+                transaction.setOriginalRequest(sipRequest);
             // Map the transaction.
             try {
                 sipStack.addTransaction(transaction);
