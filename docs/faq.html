@@ -93,6 +93,8 @@ bug. I am afraid of your changes so can you help me fix that vintage version?
 mutli-threaded machine with dual headed monitors to get better 
 performance out of NIST-SIP? </a></li>
 <li><a href="#40">What dialog support is provided by JAIN SIP ? </a> </li>
+<li><a href="#41">How do  you make shootist shoot somewhere else 
+(at another machine) ? </a> </li>
 <li><a href="#questionables"> I have some questionable questions. Where do I look? <a/></li>
 </ol>
 <br/>
@@ -535,6 +537,21 @@ dialog support is provided for authentication. This is an application
 responsibility. In dialog requests are delvered to the application in
 strict sequentially increasing order as specified in Chapter 12 of the
 RFC 3261.
+
+<hr size="2" noshade="noshade"> 
+<a name="41"> </a>
+<li>
+How do  you make shootist shoot somewhere else 
+(at another machine) ?  <br/>
+
+Change the variable peerHostPort in Shootist.java to whatever host
+and port  you want to shoot at (ie. where the shootme resides will be
+a wise choice).  You can also leave out the RouterImpl and HopImpl and
+just use the default (just dont specify the stack configuration property
+for ROUTER_PATH ).  The example router was provided to show you how  you
+can write your own router (to look up DNS records for example).
+
+</li>
 
 </li>
 
