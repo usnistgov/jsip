@@ -158,6 +158,13 @@ will be automatically disabled when AUTOMATIC_DIALOG_SUPPORT is set to
 false.If AUTMATIC_DIALOG_SUPPORT = false then RETRANSMISSION_FILTER = false;
 </li>
 
+<li><b>Add SipTransaction set/getApplicationData() </b> <br/>
+This allows an application to associate an un-interpreted object with
+a Transaction and retrieve it for later use.
+Applications that manage their own dialog layer may use this feature 
+to associate application context with Transactions.
+</li>
+ 
 <li><b>The stack needs to support only one Provider -- not a provider for
 each transport </b> <br/> The IP address and port of the stack is known when 
 sending outbound messages thus the documentation will note that there
