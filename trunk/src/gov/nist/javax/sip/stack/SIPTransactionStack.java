@@ -24,8 +24,8 @@ import sim.java.net.*;
  * transaction-aware MessageChannels that encapsulate the original channels
  * and handle the transaction state machine, retransmissions, etc.
  *
- *@author	Jeff Keyser (original) 
- * M. Ranganathan <mranga@nist.gov>  <br/> (Added Dialog table).
+ *@author Jeff Keyser (original) 
+ *@author M. Ranganathan <mranga@nist.gov>  <br/> (Added Dialog table).
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
  *@version  JAIN-SIP-1.1
@@ -485,8 +485,8 @@ extends SIPStack implements  SIPTransactionEventListener {
 					d.getLastTransaction();
 				// If stack is managing the transaction
 				// then retransmit the last response.
-				if ( transaction.getState().getValue() ==
-				    SIPTransaction.TERMINATED_STATE &&
+				if ( TransactionState.TERMINATED == 
+				    transaction.getState() &&
 				     ((SIPServerTransaction) transaction).
 					isMapped ) {
 				     SIPResponse response = 
