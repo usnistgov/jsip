@@ -130,6 +130,7 @@ extends SIPTransaction
 implements SIPServerRequestInterface, javax.sip.ServerTransaction {
 
     protected int collectionTime;
+
     
     // Real RequestInterface to pass messages to
     private SIPServerRequestInterface	requestOf;
@@ -822,8 +823,16 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
 	      // Bug reported by Antonis Karydas
 	      getState( ).getValue() == COMPLETED_STATE) &&
             isInviteTransaction() ) {
-            raiseErrorEvent
-            ( SIPTransactionErrorEvent.TIMEOUT_ERROR );
+	    // TIMER_I should not generate a timeout 
+	    // exception to the application when the 
+	    // Invite transaction is in completed state.
+	    // Ben Evans (Open cloud) submited a bug 
+	    // report.
+	    if ( getState( ).getValue() != COMPLETED_STATE) {
+               raiseErrorEvent
+               ( SIPTransactionErrorEvent.TIMEOUT_ERROR );
+	    }
+
 	    setState( TERMINATED_STATE);
             
         } else if(  ! isInviteTransaction() && (
