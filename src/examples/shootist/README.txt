@@ -7,7 +7,7 @@ UAS.
 To run this example, open up two windows.  From the first one, type "make
 shootme" and from the second one type "make shootist". The shootist will
 send up an invite to the shootme and the victim (shootme) will respond
-like a UAC should.
+like a UAC should (or it might even kick up its legs and die).
 
 For illustrative purposes, this example turns debugging and loggin on. You
 should do so when you are developing your applications.  You will
