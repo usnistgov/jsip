@@ -19,7 +19,7 @@ import gov.nist.core.*;
  * NIST-SIP stack and event model with the JAIN-SIP stack. Implementors
  * of JAIN services need not concern themselves with this class.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.14 $ $Date: 2004-02-13 13:55:31 $
+ * @version JAIN-SIP-1.1 $Revision: 1.15 $ $Date: 2004-02-19 15:20:27 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Bug fix Contributions by Lamine Brahimi and  Andreas Bystrom. <br/>
@@ -113,6 +113,10 @@ public class NistSipMessageHandlerImpl
 							+ "Sending ACK to the TU");
 				} else {
 
+					// This could be a re-invite processing.
+					// check to see if the ack matches with the last
+					// transaction.
+
 					SIPTransaction tr = dialog.getLastTransaction();
 					SIPResponse sipResponse = tr.getLastResponse();
 
@@ -121,17 +125,7 @@ public class NistSipMessageHandlerImpl
 						&& sipResponse.getCSeq().getSequenceNumber()
 							== sipRequest.getCSeq().getSequenceNumber()) {
 
-						if (sipStackImpl.isRetransmissionFilterActive() ||
-							!dialog.isAckSeen() ) {
-							dialog.ackReceived(sipRequest);
-							transaction.setDialog(dialog);
-						} else {
-							if (LogWriter.needsLogging) 
-								sipStackImpl.logMessage
-								("Retransmission Filter enabled - dropping Ack"+
-								 " retransmission");
-							return;
-						}
+						transaction.setDialog(dialog);
 						if (LogWriter.needsLogging)
 							sipStackImpl.logMessage(
 								"ACK retransmission for 2XX response "
@@ -488,6 +482,10 @@ public class NistSipMessageHandlerImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/02/13 13:55:31  mranga
+ * Reviewed by:   mranga
+ * per the spec, Transactions must always have a valid dialog pointer. Assigned a dummy dialog for transactions that are not assigned to any dialog (such as Message).
+ *
  * Revision 1.13  2004/02/11 20:22:30  mranga
  * Reviewed by:   mranga
  * tighten up the sequence number checks for BYE processing.
