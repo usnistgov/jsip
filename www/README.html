@@ -204,27 +204,30 @@ was fixed.
 	A new configuration parameter gov.nist.javax.sip.MAX_MESSAGE_SIZE 
 	was added to limit the max size of messages.
 
-<li>Venkatesh from CMU noticed that there were threads hanging around even 
-after all stack resources had been released. This was corrected by adding
-a stack finalization method that exits all threads. The stack now
-runs happily as an applet.
+<li>Venkatesh from CMU noticed that there were threads hanging around
+even after all stack resources had been released. This was corrected
+by adding a stack finalization method that exits all threads. The stack
+now runs happily as an applet.
 
 
-<li> Dave Stuart (SIPQuest Communications) discovered a deadlock with the 
-stack and submitted a bug fix for this. Dave also discovered an error with
-ParametersHeader in converting String to boolean.
+<li> Dave Stuart (SIPQuest Communications) discovered a deadlock with
+the stack and submitted a bug fix for this. Dave also discovered an
+error with ParametersHeader in converting String to boolean.
 
 
-<li> Thomas Froment (Nextenso.com) submitted a bug fix for parsing of host:port 
-as discovered in the CERT tests (there could be one or more spaces between host and port).
+<li> Thomas Froment (Nextenso.com) submitted a bug fix for parsing of
+host:port as discovered in the CERT tests (there could be one or more
+spaces between host and port). Thomas suggested that the main scanner
+thread be eliminated from the SIPTransaction Stack and Timers be used
+instead.
 
-<li>Alex Rootham from Blue Slice noticed that out of sequence messages directed
-to a Dialog should be responded to with a 500 (Internal Server Error) by a UAS. 
-This is decidedly strange but the spec does say so. This support was 
-added to the stack.
+<li>Alex Rootham from Blue Slice noticed that out of sequence messages
+directed to a Dialog should be responded to with a 500 (Internal Server
+Error) by a UAS.  This is decidedly strange but the spec does say so. This
+support was added to the stack.
 
-<li>Bruce Evangelder from Soleo communications found a race condition with
-the UDP message processor.
+<li>Bruce Evangelder from Soleo communications found a race condition
+with the UDP message processor.
 
 
 </ul>
