@@ -158,9 +158,17 @@ import sim.java.net.*;
  * the application layer's responsibility to strip the route header. 
  *</li>
  *
+ * <li> <b> javax.sip.DIALOG_SUPPORT = [ true | false ] </b>
+ * <b> This is a planned feature for the next version of the spec </b>
+ * if set to true JAIN-SIP provides dialog suport (this is the default)
+ * if set to false JAIN-SIP will not provide dialog support. The application
+ * needs to manage its own dialogs.  If dialog support is disabled, then
+ * the retransmission filter is automatically disabled.
+ * </li>
+ *
  *</ul>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.34 $ $Date: 2004-09-26 14:48:02 $
+ * @version JAIN-SIP-1.1 $Revision: 1.35 $ $Date: 2004-09-27 18:51:18 $
  * 
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -186,6 +194,10 @@ public class SipStackImpl
 	// Flag to indicate whether stack or application will handle
 	// removal of topmost route header.
 	protected boolean stripRouteHeader;
+
+	// Flag to indicate whether the stack will provide dialog
+	// support.
+	protected boolean dialogSupport;
 
 
 	/** Creates a new instance of SipStackImpl.
@@ -471,6 +483,10 @@ public class SipStackImpl
 		this.stripRouteHeader = true;
 		this.stripRouteHeader = (flagStr == null? true : "true".equals(flagStr));
 
+		// flag to indicate whether the stack will provide dialog support.
+		String dialogSupportStr = configurationProperties.getProperty("javax.sip.DIALOG_SUPPORT");
+		this.dialogSupport = (flagStr == null ? true : "false".equals(dialogSupportStr));
+
 		
 //ifdef SIMULATION
 /*
@@ -752,6 +768,12 @@ public class SipStackImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.34  2004/09/26 14:48:02  mranga
+ * Submitted by:  John Martin
+ * Reviewed by:   mranga
+ *
+ * Remove unnecssary synchronization.
+ *
  * Revision 1.33  2004/09/07 18:25:53  mranga
  * Submitted by:  Bill Roome
  * Reviewed by:   mranga
