@@ -26,7 +26,7 @@ import sim.java.net.*;
  * This can be accessed from the SIPMessage using the getContent and
  * getContentBytes methods provided by the SIPMessage class. 
  *
- * @version JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2004-02-25 20:52:46 $
+ * @version JAIN-SIP-1.1 $Revision: 1.8 $ $Date: 2004-02-25 21:43:03 $
  *
  * @author <A href=mailto:mranga@nist.gov > M. Ranganathan  </A>
  *
@@ -300,13 +300,17 @@ public final class PipelinedMsgParser implements Runnable {
 					contentLength = 0;
 				}
 
+				// TODO add a mechanism to deal with DOS attacks
+				// that try to defeat the system by just pushing
+				// vast amounts of data at us.
+				// TODO Add a timeout to this read so clients 
+				// that lie about content length will not hang this
+				// thread.
+
 				if (contentLength == 0) {
-					Debug.println("content length " + contentLength);
 					sipMessage.removeContent();
 				} else { // deal with the message body.
 					contentLength = cl.getContentLength();
-					Debug.println("content length " + contentLength);
-					
 					byte[] message_body = new byte[contentLength];
 					int nread = 0;
 					while (nread < contentLength) {
@@ -318,7 +322,6 @@ public final class PipelinedMsgParser implements Runnable {
 									contentLength - nread);
 							if (readlength >= 0) {
 								nread += readlength;
-								Debug.println("read " + nread);
 							} else {
 								break;
 							}
@@ -343,6 +346,10 @@ public final class PipelinedMsgParser implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/02/25 20:52:46  mranga
+ * Reviewed by:   mranga
+ * Fix TCP transport so messages in excess of 8192 bytes are accepted.
+ *
  * Revision 1.6  2004/01/22 18:39:41  mranga
  * Reviewed by:   M. Ranganathan
  * Moved the ifdef SIMULATION and associated tags to the first column so Prep preprocessor can deal with them.
