@@ -33,7 +33,7 @@ import sim.java.net.*;
  * returnResponse  for successful message processing and throw
  * SIPServerException for unsuccessful message processing.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2004-04-19 21:51:04 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.18 $ $Date: 2004-05-14 20:20:03 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * 
@@ -91,10 +91,16 @@ public abstract class SIPStack {
 	protected String stackName;
 
 	/**
-	 * IP address of stack
+	 * IP address of stack -- this can be re-written by stun.
 	 */
 	protected String stackAddress; // My host address.
 	protected InetAddress stackInetAddress; // INET address of stack.
+
+	/**
+	 * IP address of stack
+	 */
+	protected String savedStackAddress; // My host address.
+	protected InetAddress savedStackInetAddress; // INET address of stack.
 
 	/**
 	 * Request factory interface (to be provided by the application)
@@ -293,7 +299,7 @@ public abstract class SIPStack {
 	 * Set my address.
 	 * @param stackAddress -- A string containing the stack address.
 	 */
-	public void setHostAddress(String stackAddress)
+	protected void setHostAddress(String stackAddress)
 		throws UnknownHostException {
 		if (stackAddress.indexOf(':') != stackAddress.lastIndexOf(':')
 			&& stackAddress.trim().charAt(0) != '[')
@@ -301,6 +307,16 @@ public abstract class SIPStack {
 		else
 			this.stackAddress = stackAddress;
 		this.stackInetAddress = InetAddress.getByName(stackAddress);
+	}
+
+	protected void setRealHostAddress(String stackAddress) 
+		throws UnknownHostException {
+		if (stackAddress.indexOf(':') != stackAddress.lastIndexOf(':')
+			&& stackAddress.trim().charAt(0) != '[')
+			this.savedStackAddress = '[' + stackAddress + ']';
+		else
+			this.savedStackAddress = stackAddress;
+		this.savedStackInetAddress = InetAddress.getByName(stackAddress);
 	}
 
 	/**
@@ -713,6 +729,11 @@ public abstract class SIPStack {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2004/04/19 21:51:04  mranga
+ * Submitted by:  mranga
+ * Reviewed by:  ivov
+ * Support for stun.
+ *
  * Revision 1.16  2004/04/07 00:19:23  mranga
  * Reviewed by:   mranga
  * Fixes a potential race condition for client transactions.
