@@ -112,7 +112,7 @@ import java.util.LinkedList;
  *  
  * </pre>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.55 $ $Date: 2004-12-07 18:33:16 $
+ * @version JAIN-SIP-1.1 $Revision: 1.56 $ $Date: 2005-01-06 19:37:04 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
  * @author Bug fixes by Emil Ivov, Antonis Karydas, Daniel Martinez.
@@ -781,7 +781,10 @@ public class SIPServerTransaction extends SIPTransaction implements
                         this.collectionTime = TIMER_J;
                         this.setState(TransactionState.TERMINATED);
                         if (!isReliable()) {
-                            this.dialog.setRetransmissionTicks();
+			    // test for dialog existance ( Bug report
+			    // from Bill Roome )
+			    if ( this.dialog != null) 
+					this.dialog.setRetransmissionTicks();
                             enableRetransmissionTimer();
 
                         }
@@ -1217,6 +1220,13 @@ public class SIPServerTransaction extends SIPTransaction implements
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.55  2004/12/07 18:33:16  mranga
+ * Submitted by:  Jeff Adams
+ * Reviewed by:   M. Ranganathan
+ *
+ * Timer bug fix
+ * Sniffer tool enhancement.
+ *
  * Revision 1.54  2004/12/03 17:01:29  mranga
  * Issue number:
  * Obtained from:

@@ -1,9 +1,8 @@
 <h1> Spec Errata and enhancements </h1>
 
-These errors and ommisions are to be corrected in a future maintenance release. 
-They were discovered too late to be incorporated into the current release or
-were unearthed as a result of use.  A formal change list will be prepared
-for these and submitted for approval for the next spec revision.
+The following is an <b>Unofficial</b> change list for Jain-sip-1.2.
+They were discovered too late to be incorporated into the current release
+or were unearthed as a result of use.
 
 <ul>
 <li><b><it>javax.sip.message.SipRequest.clone() </it> -- clarify behavior </b>
@@ -22,6 +21,12 @@ cloned SipRequest.
 <li><b><it>javax.sip.MessageFactory.createSipRequest(String )</it> 
 - clarify behavior </b> <br/>
 If the argument is null then an empty SipRequest is created. </li>
+
+<li><b><it>javax.sip.MessageFactory.createSipResponse(String )</it> </b>
+Creates and parses a Sip Response from a string. This is useful for
+applications such as protocol test tools that may need to create responses
+independent of requests </li>
+
 
 <li><b><it>javax.sip.Dialog.sendAck </it> -- clarify behavior </b>  <br/>
 Note that it is used is used for sending both ACK and PRACK messages. 
@@ -54,6 +59,11 @@ with the existing Dialog or create a Dialog with null state. However,
 if the Transaction is neither dialog creating nor can be associated with
 an existing dialog, then the implementation must return null when the
 application issues getDialog on the transaction.  
+</li>
+
+<li><b><it>RequestEvent and ResponseEvent </it>  -- new Method <br/> </b>
+The RequestEvent and ResponseEvent will support a new method <br/>
+<it> Dialog getDialog ( ) </it>
 </li>
 
 <li><b><it>javax.sip.header.HeaderFactory.createToHeader </it> --
@@ -134,9 +144,6 @@ Dialog getNewClientDialog (Response) throws DialogAlreadyExistsException
 
 <p>
 
-The RequestEvent and ResponseEvent will support a new method <br/>
-<it> Dialog getDialog ( ) </it>
-
 
 <p>Here is a fragment of code that indicates how UACs may use this support:
 
@@ -155,8 +162,14 @@ try {
 <br/>
 As this is intended primarily for proxy servers, RETRANSMISSION_FILTER
 will be automatically disabled when AUTOMATIC_DIALOG_SUPPORT is set to
-false.If AUTMATIC_DIALOG_SUPPORT = false then RETRANSMISSION_FILTER = false;
+off. If AUTMATIC_DIALOG_SUPPORT = off then RETRANSMISSION_FILTER = off;
+Additionally, the Provider will allow applications to create new 
+ServerTransaction for any request (not just dialog creating requests) 
+when AUTOMATIC_DIALOG_SUPPORT = off 
 </li>
+
+<li> <b> Add a new method getDialog() to Request/Response Events </b> <br/>
+See code fragmement above for use case </li>
 
 <li><b>Add SipTransaction set/getApplicationData() </b> <br/>
 This allows an application to associate an un-interpreted object with
@@ -216,10 +229,18 @@ javax.sip.NETWORK_LAYER
 
 </li>
 
-<li><b>javax.sip.header.MaxForwardsHeader should throw exception 
-if decrement is attempted when the value is already 0 </b>
-Fix this in the interface.
+<li>
+<b>Add a SipListener method to support asynchronous reporting of IO Exceptions
+</b><br/>
+Asynchronous IO Exceptions may occur as a result of errors during 
+retransmission of requests.
+The Transaction state machines are required to report IO Exceptions to the 
+Listener immediately (according to RFC 3261). The current design only supports
+delayed reporting through timeouts. A new Listener SipListener2 that supports
+a processIOException method will be defined. A new Event IOExceptionEvent
+will be defined.
 </li>
+
 
 </ul>
 
