@@ -24,7 +24,7 @@ import java.text.ParseException;
  * retrieve this structure from the SipStack. Bugs against route set 
  * management were reported by Antonis Karydas and Brad Templeton.
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.26 $ $Date: 2004-03-30 17:53:55 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.27 $ $Date: 2004-04-30 14:03:26 $
  *
  *@author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -112,18 +112,25 @@ public class DialogImpl implements javax.sip.Dialog {
 		if (rl != null && !rl.isEmpty()) {
 			Route route = (Route) this.getRouteList().getFirst();
 			sipUri = (SipUri) (route.getAddress().getURI());
-		} else if (contactRoute != null) {
+		} else if (contactRoute != null 
+				&& contactRoute.getAddress().getURI() instanceof SipUri ) {
 			sipUri = (SipUri) (contactRoute.getAddress().getURI());
 		} else
 			throw new SipException("No route found!");
 
-		String host = sipUri.getHost();
-		int port = sipUri.getPort();
-		if (port == -1)
-			port = 5060;
+		// Use the maddr param to get the host if one exists.
+		String host = sipUri.getMAddrParam() != null? sipUri.getMAddrParam(): sipUri.getHost();
+
+		// Get the transport parameter.
 		String transport = sipUri.getTransportParam();
 		if (transport == null)
 			transport = "udp";
+
+
+		int port = sipUri.getPort();
+		// TODO -- check if transport parameter is TLS and assign 5061
+		if (port == -1)
+			port = 5060;
 		return new HopImpl(host, port, transport);
 	}
 
@@ -1470,6 +1477,10 @@ public class DialogImpl implements javax.sip.Dialog {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.26  2004/03/30 17:53:55  mranga
+ * Reviewed by:   mranga
+ * more reference counting cleanup
+ *
  * Revision 1.25  2004/03/12 23:26:42  mranga
  * Reviewed by:   mranga
  * Fixed a synchronization problem
