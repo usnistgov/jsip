@@ -20,7 +20,7 @@ import java.text.ParseException;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  *
- * @version JAIN-SIP-1.1 $Revision: 1.11 $ $Date: 2005-01-25 22:51:17 $
+ * @version JAIN-SIP-1.1 $Revision: 1.12 $ $Date: 2005-03-18 20:19:22 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -900,15 +900,20 @@ public abstract class SIPMessage
 				Utils.toHexString(retval.toString().toLowerCase().getBytes());
 
 			return new Integer( hc.hashCode() ).toString();
-			/*
-			if (hc.length() < 32)
-				return hc;
-			else
-				return hc.substring(hc.length() - 32, hc.length() - 1);
-			*/
 		}
-		// Convert to lower case -- bug fix as a result of a bug report
-		// from Chris Mills of Nortel Networks.
+	}
+
+	/** 
+	 * Override the hashcode method ( see issue # 55 ) 
+	 * Note that if you try to use this method before you
+	 * assemble a valid request, you will get a  constant  ( -1 ).
+	 * Beware of placing any half formed requests in  a table.
+	 */
+	public int hashCode() {
+		if ( this.callIdHeader  == null ) 
+		   throw new RuntimeException 
+			("Invalid message! Cannot compute hashcode!! ");
+		else return this.callIdHeader.getCallId().hashCode();
 	}
 
 	/**
@@ -1704,6 +1709,11 @@ public abstract class SIPMessage
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2005/01/25 22:51:17  mranga
+ * Reviewed by:   mranga
+ *
+ * return hashcode of branchId computed for rfc 2543 clients.
+ *
  * Revision 1.10  2004/09/10 18:26:08  mranga
  * Submitted by:  mranga
  * Reviewed by:   mranga
