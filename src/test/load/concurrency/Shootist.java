@@ -36,7 +36,7 @@ public class Shootist implements SipListener {
 	private String transport;
 	int byeCount;
 	int ackCount;
-	private static int NDIALOGS = 500;
+	private static int NDIALOGS = 100;
 
 	// Keeps track of successful dialog completion.
 	private static Timer timer;
@@ -513,6 +513,10 @@ public class Shootist implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/06/16 02:53:20  mranga
+ * Submitted by:  mranga
+ * Reviewed by:   implement re-entrant multithreaded listener model.
+ *
  * Revision 1.1  2004/06/15 09:54:47  mranga
  * Reviewed by:   mranga
  * re-entrant listener model added.

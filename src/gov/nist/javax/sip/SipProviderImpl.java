@@ -22,7 +22,7 @@ import sim.java.net.*;
 
 /** Implementation of the JAIN-SIP provider interface.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.23 $ $Date: 2004-06-15 09:54:40 $
+ * @version JAIN-SIP-1.1 $Revision: 1.24 $ $Date: 2004-06-16 19:04:28 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -79,14 +79,6 @@ public final class SipProviderImpl
 					+ sipEvent.getSource()
 					);
 			sipStackImpl.logStackTrace();
-		}
-
-		if (this.sipListener == null) {
-			if (LogWriter.needsLogging) {
-				sipStackImpl.logMessage("Dropping listener = null");
-			}
-
-			return;
 		}
 
 		EventWrapper eventWrapper = new EventWrapper();
@@ -710,6 +702,11 @@ public final class SipProviderImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.23  2004/06/15 09:54:40  mranga
+ * Reviewed by:   mranga
+ * re-entrant listener model added.
+ * (see configuration property gov.nist.javax.sip.REENTRANT_LISTENER)
+ *
  * Revision 1.22  2004/05/18 15:26:42  mranga
  * Reviewed by:   mranga
  * Attempted fix at race condition bug. Remove redundant exception (never thrown).

@@ -14,14 +14,16 @@ import java.io.IOException;
 
 /**
  * An adapter class from the JAIN implementation objects to the NIST-SIP stack.
+ * The primary purpose of this class is to do early rejection of bad messages
+ * and deliver meaningful messages to the transaction layer.
  * This is the class that is instantiated by the NistSipMessageFactory to
  * create a new SIPServerRequest or SIPServerResponse.
  * Note that this is not part of the JAIN-SIP spec (it does not implement
  * a JAIN-SIP interface). This is part of the glue that ties together the
  * NIST-SIP stack and event model with the JAIN-SIP stack. Implementors
- * of JAIN services need not concern themselves with this class.
+ * of JAIN services need not concern themselves with this class. 
  *
- * @version JAIN-SIP-1.1 $Revision: 1.33 $ $Date: 2004-06-16 16:31:07 $
+ * @version JAIN-SIP-1.1 $Revision: 1.34 $ $Date: 2004-06-16 19:04:27 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Bug fix Contributions by Lamine Brahimi and  Andreas Bystrom. <br/>
@@ -173,7 +175,14 @@ public class NistSipMessageHandlerImpl
 						sipStackImpl.logMessage("dialogId = " + dialogId);
 					DialogImpl dialog = sipStackImpl.getDialog(dialogId);
 					if (dialog != null) {
-						dialog.addTransaction(transaction);
+					       // check if request is in dialog sequence.
+					       if ( dialog.isRequestConsumable(sipRequest) )  {
+							dialog.addTransaction(transaction);
+						} else {
+							if (LogWriter.needsLogging)
+								sipStackImpl.logMessage("Dropping bye  for " + dialogId);
+							return;
+						}
 					}  
 					/** else {
 						dialogId = sipRequest.getDialogId(false);
@@ -330,6 +339,7 @@ public class NistSipMessageHandlerImpl
 
 			// Sequence numbers are supposed to be incremented
 			// sequentially within a dialog for RFC 3261
+			// Note BYE is handled above - so no check here.
 
 			if (dialog != null && 
 				transaction != null && 
@@ -364,7 +374,7 @@ public class NistSipMessageHandlerImpl
 				     } 
 				     return;
 				} else if ( ! dialog.isRequestConsumable(sipRequest) ) {
-					// Bug noticed by Bruce Evangelder
+					// Bug noticed by Bruce Evangelder. Spec Section 12.2.1
 					// Check if sequence number of the request allows it to be consumed.
    					// Requests within a dialog MUST contain strictly monotonically
    					// increasing and contiguous CSeq sequence numbers (increasing-by-one)
@@ -544,6 +554,9 @@ public class NistSipMessageHandlerImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.33  2004/06/16 16:31:07  mranga
+ * Sequence number checking for in-dialog messages
+ *
  * Revision 1.32  2004/06/16 02:53:17  mranga
  * Submitted by:  mranga
  * Reviewed by:   implement re-entrant multithreaded listener model.
