@@ -118,7 +118,7 @@ import java.io.IOException;
  * @author Bug fixes by Emil Ivov. <a href=" {@docRoot}/uncopyright.html">This
  *         code is in the public domain. </a>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.43 $ $Date: 2004-12-01 19:05:15 $
+ * @version JAIN-SIP-1.1 $Revision: 1.44 $ $Date: 2005-03-30 19:57:58 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
         ServerResponseInterface, javax.sip.ClientTransaction, PendingRecord {
@@ -461,9 +461,12 @@ public class SIPClientTransaction extends SIPTransaction implements
         // arrives before a previous one completes processing.
         if (this.eventPending) {
             if (LogWriter.needsLogging) {
-                sipStack.logWriter.logMessage("putting pending "
+                sipStack.logWriter.logMessage("Discarding early arriving Response "
                         + transactionResponse.getFirstLine());
             }
+            /**
+             * This was leading to infinite loop. This optimization is backed out for now.
+             * 
             synchronized (this.pendingResponses) {
                 if (this.pendingResponses.size() < MAX_PENDING_RESPONSES) {
                     this.pendingResponses.add(new PendingResponse(
@@ -471,6 +474,8 @@ public class SIPClientTransaction extends SIPTransaction implements
                 }
             }
             sipStack.putPending(this);
+            **/
+            
             return;
         }
 
@@ -1134,6 +1139,11 @@ public class SIPClientTransaction extends SIPTransaction implements
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.43  2004/12/01 19:05:15  mranga
+ * Reviewed by:   mranga
+ * Code cleanup remove the unused SIMULATION code to reduce the clutter.
+ * Fix bug in Dialog state machine.
+ *
  * Revision 1.42  2004/10/31 02:19:07  mranga
  * Reviewed by:   M. Ranganathan
  *
