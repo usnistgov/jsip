@@ -20,7 +20,7 @@ import java.text.ParseException;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  *
- * @version JAIN-SIP-1.1 $Revision: 1.8 $ $Date: 2004-03-25 15:15:04 $
+ * @version JAIN-SIP-1.1 $Revision: 1.9 $ $Date: 2004-07-25 19:26:44 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -299,6 +299,9 @@ public abstract class SIPMessage
 
 	/**
 	 * Merge a request with a template
+ 	 *
+	 *@param template -- template to merge with.
+	 *
 	 */
 	public void merge(Object template) {
 		if (!template.getClass().equals(this.getClass()))
@@ -328,6 +331,7 @@ public abstract class SIPMessage
 	 * the payload is a string (rather than a binary array of bytes).
 	 * If the payload cannot be encoded as a UTF-8 string then it is
 	 * simply ignored (will not appear in the encoded message).
+	 *
 	 * @return The Canonical String representation of the message
 	 * (including the canonical string representation of
 	 * the SDP payload if it exists).
@@ -563,6 +567,7 @@ public abstract class SIPMessage
 
 	/**
 	 * Attach a header and die if you get a duplicate header exception.
+	 *
 	 * @param h SIPHeader to attach.
 	 */
 	private void attachHeader(SIPHeader h) {
@@ -583,6 +588,7 @@ public abstract class SIPMessage
 
 	/**
 	 * Attach a header (replacing the original header).
+	 *
 	 * @param sipHeader SIPHeader that replaces a header of the same type.
 	 */
 	public void setHeader(Header sipHeader) {
@@ -626,7 +632,6 @@ public abstract class SIPMessage
 	 * which is the normal way in which headers are attached.
 	 * This was added in support of JAIN-SIP.
 	 *
-	 * @since 1.0 (made this public)
 	 * @param h header to attach.
 	 * @param replaceflag if true then replace a header if it exists.
 	 * @throws SIPDuplicateHeaderException If replaceFlag is false and
@@ -636,6 +641,7 @@ public abstract class SIPMessage
 		throws SIPDuplicateHeaderException {
 		this.attachHeader(h, replaceflag, false);
 	}
+
 	/**
 	 * Attach the header to the SIP Message structure at a specified
 	 * position in its list of headers.
@@ -743,7 +749,7 @@ public abstract class SIPMessage
 	 * @param top -- flag that indicates which end of header list to process.
 	 */
 	public void removeHeader(String headerName, boolean top) {
-		// System.out.println("removeHeader " + headerName);
+
 		SIPHeader toRemove =
 			(SIPHeader) nameTable.get(headerName.toLowerCase());
 		// nothing to do then we are done.
@@ -969,13 +975,6 @@ public abstract class SIPMessage
 		return (ViaList) getSIPHeaderList(ViaHeader.NAME);
 	}
 
-	/**
-	 * Get an iterator to the list of vial headers.
-	 * @return a list iterator to the list of via headers.
-	 * public ListIterator getVia() {
-	 * return this.viaHeaders.listIterator();
-	 * }
-	 */
 
 	/**
 	 * Set A list of via headers.
@@ -1020,13 +1019,6 @@ public abstract class SIPMessage
 		return (CSeqHeader) cSeqHeader;
 	}
 
-	/**
-	 * Get the sequence number.
-	 * @return the sequence number.
-	 */
-	public int getCSeqNumber() {
-		return cSeqHeader.getSequenceNumber();
-	}
 
 	/**
 	 * Get the Authorization header (null if one does not exist).
@@ -1038,8 +1030,9 @@ public abstract class SIPMessage
 
 	/**
 	 * Get the MaxForwards header (null if one does not exist).
-	 * @return Max-Forwards header
+         * @return Max-Forwards header
 	 */
+	
 	public MaxForwardsHeader getMaxForwards() {
 		return maxForwardsHeader;
 	}
@@ -1051,48 +1044,8 @@ public abstract class SIPMessage
 	public void setMaxForwards(MaxForwardsHeader maxForwards) {
 		this.setHeader(maxForwards);
 	}
+	
 
-	/**
-	 * Get the MinExpires header.
-	 * @return Min-Expires header
-	 */
-	public MinExpires getMinExpires() {
-		return (MinExpires) this.getHeader(MinExpiresHeader.NAME);
-	}
-
-	/**
-	 * Set the min expires header.
-	 *
-	 * @return the Min-Expires header.
-	 */
-	public void setMinExpiresHeader(MinExpiresHeader minExpires) {
-		this.setHeader(minExpires);
-	}
-
-	/**
-	 * Get the Organization header (null if one does not exist).
-	 * @return Orgnaization header.
-	 */
-	public Organization getOrganizationHeader() {
-		return (Organization) this.getHeader(OrganizationHeader.NAME);
-	}
-
-	/**
-	 * Get the Priority header (null if one does not exist).
-	 * @return Priority header
-	 */
-	public Priority getPriorityHeader() {
-		return (Priority) this.getHeader(PriorityHeader.NAME);
-	}
-
-	/**
-	 * Get the ProxyAuthorization header (null if one does not exist).
-	 * @return List containing Proxy-Authorization headers.
-	 */
-	public ProxyAuthorization getProxyAuthorizationHeader() {
-		return (ProxyAuthorization) this.getHeader(
-			ProxyAuthorizationHeader.NAME);
-	}
 
 	/**
 	 * Get the Route List of headers (null if one does not exist).
@@ -1107,7 +1060,7 @@ public abstract class SIPMessage
 	 *
 	 * @return Call-ID header .
 	 */
-	public javax.sip.header.CallIdHeader getCallId() {
+	public CallIdHeader getCallId() {
 		return callIdHeader;
 	}
 
@@ -1132,17 +1085,6 @@ public abstract class SIPMessage
 		callIdHeader.setCallId(callId);
 	}
 
-	/**
-	 * Get the call ID string.
-	 * A conveniance function that returns the stuff following
-	 * the header name for the call id header.
-	 *
-	 * @return the call identifier.
-	 *
-	 */
-	public String getCallIdentifier() {
-		return callIdHeader.getCallId();
-	}
 
 	/**
 	 * Get the RecordRoute header list (null if one does not exist).
@@ -1755,6 +1697,10 @@ public abstract class SIPMessage
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/03/25 15:15:04  mranga
+ * Reviewed by:   mranga
+ * option to log message content added.
+ *
  * Revision 1.7  2004/03/01 12:37:27  mranga
  * Submitted by:  Watanabe Masafumi
  * Reviewed by:   mranga

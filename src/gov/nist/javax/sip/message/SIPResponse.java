@@ -16,7 +16,7 @@ import java.text.ParseException;
 /**
  * SIP Response structure.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-03-25 15:15:05 $
+ * @version JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2004-07-25 19:26:44 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -679,11 +679,16 @@ public final class SIPResponse
 	}
 
 	public String toString() {
-		return statusLine.encode() + super.encode();
+		if (statusLine == null) return  "";
+		else return statusLine.encode() + super.encode();
 	}
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/03/25 15:15:05  mranga
+ * Reviewed by:   mranga
+ * option to log message content added.
+ *
  * Revision 1.3  2004/02/18 14:33:02  mranga
  * Submitted by:  Bruno Konik
  * Reviewed by:   mranga
