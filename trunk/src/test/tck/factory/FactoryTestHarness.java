@@ -161,7 +161,7 @@ public class FactoryTestHarness extends TestHarness {
 			"Contact: \"Mr. Watson\" <mailto:watson@bell-telephone.com>;q=0.1\n",
 			"Contact: LittleGuy <sip:UserB@there.com;user=phone>\n",
 			"Contact: <sip:+1-972-555-2222@gw1.wcom.com;user=phone>\n",
-			"Contact: tel:+1-972-555-2222\n",
+			"Contact: <tel:+1-972-555-2222>\n",
 			"Contact:*\n",
 			"Contact:BigGuy<sip:utente@127.0.0.1;5000>;Expires=3600\n",
 			"Content-Disposition: session\n",
