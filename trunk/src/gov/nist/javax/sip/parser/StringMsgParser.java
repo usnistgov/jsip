@@ -29,7 +29,7 @@ import gov.nist.core.*;
  * entire message is parsed in one feld swoop).
  *
  *
- * @version JAIN-SIP-1.1 $Revision: 1.9 $ $Date: 2004-02-29 00:46:34 $
+ * @version JAIN-SIP-1.1 $Revision: 1.10 $ $Date: 2005-04-04 10:03:12 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -665,7 +665,7 @@ public class StringMsgParser {
 	public SIPHeader parseSIPHeader(String header) throws ParseException {
 		header += "\n\n";
 		// Handle line folding.
-		String nmessage = "";
+		StringBuffer nmessage = new StringBuffer(header.length() + 5);
 		int counter = 0;
 		// eat leading spaces and carriage returns (necessary??)
 		int i = 0;
@@ -678,16 +678,16 @@ public class StringMsgParser {
 				&& (header.charAt(i) == '\n'
 					&& (header.charAt(i + 1) == '\t'
 						|| header.charAt(i + 1) == ' '))) {
-				nmessage += ' ';
+				nmessage.append(' ');
 				i++;
 			} else {
-				nmessage += header.charAt(i);
+				nmessage.append(header.charAt(i));
 			}
 		}
 
-		nmessage += "\n";
+		nmessage.append('\n');
 
-		HeaderParser hp = ParserFactory.createParser(nmessage);
+		HeaderParser hp = ParserFactory.createParser(nmessage.toString());
 		if (hp == null)
 			throw new ParseException("could not create parser", 0);
 		return hp.parse();
@@ -790,6 +790,11 @@ public class StringMsgParser {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/02/29 00:46:34  mranga
+ * Reviewed by:   mranga
+ * Added new configuration property to limit max message size for TCP transport.
+ * The property is gov.nist.javax.sip.MAX_MESSAGE_SIZE
+ *
  * Revision 1.8  2004/02/18 14:33:02  mranga
  * Submitted by:  Bruno Konik
  * Reviewed by:   mranga
