@@ -228,18 +228,15 @@ TokenValues, ConfigurationSwitches
 				testLogWriter = System.out;
 			      }
 			}
-			
-	
-
 
 			emitString(XML_DOCTYPE_IDENTIFIER);
 
 			emitTag(TEST_OUTPUT);
-			this.startTime = System.currentTimeMillis();
+			startTime = System.currentTimeMillis();
 
 		} else if (name.compareTo(TESTCASE) == 0 ) {
 			// Starting a new test 
-			this.counter ++;
+			counter ++;
 			failureReason = "";
 			statusMessage = "";
 			failureFlag	 = false;
