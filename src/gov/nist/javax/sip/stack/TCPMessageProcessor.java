@@ -2,15 +2,8 @@
  * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).      *
  ******************************************************************************/
 package gov.nist.javax.sip.stack;
-//ifndef SIMULATION
-//
 import java.net.Socket;
 import java.net.ServerSocket;
-//else
-/*
-import sim.java.net.*;
-//endif
-*/
 import java.io.IOException;
 import java.net.SocketException;
 import gov.nist.core.*;
@@ -23,7 +16,7 @@ import java.util.*;
  * object that creates new TCP MessageChannels (one for each new
  * accept socket).  
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.21 $ $Date: 2004-09-04 14:59:54 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.22 $ $Date: 2004-12-01 19:05:16 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Acknowledgement: Jeff Keyser suggested that a
@@ -36,14 +29,7 @@ import java.util.*;
  */
 public class TCPMessageProcessor extends MessageProcessor {
 
-//ifdef SIMULATION
-/*
-	protected SimThread thread;
-//else
-*/
 	protected Thread thread;
-//endif
-//
 
 
 	protected int port;
@@ -55,15 +41,7 @@ public class TCPMessageProcessor extends MessageProcessor {
 
 	private Hashtable tcpMessageChannels;
 
-//ifndef SIMULATION
-//
 	private ServerSocket sock;
-//else
-/*
-	private SimServerSocket sock;
-	private SimMessageObject msgObject;
-//endif
-*/
 
 	protected int useCount;
 
@@ -81,29 +59,16 @@ public class TCPMessageProcessor extends MessageProcessor {
 		this.sipStack = sipStack;
 		this.port = port;
 		this.tcpMessageChannels = new Hashtable();
-//ifdef SIMULATION
-/*
-		this.msgObject = new SimMessageObject();
-//endif
-*/
 	}
 
 	/**
 	 * Start the processor.
 	 */
 	public void start() throws IOException {
-//ifndef SIMULATION
-//
 		thread = new Thread(this);
 		thread.setName("TCPMessageProcessorThread");
 		thread.setDaemon(true);
 		this.sock = sipStack.getNetworkLayer().createServerSocket(this.port, 0, sipStack.savedStackInetAddress);
-//else 
-/*
-		this.sock = new SimServerSocket (sipStack.stackInetAddress,this.port);
-		thread = new SimThread(this);
-//endif
-*/
 		this.isRunning = true;
 		thread.start();
 
@@ -127,16 +92,7 @@ public class TCPMessageProcessor extends MessageProcessor {
 		// Accept new connectins on our socket.
 		while (this.isRunning) {
 			try {
-//ifndef SIMULATION
-//
-				synchronized (this)
-//else
-/*
-				this.msgObject.enterCriticalSection();
-				try
-//endif
-*/ 
-				{
+				synchronized (this) {
 					// sipStack.maxConnections == -1 means we are
 					// willing to handle an "infinite" number of
 					// simultaneous connections (no resource limitation).
@@ -145,14 +101,7 @@ public class TCPMessageProcessor extends MessageProcessor {
 						&& sipStack.maxConnections != -1
 						&& this.nConnections >= sipStack.maxConnections) {
 						try {
-//ifndef SIMULATION
-//
 							this.wait();
-//else
-/*
-				 			this.msgObject.doWait();
-//endif
-*/
 
 							if (!this.isRunning)
 								return;
@@ -162,20 +111,8 @@ public class TCPMessageProcessor extends MessageProcessor {
 					}
 					this.nConnections++;
 				}
-//ifdef SIMULATION
-/*
-				finally { this.msgObject.leaveCriticalSection(); }
-//endif
-*/
 
-//ifndef SIMULATION
-//
 				Socket newsock = sock.accept();
-//else
-/*
-				SimSocket newsock = sock.accept();
-//endif
-*/
 				if (LogWriter.needsLogging) {
 					getSIPStack().logWriter.logMessage(
 						"Accepting new connection!");
@@ -240,15 +177,7 @@ public class TCPMessageProcessor extends MessageProcessor {
 				(TCPMessageChannel)it.next() ;
 			next.close();
 		}
-//ifdef SIMULATION
-/*
-		this.msgObject.doNotify();
-//else
-*/
 		this.notify();
-//endif
-//
-
 	}
 
 
@@ -375,6 +304,13 @@ public class TCPMessageProcessor extends MessageProcessor {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.21  2004/09/04 14:59:54  mranga
+ * Reviewed by:   mranga
+ *
+ * Added a method to expose the Thread for the message processors so that
+ * stack.stop() can join to wait for the threads to die rather than sleep().
+ * Feature requested by Mike Andrews.
+ *
  * Revision 1.20  2004/08/30 16:04:47  mranga
  * Submitted by:  Mike Andrews
  * Reviewed by:   mranga

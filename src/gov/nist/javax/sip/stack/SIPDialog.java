@@ -23,7 +23,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.9 $ $Date: 2004-11-19 16:22:56 $
+ * @version JAIN-SIP-1.1 $Revision: 1.10 $ $Date: 2004-12-01 19:05:15 $
  * 
  * @author M. Ranganathan <mranga@nist.gov><br/>Bugs were reported by Antonis
  *         Karydas, Brad Templeton and Alex Rootham.
@@ -1398,12 +1398,6 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
             throw new SipException("Bad dialog state " + this.getState());
 
         }
-        /**
-         * if (this.isServer() &&
-         * dialogRequest.getMethod().equalsIgnoreCase(Request.BYE) &&
-         * this.getState().getValue() == EARLY_STATE) { throw new
-         * SipException("Bad dialog state " + this.getState()); }
-         */
 
         if (LogWriter.needsLogging)
             sipStack.logWriter.logMessage("dialog.sendRequest " + " dialog = "
@@ -1625,8 +1619,6 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
             }
         } else {
             // I am the client so I do not swap headers.
-            //SIPClientTransaction clientTransaction = 
-	    // (SIPClientTransaction) this.getFirstTransaction();
 
             try {
 
@@ -1745,6 +1737,11 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/11/19 16:22:56  mranga
+ * Submitted by:  mranga
+ * Reviewed by:   mranga
+ * Route bye request to right target (if there is no record routing enabled).
+ *
  * Revision 1.8  2004/11/18 18:59:40  mranga
  *
  * Reviewed by:   mranga

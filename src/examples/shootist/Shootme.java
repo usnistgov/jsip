@@ -239,7 +239,7 @@ public class Shootme implements SipListener {
 		properties.setProperty("javax.sip.STACK_NAME", "shootme");
 		// You need  16 for logging traces. 32 for debug + traces.
 		// Your code will limp at 32 but it is best for debugging.
-		properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "16");
+		properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
 		properties.setProperty(
 			"gov.nist.javax.sip.DEBUG_LOG",
 			"shootmedebug.txt");
@@ -298,6 +298,12 @@ public class Shootme implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.20  2004/09/26 14:48:01  mranga
+ * Submitted by:  John Martin
+ * Reviewed by:   mranga
+ *
+ * Remove unnecssary synchronization.
+ *
  * Revision 1.19  2004/06/16 02:53:17  mranga
  * Submitted by:  mranga
  * Reviewed by:   implement re-entrant multithreaded listener model.

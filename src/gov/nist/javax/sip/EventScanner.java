@@ -8,15 +8,10 @@ import javax.sip.*;
 import gov.nist.core.*;
 import java.io.*;
 
-//ifdef SIMULATION
-/*
- import sim.java.net.*;
- //endif
- */
 /**
  * Event Scanner to deliver events to the Listener.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2004-10-31 02:19:07 $
+ * @version JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2004-12-01 19:05:14 $
  * 
  * @author M. Ranganathan <mranga@nist.gov><br/>
  * 
@@ -37,18 +32,9 @@ class EventScanner implements Runnable {
 
 	private SipStackImpl sipStackImpl;
 
-	//ifdef SIMULATION
-	/*
-	 * private SimMessageObject pendingEventsShadow; //endif
-	 */
 
 	public EventScanner(SipStackImpl sipStackImpl) {
 		this.pendingEvents = new LinkedList();
-		//ifdef SIMULATION
-		/*
-		 * this.pendingEventsShadow = new SimMessageObject(); SimThread myThread =
-		 * new SimThread(this); //else
-		 */
 		Thread myThread = new Thread(this);
 		// This needs to be set to false else the
 		// main thread mysteriously exits.
@@ -64,32 +50,16 @@ class EventScanner implements Runnable {
 
 	public void addEvent(EventWrapper eventWrapper) {
 
-		//ifndef SIMULATION
-		//
-		synchronized (this.eventMutex)
-		//else
-		/*
-		 * this.pendingEventsShadow.enterCriticalSection(); try //endif
-		 */
-		{
+		synchronized (this.eventMutex) {
 
 			pendingEvents.add(eventWrapper);
 
 			// Add the event into the pending events list
 
-			//ifdef SIMULATION
-			/*
-			 * this.pendingEventsShadow.doNotify(); //else
-			 */
 
 			eventMutex.notify();
-			//endif
 		}
 
-		//ifdef SIMULATION
-		/*
-		 * finally { this.pendingEventsShadow.leaveCriticalSection(); } //endif
-		 */
 
 	}
 
@@ -299,14 +269,7 @@ class EventScanner implements Runnable {
 			EventWrapper eventWrapper = null;
 
 			LinkedList eventsToDeliver;
-			//ifndef SIMULATION
-			//
-			synchronized (this.eventMutex)
-			//else
-			/*
-			 * this.pendingEventsShadow.enterCriticalSection(); try //endif
-			 */
-			{
+			synchronized (this.eventMutex) {
 				// First, wait for some events to become available.
 				while (pendingEvents.isEmpty()) {
 					// There's nothing in the list, check to make sure we
@@ -321,12 +284,7 @@ class EventScanner implements Runnable {
 					// We haven't been stopped, and the event list is indeed
 					// rather empty. Wait for some events to come along.
 					try {
-						//ifdef SIMULATION
-						/*
-						 * this.pendingEventsShadow.doWait(); //else
-						 */
 						eventMutex.wait();
-						//endif
 					} catch (InterruptedException ex) {
 						// Let the thread die a normal death
 						sipStackImpl.logMessage("Interrupted!");
@@ -342,11 +300,6 @@ class EventScanner implements Runnable {
 				eventsToDeliver = pendingEvents;
 				pendingEvents = new LinkedList();
 			}
-			//ifdef SIMULATION
-			/*
-			 * finally { this.pendingEventsShadow.leaveCriticalSection(); }
-			 * //endif
-			 */
 			ListIterator iterator = eventsToDeliver.listIterator();
 			while (iterator.hasNext()) {
 				eventWrapper = (EventWrapper) iterator.next();

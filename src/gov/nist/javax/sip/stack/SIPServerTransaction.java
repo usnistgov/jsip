@@ -110,7 +110,7 @@ import java.util.LinkedList;
  * 
  * </pre>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.51 $ $Date: 2004-11-28 17:32:26 $
+ * @version JAIN-SIP-1.1 $Revision: 1.52 $ $Date: 2004-12-01 19:05:15 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
  * @author Bug fixes by Emil Ivov, Antonis Karydas, Daniel Martinez.
@@ -1001,22 +1001,23 @@ public class SIPServerTransaction extends SIPTransaction implements
                     //Check if we want to put the dialog in the dialog table.
                     //A dialog is put into the dialog table when the server
                     //transaction is responded to by a provisional response
+		    // or a final response. The Dialog is terminated
+		    // if the response is an error response.
                   
                     if (sipStack.isDialogCreated(responseImpl.getCSeq()
                             .getMethod())) {
                         if (response.getStatusCode() / 100 == 1) {
                             dialog.setState(SIPDialog.EARLY_STATE);
-                        }
-                        // Enter into our dialog table provided this is a
-                        // dialog creating method. Note that we dont put
-                        // things into the dialog table for an error response.
-                        if (responseImpl.getStatusCode() != 100 && 
-                            responseImpl.getStatusCode()/100 <= 2  )
+			    if ( responseImpl.getStatusCode() != 100 ) 
+                                sipStack.putDialog(dialog);
+                        } else if ( responseImpl.getStatusCode()/100 <= 2 ) {
                             sipStack.putDialog(dialog);
-                        else
+			} else {
                             dialog.setState(SIPDialog.TERMINATED_STATE);
+			}
+				
                         
-
+			// 2XX response handling.
                         if (responseImpl.getStatusCode() / 100 == 2) {
                             if (responseImpl.getCSeq().getMethod().equals(
                                     Request.INVITE)) {
@@ -1161,6 +1162,12 @@ public class SIPServerTransaction extends SIPTransaction implements
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.51  2004/11/28 17:32:26  mranga
+ * Submitted by:  hagai sela
+ * Reviewed by:   mranga
+ *
+ * Support for symmetric nats
+ *
  * Revision 1.50  2004/10/31 02:19:08  mranga
  * Reviewed by:   M. Ranganathan
  *
