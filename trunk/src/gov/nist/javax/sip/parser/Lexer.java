@@ -16,7 +16,8 @@ import java.util.Hashtable;
 
 public class Lexer extends LexerCore {
         /** get the header name of the line
-         *  @return String
+         *  @return  the header name (stuff before the :)
+	 * bug fix submitted by zvali@dev.java.net
          */
         public static String getHeaderName(String line){
            if (line==null) return null;
@@ -25,13 +26,15 @@ public class Lexer extends LexerCore {
                 int begin=line.indexOf(":");
                 headerName=null;
                 if (begin>=1)
-                    headerName=line.substring(0,begin);
+                    headerName=line.substring(0,begin).trim();
            }
            catch(IndexOutOfBoundsException e) {
                 return null;
            }
            return headerName;
         }
+
+	
 
 	public Lexer(String lexerName, String buffer) {
 		super(lexerName,buffer);
