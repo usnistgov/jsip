@@ -97,6 +97,5 @@ emacsclean:
 	$(RM) -f .#*
 
 default: 
-	make all
+	$(MAKE) all
 
-prep:
