@@ -669,25 +669,20 @@ public class SdpFactory extends Object {
 
    public static void main(String[] args) 
 	throws SdpParseException , SdpException {
-	String sdpFields = "v=0\r\n" +
-"o=4855 13760799956958020 13760799956958020 IN IP4 166.35.224.216\r\n" +
-"s=nortelnetworks\r\n" +
-"p=+1 972 684 1000\r\n"+
-"c=IN IP4 166.35.224.216\r\n"+
-"t=0 0\r\n"+
-"m=audio 50006 RTP/AVP 0 8 4 18\r\n"+
-"a=rtpmap:0 PCMU/8000\r\n"+
-"a=rtpmap:8 PCMA/8000\r\n"+
-"a=rtpmap:4 G723/8000\r\n"+
-"a=rtpmap:18 G729A/8000\r\n"+
-"a=ptime:30\r\n";
+	String sdpFields = "v=0\r\n"+
+"o=phone 1057165447541 1057165447541 IN IP4 123.4.566.156\r\n"+
+"s=-\r\n" +
+"c=IN IP4 123.4.566.156\r\n"+
+"t=0 0\r\n" +
+"m=data 3011 tcp OSA\r\n";
+
 	SdpFactory sdpFactory = new SdpFactory();
 	SessionDescription sessionDescription = 
 			sdpFactory.createSessionDescription(sdpFields);
 		
 	System.out.println("sessionDescription = " + sessionDescription);
 	Vector mediaDescriptions = 
-		sessionDescription.getMediaDescriptions(true);
+		sessionDescription.getMediaDescriptions(false);
 	for (int i = 0; i < mediaDescriptions.size(); i++) {
 		MediaDescription m = (MediaDescription) 
 					mediaDescriptions.elementAt(i);
