@@ -158,17 +158,20 @@ import sim.java.net.*;
  * the application layer's responsibility to strip the route header. 
  *</li>
  *
- * <li> <b> javax.sip.DIALOG_SUPPORT = [ true | false ] </b>
+ * <li> <b> javax.sip.AUTOMATIC_DIALOG_SUPPORT = [ true | false ] </b>
  * <b> This is a planned feature for the next version of the spec </b>
- * if set to true JAIN-SIP provides dialog suport (this is the default)
- * if set to false JAIN-SIP will not provide dialog support. The application
- * needs to manage its own dialogs.  If dialog support is disabled, then
- * the retransmission filter is automatically disabled.
+ * if set to true JAIN-SIP provides automatic dialog suport 
+ * (this is the default). If set to true (default) the dialog is created
+ * by the stack automatically when the request is handled statefully.
+ * If set to false, the stack will not create a dialog for the application
+ * implicitly. In this case the stack is responsible for creating and 
+ * associating the dialog.
+ *
  * </li>
  *
  *</ul>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.35 $ $Date: 2004-09-27 18:51:18 $
+ * @version JAIN-SIP-1.1 $Revision: 1.36 $ $Date: 2004-09-28 04:07:03 $
  * 
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -484,8 +487,9 @@ public class SipStackImpl
 		this.stripRouteHeader = (flagStr == null? true : "true".equals(flagStr));
 
 		// flag to indicate whether the stack will provide dialog support.
-		String dialogSupportStr = configurationProperties.getProperty("javax.sip.DIALOG_SUPPORT");
-		this.dialogSupport = (flagStr == null ? true : "false".equals(dialogSupportStr));
+		String dialogSupportStr = configurationProperties.getProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT");
+		
+		this.dialogSupport = (dialogSupportStr == null ? true : !("false".equals(dialogSupportStr)));
 
 		
 //ifdef SIMULATION
@@ -768,6 +772,11 @@ public class SipStackImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.35  2004/09/27 18:51:18  mranga
+ * Reviewed by:   mranga
+ *
+ * Additional config flag for proxy servers (dialog is not tracked by stack).
+ *
  * Revision 1.34  2004/09/26 14:48:02  mranga
  * Submitted by:  John Martin
  * Reviewed by:   mranga
