@@ -27,7 +27,7 @@ import java.net.*;
  * @author M. Ranganathan <mranga@nist.gov><br/>(Added Dialog table).
  * @author performance enhacements added by Pierre De Rop and Thomas Froment.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.42 $ $Date: 2004-10-01 16:05:08 $ <a
+ * @version JAIN-SIP-1.1 $Revision: 1.43 $ $Date: 2004-10-04 16:03:53 $ <a
  *          href=" {@docRoot}/uncopyright.html">This code is in the public
  *          domain. </a>
  */
@@ -934,6 +934,9 @@ public abstract class SIPTransactionStack extends SIPMessageStack implements
 							if (next.hasPending()) {
 								ll.add(next);
 								ti.remove();
+							} else if (next.isTerminated()) {
+								// Clean up if the the transaction is terminated.
+								ti.remove();
 							}
 						}
 					}
@@ -991,6 +994,10 @@ public abstract class SIPTransactionStack extends SIPMessageStack implements
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.42  2004/10/01 16:05:08  mranga
+ * Submitted by:  mranga
+ * Fixed memory leak
+ *
  * Revision 1.41  2004/07/23 06:50:05  mranga
  * Submitted by:  mranga
  * Reviewed by:   mranga

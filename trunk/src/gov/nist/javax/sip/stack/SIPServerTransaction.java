@@ -116,7 +116,7 @@ import java.util.LinkedList;
  *
  *</pre>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.44 $ $Date: 2004-10-04 14:43:20 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.45 $ $Date: 2004-10-04 16:03:53 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
  * @author Bug fixes by Emil Ivov, Antonis Karydas.
@@ -1127,8 +1127,7 @@ implements ServerRequestInterface, javax.sip.ServerTransaction, PendingRecord {
     
     public boolean hasPending() {
 	synchronized (this.pendingRequests) {
-		return    this.getState() != TransactionState.TERMINATED && 
-			! this.pendingRequests.isEmpty();
+		return    ! this.pendingRequests.isEmpty();
 	}
     }
 
@@ -1136,11 +1135,11 @@ implements ServerRequestInterface, javax.sip.ServerTransaction, PendingRecord {
 	boolean toNotify = false;
 	synchronized (this.pendingRequests ) {
 	   super.clearPending();
-           if ( !pendingRequests.isEmpty() ) {
+           if ( this.isTerminated() || !pendingRequests.isEmpty() ) {
 		toNotify = true;
 	   }
 	}
-        if (toNotify) sipStack.notifyPendingRecordScanner(); 
+	if (toNotify) sipStack.notifyPendingRecordScanner(); 
     }
 
     /** Start the timer task.
@@ -1162,6 +1161,11 @@ implements ServerRequestInterface, javax.sip.ServerTransaction, PendingRecord {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.44  2004/10/04 14:43:20  mranga
+ * Reviewed by:   mranga
+ *
+ * Remove transaction from pending list when terminated.
+ *
  * Revision 1.43  2004/10/01 16:05:08  mranga
  * Submitted by:  mranga
  * Fixed memory leak
