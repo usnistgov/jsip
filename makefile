@@ -183,7 +183,7 @@ clean: emacsclean
 	$(RM) -f timestamp
 
 cleandocs:
-	cd docs/api/;make clean
+	cd docs/api/;$(MAKE) clean
 
 backup:
 	tar -cvzf $(SRCTAR)  --exclude CVS			\
