@@ -16,7 +16,7 @@ import java.text.ParseException;
 /**
  * SIP Response structure.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2004-07-25 19:26:44 $
+ * @version JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2004-09-09 16:49:07 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -240,7 +240,7 @@ public final class SIPResponse
 				break;
 
 			default :
-				retval = null;
+				retval = "Unkown Reason";
 
 		}
 		return retval;
@@ -685,6 +685,10 @@ public final class SIPResponse
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/07/25 19:26:44  mranga
+ * Reviewed by:   mranga
+ * Allows multiple Authorization headers in a message. Some minor cleanup.
+ *
  * Revision 1.4  2004/03/25 15:15:05  mranga
  * Reviewed by:   mranga
  * option to log message content added.
