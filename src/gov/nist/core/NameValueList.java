@@ -191,15 +191,6 @@ public class NameValueList extends GenericObjectList  {
          */
         public NameValueList() { nvHash = new Hashtable(); }
             
-	/**
-	*  Grows this name-value list by adding all the elements from the other
-	*  NameValue list. 
-	*  Merges the hash tables for the name value lists together.
-	*/
-	public void concatenate( NameValueList other) {
-		super.concatenate(other);
-		nvHash.putAll(other.nvHash);
-	}
         
         public Object clone()   {
             NameValueList retval = new NameValueList();

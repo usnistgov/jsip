@@ -116,6 +116,9 @@ extends SIPStack implements  SIPTransactionEventListener {
     public void
     putDialog(DialogImpl dialog) {
         String dialogId  = dialog.getDialogId();
+	synchronized(dialogTable) {
+	     if (dialogTable.containsKey(dialogId)) return;
+	}
         if (LogWriter.needsLogging) {
             LogWriter.logMessage("putDialog dialogId=" + dialogId);
         }
