@@ -22,7 +22,7 @@ import java.net.*;
  * @author M. Ranganathan <mranga@nist.gov><br/>(Added Dialog table).
  * @author performance enhacements added by Pierre De Rop and Thomas Froment.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.47 $ $Date: 2004-12-01 19:05:16 $ <a
+ * @version JAIN-SIP-1.1 $Revision: 1.48 $ $Date: 2005-01-28 00:23:38 $ <a
  *          href=" {@docRoot}/uncopyright.html">This code is in the public
  *          domain. </a>
  */
@@ -189,7 +189,7 @@ public abstract class SIPTransactionStack extends SIPMessageStack implements
 	}
 
 	public SIPDialog createDialog(SIPTransaction transaction) {
-		SIPRequest sipRequest = transaction.getOriginalRequest();
+		// SIPRequest sipRequest = transaction.getOriginalRequest();
 
 		SIPDialog retval = new SIPDialog(transaction);
 
@@ -1038,6 +1038,11 @@ public abstract class SIPTransactionStack extends SIPMessageStack implements
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.47  2004/12/01 19:05:16  mranga
+ * Reviewed by:   mranga
+ * Code cleanup remove the unused SIMULATION code to reduce the clutter.
+ * Fix bug in Dialog state machine.
+ *
  * Revision 1.46  2004/10/31 02:19:08  mranga
  * Reviewed by:   M. Ranganathan
  *
