@@ -120,7 +120,7 @@ import sim.java.*;
  *@author Bug fixes by Emil Ivov.
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.23 $ $Date: 2004-04-09 11:51:26 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.24 $ $Date: 2004-04-19 21:51:04 $
  */
 public class SIPClientTransaction
 	extends SIPTransaction
@@ -569,10 +569,10 @@ public class SIPClientTransaction
 				enableTimeoutTimer(TIMER_F);
 				// According to RFC, the TU has to be informed on 
 				// this transition.  Bug report by Emil Ivov
-				respondTo.processResponse(transactionResponse, this);
+				if (respondTo != null) respondTo.processResponse(transactionResponse, this);
 			} else if (200 <= statusCode && statusCode <= 699) {
 				// Send the response up to the TU.
-				respondTo.processResponse(transactionResponse, this);
+				if (respondTo != null) respondTo.processResponse(transactionResponse, this);
 				if (!isReliable()) {
 					this.setState(TransactionState.COMPLETED);
 					enableTimeoutTimer(TIMER_K);
@@ -583,9 +583,9 @@ public class SIPClientTransaction
 		} else if (TransactionState.PROCEEDING == this.getState()) {
 			// Bug fixes by Emil Ivov
 			if (statusCode / 100 == 1) {
-				respondTo.processResponse(transactionResponse, this);
+				if (respondTo != null) respondTo.processResponse(transactionResponse, this);
 			} else if (200 <= statusCode && statusCode <= 699) {
-				respondTo.processResponse(transactionResponse, this);
+				if (respondTo != null) respondTo.processResponse(transactionResponse, this);
 				disableRetransmissionTimer();
 				disableTimeoutTimer();
 				if (!isReliable()) {
@@ -660,14 +660,14 @@ public class SIPClientTransaction
 		} else if (TransactionState.CALLING == this.getState()) {
 			if (statusCode / 100 == 2) {
 				// 200 responses are always seen by TU.
-				respondTo.processResponse(transactionResponse, this);
+				if (respondTo != null) respondTo.processResponse(transactionResponse, this);
 				disableRetransmissionTimer();
 				disableTimeoutTimer();
 				this.setState(TransactionState.TERMINATED);
 			} else if (statusCode / 100 == 1) {
 				disableRetransmissionTimer();
 				disableTimeoutTimer();
-				respondTo.processResponse(transactionResponse, this);
+				if (respondTo != null) respondTo.processResponse(transactionResponse, this);
 				this.setState(TransactionState.PROCEEDING);
 			} else if (300 <= statusCode && statusCode <= 699) {
 				// Send back an ACK request (do this before calling the
@@ -685,7 +685,7 @@ public class SIPClientTransaction
 				// the TU, and the client transaction MUST generate an 
 				// ACK request.
 
-				respondTo.processResponse(transactionResponse, this);
+				if (respondTo != null) respondTo.processResponse(transactionResponse, this);
 
 				if (!isReliable()) {
 					this.setState(TransactionState.COMPLETED);
@@ -697,10 +697,10 @@ public class SIPClientTransaction
 			}
 		} else if (TransactionState.PROCEEDING == this.getState()) {
 			if ( statusCode / 100 == 1) {
-				respondTo.processResponse(transactionResponse, this);
+				if (respondTo != null) respondTo.processResponse(transactionResponse, this);
 			} else if (statusCode / 100 == 2) {
 				this.setState(TransactionState.TERMINATED);
-				respondTo.processResponse(transactionResponse, this);
+				if (respondTo != null) respondTo.processResponse(transactionResponse, this);
 			} else if (300 <= statusCode && statusCode <= 699) {
 				// Send back an ACK request
 				try {
@@ -709,7 +709,7 @@ public class SIPClientTransaction
 					InternalErrorHandler.handleException(ex);
 				}
 				// Pass up to the TU for processing.
-				respondTo.processResponse(transactionResponse, this);
+				if (respondTo != null) respondTo.processResponse(transactionResponse, this);
 				if (!isReliable()) {
 					this.setState(TransactionState.COMPLETED);
 					enableTimeoutTimer(TIMER_D);
@@ -1014,6 +1014,10 @@ public class SIPClientTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.23  2004/04/09 11:51:26  mranga
+ * Reviewed by:   mranga
+ * Limit size of pending buffer to thwart response flooding attack.
+ *
  * Revision 1.22  2004/04/07 00:19:23  mranga
  * Reviewed by:   mranga
  * Fixes a potential race condition for client transactions.

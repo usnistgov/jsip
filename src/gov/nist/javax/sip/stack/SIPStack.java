@@ -33,7 +33,7 @@ import sim.java.net.*;
  * returnResponse  for successful message processing and throw
  * SIPServerException for unsuccessful message processing.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2004-04-07 00:19:23 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2004-04-19 21:51:04 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * 
@@ -149,6 +149,8 @@ public abstract class SIPStack {
 	private Collection messageProcessors;
 
 	protected String stunServerAddress;
+
+	protected int stunServerPort;
 
 	/**
 	 * Log a bad message (invoked when a parse exception arises).
@@ -711,6 +713,11 @@ public abstract class SIPStack {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2004/04/07 00:19:23  mranga
+ * Reviewed by:   mranga
+ * Fixes a potential race condition for client transactions.
+ * Handle re-invites statefully within an established dialog.
+ *
  * Revision 1.15  2004/03/30 15:17:39  mranga
  * Reviewed by:   mranga
  * Added reInitialization for stack in support of applets.

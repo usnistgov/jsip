@@ -82,6 +82,11 @@ JAIN-SIP, the stack supports the following configuration Parameters :
    if your client uses TCP to get through NAT boxes, you may want to set this to <b>true</b>
    so as to allow inbound signaling to the client.
  </li>
+ <li><b>gov.nist.javax.sip.STUN_SERVER = ipaddress[:port] </b> <br/>
+Stun server address:port. Default is null (no stun support). To enable
+this feature, download and install the stun4j package and make sure 
+stun4j.jar is in your class path.
+</li>
 
  <li><b>gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS = [true|false] </b> <br/>
    Default value is <b>true</b>. Setting this to false makes the Stack close the server socket after

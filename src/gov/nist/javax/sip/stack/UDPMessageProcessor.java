@@ -23,7 +23,7 @@ import  sim.java.net.*;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size). 
  * Each UDP message is processed in its own thread). 
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.12 $ $Date: 2004-04-03 12:30:53 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2004-04-19 21:51:04 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -165,14 +165,13 @@ public class UDPMessageProcessor extends MessageProcessor {
 				// TODO - define a configuration property for this.
 
 				// Define stun address for the stun server.
-				int stunServerPort = 3478;
 				Class parm[] = new Class[2];
 				parm[0] = String.class;
 				parm[1] = Integer.TYPE;
 				Constructor cons = stunAddressClass.getConstructor(parm);
 				Object ca[] = new Object[2];
 				ca[0] = sipStack.stunServerAddress;
-				ca[1] = new Integer(stunServerPort);
+				ca[1] = new Integer(sipStack.stunServerPort);
 				Object stunAddress = cons.newInstance(ca);
 
 				// Get the  Simple Address Detector instance.
@@ -417,6 +416,10 @@ public class UDPMessageProcessor extends MessageProcessor {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/04/03 12:30:53  mranga
+ * Reviewed by:   mranga
+ * fix potential race condition.
+ *
  * Revision 1.11  2004/01/22 18:39:42  mranga
  * Reviewed by:   M. Ranganathan
  * Moved the ifdef SIMULATION and associated tags to the first column so Prep preprocessor can deal with them.
