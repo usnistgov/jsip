@@ -27,7 +27,7 @@ import sim.java.net.*;
  * @author Jeff Keyser (original) 
  * @author M. Ranganathan <mranga@nist.gov>  <br/> (Added Dialog table).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.23 $ $Date: 2004-03-09 00:34:44 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.24 $ $Date: 2004-03-30 15:17:39 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public abstract class SIPTransactionStack
@@ -81,6 +81,35 @@ public abstract class SIPTransactionStack
 		// the code.
 		// Create the transaction collections
 
+		clientTransactions = Collections.synchronizedSet(new HashSet());
+		serverTransactions = Collections.synchronizedSet(new HashSet());
+		// Dialog dable.
+		this.dialogTable = new Hashtable();
+
+		// Dummy dialog assigned for transactions that do not belong to a
+		// dialog.
+		this.dummyDialog = new DialogImpl();
+		this.dummyDialog.setDialogId("DUMMY-DIALOG");
+
+		// Start the timer event thread.
+//ifdef SIMULATION
+/*
+		SimThread simThread =	new SimThread( new TransactionScanner(this));
+		simThread.setName("TransactionScanner");
+		simThread.start();
+//else
+*/
+		new Thread(new TransactionScanner(this)).start();
+//endif
+//
+
+	}
+
+
+	/** Re Initialize the stack instance.
+	*/
+	protected void reInit() {
+		super.reInit();
 		clientTransactions = Collections.synchronizedSet(new HashSet());
 		serverTransactions = Collections.synchronizedSet(new HashSet());
 		// Dialog dable.
@@ -897,6 +926,15 @@ public abstract class SIPTransactionStack
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.23  2004/03/09 00:34:44  mranga
+ * Reviewed by:   mranga
+ * Added TCP connection management for client and server side
+ * Transactions. See configuration parameter
+ * gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false
+ * Releases Server TCP Connections after linger time
+ * gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS=false
+ * Releases Client TCP Connections after linger time
+ *
  * Revision 1.22  2004/03/07 22:25:25  mranga
  * Reviewed by:   mranga
  * Added a new configuration parameter that instructs the stack to

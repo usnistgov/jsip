@@ -217,7 +217,7 @@ class IOHandler {
 		if (transport.compareToIgnoreCase(TCP) == 0) {
 			String key = makeKey(inaddr, contactPort);
 			Socket clientSock = getSocket(key);
-			retry : while (retry_count < max_retry) {
+			while (retry_count < max_retry) {
 				if (clientSock == null) {
 					if (LogWriter.needsLogging) {
 						sipStack.logWriter.logMessage("inaddr = " + inaddr);
@@ -243,7 +243,6 @@ class IOHandler {
 						clientSock.close();
 						clientSock = null;
 						retry_count++;
-						break retry;
 					}
 				}
 			}
@@ -289,6 +288,10 @@ class IOHandler {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2004/03/26 21:53:46  mranga
+ * Reviewed by:   mranga
+ * Remove unused function.
+ *
  * Revision 1.17  2004/03/25 16:37:00  mranga
  * Reviewed by:   mranga
  * Fix up for logging messages.
