@@ -28,7 +28,7 @@ import sim.java.net.*;
  * @author Jeff Keyser (original) 
  * @author M. Ranganathan <mranga@nist.gov>  <br/> (Added Dialog table).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.37 $ $Date: 2004-06-27 00:41:52 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.38 $ $Date: 2004-06-27 01:00:21 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public abstract class SIPTransactionStack
@@ -532,6 +532,7 @@ public abstract class SIPTransactionStack
 							logWriter.logMessage("adding server transaction " + 
 							currentTransaction);
 						serverTransactions.add(0,currentTransaction);
+						addTransactionHash(currentTransaction);
 						currentTransaction.startTransactionTimer();
 						currentTransaction.isMapped = true;
 					} 
@@ -549,6 +550,7 @@ public abstract class SIPTransactionStack
 					        if (LogWriter.needsLogging)
 							logWriter.logMessage("adding server transaction " +  currentTransaction);
 						serverTransactions.add(0,currentTransaction);
+						addTransactionHash(currentTransaction);
 						currentTransaction.startTransactionTimer();
 						currentTransaction.toListener = true;
 					}  
@@ -948,6 +950,12 @@ public abstract class SIPTransactionStack
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.37  2004/06/27 00:41:52  mranga
+ * Submitted by:  Thomas Froment and Pierre De Rop
+ * Reviewed by:   mranga
+ * Performance improvements
+ * (auxiliary data structure for fast lookup of transactions).
+ *
  * Revision 1.36  2004/06/21 05:42:32  mranga
  * Reviewed by:  mranga
  * more code smithing
