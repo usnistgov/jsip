@@ -11,7 +11,8 @@ import java.text.ParseException;
  * The SipUri structure. 
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
- * @version JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2004-07-22 14:22:52 $
+ * Includes a bug fix by Stefan Marx.
+ * @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-09-26 14:48:03 $
  *
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
@@ -644,12 +645,18 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 
 	/**
 	 * Returns an Iterator over the names (Strings) of all headers present
-	 * in this SipURI.
+	 * in this SipURI. 
 	 *
 	 * @return an Iterator over all the header names
 	 */
 	public Iterator getHeaderNames() {
-		return this.qheaders.listIterator();
+		LinkedList llist = new LinkedList();
+		Iterator it = this.qheaders.listIterator();
+		while (it.hasNext()) {
+			NameValue nv = (NameValue) it.next();
+			llist.add(nv.getName());
+		}
+		return llist.listIterator();
 	}
 
 	/** Returns the value of the <code>lr</code> parameter, or null if this
@@ -937,6 +944,12 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/07/22 14:22:52  mranga
+ * Submitted by:  Dave Stuart
+ * Reviewed by:   mranga
+ *
+ * Fix for equality check. Compare size of parameter lists.
+ *
  * Revision 1.2  2004/01/22 13:26:28  sverker
  * Issue number:
  * Obtained from:

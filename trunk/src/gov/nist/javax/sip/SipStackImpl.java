@@ -113,9 +113,7 @@ import sim.java.net.*;
  *   parse and manage the state machine but will run the listener in
  *   its own thread.
  * </li>
- * </ul>
- * </li> 
- *
+ *</ul>
  *
  *<li> <b>gov.nist.javax.sip.REENTRANT_LISTENER = true|false </b> <br/>
  *  Default is false. Set to true if the listener is re-entrant. 
@@ -140,9 +138,8 @@ import sim.java.net.*;
  * of the content  delivered in this interval.
  * Default value is -1  (ie. the stack is wide open to starvation attacks) and
  * the client can be as slow as it wants to be.
- *
  *</li>
-
+ *
  *<li> <b>gov.nist.javax.sip.NETWORK_LAYER = classpath </b> <br/>
  * This is an EXPERIMENTAL property (still under active devlopment).
  * Defines a network layer that allows a client to have control over socket
@@ -163,7 +160,7 @@ import sim.java.net.*;
  *
  *</ul>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.33 $ $Date: 2004-09-07 18:25:53 $
+ * @version JAIN-SIP-1.1 $Revision: 1.34 $ $Date: 2004-09-26 14:48:02 $
  * 
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -755,6 +752,12 @@ public class SipStackImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.33  2004/09/07 18:25:53  mranga
+ * Submitted by:  Bill Roome
+ * Reviewed by:   mranga
+ *
+ * flag to govern configuration should be tested against true
+ *
  * Revision 1.32  2004/09/01 18:09:05  mranga
  * Reviewed by:   mranga
  * Allow application to see route header on incoming request though

@@ -23,7 +23,7 @@ import java.io.IOException;
  * NIST-SIP stack and event model with the JAIN-SIP stack. Implementors
  * of JAIN services need not concern themselves with this class. 
  *
- * @version JAIN-SIP-1.1 $Revision: 1.39 $ $Date: 2004-09-01 18:09:05 $
+ * @version JAIN-SIP-1.1 $Revision: 1.40 $ $Date: 2004-09-26 14:48:02 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Bug fix Contributions by Lamine Brahimi and  Andreas Bystrom. <br/>
@@ -105,11 +105,10 @@ public class NistSipMessageHandlerImpl
 
 		SIPTransaction transaction = transactionChannel;
 		// Look for the registered SIPListener for the message channel.
-//ifndef SIMULATION
-//
-		synchronized (sipProvider) {
-//endif
-//
+
+		// Removed unnecessary synchronization
+		// bug reported by John Martin.
+		// synchronized (sipProvider) {
 			if (sipRequest.getMethod().equalsIgnoreCase(Request.ACK)) {
 				// Could not find transaction. Generate an event
 				// with a null transaction identifier.
@@ -450,11 +449,7 @@ public class NistSipMessageHandlerImpl
 							(Request) sipRequest);
 			}
 			sipProvider.handleEvent(sipEvent, transaction);
-//ifndef SIMULATION
-//
-		}
-//endif
-//
+// 		}
 
 	}
 
@@ -558,6 +553,11 @@ public class NistSipMessageHandlerImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.39  2004/09/01 18:09:05  mranga
+ * Reviewed by:   mranga
+ * Allow application to see route header on incoming request though
+ * use of a configuration parameter.
+ *
  * Revision 1.38  2004/06/21 05:43:16  mranga
  * Reviewed by:  mranga
  *
