@@ -120,7 +120,7 @@ import sim.java.*;
  *@author Bug fixes by Emil Ivov.
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.20 $ $Date: 2004-03-09 00:34:44 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.21 $ $Date: 2004-04-06 01:19:00 $
  */
 public class SIPClientTransaction
 	extends SIPTransaction
@@ -379,8 +379,14 @@ public class SIPClientTransaction
 
 		// Ignore 1xx 
 		if (TransactionState.COMPLETED == this.getState()
-			&& transactionResponse.getStatusCode() / 100 == 1)
+			&& transactionResponse.getStatusCode() / 100 == 1) {
 			return;
+		} else if (TransactionState.PROCEEDING == this.getState()
+			 && transactionResponse.getStatusCode() == 100 ) { 
+			// Ignore 100 if received after 180
+			// bug report from Peter Parnes.
+			return;
+		}
 
 		if (LogWriter.needsLogging)
 			parentStack.logWriter.logMessage(
@@ -662,7 +668,7 @@ public class SIPClientTransaction
 				}
 			}
 		} else if (TransactionState.PROCEEDING == this.getState()) {
-			if (statusCode / 100 == 1) {
+			if ( statusCode / 100 == 1) {
 				respondTo.processResponse(transactionResponse, this);
 			} else if (statusCode / 100 == 2) {
 				this.setState(TransactionState.TERMINATED);
@@ -962,6 +968,15 @@ public class SIPClientTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.20  2004/03/09 00:34:44  mranga
+ * Reviewed by:   mranga
+ * Added TCP connection management for client and server side
+ * Transactions. See configuration parameter
+ * gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false
+ * Releases Server TCP Connections after linger time
+ * gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS=false
+ * Releases Client TCP Connections after linger time
+ *
  * Revision 1.19  2004/03/07 22:25:24  mranga
  * Reviewed by:   mranga
  * Added a new configuration parameter that instructs the stack to
