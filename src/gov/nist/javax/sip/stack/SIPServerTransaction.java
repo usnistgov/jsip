@@ -593,7 +593,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
 	    transactionResponse.getTo().getTag() != null  	&&
 	    ((SIPTransactionStack) this.getSIPStack()).isDialogCreated
 	    (transactionResponse.getCSeq().getMethod())) {
-	    this.dialog.setRemoteTag(transactionResponse.getTo().getTag());
+	    //this.dialog.setRemoteTag(transactionResponse.getTo().getTag());
 	    ((SIPTransactionStack) this.getSIPStack()).putDialog(this.dialog);
 	    if (statusCode/100 == 1) 
 			this.dialog.setState(DialogImpl.EARLY_STATE);
