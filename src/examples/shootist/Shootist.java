@@ -77,12 +77,12 @@ public class Shootist implements SipListener {
 			System.out.println("shootist:  Sending OK.");
 			System.out.println("Dialog State = " + dialog.getState());
 
-			//ifdef SIMULATION
-			/*
+//ifdef SIMULATION
+/*
 				    System.out.println("End time = " 
 						+ SimSystem.currentTimeMillis());
-			//endif
-			*/
+//endif
+*/
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -155,14 +155,14 @@ public class Shootist implements SipListener {
 		sipFactory = SipFactory.getInstance();
 		sipFactory.setPathName("gov.nist");
 		Properties properties = new Properties();
-		//ifdef SIMULATION
-		/*
+//ifdef SIMULATION
+/*
 		        properties.setProperty("javax.sip.IP_ADDRESS"
 		        ,"129.6.55.61");
 		        properties.setProperty("javax.sip.OUTBOUND_PROXY"
 		        ,"129.6.55.62:5070/UDP");
-		//else
-		*/
+//else
+*/
 		properties.setProperty("javax.sip.IP_ADDRESS", "127.0.0.1");
 		// If you want to try TCP transport change the following to
 		// transport = "tcp";
@@ -171,8 +171,8 @@ public class Shootist implements SipListener {
 			"javax.sip.OUTBOUND_PROXY",
 			"127.0.0.1:5070/" + transport);
 		// If you want to use UDP then uncomment this.
-		//endif
-		//
+//endif
+//
 
 		properties.setProperty(
 			"javax.sip.ROUTER_PATH",
@@ -380,6 +380,15 @@ public class Shootist implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2004/03/09 00:34:42  mranga
+ * Reviewed by:   mranga
+ * Added TCP connection management for client and server side
+ * Transactions. See configuration parameter
+ * gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false
+ * Releases Server TCP Connections after linger time
+ * gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS=false
+ * Releases Client TCP Connections after linger time
+ *
  * Revision 1.18  2004/03/07 22:25:21  mranga
  * Reviewed by:   mranga
  * Added a new configuration parameter that instructs the stack to
