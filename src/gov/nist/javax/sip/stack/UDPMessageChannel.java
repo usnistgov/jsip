@@ -46,7 +46,7 @@ import sim.java.net.*;
  * this code that was sending it into an infinite loop when a bad incoming
  * message was parsed.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.15 $ $Date: 2004-03-30 15:38:18 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2004-04-22 22:51:19 $
  */
 public class UDPMessageChannel
 	extends MessageChannel
@@ -534,13 +534,13 @@ public class UDPMessageChannel
 		if (LogWriter.needsLogging)
 			this.stack.logWriter.logException(ex);
 		// Log the bad message for later reference.
-		if (hdrClass.equals(From.class)
+		if ((hdrClass!=null)&&(hdrClass.equals(From.class)
 			|| hdrClass.equals(To.class)
 			|| hdrClass.equals(CSeq.class)
 			|| hdrClass.equals(Via.class)
 			|| hdrClass.equals(CallID.class)
 			|| hdrClass.equals(RequestLine.class)
-			|| hdrClass.equals(StatusLine.class)) {
+			|| hdrClass.equals(StatusLine.class))) {
 			stack.logBadMessage(message);
 			throw ex;
 		} else {
@@ -906,6 +906,10 @@ public class UDPMessageChannel
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2004/03/30 15:38:18  mranga
+ * Reviewed by:   mranga
+ * Name the threads so as to facilitate debugging.
+ *
  * Revision 1.14  2004/01/22 18:39:42  mranga
  * Reviewed by:   M. Ranganathan
  * Moved the ifdef SIMULATION and associated tags to the first column so Prep preprocessor can deal with them.

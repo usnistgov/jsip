@@ -7,7 +7,7 @@ import java.util.Vector;
 /**
  * Parser For SIP and Tel URLs. Other kinds of URL's are handled by the 
  * J2SE 1.4 URL class.
- * @version JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2004-02-06 20:15:55 $
+ * @version JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2004-04-22 22:51:18 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -102,7 +102,7 @@ public class URLParser extends Parser {
 		return retval.toString();
 	}
 
-	protected NameValue uriParam() throws ParseException {
+	private NameValue uriParam() throws ParseException {
 		if (debug)
 			dbg_enter("uriParam");
 		try {
@@ -113,7 +113,11 @@ public class URLParser extends Parser {
 				lexer.consume(1);
 				pvalue = paramNameOrValue();
 			}
-			return new NameValue(pname, pvalue);
+			if (pname.toString().equals("") &&
+			    ( pvalue == null || 
+			    pvalue.toString().equals("") ))
+			    return null;
+			else return new NameValue(pname, pvalue);
 		} finally {
 			if (debug)
 				dbg_leave("uriParam");
@@ -544,7 +548,7 @@ public class URLParser extends Parser {
 					break;
 				lexer.consume(1);
 				NameValue parms = uriParam();
-				retval.setUriParameter(parms);
+				if (parms != null) retval.setUriParameter(parms);
 			}
 
 			if (lexer.hasMoreChars() && lexer.lookAhead(0) == '?') {
@@ -744,6 +748,11 @@ public class URLParser extends Parser {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/02/06 20:15:55  mranga
+ * Submitted by:  Bruno Konik
+ * Reviewed by:   mranga
+ * Fixed character sets for parsing of urls and methods.
+ *
  * Revision 1.5  2004/01/22 13:26:32  sverker
  * Issue number:
  * Obtained from:
