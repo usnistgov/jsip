@@ -4,6 +4,7 @@
 package gov.nist.javax.sip.stack;
 
 import java.util.*;
+import gov.nist.javax.sip.*;
 import gov.nist.javax.sip.header.*;
 import gov.nist.javax.sip.address.*;
 import gov.nist.javax.sip.message.*;
@@ -24,7 +25,7 @@ import java.text.ParseException;
  * retrieve this structure from the SipStack. Bugs against route set
  * management were reported by Antonis Karydas and Brad Templeton.
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.33 $ $Date: 2004-06-16 16:31:07 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.34 $ $Date: 2004-06-17 15:22:30 $
  *
  *@author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -33,7 +34,7 @@ import java.text.ParseException;
  *
  */
 
-public class DialogImpl implements javax.sip.Dialog {
+public class DialogImpl implements javax.sip.Dialog , PendingRecord {
     private boolean reInviteFlag;
     private Object applicationData; // Opaque pointer to application data.
     private SIPRequest originalRequest;
@@ -54,10 +55,12 @@ public class DialogImpl implements javax.sip.Dialog {
     protected SIPRequest lastAck;
     protected boolean ackProcessed;
     protected DialogTimerTask timerTask;
-    protected int nextSeqno;
-    
+    protected Integer nextSeqno;
+    protected static final int WINDOW_SIZE = 8;
+    protected   Hashtable pendingRecords;
     private int retransmissionTicksLeft;
     private int prevRetransmissionTicks;
+    protected boolean inPendingQueue;
 
     // This is for debugging only.
     private int ackLine;
@@ -73,6 +76,24 @@ public class DialogImpl implements javax.sip.Dialog {
     public final static int CONFIRMED_STATE = DialogState._CONFIRMED;
     public final static int COMPLETED_STATE = DialogState._COMPLETED;
     public final static int TERMINATED_STATE = DialogState._TERMINATED;
+
+    /** Put a pendig request (to be consumed later if possible). If seqno is
+     * way too big (outside window) reject it.
+     */
+    public void putPending(NistSipMessageHandlerImpl pendingRecord, int seqno) {
+        boolean toInsert = false;
+        synchronized(pendingRecords) {
+            if (seqno > nextSeqno.intValue() + WINDOW_SIZE) {
+                return;
+            } else if ( this.pendingRecords.containsKey(new Integer(seqno))) {
+                 return;
+            } else {
+                    this.pendingRecords.put(new Integer(seqno),pendingRecord);
+                    toInsert = true;         
+            }
+        }
+        if (toInsert) sipStack.putPending(this);
+    }
     
     /** Set ptr to app data.
      */
@@ -87,16 +108,28 @@ public class DialogImpl implements javax.sip.Dialog {
     }
 
 
+    /** Updates the next consumable seqno and notifies the pending thread
+     * if there are any queued requests.
+     */
     public void requestConsumed() {
-	// here is a good place to re-run pending transactions
-	this.nextSeqno = this.getRemoteSequenceNumber() + 1;
+	this.nextSeqno = new Integer(this.getRemoteSequenceNumber() + 1);
+        // got the next thing we were looking for.
+	if (this.pendingRecords.containsKey(nextSeqno)) {
+		this.sipStack.notifyPendingRecordScanner();
+	} else if ( this.pendingRecords.size() != 0 ) {
+                    this.sipStack.putPending(this);
+        }
     }
 
     /** Return true if this request can be consumed by the dialog.
+     *@param dialogRequest is the request to check with the dialog.
+     *@return true if the dialogRequest sequence number matches the next consumable seqno.
      */
     public boolean isRequestConsumable(SIPRequest dialogRequest) {
+        // have not yet set remote seqno - this is a fresh 
 	if (this.getRemoteSequenceNumber() == -1 ) return true;
-	else return this.nextSeqno == dialogRequest.getCSeq().getSequenceNumber();
+        else if ( this.nextSeqno == null) return false;
+	else return this.nextSeqno.intValue() == dialogRequest.getCSeq().getSequenceNumber();
     }
     
     /**
@@ -240,6 +273,7 @@ public class DialogImpl implements javax.sip.Dialog {
 	if (state == TERMINATED_STATE)  {
 		this.sipStack.removeDialog(this);
 		this.stopTimer();
+                this.sipStack.removePending(this);
 	}
     }
     
@@ -558,6 +592,7 @@ public class DialogImpl implements javax.sip.Dialog {
     /** Protected Dialog constructor.
      */
     protected DialogImpl() {
+	this.pendingRecords = new Hashtable();
         this.routeList = new RouteList();
         this.dialogState = -1; // not yet initialized.
         localSequenceNumber = 0;
@@ -1607,9 +1642,38 @@ public class DialogImpl implements javax.sip.Dialog {
 	   if (this.timerTask != null) this.timerTask.cancel();
 	} catch (Exception ex) {}
     }
+    
+    public void clearPending() {
+    }
+    
+    public boolean hasPending() {
+        synchronized (this.pendingRecords) {
+            return this.pendingRecords.containsKey(nextSeqno);
+        }
+    }
+    
+    public void processPending() {
+        NistSipMessageHandlerImpl msgHandler = null;
+        synchronized (this.pendingRecords) {
+             msgHandler = 
+                (NistSipMessageHandlerImpl) 
+                pendingRecords.remove(nextSeqno);
+             if (this.pendingRecords.size() != 0) 
+                    sipStack.putPending(this);
+        }
+         if (msgHandler != null) {
+               msgHandler.processPending();
+         }
+         
+    }
+             
+    
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.33  2004/06/16 16:31:07  mranga
+ * Sequence number checking for in-dialog messages
+ *
  * Revision 1.32  2004/06/16 02:53:19  mranga
  * Submitted by:  mranga
  * Reviewed by:   implement re-entrant multithreaded listener model.

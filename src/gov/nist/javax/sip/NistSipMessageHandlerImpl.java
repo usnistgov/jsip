@@ -23,7 +23,7 @@ import java.io.IOException;
  * NIST-SIP stack and event model with the JAIN-SIP stack. Implementors
  * of JAIN services need not concern themselves with this class. 
  *
- * @version JAIN-SIP-1.1 $Revision: 1.34 $ $Date: 2004-06-16 19:04:27 $
+ * @version JAIN-SIP-1.1 $Revision: 1.35 $ $Date: 2004-06-17 15:22:29 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Bug fix Contributions by Lamine Brahimi and  Andreas Bystrom. <br/>
@@ -35,6 +35,18 @@ public class NistSipMessageHandlerImpl
 	protected SIPTransaction transactionChannel;
 	protected ListeningPointImpl listeningPoint;
 	protected SipStackImpl sipStackImpl;
+
+	private  SIPRequest pendingRequest;
+	private  MessageChannel pendingMessageChannel;
+
+
+	/** Gets called from the dialog layer.
+	*/
+	public void  processPending() {
+		processRequest(pendingRequest,pendingMessageChannel);
+	}
+
+	
 
 	/**
 	 * Process a request.
@@ -380,11 +392,11 @@ public class NistSipMessageHandlerImpl
    					// increasing and contiguous CSeq sequence numbers (increasing-by-one)
    					// in each direction (excepting ACK and CANCEL of course, whose numbers
    					// equal the requests being acknowledged or cancelled). 
-					// The sequence number is too large - just drop the message silently and wait
-					// for a retransmit in the right order. For efficient processing I should queue this
-					// and re-process later but for now we drop the message.
+					// For efficient processing put in the pending queue
+					// and re-process later. It would be equally valid to drop here.
 				        if (LogWriter.needsLogging) 
-					   sipStackImpl.logMessage ("sequence number is too large - dropping!" );
+					   sipStackImpl.logMessage ("sequence number is too large - putting pending!" );
+					dialog.putPending(this,sipRequest.getCSeq().getSequenceNumber());
 					return;
 					
 				} 
@@ -554,6 +566,9 @@ public class NistSipMessageHandlerImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.34  2004/06/16 19:04:27  mranga
+ * Check for out of sequence bye processing.
+ *
  * Revision 1.33  2004/06/16 16:31:07  mranga
  * Sequence number checking for in-dialog messages
  *

@@ -120,11 +120,12 @@ import sim.java.*;
  *@author Bug fixes by Emil Ivov.
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.32 $ $Date: 2004-06-15 09:54:44 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.33 $ $Date: 2004-06-17 15:22:31 $
  */
 public class SIPClientTransaction
 extends SIPTransaction
-implements SIPServerResponseInterface, javax.sip.ClientTransaction {
+implements SIPServerResponseInterface, javax.sip.ClientTransaction , 
+PendingRecord{
     
     // max # of pending responses that can we can buffer (to avoid
     // response flooding DOS attack).
@@ -469,19 +470,20 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
         // Defer processing if a previous event has been placed in the processing queue.
         // bug shows up on fast dual processor machines where a subsequent response
         // arrives before a previous one completes processing.
-	synchronized (this.pendingResponses) {
           if (this.eventPending ) {
 	      if (LogWriter.needsLogging) {
 		  sipStack.logWriter.logMessage
 		   ("putting pending " + transactionResponse.getFirstLine());
 	      }
-              if (this.pendingResponses.size() < MAX_PENDING_RESPONSES) {
-                this.pendingResponses.add
-                (new PendingResponse(transactionResponse,sourceChannel));
+	      synchronized (this.pendingResponses) {
+                 if (this.pendingResponses.size() < MAX_PENDING_RESPONSES) {
+                   this.pendingResponses.add
+                    (new PendingResponse(transactionResponse,sourceChannel));
+	         }
 	      }
+	      sipStack.putPending(this);
               return;
           }
-	}
         
         if (LogWriter.needsLogging)
             sipStack.logWriter.logMessage(
@@ -1074,7 +1076,7 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
     }
     
 
-    protected boolean hasPending() {
+    public boolean hasPending() {
 	synchronized(pendingResponses) {
 		return !pendingResponses.isEmpty();
 	}
@@ -1091,7 +1093,7 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
 		toNotify = true;
 	 }
 	}
-	if (toNotify) sipStack.notifyPendingResponseScanner(); 
+	if (toNotify) sipStack.notifyPendingRecordScanner(); 
      }
             
     
@@ -1106,6 +1108,11 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.32  2004/06/15 09:54:44  mranga
+ * Reviewed by:   mranga
+ * re-entrant listener model added.
+ * (see configuration property gov.nist.javax.sip.REENTRANT_LISTENER)
+ *
  * Revision 1.31  2004/06/02 13:09:57  mranga
  * Submitted by:  Peter Parnes
  * Reviewed by:  mranga
