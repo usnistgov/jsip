@@ -145,24 +145,24 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
 	}
 	public void run () {
 		if (this.serverTransaction.getState() == null ||
-		    this.serverTransaction.getState().getValue() == 
-			TRYING_STATE) {
-		      if (parentStack.logWriter.needsLogging)
+		    TransactionState.TRYING == 
+		    this.serverTransaction.getState() ) {
+		    if (parentStack.logWriter.needsLogging)
 		      	parentStack.logWriter.logMessage
 				(" sending Trying current state = " +
 				this.serverTransaction.getState());
-		      try {
+		    try {
                     	serverTransaction.sendMessage( 
 			serverTransaction.getOriginalRequest().
                     	createResponse( 100, "Trying" ) );
 		      if (parentStack.logWriter.needsLogging)
 		 	  parentStack.logWriter.logMessage(" trying sent " + 
 				this.serverTransaction.getState());
-		      } catch (IOException ex) { 
+		    } catch (IOException ex) { 
 			 if (parentStack.logWriter.needsLogging) 
 				parentStack.logWriter.logMessage
 				("IO error sending  TRYING");
-		      }
+		    }
 		}
 	}
 
@@ -397,7 +397,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
      */
      protected void map() {
             if( getState() == null || 
-		getState( ).getValue()  == TRYING_STATE ) {
+		getState( ) == TransactionState.TRYING ) {
                 if( isInviteTransaction( )  &&  ! this.isMapped ) {
 	            this.isMapped = true;
 		    // Schedule a timer to fire in 200 ms if the
@@ -456,7 +456,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
                 // If an invite transaction is ACK'ed while in
                 // the completed state,
             } else if( isInviteTransaction( ) &&
-            getState().getValue() == COMPLETED_STATE &&
+            TransactionState.COMPLETED  == getState() &&
             transactionRequest.getMethod( ).equals( Request.ACK ) ) {
                 
                 setState( CONFIRMED_STATE );
@@ -485,8 +485,8 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
             } else if( transactionRequest.getMethod( ).equals
             ( getOriginalRequest( ).getMethod( ) ) ) {
                 
-                if( getState( ).getValue() == PROCEEDING_STATE ||
-                getState( ).getValue() == COMPLETED_STATE ) {
+                if(  TransactionState.PROCEEDING == getState() ||
+                     TransactionState.COMPLETED  == getState() ) {
                     
                     // Resend the last response to
                     // the client
@@ -514,8 +514,8 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
             }
             
             // Pass message to the TU
-	    if (getState().getValue() != COMPLETED_STATE && 
-		getState().getValue() != TERMINATED_STATE &&
+	    if ( TransactionState.COMPLETED  != getState()   && 
+	         TransactionState.TERMINATED != getState()   &&
 		requestOf != null )  {
 		if ( getOriginalRequest().getMethod().
 		     equals(transactionRequest.getMethod())) {
@@ -529,7 +529,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
 		// This seems like a common bug so I am allowing it through!
 		if (((SIPTransactionStack)getSIPStack()).isDialogCreated
 		     (getOriginalRequest().getMethod()) 
-		     && getState().getValue() == TERMINATED_STATE  
+		     && getState() == TransactionState.TERMINATED
 		     && transactionRequest.getMethod().equals(Request.ACK)
 		     && requestOf != null ) {
 		     ((DialogImpl) this.getDialog()).ackReceived
@@ -638,7 +638,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
         
         // If the TU sends a provisional response while in the
         // trying state,
-	if (  getState().getValue() ==  TRYING_STATE  )   {
+	if (  getState() ==  TransactionState.TRYING  )   {
 	   if ( statusCode / 100 == 1 ) {
                setState( PROCEEDING_STATE );
 	    } else if (  200 <= statusCode  && statusCode <= 699) {
@@ -658,7 +658,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
 	    }
             
             // If the transaction is in the proceeding state,
-        } else if( getState( ).getValue() == PROCEEDING_STATE ) {
+        } else if( getState() == TransactionState.PROCEEDING ) {
             
             if( isInviteTransaction( ) ) {
                 
@@ -732,7 +732,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
             }
             
             // If the transaction has already completed,
-        } else if( getState( ).getValue() == COMPLETED_STATE ) {
+        } else if( TransactionState.COMPLETED == this.getState() ) {
             
             return;
         }
@@ -808,38 +808,35 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
 		this.getOriginalRequest().getMethod() );
 
         DialogImpl dialog = (DialogImpl) this.getDialog();
-        int mystate = this.getState().getValue();
 	if (((SIPTransactionStack)getSIPStack()).isDialogCreated
 	       (this.getOriginalRequest().getMethod()) && 
-               ( mystate == super.CALLING_STATE ||
-                 mystate == super.TRYING_STATE )) {
+               ( TransactionState.CALLING == this.getState()  ||
+                 TransactionState.TRYING == this.getState())) {
 	        dialog.setState(DialogImpl.TERMINATED_STATE);
          } else if (getOriginalRequest().getMethod().equals(Request.BYE)){
              if (dialog != null) 
                     dialog.setState(DialogImpl.TERMINATED_STATE);
          }
 
-        if( (getState( ).getValue() == COMPLETED_STATE) 
+        if(  TransactionState.COMPLETED == this.getState()  
 		&& isInviteTransaction() ) {
             raiseErrorEvent( SIPTransactionErrorEvent.TIMEOUT_ERROR );            
             
 	    setState( TERMINATED_STATE);
             
-        } else if (( getState( ).getValue() == CONFIRMED_STATE) 
+        } else if (  TransactionState.CONFIRMED == this.getState() 
 		&& isInviteTransaction()) {
 	    // TIMER_I should not generate a timeout 
 	    // exception to the application when the 
 	    // Invite transaction is in Confirmed state.
             // Just transition to Terminated state.
 	    setState( TERMINATED_STATE);
-        } else if(  ! isInviteTransaction() && (
-	   getState( ).getValue() == COMPLETED_STATE  ||
-	  getState().getValue() == CONFIRMED_STATE ) ) {
-            
-            setState( TERMINATED_STATE );
-            
+        } else if(  ! isInviteTransaction() && 
+	   ( TransactionState.COMPLETED == this.getState()  ||
+	     TransactionState.CONFIRMED == this.getState() ) ) {
+             setState( TERMINATED_STATE );
         } else if (isInviteTransaction() &&
-		getState().getValue() == TERMINATED_STATE) {
+		TransactionState.TERMINATED == this.getState() ) {
 		// This state could be reached when retransmitting
 		// Bug report sent in by Christophe
 		raiseErrorEvent(SIPTransactionErrorEvent.TIMEOUT_ERROR);
