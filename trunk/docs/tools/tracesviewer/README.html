@@ -3,37 +3,33 @@
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
 <TITLE>NIST SIP SIP SIGNALING TRACE VIEWER</TITLE>
 </HEAD>
-<BODY TEXT="#333333" BACKGROUND="back.gif">
-<CENTER><H1><font color="#0000FF">NIST-SIP traces viewer</font></H1></CENTER>
+<BODY text="#000000" BACKGROUND="images/back.gif">
+<CENTER><H1><font color="#0000FF"><i>NIST-SIP traces viewer</i></font></H1></CENTER>
  
-<P><font size="5"><b>What's this ?</b></font></P>
+<P><font size="5"><u><b>What's this ?</b></u></font></P>
 
 <P>This contains the code for a simple graphical user interface for
 visualizing SIP signaling traces
 </font>
 </P>
 
-<H2><b>Start the application</b></H2>
+<H2><u><b>Start the application</b></u></H2>
     <P> You have to start the application from the command line:
-    either from the command line using the makefile: 
+    either from the command line using ant: 
 <ul>
 <li>
-   When viewing traces from a file use the command (assuming the class paths
-   are properly set):
-   <font color = red > ant viewer
+    <font color = red > ant viewer
    </font>
 </li>
 <li>
-   Or use the makefile (assuming the class paths
+   or the using makefile
+   When viewing traces from a file use the command (assuming the class paths
    are properly set).
    <font color = red > java tools.tracesviewer.TracesViewer -f serverlogfile
    </font>
    You can generate this log from the stack using the following property:
    <it>gov.nist.javax.sip.SERVER_LOG</it>. Set this property to serverlogfile
-   and feed the generated trace to the tracesviewer. 
-    <br>
-    Or set this property to serverlogfile
-    and feed the generated trace to the tracesviewer modifying the build.xml's viewer target.
+   and feed the generated trace to the tracesviewer.
 </li>
 <li> To obtain the trace file from a stack that has exported its trace file
 via RMI invoke the tool as follows:
@@ -60,8 +56,8 @@ via RMI invoke the tool as follows:
 
     </P>
 
-<a href="visualizer.gif">
-If everything is running OK it you will see a window with the retrieved traces,
+<a href="images/visualizer-pic.jpg"  width="150" height="150"  target="_blank">
+If everything is running OK, you will see a window with the retrieved traces,
 paired and color coded by transaction identifier and organized by call ID.
 </a>
   
