@@ -1061,11 +1061,9 @@ public class HeaderFactoryImpl implements HeaderFactory {
 					getMyClass().newInstance();
 			} catch (InstantiationException ex) {
 			   ex.printStackTrace();
-			   System.exit(0);
 			   return null;
 			} catch (IllegalAccessException ex) {
 			   ex.printStackTrace();
-			   System.exit(0);
 			   return null;
 			}
 		  } else {

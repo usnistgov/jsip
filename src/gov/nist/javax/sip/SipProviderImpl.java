@@ -334,16 +334,19 @@ javax.sip.SipProvider, SIPTransactionEventListener {
                     HopImpl hop = dialog.getNextHop();
                     if (hop != null) {
                         SIPClientTransaction ct =
-                        (SIPClientTransaction) sipStack.createMessageChannel(hop);
+                        (SIPClientTransaction) sipStack.createMessageChannel
+						(hop);
                         String branchId = Utils.generateBranchId();
                         if (sipRequest.getTopmostVia() != null) {
                             sipRequest.getTopmostVia().setBranch(branchId);
                         } else {
                             // Find a message processor to assign this 
                             // transaction to.
-                            MessageProcessor messageProcessor =
-                            sipStack.getMessageProcessor(hop.getTransport());
-                            Via via = messageProcessor.getViaHeader();
+                            // MessageProcessor messageProcessor =
+                            // sipStack.getMessageProcessor(hop.getTransport());
+
+                            Via via = this.listeningPoint.
+					messageProcessor.getViaHeader();
                             sipRequest.addHeader(via);
                         }
                         ct.setOriginalRequest(sipRequest);
@@ -364,31 +367,31 @@ javax.sip.SipProvider, SIPTransactionEventListener {
                 try {
                     SIPClientTransaction ct =
                     (SIPClientTransaction) sipStack.createMessageChannel(hop);
+		    if (ct == null) continue;
                     String branchId = Utils.generateBranchId();
                     if (sipRequest.getTopmostVia() != null) {
                         sipRequest.getTopmostVia().setBranch(branchId);
                     } else {
-                        // Find a message processor to assign this transaction to.
-                        MessageProcessor messageProcessor =
-                        sipStack.getMessageProcessor(hop.getTransport());
-                        Via via = messageProcessor.getViaHeader();
+                        // Find a message processor to assign this 
+			// transaction to. MessageProcessor messageProcessor =
+                        // sipStack.getMessageProcessor(hop.getTransport());
+
+                        Via via = this.listeningPoint.messageProcessor.
+					getViaHeader();
                         sipRequest.addHeader(via);
+
                     }
                     ct.setOriginalRequest(sipRequest);
                     ct.setBranch(branchId);
                     if (sipStack.isDialogCreated(request.getMethod())) {
                         // create a new dialog to contain this transaction
                         // provided this is necessary.
-                        // String dialogId = sipRequest.getDialogId(false);
-                        // DialogImpl dialog = sipStack.getDialog(dialogId);
-                        // This could be a re-invite (but noticed by Brad Templeton)
-                        
+                        // This could be a re-invite 
+			// (but noticed by Brad Templeton)
                         if (dialog != null)
                             ct.setDialog(dialog);
                         else sipStack.createDialog(ct);
                     }  else {
-                        // String dialogId = sipRequest.getDialogId(false);
-                        // DialogImpl dialog = sipStack.getDialog(dialogId);
                         
                         ct.setDialog(dialog);
                         
@@ -405,7 +408,7 @@ javax.sip.SipProvider, SIPTransactionEventListener {
             }
         }
         throw new TransactionUnavailableException
-        ("Could not create transaction - could not resolve next hop! ");
+        ("Could not resolve next hop or listening point unavailable! ");
         
     }
     
