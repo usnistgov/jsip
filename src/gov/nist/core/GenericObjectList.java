@@ -55,10 +55,9 @@ public abstract class GenericObjectList
 	protected String separator;
 
 	protected String getIndentation() {
-		String retval = "";
-		for (int i = 0; i < indentation; i++)
-			retval += " ";
-		return retval;
+    char [] chars = new char [indentation];
+    java.util.Arrays.fill (chars, ' ');
+    return new String (chars);
 	}
 
 	/** Return true if this supports reflection based cloning.
@@ -778,6 +777,10 @@ public abstract class GenericObjectList
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/01/22 14:23:45  mranga
+ * Reviewed by:   mranga
+ * Fixed some minor formatting issues.
+ *
  * Revision 1.5  2004/01/22 13:26:27  sverker
  * Issue number:
  * Obtained from:
