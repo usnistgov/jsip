@@ -197,6 +197,13 @@ c:/jakarta-ant/bin/ant all
      </javac>
 </target>
 
+<!-- download and unzip the libs.zip -->
+<target name="getlibs">
+    <get src="http://is2.antd.nist.gov/pub/nist-sip/libs.zip"
+         dest="./libs.zip" verbose="on"/>
+    <unzip src="libs.zip" dest="./"/>
+</target>
+
 <!-- compile to traces viewer jar -->
 <target name="viewerjar">
     <copy todir="${classes}/tools/tracesviewer/images">
