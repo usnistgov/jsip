@@ -95,6 +95,8 @@ performance out of NIST-SIP? </a></li>
 <li><a href="#40">What dialog support is provided by JAIN SIP ? </a> </li>
 <li><a href="#41">How do  you make shootist shoot somewhere else 
 (at another machine) ? </a> </li>
+<li><a href="#42">How do you find out which IP address a SIP Message arrived
+on? </a> </li>
 <li><a href="#questionables"> I have some questionable questions. Where do I look? <a/></li>
 </ol>
 <br/>
@@ -541,16 +543,23 @@ RFC 3261.
 <hr size="2" noshade="noshade"> 
 <a name="41"> </a>
 <li>
-How do  you make shootist shoot somewhere else 
-(at another machine) ?  <br/>
+How do  you make shootist shoot somewhere else (at another machine) ?  <br/>
 
-Change the variable peerHostPort in Shootist.java to whatever host
+Change the variable peerHostPort in Shootist.java  to whatever host
 and port  you want to shoot at (ie. where the shootme resides will be
-a wise choice).  You can also leave out the RouterImpl and HopImpl and
+a wise choice). Change change Shootme.java likewise.
+You can also leave out the RouterImpl and HopImpl and
 just use the default (just dont specify the stack configuration property
 for ROUTER_PATH ).  The example router was provided to show you how  you
 can write your own router (to look up DNS records for example).
+</li>
 
+<hr size="2" noshade="noshade"> 
+<a name="42"> </a>
+<li>How do you find out which IP address and port a SIP Message arrived
+on? <br/> 
+From the Listening Point on which the message was received, retrieve the IP
+Address and Port.
 </li>
 
 </li>
@@ -563,7 +572,7 @@ We have provided links to external web pages in this section because
 it has information that may be of interest to our users. NIST does not
 necessarily endorse the views expressed or the facts presented on these
 sites. Further, NIST does not endorse any commercial products that may
-be advertised or available on these sites.
+be advertised or available on these sites. 
 
 
 <ul>
@@ -596,15 +605,28 @@ NO NO and NO </li>
 more the story of why we feel the need for great gods who fight for
 justice in a world where justice seems another commodity to be bought and
 sold....Neo-Ranga himself is wonderful, fully expressing the sheer mass
-and power he represents, while his thoughts and purpose are expressed
-only in his eyes and actions....." [dvd review] 
+(especially mass) and power he represents, 
+while his thoughts and purpose are expressed only in his eyes 
+and actions....." [dvd review] 
+Editorial -- I would not quite put it in those terms, but who am I to object.
+</li>
+
+<li> What should I do if something does work? <br/>
+Dont worry, be happy, you are likely doing something wrong.
 </li>
 
 <li> What should I do if something does not work? <br/>
+Dont worry be happy, you are likely doing something right.
 <a href="http://www.popcultmag.com/obsessions/profilesingreatness/mad/alfred.jpg">Happy Coding! If anything breaks, 
 don't worry (what? me?? worry???) </a>, 
 be happy and let us know  at
 <a href=mailto:nist-sip-dev@antd.nist.gov>nist-sip-dev@antd.nist.gov</a> <br/>
+
+<li> Why NIST ? <br/>
+This is a very deep question. If you are a congress person, then "If not NIST, 
+who else?". If you are not a congress person, "Why not NIST?". 
+
+
 </ul>
 
 <br>
