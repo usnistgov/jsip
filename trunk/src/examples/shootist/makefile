@@ -7,9 +7,9 @@ EXTRA_LIBS=$(XERCES_HOME)/xerces.jar
 
 
 clean: emacsclean
-	\rm -f *.class
-	\rm -f *log*
-	\rm -f *debug*
+	$(RM) *.class
+	$(RM) -f *log*
+	$(RM) -f *debug*
 
 all:  prep
 ifeq (${SIMULATION},true)
@@ -23,15 +23,15 @@ endif
 
 #shootist is the uac
 shootist: Shootist.class
-	\rm -f shootistdebug.txt
-	\rm -f shootistlog.txt
+	$(RM) shootistdebug.txt
+	$(RM) shootistlog.txt
 	$(JAVA) examples.shootist.Shootist 
 
 
 #shootme is the uas
 shootme: Shootme.class
-	\rm -f shootmedebug.txt
-	\rm -f shootmelog.txt
+	$(RM) -f shootmedebug.txt
+	$(RM) -f shootmelog.txt
 	$(JAVA)  examples.shootist.Shootme 
 
 shootmelog:
@@ -44,6 +44,6 @@ sim:
 	$(JAVA) examples.shootist.Shoot
 
 cleanlogs:
-	\rm -f *debug.txt
-	\rm -f *log.txt
+	$(RM) -f *debug.txt
+	$(RM) -f *log.txt
 
