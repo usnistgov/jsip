@@ -19,12 +19,21 @@ visualizing SIP signaling traces
 <ul>
 <li>
    When viewing traces from a file use the command (assuming the class paths
+   are properly set):
+   <font color = red > ant viewer
+   </font>
+</li>
+<li>
+   Or use the makefile (assuming the class paths
    are properly set).
    <font color = red > java tools.tracesviewer.TracesViewer -f serverlogfile
    </font>
    You can generate this log from the stack using the following property:
    <it>gov.nist.javax.sip.SERVER_LOG</it>. Set this property to serverlogfile
-   and feed the generated trace to the tracesviewer.
+   and feed the generated trace to the tracesviewer. 
+    <br>
+    Or set this property to serverlogfile
+    and feed the generated trace to the tracesviewer modifying the build.xml's viewer target.
 </li>
 <li> To obtain the trace file from a stack that has exported its trace file
 via RMI invoke the tool as follows:

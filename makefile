@@ -162,7 +162,6 @@ clean: emacsclean
 	cd $(SRCROOT)/gov/nist/javax/sip/message;$(MAKE) clean
 	cd $(SRCROOT)/gov/nist/core;$(MAKE) clean
 	cd $(SRCROOT)/examples/shootist; $(MAKE) clean
-	cd $(DOCDIR);$(MAKE) clean
 	$(RM) -rf classes
 	$(RM) -f $(RI_JAR)
 	$(RM) -f $(SDP_JAR)
@@ -222,12 +221,12 @@ srctar: stamp
 	./$(PROJECT_ROOT)/src/javax				\
 	./$(PROJECT_ROOT)/src/gov/nist/javax			\
 	./$(PROJECT_ROOT)/src/gov/nist/core		        \
-	./$(PROJECT_ROOT)/src/tools/tracesviewer	        \
+	./$(PROJECT_ROOT)/src/tools/tracesviewer		        \
 	./$(PROJECT_ROOT)/src/tools/sniffer		        \
 	./$(PROJECT_ROOT)/src/examples/shootist		        \
 	./$(PROJECT_ROOT)/src/test/tck		        	\
-	./$(PROJECT_ROOT)/README				\
-	./$(PROJECT_ROOT)/makefile				\
+	./$(PROJECT_ROOT)/README					\
+	./$(PROJECT_ROOT)/makefile					\
 	./$(PROJECT_ROOT)/build.xml				\
 	./$(PROJECT_ROOT)/build-config				\
 	./$(PROJECT_ROOT)/docs					
@@ -320,6 +319,37 @@ archives: tarfile
 ship:  all
 	$(MAKE) tarfile
 
+
+#	$(JAIN_API_JAR) $(RI_JAR)  lib/junit/junit.jar
+
+# Build the jain api TCK
+tck:
+	cd src/test/tck;$(MAKE) all			
+	cd lib/junit;jar -xvf junit.jar			
+	jar  cvfm jain-sip-1.1.tck.jar  		\
+	 manifest.tck  					\
+	-C ./lib/junit junit				\
+	-C ./classes test/tck/ 				\
+	-C ./classes gov/nist/javax/sip 		\
+	-C ./classes gov/nist/core 			\
+	-C ./classes javax/sip/ 			
+
+libzip:
+	zip libs.zip 		      			\
+	-r lib/xerces/xerces.jar			\
+	-r lib/junit/junit.jar				\
+	-r lib/xerces/LICENSE			
+
+#Builds the traces viewer jar file:
+viewerjar:
+	cd src/tools/tracesviewer;$(MAKE) all
+	cd lib/xerces;jar -xvf xerces.jar	
+	jar  cvfm tracesviewer.jar  		\
+	 manifest.viewer  			\
+	-C ./classes tools/tracesviewer			\
+	-C ./lib/xerces org				\
+	-C ./lib/xerces javax				
+
 export:
 	tar -cvzf export.tar.gz  --exclude CVS	\
 	--exclude filesystem.attributes		\
@@ -346,27 +376,3 @@ export:
 	./build-config				\
 	./docs					
 	mv export.tar.gz ../java-net/jain-sip
-	
-
-
-#	$(JAIN_API_JAR) $(RI_JAR)  lib/junit/junit.jar
-
-# Build the jain api TCK
-tck:
-	cd src/test/tck;$(MAKE) all			
-	cd lib/junit;jar -xvf junit.jar			
-	jar  cvfm jain-sip-1.1.tck.jar  		\
-	 manifest.tck  					\
-	-C ./lib/junit junit				\
-	-C ./classes test/tck/ 				\
-	-C ./classes gov/nist/javax/sip 		\
-	-C ./classes gov/nist/core 			\
-	-C ./classes javax/sip/ 			
-
-libzip:
-	zip libs.zip 		      			\
-	-r lib/xerces/xerces.jar			\
-	-r lib/junit/junit.jar				\
-	-r lib/xerces/LICENSE			
-
-
