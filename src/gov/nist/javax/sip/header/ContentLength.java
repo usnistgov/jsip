@@ -2,8 +2,9 @@
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
 *******************************************************************************/
 package gov.nist.javax.sip.header;
-import gov.nist.core.*;
+
 import javax.sip.*;
+
 /**
 * ContentLength SIPHeader (of which there can be only one in a SIPMessage).
 *<pre>
@@ -42,60 +43,74 @@ import javax.sip.*;
 *
 *@author M. Ranganathan <mranga@nist.gov>  <br/>
 *@author Olivier Deruelle <deruelle@nist.gov><br/>
+* @version JAIN-SIP-1.1 $Revision: 1.2 $ $Date: 2004-01-22 13:26:29 $
 */
-public class ContentLength extends SIPHeader implements 
-	javax.sip.header.ContentLengthHeader {
-    
-        /** contentLength field.
-         */    
-        protected Integer contentLength;
-	
-        /** Default constructor.
-         */        
-        public ContentLength() { 
-            super(NAME);
-        }
-        
-        /** 
-         *Constructor given a length.
-         */
-        public ContentLength(int length) {
-            super(NAME);
-            this.contentLength = new Integer(length);
-        }
+public class ContentLength
+	extends SIPHeader
+	implements javax.sip.header.ContentLengthHeader {
 
-        /** get the ContentLength field.
-         * @return int
-         */        
-	public int getContentLength() { 
-            return contentLength.intValue();
-        }
-        
 	/**
-         * Set the contentLength member
-         * @param contentLength int to set
-         */
-	public void setContentLength(int contentLength) throws InvalidArgumentException{
-		if (contentLength<0) throw new InvalidArgumentException("JAIN-SIP Exception"+
-		", ContentLength, setContentLength(), the contentLength parameter is <0");
+	 * contentLength field.
+	 */
+	protected Integer contentLength;
+
+	/**
+	 * Default constructor.
+	 */
+	public ContentLength() {
+		super(NAME);
+	}
+
+	/** 
+	 * Constructor given a length.
+	 */
+	public ContentLength(int length) {
+		super(NAME);
+		this.contentLength = new Integer(length);
+	}
+
+	/**
+	 * get the ContentLength field.
+	 * @return int
+	 */
+	public int getContentLength() {
+		return contentLength.intValue();
+	}
+
+	/**
+	 * Set the contentLength member
+	 * @param contentLength int to set
+	 */
+	public void setContentLength(int contentLength)
+		throws InvalidArgumentException {
+		if (contentLength < 0)
+			throw new InvalidArgumentException(
+				"JAIN-SIP Exception"
+					+ ", ContentLength, setContentLength(), the contentLength parameter is <0");
 		this.contentLength = new Integer(contentLength);
-    } 
-
-        /**
-         * Encode into a canonical string.
-         * @return String
-         */        
-	public String encodeBody() { 
-		if (contentLength == null) return "0";
-		else return contentLength.toString();
 	}
 
-	/** Pattern matcher ignores content length.
-	*/
+	/**
+	 * Encode into a canonical string.
+	 * @return String
+	 */
+	public String encodeBody() {
+		if (contentLength == null)
+			return "0";
+		else
+			return contentLength.toString();
+	}
+
+	/**
+	 * Pattern matcher ignores content length.
+	 */
 	public boolean match(Object other) {
-		if (other instanceof ContentLength) return true;
-		else return false;
+		if (other instanceof ContentLength)
+			return true;
+		else
+			return false;
 	}
-
-        
 }
+/*
+ * $Log: not supported by cvs2svn $
+ */

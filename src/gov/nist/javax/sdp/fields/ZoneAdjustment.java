@@ -2,7 +2,7 @@
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
 *******************************************************************************/
 package gov.nist.javax.sdp.fields;
-import  gov.nist.core.*;
+import gov.nist.core.*;
 
 /**
 * Zone adjustment class.
@@ -56,21 +56,21 @@ public class ZoneAdjustment extends SDPObject {
 	public void setSign(String s) {
 		sign = s;
 	}
-		
 
 	/**
 	* Encode this structure into canonical form.
 	*@return encoded form of the header.
 	*/
-
 	public String encode() {
 		String retval = new Long(time).toString();
 		retval += Separators.SP;
-		if (sign != null) retval += sign;
+		if (sign != null)
+			retval += sign;
 		retval += offset.encode();
 		return retval;
 	}
-	
-
 
 }
+/*
+ * $Log: not supported by cvs2svn $
+ */

@@ -19,15 +19,16 @@ import java.util.LinkedList;
 *
 */
 
-public class NameValueList extends GenericObjectList  {
+public class NameValueList extends GenericObjectList {
 
-	public NameValueList( String listName ) {
-	    super(listName,NameValue.class);
+	public NameValueList(String listName) {
+		super(listName, NameValue.class);
 	}
 
-	public void add (NameValue nv ) {
-		if (nv == null) throw new NullPointerException("null nv");
-		super.add((GenericObject)nv);
+	public void add(NameValue nv) {
+		if (nv == null)
+			throw new NullPointerException("null nv");
+		super.add((GenericObject) nv);
 	}
 
 	/**
@@ -39,175 +40,169 @@ public class NameValueList extends GenericObjectList  {
 		this.add(nv);
 	}
 
-
 	/**
 	* Set a namevalue object in this list.
 	*/
 	public void set(String name, Object value) {
-		NameValue nv = new NameValue(name,value);
+		NameValue nv = new NameValue(name, value);
 		this.set(nv);
 	}
-
-	
-        
-        
 
 	/**
 	* Add a name value record to this list.
 	*/
 
 	public void add(String name, Object obj) {
-		NameValue nv = new NameValue(name,obj);
+		NameValue nv = new NameValue(name, obj);
 		add(nv);
 	}
-        
-	
-	
-		       
-		
 
 	/**
-         *  Compare if two NameValue lists are equal.
+	     *  Compare if two NameValue lists are equal.
 	 *@param otherObject  is the object to compare to.
 	 *@return true if the two objects compare for equality.
-         */
-        public boolean equals(Object otherObject) {
-            if (!otherObject.getClass().equals
-                (this.getClass())) {
-                return false;
-            }
-            NameValueList other = (NameValueList) otherObject;
-
-            if (this.size() != other.size()) {
-		return false;
-	    }
-	    ListIterator li = this.listIterator();
-	    
-	    while (li.hasNext()) {
-		NameValue nv = (NameValue) li.next();
-		boolean found = false;
-	        ListIterator li1 = other.listIterator();
-		while (li1.hasNext()) {
-			NameValue nv1  = (NameValue) li1.next();
-			// found a match so break;
-			if (nv.equals(nv1))   {
-			   found = true;
-			   break;
-			}
+	     */
+	public boolean equals(Object otherObject) {
+		if (!otherObject.getClass().equals(this.getClass())) {
+			return false;
 		}
-		if (! found ) return false;
-	    }
-	    return true;
+		NameValueList other = (NameValueList) otherObject;
+
+		if (this.size() != other.size()) {
+			return false;
+		}
+		ListIterator li = this.listIterator();
+
+		while (li.hasNext()) {
+			NameValue nv = (NameValue) li.next();
+			boolean found = false;
+			ListIterator li1 = other.listIterator();
+			while (li1.hasNext()) {
+				NameValue nv1 = (NameValue) li1.next();
+				// found a match so break;
+				if (nv.equals(nv1)) {
+					found = true;
+					break;
+				}
+			}
+			if (!found)
+				return false;
+		}
+		return true;
 	}
-	
 
 	/**
 	*  Do a lookup on a given name and return value associated with it.
 	*/
-	public Object  getValue(String name) {
+	public Object getValue(String name) {
 		NameValue nv = this.getNameValue(name);
-		if (nv != null ) return nv.value;
-		else return null;
+		if (nv != null)
+			return nv.value;
+		else
+			return null;
 	}
 
 	/**
 	* Get the NameValue record given a name.
 	* @since 1.0
 	*/
-	public NameValue getNameValue (String name) {
+	public NameValue getNameValue(String name) {
 		ListIterator li = this.listIterator();
-	     
+
 		NameValue retval = null;
 		while (li.hasNext()) {
-		    NameValue nv = (NameValue) li.next();
-		    if (nv.getName().equalsIgnoreCase(name)) {
-		       retval = nv;
-		       break;
-		    }
+			NameValue nv = (NameValue) li.next();
+			if (nv.getName().equalsIgnoreCase(name)) {
+				retval = nv;
+				break;
+			}
 		}
-		return  retval;
+		return retval;
 	}
-	
+
 	/**
 	* Returns a boolean telling if this NameValueList
 	* has a record with this name  
 	* @since 1.0
 	*/
-	public boolean hasNameValue (String name) {
-		return  getNameValue(name) != null;
+	public boolean hasNameValue(String name) {
+		return getNameValue(name) != null;
 	}
 
 	/**
 	* Remove the element corresponding to this name.
 	* @since 1.0
 	*/
-	public boolean delete( String name) {
+	public boolean delete(String name) {
 		ListIterator li = this.listIterator();
 		NameValue nv;
 		boolean removed = false;
 		while (li.hasNext()) {
-		    nv = (NameValue) li.next();
-		    if (nv.getName().equalsIgnoreCase(name))  {
-			li.remove();
-			removed = true;
-		    }
+			nv = (NameValue) li.next();
+			if (nv.getName().equalsIgnoreCase(name)) {
+				li.remove();
+				removed = true;
+			}
 		}
-		return  removed;
-		
-	}
-        
-        /**
-         *Get the list iterator for this list.
-         */
-        public Iterator getIterator() { return super.getIterator(); }
+		return removed;
 
-	 /**
-	  *Get a list of parameter names.
-	  *@return a list iterator that has the names of the parameters.
-	  */
-	 public Iterator getNames() {
+	}
+
+	/**
+	 *Get the list iterator for this list.
+	 */
+	public Iterator getIterator() {
+		return super.getIterator();
+	}
+
+	/**
+	 *Get a list of parameter names.
+	 *@return a list iterator that has the names of the parameters.
+	 */
+	public Iterator getNames() {
 		LinkedList ll = new LinkedList();
 		Iterator iterator = this.getIterator();
-		while(iterator.hasNext()) {
-		   String name = ((NameValue) iterator.next()).name;
-		   ll.add(name);
+		while (iterator.hasNext()) {
+			String name = ((NameValue) iterator.next()).name;
+			ll.add(name);
 		}
 		return ll.listIterator();
-	 }
+	}
 
-	
-        /**
-         *default constructor.
-         */
-        public NameValueList() { }
-            
-        
-        public Object clone()   {
-            NameValueList retval = new NameValueList();
-	    retval.setMyClass(this.getMyClass());
-	    retval.listName = listName;
-	    retval.separator = this.separator;
-            ListIterator li = this.listIterator();
-            while (li.hasNext()) {
-                NameValue nv = (NameValue) li.next();
-                NameValue nnv = (NameValue) nv.clone();
-                retval.add(nnv);
-            }
-            return retval;
-        
-        }
-        
-        /** Get the parameter as a String.
-         *@return the parameter as a string.
-         */
-        public String getParameter(String name) {
-            Object val = this.getValue(name);
-            if (val == null) return null;
-            if (val instanceof GenericObject) 
-                return ((GenericObject)val).encode();
-            else return val.toString();
-        }
+	/**
+	 *default constructor.
+	 */
+	public NameValueList() {
+	}
 
+	public Object clone() {
+		NameValueList retval = new NameValueList();
+		retval.setMyClass(this.getMyClass());
+		retval.listName = listName;
+		retval.separator = this.separator;
+		ListIterator li = this.listIterator();
+		while (li.hasNext()) {
+			NameValue nv = (NameValue) li.next();
+			NameValue nnv = (NameValue) nv.clone();
+			retval.add(nnv);
+		}
+		return retval;
 
+	}
 
+	/** Get the parameter as a String.
+	 *@return the parameter as a string.
+	 */
+	public String getParameter(String name) {
+		Object val = this.getValue(name);
+		if (val == null)
+			return null;
+		if (val instanceof GenericObject)
+			return ((GenericObject) val).encode();
+		else
+			return val.toString();
+	}
 }
+/*
+ * $Log: not supported by cvs2svn $
+ */

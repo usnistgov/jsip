@@ -4,27 +4,27 @@ import javax.sip.address.*;
 import javax.sip.message.*;
 import java.util.*;
 
-
-public class MyRouter  implements Router {
+public class MyRouter implements Router {
 	protected SipStack myStack;
 	protected HopImpl defaultRoute;
 
 	public MyRouter(SipStack sipStack, String nextHop) {
-	   
 
-	    this.myStack = sipStack;
-	    this.defaultRoute = new HopImpl(nextHop);
+		this.myStack = sipStack;
+		this.defaultRoute = new HopImpl(nextHop);
 	}
-	
+
 	/** Always send requests to the default route location.
 	*/
 	public ListIterator getNextHops(Request sipRequest) {
-	   LinkedList ll = null;
-           if (defaultRoute != null) {
-             if (ll == null) ll = new LinkedList();
-             ll.add(defaultRoute);
-	     return ll.listIterator();
-           } else return null;
+		LinkedList ll = null;
+		if (defaultRoute != null) {
+			if (ll == null)
+				ll = new LinkedList();
+			ll.add(defaultRoute);
+			return ll.listIterator();
+		} else
+			return null;
 	}
 
 	public Hop getOutboundProxy() {
@@ -32,3 +32,6 @@ public class MyRouter  implements Router {
 	}
 
 }
+/*
+ * $Log: not supported by cvs2svn $
+ */

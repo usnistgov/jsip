@@ -2,10 +2,8 @@
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
 *******************************************************************************/
 package gov.nist.javax.sip.header;
-import gov.nist.core.*;
-import javax.sip.*;
+
 import java.util.Locale;
-import java.text.ParseException;
 
 /**
 * ContentLanguage header
@@ -52,72 +50,75 @@ import java.text.ParseException;
 *   Content-Language MAY be applied to any media type -- it is not
 *   limited to textual documents.
 *</pre>
+* @version JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2004-01-22 13:26:29 $
 */
-public class ContentLanguage extends SIPHeader implements 
-		javax.sip.header.ContentLanguageHeader{
-	
-        /** languageTag field.
-         */    
+public class ContentLanguage
+	extends SIPHeader
+	implements javax.sip.header.ContentLanguageHeader {
+
+	/** languageTag field.
+	 */
 	protected Locale locale;
 
 	public ContentLanguage() {
-            super (CONTENT_LANGUAGE);
-        }
-
-        /** Default constructor.
-         * @param lang String to set
-         */        
-	public ContentLanguage( String languageTag ) {
-		super (CONTENT_LANGUAGE);
-		this.locale = new Locale(languageTag,Locale.US.getCountry());
+		super(CONTENT_LANGUAGE);
 	}
-           
-        /**
-         * Canonical encoding of the  value of the header.
-         * @return encoded body of header.
-         */
+
+	/** 
+	 * Default constructor.
+	 * @param languageTag String to set
+	 */
+	public ContentLanguage(String languageTag) {
+		super(CONTENT_LANGUAGE);
+		this.locale = new Locale(languageTag, Locale.US.getCountry());
+	}
+
+	/**
+	 * Canonical encoding of the  value of the header.
+	 * @return encoded body of header.
+	 */
 	public String encodeBody() {
 		return this.locale.getLanguage();
 	}
-        
-        /** get the languageTag field.
-         * @return String
-         */        
-	public String getLanguageTag () {
-            return this.locale.getLanguage();
-        }
-	
-        /** set the languageTag field
-         * @param languageTag -- language tag to set.
-         */        
-	public void setLanguageTag( String languageTag) {
-            this.locale = new Locale(languageTag,Locale.US.getCountry());
-        }
-        
-        /**
-         * Gets the language value of the ContentLanguageHeader.
-         *
-         *
-         *
-         * @return the Locale value of this ContentLanguageHeader
-         *
-         */
-        public Locale getContentLanguage() {
-            return locale;
-        }        
-        
-        /**
-         * Sets the language parameter of this ContentLanguageHeader.
-         *
-         *
-         *
-         * @param language - the new Locale value of the language of
-         *
-         * ContentLanguageHeader
-         *
-         */
-        public void setContentLanguage(Locale language)  {
-            this.locale = language;
-        }        
 
+	/** get the languageTag field.
+	 * @return String
+	 */
+	public String getLanguageTag() {
+		return this.locale.getLanguage();
+	}
+
+	/** set the languageTag field
+	 * @param languageTag -- language tag to set.
+	 */
+	public void setLanguageTag(String languageTag) {
+		this.locale = new Locale(languageTag, Locale.US.getCountry());
+	}
+
+	/**
+	 * Gets the language value of the ContentLanguageHeader.
+	 *
+	 *
+	 *
+	 * @return the Locale value of this ContentLanguageHeader
+	 *
+	 */
+	public Locale getContentLanguage() {
+		return locale;
+	}
+
+	/**
+	 * Sets the language parameter of this ContentLanguageHeader.
+	 *
+	 * @param language - the new Locale value of the language of
+	 *
+	 * ContentLanguageHeader
+	 *
+	 */
+	public void setContentLanguage(Locale language) {
+		this.locale = language;
+	}
 }
+/*
+ * $Log: not supported by cvs2svn $
+ */
