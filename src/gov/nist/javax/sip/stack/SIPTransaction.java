@@ -126,7 +126,7 @@ public abstract class SIPTransaction
 	// Number of ticks before the message is retransmitted
 	private int		retransmissionTimerTicksLeft;
 	// Number of ticks before the transaction times out
-	private int		timeoutTimerTicksLeft;
+	protected int		timeoutTimerTicksLeft;
 	// List of event listeners for this transaction
 	private Set		eventListeners;
      

@@ -524,11 +524,11 @@ public class DialogImpl implements javax.sip.Dialog {
      *
      */
     public String getDialogId() {
-	
+
         if (firstTransaction instanceof SIPServerTransaction ) {
-                SIPRequest sipRequest = (SIPRequest)
-                ((SIPServerTransaction) firstTransaction).getRequest();
-                this.dialogId = sipRequest.getDialogId(true,this.myTag);
+		if (this.originalRequest != null) 
+                      this.dialogId = 
+		      originalRequest.getDialogId(true,this.myTag);
         } else {
     		if (   this.getFirstTransaction() != null && 
 			((SIPClientTransaction)this.getFirstTransaction()).
@@ -1049,7 +1049,8 @@ public class DialogImpl implements javax.sip.Dialog {
 	else if (this.getState() == null || 
 		this.getState().getValue() == TERMINATED_STATE) 
 		throw new SipException
-		("Dialog not yet established or terminated " + this.getState());
+		("Dialog  " + getDialogId() +  
+		  " not yet established or terminated " + this.getState());
 
 	RequestLine requestLine = new RequestLine();
 	requestLine.setUri((GenericURI)getRemoteParty().getURI());
