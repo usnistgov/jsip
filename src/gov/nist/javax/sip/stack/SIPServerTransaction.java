@@ -19,105 +19,107 @@ import java.util.LinkedList;
  * 
  * <pre>
  * 
- *                                |INVITE
- *                                |pass INV to TU
- *             INVITE             V send 100 if TU won't in 200ms
- *             send response+-----------+
- *                 +--------|           |--------+101-199 from TU
- *                 |        | Proceeding|        |send response
- *                 +-------&gt;|           |&lt;-------+
- *                          |           |          Transport Err.
- *                          |           |          Inform TU
- *                          |           |---------------&gt;+
- *                          +-----------+                |
- *             300-699 from TU |     |2xx from TU        |
- *             send response   |     |send response      |
- *                             |     +------------------&gt;+
- *                             |                         |
- *             INVITE          V          Timer G fires  |
- *             send response+-----------+ send response  |
- *                 +--------|           |--------+       |
- *                 |        | Completed |        |       |
- *                 +-------&gt;|           |&lt;-------+       |
- *                          +-----------+                |
- *                             |     |                   |
- *                         ACK |     |                   |
- *                         -   |     +------------------&gt;+
- *                             |        Timer H fires    |
- *                             V        or Transport Err.|
- *                          +-----------+  Inform TU     |
- *                          |           |                |
- *                          | Confirmed |                |
- *                          |           |                |
- *                          +-----------+                |
- *                                |                      |
- *                                |Timer I fires         |
- *                                |-                     |
- *                                |                      |
- *                                V                      |
- *                          +-----------+                |
- *                          |           |                |
- *                          | Terminated|&lt;---------------+
- *                          |           |
- *                          +-----------+
- * 
- *               Figure 7: INVITE server transaction
- * 
- * 
- *    		Request received
- *                                   |pass to TU
- * 
- *                                   V
- *                             +-----------+
- *                             |           |
- *                             | Trying    |-------------+
- *                             |           |             |
- *                             +-----------+             |200-699 from TU
- *                                   |                   |send response
- *                                   |1xx from TU        |
- *                                   |send response      |
- *                                   |                   |
- *                Request            V      1xx from TU  |
- *                send response+-----------+send response|
- *                    +--------|           |--------+    |
- *                    |        | Proceeding|        |    |
- *                    +-------&gt;|           |&lt;-------+    |
- *             +&lt;--------------|           |             |
- *             |Trnsprt Err    +-----------+             |
- *             |Inform TU            |                   |
- *             |                     |                   |
- *             |                     |200-699 from TU    |
- *             |                     |send response      |
- *             |  Request            V                   |
- *             |  send response+-----------+             |
- *             |      +--------|           |             |
- *             |      |        | Completed |&lt;------------+
- *             |      +-------&gt;|           |
- *             +&lt;--------------|           |
- *             |Trnsprt Err    +-----------+
- *             |Inform TU            |
- *             |                     |Timer J fires
- *             |                     |-
- *             |                     |
- *             |                     V
- *             |               +-----------+
- *             |               |           |
- *             +--------------&gt;| Terminated|
- *                             |           |
- *                             +-----------+
- * 
- * 
- * 
+ *  
+ *                                 |INVITE
+ *                                 |pass INV to TU
+ *              INVITE             V send 100 if TU won't in 200ms
+ *              send response+-----------+
+ *                  +--------|           |--------+101-199 from TU
+ *                  |        | Proceeding|        |send response
+ *                  +-------&gt;|           |&lt;-------+
+ *                           |           |          Transport Err.
+ *                           |           |          Inform TU
+ *                           |           |---------------&gt;+
+ *                           +-----------+                |
+ *              300-699 from TU |     |2xx from TU        |
+ *              send response   |     |send response      |
+ *                              |     +------------------&gt;+
+ *                              |                         |
+ *              INVITE          V          Timer G fires  |
+ *              send response+-----------+ send response  |
+ *                  +--------|           |--------+       |
+ *                  |        | Completed |        |       |
+ *                  +-------&gt;|           |&lt;-------+       |
+ *                           +-----------+                |
+ *                              |     |                   |
+ *                          ACK |     |                   |
+ *                          -   |     +------------------&gt;+
+ *                              |        Timer H fires    |
+ *                              V        or Transport Err.|
+ *                           +-----------+  Inform TU     |
+ *                           |           |                |
+ *                           | Confirmed |                |
+ *                           |           |                |
+ *                           +-----------+                |
+ *                                 |                      |
+ *                                 |Timer I fires         |
+ *                                 |-                     |
+ *                                 |                      |
+ *                                 V                      |
+ *                           +-----------+                |
+ *                           |           |                |
+ *                           | Terminated|&lt;---------------+
+ *                           |           |
+ *                           +-----------+
+ *  
+ *                Figure 7: INVITE server transaction
+ *  
+ *  
+ *     		Request received
+ *                                    |pass to TU
+ *  
+ *                                    V
+ *                              +-----------+
+ *                              |           |
+ *                              | Trying    |-------------+
+ *                              |           |             |
+ *                              +-----------+             |200-699 from TU
+ *                                    |                   |send response
+ *                                    |1xx from TU        |
+ *                                    |send response      |
+ *                                    |                   |
+ *                 Request            V      1xx from TU  |
+ *                 send response+-----------+send response|
+ *                     +--------|           |--------+    |
+ *                     |        | Proceeding|        |    |
+ *                     +-------&gt;|           |&lt;-------+    |
+ *              +&lt;--------------|           |             |
+ *              |Trnsprt Err    +-----------+             |
+ *              |Inform TU            |                   |
+ *              |                     |                   |
+ *              |                     |200-699 from TU    |
+ *              |                     |send response      |
+ *              |  Request            V                   |
+ *              |  send response+-----------+             |
+ *              |      +--------|           |             |
+ *              |      |        | Completed |&lt;------------+
+ *              |      +-------&gt;|           |
+ *              +&lt;--------------|           |
+ *              |Trnsprt Err    +-----------+
+ *              |Inform TU            |
+ *              |                     |Timer J fires
+ *              |                     |-
+ *              |                     |
+ *              |                     V
+ *              |               +-----------+
+ *              |               |           |
+ *              +--------------&gt;| Terminated|
+ *                              |           |
+ *                              +-----------+
+ *  
+ *  
+ *  
+ *  
  * </pre>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.53 $ $Date: 2004-12-03 16:36:06 $
+ * @version JAIN-SIP-1.1 $Revision: 1.54 $ $Date: 2004-12-03 17:01:29 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
  * @author Bug fixes by Emil Ivov, Antonis Karydas, Daniel Martinez.
- * @author Performance enhancements and bug fixes contributed by Thomas Froment 
+ * @author Performance enhancements and bug fixes contributed by Thomas Froment
  * 
- * and Pierre De Rop.  <br/>
- *<a href=" {@docRoot}/uncopyright.html">This code is in the  public domain. </a>
+ * and Pierre De Rop. <br/><a href=" {@docRoot}/uncopyright.html">This code is
+ * in the public domain. </a>
  * 
  *  
  */
@@ -125,7 +127,8 @@ public class SIPServerTransaction extends SIPTransaction implements
         ServerRequestInterface, javax.sip.ServerTransaction, PendingRecord {
 
     protected boolean toListener; // Hack alert - if this is set to true then
-                                  // force the listener to see transaction
+
+    // force the listener to see transaction
 
     private LinkedList pendingRequests;
 
@@ -218,109 +221,106 @@ public class SIPServerTransaction extends SIPTransaction implements
 
     }
 
-
-   /** 
-    * Send a response.
-    */
-
-   private void sendResponse(SIPResponse transactionResponse)
-   throws IOException {
-
-   // RFC18.2.2. Sending Responses
-   //  The server transport uses the value of the top Via header field in order 
-   //  to determine where to send a response.  
-   //  It MUST follow the following process:
-   //  If the "sent-protocol" is a reliable transport 
-   //  protocol such as TCP or SCTP, 
-   //  or TLS over those, the response MUST be 
-   //  sent using the existing connection 
-   //  to the source of the original request
-   //  that created the transaction, if that connection is still open.
-   if (isReliable()) {
-       getMessageChannel().sendMessage(transactionResponse);          
-       // If that connection attempt fails, the server SHOULD 
-       // use SRV 3263 procedures
-       // for servers in order to determine the IP address 
-       // and port to open the connection and send the response to.
-
-   } else {
-       Via via = transactionResponse.getTopmostVia();
-       String transport = via.getTransport();
-       if (transport == null) throw new IOException ("missing transport!");
-       //@@@ hagai Symmetric NAT support
-       int port = via.getrport();
-       if (port == -1) port = via.getPort();            
-       if (port == -1) {
-           if (transport.equalsIgnoreCase("TLS")) port = 5061;
-           else port = 5060;                
-	}
-
-        // Otherwise, if the Via header field value contains a 
-	// "maddr" parameter, the response MUST be forwarded to 
-	// the address listed there, using the port indicated in "sent-by",
-        // or port 5060 if none is present.  If the address is a multicast 
-	// address, the response SHOULD be sent using 
-	// the TTL indicated in the "ttl" parameter, or with a 
-	// TTL of 1 if that parameter is not present.
-        Host maddr= via.getMaddr();              
-	String host=null;
-        if (maddr!=null) {
-           host = maddr.getHostname();
-        } else {
-            // Otherwise (for unreliable unicast transports), 
-	    // if the top Via has a "received" parameter, the response MUST be sent to the
-            // address in the "received" parameter, using the port indicated in the 
-	    // "sent-by" value, or using port 5060 if none is specified explicitly.
-            host = via.getParameter(Via.RECEIVED);
-            if (host==null) {
-               // Otherwise, if it is not receiver-tagged, the response MUST be 
-	       // sent to the address indicated by the "sent-by" value, 
-	       // using the procedures in Section 5
-               // RFC 3263 PROCEDURE TO BE DONE HERE
-               host = via.getHost();
-           }
-       }
-       // Changed by Daniel J. Martinez Manzano <dani@dif.um.es>
-       // Original code called constructor with concatenated
-       // parameters, which didn't work for IPv6 addresses.
-       HopImpl hop = new HopImpl(host,port,transport);
-       MessageChannel messageChannel =    ((SIPTransactionStack) getSIPStack()).createRawMessageChannel(hop);
-       messageChannel.sendMessage(transactionResponse);
-     }
-   }
-    
-
     /**
+     * Send a response.
+     */
+
     private void sendResponse(SIPResponse transactionResponse)
             throws IOException {
-        // Bug report by Shanti Kadiyala
-        if (transactionResponse.getTopmostVia().getParameter(Via.RECEIVED) == null) {
-            // Send the response back on the same peer as received.
-            super.sendMessage(transactionResponse);
+
+        // RFC18.2.2. Sending Responses
+        //  The server transport uses the value of the top Via header field in
+        // order
+        //  to determine where to send a response.
+        //  It MUST follow the following process:
+        //  If the "sent-protocol" is a reliable transport
+        //  protocol such as TCP or SCTP,
+        //  or TLS over those, the response MUST be
+        //  sent using the existing connection
+        //  to the source of the original request
+        //  that created the transaction, if that connection is still open.
+        if (isReliable()) {
+            getMessageChannel().sendMessage(transactionResponse);
+            // If that connection attempt fails, the server SHOULD
+            // use SRV 3263 procedures
+            // for servers in order to determine the IP address
+            // and port to open the connection and send the response to.
+
         } else {
-            // Respond to the host name in the received parameter.
             Via via = transactionResponse.getTopmostVia();
-            String host = via.getParameter(Via.RECEIVED);
+            String transport = via.getTransport();
+            if (transport == null)
+                throw new IOException("missing transport!");
             //@@@ hagai Symmetric NAT support
             int port = via.getrport();
             if (port == -1)
-                port = via.getPort();            
-            if (port == -1)
-                port = 5060;
-            String transport = via.getTransport();
+                port = via.getPort();
+            if (port == -1) {
+                if (transport.equalsIgnoreCase("TLS"))
+                    port = 5061;
+                else
+                    port = 5060;
+            }
 
-	    // Changed by Daniel J. Martinez Manzano <dani@dif.um.es>
-	    // Original code called constructor with concatenated
-	    // parameters, which didn't work for IPv6 addresses.
+            // Otherwise, if the Via header field value contains a
+            // "maddr" parameter, the response MUST be forwarded to
+            // the address listed there, using the port indicated in "sent-by",
+            // or port 5060 if none is present. If the address is a multicast
+            // address, the response SHOULD be sent using
+            // the TTL indicated in the "ttl" parameter, or with a
+            // TTL of 1 if that parameter is not present.
+            Host maddr = via.getMaddr();
+            String host = null;
+            if (maddr != null) {
+                host = maddr.getHostname();
+            } else {
+                // Otherwise (for unreliable unicast transports),
+                // if the top Via has a "received" parameter, the response MUST
+                // be sent to the
+                // address in the "received" parameter, using the port indicated
+                // in the
+                // "sent-by" value, or using port 5060 if none is specified
+                // explicitly.
+                host = via.getParameter(Via.RECEIVED);
+                if (host == null) {
+                    // Otherwise, if it is not receiver-tagged, the response
+                    // MUST be
+                    // sent to the address indicated by the "sent-by" value,
+                    // using the procedures in Section 5
+                    // RFC 3263 PROCEDURE TO BE DONE HERE
+                    host = via.getHost();
+                }
+            }
+            // Changed by Daniel J. Martinez Manzano <dani@dif.um.es>
+            // Original code called constructor with concatenated
+            // parameters, which didn't work for IPv6 addresses.
             HopImpl hop = new HopImpl(host, port, transport);
-
-            MessageChannel messageChannel =
-            ((SIPTransactionStack) getSIPStack()).createRawMessageChannel(
-            hop);
+            MessageChannel messageChannel = ((SIPTransactionStack) getSIPStack())
+                    .createRawMessageChannel(hop);
             messageChannel.sendMessage(transactionResponse);
         }
     }
-    **/
+
+    /**
+     * private void sendResponse(SIPResponse transactionResponse) throws
+     * IOException { // Bug report by Shanti Kadiyala if
+     * (transactionResponse.getTopmostVia().getParameter(Via.RECEIVED) == null) { //
+     * Send the response back on the same peer as received.
+     * super.sendMessage(transactionResponse); } else { // Respond to the host
+     * name in the received parameter. Via via =
+     * transactionResponse.getTopmostVia(); String host =
+     * via.getParameter(Via.RECEIVED); //@@@ hagai Symmetric NAT support int
+     * port = via.getrport(); if (port == -1) port = via.getPort(); if (port ==
+     * -1) port = 5060; String transport = via.getTransport();
+     *  // Changed by Daniel J. Martinez Manzano <dani@dif.um.es>// Original
+     * code called constructor with concatenated // parameters, which didn't
+     * work for IPv6 addresses. HopImpl hop = new HopImpl(host, port,
+     * transport);
+     * 
+     * MessageChannel messageChannel = ((SIPTransactionStack)
+     * getSIPStack()).createRawMessageChannel( hop);
+     * messageChannel.sendMessage(transactionResponse); } }
+     */
 
     /**
      * Creates a new server transaction.
@@ -489,8 +489,8 @@ public class SIPServerTransaction extends SIPTransaction implements
                 this.isMapped = true;
                 // Schedule a timer to fire in 200 ms if the
                 // TU did not send a trying in that time.
-		// TODO -- fix this to only send trying for the
-		// case
+                // TODO -- fix this to only send trying for the
+                // case
                 sipStack.timer.schedule(new SendTrying(this), 200);
 
             } else {
@@ -714,7 +714,7 @@ public class SIPServerTransaction extends SIPTransaction implements
         }
 
         // Dialog state machine state adjustment.
-        
+
         if (this.dialog != null) {
             if (this.dialog.getRemoteTag() == null
                     && transactionResponse.getTo().getTag() != null
@@ -726,8 +726,8 @@ public class SIPServerTransaction extends SIPTransaction implements
                         .putDialog(this.dialog);
                 if (statusCode / 100 == 1)
                     this.dialog.setState(SIPDialog.EARLY_STATE);
-            } 
-            
+            }
+
             if (((SIPTransactionStack) this.getSIPStack())
                     .isDialogCreated(transactionResponse.getCSeq().getMethod())
                     && transactionResponse.getCSeq().getMethod().equals(
@@ -1039,7 +1039,7 @@ public class SIPServerTransaction extends SIPTransaction implements
             }
 
             this.sendMessage((SIPResponse) response);
-            
+
             // See if the dialog needs to be inserted into the dialog table
             // or if the state of the dialog needs to be changed.
             if (dialog != null) {
@@ -1047,7 +1047,8 @@ public class SIPServerTransaction extends SIPTransaction implements
                 // been established so delete the dialog.
                 // Does not apply to re-invite (Bug report by Martin LeClerc )
 
-                if (responseImpl.getCSeq().getMethod().equalsIgnoreCase("CANCEL")
+                if (responseImpl.getCSeq().getMethod().equalsIgnoreCase(
+                        "CANCEL")
                         && responseImpl.getStatusCode() == 200
                         && (!dialog.isReInvite())
                         && sipStack.isDialogCreated(getOriginalRequest()
@@ -1055,7 +1056,8 @@ public class SIPServerTransaction extends SIPTransaction implements
                         && (dialog.getState() == null || dialog.getState()
                                 .getValue() == SIPDialog.EARLY_STATE)) {
                     dialog.setState(SIPDialog.TERMINATED_STATE);
-                } else if (responseImpl.getCSeq().getMethod().equals(Request.BYE)
+                } else if (responseImpl.getCSeq().getMethod().equals(
+                        Request.BYE)
                         && responseImpl.getStatusCode() == 200) {
                     // Only transition to terminated state when
                     // 200 OK is returned for the BYE. Other
@@ -1072,27 +1074,26 @@ public class SIPServerTransaction extends SIPTransaction implements
                         && responseImpl.getTo().getTag() != null) {
                     if (responseImpl.getStatusCode() != 100)
                         dialog.setLocalTag(responseImpl.getTo().getTag());
-                    
+
                     //Check if we want to put the dialog in the dialog table.
                     //A dialog is put into the dialog table when the server
                     //transaction is responded to by a provisional response
-		    // or a final response. The Dialog is terminated
-		    // if the response is an error response.
-                  
+                    // or a final response. The Dialog is terminated
+                    // if the response is an error response.
+
                     if (sipStack.isDialogCreated(responseImpl.getCSeq()
                             .getMethod())) {
                         if (response.getStatusCode() / 100 == 1) {
                             dialog.setState(SIPDialog.EARLY_STATE);
-			    if ( responseImpl.getStatusCode() != 100 ) 
+                            if (responseImpl.getStatusCode() != 100)
                                 sipStack.putDialog(dialog);
-                        } else if ( responseImpl.getStatusCode()/100 <= 2 ) {
+                        } else if (responseImpl.getStatusCode() / 100 <= 2) {
                             sipStack.putDialog(dialog);
-			} else {
+                        } else {
                             dialog.setState(SIPDialog.TERMINATED_STATE);
-			}
-				
-                        
-			// 2XX response handling.
+                        }
+
+                        // 2XX response handling.
                         if (responseImpl.getStatusCode() / 100 == 2) {
                             if (responseImpl.getCSeq().getMethod().equals(
                                     Request.INVITE)) {
@@ -1236,81 +1237,65 @@ public class SIPServerTransaction extends SIPTransaction implements
 
 }
 /*
- * $Log: not supported by cvs2svn $
- * Revision 1.52  2004/12/01 19:05:15  mranga
- * Reviewed by:   mranga
- * Code cleanup remove the unused SIMULATION code to reduce the clutter.
- * Fix bug in Dialog state machine.
- *
- * Revision 1.51  2004/11/28 17:32:26  mranga
- * Submitted by:  hagai sela
- * Reviewed by:   mranga
- *
+ * $Log: not supported by cvs2svn $ Revision 1.53 2004/12/03 16:36:06 mranga
+ * Submitted by: Thomas Froment Reviewed by: mranga
+ * 
+ * Fix sendresponse in server transactions.
+ * 
+ * Revision 1.52 2004/12/01 19:05:15 mranga Reviewed by: mranga Code cleanup
+ * remove the unused SIMULATION code to reduce the clutter. Fix bug in Dialog
+ * state machine.
+ * 
+ * Revision 1.51 2004/11/28 17:32:26 mranga Submitted by: hagai sela Reviewed
+ * by: mranga
+ * 
  * Support for symmetric nats
- *
- * Revision 1.50  2004/10/31 02:19:08  mranga
- * Reviewed by:   M. Ranganathan
- *
+ * 
+ * Revision 1.50 2004/10/31 02:19:08 mranga Reviewed by: M. Ranganathan
+ * 
  * Cancel behavior race condition bug.
- *
+ * 
  * Cancel example added.
- *
- * Revision 1.49  2004/10/28 19:02:51  mranga
- * Submitted by:  Daniel Martinez
- * Reviewed by:   M. Ranganathan
- *
+ * 
+ * Revision 1.49 2004/10/28 19:02:51 mranga Submitted by: Daniel Martinez
+ * Reviewed by: M. Ranganathan
+ * 
  * Added changes for TLS support contributed by Daniel Martinez
- *
- * Revision 1.48  2004/10/06 18:56:07  mranga
- * *** empty log message ***
- *
- * Revision 1.47  2004/10/06 16:57:50  mranga
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:
- *
- * Memory leak fix
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- * Revision 1.46  2004/10/05 16:22:38  mranga
- * Issue number:
- * Obtained from:
- * Submitted by:  Xavi Ferro
- * Reviewed by:   mranga
- *
- * Another attempted fix for memory leak.
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- * Revision 1.45 2004/10/04 16:03:53 mranga
- * Reviewed by: mranga attempted fix for memory leak
+ * 
+ * Revision 1.48 2004/10/06 18:56:07 mranga *** empty log message ***
+ * 
+ * Revision 1.47 2004/10/06 16:57:50 mranga Issue number: Obtained from:
+ * Submitted by: Reviewed by:
+ * 
+ * Memory leak fix CVS:
+ * ---------------------------------------------------------------------- CVS:
+ * Issue number: CVS: If this change addresses one or more issues, CVS: then
+ * enter the issue number(s) here. CVS: Obtained from: CVS: If this change has
+ * been taken from another system, CVS: then name the system in this line,
+ * otherwise delete it. CVS: Submitted by: CVS: If this code has been
+ * contributed to the project by someone else; i.e., CVS: they sent us a patch
+ * or a set of diffs, then include their name/email CVS: address here. If this
+ * is your work then delete this line. CVS: Reviewed by: CVS: If we are doing
+ * pre-commit code reviews and someone else has CVS: reviewed your changes,
+ * include their name(s) here. CVS: If you have not had it reviewed then delete
+ * this line.
+ * 
+ * Revision 1.46 2004/10/05 16:22:38 mranga Issue number: Obtained from:
+ * Submitted by: Xavi Ferro Reviewed by: mranga
+ * 
+ * Another attempted fix for memory leak. CVS:
+ * ---------------------------------------------------------------------- CVS:
+ * Issue number: CVS: If this change addresses one or more issues, CVS: then
+ * enter the issue number(s) here. CVS: Obtained from: CVS: If this change has
+ * been taken from another system, CVS: then name the system in this line,
+ * otherwise delete it. CVS: Submitted by: CVS: If this code has been
+ * contributed to the project by someone else; i.e., CVS: they sent us a patch
+ * or a set of diffs, then include their name/email CVS: address here. If this
+ * is your work then delete this line. CVS: Reviewed by: CVS: If we are doing
+ * pre-commit code reviews and someone else has CVS: reviewed your changes,
+ * include their name(s) here. CVS: If you have not had it reviewed then delete
+ * this line. Revision 1.45 2004/10/04 16:03:53 mranga Reviewed by: mranga
+ * attempted fix for memory leak
  * 
  * Revision 1.44 2004/10/04 14:43:20 mranga Reviewed by: mranga
  * 
