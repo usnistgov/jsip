@@ -46,7 +46,7 @@ import sim.java.net.*;
  * this code that was sending it into an infinite loop when a bad incoming
  * message was parsed.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.24 $ $Date: 2004-08-30 16:04:48 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.25 $ $Date: 2004-09-07 20:13:06 $
  */
 public class UDPMessageChannel
 extends MessageChannel
@@ -440,7 +440,7 @@ implements ParseExceptionListener, Runnable {
                         + sipRequest.getViaPort(),
                         stack.getHostAddress()
                         + ":"
-                        + stack.getPort(this.getTransport()),
+                        + this.myPort,
                         false,
                         new Long(receptionTime).toString());
                     } else {
@@ -451,7 +451,7 @@ implements ParseExceptionListener, Runnable {
                         + sipRequest.getViaPort(),
                         stack.getHostAddress()
                         + ":"
-                        + stack.getPort(this.getTransport()),
+                        +  this.myPort,  //stack.getPort(this.getTransport()),
                         sipServerRequest.getProcessingInfo(),
                         false,
                         new Long(receptionTime).toString());
@@ -849,6 +849,12 @@ implements ParseExceptionListener, Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.24  2004/08/30 16:04:48  mranga
+ * Submitted by:  Mike Andrews
+ * Reviewed by:   mranga
+ *
+ * Added a network layer.
+ *
  * Revision 1.23  2004/07/16 17:13:56  mranga
  * Submitted by:  Damand Joost
  * Reviewed by:   mranga
