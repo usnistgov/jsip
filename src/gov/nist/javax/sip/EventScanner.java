@@ -19,7 +19,7 @@ import sim.java.net.*;
 */
 /** Event Scanner to deliver events to the Listener.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2004-04-07 00:19:22 $
+ * @version JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2004-04-07 13:04:46 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -258,7 +258,9 @@ class EventScanner implements Runnable {
 						   // notify the pending response thread so he can take care of it.
 						   // cannot do this in the context of the current thread else it
 						   // will deadlock.
-						   if (ct.hasResponsesPending()) sipStackImpl.notify();
+						   if (ct.hasResponsesPending()) {
+							synchronized(sipStackImpl) { sipStackImpl.notify(); }
+						   }
 						}
 					} else if (sipEvent instanceof TimeoutEvent) {
 						sipListener.processTimeout((TimeoutEvent) sipEvent);
