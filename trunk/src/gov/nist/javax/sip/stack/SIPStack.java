@@ -33,7 +33,7 @@ import sim.java.net.*;
  * returnResponse  for successful message processing and throw
  * SIPServerException for unsuccessful message processing.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.14 $ $Date: 2004-03-12 23:26:42 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.15 $ $Date: 2004-03-30 15:17:39 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * 
@@ -372,6 +372,18 @@ public abstract class SIPStack {
 			return false;
 		}
 	}
+	
+	/** Reusing the same stack instance.
+	*/
+	protected void reInit() {
+		if (LogWriter.needsLogging)
+			logWriter.logMessage("Re-initializing !" ) ;
+	
+		// Array of message processors.
+		messageProcessors = new ArrayList();
+		// Handle IO for this process.
+		this.ioHandler = new IOHandler(this);
+	}
 
 	/**
 	 * Default constructor.
@@ -696,6 +708,10 @@ public abstract class SIPStack {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/03/12 23:26:42  mranga
+ * Reviewed by:   mranga
+ * Fixed a synchronization problem
+ *
  * Revision 1.13  2004/03/09 00:34:44  mranga
  * Reviewed by:   mranga
  * Added TCP connection management for client and server side
