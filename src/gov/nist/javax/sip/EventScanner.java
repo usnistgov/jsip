@@ -16,7 +16,7 @@ import java.io.*;
 /**
  * Event Scanner to deliver events to the Listener.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2004-06-27 00:41:51 $
+ * @version JAIN-SIP-1.1 $Revision: 1.14 $ $Date: 2004-07-16 17:13:55 $
  * 
  * @author M. Ranganathan <mranga@nist.gov><br/>
  * 
@@ -50,6 +50,7 @@ class EventScanner implements Runnable {
 		 * new SimThread(this); //else
 		 */
 		Thread myThread = new Thread(this);
+		myThread.setDaemon(true);
 		//endif
 		//
 		this.sipStackImpl = sipStackImpl;
