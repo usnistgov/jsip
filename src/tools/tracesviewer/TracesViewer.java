@@ -407,12 +407,12 @@ public class TracesViewer extends javax.swing.JFrame {
         this.show();
     }
  
-/*********************************************************************************/
+/*****************************************************************************/
     
     public TracesSessions refreshTracesSessions(){
             TracesSessions retval = null ;
             TracesSessions tss = new TracesSessions() ;
-	    String trace;
+	    String trace = null;
             try {
 		if (this.logFile != null) {
 		    File file = new File(this.logFile);
@@ -422,24 +422,7 @@ public class TracesViewer extends javax.swing.JFrame {
 		    fr.close();
 		    trace = new String(cbuf);
 
-	         } else {
-             
-                    System.out.println("Getting the logs via RMI :") ;
-                    System.out.println("	rmiHost : "+rmiHost) ;
-                    System.out.println("	rmiPort : "+rmiPort) ;
-                    System.out.println("	stackId : "+stackId) ;
-               
-                String name = "//" + rmiHost ;
-                name += ":" + rmiPort;
-                name += "/" + stackId;
-                name += "/gov.nist.javax.sip.stack.MessageLogTableImpl";
-                
-                System.out.println("Path to the rmi registry : ") ;
-                System.out.println(name) ;
-	        MessageLogTable table =
-                (MessageLogTable) Naming.lookup(name);
-                 trace = table.flush();
-	       }
+	         } 
                 //System.out.println("**** TRACE ******:\n"+trace+"\n");
                 if (trace != null && ! trace.equals("")) {
 		      LogFileParser parser = 	new LogFileParser();
