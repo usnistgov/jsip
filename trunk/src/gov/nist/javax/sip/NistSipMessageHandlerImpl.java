@@ -19,7 +19,7 @@ import gov.nist.core.*;
  * NIST-SIP stack and event model with the JAIN-SIP stack. Implementors
  * of JAIN services need not concern themselves with this class.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.8 $ $Date: 2004-01-26 19:12:49 $
+ * @version JAIN-SIP-1.1 $Revision: 1.9 $ $Date: 2004-01-27 15:11:06 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Bug fix Contributions by Lamine Brahimi and  Andreas Bystrom. <br/>
@@ -92,11 +92,25 @@ public class NistSipMessageHandlerImpl
 								+ true);
 
 					}
-					//return;
 					// Bug reported by Antonis Karydas
 					transaction =
 						sipStackImpl.findTransaction(sipRequest, true);
-					//transaction = null;
+				} else if (dialog.getLastAck()!= null &&
+					   dialog.getLastAck().equals(sipRequest) ){
+					if (sipStackImpl.isRetransmissionFilterActive() ) {
+							dialog.ackReceived(sipRequest);
+							transaction.setDialog(dialog);
+						if (LogWriter.needsLogging) {
+							sipStackImpl.logMessage
+							("Retransmission Filter enabled - dropping Ack"+
+							 " retransmission");
+						}
+						return;
+					}
+					if (LogWriter.needsLogging)
+						sipStackImpl.logMessage(
+							"ACK retransmission for 2XX response "
+							+ "Sending ACK to the TU");
 				} else {
 
 					SIPTransaction tr = dialog.getLastTransaction();
@@ -107,12 +121,22 @@ public class NistSipMessageHandlerImpl
 						&& sipResponse.getCSeq().getSequenceNumber()
 							== sipRequest.getCSeq().getSequenceNumber()) {
 
+						if (sipStackImpl.isRetransmissionFilterActive() ||
+							!dialog.isAckSeen() ) {
+							dialog.ackReceived(sipRequest);
+							transaction.setDialog(dialog);
+						} else {
+							if (LogWriter.needsLogging) 
+								sipStackImpl.logMessage
+								("Retransmission Filter enabled - dropping Ack"+
+								 " retransmission");
+							return;
+						}
 						if (LogWriter.needsLogging)
 							sipStackImpl.logMessage(
 								"ACK retransmission for 2XX response "
 									+ "Sending ACK to the TU");
-						dialog.ackReceived(sipRequest);
-						transaction.setDialog(dialog);
+							
 					} else {
 						if (LogWriter.needsLogging)
 							sipStackImpl.logMessage(
@@ -442,6 +466,10 @@ public class NistSipMessageHandlerImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/01/26 19:12:49  mranga
+ * Reviewed by:   mranga
+ * moved SIMULATION tag to first columnm
+ *
  * Revision 1.7  2004/01/22 13:26:28  sverker
  * Issue number:
  * Obtained from:
