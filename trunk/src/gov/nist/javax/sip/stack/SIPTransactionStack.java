@@ -500,6 +500,7 @@ extends SIPStack implements  SIPTransactionEventListener {
 				              transaction.sendMessage(response);
 					} catch (IOException ex) {
 					   /* Will eventully time out */
+					    d.setState (DialogImpl.TERMINATED_STATE);
 					} finally {
 					    // Need to fire the timer so
 					    // transaction will eventually
@@ -520,7 +521,7 @@ extends SIPStack implements  SIPTransactionEventListener {
                     while (transactionIterator.hasNext()) {
                         nextTransaction =
                         (SIPTransaction)
-                        transactionIterator.next();
+                       transactionIterator.next();
                         nextTransaction.fireTimer();
                     }
                     
@@ -840,6 +841,29 @@ extends SIPStack implements  SIPTransactionEventListener {
 	else {
 		return serverTransactions.size() < transactionTableSize;
 	}
+    }
+
+    /** Invoked when an error has ocurred with a transaction.
+     *
+     * 	@param transactionErrorEvent Error event.
+     */
+    public synchronized  void transactionErrorEvent
+        (SIPTransactionErrorEvent transactionErrorEvent) {
+            SIPTransaction transaction =
+                    (SIPTransaction) transactionErrorEvent.getSource();
+            // TODO
+	    if (transactionErrorEvent.getErrorID() 
+		== SIPTransactionErrorEvent.TRANSPORT_ERROR) {
+		// Kill scanning of this transaction.
+		transaction.setState(SIPTransaction.TERMINATED_STATE);
+		if (transaction instanceof SIPServerTransaction) {
+		   // let the reaper get him
+		   ((SIPServerTransaction)transaction).collectionTime = 0;
+		}
+	        transaction.disableTimeoutTimer();
+	        transaction.disableRetransmissionTimer();
+	   }
+            
     }
     
     

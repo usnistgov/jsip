@@ -259,7 +259,7 @@ public class Shootist implements SipListener  {
 	    **/
             
             // Create ViaHeaders
-            String transport = "udp";
+            String transport = "tcp";
             requestURI.setTransportParam(transport);
             
             ArrayList viaHeaders = new ArrayList();

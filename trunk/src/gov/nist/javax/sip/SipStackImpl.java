@@ -531,17 +531,6 @@ implements javax.sip.SipStack {
     
     
     
-    /** Invoked when an error has ocurred with a transaction.
-     *
-     * 	@param transactionErrorEvent Error event.
-     */
-    public void transactionErrorEvent
-        (SIPTransactionErrorEvent transactionErrorEvent) {
-            // TODO
-            SIPTransaction transaction =
-                    (SIPTransaction) transactionErrorEvent.getSource();
-            
-    }
 
     
 }
