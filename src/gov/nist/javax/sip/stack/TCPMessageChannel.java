@@ -33,7 +33,7 @@ import sim.java.net.*;
  * Niklas Uhrberg suggested that a mechanism be added to limit the number
  * of simultaneous open connections.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.19 $ $Date: 2004-03-19 23:41:30 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.20 $ $Date: 2004-03-30 15:38:18 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public final class TCPMessageChannel
@@ -273,6 +273,7 @@ public final class TCPMessageChannel
 			this.myClientInputStream = mySock.getInputStream();
 			this.myClientOutputStream = mySock.getOutputStream();
 		    	Thread thread = new Thread(this);
+			thread.setName("TCPMessageChannelThread");
 			thread.start();
 		}
 
@@ -375,6 +376,7 @@ public final class TCPMessageChannel
 //else
 */
 			Thread mythread = new Thread(this);
+		        mythread.setName("TCPMessageChannelThread");
 //endif
 //
 
@@ -790,6 +792,10 @@ public final class TCPMessageChannel
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2004/03/19 23:41:30  mranga
+ * Reviewed by:   mranga
+ * Fixed connection and thread caching.
+ *
  * Revision 1.18  2004/03/19 17:26:20  mranga
  * Reviewed by:   mranga
  * Fixed silly bug.

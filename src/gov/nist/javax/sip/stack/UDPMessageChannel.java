@@ -46,7 +46,7 @@ import sim.java.net.*;
  * this code that was sending it into an infinite loop when a bad incoming
  * message was parsed.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.14 $ $Date: 2004-01-22 18:39:42 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.15 $ $Date: 2004-03-30 15:38:18 $
  */
 public class UDPMessageChannel
 	extends MessageChannel
@@ -107,6 +107,7 @@ public class UDPMessageChannel
 //ifndef SIMULATION
 //
 		Thread mythread = new Thread(this);
+		mythread.setName("UDPMessageChannelThread");
 //else
 /*
 		SimThread mythread = new SimThread(this);
@@ -905,6 +906,10 @@ public class UDPMessageChannel
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/01/22 18:39:42  mranga
+ * Reviewed by:   M. Ranganathan
+ * Moved the ifdef SIMULATION and associated tags to the first column so Prep preprocessor can deal with them.
+ *
  * Revision 1.13  2004/01/22 14:23:45  mranga
  * Reviewed by:   mranga
  * Fixed some minor formatting issues.
