@@ -403,7 +403,8 @@ public class LexerCore extends StringTokenizer {
 		try {
 			while (true) {
 				char next = lookAhead(0);
-				if (next == '\0' || next == '\n' || next == ';') {
+				// bug fix from Ben Evans.
+				if (next == '\0' || next == '\n' || next == ';' || next == ',' ) {
 					break;
 				} else {
 					consume(1);
@@ -568,6 +569,11 @@ public class LexerCore extends StringTokenizer {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/02/06 20:15:55  mranga
+ * Submitted by:  Bruno Konik
+ * Reviewed by:   mranga
+ * Fixed character sets for parsing of urls and methods.
+ *
  * Revision 1.7  2004/01/22 14:23:45  mranga
  * Reviewed by:   mranga
  * Fixed some minor formatting issues.
