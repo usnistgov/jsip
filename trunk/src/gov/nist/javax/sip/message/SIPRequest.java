@@ -22,7 +22,7 @@ import gov.nist.javax.sip.header.*;
  *   cancel requests from incoming orignial  requests without 
  *   the additional overhead  of encoding and decoding messages.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-01-22 13:26:31 $
+ * @version JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2004-02-05 14:43:21 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -523,9 +523,7 @@ public final class SIPRequest
 				|| nextHeader instanceof RecordRouteList
 				|| nextHeader instanceof CSeq
 				|| nextHeader instanceof MaxForwards
-				|| // nextHeader instanceof ExtensionHeader 	||
-			nextHeader
-					instanceof TimeStamp) {
+				|| nextHeader instanceof TimeStamp) {
 				/**
 				if (SIPMessage.isRequestHeader(nextHeader)) {
 					continue;
@@ -668,6 +666,9 @@ public final class SIPRequest
 				} else {
 					nextHeader = (SIPHeader) nextHeader.clone();
 				}
+			} else if (nextHeader instanceof ContactList ) {
+				// CONTACT header does not apply for ACK requests.
+				continue;
 			} else if (nextHeader instanceof ViaList) {
 				// Bug reported by Gianluca Martinello
 				//The ACK MUST contain a single Via header field, 
@@ -896,4 +897,28 @@ public final class SIPRequest
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/01/22 13:26:31  sverker
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  sverker
+ * Reviewed by:   mranga
+ *
+ * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  */
