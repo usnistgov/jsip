@@ -76,7 +76,6 @@ c:/jakarta-ant/bin/ant all
 	<property name= "srcroot" value = "${root}/src" />
 	<property name="debug" value="true"/>
 	<!-- where are the lib -->
-	<property name="xerceslib" value="${root}/lib/xerces/xerces.jar" />
 	<property name= "jain_api_jar" value = "JainSipApi1.1.jar" />
 	<property name= "ri_jar" value = "nist-sip-1.2.jar" />
 	<property name= "sdp_jar" value = "nist-sdp-1.0.jar" />
@@ -217,7 +216,6 @@ c:/jakarta-ant/bin/ant all
 				srcdir="${srcroot}/examples/"
 				destdir= "${classes}">
 			<classpath>
-				<pathelement location="${xerceslib}"/>
 				<pathelement location="${jain_api_jar}"/>
 				<pathelement location="${ri_jar}"/>
 				<pathelement location="${classes}"/>
@@ -234,7 +232,6 @@ c:/jakarta-ant/bin/ant all
 				srcdir="${srcroot}/test/tck"
 				destdir= "${classes}">
 			<classpath>
-				<pathelement location="${xerceslib}"/>
 				<pathelement location="${jain_api_jar}"/>
 				<pathelement location="${ri_jar}"/>
 				<pathelement location="${classes}"/>
@@ -262,7 +259,6 @@ c:/jakarta-ant/bin/ant all
 				<attribute name="Built-By" value="${user.name}"/>
 				<attribute name="Main-Class" value="tools.tracesviewer.TracesViewer"/>
 			</manifest>
-			<zipfileset src="${xerceslib}"/>
 		</jar>
 	</target>
 
@@ -270,7 +266,6 @@ c:/jakarta-ant/bin/ant all
 	<target name="compiletools" depends="init">
 		<javac debug="${debug}" deprecation="${deprecation}" optimize="${optimize}" srcdir="${srcroot}/tools/tracesviewer" destdir= "${classes}">
 			<classpath>
-				<pathelement location="${xerceslib}"/>
 				<pathelement location="${classes}"/>
 			</classpath>
 		</javac>
@@ -279,7 +274,6 @@ c:/jakarta-ant/bin/ant all
 		</copy>
 		<javac debug="${debug}" deprecation="${deprecation}" optimize="${optimize}" srcdir="${srcroot}/tools/sniffer" destdir= "${classes}">
 			<classpath>
-				<pathelement location="${xerceslib}"/>
 				<pathelement location="${classes}"/>
 			</classpath>
 		</javac>

@@ -1,7 +1,7 @@
 ROOT=../../..
 include $(ROOT)/build-config
 
-EXTRA_LIBS=$(XERCES_HOME)/xerces.jar
+#EXTRA_LIBS=$(XERCES_HOME)/xerces.jar
 
 all:	
 	$(JAVAC) *.java

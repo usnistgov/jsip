@@ -3,8 +3,6 @@
 ROOT=../../../
 include $(ROOT)/build-config
 
-EXTRA_LIBS=$(XERCES_HOME)/xerces.jar
-
 
 clean: emacsclean
 	$(RM) *.class

@@ -20,6 +20,8 @@
 # XERCES_HOME is the directory where the java xml parser is installed 
 #		(if you want to build or run the torture tests).
 #		You can download xerces from www.apache.org
+# 		You need this only if you are building under J2SDK1.3x and
+#		want to build the tools.
 #
 ################################################################
 
@@ -38,7 +40,7 @@ SRCROOT = $(ROOT)/src/
 DESTINATION = $(ROOT)/classes/
 
 ifeq (${OS},Windows_NT) 
-	JDK_HOME=c:/j2sdk1.4.1
+	JDK_HOME=c:/java/j2sdk1.4.2_04
 else
 	JDK_HOME=/home/nist-sip/j2sdk1.4.2
 endif
