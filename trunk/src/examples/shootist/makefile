@@ -16,8 +16,7 @@ ifeq (${SIMULATION},true)
 	echo "${SIMULATION}"
 	$(JAVAC) *.java
 else
-	$(JAVAC) Shootist.java
-	$(JAVAC) Shootme.java
+	$(JAVAC) *.java
 endif
 
 
