@@ -181,9 +181,10 @@ backup:
 	--exclude *.log						\
 	--exclude debug.txt					\
 	--exclude api						\
-	./src/gov/nist/javax			\
-	./src/gov/nist/core			\
-	./src/examples/shootist		        \
+	./src/test/					\
+	./src/gov/nist/javax				\
+	./src/gov/nist/core				\
+	./src/examples/shootist		        	\
 	./src/tools/tracesviewer	        
 	
 
@@ -202,15 +203,16 @@ zipfile:
 	-r ./$(PROJECT_ROOT)/src/gov/nist/core		        \
 	-r ./$(PROJECT_ROOT)/src/tools/tracesviewer	        \
 	-r ./$(PROJECT_ROOT)/src/tools/sniffer		        \
-	-r ./$(PROJECT_ROOT)/src/examples/shootist	        	\
+	-r ./$(PROJECT_ROOT)/src/examples/shootist	       	\
 	-r ./$(PROJECT_ROOT)/src/javax				\
-	-r ./$(PROJECT_ROOT)/src/test/tck				\
+	-r ./$(PROJECT_ROOT)/src/test/tck			\
+	-r ./$(PROJECT_ROOT)/src/test/torture			\
 	-r ./$(PROJECT_ROOT)/classes				\
 	-r ./$(PROJECT_ROOT)/README				\
 	-r ./$(PROJECT_ROOT)/makefile				\
 	-r ./$(PROJECT_ROOT)/build.xml				\
-	-r ./$(PROJECT_ROOT)/build-config				\
-	-r ./$(PROJECT_ROOT)/docs					\
+	-r ./$(PROJECT_ROOT)/build-config			\
+	-r ./$(PROJECT_ROOT)/docs				\
 	-r ./$(PROJECT_ROOT)/$(RI_JAR)				\
 	-r ./$(PROJECT_ROOT)/$(SDP_JAR)				\
 	-r ./$(PROJECT_ROOT)/$(JAIN_API_JAR)			\
@@ -296,6 +298,7 @@ tarfile:
 	./$(PROJECT_ROOT)/lib/junit/junit.jar		        \
 	./$(PROJECT_ROOT)/src/javax				\
 	./$(PROJECT_ROOT)/src/test/tck				\
+	./$(PROJECT_ROOT)/src/test/torture			\
 	./$(PROJECT_ROOT)/src/gov/nist/javax			\
 	./$(PROJECT_ROOT)/src/gov/nist/core		        \
 	./$(PROJECT_ROOT)/src/tools/tracesviewer		        \
