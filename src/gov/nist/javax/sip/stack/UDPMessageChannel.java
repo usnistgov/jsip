@@ -40,7 +40,7 @@ import java.text.ParseException;
  * this code that was sending it into an infinite loop when a bad incoming
  * message was parsed.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.27 $ $Date: 2004-12-01 19:05:16 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.28 $ $Date: 2005-02-24 16:14:30 $
  */
 public class UDPMessageChannel
 extends MessageChannel
@@ -100,6 +100,10 @@ implements ParseExceptionListener, Runnable {
         super.messageProcessor = messageProcessor;
         this.stack = stack;
         Thread mythread = new Thread(this);
+
+        this.myAddress = stack.getHostAddress();
+        this.myPort = messageProcessor.getPort();
+
         mythread.setName("UDPMessageChannelThread");
 	mythread.setDaemon(true);
         mythread.start();
@@ -760,6 +764,11 @@ implements ParseExceptionListener, Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.27  2004/12/01 19:05:16  mranga
+ * Reviewed by:   mranga
+ * Code cleanup remove the unused SIMULATION code to reduce the clutter.
+ * Fix bug in Dialog state machine.
+ *
  * Revision 1.26  2004/11/28 17:32:26  mranga
  * Submitted by:  hagai sela
  * Reviewed by:   mranga
