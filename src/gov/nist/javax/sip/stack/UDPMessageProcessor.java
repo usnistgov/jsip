@@ -18,7 +18,7 @@ import java.lang.reflect.*;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size). 
  * Each UDP message is processed in its own thread). 
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.22 $ $Date: 2004-12-01 19:05:16 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.23 $ $Date: 2004-12-12 23:47:19 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -36,11 +36,6 @@ import java.lang.reflect.*;
  */
 public class UDPMessageProcessor extends MessageProcessor {
 
-	/**
-	 * Increment this when a message comes in and decrement after
-	 * processing is done.
-	 */
-	// int useCount;
 
 	/**
 	 * port on which to listen for incoming messaes.
@@ -196,8 +191,6 @@ public class UDPMessageProcessor extends MessageProcessor {
 		thread.setName("UDPMessageProcessorThread");
 		thread.start();
 	}
-//endif
-//
 
 	/**
 	 * Thread main routine.
@@ -345,6 +338,11 @@ public class UDPMessageProcessor extends MessageProcessor {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.22  2004/12/01 19:05:16  mranga
+ * Reviewed by:   mranga
+ * Code cleanup remove the unused SIMULATION code to reduce the clutter.
+ * Fix bug in Dialog state machine.
+ *
  * Revision 1.21  2004/09/26 14:48:03  mranga
  * Submitted by:  John Martin
  * Reviewed by:   mranga

@@ -120,7 +120,7 @@ class IOHandler {
 						sipStack.logWriter.logMessage("inaddr = " + inaddr);
 						sipStack.logWriter.logMessage("port = " + contactPort);
 					}
-					clientSock = sipStack.getNetworkLayer().createSocket(inaddr,contactPort);
+					clientSock = sipStack.getNetworkLayer().createSocket(inaddr,contactPort,sipStack.getRealIPAddress());
 					OutputStream outputStream = clientSock.getOutputStream();
 					writeChunks(outputStream, bytes,length);
 					putSocket(key, clientSock);
@@ -162,7 +162,7 @@ class IOHandler {
 						sipStack.logWriter.logMessage("inaddr = " + inaddr);
 						sipStack.logWriter.logMessage("port = " + contactPort);
 					}
-					clientSock = sipStack.getNetworkLayer().createSSLSocket(inaddr,contactPort);
+					clientSock = sipStack.getNetworkLayer().createSSLSocket(inaddr,contactPort,sipStack.getRealIPAddress());
 					OutputStream outputStream = clientSock.getOutputStream();
 					writeChunks(outputStream, bytes,length);
 					putSocket(key, clientSock);
@@ -206,8 +206,6 @@ class IOHandler {
 
 	}
 
-//endif
-//
 
 
 	/**
@@ -229,6 +227,11 @@ class IOHandler {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.27  2004/12/01 19:05:15  mranga
+ * Reviewed by:   mranga
+ * Code cleanup remove the unused SIMULATION code to reduce the clutter.
+ * Fix bug in Dialog state machine.
+ *
  * Revision 1.26  2004/10/28 19:02:51  mranga
  * Submitted by:  Daniel Martinez
  * Reviewed by:   M. Ranganathan
