@@ -114,7 +114,7 @@ import java.util.TimerTask;
  *
  *</pre>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.21 $ $Date: 2004-02-13 13:55:32 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.22 $ $Date: 2004-02-13 14:12:43 $
  * @author Jeff Keyser 
  * @author M. Ranganathan <mranga@nist.gov>  
  * @author Bug fixes by Emil Ivov, Antonis Karydas.
@@ -367,6 +367,7 @@ public class SIPServerTransaction
 				// TU did not send a trying in that time.
 
 //ifndef SIMULATION
+//
 				new Timer().schedule(new SendTrying(this), 200);
 //else
 /*
@@ -598,7 +599,7 @@ public class SIPServerTransaction
 			} else if (statusCode / 100 >= 3 && statusCode / 100 <= 6) {
 				this.dialog.setState(DialogImpl.TERMINATED_STATE);
 			}
-		} else if (
+		} else if ( this.dialog != null &&
 			transactionResponse.getCSeq().getMethod().equals(Request.BYE)
 				&& statusCode / 100 == 2 && dialog != null ) {
 			// Dialog will be terminated when the transction is terminated.
@@ -653,8 +654,8 @@ public class SIPServerTransaction
 						.equals(Request.CANCEL)) {
 
 						this.setState(TransactionState.TERMINATED);
-						if (!isReliable()) {
-							((DialogImpl) this.dialog)
+						if (!isReliable() ) {
+							this.dialog
 								.setRetransmissionTicks();
 							enableRetransmissionTimer();
 
@@ -978,6 +979,13 @@ public class SIPServerTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.64  2004/02/13 14:01:02  mranga
+ * Assign dialog ptr for all transactions
+ *
+ * Revision 1.21  2004/02/13 13:55:32  mranga
+ * Reviewed by:   mranga
+ * per the spec, Transactions must always have a valid dialog pointer. Assigned a dummy dialog for transactions that are not assigned to any dialog (such as Message).
+ *
  * Revision 1.20  2004/02/05 14:43:21  mranga
  * Reviewed by:   mranga
  * Fixed for correct reporting of transaction state.
