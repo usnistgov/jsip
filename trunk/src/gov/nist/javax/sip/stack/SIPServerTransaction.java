@@ -117,7 +117,7 @@ import java.util.ListIterator;
  *
  *</pre>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.35 $ $Date: 2004-06-15 09:54:45 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.36 $ $Date: 2004-06-16 02:53:20 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
  * @author Bug fixes by Emil Ivov, Antonis Karydas.
@@ -1023,11 +1023,37 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
                         // dialog creating method.
                         if (responseImpl.getStatusCode() != 100)
                             sipStack.putDialog(dialog);
+			
+			if (responseImpl.getStatusCode()/ 100 ==  2 ) {
+			    if (responseImpl.getCSeq().getMethod().equals
+				(Request.INVITE) ) {
+			        if (dialog.getState() == null) dialog.setState(DialogImpl.EARLY_STATE);
+			        dialog.startTimer(this);
+			    } else  {
+			        dialog.setState(DialogImpl.CONFIRMED_STATE);
+			    }
+			}
+			
                     }
                 } else if (response.getStatusCode() / 100 == 2) {
                     if (sipStack
                     .isDialogCreated(responseImpl.getCSeq().getMethod())) {
-                        dialog.setState(DialogImpl.CONFIRMED_STATE);
+			if ( ! responseImpl.getCSeq().getMethod().equals(Request.INVITE)) {
+                        	dialog.setState(DialogImpl.CONFIRMED_STATE);
+			} else {
+				if (this.dialog.getState() == null)  {
+			    		// On the server side of the dialog,
+			    		// go to confirmed state only after ACK.
+                       	    		this.dialog.setState(DialogImpl.EARLY_STATE);
+			    
+		    		}
+				
+			       // Start the dialog timer to send notifications
+			       // to application.
+			       this.dialog.startTimer(this);
+			}
+			// For an INVITE transaction, wait till we get the
+			// ACK back to go into the CONFIRMED state.
                         sipStack.putDialog(dialog);
                     }
                 }
@@ -1125,6 +1151,11 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.35  2004/06/15 09:54:45  mranga
+ * Reviewed by:   mranga
+ * re-entrant listener model added.
+ * (see configuration property gov.nist.javax.sip.REENTRANT_LISTENER)
+ *
  * Revision 1.34  2004/06/02 13:09:58  mranga
  * Submitted by:  Peter Parnes
  * Reviewed by:  mranga

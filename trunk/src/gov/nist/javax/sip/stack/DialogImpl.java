@@ -24,7 +24,7 @@ import java.text.ParseException;
  * retrieve this structure from the SipStack. Bugs against route set
  * management were reported by Antonis Karydas and Brad Templeton.
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.31 $ $Date: 2004-06-15 09:54:44 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.32 $ $Date: 2004-06-16 02:53:19 $
  *
  *@author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -53,6 +53,7 @@ public class DialogImpl implements javax.sip.Dialog {
     private boolean ackSeen;
     protected SIPRequest lastAck;
     protected boolean ackProcessed;
+    protected DialogTimerTask timerTask;
     
     private int retransmissionTicksLeft;
     private int prevRetransmissionTicks;
@@ -101,51 +102,22 @@ public class DialogImpl implements javax.sip.Dialog {
         }
     }
 
-    public class DialogGCTask extends TimerTask {
-	DialogImpl dialog;
-	SIPTransactionStack stack;
-
-	public DialogGCTask(DialogImpl dialog) {
-		this.dialog = dialog;
-		this.stack = dialog.sipStack;
-	}
-
-	public void run() {
-		// Remove all mappings for this dialog from the dialog table.
-		// We could use the key but want to make sure all mappings for
-		// this dialog are removed (it could be mapped two times in
-		// the same hashtable for re-invites.
-		this.stack.removeDialog(this.dialog);
-		// cancel the associated dialog timer.
-		try {
-                    this.cancel();
-		 } catch (IllegalStateException ex) {
-		    // If the stack has been killed, then return.
-		    if (!stack.isAlive()) return;
-		}
-
-	}
-
-    }
-    
     public class DialogTimerTask extends TimerTask {
         DialogImpl dialog;
         SIPTransactionStack stack;
-        public DialogTimerTask( DialogImpl dialog ) {
+	SIPServerTransaction transaction;
+        public DialogTimerTask( DialogImpl dialog, SIPServerTransaction transaction ) {
             this.dialog  = dialog;
             this.stack = dialog.sipStack;
+	    this.transaction = transaction;
         }
         
         public void run() {
             // If I ACK has not been seen on Dialog,
             // resend last response.
-            if (dialog.isServer() && (!dialog.ackSeen) && dialog.isInviteDialog()) {
-                SIPTransaction transaction = dialog.getLastTransaction();
-                // If stack is managing the transaction
-                // then retransmit the last response.
-                if (TransactionState.TERMINATED == transaction.getState()
-                    && transaction instanceof SIPServerTransaction
-                    && ((SIPServerTransaction)transaction).isMapped) {
+	    if (LogWriter.needsLogging ) 
+		sipStack.logMessage("Running dialog timer");
+            if (!dialog.ackSeen)  {
                     SIPResponse response = transaction.getLastResponse();
                     // Retransmit to 200 until ack receivedialog.
                     if (response.getStatusCode() == 200) {
@@ -168,14 +140,14 @@ public class DialogImpl implements javax.sip.Dialog {
                             transaction.fireTimer();
                         }
                     }
-                }
             } 
 		
 	    // Stop running this timer if the dialog is in the 
 	    // confirmed state or ack seen if retransmit filter on.
-	    if ( this.dialog.dialogState == CONFIRMED_STATE   	|| 
+	    if ( this.dialog.isAckSeen()    			|| 
 		this.dialog.dialogState == TERMINATED_STATE 	) { 
 		this.cancel();
+		this.dialog.timerTask = null;
 	    } 
 
         }
@@ -255,6 +227,7 @@ public class DialogImpl implements javax.sip.Dialog {
 		// TimerTask tt = new DialogGCTask(this);
 		// this.sipStack.timer.schedule(tt,32*1000);
 		this.sipStack.removeDialog(this);
+		this.stopTimer();
 	}
     }
     
@@ -276,28 +249,23 @@ public class DialogImpl implements javax.sip.Dialog {
      */
     public void ackReceived(SIPRequest sipRequest) {
         
-        Transaction tr = this.getLastTransaction();
         // Suppress retransmission of the final response (in case
         // retransmission filter is being used).
 	if (this.ackSeen) return;
-        if (tr != null && tr instanceof SIPServerTransaction) {
-            SIPServerTransaction st = (SIPServerTransaction) tr;
-            if (getRemoteSequenceNumber() == sipRequest.getCSeq().getSequenceNumber()) {
+        SIPServerTransaction tr = this.getInviteTransaction();
+        if (tr != null ) {
+            if (tr.getCSeq() == sipRequest.getCSeq().getSequenceNumber()) {
                 //st.setState(SIPTransaction.TERMINATED_STATE);
                 this.ackSeen = true;
                 this.lastAck = sipRequest;
                 if (LogWriter.needsLogging) {
                    sipStack.logWriter.logMessage(
-                    "ackReceived for " + ((SIPTransaction) st).getMethod());
+                    "ackReceived for " + ((SIPTransaction) tr).getMethod());
 		    this.ackLine = sipStack.logWriter.lineCount;
 		    this.printDebugInfo();
 	        }
 		this.setState(CONFIRMED_STATE);
             }
-            
-            
-            if (st == null)
-                return;
         }
     }
     
@@ -750,6 +718,13 @@ public class DialogImpl implements javax.sip.Dialog {
     public SIPTransaction getLastTransaction() {
         return this.lastTransaction;
     }
+
+    /** Get the INVITE transaction (null if no invite transaction).
+     */
+     public SIPServerTransaction getInviteTransaction() {
+	if (this.timerTask != null) return this.timerTask.transaction;
+	else return null;
+     }
     
     /**
      * Set the local sequece number for the dialog (defaults to 1 when
@@ -1319,11 +1294,13 @@ public class DialogImpl implements javax.sip.Dialog {
             throw new SipException("Bad dialog state " + this.getState());
             
         }
+	/**
         if (this.isServer() &&
         dialogRequest.getMethod().equalsIgnoreCase(Request.BYE)
         && this.getState().getValue() == EARLY_STATE) {
             throw new SipException("Bad dialog state " + this.getState());
         }
+	**/
 
 		
         
@@ -1592,14 +1569,37 @@ public class DialogImpl implements javax.sip.Dialog {
         return originalRequest.getMethod().equals(Request.INVITE);
     }
     
-    private void startTimer() {
-        TimerTask myTimer = new DialogTimerTask(this);
-        sipStack.timer.scheduleAtFixedRate
-        (myTimer,0,SIPTransactionStack.BASE_TIMER_INTERVAL);
+    protected void startTimer(SIPServerTransaction transaction) {
+	if (this.timerTask != null && 
+		this.timerTask.transaction == transaction )  {
+		sipStack.logMessage("Timer already running for " +
+				getDialogId());
+		return;
+	}
+	if (LogWriter.needsLogging) 
+		sipStack.logMessage("Starting dialog timer for " +
+				getDialogId());
+        this.ackSeen = false;
+	if (this.timerTask != null)  
+		this.timerTask.transaction = transaction;
+	else this.timerTask = new DialogTimerTask(this,transaction);
+	this.setRetransmissionTicks();
+        sipStack.timer.schedule(timerTask,0,SIPTransactionStack.BASE_TIMER_INTERVAL);
+    }
+
+    protected void stopTimer() {
+	try {
+	   if (this.timerTask != null) this.timerTask.cancel();
+	} catch (Exception ex) {}
     }
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.31  2004/06/15 09:54:44  mranga
+ * Reviewed by:   mranga
+ * re-entrant listener model added.
+ * (see configuration property gov.nist.javax.sip.REENTRANT_LISTENER)
+ *
  * Revision 1.30  2004/06/02 13:09:57  mranga
  * Submitted by:  Peter Parnes
  * Reviewed by:  mranga

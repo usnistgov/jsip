@@ -21,7 +21,7 @@ import java.io.IOException;
  * NIST-SIP stack and event model with the JAIN-SIP stack. Implementors
  * of JAIN services need not concern themselves with this class.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.31 $ $Date: 2004-06-15 09:54:40 $
+ * @version JAIN-SIP-1.1 $Revision: 1.32 $ $Date: 2004-06-16 02:53:17 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Bug fix Contributions by Lamine Brahimi and  Andreas Bystrom. <br/>
@@ -119,8 +119,6 @@ public class NistSipMessageHandlerImpl
 					   dialog.getLastAck().getCSeq().getSequenceNumber()  == 
 					   sipRequest.getCSeq().getSequenceNumber() ) {
 					if (sipStackImpl.isRetransmissionFilterActive() ) {
-							dialog.ackReceived(sipRequest);
-							transaction.setDialog(dialog);
 						if (LogWriter.needsLogging) {
 							sipStackImpl.logMessage
 							("Retransmission Filter enabled - dropping Ack"+
@@ -132,61 +130,37 @@ public class NistSipMessageHandlerImpl
 						sipStackImpl.logMessage(
 							"ACK retransmission for 2XX response "
 							+ "Sending ACK to the TU");
+					transaction.setDialog(dialog);
 				} else {
 
 					// This could be a re-invite processing.
 					// check to see if the ack matches with the last
 					// transaction.
 
-					SIPTransaction tr = dialog.getLastTransaction();
-					SIPResponse sipResponse = tr.getLastResponse();
+					SIPServerTransaction tr = dialog.getInviteTransaction();
+					SIPResponse sipResponse = (tr != null? tr.getLastResponse() : null);
 
 					// Idiot check for sending ACK from the wrong side!
-					if (tr instanceof SIPServerTransaction 
-						&& sipResponse != null
+					if (    tr != null && sipResponse != null
 						&& sipResponse.getStatusCode() / 100 == 2
 						&& sipResponse.getCSeq().getMethod().equals(Request.INVITE) 
 						&& sipResponse.getCSeq().getSequenceNumber()
 							== sipRequest.getCSeq().getSequenceNumber()) {
 
 						transaction.setDialog(dialog);
-
-						if (sipStackImpl.isRetransmissionFilterActive() &&
-							dialog.getLastAck() != null 		&&
-							dialog.getLastAck().getCSeq().getSequenceNumber()  == 
-							sipRequest.getCSeq().getSequenceNumber() ) {
-							if (LogWriter.needsLogging)
-								sipStackImpl.logMessage(
-								"ACK retransmission for 2XX response --- "
-									+ "Dropping ");
-							return;
-						} else {
-							// record that we already saw an ACK for
-							// this dialog.
-						        dialog.ackReceived(sipRequest);
-							sipStackImpl.logMessage(
+						// record that we already saw an ACK for
+						// this dialog.
+					        dialog.ackReceived(sipRequest);
+						sipStackImpl.logMessage(
 								"ACK for 2XX response --- sending to TU ");
-						}
-							
 							
 					} else {
+						// This happens when the ACK is re-transmitted and arrives too late
+						// to be processed.
 						if (LogWriter.needsLogging)
 							sipStackImpl.logMessage(
-								"ACK retransmission for non 2XX response "
-									+ "Discarding ACK");
-						// Could not find a transaction.
-						if (tr == null) {
-							if (LogWriter.needsLogging)
-								sipStackImpl.logMessage(
-									"Could not find transaction ACK dropped");
-							return;
-						}
-						transaction = tr;
-						if (transaction instanceof SIPClientTransaction) {
-							if (LogWriter.needsLogging)
-								sipStackImpl.logMessage("Dropping late ACK");
-							return;
-						}
+								" INVITE transaction not found  -- Discarding ACK");
+						return;
 					}
 				}
 			} else if (sipRequest.getMethod().equals(Request.BYE) ) {
@@ -282,7 +256,7 @@ public class NistSipMessageHandlerImpl
 			}  else if (sipRequest.getMethod().equals(Request.INVITE) )  {
 				String dialogId = sipRequest.getDialogId(true);
 				DialogImpl dialog = sipStack.getDialog(dialogId);
-				SIPTransaction lastTransaction = dialog == null? null: dialog.getLastTransaction();
+				SIPTransaction lastTransaction = dialog == null? null: dialog.getInviteTransaction();
 
 				// RFC 3261 Chapter 14.
  				// A UAS that receives a second INVITE before it sends the final
@@ -321,11 +295,14 @@ public class NistSipMessageHandlerImpl
 					return;
 				}
 
+
+
+
 				// RFC 3261 Chapter 14.
- 				// A UAS that receives a second INVITE before it sends the final
 				// A UAS that receives an INVITE on a dialog while an INVITE it had sent
   				// on that dialog is in progress MUST return a 491 (Request Pending)
    				// response to the received INVITE.
+				lastTransaction = (dialog == null? null: dialog.getLastTransaction());
 
 				if (dialog != null 				   		&&
 				 	dialog.getLastTransaction() != null 			&&
@@ -354,7 +331,7 @@ public class NistSipMessageHandlerImpl
 			DialogImpl dialog = sipStackImpl.getDialog(dialogId);
 
 			// Sequence numbers are supposed to be incremented
-			// monotonically (actually sequentially) for RFC 3261
+			// sequentially within a dialog for RFC 3261
 
 			if (dialog != null && 
 				transaction != null && 
@@ -388,7 +365,15 @@ public class NistSipMessageHandlerImpl
 					}
 				     } 
 				     return;
-				}
+				} else if ( dialog.getRemoteSequenceNumber()  + 1 != 
+					sipRequest.getCSeq().getSequenceNumber() )  {
+					// The sequence number is too large - just drop the message silently and wait
+					// for a retransmit in the right order.
+				        if (LogWriter.needsLogging) 
+					   sipStackImpl.logMessage ("sequence number is too large - dropping!" );
+					return;
+					
+				} 
 				dialog.addTransaction(transaction);
 				dialog.addRoute(sipRequest);
 			}
@@ -572,6 +557,11 @@ public class NistSipMessageHandlerImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.31  2004/06/15 09:54:40  mranga
+ * Reviewed by:   mranga
+ * re-entrant listener model added.
+ * (see configuration property gov.nist.javax.sip.REENTRANT_LISTENER)
+ *
  * Revision 1.30  2004/05/18 15:26:42  mranga
  * Reviewed by:   mranga
  * Attempted fix at race condition bug. Remove redundant exception (never thrown).
