@@ -80,6 +80,10 @@ an incoming INVITE?</a> </li>
  <li><a href="#34">While sending ACK request for 200 OK should I use transaction.createAck() or Dialog.createRequest(Request.ACK)?
 <br/></li>
  <li><a href="#35">Can I run the stack in an applet? </li>
+ <li><a href="#36">
+I want to be able to send SIP packets to different SIP servers using 
+different local identities. Any tips on how this is best handled 
+with this stack? </li>
 <li><a href="#questionables"> I have some questionable questions. Where do I look? <br/> </li>
 </ol>
 <br>
@@ -455,6 +459,21 @@ Can I run the stack in an applet?<br/>
 Yes - take a look at jain-sip-applet-phone.dev.java.net. If your server
 caches connections, you can use TCP sip transactions to transport chunks of
 binary data and thereby construct an applet phone.
+</li>
+<a name="36"></a>
+<li>
+I want to be able to send SIP packets to different SIP servers using 
+different local identities. Any tips on how this is best handled 
+with this stack? <br/>
+
+The way to do this through the router. Note that you can specify a Router
+class implementation when the stack is created. The Router sets up the
+path to the next hop. In your Router, look at the user trying to set up
+the call and return the Hop implementation corresponding to the gateway
+to which that user should be pointed to.
+Note also that the Router is only used to route requests out of dialog -
+which is to say it is used for pre-dialog establishment, requests that
+dont belong to any particular dialog and stateless requests.
 </li>
 </ol>
 <a name="questionables"></a>
