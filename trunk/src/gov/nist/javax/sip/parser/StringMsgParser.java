@@ -29,7 +29,7 @@ import gov.nist.core.*;
  * entire message is parsed in one feld swoop).
  *
  *
- * @version JAIN-SIP-1.1 $Revision: 1.8 $ $Date: 2004-02-18 14:33:02 $
+ * @version JAIN-SIP-1.1 $Revision: 1.9 $ $Date: 2004-02-29 00:46:34 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -329,6 +329,7 @@ public class StringMsgParser {
 			sipmsg.setMessageContent(body);
 		}
 		// System.out.println("Parsed = " + sipmsg);
+		sipmsg.setSize(currentMessage.length());
 		return sipmsg;
 
 	}
@@ -789,6 +790,13 @@ public class StringMsgParser {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/02/18 14:33:02  mranga
+ * Submitted by:  Bruno Konik
+ * Reviewed by:   mranga
+ * Remove extraneous newline in encoding messages. Test for empty sdp announce
+ * rather than die with null when null is passed to sdp announce parser.
+ * Fixed bug in checking for \n\n when looking for message end.
+ *
  * Revision 1.7  2004/02/13 19:20:09  mranga
  * Reviewed by:   mranga
  * minor fix for error callback.

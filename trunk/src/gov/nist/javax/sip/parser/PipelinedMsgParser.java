@@ -26,7 +26,7 @@ import sim.java.net.*;
  * This can be accessed from the SIPMessage using the getContent and
  * getContentBytes methods provided by the SIPMessage class. 
  *
- * @version JAIN-SIP-1.1 $Revision: 1.8 $ $Date: 2004-02-25 21:43:03 $
+ * @version JAIN-SIP-1.1 $Revision: 1.9 $ $Date: 2004-02-29 00:46:34 $
  *
  * @author <A href=mailto:mranga@nist.gov > M. Ranganathan  </A>
  *
@@ -67,6 +67,9 @@ public final class PipelinedMsgParser implements Runnable {
 	private byte[] messageBody;
 	private boolean errorFlag;
 	private InputStream rawInputStream;
+	private int maxMessageSize;
+	private int sizeCounter;
+	private int messageSize;
 
 	/**
 	 * default constructor.
@@ -93,10 +96,12 @@ public final class PipelinedMsgParser implements Runnable {
 	public PipelinedMsgParser(
 		SIPMessageListener sipMessageListener,
 		InputStream in,
-		boolean debug) {
+		boolean debug,
+		int maxMessageSize ) {
 		this();
 		this.sipMessageListener = sipMessageListener;
 		rawInputStream = in;
+		this.maxMessageSize = maxMessageSize;
 //ifndef SIMULATION
 //
 		mythread = new Thread(this);
@@ -117,8 +122,9 @@ public final class PipelinedMsgParser implements Runnable {
 	 * @param in An input stream to read messages from.
 	 */
 
-	public PipelinedMsgParser(SIPMessageListener mhandler, InputStream in) {
-		this(mhandler, in, false);
+	public PipelinedMsgParser(SIPMessageListener mhandler, 
+		InputStream in, int maxMsgSize) {
+		this(mhandler, in, false,maxMsgSize);
 	}
 
 	/**
@@ -127,7 +133,7 @@ public final class PipelinedMsgParser implements Runnable {
 	 */
 
 	public PipelinedMsgParser(InputStream in) {
-		this(null, in, false);
+		this(null, in, false,0);
 	}
 
 	/**
@@ -183,8 +189,14 @@ public final class PipelinedMsgParser implements Runnable {
 				int i = inputStream.read();
 				if (i == -1) {
 					throw new IOException("End of stream");
-				} else
+				} else 
 					ch = (char) i;
+				// reduce the available read size by 1 ("size" of a char).
+				if ( this.maxMessageSize > 0 ) {
+				     this.sizeCounter --;
+				     if (this.sizeCounter <= 0) 
+					 throw new IOException("Max size exceeded!");
+				}
 				if (ch != '\r')
 					retval.append(ch);
 				if (ch == '\n') {
@@ -243,6 +255,8 @@ public final class PipelinedMsgParser implements Runnable {
 		// encodings to read the message body.
 		try {
 			while (true) {
+				this.sizeCounter = this.maxMessageSize;
+				this.messageSize = 0;
 				StringBuffer inputBuffer = new StringBuffer();
 				Debug.println("Starting parse!");
 				String line1;
@@ -263,7 +277,7 @@ public final class PipelinedMsgParser implements Runnable {
 
 					}
 				}
-				Debug.println("line1  = " + line1);
+
 				inputBuffer.append(line1);
 
 				while (true) {
@@ -300,17 +314,17 @@ public final class PipelinedMsgParser implements Runnable {
 					contentLength = 0;
 				}
 
-				// TODO add a mechanism to deal with DOS attacks
-				// that try to defeat the system by just pushing
-				// vast amounts of data at us.
+				//System.out.println("contentLength " + contentLength);
+
+
 				// TODO Add a timeout to this read so clients 
 				// that lie about content length will not hang this
 				// thread.
 
 				if (contentLength == 0) {
 					sipMessage.removeContent();
-				} else { // deal with the message body.
-					contentLength = cl.getContentLength();
+				} else if ( maxMessageSize == 0 || 
+					contentLength < this.sizeCounter ) {
 					byte[] message_body = new byte[contentLength];
 					int nread = 0;
 					while (nread < contentLength) {
@@ -331,9 +345,17 @@ public final class PipelinedMsgParser implements Runnable {
 						}
 					}
 					sipMessage.setMessageContent(message_body);
-				}
+				} 
+				// Content length too large - process the message and
+				// return error from there.
 				if (sipMessageListener != null) {
-					sipMessageListener.processMessage(sipMessage);
+					try {
+						sipMessageListener.processMessage(sipMessage);
+					} catch (Exception ex) {
+						// fatal error in processing - close the 
+						// connection.
+						break;
+					}
 				}
 			}
 		} finally {
@@ -346,6 +368,11 @@ public final class PipelinedMsgParser implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/02/25 21:43:03  mranga
+ * Reviewed by:   mranga
+ * Added a couple of todo's and removed some debug printlns that could slow
+ * code down by a bit.
+ *
  * Revision 1.7  2004/02/25 20:52:46  mranga
  * Reviewed by:   mranga
  * Fix TCP transport so messages in excess of 8192 bytes are accepted.

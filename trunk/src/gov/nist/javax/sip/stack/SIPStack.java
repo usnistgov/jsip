@@ -33,7 +33,7 @@ import sim.java.net.*;
  * returnResponse  for successful message processing and throw
  * SIPServerException for unsuccessful message processing.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.10 $ $Date: 2004-02-20 16:36:42 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.11 $ $Date: 2004-02-29 00:46:35 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * 
@@ -122,6 +122,17 @@ public abstract class SIPStack {
 	 */
 	protected int maxConnections;
 
+
+	/** 
+	 * Max size of message that can be read from a TCP connection.
+	 */
+	protected int maxContentLength;
+
+	/** 
+	 * Max # of headers that a SIP message can contain. 
+	 */
+	protected int maxMessageSize;
+
 	/**
 	 * A collection of message processors.
 	 */
@@ -154,6 +165,11 @@ public abstract class SIPStack {
 
 	public ServerLog getServerLog() {
 		return this.serverLog;
+	}
+
+
+	public int getMaxMessageSize() {
+		return this.maxMessageSize;
 	}
 
 	/**
@@ -664,6 +680,12 @@ public abstract class SIPStack {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/02/20 16:36:42  mranga
+ * Reviewed by:   mranga
+ * Minor changes to debug logging -- record the properties with which the stack
+ * was created. Be slightly more forgiving when checking for retransmission
+ * filter when configuring stack.
+ *
  * Revision 1.9  2004/01/22 18:39:41  mranga
  * Reviewed by:   M. Ranganathan
  * Moved the ifdef SIMULATION and associated tags to the first column so Prep preprocessor can deal with them.
