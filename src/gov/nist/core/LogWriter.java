@@ -56,7 +56,7 @@ public class LogWriter
 */
 	public static boolean needsLogging = false;
 
-	public static int lineCount = 0;
+	public int lineCount;
 
 
 	/**

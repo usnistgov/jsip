@@ -16,6 +16,12 @@ import javax.sip.header.*;
 
 import java.io.IOException;
 
+//ifdef SIMULATION
+/*
+import sim.java.*;
+//endif
+*/
+
 
 /**
  *Represents a client transaction.
@@ -268,6 +274,15 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
         
         // Message typecast as a request
         SIPRequest	transactionRequest;
+
+//ifdef SIMULATION
+/*
+	SimSystem.hold(getSIPStack().stackProcessingTime);
+//endif
+*/
+
+	
+
         
         
         transactionRequest = (SIPRequest)messageToSend;
@@ -356,7 +371,17 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
         if (parentStack.serverLog.needsLogging
 	   (parentStack.serverLog.TRACE_MESSAGES))
             this.logResponse(transactionResponse,
-            System.currentTimeMillis(),"normal processing");
+
+//ifdef SIMULATION
+/*
+            SimSystem.currentTimeMillis(),
+//else
+*/
+            System.currentTimeMillis(),
+//endif
+//
+
+	    "normal processing");
 	// Ignore 1xx 
 	if (getState().getValue() == COMPLETED_STATE  && 
 		transactionResponse.getStatusCode()/100 == 1) return;

@@ -12,7 +12,14 @@ clean: emacsclean
 	\rm -f *debug*
 
 all: 
+ifeq (${SIMULATION},true)
+	echo "${SIMULATION}"
 	$(JAVAC) *.java
+else
+	$(JAVAC) Shootist.java
+	$(JAVAC) Shootme.java
+endif
+
 
 
 #shootist is the uac
@@ -29,11 +36,15 @@ shootme: Shootme.class
 	$(JAVA)  examples.shootist.Shootme 
 
 shootmelog:
-	$(JAVA) tools.tracesviewer.TracesViewer -f shootmelog.txt
+	$(JAVA) tools.tracesviewer.TracesViewer -server_file shootmelog.txt
 
 shootistlog:
-	$(JAVA) tools.tracesviewer.TracesViewer -f shootistlog.txt
+	$(JAVA) tools.tracesviewer.TracesViewer -server_file shootistlog.txt
 
 sim:
 	$(JAVA) examples.shootist.Shoot
+
+cleanlogs:
+	\rm -f *debug.txt
+	\rm -f *log.txt
 

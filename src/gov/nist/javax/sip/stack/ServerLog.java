@@ -19,6 +19,11 @@ import java.util.LinkedList;
 import java.util.StringTokenizer;
 import java.rmi.*;
 import java.util.ListIterator;
+//ifdef SIMULATION
+/*
+import sim.java.*;
+//endif
+*/
 
 /** Log file wrapper class.
  * Log messages into the message trace file and also write the log into the
@@ -77,8 +82,8 @@ public class ServerLog {
     protected String stackIpAddress;
 
     
-    public ServerLog(LogWriter logWriter) {
-	this.logWriter = logWriter;
+    public ServerLog(SIPStack sipStack) {
+	this.logWriter = sipStack.logWriter;
     }
 
      public void setStackIpAddress(String ipAddress) {
@@ -227,7 +232,7 @@ public class ServerLog {
     String  time) {
         
         MessageLog log = new MessageLog(message, from, to, time,
-            sender,  firstLine, status, tid,callId);
+            sender,  firstLine, status, tid,callId,logWriter.lineCount);
         logMessage(log.flush());
     }
 
@@ -243,7 +248,7 @@ public class ServerLog {
         
         MessageLog log = new MessageLog(message, from, to, time,
             sender,  firstLine,
-            status, tid, callId);
+            status, tid, callId,logWriter.lineCount);
 	logMessage(log.flush());
     }
     
@@ -264,7 +269,14 @@ public class ServerLog {
     String firstLine,
     String status,
     String tid) {
+//ifdef SIMULATION
+/*
+        String time = new Long(SimSystem.currentTimeMillis()).toString();
+//else
+*/
         String time = new Long(System.currentTimeMillis()).toString();
+//endif
+//
         logMessage
         (message,from, to,sender,callId,firstLine,status,
         tid,time);
@@ -322,7 +334,16 @@ public class ServerLog {
     public void logMessage(SIPMessage message, String from,
     String to, boolean sender) {
         logMessage(message,from,to,sender,
-        new Long(System.currentTimeMillis()).toString());
+//ifdef SIMULATION
+/*
+        new Long(SimSystem.currentTimeMillis()).toString()
+//else
+*/
+        new Long(System.currentTimeMillis()).toString()
+//endif
+//
+
+	);
     }
     
     /** Log a message into the log directory.
@@ -380,7 +401,15 @@ public class ServerLog {
     String to, String status,
     boolean sender) {
         logMessage(message,from,to,status,sender,
-        System.currentTimeMillis());
+//ifdef SIMULATION
+/*
+        SimSystem.currentTimeMillis()
+//else
+*/
+        System.currentTimeMillis()
+//endif
+//
+	);
     }
     
     

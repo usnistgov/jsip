@@ -174,19 +174,17 @@ public class UDPMessageProcessor  extends MessageProcessor {
 		// not empty. As soon as you introduce some other
 		// condition you will have to call notifyAll instead of 
 		// notify below.
-
-                 synchronized(
 //ifdef SIMULATION
 /*
-			this.messageQueueShadow
+		this.messageQueueShadow.enterCriticalSection();
+		try 
 //else
 */
 
-			this.messageQueue
+                 synchronized( this.messageQueue ) 
 //endif
 //
-
-		) {
+		{
                      this.messageQueue.addLast(packet);
 //ifdef SIMULATION
 /*
@@ -197,6 +195,11 @@ public class UDPMessageProcessor  extends MessageProcessor {
 //endif
 //
                   }
+//ifdef SIMULATION
+/*
+		finally { this.messageQueueShadow.leaveCriticalSection(); }
+//endif
+*/
 		} else {
                    new UDPMessageChannel(sipStack,this,packet);
                 }
@@ -207,16 +210,16 @@ public class UDPMessageProcessor  extends MessageProcessor {
                 isRunning = false;
 		// The notifyAll should be in a synchronized block.
 		// ( bug report by Niklas Uhrberg ).
-		synchronized (
 //ifdef SIMULATION
 /*
-			this.messageQueueShadow
+		this.messageQueueShadow.enterCriticalSection();
+		try
 //else
 */
-			this.messageQueue
+		synchronized ( this.messageQueue) 
 //endif
 //
-		) {
+		{
 //ifdef SIMULATION
 /*
 			this.messageQueueShadow.doNotifyAll();
@@ -226,6 +229,11 @@ public class UDPMessageProcessor  extends MessageProcessor {
 //endif
 //
 		}
+//ifdef SIMULATION
+/*
+		finally { this.messageQueueShadow.leaveCriticalSection(); }
+//endif
+*/
             } catch (IOException ex) {
                 isRunning = false;
                 ex.printStackTrace();
@@ -247,12 +255,26 @@ public class UDPMessageProcessor  extends MessageProcessor {
      */
     
     public void stop() {
-	synchronized(this.messageQueue) {
+//ifdef SIMULATION
+/*
+	this.messageQueueShadow.enterCriticalSection();
+	try 
+//else
+*/
+	synchronized ( this.messageQueue) 
+//endif
+//
+	{
            this.isRunning = false;
            this.messageQueue.notifyAll();
 	   this.listeningPoint = null;
            sock.close();
 	}
+//ifdef SIMULATION
+/*
+	finally { this.messageQueueShadow.leaveCriticalSection(); }
+//endif
+*/
     }
     
     /**
