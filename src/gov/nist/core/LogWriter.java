@@ -3,12 +3,14 @@
 ***************************************************************************/
 
 package gov.nist.core;
+
 import java.io.File;
-import java.io.IOException;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+
 
 /**
 *  Log System Errors. Also used for debugging log.
@@ -16,6 +18,7 @@ import java.io.StringWriter;
 *@version  JAIN-SIP-1.1
 *
 *@author M. Ranganathan <mranga@nist.gov>  <br/>
+*@author m.andrews
 *
 *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
 *
@@ -23,44 +26,45 @@ import java.io.StringWriter;
 
 public class LogWriter {
 
+    // private final static Logger logger = Logger.getLogger(LogWriter.class);
+    
 	/** Dont trace
 	 */
-	public static int TRACE_NONE = 0;
+	public static final int TRACE_NONE = 0;
 	/** Trace initialization code
 	 */
 	/** Trace message processing
 	 */
-	public static int TRACE_MESSAGES = 16;
+	public static final int TRACE_MESSAGES = 16;
 	/** Trace exception processing
 	 */
-	public static int TRACE_EXCEPTION = 17;
+	public static final int TRACE_EXCEPTION = 17;
 	/** Debug trace level (all tracing enabled).
 	 */
-	public static int TRACE_DEBUG = 32;
+	public static final int TRACE_DEBUG = 32;
 	/** Name of the log file in which the trace is written out
 	 * (default is /tmp/sipserverlog.txt)
 	 */
 	private String logFileName = "debuglog.txt";
 	/** Print writer that is used to write out the log file.
 	 */
-	public PrintWriter printWriter;
+	private PrintWriter printWriter;
 	/** print stream for writing out trace
 	 */
-	public PrintStream traceWriter = System.out;
+	private PrintStream traceWriter = System.out;
 
 	/** Flag to indicate that logging is enabled. This needs to be
 	* static and public in order to globally turn logging on or off.
-	* This is static for efficiency reasons (the java compiler will not
-	* generate the logging code if this is set to false).
 	*/
 	public static boolean needsLogging = false;
 
-	public int lineCount;
+	private int lineCount;
 
 	/**
 	*  Debugging trace stream.
 	*/
-	private static PrintStream trace = System.out;
+	private static final PrintStream trace = System.out;
+	
 	/** trace level
 	 */
 	// protected     static int traceLevel = TRACE_DEBUG;
@@ -79,6 +83,10 @@ public class LogWriter {
 		}
 	}
 
+	public int getLineCount() {
+	    return lineCount;
+	}
+	
 	public void logException(Exception ex) {
 		if (needsLogging) {
 			StringWriter sw = new StringWriter();
@@ -86,10 +94,23 @@ public class LogWriter {
 			checkLogFile();
 			if (printWriter != null)
 				ex.printStackTrace(pw);
+			pw.close();
 			println(sw.toString());
 		}
 	}
 
+	public void logThrowable(Throwable throwable) {
+		if (needsLogging) {
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			checkLogFile();
+			if (printWriter != null)
+				throwable.printStackTrace(pw);
+			pw.close();
+			println(sw.toString());
+		}
+	}
+	
 	/** Log an excption. 
 	* 1.4x Code contributed by Brad Templeton
 	*
@@ -157,8 +178,9 @@ public class LogWriter {
 	}
 
 	private void println(String message) {
-		for (int i = 0; i < message.length(); i++) {
-			if (message.charAt(i) == '\n')
+	    char[] chars = message.toCharArray();
+		for (int i = 0; i < chars.length; i++) {
+			if (chars[i] == '\n')
 				lineCount++;
 		}
 		checkLogFile();
@@ -194,6 +216,10 @@ public class LogWriter {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/04/19 18:23:48  mranga
+ * Reviewed by:   mranga
+ * Fixed the tck (reset factories before getting the TI factories)
+ *
  *
  * Revision 1.5  2004/01/22 13:26:27  sverker
  * Issue number:

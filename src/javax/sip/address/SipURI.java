@@ -220,7 +220,7 @@ public interface SipURI extends URI, Parameters {
      * sip:jimmy@jcp.org?priority=urgent has a header "priority" whose
      * value is "urgent".
      *
-     * @param <var>name</var> name of header to retrieve
+     * @param name name of header to retrieve
      * @return the value of specified header
      */
     public String getHeader(String name);
@@ -345,7 +345,7 @@ public interface SipURI extends URI, Parameters {
      * user, overriding any address derived from the host field. This is
      * equivalent to setParameter("maddr", maddr).
      *
-     * @param  method - new value of the <code>maddr</code> parameter
+     * @param mAddr new value of the <code>maddr</code> parameter
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the mAddr value.
      */

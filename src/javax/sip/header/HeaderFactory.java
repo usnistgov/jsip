@@ -59,8 +59,8 @@ public interface HeaderFactory {
      * Creates a new AcceptHeader based on the newly supplied contentType and 
      * contentSubType values.
      *
-     * @param type the new string content type value.
-     * @param subType the new string content sub-type value.
+     * @param contentType the new string content type value.
+     * @param contentSubType the new string content sub-type value.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the content type or content subtype value.
      * @return the newly created AcceptHeader object.
@@ -203,7 +203,7 @@ public interface HeaderFactory {
      * Creates a new ContentDispositionHeader based on the newly supplied 
      * contentDisposition value.
      *
-     * @param contentDisposition the new string value of the contentDisposition.
+     * @param contentDispositionType the new string value of the contentDisposition.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the contentDisposition value.
      * @return the newly created ContentDispositionHeader object.
@@ -237,7 +237,7 @@ public interface HeaderFactory {
     /**
      * Creates a new ContentLengthHeader based on the newly supplied contentLength value.
      *
-     * @param sequenceNumber the new integer value of the contentLength.
+     * @param contentLength the new integer value of the contentLength.
      * @throws InvalidArgumentException if supplied contentLength is less 
      * than zero.
      * @return the newly created ContentLengthHeader object.
@@ -249,8 +249,8 @@ public interface HeaderFactory {
      * Creates a new ContentTypeHeader based on the newly supplied contentType and 
      * contentSubType values.
      *
-     * @param type the new string content type value.
-     * @param subType the new string content sub-type value.
+     * @param contentType the new string content type value.
+     * @param contentSubType the new string content sub-type value.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the content type or content subtype value.
      * @return the newly created ContentTypeHeader object.
@@ -353,7 +353,7 @@ public interface HeaderFactory {
      /**
      * Creates a new MaxForwardsHeader based on the newly supplied maxForwards value.
      *
-     * @param expires the new integer value of the maxForwards.
+     * @param maxForwards the new integer value of the maxForwards.
      * @throws InvalidArgumentException if supplied maxForwards is less 
      * than zero or greater than 255.
      * @return the newly created MaxForwardsHeader object.
@@ -652,8 +652,8 @@ public interface HeaderFactory {
      * Creates a new ViaHeader based on the newly supplied uri and branch values.
      *
      * @param host the new string value of the host.
-     * @param host the new integer value of the port.
-     * @param host the new string value of the transport.
+     * @param port the new integer value of the port.
+     * @param transport the new string value of the transport.
      * @param branch the new string value of the branch.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the host, transport or branch value.

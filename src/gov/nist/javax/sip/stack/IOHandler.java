@@ -220,7 +220,7 @@ class IOHandler {
 						sipStack.logWriter.logMessage("inaddr = " + inaddr);
 						sipStack.logWriter.logMessage("port = " + contactPort);
 					}
-					clientSock = new Socket(inaddr, contactPort);
+					clientSock = sipStack.getNetworkLayer().createSocket(inaddr,contactPort);
 					OutputStream outputStream = clientSock.getOutputStream();
 					writeChunks(outputStream, bytes,length);
 					putSocket(key, clientSock);
@@ -287,6 +287,12 @@ class IOHandler {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.24  2004/08/30 16:04:47  mranga
+ * Submitted by:  Mike Andrews
+ * Reviewed by:   mranga
+ *
+ * Added a network layer.
+ *
  * Revision 1.23  2004/07/23 06:50:04  mranga
  * Submitted by:  mranga
  * Reviewed by:   mranga

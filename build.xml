@@ -72,16 +72,22 @@ c:/jakarta-ant/bin/ant all
 	<property name="href.uncopyright" value="../uncopyright.html" />
 	<property name="href.mailto" value="mailto:nist-sip-dev@antd.nist.gov" />
 	<property name="href.distribution" value="http://www-x.antd.nist.gov/proj/iptel/nist-sip-requestform/nist-sip-1.2-requestform.htm"/>
+	
 	<!-- where the src lives -->
 	<property name= "srcroot" value = "${root}/src" />
 	<property name="debug" value="true"/>
+	
 	<!-- where are the lib -->
 	<property name= "jain_api_jar" value = "JainSipApi1.1.jar" />
 	<property name= "ri_jar" value = "nist-sip-1.2.jar" />
 	<property name= "sdp_jar" value = "nist-sdp-1.0.jar" />
 	<property name= "sip-sdp-jar" value = "sip-sdp.jar" />
-
-	<target name="all" depends="clean,compilestack,compileri,compilesdp,sip-sdp-jar,compileexamples,compiletools,javadoc" />
+	<property name = 'junit_jar' value = 'lib/junit3.8.1/junit.jar'/>
+	<property name = 'tck_jar' value = 'tck.jar'/>
+	
+	<property name ='j2se_api' value='http://java.sun.com/j2se/1.4.2/docs/api'/>
+	
+	<target name="all" depends="clean,compilestack,compileri,compilesdp,sip-sdp-jar,compileexamples,compiletools,javadoc,javadoc-jain" />
 
 	<!-- Clean everything -->
 	<target name="clean">
@@ -92,6 +98,17 @@ c:/jakarta-ant/bin/ant all
 		<delete file="./${jain_api_jar}"/>
 		<delete file="./${ri_jar}"/>
 		<delete file="./${sdp_jar}"/>
+		<delete file="./${tck_jar}"/>
+		
+		<delete dir='javadoc'/>
+		<delete dir='javadoc-jain'/>
+		
+		<!-- files created by running targets -->
+		<delete file='./riDebugLog.txt'/>
+		<delete file='./tcklog.txt'/>
+		<delete file='./tiDebugLog.txt'/>
+		<delete file='./tiMessageLog.txt'/>
+		
 	</target>
 
 	<!-- Create ${classes} -->
@@ -100,14 +117,17 @@ c:/jakarta-ant/bin/ant all
 	</target>
 
 	<target name="cleandocs">
-		<delete dir="${docdir}" />
+		<delete dir="javadoc" />
 	</target>
 
 	<target name="javadoc" >
+		
+		<mkdir dir='javadoc'/>
+			
 		<javadoc packagenames="javax.sip.*,javax.sip.header.*,javax.sip.message.*,javax.sip.address.*,gov.nist.javax.sip.*,gov.nist.javax.sip.address.*,gov.nist.javax.sip.message.*,gov.nist.javax.sip.header.*,gov.nist.javax.sip.stack.*,gov.nist.javax.sip.parser.*"
 				sourcepath="${srcroot}"
 				overview="${docdir}/overview.html"
-				destdir="${docdir}"
+				destdir="javadoc"
 				use="true"
 				splitindex="true"
 				windowtitle="JAIN-SIP-1.1 RI For the People !"
@@ -120,7 +140,7 @@ c:/jakarta-ant/bin/ant all
 			<classpath>
 				<pathelement location="${jain_api_jar}"/>
 			</classpath>
-			<link href="http://java.sun.com/products/j2se/1.4.1/docs/api" />
+			<link href="${j2se_api}" />
 			<header>
 				<![CDATA[
 					<b> NIST SIP Parser and Stack (v1.2) </b>
@@ -138,6 +158,44 @@ c:/jakarta-ant/bin/ant all
 		</javadoc>
 	</target>
 
+	<target name="javadoc-jain" >
+		
+		<mkdir dir='javadoc-jain'/>
+			
+		<javadoc packagenames="javax.sip.*,javax.sip.header.*,javax.sip.message.*,javax.sip.address.*,javax.sdp.*"
+				sourcepath="${srcroot}"
+				overview="${docdir}/overview.html"
+				destdir="javadoc-jain"
+				use="true"
+				splitindex="true"
+				windowtitle="JAIN-SIP-1.1 RI For the People !"
+				doctitle="NIST SIP/SDP Parser and Stack (v1.2)"
+				public="true"
+				author="true"
+				version="true"
+				defaultexcludes="yes"
+				additionalparam="-breakiterator">
+			<classpath>
+				<pathelement location="${jain_api_jar}"/>
+			</classpath>
+			<link href="${j2se_api}" />
+			<header>
+				<![CDATA[
+					<b> NIST SIP Parser and Stack (v1.2) </b>
+				]]>
+			</header>
+			<bottom>
+				<![CDATA[
+					<font size="-1">
+						<a href="${href.nist.homepage}"> A product of the NIST/ITL Advanced Networking Technologies Division. </a><br>
+						<a href="${href.uncopyright}"> See conditions of use. </a> <br>
+						<a href="${href.mailto}">Submit a bug report or feature request. </a><br>
+					</font>
+				]]>
+			</bottom>
+		</javadoc>
+	</target>
+	
 	<!-- Compile the stack and libraries -->
 	<target name="compilestack" depends="init">
 		<javac	debug="${debug}"
@@ -207,6 +265,8 @@ c:/jakarta-ant/bin/ant all
 			includes="javax/**/*.class,gov/nist/**/*.class"/>
 	</target>
 
+	<target name='compilejain' depends='compilestack,compileri,compilesdp'/>
+	
 	<!-- Compile the examples -->
 	<target name="compileexamples" depends="init">
 		<javac 	debug="${debug}"
@@ -235,10 +295,34 @@ c:/jakarta-ant/bin/ant all
 				<pathelement location="${jain_api_jar}"/>
 				<pathelement location="${ri_jar}"/>
 				<pathelement location="${classes}"/>
+				<pathelement location='${junit_jar}'/>
 			</classpath>
 		</javac>
+		<jar destfile="${tck_jar}" basedir="${classes}" includes="test/tck/**/*.class">
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Main-Class" value="test.tck.Tck"/>
+			</manifest>
+		</jar>
 	</target>
 
+	<target name='runtck' depends='clean,compiletck'>
+	   <!-- clean out all previously compiled code to make sure we use latest and greatest (or buggiest!) -->
+		<java classname="test.tck.Tck" fork="true">
+			<arg value='-mode'/>
+			<arg value='gui'/>
+			<classpath>
+				<pathelement location="${jain_api_jar}"/>
+				<pathelement location="${ri_jar}"/>
+				<pathelement location="${tck_jar}"/>
+				<pathelement location='${junit_jar}'/>
+				
+				<!-- add source path since this will pick up test.tck.gui.images -->
+				<pathelement location='src'/>
+			</classpath>
+		</java>
+	</target>
+	
 	<!-- download and unzip the libs.zip -->
 	<target name="getlibs">
 		<get src="http://is2.antd.nist.gov/pub/nist-sip/libs.zip"
@@ -294,6 +378,7 @@ c:/jakarta-ant/bin/ant all
             </classpath>                       
         </java>
     </target>
+	
     <target name="subscriber" description="run the service.">
         <java classname="examples.subsnotify.Subscriber" fork="true">
             <classpath>
@@ -309,5 +394,6 @@ c:/jakarta-ant/bin/ant all
             </classpath>                       
         </java>
     </target>
+	
 </project>
 

@@ -64,7 +64,7 @@ public interface CallInfoHeader extends Parameters, Header {
      * Sets the Information parameter of this CallInfoHeader. The Information
      * describes the caller or callee.
      *
-     * @param icon - the new URI value of the location of the information.
+     * @param info the new URI value of the location of the information.
      */
     public void setInfo(URI info);
 

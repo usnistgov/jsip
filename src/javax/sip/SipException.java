@@ -74,7 +74,7 @@ public class SipException extends Exception {
 
      *
 
-     * @param <var>message</var> the error message of this Exception.
+     * @param message the error message of this Exception.
 
      */
 

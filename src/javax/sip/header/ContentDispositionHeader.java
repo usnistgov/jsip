@@ -74,7 +74,7 @@ public interface ContentDispositionHeader extends Parameters, Header {
      * Sets the interpretation value of the message body or message body part
      * for this ContentDispositionHeader.
      *
-     * @param <var>dispositiontype</var> the new String value of the
+     * @param dispositionType the new String value of the
      * disposition type.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the dispositionType parameter.
@@ -97,7 +97,7 @@ public interface ContentDispositionHeader extends Parameters, Header {
      * and "required".  If the handling parameter is missing, the value
      * "required" SHOULD be assumed.
      *
-     * @param <var>handling</var> the new String value either "optional"
+     * @param handling the new String value either "optional"
      * or "required".
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the handling parameter.
