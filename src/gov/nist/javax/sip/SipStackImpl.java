@@ -100,8 +100,21 @@ import sim.java.net.*;
  *   Max number of simultaneous TCP connections handled by stack. 
  *  (Was mis-spelled - Documentation bug fix by Bob Johnson)</li>
  *</ul>
+ *
+ *<li> <b>gov.nist.javax.sip.READ_TIMEOUT = integer </b> <br/>
+ * This is relevant for incoming TCP connections to prevent starvation at
+ * the server.
+ * This defines the timeout in miliseconds between successive reads after the 
+ * first byte of a SIP message is read by the stack. All the sip headers
+ * must be delivered in this interval and each successive buffer must be
+ * of the content  delivered in this interval.
+ * Default value is -1  (ie. the stack is wide open to starvation attacks) and
+ * the client can be as slow as it wants to be.
+ *
+ *</li>
+ *</ul>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.25 $ $Date: 2004-05-14 20:20:02 $
+ * @version JAIN-SIP-1.1 $Revision: 1.26 $ $Date: 2004-05-16 14:13:21 $
  * 
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -120,6 +133,7 @@ public class SipStackImpl
 	protected String routerPath;
 
 	protected EventScanner eventScanner;
+
 
 	/** Creates a new instance of SipStackImpl.
 	*/
@@ -319,6 +333,23 @@ public class SipStackImpl
 		if (cacheflag != null && "false".equalsIgnoreCase(cacheflag.trim())) {
 		        super.cacheClientConnections = false;
 		}
+                
+                String readTimeout = configurationProperties.getProperty 
+                                        ("gov.nist.javax.sip.READ_TIMEOUT");
+                 if (readTimeout != null) {
+                       try {
+                           
+                            int rt = Integer.parseInt(readTimeout);
+                            if (rt >= 100 ) {
+                                 super.readTimeout = rt;
+                            }else {
+                                 System.out.println("Value too low " + readTimeout);
+                            }
+                       } catch (NumberFormatException nfe) {
+                           // Ignore.
+                           System.out.println("Bad read timeout " + readTimeout);
+                       }
+                 }
 
 		// Get the address of the stun server.
 
@@ -638,6 +669,14 @@ public class SipStackImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.25  2004/05/14 20:20:02  mranga
+ *
+ * Submitted by:  Dave Stuart
+ * Reviewed by:  mranga
+ *
+ * Stun support hacks -- use the original address specified to bind tcp transport
+ * socket.
+ *
  * Revision 1.24  2004/04/29 19:27:46  mranga
  * Submitted by:  Dave Stuart (Sipquest).
  * Reviewed by:  mranga

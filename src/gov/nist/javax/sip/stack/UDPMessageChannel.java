@@ -46,7 +46,7 @@ import sim.java.net.*;
  * this code that was sending it into an infinite loop when a bad incoming
  * message was parsed.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2004-05-06 15:45:52 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.18 $ $Date: 2004-05-16 14:13:23 $
  */
 public class UDPMessageChannel
 	extends MessageChannel
@@ -510,7 +510,7 @@ public class UDPMessageChannel
 					this.stack.serverLog.logException(ex);
 				}
 			}
-			((UDPMessageProcessor) messageProcessor).useCount--;
+			//((UDPMessageProcessor) messageProcessor).useCount--;
 			if (stack.threadPoolSize == -1) {
 				return;
 			}
@@ -904,6 +904,10 @@ public class UDPMessageChannel
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2004/05/06 15:45:52  mranga
+ * Reviewed by:   mranga
+ * delete dialog when 4xx other than 401 or 407 are received in the early state.
+ *
  * Revision 1.16  2004/04/22 22:51:19  mranga
  * Submitted by:  Thomas Froment
  * Reviewed by:   mranga

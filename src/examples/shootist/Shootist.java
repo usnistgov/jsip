@@ -31,6 +31,7 @@ public class Shootist implements SipListener {
 	private ContactHeader contactHeader;
 	private ListeningPoint tcpListeningPoint;
 	private ListeningPoint udpListeningPoint;
+	private int counter;
 
 	protected ClientTransaction inviteTid;
 
@@ -46,6 +47,10 @@ public class Shootist implements SipListener {
 	}
 	private void shutDown() {
 		try {
+		        try {  
+				Thread.sleep(2000);
+		     	} catch (InterruptedException e) {
+		     	}
 			System.out.println("nulling reference");
 			this.sipStack.deleteListeningPoint(tcpListeningPoint);
 			this.sipStack.deleteListeningPoint(udpListeningPoint);
@@ -59,7 +64,7 @@ public class Shootist implements SipListener {
 			      break;
 			    } catch (ObjectInUseException  ex)  {
 			        try {  
-					Thread.sleep(1000);
+					Thread.sleep(2000);
 			     	} catch (InterruptedException e) {
 					continue;
 			     	}
@@ -77,8 +82,10 @@ public class Shootist implements SipListener {
 			this.tcpListeningPoint = null;
 			this.reInviteCount = 0;
 			System.gc();
-			// Redo this from the start.
-			// this.init();
+			//Redo this from the start.
+			if (counter < 10 ) 
+				this.init();
+			else counter ++;
 		} catch (Exception ex) { ex.printStackTrace(); }
 	}
 	
@@ -206,7 +213,7 @@ public class Shootist implements SipListener {
 
 	public void processTimeout(javax.sip.TimeoutEvent timeoutEvent) {
 
-		System.out.println("Transaction Time out");
+		System.out.println("Transaction Time out" );
 	}
 
 	public void init() {
@@ -250,7 +257,7 @@ public class Shootist implements SipListener {
 		// Set to 0 in your production code for max speed.
 		// You need  16 for logging traces. 32 for debug + traces.
 		// Your code will limp at 32 but it is best for debugging.
-		properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
+		properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "0");
 
 		try {
 			// Create SipStack object
@@ -405,6 +412,7 @@ public class Shootist implements SipListener {
 			System.out.println("length = " + contents.length);
 **/
 			byte[]  contents = sdpData.getBytes();
+			//byte[]  contents = sdpBuff.toString().getBytes();
 
 			request.setContent(contents, contentTypeHeader);
 
@@ -441,6 +449,9 @@ public class Shootist implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.25  2004/04/07 18:56:05  mranga
+ * Reviewed by:   got rid of confusing sleep
+ *
  * Revision 1.24  2004/04/07 13:46:29  mranga
  * Reviewed by:   mranga
  * move processing of delayed responses outside the synchronized block.

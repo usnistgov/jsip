@@ -33,7 +33,7 @@ import sim.java.net.*;
  * Niklas Uhrberg suggested that a mechanism be added to limit the number
  * of simultaneous open connections.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.24 $ $Date: 2004-04-22 22:51:19 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.25 $ $Date: 2004-05-16 14:13:23 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public final class TCPMessageChannel
@@ -660,7 +660,7 @@ public final class TCPMessageChannel
 		String message;
 		Pipeline hispipe = null;
 		// Create a pipeline to connect to our message parser.
-		hispipe = new Pipeline();
+		hispipe = new Pipeline(myClientInputStream,stack.readTimeout);
 		// Create a pipelined message parser to read and parse
 		// messages that we write out to him.
 		myParser = new PipelinedMsgParser(this, hispipe,this.stack.getMaxMessageSize());
@@ -804,6 +804,12 @@ public final class TCPMessageChannel
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.24  2004/04/22 22:51:19  mranga
+ * Submitted by:  Thomas Froment
+ * Reviewed by:   mranga
+ *
+ * Fixed corner cases.
+ *
  * Revision 1.23  2004/04/21 16:25:22  mranga
  * Reviewed by:   mranga
  * Record IP address of peer in TCP connection as soon as connection is made.

@@ -243,13 +243,16 @@ public class Shootme implements SipListener {
 		properties.setProperty("javax.sip.STACK_NAME", "shootme");
 		// You need  16 for logging traces. 32 for debug + traces.
 		// Your code will limp at 32 but it is best for debugging.
-		properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
+		properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "0");
 		properties.setProperty(
 			"gov.nist.javax.sip.DEBUG_LOG",
 			"shootmedebug.txt");
 		properties.setProperty(
 			"gov.nist.javax.sip.SERVER_LOG",
 			"shootmelog.txt");
+		// Guard against starvation.
+		properties.setProperty(
+			"gov.nist.javax.sip.READ_TIMEOUT", "1000");
 		// properties.setProperty("gov.nist.javax.sip.MAX_MESSAGE_SIZE", "4096");
 		properties.setProperty("gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS", "false");
 
@@ -299,6 +302,10 @@ public class Shootme implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2004/04/07 13:46:30  mranga
+ * Reviewed by:   mranga
+ * move processing of delayed responses outside the synchronized block.
+ *
  * Revision 1.15  2004/04/07 00:19:22  mranga
  * Reviewed by:   mranga
  * Fixes a potential race condition for client transactions.

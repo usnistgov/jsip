@@ -21,7 +21,7 @@ Get the tool from www.apache.org and install. Set your path to the ant shell
 (batch) file.
 
 >From the command prompt, execute the following command:
-ant -Djmf.home=jmfhome target
+ant target
 
 Where avaliable targets are:
 

@@ -9,6 +9,31 @@ public class Pipeline extends  InputStream {
 	private LinkedList buffList;
 	private Buffer currentBuffer;
 	private boolean isClosed;
+        private Timer timer;
+        private InputStream pipe;
+	private int readTimeout;
+        
+        class MyTimer extends TimerTask {
+            Pipeline pipeline;
+	    private boolean isCancelled;
+            protected MyTimer(Pipeline pipeline) {
+                this.pipeline = pipeline;
+            }
+            
+            public void run() {
+		if (this.isCancelled) return;
+                pipeline.close();
+                try {
+                    pipeline.pipe.close();
+                } catch (IOException ex) {}
+            }
+	    public boolean cancel() {
+		boolean retval = super.cancel();
+		this.isCancelled = true;
+		return retval;
+	    }
+            
+        }
 
 	class Buffer {
 		byte[] bytes;
@@ -27,9 +52,25 @@ public class Pipeline extends  InputStream {
 	}
 
 
+        public void startTimer() {
+            if (this.readTimeout == -1) return;
+            this.timer = new Timer();
+            //TODO make this a tunable number. For now 4 seconds
+            // between reads seems reasonable upper limit.
+            timer.schedule(new MyTimer(this), this.readTimeout);
+        }
+        
+        public void stopTimer() {
+            if (this.readTimeout == -1) return;
+            this.timer.cancel();
+        }
 
-	public Pipeline () {
+	public Pipeline (InputStream pipe,int readTimeout) {
+                // pipe is the Socket stream 
+                // this is recorded here to implement a timeout.
+                this.pipe = pipe;
 		buffList = new LinkedList();
+		this.readTimeout = readTimeout;
 	}
 
 	public void write (byte [] bytes, int start, int length) 
