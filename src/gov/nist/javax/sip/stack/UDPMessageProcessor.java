@@ -23,7 +23,7 @@ import  sim.java.net.*;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size). 
  * Each UDP message is processed in its own thread). 
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.19 $ $Date: 2004-08-30 16:04:48 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.20 $ $Date: 2004-09-04 14:59:54 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -88,6 +88,12 @@ public class UDPMessageProcessor extends MessageProcessor {
 	 */
 	protected SIPMessageStack sipStack;
 
+
+	/**
+	* The message processor deaemon thread (used for wait)
+	*/
+	protected Thread  thread;
+
 //ifdef SIMULATION
 /*
 	    protected SimDatagramSocket sock;
@@ -125,6 +131,13 @@ public class UDPMessageProcessor extends MessageProcessor {
 		} catch (SocketException ex) {
 			throw new IOException (ex.getMessage());
 		}
+	}
+
+	/**
+	* Get my thread.
+	*/
+	public Thread getThread() {
+		return this.thread;
 	}
 
 	/**
@@ -214,7 +227,7 @@ public class UDPMessageProcessor extends MessageProcessor {
 		}
 
 		this.isRunning = true;
-		Thread thread = new Thread(this);
+		this.thread = new Thread(this);
 		thread.setDaemon(true);
 		// Issue #32 on java.net
 		thread.setName("UDPMessageProcessorThread");
@@ -351,7 +364,7 @@ public class UDPMessageProcessor extends MessageProcessor {
 			this.messageQueue.notifyAll();
 			this.listeningPoint = null;
 			sock.close();
-		}
+			}
 //ifdef SIMULATION
 /*
 		finally { this.messageQueueShadow.leaveCriticalSection(); }
@@ -425,6 +438,12 @@ public class UDPMessageProcessor extends MessageProcessor {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2004/08/30 16:04:48  mranga
+ * Submitted by:  Mike Andrews
+ * Reviewed by:   mranga
+ *
+ * Added a network layer.
+ *
  * Revision 1.18  2004/07/16 17:13:56  mranga
  * Submitted by:  Damand Joost
  * Reviewed by:   mranga
