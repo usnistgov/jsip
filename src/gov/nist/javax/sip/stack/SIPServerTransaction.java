@@ -114,7 +114,7 @@ import java.util.TimerTask;
  *
  *</pre>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.28 $ $Date: 2004-04-19 21:51:04 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.29 $ $Date: 2004-04-22 22:51:18 $
  * @author Jeff Keyser 
  * @author M. Ranganathan <mranga@nist.gov>  
  * @author Bug fixes by Emil Ivov, Antonis Karydas.
@@ -258,8 +258,8 @@ public class SIPServerTransaction
 		if (LogWriter.needsLogging) {
 			parentStack.logWriter.logMessage("--------- TEST ------------");
 			parentStack.logWriter.logMessage(
-				" testing " + this.getOriginalRequest());
-			parentStack.logWriter.logMessage("Against " + messageToTest);
+				" testing " + this.getOriginalRequest().encodeMessage());
+			parentStack.logWriter.logMessage("Against " + messageToTest.encodeMessage());
 			parentStack.logWriter.logMessage(
 				"isTerminated = " + isTerminated());
 		}
@@ -1019,6 +1019,11 @@ public class SIPServerTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.28  2004/04/19 21:51:04  mranga
+ * Submitted by:  mranga
+ * Reviewed by:  ivov
+ * Support for stun.
+ *
  * Revision 1.27  2004/04/07 00:19:23  mranga
  * Reviewed by:   mranga
  * Fixes a potential race condition for client transactions.

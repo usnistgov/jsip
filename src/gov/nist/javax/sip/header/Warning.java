@@ -11,7 +11,7 @@ import javax.sip.InvalidArgumentException;
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * @author Olivier Deruelle <deruelle@nist.gov><br/>
- * @version JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2004-04-21 16:25:21 $
+ * @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-04-22 22:51:16 $
  *
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
@@ -84,7 +84,12 @@ public class Warning extends SIPHeader implements WarningHeader {
 	 * @throws SipParseException if code is not accepted by implementation
 	 */
 	public void setCode(int code) throws InvalidArgumentException {
-		this.code = code;
+		if (code >99  && code < 1000) { // check this is a 3DIGIT code
+			this.code = code;
+		} else
+			throw new InvalidArgumentException(
+				"Code parameter in the Warning header is invalid: code="
+					+ code);
 	}
 
 	/**
@@ -94,8 +99,7 @@ public class Warning extends SIPHeader implements WarningHeader {
 	 */
 	public void setAgent(String host) throws ParseException {
 		if (host == null)
-			throw new NullPointerException
-			("the host parameter in the Warning header is null");
+			throw new NullPointerException("the host parameter in the Warning header is null");
 		else {
 			this.agent = host;
 		}

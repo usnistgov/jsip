@@ -19,7 +19,7 @@ import gov.nist.core.*;
  * NIST-SIP stack and event model with the JAIN-SIP stack. Implementors
  * of JAIN services need not concern themselves with this class.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.26 $ $Date: 2004-04-07 00:19:22 $
+ * @version JAIN-SIP-1.1 $Revision: 1.27 $ $Date: 2004-04-22 22:51:16 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Bug fix Contributions by Lamine Brahimi and  Andreas Bystrom. <br/>
@@ -407,14 +407,10 @@ public class NistSipMessageHandlerImpl
 					return;
 				} else if (sipStackImpl.isRetransmissionFilterActive()) {
 					// 200  retransmission for the final response.
-					if (sipResponse
-						.getCSeq()
-						.equals(
-							dialog
-								.getFirstTransaction()
-								.getRequest()
-								.getHeader(
-								SIPHeaderNames.CSEQ))) {
+					if (sipResponse.getCSeq().getSequenceNumber() == 
+						((SIPTransaction) dialog.getFirstTransaction()).getCSeq() &&
+					    sipResponse.getCSeq().getMethod().equals
+						(((SIPTransaction)dialog.getFirstTransaction()).getMethod())) {
 						try {
 							// Found the dialog - resend the ACK and
 							// dont pass up the null transaction
@@ -479,6 +475,11 @@ public class NistSipMessageHandlerImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.26  2004/04/07 00:19:22  mranga
+ * Reviewed by:   mranga
+ * Fixes a potential race condition for client transactions.
+ * Handle re-invites statefully within an established dialog.
+ *
  * Revision 1.25  2004/04/06 12:28:23  mranga
  * Reviewed by:   mranga
  * changed locale to Locale.getDefault().getCountry()
