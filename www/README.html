@@ -155,7 +155,9 @@ by the following people:
 	the retransmission filter is enabled. Christophe noted a bug in
 	IOHandler when an IO Exception occurs while transmitting via TCP.
 	Christophe noted a stack bug when IOException occurs (timer tick
-	needs to be updated).
+	needs to be updated). Christophe tested the stack for Exception 
+	conditions under TCP Transport and uncovered some bugs in 
+        retransmission filter implementation under these conditions.
 
 
 <li> Gareth Deli noticed a bug in TCP transport. 
