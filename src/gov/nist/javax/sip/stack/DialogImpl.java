@@ -38,6 +38,7 @@ import java.text.ParseException;
 public class DialogImpl implements javax.sip.Dialog {
     private boolean reInviteFlag;
     private Object applicationData; // Opaque pointer to application data.
+    private SIPRequest	   originalRequest;
     private SIPTransaction firstTransaction;
     private SIPTransaction lastTransaction;
     private String dialogId;
@@ -53,8 +54,17 @@ public class DialogImpl implements javax.sip.Dialog {
     private int dialogState;
     protected boolean ackSeen;
     protected SIPRequest lastAck;
-    private GenericURI requestURI;
-    protected int retransmissionCount;
+
+    private int retransmissionTicksLeft;
+    private int prevRetransmissionTicks; 
+
+
+    // The following fields are extracted from the request that created the
+    // Dialog.
+    private   GenericURI requestURI;
+    protected javax.sip.address.Address localParty;
+    protected javax.sip.address.Address remoteParty;
+    protected CallIdHeader callIdHeader;
     
     public final static int EARLY_STATE     = DialogState._EARLY;
     public final static int CONFIRMED_STATE = DialogState._CONFIRMED;
@@ -161,9 +171,6 @@ public class DialogImpl implements javax.sip.Dialog {
             sipStack.logWriter.logMessage( "isServer = " + isServer());
             sipStack.logWriter.logMessage("localTag = " + getLocalTag());
             sipStack.logWriter.logMessage( "remoteTag = " + getRemoteTag());
-            sipStack.logWriter.logMessage("firstTransaction = " +
-            ((SIPTransaction) firstTransaction).getOriginalRequest());
-            
         }
     }
     
@@ -178,16 +185,14 @@ public class DialogImpl implements javax.sip.Dialog {
 	    // retransmission filter is being used).
 	    if (tr != null && tr instanceof SIPServerTransaction ) {
 		SIPServerTransaction st = (SIPServerTransaction) tr;
-	    	if (st.getOriginalRequest().getCSeq().getSequenceNumber() ==
-			sipRequest.getCSeq().getSequenceNumber()) {
+	    	if (st.getCSeq() == sipRequest.getCSeq().getSequenceNumber()) {
 			st.setState(SIPTransaction.TERMINATED_STATE);
 			this.ackSeen = true;
 	    	}
 	    
             	if (sipStack.logWriter.needsLogging)
 	        	sipStack.logWriter.logMessage
-			("ackReceived for " + 
-			((SIPRequest)st.getOriginalRequest()).getMethod());
+			("ackReceived for " + ((SIPTransaction)st).getMethod());
 
 	    	if (st == null) return;
 	    }
@@ -470,8 +475,6 @@ public class DialogImpl implements javax.sip.Dialog {
         this.dialogState =  -1; // not yet initialized.
         localSequenceNumber = 0;
         remoteSequenceNumber = -1;
-	this.retransmissionCount = 8; // Max # times to retransmit OK.
-				      // When retransmission filter is set.
     }
     
     
@@ -553,8 +556,7 @@ public class DialogImpl implements javax.sip.Dialog {
 	// Proessing a re-invite.
 	if ( firstTransaction != null &&
 	     firstTransaction != transaction &&
-	     transaction.getOriginalRequest().getMethod().
-	     equals(firstTransaction.getOriginalRequest().getMethod())) {
+	     transaction.getMethod().equals(firstTransaction.getMethod())) {
 	     this.reInviteFlag = true;
 	}
 
@@ -563,6 +565,10 @@ public class DialogImpl implements javax.sip.Dialog {
             // numbers and the from and to tags for future
             // use on this dialog.
             firstTransaction = transaction;
+	    this.setLocalParty(sipRequest);
+	    this.setRemoteParty(sipRequest);
+	    this.setCallId(sipRequest);
+	    this.originalRequest = sipRequest;
             
             if (transaction instanceof SIPServerTransaction ) {
                 setRemoteSequenceNumber
@@ -577,8 +583,8 @@ public class DialogImpl implements javax.sip.Dialog {
 		if (myTag == null) 
 			throw new RuntimeException("bad message tag missing!");
             }
-        } else if (  transaction.getOriginalRequest().getMethod().equals
-	           ( firstTransaction.getOriginalRequest().getMethod())  &&
+        } else if (  transaction.getMethod().equals
+	           ( firstTransaction.getMethod())  &&
 	      (((firstTransaction instanceof SIPServerTransaction)   &&
 	       (transaction instanceof SIPClientTransaction))  || 
 	        ((firstTransaction instanceof SIPClientTransaction) &&
@@ -587,6 +593,10 @@ public class DialogImpl implements javax.sip.Dialog {
 	    //  (put the other side on hold).
 
 	     firstTransaction = transaction;
+	     this.setLocalParty(sipRequest);
+	     this.setRemoteParty(sipRequest);
+	     this.setCallId(sipRequest);
+	     this.originalRequest = sipRequest;
 
 	}
 
@@ -771,9 +781,11 @@ public class DialogImpl implements javax.sip.Dialog {
      * @return the Call-ID for this Dialogue
      */
     public CallIdHeader getCallId() {
-        SIPRequest sipRequest =
-        ((SIPTransaction)this.getFirstTransaction()).getOriginalRequest();
-        return sipRequest.getCallId();
+        return this.callIdHeader;
+    }
+
+    private void setCallId(SIPRequest sipRequest) {
+	this.callIdHeader = sipRequest.getCallId();
     }
     
     
@@ -783,14 +795,16 @@ public class DialogImpl implements javax.sip.Dialog {
      */
     
     public javax.sip.address.Address getLocalParty()  {
-       SIPRequest sipRequest =
-          ((SIPTransaction)this.getFirstTransaction()).getOriginalRequest();
-	if (!isServer()) {
-          return sipRequest.getFrom().getAddress();
-	} else  {
-          return sipRequest.getTo().getAddress();
-	}
+	return this.localParty;
     }
+
+    private void setLocalParty( SIPRequest sipRequest) {
+	if (!isServer()) {
+          this.localParty =  sipRequest.getFrom().getAddress();
+	} else  {
+          this.localParty =  sipRequest.getTo().getAddress();
+	}
+     }
     
     /**
      * Returns the Address identifying the remote party.
@@ -803,15 +817,17 @@ public class DialogImpl implements javax.sip.Dialog {
      * @return the address object of the remote party.
      */
     public javax.sip.address.Address getRemoteParty() {
-        SIPRequest sipRequest =
-          ((SIPTransaction)this.getFirstTransaction()).getOriginalRequest();
-	if (!isServer()) {
-          return sipRequest.getTo().getAddress();
-	} else  {
-          return sipRequest.getFrom().getAddress();
-	}
+	return this.remoteParty;
         
     }
+
+    private void setRemoteParty(SIPRequest sipRequest) {
+	if (!isServer()) {
+          this.remoteParty = sipRequest.getTo().getAddress();
+	} else  {
+          this.remoteParty = sipRequest.getFrom().getAddress();
+	}
+     }
     
     /**
      * Returns the Address identifying the remote target.
@@ -903,9 +919,7 @@ public class DialogImpl implements javax.sip.Dialog {
 	    this.setState(CONFIRMED_STATE);
 	}
 	
-	if (! ((SIPTransaction)this.getFirstTransaction()).
-	   getOriginalRequest().getCallId().
-	   getCallId().equals(((SIPRequest)request).
+	if ( ! this.getCallId().getCallId().equals(((SIPRequest)request).
 			getCallId().getCallId())) {
 	    throw new SipException ("Bad call ID in request");
 	}
@@ -1035,9 +1049,7 @@ public class DialogImpl implements javax.sip.Dialog {
 	else if (this.getState() == null || 
 		this.getState().getValue() == TERMINATED_STATE) 
 		throw new SipException
-		("Dialog not yet established or terminated");
-	SIPRequest originalRequest = 
-		(SIPRequest) this.getFirstTransaction().getRequest();
+		("Dialog not yet established or terminated " + this.getState());
 
 	RequestLine requestLine = new RequestLine();
 	requestLine.setUri((GenericURI)getRemoteParty().getURI());
@@ -1196,10 +1208,8 @@ public class DialogImpl implements javax.sip.Dialog {
 	}
 
 
-	if (! ((SIPTransaction)this.getFirstTransaction()).
-	   getOriginalRequest().getCallId().
-	   getCallId().equals(dialogRequest.
-			getCallId().getCallId())) {
+	if (! this.getCallId().getCallId().equals(dialogRequest.
+			getCallId().getCallId()) )  {
 	    throw new SipException ("Bad call ID in request");
 	}
 
@@ -1375,11 +1385,29 @@ public class DialogImpl implements javax.sip.Dialog {
 		if (dialogRequest.getMethod().equalsIgnoreCase(Request.BYE))
 		    this.delete();
             } catch (IOException ex) {
+		if (sipStack.logWriter.needsLogging) 
+			sipStack.logWriter.logException(ex);
                 throw new SipException("error sending message");
             }
             
         }
     }
+
+    /** Return yes if the last response is to be retransmitted.
+     */
+    protected boolean toRetransmitFinalResponse() {
+	if (--retransmissionTicksLeft == 0)  {
+		this.retransmissionTicksLeft = 2*prevRetransmissionTicks;
+		this.prevRetransmissionTicks = retransmissionTicksLeft;
+		return true;
+	} else return false;
+
+    }
+
+    protected void setRetransmissionTicks() {
+		this.retransmissionTicksLeft = 1;
+		this.prevRetransmissionTicks = 1;
+     }
 
 
     /** Resend the last ack.
@@ -1392,8 +1420,7 @@ public class DialogImpl implements javax.sip.Dialog {
     }
 
     protected boolean isInviteDialog() {
-	return this.getFirstTransaction().getRequest().getMethod().
-			equals(Request.INVITE);
+	return originalRequest.getMethod().equals(Request.INVITE);
     }
 	
 

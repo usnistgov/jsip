@@ -8,7 +8,7 @@ package gov.nist.core;
 
 public class Debug {
 	
-        public static final boolean debug = false;
+        public static final boolean debug = true;
 	public static  final boolean parserDebug = false;
         
 	

@@ -713,7 +713,7 @@ implements  ParseExceptionListener, Runnable {
      * packets).
      */
     public int getPort() {
-        return ((UDPMessageProcessor)messageProcessor).port;
+        return ((UDPMessageProcessor)messageProcessor).getPort();
     }
     
     

@@ -25,7 +25,7 @@ import java.util.TimerTask;
 /**
 *	Represents a server transaction. Implements the following
 * state machines.
-*<pre>
+<pre>
 *                               |INVITE
 *                               |pass INV to TU
 *            INVITE             V send 100 if TU won't in 200ms
@@ -563,7 +563,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
     
     /**
      *	Send a response message through this transactionand onto
-     *      the client.
+     *      the client. The response drives the state machine.
      *
      *	@param messageToSend Response to process and send.
      */
@@ -641,7 +641,13 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
 	   if ( statusCode / 100 == 1 ) {
                setState( PROCEEDING_STATE );
 	    } else if (  200 <= statusCode  && statusCode <= 699) {
-		 setState (COMPLETED_STATE);
+		// Check --  bug report from christophe
+		 if (! isInviteTransaction() )  {
+			setState (COMPLETED_STATE);
+		 } else {
+		   if (statusCode /100 == 2) setState( TERMINATED_STATE );
+		   else setState ( COMPLETED_STATE );
+		 }
                  if( !isReliable( ) ) {
                         
                         enableRetransmissionTimer( );
@@ -673,7 +679,8 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
                     
 	                    setState( TERMINATED_STATE );
 	                    if( !isReliable( ) ) {
-	                        
+	                        ((DialogImpl)this.getDialog())
+					.setRetransmissionTicks();
 	                        enableRetransmissionTimer( );
 	                        
 	                    }
@@ -788,7 +795,8 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
     ) {
 
 	if (parentStack.logWriter.needsLogging) 
-		parentStack.logWriter.logMessage("SIPServerTransaction.fireTimeoutTimer " 
+		parentStack.logWriter.logMessage
+		("SIPServerTransaction.fireTimeoutTimer " 
 		+ this.getState() + " method = " + 
 		this.getOriginalRequest().getMethod() );
 
@@ -818,8 +826,15 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
             
             setState( TERMINATED_STATE );
             
-        }
-        
+        } else if (isInviteTransaction() &&
+		getState().getValue() == TERMINATED_STATE) {
+		// This state could be reached when retransmitting
+		// Bug report sent in by Christophe
+		raiseErrorEvent(SIPTransactionErrorEvent.TIMEOUT_ERROR);
+                if (dialog != null) 
+                    dialog.setState(DialogImpl.TERMINATED_STATE);
+	}
+
     }
     
     /** Get the last response.

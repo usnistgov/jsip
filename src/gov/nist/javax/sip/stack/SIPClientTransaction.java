@@ -233,7 +233,16 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
 	**/
         
         transactionMatches = false;
-        if( !isTerminated( ) ) {
+	if ( getState() != null &&  getState().getValue() == COMPLETED_STATE) {
+	  if ( rfc3261Compliant ) {
+             transactionMatches =   getBranch().equals
+                    (((Via)viaHeaders.getFirst()).
+                    getBranch());
+	   } else {
+             transactionMatches =   getBranch().equals
+                     (messageToTest.getTransactionId());
+	   }
+	} else if( !isTerminated( ) ) {
             if (rfc3261Compliant) {
                 if( viaHeaders != null ) {
                     // If the branch parameter is the
@@ -250,9 +259,15 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
                     }
                 }
             } else {
-                transactionMatches =
-                getOriginalRequest().getTransactionId().equals
-                (messageToTest.getTransactionId());
+		// not RFC 3261 compliant.
+		if (getBranch() != null)  {
+                    transactionMatches = getBranch().equals
+                        (messageToTest.getTransactionId());
+		} else  {
+		     transactionMatches =
+                     getOriginalRequest().getTransactionId().equals
+                     (messageToTest.getTransactionId());
+		}
                 
             }
             
@@ -462,6 +477,17 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
             if (isInviteTransaction())
                 inviteClientTransaction(transactionResponse,sourceChannel);
             else nonInviteClientTransaction(transactionResponse,sourceChannel);
+	    // The original request is not needed except for INVITE
+	    // transactions -- null the pointers to the transactions so
+	    // that state may be released.
+	    if (getState().getValue() == COMPLETED_STATE &&  
+		    this.originalRequest != null &&
+		    ! this.originalRequest.getMethod().equals(Request.INVITE)) {
+		    // reduce the state to minimum
+		    this.lastRequest = null;
+		    this.originalRequest = null;
+		    this.lastResponse = null;
+	   }
         } catch (IOException ex) {
             setState(TERMINATED_STATE);
             raiseErrorEvent
@@ -558,7 +584,12 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
                 setState(TERMINATED_STATE);
             }
 	   }
-        }
+        } else {
+	  if (getSIPStack().logWriter.needsLogging) {
+		getSIPStack().logWriter.logMessage
+		(" Not sending response to TU! " + getState());
+	  }
+	}
     }
     
     
@@ -763,6 +794,10 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
      */
     protected void fireTimeoutTimer(
     ) {
+
+	if ( parentStack.logWriter.needsLogging ) 
+		parentStack.logWriter.logMessage
+		("fireTimeoutTimer " + this);
         
          DialogImpl dialogImpl = (DialogImpl) this.getDialog();
          if( getState().getValue() == CALLING_STATE ||
@@ -817,11 +852,11 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
      */    
     public Request createAck() throws SipException {
 	SIPRequest originalRequest = this.getOriginalRequest();
-	if (originalRequest.getMethod().equalsIgnoreCase(Request.ACK))
+	if (originalRequest.getMethod().equalsIgnoreCase(Request.ACK)) {
 		throw new SipException("Cannot ACK an ACK!");
-	else if (  lastResponse == null) 
+	} else if (  lastResponse == null) {
 		throw new SipException ("bad Transaction state");
-	else if (  lastResponse.getStatusCode() < 200 )  {
+	} else if (  lastResponse.getStatusCode() < 200 )  {
 		if (parentStack.logWriter.needsLogging ) {
 			parentStack.logWriter.logMessage("lastResponse = " + 
 				lastResponse);
@@ -885,6 +920,16 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
 	 return ackRequest;
 		
 	
+    }
+
+    /** Set the state.
+     */
+
+    public void setState(int newState) {
+		super.setState(newState);
+		// Get rid of the transaction identifiers to reduce the 
+		// footprint of the stack.
+
     }
 
     
