@@ -299,7 +299,8 @@ public class MessageFlowHarness extends TestHarness {
 					srcProvider.getSipStack().getIPAddress(),
 					srcProvider.getListeningPoint().getPort(),
 					srcProvider.getListeningPoint().getTransport(),
-					Long.toString(System.currentTimeMillis())
+                    // BUG: Use proper RFC3261 branch ID
+					"z9hG4bK" + Long.toString(System.currentTimeMillis())
 			//branch id
 	);
 		via.add(viaHeader);
@@ -511,10 +512,13 @@ public class MessageFlowHarness extends TestHarness {
 	public ContactHeader createRiContact() throws TckInternalError {
 		try {
 			ContactHeader contact = riHeaderFactory.createContactHeader();
-			SipURI srcSipURI =
-				tiAddressFactory.createSipURI(
-					null,
-					riSipProvider.getSipStack().getIPAddress());
+            // BUG reported by Ben Evans (Open Cloud): 
+			// Should be using RI's address factory here, not TI's.
+
+            SipURI srcSipURI =
+                riAddressFactory.createSipURI(
+                    null,
+                    riSipProvider.getSipStack().getIPAddress());
 			srcSipURI.setPort(riSipProvider.getListeningPoint().getPort());
 			srcSipURI.setTransportParam(
 				riSipProvider.getListeningPoint().getTransport());

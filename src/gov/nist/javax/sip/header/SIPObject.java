@@ -10,7 +10,7 @@ import gov.nist.core.*;
  * specializes the gov.nist.sip.header.GenericObject class for SIPHeader
  * related objects.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2004-09-10 18:26:07 $
+ * @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-09-13 15:12:27 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -316,7 +316,6 @@ public abstract class SIPObject extends GenericObject {
 	 *
 	 */
 	public boolean match(Object other) {
-		// BUGBUG
 		if (other == null) {
 			return true;
 		}
@@ -864,6 +863,11 @@ public abstract class SIPObject extends GenericObject {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/09/10 18:26:07  mranga
+ * Submitted by:  mranga
+ * Reviewed by:   mranga
+ * added match examples for the benifit of those building test frameworks.
+ *
  * Revision 1.2  2004/01/22 13:26:29  sverker
  * Issue number:
  * Obtained from:

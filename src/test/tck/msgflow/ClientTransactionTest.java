@@ -181,6 +181,9 @@ public class ClientTransactionTest extends MessageFlowHarness {
 					riMessageFactory.createResponse(
 						Response.OK,
 						receivedRequest);
+                // BUG submitted by Ben Evans (Opencloud): 
+				// need to set contact header on dialog-creating response
+                ok.setHeader(createRiContact());
 			} catch (ParseException ex) {
 				throw new TckInternalError(
 					"Failed to create an OK response!",
