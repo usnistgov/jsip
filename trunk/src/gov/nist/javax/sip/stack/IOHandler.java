@@ -33,7 +33,7 @@ import sim.java.*;
 
 class IOHandler {
 
-	private SIPStack sipStack;
+	private SIPMessageStack sipStack;
 
 	private static String UDP = "udp";
 	private static String TCP = "tcp";
@@ -47,7 +47,7 @@ class IOHandler {
 
 	}
 
-	protected IOHandler(SIPStack sipStack) {
+	protected IOHandler(SIPMessageStack sipStack) {
 		this.sipStack = sipStack;
 		this.socketTable = new Hashtable();
 	}
@@ -289,6 +289,10 @@ class IOHandler {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.21  2004/04/16 21:30:22  mranga
+ * Reviewed by:   mranga
+ * ignore close exception.
+ *
  * Revision 1.20  2004/04/02 19:36:19  mranga
  * Reviewed by:   mranga
  *

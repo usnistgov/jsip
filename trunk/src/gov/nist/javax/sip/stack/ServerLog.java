@@ -25,7 +25,7 @@ import sim.java.*;
  * later access via RMI. The trace can be viewed with a trace viewer (see
  * tools.traceviewerapp).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.12 $ $Date: 2004-04-27 17:18:54 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2004-06-21 04:59:53 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -84,11 +84,11 @@ public class ServerLog {
 
 	protected String stackIpAddress;
 
-	private SIPStack sipStack;
+	private SIPMessageStack sipStack;
 
 	private Properties configurationProperties;
 
-	public ServerLog(SIPStack sipStack ) {
+	public ServerLog(SIPMessageStack sipStack ) {
 		this.logWriter = sipStack.logWriter;
 	}
 	
@@ -684,6 +684,10 @@ public class ServerLog {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/04/27 17:18:54  mranga
+ * Reviewed by:   mranga
+ * Turn off logging of content  by default.
+ *
  * Revision 1.11  2004/04/16 16:04:35  mranga
  * Submitted by:  Thomas Froment
  * Reviewed by:   mranga

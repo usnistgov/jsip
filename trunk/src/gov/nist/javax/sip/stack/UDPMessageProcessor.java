@@ -23,7 +23,7 @@ import  sim.java.net.*;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size). 
  * Each UDP message is processed in its own thread). 
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.15 $ $Date: 2004-06-02 15:32:12 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2004-06-21 04:59:54 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -81,7 +81,7 @@ public class UDPMessageProcessor extends MessageProcessor {
 	/**
 	 * Our stack (that created us).
 	 */
-	protected SIPStack sipStack;
+	protected SIPMessageStack sipStack;
 
 //ifdef SIMULATION
 /*
@@ -102,7 +102,7 @@ public class UDPMessageProcessor extends MessageProcessor {
 	 * Constructor.
 	 * @param sipStack pointer to the stack.
 	 */
-	protected UDPMessageProcessor(SIPStack sipStack, int port)  
+	protected UDPMessageProcessor(SIPMessageStack sipStack, int port)  
 		throws IOException {
 		this.sipStack = sipStack;
 		this.messageQueue = new LinkedList();
@@ -366,7 +366,7 @@ public class UDPMessageProcessor extends MessageProcessor {
 	 * Returns the stack.
 	 * @return my sip stack.
 	 */
-	public SIPStack getSIPStack() {
+	public SIPMessageStack getSIPStack() {
 		return sipStack;
 	}
 
@@ -420,6 +420,13 @@ public class UDPMessageProcessor extends MessageProcessor {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2004/06/02 15:32:12  mranga
+ * Submitted by:  bdupras2
+ * Reviewed by:   mranga
+ * Fixes minor "issue" - forgot to set thread name for udp message processor
+ * thread (was hoping that the issue would be withdrawn - OK I give up it is
+ * "fixed")
+ *
  * Revision 1.14  2004/05/16 14:13:23  mranga
  * Reviewed by:   mranga
  * Fixed the use-count issue reported by Peter Parnes.

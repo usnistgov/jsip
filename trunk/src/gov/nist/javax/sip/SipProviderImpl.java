@@ -22,7 +22,7 @@ import sim.java.net.*;
 
 /** Implementation of the JAIN-SIP provider interface.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.24 $ $Date: 2004-06-16 19:04:28 $
+ * @version JAIN-SIP-1.1 $Revision: 1.25 $ $Date: 2004-06-21 04:59:48 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -238,7 +238,7 @@ public final class SipProviderImpl
 				((SIPTransaction) retval).addEventListener(this);
 				sipStack.addTransaction((SIPClientTransaction) retval);
 				((SIPClientTransaction) retval).setDialog(
-					(DialogImpl) ct.getDialog());
+					(SIPDialog) ct.getDialog());
 				return retval;
 			}
 
@@ -251,7 +251,7 @@ public final class SipProviderImpl
 		// Could not find a dialog or the route is not set in dialog.
 		Iterator it = sipStackImpl.getRouter().getNextHops(request);
 		String dialogId = sipRequest.getDialogId(false);
-		DialogImpl dialog = sipStack.getDialog(dialogId);
+		SIPDialog dialog = sipStack.getDialog(dialogId);
 		if (it == null || !it.hasNext()) {
 			// could not route the request as out of dialog.
 			// maybe the user has no router or the router cannot resolve
@@ -392,7 +392,7 @@ public final class SipProviderImpl
 			// So I can handle timeouts.
 			transaction.addEventListener(this);
 			String dialogId = sipRequest.getDialogId(true);
-			DialogImpl dialog = sipStack.getDialog(dialogId);
+			SIPDialog dialog = sipStack.getDialog(dialogId);
 			if (dialog == null)
 				dialog = sipStack.createDialog(transaction);
 			else
@@ -423,7 +423,7 @@ public final class SipProviderImpl
 				throw new TransactionUnavailableException("Could not send back provisional response!");
 			}
 			String dialogId = sipRequest.getDialogId(true);
-			DialogImpl dialog = sipStack.getDialog(dialogId);
+			SIPDialog dialog = sipStack.getDialog(dialogId);
 			if (dialog != null) {
 				dialog.addTransaction(transaction);
 				dialog.addRoute(sipRequest);
@@ -702,6 +702,9 @@ public final class SipProviderImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.24  2004/06/16 19:04:28  mranga
+ * Check for out of sequence bye processing.
+ *
  * Revision 1.23  2004/06/15 09:54:40  mranga
  * Reviewed by:   mranga
  * re-entrant listener model added.

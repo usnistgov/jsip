@@ -23,7 +23,7 @@ import java.util.*;
  * object that creates new TCP MessageChannels (one for each new
  * accept socket).  
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2004-05-14 20:20:03 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.18 $ $Date: 2004-06-21 04:59:53 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Acknowledgement: Jeff Keyser suggested that a
@@ -68,14 +68,14 @@ public class TCPMessageProcessor extends MessageProcessor {
 	/**
 	 * The SIP Stack Structure.
 	 */
-	protected SIPStack sipStack;
+	protected SIPMessageStack sipStack;
 
 	/**
 	 * Constructor.
 	 * @param sipStack SIPStack structure.
 	 * @param port port where this message processor listens.
 	 */
-	protected TCPMessageProcessor(SIPStack sipStack, int port) {
+	protected TCPMessageProcessor(SIPMessageStack sipStack, int port) {
 		this.sipStack = sipStack;
 		this.port = port;
 		this.tcpMessageChannels = new Hashtable();
@@ -204,7 +204,7 @@ public class TCPMessageProcessor extends MessageProcessor {
 	 * Returns the stack.
 	 * @return my sip stack.
 	 */
-	public SIPStack getSIPStack() {
+	public SIPMessageStack getSIPStack() {
 		return sipStack;
 	}
 
@@ -362,6 +362,14 @@ public class TCPMessageProcessor extends MessageProcessor {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2004/05/14 20:20:03  mranga
+ *
+ * Submitted by:  Dave Stuart
+ * Reviewed by:  mranga
+ *
+ * Stun support hacks -- use the original address specified to bind tcp transport
+ * socket.
+ *
  * Revision 1.16  2004/03/30 16:40:30  mranga
  * Reviewed by:   mranga
  * more tweaks to reference counting for cleanup.

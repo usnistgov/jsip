@@ -16,7 +16,7 @@ import gov.nist.core.*;
  * Message channel abstraction for the SIP stack.
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.9 $ $Date: 2004-05-30 18:55:57 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.10 $ $Date: 2004-06-21 04:59:50 $
  *
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
@@ -36,7 +36,7 @@ public abstract class MessageChannel {
 	 * Get the SIPStack object from this message channel.
 	 * @return SIPStack object of this message channel
 	 */
-	public abstract SIPStack getSIPStack();
+	public abstract SIPMessageStack getSIPStack();
 
 	/**
 	 * Get transport string of this message channel.
@@ -309,6 +309,11 @@ public abstract class MessageChannel {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/05/30 18:55:57  mranga
+ * Reviewed by:   mranga
+ * Move to timers and eliminate the Transaction scanner Thread
+ * to improve scalability and reduce cpu usage.
+ *
  * Revision 1.8  2004/05/18 15:26:42  mranga
  * Reviewed by:   mranga
  * Attempted fix at race condition bug. Remove redundant exception (never thrown).

@@ -19,7 +19,7 @@ import sim.java.net.*;
 */
 
 /**
- * Adds a transaction layer to the {@link SIPStack} class.  This is done by
+ * Adds a transaction layer to the {@link SIPMessageStack} class.  This is done by
  * replacing the normal MessageChannels returned by the base class with
  * transaction-aware MessageChannels that encapsulate the original channels
  * and handle the transaction state machine, retransmissions, etc.
@@ -27,11 +27,11 @@ import sim.java.net.*;
  * @author Jeff Keyser (original) 
  * @author M. Ranganathan <mranga@nist.gov>  <br/> (Added Dialog table).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.33 $ $Date: 2004-06-17 15:22:31 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.34 $ $Date: 2004-06-21 04:59:52 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public abstract class SIPTransactionStack
-	extends SIPStack
+	extends SIPMessageStack
 	implements SIPTransactionEventListener {
 
 	/**
@@ -176,7 +176,7 @@ public abstract class SIPTransactionStack
 	 * @param dialog -- dialog to put into the dialog table.
 	 *
 	 */
-	public void putDialog(DialogImpl dialog) {
+	public void putDialog(SIPDialog dialog) {
 		String dialogId = dialog.getDialogId();
 		synchronized (dialogTable) {
 			if (dialogTable.containsKey(dialogId))
@@ -196,10 +196,10 @@ public abstract class SIPTransactionStack
 
 	}
 
-	public DialogImpl createDialog(SIPTransaction transaction) {
+	public SIPDialog createDialog(SIPTransaction transaction) {
 		SIPRequest sipRequest = transaction.getOriginalRequest();
 
-		DialogImpl retval = new DialogImpl(transaction);
+		SIPDialog retval = new SIPDialog(transaction);
 
 		return retval;
 
@@ -216,11 +216,11 @@ public abstract class SIPTransactionStack
 	*
 	*@param dialog -- dialog to remove.
 	*/
-	public void removeDialog(DialogImpl dialog) {
+	public void removeDialog(SIPDialog dialog) {
                 synchronized (dialogTable) {
 		    Iterator it = this.dialogTable.values().iterator();
 		    while (it.hasNext() ) {
-			DialogImpl d = (DialogImpl) it.next();
+			SIPDialog d = (SIPDialog) it.next();
 			if (d == dialog ) {
                 		if (LogWriter.needsLogging) {
                     			String dialogId = dialog.getDialogId();
@@ -242,11 +242,11 @@ public abstract class SIPTransactionStack
 	 * @param dialogId is the dialog id to check.
 	 */
 
-	public DialogImpl getDialog(String dialogId) {
+	public SIPDialog getDialog(String dialogId) {
 		if (LogWriter.needsLogging)
 			logWriter.logMessage("Getting dialog for " + dialogId);
 		synchronized (dialogTable) {
-			return (DialogImpl) dialogTable.get(dialogId);
+			return (SIPDialog) dialogTable.get(dialogId);
 		}
 	}
 
@@ -490,7 +490,7 @@ public abstract class SIPTransactionStack
 					// Dialog is not created - can we find the state?
 					// If so, then create a transaction and add it.
 					String dialogId = requestReceived.getDialogId(true);
-					DialogImpl dialog = getDialog(dialogId);
+					SIPDialog dialog = getDialog(dialogId);
 				        // Sequence numbers are supposed to increment.
 				        // avoid processing old sequence numbers and
 				        // delivering the same request up to the
@@ -510,7 +510,7 @@ public abstract class SIPTransactionStack
 				} else {
 					// Create the transaction but dont map it.
 					String dialogId = requestReceived.getDialogId(true);
-					DialogImpl dialog = getDialog(dialogId);
+					SIPDialog dialog = getDialog(dialogId);
 					// This is a dialog creating request that is part of an
 					// existing dialog (eg. re-Invite). Re-invites get a non
 					// null server transaction Id (unlike the original invite).
@@ -846,6 +846,12 @@ public abstract class SIPTransactionStack
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.33  2004/06/17 15:22:31  mranga
+ * Reviewed by:   mranga
+ *
+ * Added buffering of out-of-order in-dialog requests for more efficient
+ * processing of such requests (this is a performance optimization ).
+ *
  * Revision 1.32  2004/06/15 09:54:45  mranga
  * Reviewed by:   mranga
  * re-entrant listener model added.

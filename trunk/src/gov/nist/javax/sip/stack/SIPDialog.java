@@ -25,7 +25,7 @@ import java.text.ParseException;
  * retrieve this structure from the SipStack. Bugs against route set
  * management were reported by Antonis Karydas and Brad Templeton.
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.35 $ $Date: 2004-06-17 15:36:10 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.1 $ $Date: 2004-06-21 04:59:51 $
  *
  *@author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -34,7 +34,7 @@ import java.text.ParseException;
  *
  */
 
-public class DialogImpl implements javax.sip.Dialog , PendingRecord {
+public class SIPDialog implements javax.sip.Dialog , PendingRecord {
     private boolean reInviteFlag;
     private Object applicationData; // Opaque pointer to application data.
     private SIPRequest originalRequest;
@@ -153,10 +153,10 @@ public class DialogImpl implements javax.sip.Dialog , PendingRecord {
     }
 
     public class DialogTimerTask extends TimerTask {
-        DialogImpl dialog;
+        SIPDialog dialog;
         SIPTransactionStack stack;
 	SIPServerTransaction transaction;
-        public DialogTimerTask( DialogImpl dialog, SIPServerTransaction transaction ) {
+        public DialogTimerTask( SIPDialog dialog, SIPServerTransaction transaction ) {
             this.dialog  = dialog;
             this.stack = dialog.sipStack;
 	    this.transaction = transaction;
@@ -178,7 +178,7 @@ public class DialogImpl implements javax.sip.Dialog , PendingRecord {
                                 && dialog.toRetransmitFinalResponse())
                                 transaction.sendMessage(response);
                         } catch (IOException ex) {
-                            dialog.setState(DialogImpl.TERMINATED_STATE);
+                            dialog.setState(SIPDialog.TERMINATED_STATE);
                         } finally {
                             // Need to fire the timer so
                             // transaction will eventually
@@ -594,7 +594,7 @@ public class DialogImpl implements javax.sip.Dialog , PendingRecord {
     
     /** Protected Dialog constructor.
      */
-    protected DialogImpl() {
+    protected SIPDialog() {
 	this.pendingRecords = new Hashtable();
         this.routeList = new RouteList();
         this.dialogState = -1; // not yet initialized.
@@ -613,7 +613,7 @@ public class DialogImpl implements javax.sip.Dialog , PendingRecord {
      *
      *@param transaction is the first transaction.
      */
-    protected DialogImpl(SIPTransaction transaction) {
+    protected SIPDialog(SIPTransaction transaction) {
         this();
         this.sipStack = transaction.sipStack;
         this.addTransaction(transaction);
@@ -1674,6 +1674,10 @@ public class DialogImpl implements javax.sip.Dialog , PendingRecord {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.35  2004/06/17 15:36:10  mranga
+ * Reviewed by:   mranga
+ * minor tweaks
+ *
  * Revision 1.34  2004/06/17 15:22:30  mranga
  * Reviewed by:   mranga
  *

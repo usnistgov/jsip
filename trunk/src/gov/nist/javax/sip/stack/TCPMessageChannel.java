@@ -33,7 +33,7 @@ import sim.java.net.*;
  * Niklas Uhrberg suggested that a mechanism be added to limit the number
  * of simultaneous open connections.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.27 $ $Date: 2004-05-30 18:55:58 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.28 $ $Date: 2004-06-21 04:59:53 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public final class TCPMessageChannel
@@ -67,7 +67,7 @@ implements SIPMessageListener, Runnable {
 //endif
  */
     
-    private SIPStack stack;
+    private SIPMessageStack stack;
     
     private String myAddress;
     private int myPort;
@@ -104,7 +104,7 @@ implements SIPMessageListener, Runnable {
     //
     protected TCPMessageChannel(
     Socket sock,
-    SIPStack sipStack,
+    SIPMessageStack sipStack,
     TCPMessageProcessor msgProcessor)
     throws IOException {
         if (LogWriter.needsLogging)  {
@@ -162,7 +162,7 @@ implements SIPMessageListener, Runnable {
     protected TCPMessageChannel(
     InetAddress inetAddr,
     int port,
-    SIPStack sipStack,
+    SIPMessageStack sipStack,
     TCPMessageProcessor messageProcessor)
     throws IOException {
         if (LogWriter.needsLogging)  {
@@ -210,7 +210,7 @@ implements SIPMessageListener, Runnable {
      * Get my SIP Stack.
      * @return The SIP Stack for this message channel.
      */
-    public SIPStack getSIPStack() {
+    public SIPMessageStack getSIPStack() {
         return stack;
     }
     
@@ -445,7 +445,7 @@ implements SIPMessageListener, Runnable {
                 if (v.hasPort()) {
                     this.peerPort = v.getPort();
                 } else
-                    this.peerPort = SIPStack.DEFAULT_PORT;
+                    this.peerPort = SIPMessageStack.DEFAULT_PORT;
                 this.peerProtocol = v.getTransport();
                 try {
                     this.peerAddress = mySock.getInetAddress();
@@ -725,6 +725,11 @@ implements SIPMessageListener, Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.27  2004/05/30 18:55:58  mranga
+ * Reviewed by:   mranga
+ * Move to timers and eliminate the Transaction scanner Thread
+ * to improve scalability and reduce cpu usage.
+ *
  * Revision 1.26  2004/05/18 15:26:45  mranga
  * Reviewed by:   mranga
  * Attempted fix at race condition bug. Remove redundant exception (never thrown).
