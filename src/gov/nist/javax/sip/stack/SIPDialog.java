@@ -24,7 +24,7 @@ import java.text.ParseException;
  * message structure to extract a dialog identifier that can be used to
  * retrieve this structure from the SipStack. 
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.2 $ $Date: 2004-07-29 20:26:15 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2004-08-04 18:42:52 $
  *
  *@author M. Ranganathan <mranga@nist.gov>  <br/>
  *Bugs were reported by Antonis Karydas, Brad Templeton and Alex Rootham.
@@ -1653,7 +1653,8 @@ public class SIPDialog implements javax.sip.Dialog , PendingRecord {
     
     public boolean hasPending() {
         synchronized (this.pendingRecords) {
-            return this.pendingRecords.containsKey(nextSeqno);
+            return nextSeqno != null && 
+		this.pendingRecords.containsKey(nextSeqno);
         }
     }
     
@@ -1676,6 +1677,12 @@ public class SIPDialog implements javax.sip.Dialog , PendingRecord {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/07/29 20:26:15  mranga
+ * Submitted by:  Alex Rootham
+ * Reviewed by:   mranga
+ *
+ * check for null before putting SipDialog on the pending queue.
+ *
  * Revision 1.1  2004/06/21 04:59:51  mranga
  * Refactored code - no functional changes.
  *
