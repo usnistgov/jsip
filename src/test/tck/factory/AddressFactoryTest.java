@@ -169,7 +169,7 @@ public class AddressFactoryTest  extends FactoryTestHarness {
                 
             }
             
-            for (int i = 0; i < addresses.length ; i++ ) {
+            for (int i = 0; i < hosts.length ; i++ ) {
                 javax.sip.address.SipURI  tiSipURI;
                 javax.sip.address.SipURI  riSipURI;
                 tiSipURI = this.createTiSipURI(null, this.addresses[i]);
