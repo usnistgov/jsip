@@ -33,7 +33,7 @@ import sim.java.net.*;
  * Niklas Uhrberg suggested that a mechanism be added to limit the number
  * of simultaneous open connections.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.14 $ $Date: 2004-03-09 00:34:45 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.15 $ $Date: 2004-03-18 22:01:20 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public final class TCPMessageChannel
@@ -642,15 +642,9 @@ public final class TCPMessageChannel
 	 */
 	public void run() {
 		String message;
-		PipedOutputStream mypipe = null;
-		PipedInputStream hispipe = null;
-		try {
-			// Create a pipeline to connect to our message parser.
-			hispipe = new PipedInputStream();
-			mypipe = new PipedOutputStream(hispipe);
-		} catch (IOException ex) {
-			InternalErrorHandler.handleException(ex);
-		}
+		Pipeline hispipe = null;
+		// Create a pipeline to connect to our message parser.
+		hispipe = new Pipeline();
 		// Create a pipelined message parser to read and parse
 		// messages that we write out to him.
 		myParser = new PipelinedMsgParser(this, hispipe,this.stack.getMaxMessageSize());
@@ -658,14 +652,13 @@ public final class TCPMessageChannel
 		myParser.processInput();
 		// bug fix by Emmanuel Proulx
 		int bufferSize = 4096;
-		byte[] msg = new byte[bufferSize];
 		while (true) {
 			try {
+				byte[] msg = new byte[bufferSize];
 				int nbytes = myClientInputStream.read(msg, 0, bufferSize);
 				// no more bytes to read...
 				if (nbytes == -1) {
-					mypipe.write("\r\n\r\n".getBytes("UTF-8"));
-					mypipe.flush();
+					hispipe.write("\r\n\r\n".getBytes("UTF-8"));
 					try {
 						if (stack.maxConnections != -1) {
 							synchronized (tcpMessageProcessor) {
@@ -673,7 +666,7 @@ public final class TCPMessageChannel
 								tcpMessageProcessor.notify();
 							}
 						}
-						mypipe.close();
+						hispipe.close();
 						mySock.close();
 					} catch (IOException ioex) {
 					}
@@ -682,13 +675,12 @@ public final class TCPMessageChannel
 				if (LogWriter.needsLogging) {
 					stack.logWriter.logMessage(new String(msg, 0, nbytes));
 				}
-				mypipe.write(msg, 0, nbytes);
-				mypipe.flush();
+				hispipe.write(msg, 0, nbytes);
+				
 			} catch (IOException ex) {
 				// Terminate the message.
 				try {
-					mypipe.write("\r\n\r\n".getBytes("UTF-8"));
-					mypipe.flush();
+					hispipe.write("\r\n\r\n".getBytes("UTF-8"));
 				} catch (Exception e) {
 					// InternalErrorHandler.handleException(e);
 				}
@@ -705,7 +697,7 @@ public final class TCPMessageChannel
 							}
 						}
 						mySock.close();
-						mypipe.close();
+						hispipe.close();
 					} catch (IOException ioex) {
 					}
 				} catch (Exception ex1) {
@@ -781,6 +773,15 @@ public final class TCPMessageChannel
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/03/09 00:34:45  mranga
+ * Reviewed by:   mranga
+ * Added TCP connection management for client and server side
+ * Transactions. See configuration parameter
+ * gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false
+ * Releases Server TCP Connections after linger time
+ * gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS=false
+ * Releases Client TCP Connections after linger time
+ *
  * Revision 1.13  2004/03/07 22:25:25  mranga
  * Reviewed by:   mranga
  * Added a new configuration parameter that instructs the stack to

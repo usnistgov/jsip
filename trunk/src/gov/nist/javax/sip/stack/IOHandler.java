@@ -191,20 +191,16 @@ class IOHandler {
 					}
 					clientSock = new Socket(inaddr, contactPort);
 					OutputStream outputStream = clientSock.getOutputStream();
-					//synchronized (outputStream) {
-						outputStream.write(bytes, 0, length);
-						outputStream.flush();
-					//}
+					outputStream.write(bytes, 0, length);
+					outputStream.flush();
 					putSocket(key, clientSock);
 					break;
 				} else {
 					try {
 						OutputStream outputStream =
 							clientSock.getOutputStream();
-						//synchronized (outputStream) {
-							outputStream.write(bytes, 0, length);
-							outputStream.flush();
-						//}
+						outputStream.write(bytes, 0, length);
+						outputStream.flush();
 						break;
 					} catch (IOException ex) {
 						if (LogWriter.needsLogging)
@@ -305,6 +301,13 @@ class IOHandler {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/03/07 22:25:24  mranga
+ * Reviewed by:   mranga
+ * Added a new configuration parameter that instructs the stack to
+ * drop a server connection after server transaction termination
+ * set gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false for this
+ * Default behavior is true.
+ *
  * Revision 1.10  2004/01/22 18:39:41  mranga
  * Reviewed by:   M. Ranganathan
  * Moved the ifdef SIMULATION and associated tags to the first column so Prep preprocessor can deal with them.
