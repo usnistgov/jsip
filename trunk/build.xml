@@ -248,7 +248,6 @@ c:/jakarta-ant/bin/ant all
 		<copy todir="${classes}/tools/tracesviewer/images">
 			<fileset dir="${srcroot}/tools/tracesviewer/images"/>
 		</copy>
-
 		<jar compress="false" destfile="tracesviewer.jar">
 			<fileset dir="${classes}">
 				<include name="tools/tracesviewer/**/*.*"/>
@@ -269,6 +268,9 @@ c:/jakarta-ant/bin/ant all
 				<pathelement location="${classes}"/>
 			</classpath>
 		</javac>
+		<copy todir="${classes}/tools/tracesviewer/images">
+			<fileset dir="${srcroot}/tools/tracesviewer/images"/>
+		</copy>
 		<javac debug="${debug}" deprecation="${deprecation}" optimize="${optimize}" srcdir="${srcroot}/tools/sniffer" destdir= "${classes}">
 			<classpath>
 				<pathelement location="${xerceslib}"/>
