@@ -667,6 +667,7 @@ public class SdpFactory extends Object {
         return ((d.getTime()/1000) + SdpConstants.NTP_CONST);
     }
 
+/**
    public static void main(String[] args) 
 	throws SdpParseException , SdpException {
 	String sdpFields = "v=0\r\n"+
@@ -692,5 +693,6 @@ public class SdpFactory extends Object {
 		System.out.println("formats = " + formats);
 	}
    }
+**/
     
 }
