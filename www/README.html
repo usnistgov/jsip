@@ -151,7 +151,7 @@ by the following people:
 <li> Peter Parnes noted a bug in handling null messages. Null messages could
 	be sent to keep alive firewall NAT mappings.
 
-<li> Christophe noticed a bug in the transaction state machine when
+<li> Christophe at yahoo.fr noticed a bug in the transaction state machine when
 	the retransmission filter is enabled. Christophe noted a bug in
 	IOHandler when an IO Exception occurs while transmitting via TCP.
 	Christophe noted a stack bug when IOException occurs (timer tick
@@ -167,6 +167,10 @@ by the following people:
 
 <li> Ben Evans noticed a transaction state machine implementation error
      in SIPServerTransaction
+
+<li> Zvalli at dev.java.net reported bugs in the parsing of warning headers and
+     found a bug when there was a whitespace separating the header name
+     and the : following it.
 
 </ul>
 
