@@ -224,7 +224,7 @@ public class FactoryTestHarness extends TestHarness {
 			"Retry-After: 1220 (I'm in a meeting)\n",
 			"Retry-After: 1230 (I'm in a meeting);fg=der;duration=23\n",
 			"Route: <sip:alice@atlanta.com>\n",
-			"Route: sip:bob@biloxi.com \n",
+			"Route: <sip:bob@biloxi.com>\n",
 			"Server: Softphone/Beta1.5 \n",
 			"Server: HomeServer v2\n",
 			"Server: Nist/Beta1 (beta version) \n",
