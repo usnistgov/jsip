@@ -26,7 +26,7 @@ import sim.java.net.*;
  * This can be accessed from the SIPMessage using the getContent and
  * getContentBytes methods provided by the SIPMessage class. 
  *
- * @version JAIN-SIP-1.1 $Revision: 1.11 $ $Date: 2004-03-07 22:25:23 $
+ * @version JAIN-SIP-1.1 $Revision: 1.12 $ $Date: 2004-03-18 22:01:19 $
  *
  * @author <A href=mailto:mranga@nist.gov > M. Ranganathan  </A>
  *
@@ -336,8 +336,7 @@ public final class PipelinedMsgParser implements Runnable {
 					contentLength < this.sizeCounter ) {
 					byte[] message_body = new byte[contentLength];
 					int nread = 0;
-					int retry_count = 0;
-					while (nread < contentLength && retry_count < 1) {
+					while (nread < contentLength ) {
 						try {
 							int readlength =
 								inputStream.read(
@@ -347,9 +346,7 @@ public final class PipelinedMsgParser implements Runnable {
 							if (readlength >= 0) {
 								nread += readlength;
 							} else {
-							    Thread.yield();
-							    retry_count++;
-							    continue;
+								break;
 							}
 						} catch (IOException ex) {
 							ex.printStackTrace();
@@ -380,6 +377,13 @@ public final class PipelinedMsgParser implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/03/07 22:25:23  mranga
+ * Reviewed by:   mranga
+ * Added a new configuration parameter that instructs the stack to
+ * drop a server connection after server transaction termination
+ * set gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false for this
+ * Default behavior is true.
+ *
  * Revision 1.10  2004/02/29 15:32:58  mranga
  * Reviewed by:   mranga
  * bug fixes on limiting the max message size.
