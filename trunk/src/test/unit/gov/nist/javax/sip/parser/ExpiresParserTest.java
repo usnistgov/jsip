@@ -1,7 +1,7 @@
 /*
  * Created on Jul 29, 2004
  *
- *The Open SIP project
+ *The JAIN-SIP project
  */
 package test.unit.gov.nist.javax.sip.parser;
 import gov.nist.javax.sip.parser.*;

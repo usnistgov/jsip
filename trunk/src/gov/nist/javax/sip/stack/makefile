@@ -1,4 +1,4 @@
-
+# The root make file
 ROOT=../../../../../../
 
 include $(ROOT)/build-config
