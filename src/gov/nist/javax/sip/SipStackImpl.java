@@ -197,7 +197,8 @@ implements javax.sip.SipStack {
 	String rf = 
 		configurationProperties.getProperty
 			("javax.sip.RETRANSMISSION_FILTER");
-	if (rf != null &&  "true".equalsIgnoreCase(rf)) {
+	if (rf != null &&   
+	   ("true".equalsIgnoreCase(rf) || "on".equalsIgnoreCase(rf)) ) {
 		this.retransmissionFilter = true;
 	}
 
