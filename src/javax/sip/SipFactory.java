@@ -134,9 +134,13 @@ public class SipFactory{
                      throws PeerUnavailableException {
 
         //  If the properties is null, then throw an exception
-        if(properties == null) {
+        if(properties == null ) {
             throw new NullPointerException("Empty Properties file");
         }
+	if ( properties.getProperty("javax.sip.IP_ADDRESS")  == null ) {
+		throw new PeerUnavailableException
+			("IP address property missing");
+	}
         // if no stacks are created, create a new one
         if (sipStackList == null) {
              sipStackList = new LinkedList();
@@ -146,8 +150,8 @@ public class SipFactory{
           // if so slect it to be returned  
 	  int i = 0;
           for (i=0; i<sipStackList.size();i++){
-              if (((SipStack)sipStackList.get(i)).getIPAddress() ==
-                            properties.getProperty("javax.sip.IP_ADDRESS")) {
+              if (((SipStack)sipStackList.get(i)).getIPAddress().equals(
+                            properties.getProperty("javax.sip.IP_ADDRESS"))) {
                   sipStack = (SipStack)sipStackList.get(i);
 		  break;
 	      }
