@@ -33,7 +33,7 @@ import sim.java.net.*;
  * Niklas Uhrberg suggested that a mechanism be added to limit the number
  * of simultaneous open connections.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2004-03-19 04:22:22 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2004-03-19 17:06:19 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public final class TCPMessageChannel
@@ -185,7 +185,7 @@ public final class TCPMessageChannel
 	 */
  	public void close() {
 		try {
-			mySock.close();
+			if (mySock != null ) mySock.close();
 			if (LogWriter.needsLogging)
 				stack.logWriter.logMessage
 				("Closing message Channel " + this);
@@ -446,7 +446,6 @@ public final class TCPMessageChannel
 	 * for processing the message).
 	 */
 	public void processMessage(SIPMessage sipMessage)  throws Exception {
-		this.tcpMessageProcessor.useCount++;
 		try {
 			if (sipMessage.getFrom() == null
 				|| //sipMessage.getFrom().getTag() == null ||
@@ -631,7 +630,7 @@ public final class TCPMessageChannel
 				}
 			}
 		} finally {
-			this.tcpMessageProcessor.useCount--;
+			this.tcpMessageProcessor.remove(this);
 		}
 	}
 
@@ -770,6 +769,11 @@ public final class TCPMessageChannel
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2004/03/19 04:22:22  mranga
+ * Reviewed by:   mranga
+ * Added IO Pacing for long writes - split write into chunks and flush after each
+ * chunk to avoid socket back pressure.
+ *
  * Revision 1.15  2004/03/18 22:01:20  mranga
  * Reviewed by:   mranga
  * Get rid of the PipedInputStream from pipelined parser to avoid a copy.
