@@ -20,7 +20,7 @@ import java.text.ParseException;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  *
- * @version JAIN-SIP-1.1 $Revision: 1.10 $ $Date: 2004-09-10 18:26:08 $
+ * @version JAIN-SIP-1.1 $Revision: 1.11 $ $Date: 2005-01-25 22:51:17 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -898,10 +898,14 @@ public abstract class SIPMessage
 			}
 			String hc =
 				Utils.toHexString(retval.toString().toLowerCase().getBytes());
+
+			return new Integer( hc.hashCode() ).toString();
+			/*
 			if (hc.length() < 32)
 				return hc;
 			else
 				return hc.substring(hc.length() - 32, hc.length() - 1);
+			*/
 		}
 		// Convert to lower case -- bug fix as a result of a bug report
 		// from Chris Mills of Nortel Networks.
@@ -1700,6 +1704,11 @@ public abstract class SIPMessage
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/09/10 18:26:08  mranga
+ * Submitted by:  mranga
+ * Reviewed by:   mranga
+ * added match examples for the benifit of those building test frameworks.
+ *
  * Revision 1.9  2004/07/25 19:26:44  mranga
  * Reviewed by:   mranga
  * Allows multiple Authorization headers in a message. Some minor cleanup.
