@@ -46,7 +46,7 @@ public class DebugWindow extends javax.swing.JFrame {
             beforeDebugTextArea.setFont(new Font ("Dialog", 1, 12));
             beforeDebugTextArea.setForeground(Color.black);
             beforeDebugTextArea.setText("***********************************************\n"+
-            "STACK TRACE BEFORE RECEIVING\n"+
+            "STACK TRACE BEFORE \n"+
             " THE SIP MESSAGE\n"+
             "***********************************************\n\n"+beforeDebug);
             ScrollPane scrollBefore = new ScrollPane(ScrollPane.SCROLLBARS_ALWAYS) ;
@@ -58,7 +58,7 @@ public class DebugWindow extends javax.swing.JFrame {
             afterDebugTextArea.setFont(new Font ("Dialog", 1, 12));
             afterDebugTextArea.setForeground(Color.black);
             afterDebugTextArea.setText("************************************************\n"+
-            "STACK TRACE AFTER RECEIVING\n"+
+            "STACK TRACE AFTER \n"+
             " THE SIP MESSAGE\n"+
             "************************************************\n\n"+afterDebug);
             ScrollPane scrollAfter= new ScrollPane(ScrollPane.SCROLLBARS_ALWAYS) ;

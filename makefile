@@ -162,6 +162,7 @@ clean: emacsclean
 	cd $(SRCROOT)/gov/nist/javax/sip/message;$(MAKE) clean
 	cd $(SRCROOT)/gov/nist/core;$(MAKE) clean
 	cd $(SRCROOT)/examples/shootist; $(MAKE) clean
+	cd $(DOCDIR);$(MAKE) clean
 	$(RM) -rf classes
 	$(RM) -f $(RI_JAR)
 	$(RM) -f $(SDP_JAR)
@@ -221,12 +222,12 @@ srctar: stamp
 	./$(PROJECT_ROOT)/src/javax				\
 	./$(PROJECT_ROOT)/src/gov/nist/javax			\
 	./$(PROJECT_ROOT)/src/gov/nist/core		        \
-	./$(PROJECT_ROOT)/src/tools/tracesviewer		        \
+	./$(PROJECT_ROOT)/src/tools/tracesviewer	        \
 	./$(PROJECT_ROOT)/src/tools/sniffer		        \
 	./$(PROJECT_ROOT)/src/examples/shootist		        \
 	./$(PROJECT_ROOT)/src/test/tck		        	\
-	./$(PROJECT_ROOT)/README					\
-	./$(PROJECT_ROOT)/makefile					\
+	./$(PROJECT_ROOT)/README				\
+	./$(PROJECT_ROOT)/makefile				\
 	./$(PROJECT_ROOT)/build.xml				\
 	./$(PROJECT_ROOT)/build-config				\
 	./$(PROJECT_ROOT)/docs					
@@ -318,6 +319,34 @@ archives: tarfile
 # build the ship tar.gz  and zip image.
 ship:  all
 	$(MAKE) tarfile
+
+export:
+	tar -cvzf export.tar.gz  --exclude CVS	\
+	--exclude filesystem.attributes		\
+	--exclude .cvsignore			\
+	--exclude \.#*				\
+	--exclude \#*				\
+	--exclude \*~				\
+	--exclude *.log				\
+	--exclude debug.txt			\
+	--exclude api				\
+	--exclude build-config			\
+	./manifest.tck				\
+	./timestamp				\
+	./src/javax				\
+	./src/gov/nist/javax			\
+	./src/gov/nist/core		        \
+	./src/tools/tracesviewer	        \
+	./src/tools/sniffer		        \
+	./src/examples/shootist		        \
+	./src/test/tck		        	\
+	./README				\
+	./makefile				\
+	./build.xml				\
+	./build-config				\
+	./docs					
+	mv export.tar.gz ../java-net/jain-sip
+	
 
 
 #	$(JAIN_API_JAR) $(RI_JAR)  lib/junit/junit.jar

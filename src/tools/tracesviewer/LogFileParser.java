@@ -190,7 +190,7 @@ public class LogFileParser extends DefaultHandler {
             append(new String(cbuf)).
 	    append("]]></debug></messages>\n");
             
-            System.out.println(sb.toString());
+           // System.out.println(sb.toString());
             
             InputSource inputSource = new InputSource
             (new ByteArrayInputStream(sb.toString().getBytes()));
@@ -225,7 +225,7 @@ public class LogFileParser extends DefaultHandler {
             append(new String(cbuf)).
 	    append("</messages>\n");
             
-            System.out.println(sb.toString());
+            //System.out.println(sb.toString());
             
             InputSource inputSource = new InputSource
             (new ByteArrayInputStream(sb.toString().getBytes()));
