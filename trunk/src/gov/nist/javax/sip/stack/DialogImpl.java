@@ -78,15 +78,15 @@ public class DialogImpl implements javax.sip.Dialog {
      *A debugging print routine.
      */
     private void printRouteList() {
-        if (LogWriter.needsLogging) {
-            LogWriter.logMessage("this : " + this);
-            LogWriter.logMessage("printRouteList : " +
+        if (sipStack.logWriter.needsLogging) {
+            sipStack.logWriter.logMessage("this : " + this);
+            sipStack.logWriter.logMessage("printRouteList : " +
             this.routeList.encode());
             if (this.contactRoute != null) {
-                LogWriter.logMessage("contactRoute : " +
+                sipStack.logWriter.logMessage("contactRoute : " +
                 this.contactRoute.encode());
             } else {
-                LogWriter.logMessage("contactRoute : null");
+                sipStack.logWriter.logMessage("contactRoute : null");
             }
         }
     }
@@ -136,14 +136,14 @@ public class DialogImpl implements javax.sip.Dialog {
      */
     
     public void setState(int state) {
-	if (LogWriter.needsLogging) {
-	    LogWriter.logMessage("Setting dialog state for " +
+	if (sipStack.logWriter.needsLogging) {
+	    sipStack.logWriter.logMessage("Setting dialog state for " +
 			this);
-	    LogWriter.logStackTrace();
+	    sipStack.logWriter.logStackTrace();
 	    if (state != -1 && 
 		state != this.dialogState ) 
-		if (LogWriter.needsLogging) {
-		   LogWriter.logMessage("New dialog state is " + 
+		if (sipStack.logWriter.needsLogging) {
+		   sipStack.logWriter.logMessage("New dialog state is " + 
 			DialogState.getObject(state) +  
 			"dialogId = " +
 			this.getDialogId() );
@@ -156,11 +156,11 @@ public class DialogImpl implements javax.sip.Dialog {
     /** Debugging print for the dialog.
      */
     public void printTags() {
-        if (LogWriter.needsLogging) {
-            LogWriter.logMessage( "isServer = " + isServer());
-            LogWriter.logMessage("localTag = " + getLocalTag());
-            LogWriter.logMessage( "remoteTag = " + getRemoteTag());
-            LogWriter.logMessage("firstTransaction = " +
+        if (sipStack.logWriter.needsLogging) {
+            sipStack.logWriter.logMessage( "isServer = " + isServer());
+            sipStack.logWriter.logMessage("localTag = " + getLocalTag());
+            sipStack.logWriter.logMessage( "remoteTag = " + getRemoteTag());
+            sipStack.logWriter.logMessage("firstTransaction = " +
             ((SIPTransaction) firstTransaction).getOriginalRequest());
             
         }
@@ -183,8 +183,8 @@ public class DialogImpl implements javax.sip.Dialog {
 			this.ackSeen = true;
 	    	}
 	    
-            	if (LogWriter.needsLogging)
-	        	LogWriter.logMessage
+            	if (sipStack.logWriter.needsLogging)
+	        	sipStack.logWriter.logMessage
 			("ackReceived for " + 
 			((SIPRequest)st.getOriginalRequest()).getMethod());
 
@@ -233,8 +233,8 @@ public class DialogImpl implements javax.sip.Dialog {
     
     
     private RouteList getRouteList() {
-	if (LogWriter.needsLogging)
-	    LogWriter.logMessage("getRouteList " + this);
+	if (sipStack.logWriter.needsLogging)
+	    sipStack.logWriter.logMessage("getRouteList " + this);
         // Find the top via in the route list.
         ListIterator li = routeList.listIterator(routeList.size());
         boolean flag = true;
@@ -266,15 +266,15 @@ public class DialogImpl implements javax.sip.Dialog {
 	   }
 	}
 	
-        if (LogWriter.needsLogging) {
-            LogWriter.logMessage("----- " );
-            LogWriter.logMessage("getRouteList for " + this );
+        if (sipStack.logWriter.needsLogging) {
+            sipStack.logWriter.logMessage("----- " );
+            sipStack.logWriter.logMessage("getRouteList for " + this );
             if (retval != null)
-                LogWriter.logMessage("RouteList = " +
+                sipStack.logWriter.logMessage("RouteList = " +
                 retval.encode());
-            LogWriter.logMessage("myRouteList = " +
+            sipStack.logWriter.logMessage("myRouteList = " +
             routeList.encode());
-            LogWriter.logMessage("----- " );
+            sipStack.logWriter.logMessage("----- " );
         }
         return retval;
     }
@@ -397,8 +397,8 @@ public class DialogImpl implements javax.sip.Dialog {
     public synchronized void addRoute(SIPMessage sipMessage) {
         // cannot add route list after the dialog is initialized.
 	try {
-	if (LogWriter.needsLogging) {
-		LogWriter.logMessage
+	if (sipStack.logWriter.needsLogging) {
+		sipStack.logWriter.logMessage
 		("addRoute: dialogState: " + this + "state = " +
 		 this.getState() );
 	}
@@ -450,9 +450,9 @@ public class DialogImpl implements javax.sip.Dialog {
             }
         }
 	} finally {
-          if (LogWriter.needsLogging)  {
-	      LogWriter.logStackTrace();
-              LogWriter.logMessage
+          if (sipStack.logWriter.needsLogging)  {
+	      sipStack.logWriter.logStackTrace();
+              sipStack.logWriter.logMessage
               ("added a route = " + routeList.encode() + 
 		"contactRoute = " + contactRoute);
 	    
@@ -486,6 +486,7 @@ public class DialogImpl implements javax.sip.Dialog {
      */
     protected DialogImpl(SIPTransaction transaction) {
         this();
+	this.sipStack = transaction.parentStack;
         this.addTransaction(transaction);
     }
     
@@ -574,13 +575,13 @@ public class DialogImpl implements javax.sip.Dialog {
 	this.lastTransaction = transaction;
         // set a back ptr in the incoming dialog.
         transaction.setDialog(this);
-        if (LogWriter.needsLogging) {
-            LogWriter.logMessage("Transaction Added " +
+        if (sipStack.logWriter.needsLogging) {
+            sipStack.logWriter.logMessage("Transaction Added " +
             this + myTag + "/" + hisTag);
-            LogWriter.logMessage("TID = "
+            sipStack.logWriter.logMessage("TID = "
             + transaction.getTransactionId() +
             "/" + transaction.IsServerTransaction() );
-            LogWriter.logStackTrace();
+            sipStack.logWriter.logStackTrace();
         }
     }
     
@@ -707,10 +708,10 @@ public class DialogImpl implements javax.sip.Dialog {
      * 	to this dialog.
      */
     public void setLocalTag(String mytag) {
-        if (LogWriter.needsLogging)  {
-            LogWriter.logMessage("set Local tag " + mytag + " "
+        if (sipStack.logWriter.needsLogging)  {
+            sipStack.logWriter.logMessage("set Local tag " + mytag + " "
             + this.dialogId);
-            LogWriter.logStackTrace();
+            sipStack.logWriter.logStackTrace();
         }
         
         this.myTag = mytag;
@@ -855,8 +856,8 @@ public class DialogImpl implements javax.sip.Dialog {
      */
     public synchronized void sendAck(Request request) throws SipException {
         SIPRequest ackRequest = (SIPRequest) request;
-	if (LogWriter.needsLogging) 
-		LogWriter.logMessage("sendAck" + this);
+	if (sipStack.logWriter.needsLogging) 
+		sipStack.logWriter.logMessage("sendAck" + this);
 	// Loosen up check for re-invites (Andreas B)
         // if (this.isServer())
         //   throw new SipException
@@ -890,10 +891,10 @@ public class DialogImpl implements javax.sip.Dialog {
 	    throw new SipException ("Bad call ID in request");
 	}
 	try {
-	       if (LogWriter.needsLogging) {
-		  LogWriter.logMessage("setting from tag For outgoing ACK= "  
+	       if (sipStack.logWriter.needsLogging) {
+		  sipStack.logWriter.logMessage("setting from tag For outgoing ACK= "  
 			+ this.getLocalTag());
-		  LogWriter.logMessage("setting To tag for outgoing ACK = "
+		  sipStack.logWriter.logMessage("setting To tag for outgoing ACK = "
 			+ this.getRemoteTag());
 	       }
 	       if (this.getLocalTag() != null) 
@@ -973,8 +974,8 @@ public class DialogImpl implements javax.sip.Dialog {
 		// immediately.
 	       clientTransaction.setState(SIPTransaction.TERMINATED_STATE);
 	} catch (Exception ex) {
-		if (LogWriter.needsLogging)
-		   LogWriter.logException(ex);
+		if (sipStack.logWriter.needsLogging)
+		   sipStack.logWriter.logException(ex);
 		throw new SipException("Cold not create message channel");
 	 }
         
@@ -1161,8 +1162,8 @@ public class DialogImpl implements javax.sip.Dialog {
 	    ("Bad dialog state " + this.getState());
 	}
 
-	if (LogWriter.needsLogging) 
-		LogWriter.logMessage("dialog.sendRequest " + 
+	if (sipStack.logWriter.needsLogging) 
+		sipStack.logWriter.logMessage("dialog.sendRequest " + 
 		" dialog = " + this + "\ndialogRequest = \n" +
 		dialogRequest);
 
@@ -1292,7 +1293,7 @@ public class DialogImpl implements javax.sip.Dialog {
 	   ((SIPClientTransaction) clientTransactionId).
 	       encapsulatedChannel = messageChannel;
        } catch (Exception ex) {
-	   if (LogWriter.needsLogging) LogWriter.logException(ex);
+	   if (sipStack.logWriter.needsLogging) sipStack.logWriter.logException(ex);
 	   throw new SipException("Cold not create message channel");
        }
 
@@ -1324,7 +1325,6 @@ public class DialogImpl implements javax.sip.Dialog {
 		if (dialogRequest.getMethod().equals(Request.BYE))
 		    this.setState(COMPLETED_STATE);
             } catch (IOException ex) {
-                ex.printStackTrace();
                 throw new SipException("error sending message");
             }
         } else {
@@ -1334,11 +1334,11 @@ public class DialogImpl implements javax.sip.Dialog {
 
 	    try {
 
-         	if (LogWriter.needsLogging) {
-			LogWriter.logMessage("setting tags from " +
+         	if (sipStack.logWriter.needsLogging) {
+			sipStack.logWriter.logMessage("setting tags from " +
 				this.getDialogId());      
-			LogWriter.logMessage("fromTag " + this.myTag);
-			LogWriter.logMessage("toTag " + this.hisTag);
+			sipStack.logWriter.logMessage("fromTag " + this.myTag);
+			sipStack.logWriter.logMessage("toTag " + this.hisTag);
 		}
 		  
 		if (this.myTag != null)  from.setTag(this.myTag);
@@ -1354,7 +1354,6 @@ public class DialogImpl implements javax.sip.Dialog {
 		if (dialogRequest.getMethod().equalsIgnoreCase(Request.BYE))
 		    this.delete();
             } catch (IOException ex) {
-                ex.printStackTrace();
                 throw new SipException("error sending message");
             }
             

@@ -62,7 +62,7 @@ public class UserAgentParser extends   HeaderParser {
 		       userAgent.addProductToken(tok);
 		    } catch (ParseException ex) {
 			tok = this.lexer.getRest();
-			userAgent.addProductToken(tok.trim());
+			userAgent.addProductToken(tok);
 			break;
 		    }
 		  }
@@ -75,6 +75,7 @@ public class UserAgentParser extends   HeaderParser {
             return  userAgent;
         }
         
+        /** 
         public static void main(String args[]) throws ParseException {
 		String userAgent[] = {
                 "User-Agent: Softphone/Beta1.5 \n",
@@ -91,4 +92,5 @@ public class UserAgentParser extends   HeaderParser {
 		}
 			
 	}
+         */
 }

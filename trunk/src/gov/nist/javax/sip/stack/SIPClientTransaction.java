@@ -149,9 +149,9 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
         // setBranch( SIPConstants.BRANCH_MAGIC_COOKIE +
         // Integer.toHexString( hashCode( ) ) );
         setBranch( Utils.generateBranchId());
-        if (LogWriter.needsLogging) {
-            LogWriter.logMessage("Creating clientTransaction " + this);
-            LogWriter.logStackTrace();
+        if (parentStack.logWriter.needsLogging) {
+            parentStack.logWriter.logMessage("Creating clientTransaction " + this);
+            parentStack.logWriter.logStackTrace();
         }
         
     }
@@ -215,14 +215,14 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
         messageBranch.startsWith(SIPConstants.BRANCH_MAGIC_COOKIE);
 
 	/**
-	if (LogWriter.needsLogging)  {
-		LogWriter.logMessage("--------- TEST ------------");
-		LogWriter.logMessage(" testing " + this.getOriginalRequest());
-		LogWriter.logMessage("Against " + messageToTest);
-		LogWriter.logMessage("isTerminated = " + isTerminated());
-		LogWriter.logMessage("messageBranch = " + messageBranch);
-		LogWriter.logMessage("viaList = " + messageToTest.getViaHeaders());
-		LogWriter.logMessage("myBranch = " + getBranch());
+	if (parentStack.logWriter.needsLogging)  {
+		parentStack.logWriter.logMessage("--------- TEST ------------");
+		parentStack.logWriter.logMessage(" testing " + this.getOriginalRequest());
+		parentStack.logWriter.logMessage("Against " + messageToTest);
+		parentStack.logWriter.logMessage("isTerminated = " + isTerminated());
+		parentStack.logWriter.logMessage("messageBranch = " + messageBranch);
+		parentStack.logWriter.logMessage("viaList = " + messageToTest.getViaHeaders());
+		parentStack.logWriter.logMessage("myBranch = " + getBranch());
 	}
 	**/
         
@@ -268,7 +268,6 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
         
         // Message typecast as a request
         SIPRequest	transactionRequest;
-	boolean flag = false;
         
         
         transactionRequest = (SIPRequest)messageToSend;
@@ -283,10 +282,9 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
         } catch (java.text.ParseException ex) {}
         
         // If this is the first request for this transaction,
-            
-        if  ( getState() != null 
-	&& (getState().getValue() == PROCEEDING_STATE ||
-        getState().getValue() == CALLING_STATE ) ) {
+        if( getState( ) != null  &&
+         (getState().getValue() == PROCEEDING_STATE ||
+        getState().getValue() == CALLING_STATE )  ){
             
             // If this is a TU-generated ACK request,
             if( transactionRequest.getMethod().equals( Request.ACK ) ) {
@@ -310,32 +308,28 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
             // Send the message to the server
             lastRequest = transactionRequest;
             getMessageChannel( ).sendMessage( transactionRequest );
-	    if (getState() == null ) {
+	    if (getState() == null) {
                // Save this request as the one this transaction
                // is handling
                setOriginalRequest( transactionRequest );
-            
                // Change to trying/calling state
                if (transactionRequest.getMethod().equals(Request.INVITE)) {
-                  setState(CALLING_STATE);
-              } else if (transactionRequest.getMethod().equals(Request.ACK)) {
-		// Acks are never retransmitted.
-                setState(TERMINATED_STATE);
-	      } else {
-                setState( TRYING_STATE );
-              }
+                   setState(CALLING_STATE);
+               } else if (transactionRequest.getMethod().equals(Request.ACK)) {
+		  // Acks are never retransmitted.
+                  setState(TERMINATED_STATE);
+	       } else {
+                   setState( TRYING_STATE );
+               }
               if( !isReliable( ) ) {
-                
                 enableRetransmissionTimer( );
-                
               }
-            
               if (isInviteTransaction()) {
-                enableTimeoutTimer( TIMER_B );
+                 enableTimeoutTimer( TIMER_B );
               }  else {
                 enableTimeoutTimer( TIMER_F );
               }
-	   }
+	    }
             
         } catch( IOException e ) {
             
@@ -359,15 +353,16 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
     MessageChannel	sourceChannel
     ) throws SIPServerException {
         // Log the incoming response in our log file.
-        if (ServerLog.needsLogging(ServerLog.TRACE_MESSAGES))
+        if (parentStack.serverLog.needsLogging
+	   (parentStack.serverLog.TRACE_MESSAGES))
             this.logResponse(transactionResponse,
             System.currentTimeMillis(),"normal processing");
 	// Ignore 1xx 
 	if (getState().getValue() == COMPLETED_STATE  && 
 		transactionResponse.getStatusCode()/100 == 1) return;
 
-	if (LogWriter.needsLogging) 
-	    LogWriter.logMessage("processing " + 
+	if (parentStack.logWriter.needsLogging) 
+	    parentStack.logWriter.logMessage("processing " + 
 	    transactionResponse.getFirstLine() + "current state = " 
 	   + getState().getValue());
 
@@ -714,7 +709,6 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
         
         try {
              // Resend the last request sent
-             // System.out.println("fireRetransmissionTimer " );
 	     if ( this.getState() == null || ! this.isMapped ) return;
 	     if ( this.getState().getValue()    == CALLING_STATE  ||
 		 this.getState().getValue()    == TRYING_STATE ) {
@@ -803,8 +797,8 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
 	else if (  lastResponse == null) 
 		throw new SipException ("bad Transaction state");
 	else if (  lastResponse.getStatusCode() < 200 )  {
-		if (LogWriter.needsLogging ) {
-			LogWriter.logMessage("lastResponse = " + 
+		if (parentStack.logWriter.needsLogging ) {
+			parentStack.logWriter.logMessage("lastResponse = " + 
 				lastResponse);
 		}
 		throw new SipException("Cannot ACK a provisional response!");

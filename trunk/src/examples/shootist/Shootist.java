@@ -6,6 +6,11 @@ import javax.sip.message.*;
 import java.util.*;
 import java.io.*;
 import java.net.*;
+//ifdef SIMULATION
+/*
+import sim.java.net.*;
+//endif
+*/
 
 
 /**
@@ -15,13 +20,15 @@ import java.net.*;
  *@author M. Ranganathan
  */
 
-public class Shootist implements SipListener {
+public class Shootist implements SipListener  {
     
     private static SipProvider sipProvider;
     private static AddressFactory addressFactory;
     private static MessageFactory messageFactory;
     private static HeaderFactory  headerFactory;
     private static SipStack    sipStack;
+    
+
     
     protected   ClientTransaction   inviteTid;
     
@@ -69,6 +76,14 @@ public class Shootist implements SipListener {
 	    }
             Response response = messageFactory.createResponse(200,request);
             serverTransactionId.sendResponse(response);
+
+//ifdef SIMULATION
+/*
+	    System.out.println("End time = " + SimMachine.clock());
+//endif
+*/
+
+	    
             
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -112,6 +127,7 @@ public class Shootist implements SipListener {
                 Dialog dialog = tid.getDialog();
 		Request ackRequest = dialog.createRequest(Request.ACK);
 		// Bug report by Andreas Bystrom.
+		System.out.println("Sending ACK");
                 dialog.sendAck(ackRequest);
             }
         } catch (Exception ex) {
@@ -128,8 +144,7 @@ public class Shootist implements SipListener {
     
     
     
-    
-    public static void main(String args[])  {
+   public void init(  ) {
         SipFactory sipFactory = null;
         sipStack = null;
         sipProvider = null;
@@ -137,9 +152,9 @@ public class Shootist implements SipListener {
         sipFactory.setPathName("gov.nist");
         Properties properties = new Properties();
         properties.setProperty("javax.sip.IP_ADDRESS"
-        ,"127.0.0.1");
+        ,"129.6.55.61");
         properties.setProperty("javax.sip.OUTBOUND_PROXY"
-        ,"127.0.0.1:5070/UDP");
+        ,"129.6.55.62:5070/UDP");
         properties.setProperty("javax.sip.ROUTER_PATH",
         "examples.shootist.MyRouter");
         properties.setProperty("javax.sip.STACK_NAME",
@@ -153,11 +168,12 @@ public class Shootist implements SipListener {
 	// You need  16 for logging traces. 32 for debug + traces.
 	// Your code will limp at 32 but it is best for debugging.
         properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
-        
+
         
         try {
             // Create SipStack object
             sipStack = sipFactory.createSipStack(properties);
+	    System.out.println("createSipStack " + sipStack);
         } catch(PeerUnavailableException e) {
             // could not find
             // gov.nist.jain.protocol.ip.sip.SipStackImpl
@@ -175,18 +191,18 @@ public class Shootist implements SipListener {
             messageFactory = sipFactory.createMessageFactory();
             ListeningPoint lp  = sipStack.createListeningPoint
             (5060,"udp");
-	    System.out.println("listening point created" + lp);
             sipProvider = sipStack.createSipProvider(lp);
-            Shootist listener = new Shootist();
+            Shootist listener = this;
             sipProvider.addSipListener(listener);
+	
+	    System.out.println("createListeningPoint");
 
             lp  = sipStack.createListeningPoint
             (5060,"tcp");
-	    System.out.println("listening point created" + lp);
-
-	    
             sipProvider = sipStack.createSipProvider(lp);
             sipProvider.addSipListener(listener);
+
+	    System.out.println("createListeningPoint");
 
 
             String fromName       = "BigGuy";
@@ -329,8 +345,7 @@ public class Shootist implements SipListener {
             
             // send the request out.
             listener.inviteTid.sendRequest();
-            
-            System.out.println("request = " + request);
+
             
             
         } catch (Exception ex) {
@@ -338,6 +353,10 @@ public class Shootist implements SipListener {
             ex.printStackTrace();
             usage();
         }
+    }
+    
+    public static void main(String args[])  {
+	new Shootist().init();
         
     }
     

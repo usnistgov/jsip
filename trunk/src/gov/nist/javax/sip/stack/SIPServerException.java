@@ -42,8 +42,6 @@ public class SIPServerException extends Exception
          */
 	public SIPServerException ( int rc) {
 		this.rc = rc;
-		if (LogWriter.needsLogging)
-		     LogWriter.logException(this);
 	}
 	/**
          * Constructor for when we have the error code and some error info.
@@ -53,8 +51,6 @@ public class SIPServerException extends Exception
 	public SIPServerException ( int rc, String msg) {
                 this.rc = rc;
                 this.message = msg;
-		if (LogWriter.needsLogging)
-		    LogWriter.logException(this);
 	}
 	/**
          * Constructor for when we have a return code and a SIPMessage.
@@ -66,8 +62,6 @@ public class SIPServerException extends Exception
 		this.rc = rc;
                 this.sipMessage = message;
                 this.message = msg;
-		if (LogWriter.needsLogging)
-		    LogWriter.logException(this);
 
 	}
 	
@@ -78,7 +72,6 @@ public class SIPServerException extends Exception
          */
 	public SIPServerException( String response) {
 		super (response);
-		ServerLog.logException(this);
 	}
 
 	/** Constructor that constructs the message from the standard

@@ -109,8 +109,8 @@ public class DefaultRouter implements Router {
             SipUri uri = (SipUri)route.getAddress().getURI();
             int port;
             if (uri.getHostPort().hasPort()) {
-                LogWriter.logMessage("routeHeader = " + uri.encode());
-                LogWriter.logMessage("port = " +
+                sipStack.logWriter.logMessage("routeHeader = " + uri.encode());
+                sipStack.logWriter.logMessage("port = " +
                 uri.getHostPort().getPort());
                 port = uri.getHostPort().getPort();
             } else {
@@ -123,8 +123,8 @@ public class DefaultRouter implements Router {
             ll.add(hop);
             //  routes.removeFirst();
             //  sipRequest.setRequestURI(uri);
-            if (LogWriter.needsLogging)
-                LogWriter.logMessage("We use the Route header to " +
+            if (sipStack.logWriter.needsLogging)
+                sipStack.logWriter.logMessage("We use the Route header to " +
                 "forward the message");
         } else if (requestURI instanceof SipURI &&
 	  ((SipURI)requestURI).getMAddrParam() != null ){
@@ -136,8 +136,8 @@ public class DefaultRouter implements Router {
             hop.setURIRouteFlag();
             ll = new LinkedList();
             ll.add(hop);
-            if (LogWriter.needsLogging)
-                LogWriter.logMessage("Added Hop = " + hop.toString());
+            if (sipStack.logWriter.needsLogging)
+                sipStack.logWriter.logMessage("Added Hop = " + hop.toString());
         } else if (requestURI instanceof SipURI) {
             String host = ((SipURI)requestURI).getHost();
           
@@ -152,16 +152,16 @@ public class DefaultRouter implements Router {
             HopImpl hop = new HopImpl(host,port,transport);
             ll = new LinkedList();
             ll.add(hop);
-            if (LogWriter.needsLogging)
-                 LogWriter.logMessage("Added Hop = " + hop.toString());
+            if (sipStack.logWriter.needsLogging)
+                 sipStack.logWriter.logMessage("Added Hop = " + hop.toString());
                 
        }
         
         if (defaultRoute != null) {
             if (ll == null) ll = new LinkedList();
             ll.add(defaultRoute);
-            if (LogWriter.needsLogging) {
-                LogWriter.logMessage("Added Hop = " +
+            if (sipStack.logWriter.needsLogging) {
+                sipStack.logWriter.logMessage("Added Hop = " +
                 defaultRoute.toString());
             }
         }

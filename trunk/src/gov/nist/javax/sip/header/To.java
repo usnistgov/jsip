@@ -146,10 +146,6 @@ javax.sip.header.ToHeader {
     public void setTag(String t) throws ParseException {
         if (t == null) throw new  NullPointerException("null tag ");
 	else if (t.trim().equals("")) throw new ParseException("bad tag" ,0);
-	if (LogWriter.needsLogging) {
-		LogWriter.logMessage("To:setTag " + t);
-		LogWriter.logStackTrace();
-	}
         this.setParameter(ParameterNames.TAG,t);
     }    
 

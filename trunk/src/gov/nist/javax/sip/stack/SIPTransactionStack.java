@@ -12,6 +12,11 @@ import java.util.*;
 import java.io.IOException;
 import java.net.*;
 
+//ifdef SIMULATION
+/*
+import sim.java.net.*;
+//endif
+*/
 
 /**
  *	Adds a transaction layer to the {@link SIPStack} class.  This is done by
@@ -47,7 +52,7 @@ extends SIPStack implements  SIPTransactionEventListener {
     // A table of assigned dialogs.
     
     
-    // Retransmission filter - indicates the stack will retransmit 200 OK
+    // Retransmissio{n filter - indicates the stack will retransmit 200 OK
     // for invite transactions.
     protected boolean retransmissionFilter;
     
@@ -80,7 +85,16 @@ extends SIPStack implements  SIPTransactionEventListener {
         // Dialog dable.
         this.dialogTable = new Hashtable();
         // Start the timer event thread.
+//ifdef SIMULATION
+/*
+ 	SimThread simThread =	new SimThread( new TransactionScanner( ));
+	simThread.setName("TransactionScanner");
+	simThread.start();
+//else
+*/
         new Thread( new TransactionScanner() ).start( );
+//endif
+//
         
     }
     /** Return true if extension is supported.
@@ -100,8 +114,8 @@ extends SIPStack implements  SIPTransactionEventListener {
      */
     public void addExtensionMethod(String extensionMethod) {
 	if (extensionMethod.equals(Request.NOTIFY)) {
-		if (LogWriter.needsLogging) 
-			LogWriter.logMessage("NOTIFY Supported Natively");
+		if (logWriter.needsLogging) 
+			logWriter.logMessage("NOTIFY Supported Natively");
 	} else {
            this.dialogCreatingMethods.add(extensionMethod.trim().toUpperCase());
 	}
@@ -119,14 +133,14 @@ extends SIPStack implements  SIPTransactionEventListener {
 	synchronized(dialogTable) {
 	     if (dialogTable.containsKey(dialogId)) return;
 	}
-        if (LogWriter.needsLogging) {
-            LogWriter.logMessage("putDialog dialogId=" + dialogId);
+        if (logWriter.needsLogging) {
+            logWriter.logMessage("putDialog dialogId=" + dialogId);
         }
         // if (this.getDefaultRouteHeader() != null)
         //   dialog.addRoute(this.getDefaultRouteHeader(),false);
         dialog.setStack(this);
-        if (LogWriter.needsLogging)
-            LogWriter.logStackTrace();
+        if (logWriter.needsLogging)
+            logWriter.logStackTrace();
         synchronized(dialogTable) {
             dialogTable.put(dialogId,dialog);
         }
@@ -156,8 +170,8 @@ extends SIPStack implements  SIPTransactionEventListener {
     
     public DialogImpl
     getDialog(String dialogId) {
-	if (LogWriter.needsLogging)
-		LogWriter.logMessage("Getting dialog for " + dialogId);
+	if (logWriter.needsLogging)
+		logWriter.logMessage("Getting dialog for " + dialogId);
         synchronized(dialogTable) {
             return (DialogImpl)dialogTable.get(dialogId);
         }
@@ -219,8 +233,8 @@ extends SIPStack implements  SIPTransactionEventListener {
     findTransaction(SIPMessage sipMessage, boolean isServer) {
 	
         if (isServer) {
-	    if (LogWriter.needsLogging)
-		 LogWriter.logMessage("searching server transaction for " 
+	    if (logWriter.needsLogging)
+		 logWriter.logMessage("searching server transaction for " 
 			+ sipMessage + " size =  " + 
 			this.serverTransactions.size());
 	    synchronized(this.serverTransactions) {
@@ -255,8 +269,8 @@ extends SIPStack implements  SIPTransactionEventListener {
     public SIPTransaction
     findCancelTransaction(SIPRequest cancelRequest, boolean isServer) {
 
-	if (LogWriter.needsLogging) {
-	   LogWriter.logMessage("findCancelTransaction request= \n" 
+	if (logWriter.needsLogging) {
+	   logWriter.logMessage("findCancelTransaction request= \n" 
 			+ cancelRequest  +
 		"\nfindCancelRequest isServer=" + isServer  );
 	}
@@ -318,37 +332,41 @@ extends SIPStack implements  SIPTransactionEventListener {
     /**
      *	Thread used to throw timer events for all transactions.
      */
-    class TransactionScanner implements Runnable {
-        public void run() {
+
+     class TransactionScanner implements  Runnable {
+
+     public void run() {
             
             // Iterator through all transactions
             Iterator		transactionIterator;
             // One transaction in the set
             SIPTransaction	nextTransaction;
-            LinkedList fireList = new LinkedList();
-            Iterator iterator;
+            
+            
             // Loop while this stack is running
             while( isAlive( ) ) {
                 
                 try {
                     
                     // Sleep for one timer "tick"
+//ifndef SIMULATION
+//
                     Thread.sleep( BASE_TIMER_INTERVAL );
+//else
+/*
+		    SimThread.sleep((double) BASE_TIMER_INTERVAL);
+//endif
+*/
 
-		    //  System.out.println("clientTransactionTable size " +
-	 	    // 	clientTransactions.size());
-		    // System.out.println("serverTransactionTable size " + 
-		    // serverTransactions.size());
                     // Check all client transactions
 
-                    
+                    LinkedList fireList = new LinkedList();
                     
                     // Check all server transactions
                     synchronized(serverTransactions) {
-		        if (serverTransactions.size() > 0 ) {
-                           transactionIterator =
-                           serverTransactions.iterator( );
-                          while( transactionIterator.hasNext( ) ) {
+                        transactionIterator =
+                        serverTransactions.iterator( );
+                        while( transactionIterator.hasNext( ) ) {
                             
                             nextTransaction =
                             (SIPTransaction)
@@ -362,8 +380,8 @@ extends SIPStack implements  SIPTransactionEventListener {
 				if (((SIPServerTransaction)nextTransaction).
 				collectionTime == 0) {
                                   // Remove it from the set
-				   if (LogWriter.needsLogging)
-				      LogWriter.logMessage("removing" +
+				   if (logWriter.needsLogging)
+				      logWriter.logMessage("removing" +
 					nextTransaction );
                                    transactionIterator.remove( );
 				} else {
@@ -372,24 +390,28 @@ extends SIPStack implements  SIPTransactionEventListener {
 				}
                                 // If this transaction has not
                                 //terminated,
-                             } else {
+                            } else {
                                 // Add to the fire list -- needs to be moved
                                 // outside the synchronized block to prevent
                                 // deadlock.
+				/**
+				System.out.println("state = " +
+					nextTransaction.getState() + "/" +
+					nextTransaction.getOriginalRequest().
+					getMethod());
+				**/
                                 fireList.add(nextTransaction);
                                 
                             }
                             
-                          }
-			}
+                        }
                     }
                     
                     
                     synchronized(clientTransactions) {
-			if (clientTransactions.size() > 0) {
-                          transactionIterator =
-                          clientTransactions.iterator( );
-                          while( transactionIterator.hasNext( ) ) {
+                        transactionIterator =
+                        clientTransactions.iterator( );
+                        while( transactionIterator.hasNext( ) ) {
                             
                             nextTransaction = (SIPTransaction)
                             transactionIterator.next( );
@@ -398,8 +420,8 @@ extends SIPStack implements  SIPTransactionEventListener {
                             if( nextTransaction.isTerminated( ) ) {
                                 
                                 // Remove it from the set
-                                if (LogWriter.needsLogging) {
-                                    LogWriter.logMessage
+                                if (logWriter.needsLogging) {
+                                    logWriter.logMessage
                                     ("Removing clientTransaction " +
                                     nextTransaction);
                                 }
@@ -414,15 +436,13 @@ extends SIPStack implements  SIPTransactionEventListener {
                                 fireList.add(nextTransaction);
                                 
 			   }
-                          }
-			}
+                        }
                     }
                     
                     synchronized (dialogTable) {
-		        if (dialogTable.size() > 0 )  {
-                          Collection values = dialogTable.values();
-                          iterator = values.iterator();
-                          while (iterator.hasNext()) {
+                        Collection values = dialogTable.values();
+                        Iterator iterator = values.iterator();
+                        while (iterator.hasNext()) {
                             DialogImpl d = (DialogImpl) iterator.next();
 			    // System.out.println("dialogState = " +
 			    //	d.getState() + 
@@ -430,10 +450,10 @@ extends SIPStack implements  SIPTransactionEventListener {
                             if ( d.getState() != null  &&
                             d.getState().getValue() ==
                             DialogImpl.TERMINATED_STATE ) {
-                                if (LogWriter.needsLogging) {
+                                if (logWriter.needsLogging) {
                                     String dialogId =
                                     d.getDialogId();
-                                    LogWriter.logMessage
+                                    logWriter.logMessage
                                     ("Removing Dialog " +
                                     dialogId);
                                 }
@@ -465,23 +485,20 @@ extends SIPStack implements  SIPTransactionEventListener {
 				     }
 				}
 			    }
-                          }
-			}
+                        }
                     }
                     
                     // Clean up the assigned dialogs table.
                     
-		    if (fireList.size() > 0 ) {
-                       transactionIterator = fireList.iterator();
-                       while (transactionIterator.hasNext()) {
-                           nextTransaction = (SIPTransaction)
-                           transactionIterator.next();
-                           nextTransaction.fireTimer();
-                       }
-		    }
-                    fireList.clear();
-                    transactionIterator = null;
-		    iterator = null;
+                    
+                    transactionIterator = fireList.iterator();
+                    while (transactionIterator.hasNext()) {
+                        nextTransaction =
+                        (SIPTransaction)
+                        transactionIterator.next();
+                        nextTransaction.fireTimer();
+                    }
+                    
                     
                 } catch( InterruptedException e ) {
                     
@@ -492,7 +509,8 @@ extends SIPStack implements  SIPTransactionEventListener {
             }
             
         }
-    }
+
+     }
 
     
     /**

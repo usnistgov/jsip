@@ -8,7 +8,7 @@ include  $(ROOT)/build-config
 %.class: %.java
 	$(JAVAC) $<
 
-all: 
+all:  prep
 	$(JAVAC) *.java
 
 clean:  emacsclean

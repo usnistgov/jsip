@@ -11,7 +11,9 @@ clean: emacsclean
 	\rm -f *log*
 	\rm -f *debug*
 
-all: Shootist.class MyRouter.class Shootme.class
+all: 
+	$(JAVAC) *.java
+
 
 #shootist is the uac
 shootist: Shootist.class
@@ -31,4 +33,7 @@ shootmelog:
 
 shootistlog:
 	$(JAVA) tools.tracesviewer.TracesViewer -f shootistlog.txt
+
+sim:
+	$(JAVA) examples.shootist.Shoot
 

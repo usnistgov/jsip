@@ -17,6 +17,12 @@ import gov.nist.core.*;
 import java.io.*;
 import gov.nist.javax.sip.address.*;
 import java.text.ParseException;
+//ifdef SIMULATION
+/*
+import sim.java.net.*;
+//endif
+*/
+
 
 
 /** Implementation of the JAIN-SIP provider interface.
@@ -34,16 +40,21 @@ javax.sip.SipProvider, SIPTransactionEventListener {
     protected   SipListener sipListener;
     
     private     LinkedList pendingEvents;
+
+//ifdef SIMULATION
+/*
+    private     SimMessageObject pendingEventsShadow;
+//endif
+*/
     
     protected boolean isActive;
     
     private     SIPTransactionStack sipStack;
     
-    protected   SipStack sipStackImpl;
+    protected   SipStackImpl sipStackImpl;
     
     protected  ListeningPointImpl listeningPoint;
     
-    // private    SIPServerTransaction currentTransaction;
     
     
     /** Stop processing messages for this provider. Post an empty message to our
@@ -52,15 +63,35 @@ javax.sip.SipProvider, SIPTransactionEventListener {
     protected  void stop() {
         // Put an empty event in the queue and post ourselves a message.
         if(LogWriter.needsLogging)
-            LogWriter.logMessage("Exiting provider" );
+            sipStackImpl.logMessage("Exiting provider" );
         synchronized (this) {
             listeningPoint.removeSipProvider();
         }
-        synchronized (this.pendingEvents) {
+//ifndef SIMULATION
+//
+        synchronized ( this.pendingEvents) 
+//else
+/*
+	this.pendingEventsShadow.enterCriticalSection();
+//endif
+*/
+	{
             EventWrapper eventWrapper = new EventWrapper();
             this.pendingEvents.add(eventWrapper);
+//ifdef SIMULATION
+/*
+	    this.pendingEventsShadow.doNotify();
+//else
+*/
             this.pendingEvents.notify();
+//endif
+//
         }
+//ifdef SIMULATION
+/*
+	this.pendingEventsShadow.leaveCriticalSection();
+//endif
+*/
     }
     
     
@@ -76,25 +107,47 @@ javax.sip.SipProvider, SIPTransactionEventListener {
     public void handleEvent(EventObject sipEvent,
     SIPTransaction transaction ) {
         if (LogWriter.needsLogging) {
-            LogWriter.logMessage("handleEvent " + sipEvent +
+            sipStackImpl.logMessage("handleEvent " + sipEvent +
             "currentTransaction = " + transaction +
             "this.sipListener = " + this.sipListener );
-	     LogWriter.logStackTrace();
+	     sipStackImpl.logStackTrace();
         }
+	
         if (this.sipListener == null) {
 		if (LogWriter.needsLogging) {
-		  LogWriter.logMessage("Dropping listener = null");
+		  sipStackImpl.logMessage("Dropping listener = null");
 		}
 
 		return;
 	}
-        synchronized (this.pendingEvents) {
+
+//ifndef SIMULATION
+//
+        synchronized ( this.pendingEvents ) 
+//else
+/*
+	this.pendingEventsShadow.enterCriticalSection();
+//endif
+*/
+      {
             EventWrapper eventWrapper = new EventWrapper();
             eventWrapper.sipEvent = sipEvent;
             eventWrapper.transaction = transaction;
-            this.pendingEvents.add(eventWrapper);
+             this.pendingEvents.add(eventWrapper);
+//ifdef SIMULATION
+/*
+            this.pendingEventsShadow.doNotify();
+//else
+*/
             this.pendingEvents.notify();
+//endif
+//
         }
+//ifdef SIMULATION
+/*
+	this.pendingEventsShadow.leaveCriticalSection();
+//endif
+*/
     }
     
     
@@ -105,7 +158,15 @@ javax.sip.SipProvider, SIPTransactionEventListener {
     /** Creates a new instance of SipProviderImpl */
     protected SipProviderImpl() {
         this.pendingEvents = new LinkedList();
+//ifdef SIMULATION
+/*
+	this.pendingEventsShadow = new SimMessageObject();
+	SimThread myThread = new SimThread(this);
+//else
+*/
 	Thread myThread = new Thread(this);
+//endif
+//
 	// myThread.setPriority(Thread.MAX_PRIORITY);
         myThread.start();
     }
@@ -122,12 +183,27 @@ javax.sip.SipProvider, SIPTransactionEventListener {
         while(true) {
             EventObject sipEvent = null;
             EventWrapper eventWrapper = null;
-            synchronized (this.pendingEvents) {
+//ifndef SIMULATION
+//
+            synchronized ( this.pendingEvents) 
+//else
+/*
+	    this.pendingEventsShadow.enterCriticalSection();
+//endif
+*/
+		{
                 if (pendingEvents.isEmpty()) {
                     try {
+//ifdef SIMULATION
+/*
+			this.pendingEventsShadow.doWait();
+//else
+*/
                         this.pendingEvents.wait();
+//endif
+//
                     } catch (InterruptedException ex) {
-                        LogWriter.logMessage("Interrupted!" );
+                        sipStackImpl.logMessage("Interrupted!" );
                         continue;
                     }
                 }
@@ -136,12 +212,13 @@ javax.sip.SipProvider, SIPTransactionEventListener {
                     eventWrapper = (EventWrapper) iterator.next();
                     sipEvent = eventWrapper.sipEvent;
                     if (LogWriter.needsLogging) {
-                        LogWriter.logMessage("Processing " + sipEvent +
+                        sipStackImpl.logMessage("Processing " + sipEvent +
                         "nevents "  + pendingEvents.size());
                     }
                     if (sipEvent == null) {
                         if(LogWriter.needsLogging)
-                            LogWriter.logMessage("Exiting provider thread!" );
+                            sipStackImpl.logMessage
+				("Exiting provider thread!" );
                         listeningPoint.removeSipProvider();
                         return;
                     }
@@ -158,7 +235,7 @@ javax.sip.SipProvider, SIPTransactionEventListener {
                             // If transaction already exists bail.
                             if (tr != null) {
                                 if (LogWriter.needsLogging)
-                                    LogWriter.logMessage
+                                    sipStackImpl.logMessage
                                     ("transaction already exists!");
                                 continue;
                             }
@@ -176,7 +253,7 @@ javax.sip.SipProvider, SIPTransactionEventListener {
 				// too late to cancel the transaction then 
 				// just respond OK to the CANCEL and bail.
                                 if (LogWriter.needsLogging)
-                                    LogWriter.logMessage
+                                    sipStackImpl.logMessage
                                     ("Too late to cancel Transaction");
 				// send OK and just ignore the CANCEL.
 				 try {
@@ -197,11 +274,16 @@ javax.sip.SipProvider, SIPTransactionEventListener {
                         sipListener.processTimeout((TimeoutEvent) sipEvent);
                     } else {
                         if (LogWriter.needsLogging)
-                            LogWriter.logMessage("bad event" + sipEvent);
+                            sipStackImpl.logMessage("bad event" + sipEvent);
                     }
                 } // Bug report by Laurent Schwitzer
                 pendingEvents.clear();
             }// end of Synchronized block
+//ifdef SIMULATION
+/*
+	    this.pendingEventsShadow.leaveCriticalSection();
+//endif
+*/
         } // end While
     }
     
@@ -241,7 +323,7 @@ javax.sip.SipProvider, SIPTransactionEventListener {
             }
         }
         if (LogWriter.needsLogging)
-            LogWriter.logMessage("add SipListener " + sipListener);
+            sipStackImpl.logMessage("add SipListener " + sipListener);
         this.sipListener = sipListener;
         synchronized(sipStackImpl) {
             Iterator it = sipStackImpl.getSipProviders();
@@ -318,7 +400,7 @@ javax.sip.SipProvider, SIPTransactionEventListener {
             
         }
         if (LogWriter.needsLogging)
-            LogWriter.logMessage("could not find existing transaction for "
+            sipStackImpl.logMessage("could not find existing transaction for "
             + ((SIPRequest)request).getFirstLine());
         
         
@@ -595,7 +677,7 @@ javax.sip.SipProvider, SIPTransactionEventListener {
                     messageChannel.sendMessage((SIPMessage)newRequest);
                 else throw new SipException("could not forward request");
             } catch (IOException ex) {
-                throw  new SipException(ex.getMessage());
+                throw new SipException(ex.getMessage());
             } catch (ParseException ex1) {
                 InternalErrorHandler.handleException(ex1);
             }
@@ -711,7 +793,7 @@ javax.sip.SipProvider, SIPTransactionEventListener {
             SIPTransactionErrorEvent.TRANSPORT_ERROR) {
 	    // There must be a way to inform the TU here!!
             if (LogWriter.needsLogging) {
-                LogWriter.logMessage
+                sipStackImpl.logMessage
                 ("TransportError occured on " + transaction);
             }
         } else if (transactionErrorEvent.getErrorID() == 
