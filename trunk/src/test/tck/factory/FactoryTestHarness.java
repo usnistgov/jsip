@@ -9,6 +9,23 @@ import test.tck.*;
    
 public class FactoryTestHarness extends TestHarness {
 
+ protected static String hosts[] = {
+        "herbivore.ncsl.nist.gov",
+        "foo.bar.com",
+        "129.6.55.181",
+        "herbivore.ncsl.nist.gov:5070",
+        "big.com",
+        "big.com",
+        "big.com",
+        "gateway.com",
+        "10.1.2.3",
+        "example.com",
+        "alice",
+        "registrar.com",
+        "10.10.30.186:666" 
+    };
+  
+
   static protected String urls[] = {
         "sip:herbivore.ncsl.nist.gov:5070;maddr=129.6.55.251;lr",
         "sip:1-301-975-3664@foo.bar.com;user=phone", "sip:129.6.55.181",
