@@ -23,7 +23,7 @@ import java.util.*;
  * object that creates new TCP MessageChannels (one for each new
  * accept socket).  
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2004-03-30 16:40:30 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2004-05-14 20:20:03 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Acknowledgement: Jeff Keyser suggested that a
@@ -94,7 +94,7 @@ public class TCPMessageProcessor extends MessageProcessor {
 //
 		thread = new Thread(this);
 		thread.setName("TCPMessageProcessorThread");
-		this.sock = new ServerSocket(this.port, 0, sipStack.stackInetAddress);
+		this.sock = new ServerSocket(this.port, 0, sipStack.savedStackInetAddress);
 //else 
 /*
 		this.sock = new SimServerSocket (sipStack.stackInetAddress,this.port);
@@ -362,6 +362,10 @@ public class TCPMessageProcessor extends MessageProcessor {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2004/03/30 16:40:30  mranga
+ * Reviewed by:   mranga
+ * more tweaks to reference counting for cleanup.
+ *
  * Revision 1.15  2004/03/30 15:38:18  mranga
  * Reviewed by:   mranga
  * Name the threads so as to facilitate debugging.

@@ -114,7 +114,7 @@ import java.util.TimerTask;
  *
  *</pre>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.29 $ $Date: 2004-04-22 22:51:18 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.30 $ $Date: 2004-05-14 20:20:03 $
  * @author Jeff Keyser 
  * @author M. Ranganathan <mranga@nist.gov>  
  * @author Bug fixes by Emil Ivov, Antonis Karydas.
@@ -586,33 +586,32 @@ public class SIPServerTransaction
 		}
 
 		// Put a dialog record in the SIP Stack if necessary.
-		if (this.dialog != null
-			&& this.dialog.getRemoteTag() == null
-			&& transactionResponse.getTo().getTag() != null
-			&& ((SIPTransactionStack) this.getSIPStack()).isDialogCreated(
+		if (this.dialog != null) {
+			if ( this.dialog.getRemoteTag() == null
+				&& transactionResponse.getTo().getTag() != null
+				&& ((SIPTransactionStack) this.getSIPStack()).isDialogCreated(
 				transactionResponse.getCSeq().getMethod())) {
-			this.dialog.setRemoteTag(transactionResponse.getTo().getTag());
-			((SIPTransactionStack) this.getSIPStack()).putDialog(this.dialog);
-			if (statusCode / 100 == 1)
-				this.dialog.setState(DialogImpl.EARLY_STATE);
-		} else if (
-			((SIPTransactionStack) this.getSIPStack()).isDialogCreated(
-				transactionResponse.getCSeq().getMethod())
-				&& transactionResponse.getCSeq().getMethod().equals(
+				this.dialog.setRemoteTag(transactionResponse.getTo().getTag());
+				((SIPTransactionStack) this.getSIPStack()).putDialog(this.dialog);
+				if (statusCode / 100 == 1)
+					this.dialog.setState(DialogImpl.EARLY_STATE);
+				} else if (((SIPTransactionStack) this.getSIPStack()).isDialogCreated(
+					transactionResponse.getCSeq().getMethod())
+					&& transactionResponse.getCSeq().getMethod().equals(
 					getOriginalRequest().getMethod())) {
-			if (statusCode / 100 == 2) {
-				this.dialog.setState(DialogImpl.CONFIRMED_STATE);
-			} else if (statusCode / 100 >= 3 && statusCode / 100 <= 6) {
-				this.dialog.setState(DialogImpl.TERMINATED_STATE);
-			}
-		} else if ( this.dialog != null &&
-			transactionResponse.getCSeq().getMethod().equals(Request.BYE)
+				if (statusCode / 100 == 2) {
+					this.dialog.setState(DialogImpl.CONFIRMED_STATE);
+				} else if (statusCode / 100 >= 3 && statusCode / 100 <= 6) {
+					this.dialog.setState(DialogImpl.TERMINATED_STATE);
+				}
+			} else if ( transactionResponse.getCSeq().getMethod().equals(Request.BYE)
 				&& statusCode / 100 == 2 && dialog != null ) {
 			// Dialog will be terminated when the transction is terminated.
-			if (!isReliable())
-				this.dialog.setState(DialogImpl.COMPLETED_STATE);
-			else
-				this.dialog.setState(DialogImpl.TERMINATED_STATE);
+				if (!isReliable())
+					this.dialog.setState(DialogImpl.COMPLETED_STATE);
+				else
+					this.dialog.setState(DialogImpl.TERMINATED_STATE);
+			}
 		}
 
 		// If the TU sends a provisional response while in the
@@ -1019,6 +1018,12 @@ public class SIPServerTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.29  2004/04/22 22:51:18  mranga
+ * Submitted by:  Thomas Froment
+ * Reviewed by:   mranga
+ *
+ * Fixed corner cases.
+ *
  * Revision 1.28  2004/04/19 21:51:04  mranga
  * Submitted by:  mranga
  * Reviewed by:  ivov
