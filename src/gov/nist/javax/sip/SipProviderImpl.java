@@ -22,7 +22,7 @@ import sim.java.net.*;
 
 /** Implementation of the JAIN-SIP provider interface.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2004-04-07 00:19:22 $
+ * @version JAIN-SIP-1.1 $Revision: 1.18 $ $Date: 2004-04-08 22:08:27 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -202,6 +202,15 @@ public final class SipProviderImpl
 		SIPRequest sipRequest = (SIPRequest) request;
 		if (sipRequest.getTransaction() != null)
 			throw new TransactionUnavailableException("Transaction already assigned to request");
+		// Prune illegal requests early.
+		if (sipRequest.getTopmostVia() != null ) {
+		   HostPort hp = sipRequest.getTopmostVia().getSentBy();
+		   int port = hp.getPort() == -1 ? 5060: hp.getPort();
+		   if (sipStackImpl.getListeningPoint(port,sipRequest.getTopmostVia().getTransport()) == null) 
+			throw new TransactionUnavailableException (" No listening point for " + 
+			sipRequest.getTopmostVia().getTransport() 
+			+ " at port " + port);
+		}
 		if (request.getMethod().equalsIgnoreCase(Request.CANCEL)) {
 			SIPClientTransaction ct =
 				(SIPClientTransaction) sipStack.findCancelTransaction(
@@ -688,6 +697,11 @@ public final class SipProviderImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2004/04/07 00:19:22  mranga
+ * Reviewed by:   mranga
+ * Fixes a potential race condition for client transactions.
+ * Handle re-invites statefully within an established dialog.
+ *
  * Revision 1.16  2004/03/18 14:40:38  mranga
  * Reviewed by:   mranga
  * Removed event scanning thread from provider and added a single class that
