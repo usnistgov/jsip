@@ -10,7 +10,7 @@
 </head>
 <body text="#000000" background="back.gif" link="#0000ff"
  vlink="#ff0000" alink="#000088">
-<h2>Frequently Asked questions </h2>
+<h2>Frequently Asked Questions / JAIN-SIP HOWTO </h2>
 <ol>
   <li><a href="#1">Who owns NIST-SIP ?</a> </li>
   <li><a href="#2">What are the restrictions on its use?</a> </li>
@@ -97,6 +97,9 @@ performance out of NIST-SIP? </a></li>
 (at another machine) ? </a> </li>
 <li><a href="#42">How do you find out which IP address a SIP Message arrived
 on? </a> </li>
+<li><a href="#43">How do you use the STUN support?</a></li>
+<li><a href="#44">Can you delay sending responses to after the Listener runs 
+(ie. respond to requests asynchronously after the listener returns) ?</a></li>
 <li><a href="#questionables"> I have some questionable questions. Where do I look? <a/></li>
 </ol>
 <br/>
@@ -561,7 +564,24 @@ on? <br/>
 From the Listening Point on which the message was received, retrieve the IP
 Address and Port.
 </li>
-
+<hr size="2" noshade="noshade"> 
+<a name="43"> </a>
+<li>How do you enable/use the STUN support?<br/>
+set the <it>gov.nist.javax.sip.STUN_SERVER </it> to point to 
+stun_server_ip_address[:port]  where your stun server resides.
+The stack will return mapped address when you
+getIpAddress() from the stack and getPort() from the listening point.
+With stun, if you have a NAT box, these will in general be different
+from the IP address and port used to create the LP.
+Your application needs to use these in setting up the contact address and
+SDP parameters as appropriate. The stack is not responsible for this.
+</li>
+<hr size="2" noshade="noshade"> 
+<li>Can you delay sending responses to requests until after the Listener runs ? <br/>
+You cannot do this. You must respond to the request when the listener is
+invoked. You must do this synchronously (not from another thread). This is
+because housekeeping functions are performed after the listener completes
+invocation.
 </li>
 
 </ol>
