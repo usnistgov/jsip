@@ -235,7 +235,6 @@ srctar: stamp
 	--exclude \*~						\
 	--exclude *.log						\
 	--exclude debug.txt					\
-	--exclude api						\
 	./$(PROJECT_ROOT)/manifest.tck				\
 	./$(PROJECT_ROOT)/timestamp				\
 	./$(PROJECT_ROOT)/src/javax				\
