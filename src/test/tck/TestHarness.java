@@ -254,6 +254,7 @@ public class TestHarness extends TestCase {
 	void getFactories() {
 		try {
 			tiSipFactory = SipFactory.getInstance();
+			tiSipFactory.resetFactory();
 			if (path == null)
 				path = "gov.nist";
 			tiSipFactory.setPathName(path.trim());
@@ -279,23 +280,16 @@ public class TestHarness extends TestCase {
 	void getRIFactories() {
 		try {
 			riSipFactory = SipFactory.getInstance();
+			riSipFactory.resetFactory();
 			if (riSipFactory == null) {
 				throw new TckInternalError("could not get SipFactory");
 			}
+			// Testing against the RI.
 			String path = "gov.nist";
 			riSipFactory.setPathName(path);
-			riAddressFactory = riSipFactory.createAddressFactory();
-			if (riAddressFactory == null) {
-				throw new TckInternalError("could not create RI Address Factory -- check class path");
-			}
-			riHeaderFactory = riSipFactory.createHeaderFactory();
-			if (riHeaderFactory == null) {
-				throw new TckInternalError("could not create RI Header Factory -- check class path");
-			}
-			riMessageFactory = riSipFactory.createMessageFactory();
-			if (riMessageFactory == null) {
-				throw new TckInternalError("Cold not create RI Message Factory -- check class path");
-			}
+			riAddressFactory = tiSipFactory.createAddressFactory();
+			riHeaderFactory = tiSipFactory.createHeaderFactory();
+			riMessageFactory = tiSipFactory.createMessageFactory();
 		} catch (Exception ex) {
 			throw new TckInternalError("Could not get factories");
 		}
