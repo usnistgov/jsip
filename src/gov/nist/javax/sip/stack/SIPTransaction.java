@@ -23,7 +23,7 @@ import javax.sip.message.*;
  *
  * @author Jeff Keyser 
  * @author M. Ranganathan (modified Jeff's original source and aligned with JAIN-SIP 1.1)
- * @version  JAIN-SIP-1.1 $Revision: 1.25 $ $Date: 2004-06-21 04:59:52 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.26 $ $Date: 2004-06-27 00:41:52 $
  */
 public abstract class SIPTransaction
 	extends MessageChannel
@@ -81,6 +81,8 @@ public abstract class SIPTransaction
 	protected boolean isAckSeen;
 
 	protected boolean eventPending; // indicate that an event is pending here.
+
+	protected String transactionId; // Transaction Id.
 
 	/**
 	 * Initialized but no state assigned.
@@ -216,9 +218,7 @@ public abstract class SIPTransaction
 				if (LogWriter.needsLogging)
 					sipStack.logWriter.logMessage(
 							"removing" + transaction);
-					synchronized(sipStack.serverTransactions) {
-						sipStack.serverTransactions.remove(this.transaction);
-					}
+					sipStack.removeTransaction(this.transaction);
 				if (  ( ! this.sipStack.cacheServerConnections )
 				   && transaction.encapsulatedChannel instanceof TCPMessageChannel
 			   	   && -- ((TCPMessageChannel) transaction.encapsulatedChannel).useCount == 0 ) {
@@ -283,26 +283,25 @@ public abstract class SIPTransaction
 		// Branch value of topmost Via header
 		String newBranch;
 
+		if (this.originalRequest != null) {
+			sipStack.removeTransactionHash(this);
+		}
 		// This will be cleared later.
 
 		this.originalRequest = newOriginalRequest;
 
 		// just cache the control information so the
 		// original request can be released later.
-
 		this.method = newOriginalRequest.getMethod();
-
 		this.from = (From) newOriginalRequest.getFrom();
-
 		this.to = (To) newOriginalRequest.getTo();
-
 		this.callId = (CallID) newOriginalRequest.getCallId();
-
 		this.cSeq = newOriginalRequest.getCSeq().getSequenceNumber();
-
 		this.event = (Event) newOriginalRequest.getHeader("Event");
+		this.transactionId = newOriginalRequest.getTransactionId();
 
 		originalRequest.setTransaction(this);
+
 
 		// If the message has an explicit branch value set,
 		newBranch =
@@ -799,7 +798,7 @@ public abstract class SIPTransaction
 	 * Get the transaction Id.
 	 */
 	public String getTransactionId() {
-		return this.getOriginalRequest().getTransactionId();
+		return this.transactionId;
 	}
 
 	/**
@@ -961,6 +960,7 @@ public abstract class SIPTransaction
 		this.eventPending = false;
 	}
 
+
 	protected abstract void startTransactionTimer();
 
 	public abstract void processPending();
@@ -968,6 +968,9 @@ public abstract class SIPTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.25  2004/06/21 04:59:52  mranga
+ * Refactored code - no functional changes.
+ *
  * Revision 1.24  2004/06/15 09:54:45  mranga
  * Reviewed by:   mranga
  * re-entrant listener model added.

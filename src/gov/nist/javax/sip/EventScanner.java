@@ -16,7 +16,7 @@ import java.io.*;
 /**
  * Event Scanner to deliver events to the Listener.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.12 $ $Date: 2004-06-21 05:33:38 $
+ * @version JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2004-06-27 00:41:51 $
  * 
  * @author M. Ranganathan <mranga@nist.gov><br/>
  * 
@@ -139,7 +139,7 @@ class EventScanner implements Runnable {
 					if (tr != null && !tr.passToListener()) {
 						if (LogWriter.needsLogging)
 							sipStackImpl
-									.logMessage("transaction already exists!");
+									.logMessage("transaction already exists! " + tr);
 						return;
 					} else if (sipStackImpl.findPendingTransaction(sipRequest) != null) {
 						if (LogWriter.needsLogging)
@@ -300,7 +300,7 @@ class EventScanner implements Runnable {
 			 */
 			{
 				// First, wait for some events to become available.
-				if (pendingEvents.isEmpty()) {
+				while (pendingEvents.isEmpty()) {
 					// There's nothing in the list, check to make sure we
 					// haven't
 					// been stopped. If we have, then let the thread die.
