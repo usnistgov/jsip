@@ -19,7 +19,7 @@ import gov.nist.core.*;
  * NIST-SIP stack and event model with the JAIN-SIP stack. Implementors
  * of JAIN services need not concern themselves with this class.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2004-02-19 16:01:40 $
+ * @version JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2004-02-19 16:21:16 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Bug fix Contributions by Lamine Brahimi and  Andreas Bystrom. <br/>
@@ -120,7 +120,9 @@ public class NistSipMessageHandlerImpl
 					SIPTransaction tr = dialog.getLastTransaction();
 					SIPResponse sipResponse = tr.getLastResponse();
 
-					if (sipResponse != null
+					// Idiot check for sending ACK from the wrong side!
+					if (tr instanceof SIPServerTransaction 
+						&& sipResponse != null
 						&& sipResponse.getStatusCode() / 100 == 2
 						&& sipResponse.getCSeq().getSequenceNumber()
 							== sipRequest.getCSeq().getSequenceNumber()) {
@@ -134,6 +136,8 @@ public class NistSipMessageHandlerImpl
 									+ "Dropping ");
 							return;
 						} else {
+							// record that we already saw an ACK for
+							// this transaction.
 							tr.setAckSeen();
 							sipStackImpl.logMessage(
 								"ACK retransmission for 2XX response --- "
@@ -492,6 +496,10 @@ public class NistSipMessageHandlerImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2004/02/19 16:01:40  mranga
+ * Reviewed by:   mranga
+ * tighten up retransmission filter to deal with ack retransmissions.
+ *
  * Revision 1.15  2004/02/19 15:20:27  mranga
  * Reviewed by:   mranga
  * allow ack to go through for re-invite processing
