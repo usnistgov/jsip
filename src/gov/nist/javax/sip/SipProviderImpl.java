@@ -595,7 +595,7 @@ javax.sip.SipProvider, SIPTransactionEventListener {
                     messageChannel.sendMessage((SIPMessage)newRequest);
                 else throw new SipException("could not forward request");
             } catch (IOException ex) {
-                throw new SipException(ex.getMessage());
+                throw  new SipException(ex.getMessage());
             } catch (ParseException ex1) {
                 InternalErrorHandler.handleException(ex1);
             }
