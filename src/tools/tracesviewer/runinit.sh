@@ -6,8 +6,12 @@ echo "java tools.tracesviewer.TracesViewer -[debug_file|server_file] fileName"
 
 echo $OS
 
+#if you are using 1.3
+
+# EXTRA_LIBS= ../../../lib/xerces/xerces.jar
+
 if test $OS = "Windows_NT" ; then
-  	java -classpath ".;../../../lib/xerces/xerces.jar;../../../classes" tools.tracesviewer.TracesViewer $*
+  	java -classpath "../../../classes" tools.tracesviewer.TracesViewer $*
 else
-	java -classpath "./:../../../lib/xerces/xerces.jar:../../../classes" tools.tracesviewer.TracesViewer $*
+	java -classpath "../../../classes" tools.tracesviewer.TracesViewer $*
 fi

@@ -1,7 +1,14 @@
 package tools.tracesviewer;
+
+//ifdef J2SDK1.4
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+//endif
+
 import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.SAXException;
+
 import java.io.*;
 import java.util.*;
 
@@ -9,7 +16,7 @@ import java.util.*;
  */
 public class LogFileParser extends DefaultHandler {
 	protected Hashtable messageLogs;
-	private XMLReader saxParser;
+	private XMLReader xmlReader;
 	private String transactionId;
 	private String from;
 	private String to;
@@ -32,13 +39,22 @@ public class LogFileParser extends DefaultHandler {
 	public LogFileParser() {
 		messageLogs = new Hashtable();
 		try {
+//ifdef J2SDK1.4
+			SAXParserFactory saxParserFactory=SAXParserFactory.newInstance();
+			SAXParser saxParser = saxParserFactory.newSAXParser();
+			this.xmlReader = saxParser.getXMLReader();
 
-			this.saxParser =
-				(XMLReader) Class
-					.forName("org.apache.xerces.parsers.SAXParser")
-					.newInstance();
-			saxParser.setContentHandler(this);
-			saxParser.setFeature(
+//else
+//
+//			this.xmlReader =
+//				(XMLReader) Class
+//					.forName("org.apache.xerces.parsers.SAXParser")
+// 				.newInstance();
+//endif
+
+			xmlReader.setContentHandler(this);
+
+			xmlReader.setFeature(
 				"http://xml.org/sax/features/validation",
 				true);
 			// parse the xml specification for the event tags.
@@ -52,7 +68,7 @@ public class LogFileParser extends DefaultHandler {
 
 	public Hashtable parseLogs(InputSource inputSource) {
 		try {
-			this.saxParser.parse(inputSource);
+			this.xmlReader.parse(inputSource);
 			return messageLogs;
 		} catch (SAXParseException spe) {
 			spe.printStackTrace();
