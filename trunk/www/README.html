@@ -240,6 +240,11 @@ and other functionality.
 sent to the wrong destination because the contact header in the last response
 was being ignored. Mat sent in a bug fix for this problem.
 
+<li> Bill Roome (AT&T research) noted that Applications may want to see
+the route header. The stack was previously stripping it. 
+A configuration parameter was added to pass the route header up to 
+the application.
+
 </ul>
 
 
