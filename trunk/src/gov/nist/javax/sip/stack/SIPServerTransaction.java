@@ -114,7 +114,7 @@ import java.util.TimerTask;
  *
  *</pre>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2004-01-22 14:23:45 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2004-01-22 18:39:41 $
  * @author Jeff Keyser 
  * @author M. Ranganathan <mranga@nist.gov>  
  * @author Bug fixes by Emil Ivov, Antonis Karydas.
@@ -364,14 +364,13 @@ public class SIPServerTransaction
 				// Schedule a timer to fire in 200 ms if the
 				// TU did not send a trying in that time.
 
-				//ifndef SIMULATION
-				//
+//ifndef SIMULATION
 				new Timer().schedule(new SendTrying(this), 200);
-				//else
-				/*
-			 	new SimTimer().schedule( new SendTrying( this ), 200);
-				//endif
-				*/
+//else
+/*
+		 		new SimTimer().schedule( new SendTrying( this ), 200);
+//endif
+*/
 
 			} else {
 				isMapped = true;
@@ -947,6 +946,10 @@ public class SIPServerTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2004/01/22 14:23:45  mranga
+ * Reviewed by:   mranga
+ * Fixed some minor formatting issues.
+ *
  * Revision 1.15  2004/01/22 13:26:33  sverker
  * Issue number:
  * Obtained from:

@@ -22,7 +22,7 @@ import sim.java.net.*;
 
 /** Implementation of the JAIN-SIP provider interface.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.12 $ $Date: 2004-01-22 14:23:45 $
+ * @version JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2004-01-22 18:39:41 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -36,11 +36,11 @@ public final class SipProviderImpl
 
 	private LinkedList pendingEvents;
 
-	//ifdef SIMULATION
-	/*
+//ifdef SIMULATION
+/*
 	private     SimMessageObject pendingEventsShadow;
-	//endif
-	*/
+//endif
+*/
 
 	protected boolean isActive;
 
@@ -60,31 +60,33 @@ public final class SipProviderImpl
 		synchronized (this) {
 			listeningPoint.removeSipProvider();
 		}
-		//ifndef SIMULATION
-		//
+//ifndef SIMULATION
+//
 		synchronized (this.pendingEvents)
-			//else
-			/*
+//else
+/*
 			this.pendingEventsShadow.enterCriticalSection();
 			try
-			//endif
-			*/ {
+//endif
+*/ 
+		  {
 			EventWrapper eventWrapper = new EventWrapper();
 			this.pendingEvents.add(eventWrapper);
-			//ifdef SIMULATION
-			/*
+//ifdef SIMULATION
+/*
 			this.pendingEventsShadow.doNotify();
-			//else
-			*/
+//else
+*/
 			this.pendingEvents.notify();
-			//endif
-			//
+//endif
+//
 		}
-		//ifdef SIMULATION
-		/*
+//ifdef SIMULATION
+/*
 		finally { this.pendingEventsShadow.leaveCriticalSection(); }
-		//endif
-		*/
+//endif
+*/
+
 	}
 
 	/**
@@ -116,48 +118,48 @@ public final class SipProviderImpl
 			return;
 		}
 
-		//ifndef SIMULATION
-		//
+//ifndef SIMULATION
+//
 		synchronized (this.pendingEvents)
-			//else
-			/*
+//else
+/*
 			this.pendingEventsShadow.enterCriticalSection();
 			try
-			//endif
-			*/ {
+//endif
+*/ 
+			{
 			EventWrapper eventWrapper = new EventWrapper();
 			eventWrapper.sipEvent = sipEvent;
 			eventWrapper.transaction = transaction;
 			this.pendingEvents.add(eventWrapper);
-			//ifdef SIMULATION
-			/*
+//ifdef SIMULATION
+/*
 			this.pendingEventsShadow.doNotify();
-			//else
-			*/
+//else
+*/
 			this.pendingEvents.notify();
-			//endif
-			//
+//endif
+//
 		}
-		//ifdef SIMULATION
-		/*
+//ifdef SIMULATION
+/*
 			finally { this.pendingEventsShadow.leaveCriticalSection(); }
-		//endif
-		*/
+//endif
+*/
 	}
 
 	/** Creates a new instance of SipProviderImpl */
 	protected SipProviderImpl() {
 		this.pendingEvents = new LinkedList();
-		//ifdef SIMULATION
-		/*
+//ifdef SIMULATION
+/*
 		this.pendingEventsShadow = new SimMessageObject();
 		SimThread myThread = new SimThread(this);
-		//else
-		*/
+//else
+*/
 		Thread myThread = new Thread(this);
-		//endif
-		//
-		// myThread.setPriority(Thread.MAX_PRIORITY);
+//endif
+//
 		myThread.start();
 	}
 
@@ -173,25 +175,26 @@ public final class SipProviderImpl
 		while (true) {
 			EventObject sipEvent = null;
 			EventWrapper eventWrapper = null;
-			//ifndef SIMULATION
-			//
+//ifndef SIMULATION
+//
 			synchronized (this.pendingEvents)
-				//else
-				/*
+//else
+/*
 				this.pendingEventsShadow.enterCriticalSection();
 				try 
-				//endif
-				*/ {
+//endif
+*/ 
+				{
 				if (pendingEvents.isEmpty()) {
 					try {
-						//ifdef SIMULATION
-						/*
+//ifdef SIMULATION
+/*
 						this.pendingEventsShadow.doWait();
-						//else
-						*/
+//else
+*/
 						this.pendingEvents.wait();
-						//endif
-						//
+//endif
+//
 					} catch (InterruptedException ex) {
 						sipStackImpl.logMessage("Interrupted!");
 						continue;
@@ -270,11 +273,11 @@ public final class SipProviderImpl
 				} // Bug report by Laurent Schwitzer
 				pendingEvents.clear();
 			} // end of Synchronized block
-			//ifdef SIMULATION
-			/*
+//ifdef SIMULATION
+/*
 			finally { this.pendingEventsShadow.leaveCriticalSection(); }
-			//endif
-			*/
+//endif
+*/
 		} // end While
 	}
 
@@ -526,12 +529,6 @@ public final class SipProviderImpl
 				(SIPServerTransaction) ((SIPRequest) request).getTransaction();
 			if (transaction == null)
 				throw new TransactionUnavailableException("Transaction not available");
-			/**
-			    if (!transaction.isMessagePartOfTransaction((SIPRequest) request)) {
-			        throw new TransactionUnavailableException
-			        ("Request Mismatch");
-			    }
-			**/
 			if (transaction.getOriginalRequest() == null)
 				transaction.setOriginalRequest(sipRequest);
 			try {
@@ -861,6 +858,10 @@ public final class SipProviderImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/01/22 14:23:45  mranga
+ * Reviewed by:   mranga
+ * Fixed some minor formatting issues.
+ *
  * Revision 1.11  2004/01/22 13:26:28  sverker
  * Issue number:
  * Obtained from:
