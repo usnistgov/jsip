@@ -21,7 +21,7 @@ import javax.sip.message.*;
  *
  * @author Jeff Keyser 
  * @author M. Ranganathan (modified Jeff's original source and aligned with JAIN-SIP 1.1)
- * @version  JAIN-SIP-1.1 $Revision: 1.14 $ $Date: 2004-01-25 16:06:24 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.15 $ $Date: 2004-02-05 14:43:21 $
  */
 public abstract class SIPTransaction
 	extends MessageChannel
@@ -364,7 +364,7 @@ public abstract class SIPTransaction
 	 *
 	 * @return Current state of this transaction.
 	 */
-	public final TransactionState getState() {
+	public TransactionState getState() {
 		return this.currentState;
 	}
 
@@ -858,6 +858,12 @@ public abstract class SIPTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/01/25 16:06:24  mranga
+ * Reviewed by:   M. Ranganathan
+ *
+ * Clean up setting state (Use TransactionState instead of integer). Convert to UNIX file format.
+ * Remove extraneous methods.
+ *
  * Revision 1.13  2004/01/22 20:15:32  mranga
  * Reviewed by:  mranga
  * Fixed a possible race condition in  nulling out the transaction Request (earlier added for scalability).
