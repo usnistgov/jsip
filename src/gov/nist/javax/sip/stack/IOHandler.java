@@ -164,6 +164,17 @@ class IOHandler {
 		}
 //else
 */
+
+	private void writeChunks(OutputStream outputStream, byte[] bytes, int length) 
+		throws IOException {
+		int chunksize = 4096;
+		for (int p = 0; p < length; p += chunksize )  {
+			int chunk = p + chunksize < length? chunksize: length - p;
+			outputStream.write(bytes, p, chunk);
+			outputStream.flush();
+		}
+	}
+
 	public Socket sendBytes(
 		InetAddress inaddr,
 		int contactPort,
@@ -191,16 +202,14 @@ class IOHandler {
 					}
 					clientSock = new Socket(inaddr, contactPort);
 					OutputStream outputStream = clientSock.getOutputStream();
-					outputStream.write(bytes, 0, length);
-					outputStream.flush();
+					writeChunks(outputStream, bytes,length);
 					putSocket(key, clientSock);
 					break;
 				} else {
 					try {
 						OutputStream outputStream =
 							clientSock.getOutputStream();
-						outputStream.write(bytes, 0, length);
-						outputStream.flush();
+						writeChunks(outputStream,bytes,length);
 						break;
 					} catch (IOException ex) {
 						if (LogWriter.needsLogging)
@@ -301,6 +310,10 @@ class IOHandler {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/03/18 22:01:20  mranga
+ * Reviewed by:   mranga
+ * Get rid of the PipedInputStream from pipelined parser to avoid a copy.
+ *
  * Revision 1.11  2004/03/07 22:25:24  mranga
  * Reviewed by:   mranga
  * Added a new configuration parameter that instructs the stack to
