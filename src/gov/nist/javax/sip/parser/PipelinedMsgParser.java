@@ -26,7 +26,7 @@ import sim.java.net.*;
  * This can be accessed from the SIPMessage using the getContent and
  * getContentBytes methods provided by the SIPMessage class. 
  *
- * @version JAIN-SIP-1.1 $Revision: 1.12 $ $Date: 2004-03-18 22:01:19 $
+ * @version JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2004-03-19 04:22:22 $
  *
  * @author <A href=mailto:mranga@nist.gov > M. Ranganathan  </A>
  *
@@ -343,7 +343,7 @@ public final class PipelinedMsgParser implements Runnable {
 									message_body,
 									nread,
 									contentLength - nread);
-							if (readlength >= 0) {
+							if (readlength > 0) {
 								nread += readlength;
 							} else {
 								break;
@@ -377,6 +377,10 @@ public final class PipelinedMsgParser implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/03/18 22:01:19  mranga
+ * Reviewed by:   mranga
+ * Get rid of the PipedInputStream from pipelined parser to avoid a copy.
+ *
  * Revision 1.11  2004/03/07 22:25:23  mranga
  * Reviewed by:   mranga
  * Added a new configuration parameter that instructs the stack to
