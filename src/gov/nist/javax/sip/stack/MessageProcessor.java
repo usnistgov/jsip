@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import gov.nist.javax.sip.address.*;
 import gov.nist.core.*;
+import gov.nist.javax.sip.*;
 import gov.nist.javax.sip.header.*;
 import java.text.*;
 
@@ -22,6 +23,8 @@ import java.text.*;
 
 public abstract class MessageProcessor  implements Runnable {
 	
+
+	protected ListeningPointImpl listeningPoint;
 	/**
          * Get the transport string.
          * @return A string that indicates the transport. 
@@ -103,5 +106,13 @@ public abstract class MessageProcessor  implements Runnable {
 	/** Run method.
 	*/
 	public abstract void run();
+
+	public ListeningPointImpl getListeningPoint() { 
+		return listeningPoint;
+	}
+
+	public void setListeningPoint(ListeningPointImpl lp) {
+		this.listeningPoint = lp;
+	}
 
 }

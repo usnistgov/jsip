@@ -144,6 +144,7 @@ public class TCPMessageProcessor extends MessageProcessor  {
      */
     public synchronized void stop() {
         isRunning = false;
+	this.listeningPoint = null;
         try{
             sock.close();
         } catch(IOException e) {

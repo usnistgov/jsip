@@ -64,30 +64,19 @@ implements SIPStackMessageFactory
         retval.sipStack = theStack;
 	SipStackImpl sipStackImpl = (SipStackImpl)theStack;
 	retval.sipStackImpl = sipStackImpl;
+	/**
 	ListeningPointImpl listeningPoint = (ListeningPointImpl)
 		sipStackImpl.getListeningPoint
 		(messageChannel.getPort(),
 		 messageChannel.getTransport());
-	retval.listeningPoint = listeningPoint;
-	if (listeningPoint == null) return null;
-	SipProviderImpl sipProvider = (SipProviderImpl) 
-			listeningPoint.getProvider();
-	/**
-	SipListener sipListener = sipProvider.sipListener;
-	if (sipListener == null) {
-		if (LogWriter.needsLogging)
-			LogWriter.logMessage("null listener - dropping!");
-		 return null;
-	}
-	// Critical section.
-	// synchronized(sipListener) {}
-	// retval.sipRequest = sipRequest;
 	**/
+	retval.listeningPoint = 
+		messageChannel.getMessageProcessor().getListeningPoint();
+	if (retval.listeningPoint == null) return null;
 	if (LogWriter.needsLogging) 
 	    LogWriter.logMessage("Returning request interface for " +
 			sipRequest.getFirstLine() + " " + retval + 
 			" messageChannel = " + messageChannel );
-	
         return  retval;
     }
     
@@ -118,9 +107,13 @@ implements SIPStackMessageFactory
 
         retval.transactionChannel = tr;
 
+	/**
 	retval.listeningPoint = (ListeningPointImpl)
 		sipStackImpl.getListeningPoint
 		(messageChannel.getPort(),messageChannel.getTransport());
+	**/
+	retval.listeningPoint = 
+		messageChannel.getMessageProcessor().getListeningPoint();
         return  retval;
     }
 

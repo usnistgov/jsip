@@ -52,8 +52,6 @@ extends  MessageChannel
 implements  ParseExceptionListener, Runnable {
     public static final String SIPHEADERS_PACKAGE = 
             PackageNames.SIPHEADERS_PACKAGE;
-    /** Pointer to the message processor that started us. */
-    protected  UDPMessageProcessor messageProcessor;
     
     /** Channel notifier (gets called on new channel creates).
      */
@@ -107,7 +105,7 @@ implements  ParseExceptionListener, Runnable {
     protected UDPMessageChannel(SIPStack stack,
     ChannelNotifier notifier,
     UDPMessageProcessor messageProcessor ) {
-        this.messageProcessor = messageProcessor;
+        super.messageProcessor = messageProcessor;
         this.stack = stack;
         Thread mythread = new Thread(this);
         mythread.start();
@@ -129,7 +127,7 @@ implements  ParseExceptionListener, Runnable {
     DatagramPacket packet) {
         
         this.incomingPacket = packet;
-        this.messageProcessor = messageProcessor;
+        super.messageProcessor = messageProcessor;
         this.stack = stack;
         this.myAddress = stack.getHostAddress();
         this.myPort = messageProcessor.getPort();
@@ -155,7 +153,7 @@ implements  ParseExceptionListener, Runnable {
         peerAddress = targetAddr;
         peerPort = port;
         peerProtocol = "UDP";
-        this.messageProcessor = messageProcessor;
+        super.messageProcessor = messageProcessor;
         this.myAddress = sipStack.getHostAddress();
         this.myPort = messageProcessor.getPort();
         stack = sipStack;
@@ -182,19 +180,25 @@ implements  ParseExceptionListener, Runnable {
             DatagramPacket packet;
             
             if ( stack.threadPoolSize != -1 ) {
-                synchronized(this.messageProcessor.messageQueue) {
-                    while (this.messageProcessor.messageQueue.isEmpty()) {
+                synchronized
+		   (((UDPMessageProcessor)messageProcessor).messageQueue) {
+                    while (((UDPMessageProcessor)messageProcessor).
+			    messageQueue.isEmpty()) {
                         // Check to see if we need to exit.
-                        if (! this.messageProcessor.isRunning) return;
+                        if (!((UDPMessageProcessor)messageProcessor).isRunning)
+				 return;
                         try {
-                            this.messageProcessor.messageQueue.wait();
+                            ((UDPMessageProcessor)messageProcessor).
+				messageQueue.wait();
                         } catch (InterruptedException ex) {
-                            if (! this.messageProcessor.isRunning) return;
+                           if (!((UDPMessageProcessor) messageProcessor).isRunning) 
+				return;
                         }
                     }
                     packet =
                     (DatagramPacket)
-                    this.messageProcessor.messageQueue.removeFirst();
+                    ((UDPMessageProcessor)messageProcessor).messageQueue.
+				removeFirst();
 			
                 }
                 this.incomingPacket = packet;
@@ -398,7 +402,7 @@ implements  ParseExceptionListener, Runnable {
                         ServerLog.logException(ex);
                     }
                 }
-            this.messageProcessor.useCount --;
+            ((UDPMessageProcessor)messageProcessor).useCount --;
             if (stack.threadPoolSize == -1) {
                 return;
             }
@@ -587,7 +591,7 @@ implements  ParseExceptionListener, Runnable {
      * packets).
      */
     public int getPort() {
-        return messageProcessor.port;
+        return ((UDPMessageProcessor)messageProcessor).port;
     }
     
     
