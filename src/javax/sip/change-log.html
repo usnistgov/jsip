@@ -1,0 +1,293 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Change-Log</title>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+  <meta name="author" content="Phelim O'Doherty">
+</head>
+<body>
+<h1>Change-Log for JAIN SIP v1.1</h1>
+<br>
+<hr width="100%" size="2">
+<h3>General</h3>
+<ul>
+  <li>Introduced the javax.sip package structure.</li>
+</ul>
+<hr width="100%" size="2">
+<h3>Package javax.sip</h3>
+<ul>
+  <li>Added Timeout Class defining two types of timeouts, RETRANSMIT and
+TRANSACTION.</li>
+  <li>Deleted SipEvent and defined granularity into the RequestEvent, ResponseEvent
+and TimeoutEvent.</li>
+  <li>Mandated single SipListener in the system.</li>
+  <li>Added new ObjectInUseException to replace UnableToDeleteProviderException</li>
+  <li>Moved Parameters interface to javax.sip.header package.</li>
+  <li>Replaced SIPParseException with java.text.ParseException.</li>
+  <li>Deleted SipListenerAlreadyRegisteredException, SipListenerNotRegisteredException,
+UnableToDeleteProviderException and SipParseException.</li>
+  <li>Added ClientTransaction and ServerTransaction objects.</li>
+  <li>Changed transaction identifier from long to ClientTransaction and ServerTransaction
+objects.</li>
+  <li>Added Dialogue object.</li>
+  <li>Removed incorrect use of IllegalArgumentException.</li>
+  <li>Change TransportUnavailableException to TransportNotSupportedException.</li>
+  <li>Added Router object that shows configuration of default route and outbound
+proxy. </li>
+  <li>Defined properties format for static SipStack configuration. </li>
+  <li>Added TransactionAlreadyExistsException.</li>
+</ul>
+<h4>ListeningPoint.java</h4>
+<ul>
+  <li>Supported TLS over TCP and SCTP transport in Listening Point class.</li>
+  <li>Deleted the DEFAULT_PORT constant and replaced with the PORT_5060 and
+PORT_5061 constants.</li>
+</ul>
+<h4>SipProvider.java</h4>
+<ul>
+  <li>Added setListeningPoint method to SipProvider class.</li>
+  <li>Added TransactionDoesNotExistException on sendRequest and sendResponse
+methods.</li>
+  <li>Added getNewServerTransaction(Request) and getNewClientTransaction(Request).</li>
+  <li>Changed SipException to IdHeaderNotAvailableExcetpion on the getCallIdHeader
+method on SipProvider.</li>
+  <li>SipListenerAlreadyRegisteredException and SipListenerNotRegisteredException
+use on the SipProvider interface now return silently.</li>
+  <li>Moved send sendBye(long transactionId, boolean isServerTransaction)
+from Provider to Dialogue.</li>
+  <li>Deleted extraneous methods on SipProvider, namely:</li>
+  <ul>
+    <li>public long sendAck(long clientTransactionId, String body, String
+bodyType, String bodySubType)</li>
+    <li>public long sendAck(long clientTransactionId, byte[] body, String
+bodyType, String bodySubType) </li>
+    <li>public void sendResponse(long serverTransactionId, int statusCode,
+byte[] body, String bodyType, String bodySubType)</li>
+    <li>public void sendResponse(long serverTransactionId, int statusCode,
+String body, String bodyType, String bodySubType)</li>
+    <li>public void sendResponse(long serverTransactionId, int statusCode)</li>
+    <li>public Request getTransactionRequest(long transactionId, boolean
+isServerTransaction)</li>
+    <li>public Response getTransactionResponse(long transactionId, boolean
+isServerTransaction)</li>
+  </ul>
+</ul>
+<h4>SipStack.java</h4>
+<ul>
+  <li>Added create and delete methods for ListeningPoints.</li>
+  <li>Replaced UnableToDeleteProviderException with ObjectInUseException
+on deleteProvider method.</li>
+  <li>Added getIPAddress method.</li>
+  <li>Added getRetransmissionFilter utility for User Agents.</li>
+  <li>Added getRouter method.</li>
+  <li>Deleted setStackName method.</li>
+</ul>
+<h4>SipFactory.java</h4>
+<ul>
+  <li>Updated to ensure only one instance of a SipStack per IP Address.</li>
+  <li>Updated to ensure only one instance MessageFactory, HeaderFactory and
+AddressFactory is ever returned by the SipFactory.</li>
+  <li>Added resetFactory method to switch between implementations from different
+vendors.</li>
+  <li>Removed SipException of createSipStack on the SipFactory as it is never
+thrown.</li>
+  <li>Added properties argument to createSipStack and defined expected values
+of properties object.</li>
+</ul>
+<h4>SipListener.java</h4>
+<ul>
+  <li>Deleted processTimeout, processRequest and processResponse with generic
+SipEvent argument and replaced with finer grained Event mechanism.</li>
+</ul>
+<hr width="100%" size="2">
+<h3>Package javax.sip.address</h3>
+<ul>
+  <li>Deleted SipURL.</li>
+  <li>Added TelURL interface.</li>
+  <li>Added SipURI inteface.</li>
+  <li>Renamed get/setAddress to get/setURI in NameAddress.</li>
+  <li>Removed explicit clone method on NameAddress.</li>
+  <li>Deleted removeDisplayName and hasDisplayName on NameAddress.</li>
+  <li>Removed SipParseException of setDisplayName method of NameAddress.</li>
+  <li>Renamed NameAddress to Address.</li>
+  <li>Removed SipParseException of createNameAddress method on AddressFactory.</li>
+  <li>Deleted createSipURL(InetAddress host), createSipURL(String host), 
+createSipURL(String user, InetAddress host),
+createSipURL(String user, String host) on the AddressFactory.</li>
+  <li>Added createAddress(String address), createTelURL(String phoneNumber) and 
+createSipURI(String user, String host) on the AddressFactory.</li>
+</ul>
+<hr width="100%" size="2">
+<h3>Package javax.sip.header</h3>
+<ul>
+  <li>Added TooManyHopsException to Header package.
+  <li>Changed exception on decrementMaxForwards method in MaxForwardsHeader to TooManyHopsException.
+</ul>
+<h4>Added Headers</h4>
+<ul>
+  <li>Added the following new RFC3261 Headers - AuthenticationInfoHeader,
+CallInfoHeader, ContentDispositionHeader, ContentLanguageHeader, ErrorInfoHeader,
+InReplyToHeader, MimeVersionHeader, MinExpiresHeader, SupportHeader. </li>
+  <li>Added ReasonHeader which is an ExtensionHeader to support RFC3326.</li>
+  <li>Added RAckHeader and RSeqHeader which are Extension headers to support
+RFC3262.</li>
+  <li>Added AllowEventsHeader, EventHeader and SubscriptionState which are
+extension headers to support RFC3265.</li>
+  <li>Added PathHeader which is an extension header to support draft-willis-sip-path-08.txt.</li>
+</ul>
+<h4>Deleted Headers</h4>
+<ul>
+  <li>EncodingHeader</li>
+  <li>EncryptionHeader </li>
+  <li>EndpointHeader </li>
+  <li>HideHeader </li>
+  <li>NameAddressHeader </li>
+  <li>OptionTagHeader </li>
+  <li>ProductHeader </li>
+  <li>ResponseKeyHeader </li>
+  <li>SecurityHeader. </li>
+</ul>
+<h4>HeaderFactory.java</h4>
+<ul>
+  <li>Added create methods for AlertInfo, AuthenticationInfoHeader, CallInfoHeader,
+ContentDispositionHeader, ErrorInfoHeader, InReplyTo, MimeVersion, ReplyTo.</li>
+  <li>Added create methods for extension RFC's, AllowEventsHeader, EventHeader,
+PathHeader, RAckHeader, RSeqHeader, ReasonHeader, SubscriptionStateHeader.</li>
+  <li>Deleted createDateHeader(String date), createEncryptionHeader(String
+scheme), createExpiresHeader(String date), createExpiresHeader(Date date),
+createHeader(String name, String value), createHideHeader(String hide), createResponseKeyHeader(String
+scheme), createRetryAfterHeader(String date), createRetryAfterHeader(Date
+date), createViaHeader(String host, int port, String transport), createViaHeader(String
+host), createViaHeader(int port, String host), createViaHeader(InetAddress
+host), createViaHeader(int port, InetAddress host), createViaHeader(URI uri),
+createViaHeader(String host, String transport).</li>
+</ul>
+<h4>New Utility classes</h4>
+ 
+<ul>
+  <li>HeaderAddress</li>
+  <li>Encoding</li>
+  <li>OptionTag</li>
+  <li>Parameters</li>
+</ul>
+<h4>Deleted methods in Headers</h4>
+<ul>
+  <li>hasQValue and removeQValue in AcceptHeader.</li>
+  <li> hasQValue and removeQValue in AcceptLanguageHeader.</li>
+  <li> getMethod and setMethod in Allow Header and replaced with methods
+handling an Iterator.</li>
+  <li> get/set/has/removeAction, get/set/has/removeComment, getExpiresAsDate,
+getExpiresAsDeltaSeconds, setExpires(Date expiryDate), has/removeQValue,
+has/removeExpires, set/isWildcard, ACTION_PROXY and ACTION_REDIRECT in ContactHeader.
+  </li>
+  <li> setDate(String date), get/setDate(Date date) in DateHeader. </li>
+  <li> getEncoding and setEncoding in Encoding Header and replaced with methods
+handling an Iterator.</li>
+  <li> getValue and setValue in Header.</li>
+  <li> getDeltaSeconds, setDeltaSeconds and isDate in ExpiresHeader.</li>
+  <li> get/setValue in Header.</li>
+  <li> remove/hasDelay in TimestampHeader.</li>
+  <li> get/set/has/removeComment and has/removeDuration in RetryAfterHeader.</li>
+  <li> get/set/set/has/removeMaddr, get/set/set/has/removeHost, get/set/has/removePort, 
+get/set/has/removeComment, get/setProtocolVersion, get/setTransport, get/set/has/removeTTL, 
+has/removeReceived, has/removeBranch, setReceived(InetAddress received), set/isHidden,
+UDP and TCP in ViaHeader.</li>
+  <li> get/setAgent in WarningHeader.<br>
+  </li>
+</ul>
+<h4> Added methods in Headers</h4>
+<ul>
+  <li> Added getAlertInfo and setAlertInfo in AlertInfoHeader.</li>
+  <li> Added get/set RetryAfter attribute to RetryAfterHeader.</li>
+  <li> Added getAuthenticationInfo and setAuthenticationInfo in AuthenticationInfoHeader.</li>
+  <li> Added digest, realm, username and response accessors to AuthorizationHeader.<br>
+  </li>
+</ul>
+<h4> Exceptions</h4>
+<ul>
+  <li>Removed SIPParseException of setSequenceNumber in CSeqHeader.</li>
+  <li> Throw ParseException on setParameter in ParametersHeader.</li>
+  <li> Removed IllegalArgumentException in EncodingHeader.</li>
+  <li> Changed SIPParseException to InvalidArgumentException on setContentLength
+in ContentLengthHeader.</li>
+  <li> Changed SIPParseException to InvalidArgumentException on setMaxForward
+in MaxForwardsHeader.</li>
+  <li> Changed SIPException to IllegalAccessException on decrementMaxForward
+in MaxForwardsHeader.</li>
+</ul>
+<h4>Inheritance</h4>
+<ul>
+  <li>ExpiresHeader no longer extends DateHeader, inherets directly from
+Header.</li>
+  <li> ProxyRequireHeader now extends RequireHeader as opposed to OptionTagHeader.</li>
+  <li> RetryAfterHeader no longer extends ExpiresHeader.<br>
+  </li>
+</ul>
+<h4> Data types</h4>
+<ul>
+  <li>Changed SequenceNumber from long to int in CSeqHeader.</li>
+  <li> Changed duration from long to int in RetryAfterHeader.</li>
+  <li> Changed date from Date to Calender in DateHeader.</li>
+</ul>
+<hr width="100%" size="2">
+<h3>Package javax.sip.message</h3>
+<h4>Request.java</h4>
+<ul>
+  <li>Deleted all header accessor methods, use those defined in Message.</li>
+  <li>Added INFO method as defined in RFC2976.</li>
+  <li>Added PRACK method as defined in RFC3262. </li>
+  <li>Added SUBSCRIBE and NOTIFY as defined in RFC3265.</li>
+  <li>Added UPDATE method as defined in RFC3311.</li>
+  <li>Added MESSAGE method as defined in RFC3428.</li>
+</ul>
+<h4>Response.java</h4>
+<ul>
+  <li>Deleted all header accessor methods, use those defined in Message.</li>
+  <li>Added 183 Session Progress, 413 Request Entity Too Large, 414 Request
+URI Too Long, 416 Unsupported URI Scheme, 421 Extension Required, 423 Interval
+Too Brief, 480 Temporarily Unavailable, 481 Call/Transaction Does Not Exist,
+487 Request Terminated, 488 Not Acceptable Here, 491 Request Pending, 493
+Undecipherable, 500 Server Internal Error, 504 Server Time-out, 505 Version
+Not Supported, 513 Message Too Large.</li>
+  <li>Deleted 303 See Other, 409 Conflict, 411 Length Rquired, 413 Entity
+Too Large, 414 Request URI Too Large, 480 Temporarily Not Available, 481
+Call Leg/Transaction Does Not Exist, 500 Internal Server Error, 504 Gateway
+Time-out, 505 SIP Version Not Supported.</li>
+  <li>Added 202 Accepted and 489 Bad Event as defined in RFC3265.</li>
+</ul>
+<h4>Message.java</h4>
+<ul>
+  <li>Deleted set/getEncrytionHeader on Message.</li>
+  <li>Deleted createViaHeader(InetAddress host, int port, String transport)
+and createViaHeader(InetAddress host, String transport).</li>
+  <li>Added createViaHeader(SipURI sipURI).</li>
+  <li>Added the mandatory MaxForwardsHeader with the set/get accessor methods.</li>
+  <li>Made ViaHeader mandatory, hence deleted hasViaHeaders(), removeViaHeaders()
+methods.</li>
+  <li>Deleted isRequest(), hasBody(), hasHeaders(), hasHeaders(String headerName),
+setHeaders(String headerName, List headers), setHeader(Header header, boolean
+first), getHeader(String headerName, boolean first), addHeader(Header header,
+boolean top), addHeaders(String headerName, List headers, boolean top), removeHeaders(String
+headerName), (String headerName, boolean first), getBodyAsBytes(), setBody(ContentTypeHeader
+contentTypeHeader, String body). </li>
+  <li>Deleted all optional specific Header accessor methods and replced with
+generic mechanism to acces optional headers. </li>
+  <li>Added getHeader(String headerName), addHeader(Header header), removeHeader(String
+headerName), setHeaders(List headers), getContent, getRawContent, setContent(Object
+body, ContentTypeHeader contentTypeHeader), getContentDisposition(), setContentDisposition(ContentDisposition
+contentDisposition).</li>
+  <li>Changed HeaderIterator to ListIterator</li>
+</ul>
+<h4>MessageFactory.java</h4>
+<ul>
+  <li>Added createCancelRequest(Request) method.
+  <li>Added createCancelRequest(Request) method.
+</ul>
+<hr width="100%" size="2"><br>
+<br>
+<br>
+<br>
+<br>
+</body>
+</html>

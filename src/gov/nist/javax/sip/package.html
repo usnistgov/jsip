@@ -1,0 +1,28 @@
+<body>
+This is the root of the JAIN implementation of SIP. Contains utility
+classes and implementatin of the provider and stack. Implementation of the
+headers is contained in header and implementation of the parser in the
+parser subdirectory. The stack contains the implementation classes for
+the stack. The StackImpl here implements the Jain SIP stack. The dialog
+and transaction implementations reside in the stack package.
+
+Additional Features (that are not required by the JAIN-SIP spec) and that
+can be enabled by properties specified when the SipStack is created:
+
+<ul>
+<li> Message Logging features - permits the application to log messages in
+a format that are suitable for trace viewing using the trace viewer facility.  
+</li>
+<li> Load Control Features - Control the transaction table size and server 
+conurrency to lessen Denial of Service attacks.
+</li>
+</ul>
+
+
+</body>
+
+<h2> Compatibility Note </h2>
+<a href=../../../change-log.html>
+JAIN SIP 1.1 is not backward compatible with JAIN-SIP 1.0. Here is a summary
+of the differences between JAIN-SIP 1.0 and JAIN SIP 1.1
+</a>
