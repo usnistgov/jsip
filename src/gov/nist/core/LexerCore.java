@@ -238,8 +238,8 @@ public class LexerCore extends StringTokenizer {
 				consume(1);
 			} else
 				throw new ParseException(
-					buffer + "\nExpecting  " + ch.charValue(),
-					ptr);
+					buffer + "\nExpecting  >>>" + ch.charValue() + "<<< got >>>" 
+					+ next + "<<<", ptr);
 		}
 		return this.currentMatch;
 	}
@@ -569,6 +569,11 @@ public class LexerCore extends StringTokenizer {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/03/10 03:37:25  mranga
+ * Submitted by:  Ben Evans
+ * Reviewed by:  mranga
+ * Bug in parsing of via header when there is a number of comma separated headers.
+ *
  * Revision 1.8  2004/02/06 20:15:55  mranga
  * Submitted by:  Bruno Konik
  * Reviewed by:   mranga
