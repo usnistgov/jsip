@@ -25,7 +25,7 @@ import javax.sip.header.ContactHeader;
  * Message channel abstraction for the SIP stack.
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.11 $ $Date: 2004-09-03 02:18:44 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.12 $ $Date: 2004-09-04 14:59:54 $
  *
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
@@ -137,10 +137,6 @@ public abstract class MessageChannel {
 		else
 			return -1;
 	}
-	/**
-	 * Handle an exception.
-	public abstract void handleException(SIPServerException ex);
-	 */
 
 	/**
 	 * Send a message given SIP message.
@@ -318,6 +314,9 @@ public abstract class MessageChannel {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/09/03 02:18:44  xoba
+ * got rid of cast to 'Contact' class
+ *
  * Revision 1.10  2004/06/21 04:59:50  mranga
  * Refactored code - no functional changes.
  *

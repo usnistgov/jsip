@@ -13,7 +13,7 @@ import java.text.*;
  * or ServerResponse object. The main job of the message processor is
  * to instantiate message channels for the given transport.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2004-06-21 04:59:50 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.8 $ $Date: 2004-09-04 14:59:54 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * 
@@ -64,6 +64,13 @@ public abstract class MessageProcessor implements Runnable {
 		InetAddress targetHost,
 		int port)
 		throws IOException;
+
+	/**
+	* Get our thread. This is used for joining when 
+	* message processors exit (requested by 
+	* Mike Andrews).
+	*/
+	public abstract Thread getThread();
 
 	/**
 	 * Start our thread.
@@ -132,6 +139,9 @@ public abstract class MessageProcessor implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/06/21 04:59:50  mranga
+ * Refactored code - no functional changes.
+ *
  * Revision 1.6  2004/03/07 22:25:24  mranga
  * Reviewed by:   mranga
  * Added a new configuration parameter that instructs the stack to

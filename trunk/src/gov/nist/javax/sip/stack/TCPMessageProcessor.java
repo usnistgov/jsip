@@ -23,13 +23,15 @@ import java.util.*;
  * object that creates new TCP MessageChannels (one for each new
  * accept socket).  
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.20 $ $Date: 2004-08-30 16:04:47 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.21 $ $Date: 2004-09-04 14:59:54 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Acknowledgement: Jeff Keyser suggested that a
  * Stop mechanism be added to this. Niklas Uhrberg suggested that
  * a means to limit the number of simultaneous active connections
- * should be added.
+ * should be added. Mike Andrews suggested that the thread be
+ * accessible so as to implement clean stop using Thread.join().
+ *
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public class TCPMessageProcessor extends MessageProcessor {
@@ -105,6 +107,16 @@ public class TCPMessageProcessor extends MessageProcessor {
 		this.isRunning = true;
 		thread.start();
 
+	}
+
+	
+	/**
+	* Return our thread.
+	*
+	*@return -- our thread. This is used for joining 
+	*/
+	public Thread getThread() {
+		return this.thread;
 	}
 
 	/**
@@ -363,6 +375,12 @@ public class TCPMessageProcessor extends MessageProcessor {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.20  2004/08/30 16:04:47  mranga
+ * Submitted by:  Mike Andrews
+ * Reviewed by:   mranga
+ *
+ * Added a network layer.
+ *
  * Revision 1.19  2004/08/23 23:56:21  mranga
  * Reviewed by:   mranga
  * forgot to set isDaemon in one or two places where threads were being
