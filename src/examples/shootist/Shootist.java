@@ -6,11 +6,6 @@ import javax.sip.message.*;
 import java.util.*;
 
 
-//ifdef SIMULATION
-/*
-import sim.java.*;
-//endif
-*/
 
 /**
  * This class is a UAC template. Shootist is the guy that shoots and shootme 
@@ -32,6 +27,11 @@ public class Shootist implements SipListener {
 	private ListeningPoint tcpListeningPoint;
 	private ListeningPoint udpListeningPoint;
 	private int counter;
+	private static String PEER_ADDRESS = Shootme.myAddress;
+	
+	// To run on two machines change these to suit.
+	public static final String myAddress = "127.0.0.1";
+	private static final int myPort = 5060;
 
 	protected ClientTransaction inviteTid;
 
@@ -216,8 +216,9 @@ public class Shootist implements SipListener {
 		Properties properties = new Properties();
 		// If you want to try TCP transport change the following to
 		String transport = "tcp";
-		String peerHostPort = "127.0.0.1:5070";
-		properties.setProperty("javax.sip.IP_ADDRESS", "127.0.0.1");
+		String peerHostPort = PEER_ADDRESS+":5070";
+		properties.setProperty("javax.sip.IP_ADDRESS", myAddress
+);
 		properties.setProperty(
 			"javax.sip.OUTBOUND_PROXY", 
 			peerHostPort + "/" + transport);
@@ -268,7 +269,7 @@ public class Shootist implements SipListener {
 			addressFactory = sipFactory.createAddressFactory();
 			messageFactory = sipFactory.createMessageFactory();
 			udpListeningPoint = sipStack.createListeningPoint
-							(5060, "udp");
+							(myPort, "udp");
 			udpProvider = sipStack.createSipProvider
 							(udpListeningPoint);
 			Shootist listener = this;
@@ -278,7 +279,7 @@ public class Shootist implements SipListener {
 
 
 			tcpListeningPoint = sipStack.createListeningPoint
-								(5060, "tcp");
+								(myPort, "tcp");
 			tcpProvider = sipStack.createSipProvider(tcpListeningPoint);
 			tcpProvider.addSipListener(listener);
 
@@ -428,6 +429,10 @@ public class Shootist implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.33  2005/01/20 17:31:12  mranga
+ * Reviewed by:   mranga
+ * added something to get content in example
+ *
  * Revision 1.32  2004/12/01 19:05:14  mranga
  * Reviewed by:   mranga
  * Code cleanup remove the unused SIMULATION code to reduce the clutter.
