@@ -173,6 +173,7 @@ clean: emacsclean
 	cd $(SRCROOT)/gov/nist/core;$(MAKE) clean
 	cd $(SRCROOT)/gov/nist/core/net;$(MAKE) clean
 	cd $(SRCROOT)/examples/shootist; $(MAKE) clean
+	cd $(SRCROOT)/examples/tls; $(MAKE) clean
 	cd $(SRCROOT)/examples/subsnotify; $(MAKE) clean
 	$(RM) -rf classes
 	$(RM) -f $(RI_JAR)
@@ -199,6 +200,7 @@ backup:
 	./src/gov/nist/core				\
 	./src/gov/nist/core/net				\
 	./src/examples/shootist		        	\
+	./src/examples/tls		        	\
 	./src/examples/subsnotify	        	\
 	./src/tools/tracesviewer	        
 	
@@ -218,6 +220,7 @@ zipfile:
 	-r ./$(PROJECT_ROOT)/src/gov/nist/core/net	        \
 	-r ./$(PROJECT_ROOT)/src/tools/tracesviewer	        \
 	-r ./$(PROJECT_ROOT)/src/tools/sniffer		        \
+	-r ./$(PROJECT_ROOT)/src/examples/tls	       		\
 	-r ./$(PROJECT_ROOT)/src/examples/shootist	       	\
 	-r ./$(PROJECT_ROOT)/src/examples/subsnotify	       	\
 	-r ./$(PROJECT_ROOT)/src/javax				\
@@ -261,6 +264,7 @@ srctar: stamp
 	./$(PROJECT_ROOT)/src/tools/tracesviewer	      	\
 	./$(PROJECT_ROOT)/src/tools/sniffer		        \
 	./$(PROJECT_ROOT)/src/examples/shootist		        \
+	./$(PROJECT_ROOT)/src/examples/tls		        \
 	./$(PROJECT_ROOT)/src/examples/subsnotify	        \
 	./$(PROJECT_ROOT)/src/test/tck		        	\
 	./$(PROJECT_ROOT)/README				\
@@ -281,6 +285,7 @@ srczip: stamp
 	-r ./$(PROJECT_ROOT)/src/gov/nist/core/net	        \
 	-r ./$(PROJECT_ROOT)/src/tools/tracesviewer	        \
 	-r ./$(PROJECT_ROOT)/src/tools/sniffer		        \
+	-r ./$(PROJECT_ROOT)/src/examples/tls        		\
 	-r ./$(PROJECT_ROOT)/src/examples/shootist        	\
 	-r ./$(PROJECT_ROOT)/src/examples/subsnotify        	\
 	-r ./$(PROJECT_ROOT)/src/test/tck	        	\
@@ -323,6 +328,7 @@ tarfile:
 	./$(PROJECT_ROOT)/src/gov/nist/core/net	        	\
 	./$(PROJECT_ROOT)/src/tools/tracesviewer	        \
 	./$(PROJECT_ROOT)/src/tools/sniffer		        \
+	./$(PROJECT_ROOT)/src/examples/tls		        \
 	./$(PROJECT_ROOT)/src/examples/shootist		        \
 	./$(PROJECT_ROOT)/src/examples/subsnotify	        \
 	./$(PROJECT_ROOT)/classes				\
@@ -390,6 +396,7 @@ export:
 	./src/tools/tracesviewer	        \
 	./src/tools/sniffer		        \
 	./src/examples/shootist		        \
+	./src/examples/tls		        \
 	./src/examples/subsnotify	        \
 	./src/test/tck		        	\
 	./README				\

@@ -13,12 +13,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.String;
 import java.text.ParseException;
-//ifdef SIMULATION
-/*
-import sim.java.*;
-import sim.java.net.*;
-//endif
- */
 
 /**
  * This is the UDP Message handler that gets created when a UDP message
@@ -46,7 +40,7 @@ import sim.java.net.*;
  * this code that was sending it into an infinite loop when a bad incoming
  * message was parsed.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.25 $ $Date: 2004-09-07 20:13:06 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.26 $ $Date: 2004-11-28 17:32:26 $
  */
 public class UDPMessageChannel
 extends MessageChannel
@@ -68,6 +62,10 @@ implements ParseExceptionListener, Runnable {
     private InetAddress peerAddress;
     
     private String myAddress;
+
+    //@@@ hagai
+    private int peerPacketSourcePort;
+    private InetAddress peerPacketSourceAddress;
     
     /**
      * Reciever port -- port of the destination.
@@ -357,6 +355,9 @@ implements ParseExceptionListener, Runnable {
                 } else
                     this.peerPort = SIPMessageStack.DEFAULT_PORT;
                 this.peerProtocol = v.getTransport();
+
+                this.peerPacketSourceAddress = packet.getAddress();
+                this.peerPacketSourcePort = packet.getPort();
                 try {
                     this.peerAddress = packet.getAddress();
                     // Check to see if the received parameter matches
@@ -365,10 +366,16 @@ implements ParseExceptionListener, Runnable {
                     if (!v
                     .getSentBy()
                     .getInetAddress()
-                    .equals(this.peerAddress))
+                    .equals(this.peerAddress)) {
                         v.setParameter(
                         Via.RECEIVED,
                         this.peerAddress.getHostName());
+			//@@@hagai
+
+                        v.setParameter(
+                                Via.RPORT,
+                                new Integer(this.peerPacketSourcePort).toString());
+		    }
                     
                     // this.peerAddress = v.getSentBy().getInetAddress();
                 } catch (java.net.UnknownHostException ex) {
@@ -796,11 +803,15 @@ implements ParseExceptionListener, Runnable {
     }
     
     
-    /**
-     * private void sendMessage(byte[] msg, boolean retry) throws IOException {
-     * sendMessage(msg, peerAddress, peerPort, peerProtocol, retry);
-     * }
-     **/
+    public int getPeerPacketSourcePort()
+    {
+        return peerPacketSourcePort;
+    }
+
+    public InetAddress getPeerPacketSourceAddress()
+    {
+        return peerPacketSourceAddress;
+    }
     
     /**
      * Get the logical originator of the message (from the top via header).
@@ -849,6 +860,12 @@ implements ParseExceptionListener, Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.25  2004/09/07 20:13:06  mranga
+ * Submitted by:  mranga
+ * Reviewed by:   mranga
+ *
+ * Fixed some logging code.
+ *
  * Revision 1.24  2004/08/30 16:04:48  mranga
  * Submitted by:  Mike Andrews
  * Reviewed by:   mranga
