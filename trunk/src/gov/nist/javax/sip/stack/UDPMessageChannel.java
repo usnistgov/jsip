@@ -46,6 +46,9 @@ import sim.java.net.*;
  * Lamine Brahimi suggested a single threaded behavior flag
  * be added to this. Niklas Uhrberg suggested that thread pooling support
  * be added to this for performance and resource management.
+ * Peter Parnes found a bug with
+ * this code that was sending it into an infinite loop when a bad incoming
+ * message was parsed.
  *
  *@version  JAIN-SIP-1.1
  *
@@ -293,8 +296,19 @@ implements  ParseExceptionListener, Runnable {
                 if (stack.threadPoolSize == -1) return;
                 else continue;
             }
-            // No parse exception.
-           if (sipMessage == null) continue;
+            // No parse exception but null message - reject it and 
+	    // march on (or return). Bug report from Peter Parnes.
+	    // exit this message processor if the message did not parse.
+	     
+            if (sipMessage == null)  {
+                if (this.stack.logWriter.needsLogging) {
+                    this.stack.logWriter.logMessage( "Rejecting message !  " 
+			+ new String(msgBytes));
+                    this.stack.logWriter.logMessage( "Null message parsed.");
+                }
+	       if (stack.threadPoolSize == -1 ) return;
+	       else continue;
+	   }
            ViaList viaList = sipMessage.getViaHeaders();
            // Check for the required headers.
            if (sipMessage.getFrom()   == null  	 	||
