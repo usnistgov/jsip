@@ -1219,6 +1219,9 @@ public class DialogImpl implements javax.sip.Dialog {
          ((SIPClientTransaction)clientTransactionId).dialog = this;
 
 	this.addTransaction((SIPTransaction) clientTransactionId);
+	// Enable the retransmission filter for the transaction
+
+         ((SIPClientTransaction)clientTransactionId).isMapped = true;
 
 
         From from = (From) dialogRequest.getFrom();
