@@ -27,7 +27,7 @@ import sim.java.net.*;
  * @author Jeff Keyser (original) 
  * @author M. Ranganathan <mranga@nist.gov>  <br/> (Added Dialog table).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.24 $ $Date: 2004-03-30 15:17:39 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.25 $ $Date: 2004-03-30 15:38:18 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public abstract class SIPTransactionStack
@@ -99,7 +99,9 @@ public abstract class SIPTransactionStack
 		simThread.start();
 //else
 */
-		new Thread(new TransactionScanner(this)).start();
+		Thread scanner = new Thread(new TransactionScanner(this));
+		scanner.setName("TransactionScanner");
+		scanner.start();
 //endif
 //
 
@@ -926,6 +928,10 @@ public abstract class SIPTransactionStack
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.24  2004/03/30 15:17:39  mranga
+ * Reviewed by:   mranga
+ * Added reInitialization for stack in support of applets.
+ *
  * Revision 1.23  2004/03/09 00:34:44  mranga
  * Reviewed by:   mranga
  * Added TCP connection management for client and server side
