@@ -120,7 +120,7 @@ import sim.java.*;
  *@author Bug fixes by Emil Ivov.
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.24 $ $Date: 2004-04-19 21:51:04 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.25 $ $Date: 2004-05-06 15:45:52 $
  */
 public class SIPClientTransaction
 	extends SIPTransaction
@@ -479,14 +479,20 @@ public class SIPClientTransaction
 					// state.
 					dialog.setRemoteTag(transactionResponse.getToTag());
 					dialog.setState(DialogImpl.CONFIRMED_STATE);
-				} else if (
-					(transactionResponse.getStatusCode() == 487
-						|| transactionResponse.getStatusCode() / 100 == 5
-						|| transactionResponse.getStatusCode() / 100 == 6)
-						&& (dialog.getState() == null
-							|| dialog.getState().getValue()
+				} else if  (transactionResponse.getStatusCode() == 401 && 
+						transactionResponse.getStatusCode() == 407)  {
+					// Note that if the status code is 401 or 407, the app needs to
+					// re-issue the invite with the same call id so we keep the 
+					// dialog running.
+					if (dialog.getState() == null) 
+						dialog.setState(DialogImpl.EARLY_STATE);
+				} else if (  ( transactionResponse.getStatusCode() / 100 == 4				  ||
+				 	        transactionResponse.getStatusCode() / 100 == 5				  ||
+					 	transactionResponse.getStatusCode() / 100 == 6) 
+						&& (dialog.getState() == null || dialog.getState().getValue()
 								== DialogImpl.EARLY_STATE)) {
 					// Invite transaction generated an error.
+					// Kill the associated dialog.
 					dialog.setState(DialogImpl.TERMINATED_STATE);
 				}
 			}
@@ -1014,6 +1020,11 @@ public class SIPClientTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.24  2004/04/19 21:51:04  mranga
+ * Submitted by:  mranga
+ * Reviewed by:  ivov
+ * Support for stun.
+ *
  * Revision 1.23  2004/04/09 11:51:26  mranga
  * Reviewed by:   mranga
  * Limit size of pending buffer to thwart response flooding attack.
