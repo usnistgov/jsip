@@ -208,7 +208,7 @@ c:/jakarta-ant/bin/ant all
 				deprecation="${deprecation}"
 				optimize="${optimize}"
 				sourcepath="${srcroot}"
-				srcdir="${srcroot}/examples/shootist"
+				srcdir="${srcroot}/examples/"
 				destdir= "${classes}">
 			<classpath>
 				<pathelement location="${xerceslib}"/>
@@ -278,5 +278,36 @@ c:/jakarta-ant/bin/ant all
 			</classpath>
 		</javac>
 	</target>
+	
+	<target name="shootme" description="run the service.">
+        <java classname="examples.shootist.Shootme" fork="true">
+            <classpath>
+                <pathelement location="${classes}"/>
+            </classpath>                       
+        </java>
+    </target>
+
+    <target name="shootist" description="run the service.">
+        <java classname="examples.shootist.Shootist" fork="true">
+            <classpath>
+                <pathelement location="${classes}"/>
+            </classpath>                       
+        </java>
+    </target>
+    <target name="subscriber" description="run the service.">
+        <java classname="examples.subsnotify.Subscriber" fork="true">
+            <classpath>
+                <pathelement location="${classes}"/>
+            </classpath>                       
+        </java>
+    </target>
+
+    <target name="notifier" description="run the service.">
+        <java classname="examples.subsnotify.Notifier" fork="true">
+            <classpath>
+                <pathelement location="${classes}"/>
+            </classpath>                       
+        </java>
+    </target>
 </project>
 
