@@ -1047,7 +1047,8 @@ public class DialogImpl implements javax.sip.Dialog {
 	// Set the dialog back pointer.
 	if (method == null )throw new NullPointerException("null method");
 	else if (this.getState() == null || 
-		this.getState().getValue() == TERMINATED_STATE) 
+		 (this.getState().getValue() == TERMINATED_STATE &&
+		  ! method.equalsIgnoreCase(Request.BYE) ) )
 		throw new SipException
 		("Dialog  " + getDialogId() +  
 		  " not yet established or terminated " + this.getState());
