@@ -77,30 +77,14 @@ CVS Access
 ----------
 
 As the source is subject to frequent updates, you may also wish to access
-our public CVS repository regularly. In order to do this:
+our public CVS repository regularly.  The public repository resides
+on dev.java.net
 
-1. Install cvs (if you are using windows, please install cygwin 
-and this gets you cvs).
+Follow the instructions given here
 
-2. Log into cvs:
+http://jain-sip.dev.java.net/source/browse/jain-sip/
 
-cvs -d :pserver:anonymous@is2.antd.nist.gov:/home/nist-sip/nist-siprepository login
 
-Supply a password when prompted.
-
-Password: nist-sip
-
-3. check out the repository:
-
-cvs -d :pserver:anonymous@is2.antd.nist.gov:/home/nist-sip/nist-siprepository co nist-sip-1.2
-
-This will download all the files you need to build the source.
-
-Read nist-sip-1.2/README (this file) and follow the build instructions.
-
-4. To make an update to your copy of the source
-
-cvs -d :pserver:anonymous@is2.antd.nist.gov:/home/nist-sip/nist-siprepository update -P -d nist-sip-1.2
 
 
 
@@ -109,12 +93,13 @@ The BLEEDING EDGE repository
 ----------------------------
 
 Because we frequently collaborate with others,  we also have a public
-internal CVS repository.  We use this for our own development as well.
-This is referred to affectionately as the BLEEDING EDGE repository.
-Use our internal CVS repository if you want to be on the bleeding edge
-of development but be warned that  the code herein is likely to be
-less stable but more up to date and therefore more or less buggy as the
-case may be (consider the principle of "no risk no reward"):
+internal CVS repository.  This repository resides on NIST.  We use this
+for our own development as well.  This is referred to affectionately as
+the BLEEDING EDGE repository.  Use our internal CVS repository if you
+want to be on the bleeding edge of development but be warned that  the
+code herein is likely to be less stable but more up to date and therefore
+more or less buggy as the case may be (consider the principle of "no
+risk no reward"):
 
 cvs -d :pserver:anonymous@is2.antd.nist.gov:/home/nist-sip/cvs-nist-sip-1.2/repository  login
 
