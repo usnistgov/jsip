@@ -16,6 +16,41 @@
    
 <h2>Frequently Asked questions </h2>
 <ul>
+<li>Who owns NIST-SIP ?
+<li>What are the restrictions on its use? 
+<li>Show me a quick how-to.
+<li>Why is there only superficial resemblance between JAIN SIP 1.0  and
+<li>How involved is it to port applications between JAIN-SIP 1.0 and  JAIN-SIP
+1.1 JAIN SIP 1.1?  
+<li>Why does my application get null transaction ID for  INVITE transactions?
+<li> What is the difference between Transaction.sendRequest,
+Dialog.sendRequest and SipProvider.sendRequest  ?
+<li>Who manages From/To tags  ?
+<li>Is JAIN-SIP 1.1 Stateful/Stateless or DialogStateful ?
+<li>Why Dialog.sendRequest but no Dialog.sendResponse ?
+<li>Does the SIP Communicator Softphone work on Linux?
+<li>How do I cancel a transaction ?
+<li>What does the Router do?
+<li> What is the difference between Trasaction.sendAck 
+and  Dialog.sendAck ? 
+<li>Why is there no Provider method for creating dialogs? 
+<li>I am constructing a stateful proxy/B2BUA. I forward the request
+after modifying it and then respond statefully. 
+Why are the tags/headers/something else modified in the response ? 
+<li>How to set up MSN messenger for SIP?
+<li>Does NIST-SIP do eager or lazy parsing? I see no parse exceptions on
+get methods. What happened to all the JAIN SIP lazy parsing stuff?
+<li>What support is provided for sending out-of-dialog requests? 
+<li>How do I communicate with the Router from the application?
+<li>How are IO Exceptions reported to the Application? 
+<li>Why is the Transacton Request returned from transaction.getRequest() 
+set to null? 
+<li>How do you identify the listening point for an incoming 
+server transaction in the case where you are supporting multiple
+listening points?
+</ul>
+<br><hr SIZE=2  NOSHADE>
+<ul>
  <li>Who owns NIST-SIP? <br/>
 You! it is in the public domain. However, this only applies to
 everything that was developed by us at NIST!   This includes the stack
@@ -73,7 +108,7 @@ needs to specify a From tag. From the server side, the application specifies
 the initial To tag when responding to the request. After that, the stack
 manages things. Transactions are assigned to dialogs based on tags in requests/respomses.
   </li>
-<li>Wy Dialog.sendRequest but no Dialog.sendResponse <br/>
+<li>Why Dialog.sendRequest but no Dialog.sendResponse <br/>
  Dialog.sendRequest uses route set and other dialog specific information. 
 Responses take all the information they need from the transaction.</li>
 <li>Does the Softphone work on Linux?<br/>
@@ -135,7 +170,9 @@ This is for efficiency. If you want to modify an outgoing request  (for example
 if you are building a stateful proxy server or B2BUA)  clone it. JAIN-SIP
 specifies a Deep cloning operation for this purpose.</li>
 
-<li> How to set up messenger for SIP?<br/>
+<li> How to set up MSN messenger for SIP?<br/>
+MSN Messenger 4.7 (on windows XP) supports SIP but SIP support
+is not working well on MSN 5.0 (on Win2K).
 Enable communications services in Accounts tab. Go to Advanced and set your 
 proxy from there.
 </li>
@@ -177,7 +214,8 @@ Event. This may change in the next revision where an explicit IOException
 Event may be included in the architecture to avoid overloading the semantics
 of a TIMEOUT event.
 </br>
-<li> Why is the Transacton Request set to null? </br> The client
+<li> Why is the Transacton Request returned from transaction.getRequest() 
+set to null? </br> The client
 transaction is only obliged to hold a reference to the Request until the
 transaction goes to COMPLETED state. After that, the reference to the
 Request is nulled out to save heap space and ehance scalability of the
@@ -185,8 +223,15 @@ implementation. If you want to hold a long term reference to the request,
 then please do this in your application.
 </br>
 
-
+<li>How do you identify the listening point for an incoming 
+server transaction in the case where you are supporting multiple
+listening points?</br>
+<ul>
+<li> <it> SipProvider sipProvider = sipEvent.getSource();  </it> </li>
+<li>  <it> ListeningPoint lp = sipProvider.getListeningPoint(); </it> </li>
 </ul>
+
+<br><hr SIZE=2  NOSHADE>
 
 <h2> Frequently Questionable Questions (List likely to grow in time) </h2>
 
