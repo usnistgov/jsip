@@ -3,6 +3,10 @@ import  java.io.*;
 import java.util.*;
 
 /** Input class for the pipelined parser.
+*Buffer all bytes read from the socket and make them available to the message parser.
+*
+*@author M. Ranganathan (Contains a bug fix contributed by Rob Daugherty ( Lucent Technologies) )
+*
 */
 
 public class Pipeline extends  InputStream {
@@ -104,7 +108,7 @@ public class Pipeline extends  InputStream {
 	}
 
 	public int read() throws IOException {
-		if (this.isClosed) return -1;
+		// if (this.isClosed) return -1;
 		synchronized (this.buffList) {
 		    if (currentBuffer != null && currentBuffer.ptr <
 			currentBuffer.length)  {
@@ -113,6 +117,8 @@ public class Pipeline extends  InputStream {
 				this.currentBuffer = null;
 			return retval;
 		     }
+		     // Bug fix contributed by Rob Daugherty.
+		     if (this.isClosed && this.buffList.isEmpty()) return -1;
 		     try {
 			// wait till something is posted.
 			while (this.buffList.isEmpty()) {

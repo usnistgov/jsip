@@ -8,11 +8,6 @@ import gov.nist.javax.sip.message.*;
 import gov.nist.javax.sip.header.*;
 import java.text.ParseException;
 import java.io.*;
-//ifdef SIMULATION
-/*
-import sim.java.net.*;
-//endif
-*/
 
 /**
  * This implements a pipelined message parser suitable for use
@@ -26,7 +21,7 @@ import sim.java.net.*;
  * This can be accessed from the SIPMessage using the getContent and
  * getContentBytes methods provided by the SIPMessage class. 
  *
- * @version JAIN-SIP-1.1 $Revision: 1.15 $ $Date: 2004-05-30 18:55:56 $
+ * @version JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2004-11-30 23:28:14 $
  *
  * @author <A href=mailto:mranga@nist.gov > M. Ranganathan  </A>
  *
@@ -34,7 +29,7 @@ import sim.java.net.*;
  *
  * Lamine Brahimi and Yann Duponchel (IBM Zurich) noticed that the parser was
  * blocking so I threw out some cool pipelining which ran fast but only worked
- * when the phase of the full moon matched its mood. Now things are serialized
+ * when the phase of the moon matched its mood. Now things are serialized
  * and life goes slower but more reliably.
  *
  * @see  SIPMessageListener
@@ -56,14 +51,7 @@ public final class PipelinedMsgParser implements Runnable {
 	 * and erroneous messages.)
 	 */
 	protected SIPMessageListener sipMessageListener;
-//ifdef SIMULATION
-/*
-	private SimThread mythread; // Preprocessor thread
-//else
-*/
 	private Thread mythread; // Preprocessor thread
-//endif
-//
 	private byte[] messageBody;
 	private boolean errorFlag;
 	private     Pipeline rawInputStream;
@@ -102,15 +90,8 @@ public final class PipelinedMsgParser implements Runnable {
 		this.sipMessageListener = sipMessageListener;
 		rawInputStream = in;
 		this.maxMessageSize = maxMessageSize;
-//ifndef SIMULATION
-//
 		mythread = new Thread(this);
 		mythread.setName("PipelineThread-" + getNewUid());
-//else
-/*
-		mythread = new SimThread(this);
-//endif
-*/
 
 	}
 
@@ -154,14 +135,7 @@ public final class PipelinedMsgParser implements Runnable {
 
 		p.rawInputStream = this.rawInputStream;
 		p.sipMessageListener = this.sipMessageListener;
-//ifdef SIMULATION
-/*
-		SimThread mythread = new SimThread(p);
-//else
-*/
 		Thread mythread = new Thread(p);
-//endif
-//
 		mythread.setName("PipelineThread");
 		return p;
 	}
@@ -398,6 +372,11 @@ public final class PipelinedMsgParser implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2004/05/30 18:55:56  mranga
+ * Reviewed by:   mranga
+ * Move to timers and eliminate the Transaction scanner Thread
+ * to improve scalability and reduce cpu usage.
+ *
  * Revision 1.14  2004/05/16 14:13:22  mranga
  * Reviewed by:   mranga
  * Fixed the use-count issue reported by Peter Parnes.
