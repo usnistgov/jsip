@@ -19,7 +19,7 @@ import gov.nist.core.*;
  * NIST-SIP stack and event model with the JAIN-SIP stack. Implementors
  * of JAIN services need not concern themselves with this class.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2004-02-11 20:22:30 $
+ * @version JAIN-SIP-1.1 $Revision: 1.14 $ $Date: 2004-02-13 13:55:31 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Bug fix Contributions by Lamine Brahimi and  Andreas Bystrom. <br/>
@@ -447,14 +447,6 @@ public class NistSipMessageHandlerImpl
 		SIPClientTransaction clientTransaction =
 			(SIPClientTransaction) this.transactionChannel;
 
-		DialogImpl dialog = null;
-		if (transaction != null) {
-			dialog = (DialogImpl) transaction.getDialog();
-			if (LogWriter.needsLogging && dialog == null) {
-				sipStackImpl.logMessage(
-					"dialog not found for " + sipResponse.getFirstLine());
-			}
-		}
 
 		SipListener sipListener = sipProvider.sipListener;
 
@@ -496,6 +488,10 @@ public class NistSipMessageHandlerImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2004/02/11 20:22:30  mranga
+ * Reviewed by:   mranga
+ * tighten up the sequence number checks for BYE processing.
+ *
  * Revision 1.12  2004/02/05 10:58:12  mranga
  * Reviewed by:   mranga
  * Fixed a another bug caused by previous fix that restricted request

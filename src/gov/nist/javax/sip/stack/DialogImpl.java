@@ -24,7 +24,7 @@ import java.text.ParseException;
  * retrieve this structure from the SipStack. Bugs against route set 
  * management were reported by Antonis Karydas and Brad Templeton.
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.19 $ $Date: 2004-02-04 22:07:24 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.20 $ $Date: 2004-02-13 13:55:31 $
  *
  *@author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -469,11 +469,12 @@ public class DialogImpl implements javax.sip.Dialog {
 
 	/** Protected Dialog constructor.
 	 */
-	private DialogImpl() {
+	protected DialogImpl() {
 		this.routeList = new RouteList();
 		this.dialogState = -1; // not yet initialized.
 		localSequenceNumber = 0;
 		remoteSequenceNumber = -1;
+
 	}
 
 	/** Set the dialog identifier.
@@ -1437,6 +1438,10 @@ public class DialogImpl implements javax.sip.Dialog {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2004/02/04 22:07:24  mranga
+ * Reviewed by:   mranga
+ * Fix for handling of out of order sequence numbers in the dialog layer.
+ *
  * Revision 1.18  2004/02/04 18:44:18  mranga
  * Reviewed by:   mranga
  * check sequence number before delivering event to application.
