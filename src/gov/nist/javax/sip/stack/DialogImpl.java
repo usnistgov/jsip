@@ -25,7 +25,7 @@ import java.text.ParseException;
  * retrieve this structure from the SipStack. Bugs against route set
  * management were reported by Antonis Karydas and Brad Templeton.
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.34 $ $Date: 2004-06-17 15:22:30 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.35 $ $Date: 2004-06-17 15:36:10 $
  *
  *@author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -82,6 +82,7 @@ public class DialogImpl implements javax.sip.Dialog , PendingRecord {
      */
     public void putPending(NistSipMessageHandlerImpl pendingRecord, int seqno) {
         boolean toInsert = false;
+	if (nextSeqno == null) return;
         synchronized(pendingRecords) {
             if (seqno > nextSeqno.intValue() + WINDOW_SIZE) {
                 return;
@@ -112,13 +113,15 @@ public class DialogImpl implements javax.sip.Dialog , PendingRecord {
      * if there are any queued requests.
      */
     public void requestConsumed() {
+	boolean toNotify = false;
 	this.nextSeqno = new Integer(this.getRemoteSequenceNumber() + 1);
         // got the next thing we were looking for.
-	if (this.pendingRecords.containsKey(nextSeqno)) {
-		this.sipStack.notifyPendingRecordScanner();
-	} else if ( this.pendingRecords.size() != 0 ) {
-                    this.sipStack.putPending(this);
-        }
+	synchronized (this.pendingRecords) {
+	   if (this.pendingRecords.containsKey(nextSeqno)) {
+		toNotify = true;
+	    } 
+	}
+	if (toNotify) this.sipStack.notifyPendingRecordScanner();
     }
 
     /** Return true if this request can be consumed by the dialog.
@@ -1671,6 +1674,12 @@ public class DialogImpl implements javax.sip.Dialog , PendingRecord {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.34  2004/06/17 15:22:30  mranga
+ * Reviewed by:   mranga
+ *
+ * Added buffering of out-of-order in-dialog requests for more efficient
+ * processing of such requests (this is a performance optimization ).
+ *
  * Revision 1.33  2004/06/16 16:31:07  mranga
  * Sequence number checking for in-dialog messages
  *
