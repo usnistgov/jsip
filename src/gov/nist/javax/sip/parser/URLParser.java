@@ -54,8 +54,22 @@ public class URLParser extends Parser {
         next == '&' ||
         next == '+' ||
         next == '$' ||
-        next == ',';
+        next == ',' ;
         
+    }
+
+    // Missing '=' bug in character set - discovered by interop testing 
+    // at SIPIT 13 by Bob Johnson and Scott Holben.
+    protected static boolean isUserUnreserved(char la) {
+	return   la == '&'  || 
+		 la == '?'  ||
+          	 la ==  '+' || 
+		 la == '$'  || 
+		 la == '#'  ||
+          	 la == '/'  || 
+		 la == ','  || 
+		 la == '.'  || 
+		 la == '='   ; 
     }
     
     
@@ -561,6 +575,7 @@ public class URLParser extends Parser {
         return retval.toString();
     }
     
+    
     protected String user() throws ParseException {
         
 	if (debug) dbg_enter("user");
@@ -568,10 +583,9 @@ public class URLParser extends Parser {
         StringBuffer retval = new StringBuffer();
         while(lexer.hasMoreChars()) {
             char la = lexer.lookAhead(0);
-            if (la == '=') break;
-            else if (isUnreserved(la) || la == '&' || la == '?' ||
-            la ==  '+' || la == '$' || la == '#' ||
-            la == '/'  || la == ',' || la == '.' ) {
+            //if (la == '=') break;
+            if (isUnreserved(la)   || 
+		isUserUnreserved(la)) {
                 retval.append(la);
                 lexer.consume(1);
             } else if (isEscaped()) {
@@ -614,6 +628,7 @@ public class URLParser extends Parser {
 /**
 static private String urls[] = 
 { 
+   "sip:conference=1234@sip.convedia.com;xyz=pqd",
    "sip:herbivore.ncsl.nist.gov:5070;maddr=129.6.55.251;lc",
   "sip:1-301-975-3664@foo.bar.com;user=phone", "sip:129.6.55.181",
   "sip:herbivore.ncsl.nist.gov:5070;maddr=129.6.55.251?method=INVITE&contact=sip:foo.bar.com",
