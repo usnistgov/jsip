@@ -17,6 +17,7 @@ compatible) running on top of Familiar (Linux embedded operating
 system). To add Swing support,  you just need to install an optional
 library. 
 
+The jsphone example requires J2SDK1.4 and Java Media Framework (JMF).
 
 Building It from Scratch
 -------------------------
@@ -77,14 +78,30 @@ CVS Access
 ----------
 
 As the source is subject to frequent updates, you may also wish to access
-our public CVS repository regularly.  The public repository resides
-on dev.java.net
+our public CVS repository regularly. In order to do this:
 
-Follow the instructions given here
+1. Install cvs (if you are using windows, please install cygwin 
+and this gets you cvs).
 
-http://jain-sip.dev.java.net/source/browse/jain-sip/
+2. Log into cvs:
 
+cvs -d :pserver:anonymous@is2.antd.nist.gov:/home/nist-sip/nist-siprepository login
 
+Supply a password when prompted.
+
+Password: nist-sip
+
+3. check out the repository:
+
+cvs -d :pserver:anonymous@is2.antd.nist.gov:/home/nist-sip/nist-siprepository co nist-sip-1.2
+
+This will download all the files you need to build the source.
+
+Read nist-sip-1.2/README (this file) and follow the build instructions.
+
+4. To make an update to your copy of the source
+
+cvs -d :pserver:anonymous@is2.antd.nist.gov:/home/nist-sip/nist-siprepository update -P -d nist-sip-1.2
 
 
 
@@ -93,13 +110,12 @@ The BLEEDING EDGE repository
 ----------------------------
 
 Because we frequently collaborate with others,  we also have a public
-internal CVS repository.  This repository resides on NIST.  We use this
-for our own development as well.  This is referred to affectionately as
-the BLEEDING EDGE repository.  Use our internal CVS repository if you
-want to be on the bleeding edge of development but be warned that  the
-code herein is likely to be less stable but more up to date and therefore
-more or less buggy as the case may be (consider the principle of "no
-risk no reward"):
+internal CVS repository.  We use this for our own development as well.
+This is referred to affectionately as the BLEEDING EDGE repository.
+Use our internal CVS repository if you want to be on the bleeding edge
+of development but be warned that  the code herein is likely to be
+less stable but more up to date and therefore more or less buggy as the
+case may be (consider the principle of "no risk no reward"):
 
 cvs -d :pserver:anonymous@is2.antd.nist.gov:/home/nist-sip/cvs-nist-sip-1.2/repository  login
 
@@ -138,9 +154,6 @@ SUBSTANTIAL CODE CONTRIBUTIONS MADE BY THE FOLLOWING PEOPLE
 -----------------------------------------------------------
 
 1. Emil Ivov <emil_ivov@yahoo.com> Contributed a Video Softphone Under GPL.
-	This is now its own top level project and lives in 
-	
-	http://sip-communicator.dev.java.net
 
 2. Emil Ivov contributed the TCK for the Transaction and Dialog layer - this
 	is over 75% of the TCK itself. 
@@ -217,15 +230,15 @@ by the following people:
     Sun reported a problem with SDP parsing. Emil discovered a bug in the
     Server transaction implementation. Emil contributed comprehensive 
     state machine unit tests of the Transaction layer to the TCK 
-    (work in progress). The softphone is distributed as its own top level
-    project and is hosted at http://sip-communicator.dev.java.net
+    (work in progress). 
 
 3. Andreas Byström reported bugs in set/get methods for Authentication 
     headers (quotes were missing). Andreas reported bugs in the 
     SDP implementation. Andreas helped to unit test call flows.  Andreas
     found documentation bugs and reported problems and incompleteness with
     the TCK.  Andreas noticed problems with Acking 487. Ack should be sent
-    before the TU gets called.
+    before the TU gets called. Andreas noted that CANCEL should not 
+    contain content.
 
 4. Antonis Karydas reported bugs in the implementation of the JAIN transaction
     model. Server transactions were being created with non-null TID
@@ -239,7 +252,9 @@ by the following people:
     a problem in handling Server transaction timeouts and posted a fix
     for this problem. Antonis reported a problem in content length for
     generation of responses. Antonis reported a problem with closely 
-    spaced ACKs for CANCELed Server Transactions.
+    spaced ACKs for CANCELed Server Transactions. Antonis reported that
+    CANCEL after OK was not properly handled (stack should respond OK
+    to cancel and not bother application.
 
 5. Beichuang reported bugs in the IM Client and presence server. BC also
     noted that extension methods were not working (Dialogs were not being 

@@ -188,11 +188,6 @@ c:/jakarta-ant/bin/ant all
              <pathelement location="${classes}"/>
          </classpath>
      </javac>
-
-<!-- Examples are bundled and distributed separately -->
-
-<!--
-
      <javac debug="${debug}" deprecation="${deprecation}" optimize="${optimize}" sourcepath="${srcroot}" srcdir="${srcroot}/examples/proxy" destdir= "${classes}">
          <classpath>
              <pathelement location="${xerceslib}"/>
@@ -216,7 +211,6 @@ c:/jakarta-ant/bin/ant all
          </classpath>
      </javac>
 </target>
--->
 
 <!-- Compile the tools -->
 <target name="compiletools">

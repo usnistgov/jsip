@@ -544,6 +544,7 @@ public final class SIPRequest extends SIPMessage
 	* this request. Note that tag assignment and removal of
 	* is left to the caller (we use whatever tags are present in the
 	* original request).  Acknowledgement: Added by Jeff Keyser.
+	* Incorporates a bug report from Andreas Byström.
 	*
 	*@return A CANCEL SIPRequest with a copy all the original headers 
 	* from this request except for Require, ProxyRequire.
@@ -561,8 +562,14 @@ public final class SIPRequest extends SIPMessage
 		headerIterator = getHeaders();
 		while(headerIterator.hasNext()){
 			nextHeader = (SIPHeader)headerIterator.next();
-			if (nextHeader instanceof RequireList) continue;
-			if (nextHeader instanceof ProxyRequireList) continue;
+			if (nextHeader instanceof RequireList) 
+				continue;
+			else if (nextHeader instanceof ProxyRequireList) 
+				continue;
+			else if (nextHeader instanceof ContentLength) 
+				continue;
+			else if (nextHeader instanceof ContentType) 
+				continue;
 			
 			if (nextHeader instanceof ViaList) {
 			/**

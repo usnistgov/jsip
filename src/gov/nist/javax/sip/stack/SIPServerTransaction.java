@@ -268,10 +268,12 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
 	}
 
 	// Compensation for retransmits after OK has been dispatched  
-	// as suggested by Antonis Karydas.
-        if ((((SIPTransactionStack)getSIPStack()).isDialogCreated
+	// as suggested by Antonis Karydas. Cancel Processing is 
+	// special because we want to look for the invite
+        if (((SIPRequest)messageToTest).getMethod().equals(Request.CANCEL)
+	   || ((((SIPTransactionStack)getSIPStack()).isDialogCreated
 	     (((SIPRequest)messageToTest).getMethod()))  ||
-             !isTerminated( ) ) {
+             !isTerminated( ))) {
             
             // Get the topmost Via header and its branch parameter
             viaHeaders = messageToTest.getViaHeaders( );
@@ -515,6 +517,21 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
 			(transactionRequest);
                      requestOf.processRequest( transactionRequest, this );
 		} else if (LogWriter.needsLogging)
+			if (transactionRequest.getMethod().equals 
+				(Request.CANCEL)) {
+                                if (LogWriter.needsLogging)
+                                    LogWriter.logMessage
+                                    ("Too late to cancel Transaction");
+				// send OK and just ignore the CANCEL.
+				 try {
+				  this.sendMessage
+				  (transactionRequest.
+					createResponse(Response.OK));
+				} catch (IOException ex) {
+				  // Transaction is already terminated
+				  // just ignore the IOException.
+				}
+			}
 			LogWriter.logMessage("Dropping request " + 
 				getState());
 	    }
