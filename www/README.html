@@ -174,11 +174,19 @@ it was fixed.
      found a bug when there was a whitespace separating the header name
      and the : following it.
 
+
 <li> Sverker Abrahamsson reformatted everything to conform to the java
-style guide and eliminated many annoying javadoc problems.
+    style guide and eliminated many annoying javadoc problems.
+
 
 <li> Bruno Konik torture tested the parser and unearthed some
-problems with the parsing of SIP urls and methods.
+     problems with the parsing of SIP urls and methods. 
+     These problems were fixed.
+
+<li> Wanrong Lin noted that the spec called for a dummy dialog to be created
+	even if there is no possibility of a transaction being assigned to
+	a dialog. This was fixed - now a static dummy dialog is assigned to a
+	transaction that has no possibility of being assigned to any dialog.
 
 </ul>
 
