@@ -361,6 +361,7 @@ public abstract class SIPTransaction
 	protected final void enableRetransmissionTimer(
 	) {
 
+		// Changed this to 2 on request from Joseph Cheung 
 		enableRetransmissionTimer( 1 );
 
 	}
