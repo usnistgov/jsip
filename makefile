@@ -190,6 +190,7 @@ backup:
 	--exclude *.log						\
 	--exclude debug.txt					\
 	--exclude api						\
+	--exclude *Log.txt					\
 	./src/test/					\
 	./src/gov/nist/javax				\
 	./src/gov/nist/core				\
@@ -245,6 +246,7 @@ srctar: stamp
 	--exclude \*~						\
 	--exclude *.log						\
 	--exclude debug.txt					\
+	--exclude *Log.txt					\
 	./$(PROJECT_ROOT)/manifest.tck				\
 	./$(PROJECT_ROOT)/timestamp				\
 	./$(PROJECT_ROOT)/src/javax				\

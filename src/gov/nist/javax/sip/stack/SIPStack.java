@@ -33,7 +33,7 @@ import sim.java.net.*;
  * returnResponse  for successful message processing and throw
  * SIPServerException for unsuccessful message processing.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.18 $ $Date: 2004-05-14 20:20:03 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.19 $ $Date: 2004-05-16 14:13:23 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * 
@@ -157,6 +157,11 @@ public abstract class SIPStack {
 	protected String stunServerAddress;
 
 	protected int stunServerPort;
+
+	/** Read timeout on TCP incoming sockets -- defines the time between reads for 
+	*after delivery of first byte of message.
+	*/
+	protected int readTimeout;
 
 	/**
 	 * Log a bad message (invoked when a parse exception arises).
@@ -426,6 +431,8 @@ public abstract class SIPStack {
 		this.logWriter = new LogWriter();
 		// Server log file.
 		this.serverLog = new ServerLog(this);
+		// The read time out is infinite.
+		this.readTimeout = -1;
 
 //ifdef SIMULATION
 /*
@@ -729,6 +736,14 @@ public abstract class SIPStack {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2004/05/14 20:20:03  mranga
+ *
+ * Submitted by:  Dave Stuart
+ * Reviewed by:  mranga
+ *
+ * Stun support hacks -- use the original address specified to bind tcp transport
+ * socket.
+ *
  * Revision 1.17  2004/04/19 21:51:04  mranga
  * Submitted by:  mranga
  * Reviewed by:  ivov

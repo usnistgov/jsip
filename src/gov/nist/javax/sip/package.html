@@ -102,6 +102,19 @@ stun4j.jar is in your class path.
  <li> <b>gov.nist.javax.sip.MAX_CONNECTIONS = integer </b> <br/>
     Max number of simultaneous incoming TCP connections handled by stack. 
  </li>
+
+ <li> <b>gov.nist.javax.sip.READ_TIMEOUT = integer </b> <br/>
+  This is relevant for incoming TCP connections to prevent starvation at
+  the server.
+  This defines the timeout in miliseconds between successive reads after the 
+  first byte of a SIP message is read by the stack. All the sip headers
+  must be delivered in this interval and each successive buffer of the
+  message content  must be delivered in this interval or the connection 
+  will be killed and the message truncated.
+  Default value is -1  (ie. the stack is wide open to starvation attacks) and
+  the client can be as slow as it wants to be. Min value if specified should
+  exceed 100 millisec.
+  </li>
  </ul>
 
 </body>
