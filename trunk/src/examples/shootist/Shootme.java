@@ -91,7 +91,7 @@ public class Shootme implements SipListener {
 				response.getHeader(ToHeader.NAME);
 		toHeader.setTag("4321"); // Application is supposed to set.
 		Address address = addressFactory.createAddress(
-			"Shootme <sip:129.6.55.62:5070>");
+			"Shootme <sip:127.0.0.1:5070>");
 		ContactHeader contactHeader = 
 			headerFactory.createContactHeader(address);
 		response.addHeader(contactHeader);
@@ -181,7 +181,7 @@ public class Shootme implements SipListener {
         sipFactory = SipFactory.getInstance();
         sipFactory.setPathName("gov.nist");
         Properties properties = new Properties();
-        properties.setProperty("javax.sip.IP_ADDRESS","129.6.55.62");
+        properties.setProperty("javax.sip.IP_ADDRESS","127.0.0.1");
         properties.setProperty("javax.sip.RETRANSMISSION_FILTER", "true");
         properties.setProperty("javax.sip.STACK_NAME", "shootme");
 	// You need  16 for logging traces. 32 for debug + traces.
