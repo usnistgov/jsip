@@ -23,7 +23,7 @@ import java.util.*;
  * object that creates new TCP MessageChannels (one for each new
  * accept socket).  
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2004-03-25 18:08:15 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.14 $ $Date: 2004-03-25 19:01:44 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Acknowledgement: Jeff Keyser suggested that a
@@ -244,7 +244,10 @@ public class TCPMessageProcessor extends MessageProcessor {
 		   sipStack.logWriter.logMessage	
 		   ( Thread.currentThread() + " removing " + key);
 		}
-		this.tcpMessageChannels.remove(key);
+
+		/** May have been removed already */
+		if (tcpMessageChannels.get(key) == tcpMessageChannel) 
+			this.tcpMessageChannels.remove(key);
 	}
 
 
@@ -356,6 +359,11 @@ public class TCPMessageProcessor extends MessageProcessor {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2004/03/25 18:08:15  mranga
+ * Reviewed by:   mranga
+ * Fix connection caching for ill behaved clients which connect multiple times
+ * for the same incoming request.
+ *
  * Revision 1.12  2004/03/25 15:15:05  mranga
  * Reviewed by:   mranga
  * option to log message content added.
