@@ -4,19 +4,28 @@
 
 package gov.nist.javax.sip.stack;
 
-import gov.nist.javax.sip.header.*;
-import gov.nist.javax.sip.address.*;
-import gov.nist.javax.sip.message.*;
-import java.net.InetAddress;
+import gov.nist.core.Host;
+import gov.nist.core.HostPort;
+import gov.nist.core.InternalErrorHandler;
+import gov.nist.javax.sip.address.AddressImpl;
+import gov.nist.javax.sip.header.CSeq;
+import gov.nist.javax.sip.header.CallID;
+import gov.nist.javax.sip.header.Via;
+import gov.nist.javax.sip.message.SIPMessage;
+import gov.nist.javax.sip.message.SIPRequest;
+import gov.nist.javax.sip.message.SIPResponse;
+
 import java.io.IOException;
+import java.net.InetAddress;
 import java.text.ParseException;
-import gov.nist.core.*;
+
+import javax.sip.header.ContactHeader;
 
 /**
  * Message channel abstraction for the SIP stack.
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.10 $ $Date: 2004-06-21 04:59:50 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.11 $ $Date: 2004-09-03 02:18:44 $
  *
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
@@ -284,8 +293,8 @@ public abstract class MessageChannel {
 		String status) {
 		int peerport = getPeerPort();
 		if (peerport == 0 && sipResponse.getContactHeaders() != null) {
-			Contact contact =
-				(Contact) sipResponse.getContactHeaders().getFirst();
+			ContactHeader contact =
+				(ContactHeader) sipResponse.getContactHeaders().getFirst();
 			peerport = ((AddressImpl) contact.getAddress()).getPort();
 
 		}
@@ -309,6 +318,9 @@ public abstract class MessageChannel {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/06/21 04:59:50  mranga
+ * Refactored code - no functional changes.
+ *
  * Revision 1.9  2004/05/30 18:55:57  mranga
  * Reviewed by:   mranga
  * Move to timers and eliminate the Transaction scanner Thread
