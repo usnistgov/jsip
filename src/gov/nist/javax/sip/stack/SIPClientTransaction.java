@@ -120,7 +120,7 @@ import sim.java.*;
  *@author Bug fixes by Emil Ivov.
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2004-01-22 18:39:41 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.14 $ $Date: 2004-01-22 20:15:32 $
  */
 public class SIPClientTransaction
 	extends SIPTransaction
@@ -461,20 +461,6 @@ public class SIPClientTransaction
 				inviteClientTransaction(transactionResponse, sourceChannel);
 			else
 				nonInviteClientTransaction(transactionResponse, sourceChannel);
-			// The original request is not needed except for INVITE
-			// transactions -- null the pointers to the transactions so
-			// that state may be released.
-			if (TransactionState.COMPLETED == this.getState()
-				&& this.originalRequest != null
-				&& !this.originalRequest.getMethod().equals(Request.INVITE)) {
-				// reduce the state to minimum
-				// This assumes that the application will not need
-				// to access the request once the transaction is 
-				// completed. 
-				this.lastRequest = null;
-				this.originalRequest = null;
-				this.lastResponse = null;
-			}
 		} catch (IOException ex) {
 			setState(TERMINATED_STATE);
 			raiseErrorEvent(SIPTransactionErrorEvent.TRANSPORT_ERROR);
@@ -815,6 +801,8 @@ public class SIPClientTransaction
 	 */
 	public Request createCancel() throws SipException {
 		SIPRequest originalRequest = this.getOriginalRequest();
+		if (originalRequest == null) 
+			throw new SipException("Bad state " + getState());
 		if (originalRequest.getMethod().equalsIgnoreCase(Request.ACK))
 			throw new SipException("Cannot Cancel ACK!");
 		else
@@ -830,7 +818,8 @@ public class SIPClientTransaction
 	 */
 	public Request createAck() throws SipException {
 		SIPRequest originalRequest = this.getOriginalRequest();
-		if (originalRequest.getMethod().equalsIgnoreCase(Request.ACK)) {
+		if (originalRequest == null) throw new SipException("bad state " + getState());
+		if (getMethod().equalsIgnoreCase(Request.ACK)) {
 			throw new SipException("Cannot ACK an ACK!");
 		} else if (lastResponse == null) {
 			throw new SipException("bad Transaction state");
@@ -941,9 +930,26 @@ public class SIPClientTransaction
 	public boolean isSecure() {
 		return encapsulatedChannel.isSecure();
 	}
+
+	/** This is called by the stack after a non-invite client
+	* transaction goes to completed state.
+	*/
+	public void clearState() {
+			// reduce the state to minimum
+			// This assumes that the application will not need
+			// to access the request once the transaction is 
+			// completed. 
+			this.lastRequest = null;
+			this.originalRequest = null;
+			this.lastResponse = null;
+	}
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2004/01/22 18:39:41  mranga
+ * Reviewed by:   M. Ranganathan
+ * Moved the ifdef SIMULATION and associated tags to the first column so Prep preprocessor can deal with them.
+ *
  * Revision 1.12  2004/01/22 14:23:45  mranga
  * Reviewed by:   mranga
  * Fixed some minor formatting issues.

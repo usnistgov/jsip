@@ -22,7 +22,7 @@ import sim.java.net.*;
 
 /** Implementation of the JAIN-SIP provider interface.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2004-01-22 18:39:41 $
+ * @version JAIN-SIP-1.1 $Revision: 1.14 $ $Date: 2004-01-22 20:15:32 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -262,8 +262,25 @@ public final class SipProviderImpl
 						}
 
 						sipListener.processRequest((RequestEvent) sipEvent);
+						
 					} else if (sipEvent instanceof ResponseEvent) {
 						sipListener.processResponse((ResponseEvent) sipEvent);
+						// The original request is not needed except for INVITE
+						// transactions -- null the pointers to the transactions so
+						// that state may be released.
+					        SIPClientTransaction ct = (SIPClientTransaction) 
+											eventWrapper.transaction;
+						if ( ct != null 
+							&& TransactionState.COMPLETED == ct.getState()
+							&& ct.getOriginalRequest() != null
+							&& !ct.getOriginalRequest().getMethod().equals
+							 	(Request.INVITE)) {
+							// reduce the state to minimum
+							// This assumes that the application will not need
+							// to access the request once the transaction is 
+							// completed. 
+							ct.clearState() ;
+						}
 					} else if (sipEvent instanceof TimeoutEvent) {
 						sipListener.processTimeout((TimeoutEvent) sipEvent);
 					} else {
@@ -858,6 +875,10 @@ public final class SipProviderImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2004/01/22 18:39:41  mranga
+ * Reviewed by:   M. Ranganathan
+ * Moved the ifdef SIMULATION and associated tags to the first column so Prep preprocessor can deal with them.
+ *
  * Revision 1.12  2004/01/22 14:23:45  mranga
  * Reviewed by:   mranga
  * Fixed some minor formatting issues.
