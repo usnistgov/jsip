@@ -88,6 +88,8 @@ public class TracesSessionsList extends List  {
          } 
          
         public void updateTracesCanvas() { 
+            if (tracesSessions==null || tracesSessions.isEmpty())
+                return;
             // We take the first trace from the list 
             TracesSession tracesSession=(TracesSession)tracesSessions.firstElement(); 
             
@@ -111,6 +113,9 @@ public class TracesSessionsList extends List  {
          
    
    public void updateTracesCanvas(ItemEvent e) { 
+           if (tracesSessions==null || tracesSessions.isEmpty())
+                return;
+       
             index = ((Integer)e.getItem()).intValue() ; 
            
             TracesSession tracesSession=(TracesSession)tracesSessions.elementAt(index); 
