@@ -21,7 +21,7 @@ import javax.sip.message.*;
  *
  * @author Jeff Keyser 
  * @author M. Ranganathan (modified Jeff's original source and aligned with JAIN-SIP 1.1)
- * @version  JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2004-02-13 13:55:32 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2004-02-19 16:01:40 $
  */
 public abstract class SIPTransaction
 	extends MessageChannel
@@ -75,6 +75,8 @@ public abstract class SIPTransaction
 	protected DialogImpl dialog;
 
 	protected boolean isMapped;
+
+	protected boolean isAckSeen;
 
 	/**
 	 * Initialized but no state assigned.
@@ -857,9 +859,25 @@ public abstract class SIPTransaction
 		return this.encapsulatedChannel.getMessageProcessor();
 	}
 
+	/** This is book-keeping for retransmission filter management.
+	*/
+	public void setAckSeen() { 
+		this.isAckSeen = true;
+	}
+
+	/** This is book-keeping for retransmission filter management.
+	*/
+	public boolean ackSeen() {
+		return this.isAckSeen;
+	}
+
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2004/02/13 13:55:32  mranga
+ * Reviewed by:   mranga
+ * per the spec, Transactions must always have a valid dialog pointer. Assigned a dummy dialog for transactions that are not assigned to any dialog (such as Message).
+ *
  * Revision 1.15  2004/02/05 14:43:21  mranga
  * Reviewed by:   mranga
  * Fixed for correct reporting of transaction state.
