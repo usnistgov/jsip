@@ -729,6 +729,7 @@ public abstract class SIPTransaction
 		int	errorEventID
 	) {
 
+
 		// Error event to send to all listeners
 		SIPTransactionErrorEvent	newErrorEvent;
 		// Iterator through the list of listeners

@@ -7,9 +7,6 @@ all:
 	$(JAVAC) *.java
 	rm -rf $(DESTINATION)/tools/tracesviewer/images; cp -r ./images $(DESTINATION)/tools/tracesviewer
 
-viewer_jar:
-	$(JAVA) -jar ../../../tracesviewer.jar -server_file ./debug/server_3pcc_log.txt
-
 viewer:
 	$(JAVA) tools.tracesviewer.TracesViewer -server_file ./debug/server_3pcc_log.txt
 
