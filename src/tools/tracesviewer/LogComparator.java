@@ -26,8 +26,10 @@ class LogComparator implements Comparator {
 				return -1;
 			else if (ts1 > ts2)
 				return 1;
-			else
-				return 0;
+			else {
+				// Bug fix contributed by Pierre Sandström
+				return  m1 != m2 ? 1: 0;
+			}
 		} catch (NumberFormatException ex) {
 			ex.printStackTrace();
 			System.exit(0);
