@@ -27,7 +27,7 @@ import sim.java.net.*;
  * @author Jeff Keyser (original) 
  * @author M. Ranganathan <mranga@nist.gov>  <br/> (Added Dialog table).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.29 $ $Date: 2004-05-31 18:12:56 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.30 $ $Date: 2004-06-01 11:42:59 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public abstract class SIPTransactionStack
@@ -708,7 +708,8 @@ public abstract class SIPTransactionStack
 					        if (LogWriter.needsLogging)
 							logWriter.logMessage("adding server transaction " + 
 							currentTransaction);
-						serverTransactions.add(currentTransaction);
+						serverTransactions.add(0,currentTransaction);
+						currentTransaction.startTransactionTimer();
 						currentTransaction.isMapped = true;
 					} 
 				} else {
@@ -722,7 +723,8 @@ public abstract class SIPTransactionStack
 				      	    requestReceived.getCSeq().getSequenceNumber()
 				     		> dialog.getRemoteSequenceNumber()) {
 						currentTransaction.map(); 
-						serverTransactions.add(currentTransaction);
+						serverTransactions.add(0,currentTransaction);
+						currentTransaction.startTransactionTimer();
 						currentTransaction.toListener = true;
 					}
 				}
@@ -825,7 +827,7 @@ public abstract class SIPTransactionStack
 				return null;
 
 			returnChannel = createClientTransaction(mc);
-			clientTransactions.add(returnChannel);
+			clientTransactions.add(0,returnChannel);
 			((SIPClientTransaction) returnChannel).setViaPort(
 				nextHop.getPort());
 			((SIPClientTransaction) returnChannel).setViaHost(
@@ -846,11 +848,13 @@ public abstract class SIPTransactionStack
 		synchronized (clientTransactions) {
 			// New client transaction to return
 			SIPTransaction returnChannel = createClientTransaction(rawChannel);
-			clientTransactions.add(returnChannel);
+			clientTransactions.add(0,returnChannel);
 			((SIPClientTransaction) returnChannel).setViaPort(
 				rawChannel.getViaPort());
 			((SIPClientTransaction) returnChannel).setViaHost(
 				rawChannel.getHost());
+			// Add the transaction timer for the state machine.
+			returnChannel.startTransactionTimer();
 			return returnChannel;
 		}
 	}
@@ -865,7 +869,7 @@ public abstract class SIPTransactionStack
 			// New client transaction to return
 			SIPTransaction returnChannel =
 				createClientTransaction(transaction.getMessageChannel());
-			clientTransactions.add(returnChannel);
+			clientTransactions.add(0,returnChannel);
 			((SIPClientTransaction) returnChannel).setViaPort(
 				transaction.getViaPort());
 			((SIPClientTransaction) returnChannel).setViaHost(
@@ -982,6 +986,11 @@ public abstract class SIPTransactionStack
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.29  2004/05/31 18:12:56  mranga
+ * Reviewed by:   mranga
+ * arrange transactions in a synchronized list and insert transactions into the
+ * front end of the list to improve transaction search time and scalability.
+ *
  * Revision 1.28  2004/05/30 18:55:58  mranga
  * Reviewed by:   mranga
  * Move to timers and eliminate the Transaction scanner Thread

@@ -120,7 +120,7 @@ import sim.java.*;
  *@author Bug fixes by Emil Ivov.
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.29 $ $Date: 2004-05-30 18:55:57 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.30 $ $Date: 2004-06-01 11:42:59 $
  */
 public class SIPClientTransaction
 extends SIPTransaction
@@ -169,7 +169,12 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
             if (clientTransaction.isTerminated()) {
 
                 synchronized(sipStack.clientTransactions) {
-                        sipStack.clientTransactions.remove(clientTransaction);
+                    if (LogWriter.needsLogging) {
+                        sipStack.logWriter.logMessage( "removing  = " + clientTransaction + " isReliable " +
+                	 clientTransaction.isReliable() );
+		    }
+                    sipStack.clientTransactions.remove(clientTransaction);
+		    
                 }
 		this.cancel();
 
@@ -1068,6 +1073,11 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.29  2004/05/30 18:55:57  mranga
+ * Reviewed by:   mranga
+ * Move to timers and eliminate the Transaction scanner Thread
+ * to improve scalability and reduce cpu usage.
+ *
  * Revision 1.28  2004/05/20 13:59:22  mranga
  * Reviewed by:   mranga
  * Cleaned up slighly ugly code.
