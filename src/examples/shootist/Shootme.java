@@ -129,6 +129,7 @@ public class Shootme implements SipListener {
 			System.out.println("got a server tranasaction " + st);
 			byte[] content = request.getRawContent();
 			if (content != null) {
+			    System.out.println(" content = " + new String(content));
 			    ContentTypeHeader contentTypeHeader =
 				headerFactory.createContentTypeHeader("application", "sdp");
 			    System.out.println("response = " + response);
@@ -298,6 +299,11 @@ public class Shootme implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.21  2004/12/01 19:05:14  mranga
+ * Reviewed by:   mranga
+ * Code cleanup remove the unused SIMULATION code to reduce the clutter.
+ * Fix bug in Dialog state machine.
+ *
  * Revision 1.20  2004/09/26 14:48:01  mranga
  * Submitted by:  John Martin
  * Reviewed by:   mranga
