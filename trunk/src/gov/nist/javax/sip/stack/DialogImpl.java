@@ -24,7 +24,7 @@ import java.text.ParseException;
  * retrieve this structure from the SipStack. Bugs against route set 
  * management were reported by Antonis Karydas and Brad Templeton.
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.20 $ $Date: 2004-02-13 13:55:31 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.21 $ $Date: 2004-02-15 20:49:10 $
  *
  *@author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -240,10 +240,11 @@ public class DialogImpl implements javax.sip.Dialog {
 	 * 	been established.
 	 */
 	public Iterator getRouteSet() {
-		if (this.routeList == null)
-			return null;
-		else
+		if (this.routeList == null) {
+			return new LinkedList().listIterator();
+		} else {
 			return this.getRouteList().listIterator();
+		}
 	}
 
 	private RouteList getRouteList() {
@@ -312,7 +313,6 @@ public class DialogImpl implements javax.sip.Dialog {
 	 */
 	public void setDefaultRoute(Route defaultRoute) {
 		this.defaultRoute = (Route) defaultRoute.clone();
-		// addRoute(defaultRoute,false);
 	}
 
 	/**
@@ -397,6 +397,8 @@ public class DialogImpl implements javax.sip.Dialog {
 	 *  to add the route.
 	 */
 	public synchronized void addRoute(SIPMessage sipMessage) {
+		// Idiot check.
+		if (this == sipStack.dummyDialog) return;
 		// cannot add route list after the dialog is initialized.
 		try {
 			if (LogWriter.needsLogging) {
@@ -544,6 +546,8 @@ public class DialogImpl implements javax.sip.Dialog {
 	 *@param transaction is the transaction to add to the dialog.
 	 */
 	public void addTransaction(SIPTransaction transaction) {
+		// Idiot check.
+		if (this == sipStack.dummyDialog) return;
 
 		SIPRequest sipRequest = (SIPRequest) transaction.getOriginalRequest();
 
@@ -1438,6 +1442,10 @@ public class DialogImpl implements javax.sip.Dialog {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.20  2004/02/13 13:55:31  mranga
+ * Reviewed by:   mranga
+ * per the spec, Transactions must always have a valid dialog pointer. Assigned a dummy dialog for transactions that are not assigned to any dialog (such as Message).
+ *
  * Revision 1.19  2004/02/04 22:07:24  mranga
  * Reviewed by:   mranga
  * Fix for handling of out of order sequence numbers in the dialog layer.
