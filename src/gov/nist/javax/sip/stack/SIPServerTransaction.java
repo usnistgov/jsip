@@ -114,7 +114,7 @@ import java.util.TimerTask;
  *
  *</pre>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2004-01-22 18:39:41 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.18 $ $Date: 2004-01-25 16:06:24 $
  * @author Jeff Keyser 
  * @author M. Ranganathan <mranga@nist.gov>  
  * @author Bug fixes by Emil Ivov, Antonis Karydas.
@@ -405,7 +405,7 @@ public class SIPServerTransaction
 				// Save this request as the one this
 				// transaction is handling
 				setOriginalRequest(transactionRequest);
-				setState(TRYING_STATE);
+				this.setState(TransactionState.TRYING);
 				toTu = true;
 				if (isInviteTransaction() && this.isMapped) {
 
@@ -422,21 +422,21 @@ public class SIPServerTransaction
 					&& TransactionState.COMPLETED == getState()
 					&& transactionRequest.getMethod().equals(Request.ACK)) {
 
-				setState(CONFIRMED_STATE);
+				this.setState(TransactionState.CONFIRMED);
 				disableRetransmissionTimer();
 				if (!isReliable()) {
 					if (this.lastResponse != null
 						&& this.lastResponse.getStatusCode()
 							== Response.REQUEST_TERMINATED) {
 						// Bug report by Antonis Karydas
-						setState(TERMINATED_STATE);
+						this.setState(TransactionState.TERMINATED);
 					} else {
 						enableTimeoutTimer(TIMER_I);
 					}
 
 				} else {
 
-					setState(TERMINATED_STATE);
+					this.setState(TransactionState.TERMINATED);
 
 				}
 				// Application should not Ack in CONFIRMED state
@@ -459,7 +459,7 @@ public class SIPServerTransaction
 							// Send the message to the client
 							getMessageChannel().sendMessage(lastResponse);
 						} catch (IOException e) {
-							setState(TERMINATED_STATE);
+							this.setState(TransactionState.TERMINATED);
 							throw e;
 
 						}
@@ -598,16 +598,16 @@ public class SIPServerTransaction
 		// trying state,
 		if (getState() == TransactionState.TRYING) {
 			if (statusCode / 100 == 1) {
-				setState(PROCEEDING_STATE);
+				this.setState(TransactionState.PROCEEDING);
 			} else if (200 <= statusCode && statusCode <= 699) {
 				// Check --  bug report from christophe
 				if (!isInviteTransaction()) {
-					setState(COMPLETED_STATE);
+					this.setState(TransactionState.COMPLETED);
 				} else {
 					if (statusCode / 100 == 2)
-						setState(TERMINATED_STATE);
+						this.setState(TransactionState.TERMINATED);
 					else
-						setState(COMPLETED_STATE);
+						this.setState(TransactionState.COMPLETED);
 				}
 				if (!isReliable()) {
 
@@ -641,7 +641,7 @@ public class SIPServerTransaction
 						.getMethod()
 						.equals(Request.CANCEL)) {
 
-						setState(TERMINATED_STATE);
+						this.setState(TransactionState.TERMINATED);
 						if (!isReliable()) {
 							((DialogImpl) this.getDialog())
 								.setRetransmissionTicks();
@@ -654,7 +654,7 @@ public class SIPServerTransaction
 				} else if (300 <= statusCode && statusCode <= 699) {
 
 					// Set up to catch returning ACKs
-					setState(COMPLETED_STATE);
+					this.setState(TransactionState.COMPLETED);
 					if (!isReliable()) {
 
 						enableRetransmissionTimer();
@@ -668,7 +668,7 @@ public class SIPServerTransaction
 				} else if (statusCode / 100 == 2) {
 
 					// Terminate the transaction
-					setState(TERMINATED_STATE);
+					this.setState(TransactionState.TERMINATED);
 					disableRetransmissionTimer();
 					disableTimeoutTimer();
 
@@ -680,7 +680,7 @@ public class SIPServerTransaction
 
 				// Set up to retransmit this response,
 				// or terminate the transaction
-				setState(COMPLETED_STATE);
+				this.setState(TransactionState.COMPLETED);
 				if (!isReliable()) {
 
 					disableRetransmissionTimer();
@@ -688,7 +688,7 @@ public class SIPServerTransaction
 
 				} else {
 
-					setState(TERMINATED_STATE);
+					this.setState(TransactionState.TERMINATED);
 
 				}
 
@@ -707,7 +707,7 @@ public class SIPServerTransaction
 
 		} catch (IOException e) {
 
-			setState(TERMINATED_STATE);
+			this.setState(TransactionState.TERMINATED);
 			throw e;
 
 		}
@@ -782,7 +782,7 @@ public class SIPServerTransaction
 			&& isInviteTransaction()) {
 			raiseErrorEvent(SIPTransactionErrorEvent.TIMEOUT_ERROR);
 
-			setState(TERMINATED_STATE);
+			this.setState(TransactionState.TERMINATED);
 
 		} else if (
 			TransactionState.CONFIRMED == this.getState()
@@ -791,12 +791,12 @@ public class SIPServerTransaction
 			// exception to the application when the 
 			// Invite transaction is in Confirmed state.
 			// Just transition to Terminated state.
-			setState(TERMINATED_STATE);
+			this.setState(TransactionState.TERMINATED);
 		} else if (
 			!isInviteTransaction()
 				&& (TransactionState.COMPLETED == this.getState()
 					|| TransactionState.CONFIRMED == this.getState())) {
-			setState(TERMINATED_STATE);
+			this.setState(TransactionState.TERMINATED);
 		} else if (
 			isInviteTransaction()
 				&& TransactionState.TERMINATED == this.getState()) {
@@ -823,7 +823,7 @@ public class SIPServerTransaction
 		super.setOriginalRequest(originalRequest);
 		// ACK Server Transaction is just a dummy transaction.
 		if (originalRequest.getMethod().equals("ACK"))
-			this.setState(TERMINATED_STATE);
+			this.setState(TransactionState.TERMINATED);
 
 	}
 
@@ -946,6 +946,10 @@ public class SIPServerTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2004/01/22 18:39:41  mranga
+ * Reviewed by:   M. Ranganathan
+ * Moved the ifdef SIMULATION and associated tags to the first column so Prep preprocessor can deal with them.
+ *
  * Revision 1.16  2004/01/22 14:23:45  mranga
  * Reviewed by:   mranga
  * Fixed some minor formatting issues.

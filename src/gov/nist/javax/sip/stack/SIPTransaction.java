@@ -21,7 +21,7 @@ import javax.sip.message.*;
  *
  * @author Jeff Keyser 
  * @author M. Ranganathan (modified Jeff's original source and aligned with JAIN-SIP 1.1)
- * @version  JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2004-01-22 20:15:32 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.14 $ $Date: 2004-01-25 16:06:24 $
  */
 public abstract class SIPTransaction
 	extends MessageChannel
@@ -79,37 +79,37 @@ public abstract class SIPTransaction
 	/**
 	 * Initialized but no state assigned.
 	 */
-	public static final int INITIAL_STATE = -1;
+	public static final TransactionState INITIAL_STATE = null;
 
 	/**
 	 *	Trying state.
 	 */
-	public static final int TRYING_STATE = TransactionState._TRYING;
+	public static final TransactionState TRYING_STATE = TransactionState.TRYING;
 
 	/**
 	 * CALLING State.
 	 */
-	public static final int CALLING_STATE = TransactionState._CALLING;
+	public static final TransactionState CALLING_STATE = TransactionState.CALLING;
 
 	/**
 	 * Proceeding state.
 	 */
-	public static final int PROCEEDING_STATE = TransactionState._PROCEEDING;
+	public static final TransactionState PROCEEDING_STATE = TransactionState.PROCEEDING;
 
 	/**
 	 * Completed state.
 	 */
-	public static final int COMPLETED_STATE = TransactionState._COMPLETED;
+	public static final TransactionState COMPLETED_STATE = TransactionState.COMPLETED;
 
 	/**
 	 * Confirmed state.
 	 */
-	public static final int CONFIRMED_STATE = TransactionState._CONFIRMED;
+	public static final TransactionState CONFIRMED_STATE = TransactionState.CONFIRMED;
 
 	/**
 	 * Terminated state.  
 	 */
-	public static final int TERMINATED_STATE = TransactionState._TERMINATED;
+	public static final TransactionState TERMINATED_STATE = TransactionState.TERMINATED;
 
 	/**
 	 *	Maximum number of ticks between retransmissions.
@@ -135,7 +135,7 @@ public abstract class SIPTransaction
 	private int cSeq;
 
 	// Current transaction state
-	private int currentState;
+	private TransactionState currentState;
 
 	// Number of ticks the retransmission timer was set to last
 	private int retransmissionTimerLastTickCount;
@@ -149,11 +149,10 @@ public abstract class SIPTransaction
 	// List of event listeners for this transaction
 	private Set eventListeners;
 
-	// Flag to indcate that this has been cancelled.
-	protected boolean isCancelled;
-
 	// Hang on to these - we clear out the request URI after 
-	// transaction goes to final state.
+	// transaction goes to final state. Pointers to these are kept around
+	// for transaction matching as long as the transaction is in
+	// the transaction table.
 	protected From from;
 
 	protected To to;
@@ -183,7 +182,7 @@ public abstract class SIPTransaction
 		parentStack = newParentStack;
 		encapsulatedChannel = newEncapsulatedChannel;
 
-		this.currentState = INITIAL_STATE;
+		this.currentState = null;
 
 		disableRetransmissionTimer();
 		disableTimeoutTimer();
@@ -351,7 +350,7 @@ public abstract class SIPTransaction
 	 *
 	 * @param newState New state of this transaction.
 	 */
-	public void setState(int newState) {
+	public void setState(TransactionState newState) {
 		currentState = newState;
 		if (LogWriter.needsLogging) {
 			parentStack.logWriter.logMessage(
@@ -366,10 +365,7 @@ public abstract class SIPTransaction
 	 * @return Current state of this transaction.
 	 */
 	public final TransactionState getState() {
-		if (this.currentState == INITIAL_STATE)
-			return null;
-		else
-			return TransactionState.getObject(this.currentState);
+		return this.currentState;
 	}
 
 	/**
@@ -484,7 +480,7 @@ public abstract class SIPTransaction
 	 *	@return Trus if this transaction is terminated, false if not.
 	 */
 	protected final boolean isTerminated() {
-		return getState() != null && getState().getValue() == TERMINATED_STATE;
+		return  getState() == TERMINATED_STATE;
 	}
 
 	public String getHost() {
@@ -641,7 +637,7 @@ public abstract class SIPTransaction
 			eventListeners.clear();
 
 			// Errors always terminate a transaction
-			setState(TERMINATED_STATE);
+			this.setState(TransactionState.TERMINATED);
 
 			if (this instanceof SIPServerTransaction
 				&& this.isByeTransaction()
@@ -650,20 +646,6 @@ public abstract class SIPTransaction
 		}
 	}
 
-	/**
-	 * Sets the canceled flag. This indicates that the transaction
-	 * has been successfully cancelled.
-	 */
-	protected void checkCancel(SIPResponse transactionResponse) {
-		if (transactionResponse
-			.getCSeq()
-			.getMethod()
-			.equalsIgnoreCase("CANCEL")
-			&& (transactionResponse.getStatusCode() == 200
-				|| transactionResponse.getStatusCode() == 487)) {
-			this.isCancelled = true;
-		}
-	}
 
 	/**
 	 * A shortcut way of telling if we are a server transaction.
@@ -713,7 +695,11 @@ public abstract class SIPTransaction
 	}
 
 	/**
-	 * Get the last response.
+	 * Get the last response. This is used internally by the implementation. 
+	 * Dont rely on it.
+	 *
+	 *@return the last response received (for client transactions) 
+	 *   or sent (for server transactions).
 	 */
 	public SIPResponse getLastResponse() {
 		return this.lastResponse;
@@ -872,6 +858,10 @@ public abstract class SIPTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2004/01/22 20:15:32  mranga
+ * Reviewed by:  mranga
+ * Fixed a possible race condition in  nulling out the transaction Request (earlier added for scalability).
+ *
  * Revision 1.12  2004/01/22 13:26:33  sverker
  * Issue number:
  * Obtained from:
