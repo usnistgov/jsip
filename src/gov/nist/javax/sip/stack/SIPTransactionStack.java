@@ -29,7 +29,7 @@ import sim.java.net.*;
  * @author M. Ranganathan <mranga@nist.gov>  <br/> (Added Dialog table).
  * @author performance enhacements added by Pierre De Rop and Thomas Froment.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.39 $ $Date: 2004-07-01 05:42:23 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.40 $ $Date: 2004-07-16 17:13:56 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public abstract class SIPTransactionStack
@@ -116,6 +116,7 @@ implements SIPTransactionEventListener {
         
         this.timer =   new Timer();
         this.pendingRecordScanner = new Thread(new PendingRecordScanner(this));
+	this.pendingRecordScanner.setDaemon(true);
         this.pendingTransactions = Collections.synchronizedList(new ArrayList());
         pendingRecords      = Collections.synchronizedList(new ArrayList());
         pendingRecordScanner.setName("PendingRecordScanner");
@@ -151,6 +152,7 @@ implements SIPTransactionEventListener {
  */
         this.timer =   new Timer();
         pendingRecordScanner = new Thread(new PendingRecordScanner(this));
+	pendingRecordScanner.setDaemon(true);
         pendingRecordScanner.setName("PendingRecordScanner");
         pendingRecordScanner.start();
         //endif
@@ -967,6 +969,12 @@ implements SIPTransactionEventListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.39  2004/07/01 05:42:23  mranga
+ * Submitted by:  Pierre De Rop and Thomas Froment
+ * Reviewed by:    M. Ranganathan
+ *
+ * More performance hacks.
+ *
  * Revision 1.38  2004/06/27 01:00:21  mranga
  * Reviewed by:   mranga
  * Forgot to add record to hashtable structure.

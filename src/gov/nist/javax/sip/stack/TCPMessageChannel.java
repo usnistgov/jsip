@@ -33,7 +33,7 @@ import sim.java.net.*;
  * Niklas Uhrberg suggested that a mechanism be added to limit the number
  * of simultaneous open connections.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.29 $ $Date: 2004-06-21 05:42:33 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.30 $ $Date: 2004-07-16 17:13:56 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public final class TCPMessageChannel
@@ -452,13 +452,15 @@ implements SIPMessageListener, Runnable {
                     // Check to see if the received parameter matches
                     // the peer address and tag it appropriately.
                     // Bug fix by viswashanti.kadiyala@antepo.com
+		    // Should record host address not host name
+		    // bug fix by  Joost Yervante Damand
                     if (!v
                     .getSentBy()
                     .getInetAddress()
                     .equals(this.peerAddress))
                         v.setParameter(
                         Via.RECEIVED,
-                        this.peerAddress.getHostName());
+                        this.peerAddress.getHostAddress());
                 } catch (java.net.UnknownHostException ex) {
                     // Could not resolve the sender address.
                     if (LogWriter.needsLogging) {
@@ -725,6 +727,10 @@ implements SIPMessageListener, Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.29  2004/06/21 05:42:33  mranga
+ * Reviewed by:  mranga
+ * more code smithing
+ *
  * Revision 1.28  2004/06/21 04:59:53  mranga
  * Refactored code - no functional changes.
  *
