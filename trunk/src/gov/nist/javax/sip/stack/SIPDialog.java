@@ -22,12 +22,12 @@ import java.text.ParseException;
  * message is received (i.e. a response that has a To tag).
  * The SIP Protocol stores enough state in the
  * message structure to extract a dialog identifier that can be used to
- * retrieve this structure from the SipStack. Bugs against route set
- * management were reported by Antonis Karydas and Brad Templeton.
+ * retrieve this structure from the SipStack. 
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.1 $ $Date: 2004-06-21 04:59:51 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.2 $ $Date: 2004-07-29 20:26:15 $
  *
  *@author M. Ranganathan <mranga@nist.gov>  <br/>
+ *Bugs were reported by Antonis Karydas, Brad Templeton and Alex Rootham.
  *
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
@@ -80,21 +80,23 @@ public class SIPDialog implements javax.sip.Dialog , PendingRecord {
     /** Put a pendig request (to be consumed later if possible). If seqno is
      * way too big (outside window) reject it.
      */
-    public void putPending(NistSipMessageHandlerImpl pendingRecord, int seqno) {
-        boolean toInsert = false;
-	if (nextSeqno == null) return;
-        synchronized(pendingRecords) {
-            if (seqno > nextSeqno.intValue() + WINDOW_SIZE) {
+ public void putPending(NistSipMessageHandlerImpl pendingRecord, int seqno) {
+       boolean toInsert = false;
+       synchronized(pendingRecords) {
+	   // check for null added by Alex Rootham
+           if ((nextSeqno != null) && (seqno > nextSeqno.intValue() + WINDOW_SIZE)) {
+               return;
+           } else if ( this.pendingRecords.containsKey(new Integer(seqno))) {
                 return;
-            } else if ( this.pendingRecords.containsKey(new Integer(seqno))) {
-                 return;
-            } else {
-                    this.pendingRecords.put(new Integer(seqno),pendingRecord);
-                    toInsert = true;         
-            }
-        }
-        if (toInsert) sipStack.putPending(this);
-    }
+           } else {
+                   this.pendingRecords.put(new Integer(seqno),pendingRecord);
+                   toInsert = true;
+           }
+       }
+       if (toInsert) sipStack.putPending(this);
+   }
+
+
     
     /** Set ptr to app data.
      */
@@ -1674,6 +1676,9 @@ public class SIPDialog implements javax.sip.Dialog , PendingRecord {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2004/06/21 04:59:51  mranga
+ * Refactored code - no functional changes.
+ *
  * Revision 1.35  2004/06/17 15:36:10  mranga
  * Reviewed by:   mranga
  * minor tweaks
