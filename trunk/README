@@ -290,6 +290,9 @@ by the following people:
 18. Willem Romijn corrected the payload type constant for H.263 codecs
 	in SdpConstants.java
 
+19. Rafael Barriuso <rbarriuso@dit.upm.es> reported a problem with the
+	SDP Parser and submitted a bug fix for it.
+
 
 ----------------------------------------------------------------------------
 
