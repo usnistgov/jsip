@@ -30,10 +30,9 @@ Using the makefile:
 
 Building the TCK
 ----------------
-1. Ensure that the junit library is present in lib/junit/junit.jar
-2. Build the RI as above.
-3. make tck (builds a jar file containing the TCK).
-4. to run the TCK 
+1. Build the RI as above.
+2. make tck (builds a jar file containing the TCK).
+3. to run the TCK 
 
 java -jar jain-sip-1.1.tck.jar -mode gui
 
