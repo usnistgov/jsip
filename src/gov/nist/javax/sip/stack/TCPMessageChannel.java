@@ -33,7 +33,7 @@ import sim.java.net.*;
  * Niklas Uhrberg suggested that a mechanism be added to limit the number
  * of simultaneous open connections.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.9 $ $Date: 2004-01-22 18:39:41 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.10 $ $Date: 2004-02-29 00:46:35 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public final class TCPMessageChannel
@@ -420,7 +420,7 @@ public final class TCPMessageChannel
 	 * @param sipMessage Mesage to process (this calls the application
 	 * for processing the message).
 	 */
-	public void processMessage(SIPMessage sipMessage) {
+	public void processMessage(SIPMessage sipMessage)  throws Exception {
 		this.tcpMessageProcessor.useCount++;
 		try {
 			if (sipMessage.getFrom() == null
@@ -502,6 +502,19 @@ public final class TCPMessageChannel
 					stack.logWriter.logMessage("----Processing Message---");
 				}
 
+				// Check for reasonable size - reject message
+				// if it is too long.
+				if ( stack.getMaxMessageSize() > 0 &&
+				     sipRequest.getSize() + 
+				     (sipRequest.getContentLength() == null? 0 :
+					sipRequest.getContentLength().getContentLength() ) >
+				     stack.getMaxMessageSize() ) {
+				     SIPResponse sipResponse = sipRequest.createResponse(SIPResponse.MESSAGE_TOO_LARGE);
+				     byte[] resp = sipResponse.encodeAsBytes();
+				     this.sendMessage(resp,false);
+				     throw new Exception("Message size exceeded");
+				}
+
 				SIPServerRequestInterface sipServerRequest =
 					stack.newSIPServerRequest(sipRequest, this);
 				try {
@@ -555,8 +568,17 @@ public final class TCPMessageChannel
 					handleException(ex);
 				}
 			} else {
-				// This is a response message - process it.
 				SIPResponse sipResponse = (SIPResponse) sipMessage;
+				// Check the size of the response.
+				// If it is too large dump it silently.
+				if ( stack.getMaxMessageSize() > 0 &&
+				     sipResponse.getSize() + 
+				     (sipResponse.getContentLength() == null? 0 :
+					sipResponse.getContentLength().getContentLength() ) >
+				     stack.getMaxMessageSize() ) {
+				     throw new Exception("Message size exceeded");
+				}
+				// This is a response message - process it.
 				SIPServerResponseInterface sipServerResponse =
 					stack.newSIPServerResponse(sipResponse, this);
 				try {
@@ -603,13 +625,15 @@ public final class TCPMessageChannel
 		}
 		// Create a pipelined message parser to read and parse
 		// messages that we write out to him.
-		myParser = new PipelinedMsgParser(this, hispipe);
+		myParser = new PipelinedMsgParser(this, hispipe,this.stack.getMaxMessageSize());
 		// Start running the parser thread.
 		myParser.processInput();
-		byte[] msg = new byte[8192];
+		// bug fix by Emmanuel Proulx
+		int bufferSize = 4096;
+		byte[] msg = new byte[bufferSize];
 		while (true) {
 			try {
-				int nbytes = myClientInputStream.read(msg, 0, 8192);
+				int nbytes = myClientInputStream.read(msg, 0, bufferSize);
 				// no more bytes to read...
 				if (nbytes == -1) {
 					mypipe.write("\r\n\r\n".getBytes("UTF-8"));
@@ -638,7 +662,7 @@ public final class TCPMessageChannel
 					mypipe.write("\r\n\r\n".getBytes("UTF-8"));
 					mypipe.flush();
 				} catch (Exception e) {
-					InternalErrorHandler.handleException(e);
+					// InternalErrorHandler.handleException(e);
 				}
 
 				try {
@@ -729,6 +753,10 @@ public final class TCPMessageChannel
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/01/22 18:39:41  mranga
+ * Reviewed by:   M. Ranganathan
+ * Moved the ifdef SIMULATION and associated tags to the first column so Prep preprocessor can deal with them.
+ *
  * Revision 1.8  2004/01/22 13:26:33  sverker
  * Issue number:
  * Obtained from:

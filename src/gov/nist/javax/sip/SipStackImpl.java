@@ -56,6 +56,14 @@ import sim.java.net.*;
  *	<font color=red> Mail this to us with bug reports.  </font>
  *</li>
  *
+ *<li><b>gov.nist.javax.sip.MAX_REQUEST_SIZE = integer</b> <br/>
+ * Maximum size of content that a TCP connection can read. Must be
+ * at least 4K. Default is "infinity" -- ie. no limit.
+ * This is to prevent DOS attacks launched by writing to a
+ * TCP connection until the server chokes.
+ *</li>
+ *
+ *
  *<li><b>gov.nist.javax.sip.MAX_SERVER_TRANSACTIONS = integer</b> <br/>
  *   Max number of open SERVER transactions in the transaction table - incoming
  *  Requests that have the capability to create ServerTransactions will
@@ -64,14 +72,15 @@ import sim.java.net.*;
  *
  *<li> <b>gov.nist.javax.sip.THREAD_POOL_SIZE = integer </b> <br/>
  *  Concurrency control for number of simultaneous active threads for
- *  processing incoming UDP messages. </li>
+ *  processing incoming UDP messages. 
+ * </li>
  *
  *<li> <b>gov.nist.javax.sip.MAX_CONNECTIONS = integer </b> <br/>
  *   Max number of simultaneous TCP connections handled by stack. 
  *  (Was mis-spelled - Documentation bug fix by Bob Johnson)</li>
- *  </ul>
+ *</ul>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.14 $ $Date: 2004-02-20 16:36:42 $
+ * @version JAIN-SIP-1.1 $Revision: 1.15 $ $Date: 2004-02-29 00:46:33 $
  * 
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -231,6 +240,8 @@ public class SipStackImpl
 					"max connections - bad value " + ex.getMessage());
 			}
 		}
+
+		
 		String threadPoolSize =
 			configurationProperties.getProperty(
 				"gov.nist.javax.sip.THREAD_POOL_SIZE");
@@ -266,6 +277,19 @@ public class SipStackImpl
 //endif
 //
 
+		String maxMsgSize = configurationProperties.getProperty(
+				"gov.nist.javax.sip.MAX_CONTENT_LENGTH");
+
+		try {
+		   if (maxMsgSize != null) 
+			super.maxMessageSize = new Integer(maxMsgSize).intValue();
+		  if (super.maxMessageSize < 4096) super.maxMessageSize = 4096;
+		} catch (NumberFormatException ex) {
+				System.out.println(
+					"maxMessageSize - bad value " + ex.getMessage());
+		}
+
+		
 //ifdef SIMULATION
 /*
 		SimProcess.hold((double) 100);
@@ -526,6 +550,12 @@ public class SipStackImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/02/20 16:36:42  mranga
+ * Reviewed by:   mranga
+ * Minor changes to debug logging -- record the properties with which the stack
+ * was created. Be slightly more forgiving when checking for retransmission
+ * filter when configuring stack.
+ *
  * Revision 1.13  2004/01/22 18:39:41  mranga
  * Reviewed by:   M. Ranganathan
  * Moved the ifdef SIMULATION and associated tags to the first column so Prep preprocessor can deal with them.
