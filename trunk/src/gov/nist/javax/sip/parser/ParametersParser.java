@@ -17,8 +17,6 @@ import  java.text.ParseException;
 */
 public abstract class ParametersParser  extends HeaderParser {
 
-	protected ParametersHeader parametersHeader;
-
 	protected ParametersParser(Lexer lexer) {
 		super((Lexer)lexer);
 	}
@@ -31,7 +29,7 @@ public abstract class ParametersParser  extends HeaderParser {
 	throws ParseException {
 		this.lexer.SPorHT();
 		while (lexer.lookAhead(0) == ';') {
-		   this.lexer.match(';');
+		   this.lexer.consume(1);
 		   // eat white space
                    this.lexer.SPorHT();
 		   NameValue nv = nameValue();
