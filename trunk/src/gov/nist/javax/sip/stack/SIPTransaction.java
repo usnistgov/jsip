@@ -23,7 +23,7 @@ import javax.sip.message.*;
  *
  * @author Jeff Keyser 
  * @author M. Ranganathan (modified Jeff's original source and aligned with JAIN-SIP 1.1)
- * @version  JAIN-SIP-1.1 $Revision: 1.26 $ $Date: 2004-06-27 00:41:52 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.27 $ $Date: 2004-07-01 05:42:22 $
  */
 public abstract class SIPTransaction
 	extends MessageChannel
@@ -801,6 +801,14 @@ public abstract class SIPTransaction
 		return this.transactionId;
 	}
 
+
+	/** Hashcode method for fast hashtable lookup.
+	*/
+	public int hashCode() {
+		if (this.transactionId == null) return -1;
+		else return this.transactionId.hashCode();
+	}
+
 	/**
 	 * Get the port to assign for the via header of an outgoing message.
 	 */
@@ -968,6 +976,12 @@ public abstract class SIPTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.26  2004/06/27 00:41:52  mranga
+ * Submitted by:  Thomas Froment and Pierre De Rop
+ * Reviewed by:   mranga
+ * Performance improvements
+ * (auxiliary data structure for fast lookup of transactions).
+ *
  * Revision 1.25  2004/06/21 04:59:52  mranga
  * Refactored code - no functional changes.
  *

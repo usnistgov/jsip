@@ -117,10 +117,11 @@ import java.util.ListIterator;
  *
  *</pre>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.39 $ $Date: 2004-06-21 05:42:32 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.40 $ $Date: 2004-07-01 05:42:22 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
  * @author Bug fixes by Emil Ivov, Antonis Karydas.
+ * @author Performance enhancements contributed by Thomas Froment and Pierre De Rop.
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
  *
@@ -1152,6 +1153,10 @@ implements ServerRequestInterface, javax.sip.ServerTransaction, PendingRecord {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.39  2004/06/21 05:42:32  mranga
+ * Reviewed by:  mranga
+ * more code smithing
+ *
  * Revision 1.38  2004/06/21 04:59:51  mranga
  * Refactored code - no functional changes.
  *
