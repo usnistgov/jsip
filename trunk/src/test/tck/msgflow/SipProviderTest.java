@@ -416,7 +416,11 @@ public class SipProviderTest
             }
             try
             {
-                tran = tiSipProvider.getNewServerTransaction(invite);
+            	//issue 16 on dev.java.net - create tran using received invite
+                //and not the ri request object.
+                //report and fix thereof - larryb@dev.java.net
+                tran = tiSipProvider.getNewServerTransaction(
+                    						receivedRequestEvent.getRequest());
             }
             catch(TransactionUnavailableException exc)
             {
