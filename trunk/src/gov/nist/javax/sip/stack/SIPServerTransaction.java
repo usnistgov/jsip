@@ -116,7 +116,7 @@ import java.util.LinkedList;
  *
  *</pre>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.42 $ $Date: 2004-09-10 13:35:13 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.43 $ $Date: 2004-10-01 16:05:08 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
  * @author Bug fixes by Emil Ivov, Antonis Karydas.
@@ -1149,10 +1149,24 @@ implements ServerRequestInterface, javax.sip.ServerTransaction, PendingRecord {
 		sipStack.timer.schedule(myTimer,0,SIPTransactionStack.BASE_TIMER_INTERVAL);
      }
 
+    public boolean equals(Object other) {
+	if (! other.getClass().equals(this.getClass())) {
+		return false;
+	}
+	SIPServerTransaction sst = (SIPServerTransaction) other;
+	return this.getBranch().equalsIgnoreCase(sst.getBranch());
+    }
+
     
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.42  2004/09/10 13:35:13  mranga
+ * Submitted by:  Bill Roome
+ * Reviewed by:   mranga
+ *
+ * check for null dialog.
+ *
  * Revision 1.41  2004/07/23 06:50:04  mranga
  * Submitted by:  mranga
  * Reviewed by:   mranga

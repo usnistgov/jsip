@@ -27,7 +27,7 @@ import java.net.*;
  * @author M. Ranganathan <mranga@nist.gov><br/>(Added Dialog table).
  * @author performance enhacements added by Pierre De Rop and Thomas Froment.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.41 $ $Date: 2004-07-23 06:50:05 $ <a
+ * @version JAIN-SIP-1.1 $Revision: 1.42 $ $Date: 2004-10-01 16:05:08 $ <a
  *          href=" {@docRoot}/uncopyright.html">This code is in the public
  *          domain. </a>
  */
@@ -72,7 +72,7 @@ public abstract class SIPTransactionStack extends SIPMessageStack implements
 	protected Thread pendingRecordScanner;
 
 	/** List of pending dialog creating transactions. */
-	protected List pendingTransactions;
+	private HashSet pendingTransactions;
 
 	protected List pendingRecords;
 
@@ -115,8 +115,7 @@ public abstract class SIPTransactionStack extends SIPMessageStack implements
 		this.timer = new Timer();
 		this.pendingRecordScanner = new Thread(new PendingRecordScanner(this));
 		this.pendingRecordScanner.setDaemon(true);
-		this.pendingTransactions = Collections
-				.synchronizedList(new ArrayList());
+		this.pendingTransactions = new HashSet();
 		pendingRecords = Collections.synchronizedList(new ArrayList());
 		pendingRecordScanner.setName("PendingRecordScanner");
 		pendingRecordScanner.start();
@@ -132,7 +131,7 @@ public abstract class SIPTransactionStack extends SIPMessageStack implements
 		super.reInit();
 		clientTransactions = Collections.synchronizedList(new ArrayList());
 		serverTransactions = Collections.synchronizedList(new ArrayList());
-		pendingTransactions = Collections.synchronizedList(new ArrayList());
+		pendingTransactions =  new HashSet();
 		pendingRecords = Collections.synchronizedList(new ArrayList());
 		clientTransactionTable = new Hashtable();
 		serverTransactionTable = new Hashtable();
@@ -975,11 +974,29 @@ public abstract class SIPTransactionStack extends SIPMessageStack implements
 	public void stopStack() {
 		this.notifyPendingRecordScanner();
 		this.timer.cancel();
+		this.pendingTransactions.clear();
 		super.stopStack();
+	}
+
+	/**
+	* Put a transaction in the pending transaction list.
+	* This is to avoid a race condition when a duplicate may arrive
+	* when the application is deciding whether to create a transaction or not.
+	*/
+	public void putPendingTransaction( SIPServerTransaction tr ) {
+		synchronized (pendingTransactions) {
+			this.pendingTransactions.add(tr);
+		}
 	}
 }
 /*
- * $Log: not supported by cvs2svn $ Revision 1.40 2004/07/16 17:13:56 mranga
+ * $Log: not supported by cvs2svn $
+ * Revision 1.41  2004/07/23 06:50:05  mranga
+ * Submitted by:  mranga
+ * Reviewed by:   mranga
+ *
+ * Clean up - Get rid of annoying eclipse warnings.
+ * Revision 1.40 2004/07/16 17:13:56 mranga
  * Submitted by: Damand Joost Reviewed by: mranga
  * 
  * Make threads into daemon threads, use address for received = parameter on via
