@@ -243,10 +243,9 @@ public abstract class GenericObject implements Serializable {
 	}
 
 	protected String getIndentation() {
-		String retval = "";
-		for (int i = 0; i < indentation; i++)
-			retval += " ";
-		return retval;
+    char [] chars = new char [indentation];
+    java.util.Arrays.fill (chars, ' ');
+    return new String (chars);
 	}
 
 	/**
@@ -934,6 +933,9 @@ public abstract class GenericObject implements Serializable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2005/04/04 08:27:02  dmuresan
+ * Optimized GenericObject.sprint() for primitive types.
+ *
  * Revision 1.5  2004/01/22 14:23:45  mranga
  * Reviewed by:   mranga
  * Fixed some minor formatting issues.
