@@ -326,8 +326,8 @@ viewerjar:
 	jar  cvfm tracesviewer.jar  		\
 	 manifest.viewer  			\
 	-C ./classes tools/tracesviewer			\
-	-C ./lib/xerces org				\
-	-C ./lib/xerces javax				
+	-C ./lib/xerces      org				\
+	-C ./lib/xerces      javax				
 
 export:
 	tar -cvzf export.tar.gz  --exclude CVS	\
