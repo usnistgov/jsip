@@ -56,7 +56,7 @@ import sim.java.net.*;
  *	<font color=red> Mail this to us with bug reports.  </font>
  *</li>
  *
- *<li><b>gov.nist.javax.sip.MAX_REQUEST_SIZE = integer</b> <br/>
+ *<li><b>gov.nist.javax.sip.MAX_MESSAGE_SIZE = integer</b> <br/>
  * Maximum size of content that a TCP connection can read. Must be
  * at least 4K. Default is "infinity" -- ie. no limit.
  * This is to prevent DOS attacks launched by writing to a
@@ -80,7 +80,7 @@ import sim.java.net.*;
  *  (Was mis-spelled - Documentation bug fix by Bob Johnson)</li>
  *</ul>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.15 $ $Date: 2004-02-29 00:46:33 $
+ * @version JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2004-02-29 15:32:58 $
  * 
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -278,12 +278,17 @@ public class SipStackImpl
 //
 
 		String maxMsgSize = configurationProperties.getProperty(
-				"gov.nist.javax.sip.MAX_CONTENT_LENGTH");
+				"gov.nist.javax.sip.MAX_MESSAGE_SIZE");
 
 		try {
-		   if (maxMsgSize != null) 
+		   if (maxMsgSize != null) {
 			super.maxMessageSize = new Integer(maxMsgSize).intValue();
-		  if (super.maxMessageSize < 4096) super.maxMessageSize = 4096;
+		        if (super.maxMessageSize < 4096) 
+				super.maxMessageSize = 4096;
+		   } else  {
+			// Allow for "infinite" size of message
+			super.maxMessageSize = 0;
+		   }
 		} catch (NumberFormatException ex) {
 				System.out.println(
 					"maxMessageSize - bad value " + ex.getMessage());
@@ -550,6 +555,11 @@ public class SipStackImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2004/02/29 00:46:33  mranga
+ * Reviewed by:   mranga
+ * Added new configuration property to limit max message size for TCP transport.
+ * The property is gov.nist.javax.sip.MAX_MESSAGE_SIZE
+ *
  * Revision 1.14  2004/02/20 16:36:42  mranga
  * Reviewed by:   mranga
  * Minor changes to debug logging -- record the properties with which the stack
