@@ -118,7 +118,7 @@ import java.util.LinkedList;
  * 
  * </pre>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.47 $ $Date: 2004-10-06 16:57:50 $
+ * @version JAIN-SIP-1.1 $Revision: 1.48 $ $Date: 2004-10-06 18:56:07 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
  * @author Bug fixes by Emil Ivov, Antonis Karydas.
@@ -652,7 +652,8 @@ public class SIPServerTransaction extends SIPTransaction implements
             return;
         }
 
-        // Put a dialog record in the SIP Stack if necessary.
+        // Dialog state machine state adjustment.
+        
         if (this.dialog != null) {
             if (this.dialog.getRemoteTag() == null
                     && transactionResponse.getTo().getTag() != null
@@ -664,7 +665,9 @@ public class SIPServerTransaction extends SIPTransaction implements
                         .putDialog(this.dialog);
                 if (statusCode / 100 == 1)
                     this.dialog.setState(SIPDialog.EARLY_STATE);
-            } else if (((SIPTransactionStack) this.getSIPStack())
+            } 
+            
+            if (((SIPTransactionStack) this.getSIPStack())
                     .isDialogCreated(transactionResponse.getCSeq().getMethod())
                     && transactionResponse.getCSeq().getMethod().equals(
                             getOriginalRequest().getMethod())) {
@@ -1172,6 +1175,29 @@ public class SIPServerTransaction extends SIPTransaction implements
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.47  2004/10/06 16:57:50  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
+ * Memory leak fix
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.46  2004/10/05 16:22:38  mranga
  * Issue number:
  * Obtained from:
