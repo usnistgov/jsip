@@ -102,12 +102,12 @@ import sim.java.net.*;
  * <li>
  *  <li> If this is not specified, <b> and the listener is re-entrant</b>,  
  *   each event delivered to the listener is run in the context of a 
- *   new thread. 
+ *   new thread. </li>
  *  <li>If this is specified and the listener is re-entrant, 
  *   then the stack will run the listener using a 
  *   thread from the thread pool.  This allows you to manage the 
  *   level of concurrency to a fixed maximum. Threads are pre-allocated
- *   when the stack is instantiated.
+ *   when the stack is instantiated.</li>
  *  <li> If this is specified and the listener is not re-entrant, 
  *   then the stack will use the thread pool thread from this pool to
  *   parse and manage the state machine but will run the listener in
@@ -129,7 +129,7 @@ import sim.java.net.*;
  *<li> <b>gov.nist.javax.sip.MAX_CONNECTIONS = integer </b> <br/>
  *   Max number of simultaneous TCP connections handled by stack. 
  *  (Was mis-spelled - Documentation bug fix by Bob Johnson)</li>
- *</ul>
+ *
  *
  *<li> <b>gov.nist.javax.sip.READ_TIMEOUT = integer </b> <br/>
  * This is relevant for incoming TCP connections to prevent starvation at
@@ -154,7 +154,7 @@ import sim.java.net.*;
  *</li>
  *</ul>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.30 $ $Date: 2004-09-01 11:18:30 $
+ * @version JAIN-SIP-1.1 $Revision: 1.31 $ $Date: 2004-09-01 12:07:40 $
  * 
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -738,6 +738,9 @@ public class SipStackImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.30  2004/09/01 11:18:30  xoba
+ * fixed network layer property name
+ *
  * Revision 1.29  2004/08/30 16:04:47  mranga
  * Submitted by:  Mike Andrews
  * Reviewed by:   mranga
