@@ -25,7 +25,7 @@ import sim.java.*;
  * later access via RMI. The trace can be viewed with a trace viewer (see
  * tools.traceviewerapp).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2004-06-21 04:59:53 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.14 $ $Date: 2004-07-07 15:46:59 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -173,14 +173,20 @@ public class ServerLog {
 						"Here are the stack configuration properties \n"			+
 						"javax.sip.IP_ADDRESS= " 						+ 
 						configurationProperties.getProperty("javax.sip.IP_ADDRESS") + "\n" 	+
-						"javax.sip.IP_ADDRESS= " 						+ 
-						configurationProperties.getProperty("javax.sip.STACK_NAME") + "\n" 	+
 						"javax.sip.ROUTER_PATH= " 						+ 
 						configurationProperties.getProperty("javax.sip.ROUTER_PATH") + "\n" 	+
 						"javax.sip.OUTBOUND_PROXY= " 						+ 
 						configurationProperties.getProperty("javax.sip.OUTBOUND_PROXY") + "\n" 	+
 						"javax.sip.RETRANSMISSION_FILTER= " 					+ 
 						configurationProperties.getProperty("javax.sip.RETRANSMISSION_FILTER")  + 
+						"gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS= " 					  + 
+						configurationProperties.getProperty("gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS") + "\n" +
+						"gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS= " 					  + 
+						configurationProperties.getProperty("gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS") + "\n" +
+						"gov.nist.javax.sip.REENTRANT_LISTENER= " 						  + 
+						configurationProperties.getProperty("gov.nist.javax.sip.REENTRANT_LISTENER")  		  +
+						"gov.nist.javax.sip.THREAD_POOL_SIZE= " 						  + 
+						configurationProperties.getProperty("gov.nist.javax.sip.THREAD_POOL_SIZE")  		  +
 						"\n" );
 						logWriter.logMessage(" ]]> ");
 						logWriter.logMessage("</debug>");
@@ -214,7 +220,16 @@ public class ServerLog {
 						"javax.sip.OUTBOUND_PROXY= " 						+ 
 						configurationProperties.getProperty("javax.sip.OUTBOUND_PROXY") + "\n"  +
 						"javax.sip.RETRANSMISSION_FILTER= " 					+ 
-						configurationProperties.getProperty("javax.sip.RETRANSMISSION_FILTER") + "\n" );
+						configurationProperties.getProperty("javax.sip.RETRANSMISSION_FILTER") + "\n" 		  +
+						"gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS= " 					  + 
+						configurationProperties.getProperty("gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS") + "\n" +
+						"gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS= " 					  + 
+						configurationProperties.getProperty("gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS") + "\n" +
+						"gov.nist.javax.sip.REENTRANT_LISTENER= " 						  + 
+						configurationProperties.getProperty("gov.nist.javax.sip.REENTRANT_LISTENER") + "\n" 	  +
+						"gov.nist.javax.sip.THREAD_POOL_SIZE= " 						  + 
+						configurationProperties.getProperty("gov.nist.javax.sip.THREAD_POOL_SIZE")  		  +
+						"\n");
 						logWriter.logMessage(" ]]>");
 						logWriter.logMessage("</debug>");
 						logWriter.logMessage(
@@ -684,6 +699,9 @@ public class ServerLog {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2004/06/21 04:59:53  mranga
+ * Refactored code - no functional changes.
+ *
  * Revision 1.12  2004/04/27 17:18:54  mranga
  * Reviewed by:   mranga
  * Turn off logging of content  by default.
