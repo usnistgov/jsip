@@ -284,6 +284,9 @@ by the following people:
       PRACK was not updating the Dialog state and therefore route sets 
       were not being applied appropriately.
 
+18. Willem Romijn corrected the payload type constant for H.263 codecs
+	in SdpConstants.java
+
 
 ----------------------------------------------------------------------------
 
