@@ -1,7 +1,7 @@
 /*
  * Created on Jul 31, 2004
  *
- *The Open SLEE project
+ *The JAIN-SIP Project
  */
 package test.unit.gov.nist.javax.sip.parser;
 

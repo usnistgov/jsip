@@ -23,7 +23,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.11 $ $Date: 2004-12-07 18:33:16 $
+ * @version JAIN-SIP-1.1 $Revision: 1.12 $ $Date: 2005-03-29 03:49:59 $
  * 
  * @author M. Ranganathan <mranga@nist.gov><br/>Bugs were reported by Antonis
  *         Karydas, Brad Templeton, Jeff Adams and Alex Rootham.
@@ -158,6 +158,10 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
     public void requestConsumed() {
         boolean toNotify = false;
         this.nextSeqno = new Integer(this.getRemoteSequenceNumber() + 1);
+        if ( LogWriter.needsLogging){
+            this.sipStack.logWriter.logMessage("Request Consumed -- next consumable Request Seqno = " + 
+                    this.nextSeqno);
+        }
         // got the next thing we were looking for.
         synchronized (this.pendingRecords) {
             if (this.pendingRecords.containsKey(nextSeqno)) {
@@ -1737,6 +1741,13 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2004/12/07 18:33:16  mranga
+ * Submitted by:  Jeff Adams
+ * Reviewed by:   M. Ranganathan
+ *
+ * Timer bug fix
+ * Sniffer tool enhancement.
+ *
  * Revision 1.10  2004/12/01 19:05:15  mranga
  * Reviewed by:   mranga
  * Code cleanup remove the unused SIMULATION code to reduce the clutter.

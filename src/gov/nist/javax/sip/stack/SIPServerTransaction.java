@@ -112,7 +112,7 @@ import java.util.LinkedList;
  *  
  * </pre>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.56 $ $Date: 2005-01-06 19:37:04 $
+ * @version JAIN-SIP-1.1 $Revision: 1.57 $ $Date: 2005-03-29 03:49:59 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
  * @author Bug fixes by Emil Ivov, Antonis Karydas, Daniel Martinez.
@@ -711,11 +711,13 @@ public class SIPServerTransaction extends SIPTransaction implements
                     .isDialogCreated(transactionResponse.getCSeq().getMethod())
                     && transactionResponse.getCSeq().getMethod().equals(
                             getOriginalRequest().getMethod())) {
+               
                 if (statusCode / 100 == 2) {
                     // The state changes when the ACK is received for an invite
                     // transaction
                     // For other dialogs, the state changes when you send out
                     // the response.
+                    
                     if (!this.isInviteTransaction()) {
                         this.dialog.setState(SIPDialog.CONFIRMED_STATE);
                     } else {
@@ -1220,6 +1222,10 @@ public class SIPServerTransaction extends SIPTransaction implements
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.56  2005/01/06 19:37:04  mranga
+ * Submitted by:  Bill Roome
+ * Reviewed by:   M. Ranganathan
+ *
  * Revision 1.55  2004/12/07 18:33:16  mranga
  * Submitted by:  Jeff Adams
  * Reviewed by:   M. Ranganathan
