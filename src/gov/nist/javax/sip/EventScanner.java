@@ -16,7 +16,7 @@ import java.io.*;
 /**
  * Event Scanner to deliver events to the Listener.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.15 $ $Date: 2004-08-23 23:56:20 $
+ * @version JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2004-10-31 02:19:07 $
  * 
  * @author M. Ranganathan <mranga@nist.gov><br/>
  * 
@@ -174,7 +174,7 @@ class EventScanner implements Runnable {
 			sipRequest.setTransaction(eventWrapper.transaction);
 			// Processing incoming CANCEL.
 			if (sipRequest.getMethod().equals(Request.CANCEL)) {
-				SIPTransaction tr = sipStackImpl.findTransaction(sipRequest,
+				SIPTransaction tr = sipStackImpl.findCancelTransaction(sipRequest,
 						true);
 				if (tr != null
 						&& tr.getState() == SIPTransaction.TERMINATED_STATE) {
@@ -191,15 +191,20 @@ class EventScanner implements Runnable {
 						// Ignore?
 					}
 					return;
-				}
+				} 
+				if (LogWriter.needsLogging)
+						sipStackImpl.logMessage("Cancel transaction = " + tr );
+				
 			}
 
 			// Change made by SIPquest
 			try {
 
-				if (LogWriter.needsLogging)
+				if (LogWriter.needsLogging) {
 					sipStackImpl.logMessage("Calling listener "
 							+ sipRequest.getRequestURI());
+					sipStackImpl.logMessage("Calling listener " + eventWrapper.transaction);
+                                }
 				if (sipListener != null)
 					sipListener.processRequest((RequestEvent) sipEvent);
 				sipStackImpl
