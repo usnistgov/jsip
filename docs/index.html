@@ -99,10 +99,16 @@ cygwin bash shell.
 </li> <br/>
 Use the makefile provided to build everything: 
   <ul>
- <li> edit build-config - adjust the paths to libraries and J2SDK. 
-All the libraries 
-you need are provided with the distribution but they are not necessarily
- the latest.</li>
+ <li> edit build-config - adjust the paths to libraries and J2SDK and
+the xerces and junit libraries. 
+Get the xerces and junit libraries and install them in the directories
+libs/junit and libs/xerces respectively.  These are available from the
+junit.org website and apache websites. Else,
+<a href="http://is2.antd.nist.gov/pub/nist-sip/libs.zip"> 
+ you can download a (possibly out of date) copy of these from NIST  </a> 
+and unzip them at the root of the distribution tree 
+(which will create a libs directory for you).
+ </li>
  <li> The following make targets are relevant: 
       <ul>
  <li> <font color="blue"> make ri </font> makes just the reference  implementation
