@@ -18,14 +18,14 @@ import javax.sip.*;
  * messageChannel, the NIST-SIP stack calls the SIPStackMessageFactory 
  * implementation that has been registered with it to process the request.)
  *
- * @version JAIN-SIP-1.1 $Revision: 1.8 $ $Date: 2004-06-15 09:54:39 $
+ * @version JAIN-SIP-1.1 $Revision: 1.9 $ $Date: 2004-06-21 05:33:38 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
  */
-public class NistSipMessageFactoryImpl implements SIPStackMessageFactory {
+public class NistSipMessageFactoryImpl implements StackMessageFactory {
 
 	SipStackImpl sipStackImpl;
 
@@ -125,6 +125,11 @@ public class NistSipMessageFactoryImpl implements SIPStackMessageFactory {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2004/06/15 09:54:39  mranga
+ * Reviewed by:   mranga
+ * re-entrant listener model added.
+ * (see configuration property gov.nist.javax.sip.REENTRANT_LISTENER)
+ *
  * Revision 1.7  2004/04/06 12:28:22  mranga
  * Reviewed by:   mranga
  * changed locale to Locale.getDefault().getCountry()
