@@ -22,7 +22,7 @@ import sim.java.net.*;
 
 /** Implementation of the JAIN-SIP provider interface.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.18 $ $Date: 2004-04-08 22:08:27 $
+ * @version JAIN-SIP-1.1 $Revision: 1.19 $ $Date: 2004-04-19 22:32:02 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -495,6 +495,7 @@ public final class SipProviderImpl
 					Route route = (Route) rl.next();
 					//newRequest.setRequestURI(route.getAddress().getURI());
 					rl.remove();
+					if (! rl.hasNext()) newRequest.removeHeader(RouteHeader.NAME);
 				} else
 					newRequest = sipRequest;
 				MessageChannel messageChannel =
@@ -697,6 +698,11 @@ public final class SipProviderImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2004/04/08 22:08:27  mranga
+ * Reviewed by:   mranga
+ * tighten up checks for client transaction creation - make sure that transport
+ * and port on via header supports a valid listening point.
+ *
  * Revision 1.17  2004/04/07 00:19:22  mranga
  * Reviewed by:   mranga
  * Fixes a potential race condition for client transactions.
