@@ -498,7 +498,7 @@ extends SIPStack implements  SIPTransactionEventListener {
 					try {
 					   if (d.toRetransmitFinalResponse()) 
 				              transaction.sendMessage(response);
-				           transaction.fireTimer();
+				            fireList.add(transaction);
 					} catch (IOException ex) {
 					   /* Will eventully time out */
 					}
