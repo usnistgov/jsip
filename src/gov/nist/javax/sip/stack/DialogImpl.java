@@ -24,7 +24,7 @@ import java.text.ParseException;
  * retrieve this structure from the SipStack. Bugs against route set
  * management were reported by Antonis Karydas and Brad Templeton.
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.28 $ $Date: 2004-05-30 18:55:57 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.29 $ $Date: 2004-06-01 11:42:58 $
  *
  *@author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -110,13 +110,24 @@ public class DialogImpl implements javax.sip.Dialog {
             if (dialog.getState() != null
             && dialog.getState().getValue()
             == DialogImpl.TERMINATED_STATE) {
-                if (LogWriter.needsLogging) {
-                    String dialogId = dialog.getDialogId();
-                    stack.logWriter.logMessage(
-                    "Removing Dialog " + dialogId);
-                }
+		// Remove all mappings for this dialog from the dialog table.
+		// We could use the key but want to make sure all mappings for
+		// this dialog are removed (it could be mapped two times in
+		// the same hashtable for re-invites.
                 synchronized (this.stack.dialogTable) {
-                    this.stack.dialogTable.remove(this.dialog.getDialogId());
+		    Iterator it = this.stack.dialogTable.values().iterator();
+		    while (it.hasNext() ) {
+			DialogImpl d = (DialogImpl) it.next();
+			if (d == this.dialog ) {
+                		if (LogWriter.needsLogging) {
+                    			String dialogId = dialog.getDialogId();
+                    			stack.logWriter.logMessage(
+                    			"Removing Dialog " + dialogId);
+                		}
+				it.remove();
+			}
+		    }
+		    // cancel the associated dialog timer.
                     this.cancel();
                 }
             }
@@ -1389,20 +1400,28 @@ public class DialogImpl implements javax.sip.Dialog {
         }
         
         try {
-            MessageChannel messageChannel =
-            sipStack.createRawMessageChannel(hop);
+	    TCPMessageChannel oldChannel = null;
+            MessageChannel messageChannel = sipStack.createRawMessageChannel(hop);
             if ( ((SIPClientTransaction) clientTransactionId).encapsulatedChannel
-            instanceof TCPMessageChannel )  {
+            	instanceof TCPMessageChannel )  {
                 // Remove this from the connection cache if it is in the connection
                 // cache and is not yet active.
-                TCPMessageChannel oldChannel = (TCPMessageChannel)
+                oldChannel = (TCPMessageChannel)
                 ((SIPClientTransaction)clientTransactionId).encapsulatedChannel;
                 if (oldChannel.isCached && ! oldChannel.isRunning) {
                     oldChannel.uncache();
                 }
+		// Not configured to cache client connections.
+		if ( !sipStack.cacheClientConnections  )  {
+			oldChannel.useCount --;
+			if (LogWriter.needsLogging) 
+				sipStack.logWriter.logMessage("oldChannel: useCount " + oldChannel.useCount);
+
+		}
             }
-            ((SIPClientTransaction) clientTransactionId).encapsulatedChannel =
-            messageChannel;
+            ((SIPClientTransaction) clientTransactionId).encapsulatedChannel = messageChannel;
+
+		  
             
             if (messageChannel == null) {
                 // Bug fix from Antonis Karydas
@@ -1433,11 +1452,20 @@ public class DialogImpl implements javax.sip.Dialog {
             }
             ((SIPClientTransaction) clientTransactionId).encapsulatedChannel =
             messageChannel;
+            if (messageChannel != null &&
+	        messageChannel instanceof TCPMessageChannel ) 
+	        ((TCPMessageChannel) messageChannel).useCount ++;
+	    // See if we need to release the previously mapped channel.
+	    if (  ( ! sipStack.cacheClientConnections ) && 
+		oldChannel != null  && 
+		oldChannel.useCount == 0 ) 
+		oldChannel.close();
         } catch (Exception ex) {
             if (LogWriter.needsLogging)
                 sipStack.logWriter.logException(ex);
             throw new SipException("Cold not create message channel");
         }
+
         
         try {
             // Increment before setting!!
@@ -1546,6 +1574,11 @@ public class DialogImpl implements javax.sip.Dialog {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.28  2004/05/30 18:55:57  mranga
+ * Reviewed by:   mranga
+ * Move to timers and eliminate the Transaction scanner Thread
+ * to improve scalability and reduce cpu usage.
+ *
  * Revision 1.27  2004/04/30 14:03:26  mranga
  * Reviewed by:   mranga
  *

@@ -23,7 +23,7 @@ import javax.sip.message.*;
  *
  * @author Jeff Keyser 
  * @author M. Ranganathan (modified Jeff's original source and aligned with JAIN-SIP 1.1)
- * @version  JAIN-SIP-1.1 $Revision: 1.22 $ $Date: 2004-05-30 18:55:58 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.23 $ $Date: 2004-06-01 11:42:59 $
  */
 public abstract class SIPTransaction
 	extends MessageChannel
@@ -255,8 +255,11 @@ public abstract class SIPTransaction
 		this.peerAddress = newEncapsulatedChannel.getPeerAddress();
 		this.peerInetAddress = newEncapsulatedChannel.getPeerInetAddress();
 		this.peerProtocol = newEncapsulatedChannel.getPeerProtocol();
-		if (encapsulatedChannel instanceof TCPMessageChannel ) {
+		if (this.isReliable()) {
 			((TCPMessageChannel)encapsulatedChannel).useCount++;
+			if (sipStack.logWriter.needsLogging)
+			    sipStack.logWriter.logMessage("use count for encapsulated channel" +    this + " " +
+				((TCPMessageChannel)encapsulatedChannel).useCount);
 		}
 
 		this.currentState = null;
@@ -925,7 +928,8 @@ public abstract class SIPTransaction
 	 */
 	public void close() {
 		this.encapsulatedChannel.close();
-		this.myTimer.cancel();
+		if (LogWriter.needsLogging) 
+		    sipStack.logWriter.logMessage("Closing " + this.encapsulatedChannel);
 	}
 
 	public boolean isSecure() {
@@ -966,6 +970,11 @@ public abstract class SIPTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.22  2004/05/30 18:55:58  mranga
+ * Reviewed by:   mranga
+ * Move to timers and eliminate the Transaction scanner Thread
+ * to improve scalability and reduce cpu usage.
+ *
  * Revision 1.21  2004/05/18 15:26:44  mranga
  * Reviewed by:   mranga
  * Attempted fix at race condition bug. Remove redundant exception (never thrown).
