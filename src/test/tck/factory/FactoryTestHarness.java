@@ -40,10 +40,10 @@ public class FactoryTestHarness extends TestHarness {
 			"http://10.10.30.186:8080/examples/pin.vxml" };
 
 	protected static String telUrls[] =
-		{ "tel:+463-1701-4291", "tel:46317014291", "tel:+1-212-555-1212:1234" };
+		{ "tel:+463-1701-4291", "tel:46317014291;phone-context=5", "tel:+1-212-555-1212" };
 
 	protected static String phoneNumbers[] =
-		{ "+463-1701-4291", "46317014291", "+1-212-555-1212:1234" };
+		{ "+463-1701-4291", "46317014291;phone-context=5", "+1-212-555-1212" };
 
 	protected static String addresses[] =
 		{
