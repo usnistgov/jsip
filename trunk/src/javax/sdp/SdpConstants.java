@@ -163,7 +163,7 @@ public interface SdpConstants {
     
     /** Static RTP/AVP payload type for the H263 video codec.
      */
-    public static final int H263=20;
+    public static final int H263=34;
     
     /** Highest defined static payload type. This is (currently) 35.
      */
