@@ -27,7 +27,7 @@ import sim.java.net.*;
  * @author Jeff Keyser (original) 
  * @author M. Ranganathan <mranga@nist.gov>  <br/> (Added Dialog table).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.28 $ $Date: 2004-05-30 18:55:58 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.29 $ $Date: 2004-05-31 18:12:56 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public abstract class SIPTransactionStack
@@ -44,9 +44,9 @@ public abstract class SIPTransactionStack
         public static final int CONNECTION_LINGER_TIME = 32;
 
 	// Collection of current client transactions
-	protected Set clientTransactions;
+	protected List clientTransactions;
 	// Collection or current server transactions
-	protected Set serverTransactions;
+	protected List serverTransactions;
 	// Table of dialogs.
 	protected Hashtable dialogTable;
 
@@ -81,8 +81,8 @@ public abstract class SIPTransactionStack
 		// the code.
 		// Create the transaction collections
 
-		clientTransactions = Collections.synchronizedSet(new HashSet());
-		serverTransactions = Collections.synchronizedSet(new HashSet());
+		clientTransactions = Collections.synchronizedList(new ArrayList());
+		serverTransactions = Collections.synchronizedList(new ArrayList());
 		// Dialog dable.
 		this.dialogTable = new Hashtable();
 
@@ -112,8 +112,8 @@ public abstract class SIPTransactionStack
 	*/
 	protected void reInit() {
 		super.reInit();
-		clientTransactions = Collections.synchronizedSet(new HashSet());
-		serverTransactions = Collections.synchronizedSet(new HashSet());
+		clientTransactions = Collections.synchronizedList(new ArrayList());
+		serverTransactions = Collections.synchronizedList(new ArrayList());
 		// Dialog dable.
 		this.dialogTable = new Hashtable();
 
@@ -909,6 +909,8 @@ public abstract class SIPTransactionStack
 
 	/**
 	 * Add a new client transaction to the set of existing transactions.
+	 * Add it to the top of the list so an incoming response has less work
+	 * to do in order to find the transaction.
 	 *
 	 * @param clientTransaction -- client transaction to add to the set.
 	 */
@@ -917,13 +919,15 @@ public abstract class SIPTransactionStack
 		    logWriter.logMessage("added transaction " + 
 				clientTransaction );
 		synchronized (clientTransactions) {
-			clientTransactions.add(clientTransaction);
+			clientTransactions.add(0,clientTransaction);
 		}
 		clientTransaction.startTransactionTimer();
 	}
 
 	/**
-	 * Add a new server transaction to the set of existing transactions.
+	 * Add a new server transaction to the set of existing transactions. 
+	 * Add it to the top of the list so an incoming ack has less work
+	 * to do in order to find the transaction.
 	 *
 	 * @param serverTransaction -- server transaction to add to the set.
 	 */
@@ -933,7 +937,7 @@ public abstract class SIPTransactionStack
 		    logWriter.logMessage("added transaction " + 
 				serverTransaction );
 		synchronized (serverTransactions) {
-			this.serverTransactions.add(serverTransaction);
+			this.serverTransactions.add(0,serverTransaction);
 			serverTransaction.map();
 		}
 		serverTransaction.startTransactionTimer();
@@ -978,6 +982,11 @@ public abstract class SIPTransactionStack
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.28  2004/05/30 18:55:58  mranga
+ * Reviewed by:   mranga
+ * Move to timers and eliminate the Transaction scanner Thread
+ * to improve scalability and reduce cpu usage.
+ *
  * Revision 1.27  2004/04/07 13:46:30  mranga
  * Reviewed by:   mranga
  * move processing of delayed responses outside the synchronized block.
