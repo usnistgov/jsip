@@ -84,6 +84,7 @@ an incoming INVITE?</a> </li>
 I want to be able to send SIP packets to different SIP servers using 
 different local identities. Any tips on how this is best handled 
 with this stack? </li>
+ <li><a href="#37"> The stack seems a bit slow. Can you do something to improve performance? </li>
 <li><a href="#questionables"> I have some questionable questions. Where do I look? <br/> </li>
 </ol>
 <br>
@@ -475,9 +476,19 @@ Note also that the Router is only used to route requests out of dialog -
 which is to say it is used for pre-dialog establishment, requests that
 dont belong to any particular dialog and stateless requests.
 </li>
+<a name="37"> </a>
+<li> The stack seems to be slow. Can you  do something to improve performance?  <br/>
+This is a reference implementation. As such, the emphasis is on clarity
+not performance. In its current state,  the RI performs reasonably
+well and is suited for client applications. You may need to do some
+work by way of performance tuning to get it to work well in a high
+performance server setting. In particular, you may wish to fine tune
+object allocation, transaction location (searching for a transaction
+that corresponds to an incoming message) and other such details.  </li>
+
 </ol>
-<a name="questionables"></a>
-<h2> Frequently Questionable Questions (List likely to grow in time) </h2>
+<a name="questionables"></a> <h2> Frequently Questionable Questions
+(List likely to grow in time) </h2>
 
 We have provided links to external web pages in this section because
 it has information that may be of interest to our users. NIST does not
