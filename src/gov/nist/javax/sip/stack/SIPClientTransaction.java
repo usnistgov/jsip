@@ -15,11 +15,6 @@ import javax.sip.header.*;
 
 import java.io.IOException;
 
-//ifdef SIMULATION
-/*
- import sim.java.*;
- //endif
- */
 
 /**
  * Represents a client transaction. Implements the following state machines.
@@ -123,7 +118,7 @@ import java.io.IOException;
  * @author Bug fixes by Emil Ivov. <a href=" {@docRoot}/uncopyright.html">This
  *         code is in the public domain. </a>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.42 $ $Date: 2004-10-31 02:19:07 $
+ * @version JAIN-SIP-1.1 $Revision: 1.43 $ $Date: 2004-12-01 19:05:15 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
         ServerResponseInterface, javax.sip.ClientTransaction, PendingRecord {
@@ -358,10 +353,6 @@ public class SIPClientTransaction extends SIPTransaction implements
         // Message typecast as a request
         SIPRequest transactionRequest;
 
-        //ifdef SIMULATION
-        /*
-         * SimSystem.hold(getSIPStack().stackProcessingTime); //endif
-         */
 
         transactionRequest = (SIPRequest) messageToSend;
 
@@ -445,15 +436,7 @@ public class SIPClientTransaction extends SIPTransaction implements
         // Log the incoming response in our log file.
         if (sipStack.serverLog.needsLogging(ServerLog.TRACE_MESSAGES))
             this.logResponse(transactionResponse,
-
-            //ifdef SIMULATION
-                    /*
-                     * SimSystem.currentTimeMillis(), //else
-                     */
                     System.currentTimeMillis(),
-                    //endif
-                    //
-
                     "normal processing");
 
         // If the state has not yet been assigned then this is a
@@ -1151,6 +1134,13 @@ public class SIPClientTransaction extends SIPTransaction implements
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.42  2004/10/31 02:19:07  mranga
+ * Reviewed by:   M. Ranganathan
+ *
+ * Cancel behavior race condition bug.
+ *
+ * Cancel example added.
+ *
  * Revision 1.41  2004/10/28 19:02:51  mranga
  * Submitted by:  Daniel Martinez
  * Reviewed by:   M. Ranganathan

@@ -11,11 +11,6 @@ import java.util.*;
 import java.io.IOException;
 import java.net.*;
 
-//ifdef SIMULATION
-/*
- import sim.java.net.*;
- //endif
- */
 
 /**
  * Adds a transaction layer to the {@link SIPMessageStack}class. This is done
@@ -27,7 +22,7 @@ import java.net.*;
  * @author M. Ranganathan <mranga@nist.gov><br/>(Added Dialog table).
  * @author performance enhacements added by Pierre De Rop and Thomas Froment.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.46 $ $Date: 2004-10-31 02:19:08 $ <a
+ * @version JAIN-SIP-1.1 $Revision: 1.47 $ $Date: 2004-12-01 19:05:16 $ <a
  *          href=" {@docRoot}/uncopyright.html">This code is in the public
  *          domain. </a>
  */
@@ -106,11 +101,6 @@ public abstract class SIPTransactionStack extends SIPMessageStack implements
 		serverTransactionTable = new Hashtable();
 
 		// Start the timer event thread.
-		//ifdef SIMULATION
-		/*
-		 * SimThread simThread = new SimThread( new TransactionScanner(this));
-		 * simThread.setName("TransactionScanner"); simThread.start(); //else
-		 */
 
 		this.timer = new Timer();
 		this.pendingRecordScanner = new Thread(new PendingRecordScanner(this));
@@ -138,19 +128,11 @@ public abstract class SIPTransactionStack extends SIPMessageStack implements
 		// Dialog dable.
 		this.dialogTable = new Hashtable();
 
-		// Start the timer event thread.
-		//ifdef SIMULATION
-		/*
-		 * SimThread simThread = new SimThread( new TransactionScanner(this));
-		 * simThread.setName("TransactionScanner"); simThread.start(); //else
-		 */
 		this.timer = new Timer();
 		pendingRecordScanner = new Thread(new PendingRecordScanner(this));
 		pendingRecordScanner.setDaemon(true);
 		pendingRecordScanner.setName("PendingRecordScanner");
 		pendingRecordScanner.start();
-		//endif
-		//
 
 	}
 
@@ -1056,6 +1038,13 @@ public abstract class SIPTransactionStack extends SIPMessageStack implements
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.46  2004/10/31 02:19:08  mranga
+ * Reviewed by:   M. Ranganathan
+ *
+ * Cancel behavior race condition bug.
+ *
+ * Cancel example added.
+ *
  * Revision 1.45  2004/10/06 16:57:50  mranga
  * Issue number:
  * Obtained from:

@@ -215,7 +215,7 @@ public class Shootist implements SipListener {
 		sipFactory.setPathName("gov.nist");
 		Properties properties = new Properties();
 		// If you want to try TCP transport change the following to
-		String transport = "udp";
+		String transport = "tcp";
 		String peerHostPort = "127.0.0.1:5070";
 		properties.setProperty("javax.sip.IP_ADDRESS", "127.0.0.1");
 		properties.setProperty(
@@ -248,7 +248,7 @@ public class Shootist implements SipListener {
 		// Set to 0 in your production code for max speed.
 		// You need  16 for logging traces. 32 for debug + traces.
 		// Your code will limp at 32 but it is best for debugging.
-		properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "16");
+		properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
 
 		try {
 			// Create SipStack object
@@ -443,6 +443,10 @@ public class Shootist implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.31  2004/08/30 14:33:53  mranga
+ * Submitted by:  mranga
+ * Reviewed by:   mranga
+ *
  * Revision 1.30  2004/07/23 06:50:04  mranga
  * Submitted by:  mranga
  * Reviewed by:   mranga

@@ -12,18 +12,13 @@ import java.net.UnknownHostException;
 import gov.nist.core.*;
 import java.lang.reflect.*;
 
-//ifdef SIMULATION
-/*
-import  sim.java.net.*;
-//endif
-*/
 
 /**
  * Sit in a loop and handle incoming udp datagram messages. For each Datagram
  * packet, a new UDPMessageChannel is created (upto the max thread pool size). 
  * Each UDP message is processed in its own thread). 
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.21 $ $Date: 2004-09-26 14:48:03 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.22 $ $Date: 2004-12-01 19:05:16 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -62,11 +57,6 @@ public class UDPMessageProcessor extends MessageProcessor {
 	 */
 	protected LinkedList messageQueue;
 
-//ifdef SIMULATION
-/*
-	    protected SimMessageObject messageQueueShadow;
-//endif
-*/
 
 	/**
 	 * A list of message channels that we have started.
@@ -94,14 +84,7 @@ public class UDPMessageProcessor extends MessageProcessor {
 	*/
 	protected Thread  thread;
 
-//ifdef SIMULATION
-/*
-	    protected SimDatagramSocket sock;
-//else
-*/
 	protected DatagramSocket sock;
-//endif
-//
 
 	/**
 	 * A flag that is set to false to exit the message processor
@@ -117,11 +100,6 @@ public class UDPMessageProcessor extends MessageProcessor {
 		throws IOException {
 		this.sipStack = sipStack;
 		this.messageQueue = new LinkedList();
-//ifdef SIMULATION
-/*
-		this.messageQueueShadow = new SimMessageObject();
-//endif
-*/
 		this.port = port;
 		this.mappedPort = port;
 		try  {
@@ -151,21 +129,6 @@ public class UDPMessageProcessor extends MessageProcessor {
 	/**
 	 * Start our processor thread.
 	 */
-//ifdef SIMULATION
-/*
-    public void start() throws IOException {
-	        // Create a new datagram socket.
-		// Bug uncovered by
-	        this.sock =
-	        new SimDatagramSocket(port,sipStack.stackInetAddress);
-	         sock.setReceiveBufferSize
-	        (MAX_DATAGRAM_SIZE);
-	        this.isRunning = true;
-	        SimThread thread = new SimThread(this);
-	        thread.start();
-	    }
-//else
-*/
 	public void start() throws IOException {
 		// The following code is all done using introspection and looks
 		// pretty ugly. It was written this way 
@@ -269,32 +232,11 @@ public class UDPMessageProcessor extends MessageProcessor {
 					// not empty. As soon as you introduce some other
 					// condition you will have to call notifyAll instead of 
 					// notify below.
-//ifdef SIMULATION
-/*
-					this.messageQueueShadow.enterCriticalSection();
-					try 
-//else
-*/
 
-					synchronized (this.messageQueue)
-//endif
-//
-						{
+					synchronized (this.messageQueue) {
 						this.messageQueue.addLast(packet);
-//ifdef SIMULATION
-/*
-					        this.messageQueueShadow.doNotify();
-//else
-*/
 						this.messageQueue.notify();
-//endif
-//
 					}
-//ifdef SIMULATION
-/*
-					finally { this.messageQueueShadow.leaveCriticalSection(); }
-//endif
-*/
 				} else {
 					new UDPMessageChannel(sipStack, this, packet);
 				}
@@ -305,30 +247,9 @@ public class UDPMessageProcessor extends MessageProcessor {
 				isRunning = false;
 				// The notifyAll should be in a synchronized block.
 				// ( bug report by Niklas Uhrberg ).
-//ifdef SIMULATION
-/*
-				this.messageQueueShadow.enterCriticalSection();
-				try
-//else
-*/
-				synchronized (this.messageQueue)
-//endif
-//
-					{
-//ifdef SIMULATION
-/*
-					this.messageQueueShadow.doNotifyAll();
-//else
-*/
+				synchronized (this.messageQueue) {
 					this.messageQueue.notifyAll();
-//endif
-//
 				}
-//ifdef SIMULATION
-/*
-				finally { this.messageQueueShadow.leaveCriticalSection(); }
-//endif
-*/
 			} catch (IOException ex) {
 				isRunning = false;
 				ex.printStackTrace();
@@ -350,26 +271,12 @@ public class UDPMessageProcessor extends MessageProcessor {
 	 * incoming messages.
 	 */
 	public void stop() {
-//ifdef SIMULATION
-/*
-			this.messageQueueShadow.enterCriticalSection();
-			try 
-//else
-*/
-		synchronized (this.messageQueue)
-//endif
-//
-			{
+		synchronized (this.messageQueue) {
 			this.isRunning = false;
 			this.messageQueue.notifyAll();
 			this.listeningPoint = null;
 			sock.close();
-			}
-//ifdef SIMULATION
-/*
-		finally { this.messageQueueShadow.leaveCriticalSection(); }
-//endif
-*/
+		}
 	}
 
 	/**
@@ -438,6 +345,12 @@ public class UDPMessageProcessor extends MessageProcessor {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.21  2004/09/26 14:48:03  mranga
+ * Submitted by:  John Martin
+ * Reviewed by:   mranga
+ *
+ * Remove unnecssary synchronization.
+ *
  * Revision 1.20  2004/09/04 14:59:54  mranga
  * Reviewed by:   mranga
  *
