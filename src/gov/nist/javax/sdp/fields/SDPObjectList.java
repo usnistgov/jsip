@@ -125,7 +125,6 @@ public class SDPObjectList  extends GenericObjectList {
     
     public SDPObjectList (String lname, String classname) {
         super(lname,classname);
-        checkAssignability(SDPFIELDS_PACKAGE+".SDPObject",classname);
     }
     
     public SDPObjectList() {
