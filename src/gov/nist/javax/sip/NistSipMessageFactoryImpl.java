@@ -18,7 +18,7 @@ import javax.sip.*;
  * messageChannel, the NIST-SIP stack calls the SIPStackMessageFactory 
  * implementation that has been registered with it to process the request.)
  *
- * @version JAIN-SIP-1.1 $Revision: 1.9 $ $Date: 2004-06-21 05:33:38 $
+ * @version JAIN-SIP-1.1 $Revision: 1.10 $ $Date: 2004-06-21 05:43:16 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -36,7 +36,7 @@ public class NistSipMessageFactoryImpl implements StackMessageFactory {
 	 *@param messageChannel is the MessageChannel abstraction for this
 	 * 	SIPServerRequest.
 	 */
-	public SIPServerRequestInterface newSIPServerRequest(
+	public ServerRequestInterface newSIPServerRequest(
 		SIPRequest sipRequest,
 		MessageChannel messageChannel) {
 
@@ -75,7 +75,7 @@ public class NistSipMessageFactoryImpl implements StackMessageFactory {
 	 *@param messageChannel is the MessageChannel abstraction for this
 	 * 	SIPServerResponse
 	 */
-	public SIPServerResponseInterface newSIPServerResponse(
+	public ServerResponseInterface newSIPServerResponse(
 		SIPResponse sipResponse,
 		MessageChannel messageChannel) {
 		SIPTransactionStack theStack =
@@ -125,6 +125,10 @@ public class NistSipMessageFactoryImpl implements StackMessageFactory {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/06/21 05:33:38  mranga
+ * Reviewed by:  mranga
+ * more refactoring
+ *
  * Revision 1.8  2004/06/15 09:54:39  mranga
  * Reviewed by:   mranga
  * re-entrant listener model added.
