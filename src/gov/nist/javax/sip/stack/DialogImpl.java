@@ -24,7 +24,7 @@ import java.text.ParseException;
  * retrieve this structure from the SipStack. Bugs against route set 
  * management were reported by Antonis Karydas and Brad Templeton.
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2004-02-03 16:31:50 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.18 $ $Date: 2004-02-04 18:44:18 $
  *
  *@author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -564,8 +564,6 @@ public class DialogImpl implements javax.sip.Dialog {
 			this.originalRequest = sipRequest;
 
 			if (transaction instanceof SIPServerTransaction) {
-				setRemoteSequenceNumber(
-					sipRequest.getCSeq().getSequenceNumber());
 				hisTag = sipRequest.getFrom().getTag();
 				// My tag is assigned when sending response
 			} else {
@@ -592,6 +590,13 @@ public class DialogImpl implements javax.sip.Dialog {
 			this.originalRequest = sipRequest;
 
 		}
+		
+		// If this is a server transaction record the remote
+		// sequence number to avoid re-processing of requests
+		// with the same sequence number directed towards this 
+		// dialog.
+		if (transaction instanceof ServerTransaction) 
+		   setRemoteSequenceNumber( sipRequest.getCSeq().getSequenceNumber());
 
 		this.lastTransaction = transaction;
 		// set a back ptr in the incoming dialog.
@@ -1428,6 +1433,10 @@ public class DialogImpl implements javax.sip.Dialog {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2004/02/03 16:31:50  mranga
+ * Reviewed by:   mranga
+ * finer grained check on bye creation (conform to section 15 of spec).
+ *
  * Revision 1.16  2004/02/03 15:43:48  mranga
  * Reviewed by:   mranga
  * check for dialog state when creating bye request.

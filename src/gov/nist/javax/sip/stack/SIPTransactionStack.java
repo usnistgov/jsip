@@ -27,7 +27,7 @@ import sim.java.net.*;
  * @author Jeff Keyser (original) 
  * @author M. Ranganathan <mranga@nist.gov>  <br/> (Added Dialog table).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2004-01-27 13:52:11 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.18 $ $Date: 2004-02-04 18:44:18 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public abstract class SIPTransactionStack
@@ -584,7 +584,14 @@ public abstract class SIPTransactionStack
 					// If so, then create a transaction and add it.
 					String dialogId = requestReceived.getDialogId(true);
 					DialogImpl dialog = getDialog(dialogId);
-					if (dialog != null) {
+				        // Sequence numbers are supposed to increment.
+				        // avoid processing old sequence numbers and
+				        // delivering the same request up to the
+					// application if the request has already been seen.
+					// Special handling applies to ACK processing.
+					if (dialog != null  && ( requestReceived.getMethod().equals(Request.ACK) 
+				      		|| requestReceived.getCSeq().getSequenceNumber()
+				     		> dialog.getRemoteSequenceNumber())) {
 						// Found a dialog.
 						serverTransactions.add(currentTransaction);
 						currentTransaction.isMapped = true;
@@ -826,6 +833,11 @@ public abstract class SIPTransactionStack
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2004/01/27 13:52:11  mranga
+ * Reviewed by:   mranga
+ * Fixed server/user-agent parser.
+ * suppress sending ack to TU when retransFilter is enabled and ack is retransmitted.
+ *
  * Revision 1.16  2004/01/22 18:39:41  mranga
  * Reviewed by:   M. Ranganathan
  * Moved the ifdef SIMULATION and associated tags to the first column so Prep preprocessor can deal with them.
