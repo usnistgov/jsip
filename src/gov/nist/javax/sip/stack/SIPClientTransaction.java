@@ -123,7 +123,7 @@ import java.io.IOException;
  * @author Bug fixes by Emil Ivov. <a href=" {@docRoot}/uncopyright.html">This
  *         code is in the public domain. </a>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.40 $ $Date: 2004-10-05 16:22:38 $
+ * @version JAIN-SIP-1.1 $Revision: 1.41 $ $Date: 2004-10-28 19:02:51 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
         ServerResponseInterface, javax.sip.ClientTransaction, PendingRecord {
@@ -187,24 +187,41 @@ public class SIPClientTransaction extends SIPTransaction implements
 
                 // Client transaction terminated. Kill connection if
                 // this is a TCP after the linger timer has expired.
-                // The linger timer is needed to allow any pending requests to
-                // return responses.
-                if ((!this.sipStack.cacheClientConnections)
-                        && clientTransaction.isReliable()
-                        && --((TCPMessageChannel) clientTransaction.encapsulatedChannel).useCount == 0) {
-                    // Let the connection linger for a while and then close it.
-                    this.clientTransaction.myTimer = new LingerTimer(
-                            this.clientTransaction);
-                    sipStack.timer.schedule(myTimer,
-                            SIPTransactionStack.CONNECTION_LINGER_TIME * 1000);
+                // The linger timer is needed to allow any pending requests to return responses.
+                if (  ( ! this.sipStack.cacheClientConnections )
+                && clientTransaction.isReliable())
+		{
+			// Section changed by Daniel J. Martinez Manzano <dani@dif.um.es>
+			// Added support for TLS message channel
+			int newUseCount;
+
+			if(clientTransaction.encapsulatedChannel instanceof TCPMessageChannel)
+				newUseCount = -- ((TCPMessageChannel)clientTransaction.encapsulatedChannel).useCount;
+			else
+				newUseCount = -- ((TLSMessageChannel)clientTransaction.encapsulatedChannel).useCount;
+                        if(newUseCount == 0 ) {
+                    		// Let the connection linger for a while and then close it.
+		                this.clientTransaction.myTimer = new LingerTimer(this.clientTransaction);
+		                sipStack.timer.schedule(myTimer,SIPTransactionStack.CONNECTION_LINGER_TIME*1000);
+                        }
                 } else {
                     // Cache the client connections so dont close the
                     // connection.
                     if (LogWriter.needsLogging
-                            && clientTransaction.isReliable())
-                        sipStack.logWriter
-                                .logMessage("Client Use Count = "
-                                        + ((TCPMessageChannel) clientTransaction.encapsulatedChannel).useCount);
+                    && clientTransaction.isReliable())
+		    {
+			// Section changed by Daniel J. Martinez Manzano <dani@dif.um.es>
+			// Added support for TLS message channel
+
+			int UseCount;
+
+			if(clientTransaction.encapsulatedChannel instanceof TCPMessageChannel)
+				UseCount = ((TCPMessageChannel)clientTransaction.encapsulatedChannel).useCount;
+			else
+				UseCount = ((TLSMessageChannel)clientTransaction.encapsulatedChannel).useCount;
+
+                        sipStack.logWriter.logMessage( "Client Use Count = " + UseCount);
+		    }
                 }
 
                 // If this transaction has not
@@ -1143,7 +1160,30 @@ public class SIPClientTransaction extends SIPTransaction implements
     }
 }
 /*
- * $Log: not supported by cvs2svn $ Revision 1.39 2004/10/04 16:03:53 mranga
+ * $Log: not supported by cvs2svn $
+ * Revision 1.40  2004/10/05 16:22:38  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  Xavi Ferro
+ * Reviewed by:   mranga
+ *
+ * Another attempted fix for memory leak.
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ * Revision 1.39 2004/10/04 16:03:53 mranga
  * Reviewed by: mranga attempted fix for memory leak
  * 
  * Revision 1.38 2004/08/31 19:32:58 mranga Submitted by: Matt Keller Reviewed

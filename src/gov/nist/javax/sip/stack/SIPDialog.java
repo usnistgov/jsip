@@ -23,7 +23,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2004-10-05 16:22:37 $
+ * @version JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2004-10-28 19:02:51 $
  * 
  * @author M. Ranganathan <mranga@nist.gov><br/>Bugs were reported by Antonis
  *         Karydas, Brad Templeton and Alex Rootham.
@@ -291,7 +291,12 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
             transport = "udp";
 
         int port = sipUri.getPort();
-        // TODO -- check if transport parameter is TLS and assign 5061
+
+	// Added by Daniel J. Martinez Manzano <dani@dif.um.es>
+        // Checks if transport parameter is TLS and assigns 5061.
+	if("tls".equalsIgnoreCase(transport))
+		port = 5061;
+
         if (port == -1)
             port = 5060;
         return new HopImpl(host, port, transport);
@@ -1493,23 +1498,42 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
 
         try {
             TCPMessageChannel oldChannel = null;
+	    TLSMessageChannel oldTLSChannel = null;
             MessageChannel messageChannel = sipStack
                     .createRawMessageChannel(hop);
             if (((SIPClientTransaction) clientTransactionId).encapsulatedChannel instanceof TCPMessageChannel) {
                 // Remove this from the connection cache if it is in the
                 // connection
                 // cache and is not yet active.
-                oldChannel = (TCPMessageChannel) ((SIPClientTransaction) clientTransactionId).encapsulatedChannel;
-                if (oldChannel.isCached && !oldChannel.isRunning) {
+                oldChannel = (TCPMessageChannel)
+                ((SIPClientTransaction)clientTransactionId).encapsulatedChannel;
+                if (oldChannel.isCached && ! oldChannel.isRunning) {
                     oldChannel.uncache();
                 }
-                // Not configured to cache client connections.
-                if (!sipStack.cacheClientConnections) {
-                    oldChannel.useCount--;
-                    if (LogWriter.needsLogging)
-                        sipStack.logWriter.logMessage("oldChannel: useCount "
-                                + oldChannel.useCount);
+		// Not configured to cache client connections.
+		if ( !sipStack.cacheClientConnections  )  {
+			oldChannel.useCount --;
+			if (LogWriter.needsLogging) 
+				sipStack.logWriter.logMessage("oldChannel: useCount " + oldChannel.useCount);
 
+		}
+            }
+	    // This section is copied & pasted from the previous one,
+	    // and then modified for TLS management (Daniel Martinez)
+            else if ( ((SIPClientTransaction) clientTransactionId).encapsulatedChannel
+            	instanceof TLSMessageChannel )  {
+                // Remove this from the connection cache if it is in the connection
+                // cache and is not yet active.
+                oldTLSChannel = (TLSMessageChannel)
+                ((SIPClientTransaction)clientTransactionId).encapsulatedChannel;
+                if (oldTLSChannel.isCached && ! oldTLSChannel.isRunning) {
+                    oldTLSChannel.uncache();
+                }
+		// Not configured to cache client connections.
+		if ( !sipStack.cacheClientConnections  )  {
+			oldTLSChannel.useCount --;
+			if (LogWriter.needsLogging) 
+				sipStack.logWriter.logMessage("oldChannel: useCount " + oldTLSChannel.useCount);
                 }
             }
             ((SIPClientTransaction) clientTransactionId).encapsulatedChannel = messageChannel;
@@ -1539,16 +1563,24 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
                     throw new SipException("No route found!");
                 messageChannel = sipStack
                         .createRawMessageChannel(outboundProxy);
-
             }
             ((SIPClientTransaction) clientTransactionId).encapsulatedChannel = messageChannel;
-            if (messageChannel != null
-                    && messageChannel instanceof TCPMessageChannel)
-                ((TCPMessageChannel) messageChannel).useCount++;
-            // See if we need to release the previously mapped channel.
-            if ((!sipStack.cacheClientConnections) && oldChannel != null
-                    && oldChannel.useCount == 0)
-                oldChannel.close();
+
+            if (messageChannel != null &&
+	        messageChannel instanceof TCPMessageChannel ) 
+	        ((TCPMessageChannel) messageChannel).useCount ++;
+            if (messageChannel != null &&
+	        messageChannel instanceof TLSMessageChannel ) 
+	        ((TLSMessageChannel) messageChannel).useCount ++;
+	    // See if we need to release the previously mapped channel.
+	    if (  ( ! sipStack.cacheClientConnections ) && 
+		oldChannel != null  && 
+		oldChannel.useCount == 0 ) 
+		oldChannel.close();
+	    if (  ( ! sipStack.cacheClientConnections ) && 
+		oldTLSChannel != null  && 
+		oldTLSChannel.useCount == 0 ) 
+		oldTLSChannel.close();
         } catch (Exception ex) {
             if (LogWriter.needsLogging)
                 sipStack.logWriter.logException(ex);
@@ -1706,7 +1738,30 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
 
 }
 /*
- * $Log: not supported by cvs2svn $ Revision 1.5 2004/10/04 16:03:53 mranga Reviewed by:
+ * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/10/05 16:22:37  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  Xavi Ferro
+ * Reviewed by:   mranga
+ *
+ * Another attempted fix for memory leak.
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ * Revision 1.5 2004/10/04 16:03:53 mranga Reviewed by:
  * mranga attempted fix for memory leak
  * 
  * Revision 1.4 2004/09/01 02:04:14 xoba Issue number: no particular issue

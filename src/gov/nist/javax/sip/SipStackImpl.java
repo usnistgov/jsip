@@ -171,7 +171,7 @@ import sim.java.net.*;
  *
  *</ul>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.37 $ $Date: 2004-10-01 16:05:08 $
+ * @version JAIN-SIP-1.1 $Revision: 1.38 $ $Date: 2004-10-28 19:02:49 $
  * 
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -521,6 +521,7 @@ public class SipStackImpl
 		if (port <= 0)
 			throw new InvalidArgumentException("bad port");
 		if (!transport.equalsIgnoreCase("UDP")
+			&& !transport.equalsIgnoreCase("TLS") // Added by Daniel J. Martinez Manzano <dani@dif.um.es>
 			&& !transport.equalsIgnoreCase("TCP"))
 			throw new TransportNotSupportedException(
 				"bad transport " + transport);
@@ -752,6 +753,8 @@ public class SipStackImpl
 			return "udp";
 		else if (isTransportEnabled("tcp"))
 			return "tcp";
+		else if (isTransportEnabled("tls")) // Added by Daniel J. Martinez Manzano <dani@dif.um.es>
+			return "tls";
 		else
 			return null;
 	}
@@ -767,6 +770,10 @@ public class SipStackImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.37  2004/10/01 16:05:08  mranga
+ * Submitted by:  mranga
+ * Fixed memory leak
+ *
  * Revision 1.36  2004/09/28 04:07:03  mranga
  * Issue number:
  * Obtained from:
