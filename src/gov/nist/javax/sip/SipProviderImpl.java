@@ -15,16 +15,11 @@ import gov.nist.core.*;
 import java.io.*;
 import java.text.ParseException;
 
-//ifdef SIMULATION
-/*
- import sim.java.net.*;
- //endif
- */
 
 /**
  * Implementation of the JAIN-SIP provider interface.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.28 $ $Date: 2004-10-28 19:02:49 $
+ * @version JAIN-SIP-1.1 $Revision: 1.29 $ $Date: 2004-11-28 17:32:25 $
  * 
  * @author M. Ranganathan <mranga@nist.gov><br/>
  * 
@@ -524,16 +519,23 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
                 newRequest = sipRequest;
                 MessageChannel messageChannel = sipStack
                         .createRawMessageChannel(nextHop);
-                if (messageChannel != null)
+                if (messageChannel != null) {
                     messageChannel.sendMessage((SIPMessage) newRequest);
-                else
-                    throw new SipException("could not forward request");
+		    return;
+                } else {
+		    continue;
+		}
             } catch (IOException ex) {
-                throw new SipException(ex.getMessage());
+		if (LogWriter.needsLogging ) {
+			sipStack.getLogWriter().logException (ex);
+		}
+		continue;
             } catch (ParseException ex1) {
                 InternalErrorHandler.handleException(ex1);
             }
         }
+	// Could not find a suitable hop to forward the request.
+        throw new SipException("could not forward request");
 
     }
 
@@ -572,7 +574,6 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
         Via via = sipResponse.getTopmostVia();
         if (via == null)
             throw new SipException("No via header in response!");
-        int port = via.getPort();
         String transport = via.getTransport();
         //Bug report by Shanti Kadiyala
         //check to see if Via has "received paramaeter". If so
@@ -583,10 +584,16 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
         if (host == null)
             host = via.getHost();
 
-        //TODO Need to check for transport before setting port.
+	
+	// Added by Hagai Sela
+	// Symmetric nat support
+        int port = via.getrport();
         if (port == -1) {
-	   if (transport.equalsIgnoreCase("TLS")) port = 5061;
-	   else port = 5060;
+	   port = via.getPort();
+	   if ( port == -1 ) {
+	       if (transport.equalsIgnoreCase("TLS")) port = 5061;
+	       else port = 5060;
+	   }
 	}
 
 	// Added by Daniel J. Martinez Manzano <dani@dif.um.es>
@@ -764,6 +771,12 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.28  2004/10/28 19:02:49  mranga
+ * Submitted by:  Daniel Martinez
+ * Reviewed by:   M. Ranganathan
+ *
+ * Added changes for TLS support contributed by Daniel Martinez
+ *
  * Revision 1.27  2004/09/28 04:07:04  mranga
  * Issue number:
  * Obtained from:

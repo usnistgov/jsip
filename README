@@ -30,6 +30,7 @@ Using the makefile:
 
 Building the TCK
 ----------------
+The tck needs junit.jar
 1. Build the RI as above.
 2. make tck (builds a jar file containing the TCK).
 3. to run the TCK 
@@ -102,6 +103,7 @@ TCK
 ---
 Emil Ivov <emil_ivov@yahoo.com>
 M. Ranganathan  <mranga@nist.gov>
+
 
 
 ----------------------------------------------------------------------------

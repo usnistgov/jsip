@@ -24,8 +24,10 @@ import javax.sip.header.ContactHeader;
 /**
  * Message channel abstraction for the SIP stack.
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
+ * Contains additions for support of symmetric NAT contributed
+ * by Hagai.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.12 $ $Date: 2004-09-04 14:59:54 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2004-11-28 17:32:26 $
  *
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
@@ -88,6 +90,8 @@ public abstract class MessageChannel {
 	 * the message).
 	 */
 	public abstract int getPeerPort();
+        public abstract int getPeerPacketSourcePort();
+        public abstract InetAddress getPeerPacketSourceAddress();
 
 	/** 
 	 * Generate a key which identifies the message channel.
@@ -314,6 +318,13 @@ public abstract class MessageChannel {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2004/09/04 14:59:54  mranga
+ * Reviewed by:   mranga
+ *
+ * Added a method to expose the Thread for the message processors so that
+ * stack.stop() can join to wait for the threads to die rather than sleep().
+ * Feature requested by Mike Andrews.
+ *
  * Revision 1.11  2004/09/03 02:18:44  xoba
  * got rid of cast to 'Contact' class
  *

@@ -22,7 +22,7 @@ import javax.sip.message.*;
  * @author Jeff Keyser 
  * @author M. Ranganathan (modified Jeff's original source and aligned with JAIN-SIP 1.1) 
 *  @author Modifications for TLS Support added by Daniel J. Martinez Manzano <dani@dif.um.es>
- * @version  JAIN-SIP-1.1 $Revision: 1.34 $ $Date: 2004-11-19 16:22:56 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.35 $ $Date: 2004-11-28 17:32:26 $
  */
 public abstract class SIPTransaction
 	extends MessageChannel
@@ -147,6 +147,12 @@ public abstract class SIPTransaction
 	// Protocol of peer
 	protected String peerProtocol;
 
+        //@@@ hagai - NAT changes
+	// Source port extracted from peer packet
+        protected int peerPacketSourcePort;
+
+        protected InetAddress peerPacketSourceAddress;
+
 	// Transaction branch ID
 	private String branch;
 
@@ -270,6 +276,9 @@ public abstract class SIPTransaction
 		this.peerPort = newEncapsulatedChannel.getPeerPort();
 		this.peerAddress = newEncapsulatedChannel.getPeerAddress();
 		this.peerInetAddress = newEncapsulatedChannel.getPeerInetAddress();
+                // @@@ hagai
+               this.peerPacketSourcePort = newEncapsulatedChannel.getPeerPacketSourcePort();
+               this.peerPacketSourceAddress = newEncapsulatedChannel.getPeerPacketSourceAddress();
 		this.peerProtocol = newEncapsulatedChannel.getPeerProtocol();
 		if (this.isReliable()) {
 			if(encapsulatedChannel instanceof TLSMessageChannel) 
@@ -614,6 +623,14 @@ public abstract class SIPTransaction
 		return this.peerPort;
 	}
 
+        //@@@ hagai
+       public int getPeerPacketSourcePort() {
+           return this.peerPacketSourcePort;
+       }
+
+        public InetAddress getPeerPacketSourceAddress() {
+        return this.peerPacketSourceAddress;
+        }
 		
 	protected InetAddress getPeerInetAddress() {
 		return this.peerInetAddress;
@@ -1048,6 +1065,11 @@ public abstract class SIPTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.34  2004/11/19 16:22:56  mranga
+ * Submitted by:  mranga
+ * Reviewed by:   mranga
+ * Route bye request to right target (if there is no record routing enabled).
+ *
  * Revision 1.33  2004/10/28 19:02:51  mranga
  * Submitted by:  Daniel Martinez
  * Reviewed by:   M. Ranganathan

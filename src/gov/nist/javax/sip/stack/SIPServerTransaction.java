@@ -9,14 +9,6 @@ import javax.sip.message.*;
 import javax.sip.*;
 import java.text.ParseException;
 import java.io.IOException;
-//ifndef SIMULATION
-//
-// import java.util.Timer;
-//else
-/*
- import sim.java.util.SimTimer;
- //endif
- */
 
 import java.util.TimerTask;
 
@@ -118,7 +110,7 @@ import java.util.LinkedList;
  * 
  * </pre>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.50 $ $Date: 2004-10-31 02:19:08 $
+ * @version JAIN-SIP-1.1 $Revision: 1.51 $ $Date: 2004-11-28 17:32:26 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
  * @author Bug fixes by Emil Ivov, Antonis Karydas, Daniel Martinez.
@@ -235,7 +227,10 @@ public class SIPServerTransaction extends SIPTransaction implements
             // Respond to the host name in the received parameter.
             Via via = transactionResponse.getTopmostVia();
             String host = via.getParameter(Via.RECEIVED);
-            int port = via.getPort();
+            //@@@ hagai Symmetric NAT support
+            int port = via.getrport();
+            if (port == -1)
+                port = via.getPort();            
             if (port == -1)
                 port = 5060;
             String transport = via.getTransport();
@@ -419,15 +414,9 @@ public class SIPServerTransaction extends SIPTransaction implements
                 this.isMapped = true;
                 // Schedule a timer to fire in 200 ms if the
                 // TU did not send a trying in that time.
-
-                //ifndef SIMULATION
-                //
+		// TODO -- fix this to only send trying for the
+		// case
                 sipStack.timer.schedule(new SendTrying(this), 200);
-                //else
-                /*
-                 * new SimTimer().schedule( new SendTrying( this ), 200);
-                 * //endif
-                 */
 
             } else {
                 isMapped = true;
@@ -1172,6 +1161,13 @@ public class SIPServerTransaction extends SIPTransaction implements
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.50  2004/10/31 02:19:08  mranga
+ * Reviewed by:   M. Ranganathan
+ *
+ * Cancel behavior race condition bug.
+ *
+ * Cancel example added.
+ *
  * Revision 1.49  2004/10/28 19:02:51  mranga
  * Submitted by:  Daniel Martinez
  * Reviewed by:   M. Ranganathan

@@ -98,8 +98,8 @@ performance out of NIST-SIP? </a></li>
 <li><a href="#42">How do you find out which IP address a SIP Message arrived
 on? </a> </li>
 <li><a href="#43">How do you use the STUN support?</a></li>
-<li><a href="#44">Can you delay sending responses to after the Listener runs 
-(ie. respond to requests asynchronously after the listener returns) ?</a></li>
+<li><a href="#44">Can you delay sending responses to after the Listener runs ?</a></li>
+<li><a href="#45">How do you build it under the ibm java implementation?</a></li>
 <li><a href="#questionables"> I have some questionable questions. Where do I look? <a/></li>
 </ol>
 <br/>
@@ -577,12 +577,25 @@ Your application needs to use these in setting up the contact address and
 SDP parameters as appropriate. The stack is not responsible for this.
 </li>
 <hr size="2" noshade="noshade"> 
+<a name="44"> </a>
 <li>Can you delay sending responses to requests until after the Listener runs ? <br/>
 You cannot do this. You must respond to the request when the listener is
 invoked. You must do this synchronously (not from another thread). This is
 because housekeeping functions are performed after the listener completes
 invocation.
 </li>
+<hr size="2" noshade="noshade"> 
+<a name="45"> </a>
+<li> How do you build under IBM java implementation ? <br/>
+A user sent in the following helpful tip: I needed to tell eclipse that
+the files were "US-ASCII" rather than UTF-8.
+
+Then I edited my build-config and added "-encoding US-ASCII" to the end
+of the line that defines JAVAC for OS other than Windows_NT.  Then "make
+ri" completed without incident.
+
+</li>
+
 
 </ol>
 <a name="questionables"></a> <h2> Frequently Questionable Questions

@@ -12,7 +12,7 @@ import javax.sip.*;
  *
  * @see ViaList
  *
- * @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-07-28 14:13:53 $
+ * @version JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2004-11-28 17:32:25 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -38,6 +38,11 @@ public class Via
 	/** The "TTL" parameter is designating the time-to-live value.
 	 */
 	public static final String TTL = ParameterNames.TTL;
+
+	/** The RPORT parameter.
+	*/
+	public static final String RPORT = ParameterNames.RPORT;
+
 	/** sentProtocol field.
 	 */
 	protected Protocol sentProtocol;
@@ -273,6 +278,20 @@ public class Via
 		return sentBy.getPort();
 	}
 
+
+	/**
+	* Return the rport parameter.
+	*
+	*@return the rport parameter or -1.
+	*/
+       public int getrport() {
+         String strRport = getParameter(ParameterNames.RPORT);
+         if (strRport != null)
+            return new Integer(strRport).intValue();
+         else
+            return -1;
+     	}
+
 	/**
 	 * Returns the value of the transport parameter. 
 	 *
@@ -447,6 +466,12 @@ public class Via
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/07/28 14:13:53  mranga
+ * Submitted by:  mranga
+ *
+ * Move out the test code to a separate test/unit class.
+ * Fixed some encode methods.
+ *
  * Revision 1.3  2004/02/28 13:33:43  mranga
  * Reviewed by:   mranga
  * fixed bug with removePort
