@@ -644,6 +644,11 @@ public final class SIPRequest extends SIPMessage
 				// Antonis Kyardis.
 				continue;
 			} else if (nextHeader instanceof CSeq) {
+			      // The CSeq header field in the 
+			      // ACK MUST contain the same value for the 
+			      // sequence number as was present in the 
+			      // original request, but the method parameter 
+			      // MUST be equal to "ACK".
 				CSeq cseq = (CSeq) nextHeader.clone();
 				try{cseq.setMethod(Request.ACK);}
 					catch(ParseException e){}
@@ -654,6 +659,15 @@ public final class SIPRequest extends SIPMessage
 			   }  else {
 			     nextHeader = (SIPHeader) nextHeader.clone();
 			   }
+			} else if (nextHeader instanceof ViaList) {
+			   // Bug reported by Gianluca Martinello
+			   //The ACK MUST contain a single Via header field, 
+			   // and this MUST be equal to the top Via header 
+			   // field of the original
+                           // request.  
+			    
+			    nextHeader =(SIPHeader)
+				((ViaList)nextHeader).getFirst().clone(); 
 			} else {
 			    nextHeader = (SIPHeader) nextHeader.clone();
 			}

@@ -293,6 +293,9 @@ by the following people:
 19. Rafael Barriuso <rbarriuso@dit.upm.es> reported a problem with the
 	SDP Parser and submitted a bug fix for it.
 
+20. Bug reported by Gianluca Martinello in SIPRequest.createAck(To ). 
+     The ACK MUST contain a single Via header field, and this MUST 
+     be equal to the top Via header field of the original request.  
 
 ----------------------------------------------------------------------------
 
