@@ -74,6 +74,7 @@ after I send response?</a> </li>
 execption on
 an incoming INVITE?</a> </li>
   <li><a href="#30">Why dont you use log4j for logging?</a> </li>
+  <li><a href="#31">I see a SIP message headed for my machine on Ethereal but my application (Listener) does not see it. Why ?</a> </li>
 </ol>
 <br>
 <hr size="2" noshade="noshade">
@@ -365,17 +366,22 @@ transaction be created at some future time. You must create the server
 transaction synchronously when the request is delivered to
 your application and not later. </li>
   <br>
-  <hr size="2" noshade="noshade"><li><a name="30"></a>Why dont you use
-log4j for logging? <br>
+  <hr size="2" noshade="noshade"><li>
+   <a name="30"></a>
+ Why dont you use log4j for logging? <br>
 To keep the RI as independent of external dependencies as possible, all
 you need for the RI is j2se 1.3.1 or above. A configuration switch
 to allow you to log using log4j may be added in the future.
 Features like log4j can be easily added by just extending
 gov.nist.core.LogWriter.java. <br>
     <br>
-    <hr size="2" noshade="noshade"></li>
   <br>
   <hr size="2" noshade="noshade">
+   <a name="31"></a>
+  <li>I see a SIP message headed for my machine on Ethereal but my application (Listener) does not see it. Why ? <br/>
+   The Listener may have blocked. Do not block in your listener method. If you need to block, start a thread and block in it.
+   </li>
+   </br>
 </ol>
 <!--
 <h2> Frequently Questionable Questions (List likely to grow in time) </h2>
@@ -432,5 +438,6 @@ be happy and let us know  at
 <br>
 -->
 M. Ranganathan, Olivier Deruelle and Emil Ivov.
+<hr size="2" noshade="noshade"></li>
 </body>
 </html>
