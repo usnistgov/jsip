@@ -175,12 +175,16 @@ public class Shootist implements SipListener {
             messageFactory = sipFactory.createMessageFactory();
             ListeningPoint lp  = sipStack.createListeningPoint
             (5060,"udp");
+	    System.out.println("listening point created" + lp);
             sipProvider = sipStack.createSipProvider(lp);
             Shootist listener = new Shootist();
             sipProvider.addSipListener(listener);
 
             lp  = sipStack.createListeningPoint
             (5060,"tcp");
+	    System.out.println("listening point created" + lp);
+
+	    
             sipProvider = sipStack.createSipProvider(lp);
             sipProvider.addSipListener(listener);
 

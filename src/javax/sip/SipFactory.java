@@ -144,15 +144,17 @@ public class SipFactory{
         } else {
           // Check to see if a stack with that IP Address is already created,
           // if so slect it to be returned  
-          for (int i=0; i<sipStackList.size();i++){
-              if (((SipStack)sipStackList.get(i)).getIPAddress() == 
+	  int i = 0;
+          for (i=0; i<sipStackList.size();i++){
+              if (((SipStack)sipStackList.get(i)).getIPAddress() ==
                             properties.getProperty("javax.sip.IP_ADDRESS")) {
                   sipStack = (SipStack)sipStackList.get(i);
-              // otherwise create new one    
-              } else {
-                  sipStack = createStack(properties);
-              }
+		  break;
+	      }
           }          
+	  if (i == sipStackList.size()) {
+                  sipStack = createStack(properties);
+          }
         }
         return sipStack;
     }
