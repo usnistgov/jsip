@@ -696,25 +696,27 @@ public class SessionDescriptionImpl implements SessionDescription {
      * @return Returns the canonical string representation
      * of the current SessionDescrption.
      */
-    public String toString() {
+ public String toString() {
         StringBuffer encBuff = new StringBuffer();
-        
+       
         //Encode single attributes
         encBuff.append( getVersion() == null ? "" : getVersion().toString());
         encBuff.append( getOrigin() == null ? "" : getOrigin().toString());
-        encBuff.append( getSessionName() == null ? "" : getSessionName().toString());
+        encBuff.append( getSessionName() == null ? "" : 
+			getSessionName().toString());
         encBuff.append( getInfo() == null ? "" : getInfo().toString());
-        encBuff.append( getURI() == null ? "" : getURI().toString());
-        encBuff.append( getConnection() == null ? "" : getConnection().toString());
-        encBuff.append( getKey() == null ? "" : getKey().toString());
-        
+       
         //Encode attribute vectors
         try {
+            encBuff.append( getURI() == null ? "" : getURI().toString());
             encBuff.append(encodeVector(getEmails(true)));
             encBuff.append(encodeVector(getPhones(true)));
+            encBuff.append( getConnection() == null ? "" : 
+					getConnection().toString());
+            encBuff.append(encodeVector(getBandwidths(true)));
             encBuff.append(encodeVector(getTimeDescriptions(true)));
             encBuff.append(encodeVector(getZoneAdjustments(true)));
-            encBuff.append(encodeVector(getBandwidths(true)));
+            encBuff.append( getKey() == null ? "" : getKey().toString());
             encBuff.append(encodeVector(getAttributes(true)));
             encBuff.append(encodeVector(getMediaDescriptions(true)));
             //adds the final crlf
@@ -724,5 +726,7 @@ public class SessionDescriptionImpl implements SessionDescription {
         }
         return encBuff.toString();
     }
+
+
     
 }
