@@ -5,7 +5,7 @@ import java.text.*;
 
 /** Parser for CALL ID header.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-01-22 13:26:31 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2004-07-28 14:13:54 $
  *
  * @author M. Ranganathan <mranga@nist.gov> 
  * @author  Olivier Deruelle <deruelle@nist.gov>
@@ -56,26 +56,35 @@ public class CallIDParser extends HeaderParser {
 	}
 
 	/*
-	    public static void main(String args[]) throws ParseException {
-	        String call[] = {
-		    "Call-ID: f0b40bcc-3485-49e7-ad1a-f1dfad2e39c9@10.5.0.53\n",
-	            "Call-ID: f81d4fae-7dec-11d0-a765-00a0c91e6bf6@foo.bar.com\n",
-	            "i:f81d4fae-7dec-11d0-a765-00a0c91e6bf6@foo.bar.com\n",
-	            "Call-ID: 1@10.0.0.1\n",
-	            "Call-ID: kl24ahsd546folnyt2vbak9sad98u23naodiunzds09a3bqw0sdfbsk34poouymnae0043nsed09mfkvc74bd0cuwnms05dknw87hjpobd76f\n",
-	            "Call-Id: 281794\n"
-	        };
-	        
-	        for (int i = 0; i <call.length; i++ ) {
-	            CallIDParser cp =
-	            new CallIDParser(call[i]);
-	            CallID callID= (CallID) cp.parse();
-	            System.out.println("encoded = " + callID.encode());
-	        }
+	  
 	        
 	    }
 	*/
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/01/22 13:26:31  sverker
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  sverker
+ * Reviewed by:   mranga
+ *
+ * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  */
