@@ -86,70 +86,6 @@ class IOHandler
 	}
 
 
-	/**
-         * Forward a given request to the address given. 
-         * The address has information on
-         * the type of transport etc. used to talk to it.
-         * @param addr is the address to which to send the request to
-         * @param request is the request that is being forwarded
-         * If the address does not specify a transport, we 
-         * try UDP first and if this  fails, then try TCP.
-         * @throws IOException If the message could not be sent for any
-         * reason
-         */
-	public void sendRequest(AddressImpl addr, 
-       					String request) throws IOException 
-	{
-		HostPort hostPort = addr.getHostPort();
-		String transport = 
-                    ((SipUri)addr.getURI()).getTransportParam();
-		if (transport == null) {
-	       		transport = SIPConstants.UDP;
-			try {
-				sendRequest(hostPort,transport,request); 
-			} catch (IOException ex) {
-				if (sipStack.logWriter.needsLogging) {
-				   sipStack.logWriter.logException(ex);
-				   sipStack.logWriter.logMessage
-					("UDP Send failed!");
-				}
-				sendRequest(hostPort, TCP, request);
-			}
-		} else { 
-			sendRequest(hostPort,transport,request);
-		}
-				
-	}
-	
-		
-
-	/**
-         * Forward a given request to the address given. 
-         * The address has information on
-         * the type of transport etc. used to talk to it.
-         * @param addr is the address to which to send the request.
-         * @param transport is the transport string udp or tcp.
-         * @param nrequest is the request that is being forwarded	    
-         * For udp we do a connect and a send as specified in tbe RFC 
-         * so that an error is returned immediately if the other end is 
-         * not listening
-         * @throws IOException If the message could not be sent for any reason
-         */
-	
-	public void sendRequest(HostPort addr, 
-				String transport,
-				String nrequest)  throws IOException 
-	{      
-		String request = nrequest;
-
-		String hostName = addr.getHost().getHostname();
-		InetAddress inaddr =  InetAddress.getByName(hostName);
-		int contactPort = addr.getPort(); 		
-		if (contactPort == -1) {
-		    contactPort = 5060;
-		}
-		sendRequest(inaddr,contactPort,transport,request);
-	}
 
 	/**
          * Forward a given request to the address given. This caches
@@ -171,16 +107,17 @@ class IOHandler
         sendBytes( InetAddress inaddr, 
 		int contactPort, 
                 String transport, 
-                byte[] bytes) 
+                byte[] bytes, boolean retry ) 
         throws IOException {
 		 int retry_count = 0;
+		 int max_retry = retry? 2: 1;
 		// Server uses TCP transport. TCP client sockets are cached
 		int length = bytes.length;
 		if (transport.compareToIgnoreCase(TCP) == 0 ) {
 		   String key = makeKey(inaddr,contactPort);
                    SimSocket    clientSock = getSocket(key);
 		    retry:
-			while(retry_count < 2) {
+			while(retry_count < max_retry) {
 			    if (clientSock == null) {
 				if (sipStack.logWriter.needsLogging) {
 				   sipStack.logWriter.logMessage
@@ -240,16 +177,17 @@ class IOHandler
 	public  Socket sendBytes(InetAddress inaddr, 
 			int contactPort, 
                         String transport, 
-                        byte[] bytes) 
+                        byte[] bytes, boolean retry) 
         throws IOException {
 		 int retry_count = 0;
+		 int max_retry = retry? 2:1;
 		// Server uses TCP transport. TCP client sockets are cached
 		int length = bytes.length;
 		if (transport.compareToIgnoreCase(TCP) == 0 ) {
 		   String key = makeKey(inaddr,contactPort);
 		    Socket clientSock = getSocket(key);
 		    retry:
-			while(retry_count < 2) {
+			while(retry_count < max_retry ) {
 			    if (clientSock == null) {
 				if (sipStack.logWriter.needsLogging) {
 				   sipStack.logWriter.logMessage
@@ -312,36 +250,6 @@ class IOHandler
 //
 
 
-	/**
-         * Forward a given request to the address given. 
-         * The address has information on
-         * the type of transport etc. used to talk to it.
-         * @param inaddr is the address to which to send the request.
-         * @param port is the port to send to.
-         * @param transport is the transport string udp or tcp.
-         * @param nrequest is the request that is being forwarded	    
-         * For udp we do a connect and a send as specified in tbe RFC 
-         * so that an error is returned immediately if the other end is 
-         * not listening
-         * @throws IOException If the message could not be sent for any reason
-         */
-
-	public void sendRequest(InetAddress inaddr, 
-			int contactPort, 
-                        String transport, 
-                        String request) 
-        throws IOException {
-		int length = request.getBytes().length;
-		byte bytes[] = request.getBytes();
-                // Log some debugging information.
-                if (sipStack.logWriter.needsLogging) {
-                    sipStack.logWriter.logMessage("sendRequest: " 
-			+  inaddr.getHostAddress() + ":"+  contactPort + "/" + 
-			  transport + "length" + length);
-                }
-		sendBytes(inaddr,contactPort,transport,bytes);
-		
-	}
 
 
 	/** Send a request when you have a host and port string 
@@ -366,7 +274,8 @@ class IOHandler
                firstLine = response.getStatusLine().encode();
            }
 	   InetAddress inetAddr = InetAddress.getByName(host);
-	   sendRequest(inetAddr,port,transport,message.encode());
+	   sendBytes(inetAddr,port,transport,message.encodeAsBytes(), 
+		message instanceof SIPRequest);
 	   
 	   if (sipStack.serverLog.needsLogging(ServerLog.TRACE_MESSAGES)) {
                String status = null;

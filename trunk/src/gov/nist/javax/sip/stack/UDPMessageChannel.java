@@ -527,7 +527,8 @@ implements  ParseExceptionListener, Runnable {
 //endif
 //
 
-        sendMessage(msg, peerAddress, peerPort,peerProtocol);
+        sendMessage(msg, peerAddress, peerPort,peerProtocol, 
+		sipMessage instanceof SIPRequest );
         if (stack.serverLog.needsLogging(stack.serverLog.TRACE_MESSAGES))
             logMessage(sipMessage,peerAddress,peerPort,time);
     }
@@ -540,7 +541,7 @@ implements  ParseExceptionListener, Runnable {
      * @throws IOException If there is trouble sending this message.
      */
     protected void sendMessage(byte[] msg, InetAddress peerAddress,
-    int peerPort) throws IOException {
+    int peerPort, boolean reConnect ) throws IOException {
         // msg += "\r\n\r\n";
         // Via is not included in the request so silently drop the reply.
         if (this.stack.logWriter.needsLogging) 
@@ -612,7 +613,7 @@ implements  ParseExceptionListener, Runnable {
      * @throws IOException If there is trouble sending this message.
      */
     protected void sendMessage(byte[] msg, InetAddress peerAddress,
-    int peerPort, String peerProtocol) throws IOException {
+    int peerPort, String peerProtocol, boolean retry ) throws IOException {
         // msg += "\r\n\r\n";
         // Via is not included in the request so silently drop the reply.
         if (peerPort == -1) {
@@ -676,7 +677,7 @@ implements  ParseExceptionListener, Runnable {
 //else
 */
             Socket outputSocket =  stack.ioHandler.sendBytes
-			(peerAddress,peerPort,"tcp",msg);
+			(peerAddress,peerPort,"tcp",msg, retry );
 //endif
 //
             OutputStream myOutputStream = outputSocket.getOutputStream();
@@ -743,7 +744,7 @@ implements  ParseExceptionListener, Runnable {
         }  else {
             // Assume that the message has already been formatted.
             try {
-                sendMessage(msgString);
+                sendMessage(msgString.getBytes(),false);
             } catch (IOException ioex) {
                 this.stack.serverLog.logException(ioex);
             }
@@ -791,15 +792,17 @@ implements  ParseExceptionListener, Runnable {
     }
     
     
+/**
     private void sendMessage(String msg)
     throws IOException {
         sendMessage(msg.getBytes(),peerAddress,
         peerPort,peerProtocol);
     }
+**/
     
-    private void sendMessage(byte[] msg)
+    private void sendMessage(byte[] msg, boolean retry)
     throws IOException {
-        sendMessage(msg,peerAddress,peerPort,peerProtocol);
+        sendMessage(msg,peerAddress,peerPort,peerProtocol, retry );
     }
     
     /** Get the logical originator of the message (from the top via header).

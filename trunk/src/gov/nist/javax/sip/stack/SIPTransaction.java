@@ -671,7 +671,8 @@ public abstract class SIPTransaction
 	protected void sendMessage(
 		byte[]		messageBytes,
 		InetAddress	receiverAddress,
-		int			receiverPort
+		int			receiverPort,
+		boolean 	retry
 	) throws IOException {
 
 		// Object representation of the SIP message

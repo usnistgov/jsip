@@ -158,6 +158,9 @@ by the following people:
 	needs to be updated). Christophe tested the stack for Exception 
 	conditions under TCP Transport and uncovered some bugs in 
         retransmission filter implementation under these conditions.
+	Christophe noted that the stack was trying to retry connections for
+	sending responses. This is against the SIP RFC (request/response 
+	should use the same connection) and it was fixed.
 
 
 <li> Gareth Deli noticed a bug in TCP transport. 

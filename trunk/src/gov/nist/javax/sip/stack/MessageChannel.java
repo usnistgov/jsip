@@ -98,7 +98,9 @@ public abstract class MessageChannel
  */        
    	protected abstract void  sendMessage(byte[] message, 
 					  InetAddress receiverAddress,
-					  int receiverPort) throws IOException;
+					  int receiverPort, 
+					  boolean reconnectFlag) 
+					  throws IOException;
 
 
 /** Get the host of this message channel.
@@ -130,7 +132,8 @@ public void sendMessage(SIPMessage sipMessage,
 			int receiverPort) throws IOException {
     long time = System.currentTimeMillis();
     byte[] bytes = sipMessage.encodeAsBytes();
-    sendMessage(bytes, receiverAddress, receiverPort);
+    sendMessage(bytes, receiverAddress, receiverPort, 
+	sipMessage instanceof SIPRequest );
     logMessage(sipMessage, receiverAddress, receiverPort,time);
 }
 
