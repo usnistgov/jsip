@@ -89,6 +89,9 @@ with this stack? </li>
 to fix bugs and customize it. It now works but lately I noticed some strange
 bug. I am afraid of your changes so can you help me fix that vintage version? 
 </li>
+ <li><a href="#39">How can I take advantage of my multi-processor 
+mutli-threaded machine with dual headed monitors to get better 
+performance out of NIST-SIP? </li>
 <li><a href="#questionables"> I have some questionable questions. Where do I look? <br/> </li>
 </ol>
 <br>
@@ -500,6 +503,18 @@ your code and make sure you are up to date with the latest version before
 you post bug reports. I cannot fix back level code.  
 </li>
 
+<a name= "39"> </a>
+<li>How can I take advantage of my multi-processor mutli-threaded machine
+with dual headed monitors to get better performance out of NIST-SIP? <br/>
+<br/> This may be of use when you are building a high performance server
+software component. Inform the stack that your listener is re-entrant
+using the gov.nist.javax.sip.stack.REENTRANT_LISTENER=true configuration
+property.  Manage the thread pool size to suit your needs. See the
+gov.nist.javax.sip.stack.THREAD_POOL_SIZE=number configuration property.
+Be careful that your listener is indeed re-entrant.  The stack will parse,
+manage the transaction state machine and call your listener code in the
+same thread avoiding queueing.
+</li>
 
 </ol>
 <a name="questionables"></a> <h2> Frequently Questionable Questions
