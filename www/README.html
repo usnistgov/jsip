@@ -215,11 +215,13 @@ the stack and submitted a bug fix for this. Dave also discovered an
 error with ParametersHeader in converting String to boolean.
 
 
-<li> Thomas Froment (Nextenso.com) submitted a bug fix for parsing of
+<li> Thomas Froment submitted a bug fix for parsing of
 host:port as discovered in the CERT tests (there could be one or more
 spaces between host and port). Thomas suggested that the main scanner
 thread be eliminated from the SIPTransaction Stack and Timers be used
-instead.
+Thomas Fromet and Pierre De Rop  suggested a fast lookup path be
+added for looking up Transactions. An auxilliary hash table for quick
+lookup was added based on their suggestions.
 
 <li>Alex Rootham from Blue Slice noticed that out of sequence messages
 directed to a Dialog should be responded to with a 500 (Internal Server
