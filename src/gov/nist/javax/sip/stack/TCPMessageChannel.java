@@ -33,7 +33,7 @@ import sim.java.net.*;
  * Niklas Uhrberg suggested that a mechanism be added to limit the number
  * of simultaneous open connections.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.18 $ $Date: 2004-03-19 17:26:20 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.19 $ $Date: 2004-03-19 23:41:30 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public final class TCPMessageChannel
@@ -51,6 +51,11 @@ public final class TCPMessageChannel
 	private PipelinedMsgParser myParser;
 	private InputStream myClientInputStream; // just to pass to thread.
 	private OutputStream myClientOutputStream;
+
+	private String key ;
+	protected boolean isCached;
+
+
 
 //ifndef SIMULATION
 //
@@ -78,6 +83,8 @@ public final class TCPMessageChannel
 	protected int useCount;
 
 	private TCPMessageProcessor tcpMessageProcessor;
+
+
 
 	/**
 	 * Constructor - gets called from the SIPStack class with a socket
@@ -169,6 +176,7 @@ public final class TCPMessageChannel
 		this.tcpMessageProcessor = messageProcessor;
 		this.myAddress = sipStack.getHostAddress();
 		// Bug report by Vishwashanti Raj Kadiayl 
+		this.key = MessageChannel.getKey(peerAddress,peerPort,"TCP");
 		super.messageProcessor = messageProcessor;
 
 	}
@@ -497,10 +505,16 @@ public final class TCPMessageChannel
 				} catch (java.text.ParseException ex) {
 					InternalErrorHandler.handleException(ex);
 				}
-				String key =
-					IOHandler.makeKey(mySock.getInetAddress(), this.peerPort);
 				// Use this for outgoing messages as well.
-				stack.ioHandler.putSocket(key, mySock);
+				if (! this.isCached) {
+				    ( (TCPMessageProcessor) 
+				    this.messageProcessor)
+				      .cacheMessageChannel(this);
+				    this.isCached = true;
+				    String key =
+					IOHandler.makeKey(mySock.getInetAddress(), this.peerPort);
+			            stack.ioHandler.putSocket(key, mySock);
+				} 
 			}
 
 			// System.out.println("receiver address = " + receiverAddress);
@@ -702,7 +716,8 @@ public final class TCPMessageChannel
 			} catch (Exception ex) {
 				InternalErrorHandler.handleException(ex);
 			} 
-		} } finally {
+		} 
+		} finally {
 			this.tcpMessageProcessor.remove(this);
 		}
 
@@ -731,7 +746,12 @@ public final class TCPMessageChannel
 	 * and re-use it if necessary.
 	 */
 	public String getKey() {
-		return getKey(peerAddress, peerPort, "TCP");
+		if (this.key != null)  {
+			return	this.key;
+		} else  {
+			this.key = MessageChannel.getKey(this.peerAddress,this.peerPort,"TCP");
+			return this.key;
+		}
 	}
 
 	/**
@@ -770,6 +790,10 @@ public final class TCPMessageChannel
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2004/03/19 17:26:20  mranga
+ * Reviewed by:   mranga
+ * Fixed silly bug.
+ *
  * Revision 1.17  2004/03/19 17:06:19  mranga
  * Reviewed by:   mranga
  * Fixed some stack cleanup issues. Stack should release all resources when
