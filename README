@@ -297,6 +297,9 @@ by the following people:
      The ACK MUST contain a single Via header field, and this MUST 
      be equal to the top Via header field of the original request.  
 
+21. Sylvian Corre <sylvain.corre@rd.francetelecom.com> sent in  a bug
+	fix for parsing User Agent Header.
+
 ----------------------------------------------------------------------------
 
 Following is a list of people who contributed bugs reports and fixes to
