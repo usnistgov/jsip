@@ -19,7 +19,7 @@ import gov.nist.core.*;
  * NIST-SIP stack and event model with the JAIN-SIP stack. Implementors
  * of JAIN services need not concern themselves with this class.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.20 $ $Date: 2004-02-25 23:02:13 $
+ * @version JAIN-SIP-1.1 $Revision: 1.21 $ $Date: 2004-02-26 14:28:50 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Bug fix Contributions by Lamine Brahimi and  Andreas Bystrom. <br/>
@@ -179,7 +179,6 @@ public class NistSipMessageHandlerImpl
 					DialogImpl dialog = sipStackImpl.getDialog(dialogId);
 					if (dialog != null) {
 						dialog.addTransaction(transaction);
-						dialog.setState(DialogImpl.COMPLETED_STATE);
 					} else {
 						dialogId = sipRequest.getDialogId(false);
 						if (LogWriter.needsLogging)
@@ -188,7 +187,6 @@ public class NistSipMessageHandlerImpl
 						dialog = sipStackImpl.getDialog(dialogId);
 						if (dialog != null) {
 							dialog.addTransaction(transaction);
-							dialog.setState(DialogImpl.COMPLETED_STATE);
 						} else {
 							transaction = null; // pass up to provider for
 							// stateless handling.
@@ -487,6 +485,11 @@ public class NistSipMessageHandlerImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.20  2004/02/25 23:02:13  mranga
+ * Submitted by:  jeand
+ * Reviewed by:   mranga
+ * Remove pointless redundant code
+ *
  * Revision 1.19  2004/02/25 22:15:43  mranga
  * Submitted by:  jeand
  * Reviewed by:   mranga

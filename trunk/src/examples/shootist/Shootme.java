@@ -61,14 +61,16 @@ public class Shootme implements SipListener {
 		RequestEvent requestEvent,
 		ServerTransaction serverTransaction) {
 		SipProvider sipProvider = (SipProvider) requestEvent.getSource();
-		System.out.println("sipProvider " + sipProvider);
 		try {
 			System.out.println("shootme: got an ACK -- sending bye! ");
+			System.out.println("shootme: got an ACK " 
+				+ requestEvent.getRequest());
 			Dialog dialog = inviteTid.getDialog();
 			Request byeRequest = dialog.createRequest(Request.BYE);
 			ClientTransaction tr =
 				sipProvider.getNewClientTransaction(byeRequest);
 			dialog.sendRequest(tr);
+			System.out.println("Dialog State = " + dialog.getState());
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.exit(0);
@@ -108,6 +110,7 @@ public class Shootme implements SipListener {
 			//System.out.println("Content = " + new String(content));
 			ContentTypeHeader contentTypeHeader =
 				headerFactory.createContentTypeHeader("application", "sdp");
+			System.out.println("response = " + response);
 			response.setContent(content, contentTypeHeader);
 			Dialog dialog = st.getDialog();
 			if (dialog != null)
@@ -132,6 +135,7 @@ public class Shootme implements SipListener {
 			Response response =
 				messageFactory.createResponse(200, request, null, null);
 			serverTransactionId.sendResponse(response);
+			System.out.println("Dialog State is " + serverTransactionId.getDialog().getState());
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -165,6 +169,8 @@ public class Shootme implements SipListener {
 				Request request = tid.getRequest();
 				dialog.sendAck(request);
 			}
+			Dialog dialog = tid.getDialog();
+			System.out.println("Dalog State = " + dialog.getState());
 		} catch (SipException ex) {
 			ex.printStackTrace();
 			System.exit(0);
@@ -258,6 +264,10 @@ public class Shootme implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/02/13 13:55:31  mranga
+ * Reviewed by:   mranga
+ * per the spec, Transactions must always have a valid dialog pointer. Assigned a dummy dialog for transactions that are not assigned to any dialog (such as Message).
+ *
  * Revision 1.8  2004/01/22 13:26:27  sverker
  * Issue number:
  * Obtained from:

@@ -62,13 +62,18 @@ public class Shootist implements SipListener {
 		Request request,
 		ServerTransaction serverTransactionId) {
 		try {
-			System.out.println("shootist:  got a bye sending OK.");
+			System.out.println("shootist:  got a bye .");
 			if (serverTransactionId == null) {
 				System.out.println("shootist:  null TID.");
 				return;
 			}
-			Response response = messageFactory.createResponse(200, request);
+			Dialog dialog = serverTransactionId.getDialog();
+			System.out.println("Dialog State = " + dialog.getState());
+			Response response = messageFactory.createResponse
+						(200, request);
 			serverTransactionId.sendResponse(response);
+			System.out.println("shootist:  Sending OK.");
+			System.out.println("Dialog State = " + dialog.getState());
 
 			//ifdef SIMULATION
 			/*
@@ -121,6 +126,7 @@ public class Shootist implements SipListener {
 				// Bug report by Andreas Bystrom.
 				System.out.println("Sending ACK");
 				dialog.sendAck(ackRequest);
+				//dialog.sendAck(ackRequest);
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -150,9 +156,13 @@ public class Shootist implements SipListener {
 		//else
 		*/
 		properties.setProperty("javax.sip.IP_ADDRESS", "127.0.0.1");
+		// If you want to try TCP transport change the following to
+		// transport = "tcp";
+		String transport = "udp";
 		properties.setProperty(
 			"javax.sip.OUTBOUND_PROXY",
-			"127.0.0.1:5070/UDP");
+			"127.0.0.1:5070/" + transport);
+		// If you want to use UDP then uncomment this.
 		//endif
 		//
 
@@ -239,8 +249,6 @@ public class Shootist implements SipListener {
 			**/
 
 			// Create ViaHeaders
-			String transport = "udp";
-			requestURI.setTransportParam(transport);
 
 			ArrayList viaHeaders = new ArrayList();
 			int port = sipProvider.getListeningPoint().getPort();
@@ -250,6 +258,7 @@ public class Shootist implements SipListener {
 					sipProvider.getListeningPoint().getPort(),
 					transport,
 					null);
+
 
 			// add via headers
 			viaHeaders.add(viaHeader);
@@ -317,6 +326,14 @@ public class Shootist implements SipListener {
 					+ "a=rtpmap:4 G723/8000\r\n"
 					+ "a=rtpmap:18 G729A/8000\r\n"
 					+ "a=ptime:20\r\n";
+			/**
+			StringBuffer sdpBuff = new StringBuffer();
+			for (int i = 0; i < 50; i++)  {
+				sdpBuff.append(sdp);
+			}
+			String sdpData = sdpBuff.toString();
+			**/
+
 			request.setContent(sdpData, contentTypeHeader);
 
 			extensionHeader =
@@ -336,6 +353,7 @@ public class Shootist implements SipListener {
 
 			// send the request out.
 			listener.inviteTid.sendRequest();
+			System.out.println("Size = " + sdpData.length());
 
 		} catch (Exception ex) {
 			System.out.println(ex.getMessage());
@@ -351,6 +369,10 @@ public class Shootist implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2004/02/13 13:55:31  mranga
+ * Reviewed by:   mranga
+ * per the spec, Transactions must always have a valid dialog pointer. Assigned a dummy dialog for transactions that are not assigned to any dialog (such as Message).
+ *
  * Revision 1.14  2004/01/22 13:26:27  sverker
  * Issue number:
  * Obtained from:
