@@ -8,7 +8,7 @@ import javax.sip.InvalidArgumentException;
 /**
  * MaxForwards SIPHeader
  *
- * @version JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2004-12-13 01:28:26 $
+ * @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-12-25 16:31:32 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * @author Olivier Deruelle <deruelle@nist.gov><br/>
@@ -63,13 +63,18 @@ public class MaxForwards extends SIPHeader implements MaxForwardsHeader {
 
 	/** decrement MaxForwards field one by one.
 	 */
-	public void decrementMaxForwards() {
+	public void decrementMaxForwards() throws TooManyHopsException {
 		if (maxForwards > 0)
 			maxForwards--;
+		else throw new TooManyHopsException ("has already reached 0!");
 	}
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/12/13 01:28:26  mranga
+ * Reviewed by:   mranga
+ * Check for 0 before decrementing count
+ *
  * Revision 1.2  2004/01/22 13:26:29  sverker
  * Issue number:
  * Obtained from:
