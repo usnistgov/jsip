@@ -33,7 +33,7 @@ import sim.java.net.*;
  * Niklas Uhrberg suggested that a mechanism be added to limit the number
  * of simultaneous open connections.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2004-03-19 17:06:19 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.18 $ $Date: 2004-03-19 17:26:20 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public final class TCPMessageChannel
@@ -630,7 +630,6 @@ public final class TCPMessageChannel
 				}
 			}
 		} finally {
-			this.tcpMessageProcessor.remove(this);
 		}
 	}
 
@@ -651,7 +650,7 @@ public final class TCPMessageChannel
 		myParser.processInput();
 		// bug fix by Emmanuel Proulx
 		int bufferSize = 4096;
-		while (true) {
+		try { while (true) {
 			try {
 				byte[] msg = new byte[bufferSize];
 				int nbytes = myClientInputStream.read(msg, 0, bufferSize);
@@ -702,7 +701,9 @@ public final class TCPMessageChannel
 				return;
 			} catch (Exception ex) {
 				InternalErrorHandler.handleException(ex);
-			}
+			} 
+		} } finally {
+			this.tcpMessageProcessor.remove(this);
 		}
 
 	}
@@ -769,6 +770,11 @@ public final class TCPMessageChannel
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2004/03/19 17:06:19  mranga
+ * Reviewed by:   mranga
+ * Fixed some stack cleanup issues. Stack should release all resources when
+ * finalized.
+ *
  * Revision 1.16  2004/03/19 04:22:22  mranga
  * Reviewed by:   mranga
  * Added IO Pacing for long writes - split write into chunks and flush after each
