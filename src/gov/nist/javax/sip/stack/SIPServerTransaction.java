@@ -118,7 +118,7 @@ import java.util.LinkedList;
  * 
  * </pre>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.46 $ $Date: 2004-10-05 16:22:38 $
+ * @version JAIN-SIP-1.1 $Revision: 1.47 $ $Date: 2004-10-06 16:57:50 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
  * @author Bug fixes by Emil Ivov, Antonis Karydas.
@@ -975,24 +975,23 @@ public class SIPServerTransaction extends SIPTransaction implements
             }
 
             this.sendMessage((SIPResponse) response);
-            // Transaction successfully cancelled but dialog has not yet
-            // been established so delete the dialog.
-            // Does not apply to re-invite (Bug report by Martin LeClerc )
-
-            if (responseImpl.getCSeq().getMethod().equalsIgnoreCase("CANCEL")
-                    && responseImpl.getStatusCode() == 200
-                    && dialog != null
-                    && (!dialog.isReInvite())
-                    && sipStack.isDialogCreated(getOriginalRequest()
-                            .getMethod())
-                    && (dialog.getState() == null || dialog.getState()
-                            .getValue() == SIPDialog.EARLY_STATE)) {
-                dialog.setState(SIPDialog.TERMINATED_STATE);
-            }
+            
             // See if the dialog needs to be inserted into the dialog table
             // or if the state of the dialog needs to be changed.
             if (dialog != null) {
-                if (responseImpl.getCSeq().getMethod().equals(Request.BYE)
+                // Transaction successfully cancelled but dialog has not yet
+                // been established so delete the dialog.
+                // Does not apply to re-invite (Bug report by Martin LeClerc )
+
+                if (responseImpl.getCSeq().getMethod().equalsIgnoreCase("CANCEL")
+                        && responseImpl.getStatusCode() == 200
+                        && (!dialog.isReInvite())
+                        && sipStack.isDialogCreated(getOriginalRequest()
+                                .getMethod())
+                        && (dialog.getState() == null || dialog.getState()
+                                .getValue() == SIPDialog.EARLY_STATE)) {
+                    dialog.setState(SIPDialog.TERMINATED_STATE);
+                } else if (responseImpl.getCSeq().getMethod().equals(Request.BYE)
                         && responseImpl.getStatusCode() == 200) {
                     // Only transition to terminated state when
                     // 200 OK is returned for the BYE. Other
@@ -1009,15 +1008,25 @@ public class SIPServerTransaction extends SIPTransaction implements
                         && responseImpl.getTo().getTag() != null) {
                     if (responseImpl.getStatusCode() != 100)
                         dialog.setLocalTag(responseImpl.getTo().getTag());
+                    
+                    //Check if we want to put the dialog in the dialog table.
+                    //A dialog is put into the dialog table when the server
+                    //transaction is responded to by a provisional response
+                  
                     if (sipStack.isDialogCreated(responseImpl.getCSeq()
                             .getMethod())) {
                         if (response.getStatusCode() / 100 == 1) {
                             dialog.setState(SIPDialog.EARLY_STATE);
                         }
                         // Enter into our dialog table provided this is a
-                        // dialog creating method.
-                        if (responseImpl.getStatusCode() != 100)
+                        // dialog creating method. Note that we dont put
+                        // things into the dialog table for an error response.
+                        if (responseImpl.getStatusCode() != 100 && 
+                            responseImpl.getStatusCode()/100 <= 2  )
                             sipStack.putDialog(dialog);
+                        else
+                            dialog.setState(SIPDialog.TERMINATED_STATE);
+                        
 
                         if (responseImpl.getStatusCode() / 100 == 2) {
                             if (responseImpl.getCSeq().getMethod().equals(
@@ -1162,7 +1171,30 @@ public class SIPServerTransaction extends SIPTransaction implements
 
 }
 /*
- * $Log: not supported by cvs2svn $ Revision 1.45 2004/10/04 16:03:53 mranga
+ * $Log: not supported by cvs2svn $
+ * Revision 1.46  2004/10/05 16:22:38  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  Xavi Ferro
+ * Reviewed by:   mranga
+ *
+ * Another attempted fix for memory leak.
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ * Revision 1.45 2004/10/04 16:03:53 mranga
  * Reviewed by: mranga attempted fix for memory leak
  * 
  * Revision 1.44 2004/10/04 14:43:20 mranga Reviewed by: mranga
