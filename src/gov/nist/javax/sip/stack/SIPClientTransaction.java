@@ -120,7 +120,7 @@ import sim.java.*;
  *@author Bug fixes by Emil Ivov.
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.36 $ $Date: 2004-06-27 00:41:52 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.37 $ $Date: 2004-07-01 05:42:22 $
  */
 public class SIPClientTransaction
 extends SIPTransaction
@@ -1072,6 +1072,8 @@ PendingRecord{
         }
         this.processResponse(pr.sipResponse,pr.messageChannel);
     }
+
+    
     
 
     public boolean hasPending() {
@@ -1106,6 +1108,12 @@ PendingRecord{
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.36  2004/06/27 00:41:52  mranga
+ * Submitted by:  Thomas Froment and Pierre De Rop
+ * Reviewed by:   mranga
+ * Performance improvements
+ * (auxiliary data structure for fast lookup of transactions).
+ *
  * Revision 1.35  2004/06/21 05:42:30  mranga
  * Reviewed by:  mranga
  * more code smithing
