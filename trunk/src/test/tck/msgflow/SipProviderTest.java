@@ -315,10 +315,6 @@ public class SipProviderTest extends MessageFlowHarness {
 				tranBranch,
 				reqBranch);
 			assertNotNull(
-				"The newly created transaction returned a null Dialog. "
-					+ "Please check the docs on Transaction.getDialog()",
-				tran.getDialog());
-			assertNotNull(
 				"The transaction's getRequest() method returned a null Request ",
 				tran.getRequest());
 			assertEquals(
@@ -404,7 +400,11 @@ public class SipProviderTest extends MessageFlowHarness {
 				"The transaction's getRequest() method returned a Request "
 					+ "that did not match the one that we used to create it!",
 				tran.getRequest(),
-				invite);
+                    receivedRequestEvent.getRequest());
+                // BUG reported by Ben Evans: comparing 
+				// RI and TI objects using equals() is bound to fail
+                // if they are different implementations.
+				
 		} catch (Throwable exc) {
 			exc.printStackTrace();
 			fail(exc.getClass().getName() + ": " + exc.getMessage());

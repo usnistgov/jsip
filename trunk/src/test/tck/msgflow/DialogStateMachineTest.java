@@ -84,6 +84,8 @@ public class DialogStateMachineTest extends MessageFlowHarness {
 						inviteReqEvt.getRequest());
 				((ToHeader) ringing.getHeader(ToHeader.NAME)).setTag(
 					Integer.toString(hashCode()));
+                // BUG: set contact header on dialog-creating response
+                ringing.setHeader(createRiContact());
 				riSipProvider.sendResponse(ringing);
 			} catch (Exception e) {
 				throw new TckInternalError(
@@ -117,6 +119,8 @@ public class DialogStateMachineTest extends MessageFlowHarness {
 						inviteReqEvt.getRequest());
 				((ToHeader) ok.getHeader(ToHeader.NAME)).setTag(
 					Integer.toString(hashCode()));
+                // BUG: set contact header on dialog-creating response
+                ok.setHeader(createRiContact());
 				riSipProvider.sendResponse(ok);
 			} catch (Exception e) {
 				throw new TckInternalError(
@@ -222,6 +226,9 @@ public class DialogStateMachineTest extends MessageFlowHarness {
 				//!discuss with Ranga
 				((ToHeader) ringing.getHeader(ToHeader.NAME)).setTag(
 					Integer.toString(hashCode()));
+                // BUG report by Ben Evans (Open cloud): 
+				// set contact header on dialog-creating response
+                ringing.setHeader(createTiContact());
 				tran.sendResponse(ringing);
 			} catch (Exception e) {
 				throw new TiUnexpectedError(
@@ -253,6 +260,11 @@ public class DialogStateMachineTest extends MessageFlowHarness {
 					tiMessageFactory.createResponse(
 						Response.OK,
 						inviteReqEvt.getRequest());
+                // Bug - need to set to-tag on OK response
+                // NIST-SIP fills in the to-tag but this behaviour is
+                // not specified
+                ((ToHeader) ok.getHeader(ToHeader.NAME)).setTag(
+                    Integer.toString(hashCode()));
 				ContactHeader contact = createTiContact();
 				ok.addHeader(contact);
 

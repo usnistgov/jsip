@@ -72,6 +72,8 @@ public class ServerTransactionTest extends MessageFlowHarness {
 					tiMessageFactory.createResponse(
 						Response.RINGING,
 						tran.getRequest());
+                // BUG: set contact header on dialog-creating response
+                ringing.setHeader(createTiContact());
 			} catch (ParseException ex) {
 				throw new TiUnexpectedError(
 					"A ParseException was thrown while trying to create a ringing "

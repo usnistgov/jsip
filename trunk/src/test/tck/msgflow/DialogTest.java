@@ -79,6 +79,9 @@ public class DialogTest extends MessageFlowHarness {
 						inviteReqEvt.getRequest());
 				((ToHeader) ringing.getHeader(ToHeader.NAME)).setTag(
 					Integer.toString(hashCode()));
+                // BUG report from Ben Evans: 
+				// set contact header on dialog-creating response
+                ringing.setHeader(createRiContact());
 				riSipProvider.sendResponse(ringing);
 			} catch (Exception e) {
 				throw new TckInternalError(

@@ -11,7 +11,7 @@ import javax.sip.header.*;
 /**
  * Retry-After SIP Header.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.2 $ $Date: 2004-01-22 13:26:29 $
+ * @version JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2004-09-13 15:12:27 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * @author Olivier Deruelle <deruelle@nist.gov><br/>
@@ -155,9 +155,34 @@ public class RetryAfter extends ParametersHeader implements RetryAfterHeader {
 	 */
 
 	public int getDuration() {
-		return super.getParameterAsInt(DURATION);
+		int retval = super.getParameterAsInt(DURATION);
+		return retval == -1? 0: retval;
 	}
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/01/22 13:26:29  sverker
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  sverker
+ * Reviewed by:   mranga
+ *
+ * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  */

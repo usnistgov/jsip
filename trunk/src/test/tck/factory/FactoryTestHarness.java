@@ -68,8 +68,11 @@ public class FactoryTestHarness extends TestHarness {
 			+ "To: \"littleguy@there.com\" <sip:littleguy@there.com:5060> \r\n"
 			+ "Call-ID: Q2AboBsaGn9!?x6@sipbakeoff.com \r\n"
 			+ "CSeq: 1 INVITE \r\n"
-			+ "Accept: application/sdp;level=1\n"
-			+ "Accept-Language: da\n"
+            // BUG submitted by Ben Evans (opencloud): 
+			//  was missing \r\n on Accept and Accept-Language headers
+            // (works OK in NIST-SIP but not valid SIP syntax)
+			+ "Accept: application/sdp;level=1\r\n"
+			+ "Accept-Language: da\r\n"
 			+ "Authentication-Info: nextnonce=\"47364c23432d2e131a5fb210812c\"\r\n"
 			+ "Accept-Encoding: identity; q=0.5\r\n"
 			+ "Authorization: Digest username=\"UserB\", realm=\"MCI WorldCom SIP\","
@@ -88,7 +91,9 @@ public class FactoryTestHarness extends TestHarness {
 			"Accept-Encoding: compress;q=0.5,gzip;q=1.0\n",
 			"Accept: application/sdp;level=1,application/x-private,text/html\n",
 			"Contact: Bo Bob Biggs"
-				+ "< sip:user@example.com?Route=%3Csip:sip.example.com%3E >,"
+                // BUG submitted by Ben Evans (opencloud): SIP syntax does not 
+				// permit space between < and URI
+				+ "<sip:user@example.com?Route=%3Csip:sip.example.com%3E>,"
 				+ "Joe Bob Briggs <sip:mranga@nist.gov>\n",
 			"Proxy-Require: foo, 1234 \n",
 			"Record-Route: <sip:bob@biloxi.com>,"
@@ -153,8 +158,10 @@ public class FactoryTestHarness extends TestHarness {
 			"Contact:BigGuy<sip:utente@127.0.0.1:5000>;expires=3600\n",
 			"Contact: sip:4855@166.35.224.216:5060\n",
 			"Contact: sip:user@host.company.com\n",
+        // BUG reported by Ben Evans (opencloud): SIP syntax 
+		// does not permit space between < and URI
 			"Contact: Bo Bob Biggs"
-				+ "< sip:user@example.com?Route=%3Csip:sip.example.com%3E >\n",
+				+ "<sip:user@example.com?Route=%3Csip:sip.example.com%3E>\n",
 			"Contact: Joe Bob Briggs <sip:mranga@nist.gov>\n",
 			"Contact: \"Mr. Watson\" <sip:watson@worcester.bell-telephone.com>"
 				+ " ; q=0.7; expires=3600",
@@ -179,7 +186,8 @@ public class FactoryTestHarness extends TestHarness {
 			"Date: Mon, 08 Jan 2001 19:05:06 GMT\n",
 			"Error-Info: <sip:not-in-service-recording@atlanta.com>\n",
 			"Error-Info: <sip:not-in-service-recording@atlanta.com>;param1=oli\n",
-			"From: foobar at com<sip:4855@166.34.120.100 >;tag=1024181795\n",
+            // BUG from Ben Evans (opencloud): space before >
+            "From: foobar at com<sip:4855@166.34.120.100>;tag=1024181795\n",
 			"From: sip:user@company.com\n",
 			"From: sip:caller@university.edu\n",
 			"from: sip:localhost\n",
@@ -207,6 +215,8 @@ public class FactoryTestHarness extends TestHarness {
 			"Reason: SIP ;cause=200 ;text=\"Call completed elsewhere\"\n",
 			"Reason: Q.850 ;cause=16 ;text=\"Terminated\"\n",
 			"Reason: SIP ;cause=600 ;text=\"Busy Everywhere\"\n",
+            // API BUG: what should the default cause code be? - NIST uses -1 but this is not specified.
+			// TBD -- documentation fix in jain-sip 1.2 should specify the default cause to be -1
 			"Reason: SIP \n",
 			"Record-Route: <sip:bob@biloxi.com>",
 			"Record-Route: <sip:bob@biloxi.com;maddr=10.1.1.1>",
@@ -221,7 +231,9 @@ public class FactoryTestHarness extends TestHarness {
 			"Require: 100rel \n",
 			"Retry-After: 18000;duration=3600\n",
 			"Retry-After: 120;duration=3600;ra=oli\n",
-			"Retry-After: 1220 (I'm in a meeting)\n",
+            // BUG reported by Ben Evans, opencloud: 
+			// javadoc says default duration is 0 but RI returns -1,
+			// The RI was fixed to return 0
 			"Retry-After: 1230 (I'm in a meeting);fg=der;duration=23\n",
 			"Route: <sip:alice@atlanta.com>\n",
 			"Route: <sip:bob@biloxi.com>\n",
@@ -232,6 +244,8 @@ public class FactoryTestHarness extends TestHarness {
 			"Server: Nist1.0/Beta2 UbiServer/vers.1.0 (new stuff) (Cool) \n",
 			"Subject: Where is the Moscone?\n",
 			"Subject: Need more boxes\n",
+            // API BUG: default value of retry-after param not specified.
+			// TBD -- documentation bug in JAIN-SIP to be fixed in 1.2
 			"Subscription-State: active \n",
 			"Subscription-State: terminated;reason=rejected \n",
 			"Subscription-State: pending;reason=probation;expires=36\n",

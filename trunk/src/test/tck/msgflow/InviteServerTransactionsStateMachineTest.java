@@ -198,6 +198,9 @@ public class InviteServerTransactionsStateMachineTest
 				((ToHeader) ringing.getHeader(ToHeader.NAME)).setTag(
 					Integer.toString(hashCode()));
 				addStatus(tran.getRequest(), ringing);
+                // BUG report from Ben Evans:
+				// set contact header on dialog-creating response
+                ringing.setHeader(createTiContact());
 			} catch (ParseException ex) {
 				throw new TiUnexpectedError(
 					"A ParseException was thrown while trying to create a ringing "
@@ -522,6 +525,9 @@ public class InviteServerTransactionsStateMachineTest
 				((ToHeader) ringing.getHeader(ToHeader.NAME)).setTag(
 					Integer.toString(hashCode()));
 				addStatus(tran.getRequest(), ringing);
+                // BUG report from Ben Evans: 
+				// set contact header on dialog-creating response
+                ringing.setHeader(createTiContact());
 			} catch (ParseException ex) {
 				throw new TiUnexpectedError(
 					"A ParseException was thrown while trying to create a ringing "

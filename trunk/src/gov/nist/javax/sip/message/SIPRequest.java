@@ -26,7 +26,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.9 $ $Date: 2004-06-16 02:53:19 $
+ * @version JAIN-SIP-1.1 $Revision: 1.10 $ $Date: 2004-09-13 15:12:26 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -162,11 +162,6 @@ public final class SIPRequest
 			throw new ParseException(prefix + MaxForwardsHeader.NAME, 0);
 		}
 
-		/*  BUGBUG
-		* Need to revisit this check later... 
-		        * for now we just leave this to the
-			* application to catch.
-		*/
 
 		if (requestLine != null
 			&& requestLine.getMethod() != null
@@ -945,6 +940,10 @@ public final class SIPRequest
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/06/16 02:53:19  mranga
+ * Submitted by:  mranga
+ * Reviewed by:   implement re-entrant multithreaded listener model.
+ *
  * Revision 1.8  2004/06/15 09:54:43  mranga
  * Reviewed by:   mranga
  * re-entrant listener model added.
