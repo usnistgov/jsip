@@ -19,7 +19,7 @@ import gov.nist.core.*;
  * NIST-SIP stack and event model with the JAIN-SIP stack. Implementors
  * of JAIN services need not concern themselves with this class.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.25 $ $Date: 2004-04-06 12:28:23 $
+ * @version JAIN-SIP-1.1 $Revision: 1.26 $ $Date: 2004-04-07 00:19:22 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Bug fix Contributions by Lamine Brahimi and  Andreas Bystrom. <br/>
@@ -260,6 +260,7 @@ public class NistSipMessageHandlerImpl
 			}
 			// If the transaction is found then it is already managed so
 			// dont call the listener.
+			/**
 			if (sipStack.isDialogCreated(sipRequest.getMethod())) {
 				if ((SIPServerTransaction) sipStack
 					.findTransaction(sipRequest, true) 
@@ -267,6 +268,7 @@ public class NistSipMessageHandlerImpl
 					return;
 				} 
 			}
+			**/
 			String dialogId = sipRequest.getDialogId(true);
 			DialogImpl dialog = sipStackImpl.getDialog(dialogId);
 
@@ -477,6 +479,12 @@ public class NistSipMessageHandlerImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.25  2004/04/06 12:28:23  mranga
+ * Reviewed by:   mranga
+ * changed locale to Locale.getDefault().getCountry()
+ * moved check for valid transaction state up in the stack so unfruitful responses
+ * are pruned early.
+ *
  * Revision 1.24  2004/03/31 20:30:46  deruelle_jean
  * Fix bug on dropping out of sequence BYE
  *

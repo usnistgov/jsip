@@ -21,7 +21,7 @@ import javax.sip.message.*;
  *
  * @author Jeff Keyser 
  * @author M. Ranganathan (modified Jeff's original source and aligned with JAIN-SIP 1.1)
- * @version  JAIN-SIP-1.1 $Revision: 1.19 $ $Date: 2004-03-09 00:34:44 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.20 $ $Date: 2004-04-07 00:19:24 $
  */
 public abstract class SIPTransaction
 	extends MessageChannel
@@ -77,6 +77,8 @@ public abstract class SIPTransaction
 	protected boolean isMapped;
 
 	protected boolean isAckSeen;
+
+	protected boolean eventPending; // indicate that an event is pending here.
 
 	/**
 	 * Initialized but no state assigned.
@@ -882,9 +884,31 @@ public abstract class SIPTransaction
 		return this.isAckSeen;
 	}
 
+	public void setEventPending ( ) {
+			this.eventPending = true;
+	}
+
+	public boolean isEventPending() {
+		return this.eventPending;
+	}
+	
+	public void clearEventPending() {
+		this.eventPending = false;
+	}
+
+
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2004/03/09 00:34:44  mranga
+ * Reviewed by:   mranga
+ * Added TCP connection management for client and server side
+ * Transactions. See configuration parameter
+ * gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false
+ * Releases Server TCP Connections after linger time
+ * gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS=false
+ * Releases Client TCP Connections after linger time
+ *
  * Revision 1.18  2004/02/22 13:53:57  mranga
  * Reviewed by:   mranga
  * Return null from transaction rather than dummy dialog (following discussion

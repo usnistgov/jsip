@@ -27,7 +27,7 @@ import sim.java.net.*;
  * @author Jeff Keyser (original) 
  * @author M. Ranganathan <mranga@nist.gov>  <br/> (Added Dialog table).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.25 $ $Date: 2004-03-30 15:38:18 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.26 $ $Date: 2004-04-07 00:19:24 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public abstract class SIPTransactionStack
@@ -102,10 +102,15 @@ public abstract class SIPTransactionStack
 		Thread scanner = new Thread(new TransactionScanner(this));
 		scanner.setName("TransactionScanner");
 		scanner.start();
+		Thread pendingResponseScanner = new Thread(new PendingResponseScanner(this));
+		pendingResponseScanner.setName("ResponseScanner");
+		pendingResponseScanner.start();
 //endif
 //
 
 	}
+
+
 
 
 	/** Re Initialize the stack instance.
@@ -130,7 +135,12 @@ public abstract class SIPTransactionStack
 		simThread.start();
 //else
 */
-		new Thread(new TransactionScanner(this)).start();
+		Thread scanner = new Thread(new TransactionScanner(this));
+		scanner.setName("TransactionScanner");
+		scanner.start();
+		Thread pendingResponseScanner = new Thread(new PendingResponseScanner(this));
+		pendingResponseScanner.setName("ResponseScanner");
+		pendingResponseScanner.start();
 //endif
 //
 
@@ -366,6 +376,39 @@ public abstract class SIPTransactionStack
 	protected SIPTransactionStack(SIPStackMessageFactory messageFactory) {
 		this();
 		super.sipMessageFactory = messageFactory;
+	}
+
+	class PendingResponseScanner implements Runnable {
+	      SIPTransactionStack myStack;
+	      protected PendingResponseScanner (SIPTransactionStack myStack){
+			this.myStack = myStack;
+	      }
+	      public void run() {
+		try {
+		while (true) {
+		   synchronized (this.myStack) {
+		      try {
+		         this.myStack.wait();
+		         if (! isAlive() ) return;
+		      } catch (InterruptedException ex) {
+		         if (! isAlive() ) return;
+			 else continue;
+		      }
+		   }
+		   synchronized (clientTransactions) {
+			Iterator ti = clientTransactions.iterator();
+			while (ti.hasNext()) {
+				SIPClientTransaction next = (SIPClientTransaction) ti.next();
+		        	next.processPendingResponses();
+			}
+		   }
+	        }
+	      } finally {
+		if (LogWriter.needsLogging)
+		   logWriter.logMessage
+				("exitting pendingResponsScanner!!");
+	      }
+	   }
 	}
 
 	/**
@@ -687,7 +730,18 @@ public abstract class SIPTransactionStack
 					} 
 				} else {
 					// Create the transaction but dont map it.
-					currentTransaction.setOriginalRequest(requestReceived);
+					String dialogId = requestReceived.getDialogId(true);
+					DialogImpl dialog = getDialog(dialogId);
+					// This is a dialog creating request that is part of an
+					// existing dialog (eg. re-Invite). Re-invites get a non
+					// null server transaction Id (unlike the original invite).
+				        if (dialog != null  && 
+				      	    requestReceived.getCSeq().getSequenceNumber()
+				     		> dialog.getRemoteSequenceNumber()) {
+						currentTransaction.map(); 
+						serverTransactions.add(currentTransaction);
+						currentTransaction.toListener = true;
+					}
 				}
 			}
 
@@ -928,6 +982,10 @@ public abstract class SIPTransactionStack
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.25  2004/03/30 15:38:18  mranga
+ * Reviewed by:   mranga
+ * Name the threads so as to facilitate debugging.
+ *
  * Revision 1.24  2004/03/30 15:17:39  mranga
  * Reviewed by:   mranga
  * Added reInitialization for stack in support of applets.

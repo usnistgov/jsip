@@ -94,6 +94,7 @@ public class Shootme implements SipListener {
 		ServerTransaction serverTransaction) {
 		SipProvider sipProvider = (SipProvider) requestEvent.getSource();
 		Request request = requestEvent.getRequest();
+		System.out.println("Got an INVITE  " + request);
 		try {
 			System.out.println("shootme: got an Invite sending OK");
 			//System.out.println("shootme:  " + request);
@@ -293,6 +294,10 @@ public class Shootme implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/03/30 18:10:53  mranga
+ * Reviewed by:   mranga
+ * added code to demonstrate cleanup
+ *
  * Revision 1.13  2004/03/12 21:53:08  mranga
  * Reviewed by:   mranga
  * moved some comments around for ifdef support.
