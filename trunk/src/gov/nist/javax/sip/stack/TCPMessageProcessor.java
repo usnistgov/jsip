@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.net.SocketException;
 import gov.nist.core.*;
 import java.net.*;
+import java.util.*;
 
 /**
  * Sit in a loop waiting for incoming tcp connections and start a
@@ -22,7 +23,7 @@ import java.net.*;
  * object that creates new TCP MessageChannels (one for each new
  * accept socket).  
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.9 $ $Date: 2004-01-22 18:39:42 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.10 $ $Date: 2004-03-19 17:06:20 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Acknowledgement: Jeff Keyser suggested that a
@@ -42,13 +43,15 @@ public class TCPMessageProcessor extends MessageProcessor {
 //endif
 //
 
-	protected int useCount;
 
 	protected int port;
 
 	protected int nConnections;
 
 	private boolean isRunning;
+
+
+	private Hashtable tcpMessageChannels;
 
 //ifndef SIMULATION
 //
@@ -73,6 +76,7 @@ public class TCPMessageProcessor extends MessageProcessor {
 	protected TCPMessageProcessor(SIPStack sipStack, int port) {
 		this.sipStack = sipStack;
 		this.port = port;
+		this.tcpMessageChannels = new Hashtable();
 //ifdef SIMULATION
 /*
 		this.msgObject = new SimMessageObject();
@@ -211,6 +215,13 @@ public class TCPMessageProcessor extends MessageProcessor {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		Collection en = tcpMessageChannels.values();
+		for ( Iterator it = en.iterator(); it.hasNext(); ) {
+		       TCPMessageChannel next = 
+				(TCPMessageChannel)it.next() ;
+			next.close();
+		}
 //ifdef SIMULATION
 /*
 		this.msgObject.doNotify();
@@ -222,21 +233,55 @@ public class TCPMessageProcessor extends MessageProcessor {
 
 	}
 
+
+	protected synchronized void remove
+		(TCPMessageChannel tcpMessageChannel) {
+
+		String key = tcpMessageChannel.getKey();
+		System.out.println("removing " + key);
+		this.tcpMessageChannels.remove(key);
+	}
+
+
 	/**
 	 * Create and return new TCPMessageChannel for the given host/port.
 	 */
 	public MessageChannel createMessageChannel(HostPort targetHostPort)
 		throws IOException {
-		return new TCPMessageChannel(
+		String key = MessageChannel.getKey(targetHostPort,"TCP");
+		if (tcpMessageChannels.get(key) != null)  {
+			return (TCPMessageChannel) 
+				this.tcpMessageChannels.get(key);
+		} else {
+		     TCPMessageChannel retval = new TCPMessageChannel(
 			targetHostPort.getInetAddress(),
 			targetHostPort.getPort(),
 			sipStack,
 			this);
+		     this.tcpMessageChannels.put(key,retval);
+		     System.out.println("key " + key);
+		     System.out.println("Creating " + retval);
+		     return retval;
+		}
 	}
 
 	public MessageChannel createMessageChannel(InetAddress host, int port)
 		throws IOException {
-		return new TCPMessageChannel(host, port, sipStack, this);
+		try {
+		   String key = MessageChannel.getKey(host,port,"TCP");
+		   if (tcpMessageChannels.get(key) != null)  {
+			return (TCPMessageChannel) 
+				this.tcpMessageChannels.get(key);
+		   } else {
+		        TCPMessageChannel retval  = new TCPMessageChannel(host, port, sipStack, this);
+			this.tcpMessageChannels.put(key,retval);
+		        System.out.println("key " + key);
+		        System.out.println("Creating " + retval);
+			return retval;
+		   }
+		} catch (UnknownHostException ex) {
+			throw new IOException (ex.getMessage());
+		}
 	}
 
 	/**
@@ -261,7 +306,7 @@ public class TCPMessageProcessor extends MessageProcessor {
 	}
 
 	public boolean inUse() {
-		return this.useCount != 0;
+		return tcpMessageChannels.size() != 0;
 	}
 
 	/**
@@ -280,6 +325,10 @@ public class TCPMessageProcessor extends MessageProcessor {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2004/01/22 18:39:42  mranga
+ * Reviewed by:   M. Ranganathan
+ * Moved the ifdef SIMULATION and associated tags to the first column so Prep preprocessor can deal with them.
+ *
  * Revision 1.8  2004/01/22 14:23:45  mranga
  * Reviewed by:   mranga
  * Fixed some minor formatting issues.

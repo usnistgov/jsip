@@ -19,7 +19,7 @@ import sim.java.net.*;
 */
 /** Event Scanner to deliver events to the Listener.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.1 $ $Date: 2004-03-18 14:40:38 $
+ * @version JAIN-SIP-1.1 $Revision: 1.2 $ $Date: 2004-03-19 17:06:19 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -27,6 +27,8 @@ import sim.java.net.*;
  *
  */
 class EventScanner implements Runnable {
+
+	private   boolean isStopped;
 
 	protected int refCount;
 
@@ -101,32 +103,10 @@ class EventScanner implements Runnable {
 		if (this.refCount >  0 ) this.refCount --;
 
 		if (this.refCount == 0) {
-//ifndef SIMULATION
-//
-		synchronized (this.pendingEvents)
-//else
-/*
-			this.pendingEventsShadow.enterCriticalSection();
-			try
-//endif
-*/ 
-		  {
-			EventWrapper eventWrapper = new EventWrapper();
-			this.pendingEvents.add(eventWrapper);
-//ifdef SIMULATION
-/*
-			this.pendingEventsShadow.doNotify();
-//else
-*/
-			this.pendingEvents.notify();
-//endif
-//
-		}
-//ifdef SIMULATION
-/*
-		finally { this.pendingEventsShadow.leaveCriticalSection(); }
-//endif
-*/
+			synchronized( this.pendingEvents) {
+				this.isStopped = true;
+				this.pendingEvents.notify();
+			}
 		}
 
 	}
@@ -148,6 +128,11 @@ class EventScanner implements Runnable {
 */ 
 				{
 				if (pendingEvents.isEmpty()) {
+					if (this.isStopped)  {
+						if (LogWriter.needsLogging)
+						    sipStackImpl.logMessage( "Stopped event scanner!!");
+						return;
+					}
 					try {
 //ifdef SIMULATION
 /*
@@ -162,6 +147,8 @@ class EventScanner implements Runnable {
 						continue;
 					}
 				}
+
+
 				ListIterator iterator = pendingEvents.listIterator();
 				while (iterator.hasNext()) {
 					eventWrapper = (EventWrapper) iterator.next();
@@ -173,11 +160,13 @@ class EventScanner implements Runnable {
 								+ "nevents "
 								+ pendingEvents.size());
 					}
+					/**
 					if (sipEvent == null) {
 						if (LogWriter.needsLogging)
 							sipStackImpl.logMessage("Exiting provider thread!");
 						return;
 					}
+					**/
 					SipListener sipListener = ((SipProviderImpl)sipEvent.getSource()).sipListener;
 					if (sipEvent instanceof RequestEvent) {
 						// this.currentTransaction =
