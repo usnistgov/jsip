@@ -155,12 +155,15 @@ public class Shootist implements SipListener {
 		System.out.println("transaction state is " + tid.getState());
 		System.out.println("Dialog = " + tid.getDialog());
 		System.out.println("Dialog State is " + tid.getDialog().getState());
+
+		/**
 		if (response.getStatusCode() == 100 || response.getStatusCode() == 180) {
 				try {
 				    Thread.sleep(500);
 				} catch (Exception ex) {
 				}
 		}
+		**/
 		try {
 			if (response.getStatusCode() == Response.OK
 				&& ((CSeqHeader) response.getHeader(CSeqHeader.NAME))
@@ -438,6 +441,10 @@ public class Shootist implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.24  2004/04/07 13:46:29  mranga
+ * Reviewed by:   mranga
+ * move processing of delayed responses outside the synchronized block.
+ *
  * Revision 1.23  2004/03/30 18:10:53  mranga
  * Reviewed by:   mranga
  * added code to demonstrate cleanup
