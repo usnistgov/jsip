@@ -172,24 +172,24 @@ public class DialogImpl implements javax.sip.Dialog {
     public void ackReceived(SIPRequest sipRequest) {
 
 
-	if (isServer()) {
-	    SIPServerTransaction st = 
-		 (SIPServerTransaction)this.getFirstTransaction();
-	    
-            if (LogWriter.needsLogging)
-	        LogWriter.logMessage
-		("ackReceived for " + 
-		((SIPRequest)st.getOriginalRequest()).getMethod());
-
-	    if (st == null) return;
-	    // Suppress retransmission of the final response (in case
+	    Transaction tr = this.getLastTransaction();
+            // Suppress retransmission of the final response (in case
 	    // retransmission filter is being used).
-	    if (st.getOriginalRequest().getCSeq().getSequenceNumber() ==
-		sipRequest.getCSeq().getSequenceNumber()) {
+	    if (tr != null && tr instanceof SIPServerTransaction ) {
+		SIPServerTransaction st = (SIPServerTransaction) tr;
+	    	if (st.getOriginalRequest().getCSeq().getSequenceNumber() ==
+			sipRequest.getCSeq().getSequenceNumber()) {
 			st.setState(SIPTransaction.TERMINATED_STATE);
 			this.ackSeen = true;
+	    	}
+	    
+            	if (LogWriter.needsLogging)
+	        	LogWriter.logMessage
+			("ackReceived for " + 
+			((SIPRequest)st.getOriginalRequest()).getMethod());
+
+	    	if (st == null) return;
 	    }
-	}
     }
     
     
@@ -522,8 +522,8 @@ public class DialogImpl implements javax.sip.Dialog {
             // This is a server transaction. Compute the dialog id
             // from the tag we have assigned to the outgoing
             // response of the dialog creating transaction.
-    		if (   this.firstTransaction != null && 
-			((SIPClientTransaction)this.firstTransaction).
+    		if (   this.getFirstTransaction() != null && 
+			((SIPClientTransaction)this.getFirstTransaction()).
 			getLastResponse() != null) {
                    this.dialogId =
                    ((SIPClientTransaction)firstTransaction).getLastResponse().
@@ -541,15 +541,14 @@ public class DialogImpl implements javax.sip.Dialog {
      *@param transaction is the transaction to add to the dialog.
      */
     public  void addTransaction(SIPTransaction transaction) {
-        // Dont add transactions to terminated dialogs.
 	
-        if (firstTransaction == null  ) {
+         SIPRequest sipRequest =
+            (SIPRequest) transaction.getOriginalRequest();
+        if (firstTransaction == null   ) {
             // Record the local and remote sequenc
             // numbers and the from and to tags for future
             // use on this dialog.
             firstTransaction = transaction;
-            SIPRequest sipRequest =
-            (SIPRequest) transaction.getOriginalRequest();
             
             if (transaction instanceof SIPServerTransaction ) {
                 setRemoteSequenceNumber
@@ -564,7 +563,20 @@ public class DialogImpl implements javax.sip.Dialog {
 		if (myTag == null) 
 			throw new RuntimeException("bad message tag missing!");
             }
-        }
+        } else if (  transaction.getOriginalRequest().getMethod().equals
+	           ( firstTransaction.getOriginalRequest().getMethod())  &&
+	      (((firstTransaction instanceof SIPServerTransaction)   &&
+	       (transaction instanceof SIPClientTransaction))  || 
+	        ((firstTransaction instanceof SIPClientTransaction) &&
+	        (transaction instanceof SIPServerTransaction)))) {
+	    // Switch from client side to server side for re-invite
+	    //  (put the other side on hold).
+
+	     firstTransaction = transaction;
+
+	}
+
+	  
 	this.lastTransaction = transaction;
         // set a back ptr in the incoming dialog.
         transaction.setDialog(this);
@@ -851,8 +863,11 @@ public class DialogImpl implements javax.sip.Dialog {
         SIPRequest ackRequest = (SIPRequest) request;
 	if (LogWriter.needsLogging) 
 		LogWriter.logMessage("sendAck" + this);
-        if (this.isServer())
-            throw new SipException("Cannot sendAck from Server side of Dialog");
+	// Loosen up check for re-invites (Andreas B)
+        // if (this.isServer())
+        //   throw new SipException
+	// ("Cannot sendAck from Server side of Dialog");
+
         if (!ackRequest.getMethod().equals(Request.ACK) &&
 	    !ackRequest.getMethod().equals(Request.PRACK)) 
             throw new SipException("Bad request method -- should be ACK");
@@ -1022,7 +1037,22 @@ public class DialogImpl implements javax.sip.Dialog {
 	  if ( ! method.equals(Request.ACK)) {
 	      CSeq cseq = (CSeq) sipRequest.getCSeq();
 	      cseq.setSequenceNumber(this.localSequenceNumber + 1);
-	  }
+	  }  else {
+	     // This is an ACK request. Get the last transaction and
+	     // assign a seq number from there. 
+	     // Bug noticed by Andreas Bystrom.
+	      SIPTransaction transaction = this.lastTransaction;
+	      if ( transaction == null) 
+		throw new SipException ("Could not create ack!");
+	      SIPResponse response = (SIPResponse) 
+			this.lastTransaction.getLastResponse();
+	      if ( response == null) 
+		throw new SipException("Could not find response!");
+	      int seqno =  response.getCSeq().getSequenceNumber();
+	      CSeq cseq = (CSeq) sipRequest.getCSeq();
+	      cseq.setSequenceNumber(seqno);
+	   }
+	      
 	} catch (InvalidArgumentException ex) {
 	   InternalErrorHandler.handleException(ex);
 	}
@@ -1159,6 +1189,8 @@ public class DialogImpl implements javax.sip.Dialog {
 
 	// Set the dialog back pointer.
          ((SIPClientTransaction)clientTransactionId).dialog = this;
+
+	this.addTransaction((SIPTransaction) clientTransactionId);
 
 
         From from = (From) dialogRequest.getFrom();
