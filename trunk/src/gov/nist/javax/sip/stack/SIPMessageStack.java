@@ -30,7 +30,7 @@ import sim.java.net.*;
  * get the stack the process messages.
  * This will start the necessary threads that wait for incoming SIP messages.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.1 $ $Date: 2004-06-21 04:59:51 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.2 $ $Date: 2004-06-21 05:32:21 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * 
@@ -100,7 +100,7 @@ public abstract class SIPMessageStack {
 	/**
 	 * Request factory interface (to be provided by the application)
 	 */
-	protected SIPStackMessageFactory sipMessageFactory;
+	protected StackMessageFactory sipMessageFactory;
 
 	/**
 	 * Default UDP port (5060)
@@ -255,7 +255,7 @@ public abstract class SIPMessageStack {
 	 */
 
 	public SIPMessageStack(
-		SIPStackMessageFactory messageFactory,
+		StackMessageFactory messageFactory,
 		String stackAddress,
 		String stackName)
 		throws UnknownHostException {
@@ -274,7 +274,7 @@ public abstract class SIPMessageStack {
 	 * @param messageFactory User-implemented factory for processing
 	 * messages.
 	 */
-	public void setStackMessageFactory(SIPStackMessageFactory messageFactory) {
+	public void setStackMessageFactory(StackMessageFactory messageFactory) {
 		sipMessageFactory = messageFactory;
 	}
 
@@ -668,7 +668,7 @@ public abstract class SIPMessageStack {
 	 *
 	 * @param messageFactory -- messageFactory to set.
 	 */
-	protected void setMessageFactory(SIPStackMessageFactory messageFactory) {
+	protected void setMessageFactory(StackMessageFactory messageFactory) {
 		this.sipMessageFactory = messageFactory;
 	}
 
@@ -731,6 +731,9 @@ public abstract class SIPMessageStack {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2004/06/21 04:59:51  mranga
+ * Refactored code - no functional changes.
+ *
  * Revision 1.20  2004/05/18 15:26:44  mranga
  * Reviewed by:   mranga
  * Attempted fix at race condition bug. Remove redundant exception (never thrown).
