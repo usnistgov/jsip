@@ -25,6 +25,7 @@ test: clength requestlineparse hostnameparse \
       subscriptionparse subjectparse serverparse retryafterparse \
       requireparse replytoparse reasonparse rseqparse rackparse \
       proxyrequireparse priorityparse organizationparse minexpiresparse \
+      proxyauthorizationparse \
       mimeversionparse inreplytoparse eventparse contentlanguageparse \
       contentencodingparse contentdispositionparse callinfoparse \
       authenticationinfoparse allowparse alloweventsparse alertinfoparse \
@@ -134,6 +135,9 @@ rackparse: RAckParser.class
 
 proxyrequireparse: ProxyRequireParser.class
 	$(JAVA)    gov.nist.javax.sip.parser.ProxyRequireParser
+
+proxyauthorizationparse: ProxyAuthorizationParser.class
+	$(JAVA)    gov.nist.javax.sip.parser.ProxyAuthorizationParser
 
 priorityparse: PriorityParser.class
 	$(JAVA)    gov.nist.javax.sip.parser.PriorityParser
