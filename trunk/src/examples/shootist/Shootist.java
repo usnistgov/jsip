@@ -20,13 +20,16 @@ import sim.java.*;
 
 public class Shootist implements SipListener {
 
-	private static SipProvider sipProvider;
+	private static SipProvider tcpProvider;
+	private static SipProvider udpProvider;
 	private static AddressFactory addressFactory;
 	private static MessageFactory messageFactory;
 	private static HeaderFactory headerFactory;
 	private static SipStack sipStack;
 	private int reInviteCount;
 	private ContactHeader contactHeader;
+	private ListeningPoint tcpListeningPoint;
+	private ListeningPoint udpListeningPoint;
 
 	protected ClientTransaction inviteTid;
 
@@ -40,6 +43,30 @@ public class Shootist implements SipListener {
 		System.exit(0);
 
 	}
+	private void shutDown() {
+		try {
+			System.out.println("nulling reference");
+			this.sipStack.deleteListeningPoint(tcpListeningPoint);
+			this.sipStack.deleteListeningPoint(udpListeningPoint);
+			// This will close down the stack and exit all threads
+			tcpProvider.removeSipListener(this);
+			udpProvider.removeSipListener(this);
+			this.sipStack.deleteSipProvider(udpProvider);
+			this.sipStack.deleteSipProvider(tcpProvider);
+			this.sipStack = null;
+			this.tcpProvider = null;
+			this.udpProvider = null;
+			this.inviteTid = null;
+			this.contactHeader = null;
+			this.addressFactory = null;
+			this.headerFactory = null;
+			this.messageFactory = null;
+			this.udpListeningPoint = null;
+			this.tcpListeningPoint = null;
+			System.gc();
+		} catch (Exception ex) { ex.printStackTrace(); }
+	}
+	
 
 	public void processRequest(RequestEvent requestReceivedEvent) {
 		Request request = requestReceivedEvent.getRequest();
@@ -84,6 +111,10 @@ public class Shootist implements SipListener {
 //endif
 */
 
+
+			// so that the finalization method will run 
+			// and exit all resources.
+
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.exit(0);
@@ -123,14 +154,19 @@ public class Shootist implements SipListener {
 				System.out.println("Sending ACK");
 				dialog.sendAck(ackRequest);
 
-				// Send a Re INVITE
+				// Send a Re INVITE but this time force it 
+				// to use UDP as the transport. Else, it will
+				// Use whatever transport was used to create
+				// the dialog.
 				if (reInviteCount == 0) {
 				    Request inviteRequest = 
 					dialog.createRequest(Request.INVITE);
+				    ((SipURI)inviteRequest.getRequestURI()).removeParameter("transport");
+				    ((ViaHeader)inviteRequest.getHeader(ViaHeader.NAME)).setTransport("UDP");
 				    inviteRequest.addHeader(contactHeader);
 				    try {Thread.sleep(100); } catch (Exception ex) {} 
 				    ClientTransaction ct = 
-					sipProvider.getNewClientTransaction(inviteRequest);
+					udpProvider.getNewClientTransaction(inviteRequest);
 				    dialog.sendRequest(ct);
 				    reInviteCount ++;
 				}
@@ -151,7 +187,6 @@ public class Shootist implements SipListener {
 	public void init() {
 		SipFactory sipFactory = null;
 		sipStack = null;
-		sipProvider = null;
 		sipFactory = SipFactory.getInstance();
 		sipFactory.setPathName("gov.nist");
 		Properties properties = new Properties();
@@ -209,18 +244,20 @@ public class Shootist implements SipListener {
 			headerFactory = sipFactory.createHeaderFactory();
 			addressFactory = sipFactory.createAddressFactory();
 			messageFactory = sipFactory.createMessageFactory();
-			ListeningPoint lp = sipStack.createListeningPoint(5060, "udp");
-			sipProvider = sipStack.createSipProvider(lp);
+			udpListeningPoint = sipStack.createListeningPoint(5060, "udp");
+			udpProvider = sipStack.createSipProvider(udpListeningPoint);
 			Shootist listener = this;
-			sipProvider.addSipListener(listener);
+			udpProvider.addSipListener(listener);
 
-			System.out.println("createListeningPoint");
 
-			lp = sipStack.createListeningPoint(5060, "tcp");
-			SipProvider sipProvider1 = sipStack.createSipProvider(lp);
-			sipProvider1.addSipListener(listener);
 
-			System.out.println("createListeningPoint");
+
+			tcpListeningPoint = sipStack.createListeningPoint(5060, "tcp");
+			tcpProvider = sipStack.createSipProvider(tcpListeningPoint);
+			tcpProvider.addSipListener(listener);
+
+			SipProvider sipProvider = transport.equals("udp")? 
+					udpProvider: tcpProvider;
 
 			String fromName = "BigGuy";
 			String fromSipAddress = "here.com";
@@ -250,13 +287,6 @@ public class Shootist implements SipListener {
 			// create Request URI
 			SipURI requestURI =
 				addressFactory.createSipURI(toUser, toSipAddress);
-
-			// Assuming that the other end has the same
-			// transport.
-			/**
-			    requestURI.setTransportParam
-			    (sipProvider.getListeningPoint().getTransport());
-			**/
 
 			// Create ViaHeaders
 
@@ -303,7 +333,7 @@ public class Shootist implements SipListener {
 			String host = sipStack.getIPAddress();
 
 			SipURI contactUrl = addressFactory.createSipURI(fromName, host);
-			contactUrl.setPort(lp.getPort());
+			contactUrl.setPort(tcpListeningPoint.getPort());
 
 			// Create the contact name address.
 			SipURI contactURI = addressFactory.createSipURI(fromName, host);
@@ -358,6 +388,7 @@ public class Shootist implements SipListener {
 					"<http://www.antd.nist.gov>");
 			request.addHeader(callInfoHeader);
 
+
 			// Create the client transaction.
 			listener.inviteTid = sipProvider.getNewClientTransaction(request);
 
@@ -379,6 +410,10 @@ public class Shootist implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.21  2004/03/12 21:54:32  mranga
+ * Reviewed by:   mranga
+ * minor re-arrangement
+ *
  * Revision 1.20  2004/03/12 21:53:08  mranga
  * Reviewed by:   mranga
  * moved some comments around for ifdef support.
