@@ -26,7 +26,7 @@ import sim.java.net.*;
  * This can be accessed from the SIPMessage using the getContent and
  * getContentBytes methods provided by the SIPMessage class. 
  *
- * @version JAIN-SIP-1.1 $Revision: 1.14 $ $Date: 2004-05-16 14:13:22 $
+ * @version JAIN-SIP-1.1 $Revision: 1.15 $ $Date: 2004-05-30 18:55:56 $
  *
  * @author <A href=mailto:mranga@nist.gov > M. Ranganathan  </A>
  *
@@ -142,6 +142,7 @@ public final class PipelinedMsgParser implements Runnable {
 	public void processInput() {
 		mythread.start();
 	}
+
 
 	/**
 	 * Create a new pipelined parser from an existing one.
@@ -397,6 +398,11 @@ public final class PipelinedMsgParser implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2004/05/16 14:13:22  mranga
+ * Reviewed by:   mranga
+ * Fixed the use-count issue reported by Peter Parnes.
+ * Added property to prevent against content-length dos attacks.
+ *
  * Revision 1.13  2004/03/19 04:22:22  mranga
  * Reviewed by:   mranga
  * Added IO Pacing for long writes - split write into chunks and flush after each

@@ -114,7 +114,7 @@ import java.util.TimerTask;
  *
  *</pre>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.32 $ $Date: 2004-05-20 13:59:23 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.33 $ $Date: 2004-05-30 18:55:58 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
  * @author Bug fixes by Emil Ivov, Antonis Karydas.
@@ -127,7 +127,7 @@ extends SIPTransaction
 implements SIPServerRequestInterface, javax.sip.ServerTransaction {
     
     protected boolean toListener; // Hack alert - if this is set to true then force the listener to see transaction
-    
+
     
     // Real RequestInterface to pass messages to
     private SIPServerRequestInterface requestOf;
@@ -137,7 +137,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
         
         protected SendTrying(SIPServerTransaction st) {
             if (LogWriter.needsLogging)
-                parentStack.logWriter.logMessage("scheduled timer for " + st);
+                sipStack.logWriter.logMessage("scheduled timer for " + st);
             this.serverTransaction = st;
         }
         
@@ -145,7 +145,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
             if (this.serverTransaction.getRealState() == null
             || TransactionState.TRYING == this.serverTransaction.getRealState()) {
                 if (LogWriter.needsLogging)
-                    parentStack.logWriter.logMessage(
+                    sipStack.logWriter.logMessage(
                     " sending Trying current state = "
                     + this.serverTransaction.getRealState());
                 try {
@@ -154,17 +154,52 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
                     100,
                     "Trying"));
                     if (LogWriter.needsLogging)
-                        parentStack.logWriter.logMessage(
+                        sipStack.logWriter.logMessage(
                         " trying sent "
                         + this.serverTransaction.getRealState());
                 } catch (IOException ex) {
                     if (LogWriter.needsLogging)
-                        parentStack.logWriter.logMessage(
+                        sipStack.logWriter.logMessage(
                         "IO error sending  TRYING");
                 }
             }
         }
     }
+
+    class TransactionTimer extends TimerTask { 
+	SIPServerTransaction myTransaction;
+	SIPTransactionStack sipStack;
+	public TransactionTimer( SIPServerTransaction myTransaction) {
+			this.myTransaction = myTransaction;
+			this.sipStack = myTransaction.sipStack;
+	}
+
+	public void run() {
+		// If the transaction has terminated,
+		if (myTransaction.isTerminated()) {
+			// Keep the transaction hanging around in the transaction table
+			// to catch the incoming ACK retransmission.
+                        // Note that the transaction record is actually removed in 
+                        // the connection linger timer.
+			// Note - BUG report from Antonis Karydas
+			this.cancel();
+			myTransaction.myTimer = new LingerTimer(this.myTransaction);
+			// Oneshot timer.
+			sipStack.timer.schedule(myTimer, SIPTransactionStack.CONNECTION_LINGER_TIME*1000);
+			//adIf this transaction has not
+			//terminated,
+		} else {
+			// Add to the fire list -- needs to be moved
+			// outside the synchronized block to prevent
+			// deadlock.
+			fireTimer();
+
+		}
+        }
+
+    }
+		
+
     
     private void sendResponse(SIPResponse transactionResponse)
     throws IOException {
@@ -202,9 +237,9 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
         
         super(newSIPStack, newChannelToUse);
         if (LogWriter.needsLogging) {
-            parentStack.logWriter.logMessage(
+            sipStack.logWriter.logMessage(
             "Creating Server Transaction" + this);
-            parentStack.logWriter.logStackTrace();
+            sipStack.logWriter.logStackTrace();
         }
         
     }
@@ -256,11 +291,11 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
         
         transactionMatches = false;
         if (LogWriter.needsLogging) {
-            parentStack.logWriter.logMessage("--------- TEST ------------");
-            parentStack.logWriter.logMessage(
+            sipStack.logWriter.logMessage("--------- TEST ------------");
+            sipStack.logWriter.logMessage(
             " testing " + this.getOriginalRequest().encodeMessage());
-            parentStack.logWriter.logMessage("Against " + messageToTest.encodeMessage());
-            parentStack.logWriter.logMessage(
+            sipStack.logWriter.logMessage("Against " + messageToTest.encodeMessage());
+            sipStack.logWriter.logMessage(
             "isTerminated = " + isTerminated());
         }
         
@@ -367,12 +402,12 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
                 // Schedule a timer to fire in 200 ms if the
                 // TU did not send a trying in that time.
                 
-                //ifndef SIMULATION
-                //
-                new Timer().schedule(new SendTrying(this), 200);
-                //else
+//ifndef SIMULATION
+//
+		sipStack.timer.schedule(new SendTrying(this), 200);
+//else
 /*
-                                new SimTimer().schedule( new SendTrying( this ), 200);
+                new SimTimer().schedule( new SendTrying( this ), 200);
 //endif
  */
                 
@@ -517,7 +552,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
                 } else if (
                 transactionRequest.getMethod().equals(Request.CANCEL)) {
                     if (LogWriter.needsLogging)
-                        parentStack.logWriter.logMessage(
+                        sipStack.logWriter.logMessage(
                         "Too late to cancel Transaction");
                     // send OK and just ignore the CANCEL.
                     try {
@@ -528,7 +563,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
                         // just ignore the IOException.
                     }
                 }
-                parentStack.logWriter.logMessage(
+                sipStack.logWriter.logMessage(
                 "Dropping request " + getRealState());
             }
             
@@ -765,7 +800,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
             }
         } catch (IOException e) {
             if (LogWriter.needsLogging)
-                parentStack.logWriter.logException(e);
+                sipStack.logWriter.logException(e);
             raiseErrorEvent(SIPTransactionErrorEvent.TRANSPORT_ERROR);
             
         }
@@ -778,7 +813,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
     protected void fireTimeoutTimer() {
         
         if (LogWriter.needsLogging)
-            parentStack.logWriter.logMessage(
+            sipStack.logWriter.logMessage(
             "SIPServerTransaction.fireTimeoutTimer "
             + this.getRealState()
             + " method = "
@@ -872,7 +907,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
             SIPResponse responseImpl = (SIPResponse) response;
             
             if (responseImpl.getStatusCode() == 200
-            && parentStack.isDialogCreated(responseImpl.getCSeq().getMethod())
+            && sipStack.isDialogCreated(responseImpl.getCSeq().getMethod())
             && dialog.getLocalTag() == null
             && responseImpl.getTo().getTag() == null)
                 throw new SipException("To tag must be set for OK");
@@ -897,7 +932,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
                 responseImpl.getFrom().setTag(fromTag);
             else {
                 if (LogWriter.needsLogging)
-                    parentStack.logWriter.logMessage(
+                    sipStack.logWriter.logMessage(
                     "WARNING -- Null From tag  Dialog layer in jeopardy!!");
             }
             
@@ -910,7 +945,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
             && responseImpl.getStatusCode() == 200
             && dialog != null
             && (!dialog.isReInvite())
-            && parentStack.isDialogCreated(getOriginalRequest().getMethod())
+            && sipStack.isDialogCreated(getOriginalRequest().getMethod())
             && (dialog.getState() == null
             || dialog.getState().getValue() == DialogImpl.EARLY_STATE)) {
                 dialog.setState(DialogImpl.TERMINATED_STATE);
@@ -942,7 +977,7 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
                 && responseImpl.getTo().getTag() != null) {
                     if (responseImpl.getStatusCode() != 100)
                         dialog.setLocalTag(responseImpl.getTo().getTag());
-                    if (parentStack
+                    if (sipStack
                     .isDialogCreated(responseImpl.getCSeq().getMethod())) {
                         if (response.getStatusCode() / 100 == 1) {
                             dialog.setState(DialogImpl.EARLY_STATE);
@@ -950,13 +985,13 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
                         // Enter into our dialog table provided this is a
                         // dialog creating method.
                         if (responseImpl.getStatusCode() != 100)
-                            parentStack.putDialog(dialog);
+                            sipStack.putDialog(dialog);
                     }
                 } else if (response.getStatusCode() / 100 == 2) {
-                    if (parentStack
+                    if (sipStack
                     .isDialogCreated(responseImpl.getCSeq().getMethod())) {
                         dialog.setState(DialogImpl.CONFIRMED_STATE);
-                        parentStack.putDialog(dialog);
+                        sipStack.putDialog(dialog);
                     }
                 }
             }
@@ -1013,10 +1048,22 @@ implements SIPServerRequestInterface, javax.sip.ServerTransaction {
     public boolean passToListener() {
         return toListener;
     }
+
+    /** Start the timer task.
+     */
+     protected void startTransactionTimer() {
+		myTimer = new TransactionTimer(this);
+		sipStack.timer.schedule(myTimer,0,SIPTransactionStack.BASE_TIMER_INTERVAL);
+     }
+
     
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.32  2004/05/20 13:59:23  mranga
+ * Reviewed by:   mranga
+ * Cleaned up slighly ugly code.
+ *
  * Revision 1.31  2004/05/18 15:26:44  mranga
  * Reviewed by:   mranga
  * Attempted fix at race condition bug. Remove redundant exception (never thrown).
