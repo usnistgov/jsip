@@ -1,0 +1,95 @@
+#####################################################################
+# This file defines where various build tools live and gets included
+# in each of the makefiles. 
+#
+# The distribution ships with everything you need except for the Java 
+# development kit (get this from www.javasoft.com) and cygwin if you are 
+# under windows. You need cygwin for building it using the makefiles
+# There are also several shell scriptsfor starting things up in various 
+# places. No problem under unixen but for windows, you need to install 
+# cygwin. 
+#
+# You can set the following variables here according to where you 
+# have put things. These values are used in the makefiles.
+#
+# JDK_HOME is the directory where the JDK is installed 
+#	(not included with the distribution)
+#	You can download the latest jdk from www.javasoft.com
+#
+#
+# XERCES_HOME is the directory where the java xml parser is installed 
+#		(if you want to build or run the torture tests).
+#		You can download xerces from www.apache.org
+#
+################################################################
+
+MAKE=make
+
+MKDIR=mkdir -p
+
+RM = \rm -f
+
+ifeq (${OS},)
+	OS=$(OSTYPE)
+endif
+
+SRCROOT = $(ROOT)/src/
+
+DESTINATION = $(ROOT)/classes/
+
+ifeq (${OS},Windows_NT) 
+	JDK_HOME=c:/j2sdk1.4.1
+else
+	JDK_HOME=/usr/local/j2sdk1.4.0
+endif
+
+JAIN_API_JAR=JainSipApi1.1.jar
+RI_JAR=nist-sip-1.2.jar
+SDP_JAR=nist-sdp-1.0.jar
+
+# Get the Xerces library from  www.apache.org
+XERCES_HOME=$(ROOT)/lib/xerces
+
+JAIN_API=$(ROOT)/$(JAIN_API_JAR)
+
+XERCES_LIB=$(XERCES_HOME)/xerces.jar
+
+RI=$(ROOT)/$(RI_JAR)
+
+# Pointer to the source for the JAIN API (for building documentation).
+#JAIN_API_SOURCE = ./src
+
+#-----------------------------------------------------------------#
+# You should not need to touch anything from here on down. 	  #
+#-----------------------------------------------------------------#
+#Bug report from Eero Vaarnas
+ 
+ifeq (${OS},Windows_NT)
+	JAVAC=$(JDK_HOME)/bin/javac -classpath "$(JAIN_API);$(JDK_HOME);$(ROOT);$(EXTRA_LIBS)" -sourcepath $(SRCROOT) -d $(DESTINATION) -deprecation
+	JAVA=$(JDK_HOME)/bin/java -classpath "$(JAIN_API);$(JDK_HOME);$(ROOT)/classes/;./;$(EXTRA_LIBS)"
+else
+	JAVAC=$(JDK_HOME)/bin/javac  -sourcepath $(SRCROOT) -d $(DESTINATION) -O -classpath "$(JAIN_API):$(JDK_HOME):$(ROOT):./:$(EXTRA_LIBS)" -deprecation
+	JAVA=$(JDK_HOME)/bin/java -classpath "$(JAIN_API):$(ROOT)/classes:./:$(EXTRA_LIBS)"
+endif
+
+
+RMIC=$(JDK_HOME)/bin/rmic 
+JAR=$(JDK_HOME)/bin/jar
+
+JAVADOC=$(JDK_HOME)/bin/javadoc -quiet -breakiterator
+
+%.class: %.java
+	$(JAVAC) $<
+
+
+cleanlogs:
+	$(RM)  sipserverlog.txt
+	$(RM)  logfile.txt
+	$(RM)  serverlog
+
+emacsclean: 
+	rm -f *~
+	rm -f .#*
+
+default: 
+	make all

@@ -1,0 +1,12 @@
+gov.nist.core
+gov.nist.javax.sdp
+gov.nist.javax.sip
+gov.nist.javax.sip.address
+gov.nist.javax.sip.header
+gov.nist.javax.sip.parser
+gov.nist.javax.sip.stack
+javax.sdp
+javax.sip
+javax.sip.address
+javax.sip.header
+javax.sip.message
