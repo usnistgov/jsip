@@ -40,12 +40,13 @@ DESTINATION = $(ROOT)/classes/
 ifeq (${OS},Windows_NT) 
 	JDK_HOME=c:/j2sdk1.4.1
 else
-	JDK_HOME=/usr/local/j2sdk1.4.0
+	JDK_HOME=/home/nist-sip/j2sdk1.4.2
 endif
 
 JAIN_API_JAR=JainSipApi1.1.jar
 RI_JAR=nist-sip-1.2.jar
 SDP_JAR=nist-sdp-1.0.jar
+PROJECT_ROOT=jain-sip
 
 # Get the Xerces library from  www.apache.org
 XERCES_HOME=$(ROOT)/lib/xerces
