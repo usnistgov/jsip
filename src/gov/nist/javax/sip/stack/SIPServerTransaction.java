@@ -116,7 +116,7 @@ import java.util.LinkedList;
  *
  *</pre>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.41 $ $Date: 2004-07-23 06:50:04 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.42 $ $Date: 2004-09-10 13:35:13 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
  * @author Bug fixes by Emil Ivov, Antonis Karydas.
@@ -948,7 +948,8 @@ implements ServerRequestInterface, javax.sip.ServerTransaction, PendingRecord {
         try {
             SIPResponse responseImpl = (SIPResponse) response;
             
-            if (responseImpl.getStatusCode() == 200
+	    // Dialog check for null - bug reported by Bill Roome.
+            if (dialog != null && responseImpl.getStatusCode() == 200
             && sipStack.isDialogCreated(responseImpl.getCSeq().getMethod())
             && dialog.getLocalTag() == null
             && responseImpl.getTo().getTag() == null)
@@ -1152,6 +1153,12 @@ implements ServerRequestInterface, javax.sip.ServerTransaction, PendingRecord {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.41  2004/07/23 06:50:04  mranga
+ * Submitted by:  mranga
+ * Reviewed by:   mranga
+ *
+ * Clean up - Get rid of annoying eclipse warnings.
+ *
  * Revision 1.40  2004/07/01 05:42:22  mranga
  * Submitted by:  Pierre De Rop and Thomas Froment
  * Reviewed by:    M. Ranganathan
