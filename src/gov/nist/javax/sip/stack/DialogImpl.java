@@ -24,7 +24,7 @@ import java.text.ParseException;
  * retrieve this structure from the SipStack. Bugs against route set
  * management were reported by Antonis Karydas and Brad Templeton.
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.32 $ $Date: 2004-06-16 02:53:19 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.33 $ $Date: 2004-06-16 16:31:07 $
  *
  *@author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -54,6 +54,7 @@ public class DialogImpl implements javax.sip.Dialog {
     protected SIPRequest lastAck;
     protected boolean ackProcessed;
     protected DialogTimerTask timerTask;
+    protected int nextSeqno;
     
     private int retransmissionTicksLeft;
     private int prevRetransmissionTicks;
@@ -83,6 +84,19 @@ public class DialogImpl implements javax.sip.Dialog {
      */
     public Object getApplicationData() {
         return this.applicationData;
+    }
+
+
+    public void requestConsumed() {
+	// here is a good place to re-run pending transactions
+	this.nextSeqno = this.getRemoteSequenceNumber() + 1;
+    }
+
+    /** Return true if this request can be consumed by the dialog.
+     */
+    public boolean isRequestConsumable(SIPRequest dialogRequest) {
+	if (this.getRemoteSequenceNumber() == -1 ) return true;
+	else return this.nextSeqno == dialogRequest.getCSeq().getSequenceNumber();
     }
     
     /**
@@ -224,8 +238,6 @@ public class DialogImpl implements javax.sip.Dialog {
         this.dialogState = state;
 	// Dialog is in terminated state set it up for GC.
 	if (state == TERMINATED_STATE)  {
-		// TimerTask tt = new DialogGCTask(this);
-		// this.sipStack.timer.schedule(tt,32*1000);
 		this.sipStack.removeDialog(this);
 		this.stopTimer();
 	}
@@ -1580,11 +1592,14 @@ public class DialogImpl implements javax.sip.Dialog {
 		sipStack.logMessage("Starting dialog timer for " +
 				getDialogId());
         this.ackSeen = false;
-	if (this.timerTask != null)  
+	if (this.timerTask != null)  {
 		this.timerTask.transaction = transaction;
-	else this.timerTask = new DialogTimerTask(this,transaction);
+	} else  {
+		this.timerTask = new DialogTimerTask(this,transaction);
+        	sipStack.timer.schedule(timerTask,0,
+			SIPTransactionStack.BASE_TIMER_INTERVAL);
+	 }
 	this.setRetransmissionTicks();
-        sipStack.timer.schedule(timerTask,0,SIPTransactionStack.BASE_TIMER_INTERVAL);
     }
 
     protected void stopTimer() {
@@ -1595,6 +1610,10 @@ public class DialogImpl implements javax.sip.Dialog {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.32  2004/06/16 02:53:19  mranga
+ * Submitted by:  mranga
+ * Reviewed by:   implement re-entrant multithreaded listener model.
+ *
  * Revision 1.31  2004/06/15 09:54:44  mranga
  * Reviewed by:   mranga
  * re-entrant listener model added.
