@@ -7,6 +7,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 
+// Added by Daniel J. Martinez Manzano <dani@dif.um.es>
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLSocket;
+
+
 /**
  * basic interface to the network layer
  *
@@ -28,6 +33,18 @@ public interface NetworkLayer {
             InetAddress bindAddress) throws IOException;
 
     /**
+     * Creates an SSL server with the specified port, listen backlog, and local IP address to bind to.
+     * Added by Daniel J. Martinez Manzano <dani@dif.um.es>
+     *
+     * @param port
+     * @param backlog
+     * @param bindAddress
+     * @return the server socket
+     */
+    public SSLServerSocket createSSLServerSocket(int port, int backlog,
+            InetAddress bindAddress) throws IOException;
+
+    /**
      * Creates a stream socket and connects it to the specified port number at the specified IP address.
      * comparable to "new java.net.Socket(address, port);"
      * 
@@ -37,6 +54,16 @@ public interface NetworkLayer {
      */
     public Socket createSocket(InetAddress address, int port) throws IOException;
     
+    /**
+     * Creates a stream SSL socket and connects it to the specified port number at the specified IP address.
+     * Added by Daniel J. Martinez Manzano <dani@dif.um.es>
+     *
+     * @param address
+     * @param port
+     * @return the socket
+     */
+    public SSLSocket createSSLSocket(InetAddress address, int port) throws IOException;
+
     /**
      * Constructs a datagram socket and binds it to any available port on the local host machine.
      * comparable to "new java.net.DatagramSocket();"

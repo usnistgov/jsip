@@ -42,7 +42,7 @@ DESTINATION = $(ROOT)/classes/
 ifeq (${OS},Windows_NT) 
 	JDK_HOME=c:/j2sdk_nb/j2sdk1.4.2
 else
-	JDK_HOME=/home/nist-sip/j2sdk1.4.2
+	JDK_HOME=/usr/java/j2sdk1.4.2_04
 endif
 
 JAIN_API_JAR=JainSipApi1.1.jar

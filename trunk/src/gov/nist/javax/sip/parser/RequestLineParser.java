@@ -53,6 +53,10 @@ class RequestLineParser extends Parser {
 				"REGISTER sip:company.com SIP/2.0\n",
 				"INVITE sip:3660@166.35.231.140 SIP/2.0\n",
 				"INVITE sip:user@company.com SIP/2.0\n",
+				"REGISTER sip:[2001::1]:5060;transport=tcp SIP/2.0\n", // Added by Daniel J. Martinez Manzano <dani@dif.um.es>
+				"REGISTER sip:[2002:800:700:600:30:4:6:1]:5060;transport=udp SIP/2.0\n", // Added by Daniel J. Martinez Manzano <dani@dif.um.es>
+				"REGISTER sip:[3ffe:800:700::30:4:6:1]:5060;transport=tls SIP/2.0\n", // Added by Daniel J. Martinez Manzano <dani@dif.um.es>
+				"REGISTER sip:[2001:720:1710:0:201:29ff:fe21:f403]:5060;transport=udp SIP/2.0\n",
 				"OPTIONS sip:135.180.130.133 SIP/2.0\n" };
 			for (int i = 0; i < requestLines.length; i++ ) {
 			    RequestLineParser rlp = 
@@ -66,6 +70,12 @@ class RequestLineParser extends Parser {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/06/27 00:41:51  mranga
+ * Submitted by:  Thomas Froment and Pierre De Rop
+ * Reviewed by:   mranga
+ * Performance improvements
+ * (auxiliary data structure for fast lookup of transactions).
+ *
  * Revision 1.4  2004/01/22 13:26:31  sverker
  * Issue number:
  * Obtained from:
