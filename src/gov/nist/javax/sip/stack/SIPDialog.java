@@ -23,10 +23,10 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.10 $ $Date: 2004-12-01 19:05:15 $
+ * @version JAIN-SIP-1.1 $Revision: 1.11 $ $Date: 2004-12-07 18:33:16 $
  * 
  * @author M. Ranganathan <mranga@nist.gov><br/>Bugs were reported by Antonis
- *         Karydas, Brad Templeton and Alex Rootham.
+ *         Karydas, Brad Templeton, Jeff Adams and Alex Rootham.
  * 
  * <a href=" {@docRoot}/uncopyright.html">This code is in the public domain.
  * </a>
@@ -1696,7 +1696,7 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
             this.timerTask.transaction = transaction;
         } else {
             this.timerTask = new DialogTimerTask(this, transaction);
-            sipStack.timer.schedule(timerTask, 0,
+            sipStack.timer.schedule(timerTask, SIPTransactionStack.BASE_TIMER_INTERVAL,
                     SIPTransactionStack.BASE_TIMER_INTERVAL);
         }
         this.setRetransmissionTicks();
@@ -1737,6 +1737,11 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/12/01 19:05:15  mranga
+ * Reviewed by:   mranga
+ * Code cleanup remove the unused SIMULATION code to reduce the clutter.
+ * Fix bug in Dialog state machine.
+ *
  * Revision 1.9  2004/11/19 16:22:56  mranga
  * Submitted by:  mranga
  * Reviewed by:   mranga

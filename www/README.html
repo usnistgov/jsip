@@ -222,7 +222,9 @@ spaces between host and port). Thomas suggested that the main scanner
 thread be eliminated from the SIPTransaction Stack and Timers be used
 Thomas Fromet and Pierre De Rop  suggested a fast lookup path be
 added for looking up Transactions. An auxilliary hash table for quick
-lookup was added based on their suggestions.
+lookup was added based on their suggestions. Thomas contributed
+a bug fix for sending responses in server transactions. The maddr
+parameter was being ignored.
 
 <li>Alex Rootham from Blue Slice noticed that out of sequence messages
 directed to a Dialog should be responded to with a 500 (Internal Server
@@ -259,6 +261,8 @@ in the MessageHandler that was removed.
 <li> Rob Daugherty (Lucent) detected a bug in handling of TCP messages
 and contributed a fix for this. </li>
 
+<li>Jeff Adams ( Polycomm.com ) submitted a patch for the sniffer tool.
+Jef submitted a patch for setting the timer on the Transaction Timer. </li>
 
 </ul>
 
