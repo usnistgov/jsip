@@ -69,11 +69,20 @@ JAIN-SIP, the stack supports the following configuration Parameters :
    (default value is "infinity"). </li>
  
  <li><b>gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS = [true|false] </b> <br/>
-   Default value is true. Setting this to false makes the Stack close the server socket after
+   Default value is <b>true</b>. Setting this to false makes the Stack close the server socket after
    a Server Transaction goes to the TERMINATED state. This allows a server to protectect against 
    TCP based Denial of Service attacks launched by clients (ie. initiate hundreds of client gransactions).
    If false (default action), the stack will keep the socket open so as to maximize performance at 
-   the expense of Thread and memory resources - leaving itself open to DOS attacks. 
+   the expense of Thread and memory resources - leaving itself open to DOS attacks.  However,
+   if your client uses TCP to get through NAT boxes, you may want to set this to <b>true</b>
+   so as to allow inbound signaling to the client.
+ </li>
+
+ <li><b>gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS = [true|false] </b> <br/>
+   Default value is <b>true</b>. Setting this to false makes the Stack close the server socket after
+   a Client Transaction goes to the TERMINATED state. This allows a client release any buffers
+   threads and socket connections associated with a client transaction after the transaction has
+   terminated at the expense of performance.
  </li>
  
  <li> <b>gov.nist.javax.sip.THREAD_POOL_SIZE = integer </b> <br/>

@@ -114,7 +114,7 @@ import java.util.TimerTask;
  *
  *</pre>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.25 $ $Date: 2004-03-07 22:25:24 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.26 $ $Date: 2004-03-09 00:34:44 $
  * @author Jeff Keyser 
  * @author M. Ranganathan <mranga@nist.gov>  
  * @author Bug fixes by Emil Ivov, Antonis Karydas.
@@ -126,7 +126,6 @@ public class SIPServerTransaction
 	extends SIPTransaction
 	implements SIPServerRequestInterface, javax.sip.ServerTransaction {
 
-	protected int collectionTime;
 
 	// Real RequestInterface to pass messages to
 	private SIPServerRequestInterface requestOf;
@@ -1009,6 +1008,13 @@ public class SIPServerTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.25  2004/03/07 22:25:24  mranga
+ * Reviewed by:   mranga
+ * Added a new configuration parameter that instructs the stack to
+ * drop a server connection after server transaction termination
+ * set gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false for this
+ * Default behavior is true.
+ *
  * Revision 1.24  2004/02/26 17:30:21  mranga
  * Submitted by:  jeand
  * Reviewed by:  mranga

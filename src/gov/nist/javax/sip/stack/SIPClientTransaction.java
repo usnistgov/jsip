@@ -120,7 +120,7 @@ import sim.java.*;
  *@author Bug fixes by Emil Ivov.
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.19 $ $Date: 2004-03-07 22:25:24 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.20 $ $Date: 2004-03-09 00:34:44 $
  */
 public class SIPClientTransaction
 	extends SIPTransaction
@@ -942,9 +942,33 @@ public class SIPClientTransaction
 			this.originalRequest = null;
 			this.lastResponse = null;
 	}
+
+	/** Sets a timeout after which the connection is closed (provided the server does not
+	* use the connection for outgoing requests in this time period) 
+	* and  calls the superclass to set state.
+	*/
+	public void setState (TransactionState newState) {
+			// Set this timer for connection caching
+			// of incoming connections. 
+			if ( newState == TransactionState.TERMINATED && 
+				this.isReliable() && 
+			    ( ! getSIPStack().cacheClientConnections )  ){
+			    // Set a time after which the connection
+			    // is closed.
+			    this.collectionTime = TIMER_J;
+			}
+			super.setState(newState);
+	}
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2004/03/07 22:25:24  mranga
+ * Reviewed by:   mranga
+ * Added a new configuration parameter that instructs the stack to
+ * drop a server connection after server transaction termination
+ * set gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false for this
+ * Default behavior is true.
+ *
  * Revision 1.18  2004/02/24 22:39:34  mranga
  * Reviewed by:   mranga
  * Only terminate the client side dialog when the bye Terminates or times out
