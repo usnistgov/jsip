@@ -11,7 +11,7 @@ import java.io.*;
 /**
  * Event Scanner to deliver events to the Listener.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2004-12-01 19:05:14 $
+ * @version JAIN-SIP-1.1 $Revision: 1.18 $ $Date: 2005-03-16 21:13:09 $
  * 
  * @author M. Ranganathan <mranga@nist.gov><br/>
  * 
@@ -86,10 +86,16 @@ class EventScanner implements Runnable {
 		SipListener sipListener = ((SipProviderImpl) sipEvent.getSource()).sipListener;
 
 		if (sipEvent instanceof RequestEvent) {
+		  
 			// Check if this request has already created a
 			// transaction
 			SIPRequest sipRequest = (SIPRequest) ((RequestEvent) sipEvent)
 					.getRequest();
+			  
+		    if (LogWriter.needsLogging)
+			sipStackImpl.logMessage("deliverEvent : " 
+				+ sipRequest.getFirstLine() + 
+				" transaction " + eventWrapper.transaction );
 			// If this is a dialog creating method for which a server
 			// transaction already exists or a method which is
 			// not dialog creating and not within an existing dialog
