@@ -21,7 +21,7 @@ import javax.sip.message.*;
  *
  * @author Jeff Keyser 
  * @author M. Ranganathan (modified Jeff's original source and aligned with JAIN-SIP 1.1)
- * @version  JAIN-SIP-1.1 $Revision: 1.18 $ $Date: 2004-02-22 13:53:57 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.19 $ $Date: 2004-03-09 00:34:44 $
  */
 public abstract class SIPTransaction
 	extends MessageChannel
@@ -166,6 +166,11 @@ public abstract class SIPTransaction
 	// Back ptr to the JAIN layer.
 	private Object wrapper;
 
+	// Counter for caching of connections.
+	// Connection lingers for collectionTime
+	// after the  Transaction goes to terminated state.
+	protected int collectionTime;
+
 	public String getBranchId() {
 		return this.branch;
 	}
@@ -183,6 +188,9 @@ public abstract class SIPTransaction
 
 		parentStack = newParentStack;
 		encapsulatedChannel = newEncapsulatedChannel;
+		if (encapsulatedChannel instanceof TCPMessageChannel ) {
+			((TCPMessageChannel)encapsulatedChannel).useCount++;
+		}
 
 		this.currentState = null;
 
@@ -877,6 +885,11 @@ public abstract class SIPTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2004/02/22 13:53:57  mranga
+ * Reviewed by:   mranga
+ * Return null from transaction rather than dummy dialog (following discussion
+ * with Phelim et al. ) Note the addition to the errata.
+ *
  * Revision 1.17  2004/02/19 16:01:40  mranga
  * Reviewed by:   mranga
  * tighten up retransmission filter to deal with ack retransmissions.

@@ -27,7 +27,7 @@ import sim.java.net.*;
  * @author Jeff Keyser (original) 
  * @author M. Ranganathan <mranga@nist.gov>  <br/> (Added Dialog table).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.22 $ $Date: 2004-03-07 22:25:25 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.23 $ $Date: 2004-03-09 00:34:44 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public abstract class SIPTransactionStack
@@ -402,9 +402,15 @@ public abstract class SIPTransactionStack
 									transactionIterator.remove();
 									if (  ( ! this.sipStack.cacheServerConnections )
 									   && nextTransaction.encapsulatedChannel instanceof TCPMessageChannel
-									   && ((TCPMessageChannel) nextTransaction.encapsulatedChannel).acceptedConnection) {
+								   	   && -- ((TCPMessageChannel) nextTransaction.encapsulatedChannel).useCount == 0 ) {
 									  // Close the encapsulated socket if stack is configured 
 									   nextTransaction.close();
+									} else {
+									   if (LogWriter.needsLogging
+									      &&  ( ! this.sipStack.cacheServerConnections )
+								              && nextTransaction.isReliable())
+									      logWriter.logMessage( "Use Count = " +
+								   	      ((TCPMessageChannel) nextTransaction.encapsulatedChannel).useCount);
 									}
 								} else {
 									( ( SIPServerTransaction) nextTransaction)
@@ -434,15 +440,47 @@ public abstract class SIPTransactionStack
 							// If the transaction has terminated,
 							if (nextTransaction.isTerminated()) {
 
-								transactionIterator.remove();
-								// Remove it from the set
-								if (LogWriter.needsLogging) {
-									logWriter.logMessage(
+								if ( this.sipStack.cacheClientConnections)  {
+									// Caching connections -- dont need this
+									// record.
+									if (LogWriter.needsLogging) {
+									     logWriter.logMessage(
 										"Removing clientTransaction "
 											+ nextTransaction
 											+ " tableSize "
 											+ clientTransactions.size());
+									}
+									transactionIterator.remove();
+								} else {
+									if (nextTransaction.collectionTime == 0) {
+										if (LogWriter.needsLogging) {
+									     		logWriter.logMessage(
+											"Removing clientTransaction "
+											+ nextTransaction
+											+ " tableSize "
+											+ clientTransactions.size());
+										}
+										transactionIterator.remove();
+									} else  {
+										nextTransaction.collectionTime --;
+									}
 								}
+
+								// Client transaction terminated. Kill connection if
+								// this is a TCP after the linger timer has expired.
+								if (  ( ! this.sipStack.cacheClientConnections )
+								   && nextTransaction.collectionTime == 0
+								   && nextTransaction.isReliable()
+								   && -- ((TCPMessageChannel) nextTransaction.encapsulatedChannel).useCount == 0 ) {
+								   nextTransaction.close();
+								} else {
+								   if (LogWriter.needsLogging
+								      &&  ( ! this.sipStack.cacheClientConnections )
+								      && nextTransaction.isReliable())
+								      logWriter.logMessage( "Client Use Count = " +
+							   	      ((TCPMessageChannel) nextTransaction.encapsulatedChannel).useCount);
+								}
+								   
 
 								// If this transaction has not
 								// terminated,
@@ -859,6 +897,13 @@ public abstract class SIPTransactionStack
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.22  2004/03/07 22:25:25  mranga
+ * Reviewed by:   mranga
+ * Added a new configuration parameter that instructs the stack to
+ * drop a server connection after server transaction termination
+ * set gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false for this
+ * Default behavior is true.
+ *
  * Revision 1.21  2004/02/13 13:55:32  mranga
  * Reviewed by:   mranga
  * per the spec, Transactions must always have a valid dialog pointer. Assigned a dummy dialog for transactions that are not assigned to any dialog (such as Message).
