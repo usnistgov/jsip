@@ -199,7 +199,7 @@ c:/jakarta-ant/bin/ant all
 				<pathelement location="${ri_jar}"/>
 			</classpath>
 		</javac>
-		<jar destfile="${sdp_jar}" basedir="${classes}" includes="gov/nist/core/**/*.class,gov/nist/javax/sdp/**/*.class,javax/sdp/**/*.class"/>
+		<jar destfile="${sdp_jar}" basedir="${classes}" includes="gov/nist/javax/sdp/**/*.class,javax/sdp/**/*.class"/>
 	</target>
 
 	<!-- Compile the examples -->
