@@ -8,6 +8,7 @@ import javax.sip.message.*;
 import gov.nist.javax.sip.stack.*;
 import gov.nist.javax.sip.message.*;
 import gov.nist.javax.sip.header.*;
+import gov.nist.javax.sip.address.*;
 import gov.nist.core.*;
 import java.io.IOException;
 
@@ -20,7 +21,7 @@ import java.io.IOException;
  * NIST-SIP stack and event model with the JAIN-SIP stack. Implementors
  * of JAIN services need not concern themselves with this class.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.28 $ $Date: 2004-05-10 21:11:19 $
+ * @version JAIN-SIP-1.1 $Revision: 1.29 $ $Date: 2004-05-12 20:48:54 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Bug fix Contributions by Lamine Brahimi and  Andreas Bystrom. <br/>
@@ -65,6 +66,27 @@ public class NistSipMessageHandlerImpl
 			return;
 		}
 		SipListener sipListener = sipProvider.sipListener;
+
+		// Section 16.4 If the first value in the Route header 
+		// field indicates this proxy,the proxy MUST remove that
+		// value from the request .
+		
+		if (sipRequest.getHeader(Route.NAME) != null) {
+		      RouteList routes = sipRequest.getRouteHeaders();
+		       Route route = (Route) routes.getFirst();
+		       SipUri uri = (SipUri) route.getAddress().getURI();
+		       int port;
+			if (uri.getHostPort().hasPort()) {
+				port = uri.getHostPort().getPort();
+			} else {
+				port = 5060;
+			}
+			String host = uri.getHost();
+			if (host.equals(listeningPoint.getHost()) && port == listeningPoint.getPort()) {
+			     if (routes.size() == 1) sipRequest.removeHeader(Route.NAME);
+			     else routes.removeFirst();
+			}
+		}
 
 		SIPTransaction transaction = transactionChannel;
 		// Look for the registered SIPListener for the message channel.
@@ -484,6 +506,12 @@ public class NistSipMessageHandlerImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.28  2004/05/10 21:11:19  mranga
+ * Submitted by:  alex rootham
+ * Reviewed by:   mranga
+ * Add check for out of sequence requests and return server internal error
+ * response.
+ *
  * Revision 1.27  2004/04/22 22:51:16  mranga
  * Submitted by:  Thomas Froment
  * Reviewed by:   mranga
