@@ -33,7 +33,7 @@ import sim.java.net.*;
  * Niklas Uhrberg suggested that a mechanism be added to limit the number
  * of simultaneous open connections.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2004-03-07 22:25:25 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.14 $ $Date: 2004-03-09 00:34:45 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public final class TCPMessageChannel
@@ -71,7 +71,11 @@ public final class TCPMessageChannel
 
 	private String peerProtocol;
 
-	protected boolean acceptedConnection;
+
+	//Incremented whenever a transaction gets assigned
+	// to the message channel and decremented when 
+	// a transaction gets freed from the message channel.
+	protected int useCount;
 
 	private TCPMessageProcessor tcpMessageProcessor;
 
@@ -100,7 +104,6 @@ public final class TCPMessageChannel
 			"creating new TCPMessageChannel ");
 			sipStack.logWriter.logStackTrace();
 		}
-		this.acceptedConnection  = true;
 		mySock = sock;
 		myAddress = sipStack.getHostAddress();
 		myClientInputStream = mySock.getInputStream();
@@ -264,10 +267,6 @@ public final class TCPMessageChannel
 		    	Thread thread = new Thread(this);
 			thread.start();
 		}
-		if ( retry ) {
-			// sending out a request so this is not accepted connection.
-			this.acceptedConnection = false;
-		}
 
 	}
 //else
@@ -374,8 +373,6 @@ public final class TCPMessageChannel
 			mythread.start();
 		}
 
-		// Sending out a request - treated like an outgoing connection.
-		if ( retry ) this.acceptedConnection = false;
 	}
 
 	/**
@@ -784,6 +781,13 @@ public final class TCPMessageChannel
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2004/03/07 22:25:25  mranga
+ * Reviewed by:   mranga
+ * Added a new configuration parameter that instructs the stack to
+ * drop a server connection after server transaction termination
+ * set gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false for this
+ * Default behavior is true.
+ *
  * Revision 1.12  2004/03/05 20:36:55  mranga
  * Reviewed by:   mranga
  * put in some debug printfs and cleaned some things up.

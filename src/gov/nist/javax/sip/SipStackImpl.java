@@ -75,7 +75,14 @@ import sim.java.net.*;
  *  a Server Transaction goes to the TERMINATED state. This allows a server to protectect against 
  *  TCP based Denial of Service attacks launched by clients (ie. initiate hundreds of client gransactions).
  *  If false (default action), the stack will keep the socket open so as to maximize performance at 
-*   the expense of Thread and memory resources - leaving itself open to DOS attacks. 
+ *   the expense of Thread and memory resources - leaving itself open to DOS attacks. 
+ *</li>
+ *
+ *<li><b>gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS = [true|false] </b> <br/>
+ *  Default value is true. Setting this to true makes the Stack close the server socket after
+ *  a Client Transaction goes to the TERMINATED state. This allows a client release any buffers
+ *  threads and socket connections associated with a client transaction after the transaction has
+ *  terminated at the expense of performance.
  *</li>
  *
  *<li> <b>gov.nist.javax.sip.THREAD_POOL_SIZE = integer </b> <br/>
@@ -88,7 +95,7 @@ import sim.java.net.*;
  *  (Was mis-spelled - Documentation bug fix by Bob Johnson)</li>
  *</ul>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2004-03-07 22:25:22 $
+ * @version JAIN-SIP-1.1 $Revision: 1.18 $ $Date: 2004-03-09 00:34:43 $
  * 
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -282,6 +289,15 @@ public class SipStackImpl
 
 		if (flag != null && "false".equalsIgnoreCase(flag.trim())) {
 		        super.cacheServerConnections = false;
+		}
+
+		super.cacheClientConnections = true;
+                String cacheflag = 
+		    configurationProperties.getProperty
+		     ("gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS");
+
+		if (cacheflag != null && "false".equalsIgnoreCase(cacheflag.trim())) {
+		        super.cacheClientConnections = false;
 		}
 
 		// Get the address of the stun server.
@@ -572,6 +588,13 @@ public class SipStackImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2004/03/07 22:25:22  mranga
+ * Reviewed by:   mranga
+ * Added a new configuration parameter that instructs the stack to
+ * drop a server connection after server transaction termination
+ * set gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false for this
+ * Default behavior is true.
+ *
  * Revision 1.16  2004/02/29 15:32:58  mranga
  * Reviewed by:   mranga
  * bug fixes on limiting the max message size.

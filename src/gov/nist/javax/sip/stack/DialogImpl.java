@@ -24,7 +24,7 @@ import java.text.ParseException;
  * retrieve this structure from the SipStack. Bugs against route set 
  * management were reported by Antonis Karydas and Brad Templeton.
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.23 $ $Date: 2004-02-26 14:28:51 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.24 $ $Date: 2004-03-09 00:34:44 $
  *
  *@author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -1155,6 +1155,13 @@ public class DialogImpl implements javax.sip.Dialog {
 			if (this.getRemoteTarget() != null)
 				sipRequest.setRequestURI(this.getRemoteTarget().getURI());
 		}
+		// Set the transport to be the same for the outgoing request.
+		try {
+		  if (sipRequest.getRequestURI() instanceof SipUri) {
+		      ((SipUri) sipRequest.getRequestURI()).
+		      setTransportParam(sipRequest.getTopmostVia().getTransport());
+		   }
+		} catch (ParseException ex) { }
 		return sipRequest;
 
 	}
@@ -1453,6 +1460,12 @@ public class DialogImpl implements javax.sip.Dialog {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.23  2004/02/26 14:28:51  mranga
+ * Reviewed by:   mranga
+ * Moved some code around (no functional change) so that dialog state is set
+ * when the transaction is added to the dialog.
+ * Cleaned up the Shootist example a bit.
+ *
  * Revision 1.22  2004/02/24 22:39:34  mranga
  * Reviewed by:   mranga
  * Only terminate the client side dialog when the bye Terminates or times out

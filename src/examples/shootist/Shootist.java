@@ -186,6 +186,8 @@ public class Shootist implements SipListener {
 		properties.setProperty(
 			"gov.nist.javax.sip.SERVER_LOG",
 			"shootistlog.txt");
+		// Drop the client connection after we are done with the transaction.
+		properties.setProperty("gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS", "false");
 		// Set to 0 in your production code for max speed.
 		// You need  16 for logging traces. 32 for debug + traces.
 		// Your code will limp at 32 but it is best for debugging.
@@ -378,6 +380,13 @@ public class Shootist implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2004/03/07 22:25:21  mranga
+ * Reviewed by:   mranga
+ * Added a new configuration parameter that instructs the stack to
+ * drop a server connection after server transaction termination
+ * set gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false for this
+ * Default behavior is true.
+ *
  * Revision 1.17  2004/03/05 20:36:54  mranga
  * Reviewed by:   mranga
  * put in some debug printfs and cleaned some things up.
