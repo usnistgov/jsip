@@ -24,7 +24,7 @@ import java.text.ParseException;
  * retrieve this structure from the SipStack. Bugs against route set
  * management were reported by Antonis Karydas and Brad Templeton.
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.30 $ $Date: 2004-06-02 13:09:57 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.31 $ $Date: 2004-06-15 09:54:44 $
  *
  *@author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -50,12 +50,15 @@ public class DialogImpl implements javax.sip.Dialog {
     private Route defaultRoute;
     private SIPTransactionStack sipStack;
     private int dialogState;
-    protected boolean ackSeen;
+    private boolean ackSeen;
     protected SIPRequest lastAck;
     protected boolean ackProcessed;
     
     private int retransmissionTicksLeft;
     private int prevRetransmissionTicks;
+
+    // This is for debugging only.
+    private int ackLine;
     
     // The following fields are extracted from the request that created the
     // Dialog.
@@ -97,6 +100,33 @@ public class DialogImpl implements javax.sip.Dialog {
             }
         }
     }
+
+    public class DialogGCTask extends TimerTask {
+	DialogImpl dialog;
+	SIPTransactionStack stack;
+
+	public DialogGCTask(DialogImpl dialog) {
+		this.dialog = dialog;
+		this.stack = dialog.sipStack;
+	}
+
+	public void run() {
+		// Remove all mappings for this dialog from the dialog table.
+		// We could use the key but want to make sure all mappings for
+		// this dialog are removed (it could be mapped two times in
+		// the same hashtable for re-invites.
+		this.stack.removeDialog(this.dialog);
+		// cancel the associated dialog timer.
+		try {
+                    this.cancel();
+		 } catch (IllegalStateException ex) {
+		    // If the stack has been killed, then return.
+		    if (!stack.isAlive()) return;
+		}
+
+	}
+
+    }
     
     public class DialogTimerTask extends TimerTask {
         DialogImpl dialog;
@@ -107,51 +137,16 @@ public class DialogImpl implements javax.sip.Dialog {
         }
         
         public void run() {
-            if (dialog.getState() != null
-            && dialog.getState().getValue()
-            == DialogImpl.TERMINATED_STATE) {
-		// Remove all mappings for this dialog from the dialog table.
-		// We could use the key but want to make sure all mappings for
-		// this dialog are removed (it could be mapped two times in
-		// the same hashtable for re-invites.
-                synchronized (this.stack.dialogTable) {
-		    Iterator it = this.stack.dialogTable.values().iterator();
-		    while (it.hasNext() ) {
-			DialogImpl d = (DialogImpl) it.next();
-			if (d == this.dialog ) {
-                		if (LogWriter.needsLogging) {
-                    			String dialogId = dialog.getDialogId();
-                    			stack.logWriter.logMessage(
-                    			"Removing Dialog " + dialogId);
-                		}
-				it.remove();
-			}
-		    }
-		    // cancel the associated dialog timer.
-		    try {
-                       this.cancel();
-		    } catch (IllegalStateException ex) {
-			// If the stack has been killed, then return.
-			if (!stack.isAlive()) return;
-		    }
-                }
-            }
             // If I ACK has not been seen on Dialog,
             // resend last response.
-            if (dialog.isServer()
-            && (!dialog.ackSeen)
-            && dialog.isInviteDialog()) {
-                SIPTransaction transaction =
-                dialog.getLastTransaction();
+            if (dialog.isServer() && (!dialog.ackSeen) && dialog.isInviteDialog()) {
+                SIPTransaction transaction = dialog.getLastTransaction();
                 // If stack is managing the transaction
                 // then retransmit the last response.
-                if (TransactionState.TERMINATED
-                == transaction.getState()
-                && transaction instanceof SIPServerTransaction
-                && ( ( SIPServerTransaction) transaction)
-                .isMapped) {
-                    SIPResponse response =
-                    transaction.getLastResponse();
+                if (TransactionState.TERMINATED == transaction.getState()
+                    && transaction instanceof SIPServerTransaction
+                    && ((SIPServerTransaction)transaction).isMapped) {
+                    SIPResponse response = transaction.getLastResponse();
                     // Retransmit to 200 until ack receivedialog.
                     if (response.getStatusCode() == 200) {
                         try {
@@ -167,14 +162,22 @@ public class DialogImpl implements javax.sip.Dialog {
                             // transaction will eventually
                             // time out whether or not
                             // the IOException occurs
-                            // (bug fix sent in
-                            // by Christophe).
+                            // (bug fix sent in by Christophe).
+			    // Note that this firing also
+			    // drives Listener timeout.
                             transaction.fireTimer();
                         }
                     }
                 }
-            }
-            
+            } 
+		
+	    // Stop running this timer if the dialog is in the 
+	    // confirmed state or ack seen if retransmit filter on.
+	    if ( this.dialog.dialogState == CONFIRMED_STATE   	|| 
+		this.dialog.dialogState == TERMINATED_STATE 	) { 
+		this.cancel();
+	    } 
+
         }
         
     }
@@ -200,7 +203,8 @@ public class DialogImpl implements javax.sip.Dialog {
             throw new SipException("No route found!");
         
         // Use the maddr param to get the host if one exists.
-        String host = sipUri.getMAddrParam() != null? sipUri.getMAddrParam(): sipUri.getHost();
+        String host = sipUri.getMAddrParam() != null? 
+		sipUri.getMAddrParam(): sipUri.getHost();
         
         // Get the transport parameter.
         String transport = sipUri.getTransportParam();
@@ -246,15 +250,25 @@ public class DialogImpl implements javax.sip.Dialog {
             
         }
         this.dialogState = state;
+	// Dialog is in terminated state set it up for GC.
+	if (state == TERMINATED_STATE)  {
+		// TimerTask tt = new DialogGCTask(this);
+		// this.sipStack.timer.schedule(tt,32*1000);
+		this.sipStack.removeDialog(this);
+	}
     }
     
     /** Debugging print for the dialog.
      */
-    public void printTags() {
+    public void printDebugInfo() {
         if (LogWriter.needsLogging) {
             sipStack.logWriter.logMessage("isServer = " + isServer());
             sipStack.logWriter.logMessage("localTag = " + getLocalTag());
             sipStack.logWriter.logMessage("remoteTag = " + getRemoteTag());
+            sipStack.logWriter.logMessage("localSequenceNumer = " + getLocalSequenceNumber());
+            sipStack.logWriter.logMessage("remoteSequenceNumer = " + getRemoteSequenceNumber());
+            sipStack.logWriter.logMessage("ackLine:" +
+			this.getRemoteTag() + " " + ackLine);
         }
     }
     
@@ -265,17 +279,22 @@ public class DialogImpl implements javax.sip.Dialog {
         Transaction tr = this.getLastTransaction();
         // Suppress retransmission of the final response (in case
         // retransmission filter is being used).
+	if (this.ackSeen) return;
         if (tr != null && tr instanceof SIPServerTransaction) {
             SIPServerTransaction st = (SIPServerTransaction) tr;
-            if (st.getCSeq() == sipRequest.getCSeq().getSequenceNumber()) {
-                st.setState(SIPTransaction.TERMINATED_STATE);
+            if (getRemoteSequenceNumber() == sipRequest.getCSeq().getSequenceNumber()) {
+                //st.setState(SIPTransaction.TERMINATED_STATE);
                 this.ackSeen = true;
                 this.lastAck = sipRequest;
+                if (LogWriter.needsLogging) {
+                   sipStack.logWriter.logMessage(
+                    "ackReceived for " + ((SIPTransaction) st).getMethod());
+		    this.ackLine = sipStack.logWriter.lineCount;
+		    this.printDebugInfo();
+	        }
+		this.setState(CONFIRMED_STATE);
             }
             
-            if (LogWriter.needsLogging)
-                sipStack.logWriter.logMessage(
-                "ackReceived for " + ((SIPTransaction) st).getMethod());
             
             if (st == null)
                 return;
@@ -1305,6 +1324,8 @@ public class DialogImpl implements javax.sip.Dialog {
         && this.getState().getValue() == EARLY_STATE) {
             throw new SipException("Bad dialog state " + this.getState());
         }
+
+		
         
         if (LogWriter.needsLogging)
             sipStack.logWriter.logMessage(
@@ -1567,11 +1588,11 @@ public class DialogImpl implements javax.sip.Dialog {
             this.sendAck(lastAck);
     }
     
-    protected boolean isInviteDialog() {
+    public boolean isInviteDialog() {
         return originalRequest.getMethod().equals(Request.INVITE);
     }
     
-    protected void startTimer() {
+    private void startTimer() {
         TimerTask myTimer = new DialogTimerTask(this);
         sipStack.timer.scheduleAtFixedRate
         (myTimer,0,SIPTransactionStack.BASE_TIMER_INTERVAL);
@@ -1579,6 +1600,11 @@ public class DialogImpl implements javax.sip.Dialog {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.30  2004/06/02 13:09:57  mranga
+ * Submitted by:  Peter Parnes
+ * Reviewed by:  mranga
+ * Fixed illegal state exception.
+ *
  * Revision 1.29  2004/06/01 11:42:58  mranga
  * Reviewed by:   mranga
  * timer fix missed starting the transaction timer in a couple of places.

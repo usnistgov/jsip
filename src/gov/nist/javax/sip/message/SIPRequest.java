@@ -26,7 +26,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2004-03-25 15:15:04 $
+ * @version JAIN-SIP-1.1 $Revision: 1.8 $ $Date: 2004-06-15 09:54:43 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -240,7 +240,48 @@ public final class SIPRequest
 		if (this.requestLine == null) {
 			this.requestLine = new RequestLine();
 		}
-		this.requestLine.setMethod(method);
+
+		// Set to standard constants to speed up processing.
+		// this makes equals compares run much faster in the
+		// stack because then it is just identity comparision
+		if (method.equalsIgnoreCase(Request.INVITE))
+		    this.requestLine.setMethod(Request.INVITE);
+
+		else if (method.equalsIgnoreCase(Request.BYE))
+		    this.requestLine.setMethod(Request.BYE);
+
+		else if (method.equalsIgnoreCase(Request.ACK))
+		    this.requestLine.setMethod(Request.ACK);
+
+		else if (method.equalsIgnoreCase(Request.PRACK))
+		    this.requestLine.setMethod(Request.PRACK);
+
+		else if (method.equalsIgnoreCase(Request.INFO))
+		    this.requestLine.setMethod(Request.INFO);
+
+		else if (method.equalsIgnoreCase(Request.UPDATE))
+		    this.requestLine.setMethod(Request.UPDATE);
+		
+		else if (method.equalsIgnoreCase(Request.REFER))
+		    this.requestLine.setMethod(Request.REFER);
+
+		else if (method.equalsIgnoreCase(Request.MESSAGE))
+		    this.requestLine.setMethod(Request.MESSAGE);
+		
+		else if (method.equalsIgnoreCase(Request.SUBSCRIBE))
+		    this.requestLine.setMethod(Request.SUBSCRIBE);
+
+		else if (method.equalsIgnoreCase(Request.NOTIFY))
+		    this.requestLine.setMethod(Request.NOTIFY);
+
+		else if (method.equalsIgnoreCase(Request.REGISTER))
+		    this.requestLine.setMethod(Request.REGISTER);
+
+		else if (method.equalsIgnoreCase(Request.OPTIONS))
+		    this.requestLine.setMethod(Request.OPTIONS);
+
+		else this.requestLine.setMethod(method);
+
 		if (this.cSeqHeader != null) {
 			try {
 				this.cSeqHeader.setMethod(method);
@@ -917,6 +958,10 @@ public final class SIPRequest
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/03/25 15:15:04  mranga
+ * Reviewed by:   mranga
+ * option to log message content added.
+ *
  * Revision 1.6  2004/02/18 14:33:02  mranga
  * Submitted by:  Bruno Konik
  * Reviewed by:   mranga

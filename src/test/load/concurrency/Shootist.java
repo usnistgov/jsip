@@ -1,10 +1,12 @@
-package examples.shootist;
+package test.load.concurrency;
 import javax.sip.*;
 import javax.sip.address.*;
 import javax.sip.header.*;
 import javax.sip.message.*;
 import java.util.*;
 import java.io.*;
+
+
 
 //ifdef SIMULATION
 /*
@@ -27,13 +29,69 @@ public class Shootist implements SipListener {
 	private static MessageFactory messageFactory;
 	private static HeaderFactory headerFactory;
 	private static SipStack sipStack;
-	private int reInviteCount;
 	private ContactHeader contactHeader;
 	private ListeningPoint tcpListeningPoint;
 	private ListeningPoint udpListeningPoint;
-	private int counter;
+	private SipProvider sipProvider;
+	private String transport;
+	int byeCount;
+	int ackCount;
+	private static int NDIALOGS = 100;
 
-	protected ClientTransaction inviteTid;
+	// Keeps track of successful dialog completion.
+	private static Timer timer;
+
+	static {
+	       timer = new Timer();
+	}
+
+
+
+	class TTask extends TimerTask {
+		Dialog dialog;
+		public TTask(Dialog dialog) {
+			this.dialog = dialog;
+		} 
+		public void run() {
+		     if (dialog.getState() != DialogState.TERMINATED) {
+			  System.out.println("BYE not received for " +
+				this.dialog);
+			  System.out.println("State " +
+				this.dialog.getState());
+			  System.out.println("dialogId " +
+				this.dialog.getDialogId());
+			  Appdata appData = (Appdata) dialog.getApplicationData();
+			  System.out.println("reInviteCount " + 
+					appData.reInviteCount);
+			  
+			  System.out.println("ackCount " + appData.ackCount);
+			  ((gov.nist.javax.sip.stack.DialogImpl) dialog).printDebugInfo();
+			  System.exit(0);
+		     }
+		}
+	}
+			
+			
+
+
+	class Appdata {
+	       protected int reInviteCount;
+	       protected TimerTask ttask;
+	       protected long startTime;
+	       protected long endTime;
+	       protected int  ackCount;
+	     
+	       Appdata(Dialog dialog) {
+			ttask = new TTask(dialog);
+			timer.schedule(ttask,64*1000);
+			startTime = System.currentTimeMillis();
+		}
+
+		public void cancelTimer() {
+			this.ttask.cancel();
+			endTime = System.currentTimeMillis();
+		}
+	}
 
 	protected static final String usageString =
 		"java "
@@ -48,7 +106,7 @@ public class Shootist implements SipListener {
 	private void shutDown() {
 		try {
 		        try {  
-				Thread.sleep(2000);
+				Thread.sleep(4000);
 		     	} catch (InterruptedException e) {
 		     	}
 			System.out.println("nulling reference");
@@ -73,19 +131,17 @@ public class Shootist implements SipListener {
 			this.sipStack = null;
 			this.tcpProvider = null;
 			this.udpProvider = null;
-			this.inviteTid = null;
 			this.contactHeader = null;
 			this.addressFactory = null;
 			this.headerFactory = null;
 			this.messageFactory = null;
 			this.udpListeningPoint = null;
 			this.tcpListeningPoint = null;
-			this.reInviteCount = 0;
+			this.byeCount = 0;
 			System.gc();
-			//Redo this from the start.
-			if (counter < 10 ) 
-				this.init();
-			else counter ++;
+			this.init();
+			for (int i = 0; i < NDIALOGS; i++ ) 
+				this.sendInvite();
 		} catch (Exception ex) { ex.printStackTrace(); }
 	}
 	
@@ -95,48 +151,34 @@ public class Shootist implements SipListener {
 		ServerTransaction serverTransactionId =
 			requestReceivedEvent.getServerTransaction();
 
-		System.out.println(
-			"\n\nRequest "
-				+ request.getMethod()
-				+ " received at "
-				+ sipStack.getStackName()
-				+ " with server transaction id "
-				+ serverTransactionId);
-
 		// We are the UAC so the only request we get is the BYE.
 		if (request.getMethod().equals(Request.BYE))
 			processBye(request, serverTransactionId);
 
 	}
 
-	public void processBye(
+	public  void processBye(
 		Request request,
 		ServerTransaction serverTransactionId) {
 		try {
-			System.out.println("shootist:  got a bye .");
 			if (serverTransactionId == null) {
-				System.out.println("shootist:  null TID.");
 				return;
 			}
 			Dialog dialog = serverTransactionId.getDialog();
-			System.out.println("Dialog State = " + dialog.getState());
 			Response response = messageFactory.createResponse
 						(200, request);
 			serverTransactionId.sendResponse(response);
-			System.out.println("shootist:  Sending OK.");
-			System.out.println("Dialog State = " + dialog.getState());
-
-//ifdef SIMULATION
-/*
-				    System.out.println("End time = " 
-						+ SimSystem.currentTimeMillis());
-//endif
-*/
-
 
 			// so that the finalization method will run 
 			// and exit all resources.
-			this.shutDown();
+
+			// handled both byes then shutdown
+
+			Appdata appdata = (Appdata) dialog.getApplicationData();
+			appdata.cancelTimer();
+		        if ( ++this.byeCount == NDIALOGS)  { 
+					this.shutDown();
+			} 
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -146,22 +188,12 @@ public class Shootist implements SipListener {
 	}
 
 	public void processResponse(ResponseEvent responseReceivedEvent) {
-		System.out.println("Got a response");
 		Response response = (Response) responseReceivedEvent.getResponse();
 		Transaction tid = responseReceivedEvent.getClientTransaction();
 
-		System.out.println(
-			"Response received with client transaction id "
-				+ tid
-				+ ":\n"
-				+ response.getStatusCode());
 		if (tid == null) {
-			System.out.println("Stray response -- dropping ");
 			return;
 		}
-		System.out.println("transaction state is " + tid.getState());
-		System.out.println("Dialog = " + tid.getDialog());
-		System.out.println("Dialog State is " + tid.getDialog().getState());
 
 		/**
 		if (response.getStatusCode() == 100 || response.getStatusCode() == 180) {
@@ -183,14 +215,18 @@ public class Shootist implements SipListener {
 				// ct.sendRequest();
 				Dialog dialog = tid.getDialog();
 				Request ackRequest = dialog.createRequest(Request.ACK);
-				System.out.println("Sending ACK");
 				dialog.sendAck(ackRequest);
 
 				// Send a Re INVITE but this time force it 
 				// to use UDP as the transport. Else, it will
 				// Use whatever transport was used to create
 				// the dialog.
-				if (reInviteCount == 0) {
+				Appdata appData = (Appdata) 
+					dialog.getApplicationData();
+				appData.ackCount ++;
+				if (appData.reInviteCount == 0) {
+				    // Indicates that a dialog was established
+				    this.ackCount ++;
 				    Request inviteRequest = 
 					dialog.createRequest(Request.INVITE);
 				    ((SipURI)inviteRequest.getRequestURI()).removeParameter("transport");
@@ -200,7 +236,7 @@ public class Shootist implements SipListener {
 				    ClientTransaction ct = 
 					udpProvider.getNewClientTransaction(inviteRequest);
 				    dialog.sendRequest(ct);
-				    reInviteCount ++;
+				    appData.reInviteCount ++;
 				}
 
 			}
@@ -214,6 +250,23 @@ public class Shootist implements SipListener {
 	public void processTimeout(javax.sip.TimeoutEvent timeoutEvent) {
 
 		System.out.println("Transaction Time out" );
+		Request request = null;
+		Transaction transaction = null;
+		if (timeoutEvent.isServerTransaction()) {
+			transaction = timeoutEvent.getServerTransaction();
+			request = ((ServerTransaction) transaction).getRequest();
+		} else {
+			transaction = timeoutEvent.getClientTransaction();
+			request = ((ClientTransaction) transaction).getRequest();
+		}
+		System.out.println("state = " + transaction.getState());
+		System.out.println("dialog = " + transaction.getDialog());
+		System.out.println(
+			"dialogState = " + transaction.getDialog().getState());
+		System.out.println("Transaction Time out");
+		System.out.println("Transaction " + transaction);
+		System.out.println("request " + request);
+		
 	}
 
 	public void init() {
@@ -223,7 +276,7 @@ public class Shootist implements SipListener {
 		sipFactory.setPathName("gov.nist");
 		Properties properties = new Properties();
 		// If you want to try TCP transport change the following to
-		String transport = "udp";
+		this.transport = "udp";
 //ifdef SIMULATION
 /*
 		        properties.setProperty("javax.sip.IP_ADDRESS"
@@ -245,6 +298,7 @@ public class Shootist implements SipListener {
 			"examples.shootist.MyRouter");
 		properties.setProperty("javax.sip.STACK_NAME", "shootist");
 		properties.setProperty("javax.sip.RETRANSMISSION_FILTER", "true");
+		properties.setProperty("javax.sip.REENTRANT_LISTENER", "true");
 		properties.setProperty("javax.sip.MAX_MESSAGE_SIZE", "1048576");
 		properties.setProperty(
 			"gov.nist.javax.sip.DEBUG_LOG",
@@ -253,11 +307,12 @@ public class Shootist implements SipListener {
 			"gov.nist.javax.sip.SERVER_LOG",
 			"shootistlog.txt");
 		// Drop the client connection after we are done with the transaction.
-		properties.setProperty("gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS", "false");
+		properties.setProperty("gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS", "true");
+		properties.setProperty("gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS", "false");
 		// Set to 0 in your production code for max speed.
 		// You need  16 for logging traces. 32 for debug + traces.
 		// Your code will limp at 32 but it is best for debugging.
-		properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "16");
+		properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "0");
 
 		try {
 			// Create SipStack object
@@ -288,8 +343,16 @@ public class Shootist implements SipListener {
 			tcpProvider = sipStack.createSipProvider(tcpListeningPoint);
 			tcpProvider.addSipListener(listener);
 
-			SipProvider sipProvider = transport.equals("udp")? 
+			sipProvider = transport.equals("udp")? 
 					udpProvider: tcpProvider;
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			System.exit(0);
+		}
+	}
+
+	public void sendInvite() {
+		try {
 
 			String fromName = "BigGuy";
 			String fromSipAddress = "here.com";
@@ -305,8 +368,10 @@ public class Shootist implements SipListener {
 
 			Address fromNameAddress = addressFactory.createAddress(fromAddress);
 			fromNameAddress.setDisplayName(fromDisplayName);
+			
+			String tag = new Integer((int)(Math.random() * 10000)).toString();
 			FromHeader fromHeader =
-				headerFactory.createFromHeader(fromNameAddress, "12345");
+				headerFactory.createFromHeader(fromNameAddress, tag);
 
 			// create To Header
 			SipURI toAddress =
@@ -430,10 +495,15 @@ public class Shootist implements SipListener {
 
 
 			// Create the client transaction.
-			listener.inviteTid = sipProvider.getNewClientTransaction(request);
+			ClientTransaction inviteTid = sipProvider.getNewClientTransaction(request);
 
 			// send the request out.
-			listener.inviteTid.sendRequest();
+			inviteTid.sendRequest();
+			Dialog dialog = inviteTid.getDialog();
+
+			// Set a pointer to our application data
+			Appdata appdata = new Appdata(dialog);
+			dialog.setApplicationData(appdata);
 
 		} catch (Exception ex) {
 			System.out.println(ex.getMessage());
@@ -443,7 +513,11 @@ public class Shootist implements SipListener {
 	}
 
 	public static void main(String args[]) {
-		new Shootist().init();
+		Shootist shootist = new Shootist();
+		shootist.init();
+		for (int i = 0 ; i < NDIALOGS; i++ ) 
+			shootist.sendInvite();
+		
 
 	}
 }

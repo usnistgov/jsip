@@ -120,7 +120,7 @@ import sim.java.*;
  *@author Bug fixes by Emil Ivov.
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.31 $ $Date: 2004-06-02 13:09:57 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.32 $ $Date: 2004-06-15 09:54:44 $
  */
 public class SIPClientTransaction
 extends SIPTransaction
@@ -167,35 +167,35 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
             
             // If the transaction has terminated,
             if (clientTransaction.isTerminated()) {
-
+                
                 synchronized(sipStack.clientTransactions) {
                     if (LogWriter.needsLogging) {
                         sipStack.logWriter.logMessage( "removing  = " + clientTransaction + " isReliable " +
-                	 clientTransaction.isReliable() );
-		    }
+                        clientTransaction.isReliable() );
+                    }
                     sipStack.clientTransactions.remove(clientTransaction);
-		    
+                    
                 }
-		try {
-		    this.cancel();
-		} catch (IllegalStateException ex) {
-			if ( ! this.sipStack.isAlive()) return;
-		}
-
+                try {
+                    this.cancel();
+                } catch (IllegalStateException ex) {
+                    if ( ! this.sipStack.isAlive()) return;
+                }
+                
                 
                 // Client transaction terminated. Kill connection if
                 // this is a TCP after the linger timer has expired.
-		// The linger timer is needed to allow any pending requests to return responses.
+                // The linger timer is needed to allow any pending requests to return responses.
                 if (  ( ! this.sipStack.cacheClientConnections )
-                	&& clientTransaction.isReliable()
-                	&& -- ((TCPMessageChannel) clientTransaction.encapsulatedChannel).useCount == 0 ) {
-		    	// Let the connection linger for a while and then close it.
-		    	this.clientTransaction.myTimer = new LingerTimer(this.clientTransaction);
-		    	sipStack.timer.schedule(myTimer,SIPTransactionStack.CONNECTION_LINGER_TIME*1000);
-		} else {
-		    // Cache the client connections so dont close the connection.
+                && clientTransaction.isReliable()
+                && -- ((TCPMessageChannel) clientTransaction.encapsulatedChannel).useCount == 0 ) {
+                    // Let the connection linger for a while and then close it.
+                    this.clientTransaction.myTimer = new LingerTimer(this.clientTransaction);
+                    sipStack.timer.schedule(myTimer,SIPTransactionStack.CONNECTION_LINGER_TIME*1000);
+                } else {
+                    // Cache the client connections so dont close the connection.
                     if (LogWriter.needsLogging
-                    	&& clientTransaction.isReliable())
+                    && clientTransaction.isReliable())
                         sipStack.logWriter.logMessage( "Client Use Count = " +
                         ((TCPMessageChannel) clientTransaction.encapsulatedChannel).useCount);
                 }
@@ -204,7 +204,7 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
                 // If this transaction has not
                 // terminated,
             } else {
-		// Fire the transaction timer.
+                // Fire the transaction timer.
                 clientTransaction.fireTimer();
                 
             }
@@ -349,11 +349,11 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
         // Message typecast as a request
         SIPRequest transactionRequest;
         
-        //ifdef SIMULATION
+//ifdef SIMULATION
 /*
                 SimSystem.hold(getSIPStack().stackProcessingTime);
 //endif
- */
+*/
         
         transactionRequest = (SIPRequest) messageToSend;
         
@@ -397,7 +397,7 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
                 if (transactionRequest.getMethod().equals(Request.INVITE)) {
                     this.setState(TransactionState.CALLING);
                 } else if (
-                transactionRequest.getMethod().equals(Request.ACK)) {
+                    transactionRequest.getMethod().equals(Request.ACK)) {
                     // Acks are never retransmitted.
                     this.setState(TransactionState.TERMINATED);
                 } else {
@@ -464,17 +464,24 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
         && transactionResponse.getStatusCode() == 100 ) {
             // Ignore 100 if received after 180
             // bug report from Peter Parnes.
-            return;
+	    processPending();
         }
         // Defer processing if a previous event has been placed in the processing queue.
         // bug shows up on fast dual processor machines where a subsequent response
         // arrives before a previous one completes processing.
-        if (this.eventPending ) {
-            if (this.pendingResponses.size() < MAX_PENDING_RESPONSES)
+	synchronized (this.pendingResponses) {
+          if (this.eventPending ) {
+	      if (LogWriter.needsLogging) {
+		  sipStack.logWriter.logMessage
+		   ("putting pending " + transactionResponse.getFirstLine());
+	      }
+              if (this.pendingResponses.size() < MAX_PENDING_RESPONSES) {
                 this.pendingResponses.add
                 (new PendingResponse(transactionResponse,sourceChannel));
-            return;
-        }
+	      }
+              return;
+          }
+	}
         
         if (LogWriter.needsLogging)
             sipStack.logWriter.logMessage(
@@ -1057,26 +1064,53 @@ implements SIPServerResponseInterface, javax.sip.ClientTransaction {
     
     /** Run any pending responses - gets called at the end of the event loop.
      */
-    public synchronized void processPendingResponses( ) {
-        if (pendingResponses.isEmpty() ) return;
-        PendingResponse pr =
-        (PendingResponse) this.pendingResponses.removeFirst();
+    public  void processPending( ) {
+        PendingResponse pr;
+        synchronized (pendingResponses ) {
+            if (pendingResponses.isEmpty() ) return;
+            pr = (PendingResponse) this.pendingResponses.removeFirst();
+        }
         this.processResponse(pr.sipResponse,pr.messageChannel);
     }
     
-    public synchronized boolean hasResponsesPending() {
-        return !pendingResponses.isEmpty();
+
+    protected boolean hasPending() {
+	synchronized(pendingResponses) {
+		return !pendingResponses.isEmpty();
+	}
     }
+
+    public void clearPending() {
+	boolean toNotify  = false;
+	synchronized(pendingResponses) {
+	  super.clearPending();
+          if ( !pendingResponses.isEmpty() ) {
+	     if (LogWriter.needsLogging) 
+		sipStack.logWriter.logMessage("signaling pending response scanner!");
+	     // Clear the pending response and process it.
+		toNotify = true;
+	 }
+	}
+	if (toNotify) sipStack.notifyPendingResponseScanner(); 
+     }
+            
     
     /** Start the timer task.
      */
     protected void startTransactionTimer() {
         super.myTimer  = new TransactionTimer(this);
-        sipStack.timer.schedule(myTimer,SIPTransactionStack.BASE_TIMER_INTERVAL,SIPTransactionStack.BASE_TIMER_INTERVAL);
+        sipStack.timer.schedule(myTimer,
+		SIPTransactionStack.BASE_TIMER_INTERVAL,
+		SIPTransactionStack.BASE_TIMER_INTERVAL);
     }
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.31  2004/06/02 13:09:57  mranga
+ * Submitted by:  Peter Parnes
+ * Reviewed by:  mranga
+ * Fixed illegal state exception.
+ *
  * Revision 1.30  2004/06/01 11:42:59  mranga
  * Reviewed by:   mranga
  * timer fix missed starting the transaction timer in a couple of places.

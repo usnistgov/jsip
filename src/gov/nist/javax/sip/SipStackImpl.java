@@ -85,15 +85,43 @@ import sim.java.net.*;
  *</li>
  *
  *<li><b>gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS = [true|false] </b> <br/>
- *  Default value is true. Setting this to true makes the Stack close the server socket after
- *  a Client Transaction goes to the TERMINATED state. This allows a client release any buffers
- *  threads and socket connections associated with a client transaction after the transaction has
+ *  Default value is true. Setting this to true makes the Stack 
+ *  close the server socket aftera Client Transaction goes to the 
+ * TERMINATED state. This allows a client release any buffers
+ *  threads and socket connections associated with a client 
+ *  transaction after the transaction has
  *  terminated at the expense of performance.
  *</li>
  *
  *<li> <b>gov.nist.javax.sip.THREAD_POOL_SIZE = integer </b> <br/>
- *  Concurrency control for number of simultaneous active threads for
- *  processing incoming UDP messages. 
+ *  Concurrency control for number of simultaneous active threads.
+ *  If unspecificed, the default is "infinity".
+ *  This feature is useful if you are trying to build a container.
+ * <ul>
+ * <li>
+ *  <li> If this is not specified, <b> and the listener is re-entrant</b>,  
+ *   each event delivered to the listener is run in the context of a 
+ *   new thread. 
+ *  <li>If this is specified and the listener is re-entrant, 
+ *   then the stack will run the listener using a 
+ *   thread from the thread pool.  This allows you to manage the 
+ *   level of concurrency to a fixed maximum. Threads are pre-allocated
+ *   when the stack is instantiated.
+ *  <li> If this is specified and the listener is not re-entrant, 
+ *   then the stack will use the thread pool thread from this pool to
+ *   parse and manage the state machine but will run the listener in
+ *   its own thread.
+ * </li>
+ * </ul>
+ * </li> 
+ *
+ *
+ *<li> <b>gov.nist.javax.sip.REENTRANT_LISTENER = true|false </b> <br/>
+ * TBD!  Default is false. Set to true if the listener is re-entrant. 
+ * If the listener is re-entrant then the stack manages a thread pool
+ *  is assigned for each active (not completed) transaction 
+ * and incoming events directed to that transaction are processed 
+ * in the context of that thread.
  * </li>
  *
  *<li> <b>gov.nist.javax.sip.MAX_CONNECTIONS = integer </b> <br/>
@@ -114,7 +142,7 @@ import sim.java.net.*;
  *</li>
  *</ul>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.26 $ $Date: 2004-05-16 14:13:21 $
+ * @version JAIN-SIP-1.1 $Revision: 1.27 $ $Date: 2004-06-15 09:54:42 $
  * 
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -133,6 +161,9 @@ public class SipStackImpl
 	protected String routerPath;
 
 	protected EventScanner eventScanner;
+	// All the methods of the listener must be synchronized for
+	// this to work.
+	protected boolean reEntrantListener;
 
 
 	/** Creates a new instance of SipStackImpl.
@@ -394,6 +425,9 @@ public class SipStackImpl
 				System.out.println(
 					"maxMessageSize - bad value " + ex.getMessage());
 		}
+
+	 	String rel = configurationProperties.getProperty("gov.nist.javax.sip.REENTRANT_LISTENER");
+	        this.reEntrantListener = (rel != null && "true".equals(rel));
 
 		
 //ifdef SIMULATION
@@ -666,9 +700,21 @@ public class SipStackImpl
 	public void finalize() {
 		this.stopStack();
 	}
+
+
+	protected void putPendingTransaction( SIPServerTransaction tr ) {
+		synchronized (pendingTransactions) {
+			this.pendingTransactions.add(tr);
+		}
+	}
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.26  2004/05/16 14:13:21  mranga
+ * Reviewed by:   mranga
+ * Fixed the use-count issue reported by Peter Parnes.
+ * Added property to prevent against content-length dos attacks.
+ *
  * Revision 1.25  2004/05/14 20:20:02  mranga
  *
  * Submitted by:  Dave Stuart
