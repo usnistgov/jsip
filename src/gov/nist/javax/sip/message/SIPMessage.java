@@ -20,7 +20,7 @@ import java.text.ParseException;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  *
- * @version JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2004-02-18 14:33:02 $
+ * @version JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2004-02-29 00:46:33 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -51,6 +51,9 @@ public abstract class SIPMessage
 	protected CallID callIdHeader;
 	protected ContentLength contentLengthHeader;
 	protected MaxForwards maxForwardsHeader;
+
+	// Cumulative size of all the headers.
+	protected int size;
 
 	// Payload
 	private String messageContent;
@@ -1693,6 +1696,18 @@ public abstract class SIPMessage
 
 	}
 
+	/** Set the size of all the headers. This is for book keeping.
+	* Called by the parser.
+	*@param size -- size of the headers.
+	*/
+	public void setSize(int size) {
+		this.size = size;
+	}
+	
+	public int getSize() {
+		return this.size;
+	}
+
 	/**
 	 * Set the CSeq header.
 	 *
@@ -1713,6 +1728,13 @@ public abstract class SIPMessage
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/02/18 14:33:02  mranga
+ * Submitted by:  Bruno Konik
+ * Reviewed by:   mranga
+ * Remove extraneous newline in encoding messages. Test for empty sdp announce
+ * rather than die with null when null is passed to sdp announce parser.
+ * Fixed bug in checking for \n\n when looking for message end.
+ *
  * Revision 1.4  2004/01/22 13:26:31  sverker
  * Issue number:
  * Obtained from:
