@@ -166,7 +166,7 @@ import gov.nist.core.net.NetworkLayer;
  *
  *</ul>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.39 $ $Date: 2004-12-01 19:05:14 $
+ * @version JAIN-SIP-1.1 $Revision: 1.40 $ $Date: 2005-04-04 09:29:02 $
  * 
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -254,7 +254,7 @@ public class SipStackImpl
 			Class routerClass = Class.forName(routerPath);
 			Class[] constructorArgs = new Class[2];
 			constructorArgs[0] = javax.sip.SipStack.class;
-			constructorArgs[1] = new String().getClass();
+			constructorArgs[1] = String.class;
 			Constructor cons = routerClass.getConstructor(constructorArgs);
 			Object[] args = new Object[2];
 			args[0] = (SipStack) this;
@@ -751,6 +751,11 @@ public class SipStackImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.39  2004/12/01 19:05:14  mranga
+ * Reviewed by:   mranga
+ * Code cleanup remove the unused SIMULATION code to reduce the clutter.
+ * Fix bug in Dialog state machine.
+ *
  * Revision 1.38  2004/10/28 19:02:49  mranga
  * Submitted by:  Daniel Martinez
  * Reviewed by:   M. Ranganathan
