@@ -19,7 +19,7 @@ import gov.nist.core.*;
  * NIST-SIP stack and event model with the JAIN-SIP stack. Implementors
  * of JAIN services need not concern themselves with this class.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.10 $ $Date: 2004-02-04 18:44:18 $
+ * @version JAIN-SIP-1.1 $Revision: 1.11 $ $Date: 2004-02-04 22:07:24 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Bug fix Contributions by Lamine Brahimi and  Andreas Bystrom. <br/>
@@ -176,7 +176,7 @@ public class NistSipMessageHandlerImpl
 
 				} else {
 					dialog = sipStackImpl.getDialog(dialogId);
-					if (dialog != null) {
+					if (dialog != null ) {
 						dialog.addTransaction(transaction);
 						// sipStackImpl.removeDialog(dialog); // see provider
 					} else {
@@ -252,8 +252,8 @@ public class NistSipMessageHandlerImpl
 			// dont call the listener.
 			if (sipStack.isDialogCreated(sipRequest.getMethod())) {
 				if ((SIPServerTransaction) sipStack
-					.findTransaction(sipRequest, true)
-					!= null) {
+					.findTransaction(sipRequest, true) 
+				!= null) {
 					return;
 				} // TODO check for whether dialog exists here.
 			}
@@ -262,20 +262,25 @@ public class NistSipMessageHandlerImpl
 
 			// Sequence numbers are supposed to be incremented
 			// monotonically (actually sequentially),
-			if (dialog != null  &&  transaction != null &&
-				transaction.getDialog() == null) {
-				if (sipStackImpl.getLogWriter().needsLogging){
-					sipStackImpl.logMessage(
-					"Sequence Number already processed -- dropping message!");
-				
-				}
-					
-				return;
-			}
 
-			if (dialog != null && transaction != null) {
+			if (dialog != null && 
+				transaction != null && 
+				! sipRequest.getMethod().equals(Request.BYE)) {
+				// already dealt with bye above.
 				// Note that route updates are only effective until
 				// Dialog is in the confirmed state.
+				if ( ( ! sipRequest.getMethod().equals(Request.ACK)) &&
+				      dialog.getRemoteSequenceNumber() >= 
+				      sipRequest.getCSeq().getSequenceNumber() ) {
+				      if (LogWriter.needsLogging) {
+					sipStackImpl.logMessage
+					("Dropping out of sequence message " +
+				          dialog.getRemoteSequenceNumber() + 
+					  " "  + sipRequest.getCSeq());
+				     }
+				      
+				      return;
+				}
 				dialog.addTransaction(transaction);
 				dialog.addRoute(sipRequest);
 			}
@@ -480,6 +485,10 @@ public class NistSipMessageHandlerImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/02/04 18:44:18  mranga
+ * Reviewed by:   mranga
+ * check sequence number before delivering event to application.
+ *
  * Revision 1.9  2004/01/27 15:11:06  mranga
  * Submitted by:  jeand
  * Reviewed by:   mranga

@@ -24,7 +24,7 @@ import java.text.ParseException;
  * retrieve this structure from the SipStack. Bugs against route set 
  * management were reported by Antonis Karydas and Brad Templeton.
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.18 $ $Date: 2004-02-04 18:44:18 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.19 $ $Date: 2004-02-04 22:07:24 $
  *
  *@author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -590,13 +590,14 @@ public class DialogImpl implements javax.sip.Dialog {
 			this.originalRequest = sipRequest;
 
 		}
+		if (transaction instanceof SIPServerTransaction)
+		      setRemoteSequenceNumber( sipRequest.getCSeq().getSequenceNumber());
+
 		
 		// If this is a server transaction record the remote
 		// sequence number to avoid re-processing of requests
 		// with the same sequence number directed towards this 
 		// dialog.
-		if (transaction instanceof ServerTransaction) 
-		   setRemoteSequenceNumber( sipRequest.getCSeq().getSequenceNumber());
 
 		this.lastTransaction = transaction;
 		// set a back ptr in the incoming dialog.
@@ -646,7 +647,10 @@ public class DialogImpl implements javax.sip.Dialog {
 	 * @param rCseq is the remote cseq number.
 	 *
 	 */
-	protected void setRemoteSequenceNumber(int rCseq) {
+	private void setRemoteSequenceNumber(int rCseq) {
+		if (LogWriter.needsLogging) 
+		    sipStack.logWriter.logMessage("setRemoteSeqno " +
+				this + "/" + rCseq);
 		this.remoteSequenceNumber = rCseq;
 	}
 
@@ -1433,6 +1437,10 @@ public class DialogImpl implements javax.sip.Dialog {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2004/02/04 18:44:18  mranga
+ * Reviewed by:   mranga
+ * check sequence number before delivering event to application.
+ *
  * Revision 1.17  2004/02/03 16:31:50  mranga
  * Reviewed by:   mranga
  * finer grained check on bye creation (conform to section 15 of spec).
