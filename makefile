@@ -207,7 +207,6 @@ zipfile:
 	cd ../;		\
 	$(RM) $(ZIPFILE_NAME);	\
 	zip $(ZIPFILE_NAME)			        	\
-	-r ./$(PROJECT_ROOT)/lib/xerces/xerces.jar	        \
 	-r ./$(PROJECT_ROOT)/lib/junit/junit.jar	        \
 	-r ./$(PROJECT_ROOT)/src/gov/nist/javax			\
 	-r ./$(PROJECT_ROOT)/src/gov/nist/core		        \
@@ -306,7 +305,6 @@ tarfile:
 	--exclude *.log						\
 	--exclude debug.txt					\
 	./$(PROJECT_ROOT)/manifest.tck				\
-	./$(PROJECT_ROOT)/lib/xerces/xerces.jar		        \
 	./$(PROJECT_ROOT)/lib/junit/junit.jar		        \
 	./$(PROJECT_ROOT)/src/javax				\
 	./$(PROJECT_ROOT)/src/test/tck				\
@@ -352,19 +350,14 @@ tck:
 
 libzip:
 	zip libs.zip 		      			\
-	-r lib/xerces/xerces.jar			\
-	-r lib/junit/junit.jar				\
-	-r lib/xerces/LICENSE			
+	-r lib/junit/junit.jar				
 
 #Builds the traces viewer jar file:
 viewerjar:
 	cd src/tools/tracesviewer;$(MAKE) all
-	cd lib/xerces;jar -xvf xerces.jar	
 	jar  cvfm tracesviewer.jar  		\
 	 manifest.viewer  			\
-	-C ./classes ./tools/tracesviewer			\
-	-C ./lib/xerces      org				\
-	-C ./lib/xerces      javax				
+	-C ./classes ./tools/tracesviewer			
 
 export:
 	tar -cvzf export.tar.gz  --exclude CVS	\
