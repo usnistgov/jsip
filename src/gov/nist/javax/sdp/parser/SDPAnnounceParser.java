@@ -4,10 +4,10 @@ import gov.nist.core.*;
 import gov.nist.javax.sdp.fields.*;
 import gov.nist.javax.sdp.*;
 import java.text.ParseException;
+// Acknowledgement: this includes a bug fix submitted by 
+// Rafael Barriuso rbarriuso@dit.upm.es
+
 /** Parser for SDP Announce messages.
- *
- * Acknowledgement: this includes a bug fix submitted by 
- * Rafael Barriuso rbarriuso@dit.upm.es
  */
 public class SDPAnnounceParser extends ParserCore {
 
@@ -29,6 +29,9 @@ public class SDPAnnounceParser extends ParserCore {
 		int start = 0;
 		String line = null;
 		sdpMessage = new Vector();
+		// Return trivially if there is no sdp announce message
+		// to be parsed. Bruno Konik noticed this bug.
+		if (sdpAnnounce == null ) return;
 		// Bug fix by Andreas Bystrom.
 		while (start < sdpAnnounce.length()) {
 			int add = 0;
@@ -73,4 +76,28 @@ public class SDPAnnounceParser extends ParserCore {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/01/22 13:26:28  sverker
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  sverker
+ * Reviewed by:   mranga
+ *
+ * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  */
