@@ -23,6 +23,7 @@
 <li>How involved is it to port applications between JAIN-SIP 1.0 and  JAIN-SIP
 1.1 JAIN SIP 1.1?  
 <li>Why does my application get null transaction ID for  INVITE transactions?
+<li>Why do I see a lot of strange exceptions in the log file?
 <li> What is the difference between Transaction.sendRequest,
 Dialog.sendRequest and SipProvider.sendRequest  ?
 <li>Who manages From/To tags  ?
@@ -50,6 +51,9 @@ server transaction in the case where you are supporting multiple
 listening points?
 <li>Why is my application getting Server Transaction timeouts even
 after I send response?
+<li>Why am I getting a "Transaction not available" sip execption on
+an incoming INVITE?
+<li>Why dont you use log4j for logging?
 </ul>
 <br><hr SIZE=2  NOSHADE>
 <ul>
@@ -77,6 +81,11 @@ is a reasonable choice.
 <li>Show me a quick how-to <br/>
 See examples/shootist
 </li>
+<li> Why do I see a lot of strange exceptions in the log file?<br/>
+These are just for stack tracing (ok there are better ways to do this
+under 1.4.2 but we want to be 1.3.1 and above compatible). The implementation
+does new Exception().printStack trace and captures the execution trace
+in a file for later use. </li>
 <li>Why is there only superficial resemblance between JAIN SIP 1.0  and
 JAIN SIP 1.1?  
     <ul>
@@ -86,7 +95,6 @@ discussion list (ah! diplomacy!!).  </li>
  <li>The scope of the specification was made broader  (support for dialogs,
 Routers, support for SIMPLE REFER etc.). </li>
  <li>The RFC changed a lot over between  2543 and 3261. </li>
- 
     </ul>
   </li>
   <li>How involved is it to port applications between JAIN-SIP 1.0 and  JAIN-SIP
@@ -240,6 +248,21 @@ javax.sip.RETRANSMISSION_FILTER is "false" or "off", for INVITE
 Transactions, your application is alerted to send response periodically
 until ACK is received from the client side. This happens through the
 mechanism of your application fielding a Timeout Event.
+<li>Why am I getting a "Transaction not available" sip execption on
+an incoming INVITE?<br/>
+Check your application to see if you cloned the request before you 
+requested the server transaction. A Server transaction can only be
+created for the incoming request that is identitically equal to the
+incoming request that was received by the stack and not for a cloned
+request. Further, you cannot cache the request and ask that a server
+transaction be created at some future time. You must create the 
+server transaction synchronously when the request is delivered to
+your application and not later.
+</li>
+<li>Why dont you use log4j for logging? <br/>
+To keep the RI as independent of external dependencies as possible, all
+you need for the RI is j2se 1.3.1 or above. A configuration switch
+to allow you to log using log4j may be added in the future.
 </li>
 <br><hr SIZE=2  NOSHADE>
 
