@@ -12,7 +12,7 @@ import gov.nist.javax.sip.message.*;
  * When a response comes off the wire, the stack calls newSIPServerResponse
  * to process the response. 
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.1 $ $Date: 2004-06-21 05:32:51 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.2 $ $Date: 2004-06-21 05:42:33 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -28,7 +28,7 @@ public interface StackMessageFactory {
 	 * @param msgChan is the message channel on which this request was
 	 *	received.
 	 */
-	public SIPServerRequestInterface newSIPServerRequest(
+	public ServerRequestInterface newSIPServerRequest(
 		SIPRequest sipRequest,
 		MessageChannel msgChan);
 
@@ -39,12 +39,16 @@ public interface StackMessageFactory {
 	 * @param msgChan is the message channel on which the response was
 	 * received.
 	 */
-	public SIPServerResponseInterface newSIPServerResponse(
+	public ServerResponseInterface newSIPServerResponse(
 		SIPResponse sipResponse,
 		MessageChannel msgChan);
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2004/06/21 05:32:51  mranga
+ * Reviewed by:   mranga
+ * re factored
+ *
  * Revision 1.4  2004/01/22 13:26:33  sverker
  * Issue number:
  * Obtained from:

@@ -30,7 +30,7 @@ import sim.java.net.*;
  * be either udp or tcp.
  *
  * @see gov.nist.javax.sip.parser.StringMsgParser
- * @see gov.nist.javax.sip.stack.SIPServerRequestInterface
+ * @see gov.nist.javax.sip.stack.ServerRequestInterface
  * @author <A href=mailto:mranga@nist.gov> M. Ranganathan </A>
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
@@ -46,7 +46,7 @@ import sim.java.net.*;
  * this code that was sending it into an infinite loop when a bad incoming
  * message was parsed.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.21 $ $Date: 2004-06-21 04:59:53 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.22 $ $Date: 2004-06-21 05:42:33 $
  */
 public class UDPMessageChannel
 extends MessageChannel
@@ -401,7 +401,7 @@ implements ParseExceptionListener, Runnable {
                 SIPRequest sipRequest = (SIPRequest) sipMessage;
                 
                 // This is a request - process it.
-                SIPServerRequestInterface sipServerRequest =
+                ServerRequestInterface sipServerRequest =
                 stack.newSIPServerRequest(sipRequest, this);
                 // Drop it if there is no request returned
                 if (sipServerRequest == null) {
@@ -458,7 +458,7 @@ implements ParseExceptionListener, Runnable {
             } else {
                 // Handle a SIP Reply message.
                 SIPResponse sipResponse = (SIPResponse) sipMessage;
-                SIPServerResponseInterface sipServerResponse =
+                ServerResponseInterface sipServerResponse =
                 stack.newSIPServerResponse(sipResponse, this);
                 if (sipServerResponse != null) {
                     sipServerResponse.processResponse(sipResponse, this);
@@ -847,6 +847,9 @@ implements ParseExceptionListener, Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.21  2004/06/21 04:59:53  mranga
+ * Refactored code - no functional changes.
+ *
  * Revision 1.20  2004/05/30 18:55:58  mranga
  * Reviewed by:   mranga
  * Move to timers and eliminate the Transaction scanner Thread

@@ -120,11 +120,11 @@ import sim.java.*;
  *@author Bug fixes by Emil Ivov.
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.34 $ $Date: 2004-06-21 04:59:50 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.35 $ $Date: 2004-06-21 05:42:30 $
  */
 public class SIPClientTransaction
 extends SIPTransaction
-implements SIPServerResponseInterface, javax.sip.ClientTransaction , 
+implements ServerResponseInterface, javax.sip.ClientTransaction , 
 PendingRecord{
     
     // max # of pending responses that can we can buffer (to avoid
@@ -141,7 +141,7 @@ PendingRecord{
     
     
     // Real ResponseInterface to pass messages to
-    private SIPServerResponseInterface respondTo;
+    private ServerResponseInterface respondTo;
     
     
     class PendingResponse {
@@ -243,7 +243,7 @@ PendingRecord{
      *
      *	@param newRespondTo ResponseInterface to send messages to.
      */
-    public void setResponseInterface(SIPServerResponseInterface newRespondTo) {
+    public void setResponseInterface(ServerResponseInterface newRespondTo) {
         
         respondTo = newRespondTo;
         
@@ -1108,6 +1108,9 @@ PendingRecord{
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.34  2004/06/21 04:59:50  mranga
+ * Refactored code - no functional changes.
+ *
  * Revision 1.33  2004/06/17 15:22:31  mranga
  * Reviewed by:   mranga
  *
