@@ -191,25 +191,6 @@ LinkedList implements Serializable {
     }
     
     
-        /**
-         * A utility that checks for assignability. (useful for
-         * constructors)
-         */
-    protected void
-    checkAssignability( String class1Name, String class2Name)
-    throws ClassCastException {
-        try  {
-            Class class1 = Class.forName(class1Name);
-            Class class2 = Class.forName(class2Name);
-            if (! class1.isAssignableFrom(class2))  {
-                throw new ClassCastException( class2.getName()  +
-                " cannot be assigned from " + class1.getName());
-            }
-        } catch (ClassNotFoundException ex) {
-            InternalErrorHandler.handleException(ex);
-        }
-        
-    }
     
     
     
