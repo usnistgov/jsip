@@ -135,7 +135,7 @@ public class UDPMessageProcessor  extends MessageProcessor {
         new DatagramSocket(port,sipStack.stackInetAddress);
          sock.setReceiveBufferSize
         (MAX_DATAGRAM_SIZE);
-	if (stack.stunServerAddress  != null )  {
+	if (sipStack.stunServerAddress  != null )  {
 	  // TODO
 	  // If NAT STUN support is enabled then find the public NAT address
 	  // and record it here. (RESUME HERE).

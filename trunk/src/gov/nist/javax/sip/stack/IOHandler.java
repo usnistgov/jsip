@@ -21,8 +21,8 @@ import java.net.*;
 import gov.nist.javax.sip.*;
 import gov.nist.javax.sip.address.*;
 import gov.nist.javax.sip.header.*;
-import java.util.LinkedList;
 import java.util.Hashtable;
+import java.util.Enumeration;
 import gov.nist.core.*;
 //ifdef SIMULATION
 /*
@@ -374,6 +374,20 @@ class IOHandler
 				     firstLine,status,
 				     message.getTransactionId());
 	   }
+
+	}
+
+	/** Close all the cached connections.
+	*/
+	public void closeAll() {
+		for ( Enumeration values = socketTable.elements();
+			values.hasMoreElements(); ) {
+			Socket s = (Socket) values.nextElement();
+			try {
+				s.close();
+			} catch (IOException ex) {
+			}
+		}
 
 	}
 
