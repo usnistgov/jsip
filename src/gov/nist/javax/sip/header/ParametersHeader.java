@@ -290,6 +290,7 @@ public abstract class ParametersHeader extends SIPHeader
      * @param nameValue - the name value of the parameter to set.
      */
     public void setParameter(NameValue nameValue) {
+	//System.out.println("setParameter " + this + " nbv = " + nameValue);
 	this.parameters.set(nameValue);
     }
     

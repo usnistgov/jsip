@@ -40,8 +40,10 @@ public class FromParser extends AddressParametersParser {
 			if (from.getAddress().getURI() instanceof SipUri) {
 			  SipUri sipUri = (SipUri) from.getAddress().getURI();
 			  NameValueList parms = sipUri.getUriParms();
-			  from.setParameters(parms);
-			   sipUri.removeUriParms();
+			  if (parms != null && ! parms.isEmpty() ) {
+			     from.setParameters(parms);
+			     sipUri.removeUriParms();
+			  }
 			}
 		}
 			

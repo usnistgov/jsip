@@ -37,15 +37,17 @@ public class ToParser extends AddressParametersParser {
 		if (to.getAddress().getURI() instanceof SipUri) {
 		   SipUri sipUri = (SipUri) to.getAddress().getURI();
 		   NameValueList parms = sipUri.getUriParms();
-		   to.setParameters(parms);
-		   sipUri.removeUriParms();
+		   if (parms != null && !parms.isEmpty()) {
+		      to.setParameters(parms);
+		      sipUri.removeUriParms();
+		   }
 		}
 	}
         return to;
    }
     
     
-    /**
+/**
     public static void main(String args[]) throws ParseException {
         String to[] = {
            "To: <sip:+1-650-555-2222@ss1.wcom.com;user=phone>;tag=5617\n",
@@ -56,6 +58,7 @@ public class ToParser extends AddressParametersParser {
         };
         
         for (int i = 0; i < to.length; i++ ) {
+	    System.out.println("toParse = " + to[i]);
             ToParser tp =
             new ToParser(to[i]);
             To t = (To) tp.parse();
@@ -63,7 +66,7 @@ public class ToParser extends AddressParametersParser {
         }
         
     }
-    */
+**/
     
     
     
