@@ -27,7 +27,7 @@ import sim.java.net.*;
  * @author Jeff Keyser (original) 
  * @author M. Ranganathan <mranga@nist.gov>  <br/> (Added Dialog table).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.26 $ $Date: 2004-04-07 00:19:24 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.27 $ $Date: 2004-04-07 13:46:30 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public abstract class SIPTransactionStack
@@ -395,12 +395,18 @@ public abstract class SIPTransactionStack
 			 else continue;
 		      }
 		   }
+		   LinkedList ll = new LinkedList();
 		   synchronized (clientTransactions) {
 			Iterator ti = clientTransactions.iterator();
 			while (ti.hasNext()) {
 				SIPClientTransaction next = (SIPClientTransaction) ti.next();
-		        	next.processPendingResponses();
+				if (next.hasResponsesPending()) ll.add(next);
 			}
+		   }
+		   Iterator it = ll.iterator();
+		   while (it.hasNext()) {
+			SIPClientTransaction next = (SIPClientTransaction) it.next();
+			next.processPendingResponses();
 		   }
 	        }
 	      } finally {
@@ -982,6 +988,11 @@ public abstract class SIPTransactionStack
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.26  2004/04/07 00:19:24  mranga
+ * Reviewed by:   mranga
+ * Fixes a potential race condition for client transactions.
+ * Handle re-invites statefully within an established dialog.
+ *
  * Revision 1.25  2004/03/30 15:38:18  mranga
  * Reviewed by:   mranga
  * Name the threads so as to facilitate debugging.

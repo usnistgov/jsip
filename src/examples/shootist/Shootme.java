@@ -98,7 +98,7 @@ public class Shootme implements SipListener {
 		try {
 			System.out.println("shootme: got an Invite sending OK");
 			//System.out.println("shootme:  " + request);
-			Response response = messageFactory.createResponse(200, request);
+			Response response = messageFactory.createResponse(180, request);
 			ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
 			toHeader.setTag("4321"); // Application is supposed to set.
 //ifdef SIMULATION
@@ -143,6 +143,11 @@ public class Shootme implements SipListener {
 				System.out.println("Dialog " + dialog);
 				System.out.println("Dialog state " + dialog.getState());
 			}
+			st.sendResponse(response);
+			response = messageFactory.createResponse(200, request);
+			toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
+			toHeader.setTag("4321"); // Application is supposed to set.
+			response.addHeader(contactHeader);
 			st.sendResponse(response);
 			this.inviteTid = st;
 		} catch (Exception ex) {
@@ -294,6 +299,11 @@ public class Shootme implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2004/04/07 00:19:22  mranga
+ * Reviewed by:   mranga
+ * Fixes a potential race condition for client transactions.
+ * Handle re-invites statefully within an established dialog.
+ *
  * Revision 1.14  2004/03/30 18:10:53  mranga
  * Reviewed by:   mranga
  * added code to demonstrate cleanup
