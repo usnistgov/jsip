@@ -8,57 +8,66 @@
 
 package gov.nist.javax.sip.header;
 
-/** Product Token class
+/** 
+ * Product Token class
+ * @version JAIN-SIP-1.1 $Revision: 1.2 $ $Date: 2004-01-22 13:26:29 $
  */
 public class ProductToken extends SIPObject {
-    
-        /** name field
-         */    
+
+	/**
+	 * name field
+	 */
 	protected String name;
-        
-        /** version field
-         */        
+
+	/**
+	 * version field
+	 */
 	protected String version;
-	
-        /**
-         * Return canonical form.
-         * @return String
-         */
+
+	/**
+	 * Return canonical form.
+	 * @return String
+	 */
 	public String encode() {
-		if (version != null) return name + SLASH + version;
-		else return name;
+		if (version != null)
+			return name + SLASH + version;
+		else
+			return name;
 	}
-        
-        /**
-         * Return the name field.
-         * @return String
-         */
+
+	/**
+	 * Return the name field.
+	 * @return String
+	 */
 	public String getName() {
-            return name ;
-        } 
+		return name;
+	}
 
 	/**
-         * Return the version field.
-         * @return String
-         */
+	 * Return the version field.
+	 * @return String
+	 */
 	public String getVersion() {
-            return version ;
-        } 
+		return version;
+	}
 
 	/**
-         * Set the name member
-         * @param n String to set
-         */
+	 * Set the name member
+	 * @param n String to set
+	 */
 	public void setName(String n) {
-            name = n ;
-        } 
+		name = n;
+	}
 
 	/**
-         * Set the version member
-         * @param v String to set
-         */
+	 * Set the version member
+	 * @param v String to set
+	 */
 	public void setVersion(String v) {
-            version = v ;
-        } 
-	
+		version = v;
+	}
+
 }
+/*
+ * $Log: not supported by cvs2svn $
+ */

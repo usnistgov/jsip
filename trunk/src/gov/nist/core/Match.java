@@ -1,4 +1,5 @@
 package gov.nist.core;
+
 /** Match template for pattern matching.
 *
 *@version  JAIN-SIP-1.1
@@ -18,3 +19,6 @@ public interface Match {
 	*/
 	public boolean match(String searchString);
 }
+/*
+ * $Log: not supported by cvs2svn $
+ */

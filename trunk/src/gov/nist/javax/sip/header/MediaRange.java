@@ -7,14 +7,11 @@
 *******************************************************************************/
 package gov.nist.javax.sip.header;
 
-import gov.nist.core.*;
-
-import java.util.*;
 /**
 *   Media Range 
 * @see Accept
 * @since 0.9
-* @version 1.0
+* @version JAIN-SIP-1.1 $Revision: 1.2 $ $Date: 2004-01-22 13:26:29 $
 * <pre>
 * Revisions:
 *
@@ -29,63 +26,60 @@ import java.util.*;
 * HTTP RFC 2616 Section 14.1
 * </pre>
 */
-public class MediaRange  extends SIPObject  {
-    
-        /** type field
-         */    
-	protected String  type;
-        
-        /** subtype field
-         */        
-	protected String  subtype;
+public class MediaRange extends SIPObject {
 
+	/** type field
+	 */
+	protected String type;
 
-        /** Default constructor
-         */        
-	public  MediaRange() {
+	/** subtype field
+	 */
+	protected String subtype;
+
+	/** Default constructor
+	 */
+	public MediaRange() {
 	}
 
-        /** get type field
-         * @return String
-         */        
+	/** get type field
+	 * @return String
+	 */
 	public String getType() {
-            return type ;
-        }
-            
-        /** get the subType field.
-         * @return String
-         */                
+		return type;
+	}
+
+	/** get the subType field.
+	 * @return String
+	 */
 	public String getSubtype() {
-            return subtype ;
-        } 
-   
-        
-	/**
-         * Set the type member
-         * @param t String to set
-         */
-	public void setType(String t) {
-            type = t ;
-        }
-        
-	/**
-         * Set the subtype member
-         * @param s String to set
-         */
-	public void setSubtype(String s) {
-            subtype = s ;
-        }
-        
+		return subtype;
+	}
 
 	/**
-         * Encode the object.
-         * @return String
-         */
+	 * Set the type member
+	 * @param t String to set
+	 */
+	public void setType(String t) {
+		type = t;
+	}
+
+	/**
+	 * Set the subtype member
+	 * @param s String to set
+	 */
+	public void setSubtype(String s) {
+		subtype = s;
+	}
+
+	/**
+	 * Encode the object.
+	 * @return String
+	 */
 	public String encode() {
 		String encoding = type + SLASH + subtype;
 		return encoding;
 	}
-       
-       
-        
 }
+/*
+ * $Log: not supported by cvs2svn $
+ */

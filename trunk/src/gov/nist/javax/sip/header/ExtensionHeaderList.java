@@ -2,14 +2,13 @@
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
 *******************************************************************************/
 package gov.nist.javax.sip.header;
-import  gov.nist.javax.sip.header.*;
+
 import java.util.ListIterator;
-import javax.sip.header.*;
 
 /**
-* A generic extension header list.
-*/
-
+ * A generic extension header list.
+ * @version JAIN-SIP-1.1 $Revision: 1.2 $ $Date: 2004-01-22 13:26:29 $
+ */
 public class ExtensionHeaderList extends SIPHeaderList { 
 
 	public ExtensionHeaderList(String hName) {
@@ -28,6 +27,7 @@ public class ExtensionHeaderList extends SIPHeaderList {
 		}
 		return retval.toString();
 	}
-		
-        
 }
+/*
+ * $Log: not supported by cvs2svn $
+ */

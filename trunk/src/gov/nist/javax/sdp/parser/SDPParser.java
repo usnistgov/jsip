@@ -1,7 +1,7 @@
 package gov.nist.javax.sdp.parser;
-import  gov.nist.core.*;
-import  java.text.ParseException;
-import  gov.nist.javax.sdp.fields.*;
+import gov.nist.core.*;
+import java.text.ParseException;
+import gov.nist.javax.sdp.fields.*;
 
 /**
 *@version  JAIN-SIP-1.1
@@ -13,11 +13,9 @@ import  gov.nist.javax.sdp.fields.*;
 */
 public abstract class SDPParser extends ParserCore {
 
-	
-
 	public abstract SDPField parse() throws ParseException;
 
-
 }
-
-
+/*
+ * $Log: not supported by cvs2svn $
+ */

@@ -1,17 +1,13 @@
-
 package test.tck.factory;
 
 import java.text.ParseException;
 import javax.sip.header.*;
-import javax.sip.*;
 import java.util.*;
 import gov.nist.javax.sip.header.*;
-import gov.nist.javax.sip.message.*;
 import javax.sip.message.*;
 import javax.sip.address.*;
 import gov.nist.javax.sip.parser.*;
 import junit.framework.*;
-import junit.swingui.*;
 import test.tck.*;
 import java.lang.reflect.*;
 

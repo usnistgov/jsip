@@ -16,11 +16,11 @@ import javax.sdp.*;
 *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
 *
 */
-public class ProtoVersionField extends SDPField implements javax.sdp.Version{
+public class ProtoVersionField extends SDPField implements javax.sdp.Version {
 	protected int protoVersion;
-	
+
 	public ProtoVersionField() {
-		super(PROTO_VERSION_FIELD); 
+		super(PROTO_VERSION_FIELD);
 	}
 
 	public int getProtoVersion() {
@@ -30,35 +30,38 @@ public class ProtoVersionField extends SDPField implements javax.sdp.Version{
 	/**
 	* Set the protoVersion member  
 	*/
-	public void setProtoVersion( int pv ) {
+	public void setProtoVersion(int pv) {
 		protoVersion = pv;
 	}
 
-    /** Returns the version number.
-     * @throws SdpParseException
-     * @return int
-     */    
-    public int getVersion()
-    throws SdpParseException {
-        return getProtoVersion();
-    }
-    
-    /** Sets the version.
-     * @param value the - new version value.
-     * @throws SdpException if the value is <=0
-     */    
-    public void setVersion(int value)
-    throws SdpException {
-        if (value <0) throw new SdpException("The value is <0");
-        else setProtoVersion(value); 
-    }
+	/** Returns the version number.
+	 * @throws SdpParseException
+	 * @return int
+	 */
+	public int getVersion() throws SdpParseException {
+		return getProtoVersion();
+	}
 
-    /**
-     *  Get the string encoded version of this object
-     * @since v1.0
-     */
-    public String encode() {
-	return PROTO_VERSION_FIELD + protoVersion + Separators.NEWLINE;
-    }
-	
+	/** Sets the version.
+	 * @param value the - new version value.
+	 * @throws SdpException if the value is <=0
+	 */
+	public void setVersion(int value) throws SdpException {
+		if (value < 0)
+			throw new SdpException("The value is <0");
+		else
+			setProtoVersion(value);
+	}
+
+	/**
+	 *  Get the string encoded version of this object
+	 * @since v1.0
+	 */
+	public String encode() {
+		return PROTO_VERSION_FIELD + protoVersion + Separators.NEWLINE;
+	}
+
 }
+/*
+ * $Log: not supported by cvs2svn $
+ */

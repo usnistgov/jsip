@@ -2,16 +2,6 @@ package test.tck;
 
 import junit.framework.*;
 
-import javax.sip.*;
-import javax.sip.address.*;
-import javax.sip.message.*;
-import javax.sip.header.*;
-import java.util.Properties;
-import java.util.List;
-import java.util.*;
-import java.text.*;
-
-
 /**
  * <p>Title: TCK</p>
  * <p>Description: JAIN SIP 1.1 Technology Compatibility Kit</p>
@@ -37,8 +27,8 @@ public class TckTestSuite
     public TckTestSuite(String name)
     {
         super(name);
-        addTest(new test.tck.factory.FactoryTestSuite("FactoryTestSuite").suite());
-        addTest(new test.tck.msgflow.MessageFlowTestSuite("MessageFlowTestSuite").suite());
+        addTest(test.tck.factory.FactoryTestSuite.suite());
+        addTest(test.tck.msgflow.MessageFlowTestSuite.suite());
     }
 
     public static Test suite()

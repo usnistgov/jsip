@@ -2,21 +2,17 @@ package gov.nist.javax.sip.parser;
 
 import gov.nist.javax.sip.header.*;
 import gov.nist.javax.sip.address.*;
-import gov.nist.core.*;
 import java.text.ParseException;
-import javax.sip.*;
-import java.util.*;
 
-/** Parser for CallInfo header.
-*
-*@version  JAIN-SIP-1.1
-*
-*@author Olivier Deruelle <deruelle@nist.gov> 
-*@author M. Ranganathan <mranga@nist.gov> 
-*<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
-*
-* @version 1.0
-*/
+/**
+ * Parser for CallInfo header.
+ *
+ * @version  JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-01-22 13:26:31 $
+ *
+ * @author Olivier Deruelle <deruelle@nist.gov> 
+ * @author M. Ranganathan <mranga@nist.gov> 
+ * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+ */
 public class CallInfoParser  extends ParametersParser{
     
     /**
@@ -27,14 +23,16 @@ public class CallInfoParser  extends ParametersParser{
         super(callInfo);
     }
     
-    /** Constructor
+    /**
+     * Constructor
      * @param lexer the lexer to use to parse the header
      */
     protected  CallInfoParser(Lexer lexer) {
         super(lexer);
     }
     
-    /** parse the CallInfo String header
+    /**
+     * parse the CallInfo String header
      * @return SIPHeader (CallInfoList object)
      * @throws SIPParseException if the message does not respect the spec.
      */
@@ -103,5 +101,7 @@ public class CallInfoParser  extends ParametersParser{
         }    
     }
      */
-    
 }
+/*
+ * $Log: not supported by cvs2svn $
+ */

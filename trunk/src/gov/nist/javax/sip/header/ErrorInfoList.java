@@ -2,13 +2,13 @@
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
 *******************************************************************************/
 package gov.nist.javax.sip.header;
-import gov.nist.javax.sip.address.*;
+
 import javax.sip.header.*;
 
 /**
 * Error Info sip header.
 *
-*@version  JAIN-SIP-1.1
+* @version JAIN-SIP-1.1 $Revision: 1.2 $ $Date: 2004-01-22 13:26:29 $
 *
 *@author M. Ranganathan <mranga@nist.gov>  <br/>
 *
@@ -31,13 +31,14 @@ import javax.sip.header.*;
 *
 */
 public class ErrorInfoList extends SIPHeaderList {
-    
-        /** Default constructor.
-         */    
+
+	/**
+	 * Default constructor.
+	 */
 	public ErrorInfoList() {
-		super( ErrorInfo.class, ErrorInfoHeader.NAME);
+		super(ErrorInfo.class, ErrorInfoHeader.NAME);
 	}
-
-
 }
-
+/*
+ * $Log: not supported by cvs2svn $
+ */

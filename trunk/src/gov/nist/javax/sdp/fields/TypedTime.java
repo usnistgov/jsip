@@ -10,11 +10,12 @@ public class TypedTime extends SDPObject {
 	public String encode() {
 		String retval = "";
 		retval += new Integer(time).toString();
-		if (unit != null) retval += unit;
+		if (unit != null)
+			retval += unit;
 		return retval;
 	}
-	
-	public void setTime( int t ) {
+
+	public void setTime(int t) {
 		time = t;
 	}
 
