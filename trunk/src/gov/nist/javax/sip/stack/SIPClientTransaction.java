@@ -120,7 +120,7 @@ import sim.java.*;
  *@author Bug fixes by Emil Ivov.
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.37 $ $Date: 2004-07-01 05:42:22 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.38 $ $Date: 2004-08-31 19:32:58 $
  */
 public class SIPClientTransaction
 extends SIPTransaction
@@ -943,8 +943,18 @@ PendingRecord{
         originalRequest.createAckRequest((To) lastResponse.getTo());
         // Pull the record route headers from the last reesponse.
         RecordRouteList recordRouteList = lastResponse.getRecordRouteHeaders();
-        if (recordRouteList == null)
-            return ackRequest;
+	// Matt Keller (Motorolla) sent in a bug fix for the following.
+	if (recordRouteList == null) {
+          	Contact contact = null;
+         	if (lastResponse.getContactHeaders() != null) {
+           	  	contact = (Contact)lastResponse.getContactHeaders().getFirst();
+           	  	javax.sip.address.URI uri = (javax.sip.address.URI)
+               	  	contact.getAddress().getURI().clone();
+           	  	ackRequest.setRequestURI(uri);
+         	}
+         	return ackRequest;
+	}
+	
         ackRequest.removeHeader(RouteHeader.NAME);
         RouteList routeList = new RouteList();
         // start at the end of the list and walk backwards
@@ -1108,6 +1118,12 @@ PendingRecord{
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.37  2004/07/01 05:42:22  mranga
+ * Submitted by:  Pierre De Rop and Thomas Froment
+ * Reviewed by:    M. Ranganathan
+ *
+ * More performance hacks.
+ *
  * Revision 1.36  2004/06/27 00:41:52  mranga
  * Submitted by:  Thomas Froment and Pierre De Rop
  * Reviewed by:   mranga
