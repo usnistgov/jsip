@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE attributes PUBLIC "-//NetBeans//DTD DefaultAttributes 1.0//EN" "http://www.netbeans.org/dtds/attributes-1_0.dtd">
+<attributes version="1.0">
+    <fileobject name="SIPTransactionStack.java">
+        <attr name="class_dependency_gov.nist.javax.sip.stack.SIPStack" stringvalue="SIPTransactionStack"/>
+        <attr name="class_dependency_java.lang.Runnable" stringvalue="SIPTransactionStack.TransactionScanner"/>
+        <attr name="class_dependency_gov.nist.javax.sip.stack.SIPTransactionEventListener" stringvalue="SIPTransactionStack"/>
+    </fileobject>
+</attributes>

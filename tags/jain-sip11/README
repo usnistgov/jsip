@@ -1,0 +1,377 @@
+
+JAIN-SIP 1.1 Reference Implementation
+--------------------------------------
+CONTENTS
+-------
+See docs/index.html
+
+BUILD Notes
+-----------
+Platforms:
+---------
+You need to install J2SDK 1.3 or above. 1.41 is highly recommended. You can
+get J2SDK from http://www.javasoft.com
+
+Nist-sip1.2 compiles and runs on Ipaq using the Blackdown jvm (1.3
+compatible) running on top of Familiar (Linux embedded operating
+system). To add Swing support,  you just need to install an optional
+library. 
+
+
+Building It from Scratch
+-------------------------
+The distribution is pre-built but should you feel inclined to make changes,
+or run the examples, you may wish to rebuild everything.
+
+Using the makefile: 
+
+1. edit build-config
+2. make all
+
+Building the TCK
+----------------
+1. Ensure that the junit library is present in lib/junit/junit.jar
+2. Build the RI as above.
+3. make tck (builds a jar file containing the TCK).
+4. to run the TCK 
+
+java -jar jain-sip-1.1.tck.jar -mode gui
+
+Brings up a GUI and allows you to enter the path to your implementation.
+
+Using Jakarta ant
+
+You can use Forte with the provided build.xml file or download ant from
+the apache website and use it directly. We use make as the build tool of
+choice. build.xml is not always up to date.
+
+----------------------------------------------------------------------------
+Running the examples
+
+Please ensure that the directory  classes  (relative to where you have
+built the distribution) is included in the  classpath.  Makefile targets
+and shell scripts  are provided in each example directory to run the
+examples.
+
+How to get Source Code Refreshes
+--------------------------------
+
+CVS Snapshot
+------------
+
+For those who cannot access CVS thanks to paranoid administrative policies, 
+here is a HTTP url where a nightly source only snapshot is grabbed from
+the stable CVS repository and dumped:
+
+http://is2.antd.nist.gov/pub/nist-sip/nist-sip-1.2.src.tar.gz 
+
+http://is2.antd.nist.gov/pub/nist-sip/nist-sip-1.2.src.zip 
+
+To build from this snapshot you need to grab the xerces library from
+apache and install it in the lib/xerces directory. If you started with
+the tar/zip file, just untar/unzip the source and you will overwrite
+the existing distribution.
+
+----------------------------------------------------------------------------
+CVS Access
+----------
+
+As the source is subject to frequent updates, you may also wish to access
+our public CVS repository regularly. In order to do this:
+
+1. Install cvs (if you are using windows, please install cygwin 
+and this gets you cvs).
+
+2. Log into cvs:
+
+cvs -d :pserver:anonymous@is2.antd.nist.gov:/home/nist-sip/nist-siprepository login
+
+Supply a password when prompted.
+
+Password: nist-sip
+
+3. check out the repository:
+
+cvs -d :pserver:anonymous@is2.antd.nist.gov:/home/nist-sip/nist-siprepository co nist-sip-1.2
+
+This will download all the files you need to build the source.
+
+Read nist-sip-1.2/README (this file) and follow the build instructions.
+
+4. To make an update to your copy of the source
+
+cvs -d :pserver:anonymous@is2.antd.nist.gov:/home/nist-sip/nist-siprepository update -P -d nist-sip-1.2
+
+
+
+----------------------------------------------------------------------------
+The BLEEDING EDGE repository 
+----------------------------
+
+Because we frequently collaborate with others,  we also have a public
+internal CVS repository.  We use this for our own development as well.
+This is referred to affectionately as the BLEEDING EDGE repository.
+Use our internal CVS repository if you want to be on the bleeding edge
+of development but be warned that  the code herein is likely to be
+less stable but more up to date and therefore more or less buggy as the
+case may be (consider the principle of "no risk no reward"):
+
+cvs -d :pserver:anonymous@is2.antd.nist.gov:/home/nist-sip/cvs-nist-sip-1.2/repository  login
+
+password: nist-sip
+
+Check the source out:
+
+cvs -d :pserver:anonymous@is2.antd.nist.gov:/home/nist-sip/cvs-nist-sip-1.2/repository  checkout nist-sip-1.2
+
+Update what you have checked out using the -P and -d flags 
+(-P prunes empty directories and -d adds new ones).
+
+cvs -d :pserver:anonymous@is2.antd.nist.gov:/home/nist-sip/cvs-nist-sip-1.2/repository  update -d -P nist-sip-1.2 
+
+
+----------------------------------------------------------------------------
+
+Architecture / API design:
+-------------------------
+
+JAIN-SIP:  Phelim O'Doherty (Sun Microsystems) and M. Ranganathan (NIST) 
+
+JAIN-SDP: The SDP API spec lead is Kelvin Porter from DynamicSoft.
+
+Implementation Lead:
+---------------------
+"M. Ranganathan" <mranga@nist.gov>
+
+Implementation Team
+-------------------
+"M. Ranganathan" <mranga@nist.gov>
+"Oliver Deruelle" <deruelle@antd.nist.gov>
+
+
+SUBSTANTIAL CODE CONTRIBUTIONS MADE BY THE FOLLOWING PEOPLE
+-----------------------------------------------------------
+
+1. Emil Ivov <emil_ivov@yahoo.com> Contributed a Video Softphone Under GPL.
+	This is now its own top level project and lives in 
+	
+	http://sip-communicator.dev.java.net
+
+2. Emil Ivov contributed the TCK for the Transaction and Dialog layer - this
+	is over 75% of the TCK itself. 
+
+3. Jeff Keyser  Contributed the Transaction layer to NIST-SIP 1.1 that was
+	ported to NIST-SIP 1.2. Jeff also suggested the architecture for
+	MessageProcessors and extensiblity that is a part of the implementation
+	architecture.
+
+----------------------------------------------------------------------------
+
+This code was developed in the Internetworking Technogies Group (ITG),
+Advanced Networking Technogies Division (ANTD), the National Institute of
+Standards and Technology (NIST).
+
+Group Manager: Doug Montgomery <dougm@antd.nist.gov>
+
+Division Chief: David Su <david.su@nist.gov>
+
+http://www-x.antd.nist.gov/
+
+----------------------------------------------------------------------------
+
+CHANGES from NIST-SIP 1.1
+-------------------------
+See the change list for differences between JAIN-SIP 1.0 and JAIN-SIP 1.1.
+
+Significant implementation differences - 
+
+1. The NIST headers directly implement the JAIN headers.
+2. Antlr is not used in the parser.
+3. The class hierarchy for NIST SIP has been significantly altered.
+
+
+ACKNOWLEDGEMENTS
+-----------------
+
+Marc Bednarek and Christophe Chazeau were guest researchers at NIST when
+NIST-SIP 1.0 and NIST-SIP 1.1 were in development. Their contributions
+are acknowledged.
+
+The JAIN-SIP 1.1 API design is largely based on the NIST implementation
+experiences of JAIN-SIP 1.0. The contributions of Chris Harris
+from DynamicSoft (Spec Lead for JAIN-SIP 1.0) are hereby gratefully
+acknowledged.
+
+Design contributions to JAIN SIP 1.1 API were made by:
+
+Brian O'Neill and Josh Burger from Terminal Technologies inc.
+
+Dave Ferry and Ben Evans  from  Open Cloud inc. 
+
+Brad Templeton suggested that Dialog.sendBye be changed to the more 
+generally useful Dialog.sendRequest. 
+
+Emil Ivov, Brad Templeton and others requested a method to create a cancel
+and Ack request for a client transaction and consequently 
+ClientTransaction.createCancel  was added to the API.
+
+----------------------------------------------------------------------------
+Bug Reports and enhancements for NIST-SIP 1.2 were contributed 
+by the following people:
+
+1. Brad Templeton noticed bugs in the Transaction/Dialog layer
+   Brad suggested that Dialog.sendBye be changed to a more general
+   Dialog.sendRequest Brad templeton noticed that the stack was
+   sending out a Trying immediately and thereby not giving the application
+   a chance to do so.
+
+2. Emil Ivov Contributed IPV6 Support. Emil Cotributed the Video Softphone
+    under GPL Licensing. (See acknowledgement above). Emil noticed spec
+    documentation bugs.  Emil uncovered bugs in the transaction layer
+    implementation for several corner cases. Emil and Iain Macdonnell from 
+    Sun reported a problem with SDP parsing. Emil discovered a bug in the
+    Server transaction implementation. Emil contributed comprehensive 
+    state machine unit tests of the Transaction layer to the TCK 
+    (work in progress). The softphone is distributed as its own top level
+    project and is hosted at http://sip-communicator.dev.java.net
+
+3. Andreas Byström reported bugs in set/get methods for Authentication 
+    headers (quotes were missing). Andreas reported bugs in the 
+    SDP implementation. Andreas helped to unit test call flows.  Andreas
+    found documentation bugs and reported problems and incompleteness with
+    the TCK.  Andreas noticed problems with Acking 487. Ack should be sent
+    before the TU gets called.
+
+4. Antonis Karydas reported bugs in the implementation of the JAIN transaction
+    model. Server transactions were being created with non-null TID
+    on reciept of invites. Antonis reported that To/From headers should
+    not be restricted only to use SIP urls. Antonis reported that 
+    route sets were not properly maintained in the DialogImpl. Antonis
+    reported that the DefaultRouterImplementation should be able to handle
+    NON-SIP URLs. Antonis fixed a bug in Dialog.sendRequest() and 
+    Dialog.createRequest(). Antonis reported several bugs in the strategy
+    being used for dealing with ACKs for 4xx responses. Antonis reported
+    a problem in handling Server transaction timeouts and posted a fix
+    for this problem. Antonis reported a problem in content length for
+    generation of responses. Antonis reported a problem with closely 
+    spaced ACKs for CANCELed Server Transactions.
+
+5. Beichuang reported bugs in the IM Client and presence server. BC also
+    noted that extension methods were not working (Dialogs were not being 
+    created).
+
+6. Steve Crossley reported bugs in the parser and setting local/remote party
+     of dialog layer. Steve contributed a fix to the next hop determination
+     in the Dialog code that could allow it to deal with legacy systems.
+     Steve noticed that the short form of Refer-To was not supported in
+     the parser. Steve noticed that null pointers were being generated
+     when SessionDescriptionImpl was being cloned with null fields.
+     Steve reported that content length was being set to 0 when the
+     content of the SIP message is specified as an Object.
+
+7. Viswashanti Raj Kadiyala reported a bug and contributed a bug fix
+     in the initialization of the tcp message channel. Shanti also
+     reported a bug and contributed a bug fix for reciever tagging for
+     Via headers.
+
+8. Andrew Prokop reported a bug in cloning of Authentication headers.
+
+9. Bob Johnson noticed documentation bugs.
+
+10. Mark Smith noticed that there were bugs in the handling of lr in the proxy.
+
+12. Tiago Dias (Altitude software) noticed that there was a bug with 
+	subscribe/notify processing in the proxy. Tiago noticed that
+	Notify processing in the proxy (presence extension) 
+        was not returning final response immediately and contributed
+	a bug fix for the proxy that rectified the problem.
+
+13. Roberto Tealdi reported a problem in instantiating multiple
+	stacks in multi-homed hosts. 
+
+14. Laurent Schwitzer noticed that events were being dropped (not delivered
+	to application) when request and response were closely spaced
+	in time. Laurent noticed that the recieved parameter was not
+	handling ipv6 address types.
+
+15. Stuart Woodsford (British Telecom) noticed a bug in the parsing of host 
+	names when there are more than 3 components in the host name.
+
+16. Brian J. Collins discovered bugs in the implementation of SdpFactory.
+
+17. Dekeyzer Dmitri < dimitri.dekeyzer@rd.francetelecom.com > noted that
+      PRACK was not updating the Dialog state and therefore route sets 
+      were not being applied appropriately.
+
+
+----------------------------------------------------------------------------
+
+Following is a list of people who contributed bugs reports and fixes to
+NIST-SIP 1.1 (which implemented the JAIN SIP 1.0 interefaces). Many of
+these fixes carry over to NIST-SIP 1.2 and hence their contributions
+are acknowledged in rough chronological order of first contribution.
+Acknowledgements  for contributions are listed below and in the code
+where their contributions appear:
+
+Chris Mills 
+Maria Yndefors
+Stefan Foekel
+Jakob Schlyter  
+Ganesh Jayadevan 
+Steven Lass 	
+Kim Kirby 
+Andre Pharand
+Christophe Lafaille
+Gordon Ledgard 	
+Robert Billingslea 
+Juan Fco. Martin
+Ahmet Uyar 
+Prasanna Kumar
+Lamine Brahimi
+Nadeem Anwar
+Andreas Byström
+Yann Duponchel	
+Thai Dang Vu
+Will Scullin
+Jeff Keyser 
+Robert M. Smith 
+S. Nageswara Rao
+Niklas Uhrberg 
+Eero Vaarnas 
+Laurent Schweizer 
+M.P. Ardhanareeswaran
+Stephen Jones 
+Espen Skjaeran 
+Scott Holben 
+Salva Rey Calatayd 
+Tsun-Chieh Chiang 
+Dan Timoney 
+Majdi Abuelbassal
+Srinivas Maganti
+R.W. Johnson 
+Emil Ivov
+
+
+
+The following only applies to those parts of this distribution that
+were developed at NIST. 
+
+COPYRIGHT
+---------
+
+This software was developed at the National Institute of Standards and
+Technology by employees of the Federal Government in the course of their
+official duties. Pursuant to title 17 Section 105 of the United States
+Code this software is not subject to copyright protection and is in the
+public domain. This software is an experimental system. NIST assumes
+no responsibility whatsoever for its use by other parties, and makes
+no guarantees, expressed or implied, about its quality, reliability,
+or any other characteristic. We would appreciate acknowledgement if the
+software is used.
+
+This software can be redistributed and/or modified freely. We request
+that any derivative works bear some notice that they are derived from it,
+and any modified versions bear some notice that they have been modified.
+
+
+

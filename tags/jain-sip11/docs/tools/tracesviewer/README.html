@@ -1,0 +1,89 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<TITLE>NIST SIP SIP SIGNALING TRACE VIEWER</TITLE>
+</HEAD>
+<BODY TEXT="#333333" BACKGROUND="back.gif">
+<CENTER><H1><font color="#0000FF">NIST-SIP traces viewer</font></H1></CENTER>
+ 
+<P><font size="5"><b>What's this ?</b></font></P>
+
+<P>This contains the code for a simple graphical user interface for
+visualizing SIP signaling traces
+</font>
+</P>
+
+<H2><b>Start the application</b></H2>
+    <P> You have to start the application from the command line:
+    either from the command line using the makefile: 
+<ul>
+<li>
+   When viewing traces from a file use the command (assuming the class paths
+   are properly set).
+   <font color = red > java tools.tracesviewer.TracesViewer -f serverlogfile
+   </font>
+   You can generate this log from the stack using the following property:
+   <it>gov.nist.javax.sip.SERVER_LOG</it>. Set this property to serverlogfile
+   and feed the generated trace to the tracesviewer.
+</li>
+<li> To obtain the trace file from a stack that has exported its trace file
+via RMI invoke the tool as follows:
+   <font  color="red"> make viewer  </font><br>
+ or using the "runinit.sh" script on a Linux machine.
+    <P> Usage:
+        (if classpath correctly set)
+      <font  color="red">  java tools.tracesviewer.TracesViewer -rmihost rmihost -rmiport rmiport -stackId stackId</font><br>
+        <br>
+        - "rmihost" is the host name/address for the RMI registry
+        <br>
+        - "rmiport" (optional) is the port for the rmi registry. Usually 
+	not required if you are running from the default port of 1099.
+        <br>
+        - "stackId" is an identifier for the stack (i.e. the JAIN SIP Stack
+	Name).
+        <br>
+        The values are defaulted to rmihost == 127.0.0.1
+         rmiport ==  1099. StackId is mandatory. It is the stack name property
+	of JAIN-SIP.
+        <br>
+</li>
+</ul>
+
+    </P>
+
+<a href="visualizer.gif">
+If everything is running OK it you will see a window with the retrieved traces,
+paired and color coded by transaction identifier and organized by call ID.
+</a>
+  
+<H2>
+    <font  color="red">
+        <b>
+                Important: 
+        </b>
+    </font>
+</H2>
+<P> 
+    Problems with the trace viewer:
+</P> 
+<P>
+    - When the traces are refreshed, sometimes, you must resize the
+    window to update the scroll bars and you will be able to see all
+    the SIP messages.
+
+</P> 
+
+
+
+
+<CENTER>
+<P>Author: 
+<A HREF="mailto:deruelle@nist.gov">Swing version written by Olivier Deruelle</A> 
+<A HREF="mailto:chazeau@antd.nist.gov">Based on a the AWT version developed by Christophe Chazeau</A> 
+<A HREF="mailto:mranga@nist.gov">M. Ranganathan re-did some of the parsing and sorting stuff in the original.</A> 
+</CENTER>
+ 
+</BODY>
+</HTML>
+
+

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE attributes PUBLIC "-//NetBeans//DTD DefaultAttributes 1.0//EN" "http://www.netbeans.org/dtds/attributes-1_0.dtd">
+<attributes version="1.0">
+    <fileobject name="TypedTime.java">
+        <attr name="class_dependency_gov.nist.javax.sdp.fields.SDPObject" stringvalue="TypedTime"/>
+    </fileobject>
+    <fileobject name="URIField.java">
+        <attr name="class_dependency_gov.nist.javax.sdp.fields.SDPField" stringvalue="URIField"/>
+    </fileobject>
+    <fileobject name="ConnectionField.java">
+        <attr name="class_dependency_gov.nist.javax.sdp.fields.SDPField" stringvalue="ConnectionField"/>
+        <attr name="class_dependency_javax.sdp.Connection" stringvalue="ConnectionField"/>
+    </fileobject>
+    <fileobject name="TimeField.java">
+        <attr name="class_dependency_gov.nist.javax.sdp.fields.SDPField" stringvalue="TimeField"/>
+    </fileobject>
+    <fileobject name="ZoneField.java">
+        <attr name="class_dependency_gov.nist.javax.sdp.fields.SDPField" stringvalue="ZoneField"/>
+    </fileobject>
+    <fileobject name="PhoneField.java">
+        <attr name="class_dependency_gov.nist.javax.sdp.fields.SDPField" stringvalue="PhoneField"/>
+        <attr name="class_dependency_javax.sdp.Phone" stringvalue="PhoneField"/>
+    </fileobject>
+    <fileobject name="AttributeField.java">
+        <attr name="class_dependency_gov.nist.javax.sdp.fields.SDPField" stringvalue="AttributeField"/>
+        <attr name="class_dependency_javax.sdp.Attribute" stringvalue="AttributeField"/>
+    </fileobject>
+</attributes>
