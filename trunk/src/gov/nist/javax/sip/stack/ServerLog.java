@@ -20,7 +20,7 @@ import java.util.Properties;
  * later access via RMI. The trace can be viewed with a trace viewer (see
  * tools.traceviewerapp).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2004-12-01 19:05:16 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2005-04-04 09:54:57 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -35,19 +35,19 @@ public class ServerLog {
 	/**
 	 * Dont trace
 	 */
-	public static int TRACE_NONE = 0;
+	public static final int TRACE_NONE = 0;
 
-	public static int TRACE_MESSAGES = 16;
+	public static final int TRACE_MESSAGES = 16;
 	
 	/**
 	 * Trace exception processing
 	 */
-	public static int TRACE_EXCEPTION = 17;
+	public static final int TRACE_EXCEPTION = 17;
 
 	/**
 	 * Debug trace level (all tracing enabled).
 	 */
-	public static int TRACE_DEBUG = 32;
+	public static final int TRACE_DEBUG = 32;
 
 	/**
 	 * Name of the log file in which the trace is written out
@@ -672,6 +672,11 @@ public class ServerLog {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2004/12/01 19:05:16  mranga
+ * Reviewed by:   mranga
+ * Code cleanup remove the unused SIMULATION code to reduce the clutter.
+ * Fix bug in Dialog state machine.
+ *
  * Revision 1.15  2004/09/01 02:04:16  xoba
  * Issue number:  no particular issue number.
  *
