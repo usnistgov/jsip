@@ -114,7 +114,7 @@ import java.util.TimerTask;
  *
  *</pre>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.23 $ $Date: 2004-02-25 19:17:55 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.24 $ $Date: 2004-02-26 17:30:21 $
  * @author Jeff Keyser 
  * @author M. Ranganathan <mranga@nist.gov>  
  * @author Bug fixes by Emil Ivov, Antonis Karydas.
@@ -922,7 +922,12 @@ public class SIPServerTransaction
 				if (responseImpl
 					.getCSeq()
 					.getMethod()
-					.equalsIgnoreCase(Request.BYE)) {
+					.equalsIgnoreCase(Request.BYE) && 
+				         responseImpl.getStatusCode() == 200 ) {
+					// Only transition to terminated state when
+					// 200 OK is returned for the BYE. Other
+					// status codes just result in leaving the
+					// state in COMPLETED state.
 					dialog.setState(DialogImpl.TERMINATED_STATE);
 				} else if (
 					responseImpl.getCSeq().getMethod().equalsIgnoreCase(
@@ -984,6 +989,11 @@ public class SIPServerTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.23  2004/02/25 19:17:55  mranga
+ * Submitted by:  Bruce van Gelder
+ * Reviewed by:  mranga
+ * Test original request before setting branch and port on reply
+ *
  * Revision 1.22  2004/02/13 14:12:43  mranga
  * Reviewed by:   mranga
  * Check for null dialog assignment (for spurious bye).
