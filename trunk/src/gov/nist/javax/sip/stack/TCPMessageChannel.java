@@ -33,7 +33,7 @@ import sim.java.net.*;
  * Niklas Uhrberg suggested that a mechanism be added to limit the number
  * of simultaneous open connections.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.26 $ $Date: 2004-05-18 15:26:45 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.27 $ $Date: 2004-05-30 18:55:58 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public final class TCPMessageChannel
@@ -318,10 +318,8 @@ implements SIPMessageListener, Runnable {
         //
         
         this.sendMessage(msg, sipMessage instanceof SIPRequest);
-        if (this
-        .stack
-        .serverLog
-        .needsLogging(ServerLog.TRACE_MESSAGES))
+
+        if (this.stack.serverLog.needsLogging(ServerLog.TRACE_MESSAGES))
             logMessage(sipMessage, peerAddress, peerPort, time);
     }
     
@@ -347,13 +345,8 @@ implements SIPMessageListener, Runnable {
                                                 "TCP",message,retry);
 //else
  */
-        Socket sock =
-        this.stack.ioHandler.sendBytes(
-        receiverAddress,
-        receiverPort,
-        "TCP",
-        message,
-        retry);
+        Socket sock = this.stack.ioHandler.sendBytes( receiverAddress, receiverPort,
+        	"TCP", message, retry);
         //endif
         //
         // Created a new socket so close the old one and s
@@ -588,7 +581,7 @@ implements SIPMessageListener, Runnable {
         String message;
         Pipeline hispipe = null;
         // Create a pipeline to connect to our message parser.
-        hispipe = new Pipeline(myClientInputStream,stack.readTimeout);
+        hispipe = new Pipeline(myClientInputStream,stack.readTimeout,((SIPTransactionStack)stack).timer);
         // Create a pipelined message parser to read and parse
         // messages that we write out to him.
         myParser = new PipelinedMsgParser(this, hispipe,this.stack.getMaxMessageSize());
@@ -732,6 +725,11 @@ implements SIPMessageListener, Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.26  2004/05/18 15:26:45  mranga
+ * Reviewed by:   mranga
+ * Attempted fix at race condition bug. Remove redundant exception (never thrown).
+ * Clean up some extraneous junk.
+ *
  * Revision 1.25  2004/05/16 14:13:23  mranga
  * Reviewed by:   mranga
  * Fixed the use-count issue reported by Peter Parnes.

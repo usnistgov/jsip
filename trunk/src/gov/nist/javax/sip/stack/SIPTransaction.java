@@ -11,8 +11,10 @@ import java.util.*;
 import java.net.InetAddress;
 import java.text.ParseException;
 
+
 import javax.sip.*;
 import javax.sip.message.*;
+
 
 /**
  * Abstract class to support both client and server transactions.  
@@ -21,7 +23,7 @@ import javax.sip.message.*;
  *
  * @author Jeff Keyser 
  * @author M. Ranganathan (modified Jeff's original source and aligned with JAIN-SIP 1.1)
- * @version  JAIN-SIP-1.1 $Revision: 1.21 $ $Date: 2004-05-18 15:26:44 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.22 $ $Date: 2004-05-30 18:55:58 $
  */
 public abstract class SIPTransaction
 	extends MessageChannel
@@ -121,7 +123,7 @@ public abstract class SIPTransaction
 	protected static final int MAXIMUM_RETRANSMISSION_TICK_COUNT = 8;
 
 	// Parent stack for this transaction
-	protected SIPTransactionStack parentStack;
+	protected SIPTransactionStack sipStack;
 
 	// Original request that is being handled by this transaction
 	protected SIPRequest originalRequest;
@@ -185,9 +187,54 @@ public abstract class SIPTransaction
 	// after the  Transaction goes to terminated state.
 	protected int collectionTime;
 
+
+	// Transaction timer object.
+	protected TimerTask myTimer;
+
+
+
 	public String getBranchId() {
 		return this.branch;
 	}
+
+//ifndef SIMULATION
+	class LingerTimer extends TimerTask {
+		private SIPTransaction transaction;
+		private SIPTransactionStack sipStack;
+		
+		public LingerTimer (SIPTransaction transaction) {
+			this.transaction = transaction;
+			this.sipStack = transaction.sipStack;
+		}
+
+		public void run() {
+			// release the connection associated with this transaction.
+			if (transaction instanceof SIPClientTransaction )	 {
+				this.transaction.close();
+			} else if (transaction instanceof ServerTransaction ) {
+				// Remove it from the set
+				if (LogWriter.needsLogging)
+					sipStack.logWriter.logMessage(
+							"removing" + transaction);
+					synchronized(sipStack.serverTransactions) {
+						sipStack.serverTransactions.remove(this);
+					}
+				if (  ( ! this.sipStack.cacheServerConnections )
+				   && transaction.encapsulatedChannel instanceof TCPMessageChannel
+			   	   && -- ((TCPMessageChannel) transaction.encapsulatedChannel).useCount == 0 ) {
+				  // Close the encapsulated socket if stack is configured 
+				    transaction.close();
+				} else {
+				   if (LogWriter.needsLogging
+				      &&  ( ! this.sipStack.cacheServerConnections )
+			              && transaction.isReliable())
+				      sipStack.logWriter.logMessage( "Use Count = " +
+			   	      ((TCPMessageChannel) transaction.encapsulatedChannel).useCount);
+				}
+			}
+		}
+	}
+//endif
 
 	/**
 	 *	Transaction constructor.
@@ -200,7 +247,7 @@ public abstract class SIPTransaction
 		SIPTransactionStack newParentStack,
 		MessageChannel newEncapsulatedChannel) {
 
-		parentStack = newParentStack;
+		sipStack = newParentStack;
 		encapsulatedChannel = newEncapsulatedChannel;
 		// Record this to check if the address has changed before sending
 		// message to avoid possible race condition.
@@ -259,7 +306,7 @@ public abstract class SIPTransaction
 			((Via) newOriginalRequest.getViaHeaders().getFirst()).getBranch();
 		if (newBranch != null) {
 			if (LogWriter.needsLogging)
-				parentStack.logWriter.logMessage(
+				sipStack.logWriter.logMessage(
 					"Setting Branch id : " + newBranch);
 
 			// Override the default branch with the one 
@@ -268,7 +315,7 @@ public abstract class SIPTransaction
 
 		} else {
 			if (LogWriter.needsLogging)
-				parentStack.logWriter.logMessage(
+				sipStack.logWriter.logMessage(
 					"Branch id is null - compute TID!"
 						+ newOriginalRequest.encode());
 			setBranch(newOriginalRequest.getTransactionId());
@@ -383,9 +430,9 @@ public abstract class SIPTransaction
 	public void setState(TransactionState newState) {
 		currentState = newState;
 		if (LogWriter.needsLogging) {
-			parentStack.logWriter.logMessage(
+			sipStack.logWriter.logMessage(
 				"Transaction:setState " + newState + " " + this);
-			parentStack.logWriter.logStackTrace();
+			sipStack.logWriter.logStackTrace();
 		}
 	}
 
@@ -437,7 +484,7 @@ public abstract class SIPTransaction
 	 */
 	protected final void enableTimeoutTimer(int tickCount) {
 		if (LogWriter.needsLogging)
-			parentStack.logWriter.logMessage(
+			sipStack.logWriter.logMessage(
 				"enableTimeoutTimer "
 					+ this
 					+ " tickCount "
@@ -526,7 +573,7 @@ public abstract class SIPTransaction
 	}
 
 	public SIPStack getSIPStack() {
-		return parentStack;
+		return sipStack;
 	}
 
 	public String getPeerAddress() {
@@ -588,22 +635,21 @@ public abstract class SIPTransaction
 	    // that was specified when the transaction was
 	    // created. Bug was noted by Bruce Evangelder
 	    // soleo communications.
-	    byte[] msg = messageToSend.encodeAsBytes();
 	    encapsulatedChannel.sendMessage
-		(msg, this.peerInetAddress,
-		this.peerPort, messageToSend instanceof SIPRequest);
+		(messageToSend, this.peerInetAddress, this.peerPort);
 	}
 
 	/**
 	 * Parse the byte array as a message, process it through the 
-	 * transaction, and send it to the SIP peer.
+	 * transaction, and send it to the SIP peer. This is just
+	 * a placeholder method -- calling it will result in an IO 
+	 * exception.
 	 *
 	 * @param messageBytes Bytes of the message to send.
 	 * @param receiverAddress Address of the target peer.
 	 * @param receiverPort Network port of the target peer.
 	 *
-	 * @throws IOException If there is an error parsing 
-	 * the byte array into an object.
+	 * @throws IOException If called.
 	 */
 	protected void sendMessage(
 		byte[] messageBytes,
@@ -611,17 +657,8 @@ public abstract class SIPTransaction
 		int receiverPort,
 		boolean retry)
 		throws IOException {
-
-		// Object representation of the SIP message
-		SIPMessage messageToSend;
-
-		try {
-			StringMsgParser messageParser = new StringMsgParser();
-			messageToSend = messageParser.parseSIPMessage(messageBytes);
-			sendMessage(messageToSend);
-		} catch (ParseException e) {
-			throw new IOException(e.getMessage());
-		}
+		throw new IOException
+		("Cannot send unparsed message through Transaction Channel!");
 	}
 
 	/**
@@ -708,10 +745,6 @@ public abstract class SIPTransaction
 	 */
 	public Dialog getDialog() {
 		return this.dialog;
-
-// 	return this.dialog == null?  (Dialog) parentStack.dummyDialog : 
-//			(Dialog) this.dialog;
-//
 
 	}
 
@@ -827,13 +860,13 @@ public abstract class SIPTransaction
 
 				// If the branch equals the branch in
 				// this message,
-				if (getBranch().equals(messageBranch)
+				if (getBranch().equalsIgnoreCase(messageBranch)
 					&& topViaHeader.getSentBy().equals(
 						((Via) getOriginalRequest().getViaHeaders().getFirst())
 							.getSentBy())) {
 					transactionMatches = true;
 					if (LogWriter.needsLogging)
-						parentStack.logWriter.logMessage("returning  true");
+						sipStack.logWriter.logMessage("returning  true");
 				}
 
 			} else {
@@ -842,7 +875,7 @@ public abstract class SIPTransaction
 				// CallID, CSeq number, and top Via
 				// headers are the same,
 				if (LogWriter.needsLogging)
-					parentStack.logWriter.logMessage(
+					sipStack.logWriter.logMessage(
 						"testing against " + getOriginalRequest());
 
 				if (getOriginalRequest()
@@ -892,6 +925,7 @@ public abstract class SIPTransaction
 	 */
 	public void close() {
 		this.encapsulatedChannel.close();
+		this.myTimer.cancel();
 	}
 
 	public boolean isSecure() {
@@ -926,10 +960,17 @@ public abstract class SIPTransaction
 		this.eventPending = false;
 	}
 
+	protected abstract void startTransactionTimer();
+
 
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.21  2004/05/18 15:26:44  mranga
+ * Reviewed by:   mranga
+ * Attempted fix at race condition bug. Remove redundant exception (never thrown).
+ * Clean up some extraneous junk.
+ *
  * Revision 1.20  2004/04/07 00:19:24  mranga
  * Reviewed by:   mranga
  * Fixes a potential race condition for client transactions.

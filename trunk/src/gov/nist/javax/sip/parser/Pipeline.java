@@ -12,6 +12,7 @@ public class Pipeline extends  InputStream {
         private Timer timer;
         private InputStream pipe;
 	private int readTimeout;
+	private TimerTask myTimerTask;
         
         class MyTimer extends TimerTask {
             Pipeline pipeline;
@@ -54,20 +55,21 @@ public class Pipeline extends  InputStream {
 
         public void startTimer() {
             if (this.readTimeout == -1) return;
-            this.timer = new Timer();
             //TODO make this a tunable number. For now 4 seconds
             // between reads seems reasonable upper limit.
-            timer.schedule(new MyTimer(this), this.readTimeout);
+	    this.myTimerTask = new MyTimer(this);
+            this.timer.schedule(this.myTimerTask, this.readTimeout);
         }
         
         public void stopTimer() {
             if (this.readTimeout == -1) return;
-            this.timer.cancel();
+	    this.myTimerTask.cancel();
         }
 
-	public Pipeline (InputStream pipe,int readTimeout) {
+	public Pipeline (InputStream pipe,int readTimeout, Timer timer) {
                 // pipe is the Socket stream 
                 // this is recorded here to implement a timeout.
+		this.timer = timer;
                 this.pipe = pipe;
 		buffList = new LinkedList();
 		this.readTimeout = readTimeout;

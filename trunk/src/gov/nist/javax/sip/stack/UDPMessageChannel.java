@@ -46,7 +46,7 @@ import sim.java.net.*;
  * this code that was sending it into an infinite loop when a bad incoming
  * message was parsed.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.19 $ $Date: 2004-05-18 15:26:45 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.20 $ $Date: 2004-05-30 18:55:58 $
  */
 public class UDPMessageChannel
 extends MessageChannel
@@ -83,7 +83,6 @@ implements ParseExceptionListener, Runnable {
     
     private byte[] msgBytes;
     
-    private int packetLength;
     
     private DatagramPacket incomingPacket;
     
@@ -247,7 +246,7 @@ implements ParseExceptionListener, Runnable {
             }
             
             this.peerAddress = packet.getAddress();
-            this.packetLength = packet.getLength();
+            int packetLength = packet.getLength();
             // Read bytes and put it in a eueue.
             byte[] bytes = packet.getData();
             byte[] msgBytes = new byte[packetLength];
@@ -532,12 +531,9 @@ implements ParseExceptionListener, Runnable {
 //endif
 //
         
-        sendMessage(
-        msg,
-        peerAddress,
-        peerPort,
-        peerProtocol,
-        sipMessage instanceof SIPRequest);
+        sendMessage( msg, peerAddress, peerPort, peerProtocol, 
+			sipMessage instanceof SIPRequest);
+
         if (stack.serverLog.needsLogging(ServerLog.TRACE_MESSAGES))
             logMessage(sipMessage, peerAddress, peerPort, time);
     }
@@ -577,6 +573,7 @@ implements ParseExceptionListener, Runnable {
                 + new String(msg));
                 this.stack.logWriter.logMessage("*******************\n");
             }
+
         }
         DatagramPacket reply =
         new DatagramPacket(msg, msg.length, peerAddress, peerPort);
@@ -679,8 +676,8 @@ implements ParseExceptionListener, Runnable {
                     // bind to any interface and port.
 //ifdef SIMULATION
 /*
-                                        sock = new SimDatagramSocket();
-                                        sock.setLocalAddress(stack.stackInetAddress);
+                   sock = new SimDatagramSocket();
+                   sock.setLocalAddress(stack.stackInetAddress);
 //else
  */
                    sock = new DatagramSocket();
@@ -850,6 +847,11 @@ implements ParseExceptionListener, Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2004/05/18 15:26:45  mranga
+ * Reviewed by:   mranga
+ * Attempted fix at race condition bug. Remove redundant exception (never thrown).
+ * Clean up some extraneous junk.
+ *
  * Revision 1.18  2004/05/16 14:13:23  mranga
  * Reviewed by:   mranga
  * Fixed the use-count issue reported by Peter Parnes.

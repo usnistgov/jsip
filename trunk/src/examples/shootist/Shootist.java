@@ -194,7 +194,7 @@ public class Shootist implements SipListener {
 				    Request inviteRequest = 
 					dialog.createRequest(Request.INVITE);
 				    ((SipURI)inviteRequest.getRequestURI()).removeParameter("transport");
-				    ((ViaHeader)inviteRequest.getHeader(ViaHeader.NAME)).setTransport("UDP");
+				    ((ViaHeader)inviteRequest.getHeader(ViaHeader.NAME)).setTransport("udp");
 				    inviteRequest.addHeader(contactHeader);
 				    try {Thread.sleep(100); } catch (Exception ex) {} 
 				    ClientTransaction ct = 
@@ -449,6 +449,11 @@ public class Shootist implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.26  2004/05/16 14:13:20  mranga
+ * Reviewed by:   mranga
+ * Fixed the use-count issue reported by Peter Parnes.
+ * Added property to prevent against content-length dos attacks.
+ *
  * Revision 1.25  2004/04/07 18:56:05  mranga
  * Reviewed by:   got rid of confusing sleep
  *
