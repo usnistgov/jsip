@@ -27,7 +27,7 @@ import sim.java.net.*;
  * @author Jeff Keyser (original) 
  * @author M. Ranganathan <mranga@nist.gov>  <br/> (Added Dialog table).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.34 $ $Date: 2004-06-21 04:59:52 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.35 $ $Date: 2004-06-21 05:32:22 $
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public abstract class SIPTransactionStack
@@ -400,7 +400,7 @@ public abstract class SIPTransactionStack
 	 * @param messageFactory User-implemented factory for processing
 	 *	messages.
 	 */
-	protected SIPTransactionStack(SIPStackMessageFactory messageFactory) {
+	protected SIPTransactionStack(StackMessageFactory messageFactory) {
 		this();
 		super.sipMessageFactory = messageFactory;
 	}
@@ -846,6 +846,9 @@ public abstract class SIPTransactionStack
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.34  2004/06/21 04:59:52  mranga
+ * Refactored code - no functional changes.
+ *
  * Revision 1.33  2004/06/17 15:22:31  mranga
  * Reviewed by:   mranga
  *
