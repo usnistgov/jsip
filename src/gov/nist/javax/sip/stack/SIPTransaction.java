@@ -457,7 +457,7 @@ public abstract class SIPTransaction
 	 * timers of this transaction, and fired these events 
 	 * if necessary.
 	 */
-	synchronized final void fireTimer(
+	final void fireTimer(
 	) {
 		// If the timeout timer is enabled,
 		if( timeoutTimerTicksLeft != -1 ) {

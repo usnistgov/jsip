@@ -227,8 +227,10 @@ implements SIPMessageListener, Runnable {
     private void sendMessage(byte[] msg) throws IOException {
         Socket sock = this.stack.ioHandler.sendBytes(this.peerAddress,
         this.peerPort,this.peerProtocol,msg);
-        // Created a new socket so close the old one and s
-        if (sock != mySock) {
+        // Created a new socket so close the old one and stick the new
+	// one in its place but dont do this if it is a datagram socket.
+	// (could have replied via udp but received via tcp!).
+        if (sock != mySock && sock != null ) {
             try {
                 if (mySock != null)
                     mySock.close();
@@ -246,7 +248,7 @@ implements SIPMessageListener, Runnable {
         SimSocket sock = this.stack.ioHandler.sendBytes(this.peerAddress,
         this.peerPort,this.peerProtocol,msg);
         // Created a new socket so close the old one and s
-        if (sock != mySock) {
+        if (sock != mySock && sock != null ) {
             try {
                 if (mySock != null)
                     mySock.close();
@@ -309,7 +311,8 @@ implements SIPMessageListener, Runnable {
 //endif
 //
         // Created a new socket so close the old one and s
-        if (sock != mySock) {
+	// Check for null (bug fix sent in by Christophe)
+        if (sock != mySock && sock != null ) {
             try {
                 if (mySock != null)
                     mySock.close();
