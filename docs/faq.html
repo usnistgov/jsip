@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+    
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=iso-8859-1">
+    
+  <meta name="Author" content="M. Ranganathan">
+    
+  <meta name="GENERATOR"
+ content="Mozilla/4.75 [en] (X11; U; Linux 2.2.14-5.0 i686) [Netscape]">
+  <title>Frequently Asked Questions (List likely to grow with time)</title>
+</head>
+  <body text="#000000" background="back.gif" link="#0000ff"
+ vlink="#ff0000" alink="#000088">
+   
+<h2>Frequently Asked questions </h2>
+<ul>
+ <li>Who owns NIST-SIP? <br/>
+You! it is in the public domain. However, this only applies to
+everything that was developed by us at NIST!   This includes the stack
+(gov.nist....) the SDP implementation, the proxy, the trace viewer tool 
+and IM client. 
+When the TCK appears, it will also be open and in the public domain.
+Specific copyrights apply everything else. These are noted in the code
+and copyright statements included with the documents.   </li>
+
+<li>What are the restrictions on its use? <br>
+ Do whatever you want with it but just dont demand support. If you do use 
+it in your product or project, be aware that it is experimental code and is
+therefore subject to frequent changes.   Do acknowledge that your code was
+derived from NIST-SIP. It helps us keep the project alive. </li>
+<li>What is its intended use? <br/>
+JAIN-SIP/ NIST-SIP is meant for SIP developers. 
+As such it is not a stand-alone product.
+Its primary use is for integrating SIP into your applications.  If you
+have an applicaton already and wish to SIP-enable it, JAIN-SIP/NIST-SIP
+is a reasonable choice.
+</li>
+<li>Show me a quick how-to <br/>
+See examples/shootist
+</li>
+<li>Why is there only superficial resemblance between JAIN SIP 1.0  and
+JAIN SIP 1.1?  
+    <ul>
+ <li>The previous API had a few problems.
+These are documented in the JAIN-SIP-INTEREST
+discussion list (ah! diplomacy!!).  </li>
+ <li>The scope of the specification was made broader  (support for dialogs,
+Routers, support for SIMPLE REFER etc.). </li>
+ <li>The RFC changed a lot over between  2543 and 3261. </li>
+ 
+    </ul>
+  </li>
+  <li>How involved is it to port applications between JAIN-SIP 1.0 and  JAIN-SIP
+1.1 <br>
+ It is not difficult but it is not trivial. Anecdotal evidence indicates several
+hours  or maybe a day or two of effort.  </li>
+  <li> Is JAIN-SIP 1.1 Stateful/Stateless or DialogStateful <br>
+ All of the above! You have the option to create a dialog for the first (dialog
+creating) transaction. Once a dialog is created, however, all incoming requests
+that belong to the dialog are automatically given a server transaction and
+are hence handled statefully. </li>
+  <li>Why does my application get null transaction ID for  INVITE transactions
+?   <br>
+ In order to support both  statefull and stateless modes of operation, the
+INIVITE request gets delivered to your application with a null TID. You can
+ choose to create a ServerTransacton and associated dialog using <it>provider.createNewServerTransaction(inviteRequest)</it>
+  </li>
+   <li>Who manages From/To tags   <br>
+ From the client side, for the initial outgoing transaction,  the application
+needs to specify a From tag. From the server side, the application specifies
+the initial To tag when responding to the request. After that, the stack
+manages things. Transactions are assigned to dialogs based on tags in requests/respomses.
+  </li>
+<li>Wy Dialog.sendRequest but no Dialog.sendResponse <br/>
+ Dialog.sendRequest uses route set and other dialog specific information. 
+Responses take all the information they need from the transaction.</li>
+<li>Does the Softphone work on Linux?<br/>
+Yes. You need a 2.4 Kernel and the latest version of the Java Media Framework.
+<br>
+</li>
+<li>How do I cancel a transaction. <br>
+<ul>
+ <li> cancelreq = originalClientTransaction.createCancelRequest() </li>
+      <li> ClientTransaction ct = sipProvider.getNewClientTransaction(cancelreq) 
+      </li>
+      <li> ct.sendRequest()</li>
+    </ul>
+ </li>
+
+<li> What is the difference between Transaction.sendRequest,
+Dialog.sendRequest and SipProvider.sendRequest <br/>
+Dialog.sendRequest stamps the outgoing request with dialog state. This includes
+the local sequence number, Request URI and Route set. For requests within
+a dialog you should use Dialog.sendRequest. For sending request for a 
+transaction that is not associated with a Dialog, you should use 
+Transaction.sendRequest. For sending requests statelessly, you should use
+SipProvider.sendRequest. Stateless requests do not result in the creation
+of a new Transaction or Dialog.</li>
+
+<li> What does the Router do? <br/>
+The router routes requests outside a dialog. 
+</li>
+
+<li> How much backward compatibility with 2543 do you support <br/>
+We do not guarantee complete backward compatibility with RFC 2543. We support
+it to the extent that the implementation does not break. If there is a life
+threatening conflict between RFC 2543 and RFC 3261, then RFC 3261 wins.
+</li>
+
+<li> What is the difference between Trasaction.sendAck 
+and  Dialog.sendAck ? <br/>
+The latter includes dialog state and places a fresh branch id in the Via.
+This ensures it will not match any transaction on the server. Use this wen
+ACKing 2xx responses and the former when ACKing error responses (407) 
+and the like. </li>
+
+<li> Why is there no Provider method for creating dialogs? <br/>
+Dialog creation and destruction is managed by the stack. When the 
+client transcaction is created, a Dialog is associated with it but
+not mapped (its state is null). When you complete the transaction 
+successfully it actually gets mapped and a valid state is assigned to it.
+On the server side, when you get the request, provided the method of the
+request has the ability to create a Dialog, you can elect to create a 
+Dialog by creating a new Server Transaction at which point the stack
+automatically creates a Dialog for transaction but defers actually mapping
+it until a final response is sent out. </li>
+
+<li>I am constructing a stateful proxy/B2BUA. I forward the request
+after modifying it and then respond statefully. 
+Why are the tags/headers/something else modified in the response ? <br/>
+NIST-SIP does not copy the request when it hands it over to the listener. 
+This is for efficiency. If you want to modify an outgoing request  (for example
+if you are building a stateful proxy server or B2BUA)  clone it. JAIN-SIP
+specifies a Deep cloning operation for this purpose.</li>
+
+<li> How to set up messenger for SIP?<br/>
+Enable communications services in Accounts tab. Go to Advanced and set your 
+proxy from there.
+</li>
+
+<li>Does NIST-SIP do eager or lazy parsing? I see no parse exceptions on
+get methods. What happened to all the JAIN SIP lazy parsing stuff? <br/>
+The new JAIN Spec does not specify the type of parser to be employed. An
+implementation may employ lazy parsing. Parse failures are silent. 
+If  something
+parsing fails then the header is silently added
+to the uparseable header list and null is returned to the application.
+The application can later retrieve it as a String as an Unparseable header.
+This can happen either lazily or eagerly; however, Lazy/eager parsing is
+not exposed at the API level. NIST-SIP employs an eager strategy (mostly
+because of implementation ease). This is likely to be revised but your app
+does not get affected. 
+</li>
+
+<li>What support is provided for sending out-of-dialog requests? <br/>
+Use clientTransaction.sendRequest(). This will get the next hop from the
+Router and use that to send the request. If you use dialog.sendRequest,
+the next hop is obtained from the Dialog route set if one exists.
+</li>
+
+
+</ul>
+
+<h2> Frequently Questionable Questions (List likely to grow in time) </h2>
+
+<ul>
+
+<li>Why is the version number of NIST-SIP 1.2 whereas JAIN-SIP 1.1  ? <br/>
+Odd you should ask. The idea is to stay one step ahead.  </li>
+
+<li>What is the [NIST/DOC/White House] position on SIP? 
+<br/> 
+If you have to ask, you are likely not to be a developer and NIST-SIP is
+not for you. Direct such questions (in triplicate) to the Congressional
+Sub-committee on SIP and other signaling protocols (or cat them 3 times
+to dev/null if you prefer).
+</li>
+
+<li>Are you selling/buying something? <br/>
+No - just making something. 
+</li>
+
+<li> Do you control government policy/procurement/purchasing? <br/> 
+NO NO and NO </li>
+
+<li> Why? <br/> Why not. </li>
+
+<li> Why not? </br> Why. </li>
+
+</ul>
+
+Happy Coding! If anything breaks, don't worry (what? me?? worry???), 
+be happy and let us know  at
+<a href=mailto:nist-sip-dev@antd.nist.gov>nist-sip-dev@antd.nist.gov</a> <br/>
+
+
+M. Ranganathan, Olivier Deruelle and Emil Ivov.
+<br>
+</body>
+</html>

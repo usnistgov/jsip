@@ -1,0 +1,34 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Frameset//EN" "http://www.w3.org/TR/REC-html40/frameset.dtd">
+<html>
+<head>
+  <title></title>
+</head>
+   <body>
+<!-- ========== START OF NAVBAR ========== -->This package contains all the
+headers interfaces supported by this specification. SIP header fields are
+similar to HTTP header fields in both syntax and semantics. This specification
+models each SIP header as a specific interface as opposed to have a single
+generic interface to handle all header information. It is deemed more explicit
+for protocol support to define protocol characteristics as opposed to generic
+interfaces. This specification supports all the headers defined in RFC 3261
+and other headers introduced by supporting the following additional RFC's:<br>
+<ul>
+  <li>RFC3262 - RAckHeader and RSeqHeaders for the reliable delivery of provisional
+responses.</li>
+  <li>RFC3265 - AllowEventsHeader, EventHeader and SubscriptionStateHeader
+to support the event notification framework.</li>
+  <li>RFC3326 - ReasonHeader to support information on why the request was
+issued.</li>
+<li> RFC3515 - ReferToHeader to support recipients to refer requests to another
+resource</li>
+</ul>
+  
+<p>This specification also provides a mechanism to support other extension
+Headers. If a SIP stack vendor supports such extension headers these must
+extend the ExtensionHeader interface, which contains header name and header
+value attributes. </p>
+<p>
+   Additionally this package contains a HeaderFactory class that defines methods for creating new headers. The HeaderFactory is a singleton object, which can be obtained from the {@link javax.sip.SipFactory}.
+ 
+</body>
+</html>

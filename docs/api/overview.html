@@ -1,0 +1,78 @@
+
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="M. Ranganathan">
+   <meta name="GENERATOR" content="Mozilla/4.75 [en] (X11; U; Linux 2.2.14-5.0 i686) [Netscape]">
+</head>
+<body text="#000000" bgcolor="#FFFFFF" link="#0000FF" vlink="#FF0000" alink="#000088">
+<h2>JAIN SIP 1.1 Reference implementation Description</h2>
+The packages with the prefix gov.nist.javax.sip in distribution
+collectively form the official reference implementation  (RI) for JAIN SIP 1.1.
+<a href=jain-sip-overview.html>JAIN
+-SIP</a> is a JAVA standard API for low level access to a SIP protocol stack.
+The organization of the implementation is slightly different
+from that of the jain interfaces.  Here is a brief description of the
+JAIN-SIP implelemetnation packages.
+
+<h3> The Parser Package (gov.nist.javax.sip.parser) </h3>
+
+The parser is intended to be embedded in a SIP protocol stack or test tool
+and for building sip extensions.&nbsp;&nbsp; The parser takes as input
+either a buffer or an input stream and produces as output a parsed message
+structure. The stream (PipelinedMsgParser) based parser is intended to
+be used when TCP is used as the transport and the buffer based parser
+is intended to be used when UDP is used as the transport mechanism (the
+RI can be used over both TCP and UDP but does not yet implement sips).
+This package also contains parsers for each of the headers defined in
+the JAIN SIP specification.
+
+
+<h3> The Stack package (gov.nist.javax.sip.stack) </h3>
+
+The function function of the stack is to listen for incoming messages,
+parse such messages and call a handler to do the appropriate thing
+with the parsed message.  The handler creates a JAIN event and hands
+it off to the registered JAIN listener. The stack package includes a
+Transaction and a Dialog layer.  The Transaction layer takes care of
+retransmission and matching requests to responses and other gory details.
+The Dialog layer groups dialogs and is of use in building Dialog stateful
+components such as User Agents and Proxy servers.  These implement the
+corresponding JAIN SIP interfaces directly.
+
+<h3>The JAIN Header package implementation (gov.nist.javax.sip.header) </h3>
+
+This package contains implementations of the header interfaces in the
+corresponding JAIN package as well as the header factory implementation.
+
+<h3>The JAIN Message package implementation (gov.nist.javax.sip.header) </h3>
+
+This package implements SIP Request and Response interfaces and the Message
+Factory interface.
+
+<h3>The JAIN Address package implementation (gov.nist.javax.sip.address) </h3>
+
+This package contains classes that implement the JAIN-SIP Address factory
+and classes that implement the URI's defined in the JAIN-SIP spec.
+
+<h2>The SDP package </h2>
+
+The hierarchy contained in gov.nist.javax.sdp contains an implementation 
+of the JAIN SDP API (JSR 141). As such this is a stand-alone package; however,
+its primary use here is so that it can be used in conjunction with the 
+SIP packages described above.
+
+<h2> Backward Compatiblity Notice </h2>
+
+<A href="./change-log.html">
+JAIN-SIP 1.1 is not backward compatible with JAIN-SIP 1.0 </A> 
+and consequently NIST-SIP 1.2 is not backward compatible with NIST-SIP 1.1 
+(which implemented JAIN-SIP 1.0).
+However, JAIN-SIP 1.1 supports many features that were not supported by
+the previous API and more over NIST-SIP 1.1 has some protocol bugs which
+have hopefully been resolved here. 
+
+
+</body>
+</html>
