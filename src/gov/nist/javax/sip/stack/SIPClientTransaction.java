@@ -120,11 +120,15 @@ import sim.java.*;
  *@author Bug fixes by Emil Ivov.
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
- *@version  JAIN-SIP-1.1 $Revision: 1.22 $ $Date: 2004-04-07 00:19:23 $
+ *@version  JAIN-SIP-1.1 $Revision: 1.23 $ $Date: 2004-04-09 11:51:26 $
  */
 public class SIPClientTransaction
 	extends SIPTransaction
 	implements SIPServerResponseInterface, javax.sip.ClientTransaction {
+	
+	// max # of pending responses that can we can buffer (to avoid
+	// response flooding DOS attack).
+	private static final int MAX_PENDING_RESPONSES = 4;
 
 	private LinkedList pendingResponses;
 
@@ -405,8 +409,10 @@ public class SIPClientTransaction
 		// Defer processing if a previous event has been placed in the processing queue.
 		// bug shows up on fast dual processor machines where a subsequent response
 		// arrives before a previous one completes processing.
-		if (this.eventPending) {
-			this.pendingResponses.add(new PendingResponse(transactionResponse,sourceChannel));
+		if (this.eventPending ) {
+			if (this.pendingResponses.size() < MAX_PENDING_RESPONSES) 
+				this.pendingResponses.add
+				(new PendingResponse(transactionResponse,sourceChannel));
 			return;
 		}
 
@@ -1008,6 +1014,11 @@ public class SIPClientTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.22  2004/04/07 00:19:23  mranga
+ * Reviewed by:   mranga
+ * Fixes a potential race condition for client transactions.
+ * Handle re-invites statefully within an established dialog.
+ *
  * Revision 1.21  2004/04/06 01:19:00  mranga
  * Reviewed by:   mranga
  * suppress 100 if invite client transaction is in the Proceeding state
