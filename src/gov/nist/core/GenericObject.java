@@ -284,14 +284,14 @@ public abstract class GenericObject implements Serializable {
 	 */
 
 	protected void sprint(int intField) {
-		sprint((new Integer(intField)).toString());
+		sprint(String.valueOf(intField));
 	}
 
 	/**
 	 * Pretty printing accumulator function for shorts
 	 */
 	protected void sprint(short shortField) {
-		sprint((new Short(shortField)).toString());
+		sprint(String.valueOf(shortField));
 	}
 
 	/**
@@ -299,7 +299,7 @@ public abstract class GenericObject implements Serializable {
 	 */
 
 	protected void sprint(char charField) {
-		sprint((new Character(charField)).toString());
+		sprint(String.valueOf(charField));
 
 	}
 
@@ -308,7 +308,7 @@ public abstract class GenericObject implements Serializable {
 	 */
 
 	protected void sprint(long longField) {
-		sprint((new Long(longField)).toString());
+		sprint(String.valueOf(longField));
 	}
 
 	/**
@@ -316,7 +316,7 @@ public abstract class GenericObject implements Serializable {
 	 */
 
 	protected void sprint(boolean booleanField) {
-		sprint((new Boolean(booleanField)).toString());
+		sprint(String.valueOf(booleanField));
 	}
 
 	/**
@@ -324,7 +324,7 @@ public abstract class GenericObject implements Serializable {
 	 */
 
 	protected void sprint(double doubleField) {
-		sprint((new Double(doubleField)).toString());
+		sprint(String.valueOf(doubleField));
 	}
 
 	/**
@@ -332,7 +332,7 @@ public abstract class GenericObject implements Serializable {
 	 */
 
 	protected void sprint(float floatField) {
-		sprint((new Float(floatField)).toString());
+		sprint(String.valueOf(floatField));
 	}
 
 	/**
@@ -934,6 +934,10 @@ public abstract class GenericObject implements Serializable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/01/22 14:23:45  mranga
+ * Reviewed by:   mranga
+ * Fixed some minor formatting issues.
+ *
  * Revision 1.4  2004/01/22 13:26:27  sverker
  * Issue number:
  * Obtained from:
