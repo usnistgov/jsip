@@ -333,7 +333,7 @@ implements javax.sip.SipStack {
             try {
                 MessageProcessor messageProcessor =
                 this.createMessageProcessor(port,transport);
-                lip = new ListeningPointImpl(this);
+                lip = new ListeningPointImpl(this,port,transport);
 		lip.messageProcessor = messageProcessor;
 		messageProcessor.setListeningPoint(lip);
                 this.listeningPoints.put(key,lip);
@@ -396,7 +396,7 @@ implements javax.sip.SipStack {
 		throw new NullPointerException("null listeningPoint arg");
         ListeningPointImpl lip = (ListeningPointImpl) listeningPoint;
         // Stop the message processing thread in the listening point.
-        lip.messageProcessor.stop();
+        super.removeMessageProcessor(lip.messageProcessor);
         String key = lip.getKey();
         this.listeningPoints.remove(key);
         

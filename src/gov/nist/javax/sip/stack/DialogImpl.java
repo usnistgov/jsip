@@ -1324,6 +1324,7 @@ public class DialogImpl implements javax.sip.Dialog {
 		if (dialogRequest.getMethod().equals(Request.BYE))
 		    this.setState(COMPLETED_STATE);
             } catch (IOException ex) {
+                ex.printStackTrace();
                 throw new SipException("error sending message");
             }
         } else {
@@ -1353,6 +1354,7 @@ public class DialogImpl implements javax.sip.Dialog {
 		if (dialogRequest.getMethod().equalsIgnoreCase(Request.BYE))
 		    this.delete();
             } catch (IOException ex) {
+                ex.printStackTrace();
                 throw new SipException("error sending message");
             }
             
