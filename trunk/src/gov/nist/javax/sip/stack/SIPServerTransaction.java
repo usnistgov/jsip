@@ -114,7 +114,7 @@ import java.util.TimerTask;
  *
  *</pre>
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.22 $ $Date: 2004-02-13 14:12:43 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.23 $ $Date: 2004-02-25 19:17:55 $
  * @author Jeff Keyser 
  * @author M. Ranganathan <mranga@nist.gov>  
  * @author Bug fixes by Emil Ivov, Antonis Karydas.
@@ -560,11 +560,16 @@ public class SIPServerTransaction
 		try {
 			// Provided we have set the banch id for this we set the BID for the
 			// outgoing via.
-			if (this.getBranch() != null)
+			if (this.getOriginalRequest().getTopmostVia().getBranch() != null)
 				transactionResponse.getTopmostVia().setBranch(this.getBranch());
 			else
 				transactionResponse.getTopmostVia().removeParameter(
 					ParameterNames.BRANCH);
+
+			// Make the topmost via headers match identically for the transaction 
+			// rsponse.
+			if ( ! this.getOriginalRequest().getTopmostVia().hasPort() )
+				transactionResponse.getTopmostVia().removePort();
 		} catch (ParseException ex) {
 			ex.printStackTrace();
 		}
@@ -979,6 +984,10 @@ public class SIPServerTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.22  2004/02/13 14:12:43  mranga
+ * Reviewed by:   mranga
+ * Check for null dialog assignment (for spurious bye).
+ *
  * Revision 1.64  2004/02/13 14:01:02  mranga
  * Assign dialog ptr for all transactions
  *
