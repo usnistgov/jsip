@@ -19,7 +19,7 @@ import gov.nist.core.*;
  * NIST-SIP stack and event model with the JAIN-SIP stack. Implementors
  * of JAIN services need not concern themselves with this class.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.21 $ $Date: 2004-02-26 14:28:50 $
+ * @version JAIN-SIP-1.1 $Revision: 1.22 $ $Date: 2004-03-05 20:36:55 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Bug fix Contributions by Lamine Brahimi and  Andreas Bystrom. <br/>
@@ -51,7 +51,7 @@ public class NistSipMessageHandlerImpl
 		if (listeningPoint == null) {
 			if (LogWriter.needsLogging)
 				sipStackImpl.logMessage(
-					"Dropping message: No listening point " + "registered!");
+				"Dropping message: No listening point registered!");
 			return;
 		}
 		this.rawMessageChannel = incomingMessageChannel;
@@ -262,22 +262,19 @@ public class NistSipMessageHandlerImpl
 					.findTransaction(sipRequest, true) 
 				!= null) {
 					return;
-				} // TODO check for whether dialog exists here.
+				} 
 			}
 			String dialogId = sipRequest.getDialogId(true);
 			DialogImpl dialog = sipStackImpl.getDialog(dialogId);
 
 			// Sequence numbers are supposed to be incremented
-			// monotonically (actually sequentially),
+			// monotonically (actually sequentially) for RFC 3261
 
 			if (dialog != null && 
 				transaction != null && 
 				! sipRequest.getMethod().equals(Request.BYE) &&
 				! sipRequest.getMethod().equals(Request.CANCEL) &&
 				! sipRequest.getMethod().equals(Request.ACK)) {
-				// already dealt with bye above.
-				// Note that route updates are only effective until
-				// Dialog is in the confirmed state.
 				if (  dialog.getRemoteSequenceNumber() >= 
 				      sipRequest.getCSeq().getSequenceNumber() ) {
 				      if (LogWriter.needsLogging) {
@@ -384,6 +381,7 @@ public class NistSipMessageHandlerImpl
 			}
 			return;
 		}
+		this.rawMessageChannel = incomingMessageChannel;
 
 		SIPTransactionStack sipStack =
 			(SIPTransactionStack) sipProvider.sipStackImpl;
@@ -424,25 +422,16 @@ public class NistSipMessageHandlerImpl
 					}
 				}
 			}
-			// long receptionTime = System.currentTimeMillis();
 			// Pass the response up to the application layer to handle
 			// statelessly.
-
 			// Dialog is null so this is handled statelessly
+
 			ResponseEvent sipEvent =
 				new ResponseEvent(sipProvider, null, (Response) sipResponse);
 			sipProvider.handleEvent(sipEvent, transaction);
-			//transaction.logResponse(sipResponse,
-			//       receptionTime,"Retransmission");
 			return;
 		}
 
-		this.rawMessageChannel = incomingMessageChannel;
-
-		// Retrieve the client transaction for which we are getting
-		// this response.
-		SIPClientTransaction clientTransaction =
-			(SIPClientTransaction) this.transactionChannel;
 
 
 		SipListener sipListener = sipProvider.sipListener;
@@ -485,6 +474,12 @@ public class NistSipMessageHandlerImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.21  2004/02/26 14:28:50  mranga
+ * Reviewed by:   mranga
+ * Moved some code around (no functional change) so that dialog state is set
+ * when the transaction is added to the dialog.
+ * Cleaned up the Shootist example a bit.
+ *
  * Revision 1.20  2004/02/25 23:02:13  mranga
  * Submitted by:  jeand
  * Reviewed by:   mranga
