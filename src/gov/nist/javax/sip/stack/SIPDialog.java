@@ -23,7 +23,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2004-10-28 19:02:51 $
+ * @version JAIN-SIP-1.1 $Revision: 1.8 $ $Date: 2004-11-18 18:59:40 $
  * 
  * @author M. Ranganathan <mranga@nist.gov><br/>Bugs were reported by Antonis
  *         Karydas, Brad Templeton and Alex Rootham.
@@ -1499,8 +1499,9 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
         try {
             TCPMessageChannel oldChannel = null;
 	    TLSMessageChannel oldTLSChannel = null;
-            MessageChannel messageChannel = sipStack
-                    .createRawMessageChannel(hop);
+
+	   
+            MessageChannel messageChannel = sipStack.createRawMessageChannel(hop);
             if (((SIPClientTransaction) clientTransactionId).encapsulatedChannel instanceof TCPMessageChannel) {
                 // Remove this from the connection cache if it is in the
                 // connection
@@ -1558,13 +1559,18 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
                 // if one considers the 'first Route URI' of a
                 // request constructed according to 12.2.1.1
                 // to be the request URI when the route set is empty.
+		if (LogWriter.needsLogging) 
+			sipStack.logWriter.logMessage("Null message channel using outbound proxy !" );
                 Hop outboundProxy = sipStack.getRouter().getOutboundProxy();
                 if (outboundProxy == null)
                     throw new SipException("No route found!");
                 messageChannel = sipStack
                         .createRawMessageChannel(outboundProxy);
-            }
-            ((SIPClientTransaction) clientTransactionId).encapsulatedChannel = messageChannel;
+                ((SIPClientTransaction) clientTransactionId).encapsulatedChannel = messageChannel;
+            } else {
+		if (LogWriter.needsLogging) 
+			sipStack.logWriter.logMessage("using message channel " + messageChannel );
+	    }
 
             if (messageChannel != null &&
 	        messageChannel instanceof TCPMessageChannel ) 
@@ -1619,8 +1625,8 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
             }
         } else {
             // I am the client so I do not swap headers.
-            SIPClientTransaction clientTransaction = (SIPClientTransaction) this
-                    .getFirstTransaction();
+            //SIPClientTransaction clientTransaction = 
+	    // (SIPClientTransaction) this.getFirstTransaction();
 
             try {
 
@@ -1739,6 +1745,12 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/10/28 19:02:51  mranga
+ * Submitted by:  Daniel Martinez
+ * Reviewed by:   M. Ranganathan
+ *
+ * Added changes for TLS support contributed by Daniel Martinez
+ *
  * Revision 1.6  2004/10/05 16:22:37  mranga
  * Issue number:
  * Obtained from:
