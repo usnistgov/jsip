@@ -335,7 +335,7 @@ implements javax.sip.SipStack {
                 this.createMessageProcessor(port,transport);
                 lip = new ListeningPointImpl(this);
 		lip.messageProcessor = messageProcessor;
-                
+		messageProcessor.setListeningPoint(lip);
                 this.listeningPoints.put(key,lip);
                 return (ListeningPoint) lip;
             } catch (java.io.IOException ex) {

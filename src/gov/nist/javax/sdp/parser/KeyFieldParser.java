@@ -2,7 +2,7 @@ package gov.nist.javax.sdp.parser;
 import gov.nist.javax.sdp.fields.*;
 import gov.nist.core.*;
 import java.text.*;
-/**
+/** Parser for key field. Ack: bug fix contributed by espen@java.net
  *
  * @author  deruelle
  * @version 1.0
@@ -14,31 +14,43 @@ public class KeyFieldParser extends SDPParser {
 	this.lexer = new Lexer("charLexer",keyField);
     }
     
- 
-    
     public KeyField keyField() throws ParseException  {
         try{
             this.lexer.match ('k');
             this.lexer.SPorHT();
             this.lexer.match('=');
             this.lexer.SPorHT();
-            
-            KeyField keyField=new KeyField();
-            NameValue nameValue= nameValue();
-            String name=nameValue.getName();
-            String value=  (String) nameValue.getValue();
-            
-            keyField.setType(name);
-            
-            keyField.setKeyData(value);
-            
+
+            KeyField keyField = new KeyField();
+            //Espen: Stealing the approach from AttributeFieldParser from from here...
+            NameValue nameValue = new NameValue();
+
+            int ptr =   this.lexer.markInputPosition();
+            try {
+              String name=lexer.getNextToken(':');
+              this.lexer.consume(1);
+              String value = lexer.getRest();
+              nameValue = new NameValue(name.trim(),value.trim());
+            } catch (ParseException ex) {
+              this.lexer.rewindInputPosition(ptr);
+              String rest = this.lexer.getRest();
+              if ( rest == null)
+                throw new ParseException(this.lexer.getBuffer(),
+                                         this.lexer.getPtr());
+              nameValue=new NameValue(rest.trim(),null);
+            }
+            keyField.setType(nameValue.getName());
+            keyField.setKeyData((String) nameValue.getValue());
+            this.lexer.SPorHT();
+
             return keyField;
         }
         catch(Exception e) {
             throw new ParseException(lexer.getBuffer(),lexer.getPtr());
-        }  
-        
+        }
     }
+    
+ 
 
     public SDPField parse() throws ParseException {
 	return this.keyField();
@@ -63,7 +75,6 @@ public class KeyFieldParser extends SDPParser {
 
 	}
 **/
-
 
 
 }
