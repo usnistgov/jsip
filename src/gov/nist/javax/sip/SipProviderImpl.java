@@ -22,7 +22,7 @@ import sim.java.net.*;
 
 /** Implementation of the JAIN-SIP provider interface.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.19 $ $Date: 2004-04-19 22:32:02 $
+ * @version JAIN-SIP-1.1 $Revision: 1.20 $ $Date: 2004-04-26 21:30:47 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -206,8 +206,23 @@ public final class SipProviderImpl
 		if (sipRequest.getTopmostVia() != null ) {
 		   HostPort hp = sipRequest.getTopmostVia().getSentBy();
 		   int port = hp.getPort() == -1 ? 5060: hp.getPort();
-		   if (sipStackImpl.getListeningPoint(port,sipRequest.getTopmostVia().getTransport()) == null) 
-			throw new TransactionUnavailableException (" No listening point for " + 
+
+		   Iterator it = sipStackImpl.getListeningPoints();
+		   boolean found = false;
+		   // Note that lp.getPort() will in general return something different
+		   // than the port used to create the LP when STUN is enabled.
+		   while (it.hasNext()) {
+			ListeningPoint lp = (ListeningPoint) it.next();
+			if (lp.getPort() == port && 
+			    lp.getTransport().equalsIgnoreCase
+			    (sipRequest.getTopmostVia().getTransport())) {
+					found = true;
+					break;
+			}
+		   }
+
+		    if (! found) throw new TransactionUnavailableException 
+			(" No listening point for " + 
 			sipRequest.getTopmostVia().getTransport() 
 			+ " at port " + port);
 		}
@@ -698,6 +713,10 @@ public final class SipProviderImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.19  2004/04/19 22:32:02  mranga
+ * Reviewed by:   mranga
+ * Remove empty route list.
+ *
  * Revision 1.18  2004/04/08 22:08:27  mranga
  * Reviewed by:   mranga
  * tighten up checks for client transaction creation - make sure that transport
