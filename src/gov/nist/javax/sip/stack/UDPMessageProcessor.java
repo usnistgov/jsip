@@ -23,7 +23,7 @@ import  sim.java.net.*;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size). 
  * Each UDP message is processed in its own thread). 
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.18 $ $Date: 2004-07-16 17:13:56 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.19 $ $Date: 2004-08-30 16:04:48 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -119,8 +119,7 @@ public class UDPMessageProcessor extends MessageProcessor {
 		this.port = port;
 		this.mappedPort = port;
 		try  {
-		  this.sock = new DatagramSocket
-				(port, sipStack.stackInetAddress);
+		  this.sock = sipStack.getNetworkLayer().createDatagramSocket(port, sipStack.stackInetAddress);
 		   // Create a new datagram socket.
 		   sock.setReceiveBufferSize(MAX_DATAGRAM_SIZE);
 		} catch (SocketException ex) {
@@ -426,6 +425,12 @@ public class UDPMessageProcessor extends MessageProcessor {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2004/07/16 17:13:56  mranga
+ * Submitted by:  Damand Joost
+ * Reviewed by:   mranga
+ *
+ * Make threads into daemon threads, use address for received = parameter on via
+ *
  * Revision 1.17  2004/06/27 00:41:52  mranga
  * Submitted by:  Thomas Froment and Pierre De Rop
  * Reviewed by:   mranga
