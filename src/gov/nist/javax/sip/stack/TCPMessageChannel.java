@@ -224,9 +224,9 @@ implements SIPMessageListener, Runnable {
      */
 //ifndef SIMULATION
 //
-    private void sendMessage(byte[] msg) throws IOException {
+    private void sendMessage(byte[] msg, boolean retry ) throws IOException {
         Socket sock = this.stack.ioHandler.sendBytes(this.peerAddress,
-        this.peerPort,this.peerProtocol,msg);
+        this.peerPort,this.peerProtocol,msg, retry );
         // Created a new socket so close the old one and stick the new
 	// one in its place but dont do this if it is a datagram socket.
 	// (could have replied via udp but received via tcp!).
@@ -244,9 +244,9 @@ implements SIPMessageListener, Runnable {
     }
 //else
 /*
-    private void sendMessage(byte[] msg) throws IOException {
+    private void sendMessage(byte[] msg, boolean retry ) throws IOException {
         SimSocket sock = this.stack.ioHandler.sendBytes(this.peerAddress,
-        this.peerPort,this.peerProtocol,msg);
+        this.peerPort,this.peerProtocol,msg, retry );
         // Created a new socket so close the old one and s
         if (sock != mySock && sock != null ) {
             try {
@@ -281,7 +281,7 @@ implements SIPMessageListener, Runnable {
 //endif
 //
 
-        this.sendMessage(msg);
+        this.sendMessage(msg, sipMessage instanceof SIPRequest );
         if (this.stack.serverLog.needsLogging
 	    (this.stack.serverLog.TRACE_MESSAGES))
             logMessage (sipMessage,peerAddress,peerPort,time);
@@ -295,7 +295,7 @@ implements SIPMessageListener, Runnable {
      * @throws IOException If there is a problem connecting or sending.
      */
     public void sendMessage(byte message[], InetAddress receiverAddress,
-    int receiverPort)
+    int receiverPort, boolean retry )
     throws IOException{
         if (message == null || receiverAddress == null)
             throw new IllegalArgumentException("Null argument");
@@ -303,11 +303,11 @@ implements SIPMessageListener, Runnable {
 /*
         SimSocket sock = this.stack.ioHandler.sendBytes
 				(receiverAddress,receiverPort,
-        			"TCP",message);
+        			"TCP",message,retry);
 //else
 */
         Socket sock = this.stack.ioHandler.sendBytes
-		(receiverAddress,receiverPort, "TCP",message);
+		(receiverAddress,receiverPort, "TCP",message, retry );
 //endif
 //
         // Created a new socket so close the old one and s
@@ -362,7 +362,7 @@ implements SIPMessageListener, Runnable {
             // Otherwise, message is already formatted --
             // just return it
             try {
-                sendMessage(msgString.getBytes());
+                sendMessage(msgString.getBytes(), false);
             } catch (IOException ioex) {
                 if (this.stack.logWriter.needsLogging)
                     stack.logWriter.logException(ioex);
