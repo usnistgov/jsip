@@ -27,12 +27,14 @@ import java.util.Iterator;
  * get the stack the process messages.
  * This will start the necessary threads that wait for incoming SIP messages.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2004-12-12 23:47:19 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.8 $ $Date: 2005-02-14 15:06:45 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * 
  * Jeff Keyser suggested that MessageProcessors be accessible and applications
  * should have control over message processors.
+ * Jeyashankher, jai@lucent.com found a bug in this code.
+ * 
  * 
  * IPv6 Support added by Emil Ivov (emil_ivov@yahoo.com)<br/>
  * Network Research Team (http://www-r2.u-strasbg.fr))<br/>
@@ -587,8 +589,16 @@ public abstract class SIPMessageStack {
 	public void addMessageProcessor(MessageProcessor newMessageProcessor)
 		throws IOException {
 		synchronized (messageProcessors) {
-			messageProcessors.add(newMessageProcessor);
+			// Suggested changes by Jeyashankher, jai@lucent.com
+			// newMessageProcessor.start() can fail 
+		        // because a local port is not available
+			// This throws an IOException. 
+			// We should not add the message processor to the
+			// local list of processors unless the start() 
+			// call is successful.
 			newMessageProcessor.start();
+			messageProcessors.add(newMessageProcessor);
+			
 		}
 	}
 
@@ -733,6 +743,13 @@ public abstract class SIPMessageStack {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2004/12/12 23:47:19  mranga
+ * Issue number:  46
+ * Submitted by:  espen
+ * Reviewed by:   M. Ranganathan
+ *
+ * Use the local ip address when creating outbound TCP and TLS sockets.
+ *
  * Revision 1.6  2004/12/01 19:05:15  mranga
  * Reviewed by:   mranga
  * Code cleanup remove the unused SIMULATION code to reduce the clutter.
