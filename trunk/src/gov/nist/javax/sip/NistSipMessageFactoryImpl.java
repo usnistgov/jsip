@@ -6,6 +6,7 @@ package gov.nist.javax.sip;
 import gov.nist.javax.sip.stack.*;
 import gov.nist.javax.sip.message.*;
 import gov.nist.core.*;
+import javax.sip.*;
 
 /**
  * Implements all the support classes that are necessary for the nist-sip
@@ -17,7 +18,7 @@ import gov.nist.core.*;
  * messageChannel, the NIST-SIP stack calls the SIPStackMessageFactory 
  * implementation that has been registered with it to process the request.)
  *
- * @version JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2004-01-22 13:26:28 $
+ * @version JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2004-04-06 12:28:22 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -51,9 +52,7 @@ public class NistSipMessageFactoryImpl implements SIPStackMessageFactory {
 		}
 		SIPTransactionStack theStack =
 			(SIPTransactionStack) messageChannel.getSIPStack();
-		retval.sipStack = theStack;
-		SipStackImpl sipStackImpl = (SipStackImpl) theStack;
-		retval.sipStackImpl = sipStackImpl;
+		retval.sipStackImpl = (SipStackImpl)theStack;
 		retval.listeningPoint =
 			messageChannel.getMessageProcessor().getListeningPoint();
 		if (retval.listeningPoint == null)
@@ -79,12 +78,8 @@ public class NistSipMessageFactoryImpl implements SIPStackMessageFactory {
 	public SIPServerResponseInterface newSIPServerResponse(
 		SIPResponse sipResponse,
 		MessageChannel messageChannel) {
-		NistSipMessageHandlerImpl retval = new NistSipMessageHandlerImpl();
 		SIPTransactionStack theStack =
 			(SIPTransactionStack) messageChannel.getSIPStack();
-		retval.sipStack = theStack;
-		SipStackImpl sipStackImpl = (SipStackImpl) theStack;
-		retval.sipStackImpl = sipStackImpl;
 		// Tr is null if a transaction is not mapped.
 		SIPTransaction tr =
 			(SIPTransaction) ((SIPTransactionStack) theStack).findTransaction(
@@ -94,6 +89,37 @@ public class NistSipMessageFactoryImpl implements SIPStackMessageFactory {
 			sipStackImpl.getLogWriter().logMessage(
 				"Found Transaction " + tr + " for " + sipResponse);
 
+		if ( tr != null ) {
+		    // Prune unhealthy responses early if handling statefully.
+		    // If the state has not yet been assigned then this is a
+		    // spurious response. This was moved up from the transaction
+		    // layer because it helps catch errors early and also
+		    // avoids a possible allocation and race condition.
+		    if (tr.getState() == null)  {
+			if (LogWriter.needsLogging)
+			   sipStackImpl.logMessage( "Dropping response - null transaction state" );
+			return null;
+		        // Ignore 1xx 
+		    }  else if (TransactionState.COMPLETED == tr.getState()
+			&& sipResponse.getStatusCode() / 100 == 1) {
+			if (LogWriter.needsLogging) 
+			    sipStackImpl.logMessage ( "Dropping response - late arriving "  
+				+ sipResponse.getStatusCode());
+			return null;
+		    } else if (TransactionState.PROCEEDING == tr.getState()
+			 && sipResponse.getStatusCode() == 100 ) { 
+			// Ignore 100 if received after 
+			// transaction is in the proceeding state.
+			// bug report from Peter Parnes.
+			if (LogWriter.needsLogging) 
+			    sipStackImpl.logMessage
+				("Dropping response - late arriving 100 in proceeding state");
+			return null;
+		    }
+		}
+
+		NistSipMessageHandlerImpl retval = new NistSipMessageHandlerImpl();
+		retval.sipStackImpl = (SipStackImpl) theStack;
 		retval.transactionChannel = tr;
 
 		retval.listeningPoint =
@@ -108,4 +134,28 @@ public class NistSipMessageFactoryImpl implements SIPStackMessageFactory {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/01/22 13:26:28  sverker
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  sverker
+ * Reviewed by:   mranga
+ *
+ * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  */

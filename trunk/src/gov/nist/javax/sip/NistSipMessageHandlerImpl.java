@@ -19,7 +19,7 @@ import gov.nist.core.*;
  * NIST-SIP stack and event model with the JAIN-SIP stack. Implementors
  * of JAIN services need not concern themselves with this class.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.24 $ $Date: 2004-03-31 20:30:46 $
+ * @version JAIN-SIP-1.1 $Revision: 1.25 $ $Date: 2004-04-06 12:28:23 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Bug fix Contributions by Lamine Brahimi and  Andreas Bystrom. <br/>
@@ -30,11 +30,9 @@ public class NistSipMessageHandlerImpl
 
 	protected SIPTransaction transactionChannel;
 	protected MessageChannel rawMessageChannel;
-	// protected SIPRequest sipRequest;
-	// protected SIPResponse sipResponse;
 	protected ListeningPointImpl listeningPoint;
-	protected SIPTransactionStack sipStack;
 	protected SipStackImpl sipStackImpl;
+
 	/**
 	 * Process a request.
 	 *@exception SIPServerException is thrown when there is an error
@@ -479,6 +477,14 @@ public class NistSipMessageHandlerImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.24  2004/03/31 20:30:46  deruelle_jean
+ * Fix bug on dropping out of sequence BYE
+ *
+ * Issue number:
+ * Obtained from: Jean Deruelle
+ * Submitted by: Ranganathan
+ * Reviewed by:
+ *
  * Revision 1.23  2004/03/25 15:15:03  mranga
  * Reviewed by:   mranga
  * option to log message content added.
