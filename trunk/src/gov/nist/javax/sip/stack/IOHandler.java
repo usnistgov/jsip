@@ -239,10 +239,12 @@ class IOHandler {
 						// old connection is bad.
 						// remove from our table.
 						removeSocket(key);
-						clientSock.close();
+						try {
+						    clientSock.close();
+						} catch (Exception e) {}
 						clientSock = null;
 						retry_count++;
-					}
+					} 
 				}
 			}
 			if (clientSock == null) {
@@ -287,6 +289,13 @@ class IOHandler {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.20  2004/04/02 19:36:19  mranga
+ * Reviewed by:   mranga
+ *
+ * Post check for possible race condition when a listener runs for a long time
+ * and a duplicate request arrives in that time window was generalized to
+ * transactions that dont necessarily belong in any dialog.
+ *
  * Revision 1.19  2004/03/30 15:17:38  mranga
  * Reviewed by:   mranga
  * Added reInitialization for stack in support of applets.
