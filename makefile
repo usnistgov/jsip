@@ -153,6 +153,13 @@ jarfile:
 	$(JAR) -cvf ../$(RI_JAR) ./gov/nist/javax/sip ./gov/nist/core
 
 
+# A single jar that has everything.
+sipsdpjar: classfiles
+	$(RM) sip-sdp.jar
+	cd classes;	\
+	$(JAR) -cvf ../sip-sdp.jar  ./gov ./javax 
+
+
 
 clean: emacsclean
 	cd $(SRCROOT)/gov/nist/javax/sip;$(MAKE)  clean 
