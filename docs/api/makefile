@@ -5,9 +5,9 @@ ROOT=../../
 -include $(ROOT)/build-config
 
 clean:
-	\rm -rf  gov
-	\rm  -rf jain
-	\rm  -rf javax
+	$(shell find gov -name "*.html" -print -exec rm {} \;)
+	$(shell find javax -name "*.html" -print -exec rm {} \;)
+	$(shell find class-use -name "*.html" -print -exec rm {} \;)
 	\rm  -f  allclasses-frame.html
 	\rm  -f  allclasses-noframe.html
 	\rm  -f  constant-values.html
