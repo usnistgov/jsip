@@ -5,10 +5,10 @@ ROOT=../../
 -include $(ROOT)/build-config
 
 clean:
-	$(shell find gov -name "*.html" -print -exec rm {} \;)
-	$(shell find javax -name "*.html" -print -exec rm {} \;)
-	$(shell find class-use -name "*.html" -print -exec rm {} \;)
-	$(shell find index-files -use -name "*.html" -print -exec rm {} \;)
+	$(RM) -rf gov
+	$(RM) -rf javax
+	$(RM)  -rf index-files
+	$(RM)  -rf class-use
 	$(RM)  allclasses-frame.html
 	$(RM)  allclasses-noframe.html
 	$(RM)  constant-values.html
