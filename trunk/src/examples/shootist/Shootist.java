@@ -4,6 +4,7 @@ import javax.sip.address.*;
 import javax.sip.header.*;
 import javax.sip.message.*;
 import java.util.*;
+import java.io.*;
 
 //ifdef SIMULATION
 /*
@@ -51,8 +52,19 @@ public class Shootist implements SipListener {
 			// This will close down the stack and exit all threads
 			tcpProvider.removeSipListener(this);
 			udpProvider.removeSipListener(this);
-			this.sipStack.deleteSipProvider(udpProvider);
-			this.sipStack.deleteSipProvider(tcpProvider);
+			while (true) {
+			  try {
+			      this.sipStack.deleteSipProvider(udpProvider);
+			      this.sipStack.deleteSipProvider(tcpProvider);
+			      break;
+			    } catch (ObjectInUseException  ex)  {
+			        try {  
+					Thread.sleep(1000);
+			     	} catch (InterruptedException e) {
+					continue;
+			     	}
+			   }
+			}
 			this.sipStack = null;
 			this.tcpProvider = null;
 			this.udpProvider = null;
@@ -63,7 +75,10 @@ public class Shootist implements SipListener {
 			this.messageFactory = null;
 			this.udpListeningPoint = null;
 			this.tcpListeningPoint = null;
+			this.reInviteCount = 0;
 			System.gc();
+			// Redo this from the start.
+			// this.init();
 		} catch (Exception ex) { ex.printStackTrace(); }
 	}
 	
@@ -114,6 +129,7 @@ public class Shootist implements SipListener {
 
 			// so that the finalization method will run 
 			// and exit all resources.
+			this.shutDown();
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -131,7 +147,7 @@ public class Shootist implements SipListener {
 			"Response received with client transaction id "
 				+ tid
 				+ ":\n"
-				+ response);
+				+ response.getStatusCode());
 		if (tid == null) {
 			System.out.println("Stray response -- dropping ");
 			return;
@@ -368,13 +384,20 @@ public class Shootist implements SipListener {
 					+ "a=ptime:20\r\n";
 /**
 			StringBuffer sdpBuff = new StringBuffer();
-			for (int i = 0; i < 50; i++)  {
+			for (int i = 0; i < 500; i++)  {
 				sdpBuff.append(sdp);
 			}
 			String sdpData = sdpBuff.toString();
+			File dataFile = new File("data.txt");
+			long length = dataFile.length();
+		        FileInputStream fis = new FileInputStream(dataFile);
+			byte[] contents = new byte[(int)length];
+			fis.read(contents);
+			System.out.println("length = " + contents.length);
 **/
+			byte[]  contents = sdpData.getBytes();
 
-			request.setContent(sdpData, contentTypeHeader);
+			request.setContent(contents, contentTypeHeader);
 
 			extensionHeader =
 				headerFactory.createHeader(
@@ -394,7 +417,6 @@ public class Shootist implements SipListener {
 
 			// send the request out.
 			listener.inviteTid.sendRequest();
-			System.out.println("Size = " + sdpData.length());
 
 		} catch (Exception ex) {
 			System.out.println(ex.getMessage());
@@ -410,6 +432,14 @@ public class Shootist implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.22  2004/03/18 14:40:37  mranga
+ * Reviewed by:   mranga
+ * Removed event scanning thread from provider and added a single class that
+ * scans for events and delivers to the listener (previously each provider had
+ * its own scanning thread).
+ * Added code in stack finalization to exit all threads and release all resources
+ * held by the stack.
+ *
  * Revision 1.21  2004/03/12 21:54:32  mranga
  * Reviewed by:   mranga
  * minor re-arrangement
