@@ -3,11 +3,6 @@
 <attributes version="1.0">
     <fileobject name="SipProviderImpl.java">
         <attr name="class_dependency_java.lang.Runnable" stringvalue="SipProviderImpl"/>
-        <attr name="class_dependency_gov.nist.javax.sip.stack.SIPTransactionEventListener" stringvalue="SipProviderImpl"/>
         <attr name="class_dependency_javax.sip.SipProvider" stringvalue="SipProviderImpl"/>
-    </fileobject>
-    <fileobject name="NistSipMessageHandlerImpl.java">
-        <attr name="class_dependency_gov.nist.javax.sip.stack.SIPServerRequestInterface" stringvalue="NistSipMessageHandlerImpl"/>
-        <attr name="class_dependency_gov.nist.javax.sip.stack.SIPServerResponseInterface" stringvalue="NistSipMessageHandlerImpl"/>
     </fileobject>
 </attributes>
