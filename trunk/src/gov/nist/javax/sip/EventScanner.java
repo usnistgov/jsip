@@ -19,7 +19,7 @@ import sim.java.net.*;
 */
 /** Event Scanner to deliver events to the Listener.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2004-03-30 15:38:16 $
+ * @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-04-02 19:36:18 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -161,13 +161,6 @@ class EventScanner implements Runnable {
 								+ "nevents "
 								+ pendingEvents.size());
 					}
-					/**
-					if (sipEvent == null) {
-						if (LogWriter.needsLogging)
-							sipStackImpl.logMessage("Exiting provider thread!");
-						return;
-					}
-					**/
 					SipListener sipListener = ((SipProviderImpl)sipEvent.getSource()).sipListener;
 					if (sipEvent instanceof RequestEvent) {
 						// this.currentTransaction =
@@ -176,9 +169,24 @@ class EventScanner implements Runnable {
 						// transaction
 						SIPRequest sipRequest =
 							(SIPRequest) ((RequestEvent) sipEvent).getRequest();
-						if (sipStackImpl.isDialogCreated(sipRequest.getMethod())) {
-							SIPTransaction tr =
-								sipStackImpl.findTransaction(sipRequest, true);
+						// If this is a dialog creating method for which a server
+						// transaction already exists or a method which is
+						// not dialog creating and not within an existing dialog 
+						// (special handling for cancel) then check to see if
+						// the listener already created a transaction to handle
+						// this request and discard the duplicate request if a
+						// transaction already exists. If the listener chose
+						// to handle the request statelessly, then the listener
+						// will see the retransmission.
+						// Note that in both of these two cases, JAIN SIP will allow
+						// you to handle the request statefully or statelessly.
+						// An example of the latter case is REGISTER and an example
+						// of the former case is INVITE.
+						if (sipStackImpl.isDialogCreated(sipRequest.getMethod()) ||
+						    ( (!sipRequest.getMethod().equals(Request.CANCEL)) &&
+						      sipStackImpl.getDialog(sipRequest.getDialogId(true)) 
+						       == null) ) {
+						       SIPTransaction tr = sipStackImpl.findTransaction(sipRequest, true);
 							// If transaction already exists bail.
 							if (tr != null) {
 								if (LogWriter.needsLogging)
