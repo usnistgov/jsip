@@ -22,7 +22,7 @@ import sim.java.net.*;
 
 /** Implementation of the JAIN-SIP provider interface.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.20 $ $Date: 2004-04-26 21:30:47 $
+ * @version JAIN-SIP-1.1 $Revision: 1.21 $ $Date: 2004-05-12 20:48:54 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -501,6 +501,8 @@ public final class SipProviderImpl
 				Via via = sipRequest.getTopmostVia();
 				via.setBranch(bid);
 				SIPRequest newRequest;
+				/**
+				// This needs to be done at the receiver.
 				// Do not create a transaction for this request. If it has
 				// Mutliple route headers then take the first one off the
 				// list and copy into the request URI.
@@ -512,7 +514,9 @@ public final class SipProviderImpl
 					rl.remove();
 					if (! rl.hasNext()) newRequest.removeHeader(RouteHeader.NAME);
 				} else
-					newRequest = sipRequest;
+				**/
+
+				newRequest = sipRequest;
 				MessageChannel messageChannel =
 					sipStack.createRawMessageChannel(nextHop);
 				if (messageChannel != null)
@@ -713,6 +717,10 @@ public final class SipProviderImpl
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.20  2004/04/26 21:30:47  mranga
+ * Reviewed by:   mranga
+ * Corrected test for STUN support.
+ *
  * Revision 1.19  2004/04/19 22:32:02  mranga
  * Reviewed by:   mranga
  * Remove empty route list.
