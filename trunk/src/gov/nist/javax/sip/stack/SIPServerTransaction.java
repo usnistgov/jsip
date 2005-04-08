@@ -112,10 +112,11 @@ import java.util.LinkedList;
  *  
  * </pre>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.57 $ $Date: 2005-03-29 03:49:59 $
+ * @version JAIN-SIP-1.1 $Revision: 1.58 $ $Date: 2005-04-08 15:38:43 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
- * @author Bug fixes by Emil Ivov, Antonis Karydas, Daniel Martinez.
+ * @author Bug fixes by Emil Ivov, Antonis Karydas, Daniel Martinez, Daniel
+ * Vazques-Illa
  * @author Performance enhancements and bug fixes contributed by Thomas Froment
  * 
  * and Pierre De Rop. <br/><a href=" {@docRoot}/uncopyright.html">This code is
@@ -502,6 +503,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 
         // Can only process a single request directed to the
         // transaction at a time.
+/*
         if (this.eventPending) {
             synchronized (this.pendingRequests) {
                 if (this.pendingRequests.size() < 4)
@@ -511,6 +513,7 @@ public class SIPServerTransaction extends SIPTransaction implements
             sipStack.putPending(this);
             return;
         }
+*/
 
         try {
 
@@ -724,7 +727,13 @@ public class SIPServerTransaction extends SIPTransaction implements
                         if (this.dialog.getState() == null)
                             this.dialog.setState(SIPDialog.EARLY_STATE);
                     }
-                } else if (statusCode >= 300 && statusCode <= 699) {
+                } else if (statusCode >= 300 && statusCode <= 699  &&
+		    ( this.dialog.getState() == null ||
+		      this.dialog.getState().equals(DialogState.EARLY))) {
+		    // The Dialog is terminated IFF this status code 
+		    // is detected when the Dialog is in the EARLY state
+		    // Bug was reported by Daniel Machin Vazquez-Illa
+                    // <dmachin@dit.upm.es>
                     this.dialog.setState(SIPDialog.TERMINATED_STATE);
                 }
             } else if (transactionResponse.getCSeq().getMethod().equals(
@@ -1222,6 +1231,29 @@ public class SIPServerTransaction extends SIPTransaction implements
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.57  2005/03/29 03:49:59  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  mranga
+ *
+ * Remove transaction for early bye.
+ * Reviewed by:
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.56  2005/01/06 19:37:04  mranga
  * Submitted by:  Bill Roome
  * Reviewed by:   M. Ranganathan
