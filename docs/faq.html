@@ -100,6 +100,7 @@ on? </a> </li>
 <li><a href="#43">How do you use the STUN support?</a></li>
 <li><a href="#44">Can you delay sending responses to after the Listener runs ?</a></li>
 <li><a href="#45">How do you build it under the ibm java implementation?</a></li>
+<li><a href="#46">What happens to Terminated Transactions ?</a></li>
 <li><a href="#questionables"> I have some questionable questions. Where do I look? <a/></li>
 </ol>
 <br/>
@@ -593,6 +594,22 @@ the files were "US-ASCII" rather than UTF-8.
 Then I edited my build-config and added "-encoding US-ASCII" to the end
 of the line that defines JAVAC for OS other than Windows_NT.  Then "make
 ri" completed without incident.
+<hr size="2" noshade="noshade"> 
+<a name="46"> </a>
+<li> What happens when the Server is overloaded ? <br/>
+Once the Transaction is terminated, it is done and the server discards
+records of it. Thus you can well see the following behavior:
+<ol>
+<li> Other party sends INVITE, times out and retransmits several times
+<li> The SipListener finally sees the first transmission and, being
+busy, responds "503 service unavailable"
+<li> Later, the SipListener sees one of the retransmissions. The
+SipListener does not keep track of terminated calls, and since it now
+has resources, it responds "200 OK"
+<li> The other party ignores the "200 OK" since it already has seen the 503
+<li> Eventually, the server INVITE transaction times out.
+</ol>
+
 
 </li>
 
@@ -658,7 +675,6 @@ be happy and let us know  at
 <li> Why NIST ? <br/>
 This is a very deep question. If you are a congress person, then "If not NIST, 
 who else?". If you are not a congress person, "Why not NIST?". 
-
 
 </ul>
 
