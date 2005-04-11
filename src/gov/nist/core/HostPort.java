@@ -115,6 +115,12 @@ public final class HostPort extends GenericObject {
 			return host.getInetAddress();
 	}
 
+	public void merge(Object mergeObject) {
+		super.merge (mergeObject);
+		if (port == -1)
+			port = ((HostPort) mergeObject).port;
+	}
+
 	public Object clone() {
 		HostPort retval = new HostPort();
 		retval.port = port;
@@ -125,6 +131,9 @@ public final class HostPort extends GenericObject {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2005/04/04 17:20:11  dmuresan
+ * Simplified gov.nist.core.HostPort implementation.
+ *
  * Revision 1.4  2004/01/22 13:26:27  sverker
  * Issue number:
  * Obtained from:
