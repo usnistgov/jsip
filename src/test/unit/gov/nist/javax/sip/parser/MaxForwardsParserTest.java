@@ -18,7 +18,7 @@ public class MaxForwardsParserTest extends ParserTestCase {
 	public void testParser() {
 		
 		String content[] = {
-			"Max-Forwards: 3495\n",
+			"Max-Forwards: 34\n",
 			"Max-Forwards: 0 \n"
                 };
 			
