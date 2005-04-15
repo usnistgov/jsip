@@ -29,7 +29,7 @@ import gov.nist.core.*;
  * entire message is parsed in one feld swoop).
  *
  *
- * @version JAIN-SIP-1.1 $Revision: 1.10 $ $Date: 2005-04-04 10:03:12 $
+ * @version JAIN-SIP-1.1 $Revision: 1.11 $ $Date: 2005-04-15 19:17:07 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -736,9 +736,18 @@ public class StringMsgParser {
 
 /**
 * Test code.
+*/
 	public static void main(String[] args) throws ParseException {
 		String messages[] =
-			{
+			{ "SIP/2.0 200 OK\r\n"
+		        + "To: \"The Little Blister\" <sip:LittleGuy@there.com>;tag=469bc066\r\n"
+		        + "From: \"The Master Blaster\" <sip:BigGuy@here.com>;tag=11\r\n"
+		        + "Via: SIP/2.0/UDP 139.10.134.246:5060;branch=z9hG4bK8b0a86f6_1030c7d18e0_17;received=139.10.134.246\r\n"
+		        + "Call-ID: 1030c7d18ae_a97b0b_b@8b0a86f6\r\n"
+		        + "CSeq: 1 SUBSCRIBE\r\n"
+		        + "Contact: <sip:172.16.11.162:5070>\r\n"
+		        + "Content-Length: 0\r\n\r\n",
+
 				"SIP/2.0 180 Ringing\r\n"
 					+ "Via: SIP/2.0/UDP 172.18.1.29:5060;branch=z9hG4bK43fc10fb4446d55fc5c8f969607991f4\r\n"
 					+ "To: \"0440\" <sip:0440@212.209.220.131>;tag=2600\r\n"
@@ -779,17 +788,42 @@ public class StringMsgParser {
 					+ "a=rtpmap:18 G729A/8000\r\n"
 					+ "a=ptime:20\r\n" };
 
-		for (int i = 0; i < messages.length; i++) {
-			StringMsgParser smp = new StringMsgParser();
-			SIPMessage sipMessage = smp.parseSIPMessage(messages[i]);
-			System.out.println("encoded " + sipMessage.toString());
-			System.out.println("dialog id = " + sipMessage.getDialogId(false));
+		 class ParserThread implements Runnable {
+		     String[] messages;
+		    public ParserThread( String[] messagesToParse ) {
+		        this.messages = messagesToParse;
+		    }
+		    public void run( ) {
+		        for (int i = 0; i < messages.length; i++) {
+					StringMsgParser smp = new StringMsgParser();
+					try {
+					    SIPMessage sipMessage = smp.parseSIPMessage(messages[i]);
+					    System.out.println( " i = " + i + " branchId = " + sipMessage.getTopmostVia().getBranch());
+						//System.out.println("encoded " + sipMessage.toString());
+					} catch ( ParseException ex ) {
+					    
+					}
+				
+					//System.out.println("dialog id = " + sipMessage.getDialogId(false));
+				} 
+		    }
 		}
+		 
+		 for ( int i = 0; i < 20; i++ ) {
+		     new Thread(new ParserThread(messages)).start();
+		 }
+		
+		
+		
 	}
-**/
+	
+
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2005/04/04 10:03:12  dmuresan
+ * Optimized StringMsgParser.parseSIPHeader() to use StringBuffer for concatenation.
+ *
  * Revision 1.9  2004/02/29 00:46:34  mranga
  * Reviewed by:   mranga
  * Added new configuration property to limit max message size for TCP transport.
