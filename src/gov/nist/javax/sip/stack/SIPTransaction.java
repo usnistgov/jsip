@@ -22,7 +22,7 @@ import javax.sip.message.*;
  * @author Jeff Keyser 
  * @author M. Ranganathan (modified Jeff's original source and aligned with JAIN-SIP 1.1) 
 *  @author Modifications for TLS Support added by Daniel J. Martinez Manzano <dani@dif.um.es>
- * @version  JAIN-SIP-1.1 $Revision: 1.37 $ $Date: 2005-03-18 20:19:22 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.38 $ $Date: 2005-04-15 19:17:08 $
  */
 public abstract class SIPTransaction
 	extends MessageChannel
@@ -547,6 +547,11 @@ public abstract class SIPTransaction
 	 */
 	final void fireTimer() {
 		// If the timeout timer is enabled,
+	    if ( LogWriter.needsLogging && this instanceof SIPClientTransaction) {
+	        sipStack.getLogWriter().logMessage("fireTimer " + this 
+	                + " retransmissionTicks " + retransmissionTimerTicksLeft);
+	    }
+	        
 		if (timeoutTimerTicksLeft != -1) {
 			// Count down the timer, and if it has run out,
 			if (--timeoutTimerTicksLeft == 0) {
@@ -1063,6 +1068,12 @@ public abstract class SIPTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.37  2005/03/18 20:19:22  mranga
+ * Submitted by:  Shu-Lin Chen
+ * Reviewed by:   M. Ranganathan
+ *
+ * Fixes post-processing after timeout
+ *
  * Revision 1.36  2004/12/01 19:05:16  mranga
  * Reviewed by:   mranga
  * Code cleanup remove the unused SIMULATION code to reduce the clutter.

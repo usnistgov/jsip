@@ -73,7 +73,7 @@ public class Subscriber implements SipListener {
 			System.out.println("Dialog State = " + dialog.getState());
 			Response response = messageFactory.createResponse
 						(200, request);
-			serverTransactionId.sendResponse(response);
+			// serverTransactionId.sendResponse(response);
 			System.out.println("subscriber:  Sending OK.");
 			System.out.println("Dialog State = " + dialog.getState());
 
@@ -119,7 +119,7 @@ public class Subscriber implements SipListener {
 		properties.setProperty("javax.sip.IP_ADDRESS", "127.0.0.1");
 		// If you want to try TCP transport change the following to
 		// transport = "tcp";
-		String transport = "tcp";
+		String transport = "udp";
 		properties.setProperty(
 			"javax.sip.OUTBOUND_PROXY",
 			"127.0.0.1:5070/" + transport);
