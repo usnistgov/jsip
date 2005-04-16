@@ -4,6 +4,7 @@
 package gov.nist.core;
 import java.lang.reflect.*;
 import java.io.Serializable;
+import java.util.*;
 
 /**
 * The base class from which all the other classes in the
@@ -44,9 +45,25 @@ public abstract class GenericObject implements Serializable {
 	protected static final String HT = Separators.HT;
 	protected static final String PERCENT = Separators.PERCENT;
 
+	protected static final Set immutableClasses = new HashSet (10);
+	protected static final String[] immutableClassNames ={ 
+		"String", "Character",
+		"Boolean", "Byte", "Short", "Integer", "Long",
+		"Float", "Double"
+        };
+
 	protected int indentation;
 	protected String stringRepresentation;
 	protected Match matchExpression; // Pattern matcher.
+
+	static {
+		try {
+			for (int i = 0; i < immutableClassNames.length; i++)
+				immutableClasses.add(Class.forName("java.lang." + immutableClassNames [i]));
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException ("Internal error", e);
+		}
+	}
 
 	/** Set the  pattern matcher. To match on the
 	 * field of a sip message, set the match expression in the match template
@@ -101,21 +118,44 @@ public abstract class GenericObject implements Serializable {
 	/**
 	 *Make a clone of the given object.
 	 */
-	protected static Object makeClone(Object obj) {
+	public static Object makeClone(Object obj) {
 		if (obj == null)
 			throw new NullPointerException("null obj!");
+		Class c = obj.getClass();
 		Object clone_obj = obj;
-		if (obj instanceof String || obj instanceof Boolean
-		  || obj instanceof Integer || obj instanceof Short || obj instanceof Long
-		  || obj instanceof Float || obj instanceof Double)
-		{
+		if (immutableClasses.contains (c))
 			return obj;
-		} else {
+		else if (c.isArray ()) {
+			Class ec = c.getComponentType();
+			if (! ec.isPrimitive())
+				clone_obj = ((Object []) obj).clone();
+			else {
+				if (ec == Character.TYPE)
+					clone_obj = ((char []) obj).clone();
+				else if (ec == Boolean.TYPE)
+					clone_obj = ((boolean []) obj).clone();
+				if (ec == Byte.TYPE)
+					clone_obj = ((byte []) obj).clone();
+				else if (ec == Short.TYPE)
+					clone_obj = ((short []) obj).clone();
+				else if (ec == Integer.TYPE)
+					clone_obj = ((int []) obj).clone();
+				else if (ec == Long.TYPE)
+					clone_obj = ((long []) obj).clone();
+				else if (ec == Float.TYPE)
+					clone_obj = ((float []) obj).clone();
+				else if (ec == Double.TYPE)
+					clone_obj = ((double []) obj).clone();
+			}
+		} else if (GenericObject.class.isAssignableFrom (c))
+			clone_obj = ((GenericObject) obj).clone();
+		else if (GenericObjectList.class.isAssignableFrom (c))
+			clone_obj = ((GenericObjectList) obj).clone();
+		else if (Cloneable.class.isAssignableFrom (c)) {
 			// If a clone method exists for the object, then
 			// invoke it
 			try {
-				Class cl = obj.getClass();
-				Method meth = cl.getMethod("clone", null);
+				Method meth = c.getMethod("clone", null);
 				clone_obj = meth.invoke(obj, null);
 			} catch (SecurityException ex) {
 			} catch (IllegalArgumentException ex) {
@@ -923,6 +963,9 @@ public abstract class GenericObject implements Serializable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2005/04/04 10:43:04  dmuresan
+ * Strings and wrapped types no longer cloned in GenericObject.makeClone()
+ *
  * Revision 1.7  2005/04/04 09:51:37  dmuresan
  * Optimized getIndentation() implementations (previously used String concatenation in a loop).
  *
