@@ -59,6 +59,7 @@ c:/jakarta-ant/bin/ant all
 	<property name="javac.deprecation" value="true"/>
 	<property name="javac.optimize" value="true"/>
 	<property name="javac.debug" value="true"/>
+	<property name="javac.debuglevel" value="source,lines,vars"/>
 	<property name="javac.nowarn" value="false"/>
 	<property name="javac.source" value="1.4"/>
 	<property name="javac.target" value="${javac.source}"/>
@@ -211,7 +212,7 @@ c:/jakarta-ant/bin/ant all
 	
 	<!-- Compile the stack and libraries -->
 	<target name="compilestack" depends="init">
-		<javac	debug="${javac.debug}"
+		<javac	debug="${javac.debug}" debuglevel="${javac.debuglevel}"
 				source="${javac.source}" target="${javac.target}"
 				nowarn="${javac.nowarn}"
 				deprecation="${javac.deprecation}"
@@ -223,7 +224,7 @@ c:/jakarta-ant/bin/ant all
 	</target>
 
 	<target name="compileri"  depends="init">
-		<javac 	debug="${javac.debug}"
+		<javac 	debug="${javac.debug}" debuglevel="${javac.debuglevel}"
 				source="${javac.source}" target="${javac.target}"
 				nowarn="${javac.nowarn}"
 				deprecation="${javac.deprecation}"
@@ -236,7 +237,7 @@ c:/jakarta-ant/bin/ant all
 	</target>
 
 	<target name="compilesdp"  depends="init">
-		<javac	debug="${javac.debug}"
+		<javac	debug="${javac.debug}" debuglevel="${javac.debuglevel}"
 				source="${javac.source}" target="${javac.target}"
 				nowarn="${javac.nowarn}"
 				deprecation="${javac.deprecation}"
@@ -257,7 +258,7 @@ c:/jakarta-ant/bin/ant all
 	
 	<!-- Compile the examples -->
 	<target name="compileexamples" depends="init">
-		<javac 	debug="${javac.debug}"
+		<javac 	debug="${javac.debug}" debuglevel="${javac.debuglevel}"
 				source="${javac.source}" target="${javac.target}"
 				nowarn="${javac.nowarn}"
 				deprecation="${javac.deprecation}"
@@ -273,7 +274,7 @@ c:/jakarta-ant/bin/ant all
 
 	<!-- Compile the tck -->
 	<target name="compiletck" depends="init,compilestack,compileri,compilesdp">
-		<javac 	debug="${javac.debug}"
+		<javac 	debug="${javac.debug}" debuglevel="${javac.debuglevel}"
 				source="${javac.source}" target="${javac.target}"
 				nowarn="${javac.nowarn}"
 				deprecation="${javac.deprecation}"
@@ -335,7 +336,7 @@ c:/jakarta-ant/bin/ant all
 
 	<!-- Compile the tools -->
 	<target name="compiletools" depends="init">
-		<javac debug="${javac.debug}" source="${javac.source}" target="${javac.target}" nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="${srcroot}" includes="tools/tracesviewer/**/*.java" destdir= "${classes}">
+		<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" source="${javac.source}" target="${javac.target}" nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="${srcroot}" includes="tools/tracesviewer/**/*.java" destdir= "${classes}">
 			<classpath>
 				<pathelement location="${classes}"/>
 			</classpath>
@@ -343,7 +344,7 @@ c:/jakarta-ant/bin/ant all
 		<copy todir="${classes}/tools/tracesviewer/images">
 			<fileset dir="${srcroot}/tools/tracesviewer/images"/>
 		</copy>
-		<javac debug="${javac.debug}" source="${javac.source}" target="${javac.target}" nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="${srcroot}" includes="tools/sniffer/**/*.java" destdir= "${classes}">
+		<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" source="${javac.source}" target="${javac.target}" nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="${srcroot}" includes="tools/sniffer/**/*.java" destdir= "${classes}">
 			<classpath>
 				<pathelement location="${classes}"/>
 			</classpath>
