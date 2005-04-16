@@ -37,79 +37,6 @@ public abstract class SDPObject
 	}
 
 	/**
-	* clone this SDP object.
-	    *For any object in the object (like SIPHeaders) that are cloneable
-	    *clone the object and add it to the returned List. 
-	*Strings and wrappers of basic types are 
-	*cloned by creating new objects. For other objects, if there is
-	*a clone method, then this is invoked and the cloned object
-	*appears in the result. Otherwise, this just copies the 
-	*object reference over.  NOTE that this method cannot be moved
-	*to the superclass because the superclass is in a different package
-	*(and we need to access protected fields from here).
-	*@since 1.0
-	*/
-
-	public Object clone() {
-		Object newObject = super.clone();
-		Class myclass = this.getClass();
-		Field[] fields = myclass.getDeclaredFields();
-		for (int i = 0; i < fields.length; i++) {
-			Field f = fields[i];
-			int modifier = f.getModifiers();
-			if (Modifier.isPrivate(modifier)) {
-				continue;
-			} else if (Modifier.isStatic(modifier)) {
-				continue;
-			} else if (Modifier.isInterface(modifier)) {
-				continue;
-			} else if (Modifier.isFinal(modifier)) {
-				continue;
-			}
-			Class fieldType = f.getType();
-			String fieldName = f.getName();
-			String fname = fieldType.toString();
-			try {
-				// Primitive fields are printed with type: value 
-				if (fieldType.isPrimitive()) {
-					if (fname.compareTo("int") == 0) {
-						int intfield = f.getInt(this);
-						f.setInt(newObject, intfield);
-					} else if (fname.compareTo("short") == 0) {
-						short shortField = f.getShort(this);
-						f.setShort(newObject, shortField);
-					} else if (fname.compareTo("char") == 0) {
-						char charField = f.getChar(this);
-						f.setChar(newObject, charField);
-					} else if (fname.compareTo("long") == 0) {
-						long longField = f.getLong(this);
-						f.setLong(newObject, longField);
-					} else if (fname.compareTo("boolean") == 0) {
-						boolean booleanField = f.getBoolean(this);
-						f.setBoolean(newObject, booleanField);
-					} else if (fname.compareTo("double") == 0) {
-						double doubleField = f.getDouble(this);
-						f.setDouble(newObject, doubleField);
-					} else if (fname.compareTo("float") == 0) {
-						float floatField = f.getFloat(this);
-						f.setFloat(newObject, floatField);
-					}
-				} else {
-					Object obj = f.get(this);
-					if (obj == null)
-						continue;
-					Object clone_obj = GenericObject.makeClone(obj);
-					f.set(newObject, clone_obj);
-				}
-			} catch (IllegalAccessException ex1) {
-				ex1.printStackTrace();
-				continue; // we are accessing a private field...
-			}
-		}
-		return (Object) newObject;
-	}
-
-	/**
 	* An introspection based equality predicate for SDPObjects.
 	*@param other is the other object to test against.
 	*@return true if the objects are equal.
@@ -781,4 +708,28 @@ public abstract class SDPObject
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/01/22 13:26:27  sverker
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  sverker
+ * Reviewed by:   mranga
+ *
+ * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  */

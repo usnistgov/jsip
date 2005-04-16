@@ -12,7 +12,7 @@ import javax.sip.address.*;
  *
  *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
- *@version JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2004-11-19 19:16:05 $
+ *@version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2005-04-16 20:38:46 $
  *
  */
 public final class AddressImpl
@@ -292,9 +292,24 @@ public final class AddressImpl
 		((SipUri)this.address).setUser("*");
 	}
 
+	public Object clone() {
+		AddressImpl retval = (AddressImpl) super.clone();
+		if (this.address != null)
+			retval.address = (GenericURI) this.address.clone();
+		return retval;
+	}
+
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/11/19 19:16:05  mranga
+ * Issue number:  41
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:   mranga
+ *
+ * Wild card address behavior getUser should return *
+ *
  * Revision 1.2  2004/01/22 13:26:28  sverker
  * Issue number:
  * Obtained from:

@@ -15,7 +15,7 @@ import gov.nist.javax.sip.address.*;
  *
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
- * @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-04-15 16:20:38 $
+ * @version JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2005-04-16 20:38:50 $
  *
  */
 public abstract class ParametersHeader
@@ -439,9 +439,21 @@ public abstract class ParametersHeader
 
 	protected abstract String encodeBody();
 
+	public Object clone() {
+		ParametersHeader retval = (ParametersHeader) super.clone();
+		if (this.parameters != null)
+			retval.parameters = (NameValueList) this.parameters.clone();
+		return retval;
+	}
+
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/04/15 16:20:38  mranga
+ * Submitted by:  Dave Stuart at sipquest.
+ * Reviewed by:  mranga
+ * Bug converting String to boolean value.
+ *
  * Revision 1.3  2004/01/22 13:26:29  sverker
  * Issue number:
  * Obtained from:

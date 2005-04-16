@@ -175,9 +175,24 @@ public class RepeatField extends SDPField implements javax.sdp.RepeatTime {
 		return retval.toString ();
 	}
 
+	public Object clone() {
+		RepeatField retval = (RepeatField) super.clone();
+		if (this.repeatInterval != null)
+			retval.repeatInterval = (TypedTime) this.repeatInterval.clone();
+		if (this.activeDuration != null)
+			retval.activeDuration = (TypedTime) this.activeDuration.clone();
+		if (this.offsets != null)
+			retval.offsets = (SDPObjectList) this.offsets.clone();
+		return retval;
+	}
+
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2005/04/04 10:01:27  dmuresan
+ * Used StringBuffer instead of String += for concatenation in
+ * various encode() methods in javax.sdp.
+ *
  * Revision 1.2  2004/01/22 13:26:27  sverker
  * Issue number:
  * Obtained from:

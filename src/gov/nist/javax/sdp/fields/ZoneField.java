@@ -154,9 +154,20 @@ public class ZoneField
 	public boolean getTypedTime() {
 		return false;
 	}
+
+	public Object clone() {
+		ZoneField retval = (ZoneField) super.clone();
+		if (this.zoneAdjustments != null)
+			retval.zoneAdjustments = (SDPObjectList) this.zoneAdjustments.clone();
+		return retval;
+	}
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2005/04/04 10:01:28  dmuresan
+ * Used StringBuffer instead of String += for concatenation in
+ * various encode() methods in javax.sdp.
+ *
  * Revision 1.3  2004/01/22 13:26:28  sverker
  * Issue number:
  * Obtained from:

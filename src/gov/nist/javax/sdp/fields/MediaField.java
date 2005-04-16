@@ -209,9 +209,20 @@ public class MediaField extends SDPField implements Media {
 		encoded_string += Separators.NEWLINE;
 		return encoded_string;
 	}
+
+	public Object clone() {
+		MediaField retval = (MediaField) super.clone();
+		if (this.formats != null)
+			retval.formats = (Vector) this.formats.clone();
+		return retval;
+	}
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2005/04/04 10:01:26  dmuresan
+ * Used StringBuffer instead of String += for concatenation in
+ * various encode() methods in javax.sdp.
+ *
  * Revision 1.2  2004/01/22 13:26:27  sverker
  * Issue number:
  * Obtained from:
