@@ -126,9 +126,20 @@ public abstract class SDPFieldList extends SDPField {
 			return false;
 		return sdpFields.match(other.sdpFields);
 	}
+
+	public Object clone() {
+		SDPFieldList retval = (SDPFieldList) super.clone();
+		if (this.sdpFields != null)
+			retval.sdpFields = (SDPObjectList) this.sdpFields.clone();
+		return retval;
+	}
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2005/04/04 10:01:28  dmuresan
+ * Used StringBuffer instead of String += for concatenation in
+ * various encode() methods in javax.sdp.
+ *
  * Revision 1.2  2004/01/22 13:26:27  sverker
  * Issue number:
  * Obtained from:

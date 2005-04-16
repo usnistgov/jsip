@@ -14,7 +14,7 @@ import gov.nist.core.*;
  * that can appear in SIPObjects.
  * IMPORTANT NOTE: SIPObjectList cannot derive from SIPObject.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.2 $ $Date: 2004-01-22 13:26:29 $
+ * @version JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2005-04-16 20:38:51 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -71,84 +71,6 @@ public class SIPObjectList extends GenericObjectList {
 	 */
 	public void addFirst(SIPObject obj) {
 		super.addFirst(obj);
-	}
-
-	/**
-	 * Make a clone of this header list and return it.
-	 * For any object in the list (like SIPHeaders) that inherits from
-	 * GenericObject or GenericObjectList, clone the object and add it
-	 * to the returned List. For objects that do  not,
-	 * this just copies the reference over. WARNING.. NO CIRCULAR
-	 * REFERENCES that are accessible are tolerated (will throw this
-	 * method into an infinite loop). However, we dont (shouldnt) have such
-	 * worries because the parser generates tree sturctures.
-	 * This belongs here and not in the superclass because we need to
-	 * directly access protected fields.
-	 * @since 1.0
-	 * @return clone of this header
-	 */
-	public Object clone() {
-		SIPObjectList newObject = (SIPObjectList) super.clone();
-		ListIterator li = this.listIterator();
-		while (li.hasNext()) {
-			Object listObj = li.next();
-			Object clone_obj = makeClone(listObj);
-			newObject.add(clone_obj);
-
-		}
-		Class myclass = this.getClass();
-		Field[] fields = myclass.getDeclaredFields();
-		for (int i = 0; i < fields.length; i++) {
-			Field f = fields[i];
-			int modifier = f.getModifiers();
-			if (Modifier.isPrivate(modifier)) {
-				continue;
-			} else if (Modifier.isStatic(modifier)) {
-				continue;
-			} else if (Modifier.isInterface(modifier)) {
-				continue;
-			}
-			Class fieldType = f.getType();
-			String fieldName = f.getName();
-			String fname = fieldType.toString();
-			try {
-				// Primitive fields are printed with type: value
-				if (fieldType.isPrimitive()) {
-					if (fname.compareTo("int") == 0) {
-						int intfield = f.getInt(this);
-						f.setInt(newObject, intfield);
-					} else if (fname.compareTo("short") == 0) {
-						short shortField = f.getShort(this);
-						f.setShort(newObject, shortField);
-					} else if (fname.compareTo("char") == 0) {
-						char charField = f.getChar(this);
-						f.setChar(newObject, charField);
-					} else if (fname.compareTo("long") == 0) {
-						long longField = f.getLong(this);
-						f.setLong(newObject, longField);
-					} else if (fname.compareTo("boolean") == 0) {
-						boolean booleanField = f.getBoolean(this);
-						f.setBoolean(newObject, booleanField);
-					} else if (fname.compareTo("double") == 0) {
-						double doubleField = f.getDouble(this);
-						f.setDouble(newObject, doubleField);
-					} else if (fname.compareTo("float") == 0) {
-						float floatField = f.getFloat(this);
-						f.setFloat(newObject, floatField);
-					}
-				} else {
-					Object obj = f.get(this);
-					if (obj == null)
-						continue;
-					Object clone_obj = makeClone(obj);
-					f.set(newObject, clone_obj);
-				}
-			} catch (IllegalAccessException ex1) {
-				ex1.printStackTrace();
-				continue; // we are accessing a private field...
-			}
-		}
-		return (Object) newObject;
 	}
 
 	/**
@@ -428,4 +350,28 @@ public class SIPObjectList extends GenericObjectList {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/01/22 13:26:29  sverker
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  sverker
+ * Reviewed by:   mranga
+ *
+ * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  */

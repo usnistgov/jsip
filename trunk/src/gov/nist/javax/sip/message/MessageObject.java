@@ -11,7 +11,7 @@ import java.lang.reflect.*;
  * are derived. This class is never directly instantiated (and hence it
  * is abstract).
  *
- * @version JAIN-SIP-1.1 $Revision: 1.2 $ $Date: 2004-01-22 13:26:31 $
+ * @version JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2005-04-16 20:38:51 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -136,66 +136,6 @@ public abstract class MessageObject extends GenericObject {
 		return stringRepresentation;
 	}
 	
-	/**
-	 * Generic clone method. This cannot be in the superclass because
-	 * we need to access protected fields.
-	 */
-	public Object clone() {
-		MessageObject newObject = (MessageObject) super.clone();
-		Class myclass = this.getClass();
-		Field[] fields = myclass.getDeclaredFields();
-		for (int i = 0; i < fields.length; i++) {
-			Field f = fields[i];
-			int modifier = f.getModifiers();
-			if (Modifier.isPrivate(modifier)) {
-				continue;
-			} else if (Modifier.isStatic(modifier)) {
-				continue;
-			} else if (Modifier.isInterface(modifier)) {
-				continue;
-			}
-			Class fieldType = f.getType();
-			String fieldName = f.getName();
-			String fname = fieldType.toString();
-			try {
-				// Primitive fields are printed with type: value 
-				if (fieldType.isPrimitive()) {
-					if (fname.compareTo("int") == 0) {
-						int intfield = f.getInt(this);
-						f.setInt(newObject, intfield);
-					} else if (fname.compareTo("short") == 0) {
-						short shortField = f.getShort(this);
-						f.setShort(newObject, shortField);
-					} else if (fname.compareTo("char") == 0) {
-						char charField = f.getChar(this);
-						f.setChar(newObject, charField);
-					} else if (fname.compareTo("long") == 0) {
-						long longField = f.getLong(this);
-						f.setLong(newObject, longField);
-					} else if (fname.compareTo("boolean") == 0) {
-						boolean booleanField = f.getBoolean(this);
-						f.setBoolean(newObject, booleanField);
-					} else if (fname.compareTo("double") == 0) {
-						double doubleField = f.getDouble(this);
-						f.setDouble(newObject, doubleField);
-					} else if (fname.compareTo("float") == 0) {
-						float floatField = f.getFloat(this);
-						f.setFloat(newObject, floatField);
-					}
-				} else {
-					Object obj = f.get(this);
-					if (obj == null)
-						continue;
-					Object clone_obj = makeClone(obj);
-					f.set(newObject, clone_obj);
-				}
-			} catch (IllegalAccessException ex1) {
-				ex1.printStackTrace();
-				continue; // we are accessing a private field...
-			}
-		}
-		return (Object) newObject;
-	}
 	/** 
 	 * Recursively override the fields of this object with the fields
 	 * of a new object. This is useful when you want to genrate a template
@@ -296,4 +236,28 @@ public abstract class MessageObject extends GenericObject {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/01/22 13:26:31  sverker
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  sverker
+ * Reviewed by:   mranga
+ *
+ * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  */

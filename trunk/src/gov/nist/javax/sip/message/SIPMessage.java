@@ -20,7 +20,7 @@ import java.text.ParseException;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  *
- * @version JAIN-SIP-1.1 $Revision: 1.12 $ $Date: 2005-03-18 20:19:22 $
+ * @version JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2005-04-16 20:38:52 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -439,71 +439,30 @@ public abstract class SIPMessage
 	 * new copy of the content is allocated and copied over. If the
 	 * content is an Object that supports the clone method, then the
 	 * clone method is invoked and the cloned content is the new content.
-	 * Otherwise, the content of the new message is set equal to null.
+	 * Otherwise, the content of the new message is set equal to the old one.
 	 *
 	 * @return A cloned copy of this object.
 	 */
 	public Object clone() {
-		SIPMessage retval = null;
-		try {
-			retval = (SIPMessage) this.getClass().newInstance();
-		} catch (IllegalAccessException ex) {
-			InternalErrorHandler.handleException(ex);
-		} catch (InstantiationException ex) {
-			InternalErrorHandler.handleException(ex);
-		}
-		ListIterator li = headers.listIterator();
-		while (li.hasNext()) {
-			SIPHeader sipHeader = (SIPHeader) ((SIPHeader) li.next()).clone();
-			retval.attachHeader(sipHeader);
-		}
-		if (retval instanceof SIPRequest) {
-			SIPRequest thisRequest = (SIPRequest) this;
-			RequestLine rl =
-				(RequestLine) (thisRequest.getRequestLine()).clone();
-			((SIPRequest) retval).setRequestLine(rl);
-		} else {
-			SIPResponse thisResponse = (SIPResponse) this;
-			StatusLine sl = (StatusLine) (thisResponse.getStatusLine()).clone();
-			((SIPResponse) retval).setStatusLine(sl);
-		}
-
-		if (this.getContent() != null) {
-			try {
-				Object newContent = null;
-				Object currentContent = this.getContent();
-				// Check the type of the returned content.
-				if (currentContent instanceof String) {
-					// If it is a string allocate a new string for the body
-					newContent = new String(currentContent.toString());
-				} else if (currentContent instanceof byte[]) {
-					// If it is raw bytes allocate a new array of bytes
-					// and copy over the content.
-					int cl = ((byte[]) currentContent).length;
-					byte[] nc = new byte[cl];
-					System.arraycopy((byte[]) currentContent, 0, nc, 0, cl);
-					newContent = nc;
-				} else {
-					// See if the object has a clone method that is public
-					// If so invoke the clone method for the new content.
-					Class cl = currentContent.getClass();
-					try {
-						Method meth = cl.getMethod("clone", null);
-						if (Modifier.isPublic(meth.getModifiers())) {
-							newContent = meth.invoke(currentContent, null);
-						} else {
-							newContent = currentContent;
-						}
-					} catch (Exception ex) {
-						newContent = null;
-					}
-				}
-				if (newContent != null)
-					retval.setContent(newContent, this.getContentTypeHeader());
-			} catch (ParseException ex) { /** Ignore **/
+		SIPMessage retval = (SIPMessage) super.clone();
+		retval.nameTable = new Hashtable();
+		retval.fromHeader = null;
+		retval.toHeader = null;
+		retval.cSeqHeader = null;
+		retval.callIdHeader = null;
+		retval.contentLengthHeader = null;
+		retval.maxForwardsHeader = null;
+		if (this.headers != null) {
+			retval.headers = new LinkedList();
+			for (Iterator iter = headers.iterator(); iter.hasNext(); ) {
+				SIPHeader hdr = (SIPHeader) iter.next();
+				retval.attachHeader((SIPHeader) hdr.clone());
 			}
 		}
-
+		if (this.messageContentBytes != null)
+			retval.messageContentBytes = (byte[]) this.messageContentBytes.clone();
+		if (this.messageContentObject != null)
+			retval.messageContentObject = makeClone(messageContentObject);
 		return retval;
 	}
 
@@ -1709,6 +1668,12 @@ public abstract class SIPMessage
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2005/03/18 20:19:22  mranga
+ * Submitted by:  Shu-Lin Chen
+ * Reviewed by:   M. Ranganathan
+ *
+ * Fixes post-processing after timeout
+ *
  * Revision 1.11  2005/01/25 22:51:17  mranga
  * Reviewed by:   mranga
  *

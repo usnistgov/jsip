@@ -12,7 +12,7 @@ import java.text.ParseException;
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * Includes a bug fix by Stefan Marx.
- * @version JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2004-10-28 19:02:50 $
+ * @version JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2005-04-16 20:38:47 $
  *
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
@@ -613,17 +613,15 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 	/** clone this.
 	 */
 	public Object clone() {
-		SipUri retval = new SipUri();
-		retval.scheme = new String(this.scheme);
-		retval.authority = (Authority) this.authority.clone();
-		retval.uriParms = (NameValueList) this.uriParms.clone();
+		SipUri retval = (SipUri) super.clone();
+		if (this.authority != null)
+			retval.authority = (Authority) this.authority.clone();
+		if (this.uriParms != null)
+			retval.uriParms = (NameValueList) this.uriParms.clone();
 		if (this.qheaders != null)
 			retval.qheaders = (NameValueList) this.qheaders.clone();
-
-		if (this.telephoneSubscriber != null) {
-			retval.telephoneSubscriber =
-				(TelephoneNumber) this.telephoneSubscriber.clone();
-		}
+		if (this.telephoneSubscriber != null)
+			retval.telephoneSubscriber = (TelephoneNumber) this.telephoneSubscriber.clone();
 		return retval;
 	}
 
@@ -945,6 +943,12 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/10/28 19:02:50  mranga
+ * Submitted by:  Daniel Martinez
+ * Reviewed by:   M. Ranganathan
+ *
+ * Added changes for TLS support contributed by Daniel Martinez
+ *
  * Revision 1.4  2004/09/26 14:48:03  mranga
  * Submitted by:  John Martin
  * Reviewed by:   mranga

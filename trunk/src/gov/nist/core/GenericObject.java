@@ -115,8 +115,12 @@ public abstract class GenericObject implements Serializable, Cloneable {
 		return false;
 	}
 
-	/**
-	 *Make a clone of the given object.
+	/** Clones the given object.
+	 *  If the object is a wrapped type, an array, a GenericObject
+	 *  or a GenericObjectList, it is cast to the appropriate type
+	 *  and the clone() method is invoked. Else if the object implements
+	 *  Cloneable, reflection is used to discover and invoke the public
+	 *  clone() method. Otherwise, the original object is returned.
 	 */
 	public static Object makeClone(Object obj) {
 		if (obj == null)
@@ -168,19 +172,14 @@ public abstract class GenericObject implements Serializable, Cloneable {
 		return clone_obj;
 	}
 
-	/**
-	 *Make a clone of this object.
+	/** Clones this object.
 	 */
 	public Object clone() {
-		Class myclass = this.getClass();
-		Object newObject = null;
 		try {
-			newObject = myclass.newInstance();
-		} catch (Exception ex) {
-			InternalErrorHandler.handleException(ex);
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException("Internal error");
 		}
-		GenericObject gobj = (GenericObject) newObject;
-		return newObject;
 	}
 	/**
 	 * Recursively override the fields of this object with the fields
@@ -963,6 +962,9 @@ public abstract class GenericObject implements Serializable, Cloneable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2005/04/16 20:37:07  dmuresan
+ * GenericObject and GenericObjectList implement Cloneable.
+ *
  * Revision 1.9  2005/04/16 20:36:12  dmuresan
  * Optimized GenericObject.makeClone().
  *

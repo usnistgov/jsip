@@ -16,7 +16,7 @@ import java.text.ParseException;
 /**
  * SIP Response structure.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2004-09-09 16:49:07 $
+ * @version JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2005-04-16 20:38:52 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -415,7 +415,8 @@ public final class SIPResponse
 
 	public Object clone() {
 		SIPResponse retval = (SIPResponse) super.clone();
-		retval.statusLine = (StatusLine) this.statusLine.clone();
+		if (this.statusLine != null)
+			retval.statusLine = (StatusLine) this.statusLine.clone();
 		return retval;
 	}
 	/**
@@ -685,6 +686,12 @@ public final class SIPResponse
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/09/09 16:49:07  mranga
+ * Submitted by:  Christophe Lebel
+ * Reviewed by:   M. Ranganathan
+ *
+ * Return an "Unknown reason" string instead of null for response code not known
+ *
  * Revision 1.5  2004/07/25 19:26:44  mranga
  * Reviewed by:   mranga
  * Allows multiple Authorization headers in a message. Some minor cleanup.
