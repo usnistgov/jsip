@@ -63,7 +63,7 @@ public abstract class GenericObjectList
 	/** Return true if this supports reflection based cloning.
 	 */
 	protected static boolean isCloneable(Object obj) {
-		return obj instanceof GenericObject || obj instanceof GenericObjectList;
+		return obj instanceof Cloneable;
 	}
 
 	public static boolean isMySubclass(Class other) {
@@ -76,64 +76,15 @@ public abstract class GenericObjectList
 	}
 
 	/**
-	 *Make a clone of the given object.
-	 *Cloning rules are as follows:
-	 *Strings and wrapped basic types are cloned.
-	 *If the object supports a clone method then it is called
-	 *Otherwise the original object is returned.
-	 */
-	protected static Object makeClone(Object obj) {
-		Object clone_obj = obj;
-		if (obj instanceof String) {
-			String string = (String) obj;
-			clone_obj = (Object) new String(string);
-		} else if (obj instanceof Integer) {
-			clone_obj = new Integer(((Integer) obj).intValue());
-		} else if (obj instanceof Float) {
-			clone_obj = new Float(((Float) obj).floatValue());
-		} else if (obj instanceof Double) {
-			clone_obj = new Double(((Double) obj).doubleValue());
-		} else if (obj instanceof Long) {
-			clone_obj = new Long(((Long) obj).longValue());
-		} else {
-			// If a clone method exists for the object, then
-			// invoke it
-			try {
-				Class cl = obj.getClass();
-				Method meth = cl.getMethod("clone", null);
-				clone_obj = meth.invoke(obj, null);
-			} catch (SecurityException ex) {
-				clone_obj = obj;
-			} catch (IllegalArgumentException ex) {
-				InternalErrorHandler.handleException(ex);
-			} catch (IllegalAccessException ex) {
-				clone_obj = obj;
-			} catch (InvocationTargetException ex) {
-				clone_obj = obj;
-			} catch (NoSuchMethodException ex) {
-				clone_obj = obj;
-			}
-		}
-		return clone_obj;
-	}
-
-	/**
-	 * Implement the clone method.
+	 *  Makes a deep clone of this list.
 	 */
 	public Object clone() {
-		Class myclass = this.getClass();
-		Object newObject = null;
-		try {
-			newObject = myclass.newInstance();
-		} catch (Exception ex) {
-			InternalErrorHandler.handleException(ex);
+		GenericObjectList retval = (GenericObjectList) super.clone();
+		for (ListIterator iter = retval.listIterator(); iter.hasNext(); ) {
+			GenericObject obj = (GenericObject) ((GenericObject) iter.next ()).clone();
+			iter.set(obj);
 		}
-		GenericObjectList gobj = (GenericObjectList) newObject;
-		gobj.clear();
-		gobj.separator = this.separator;
-		gobj.myClass = this.myClass;
-		gobj.listName = new String(this.listName);
-		return newObject;
+		return retval;
 	}
 
 	/**
@@ -777,6 +728,9 @@ public abstract class GenericObjectList
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2005/04/16 20:37:07  dmuresan
+ * GenericObject and GenericObjectList implement Cloneable.
+ *
  * Revision 1.7  2005/04/04 09:51:38  dmuresan
  * Optimized getIndentation() implementations (previously used String concatenation in a loop).
  *

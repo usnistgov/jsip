@@ -15,7 +15,7 @@ import javax.sip.InvalidArgumentException;
  * @see gov.nist.javax.sip.header.ContactList
  *
  * @author M. Ranganathan <mranga@nist.gov> <br/>
- * @version JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2004-07-28 14:13:53 $
+ * @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2005-04-16 20:38:49 $
  *
  * <a href="${docRoot}/uncopyright.html">This code is in the public domain.</a>
  *
@@ -186,9 +186,22 @@ public final class Contact
 		else if (this.wildCardFlag == contact.wildCardFlag)return true;
 		return super.equals(that);
 	}
+
+	public Object clone() {
+		Contact retval = (Contact) super.clone();
+		if (this.contactList != null)
+			retval.contactList = (ContactList) this.contactList.clone();
+		return retval;
+	}
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/07/28 14:13:53  mranga
+ * Submitted by:  mranga
+ *
+ * Move out the test code to a separate test/unit class.
+ * Fixed some encode methods.
+ *
  * Revision 1.2  2004/01/22 13:26:29  sverker
  * Issue number:
  * Obtained from:

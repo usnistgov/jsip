@@ -122,8 +122,7 @@ public final class HostPort extends GenericObject {
 	}
 
 	public Object clone() {
-		HostPort retval = new HostPort();
-		retval.port = port;
+		HostPort retval = (HostPort) super.clone();
 		if (this.host != null)
 			retval.host = (Host) this.host.clone();
 		return retval;
@@ -131,6 +130,9 @@ public final class HostPort extends GenericObject {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2005/04/11 09:36:28  dmuresan
+ * Fixed HostPort.merge(), though merge() is never used.
+ *
  * Revision 1.5  2005/04/04 17:20:11  dmuresan
  * Simplified gov.nist.core.HostPort implementation.
  *

@@ -50,7 +50,7 @@ import java.util.Locale;
 *   Content-Language MAY be applied to any media type -- it is not
 *   limited to textual documents.
 *</pre>
-* @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-04-06 12:28:23 $
+* @version JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2005-04-16 20:38:49 $
 */
 public class ContentLanguage
 	extends SIPHeader
@@ -120,9 +120,22 @@ public class ContentLanguage
 	public void setContentLanguage(Locale language) {
 		this.locale = language;
 	}
+
+	public Object clone() {
+		ContentLanguage retval = (ContentLanguage) super.clone();
+		if (this.locale != null)
+			retval.locale = (Locale) this.locale.clone();
+		return retval;
+	}
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/04/06 12:28:23  mranga
+ * Reviewed by:   mranga
+ * changed locale to Locale.getDefault().getCountry()
+ * moved check for valid transaction state up in the stack so unfruitful responses
+ * are pruned early.
+ *
  * Revision 1.3  2004/01/22 13:26:29  sverker
  * Issue number:
  * Obtained from:

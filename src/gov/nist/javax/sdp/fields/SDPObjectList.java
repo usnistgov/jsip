@@ -12,82 +12,6 @@ public class SDPObjectList extends GenericObjectList {
 	protected static final String SDPFIELDS_PACKAGE =
 		PackageNames.SDP_PACKAGE + ".fields";
 
-	/**
-	 * Make a clone of this header list and return it.
-	 *For any object in the list (like SIPHeaders) that are cloneable
-	 *clone the object and add it to the returned List. 
-	*Strings and wrappers of basic types are 
-	*cloned by creating new objects. For other objects, if there is
-	*a clone method, then this is invoked and the cloned object
-	*appears in the result. Otherwise, this just copies the 
-	*object reference over. 
-	 *@since 1.0
-	 */
-
-	public Object clone() {
-		SDPObjectList newObject = (SDPObjectList) super.clone();
-		ListIterator li = this.listIterator();
-		while (li.hasNext()) {
-			Object listObj = li.next();
-			Object clone_obj = makeClone(listObj);
-			newObject.add(clone_obj);
-
-		}
-		Class myclass = this.getClass();
-		Field[] fields = myclass.getDeclaredFields();
-		for (int i = 0; i < fields.length; i++) {
-			Field f = fields[i];
-			int modifier = f.getModifiers();
-			if (Modifier.isPrivate(modifier)) {
-				continue;
-			} else if (Modifier.isStatic(modifier)) {
-				continue;
-			} else if (Modifier.isInterface(modifier)) {
-				continue;
-			}
-			Class fieldType = f.getType();
-			String fieldName = f.getName();
-			String fname = fieldType.toString();
-			try {
-				// Primitive fields are printed with type: value 
-				if (fieldType.isPrimitive()) {
-					if (fname.compareTo("int") == 0) {
-						int intfield = f.getInt(this);
-						f.setInt(newObject, intfield);
-					} else if (fname.compareTo("short") == 0) {
-						short shortField = f.getShort(this);
-						f.setShort(newObject, shortField);
-					} else if (fname.compareTo("char") == 0) {
-						char charField = f.getChar(this);
-						f.setChar(newObject, charField);
-					} else if (fname.compareTo("long") == 0) {
-						long longField = f.getLong(this);
-						f.setLong(newObject, longField);
-					} else if (fname.compareTo("boolean") == 0) {
-						boolean booleanField = f.getBoolean(this);
-						f.setBoolean(newObject, booleanField);
-					} else if (fname.compareTo("double") == 0) {
-						double doubleField = f.getDouble(this);
-						f.setDouble(newObject, doubleField);
-					} else if (fname.compareTo("float") == 0) {
-						float floatField = f.getFloat(this);
-						f.setFloat(newObject, floatField);
-					}
-				} else {
-					Object obj = f.get(this);
-					if (obj == null)
-						continue;
-					Object clone_obj = makeClone(obj);
-					f.set(newObject, clone_obj);
-				}
-			} catch (IllegalAccessException ex1) {
-				ex1.printStackTrace();
-				continue; // we are accessing a private field...
-			}
-		}
-		return (Object) newObject;
-	}
-
 	/** 
 	 * Do a merge of the GenericObjects contained in this list with the 
 	 * GenericObjects in the mergeList. Note that this does an inplace 
@@ -307,6 +231,10 @@ public class SDPObjectList extends GenericObjectList {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2005/04/04 10:01:28  dmuresan
+ * Used StringBuffer instead of String += for concatenation in
+ * various encode() methods in javax.sdp.
+ *
  * Revision 1.3  2004/01/22 13:26:27  sverker
  * Issue number:
  * Obtained from:

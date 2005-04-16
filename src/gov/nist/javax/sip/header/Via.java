@@ -12,7 +12,7 @@ import javax.sip.*;
  *
  * @see ViaList
  *
- * @version JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2004-11-28 17:32:25 $
+ * @version JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2005-04-16 20:38:51 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -463,9 +463,24 @@ public class Via
 
 		setParameter(ParameterNames.BRANCH, branch);
 	}
+
+	public Object clone() {
+		Via retval = (Via) super.clone();
+		if (this.sentProtocol != null)
+			retval.sentProtocol = (Protocol) this.sentProtocol.clone();
+		if (this.sentBy != null)
+			retval.sentBy = (HostPort) this.sentBy.clone();
+		return retval;
+	}
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2004/11/28 17:32:25  mranga
+ * Submitted by:  hagai sela
+ * Reviewed by:   mranga
+ *
+ * Support for symmetric nats
+ *
  * Revision 1.4  2004/07/28 14:13:53  mranga
  * Submitted by:  mranga
  *

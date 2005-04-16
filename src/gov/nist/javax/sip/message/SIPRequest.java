@@ -26,7 +26,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.10 $ $Date: 2004-09-13 15:12:26 $
+ * @version JAIN-SIP-1.1 $Revision: 1.11 $ $Date: 2005-04-16 20:38:52 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -327,12 +327,9 @@ public final class SIPRequest
 	*/
 
 	public Object clone() {
-
 		SIPRequest retval = (SIPRequest) super.clone();
-		if (this.requestLine != null) {
+		if (this.requestLine != null)
 			retval.requestLine = (RequestLine) this.requestLine.clone();
-			retval.setRequestLineDefaults();
-		}
 		return retval;
 	}
 
@@ -940,6 +937,29 @@ public final class SIPRequest
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2004/09/13 15:12:26  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  Ben Evans (Open Cloud)
+ * Reviewed by:   M. Ranganathan (NIST)
+ *
+ * Fixes numerous TCK problems
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.9  2004/06/16 02:53:19  mranga
  * Submitted by:  mranga
  * Reviewed by:   implement re-entrant multithreaded listener model.
