@@ -20,7 +20,7 @@ import java.util.*;
 *
 */
 
-public abstract class GenericObject implements Serializable {
+public abstract class GenericObject implements Serializable, Cloneable {
 	// Useful constants.
 	protected static final String SEMICOLON = Separators.SEMICOLON;
 	protected static final String COLON = Separators.COLON;
@@ -963,6 +963,9 @@ public abstract class GenericObject implements Serializable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2005/04/16 20:36:12  dmuresan
+ * Optimized GenericObject.makeClone().
+ *
  * Revision 1.8  2005/04/04 10:43:04  dmuresan
  * Strings and wrapped types no longer cloned in GenericObject.makeClone()
  *

@@ -22,7 +22,7 @@ import java.io.Serializable;
 */
 public abstract class GenericObjectList
 	extends LinkedList
-	implements Serializable {
+	implements Serializable, Cloneable {
 	// Useful constants.
 	protected static final String SEMICOLON = Separators.SEMICOLON;
 	protected static final String COLON = Separators.COLON;
@@ -777,6 +777,9 @@ public abstract class GenericObjectList
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2005/04/04 09:51:38  dmuresan
+ * Optimized getIndentation() implementations (previously used String concatenation in a loop).
+ *
  * Revision 1.6  2004/01/22 14:23:45  mranga
  * Reviewed by:   mranga
  * Fixed some minor formatting issues.
