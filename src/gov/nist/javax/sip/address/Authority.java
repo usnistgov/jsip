@@ -7,7 +7,7 @@ import gov.nist.core.*;
 /**
  * Authority part of a URI structure. Section 3.2.2 RFC2396
  *
- * @version JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2005-04-16 20:38:46 $
+ * @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2005-04-16 20:39:31 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -41,7 +41,7 @@ public class Authority extends NetObject {
 	 * @return boolean
 	 */
 	public boolean equals(Object other) {
-		if (!other.getClass().getName().equals(this.getClass().getName())) {
+		if (other.getClass() != getClass()) {
 			return false;
 		}
 		Authority otherAuth = (Authority) other;
@@ -194,6 +194,9 @@ public class Authority extends NetObject {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2005/04/16 20:38:46  dmuresan
+ * Canonical clone() implementations for the GenericObject and GenericObjectList hierarchies
+ *
  * Revision 1.2  2004/01/22 13:26:28  sverker
  * Issue number:
  * Obtained from:
