@@ -28,7 +28,7 @@ import java.lang.IllegalArgumentException;
 *       Date: Tue, 15 Nov 1994 08:12:31 GMT
 *</pre>
 *
-*@version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-07-28 14:41:53 $
+*@version JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2005-04-16 20:35:10 $
 *
 *@author M. Ranganathan <mranga@nist.gov>  <br/>
 *
@@ -37,7 +37,7 @@ import java.lang.IllegalArgumentException;
 *
 */
 
-public class SIPDate {
+public class SIPDate implements Cloneable {
 	public static final String GMT = "GMT";
 	public static final String MON = "Mon";
 	public static final String TUE = "Tue";
@@ -483,9 +483,26 @@ public class SIPDate {
 		long ctime = this.getJavaCal().getTime().getTime();
 		return (int) (ctime - System.currentTimeMillis()) / 1000;
 	}
+
+	public Object clone() {
+		SIPDate retval;
+		try {
+			retval = (SIPDate) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException("Internal error");
+		}
+		if (javaCal != null)
+			retval.javaCal = (java.util.Calendar) javaCal.clone();
+		return retval;
+	}
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/07/28 14:41:53  mranga
+ * Submitted by:  mranga
+ *
+ * fixed equality check for SIPDate.
+ *
  * Revision 1.3  2004/04/05 21:46:08  mranga
  * Submitted by:  Bruno Konik
  * Reviewed by:   mranga
