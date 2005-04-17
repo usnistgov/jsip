@@ -25,6 +25,7 @@ import java.text.*;
  */
 public class SdpFactory extends Object {
 
+    // unused since findSessions() is no longer implemented
     protected static Vector sessionDescriptionsList;
     
     /** Creates new SdpFactory */
@@ -90,7 +91,8 @@ public class SdpFactory extends Object {
         times.addElement(timeDescriptionImpl);
         sessionDescriptionImpl.setTimeDescriptions(times);
         
-        sessionDescriptionsList.addElement(sessionDescriptionImpl);
+        // Dan Muresan: this was a memory leak
+        // sessionDescriptionsList.addElement(sessionDescriptionImpl);
         return sessionDescriptionImpl;
     }
     
@@ -648,11 +650,14 @@ public class SdpFactory extends Object {
      */    
     
     /** Returns a collection of Strings containing session description.
+     * This method is no longer supported, as the semantics are unclear
+     * and the original implementation caused a memory leak.
      * @param source String containing session descriptions.
      * @return a collection of Strings containing session descriptions.
      */    
     public static Vector findSessions(String source) {
-      return sessionDescriptionsList;
+      // return sessionDescriptionsList;
+      throw new UnsupportedOperationException ("Not implemented");
     }
     
     /**
