@@ -119,7 +119,7 @@ import java.io.IOException;
  * @author Bug fixes by Emil Ivov. <a href=" {@docRoot}/uncopyright.html">This
  *         code is in the public domain. </a>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.45 $ $Date: 2005-04-15 19:17:08 $
+ * @version JAIN-SIP-1.1 $Revision: 1.46 $ $Date: 2005-04-18 16:46:57 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
         ServerResponseInterface, javax.sip.ClientTransaction, PendingRecord {
@@ -474,17 +474,17 @@ public class SIPClientTransaction extends SIPTransaction implements
                                 + transactionResponse.getFirstLine());
             }
             /**
-             * This was leading to infinite loop. This optimization is backed
-             * out for now.
-             * 
-             * synchronized (this.pendingResponses) { if
-             * (this.pendingResponses.size() < MAX_PENDING_RESPONSES) {
-             * this.pendingResponses.add(new PendingResponse(
-             * transactionResponse, sourceChannel)); } }
-             * sipStack.putPending(this);
-             */
-
-            return;
+             * This was leading to infinite loop.  Bug fix was
+	     * suggested by Jordan Schidlowski ( from mdci.ca )
+	     */
+             synchronized (this.pendingResponses) { 
+		if (this.pendingResponses.size() < MAX_PENDING_RESPONSES) {
+             		this.pendingResponses.add(new PendingResponse(
+             		transactionResponse, sourceChannel)); 
+		} 
+	     }
+             sipStack.putPending(this);
+             return;
         }
 
         if (LogWriter.needsLogging)
@@ -1124,6 +1124,7 @@ public class SIPClientTransaction extends SIPTransaction implements
             pr = (PendingResponse) this.pendingResponses.removeFirst();
         }
         this.processResponse(pr.sipResponse, pr.messageChannel);
+	this.eventPending = false;
     }
 
     public boolean hasPending() {
@@ -1159,7 +1160,30 @@ public class SIPClientTransaction extends SIPTransaction implements
     }
 }
 /*
- * $Log: not supported by cvs2svn $ Revision 1.44 2005/03/30 19:57:58 mranga
+ * $Log: not supported by cvs2svn $
+ * Revision 1.45  2005/04/15 19:17:08  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  mranga
+ *
+ * Fixed maxforwards test
+ * Reviewed by:
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ * Revision 1.44 2005/03/30 19:57:58 mranga
  * Issue number: Obtained from: Submitted by: mranga Reviewed by: mranga
  * Optimiization that was leading to 100% Cpu util under heavy load was backed
  * out.

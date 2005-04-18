@@ -112,7 +112,7 @@ import java.util.LinkedList;
  *  
  * </pre>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.58 $ $Date: 2005-04-08 15:38:43 $
+ * @version JAIN-SIP-1.1 $Revision: 1.59 $ $Date: 2005-04-18 16:46:57 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
  * @author Bug fixes by Emil Ivov, Antonis Karydas, Daniel Martinez, Daniel
@@ -503,7 +503,6 @@ public class SIPServerTransaction extends SIPTransaction implements
 
         // Can only process a single request directed to the
         // transaction at a time.
-/*
         if (this.eventPending) {
             synchronized (this.pendingRequests) {
                 if (this.pendingRequests.size() < 4)
@@ -513,7 +512,6 @@ public class SIPServerTransaction extends SIPTransaction implements
             sipStack.putPending(this);
             return;
         }
-*/
 
         try {
 
@@ -1191,6 +1189,7 @@ public class SIPServerTransaction extends SIPTransaction implements
             pr = (PendingRequest) this.pendingRequests.removeFirst();
         }
         this.processRequest(pr.sipRequest, pr.messageChannel);
+	this.eventPending = false;
     }
 
     public boolean hasPending() {
@@ -1231,6 +1230,12 @@ public class SIPServerTransaction extends SIPTransaction implements
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.58  2005/04/08 15:38:43  mranga
+ * Submitted by:  Daniel Vasquez
+ * Reviewed by:   mranga
+ *
+ * Fix dialog state transition
+ *
  * Revision 1.57  2005/03/29 03:49:59  mranga
  * Issue number:
  * Obtained from:
