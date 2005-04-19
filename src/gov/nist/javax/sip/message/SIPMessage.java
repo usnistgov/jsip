@@ -20,7 +20,7 @@ import java.text.ParseException;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  *
- * @version JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2005-04-16 20:38:52 $
+ * @version JAIN-SIP-1.1 $Revision: 1.14 $ $Date: 2005-04-19 03:09:53 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -444,7 +444,10 @@ public abstract class SIPMessage
 	 * @return A cloned copy of this object.
 	 */
 	public Object clone() {
-		SIPMessage retval = (SIPMessage) super.clone();
+		SIPMessage retval = null;
+		if ( this instanceof SIPRequest) 
+			retval = new SIPRequest();
+		else retval  = new SIPResponse();
 		retval.nameTable = new Hashtable();
 		retval.fromHeader = null;
 		retval.toHeader = null;
@@ -1668,6 +1671,9 @@ public abstract class SIPMessage
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2005/04/16 20:38:52  dmuresan
+ * Canonical clone() implementations for the GenericObject and GenericObjectList hierarchies
+ *
  * Revision 1.12  2005/03/18 20:19:22  mranga
  * Submitted by:  Shu-Lin Chen
  * Reviewed by:   M. Ranganathan
