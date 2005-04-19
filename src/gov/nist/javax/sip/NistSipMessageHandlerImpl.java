@@ -23,7 +23,7 @@ import java.io.IOException;
  * JAIN-SIP stack. Implementors of JAIN services need not concern themselves
  * with this class.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.46 $ $Date: 2005-04-08 15:43:51 $
+ * @version JAIN-SIP-1.1 $Revision: 1.47 $ $Date: 2005-04-19 15:57:58 $
  * 
  * @author M. Ranganathan <mranga@nist.gov><br/>Bug fix Contributions by
  *         Lamine Brahimi and Andreas Bystrom. <br/><a href=" {@docRoot}
@@ -316,10 +316,9 @@ public class NistSipMessageHandlerImpl implements ServerRequestInterface,
 
             // RFC 3261 Chapter 14.
             // A UAS that receives an INVITE on a dialog while an INVITE it had
-            // sent
-            // on that dialog is in progress MUST return a 491 (Request Pending)
+            // sent on that dialog is in progress MUST return a 491 (Request Pending)
             // response to the received INVITE.
-	    // Bug reported by Daniel Machin Vasquez-Illa
+	        // Bug reported by Daniel Machin Vasquez-Illa
             lastTransaction = (dialog == null ? null : dialog
                     .getLastTransaction());
 
@@ -329,15 +328,21 @@ public class NistSipMessageHandlerImpl implements ServerRequestInterface,
                     && lastTransaction instanceof SIPClientTransaction
                     && lastTransaction.getState() != TransactionState.COMPLETED
                     && lastTransaction.getState() != TransactionState.TERMINATED) {
-                if (LogWriter.needsLogging)
-                    sipStackImpl
+                if ( dialog.getRemoteSequenceNumber() +1 == sipRequest.getCSeq().getSequenceNumber()) {
+                    dialog.setRemoteSequenceNumber(sipRequest.getCSeq().getSequenceNumber());
+                    if (LogWriter.needsLogging)
+                        sipStackImpl
                             .logMessage("Sending 491 response for out of sequence message");
-                SIPResponse sipResponse = sipRequest
+                    SIPResponse sipResponse = sipRequest
                         .createResponse(Response.REQUEST_PENDING);
-                try {
-                    transaction.sendMessage(sipResponse);
-                } catch (IOException ex) {
-                    // Ignore.
+                    try {
+                        transaction.sendMessage(sipResponse);
+                    } catch (IOException ex) {
+                        // Ignore.
+                    }
+                } else {
+                    if (LogWriter.needsLogging)
+                        sipStackImpl.logMessage("Dropping message -- sequence number is too high!");
                 }
                 return;
             }
@@ -563,6 +568,12 @@ public class NistSipMessageHandlerImpl implements ServerRequestInterface,
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.46  2005/04/08 15:43:51  mranga
+ * Submitted by:  Daniel Machin Vasquez-Illa
+ * Reviewed by:   mranga
+ *
+ * Fixed 491 response sending
+ *
  * Revision 1.45  2005/03/29 03:50:02  mranga
  * Issue number:
  * Obtained from:
