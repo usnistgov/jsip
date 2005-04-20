@@ -26,7 +26,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.12 $ $Date: 2005-04-19 03:09:54 $
+ * @version JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2005-04-20 20:01:12 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -329,7 +329,7 @@ public final class SIPRequest
 	public Object clone() {
 		SIPRequest retval = (SIPRequest) super.clone();
 		// Do not copy over the tx pointer -- this is only for internal tracking.
-		this.transactionPointer = null;
+		retval.transactionPointer = null;
 		if (this.requestLine != null)
 			retval.requestLine = (RequestLine) this.requestLine.clone();
 		
@@ -940,6 +940,11 @@ public final class SIPRequest
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2005/04/19 03:09:54  mranga
+ * Submitted by:  mranga
+ * Reviewed by:   mranga
+ * Fixes clone problem ( should allocate a new request ).
+ *
  * Revision 1.11  2005/04/16 20:38:52  dmuresan
  * Canonical clone() implementations for the GenericObject and GenericObjectList hierarchies
  *
