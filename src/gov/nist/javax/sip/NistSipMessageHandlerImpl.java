@@ -23,7 +23,7 @@ import java.io.IOException;
  * JAIN-SIP stack. Implementors of JAIN services need not concern themselves
  * with this class.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.47 $ $Date: 2005-04-19 15:57:58 $
+ * @version JAIN-SIP-1.1 $Revision: 1.48 $ $Date: 2005-04-21 00:02:00 $
  * 
  * @author M. Ranganathan <mranga@nist.gov><br/>Bug fix Contributions by
  *         Lamine Brahimi and Andreas Bystrom. <br/><a href=" {@docRoot}
@@ -322,14 +322,14 @@ public class NistSipMessageHandlerImpl implements ServerRequestInterface,
             lastTransaction = (dialog == null ? null : dialog
                     .getLastTransaction());
 
-            if (dialog != null
-                    && dialog.getLastTransaction() != null
+            if (dialog != null 
+                    && lastTransaction != null
                     && lastTransaction.isInviteTransaction()
                     && lastTransaction instanceof SIPClientTransaction
                     && lastTransaction.getState() != TransactionState.COMPLETED
                     && lastTransaction.getState() != TransactionState.TERMINATED) {
                 if ( dialog.getRemoteSequenceNumber() +1 == sipRequest.getCSeq().getSequenceNumber()) {
-                    dialog.setRemoteSequenceNumber(sipRequest.getCSeq().getSequenceNumber());
+                    dialog.setRemoteSequenceNumber( sipRequest.getCSeq().getSequenceNumber());
                     if (LogWriter.needsLogging)
                         sipStackImpl
                             .logMessage("Sending 491 response for out of sequence message");
@@ -340,6 +340,7 @@ public class NistSipMessageHandlerImpl implements ServerRequestInterface,
                     } catch (IOException ex) {
                         // Ignore.
                     }
+                    dialog.requestConsumed();
                 } else {
                     if (LogWriter.needsLogging)
                         sipStackImpl.logMessage("Dropping message -- sequence number is too high!");
@@ -568,6 +569,29 @@ public class NistSipMessageHandlerImpl implements ServerRequestInterface,
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.47  2005/04/19 15:57:58  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  mranga
+ * Reviewed by:   mranga
+ *
+ * Fixed remote seqno issue reported by Daniel Vazquez
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.46  2005/04/08 15:43:51  mranga
  * Submitted by:  Daniel Machin Vasquez-Illa
  * Reviewed by:   mranga
