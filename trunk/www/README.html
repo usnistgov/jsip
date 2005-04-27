@@ -241,7 +241,7 @@ and other functionality.
 
 <li> Matt Keller noticed a bug where the ACK for 300-699 responses was being
 sent to the wrong destination because the contact header in the last response
-was being ignored. Mat sent in a bug fix for this problem.
+was being ignored. Mat sent in a bug fix for this problem. </li>
 
 <li> Bill Roome (AT&T research) noted that Applications may want to see
 the route header. The stack was previously stripping it. 
@@ -273,7 +273,7 @@ Jeff submitted a patch for setting the timer on the Transaction Timer. </li>
 problem where some messages were not showing up in the viewer. </li>
 
 
-<li> S. R. Jeyashankher (Jeyashankher) from Lucent Submitted a bug fix
+<li> S. R. Jeyashankher from Lucent Submitted a bug fix
 for error conditions where one cannot bind to local port </li>
 
 <li>Greg DuPertuis found a bug in the generation of unique branch IDs and
@@ -288,13 +288,20 @@ a bug fix for timeout post processing. </li>
 CallIDs and with switching lexers.  
 
 <li>Daniel Machin Vazquez-Illa submitted a bug fix for the Dialog State 
-Machine on processing 3XX-6XX class responses in Server Transactions. </li>
+Machine on processing 3XX-6XX class responses in Server Transactions. 
+Daniel noticed that the remote sequence number for server dialog needed
+to be updated even on unsuccessful server transaction processing.
+</li>
 
-<li> Jordan Schidlowski of MDCI fixed a bug that pegs the CPU when pending requests are directed
-towards a transaction under some conditions. </li>
+<li>Mario Mantak posted a bug fix for a missing short form header name
+for the Event header </li>
 
-<li> Dan Muresan submitted changes that speed up cloning of requests that did not need to use
-reflection for cloning. </li>
+<li> Jordan Schidlowski of MDCI fixed a bug that pegs the CPU when
+pending requests are directed towards a transaction under some heavy
+load conditions. </li>
+
+<li> Dan Muresan submitted changes that speed up cloning of requests
+that did not need to use reflection for cloning. </li>
 
 
 </ul>
