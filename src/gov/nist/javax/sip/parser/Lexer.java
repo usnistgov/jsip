@@ -220,6 +220,7 @@ public class Lexer extends LexerCore {
 				addKeyword(TokenNames.T.toUpperCase(), TokenTypes.TO);
 				addKeyword(TokenNames.V.toUpperCase(), TokenTypes.VIA);
 				addKeyword(TokenNames.R.toUpperCase(), TokenTypes.REFER_TO);
+			        addKeyword(TokenNames.O.toUpperCase(), TokenTypes.EVENT); // Bug fix by Mario Mantak
 			} else if (lexerName.equals("status_lineLexer")) {
 				addKeyword(TokenNames.SIP.toUpperCase(), TokenTypes.SIP);
 			} else if (lexerName.equals("request_lineLexer")) {
@@ -234,6 +235,12 @@ public class Lexer extends LexerCore {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2005/03/22 18:34:56  mranga
+ * Submitted by:  Brian Rosen
+ * Reviewed by:   mranga
+ *
+ * Applied fix suggested by Brian Rosen
+ *
  * Revision 1.4  2004/01/22 13:26:31  sverker
  * Issue number:
  * Obtained from:
