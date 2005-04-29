@@ -19,7 +19,7 @@ import java.text.ParseException;
 /**
  * Implementation of the JAIN-SIP provider interface.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.29 $ $Date: 2004-11-28 17:32:25 $
+ * @version JAIN-SIP-1.1 $Revision: 1.30 $ $Date: 2005-04-29 19:13:53 $
  * 
  * @author M. Ranganathan <mranga@nist.gov><br/>
  * 
@@ -248,6 +248,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
         Iterator it = sipStack.getRouter().getNextHops(request);
         String dialogId = sipRequest.getDialogId(false);
         SIPDialog dialog = sipStack.getDialog(dialogId);
+        Exception lastException = null;
         if (it == null || !it.hasNext()) {
             // could not route the request as out of dialog.
             // maybe the user has no router or the router cannot resolve
@@ -286,6 +287,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
         } else {
             // An out of dialog route was found. Assign this to the
             // client transaction.
+        
             while (it.hasNext()) {
                 Hop hop = (Hop) it.next();
                 try {
@@ -328,6 +330,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
                     ct.addEventListener(this);
                     return (ClientTransaction) ct;
                 } catch (java.net.UnknownHostException ex) {
+                    lastException = ex;
                     continue;
                 } catch (java.text.ParseException ex) {
                     InternalErrorHandler.handleException(ex);
@@ -337,8 +340,14 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
         if (LogWriter.needsLogging) {
             sipStack.logMessage("Error processing " + sipRequest);
         }
+        if ( lastException == null ) {
         throw new TransactionUnavailableException(
                 "Could not resolve next hop or listening point unavailable! ");
+        } else {
+            throw new TransactionUnavailableException
+            ( "Could not resolve next hop or listening point unavailable! ",
+                    lastException);
+        }
 
     }
 
@@ -771,6 +780,12 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.29  2004/11/28 17:32:25  mranga
+ * Submitted by:  hagai sela
+ * Reviewed by:   mranga
+ *
+ * Support for symmetric nats
+ *
  * Revision 1.28  2004/10/28 19:02:49  mranga
  * Submitted by:  Daniel Martinez
  * Reviewed by:   M. Ranganathan
