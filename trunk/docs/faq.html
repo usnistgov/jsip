@@ -101,6 +101,7 @@ on? </a> </li>
 <li><a href="#44">Can you delay sending responses to after the Listener runs ?</a></li>
 <li><a href="#45">How do you build it under the ibm java implementation?</a></li>
 <li><a href="#46">What happens to Terminated Transactions ?</a></li>
+<li><a href="#47">How many Calls Per Second can NIST-SIP Handle ?</a></li>
 <li><a href="#questionables"> I have some questionable questions. Where do I look? <a/></li>
 </ol>
 <br/>
@@ -596,7 +597,7 @@ of the line that defines JAVAC for OS other than Windows_NT.  Then "make
 ri" completed without incident.
 <hr size="2" noshade="noshade"> 
 <a name="46"> </a>
-<li> What happens when the Server is overloaded ? <br/>
+<li> What happens to Terminated Transactions ? <br/>
 Once the Transaction is terminated, it is done and the server discards
 records of it. Thus you can well see the following behavior:
 <ol>
@@ -611,8 +612,16 @@ has resources, it responds "200 OK"
 </ol>
 
 
-</li>
-
+<hr size="2" noshade="noshade"> 
+<a name="47"> </a>
+<li> How many calls per second can NIST-SIP handle? <br/> 
+NIST-SIP is suitable for most User Agent Applications. It can handle roughly
+15-20 Calls/Second. Thats usually enough for your average desktop phone
+unless you are an extremely busy person.  Proxy server type applications
+requiring higher thruput are best built as stateless applications
+(ie. no transactions or dialogs are allocated).  There are several
+optimizations possible including the use of NIO and lazy parsing. These
+will be implemented as time permits.  </li>
 
 </ol>
 <a name="questionables"></a> <h2> Frequently Questionable Questions
