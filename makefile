@@ -204,6 +204,7 @@ backup:
 	./src/examples/cancel		        	\
 	./src/examples/tls		        	\
 	./src/examples/subsnotify	        	\
+	./src/examples/multi	        	\
 	./src/tools/tracesviewer	        
 	
 
@@ -225,6 +226,7 @@ zipfile:
 	-r ./$(PROJECT_ROOT)/src/examples/tls	       		\
 	-r ./$(PROJECT_ROOT)/src/examples/shootist	       	\
 	-r ./$(PROJECT_ROOT)/src/examples/subsnotify	       	\
+	-r ./$(PROJECT_ROOT)/src/examples/multi	       	\
 	-r ./$(PROJECT_ROOT)/src/examples/cancel	       	\
 	-r ./$(PROJECT_ROOT)/src/javax				\
 	-r ./$(PROJECT_ROOT)/src/test/tck			\
@@ -269,6 +271,7 @@ srctar: stamp
 	./$(PROJECT_ROOT)/src/examples/shootist		        \
 	./$(PROJECT_ROOT)/src/examples/tls		        \
 	./$(PROJECT_ROOT)/src/examples/subsnotify	        \
+	./$(PROJECT_ROOT)/src/examples/multi	                \
 	./$(PROJECT_ROOT)/src/examples/cancel	        	\
 	./$(PROJECT_ROOT)/src/test/tck		        	\
 	./$(PROJECT_ROOT)/README				\
@@ -290,6 +293,7 @@ srczip: stamp
 	-r ./$(PROJECT_ROOT)/src/tools/tracesviewer	        \
 	-r ./$(PROJECT_ROOT)/src/tools/sniffer		        \
 	-r ./$(PROJECT_ROOT)/src/examples/tls        		\
+	-r ./$(PROJECT_ROOT)/src/examples/multi        		\
 	-r ./$(PROJECT_ROOT)/src/examples/shootist        	\
 	-r ./$(PROJECT_ROOT)/src/examples/subsnotify        	\
 	-r ./$(PROJECT_ROOT)/src/examples/cancel        	\
@@ -334,6 +338,7 @@ tarfile:
 	./$(PROJECT_ROOT)/src/tools/tracesviewer	        \
 	./$(PROJECT_ROOT)/src/tools/sniffer		        \
 	./$(PROJECT_ROOT)/src/examples/tls		        \
+	./$(PROJECT_ROOT)/src/examples/multi		        \
 	./$(PROJECT_ROOT)/src/examples/shootist		        \
 	./$(PROJECT_ROOT)/src/examples/subsnotify	        \
 	./$(PROJECT_ROOT)/src/examples/cancel		        \
@@ -404,6 +409,7 @@ export:
 	./src/examples/shootist		        \
 	./src/examples/tls		        \
 	./src/examples/subsnotify	        \
+	./src/examples/multi	        \
 	./src/examples/cancel	        	\
 	./src/test/tck		        	\
 	./README				\
