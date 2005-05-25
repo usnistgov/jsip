@@ -23,7 +23,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.15 $ $Date: 2005-05-06 15:06:49 $
+ * @version JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2005-05-25 18:12:32 $
  * 
  * @author M. Ranganathan <mranga@nist.gov><br/>Bugs were reported by Antonis
  *         Karydas, Brad Templeton, Jeff Adams and Alex Rootham.
@@ -778,9 +778,10 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
             } else {
                 setLocalSequenceNumber(sipRequest.getCSeq().getSequenceNumber());
                 // his tag is known when receiving response
+		// Exception test suggested by John Barton
                 myTag = sipRequest.getFrom().getTag();
                 if (myTag == null)
-                    throw new RuntimeException("bad message tag missing!");
+                    throw new RuntimeException("The request's From header is missing the required Tag parameter.");
             }
         } else if (transaction.getMethod().equals(firstTransaction.getMethod())
                 && (((firstTransaction instanceof SIPServerTransaction) && (transaction instanceof SIPClientTransaction)) || ((firstTransaction instanceof SIPClientTransaction) && (transaction instanceof SIPServerTransaction)))) {
@@ -1168,7 +1169,7 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
         HopImpl hop = this.getNextHop();
         try {
             MessageChannel messageChannel = sipStack
-                    .createRawMessageChannel(hop);
+                    .createRawMessageChannel(this.firstTransaction.getPort(),hop);
             if (messageChannel == null) {
                 // Bug fix from Antonis Karydas
                 // At this point the procedures of 8.1.2
@@ -1193,7 +1194,7 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
                 if (outboundProxy == null)
                     throw new SipException("No route found!");
                 messageChannel = sipStack
-                        .createRawMessageChannel(outboundProxy);
+                  .createRawMessageChannel(this.firstTransaction.getPort(), outboundProxy);
 
             }
             // Wrap a client transaction around the raw message channel.
@@ -1502,7 +1503,7 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
 	    TLSMessageChannel oldTLSChannel = null;
 
 	   
-            MessageChannel messageChannel = sipStack.createRawMessageChannel(hop);
+            MessageChannel messageChannel = sipStack.createRawMessageChannel(this.firstTransaction.getPort(),hop);
             if (((SIPClientTransaction) clientTransactionId).encapsulatedChannel instanceof TCPMessageChannel) {
                 // Remove this from the connection cache if it is in the
                 // connection
@@ -1566,7 +1567,7 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
                 if (outboundProxy == null)
                     throw new SipException("No route found!");
                 messageChannel = sipStack
-                        .createRawMessageChannel(outboundProxy);
+                        .createRawMessageChannel(this.firstTransaction.getPort(),outboundProxy);
                 ((SIPClientTransaction) clientTransactionId).setEncapsulatedChannel (messageChannel);
             } else {
 		if (LogWriter.needsLogging) 
@@ -1750,6 +1751,29 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2005/05/06 15:06:49  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  mranga
+ *
+ * Added method check while updating dialog state
+ * Reviewed by:
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.14  2005/04/21 00:01:59  mranga
  * Issue number:
  * Obtained from:
