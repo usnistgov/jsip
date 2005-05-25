@@ -112,7 +112,7 @@ import java.util.LinkedList;
  *  
  * </pre>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.59 $ $Date: 2005-04-18 16:46:57 $
+ * @version JAIN-SIP-1.1 $Revision: 1.60 $ $Date: 2005-05-25 18:12:33 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
  * @author Bug fixes by Emil Ivov, Antonis Karydas, Daniel Martinez, Daniel
@@ -297,7 +297,7 @@ public class SIPServerTransaction extends SIPTransaction implements
             // parameters, which didn't work for IPv6 addresses.
             HopImpl hop = new HopImpl(host, port, transport);
             MessageChannel messageChannel = ((SIPTransactionStack) getSIPStack())
-                    .createRawMessageChannel(hop);
+                    .createRawMessageChannel(this.getPort(),hop);
             messageChannel.sendMessage(transactionResponse);
         }
     }
@@ -1230,6 +1230,31 @@ public class SIPServerTransaction extends SIPTransaction implements
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.59  2005/04/18 16:46:57  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  mranga
+ * Reviewed by:   mranga
+ *
+ * Bug fixes sent in by Jordan S are incorporated. The optimization
+ * for early responses is now re-incorporated into the ClientTx and the
+ * optimization for early requests is now re-incorporated into the ServerTx
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.58  2005/04/08 15:38:43  mranga
  * Submitted by:  Daniel Vasquez
  * Reviewed by:   mranga

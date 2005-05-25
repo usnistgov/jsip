@@ -27,7 +27,7 @@ import java.util.Iterator;
  * get the stack the process messages.
  * This will start the necessary threads that wait for incoming SIP messages.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.8 $ $Date: 2005-02-14 15:06:45 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.9 $ $Date: 2005-05-25 18:12:32 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  * 
@@ -687,6 +687,9 @@ public abstract class SIPMessageStack {
 	/**
 	 *  Creates a new MessageChannel for a given Hop.
 	 *
+         *  @param sourcePort - source port of the message channel to be
+         *                     created.
+         *
 	 *  @param nextHop Hop to create a MessageChannel to.
 	 *
 	 *  @return A MessageChannel to the specified Hop, or null if
@@ -695,7 +698,7 @@ public abstract class SIPMessageStack {
 	 *  @throws UnknwonHostException If the host in the Hop doesn't
 	 *  exist.
 	 */
-	public MessageChannel createMessageChannel(Hop nextHop)
+	public MessageChannel createMessageChannel(int sourcePort, Hop nextHop)
 		throws UnknownHostException {
 		Host targetHost;
 		HostPort targetHostPort;
@@ -719,7 +722,8 @@ public abstract class SIPMessageStack {
 			// transport is found,
 			if (nextHop
 				.getTransport()
-				.equalsIgnoreCase(nextProcessor.getTransport())) {
+				.equalsIgnoreCase(nextProcessor.getTransport())
+				&& sourcePort == nextProcessor.getPort()) {
 				try {
 					// Create a channel to the target
 					// host/port
@@ -743,6 +747,12 @@ public abstract class SIPMessageStack {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2005/02/14 15:06:45  mranga
+ * Submitted by:  Jeyashenkhar
+ * Reviewed by:   mranga
+ *
+ * Bug fix for local port binding.
+ *
  * Revision 1.7  2004/12/12 23:47:19  mranga
  * Issue number:  46
  * Submitted by:  espen
