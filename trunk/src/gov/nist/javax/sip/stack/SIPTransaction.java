@@ -22,7 +22,7 @@ import javax.sip.message.*;
  * @author Jeff Keyser 
  * @author M. Ranganathan (modified Jeff's original source and aligned with JAIN-SIP 1.1) 
 *  @author Modifications for TLS Support added by Daniel J. Martinez Manzano <dani@dif.um.es>
- * @version  JAIN-SIP-1.1 $Revision: 1.38 $ $Date: 2005-04-15 19:17:08 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.39 $ $Date: 2005-06-08 21:42:29 $
  */
 public abstract class SIPTransaction
 	extends MessageChannel
@@ -201,6 +201,10 @@ public abstract class SIPTransaction
 	// Transaction timer object.
 	protected TimerTask myTimer;
 
+    protected String toTag;
+
+    protected String fromTag;
+
 
 
 	public String getBranchId() {
@@ -328,6 +332,9 @@ public abstract class SIPTransaction
 		this.method = newOriginalRequest.getMethod();
 		this.from = (From) newOriginalRequest.getFrom();
 		this.to = (To) newOriginalRequest.getTo();
+		// Save these to avoid concurrent modification exceptions!
+		this.toTag = this.to.getTag();
+		this.fromTag = this.from.getTag();
 		this.callId = (CallID) newOriginalRequest.getCallId();
 		this.cSeq = newOriginalRequest.getCSeq().getSequenceNumber();
 		this.event = (Event) newOriginalRequest.getHeader("Event");
@@ -1068,6 +1075,29 @@ public abstract class SIPTransaction
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.38  2005/04/15 19:17:08  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  mranga
+ *
+ * Fixed maxforwards test
+ * Reviewed by:
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.37  2005/03/18 20:19:22  mranga
  * Submitted by:  Shu-Lin Chen
  * Reviewed by:   M. Ranganathan

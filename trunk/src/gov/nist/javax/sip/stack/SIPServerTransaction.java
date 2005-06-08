@@ -112,7 +112,7 @@ import java.util.LinkedList;
  *  
  * </pre>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.60 $ $Date: 2005-05-25 18:12:33 $
+ * @version JAIN-SIP-1.1 $Revision: 1.61 $ $Date: 2005-06-08 21:42:29 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
  * @author Bug fixes by Emil Ivov, Antonis Karydas, Daniel Martinez, Daniel
@@ -412,20 +412,20 @@ public class SIPServerTransaction extends SIPTransaction implements
                     }
 
                     // If this is an RFC2543-compliant message,
+                    // This code is really here for backwards compatibility. It is a weak
+                    // check.
                 } else {
 
                     // If RequestURI, To tag, From tag,
                     // CallID, CSeq number, and top Via
                     // headers are the same,
-                    String originalFromTag = getOriginalRequest().getFrom()
-                            .getTag();
+                    String originalFromTag = super.fromTag;
 
                     String thisFromTag = messageToTest.getFrom().getTag();
 
                     boolean skipFrom = (originalFromTag == null || thisFromTag == null);
 
-                    String originalToTag = getOriginalRequest().getTo()
-                            .getTag();
+                    String originalToTag = super.toTag;
 
                     String thisToTag = messageToTest.getTo().getTag();
 
@@ -1230,6 +1230,12 @@ public class SIPServerTransaction extends SIPTransaction implements
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.60  2005/05/25 18:12:33  mranga
+ * Submitted by:
+ * Reviewed by:   mranga
+ *
+ * Source port for outgoing packets should have the port of the listening point.
+ *
  * Revision 1.59  2005/04/18 16:46:57  mranga
  * Issue number:
  * Obtained from:
