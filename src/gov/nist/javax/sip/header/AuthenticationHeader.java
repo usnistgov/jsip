@@ -1,5 +1,9 @@
 /*******************************************************************************
  * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
+ * 2005/06/12: geir.hedemark@telio.no: Changed behaviour of qop parameter in
+ *             Authorization header - removed quoting of string according to
+ *             RFC3261, BNF element "message-qop" (as opposed to "qop-options",
+ *             which is quoted.
  *******************************************************************************/
 package gov.nist.javax.sip.header;
 
@@ -11,7 +15,7 @@ import java.text.ParseException;
  *
  * @author Olivier Deruelle <deruelle@nist.gov>
  * @author M. Ranganathan <mranga@nist.gov><br/>
- * @version JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2005-04-04 09:54:57 $
+ * @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2005-06-12 22:08:04 $
  *
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
@@ -65,7 +69,11 @@ public abstract class AuthenticationHeader extends ParametersHeader {
 				|| name.equalsIgnoreCase(ParameterNames.NEXT_NONCE)
 				|| name.equalsIgnoreCase(ParameterNames.URI)
 				|| name.equalsIgnoreCase(ParameterNames.RESPONSE)) {
-				nv.setQuotedValue();
+                                if ((this instanceof Authorization) && name.equalsIgnoreCase(ParameterNames.QOP)) {
+                                     //NOP, QOP not quoted in authorization headers
+                                } else {
+                                      nv.setQuotedValue();
+                                }
 				if (value == null)
 					throw new NullPointerException("null value");
 				if (value.startsWith(Separators.DOUBLE_QUOTE))
@@ -182,6 +190,9 @@ public abstract class AuthenticationHeader extends ParametersHeader {
 	/**
 	 * Sets the URI of the WWWAuthenicateHeader to the <var>uri</var>
 	 * parameter value.
+	 * @deprecated since v1.2 The URI parameter does not exist for this
+         * header hence this is a no-op. Implementations  should silently
+         * fail for bacwards compatibility.
 	 *
 	 * @param uri - the new URI of this WWWAuthenicateHeader.
 	 * @since v1.1
@@ -203,6 +214,8 @@ public abstract class AuthenticationHeader extends ParametersHeader {
 	 * @return the URI representing the URI information, null if value is
 	 * not set.
 	 * @since v1.1
+	 * @deprecated since v1.2 The URI parameter does not exist for this
+         * header hence implementation swill always return null.
 	 */
 	public javax.sip.address.URI getURI() {
 		return getParameterAsURI(ParameterNames.URI);
@@ -425,6 +438,9 @@ public abstract class AuthenticationHeader extends ParametersHeader {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2005/04/04 09:54:57  dmuresan
+ * Some constants declared final.
+ *
  * Revision 1.2  2004/01/22 13:26:29  sverker
  * Issue number:
  * Obtained from:
