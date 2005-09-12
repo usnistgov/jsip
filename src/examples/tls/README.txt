@@ -25,6 +25,18 @@ properties:
   - javax.net.ssl.keyStore=testKeyStore
   - javax.net.ssl.keyStorePassword=testPass
 
+
+To add the CA to the Keystore of your JVM
+-----------------------------------------
+
+1) Extract the self-signed cert from the keystore:
+     keytool -export -file testCert.der -keystore testKeyStore (you will be prompted for the password, which is "testPass").
+ 
+2) Import it into the JVM store:
+     keytool -import -file testCert.der -keystore <jre path>/lib/security/cacerts (you will be prompted for cacerts password, which by default is "changeit").
+ 
+
+
 If you have any questions, feel free to ask at nist-sip@antd.nist.gov
 
 -- Daniel J. Martinez Manzano.

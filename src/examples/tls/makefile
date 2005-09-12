@@ -18,14 +18,14 @@ all:
 shootist: Shootist.class
 	$(RM) shootistdebug.txt
 	$(RM) shootistlog.txt
-	$(JAVA) examples.tls.Shootist 
+	$(JAVA) -Djavax.net.ssl.keyStore=testKeyStore -Djavax.net.ssl.keyStorePassword=testPass examples.tls.Shootist 
 
 
 #shootme is the uas
 shootme: Shootme.class
 	$(RM) -f shootmedebug.txt
 	$(RM) -f shootmelog.txt
-	$(JAVA)  examples.tls.Shootme 
+	$(JAVA) -Djavax.net.ssl.keyStore=testKeyStore -Djavax.net.ssl.keyStorePassword=testPass examples.tls.Shootme 
 
 shootmelog:
 	$(JAVA) tools.tracesviewer.TracesViewer -server_file shootmelog.txt
