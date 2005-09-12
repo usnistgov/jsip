@@ -74,15 +74,13 @@ public class Shootme implements SipListener {
 				+ requestEvent.getRequest());
 			int ackCount = 
 				((ApplicationData ) dialog.getApplicationData()).ackCount;
-			if (ackCount == 1) {
 			   dialog = inviteTid.getDialog();
-			   Request byeRequest = dialog.createRequest(Request.BYE);
-			   ClientTransaction tr =
+		       Request byeRequest = dialog.createRequest(Request.BYE);
+		       ClientTransaction tr =
 				sipProvider.getNewClientTransaction(byeRequest);
-			   System.out.println("shootme: got an ACK -- sending bye! ");
-			   dialog.sendRequest(tr);
-			   System.out.println("Dialog State = " + dialog.getState());
-			} else ((ApplicationData) dialog.getApplicationData()).ackCount ++;
+		        System.out.println("shootme: got an ACK -- sending bye! ");
+		        dialog.sendRequest(tr);
+		        System.out.println("Dialog State = " + dialog.getState());
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.exit(0);
@@ -105,10 +103,10 @@ public class Shootme implements SipListener {
 			toHeader.setTag("4321"); // Application is supposed to set.
 			Address address =
 				addressFactory.createAddress("Shootme <sip:" + myAddress+ ":" + myPort + ">");
-//endif
-//
 			ContactHeader contactHeader =
 				headerFactory.createContactHeader(address);
+			contactHeader.setParameter("transport", "tls");
+
 			response.addHeader(contactHeader);
 			ServerTransaction st = requestEvent.getServerTransaction();
 
@@ -227,19 +225,12 @@ public class Shootme implements SipListener {
 		sipFactory = SipFactory.getInstance();
 		sipFactory.setPathName("gov.nist");
 		Properties properties = new Properties();
-//ifdef SIMULATION
-/*
-		        properties.setProperty("javax.sip.IP_ADDRESS","129.6.55.62");
-//else
-*/
 		properties.setProperty("javax.sip.IP_ADDRESS", myAddress );
-//endif
-//
 		properties.setProperty("javax.sip.RETRANSMISSION_FILTER", "true");
 		properties.setProperty("javax.sip.STACK_NAME", "shootme");
 		// You need  16 for logging traces. 32 for debug + traces.
 		// Your code will limp at 32 but it is best for debugging.
-		properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "16");
+		properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
 		properties.setProperty(
 			"gov.nist.javax.sip.DEBUG_LOG",
 			"shootmedebug.txt");
@@ -292,88 +283,3 @@ public class Shootme implements SipListener {
 	}
 
 }
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.20  2004/09/26 14:48:01  mranga
- * Submitted by:  John Martin
- * Reviewed by:   mranga
- *
- * Remove unnecssary synchronization.
- *
- * Revision 1.19  2004/06/16 02:53:17  mranga
- * Submitted by:  mranga
- * Reviewed by:   implement re-entrant multithreaded listener model.
- *
- * Revision 1.18  2004/06/15 09:54:39  mranga
- * Reviewed by:   mranga
- * re-entrant listener model added.
- * (see configuration property gov.nist.javax.sip.REENTRANT_LISTENER)
- *
- * Revision 1.17  2004/05/16 14:13:20  mranga
- * Reviewed by:   mranga
- * Fixed the use-count issue reported by Peter Parnes.
- * Added property to prevent against content-length dos attacks.
- *
- * Revision 1.16  2004/04/07 13:46:30  mranga
- * Reviewed by:   mranga
- * move processing of delayed responses outside the synchronized block.
- *
- * Revision 1.15  2004/04/07 00:19:22  mranga
- * Reviewed by:   mranga
- * Fixes a potential race condition for client transactions.
- * Handle re-invites statefully within an established dialog.
- *
- * Revision 1.14  2004/03/30 18:10:53  mranga
- * Reviewed by:   mranga
- * added code to demonstrate cleanup
- *
- * Revision 1.13  2004/03/12 21:53:08  mranga
- * Reviewed by:   mranga
- * moved some comments around for ifdef support.
- *
- * Revision 1.12  2004/03/07 22:25:22  mranga
- * Reviewed by:   mranga
- * Added a new configuration parameter that instructs the stack to
- * drop a server connection after server transaction termination
- * set gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false for this
- * Default behavior is true.
- *
- * Revision 1.11  2004/03/05 20:36:54  mranga
- * Reviewed by:   mranga
- * put in some debug printfs and cleaned some things up.
- *
- * Revision 1.10  2004/02/26 14:28:50  mranga
- * Reviewed by:   mranga
- * Moved some code around (no functional change) so that dialog state is set
- * when the transaction is added to the dialog.
- * Cleaned up the Shootist example a bit.
- *
- * Revision 1.9  2004/02/13 13:55:31  mranga
- * Reviewed by:   mranga
- * per the spec, Transactions must always have a valid dialog pointer. Assigned a dummy dialog for transactions that are not assigned to any dialog (such as Message).
- *
- * Revision 1.8  2004/01/22 13:26:27  sverker
- * Issue number:
- * Obtained from:
- * Submitted by:  sverker
- * Reviewed by:   mranga
- *
- * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
- *
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- */
