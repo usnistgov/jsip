@@ -23,7 +23,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2005-05-25 18:12:32 $
+ * @version JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2005-09-12 19:25:25 $
  * 
  * @author M. Ranganathan <mranga@nist.gov><br/>Bugs were reported by Antonis
  *         Karydas, Brad Templeton, Jeff Adams and Alex Rootham.
@@ -299,10 +299,10 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
 
         int port = sipUri.getPort();
 
-	// Added by Daniel J. Martinez Manzano <dani@dif.um.es>
+        // Added by Daniel J. Martinez Manzano <dani@dif.um.es>
         // Checks if transport parameter is TLS and assigns 5061.
-	if("tls".equalsIgnoreCase(transport))
-		port = 5061;
+        if(port == -1 && "tls".equalsIgnoreCase(transport))
+            port = 5061;
 
         if (port == -1)
             port = 5060;
@@ -1168,6 +1168,8 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
         }
         HopImpl hop = this.getNextHop();
         try {
+            if ( LogWriter.needsLogging)
+                sipStack.logWriter.logMessage("Hop = " + hop);
             MessageChannel messageChannel = sipStack
                     .createRawMessageChannel(this.firstTransaction.getPort(),hop);
             if (messageChannel == null) {
@@ -1751,6 +1753,12 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2005/05/25 18:12:32  mranga
+ * Submitted by:
+ * Reviewed by:   mranga
+ *
+ * Source port for outgoing packets should have the port of the listening point.
+ *
  * Revision 1.15  2005/05/06 15:06:49  mranga
  * Issue number:
  * Obtained from:
