@@ -319,7 +319,7 @@ c:/jakarta-ant/bin/ant all
 	</target>
 
 	<!-- compile to traces viewer jar -->
-	<target name="viewerjar">
+	<target name="viewerjar" depends="compiletools">
 		<copy todir="${classes}/tools/tracesviewer/images">
 			<fileset dir="${srcroot}/tools/tracesviewer/images"/>
 		</copy>
