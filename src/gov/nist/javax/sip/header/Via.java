@@ -12,7 +12,7 @@ import javax.sip.*;
  *
  * @see ViaList
  *
- * @version JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2005-04-16 20:38:51 $
+ * @version JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2005-10-09 19:44:19 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -22,6 +22,11 @@ import javax.sip.*;
 public class Via
 	extends ParametersHeader
 	implements javax.sip.header.ViaHeader {
+
+	/**
+	 * Comment for <code>serialVersionUID</code>
+	 */
+	private static final long serialVersionUID = 5281728373401351378L;
 
 	/** The branch parameter is included by every forking proxy.
 	*/
@@ -63,25 +68,25 @@ public class Via
 	}
 
 	/**
-	 *Compare two via headers for equaltiy.
-	 * @param other Object to set.
-	 * @return true if the two via headers are the same.
-	 */
+	 * JvB: equals() should look something like this
+	 *
 	public boolean equals(Object other) {
-		if (!this.getClass().equals(other.getClass())) {
-			return false;
-		}
-		Via that = (Via) other;
-
-		if (!this.sentProtocol.equals(that.sentProtocol)) {
-			return false;
-		}
-		if (!this.sentBy.equals(that.sentBy)) {
-			return false;
-		}
-		return true;
+		
+		if (other==this) return true;
+		
+		if (other instanceof ViaHeader) {
+			final ViaHeader o = (ViaHeader) other;
+			return getProtocol().equalsIgnoreCase( o.getProtocol() )
+				&& getTransport().equalsIgnoreCase( o.getTransport() )
+				&& getHost().equalsIgnoreCase( o.getHost() )
+				&& getPort() == o.getPort()
+				&& equalParameters( o );
+		} 
+		return false;
 	}
-
+	*/
+	
+	
 	/** get the Protocol Version
 	 * @return String
 	 */
@@ -259,12 +264,31 @@ public class Via
 	 * Set the port part of this ViaHeader to the newly supplied <code>port</code> 
 	 * parameter.
 	 *
-	 * @param port - the new interger value of the port of this ViaHeader
+	 * @param port - the new integer value of the port of this ViaHeader
 	 */
-	public void setPort(int port) {
+	public void setPort( int port ) /*throws InvalidArgumentException*/ {
+
+		/*
+		 * InvalidArgumentException not in 1.1 API
+		 * 
+		if ( port!=-1 && (port<1 || port>65535)) {
+			throw new InvalidArgumentException( "Port value out of range -1, [1..65535]" );
+		}
+		*/
+				
 		if (sentBy == null)
 			sentBy = new HostPort();
 		sentBy.setPort(port);
+	}
+	
+	/**
+	 * Set the RPort parameter.
+	 * 
+	 * @param rport -- rport parameter to set.
+	 */
+	public void setRPort(int rport) throws InvalidArgumentException {
+	    if ( rport <= 0 ) throw new InvalidArgumentException ("Bad RPort value");
+	    this.setParameter(Via.RPORT,rport);
 	}
 
 	/**
@@ -284,13 +308,14 @@ public class Via
 	*
 	*@return the rport parameter or -1.
 	*/
-       public int getrport() {
+       public int getRPort() {
          String strRport = getParameter(ParameterNames.RPORT);
          if (strRport != null)
             return new Integer(strRport).intValue();
          else
             return -1;
      	}
+    
 
 	/**
 	 * Returns the value of the transport parameter. 
@@ -331,7 +356,7 @@ public class Via
 	public String getProtocol() {
 		if (sentProtocol == null)
 			return null;
-		return sentProtocol.getProtocolName();
+		return sentProtocol.getProtocol();	// JvB: Return name ~and~ version
 	}
 
 	/**
@@ -347,9 +372,11 @@ public class Via
 			throw new NullPointerException(
 				"JAIN-SIP Exception, "
 					+ "Via, setProtocol(), the protocol parameter is null.");
+		
 		if (sentProtocol == null)
 			sentProtocol = new Protocol();
-		sentProtocol.setProtocolName(protocol);
+		
+		sentProtocol.setProtocol(protocol);
 	}
 
 	/**
@@ -472,47 +499,7 @@ public class Via
 			retval.sentBy = (HostPort) this.sentBy.clone();
 		return retval;
 	}
+
+    
+   
 }
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.5  2004/11/28 17:32:25  mranga
- * Submitted by:  hagai sela
- * Reviewed by:   mranga
- *
- * Support for symmetric nats
- *
- * Revision 1.4  2004/07/28 14:13:53  mranga
- * Submitted by:  mranga
- *
- * Move out the test code to a separate test/unit class.
- * Fixed some encode methods.
- *
- * Revision 1.3  2004/02/28 13:33:43  mranga
- * Reviewed by:   mranga
- * fixed bug with removePort
- *
- * Revision 1.2  2004/01/22 13:26:30  sverker
- * Issue number:
- * Obtained from:
- * Submitted by:  sverker
- * Reviewed by:   mranga
- *
- * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
- *
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- */
