@@ -20,7 +20,7 @@ import java.text.ParseException;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  *
- * @version JAIN-SIP-1.1 $Revision: 1.15 $ $Date: 2005-04-20 20:01:11 $
+ * @version JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2005-10-09 20:33:06 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -831,7 +831,7 @@ public abstract class SIPMessage
 			// Bis 09 compatible branch assignment algorithm.
 			// implies that the branch id can be used as a transaction
 			// identifier.
-			return topVia.getBranch().toLowerCase();
+			return topVia.getBranch(); // JvB: don't do '.toLowerCase()';
 		} else {
 			// Old style client so construct the transaction identifier
 			// from various fields of the request.
@@ -855,10 +855,10 @@ public abstract class SIPMessage
 					retval.append(":").append(5060);
 				}
 			}
-			String hc =
-				Utils.toHexString(retval.toString().toLowerCase().getBytes());
+			String hc = retval.toString();
 
-			return new Integer( hc.hashCode() ).toString();
+			// JvB: Always start with magic_cookie
+			return SIPConstants.BRANCH_MAGIC_COOKIE + Integer.toHexString( hc.hashCode() );
 		}
 	}
 
@@ -1668,6 +1668,9 @@ public abstract class SIPMessage
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2005/04/20 20:01:11  dmuresan
+ * Fixed SIPMessage.clone() and SIPRequest.clone(), again.
+ *
  * Revision 1.14  2005/04/19 03:09:53  mranga
  * Submitted by:  mranga
  * Reviewed by:   mranga
