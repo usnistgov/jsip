@@ -12,7 +12,7 @@ import javax.sip.*;
  *
  * @see ViaList
  *
- * @version JAIN-SIP-1.1 $Revision: 1.8 $ $Date: 2005-10-09 19:48:05 $
+ * @version JAIN-SIP-1.1 $Revision: 1.9 $ $Date: 2005-10-09 20:16:11 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -85,6 +85,26 @@ public class Via
 		return false;
 	}
 	*/
+
+	/**
+	 *Compare two via headers for equaltiy.
+	 * @param other Object to set.
+	 * @return true if the two via headers are the same.
+	 */
+	public boolean equals(Object other) {
+		if (!this.getClass().equals(other.getClass())) {
+			return false;
+		}
+		Via that = (Via) other;
+
+		if (!this.sentProtocol.equals(that.sentProtocol)) {
+			return false;
+		}
+		if (!this.sentBy.equals(that.sentBy)) {
+			return false;
+		}
+		return true;
+	}
 	
 	
 	/** get the Protocol Version
