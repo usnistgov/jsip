@@ -12,7 +12,7 @@ import javax.sip.*;
  *
  * @see ViaList
  *
- * @version JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2005-10-09 19:44:19 $
+ * @version JAIN-SIP-1.1 $Revision: 1.8 $ $Date: 2005-10-09 19:48:05 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -286,7 +286,7 @@ public class Via
 	 * 
 	 * @param rport -- rport parameter to set.
 	 */
-	public void setRPort(int rport) throws InvalidArgumentException {
+	public void setrport(int rport) throws InvalidArgumentException {
 	    if ( rport <= 0 ) throw new InvalidArgumentException ("Bad RPort value");
 	    this.setParameter(Via.RPORT,rport);
 	}
@@ -308,10 +308,10 @@ public class Via
 	*
 	*@return the rport parameter or -1.
 	*/
-       public int getRPort() {
+       public int getrport() {
          String strRport = getParameter(ParameterNames.RPORT);
          if (strRport != null)
-            return new Integer(strRport).intValue();
+            return Integer.parseInt( strRport );
          else
             return -1;
      	}
