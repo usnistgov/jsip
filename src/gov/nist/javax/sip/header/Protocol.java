@@ -8,7 +8,7 @@ import java.text.ParseException;
 /**
  *  Protocol name and version.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2005-10-09 19:48:21 $
+ * @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2005-10-09 20:24:22 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -34,6 +34,28 @@ public class Protocol extends SIPObject {
 	 */
 	protected String transport;
 
+	/**
+	 * Compare two To headers for equality.
+	 * @return true if the two headers are the same.
+	 * @param other Object to set
+	 */
+	public boolean equals(Object other) {
+		if (!other.getClass().equals(this.getClass())) {
+			return false;
+		}
+		Protocol that = (Protocol) other;
+		if (this.protocolName.compareToIgnoreCase(that.protocolName) != 0) {
+			return false;
+		}
+		if (this.transport.compareToIgnoreCase(that.transport) != 0) {
+			return false;
+		}
+		if (this.protocolVersion.compareTo(that.protocolVersion) != 0) {
+			return false;
+		}
+		return true;
+	}	
+	
 	/**
 	 * Return canonical form.
 	 * @return String
@@ -120,6 +142,9 @@ public class Protocol extends SIPObject {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2005/10/09 19:48:21  jbemmel
+ * bugfix: getProtocol should return e.g. "SIP/2.0", not including transport
+ *
  * Revision 1.2  2005/10/09 18:47:53  jeroen
  * defined equals() in terms of API calls
  *
