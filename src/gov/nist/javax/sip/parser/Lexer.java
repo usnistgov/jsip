@@ -218,6 +218,7 @@ public class Lexer extends LexerCore {
 					TokenTypes.CONTENT_LENGTH);
 				addKeyword(TokenNames.S.toUpperCase(), TokenTypes.SUBJECT);
 				addKeyword(TokenNames.T.toUpperCase(), TokenTypes.TO);
+				addKeyword(TokenNames.U.toUpperCase(), TokenTypes.ALLOW_EVENTS);	// JvB: added
 				addKeyword(TokenNames.V.toUpperCase(), TokenTypes.VIA);
 				addKeyword(TokenNames.R.toUpperCase(), TokenTypes.REFER_TO);
 			        addKeyword(TokenNames.O.toUpperCase(), TokenTypes.EVENT); // Bug fix by Mario Mantak
@@ -235,6 +236,12 @@ public class Lexer extends LexerCore {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2005/04/27 14:12:05  mranga
+ * Submitted by:  Mario Mantak
+ * Reviewed by:   mranga
+ *
+ * Added a missing "short form" for event header.
+ *
  * Revision 1.5  2005/03/22 18:34:56  mranga
  * Submitted by:  Brian Rosen
  * Reviewed by:   mranga

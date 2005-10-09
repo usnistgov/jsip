@@ -6,7 +6,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * A grab bag of SIP Token names.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2005-04-27 14:12:05 $
+ * @version JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2005-10-09 19:53:31 $
  * 
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -57,12 +57,19 @@ public interface TokenNames
 	public static final String L = "L";
 	public static final String S = "S";
 	public static final String T = "T";
+	public static final String U = "U";
 	public static final String V = "V";
 	public static final String R = "R";
 	public static final String O = "O";
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2005/04/27 14:12:05  mranga
+ * Submitted by:  Mario Mantak
+ * Reviewed by:   mranga
+ *
+ * Added a missing "short form" for event header.
+ *
  * Revision 1.4  2004/01/22 13:26:32  sverker
  * Issue number:
  * Obtained from:
