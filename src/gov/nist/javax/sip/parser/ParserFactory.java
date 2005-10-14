@@ -9,7 +9,7 @@ import gov.nist.core.*;
  * A factory class that does a name lookup on a registered parser and
  * returns a header parser for the given name.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2005-04-04 09:29:03 $
+ * @version JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2005-10-14 20:00:24 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -122,6 +122,7 @@ public class ParserFactory {
 		parserTable.put(ServerHeader.NAME.toLowerCase(), ServerParser.class);
 
 		parserTable.put(SubjectHeader.NAME.toLowerCase(), SubjectParser.class);
+		parserTable.put("s", SubjectParser.class);	// JvB: added
 
 		parserTable.put(
 			SubscriptionStateHeader.NAME.toLowerCase(),
@@ -239,6 +240,9 @@ public class ParserFactory {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2005/04/04 09:29:03  dmuresan
+ * Replaced new String().getClass() with String.class.
+ *
  * Revision 1.3  2004/01/22 13:26:31  sverker
  * Issue number:
  * Obtained from:
