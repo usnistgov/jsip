@@ -6,7 +6,7 @@ import java.text.ParseException;
 /** 
  * A parser for The SIP contact header.
  * 
- * @version  JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2004-07-28 14:13:54 $
+ * @version  JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2005-10-14 19:40:09 $
  */
 public class ContactParser extends AddressParametersParser {
 
@@ -26,10 +26,16 @@ public class ContactParser extends AddressParametersParser {
 		while (true) {
 			Contact contact = new Contact();
 			if (lexer.lookAhead(0) == '*') {
-				this.lexer.match('*');
-				contact.setWildCardFlag(true);
-			} else
+				final char next = lexer.lookAhead(1);
+				if (next==' '||next=='\t'||next=='\r'||next=='\n') {
+					this.lexer.match('*');
+					contact.setWildCardFlag(true);
+				} else {
+					super.parse(contact);
+				}
+			} else {
 				super.parse(contact);
+			}
 			retval.add(contact);
 			this.lexer.SPorHT();
 			if (lexer.lookAhead(0) == ',') {
@@ -48,6 +54,12 @@ public class ContactParser extends AddressParametersParser {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/07/28 14:13:54  mranga
+ * Submitted by:  mranga
+ *
+ * Move out the test code to a separate test/unit class.
+ * Fixed some encode methods.
+ *
  * Revision 1.5  2004/04/22 22:51:17  mranga
  * Submitted by:  Thomas Froment
  * Reviewed by:   mranga
