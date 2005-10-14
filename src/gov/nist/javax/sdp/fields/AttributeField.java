@@ -92,7 +92,7 @@ public class AttributeField extends SDPField implements javax.sdp.Attribute {
 			return false;
 		else {
 			Object value = nameValue.getValue();
-			if (value == null)
+			if (value == null || value == "")	// JvB: flag value now uses ""
 				return false;
 			else
 				return true;
@@ -110,7 +110,7 @@ public class AttributeField extends SDPField implements javax.sdp.Attribute {
 		else {
 			Object value = nameValue.getValue();
 			if (value == null)
-				return null;
+				return "";	// JvB: return empty string for flag attributes
 			else if (value instanceof String)
 				return (String) value;
 			else
@@ -143,6 +143,9 @@ public class AttributeField extends SDPField implements javax.sdp.Attribute {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2005/04/16 20:38:43  dmuresan
+ * Canonical clone() implementations for the GenericObject and GenericObjectList hierarchies
+ *
  * Revision 1.2  2004/01/22 13:26:27  sverker
  * Issue number:
  * Obtained from:
