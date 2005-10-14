@@ -50,8 +50,10 @@ public interface SdpConstants {
     public static final String RTP_AVP="RTP/AVP";
     
     /** RTP mapping attribute.
+     *
+     * SDP is case-sensitive; RFC2327 specifies 'rtpmap' (all smallcap)
      */
-    public static final String RTPMAP="RTPMAP";
+    public static final String RTPMAP="rtpmap";
     
     /** RTP mapping attribute.
      */
