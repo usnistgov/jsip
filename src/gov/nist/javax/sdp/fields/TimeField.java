@@ -45,7 +45,7 @@ public class TimeField extends SDPField implements Time {
 	* @return the date
 	*/
 	public Date getStart() throws SdpParseException {
-		return new Date(startTime * 1000 + SdpConstants.NTP_CONST);
+		return SdpFactory.getDateFromNtp( startTime );
 	}
 
 	/** Returns the stop time of the session
@@ -53,7 +53,7 @@ public class TimeField extends SDPField implements Time {
 	 * @return the stop time of the session.
 	 */
 	public Date getStop() throws SdpParseException {
-		return new Date(stopTime * 1000 + SdpConstants.NTP_CONST);
+		return SdpFactory.getDateFromNtp( stopTime );
 	}
 
 	/** Sets the stop time of the session.
@@ -64,7 +64,7 @@ public class TimeField extends SDPField implements Time {
 		if (stop == null)
 			throw new SdpException("The date is null");
 		else {
-			this.stopTime = stop.getTime() / 1000 - SdpConstants.NTP_CONST;
+			this.stopTime = SdpFactory.getNtpTime( stop );
 		}
 	}
 
@@ -76,7 +76,7 @@ public class TimeField extends SDPField implements Time {
 		if (start == null)
 			throw new SdpException("The date is null");
 		else {
-			this.startTime = start.getTime() / 1000 - SdpConstants.NTP_CONST;
+			this.startTime = SdpFactory.getNtpTime( start );
 		}
 	}
 
@@ -154,4 +154,28 @@ public class TimeField extends SDPField implements Time {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/01/22 13:26:27  sverker
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  sverker
+ * Reviewed by:   mranga
+ *
+ * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  */
