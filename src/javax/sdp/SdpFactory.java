@@ -672,7 +672,7 @@ public class SdpFactory extends Object {
      * @param d Date to set
      * @return long
      */    
-    public static long getNtpTime(Date d)  throws SdpParseException{
+    public static long getNtpTime(Date d) {
         if (d==null) return -1;
         return ((d.getTime()/1000) + SdpConstants.NTP_CONST);
     }
