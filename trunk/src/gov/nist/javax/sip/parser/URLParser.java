@@ -7,7 +7,7 @@ import java.util.Vector;
 /**
  * Parser For SIP and Tel URLs. Other kinds of URL's are handled by the 
  * J2SE 1.4 URL class.
- * @version JAIN-SIP-1.1 $Revision: 1.9 $ $Date: 2005-07-14 14:53:58 $
+ * @version JAIN-SIP-1.1 $Revision: 1.10 $ $Date: 2005-10-22 23:52:44 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -83,7 +83,7 @@ public class URLParser extends Parser {
 		while (lexer.hasMoreChars()) {
 			char next = lexer.lookAhead(0);
 			if (next == '['
-				|| next == '['
+				|| next == ']'	// JvB: fixed this one, used to say '['
 				|| next == '/'
 				|| next == ':'
 				|| next == '&'
@@ -711,6 +711,12 @@ public class URLParser extends Parser {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2005/07/14 14:53:58  mranga
+ * Submitted by:  mranga
+ * Reviewed by:   mranga
+ *
+ * Applied Jeff Heynie's bug fix for URL parser.
+ *
  * Revision 1.8  2004/07/28 14:13:55  mranga
  * Submitted by:  mranga
  *
