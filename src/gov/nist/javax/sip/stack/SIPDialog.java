@@ -23,7 +23,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2005-09-12 19:25:25 $
+ * @version JAIN-SIP-1.1 $Revision: 1.18 $ $Date: 2005-11-02 14:54:51 $
  * 
  * @author M. Ranganathan <mranga@nist.gov><br/>Bugs were reported by Antonis
  *         Karydas, Brad Templeton, Jeff Adams and Alex Rootham.
@@ -190,7 +190,8 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
         else if (this.nextSeqno == null)
             return false;
         else
-            return this.nextSeqno.intValue() == dialogRequest.getCSeq()
+			// JvB: bug fix - allow a gap of >1 in CSeq sequence
+            return this.nextSeqno.intValue() <= dialogRequest.getCSeq()
                     .getSequenceNumber();
     }
 
@@ -1753,6 +1754,28 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.17  2005/09/12 19:25:25  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  mranga
+ * TLS port error fix
+ * Reviewed by:
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.16  2005/05/25 18:12:32  mranga
  * Submitted by:
  * Reviewed by:   mranga
