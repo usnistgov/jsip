@@ -133,16 +133,7 @@ public class SessionDescriptionImpl implements SessionDescription {
 	 * @return Object
 	 */
 	public Object clone() throws CloneNotSupportedException {
-		Class myClass = this.getClass();
-		SessionDescriptionImpl hi;
-		try {
-			hi = (SessionDescriptionImpl) myClass.newInstance();
-		} catch (InstantiationException ex) {
-			return null;
-		} catch (IllegalAccessException ex) {
-			return null;
-		}
-
+		SessionDescriptionImpl hi = new SessionDescriptionImpl();
 		hi.versionImpl = (ProtoVersionField) this.versionImpl.clone();
 		hi.originImpl = (OriginField) this.originImpl.clone();
 		hi.sessionNameImpl = (SessionNameField) this.sessionNameImpl.clone();
@@ -718,6 +709,10 @@ public class SessionDescriptionImpl implements SessionDescription {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2004/12/13 02:43:44  mranga
+ * Submitted by:  mranga
+ * Fix documentation bugs. Update change list.
+ *
  * Revision 1.5  2004/01/22 13:26:27  sverker
  * Issue number:
  * Obtained from:
