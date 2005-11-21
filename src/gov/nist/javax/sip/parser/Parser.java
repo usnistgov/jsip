@@ -6,7 +6,7 @@ import java.util.Vector;
 /**
  * Base parser class.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2004-01-22 13:26:31 $
+ * @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2005-11-21 23:25:35 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -29,7 +29,7 @@ public abstract class Parser extends ParserCore implements TokenTypes {
 			dbg_enter("sipVersion");
 		try {
 			Token tok = lexer.match(SIP);
-			if (!tok.getTokenValue().equals("SIP"))
+			if (!tok.getTokenValue().equalsIgnoreCase("SIP"))
 				createParseException("Expecting SIP");
 			lexer.match('/');
 			tok = lexer.match(ID);
@@ -74,4 +74,28 @@ public abstract class Parser extends ParserCore implements TokenTypes {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2004/01/22 13:26:31  sverker
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  sverker
+ * Reviewed by:   mranga
+ *
+ * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  */
