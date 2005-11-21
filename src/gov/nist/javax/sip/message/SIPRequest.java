@@ -26,7 +26,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2005-04-20 20:01:12 $
+ * @version JAIN-SIP-1.1 $Revision: 1.14 $ $Date: 2005-11-21 23:29:33 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -166,8 +166,7 @@ public final class SIPRequest
 		if (requestLine != null
 			&& requestLine.getMethod() != null
 			&& getCSeq().getMethod() != null
-			&& requestLine.getMethod().compareToIgnoreCase(getCSeq().getMethod())
-				!= 0) {
+			&& requestLine.getMethod().compareTo(getCSeq().getMethod()) != 0) {
 			throw new ParseException(
 				"CSEQ method mismatch with  Request-Line ",
 				0);
@@ -913,7 +912,7 @@ public final class SIPRequest
 	 * @param sipVersion the sip version to set.
 	 */
 	public void setSIPVersion(String sipVersion) throws ParseException {
-		if (sipVersion == null || !sipVersion.equals("SIP/2.0"))
+		if (sipVersion == null || !sipVersion.equalsIgnoreCase("SIP/2.0"))
 			throw new ParseException("sipVersion", 0);
 		this.requestLine.setSIPVersion(sipVersion);
 	}
@@ -940,6 +939,9 @@ public final class SIPRequest
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2005/04/20 20:01:12  dmuresan
+ * Fixed SIPMessage.clone() and SIPRequest.clone(), again.
+ *
  * Revision 1.12  2005/04/19 03:09:54  mranga
  * Submitted by:  mranga
  * Reviewed by:   mranga
