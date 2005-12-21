@@ -26,7 +26,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.14 $ $Date: 2005-11-21 23:29:33 $
+ * @version JAIN-SIP-1.1 $Revision: 1.15 $ $Date: 2005-12-21 16:35:28 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -564,7 +564,7 @@ public final class SIPRequest
 				|| nextHeader instanceof CallID
 				|| nextHeader instanceof RecordRouteList
 				|| nextHeader instanceof CSeq
-				|| nextHeader instanceof MaxForwards
+				// || nextHeader instanceof MaxForwards   JvB: not this one
 				|| nextHeader instanceof TimeStamp) {
 				/**
 				if (SIPMessage.isRequestHeader(nextHeader)) {
@@ -585,6 +585,12 @@ public final class SIPRequest
 				}
 			}
 		}
+		
+		if ( newResponse.getStatusCode() == 100 ) {
+			// Trying is never supposed to have the tag parameter set.
+			newResponse.getTo().removeParameter("tag");
+		}
+				
 		return newResponse;
 	}
 
@@ -939,6 +945,9 @@ public final class SIPRequest
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2005/11/21 23:29:33  jbemmel
+ * case insensitive
+ *
  * Revision 1.13  2005/04/20 20:01:12  dmuresan
  * Fixed SIPMessage.clone() and SIPRequest.clone(), again.
  *
