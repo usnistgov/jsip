@@ -23,7 +23,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.18 $ $Date: 2005-11-02 14:54:51 $
+ * @version JAIN-SIP-1.1 $Revision: 1.19 $ $Date: 2006-01-30 20:08:12 $
  * 
  * @author M. Ranganathan <mranga@nist.gov><br/>Bugs were reported by Antonis
  *         Karydas, Brad Templeton, Jeff Adams and Alex Rootham.
@@ -1326,8 +1326,9 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
             Route route = (Route) rl.getFirst();
             SipURI sipUri = (SipUri) route.getAddress().getURI();
             if (sipUri.hasLrParam()) {
-                if (this.getRemoteTarget() != null)
-                    sipRequest.setRequestURI(this.getRemoteTarget().getURI());
+                // JvB: not needed, already set on line 1264
+                //if (this.getRemoteTarget() != null)
+                //    sipRequest.setRequestURI(this.getRemoteTarget().getURI());
                 sipRequest.addHeader(rl);
             } else {
                 // First route is not a lr
@@ -1343,16 +1344,22 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
                     sipRequest.addHeader(contactRoute);
             }
         } else {
+            //
+            // JvB: see line 1264
+            //
             // Bug report from Antonis Karydas
-            if (this.getRemoteTarget() != null)
-                sipRequest.setRequestURI(this.getRemoteTarget().getURI());
+            // if (this.getRemoteTarget() != null)
+            //    sipRequest.setRequestURI(this.getRemoteTarget().getURI());
         }
         // Set the transport to be the same for the outgoing request.
         try {
             if (sipRequest.getRequestURI() instanceof SipUri) {
-                ((SipUri) sipRequest.getRequestURI())
-                        .setTransportParam(sipRequest.getTopmostVia()
-                                .getTransport());
+              
+                // JvB: first clone the URI, it may be used in other headers
+                // too! (e.g. Contact, reported by Matt Porter)
+                SipUri cloned = (SipUri) sipRequest.getRequestURI().clone();
+                cloned.setTransportParam(sipRequest.getTopmostVia().getTransport());
+                sipRequest.setRequestURI( cloned );                        
             }
         } catch (ParseException ex) {
         }
@@ -1754,6 +1761,9 @@ public class SIPDialog implements javax.sip.Dialog, PendingRecord {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.18  2005/11/02 14:54:51  jbemmel
+ * bug reported by Becky McElroy: Dialog was not accepting request with a CSeq delta > 1 (as e.g. occurs when a proxy challenges the sender)
+ *
  * Revision 1.17  2005/09/12 19:25:25  mranga
  * Issue number:
  * Obtained from:
