@@ -10,7 +10,7 @@ import java.text.ParseException;
 /**  
 *To SIP Header.
 *
-*@version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-06-17 15:22:29 $
+*@version JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2006-01-31 06:56:21 $
 *
 *@author M. Ranganathan <mranga@nist.gov>  <br/>
 *@author Olivier Deruelle <deruelle@nist.gov><br/>
@@ -87,7 +87,9 @@ public final class To
 		}
 
 		if (!parameters.isEmpty()) {
-			retval += SEMICOLON + parameters.encode();
+		  synchronized(parameters) {
+			  retval += SEMICOLON + parameters.encode();
+			}
 		}
 		return retval;
 	}
@@ -181,6 +183,12 @@ public final class To
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2004/06/17 15:22:29  mranga
+ * Reviewed by:   mranga
+ *
+ * Added buffering of out-of-order in-dialog requests for more efficient
+ * processing of such requests (this is a performance optimization ).
+ *
  * Revision 1.3  2004/01/22 13:26:30  sverker
  * Issue number:
  * Obtained from:
