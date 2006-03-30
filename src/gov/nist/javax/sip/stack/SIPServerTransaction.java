@@ -112,7 +112,7 @@ import java.util.LinkedList;
  *  
  * </pre>
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.62 $ $Date: 2006-03-28 20:58:01 $
+ * @version JAIN-SIP-1.1 $Revision: 1.63 $ $Date: 2006-03-30 02:14:59 $
  * @author Jeff Keyser
  * @author M. Ranganathan <mranga@nist.gov>
  * @author Bug fixes by Emil Ivov, Antonis Karydas, Daniel Martinez, Daniel
@@ -539,14 +539,8 @@ public class SIPServerTransaction extends SIPTransaction implements
                 this.setState(TransactionState.CONFIRMED);
                 disableRetransmissionTimer();
                 if (!isReliable()) {
-                    /*if (this.lastResponse != null
-                            && this.lastResponse.getStatusCode() == Response.REQUEST_TERMINATED) {
-                        // Bug report by Antonis Karydas
-                        this.setState(TransactionState.TERMINATED);
-                    } else {
-                    */
+                	// bug fix by jvB
                         enableTimeoutTimer(TIMER_I);
-                    // }
 
                 } else {
 
@@ -1231,6 +1225,9 @@ public class SIPServerTransaction extends SIPTransaction implements
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.62  2006/03/28 20:58:01  jbemmel
+ * fixed a 'bugfix': INVITE ST should not go to 'TERMINATED' for 'request terminated' response (487)
+ *
  * Revision 1.61  2005/06/08 21:42:29  mranga
  * Issue number:
  * Obtained from:
