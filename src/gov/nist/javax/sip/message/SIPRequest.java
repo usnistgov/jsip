@@ -26,7 +26,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.15 $ $Date: 2005-12-21 16:35:28 $
+ * @version JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2006-04-10 15:51:19 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -536,7 +536,8 @@ public final class SIPRequest
 	*@param reasonPhrase Reason phrase for this response.
 	*
 	*@return A SIPResponse with the status and reason supplied, and a copy
-	*of all the original headers from this request.
+	*of all the original headers from this request that are supposed to be part of 
+	*the response.
 	*/
 
 	public SIPResponse createResponse(int statusCode, String reasonPhrase) {
@@ -564,22 +565,10 @@ public final class SIPRequest
 				|| nextHeader instanceof CallID
 				|| nextHeader instanceof RecordRouteList
 				|| nextHeader instanceof CSeq
-				// || nextHeader instanceof MaxForwards   JvB: not this one
 				|| nextHeader instanceof TimeStamp) {
-				/**
-				if (SIPMessage.isRequestHeader(nextHeader)) {
-					continue;
-				} else if (nextHeader instanceof ContentLength) {
-					// content length added when content is
-					// added...
-					continue;
-				} else if ( nextHeader instanceof ContactList)  {
-				       // contacts are stripped from the response.
-					continue;
-				}
-				**/
+				
 				try {
-					newResponse.attachHeader(nextHeader, false);
+					newResponse.attachHeader((SIPHeader)nextHeader.clone(), false);
 				} catch (SIPDuplicateHeaderException e) {
 					e.printStackTrace();
 				}
@@ -625,13 +614,7 @@ public final class SIPRequest
 				continue;
 
 			if (nextHeader instanceof ViaList) {
-				/**
-				   SIPHeader sipHeader =  
-					(SIPHeader) 
-				       ((ViaList) nextHeader).getFirst().clone() ;
-				   nextHeader = new ViaList();
-				   ((ViaList)nextHeader).add(sipHeader);
-				 **/
+				
 				nextHeader = (ViaList) ((ViaList) nextHeader).clone();
 			}
 
@@ -945,6 +928,9 @@ public final class SIPRequest
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2005/12/21 16:35:28  jbemmel
+ * don't add Max-Forwards to responses, and remove to-tag from 100
+ *
  * Revision 1.14  2005/11/21 23:29:33  jbemmel
  * case insensitive
  *
