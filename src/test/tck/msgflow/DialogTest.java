@@ -26,6 +26,8 @@ public class DialogTest extends MessageFlowHarness {
 	private Request riInvite = null;
 	private ClientTransaction cliTran = null;
 
+  private String riToTag; // JvB: to-tag set by RI
+
 	public DialogTest(String name) {
 		super(name);
 	}
@@ -78,7 +80,7 @@ public class DialogTest extends MessageFlowHarness {
 						Response.RINGING,
 						inviteReqEvt.getRequest());
 				((ToHeader) ringing.getHeader(ToHeader.NAME)).setTag(
-					Integer.toString(hashCode()));
+					riToTag = Integer.toString(hashCode()));
                 // BUG report from Ben Evans: 
 				// set contact header on dialog-creating response
                 ringing.setHeader(createRiContact());
@@ -141,7 +143,7 @@ public class DialogTest extends MessageFlowHarness {
 			//RemoteTag
 			assertEquals(
 				"Dialog.getRemoteTag() returned a bad tag",
-				((ToHeader) riInvite.getHeader(ToHeader.NAME)).getTag(),
+				riToTag,  // JvB: was ((ToHeader) riInvite.getHeader(ToHeader.NAME)).getTag(),
 				dialog.getRemoteTag());
 			//is server
 			assertFalse(
