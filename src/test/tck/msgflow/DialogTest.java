@@ -25,8 +25,11 @@ public class DialogTest extends MessageFlowHarness {
 	/** The initial invite request at the RI side.*/
 	private Request riInvite = null;
 	private ClientTransaction cliTran = null;
+	private Response ringing = null;
+	
 
   private String riToTag; // JvB: to-tag set by RI
+
 
 	public DialogTest(String name) {
 		super(name);
@@ -73,7 +76,6 @@ public class DialogTest extends MessageFlowHarness {
 					"Failed to register a SipListener with the TI.",
 					e);
 			}
-			Response ringing = null;
 			try {
 				ringing =
 					riMessageFactory.createResponse(
@@ -141,9 +143,9 @@ public class DialogTest extends MessageFlowHarness {
 				((ToHeader) tiInvite.getHeader(ToHeader.NAME)).getAddress(),
 				dialog.getRemoteParty());
 			//RemoteTag
-			assertEquals(
+				assertEquals(
 				"Dialog.getRemoteTag() returned a bad tag",
-				riToTag,  // JvB: was ((ToHeader) riInvite.getHeader(ToHeader.NAME)).getTag(),
+			((ToHeader) ringing.getHeader(ToHeader.NAME)).getTag(),
 				dialog.getRemoteTag());
 			//is server
 			assertFalse(
@@ -233,6 +235,8 @@ public class DialogTest extends MessageFlowHarness {
 				ok.addHeader(
 					createRiInviteRequest(null, null, null).getHeader(
 						ContactHeader.NAME));
+				ToHeader okToHeader = (ToHeader)ok.getHeader(ToHeader.NAME);
+				okToHeader.setTag(	 new Integer((int) (Math.random()  * 1000)).toString());
 				riSipProvider.sendResponse(ok);
 			} catch (Exception e) {
 				throw new TckInternalError(
@@ -264,7 +268,6 @@ public class DialogTest extends MessageFlowHarness {
 			try {
 				dialog.sendAck(ack);
 			} catch (SipException ex) {
-				ex.printStackTrace();
 				fail("Failed to send an ACK request using Dialog.sendAck()");
 			}
 			waitForMessage();
