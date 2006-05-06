@@ -28,7 +28,7 @@ public class DialogTest extends MessageFlowHarness {
 	private Response ringing = null;
 	
 
-  private String riToTag; // JvB: to-tag set by RI
+	private String riToTag; // JvB: to-tag set by RI
 
 
 	public DialogTest(String name) {
@@ -145,7 +145,7 @@ public class DialogTest extends MessageFlowHarness {
 			//RemoteTag
 				assertEquals(
 				"Dialog.getRemoteTag() returned a bad tag",
-			((ToHeader) ringing.getHeader(ToHeader.NAME)).getTag(),
+			  riToTag,
 				dialog.getRemoteTag());
 			//is server
 			assertFalse(
