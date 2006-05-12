@@ -236,7 +236,7 @@ public class DialogTest extends MessageFlowHarness {
 					createRiInviteRequest(null, null, null).getHeader(
 						ContactHeader.NAME));
 				ToHeader okToHeader = (ToHeader)ok.getHeader(ToHeader.NAME);
-				okToHeader.setTag(	 new Integer((int) (Math.random()  * 1000)).toString());
+				okToHeader.setTag( riToTag );
 				riSipProvider.sendResponse(ok);
 			} catch (Exception e) {
 				throw new TckInternalError(
