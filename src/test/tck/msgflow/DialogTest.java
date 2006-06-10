@@ -28,7 +28,7 @@ public class DialogTest extends MessageFlowHarness {
 	private Response ringing = null;
 	
 
-	private String riToTag; // JvB: to-tag set by RI
+  private String riToTag; // JvB: to-tag set by RI
 
 
 	public DialogTest(String name) {
@@ -145,7 +145,7 @@ public class DialogTest extends MessageFlowHarness {
 			//RemoteTag
 				assertEquals(
 				"Dialog.getRemoteTag() returned a bad tag",
-			  riToTag,
+			((ToHeader) ringing.getHeader(ToHeader.NAME)).getTag(),
 				dialog.getRemoteTag());
 			//is server
 			assertFalse(
@@ -236,7 +236,7 @@ public class DialogTest extends MessageFlowHarness {
 					createRiInviteRequest(null, null, null).getHeader(
 						ContactHeader.NAME));
 				ToHeader okToHeader = (ToHeader)ok.getHeader(ToHeader.NAME);
-				okToHeader.setTag( riToTag );
+				okToHeader.setTag(	 new Integer((int) (Math.random()  * 1000)).toString());
 				riSipProvider.sendResponse(ok);
 			} catch (Exception e) {
 				throw new TckInternalError(
