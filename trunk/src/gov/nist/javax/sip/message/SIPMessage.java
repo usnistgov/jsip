@@ -20,7 +20,7 @@ import java.text.ParseException;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  *
- * @version JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2005-10-09 20:33:06 $
+ * @version JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2006-06-10 05:32:41 $
  *
  * @author M. Ranganathan <mranga@nist.gov>  <br/>
  *
@@ -1235,12 +1235,13 @@ public abstract class SIPMessage
 
 		try {
 			int length = -1;
-			if (content instanceof String)
-				length = ((String) content).length();
-			else if (content instanceof byte[])
+			if (content instanceof String) {
+				length = ((String) content).getBytes().length;
+			} else if (content instanceof byte[]) {
 				length = ((byte[]) content).length;
-			else
+			} else {
 				length = content.toString().length();
+			}
 
 			if (length != -1) {
 				this.contentLengthHeader.setContentLength(length);
@@ -1668,6 +1669,9 @@ public abstract class SIPMessage
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2005/10/09 20:33:06  jbemmel
+ * don't turn via branches into lowercase, and always add a cookie even when generating based on non-RFC3261 client input
+ *
  * Revision 1.15  2005/04/20 20:01:11  dmuresan
  * Fixed SIPMessage.clone() and SIPRequest.clone(), again.
  *
