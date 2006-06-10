@@ -1,0 +1,135 @@
+<body>
+This is the root of the JAIN implementation of SIP. Contains utility
+classes and implementatin of the provider and stack. Implementation of the
+headers is contained in header and implementation of the parser in the
+parser subdirectory. The stack contains the implementation classes for
+the stack. The StackImpl here implements the Jain SIP stack. The dialog
+and transaction implementations reside in the stack package. 
+
+Additional Features (that are not required by the JAIN-SIP spec) and that
+can be enabled by properties specified when the SipStack is created:
+
+<ul>
+<li> Message Logging features - permits the application to log messages in
+a format that are suitable for trace viewing using the trace viewer facility.  
+</li>
+<li> Load Control Features - Control the transaction table size and server 
+conurrency to lessen Denial of Service attacks.
+</li>
+</ul>
+
+In addition to the standard configuration Parameters supported by
+JAIN-SIP, the stack supports the following configuration Parameters :
+
+<ul>
+ <li><b>gov.nist.javax.sip.TRACE_LEVEL = integer </b><br/>
+ Currently only 16 and 32 is meaningful. 
+ If this is set to 16 or above, then incoming
+ valid messages are  logged in SERVER_LOG. If you set this to 32 and 
+ specify a DEBUG_LOG then vast amounts of trace information will be dumped
+ in to the specified DEBUG_LOG.  The server log accumulates the signaling
+ trace. 
+ <a href="{@docRoot}/tools/tracesviewer/tracesviewer.html">
+ This can be viewed using the trace viewer tool .</a>
+ Please send us both the server log and debug log 
+  when reporting non-obvious problems.</li>
+ 
+ <li><b>gov.nist.javax.sip.SERVER_LOG = fileName </b><br/>
+  Log valid incoming messages here. If this is left null AND the 
+  TRACE_LEVEL is above 16 then the messages are printed to stdout.
+  Otherwise messages are logged in a format that can later be viewed
+  using the trace viewer application which is located in 
+  the tools/tracesviewer directory. 
+ <font color=red> Mail this to us with bug reports.  </font>
+  </li>
+ <li><b>gov.nist.javax.sip.LOG_MESSAGE_CONTENT = true|false </b><br/>
+  Set true if you want to capture content into the log. Default is false.
+  Setting to true is bad idea if you are using SIP to push a lot of bytes through TCP.
+ </li>
+     
+ <li><b>gov.nist.javax.sip.BAD_MESSAGE_LOG = fileName </b><br/>
+   Messages that do not contain the required headers are dropped.
+   This file indicates where the bad (unprocessable) messages go. 
+   Default is null (bad messages are not logged in their own file). </li>
+ 
+     
+ <li><b>gov.nist.javax.sip.DEBUG_LOG = fileName </b><br/>
+   Where the debug log goes. 
+ 	<font color=red> Mail this to us with bug reports.  </font>
+ </li>
+ 
+ <li><b>gov.nist.javax.sip.MAX_MESSAGE_SIZE = integer</b> <br/>
+  Maximum size of content that a TCP connection can read. Must be
+  at least 4K. Default is "infinity" -- ie. no limit.
+  This is to prevent DOS attacks launched by writing to a
+  TCP connection until the server chokes.
+ </li>
+ 
+ 
+ <li><b>gov.nist.javax.sip.MAX_SERVER_TRANSACTIONS = integer</b> <br/>
+    Max number of open SERVER transactions in the transaction table - incoming
+   Requests that have the capability to create ServerTransactions will
+   not be processed if server transaction table exceeds this size
+   (default value is "infinity"). </li>
+ 
+ <li><b>gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS = [true|false] </b> <br/>
+   Default value is <b>true</b>. Setting this to false makes the Stack close the server socket after
+   a Server Transaction goes to the TERMINATED state. This allows a server to protectect against 
+   TCP based Denial of Service attacks launched by clients (ie. initiate hundreds of client gransactions).
+   If false (default action), the stack will keep the socket open so as to maximize performance at 
+   the expense of Thread and memory resources - leaving itself open to DOS attacks.  However,
+   if your client uses TCP to get through NAT boxes, you may want to set this to <b>true</b>
+   so as to allow inbound signaling to the client.
+ </li>
+ <li><b>gov.nist.javax.sip.STUN_SERVER = ipaddress[:port] </b> <br/>
+	Stun server address:port. Default is null (no stun support). To enable
+	this feature, download and install the stun4j package from stun4j.dev.java.net 
+	and make sure stun4j.jar is in your class path.
+</li>
+
+ <li><b>gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS = [true|false] </b> <br/>
+   Default value is <b>true</b>. Setting this to false makes the Stack close the server socket after
+   a Client Transaction goes to the TERMINATED state. This allows a client release any buffers
+   threads and socket connections associated with a client transaction after the transaction has
+   terminated at the expense of performance.
+ </li>
+ 
+ <li> <b>gov.nist.javax.sip.THREAD_POOL_SIZE = integer </b> <br/>
+   Concurrency control for number of simultaneous active threads for
+   processing incoming UDP messages. 
+  </li>
+ 
+ <li> <b>gov.nist.javax.sip.MAX_CONNECTIONS = integer </b> <br/>
+    Max number of simultaneous incoming TCP connections handled by stack. 
+ </li>
+
+ <li> <b>gov.nist.javax.sip.REENTRANT_LISTENER = true|false </b> <br/>
+   Default is false. Set to true if the listener is re-entrant. 
+  If the listener is re-entrant then the stack manages a thread pool
+  and synchronously calls the listener from the same thread which read the
+  message. Multiple transactions may concurrently receive messages and
+  this will result in multiple threads being active in the listener at
+  the same time. The listener has to be written with this in mind.
+  </li>
+
+ <li> <b>gov.nist.javax.sip.READ_TIMEOUT = integer </b> <br/>
+  This is relevant for incoming TCP connections to prevent starvation at
+  the server.
+  This defines the timeout in miliseconds between successive reads after the 
+  first byte of a SIP message is read by the stack. All the sip headers
+  must be delivered in this interval and each successive buffer of the
+  message content  must be delivered in this interval or the connection 
+  will be killed and the message truncated.
+  Default value is -1  (ie. the stack is wide open to starvation attacks) and
+  the client can be as slow as it wants to be. Min value if specified should
+  exceed 100 millisec.
+  </li>
+ </ul>
+
+</body>
+
+<h2> Compatibility Note </h2>
+<a href=../../../change-log.html>
+JAIN SIP 1.1 is not backward compatible with JAIN-SIP 1.0. Here is a summary
+of the differences between JAIN-SIP 1.0 and JAIN SIP 1.1
+</a>

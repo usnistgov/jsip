@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title></title>
+   
+</head>
+  <body>
+     
+<h2>This document specifies the JAIN<sup><font face="Symbol"><font size="-2">TM
+</font></font></sup> SIP API Specification v1.1.</h2>    
+
+<h2>Objective<br>
+    </h2>
+     
+<p>The objective of this specification is to develop a standard interface
+  to the&nbsp; Session Initiation Protocol (SIP) that can be used independently 
+ or by higher level programming entities and environments. This specification 
+ was designed to provide a developer with a standardized interface for SIP
+  services which are functionally compatible with the RFC3261 specification.
+   This specification is a general purpose transaction based Java interface 
+ to the SIP protocol. It is rich both semantically and in definition to the 
+ SIP protocol. <br>
+   </p>
+     
+<h2>Design approach </h2>
+     
+<p>JAIN SIP supports RFC 3261 functionality and the following SIP extensions; 
+ the INFO method (RFC 2976), Reliability of provisional responses (RFC 3262), 
+ Event Notification Framework (RFC 3265), the UPDATE method (RFC 3311), the 
+ Reason Header (RFC 3326), the Message method (RFC 3428) defined for instant 
+ messaging and the REFER method (RFC 3515). </p>
+     
+<p>JAIN SIP standardizes the interface to the generic transactional model 
+ defined by the SIP protocol, providing access to dialog functionality from 
+ the transaction interface. The architecture is developed for the J2SE environment 
+ therefore is event based utilizing the Listener/Provider event model. The 
+ specification is asynchronous in nature using transactional identifiers to
+ correlate messages. It defines various factory classes for creating Request 
+ and Response messages and SIP headers.&nbsp; JAIN SIP defines an interface 
+ for each Header supported, which can be added to Request or Response messages 
+ respectively. These messages are passed to the SipProvider with a transaction 
+ to be sent onto the network, while the SipListener listens for incoming Events
+ that encapsulate messages that may be responses to initiated dialogs or
+new  incoming dialogs.</p>
+     
+<p>JAIN SIP is extensible by design. It defines a generic extension header 
+ interface that can be used by applications that utilize headers that are 
+not supported directly by JAIN SIP. The design also defines a mechanism to 
+support future dialog creation methods in a JAIN SIP environment via the use
+of Java Properties. JAIN SIP can be managed statically with regards to IP
+addresses and router function, and dynamically specific to ports and transports.&nbsp;</p>
+     
+<p>The default handling of message retransmissions in JAIN SIP is dependent 
+ on the application. Stateful proxy applications need not be concerned with 
+ retransmissions as these are handled by JAIN SIP. Typically User Agent applications 
+ must handle retransmissions of ACK&#8217;s and 2xx Responses, however JAIN SIP 
+provides a convenience function that ensures all retransmissions are handled 
+by the JAIN SIP implementation, reducing the complexity for applications acting
+as user agents. This function may also be useful if JAIN SIP is used as a
+base implementation for a SIP Servlet container or an EJB implementation.<br>
+   </p>
+     
+<p>The updates incorporated in JAIN SIP v1.1 can be found in the  <a
+ href="change-log.html">Change-Log</a>.<br>
+   </p>
+     
+<h2>Specification Leads</h2>
+   Phelim O Doherty, Sun Microsystems Inc.<br>
+   Ranganathan Mudumbai, National Instituate of Standards and Technology (NIST). 
+<p> The specification leads would like to acknowledge effort and contributions 
+ to the JAIN SIP specification from 8x8, dynamicsoft, Open Cloud, Nortel Networks 
+and Siemens AG. Special thanks is also given to the development team at the NIST 
+this specification owes alot to their commitment in developing the Reference 
+Implementation and Technology Compatibility Kit (TCK) and to Emil Ivov from 
+Louis Pasteur University, France also who helped develop the Technology 
+Compatibility Kit in partnership with NIST.</p>
+ 
+</body>
+</html>

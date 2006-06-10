@@ -1,0 +1,87 @@
+<body>
+This package contains the classes for building a SIP stack.  An incoming
+message is passed through the parser and generates a SIPServerRequestImp
+or SIPServerResponseImpl. These are interfaces that are implemented by the
+application. There are two main classes here.  SIPMessageStack:  is quite simple
+and stripped down in its goals (for example, it does not provide any
+transaction support). It is essentially a messaging layer that utilizes
+the nist-sip parser and defines abstractions for message processing and
+I/O handling.  The transaction layer is provided by SIPTransactionStack.
+Note that the major protocol processors / protocol objects start with SIPXXX.
+In this respect I have deviated from the normal java naming convention.
+
+<h2> Operation of SIPStack </h2>
+
+An application extends the SIPStack class in this package and is expected
+to implement the SIPMessageFactory, SIPServerRequest and SIPServerResponse
+interfaces. The message factory implementation is registered with the
+SIPStack class on initialization. When a message comes in, the stack
+calls the NIST-SIP message parser to process the request and then calls
+the Message Factory Implementation to create a new SIPServerRequest or
+SIPServerResponse (depending on whether the message was a request or
+response) and then calls processRequest on the created SIPServerRequest
+or SIPServerResponse.
+
+Here is pseudo-code that illustrates the flow of processing messages
+(for UDP):
+
+<pre>
+
+while (true) {
+   String messageString = messageChannel.read_incoming_message();
+   SIPMessage parsed_message = 
+		sipMessageParser.parseSIPMesage(messageString);
+   sipMessageFactoryImpl.newSIPServerRequest(parsed_message);
+}
+
+</pre>
+
+The actual code implements the SIPMessageListener interface which has
+a callback method for erroneous messages.  TCP Processing is a bit more
+complex because of the stream oriented nature of TCP. 
+
+There is an architected means for dealing with extension headers by an
+application implementing the ExtensionParser interface that is part of
+this package.  Such extension parsers are registered with the stack by
+using the SIPStack.registerExtensionParser method which specifies the
+extension header name and the parser for the extnsion header. If the
+header parses correctly,  the application returns a class that subclasses
+SIPHeader and that specific to the extension header and if it does not
+parse correctly, the extension parser may throw a SIPParse exception.
+Extensions headers that are not recognized by the parser are stored
+in a list and can be retrieved by the application by calling the
+getExtensionHeaders method that returns a list of extension headers.
+
+Requests routing is handled by the SIPServerRequest handler. A routing
+algorithm may be specified by implementing the Route interface. A default
+routing algorithm that just forwards to a hard-coded proxy address is
+implemented in the DefaultRouter class.
+
+The stack supports logging of messages into a log file that can be specified
+on start-up. The log file is accessable remotely via RMI. The format of the
+log file is specified in XML. This facility is to be exploited for log
+file visualization. See tools.traceviewerapp for a visualization tool for log
+records.
+
+<h2> Operation of SIPTransactionStack </h2>
+
+SIPTransactionStack, is the stack you need to extend to build
+transaction-aware components.  This implements a transaction layer for the
+SIP stack according to chapter 17 of RFC 3261.  To implement transaction
+stateful components, you extend the SIPTransactionStack class and not
+the SIPStack class.
+
+To create a client transaction you create a transaction aware
+MessageChannel for the Hop returned from the router by calling 
+Stack.createMessageChannel.
+
+A server transaction is created when an incoming request is fielded by
+the stack. It is passed to the application using the SIPServerRequest
+and SIPServerResponse interface which are defined in the 
+gov.nist.javax.sip.stack package.
+
+The JAIN SIP statefull transaction layer is derived from the 
+SIPTransactionStack herein.
+
+<b> The transaction layer was contributed by Jeff Keyser. </b>
+</body>
