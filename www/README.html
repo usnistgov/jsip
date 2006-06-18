@@ -1,10 +1,10 @@
 
 <h2> Key contributors </h2>
 
-Substantial code contributions made by the following people:
+Substantial contributions made by the following people:
 
 <ul>
-<li> Jeroen Van Bemmel <jeroen@zonenet.nl> contributed key ideas for JSIP 1.2
+<li> Jeroen Van Bemmel (Lucent) contributed key ideas for JSIP 1.2
 and helped fix several bugs in the RI and answered questions on the 
 mailing list. 
 
@@ -17,12 +17,19 @@ was a guest researcher at NIST </li>
 version 1.1 that served as the basis for the v 1.2 TCK. </li>
 
 <li>Jeroen van Bemmel contributed significant effort to bring the TCK up to 
-   version 1.2. </li>
+   version 1.2. Jeroen validated the TCK against another implementation. </li>
+
+<li>
+Ben Evans (Open Cloud) contributed several ideas to the design
+of JAIN-SIP 1.2 and participated enthusiastically in mailing list
+discussions. </li>
 
 <li> Jeff Keyser  Contributed the initial version of the Transaction layer 
 	to NIST-SIP 1.1 that served as the basis for NIST-SIP 1.2. 
 	Jeff also suggested the architecture for MessageProcessors and 
 	extensiblity that is a part of the implementation architecture.
+
+
 </li>
 </ul>
 
@@ -47,6 +54,9 @@ Hopefully our hindsight is good.
 <p> Design contributions to JAIN SIP 1.1 API were made by:
 
 <ul>
+
+<li> Jeroen van Bemmel (Lucent) suggested several key ideas.
+
 <li>
 Ben Evans from Open Cloud contributed several ideas to the design
 of JAIN-SIP 1.2 and participated enthusiastically in mailing list
@@ -57,6 +67,7 @@ discussions. </li>
 
 <li> Brad Templeton suggested that Dialog.sendBye be changed to the more 
 generally useful Dialog.sendRequest. 
+
 
 <li>
 Emil Ivov, Brad Templeton and others requested a method to create a cancel
@@ -289,7 +300,6 @@ Jeff submitted a patch for setting the timer on the Transaction Timer. </li>
 <li> Pierre Sandström submitted a bug fix for the Trace Viewer to fix a 
 problem where some messages were not showing up in the viewer. </li>
 
-
 <li> S. R. Jeyashankher from Lucent Submitted a bug fix
 for error conditions where one cannot bind to local port </li>
 
@@ -325,6 +335,13 @@ that did not need to use reflection for cloning. </li>
 <li> Attila submitted a fix for a race condition in ACK processing </li>
 <li> Frank Reif submitted a bug fix for a race condition in 
 SIPServerTransaction </li>
+
+<li> Ivelin Ivanov <ivelin.ivanov@mobicents.org> ported
+some examples to tck test cases </li>
+
+<li>Yanick Belanger noticed a memory leak in NOTIFY client transaction
+which was fixed. Yankick also made some performance enhancements to the
+parser. </li>
 
 </ul>
 
