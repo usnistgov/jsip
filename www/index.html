@@ -8,10 +8,25 @@ public release of  JSR 141 (JAIN-SDP) interfaces.
 JAIN-SIP RI is a full implementation of RFC 3261.
 JAIN-SDP interfaces are still under public review and are subject to change.
 Tools include a signaling trace viewer that can take input from an etherreal/stack trace. RI, TCK and tools are in the public domain. 
+<hr/>
+<h1> Get the Source </h1>
 
+<a href=http://www.antd.nist.gov/proj/iptel/jain-sip-1.2.tar.gz><b>Get the nightly build snapshot. Now stable! Bug reports on jsip 1.2 will recieve priority treatment!!</b> </a>
+
+<br/>
+<br/>
+<b> The best way to get the latest source is to use cvs. Please get the disribution via cvs from NIST. </b> <br/>
+
+To access the NIST repository ( RI for JAIN SIP 1.2 ) : 
+
+<ul>
+<li> cvs -d :pserver:anonymous@is2.antd.nist.gov:/home/nist-sip/cvs-nist-sip-1.2/repository  login
+<li> password: nist-sip
+<li> cvs -d :pserver:anonymous@is2.antd.nist.gov:/home/nist-sip/cvs-nist-sip-1.2/repository checkout jain-sip-1.2
+</ul>
+<br/> 
 <hr/>
 <h1> Links </h1>
-
 <b>
 <a href="http://snad.ncsl.nist.gov/proj/iptel/jain-sip-1.2/javadoc/" target="_blank"> BROWSE the JAVADOC for JSIP 1.2 and the JSIP1.2 RI </a>
 <br/>
@@ -28,25 +43,20 @@ Click here to join the NIST-SIP Mailing List at the NIST Advanced Networking Tec
 </p>
 
 <hr/>
-
-
-<h1> Get the Source </h1>
-
-
-<a href=http://www.antd.nist.gov/proj/iptel/jain-sip-1.2.tar.gz><b>Get the nightly build snapshot. Now stable! Bug reports on jsip 1.2 will recieve priority treatment!!</b> </a>
-
-<br/>
-<br/>
-<b> The best way to get the latest source is to use cvs. Please get the disribution via cvs from NIST. </b> <br/>
-
-To access the NIST repository ( RI for JAIN SIP 1.2 ) : 
-
+<h1> News </h1>
 <ul>
-<li> cvs -d :pserver:anonymous@is2.antd.nist.gov:/home/nist-sip/cvs-nist-sip-1.2/repository  login
-<li> password: nist-sip
-<li> cvs -d :pserver:anonymous@is2.antd.nist.gov:/home/nist-sip/cvs-nist-sip-1.2/repository checkout jain-sip-1.2
+<li><b> The TCK for JSIP-1.2 is Complete! 
+If you are implementing this specification,
+you can test your implementation against the TCK </b>
+<li>
+<b> After much tweaking and optimizing the JAIN-SIP 1.2 RI performance
+has improved considerably. It measures 75 CAPS on a single processor
+2 Ghz Pentium 5 with 1 Gb of RAM. Image size reaches about 130 Megabytes.
+The stack measured over 200 CAPS on a 4 processor Netra. No memory leaks
+were noted over 1000000 calls.</b>
+<li><b> The JAIN-SIP wiki is making progress. 
+Contribute material an how to tips to the JAIN-SIP Wiki ! </b>
 </ul>
-
 <hr/>
 <h1> Related projects </h1>
 <p> A usable subset of this project 
@@ -68,7 +78,7 @@ Check out some other cool projects that use JAIN-SIP.
 <a href="http://www.cafesip.org/projects.html">http://www.cafesip.org/projects.html </a>
 
 <hr/>
-<h1> Credits </h1>
+<h1> Credits</h1>
 <ul>
 <li> Architecture / API design (JAIN-SIP Spec Leads):
     M. Ranganathan (NIST) and Phelim O'Doherty (BEA)
