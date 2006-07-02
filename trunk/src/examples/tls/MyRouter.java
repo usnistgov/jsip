@@ -2,6 +2,7 @@ package examples.tls;
 import javax.sip.*;
 import javax.sip.address.*;
 import javax.sip.message.*;
+
 import java.util.*;
 
 public class MyRouter implements Router {
@@ -28,6 +29,10 @@ public class MyRouter implements Router {
 	}
 
 	public Hop getOutboundProxy() {
+		return this.defaultRoute;
+	}
+
+	public Hop getNextHop(Request request) throws SipException {
 		return this.defaultRoute;
 	}
 

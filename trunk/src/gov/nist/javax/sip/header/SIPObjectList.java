@@ -1,3 +1,28 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 /******************************************************************************
  * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).      *
  ******************************************************************************/
@@ -14,13 +39,15 @@ import gov.nist.core.*;
  * that can appear in SIPObjects.
  * IMPORTANT NOTE: SIPObjectList cannot derive from SIPObject.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2005-04-16 20:38:51 $
+ * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-02 09:50:32 $
  *
- * @author M. Ranganathan <mranga@nist.gov>  <br/>
+ * @author M. Ranganathan   <br/>
  *
- * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+ * 
  */
 public class SIPObjectList extends GenericObjectList {
+
+	
 
 	/**
 	 * Construct a SIPObject List given a list name.
@@ -57,21 +84,8 @@ public class SIPObjectList extends GenericObjectList {
 		super();
 	}
 
-	/**
-	 * Add a new object to the list.
-	 * @param obj SIPObject to set
-	 */
-	public void add(SIPObject obj) {
-		super.add((Object) obj);
-	}
-
-	/**
-	 * Add a new object to the top of this list.
-	 * @param obj SIPObject to set
-	 */
-	public void addFirst(SIPObject obj) {
-		super.addFirst(obj);
-	}
+	
+	
 
 	/**
 	 * Do a merge of the GenericObjects contained in this list with the
@@ -150,21 +164,8 @@ public class SIPObjectList extends GenericObjectList {
 		return (SIPObject) super.next(li);
 	}
 
-	/**
-	 * Remove the first object of this list.
-	 * @return Object removed
-	 */
-	public Object removeFirst() {
-		return super.removeFirst();
-	}
-
-	/**
-	 * Remove the last object from this list.
-	 * @return Object removed
-	 */
-	public Object removeLast() {
-		return super.removeLast();
-	}
+	
+	
 
 	/**
 	 * Convert to a string given an indentation(for pretty printing).
@@ -186,192 +187,7 @@ public class SIPObjectList extends GenericObjectList {
 		super.setMyClass(cl);
 	}
 
-	/**
-	 * Do a recursive find and replace of objects pointed to by this
-	 * object. You might find this handy if you are writing a proxy
-	 * server.
-	 *
-	 * @param objectText is the canonical string representation of
-	 *		the object that we want to replace.
-	 * @param replacementObject is the object that we want to replace it
-	 *	with (must be a subclass of GenericObject or GenericObjectList).
-	 * @param matchSubstring a boolean which tells if we should match
-	 * 		a substring of the target object
-	 * A replacement will occur if a portion of the structure is found
-	 * with matching encoded text as objectText and with the same class
-	 * as replacement.
-	 * (i.e. if matchSubstring is true an object is a  candidate for
-	 *  replacement if objectText is a substring of
-	 *  candidate.encode() && candidate.class.equals(replacement.class)
-	 * otherwise the match test is an equality test.)
-	 *@exception IllegalArgumentException on null args or if
-	 * replacementObject does not derive from GenericObject or
-	 * GenericObjectList
-	 */
-	public void replace(
-		String objectText,
-		GenericObject replacementObject,
-		boolean matchSubstring)
-		throws IllegalArgumentException {
+	
 
-		if (objectText == null || replacementObject == null) {
-			throw new IllegalArgumentException("null argument");
-		}
-		ListIterator listIterator = this.listIterator();
-		LinkedList ll = new LinkedList();
 
-		while (listIterator.hasNext()) {
-			Object obj = listIterator.next();
-			if (GenericObject.isMySubclass(obj.getClass())) {
-				GenericObject gobj = (GenericObject) obj;
-				if (gobj.getClass().equals(replacementObject.getClass())) {
-					if ((!matchSubstring)
-						&& gobj.encode().compareTo(objectText) == 0) {
-						// Found the object that we want,
-						ll.add(obj);
-					} else if (
-						matchSubstring
-							&& gobj.encode().indexOf(objectText) >= 0) {
-						ll.add(obj);
-					} else {
-						gobj.replace(
-							objectText,
-							replacementObject,
-							matchSubstring);
-					}
-				}
-			} else if (GenericObjectList.isMySubclass(obj.getClass())) {
-				GenericObjectList gobj = (GenericObjectList) obj;
-				if (gobj.getClass().equals(replacementObject.getClass())) {
-					if ((!matchSubstring)
-						&& gobj.encode().compareTo(objectText) == 0) {
-						// Found the object that we want,
-						ll.add(obj);
-					} else if (
-						matchSubstring
-							&& gobj.encode().indexOf(objectText) >= 0) {
-						ll.add(obj);
-					} else {
-						gobj.replace(
-							objectText,
-							replacementObject,
-							matchSubstring);
-					}
-				}
-			}
-		}
-		for (int i = 0; i < ll.size(); i++) {
-			Object obj = ll.get(i);
-			this.remove(obj);
-			this.add(i, (Object) replacementObject);
-		}
-
-	}
-
-	/**
-	 * Do a recursive find and replace of objects pointed to by this
-	 * object.
-	 *
-	 * @param objectText is the canonical string representation of
-	 *		the object that we want to replace.
-	 * @param replacementObject is the object that we want to replace it
-	 *	with (must be a subclass of GenericObject or GenericObjectList).
-	 * @param matchSubstring a boolean which tells if we should match
-	 * 		a substring of the target object
-	 * A replacement will occur if a portion of the structure is found
-	 * with matching encoded text as objectText and with the same class
-	 * as replacement.
-	 * (i.e. if matchSubstring is true an object is a  candidate for
-	 *  replacement if objectText is a substring of
-	 *  candidate.encode() && candidate.class.equals(replacement.class)
-	 * otherwise the match test is an equality test.)
-	 *@exception IllegalArgumentException on null args or if
-	 * replacementObject does not derive from GenericObject or
-	 * GenericObjectList
-	 */
-	public void replace(
-		String objectText,
-		GenericObjectList replacementObject,
-		boolean matchSubstring)
-		throws IllegalArgumentException {
-		if (objectText == null || replacementObject == null) {
-			throw new IllegalArgumentException("null argument");
-		}
-
-		ListIterator listIterator = this.listIterator();
-		LinkedList ll = new LinkedList();
-
-		while (listIterator.hasNext()) {
-			Object obj = listIterator.next();
-			if (GenericObject.isMySubclass(obj.getClass())) {
-				GenericObject gobj = (GenericObject) obj;
-				if (gobj.getClass().equals(replacementObject.getClass())) {
-					if ((!matchSubstring)
-						&& gobj.encode().compareTo(objectText) == 0) {
-						// Found the object that we want,
-						ll.add(obj);
-					} else if (
-						matchSubstring
-							&& gobj.encode().indexOf(objectText) >= 0) {
-						ll.add(obj);
-					} else {
-						gobj.replace(
-							objectText,
-							replacementObject,
-							matchSubstring);
-					}
-				}
-			} else if (GenericObjectList.isMySubclass(obj.getClass())) {
-				GenericObjectList gobj = (GenericObjectList) obj;
-				if (gobj.getClass().equals(replacementObject.getClass())) {
-					if ((!matchSubstring)
-						&& gobj.encode().compareTo(objectText) == 0) {
-						// Found the object that we want,
-						ll.add(obj);
-					} else if (
-						matchSubstring
-							&& gobj.encode().indexOf(objectText) >= 0) {
-						ll.add(obj);
-					} else {
-						gobj.replace(
-							objectText,
-							replacementObject,
-							matchSubstring);
-					}
-				}
-			}
-		}
-		for (int i = 0; i < ll.size(); i++) {
-			Object obj = ll.get(i);
-			this.remove(obj);
-			this.add(i, (Object) replacementObject);
-		}
-	}
 }
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.2  2004/01/22 13:26:29  sverker
- * Issue number:
- * Obtained from:
- * Submitted by:  sverker
- * Reviewed by:   mranga
- *
- * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
- *
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- */

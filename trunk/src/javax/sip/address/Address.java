@@ -2,27 +2,22 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Module Name   : JAIN SIP Specification
+ * Module Name   : JSIP Specification
  * File Name     : Address.java
  * Author        : Phelim O'Doherty
  *
  *  HISTORY
  *  Version   Date      Author              Comments
  *  1.1     08/10/2002  Phelim O'Doherty    Initial version
+ *  1.2     18/05/2005  Phelim O'Doherty    Added hashcode method
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 package javax.sip.address;
@@ -41,8 +36,9 @@ import java.text.ParseException;
  * @see SipURI
  * @see TelURL
  *
- * @version 1.1
- * @author Sun Microsystems
+ * @author BEA Systems, Inc. 
+ * @author NIST
+ * @version 1.2
  *
  */
 
@@ -104,6 +100,16 @@ public interface Address extends Cloneable, Serializable{
     public boolean equals(Object obj);
 
     /**
+     * Gets a hash code value for this address. Implementations MUST
+     * implement a hashCode method that overrides the default hash code
+     * method for Objects comparision.
+     *
+     * @return a hash code value.
+     * @since v1.2
+     */
+    public int hashCode();    
+    
+    /**
      * This determines if this address is a wildcard address. That is
      * <code>((SipURI)Address.getURI()).getUser() == *;</code>. This method 
      * is specific to SIP and SIPS schemes.
@@ -111,6 +117,14 @@ public interface Address extends Cloneable, Serializable{
      * @return true if this address is a wildcard, false otherwise.
      */
     public boolean isWildcard();
+    
+    /**
+     * Clone method. An implementation is expected to override the default
+     * Object.clone method and return a "deep clone".
+     * 
+     * @since v1.2
+     */
+    public Object clone();
 
 }
 

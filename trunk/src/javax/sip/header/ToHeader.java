@@ -2,27 +2,22 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Module Name   : JAIN SIP Specification
+ * Module Name   : JSIP Specification
  * File Name     : ToHeader.java
  * Author        : Phelim O'Doherty
  *
  *  HISTORY
  *  Version   Date      Author              Comments
  *  1.1     08/10/2002  Phelim O'Doherty    
+ * 			12/15/2004  M. Ranganathan 		Added clarification for To header setTag()
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 package javax.sip.header;
@@ -98,8 +93,9 @@ import java.text.ParseException;
  * To: Duke sip:duke@jcp.org;tag=287447</code>
  *
  * @see HeaderAddress
- * @version 1.1
- * @author Sun Microsystems
+ * @author BEA Systems, Inc. 
+ * @author NIST
+ * @version 1.2
  */
 public interface ToHeader extends HeaderAddress, Parameters, Header {
 
@@ -113,8 +109,10 @@ public interface ToHeader extends HeaderAddress, Parameters, Header {
      * however whan acting as a UAS the To "tag" is assigned by the application.
      * That is the tag assignment for outbound responses for messages in a 
      * dialog is only the responsibility of the application for the first 
-     * outbound response. After dialog establishment, the stack will take care 
-     * of the tag assignment. 
+     * outbound response. If AUTOMATIC_DIALOG_SUPPORT is set to <it>on</it>
+     * (default behavior) then, after dialog establishment, the stack will take care 
+     * of the tag assignment. Null is acceptable as a tag value. Supplying null
+     * for the tag results in a header without a tag.
      *
      * @param tag - the new tag of the To Header
      * @throws ParseException which signals that an error has been reached
@@ -131,6 +129,31 @@ public interface ToHeader extends HeaderAddress, Parameters, Header {
      */
     public String getTag();
 
+    
+
+    /**
+     * Compare this ToHeader for equality with another. This method 
+     * overrides the equals method in javax.sip.Header. This method specifies 
+     * object equality as outlined by  
+     * <a href = "http://www.ietf.org/rfc/rfc3261.txt">RFC3261</a>. 
+     * Two To header fields are equivalent if their URIs match, and their 
+     * parameters match. Extension parameters in one header field, not present 
+     * in the other are ignored for the purposes of comparison. This means that 
+     * the display name and presence or absence of angle brackets do not affect 
+     * matching. When comparing header fields, field names are always 
+     * case-insensitive. Unless otherwise stated in the definition of a 
+     * particular header field, field values, parameter names, and parameter 
+     * values are case-insensitive. Tokens are always case-insensitive. Unless 
+     * specified otherwise, values expressed as quoted strings are case-sensitive.
+     *
+     * @param obj the object to compare this ToHeader with.
+     * @return <code>true</code> if <code>obj</code> is an instance of this class
+     * representing the same ToHeader as this, <code>false</code> otherwise.
+     * @since v1.2
+     */
+    public boolean equals(Object obj);      
+    
+    
     /**
      * Name of the ToHeader
      */

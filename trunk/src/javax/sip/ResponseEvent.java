@@ -2,27 +2,22 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Module Name   : JAIN SIP Specification
+ * Module Name   : JSIP Specification
  * File Name     : ResponseEvent.java
  * Author        : Phelim O'Doherty
  *
  *  HISTORY
  *  Version   Date      Author              Comments
  *  1.1     08/10/2002  Phelim O'Doherty    Initial version
+ *  1.2     12/15/2004  M. Ranganathan		Added getDialog method
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 package javax.sip;
@@ -58,7 +53,9 @@ import javax.sip.message.Response;
  * that needs passed to the application encapsulated in a ResponseEvent.
  * </ul>
  *
- * @author Sun Microsystems
+ * @author BEA Systems, Inc. 
+ * @author NIST
+ * @version 1.2
  * @since v1.1
  */
 public class ResponseEvent extends EventObject {
@@ -74,10 +71,11 @@ public class ResponseEvent extends EventObject {
     * this Response was sent
     * @param response - the Response message received by the SipProvider
     */
-    public ResponseEvent(Object source, ClientTransaction clientTransaction, Response response) {
+    public ResponseEvent(Object source, ClientTransaction clientTransaction, Dialog dialog,  Response response) {
         super(source);
         m_response = response;
         m_transaction = clientTransaction;
+        m_dialog = dialog;
     }
 
     /**
@@ -98,8 +96,30 @@ public class ResponseEvent extends EventObject {
         return m_response;
     }
 
+    /**
+     * Gets the Dialog associated with the event or null if no dialog exists. 
+     * This method separates transaction support from dialog support. This 
+     * enables application developers to access the dialog associated to this 
+     * event without having to query the transaction associated to the event. 
+     * For example the transaction associated with the event may return 'null' 
+     * because the final response for the transaction has already been received 
+     * and the stack has no more record of the transaction. This situation can 
+     * occur when a UAC sends requests out through a forking proxy. Responses 
+     * that all refer to the same transaction may be sent by the targets of the 
+     * fork but each response may be stamped with a different To tag, thus 
+     * referring to different Dialogs on the UAC. The first final response 
+     * terminates the transaction but the UAC may want to create a Dialog on 
+     * a subsequent response.
+     * 
+     * @return the dialog associated with the response event or null if there is no dialog.
+     * @since v1.2
+     */
+    public Dialog getDialog() {
+        return m_dialog;
+    }
     // internal variables
     private Response m_response;
     private ClientTransaction m_transaction;
+    private Dialog m_dialog;
 }
 

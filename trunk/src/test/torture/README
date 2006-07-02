@@ -1,6 +1,5 @@
 This is a set of torture test cases that will be expanded over time. The input 
-to these test cases is an xml file called torture.xml. Build this using
-gmake Torture and run using make tests. 
+to these test cases is an xml file called torture.xml. 
 
 The input file (torture.xml) consists of both correct and erroneous
 SIP messages, URLs and headers. The erroneous SIP messages are expected

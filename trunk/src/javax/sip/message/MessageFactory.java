@@ -2,27 +2,23 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Module Name   : JAIN SIP Specification
+ * Module Name   : JSIP Specification
  * File Name     : MessageFactory.java
  * Author        : Phelim O'Doherty
  *
  *  HISTORY
  *  Version   Date      Author              Comments
  *  1.1     08/10/2002  Phelim O'Doherty    Initial version
+ *  1.2     11/15/2004	M. Ranganathan 	    Null argument for createSipRequest creates am empty Sip Request
+ *                                          Added new method to create a response from a String
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 package javax.sip.message;
@@ -38,8 +34,9 @@ import java.util.List;
  * This class is a singleton and can be retrieved from the 
  * {@link javax.sip.SipFactory#createMessageFactory()}.
  *
- * @version 1.1
- * @author Sun Microsystems
+ * @author BEA Systems, Inc.
+ * @author NIST
+ * @version 1.2
  */
 public interface MessageFactory {
 
@@ -120,7 +117,8 @@ public interface MessageFactory {
      * Create a new SIP Request object based on a specific string value. This
      * method parses the supplied string into a SIP Request. The request 
      * string should only consist of the SIP portion of the Request and not 
-     * the content. 
+     * the content.  Supplying a null argument creates an empty SIP Request 
+     * which may be used to end out "keep alive" messages for a connection. 
      * 
      * @param request the new string value of the Request.
      * @return the newly created Request object.
@@ -249,7 +247,23 @@ public interface MessageFactory {
      * unexpectedly while parsing the statusCode.
      */
     public Response createResponse(int statusCode, Request request) 
-                                                throws ParseException;    
+                                                throws ParseException;   
+    
+    
+    /**
+     * Creates a Response from a String. This method parses the supplied string 
+     * into a SIP Response. The response string should only consist of the 
+     * SIP portion of the Response and not the content.
+     * 
+     * @param response is a string representing the response. The argument should 
+     * 	only contain the Sip Headers and not the body of the response.
+     * @throws ParseException which signals an error has been reached unexpectedly
+     * while parsing the response.
+     * @since v1.2
+     *
+     */
+    public Response createResponse( String response) throws ParseException;
+    
     
   
     

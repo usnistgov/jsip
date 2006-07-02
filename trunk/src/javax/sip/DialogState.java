@@ -2,27 +2,22 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Module Name   : JAIN SIP Specification
+ * Module Name   : JSIP Specification
  * File Name     : DialogState.java
  * Author        : Phelim O'Doherty
  *
  *  HISTORY
  *  Version   Date      Author              Comments
  *  1.1     08/10/2002  Phelim O'Doherty    Initial version
+ *  1.2     07/07/2005  Phelim O'Doherty    Deprecated the completed state.
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 
@@ -40,13 +35,14 @@ import java.io.*;
  * created when a provisional response is recieved to the INVITE Request.
  * <li> Confirmed - A dialog transitions to the "confirmed" state when a 2xx 
  * final response is received to the INVITE Request.
- * <li> Completed - A dialog transitions to the "completed" state when a BYE 
- * request is sent or received by the User Agent Client.
- * <li> Terminated - A dialog transitions to the "terminated" state when it is 
- * completed and ready for garbage collection.
+ * <li> Terminated - A dialog transitions to the "terminated" state for all 
+ * other reasons or if no response arrives at all on the dialog.
  * </ul>
  *
- * @author Sun Microsystems
+ * @author BEA Systems, Inc. 
+ * @author NIST
+ * 
+ * @version 1.2
  * @since 1.1
  */
 public final class DialogState implements Serializable{
@@ -160,11 +156,13 @@ public final class DialogState implements Serializable{
      * This constant value indicates the internal value of the "Completed" 
      * constant.
      * <br>This constant has an integer value of 2.
+     * @deprecated since v1.2 this state does not exist in a dialog.
      */    
     public static final int _COMPLETED = 2;
     
     /**
      * This constant value indicates that the dialog state is "Completed".
+     * @deprecated Since v1.2 this state does not exist in a dialog.
      */        
     public final static DialogState COMPLETED = new DialogState(_COMPLETED);
 

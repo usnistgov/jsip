@@ -9,11 +9,11 @@ import java.util.*;
 /**
 *This class stores a sorted list messages for logging. 
 *
-*@version  JAIN-SIP-1.1
+*@version 1.2
 *
-*@author M. Ranganathan <mranga@nist.gov>  
+*@author M. Ranganathan   
 *@author Marc Bednarek 
-*<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+*
 *
 */
 

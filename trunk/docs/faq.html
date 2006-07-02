@@ -25,7 +25,7 @@ JAIN-SIP 1.0 and JAIN-SIP
 1.1 JAIN SIP 1.1?</a> </li>
   <li><a href="#8"> Does the RI support Re-Invite and how do I issue a
 re-invite?</a> </li>
-  <li><a href="#9">Is JAIN-SIP 1.1 Stateful/Stateless or DialogStateful
+  <li><a href="#9">Is JAIN-SIP 1.2 Stateful/Stateless or DialogStateful
 ?</a> </li>
   <li><a href="#10">Why does my application get null transaction ID for
 INVITE transactions?</a> </li>
@@ -44,7 +44,7 @@ Dialog.sendRequest and SipProvider.sendRequest ?</a> </li>
   <li><a href="#18">What is the difference between sending ack for a
 transaction and
 Dialog.sendRequest(Request.ACK)?</a> </li>
-  <li><a href="#19">Why is there no Provider method for creating
+  <li><a href="#19">What is the Provider method for creating
 dialogs?</a> </li>
   <li><a href="#20">I am constructing a stateful proxy/B2BUA. I forward
 the request
@@ -73,7 +73,7 @@ after I send response?</a> </li>
   <li><a href="#29">Why am I getting a "Transaction not available" sip
 execption on
 an incoming INVITE?</a> </li>
-  <li><a href="#30">Why dont you use log4j for logging?</a> </li>
+  <li><a href="#30">How do you remove log4j for logging?</a> </li>
   <li><a href="#31"> I see a SIP message headed for my machine on Ethereal but my application (Listener) does not see it. Why ? </li> 
    <li><a href="#32"> How do I ensure that the stack closes TCP connections after transaction completion?<br/> </li>
    <li><a href="#33"> How do I limit the maximum size of messages that the stack will accept? </a> </li>
@@ -176,12 +176,14 @@ dialog.sendRequest(ct);<br>
   <br>
   <hr size="2" noshade="noshade"> 
 <li><a name="9"></a> 
-Is JAIN-SIP 1.1 Stateful/Stateless or DialogStateful? <br/>
-All of the above! You
+Is JAIN-SIP 1.2 Stateful/Stateless or DialogStateful? <br/>
+Your application can choose its desired behavior. You
 have the option to create a dialog for the first (dialog creating)
 transaction. Once a dialog is created, however, all incoming requests
 that belong to the dialog are automatically given a server transaction
-and are hence handled statefully. 
+and are hence handled statefully.  You can also create dialogs
+under program control and associate it with the Server or Client
+Transaction ( new feature added for JAIN-SIP-1.2)
 </li>
   <br>
   <hr size="2" noshade="noshade"> <li><a name="10"></a>Why does my
@@ -266,20 +268,27 @@ when
 ACKing 2xx responses and the former when ACKing error directed towards
 a transction (3xx) and the like. </li>
   <br>
-  <hr size="2" noshade="noshade"><li><a name="19"></a> Why is there no
+  <hr size="2" noshade="noshade"><li><a name="19"></a> What is the
 Provider method for creating dialogs? <br>
+One of the new features added to JSIP-1.2 is to allow applications
+the ability to have control over dialog creation. To enable, you
+have to set AUTOMATIC_DIALOG_SUPPORT="off" when you create the stack.
+You may also disable automatic dialog support on a per-provider basis.
+Then use the method. SipProvider.getNewDialog(tansaction) to 
+create a dialog.
+
+<p>
+Under the stack configuration parameter, AUTOMATIC_DIALOG_SUPPORT="on" ,
 Dialog creation and destruction is managed by the stack. When the
 client transcaction is created, a Dialog is associated with it but
 not mapped (its state is null). When you complete the transaction
 successfully it actually gets mapped and a valid state is assigned to
-it.
-On the server side, when you get the request, provided the method of
-the
-request has the ability to create a Dialog, you can elect to create a
+it. On the server side, when you get the request, provided the method of
+the request has the ability to create a Dialog, you can elect to create a
 Dialog by creating a new Server Transaction at which point the stack
 automatically creates a Dialog for transaction but defers actually
-mapping
-it until a final response is sent out. </li>
+mapping it until a final response is sent out. 
+</li>
   <br>
   <hr size="2" noshade="noshade"><li><a name="20"></a>I am constructing
 a stateful proxy/B2BUA. I forward the request
@@ -340,13 +349,10 @@ strip off before deciding the next hop set. </li>
   <br>
   <hr size="2" noshade="noshade"><li><a name="25"></a> How are IO
 Exceptions reported to the Application? <br>
-This case arises when using RETRANSMISSION FILTER.
-Currently, IOExceptions will be reported to the application as a
-TIMEOUT
-Event. This may change in the next revision where an explicit
-IOException Event may be included in the architecture to avoid
-overloading the semantics
-of a TIMEOUT event. <br>
+For JAIN-SIP 1.2, there is a new listener method for reporting IO Exceptions to 
+applications. Additionally, the Tranaction for which the 
+IO Exception is delivered will be immediately terminated.
+<br>
     <br>
     <hr size="2" noshade="noshade"></li>
   <li>&nbsp;<a name="26"></a>Why is the Transacton Request returned
@@ -396,12 +402,13 @@ your application and not later. </li>
   <br>
   <hr size="2" noshade="noshade"><li>
    <a name="30"></a>
- Why dont you use log4j for logging? <br>
-To keep the RI as independent of external dependencies as possible, all
-you need for the RI is j2se 1.3.1 or above. A configuration switch
-to allow you to log using log4j may be added in the future.
-Features like log4j can be easily added by just extending
-gov.nist.core.LogWriter.java. <br>
+ How do you remove log4j for logging? <br>
+Because log4j is configured by default to log to a file, you may 
+want to remove it from the implementaton. Doing this is quite 
+simple - modify gov.nist.core.LogWriter.java.  You can change
+its behavior to log to a network connection or remove it entirely
+and convert to println.
+<br>
     <br>
   <br>
   <hr size="2" noshade="noshade">
@@ -409,9 +416,11 @@ gov.nist.core.LogWriter.java. <br>
   <li>I see a SIP message headed for my machine on Ethereal but my application (Listener) does not see it. Why ? <br/>
    There could be one of several things going on:
     <ul>
-   <li> The message does not have a required header - in which case the message is discarded and logged.
+   <li> The message does not have a required header - 
+    in which case the message is discarded and logged.
     </li>
-   <li> The Listener may have blocked. Do not block in your listener method. 
+   <li> The Listener may have blocked while processing a transaction. 
+        Do not block in your listener method. 
 	If you need to block, start a thread and block in it dont block in the 
 	thread that you were called in the listener.
    </li>
@@ -616,7 +625,7 @@ has resources, it responds "200 OK"
 <a name="47"> </a>
 <li> How many calls per second can NIST-SIP handle? <br/> 
 NIST-SIP is suitable for most User Agent Applications. It can handle roughly
-15-20 Calls/Second. Thats usually enough for your average desktop phone
+50-75 Calls/Second. Thats usually enough for your average desktop phone
 unless you are an extremely busy person.  Proxy server type applications
 requiring higher thruput are best built as stateless applications
 (ie. no transactions or dialogs are allocated).  There are several
@@ -689,7 +698,7 @@ who else?". If you are not a congress person, "Why not NIST?".
 
 <br>
 <hr size="2" noshade="noshade">
-M. Ranganathan, Olivier Deruelle and Emil Ivov.
+M. Ranganathan and Jeroen van Bemmel
 <hr size="2" noshade="noshade">
 </body>
 </html>

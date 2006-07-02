@@ -1,3 +1,28 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 /******************************************************************************
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).       *
 ******************************************************************************/
@@ -23,20 +48,20 @@ import javax.sip.header.ContactHeader;
 
 /**
  * Message channel abstraction for the SIP stack.
- * @author M. Ranganathan <mranga@nist.gov>  <br/>
+ * @author M. Ranganathan   <br/>
  * Contains additions for support of symmetric NAT contributed
  * by Hagai.
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.13 $ $Date: 2004-11-28 17:32:26 $
+ * @version 1.2 $Revision: 1.14 $ $Date: 2006-07-02 09:52:39 $
  *
- * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+ * 
  */
 public abstract class MessageChannel {
 
 	/**
 	 *  Message processor to whom I belong (if set).
 	 */
-	protected MessageProcessor messageProcessor;
+	protected transient MessageProcessor messageProcessor;
 
 	/**
 	 *  Close the message channel.
@@ -47,7 +72,7 @@ public abstract class MessageChannel {
 	 * Get the SIPStack object from this message channel.
 	 * @return SIPStack object of this message channel
 	 */
-	public abstract SIPMessageStack getSIPStack();
+	public abstract SIPTransactionStack getSIPStack();
 
 	/**
 	 * Get transport string of this message channel.
@@ -90,8 +115,8 @@ public abstract class MessageChannel {
 	 * the message).
 	 */
 	public abstract int getPeerPort();
-        public abstract int getPeerPacketSourcePort();
-        public abstract InetAddress getPeerPacketSourceAddress();
+    public abstract int getPeerPacketSourcePort();
+    public abstract InetAddress getPeerPacketSourceAddress();
 
 	/** 
 	 * Generate a key which identifies the message channel.
@@ -128,7 +153,7 @@ public abstract class MessageChannel {
 	 * @return host of this messsage channel.
 	 */
 	public String getHost() {
-		return this.getSIPStack().getHostAddress();
+		return this.getMessageProcessor().getIPAddress().getHostAddress();
 	}
 
 	/**
@@ -264,11 +289,8 @@ public abstract class MessageChannel {
 		int port,
 		long time) {
 		if (! getSIPStack().serverLog.needsLogging(ServerLog.TRACE_MESSAGES)) return;
-		String firstLine = sipMessage.getFirstLine();
-		CSeq cseq = (CSeq) sipMessage.getCSeq();
-		CallID callid = (CallID) sipMessage.getCallId();
-		String cseqBody = cseq.encodeBody();
-		String callidBody = callid.encodeBody();
+	
+	
 		// Default port.
 		if (port == -1)
 			port = 5060;
@@ -316,62 +338,3 @@ public abstract class MessageChannel {
 		return this.messageProcessor;
 	}
 }
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.12  2004/09/04 14:59:54  mranga
- * Reviewed by:   mranga
- *
- * Added a method to expose the Thread for the message processors so that
- * stack.stop() can join to wait for the threads to die rather than sleep().
- * Feature requested by Mike Andrews.
- *
- * Revision 1.11  2004/09/03 02:18:44  xoba
- * got rid of cast to 'Contact' class
- *
- * Revision 1.10  2004/06/21 04:59:50  mranga
- * Refactored code - no functional changes.
- *
- * Revision 1.9  2004/05/30 18:55:57  mranga
- * Reviewed by:   mranga
- * Move to timers and eliminate the Transaction scanner Thread
- * to improve scalability and reduce cpu usage.
- *
- * Revision 1.8  2004/05/18 15:26:42  mranga
- * Reviewed by:   mranga
- * Attempted fix at race condition bug. Remove redundant exception (never thrown).
- * Clean up some extraneous junk.
- *
- * Revision 1.7  2004/03/25 16:37:00  mranga
- * Reviewed by:   mranga
- * Fix up for logging messages.
- *
- * Revision 1.6  2004/03/19 17:06:19  mranga
- * Reviewed by:   mranga
- * Fixed some stack cleanup issues. Stack should release all resources when
- * finalized.
- *
- * Revision 1.5  2004/01/22 13:26:33  sverker
- * Issue number:
- * Obtained from:
- * Submitted by:  sverker
- * Reviewed by:   mranga
- *
- * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
- *
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- */

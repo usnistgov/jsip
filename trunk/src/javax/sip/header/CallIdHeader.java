@@ -2,21 +2,15 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Module Name   : JAIN SIP Specification
+ * Module Name   : JSIP Specification
  * File Name     : CallIdHeader.java
  * Author        : Phelim O'Doherty
  *
@@ -84,9 +78,10 @@ import java.text.ParseException;
 
  *
 
- * @version 1.1
-
- * @author Sun Microsystems
+ * @author BEA Systems, Inc. 
+ * @author NIST
+ * @version 1.2
+ * @since 1.1
 
  *
 
@@ -132,7 +127,19 @@ public interface CallIdHeader extends Header {
 
     public String getCallId();
 
-
+    /**
+     * Compare this CallIdHeader for equality with another. This method 
+     * overrides the equals method in javax.sip.Header. This method specifies 
+     * object equality as outlined by  
+     * <a href = "http://www.ietf.org/rfc/rfc3261.txt">RFC3261</a>. 
+     * Call-IDs are case-sensitive and are simply compared byte-by-byte. 
+     *
+     * @param obj the object to compare this CallIdHeader with.
+     * @return <code>true</code> if <code>obj</code> is an instance of this class
+     * representing the same CallIdHeader as this, <code>false</code> otherwise.
+     * @since v1.2
+     */
+    public boolean equals(Object obj);    
 
 
 

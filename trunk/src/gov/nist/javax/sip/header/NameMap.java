@@ -1,3 +1,28 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 package gov.nist.javax.sip.header;
 import gov.nist.core.*;
 import java.util.Hashtable;
@@ -6,7 +31,8 @@ import java.util.Hashtable;
  * A mapping class that returns the SIPHeader for a given header name.
  * Add new classes to this map if you are implementing new header types if
  * you want some of the introspection based methods to work.
- * @version JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2004-05-07 11:31:40 $
+ * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-02 09:50:35 $
+ * @since 1.1
  */
 public class NameMap implements SIPHeaderNames, PackageNames {
 	static Hashtable nameMap;
@@ -143,6 +169,25 @@ public class NameMap implements SIPHeaderNames, PackageNames {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2006/06/19 06:47:26  mranga
+ * javadoc fixups
+ *
+ * Revision 1.3  2006/06/16 15:26:28  mranga
+ * Added NIST disclaimer to all public domain files. Clean up some javadoc. Fixed a leak
+ *
+ * Revision 1.2  2005/10/06 14:54:44  mranga
+ * Reverting back to 1.4 by popular demand
+ *
+ * Revision 1.1.1.1  2005/10/04 17:12:34  mranga
+ *
+ * Import
+ *
+ *
+ * Revision 1.3  2004/05/07 11:31:40  mranga
+ * Submitted by:  Henry Fernandes
+ * Reviewed by:   mranga
+ * Bad entry in NameMap for TimeStamp
+ *
  * Revision 1.2  2004/01/22 13:26:29  sverker
  * Issue number:
  * Obtained from:

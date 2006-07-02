@@ -1,3 +1,28 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 /*******************************************************************************
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
 *******************************************************************************/
@@ -8,16 +33,22 @@ import javax.sip.*;
 /**
  * Expires SIP Header.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.2 $ $Date: 2004-01-22 13:26:29 $
+ * @version 1.2 $Revision: 1.3 $ $Date: 2006-07-02 09:50:50 $
+ * @since 1.1
  *
- * @author M. Ranganathan <mranga@nist.gov>  <br/>
+ * @author M. Ranganathan   <br/>
  *
- * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+ * 
  */
 public class Expires
 	extends SIPHeader
 	implements javax.sip.header.ExpiresHeader {
 
+	/**
+	 * Comment for <code>serialVersionUID</code>
+	 */
+	private static final long serialVersionUID = 3134344915465784267L;
+	
 	/** expires field
 	 */
 	protected int expires;
@@ -45,7 +76,6 @@ public class Expires
 	 *
 	 * @return the expires value of the ExpiresHeader.
 	 *
-	 * @since JAIN SIP v1.1
 	 *
 	 */
 	public int getExpires() {
@@ -61,7 +91,6 @@ public class Expires
 	 *
 	 * @throws InvalidArgumentException if supplied value is less than zero.
 	 *
-	 * @since JAIN SIP v1.1
 	 *
 	 */
 	public void setExpires(int expires) throws InvalidArgumentException {
@@ -70,6 +99,3 @@ public class Expires
 		this.expires = expires;
 	}
 }
-/*
- * $Log: not supported by cvs2svn $
- */

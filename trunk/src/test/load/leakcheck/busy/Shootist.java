@@ -1,5 +1,5 @@
 package test.load.leakcheck.busy;
-
+ 
 import javax.sip.*;
 import javax.sip.address.*;
 import javax.sip.header.*;
@@ -247,12 +247,12 @@ public class Shootist implements SipListener {
             headerFactory = sipFactory.createHeaderFactory();
             addressFactory = sipFactory.createAddressFactory();
             messageFactory = sipFactory.createMessageFactory();
-            udpListeningPoint = sipStack.createListeningPoint(5060, "udp");
+            udpListeningPoint = sipStack.createListeningPoint(sipStack.getIPAddress(), 5060, "udp");
             udpProvider = sipStack.createSipProvider(udpListeningPoint);
             Shootist listener = this;
             udpProvider.addSipListener(listener);
 
-            tcpListeningPoint = sipStack.createListeningPoint(5060, "tcp");
+            tcpListeningPoint = sipStack.createListeningPoint(sipStack.getIPAddress(), 5060, "tcp");
             tcpProvider = sipStack.createSipProvider(tcpListeningPoint);
             tcpProvider.addSipListener(listener);
 
@@ -294,10 +294,9 @@ public class Shootist implements SipListener {
                 // Create ViaHeaders
 
                 ArrayList viaHeaders = new ArrayList();
-                int port = sipProvider.getListeningPoint().getPort();
+                int port = sipProvider.getListeningPoint(transport).getPort();
                 ViaHeader viaHeader = headerFactory.createViaHeader(sipStack
-                        .getIPAddress(), sipProvider.getListeningPoint()
-                        .getPort(), transport, null);
+                        .getIPAddress(), port, transport, null);
 
                 // add via headers
                 viaHeaders.add(viaHeader);
@@ -329,7 +328,7 @@ public class Shootist implements SipListener {
 
                 // Create the contact name address.
                 SipURI contactURI = addressFactory.createSipURI(fromName, host);
-                contactURI.setPort(sipProvider.getListeningPoint().getPort());
+                contactURI.setPort(sipProvider.getListeningPoint(transport).getPort());
 
                 Address contactAddress = addressFactory
                         .createAddress(contactURI);
@@ -380,6 +379,16 @@ public class Shootist implements SipListener {
         }
     }
 
+	public void processIOException(IOExceptionEvent exceptionEvent) {
+		System.out.println("IOException occured while retransmitting requests:" + exceptionEvent);
+	}
+	public void processTransactionTerminated(TransactionTerminatedEvent transactionTerminatedEvent) {
+		System.out.println("Transaction Terminated event: " + transactionTerminatedEvent );
+	}
+	public void processDialogTerminated(DialogTerminatedEvent dialogTerminatedEvent) {
+		System.out.println("Dialog Terminated event: " + dialogTerminatedEvent);
+	}
+    
     public static void main(String args[]) {
         new Shootist().init();
 

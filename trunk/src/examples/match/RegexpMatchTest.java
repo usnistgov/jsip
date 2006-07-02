@@ -8,32 +8,34 @@
 * You might find this useful for bulding test frameworks.
 */
 package examples.match;
+import gov.nist.core.Match;
+import gov.nist.javax.sip.address.SipUri;
+import gov.nist.javax.sip.header.RequestLine;
+import gov.nist.javax.sip.header.StatusLine;
+import gov.nist.javax.sip.message.MessageFactoryImpl;
+import gov.nist.javax.sip.message.SIPRequest;
+import gov.nist.javax.sip.message.SIPResponse;
+
+import java.util.regex.Pattern;
+
 import javax.sip.SipFactory;
-import javax.sip.address.AddressFactory;
-import javax.sip.address.SipURI;
 import javax.sip.message.MessageFactory;
 import javax.sip.message.Request;
 
-import gov.nist.core.Match;
-import gov.nist.javax.sip.message.*;
-import gov.nist.javax.sip.address.*;
-import gov.nist.javax.sip.header.*;
-
-import org.apache.regexp.*;
 
 class Matcher implements Match {
-	   RE re;
+   Pattern re;
+
    Matcher (String matchExpr)  {
-	try {
-	  re = new RE(matchExpr);
-	} catch (RESyntaxException ex) {
- 	  ex.printStackTrace();
-	  System.exit(0);
-	}
+	   re = Pattern.compile(matchExpr);
    }
+
    public boolean match(String toMatch) {
-	return re.match(toMatch);
+	java.util.regex.Matcher m = re.matcher("aaaaab");
+	boolean b = m.matches();
+	return b;
    }
+   
 }
 
 public class RegexpMatchTest {
@@ -70,7 +72,7 @@ static final String message2 = "SIP/2.0 200 OK\r\n"+
 		SipFactory sipFactory = null;
 		sipFactory = SipFactory.getInstance();
 		sipFactory.setPathName("gov.nist");
-		AddressFactory addressFactory = sipFactory.createAddressFactory();
+		// AddressFactory addressFactory = sipFactory.createAddressFactory();
 		SipUri uri = new SipUri();
 		// trap invites on company.com domain for incoming SIP 
 		// invitations.

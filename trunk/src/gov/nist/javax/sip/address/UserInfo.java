@@ -1,3 +1,28 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 /*******************************************************************************
  * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).       *
  *******************************************************************************/
@@ -6,11 +31,11 @@ package gov.nist.javax.sip.address;
 /**
  * User information part of a URL. 
  *
- * @version JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2005-04-16 20:39:31 $
- * @author M. Ranganathan <mranga@nist.gov>  <br/>
+ * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-02 09:52:34 $
+ * @author M. Ranganathan   <br/>
  * Acknowledgement -- Lamine Brahimi 
  * Submitted a bug fix for a this class.
- * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+ * 
  */
 public final class UserInfo extends NetObject {
 
@@ -151,6 +176,20 @@ public final class UserInfo extends NetObject {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2006/06/19 06:47:26  mranga
+ * javadoc fixups
+ *
+ * Revision 1.2  2006/06/16 15:26:29  mranga
+ * Added NIST disclaimer to all public domain files. Clean up some javadoc. Fixed a leak
+ *
+ * Revision 1.1.1.1  2005/10/04 17:12:34  mranga
+ *
+ * Import
+ *
+ *
+ * Revision 1.3  2005/04/16 20:39:31  dmuresan
+ * Eliminated 'c1.getClass().getName().equals(c2.getClass().getName())' idiom (c1 == c2 suffices)
+ *
  * Revision 1.2  2004/01/22 13:26:28  sverker
  * Issue number:
  * Obtained from:

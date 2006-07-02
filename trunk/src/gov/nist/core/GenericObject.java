@@ -1,3 +1,28 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 /******************************************************************************
  * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).      *
  ******************************************************************************/
@@ -12,11 +37,11 @@ import java.util.*;
 * Provides a few utility funcitons such as indentation and
 * pretty printing that all other classes benifit from.
 *
-*@version  JAIN-SIP-1.1
+*@version 1.2
 *
-*@author M. Ranganathan <mranga@nist.gov>  <br/>
+*@author M. Ranganathan   <br/>
 *
-*<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+*
 *
 */
 
@@ -119,7 +144,7 @@ public abstract class GenericObject implements Serializable, Cloneable {
 	 *  If the object is a wrapped type, an array, a GenericObject
 	 *  or a GenericObjectList, it is cast to the appropriate type
 	 *  and the clone() method is invoked. Else if the object implements
-	 *  Cloneable, reflection is used to discover and invoke the public
+	 *  Cloneable, reflection is used to discover and invoke 
 	 *  clone() method. Otherwise, the original object is returned.
 	 */
 	public static Object makeClone(Object obj) {
@@ -159,8 +184,8 @@ public abstract class GenericObject implements Serializable, Cloneable {
 			// If a clone method exists for the object, then
 			// invoke it
 			try {
-				Method meth = c.getMethod("clone", null);
-				clone_obj = meth.invoke(obj, null);
+				Method meth = c.getMethod("clone", (Class[]) null);
+				clone_obj = meth.invoke(obj,(Object[]) null);
 			} catch (SecurityException ex) {
 			} catch (IllegalArgumentException ex) {
 				InternalErrorHandler.handleException(ex);
@@ -672,337 +697,12 @@ public abstract class GenericObject implements Serializable, Cloneable {
 		return retval;
 	}
 
-	/**
-	 * An assertion checking utility.
-	 */
-
-	protected void Assert(boolean condition, String msg) {
-		if (!condition)
-			InternalErrorHandler.handleException(msg);
-	}
-
+	
 	/**
 	 *  Get the string encoded version of this object
 	 * @since v1.0
 	 */
 	public abstract String encode();
 
-	/**
-	 * Do a recursive find and replace of objects pointed to by this
-	 * object.
-	 * @since v1.0
-	 * @param objectText is the canonical string representation of
-	 *		the object that we want to replace.
-	 * @param replacement is the object that we want to replace it
-	 *		with.
-	 * @param matchSubstring a boolean which tells if we should match
-	 * 		a substring of the target object
-	 * A replacement will occur if a portion of the structure is found
-	 * with matching encoded text (a substring if matchSubstring is true)
-	 * as objectText and with the same class as replacement.
-	 */
-	public void replace(
-		String objectText,
-		GenericObject replacement,
-		boolean matchSubstring)
-		throws IllegalArgumentException {
-		if (objectText == null || replacement == null) {
-			throw new IllegalArgumentException("null argument!");
-		}
-		Class replacementClass = replacement.getClass();
-		Class myclass = getClass();
-		Field[] fields = myclass.getDeclaredFields();
-		for (int i = 0; i < fields.length; i++) {
-			Field f = fields[i];
-			Class fieldType = f.getType();
-			if (!GenericObject.class.isAssignableFrom(fieldType)
-				&& !GenericObjectList.class.isAssignableFrom(fieldType)) {
-				continue;
-			} else if (
-				(f.getModifiers() & Modifier.PRIVATE) == Modifier.PRIVATE) {
-				continue;
-			}
-
-			try {
-				if (fieldType.equals(replacementClass)) {
-
-					if (GenericObject.isMySubclass(replacementClass)) {
-						GenericObject obj = (GenericObject) f.get(this);
-						if (!matchSubstring) {
-							if (objectText.compareTo(obj.encode()) == 0) {
-								f.set(this, replacement);
-							}
-						} else {
-							// Substring match is specified
-							if (obj.encode().indexOf(objectText) >= 0) {
-								f.set(this, replacement);
-							}
-						}
-					}
-				} else if (GenericObjectList.isMySubclass(replacementClass)) {
-					GenericObjectList obj = (GenericObjectList) f.get(this);
-					if (!matchSubstring) {
-						if (objectText.compareTo(obj.encode()) == 0) {
-							f.set(this, replacement);
-						}
-					} else {
-						if (obj.encode().indexOf(objectText) >= 0) {
-							f.set(this, replacement);
-						}
-					}
-				} else if (GenericObject.class.isAssignableFrom(fieldType)) {
-					GenericObject g = (GenericObject) f.get(this);
-					g.replace(objectText, replacement, matchSubstring);
-				} else if (
-					GenericObjectList.class.isAssignableFrom(fieldType)) {
-					GenericObjectList g = (GenericObjectList) f.get(this);
-					g.replace(objectText, replacement, matchSubstring);
-				}
-			} catch (IllegalAccessException ex) {
-				InternalErrorHandler.handleException(ex);
-			}
-		}
-
-	}
-
-	/**
-	 * Do a recursive find and replace of objects pointed to by this
-	 * object.
-	 * @since v1.0
-	 *@param objectText Canonical string representation of the
-	 *  portion we want to replace.
-	 *@param replacement object we want to replace this portion with.
-	 * A replacement will occur if a portion of the structure is found
-	 * with a match of the  encoded text
-	 * with objectText and with the same class as replacement.
-	 *@param matchSubstring is true if we want to match objectText
-	 * 	as a substring of the encoded target text.
-	 * (i.e. an object is a  candidate for replacement if
-	 *   objectText is a substring of
-	 *  candidate.encode() && candidate.class.equals(replacement.class)
-	 *  otherwise the match test is an equality test.)
-	 */
-	public void replace(
-		String objectText,
-		GenericObjectList replacement,
-		boolean matchSubstring)
-		throws IllegalArgumentException {
-
-		if (objectText == null || replacement == null) {
-			throw new IllegalArgumentException("null argument!");
-		}
-		Class replacementClass = replacement.getClass();
-		Class myclass = getClass();
-		Field[] fields = myclass.getDeclaredFields();
-		for (int i = 0; i < fields.length; i++) {
-			Field f = fields[i];
-			Class fieldType = f.getType();
-			if (!GenericObject.class.isAssignableFrom(fieldType)
-				&& !GenericObjectList.class.isAssignableFrom(fieldType)) {
-				continue;
-			} else if (
-				(f.getModifiers() & Modifier.PRIVATE) == Modifier.PRIVATE) {
-				continue;
-			}
-			try {
-				if (fieldType.equals(replacementClass)) {
-					if (GenericObject.isMySubclass(replacementClass)) {
-						GenericObject obj = (GenericObject) f.get(this);
-						if (!matchSubstring) {
-							if (objectText.compareTo(obj.encode()) == 0) {
-								f.set(this, replacement);
-							}
-						} else {
-							if (obj.encode().indexOf(objectText) >= 0) {
-								f.set(this, replacement);
-							}
-						}
-					} else if (
-						GenericObjectList.isMySubclass(replacementClass)) {
-						GenericObjectList obj = (GenericObjectList) f.get(this);
-						if (!matchSubstring) {
-							if (objectText.compareTo(obj.encode()) == 0) {
-								f.set(this, replacement);
-							}
-						} else {
-							if (obj.encode().indexOf(objectText) >= 0) {
-								f.set(this, replacement);
-							}
-						}
-					}
-
-				} else if (GenericObject.class.isAssignableFrom(fieldType)) {
-					GenericObject g = (GenericObject) f.get(this);
-					g.replace(objectText, replacement, matchSubstring);
-				} else if (
-					GenericObjectList.class.isAssignableFrom(fieldType)) {
-					GenericObjectList g = (GenericObjectList) f.get(this);
-					g.replace(objectText, replacement, matchSubstring);
-				}
-			} catch (IllegalAccessException ex) {
-				InternalErrorHandler.handleException(ex);
-			}
-		}
-
-	}
-	/**
-	 * Do a recursive find and replace of objects pointed to by this
-	 * object based on regular expression pattern matching.
-	 * @since v1.0
-	 *@param regexp  regular expression for the object we want to find.
-	 * This is generated using a regular expression matching package
-	 * such as the apache regexp package.
-	 *@param replacement object we want to replace this portion with.
-	 * A replacement will occur if a portion of the structure is found
-	 * with a match of the  encoded text
-	 * with objectText and with the same class as replacement.
-	 */
-	public void replace(Match regexp, GenericObjectList replacement)
-		throws IllegalArgumentException {
-
-		if (regexp == null || replacement == null) {
-			throw new IllegalArgumentException("null argument!");
-		}
-		Class replacementClass = replacement.getClass();
-		Class myclass = getClass();
-		Field[] fields = myclass.getDeclaredFields();
-		for (int i = 0; i < fields.length; i++) {
-			Field f = fields[i];
-			Class fieldType = f.getType();
-			if (!GenericObject.class.isAssignableFrom(fieldType)
-				&& !GenericObjectList.class.isAssignableFrom(fieldType)) {
-				continue;
-			} else if (
-				(f.getModifiers() & Modifier.PRIVATE) == Modifier.PRIVATE) {
-				continue;
-			}
-			try {
-				if (fieldType.equals(replacementClass)) {
-					if (GenericObject.isMySubclass(replacementClass)) {
-						GenericObject obj = (GenericObject) f.get(this);
-						if (regexp.match(obj.encode()))
-							f.set(this, replacement);
-					} else if (
-						GenericObjectList.isMySubclass(replacementClass)) {
-						GenericObjectList obj = (GenericObjectList) f.get(this);
-						if (regexp.match(obj.encode()))
-							f.set(this, replacement);
-					}
-
-				} else if (GenericObject.class.isAssignableFrom(fieldType)) {
-					GenericObject g = (GenericObject) f.get(this);
-					g.replace(regexp, replacement);
-				} else if (
-					GenericObjectList.class.isAssignableFrom(fieldType)) {
-					GenericObjectList g = (GenericObjectList) f.get(this);
-					g.replace(regexp, replacement);
-				}
-			} catch (IllegalAccessException ex) {
-				InternalErrorHandler.handleException(ex);
-			}
-		}
-
-	}
-
-	/**
-	 * Do a find and replace of objects based on regular expression
-	 * matching of fields.
-	 * @param regexp is the match expression (i.e. implementation of
-	 *		the Match interface) for
-	 *		the object that we want to replace.
-	 * @param replacement is the object that we want to replace it
-	 *		with.
-	 * A replacement will occur if a portion of the structure is found
-	 * that matches according to the given regexp and if the class of
-	 * the replaced field matches the replacement.
-	 */
-	public void replace(Match regexp, GenericObject replacement)
-		throws IllegalArgumentException {
-		if (regexp == null || replacement == null) {
-			throw new IllegalArgumentException("null argument!");
-		}
-		Class replacementClass = replacement.getClass();
-		Class myclass = getClass();
-		Field[] fields = myclass.getDeclaredFields();
-		for (int i = 0; i < fields.length; i++) {
-			Field f = fields[i];
-			Class fieldType = f.getType();
-			if (!GenericObject.class.isAssignableFrom(fieldType)
-				&& !GenericObjectList.class.isAssignableFrom(fieldType)) {
-				continue;
-			} else if (f.getModifiers() == Modifier.PRIVATE) {
-				continue;
-			}
-
-			try {
-				if (fieldType.equals(replacementClass)) {
-
-					if (GenericObject.isMySubclass(replacementClass)) {
-						GenericObject obj = (GenericObject) f.get(this);
-						if (regexp.match(obj.encode()))
-							f.set(this, replacement);
-					}
-				} else if (GenericObjectList.isMySubclass(replacementClass)) {
-					GenericObjectList obj = (GenericObjectList) f.get(this);
-					if (regexp.match(obj.encode()))
-						f.set(this, replacement);
-				} else if (GenericObject.class.isAssignableFrom(fieldType)) {
-					GenericObject g = (GenericObject) f.get(this);
-					g.replace(regexp, replacement);
-				} else if (
-					GenericObjectList.class.isAssignableFrom(fieldType)) {
-					GenericObjectList g = (GenericObjectList) f.get(this);
-					g.replace(regexp, replacement);
-				}
-			} catch (IllegalAccessException ex) {
-				InternalErrorHandler.handleException(ex);
-			}
-		}
-	}
+	
 }
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.10  2005/04/16 20:37:07  dmuresan
- * GenericObject and GenericObjectList implement Cloneable.
- *
- * Revision 1.9  2005/04/16 20:36:12  dmuresan
- * Optimized GenericObject.makeClone().
- *
- * Revision 1.8  2005/04/04 10:43:04  dmuresan
- * Strings and wrapped types no longer cloned in GenericObject.makeClone()
- *
- * Revision 1.7  2005/04/04 09:51:37  dmuresan
- * Optimized getIndentation() implementations (previously used String concatenation in a loop).
- *
- * Revision 1.6  2005/04/04 08:27:02  dmuresan
- * Optimized GenericObject.sprint() for primitive types.
- *
- * Revision 1.5  2004/01/22 14:23:45  mranga
- * Reviewed by:   mranga
- * Fixed some minor formatting issues.
- *
- * Revision 1.4  2004/01/22 13:26:27  sverker
- * Issue number:
- * Obtained from:
- * Submitted by:  sverker
- * Reviewed by:   mranga
- *
- * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
- *
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- */

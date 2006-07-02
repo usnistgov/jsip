@@ -1,7 +1,38 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 /* This class is entirely derived from TCPMessageProcessor,
-   by making some minor changes.
-
-                Daniel J. Martinez Manzano <dani@dif.um.es>
+ *  by making some minor changes.
+ *
+ *               Daniel J. Martinez Manzano <dani@dif.um.es>
+ * Acknowledgement: Jeff Keyser suggested that a
+ * Stop mechanism be added to this. Niklas Uhrberg suggested that
+ * a means to limit the number of simultaneous active connections
+ * should be added. Mike Andrews suggested that the thread be
+ * accessible so as to implement clean stop using Thread.join().
+ *
 */
 
 /******************************************************************************
@@ -15,6 +46,8 @@ import java.net.SocketException;
 import gov.nist.core.*;
 import java.net.*;
 import java.util.*;
+import org.apache.log4j.*;
+
 
 /**
  * Sit in a loop waiting for incoming tls connections and start a
@@ -22,74 +55,61 @@ import java.util.*;
  * object that creates new TLS MessageChannels (one for each new
  * accept socket).  
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.2 $ $Date: 2004-12-01 19:05:16 $
+ * @version 1.2 $Revision: 1.3 $ $Date: 2006-07-02 09:52:43 $
  *
- * @author M. Ranganathan <mranga@nist.gov>  <br/>
- * Acknowledgement: Jeff Keyser suggested that a
- * Stop mechanism be added to this. Niklas Uhrberg suggested that
- * a means to limit the number of simultaneous active connections
- * should be added. Mike Andrews suggested that the thread be
- * accessible so as to implement clean stop using Thread.join().
- *
- * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+ * @author M. Ranganathan   <br/>
+ * 
  */
 public class TLSMessageProcessor extends MessageProcessor {
 
-	protected Thread thread;
-
-
-	protected int port;
-
+	
 	protected int nConnections;
 
 	private boolean isRunning;
-
 
 	private Hashtable tlsMessageChannels;
 
 	private SSLServerSocket sock;
 
 	protected int useCount=0;
-
+	
 	/**
 	 * The SIP Stack Structure.
 	 */
-	protected SIPMessageStack sipStack;
+	protected SIPTransactionStack sipStack;
+
+    
 
 	/**
 	 * Constructor.
+	 * 
+	 * @param ipAddress -- inet address where I am listening.
 	 * @param sipStack SIPStack structure.
 	 * @param port port where this message processor listens.
 	 */
-	protected TLSMessageProcessor(SIPMessageStack sipStack, int port) {
-		this.sipStack = sipStack;
-		this.port = port;
+	protected TLSMessageProcessor(InetAddress ipAddress, SIPTransactionStack sipStack, int port) {
+		super( ipAddress,port,"tls");
+	    this.sipStack = sipStack;
 		this.tlsMessageChannels = new Hashtable();
+		
 	}
 
 	/**
 	 * Start the processor.
 	 */
 	public void start() throws IOException {
-		thread = new Thread(this);
+		Thread thread = new Thread(this);
 		thread.setName("TLSMessageProcessorThread");
 		thread.setDaemon(true);
-		this.sock = sipStack.getNetworkLayer().createSSLServerSocket(this.port, 0, sipStack.savedStackInetAddress);
+		this.sock = sipStack.getNetworkLayer().createSSLServerSocket(this.getPort(), 0, 
+		        			this.getIPAddress());
 		this.isRunning = true;
 		thread.start();
 
 	}
 
 	
-	/**
-	* Return our thread.
-	*
-	*@return -- our thread. This is used for joining 
-	*/
-	public Thread getThread() {
-		return this.thread;
-	}
-
+	
 	/**
 	 * Run method for the thread that gets created for each accept
 	 * socket.
@@ -120,10 +140,9 @@ public class TLSMessageProcessor extends MessageProcessor {
 				}
 
 				SSLSocket newsock = (SSLSocket) sock.accept();
-				if (LogWriter.needsLogging) {
-					getSIPStack().logWriter.logMessage(
-						"Accepting new connection!");
-				}
+				if ( sipStack.logWriter.isLoggingEnabled())
+					 sipStack.logWriter.logDebug("Accepting new connection!");
+			
 				// Note that for an incoming message channel, the
 				// thread is already running
 				TLSMessageChannel tlsMessageChannel =
@@ -132,36 +151,23 @@ public class TLSMessageProcessor extends MessageProcessor {
 				this.isRunning = false;
 			} catch (IOException ex) {
 				// Problem accepting connection.
-				if (LogWriter.needsLogging)
-					getSIPStack().logWriter.logException(ex);
+			    sipStack.logWriter.logError("Problem Accepting Connection",ex);
 				continue;
 			} catch (Exception ex) {
-				InternalErrorHandler.handleException(ex);
+				sipStack.logWriter.logError("Unexpected Exception!",ex);
 			}
 		}
 	}
 
-	/**
-	 * Return the transport string.
-	 * @return the transport string
-	 */
-	public String getTransport() {
-		return "tls";
-	}
+	
 
-	/**
-	 * Returns the port that we are listening on.
-	 * @return Port address for the tcp accept.
-	 */
-	public int getPort() {
-		return this.port;
-	}
+	
 
 	/**
 	 * Returns the stack.
 	 * @return my sip stack.
 	 */
-	public SIPMessageStack getSIPStack() {
+	public SIPTransactionStack getSIPStack() {
 		return sipStack;
 	}
 
@@ -171,7 +177,6 @@ public class TLSMessageProcessor extends MessageProcessor {
 	 */
 	public synchronized void stop() {
 		isRunning = false;
-		this.listeningPoint = null;
 		try {
 			sock.close();
 		} catch (IOException e) {
@@ -193,8 +198,8 @@ public class TLSMessageProcessor extends MessageProcessor {
 		(TLSMessageChannel tlsMessageChannel) {
 
 		String key = tlsMessageChannel.getKey();
-		if (LogWriter.needsLogging) {
-		   sipStack.logWriter.logMessage	
+		if (sipStack.isLoggingEnabled()) {
+		   sipStack.logWriter.logDebug	
 		   ( Thread.currentThread() + " removing " + key);
 		}
 
@@ -220,10 +225,10 @@ public class TLSMessageProcessor extends MessageProcessor {
 			this);
 		     this.tlsMessageChannels.put(key,retval);
 		     retval.isCached = true;
-		     if (LogWriter.needsLogging ) {
-			  sipStack.logWriter.logMessage
+		     if (sipStack.isLoggingEnabled() ) {
+			  sipStack.logWriter.logDebug
 				("key " + key);
-		          sipStack.logWriter.logMessage("Creating " + retval);
+		          sipStack.logWriter.logDebug("Creating " + retval);
 		      }
 		     return retval;
 		}
@@ -236,12 +241,12 @@ public class TLSMessageProcessor extends MessageProcessor {
 		TLSMessageChannel currentChannel = 
 			(TLSMessageChannel) tlsMessageChannels.get(key);
 		if (currentChannel != null)  {
-		        if (LogWriter.needsLogging) 
-				sipStack.logWriter.logMessage("Closing " + key);
+		        if (sipStack.isLoggingEnabled()) 
+				sipStack.logWriter.logDebug("Closing " + key);
 			currentChannel.close();
 		}
-		if (LogWriter.needsLogging) 
-			sipStack.logWriter.logMessage("Caching " + key);
+		if (sipStack.isLoggingEnabled()) 
+			sipStack.logWriter.logDebug("Caching " + key);
 	        this.tlsMessageChannels.put(key,messageChannel);
 
 	}
@@ -258,9 +263,9 @@ public class TLSMessageProcessor extends MessageProcessor {
 		        TLSMessageChannel retval  = new TLSMessageChannel(host, port, sipStack, this);
 			this.tlsMessageChannels.put(key,retval);
 		        retval.isCached = true;
-			if (LogWriter.needsLogging) {
-		        	sipStack.logMessage("key " + key);
-		        	sipStack.logMessage("Creating " + retval);
+			if (sipStack.isLoggingEnabled()) {
+		        	sipStack.getLogWriter().logDebug("key " + key);
+		        	sipStack.getLogWriter().logDebug("Creating " + retval);
 			}
 			return retval;
 		   }
@@ -278,19 +283,6 @@ public class TLSMessageProcessor extends MessageProcessor {
 		return Integer.MAX_VALUE;
 	}
 
-	/**
-	 * TLS NAPTR service name.
-	 */
-	public String getNAPTRService() {
-		return "SIPS+D2T";
-	}
-
-	/**
-	 * TLS SRV prefix.
-	 */
-	public String getSRVPrefix() {
-		return "_sip._tls.";
-	}
 
 	public boolean inUse() {
 		return this.useCount != 0;
@@ -310,103 +302,3 @@ public class TLSMessageProcessor extends MessageProcessor {
 		return true;
 	}
 }
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.1  2004/10/28 19:02:52  mranga
- * Submitted by:  Daniel Martinez
- * Reviewed by:   M. Ranganathan
- *
- * Added changes for TLS support contributed by Daniel Martinez
- *
- * Revision 1.21  2004/09/04 14:59:54  mranga
- * Reviewed by:   mranga
- *
- * Added a method to expose the Thread for the message processors so that
- * stack.stop() can join to wait for the threads to die rather than sleep().
- * Feature requested by Mike Andrews.
- *
- * Revision 1.20  2004/08/30 16:04:47  mranga
- * Submitted by:  Mike Andrews
- * Reviewed by:   mranga
- *
- * Added a network layer.
- *
- * Revision 1.19  2004/08/23 23:56:21  mranga
- * Reviewed by:   mranga
- * forgot to set isDaemon in one or two places where threads were being
- * created and cleaned up some minor junk.
- *
- * Revision 1.18  2004/06/21 04:59:53  mranga
- * Refactored code - no functional changes.
- *
- * Revision 1.17  2004/05/14 20:20:03  mranga
- *
- * Submitted by:  Dave Stuart
- * Reviewed by:  mranga
- *
- * Stun support hacks -- use the original address specified to bind tcp transport
- * socket.
- *
- * Revision 1.16  2004/03/30 16:40:30  mranga
- * Reviewed by:   mranga
- * more tweaks to reference counting for cleanup.
- *
- * Revision 1.15  2004/03/30 15:38:18  mranga
- * Reviewed by:   mranga
- * Name the threads so as to facilitate debugging.
- *
- * Revision 1.14  2004/03/25 19:01:44  mranga
- * Reviewed by:   mranga
- * check for key before removing it from cache
- *
- * Revision 1.13  2004/03/25 18:08:15  mranga
- * Reviewed by:   mranga
- * Fix connection caching for ill behaved clients which connect multiple times
- * for the same incoming request.
- *
- * Revision 1.12  2004/03/25 15:15:05  mranga
- * Reviewed by:   mranga
- * option to log message content added.
- *
- * Revision 1.11  2004/03/19 23:41:30  mranga
- * Reviewed by:   mranga
- * Fixed connection and thread caching.
- *
- * Revision 1.10  2004/03/19 17:06:20  mranga
- * Reviewed by:   mranga
- * Fixed some stack cleanup issues. Stack should release all resources when
- * finalized.
- *
- * Revision 1.9  2004/01/22 18:39:42  mranga
- * Reviewed by:   M. Ranganathan
- * Moved the ifdef SIMULATION and associated tags to the first column so Prep preprocessor can deal with them.
- *
- * Revision 1.8  2004/01/22 14:23:45  mranga
- * Reviewed by:   mranga
- * Fixed some minor formatting issues.
- *
- * Revision 1.7  2004/01/22 13:26:33  sverker
- * Issue number:
- * Obtained from:
- * Submitted by:  sverker
- * Reviewed by:   mranga
- *
- * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
- *
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- */

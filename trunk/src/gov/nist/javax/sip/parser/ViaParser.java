@@ -1,17 +1,43 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 package gov.nist.javax.sip.parser;
 
+import gov.nist.javax.sip.SIPConstants;
 import gov.nist.javax.sip.header.*;
 import gov.nist.core.*;
 import java.text.ParseException;
 
 /**
  * Parser for via headers.
- *
- * @version JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2005-01-28 00:23:37 $
- *
- * @author Olivier Deruelle 
+ * 
+ * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-02 09:51:06 $
+ * @since 1.1
+ * 
+ * @author Olivier Deruelle
  * @author M. Ranganathan 
- * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public class ViaParser extends HeaderParser {
 
@@ -27,7 +53,7 @@ public class ViaParser extends HeaderParser {
 	 * a parser for the essential part of the via header.
 	 */
 	private void parseVia(Via v) throws ParseException {
-		// The protocol   
+		// The protocol
 		lexer.match(TokenTypes.ID);
 		Token protocolName = lexer.getNextToken();
 
@@ -56,7 +82,7 @@ public class ViaParser extends HeaderParser {
 		protocol.setTransport(transport.getTokenValue());
 		v.setSentProtocol(protocol);
 
-		// sent-By  
+		// sent-By
 		HostNameParser hnp = new HostNameParser(this.getLexer());
 		HostPort hostPort = hnp.hostPort();
 		v.setSentBy(hostPort);
@@ -70,16 +96,23 @@ public class ViaParser extends HeaderParser {
 			this.lexer.SPorHT();
 			NameValue nameValue = this.nameValue();
 			String name = nameValue.getName();
-			nameValue.setName(name.toLowerCase());
+			if (name.equals(Via.BRANCH)) {
+				String branchId = (String) nameValue.getValue();
+				if (branchId == null)
+					throw new ParseException("null branch Id", lexer.getPtr());
+
+			}
 			v.setParameter(nameValue);
 			this.lexer.SPorHT();
 		}
 
+		//
+		// JvB Note: RFC3261 does not allow a comment in Via headers anymore
+		//
 		if (lexer.lookAhead(0) == '(') {
 			this.lexer.selectLexer("charLexer");
 			lexer.consume(1);
 			StringBuffer comment = new StringBuffer();
-			boolean cond = true;
 			while (true) {
 				char ch = lexer.lookAhead(0);
 				if (ch == ')') {
@@ -106,8 +139,8 @@ public class ViaParser extends HeaderParser {
 	}
 
 	/**
-	 * Overrides the superclass nameValue parser because
-	 * we have to tolerate IPV6 addresses in the received parameter.
+	 * Overrides the superclass nameValue parser because we have to tolerate
+	 * IPV6 addresses in the received parameter.
 	 */
 	protected NameValue nameValue() throws ParseException {
 		if (debug)
@@ -128,8 +161,7 @@ public class ViaParser extends HeaderParser {
 					lexer.consume(1);
 					lexer.SPorHT();
 					String str = null;
-					if (name.getTokenValue().compareToIgnoreCase(Via.RECEIVED)
-						== 0) {
+					if (name.getTokenValue().compareToIgnoreCase(Via.RECEIVED) == 0) {
 						// Allow for IPV6 Addresses.
 						// these could have : in them!
 						str = lexer.byteStringNoSemicolon();
@@ -143,12 +175,14 @@ public class ViaParser extends HeaderParser {
 							str = value.getTokenValue();
 						}
 					}
-					NameValue nv = new NameValue(name.getTokenValue(), str);
+					NameValue nv = new NameValue(name.getTokenValue()
+							.toLowerCase(), str);
 					if (quoted)
 						nv.setQuotedValue();
 					return nv;
 				} else {
-					return new NameValue(name.getTokenValue(), null);
+					return new NameValue(name.getTokenValue().toLowerCase(),
+							null);
 				}
 			} catch (ParseException ex) {
 				return new NameValue(name.getTokenValue(), null);
@@ -193,69 +227,33 @@ public class ViaParser extends HeaderParser {
 
 	}
 
-/**
-
-	        public static void main(String args[]) throws ParseException {
-			String via[] = {
-		"Via: SIP/2.0/UDP 135.180.130.133;branch=-12345\n",
-		"Via: SIP/2.0/UDP 166.34.120.100;branch=0000045d-00000001"+
-	                       ",SIP/2.0/UDP 166.35.224.216:5000\n",
-		"Via: SIP/2.0/UDP sip33.example.com,"+
-	         " SIP/2.0/UDP sip32.example.com (oli),"+
-	         "SIP/2.0/UDP sip31.example.com\n",
-	         "Via: SIP/2.0/UDP host.example.com;received=::133;"+
-	         " branch=C1C3344E2710000000E299E568E7potato10potato0potato0\n",
-	         "Via: SIP/2.0/UDP host.example.com;received=135.180.130.133;"+
-	         " branch=C1C3344E2710000000E299E568E7potato10potato0potato0\n",
-	         "Via: SIP/2.0/UDP company.com:5604 ( Hello )"+
-	         ", SIP /  2.0  /  UDP 135.180.130.133\n",
-	         "Via: SIP/2.0/UDP 129.6.55.9:7060;received=stinkbug.antd.nist.gov\n",
-	
-	          "Via: SIP/2.0/UDP ss2.wcom.com:5060;branch=721e418c4.1"+
-	           ", SIP/2.0/UDP ss1.wcom.com:5060;branch=2d4790.1"+
-	           " , SIP/2.0/UDP here.com:5060( Hello the big world) \n"
-	            ,"Via: SIP/2.0/UDP ss1.wcom.com:5060;branch=2d4790.1\n",
-	                        "Via: SIP/2.0/UDP first.example.com:4000;ttl=16"+
-	                        ";maddr=224.2.0.1 ;branch=a7c6a8dlze.1 (Acme server)\n"
-	                };
-				
-			for (int i = 0; i < via.length; i++ ) {
-			    ViaParser vp = 
-				  new ViaParser(via[i]);
-			    System.out.println("toParse = " + via[i]);
-			    ViaList vl = (ViaList) vp.parse();
-			    System.out.println("encoded = " + vl.encode());
-			}
-				
-		}
-
-**/
+	/**
+	 * 
+	 * public static void main(String args[]) throws ParseException { String
+	 * via[] = { "Via: SIP/2.0/UDP 135.180.130.133;branch=-12345\n", "Via:
+	 * SIP/2.0/UDP 166.34.120.100;branch=0000045d-00000001"+ ",SIP/2.0/UDP
+	 * 166.35.224.216:5000\n", "Via: SIP/2.0/UDP sip33.example.com,"+ "
+	 * SIP/2.0/UDP sip32.example.com (oli),"+ "SIP/2.0/UDP sip31.example.com\n",
+	 * "Via: SIP/2.0/UDP host.example.com;received=::133;"+ "
+	 * branch=C1C3344E2710000000E299E568E7potato10potato0potato0\n", "Via:
+	 * SIP/2.0/UDP host.example.com;received=135.180.130.133;"+ "
+	 * branch=C1C3344E2710000000E299E568E7potato10potato0potato0\n", "Via:
+	 * SIP/2.0/UDP company.com:5604 ( Hello )"+ ", SIP / 2.0 / UDP
+	 * 135.180.130.133\n", "Via: SIP/2.0/UDP
+	 * 129.6.55.9:7060;received=stinkbug.antd.nist.gov\n",
+	 * 
+	 * "Via: SIP/2.0/UDP ss2.wcom.com:5060;branch=721e418c4.1"+ ", SIP/2.0/UDP
+	 * ss1.wcom.com:5060;branch=2d4790.1"+ " , SIP/2.0/UDP here.com:5060( Hello
+	 * the big world) \n" ,"Via: SIP/2.0/UDP
+	 * ss1.wcom.com:5060;branch=2d4790.1\n", "Via: SIP/2.0/UDP
+	 * first.example.com:4000;ttl=16"+ ";maddr=224.2.0.1 ;branch=a7c6a8dlze.1
+	 * (Acme server)\n" };
+	 * 
+	 * for (int i = 0; i < via.length; i++ ) { ViaParser vp = new
+	 * ViaParser(via[i]); System.out.println("toParse = " + via[i]); ViaList vl =
+	 * (ViaList) vp.parse(); System.out.println("encoded = " + vl.encode()); }
+	 *  }
+	 * 
+	 */
 
 }
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.4  2004/01/22 13:26:32  sverker
- * Issue number:
- * Obtained from:
- * Submitted by:  sverker
- * Reviewed by:   mranga
- *
- * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
- *
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- */

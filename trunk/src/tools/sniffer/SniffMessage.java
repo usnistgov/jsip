@@ -16,7 +16,7 @@ import gov.nist.javax.sip.message.*;
 * the University of Colorado, Boulder.
 *
 *@author Tim Bardzil <bardzil@colorado.edu> (original)
-*@author M. Ranganathan <mranga@nist.gov> (ported to 1.2)
+*@author M. Ranganathan  (ported to 1.2)
 *Jeff Adams submitted a patch for this file.
 *
 */

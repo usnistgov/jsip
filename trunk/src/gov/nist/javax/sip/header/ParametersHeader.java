@@ -1,3 +1,28 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 /**************************************************************************/
 /* Product of NIST Advanced Networking Technologies Division		  */
 /**************************************************************************/
@@ -6,16 +31,19 @@ package gov.nist.javax.sip.header;
 import gov.nist.core.*;
 import java.text.ParseException;
 import java.util.*;
+
+import javax.sip.header.Parameters;
+
 import gov.nist.javax.sip.address.*;
 
 /**
  * Parameters header. Suitable for extension by headers that have parameters.
  *
- * @author M. Ranganathan <mranga@nist.gov>  <br/>
+ * @author M. Ranganathan   <br/>
  *
- * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+ * 
  *
- * @version JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2005-04-16 20:38:50 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-02 09:50:57 $
  *
  */
 public abstract class ParametersHeader
@@ -445,37 +473,45 @@ public abstract class ParametersHeader
 			retval.parameters = (NameValueList) this.parameters.clone();
 		return retval;
 	}
+	
+	protected final boolean equalParameters( Parameters other ) {
+		if (this==other) return true;
+		
+		for ( Iterator i = this.getParameterNames(); i.hasNext();) {
+			String pname = (String) i.next();
+			
+			String p1 = this.getParameter( pname );
+			String p2 = other.getParameter( pname );
+			
+				//assert( p1 != null );
+			//if ( p1 == null ) throw new RuntimeException ("Assertion check failed");
+			//if (p2==null) return false;
+			
+			// getting them based on this.getParameterNames. Note that p1 may be null
+			// if this is a name-only parameter like rport or lr.
+			if (p1 == null ^ p2 == null) return false;
+			else if (p1 != null && !p1.equalsIgnoreCase(p2) ) return false;
+		}
+		
+		// Also compare other's parameters; some duplicate testing here...
+		for ( Iterator i = other.getParameterNames(); i.hasNext();) {
+			String pname = (String) i.next();
+			
+			String p1 = other.getParameter( pname );
+			String p2 = this.getParameter( pname );
+			
+				// assert( p1 != null );
+			// if ( p1 == null ) throw new RuntimeException("Assertion check failed!");
+			//	if (p2==null) return false;
+
+			// getting them based on this.getParameterNames. Note that p1 may be null
+			// if this is a name-only parameter like rport or lr.
+		
+			if (p1 == null ^ p2 == null) return false;
+			else if (p1 != null && !p1.equalsIgnoreCase(p2) ) return false;
+		}
+		
+		return true;
+	}
 
 }
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.4  2004/04/15 16:20:38  mranga
- * Submitted by:  Dave Stuart at sipquest.
- * Reviewed by:  mranga
- * Bug converting String to boolean value.
- *
- * Revision 1.3  2004/01/22 13:26:29  sverker
- * Issue number:
- * Obtained from:
- * Submitted by:  sverker
- * Reviewed by:   mranga
- *
- * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
- *
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- */

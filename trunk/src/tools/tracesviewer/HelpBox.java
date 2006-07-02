@@ -9,11 +9,11 @@ import java.awt.*;
 import java.awt.event.*;
 
 /**
-*@version  JAIN-SIP-1.1
+*@version 1.2
 *
-*@author Olivier Deruelle <mranga@nist.gov>  <br/>
+*@author Olivier Deruelle   <br/>
 *
-*<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+*
 */
 public class HelpBox extends Dialog {
 

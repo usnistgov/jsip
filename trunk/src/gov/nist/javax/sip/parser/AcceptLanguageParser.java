@@ -1,4 +1,29 @@
 /*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
+/*
  * AcceptLanguageParser.java
  *
  * Created on June 10, 2002, 3:31 PM
@@ -27,10 +52,10 @@ import java.text.ParseException;
  *  Accept-Language: da, en-gb;q=0.8, en;q=0.7
  *
  * @see AcceptLanguageList
- * @version  JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2004-07-28 14:13:54 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-02 09:51:08 $
  *
- * @author Olivier Deruelle <deruelle@nist.gov> 
- * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+ * @author Olivier Deruelle  
+ * 
  */
 public class AcceptLanguageParser extends HeaderParser {
 
@@ -111,6 +136,23 @@ public class AcceptLanguageParser extends HeaderParser {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2006/06/19 06:47:27  mranga
+ * javadoc fixups
+ *
+ * Revision 1.2  2006/06/16 15:26:28  mranga
+ * Added NIST disclaimer to all public domain files. Clean up some javadoc. Fixed a leak
+ *
+ * Revision 1.1.1.1  2005/10/04 17:12:35  mranga
+ *
+ * Import
+ *
+ *
+ * Revision 1.5  2004/07/28 14:13:54  mranga
+ * Submitted by:  mranga
+ *
+ * Move out the test code to a separate test/unit class.
+ * Fixed some encode methods.
+ *
  * Revision 1.4  2004/01/22 13:26:31  sverker
  * Issue number:
  * Obtained from:

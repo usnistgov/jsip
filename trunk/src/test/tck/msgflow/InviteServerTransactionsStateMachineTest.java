@@ -1,3 +1,22 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), and others. 
+* This software is has been contributed to the public domain. 
+* As a result, a formal license is not needed to use the software.
+* 
+* This software is provided "AS IS."  
+* NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* 
+*/
 package test.tck.msgflow;
 
 import junit.framework.*;
@@ -377,6 +396,13 @@ public class InviteServerTransactionsStateMachineTest
 			try {
 				eventCollector.collectRequestEvent(tiSipProvider);
 				ack.setMethod(Request.ACK);
+				
+				// JvB: to tag must match response!
+				String toTag = ((ToHeader) responseEvent.getResponse().getHeader("to")).getTag();
+				if (toTag!=null) {
+					((ToHeader) ack.getHeader("to")).setTag( toTag ); 
+				}
+				
 				riSipProvider.sendRequest(ack);
 			} catch (TooManyListenersException ex) {
 				throw new TiUnexpectedError(
@@ -407,6 +433,745 @@ public class InviteServerTransactionsStateMachineTest
 
 	}
 
+	/**
+	 * JvB: tests CANCEL for an INVITE ST
+	 */
+	public void testCanceledInvite() {
+		try {
+			Request invite = createRiInviteRequest(null, null, null);
+			SipEventCollector responseCollector = new SipEventCollector();
+			//Before Sending the request we should first register a listener with the
+			//RI that would catch the TRYING response
+			try {
+				responseCollector.collectResponseEvent(riSipProvider);
+			} catch (TooManyListenersException ex) {
+				throw new TckInternalError(
+					"Failed to register a SipListener with an RI SipProvider",
+					ex);
+			}
+			//Send the initial request (JvB: using a CT)
+			ClientTransaction riInviteCt;
+			try {
+				eventCollector.collectRequestEvent(tiSipProvider);
+				riInviteCt = riSipProvider.getNewClientTransaction( invite );
+				riInviteCt.sendRequest();
+			} catch (SipException ex) {
+				throw new TckInternalError(
+					"A SipExceptionOccurred while trying to send request!",
+					ex);
+			} catch (TooManyListenersException ex) {
+				throw new TiUnexpectedError(
+					"Failed to register a SipListener with a TI SipProvider",
+					ex);
+			}
+			waitForMessage();
+			RequestEvent inviteReceivedEvent =
+				eventCollector.extractCollectedRequestEvent();
+			if (inviteReceivedEvent == null
+				|| inviteReceivedEvent.getRequest() == null)
+				throw new TiUnexpectedError("The initial invite request was not received by the TI!");
+			//Let's create the transaction
+			ServerTransaction tran = null;
+			try {
+				tran =
+					tiSipProvider.getNewServerTransaction(
+						inviteReceivedEvent.getRequest());
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				fail(
+					ex.getClass().getName()
+						+ "was thrown while trying to "
+						+ "create the server transaction");
+			}
+			assertNotNull(
+				"tiSipProvider.getNewServerTransaction() returned null",
+				tran);
+			//Check whether a TRYING response has been sent.
+			//wait for the trying response
+			waitForMessage();
+			// At this point state must be PROCEEDING
+			assertEquals(TransactionState.PROCEEDING, tran.getState());
+			ResponseEvent responseEvent =
+				responseCollector.extractCollectedResponseEvent();
+			assertNotNull(
+				"No TRYING response has been sent by the TI upon reception "
+					+ "of an INVITE request",
+				responseEvent);
+			assertTrue(
+				"A response different from 100 was sent by the TI upon "
+					+ "reception of INVITE",
+				Response.TRYING == responseEvent.getResponse().getStatusCode());
+			
+			//Create & send RINGING. See that it is properly sent
+			//and that tran state doesn't change
+			Response ringing = null;
+			try {
+				ringing =
+					tiMessageFactory.createResponse(
+						Response.RINGING,
+						tran.getRequest());
+				((ToHeader) ringing.getHeader(ToHeader.NAME)).setTag(
+					Integer.toString(hashCode()));
+				addStatus(tran.getRequest(), ringing);
+                // BUG report from Ben Evans:
+				// set contact header on dialog-creating response
+                ringing.setHeader(createTiContact());
+			} catch (ParseException ex) {
+				throw new TiUnexpectedError(
+					"A ParseException was thrown while trying to create a ringing "
+						+ "response using TI",
+					ex);
+			}
+			try {
+				//listen for the RINGING response
+				responseCollector.collectResponseEvent(riSipProvider);
+			} catch (TooManyListenersException ex) {
+				throw new TckInternalError(
+					"Failed to register a SipListener with an RI SipProvider",
+					ex);
+			}
+			try {
+				tran.sendResponse(ringing);
+			} catch (SipException ex) {
+				ex.printStackTrace();
+				fail("The TI failed to send a RINGING response");
+			}
+			//The Transaction should still be PROCEEDING
+			assertEquals(
+				"The Transaction did not remain PROCEEDING after transmitting a RINGING response",
+				TransactionState.PROCEEDING,
+				tran.getState());
+			//Check whether the RINGING is received by the RI.
+			waitForMessage();
+			responseEvent = responseCollector.extractCollectedResponseEvent();
+			assertNotNull(
+				"The RINGING response was not received by the RI",
+				responseEvent);
+			assertTrue(
+				"A response different from RINGING was sent by the TI",
+				Response.RINGING
+					== responseEvent.getResponse().getStatusCode());
+			
+			// JvB: *new* : send CANCEL here
+			Request riCancel = riInviteCt.createCancel();
+			
+			// Send the CANCEL request
+			try {
+				eventCollector.collectRequestEvent(tiSipProvider);
+				riSipProvider.sendRequest(riCancel);
+			} catch (SipException ex) {
+				throw new TckInternalError(
+					"A SipExceptionOccurred while trying to send CANCEL request!",
+					ex);
+			} catch (TooManyListenersException ex) {
+				throw new TiUnexpectedError(
+					"Failed to register a SipListener with a TI SipProvider",
+					ex);
+			}
+			waitForMessage();
+			RequestEvent cancelReceivedEvent = eventCollector.extractCollectedRequestEvent();
+			if (cancelReceivedEvent == null
+				|| cancelReceivedEvent.getRequest() == null)
+				throw new TiUnexpectedError("The CANCEL request was not received by the TI!");
+
+			// Check that a ST was matched, and that it is equal to the INVITE ST
+			assertEquals( tran, cancelReceivedEvent.getServerTransaction() );
+			
+			// Send an OK to the CANCEL
+			Response cancelOK;
+			try {
+				cancelOK =
+					tiMessageFactory.createResponse(
+						Response.OK, cancelReceivedEvent.getRequest() );
+				addStatus( cancelReceivedEvent.getRequest(), cancelOK );
+			} catch (ParseException ex) {
+				throw new TiUnexpectedError(
+					"A ParseException was thrown while trying to create a OK "
+						+ "response using TI",
+					ex);
+			}
+			try {
+				//listen for the OK response
+				responseCollector.collectResponseEvent(riSipProvider);
+			} catch (TooManyListenersException ex) {
+				throw new TckInternalError(
+					"Failed to register a SipListener with an RI SipProvider",
+					ex);
+			}
+			try {
+				// send it statelessly
+				tiSipProvider.sendResponse(cancelOK);
+			} catch (SipException ex) {
+				ex.printStackTrace();
+				fail("The TI failed to send a CANCEL OK response");
+			}
+
+			// Check whether the OK is received by the RI.
+			waitForMessage();
+			responseEvent = responseCollector.extractCollectedResponseEvent();
+			assertNotNull(
+				"The CANCEL OK response was not received by the RI",
+				responseEvent);
+			assertTrue(
+				"A response different from OK was sent by the TI",
+				Response.OK
+					== responseEvent.getResponse().getStatusCode());
+			
+			//Send 487 from TU and see the tran goes COMPLETED
+			Response reqTerminated = null;
+			try {
+				reqTerminated =
+					tiMessageFactory.createResponse(
+						Response.REQUEST_TERMINATED,
+						tran.getRequest());
+				addStatus(tran.getRequest(), reqTerminated);
+			} catch (ParseException ex) {
+				throw new TiUnexpectedError(
+					"A ParseException was thrown while trying to create a req_terminated "
+						+ "response using TI",
+					ex);
+			}
+			try {
+				//listen for the BUSY_HERE response
+				responseCollector.collectResponseEvent(riSipProvider);
+			} catch (TooManyListenersException ex) {
+				throw new TckInternalError(
+					"Failed to register a SipListener with an RI SipProvider",
+					ex);
+			}
+			try {
+				tran.sendResponse( reqTerminated );
+			} catch (SipException ex) {
+				ex.printStackTrace();
+				fail("The TI failed to send a REQUEST_TERMINATED response");
+			}
+			//The Transaction should now be COMPLETED
+			assertEquals(
+				"The Transaction did not remain COMPLETED after transmitting a REQUEST_TERMINATED response",
+				TransactionState.COMPLETED,
+				tran.getState());
+			//Check whether the BUSY_HERE is received by the RI.
+			waitForMessage();
+			responseEvent = responseCollector.extractCollectedResponseEvent();
+			assertNotNull(
+				"The REQUEST_TERMINATED response was not received by the RI",
+				responseEvent);
+			assertEquals(
+				"A response different from REQUEST_TERMINATED was sent by the TI",
+				Response.REQUEST_TERMINATED, responseEvent.getResponse().getStatusCode() );
+			
+			// RI CT should have sent ACK, tran should be in CONFIRMED
+			// and response retransmissions should cease
+			assertEquals(
+				"The ServerTransaction did not pas into the confirmed state"
+					+ "after receiving an ACK.",
+				TransactionState.CONFIRMED, tran.getState());
+		} catch (Throwable exc) {
+			exc.printStackTrace();
+			fail(exc.getClass().getName() + ": " + exc.getMessage());
+		}
+		assertTrue(new Exception().getStackTrace()[0].toString(), true);
+
+	}	
+
+	/**
+	 * JvB: tests CANCEL for an INVITE ST, from an non-RFC3261 client
+	 * which uses a Via branch not starting with the magic cookie
+	 */
+	public void testNonRFC3261CanceledInvite() {
+		try {
+			Request invite = createRiInviteRequest(null, null, null);
+			
+			// JvB: Pretend it is sent by an older client
+			ViaHeader topVia = (ViaHeader) invite.getHeader( "Via" );
+			topVia.setBranch( "non-rfc3261" );
+			
+			SipEventCollector responseCollector = new SipEventCollector();
+			//Before Sending the request we should first register a listener with the
+			//RI that would catch the TRYING response
+			try {
+				responseCollector.collectResponseEvent(riSipProvider);
+			} catch (TooManyListenersException ex) {
+				throw new TckInternalError(
+					"Failed to register a SipListener with an RI SipProvider",
+					ex);
+			}
+			//Send the initial request (JvB: using a CT)
+			ClientTransaction riInviteCt;
+			try {
+				eventCollector.collectRequestEvent(tiSipProvider);
+				riInviteCt = riSipProvider.getNewClientTransaction( invite );
+				riInviteCt.sendRequest();
+			} catch (SipException ex) {
+				throw new TckInternalError(
+					"A SipExceptionOccurred while trying to send request!",
+					ex);
+			} catch (TooManyListenersException ex) {
+				throw new TiUnexpectedError(
+					"Failed to register a SipListener with a TI SipProvider",
+					ex);
+			}
+			waitForMessage();
+			RequestEvent inviteReceivedEvent =
+				eventCollector.extractCollectedRequestEvent();
+			if (inviteReceivedEvent == null
+				|| inviteReceivedEvent.getRequest() == null)
+				throw new TiUnexpectedError("The initial invite request was not received by the TI!");
+			//Let's create the transaction
+			ServerTransaction tran = null;
+			try {
+				tran =
+					tiSipProvider.getNewServerTransaction(
+						inviteReceivedEvent.getRequest());
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				fail(
+					ex.getClass().getName()
+						+ "was thrown while trying to "
+						+ "create the server transaction");
+			}
+			assertNotNull(
+				"tiSipProvider.getNewServerTransaction() returned null",
+				tran);
+			//Check whether a TRYING response has been sent.
+			//wait for the trying response
+			waitForMessage();
+			// At this point state must be PROCEEDING
+			assertEquals(TransactionState.PROCEEDING, tran.getState());
+			ResponseEvent responseEvent =
+				responseCollector.extractCollectedResponseEvent();
+			assertNotNull(
+				"No TRYING response has been sent by the TI upon reception "
+					+ "of an INVITE request",
+				responseEvent);
+			assertTrue(
+				"A response different from 100 was sent by the TI upon "
+					+ "reception of INVITE",
+				Response.TRYING == responseEvent.getResponse().getStatusCode());
+			
+			//Create & send RINGING. See that it is properly sent
+			//and that tran state doesn't change
+			Response ringing = null;
+			try {
+				ringing =
+					tiMessageFactory.createResponse(
+						Response.RINGING,
+						tran.getRequest());
+				((ToHeader) ringing.getHeader(ToHeader.NAME)).setTag(
+					Integer.toString(hashCode()));
+				addStatus(tran.getRequest(), ringing);
+                // BUG report from Ben Evans:
+				// set contact header on dialog-creating response
+                ringing.setHeader(createTiContact());
+			} catch (ParseException ex) {
+				throw new TiUnexpectedError(
+					"A ParseException was thrown while trying to create a ringing "
+						+ "response using TI",
+					ex);
+			}
+			try {
+				//listen for the RINGING response
+				responseCollector.collectResponseEvent(riSipProvider);
+			} catch (TooManyListenersException ex) {
+				throw new TckInternalError(
+					"Failed to register a SipListener with an RI SipProvider",
+					ex);
+			}
+			try {
+				tran.sendResponse(ringing);
+			} catch (SipException ex) {
+				ex.printStackTrace();
+				fail("The TI failed to send a RINGING response");
+			}
+			//The Transaction should still be PROCEEDING
+			assertEquals(
+				"The Transaction did not remain PROCEEDING after transmitting a RINGING response",
+				TransactionState.PROCEEDING,
+				tran.getState());
+			//Check whether the RINGING is received by the RI.
+			waitForMessage();
+			responseEvent = responseCollector.extractCollectedResponseEvent();
+			assertNotNull(
+				"The RINGING response was not received by the RI",
+				responseEvent);
+			assertTrue(
+				"A response different from RINGING was sent by the TI",
+				Response.RINGING
+					== responseEvent.getResponse().getStatusCode());
+			
+			// JvB: *new* : send CANCEL here
+			Request riCancel = riInviteCt.createCancel();
+			
+			// Send the CANCEL request
+			try {
+				eventCollector.collectRequestEvent(tiSipProvider);
+				riSipProvider.sendRequest(riCancel);
+			} catch (SipException ex) {
+				throw new TckInternalError(
+					"A SipExceptionOccurred while trying to send CANCEL request!",
+					ex);
+			} catch (TooManyListenersException ex) {
+				throw new TiUnexpectedError(
+					"Failed to register a SipListener with a TI SipProvider",
+					ex);
+			}
+			waitForMessage();
+			RequestEvent cancelReceivedEvent = eventCollector.extractCollectedRequestEvent();
+			if (cancelReceivedEvent == null
+				|| cancelReceivedEvent.getRequest() == null)
+				throw new TiUnexpectedError("The CANCEL request was not received by the TI!");
+
+			// Check that a ST was matched, and that it is equal to the INVITE ST
+			assertEquals( tran, cancelReceivedEvent.getServerTransaction() );
+			
+			// Send an OK to the CANCEL
+			Response cancelOK;
+			try {
+				cancelOK =
+					tiMessageFactory.createResponse(
+						Response.OK, cancelReceivedEvent.getRequest() );
+				addStatus( cancelReceivedEvent.getRequest(), cancelOK );
+			} catch (ParseException ex) {
+				throw new TiUnexpectedError(
+					"A ParseException was thrown while trying to create a OK "
+						+ "response using TI",
+					ex);
+			}
+			try {
+				//listen for the OK response
+				responseCollector.collectResponseEvent(riSipProvider);
+			} catch (TooManyListenersException ex) {
+				throw new TckInternalError(
+					"Failed to register a SipListener with an RI SipProvider",
+					ex);
+			}
+			try {
+				// send it statelessly
+				tiSipProvider.sendResponse(cancelOK);
+			} catch (SipException ex) {
+				ex.printStackTrace();
+				fail("The TI failed to send a CANCEL OK response");
+			}
+
+			// Check whether the OK is received by the RI.
+			waitForMessage();
+			responseEvent = responseCollector.extractCollectedResponseEvent();
+			assertNotNull(
+				"The CANCEL OK response was not received by the RI",
+				responseEvent);
+			assertTrue(
+				"A response different from OK was sent by the TI",
+				Response.OK
+					== responseEvent.getResponse().getStatusCode());
+			
+			//Send 487 from TU and see the tran goes COMPLETED
+			Response reqTerminated = null;
+			try {
+				reqTerminated =
+					tiMessageFactory.createResponse(
+						Response.REQUEST_TERMINATED,
+						tran.getRequest());
+				addStatus(tran.getRequest(), reqTerminated);
+			} catch (ParseException ex) {
+				throw new TiUnexpectedError(
+					"A ParseException was thrown while trying to create a req_terminated "
+						+ "response using TI",
+					ex);
+			}
+			try {
+				//listen for the BUSY_HERE response
+				responseCollector.collectResponseEvent(riSipProvider);
+			} catch (TooManyListenersException ex) {
+				throw new TckInternalError(
+					"Failed to register a SipListener with an RI SipProvider",
+					ex);
+			}
+			try {
+				tran.sendResponse( reqTerminated );
+			} catch (SipException ex) {
+				ex.printStackTrace();
+				fail("The TI failed to send a REQUEST_TERMINATED response");
+			}
+			//The Transaction should now be COMPLETED
+			assertEquals(
+				"The Transaction did not remain COMPLETED after transmitting a REQUEST_TERMINATED response",
+				TransactionState.COMPLETED,
+				tran.getState());
+			//Check whether the BUSY_HERE is received by the RI.
+			waitForMessage();
+			responseEvent = responseCollector.extractCollectedResponseEvent();
+			assertNotNull(
+				"The REQUEST_TERMINATED response was not received by the RI",
+				responseEvent);
+			assertTrue(
+				"A response different from REQUEST_TERMINATED was sent by the TI",
+				Response.REQUEST_TERMINATED
+					== responseEvent.getResponse().getStatusCode());
+			
+			// RI CT should have sent ACK, tran should be in CONFIRMED
+			// and response retransmissions should cease
+			assertEquals(
+				"The ServerTransaction did not pas into the confirmed state"
+					+ "after receiving an ACK.",
+				TransactionState.CONFIRMED, tran.getState());
+		} catch (Throwable exc) {
+			exc.printStackTrace();
+			fail(exc.getClass().getName() + ": " + exc.getMessage());
+		}
+		assertTrue(new Exception().getStackTrace()[0].toString(), true);
+
+	}	
+	
+	/**
+	 * JvB: tests CANCEL for an INVITE ST, in case the client changes
+	 * the case of the branch id to all lowercvase (NIST used to do this)
+	 */
+	public void testCaseInsensitiveCanceledInvite() {
+		try {
+			Request invite = createRiInviteRequest(null, null, null);
+			SipEventCollector responseCollector = new SipEventCollector();
+			//Before Sending the request we should first register a listener with the
+			//RI that would catch the TRYING response
+			try {
+				responseCollector.collectResponseEvent(riSipProvider);
+			} catch (TooManyListenersException ex) {
+				throw new TckInternalError(
+					"Failed to register a SipListener with an RI SipProvider",
+					ex);
+			}
+			//Send the initial request (JvB: using a CT)
+			ClientTransaction riInviteCt;
+			try {
+				eventCollector.collectRequestEvent(tiSipProvider);
+				riInviteCt = riSipProvider.getNewClientTransaction( invite );
+				riInviteCt.sendRequest();
+			} catch (SipException ex) {
+				throw new TckInternalError(
+					"A SipExceptionOccurred while trying to send request!",
+					ex);
+			} catch (TooManyListenersException ex) {
+				throw new TiUnexpectedError(
+					"Failed to register a SipListener with a TI SipProvider",
+					ex);
+			}
+			waitForMessage();
+			RequestEvent inviteReceivedEvent =
+				eventCollector.extractCollectedRequestEvent();
+			if (inviteReceivedEvent == null
+				|| inviteReceivedEvent.getRequest() == null)
+				throw new TiUnexpectedError("The initial invite request was not received by the TI!");
+			//Let's create the transaction
+			ServerTransaction tran = null;
+			try {
+				tran =
+					tiSipProvider.getNewServerTransaction(
+						inviteReceivedEvent.getRequest());
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				fail(
+					ex.getClass().getName()
+						+ "was thrown while trying to "
+						+ "create the server transaction");
+			}
+			assertNotNull(
+				"tiSipProvider.getNewServerTransaction() returned null",
+				tran);
+			//Check whether a TRYING response has been sent.
+			//wait for the trying response
+			waitForMessage();
+			// At this point state must be PROCEEDING
+			assertEquals(TransactionState.PROCEEDING, tran.getState());
+			ResponseEvent responseEvent =
+				responseCollector.extractCollectedResponseEvent();
+			assertNotNull(
+				"No TRYING response has been sent by the TI upon reception "
+					+ "of an INVITE request",
+				responseEvent);
+			assertTrue(
+				"A response different from 100 was sent by the TI upon "
+					+ "reception of INVITE",
+				Response.TRYING == responseEvent.getResponse().getStatusCode());
+			
+			//Create & send RINGING. See that it is properly sent
+			//and that tran state doesn't change
+			Response ringing = null;
+			try {
+				ringing =
+					tiMessageFactory.createResponse(
+						Response.RINGING,
+						tran.getRequest());
+				((ToHeader) ringing.getHeader(ToHeader.NAME)).setTag(
+					Integer.toString(hashCode()));
+				addStatus(tran.getRequest(), ringing);
+                // BUG report from Ben Evans:
+				// set contact header on dialog-creating response
+                ringing.setHeader(createTiContact());
+			} catch (ParseException ex) {
+				throw new TiUnexpectedError(
+					"A ParseException was thrown while trying to create a ringing "
+						+ "response using TI",
+					ex);
+			}
+			try {
+				//listen for the RINGING response
+				responseCollector.collectResponseEvent(riSipProvider);
+			} catch (TooManyListenersException ex) {
+				throw new TckInternalError(
+					"Failed to register a SipListener with an RI SipProvider",
+					ex);
+			}
+			try {
+				tran.sendResponse(ringing);
+			} catch (SipException ex) {
+				ex.printStackTrace();
+				fail("The TI failed to send a RINGING response");
+			}
+			//The Transaction should still be PROCEEDING
+			assertEquals(
+				"The Transaction did not remain PROCEEDING after transmitting a RINGING response",
+				TransactionState.PROCEEDING,
+				tran.getState());
+			//Check whether the RINGING is received by the RI.
+			waitForMessage();
+			responseEvent = responseCollector.extractCollectedResponseEvent();
+			assertNotNull(
+				"The RINGING response was not received by the RI",
+				responseEvent);
+			assertTrue(
+				"A response different from RINGING was sent by the TI",
+				Response.RINGING
+					== responseEvent.getResponse().getStatusCode());
+			
+			// JvB: *new* : send CANCEL here
+			Request riCancel = riInviteCt.createCancel();
+			
+			// Change Via branch to all lower case, clients SHOULD NOT
+			// do this but stack should be able to handle this
+			ViaHeader topVia = (ViaHeader) riCancel.getHeader("Via");
+			topVia.setBranch( topVia.getBranch().toLowerCase() );
+			
+			// Send the CANCEL request
+			try {
+				eventCollector.collectRequestEvent(tiSipProvider);
+				riSipProvider.sendRequest(riCancel);
+			} catch (SipException ex) {
+				throw new TckInternalError(
+					"A SipExceptionOccurred while trying to send CANCEL request!",
+					ex);
+			} catch (TooManyListenersException ex) {
+				throw new TiUnexpectedError(
+					"Failed to register a SipListener with a TI SipProvider",
+					ex);
+			}
+			waitForMessage();
+			RequestEvent cancelReceivedEvent = eventCollector.extractCollectedRequestEvent();
+			if (cancelReceivedEvent == null
+				|| cancelReceivedEvent.getRequest() == null)
+				throw new TiUnexpectedError("The CANCEL request was not received by the TI!");
+
+			// Check that a ST was matched, and that it is equal to the INVITE ST
+			// mranga -- I dont know if its valid to do things this way!
+			//assertSame( tran, cancelReceivedEvent.getServerTransaction() );
+			
+			// Send an OK to the CANCEL
+			Response cancelOK;
+			try {
+				cancelOK =
+					tiMessageFactory.createResponse(
+						Response.OK, cancelReceivedEvent.getRequest() );
+				addStatus( cancelReceivedEvent.getRequest(), cancelOK );
+			} catch (ParseException ex) {
+				throw new TiUnexpectedError(
+					"A ParseException was thrown while trying to create a OK "
+						+ "response using TI",
+					ex);
+			}
+			try {
+				//listen for the OK response
+				responseCollector.collectResponseEvent(riSipProvider);
+			} catch (TooManyListenersException ex) {
+				throw new TckInternalError(
+					"Failed to register a SipListener with an RI SipProvider",
+					ex);
+			}
+			try {
+				// send it statelessly
+				tiSipProvider.sendResponse(cancelOK);
+			} catch (SipException ex) {
+				ex.printStackTrace();
+				fail("The TI failed to send a CANCEL OK response");
+			}
+
+			// Check whether the OK is received by the RI.
+			waitForMessage();
+			responseEvent = responseCollector.extractCollectedResponseEvent();
+			assertNotNull(
+				"The CANCEL OK response was not received by the RI",
+				responseEvent);
+			assertTrue(
+				"A response different from OK was sent by the TI",
+				Response.OK
+					== responseEvent.getResponse().getStatusCode());
+			
+			//Send 487 from TU and see the tran goes COMPLETED
+			Response reqTerminated = null;
+			try {
+				reqTerminated =
+					tiMessageFactory.createResponse(
+						Response.REQUEST_TERMINATED,
+						tran.getRequest());
+				addStatus(tran.getRequest(), reqTerminated);
+			} catch (ParseException ex) {
+				throw new TiUnexpectedError(
+					"A ParseException was thrown while trying to create a req_terminated "
+						+ "response using TI",
+					ex);
+			}
+			try {
+				//listen for the BUSY_HERE response
+				responseCollector.collectResponseEvent(riSipProvider);
+			} catch (TooManyListenersException ex) {
+				throw new TckInternalError(
+					"Failed to register a SipListener with an RI SipProvider",
+					ex);
+			}
+			try {
+				tran.sendResponse( reqTerminated );
+			} catch (SipException ex) {
+				ex.printStackTrace();
+				fail("The TI failed to send a REQUEST_TERMINATED response");
+			}
+			//The Transaction should now be COMPLETED
+			assertEquals(
+				"The Transaction did not remain COMPLETED after transmitting a REQUEST_TERMINATED response",
+				TransactionState.COMPLETED,
+				tran.getState());
+			//Check whether the BUSY_HERE is received by the RI.
+			waitShortForMessage();
+			responseEvent = responseCollector.extractCollectedResponseEvent();
+			assertNotNull(
+				"The REQUEST_TERMINATED response was not received by the RI",
+				responseEvent);
+			assertTrue(
+				"A response different from REQUEST_TERMINATED was sent by the TI",
+				Response.REQUEST_TERMINATED
+					== responseEvent.getResponse().getStatusCode());
+			
+			// RI CT should have sent ACK, tran should be in CONFIRMED
+			// and response retransmissions should cease
+			
+			assertEquals(
+				"The ServerTransaction did not pas into the confirmed state"
+					+ "after receiving an ACK.",
+				TransactionState.CONFIRMED, tran.getState());
+		} catch (Throwable exc) {
+			exc.printStackTrace();
+			fail(exc.getClass().getName() + ": " + exc.getMessage());
+		}
+		assertTrue(new Exception().getStackTrace()[0].toString(), true);
+
+	}		
+	
 	/**
 	 * Tries to steer a TI server transaction through the following scenario
 	 * Proceeding-->Terminated. Apart from state transitions, we also test,
@@ -616,8 +1381,7 @@ public class InviteServerTransactionsStateMachineTest
 					tiMessageFactory.createResponse(
 						Response.OK,
 						tran.getRequest());
-				//!			discuss
-				ContactHeader contact = tiHeaderFactory.createContactHeader();
+				ContactHeader contact = this.createTiContact();
 				ok.addHeader(contact);
 				((ToHeader) ok.getHeader(ToHeader.NAME)).setTag(
 					Integer.toString(hashCode()));

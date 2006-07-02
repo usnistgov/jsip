@@ -1,8 +1,40 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 /******************************************************************************
  * Product of NIST/ITL Advanced Networking Technologies Division (ANTD)       *
  ******************************************************************************/
 package gov.nist.javax.sip.parser;
-
+/*
+ *
+ * Lamine Brahimi and Yann Duponchel (IBM Zurich) noticed that the parser was
+ * blocking so I threw out some cool pipelining which ran fast but only worked
+ * when the phase of the moon matched its mood. Now things are serialized
+ * and life goes slower but more reliably.
+ *
+ */
 import gov.nist.core.*;
 import gov.nist.javax.sip.message.*;
 import gov.nist.javax.sip.header.*;
@@ -21,16 +53,9 @@ import java.io.*;
  * This can be accessed from the SIPMessage using the getContent and
  * getContentBytes methods provided by the SIPMessage class. 
  *
- * @version JAIN-SIP-1.1 $Revision: 1.16 $ $Date: 2004-11-30 23:28:14 $
+ * @version 1.2 $Revision: 1.17 $ $Date: 2006-07-02 09:51:08 $
  *
- * @author <A href=mailto:mranga@nist.gov > M. Ranganathan  </A>
- *
- * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
- *
- * Lamine Brahimi and Yann Duponchel (IBM Zurich) noticed that the parser was
- * blocking so I threw out some cool pipelining which ran fast but only worked
- * when the phase of the moon matched its mood. Now things are serialized
- * and life goes slower but more reliably.
+ * @author  M. Ranganathan 
  *
  * @see  SIPMessageListener
  */
@@ -372,6 +397,28 @@ public final class PipelinedMsgParser implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2006/06/19 06:47:27  mranga
+ * javadoc fixups
+ *
+ * Revision 1.3  2006/06/17 10:18:14  mranga
+ * Added some synchronization to the sequence number checking.
+ * Small javadoc fixups
+ *
+ * Revision 1.2  2006/06/16 15:26:28  mranga
+ * Added NIST disclaimer to all public domain files. Clean up some javadoc. Fixed a leak
+ *
+ * Revision 1.1.1.1  2005/10/04 17:12:35  mranga
+ *
+ * Import
+ *
+ *
+ * Revision 1.16  2004/11/30 23:28:14  mranga
+ * Issue number:  44
+ * Submitted by:  Rob Daugherty
+ * Reviewed by:   M. Ranganathan
+ *
+ * TCP Pipelining truncates content when other end of pipe is closed.
+ *
  * Revision 1.15  2004/05/30 18:55:56  mranga
  * Reviewed by:   mranga
  * Move to timers and eliminate the Transaction scanner Thread

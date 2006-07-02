@@ -1,3 +1,22 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), and others. 
+* This software is has been contributed to the public domain. 
+* As a result, a formal license is not needed to use the software.
+* 
+* This software is provided "AS IS."  
+* NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* 
+*/
 package test.tck.msgflow;
 
 import junit.framework.*;
@@ -10,7 +29,7 @@ import test.tck.*;
 
 /**
  * <p>Title: TCK</p>
- * <p>Description: JAIN SIP 1.1 Technology Compatibility Kit</p>
+ * <p>Description: JAIN SIP 1.2 Technology Compatibility Kit</p>
  * @author Emil Ivov
  *     Network Research Team, Louis Pasteur University, Strasbourg, France.
  * This  code is in the public domain.
@@ -40,7 +59,7 @@ public class DialogTest extends MessageFlowHarness {
 	 * Calls MessageFlowHarness.setUp() and creates a dialog afterwards.
 	 * @throws Exception if anything goes wrong
 	 */
-	protected void setUp() throws Exception {
+	public void setUp() throws Exception {
 		try {
 			super.setUp();
 			tiInvite = createTiInviteRequest(null, null, null);
@@ -86,7 +105,7 @@ public class DialogTest extends MessageFlowHarness {
                 // BUG report from Ben Evans: 
 				// set contact header on dialog-creating response
                 ringing.setHeader(createRiContact());
-				riSipProvider.sendResponse(ringing);
+                riSipProvider.sendResponse(ringing);
 			} catch (Exception e) {
 				throw new TckInternalError(
 					"Failed to create and send a RINGING response",
@@ -119,10 +138,12 @@ public class DialogTest extends MessageFlowHarness {
 					.getCallId(),
 				dialog.getCallId().getCallId());
 			//Tran
-			assertSame(
+			/* Deprecated
+			 * assertSame(
 				"The Dialog.getTransaction did not return the right transaction.",
 				cliTran,
 				dialog.getFirstTransaction());
+			*/
 			//LocalParty
 			assertEquals(
 				"Dialog.getLocalParty() returned a bad address.",
@@ -131,7 +152,7 @@ public class DialogTest extends MessageFlowHarness {
 			//SeqNum
 			assertTrue(
 				"Dialog.getLocalSequenceNumber() returned a bad value.",
-				1 == dialog.getLocalSequenceNumber());
+				1 == dialog.getLocalSequenceNumberLong());
 			//LocalTag
 			assertEquals(
 				"Dialog.getLocalTag() returned a bad tag",
@@ -145,7 +166,7 @@ public class DialogTest extends MessageFlowHarness {
 			//RemoteTag
 				assertEquals(
 				"Dialog.getRemoteTag() returned a bad tag",
-			  riToTag,
+			((ToHeader) ringing.getHeader(ToHeader.NAME)).getTag(),
 				dialog.getRemoteTag());
 			//is server
 			assertFalse(
@@ -161,7 +182,7 @@ public class DialogTest extends MessageFlowHarness {
 	}
 
 	/**
-	 * Create a BYE request and check whethermajor fields are properly set
+	 * Create a BYE request and check whether major fields are properly set
 	 */
 	public void testCreateRequest() {
 		try {
@@ -180,9 +201,9 @@ public class DialogTest extends MessageFlowHarness {
 			//check CSeq number
 			assertEquals(
 				"Dialog.createRequest() returned a request with a bad sequence number.",
-				dialog.getLocalSequenceNumber() + 1,
+				dialog.getLocalSequenceNumberLong() + 1,
 				((CSeqHeader) bye.getHeader(CSeqHeader.NAME))
-					.getSequenceNumber());
+					.getSequenceNumberLong());
 			//Check From
 			FromHeader byeFrom = (FromHeader) bye.getHeader(FromHeader.NAME);
 			assertEquals(
@@ -205,6 +226,20 @@ public class DialogTest extends MessageFlowHarness {
 				"Dialog.createRequest() returned a request with a bad To tag.",
 				dialog.getRemoteTag(),
 				byeTo.getTag());
+			ClientTransaction ct = super.tiSipProvider.getNewClientTransaction(bye);
+			dialog.sendRequest(ct);
+			assertEquals("Dialog mismatch ", ct.getDialog(),dialog );
+			waitForMessage();
+						
+			try {
+				eventCollector.collectDialogTermiatedEvent(tiSipProvider);
+			} catch( TooManyListenersException ex) {
+				throw new TckInternalError("failed to regiser a listener iwth the TI", ex);
+			}
+			waitForTimeout();
+			DialogTerminatedEvent dte = eventCollector.extractCollectedDialogTerminatedEvent();
+			assertEquals("Dialog terminated event source mismatch", dte.getSource(), tiSipProvider);
+			assertEquals("Dialog terminated event mismatch ", dte.getDialog(), dialog);
 		} catch (Throwable exc) {
 			exc.printStackTrace();
 			fail(exc.getClass().getName() + ": " + exc.getMessage());
@@ -236,8 +271,13 @@ public class DialogTest extends MessageFlowHarness {
 					createRiInviteRequest(null, null, null).getHeader(
 						ContactHeader.NAME));
 				ToHeader okToHeader = (ToHeader)ok.getHeader(ToHeader.NAME);
-				okToHeader.setTag( riToTag );
-				riSipProvider.sendResponse(ok);
+				okToHeader.setTag( riToTag );	// needs same tag as 180 ringing!
+				// riSipProvider.sendResponse(ok);
+				
+				// Need to explicitly create the dialog on RI side
+				ServerTransaction riST = riSipProvider.getNewServerTransaction( riInvite );
+				riST.getDialog();
+				riST.sendResponse( ok );
 			} catch (Exception e) {
 				throw new TckInternalError(
 					"Failed to create and send an OK response",
@@ -248,6 +288,10 @@ public class DialogTest extends MessageFlowHarness {
 				eventCollector.extractCollectedResponseEvent();
 			if (okRespEvt == null || okRespEvt.getResponse() == null)
 				throw new TiUnexpectedError("The TI did not dispatch an OK response.");
+			
+			// After 2xx, dialog should be in CONFIRMED state. Needed to send ACK
+			assertEquals( DialogState.CONFIRMED, dialog.getState() );
+			
 			//Send the ack
 			//Setup the ack listener
 			try {
@@ -259,7 +303,10 @@ public class DialogTest extends MessageFlowHarness {
 			}
 			Request ack = null;
 			try {
-				ack = cliTran.createAck();
+				CSeqHeader cseq = (CSeqHeader) okRespEvt.getResponse().getHeader(CSeqHeader.NAME);
+				ack = dialog.createAck(cseq.getSequenceNumberLong());
+				//System.out.println( "Created ACK:" + ack );
+				//System.out.println( "original INVITE:" + riInvite );
 			} catch (SipException ex) {
 				throw new TiUnexpectedError(
 					"Failed to create an ACK request.",
@@ -267,14 +314,16 @@ public class DialogTest extends MessageFlowHarness {
 			}
 			try {
 				dialog.sendAck(ack);
-			} catch (SipException ex) {
-				fail("Failed to send an ACK request using Dialog.sendAck()");
+			} catch (Throwable ex) {
+				ex.printStackTrace();
+				fail("SipException; Failed to send an ACK request using Dialog.sendAck()");
 			}
 			waitForMessage();
-			//Did the RI get the ACK
+
+			// Did the RI get the ACK? If the dialog is not found, the ACK is filtered!
 			RequestEvent ackEvt = eventCollector.extractCollectedRequestEvent();
 			assertNotNull(
-				"The request sent by Dialog.sendAck() was not received by the RI",
+				"No requestEvent sent by Dialog.sendAck() was received by the RI",
 				ackEvt);
 			assertNotNull(
 				"The request sent by Dialog.sendAck() was not received by the RI",

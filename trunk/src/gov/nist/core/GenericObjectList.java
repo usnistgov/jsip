@@ -1,9 +1,33 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 /*******************************************************************************
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
 *******************************************************************************/
 package gov.nist.core;
 import java.util.*;
-import java.lang.reflect.*;
 import java.io.Serializable;
 
 /**
@@ -13,16 +37,16 @@ import java.io.Serializable;
 * list is created with the superclass which can be specified as either
 * a class name or a Class.  
 *
-*@version  JAIN-SIP-1.1
+*@version 1.2
 *
-*@author M. Ranganathan <mranga@nist.gov>  <br/>
+*@author M. Ranganathan   <br/>
 *
-*<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+*
 *
 */
 public abstract class GenericObjectList
 	extends LinkedList
-	implements Serializable, Cloneable {
+	implements Serializable, Cloneable, List {
 	// Useful constants.
 	protected static final String SEMICOLON = Separators.SEMICOLON;
 	protected static final String COLON = Separators.COLON;
@@ -80,8 +104,8 @@ public abstract class GenericObjectList
 	 */
 	public Object clone() {
 		GenericObjectList retval = (GenericObjectList) super.clone();
-		for (ListIterator iter = retval.listIterator(); iter.hasNext(); ) {
-			GenericObject obj = (GenericObject) ((GenericObject) iter.next ()).clone();
+		for (ListIterator  iter = retval.listIterator(); iter.hasNext(); ) {
+			GenericObject obj = (GenericObject) ((GenericObject)iter.next ()).clone();
 			iter.set(obj);
 		}
 		return retval;
@@ -124,6 +148,8 @@ public abstract class GenericObjectList
 		}
 
 	}
+	
+	
 
 	/**
 	 * A Constructor which takes a list name and a class
@@ -192,7 +218,7 @@ public abstract class GenericObjectList
 	 * @param <var> topFlag </var> set to true to add items to top of 
 	*  	list else add them to the tail end of the list.
 	 */
-	protected void concatenate(GenericObjectList objList, boolean topFlag) {
+	protected void concatenate(GenericObjectList  objList, boolean topFlag) {
 		if (!topFlag) {
 			this.addAll(objList);
 		} else {
@@ -201,12 +227,7 @@ public abstract class GenericObjectList
 		}
 	}
 
-	/**
-	 *Get the list iterator for this list.
-	 */
-	public Iterator getIterator() {
-		return this.listIterator();
-	}
+	
 
 	/**
 	 * string formatting function.
@@ -280,303 +301,19 @@ public abstract class GenericObjectList
 		return retval;
 	}
 
-	public boolean add(Object obj) {
-		if (myClass == null) {
-			myClass = obj.getClass();
-			return super.add(obj);
-		} else {
-			Class newclass = obj.getClass();
-			if (!myClass.isAssignableFrom(newclass)) {
-				throw new IllegalArgumentException(
-					"Class mismatch list insertion  "
-						+ listName
-						+ " "
-						+ newclass.getName()
-						+ "/"
-						+ myClass.getName());
-			}
-			return super.add(obj);
-		}
-	}
 
-	public void addFirst(Object objToAdd) {
+
+	public void addFirst(GenericObject objToAdd) {
 		if (myClass == null) {
 			myClass = objToAdd.getClass();
 		} else {
-			Class newclass = objToAdd.getClass();
-			if (!myClass.isAssignableFrom(newclass)) {
-				throw new IllegalArgumentException(
-					"Class mismatch list insertion  "
-						+ listName
-						+ " "
-						+ newclass.getName()
-						+ "/"
-						+ myClass.getName());
-			}
 			super.addFirst(objToAdd);
 		}
 	}
 
-	/**
-	 *  Type checked add operation.
-	 *  All objects in this list are assignable from a common
-	 *  superclass.  If the class is already set, then the new one
-	 *  is just compared with the existing class objects. Otherwise
-	 *  the first object that is added determines the class of the
-	 *  objects in the list.
-	 */
+	
 
-	protected void add(GenericObject obj) {
-		if (myClass == null) {
-			myClass = obj.getClass();
-			super.add(obj);
-		} else {
-			Class newclass = obj.getClass();
-			if (!myClass.isAssignableFrom(newclass)) {
-				throw new IllegalArgumentException(
-					"Class mismatch list insertion  "
-						+ listName
-						+ " "
-						+ newclass.getName()
-						+ "/"
-						+ myClass.getName());
-			}
-			super.add(obj);
-		}
-	}
-
-	/**
-	 * Do a find and replace of objects in this list.
-	*@param objectText text of the object to find.
-	 *@param replacementObject object to replace the target with (
-	* in case a target is found).
-	*@param matchSubstring boolean that indicates whether to flag a
-	 * match when objectText is a substring of a candidate object's 
-	* encoded text.
-	 */
-	public void replace(
-		String objectText,
-		GenericObject replacementObject,
-		boolean matchSubstring)
-		throws IllegalArgumentException {
-
-		if (objectText == null || replacementObject == null) {
-			throw new IllegalArgumentException("null argument");
-		}
-		ListIterator listIterator = this.listIterator();
-		LinkedList ll = new LinkedList();
-
-		while (listIterator.hasNext()) {
-			Object obj = listIterator.next();
-			if (GenericObject.isMySubclass(obj.getClass())) {
-				GenericObject gobj = (GenericObject) obj;
-				if (gobj.getClass().equals(replacementObject.getClass())) {
-					if ((!matchSubstring)
-						&& gobj.encode().compareTo(objectText) == 0) {
-						// Found the object that we want,
-						ll.add(obj);
-					} else if (
-						matchSubstring
-							&& gobj.encode().indexOf(objectText) >= 0) {
-						ll.add(obj);
-					} else {
-						gobj.replace(
-							objectText,
-							replacementObject,
-							matchSubstring);
-					}
-				}
-			} else if (GenericObjectList.isMySubclass(obj.getClass())) {
-				GenericObjectList gobj = (GenericObjectList) obj;
-				if (gobj.getClass().equals(replacementObject.getClass())) {
-					if ((!matchSubstring)
-						&& gobj.encode().compareTo(objectText) == 0) {
-						// Found the object that we want,
-						ll.add(obj);
-					} else if (
-						matchSubstring
-							&& gobj.encode().indexOf(objectText) >= 0) {
-						ll.add(obj);
-					} else {
-						gobj.replace(
-							objectText,
-							replacementObject,
-							matchSubstring);
-					}
-				}
-			}
-		}
-		for (int i = 0; i < ll.size(); i++) {
-			Object obj = ll.get(i);
-			this.remove(obj);
-			this.add(i, (Object) replacementObject);
-		}
-
-	}
-
-	/**
-	 * Do a find and replace of objects in this list.
-	 *@since v1.0
-	*@param objectText text of the object to find.
-	 *@param replacementObject object to replace the target with (in
-	* case a target is found).
-	*@param matchSubstring boolean that indicates whether to flag a
-	 * match when objectText is a substring of a candidate object's 
-	* encoded text.
-	 */
-	public void replace(
-		String objectText,
-		GenericObjectList replacementObject,
-		boolean matchSubstring)
-		throws IllegalArgumentException {
-		if (objectText == null || replacementObject == null) {
-			throw new IllegalArgumentException("null argument");
-		}
-
-		ListIterator listIterator = this.listIterator();
-		LinkedList ll = new LinkedList();
-
-		while (listIterator.hasNext()) {
-			Object obj = listIterator.next();
-			if (GenericObject.isMySubclass(obj.getClass())) {
-				GenericObject gobj = (GenericObject) obj;
-				if (gobj.getClass().equals(replacementObject.getClass())) {
-					if ((!matchSubstring)
-						&& gobj.encode().compareTo(objectText) == 0) {
-						// Found the object that we want,
-						ll.add(obj);
-					} else if (
-						matchSubstring
-							&& gobj.encode().indexOf(objectText) >= 0) {
-						ll.add(obj);
-					} else {
-						gobj.replace(
-							objectText,
-							replacementObject,
-							matchSubstring);
-					}
-				}
-			} else if (GenericObjectList.isMySubclass(obj.getClass())) {
-				GenericObjectList gobj = (GenericObjectList) obj;
-				if (gobj.getClass().equals(replacementObject.getClass())) {
-					if ((!matchSubstring)
-						&& gobj.encode().compareTo(objectText) == 0) {
-						// Found the object that we want,
-						ll.add(obj);
-					} else if (
-						matchSubstring
-							&& gobj.encode().indexOf(objectText) >= 0) {
-						ll.add(obj);
-					} else {
-						gobj.replace(
-							objectText,
-							replacementObject,
-							matchSubstring);
-					}
-
-				}
-			}
-		}
-		for (int i = 0; i < ll.size(); i++) {
-			Object obj = ll.get(i);
-			this.remove(obj);
-			this.add(i, (Object) replacementObject);
-		}
-
-	}
-
-	/**
-	 * Do a find and replace of objects in this list.
-	*@param regexp regular expression to match with the canonical
-	*		text we want to replace.
-	 *@param replacementObject object to replace the target with (in
-	* case a target is found).
-	 */
-	public void replace(Match regexp, GenericObjectList replacementObject)
-		throws IllegalArgumentException {
-		if (regexp == null || replacementObject == null) {
-			throw new IllegalArgumentException("null argument");
-		}
-
-		ListIterator listIterator = this.listIterator();
-		LinkedList ll = new LinkedList();
-
-		while (listIterator.hasNext()) {
-			Object obj = listIterator.next();
-			if (GenericObject.isMySubclass(obj.getClass())) {
-				GenericObject gobj = (GenericObject) obj;
-				if (gobj.getClass().equals(replacementObject.getClass())) {
-					if (regexp.match(gobj.encode())) {
-						ll.add(obj);
-					} else {
-						gobj.replace(regexp, replacementObject);
-					}
-				}
-			} else if (GenericObjectList.isMySubclass(obj.getClass())) {
-				GenericObjectList gobj = (GenericObjectList) obj;
-				if (gobj.getClass().equals(replacementObject.getClass())) {
-					if (regexp.match(gobj.encode())) {
-						ll.add(obj);
-					} else {
-						gobj.replace(regexp, replacementObject);
-					}
-
-				}
-			}
-		}
-		for (int i = 0; i < ll.size(); i++) {
-			Object obj = ll.get(i);
-			this.remove(obj);
-			this.add(i, (Object) replacementObject);
-		}
-
-	}
-
-	/**
-	 * Do a find and replace of objects in this list.
-	*@param regexp match regular expression of the object to find.
-	* this is generated using the org.apache.regexp package.
-	 *@param replacementObject object to replace the target with (
-	* in case a target is found).
-	 */
-	public void replace(Match regexp, GenericObject replacementObject)
-		throws IllegalArgumentException {
-
-		if (regexp == null || replacementObject == null) {
-			throw new IllegalArgumentException("null argument");
-		}
-		ListIterator listIterator = this.listIterator();
-		LinkedList ll = new LinkedList();
-
-		while (listIterator.hasNext()) {
-			Object obj = listIterator.next();
-			if (GenericObject.isMySubclass(obj.getClass())) {
-				GenericObject gobj = (GenericObject) obj;
-				if (gobj.getClass().equals(replacementObject.getClass())) {
-					if (regexp.match(gobj.encode())) {
-						ll.add(obj);
-					} else {
-						gobj.replace(regexp, replacementObject);
-					}
-				}
-			} else if (GenericObjectList.isMySubclass(obj.getClass())) {
-				GenericObjectList gobj = (GenericObjectList) obj;
-				if (gobj.getClass().equals(replacementObject.getClass())) {
-					if (regexp.match(gobj.encode())) {
-						ll.add(obj);
-					} else {
-						gobj.replace(regexp, replacementObject);
-					}
-				}
-			}
-		}
-		for (int i = 0; i < ll.size(); i++) {
-			Object obj = ll.get(i);
-			this.remove(obj);
-			this.add(i, (Object) replacementObject);
-		}
-
-	}
+	
 
 	/** 
 	 * Do a merge of the GenericObjects contained in this list with the 
@@ -726,40 +463,3 @@ public abstract class GenericObjectList
 		return true;
 	}
 }
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.8  2005/04/16 20:37:07  dmuresan
- * GenericObject and GenericObjectList implement Cloneable.
- *
- * Revision 1.7  2005/04/04 09:51:38  dmuresan
- * Optimized getIndentation() implementations (previously used String concatenation in a loop).
- *
- * Revision 1.6  2004/01/22 14:23:45  mranga
- * Reviewed by:   mranga
- * Fixed some minor formatting issues.
- *
- * Revision 1.5  2004/01/22 13:26:27  sverker
- * Issue number:
- * Obtained from:
- * Submitted by:  sverker
- * Reviewed by:   mranga
- *
- * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
- *
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- */
