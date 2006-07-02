@@ -2,27 +2,22 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Module Name   : JAIN SIP Specification
+ * Module Name   : JSIP Specification
  * File Name     : WWWAuthenticateHeader.java
  * Author        : Phelim O'Doherty
  *
  *  HISTORY
  *  Version   Date      Author              Comments
  *  1.1     08/10/2002  Phelim O'Doherty    
+ *  1.2     13/06/2005  Phelim O'Doherty    Deprecated get/set URI parameter
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 package javax.sip.header;
@@ -48,8 +43,9 @@ import javax.sip.address.URI;
  * algorithm=MD5</code>
  *
  * @see Parameters
- * @version 1.1
- * @author Sun Microsystems
+ * @author BEA Systems, Inc. 
+ * @author NIST
+ * @version 1.2
  */
 
 public interface WWWAuthenticateHeader extends Parameters, Header {
@@ -118,11 +114,11 @@ public interface WWWAuthenticateHeader extends Parameters, Header {
     public String getNonce();    
     
     /**
-     * Sets the URI of the WWWAuthenicateHeader to the uri
-     * parameter value.
+     * Sets the URI of the WWWAuthenicateHeader to the URI parameter value.
      *
      * @param uri - the new URI of this WWWAuthenicateHeader.
-     * @since v1.1
+     * @deprecated URI is not a supported parameter for this header.
+     * @since v1.2
      */
     public void setURI(URI uri);
 
@@ -131,7 +127,9 @@ public interface WWWAuthenticateHeader extends Parameters, Header {
      *
      * @return the URI representing the URI information, null if value is
      * not set.
-     * @since v1.1
+     * @deprecated URI is not a supported parameter for this header. This method 
+     * should return null.
+     * @since v1.2
      */
     public URI getURI();            
     

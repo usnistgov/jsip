@@ -1,3 +1,33 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
+/*
+ * Bug reports contributed by Joao Paulo, Stephen Jones, 
+ * John Zeng and Alstair Cole.
+ *
+ */
 /*******************************************************************************
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
 *******************************************************************************/
@@ -8,24 +38,26 @@ import gov.nist.javax.sip.address.*;
 
 import java.text.ParseException;
 import javax.sip.InvalidArgumentException;
+import javax.sip.header.ContactHeader;
 
 /**
  * Contact Item. 
  *
  * @see gov.nist.javax.sip.header.ContactList
  *
- * @author M. Ranganathan <mranga@nist.gov> <br/>
- * @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2005-04-16 20:38:49 $
+ * @author M. Ranganathan  <br/>
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-02 09:50:56 $
+ * @since 1.1
  *
- * <a href="${docRoot}/uncopyright.html">This code is in the public domain.</a>
- *
- * Bug reports contributed by Joao Paulo, Stephen Jones, 
- * John Zeng and Alstair Cole.
  *
  */
 public final class Contact
 	extends AddressParametersHeader
 	implements javax.sip.header.ContactHeader {
+	/**
+	 * Comment for <code>serialVersionUID</code>
+	 */
+	private static final long serialVersionUID = 1677294871695706288L;
 	public static final String ACTION = ParameterNames.ACTION;
 	public static final String PROXY = ParameterNames.PROXY;
 	public static final String REDIRECT = ParameterNames.REDIRECT;
@@ -176,54 +208,31 @@ public final class Contact
 		this.parameters.set(Q, new Float(qValue));
 	}
 	
-	/** Equality test.
-	 *
-	 */
-	public boolean equals(Object that) {
-		if (that.getClass() != this.getClass()) return false;
-		Contact contact = (Contact) that;
-		if (this.wildCardFlag != contact.wildCardFlag ) return false;
-		else if (this.wildCardFlag == contact.wildCardFlag)return true;
-		return super.equals(that);
-	}
-
 	public Object clone() {
 		Contact retval = (Contact) super.clone();
 		if (this.contactList != null)
 			retval.contactList = (ContactList) this.contactList.clone();
 		return retval;
 	}
+
+    /* (non-Javadoc)
+     * @see javax.sip.header.ContactHeader#setWildCard()
+     */
+    public void setWildCard() {
+       this.setWildCardFlag(true);
+        
+    }
+
+    /* (non-Javadoc)
+     * @see javax.sip.header.ContactHeader#isWildCard()
+     */
+    public boolean isWildCard() {
+        
+        return this.address.isWildcard();
+    }
+
+	public boolean equals(Object other) {
+		return (other instanceof ContactHeader) && super.equals(other);
+	}
+    
 }
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.3  2004/07/28 14:13:53  mranga
- * Submitted by:  mranga
- *
- * Move out the test code to a separate test/unit class.
- * Fixed some encode methods.
- *
- * Revision 1.2  2004/01/22 13:26:29  sverker
- * Issue number:
- * Obtained from:
- * Submitted by:  sverker
- * Reviewed by:   mranga
- *
- * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
- *
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- */

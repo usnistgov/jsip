@@ -1,3 +1,28 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 /******************************************************************************
  * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).      *
  ******************************************************************************/
@@ -16,24 +41,20 @@ import java.util.*;
  * object that creates new TCP MessageChannels (one for each new
  * accept socket).  
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.22 $ $Date: 2004-12-01 19:05:16 $
+ * @version 1.2 $Revision: 1.23 $ $Date: 2006-07-02 09:52:44 $
  *
- * @author M. Ranganathan <mranga@nist.gov>  <br/>
+ * @author M. Ranganathan   <br/>
  * Acknowledgement: Jeff Keyser suggested that a
  * Stop mechanism be added to this. Niklas Uhrberg suggested that
  * a means to limit the number of simultaneous active connections
  * should be added. Mike Andrews suggested that the thread be
  * accessible so as to implement clean stop using Thread.join().
  *
- * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+ * 
  */
 public class TCPMessageProcessor extends MessageProcessor {
 
-	protected Thread thread;
-
-
-	protected int port;
-
+	
 	protected int nConnections;
 
 	private boolean isRunning;
@@ -44,20 +65,26 @@ public class TCPMessageProcessor extends MessageProcessor {
 	private ServerSocket sock;
 
 	protected int useCount;
-
+	
+	
 	/**
 	 * The SIP Stack Structure.
 	 */
-	protected SIPMessageStack sipStack;
+	protected SIPTransactionStack sipStack;
 
+
+   
 	/**
 	 * Constructor.
 	 * @param sipStack SIPStack structure.
 	 * @param port port where this message processor listens.
 	 */
-	protected TCPMessageProcessor(SIPMessageStack sipStack, int port) {
+	protected TCPMessageProcessor(InetAddress ipAddress, SIPTransactionStack sipStack, int port) {
+	    super( ipAddress,port,"tcp");
+	   
 		this.sipStack = sipStack;
-		this.port = port;
+		
+		
 		this.tcpMessageChannels = new Hashtable();
 	}
 
@@ -65,24 +92,17 @@ public class TCPMessageProcessor extends MessageProcessor {
 	 * Start the processor.
 	 */
 	public void start() throws IOException {
-		thread = new Thread(this);
+		Thread thread = new Thread(this);
 		thread.setName("TCPMessageProcessorThread");
 		thread.setDaemon(true);
-		this.sock = sipStack.getNetworkLayer().createServerSocket(this.port, 0, sipStack.savedStackInetAddress);
+		this.sock = sipStack.getNetworkLayer().createServerSocket(getPort(), 0, getIPAddress());
 		this.isRunning = true;
 		thread.start();
 
 	}
 
 	
-	/**
-	* Return our thread.
-	*
-	*@return -- our thread. This is used for joining 
-	*/
-	public Thread getThread() {
-		return this.thread;
-	}
+	
 
 	/**
 	 * Run method for the thread that gets created for each accept
@@ -113,8 +133,8 @@ public class TCPMessageProcessor extends MessageProcessor {
 				}
 
 				Socket newsock = sock.accept();
-				if (LogWriter.needsLogging) {
-					getSIPStack().logWriter.logMessage(
+				if (sipStack.isLoggingEnabled()) {
+					getSIPStack().logWriter.logDebug(
 						"Accepting new connection!");
 				}
 				// Note that for an incoming message channel, the
@@ -125,7 +145,7 @@ public class TCPMessageProcessor extends MessageProcessor {
 				this.isRunning = false;
 			} catch (IOException ex) {
 				// Problem accepting connection.
-				if (LogWriter.needsLogging)
+				if (sipStack.isLoggingEnabled())
 					getSIPStack().logWriter.logException(ex);
 				continue;
 			} catch (Exception ex) {
@@ -142,19 +162,12 @@ public class TCPMessageProcessor extends MessageProcessor {
 		return "tcp";
 	}
 
-	/**
-	 * Returns the port that we are listening on.
-	 * @return Port address for the tcp accept.
-	 */
-	public int getPort() {
-		return this.port;
-	}
-
+	
 	/**
 	 * Returns the stack.
 	 * @return my sip stack.
 	 */
-	public SIPMessageStack getSIPStack() {
+	public SIPTransactionStack getSIPStack() {
 		return sipStack;
 	}
 
@@ -164,7 +177,7 @@ public class TCPMessageProcessor extends MessageProcessor {
 	 */
 	public synchronized void stop() {
 		isRunning = false;
-		this.listeningPoint = null;
+		//this.listeningPoint = null;
 		try {
 			sock.close();
 		} catch (IOException e) {
@@ -185,8 +198,8 @@ public class TCPMessageProcessor extends MessageProcessor {
 		(TCPMessageChannel tcpMessageChannel) {
 
 		String key = tcpMessageChannel.getKey();
-		if (LogWriter.needsLogging) {
-		   sipStack.logWriter.logMessage	
+		if (sipStack.isLoggingEnabled()) {
+		   sipStack.logWriter.logDebug	
 		   ( Thread.currentThread() + " removing " + key);
 		}
 
@@ -212,10 +225,10 @@ public class TCPMessageProcessor extends MessageProcessor {
 			this);
 		     this.tcpMessageChannels.put(key,retval);
 		     retval.isCached = true;
-		     if (LogWriter.needsLogging ) {
-			  sipStack.logWriter.logMessage
+		     if (sipStack.isLoggingEnabled() ) {
+			  sipStack.logWriter.logDebug
 				("key " + key);
-		          sipStack.logWriter.logMessage("Creating " + retval);
+		          sipStack.logWriter.logDebug("Creating " + retval);
 		      }
 		     return retval;
 		}
@@ -228,12 +241,12 @@ public class TCPMessageProcessor extends MessageProcessor {
 		TCPMessageChannel currentChannel = 
 			(TCPMessageChannel) tcpMessageChannels.get(key);
 		if (currentChannel != null)  {
-		        if (LogWriter.needsLogging) 
-				sipStack.logWriter.logMessage("Closing " + key);
+		        if (sipStack.isLoggingEnabled()) 
+				sipStack.logWriter.logDebug("Closing " + key);
 			currentChannel.close();
 		}
-		if (LogWriter.needsLogging) 
-			sipStack.logWriter.logMessage("Caching " + key);
+		if (sipStack.isLoggingEnabled()) 
+			sipStack.logWriter.logDebug("Caching " + key);
 	        this.tcpMessageChannels.put(key,messageChannel);
 
 	}
@@ -250,9 +263,9 @@ public class TCPMessageProcessor extends MessageProcessor {
 		        TCPMessageChannel retval  = new TCPMessageChannel(host, port, sipStack, this);
 			this.tcpMessageChannels.put(key,retval);
 		        retval.isCached = true;
-			if (LogWriter.needsLogging) {
-		        	sipStack.logMessage("key " + key);
-		        	sipStack.logMessage("Creating " + retval);
+			if (sipStack.isLoggingEnabled()) {
+		        	sipStack.getLogWriter().logDebug("key " + key);
+		        	sipStack.getLogWriter().logDebug("Creating " + retval);
 			}
 			return retval;
 		   }
@@ -270,20 +283,7 @@ public class TCPMessageProcessor extends MessageProcessor {
 		return Integer.MAX_VALUE;
 	}
 
-	/**
-	 * TCP NAPTR service name.
-	 */
-	public String getNAPTRService() {
-		return "SIP+D2T";
-	}
-
-	/**
-	 * TCP SRV prefix.
-	 */
-	public String getSRVPrefix() {
-		return "_sip._tcp.";
-	}
-
+	
 	public boolean inUse() {
 		return this.useCount != 0;
 	}
@@ -304,6 +304,38 @@ public class TCPMessageProcessor extends MessageProcessor {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2006/06/19 06:47:27  mranga
+ * javadoc fixups
+ *
+ * Revision 1.6  2006/06/16 15:26:28  mranga
+ * Added NIST disclaimer to all public domain files. Clean up some javadoc. Fixed a leak
+ *
+ * Revision 1.5  2006/05/31 07:47:27  mranga
+ * Added a simple server congestion control algorithm.
+ *
+ * Cleaned up some code.
+ *
+ * Ranga
+ *
+ * Revision 1.4  2005/12/05 22:33:07  mranga
+ * *** empty log message ***
+ *
+ * Revision 1.3  2005/11/21 19:20:29  mranga
+ * *** empty log message ***
+ *
+ * Revision 1.2  2005/11/14 22:36:01  mranga
+ * Interim update of source code
+ *
+ * Revision 1.1.1.1  2005/10/04 17:12:36  mranga
+ *
+ * Import
+ *
+ *
+ * Revision 1.22  2004/12/01 19:05:16  mranga
+ * Reviewed by:   mranga
+ * Code cleanup remove the unused SIMULATION code to reduce the clutter.
+ * Fix bug in Dialog state machine.
+ *
  * Revision 1.21  2004/09/04 14:59:54  mranga
  * Reviewed by:   mranga
  *

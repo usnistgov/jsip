@@ -2,21 +2,15 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Module Name   : JAIN SIP Specification
+ * Module Name   : JSIP Specification
  * File Name     : ExtensionHeader.java
  * Author        : Phelim O'Doherty
  *
@@ -30,16 +24,23 @@ package javax.sip.header;
 import java.text.ParseException;
 
 /**
- * This interface represents an Extension SIP header that is not currently 
- * defined by JAIN SIP. Extension Headers can be added as required by extending 
- * this interface assuming other endpoints understand the Header. Any Header that
- * extends this class must define a "NAME" String constant identifying the name 
+ * This interface represents an Extension SIP header that was not defined at the
+ * baseline (version 1.1 ) of JAIN SIP. Extension Headers can be added as 
+ * required by extending this interface assuming other endpoints understand the Header. 
+ * Any Header that extends this class must define a "NAME" String constant identifying the name 
  * of the extension Header. A server must ignore Headers that it does not 
  * understand. A proxy must not remove or modify Headers that it does not 
- * understand.
+ * understand. Implementation note : The implementation of any new headers 
+ * added since version 1.1 of this specification
+ * <b>SHOULD</b> implement ExtensionHeader for backwards compatibility (even if these
+ * headers are defined in the current version of this specification).
+ * Headers that are not part of the current version of this specification 
+ * <b>MUST</b> implement ExtensionHeader.
  *
- * @version 1.1
- * @author Sun Microsystems
+ * @author BEA Systems, Inc. 
+ * @author NIST
+ * @since 1.1
+ * @version 1.2
  */
 
 public interface ExtensionHeader extends Header {

@@ -2,21 +2,15 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Module Name   : JAIN SIP Specification
+ * Module Name   : JSIP Specification
  * File Name     : HeaderFactory.java
  * Author        : Phelim O'Doherty
  *
@@ -38,8 +32,9 @@ import java.util.*;
  * singleton and can be retrieved from the 
  * {@link javax.sip.SipFactory#createHeaderFactory()}.
  *
- * @version 1.1
- * @author Sun Microsystems
+ * @author BEA Systems, Inc. 
+ * @author NIST
+ * @version 1.2
  */
 public interface HeaderFactory {
 
@@ -151,8 +146,10 @@ public interface HeaderFactory {
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the method value.
      * @return the newly created CSeqHeader object.
+     * 
+     * @since 1.2 the sequenceNumber is long instead of int
      */
-    public CSeqHeader createCSeqHeader(int sequenceNumber, String method)
+    public CSeqHeader createCSeqHeader( long sequenceNumber, String method)
                              throws ParseException, InvalidArgumentException;
 
     /**
@@ -189,8 +186,8 @@ public interface HeaderFactory {
      * at which the user is currently available. This implies that the 
      * following conditions are met:
      * <ul>
-     * <li><code>ContactHeader.getAddress.getAddress.getUserInfo() == *;</code>
-     * <li><code>ContactHeader.getAddress.getAddress.isWildCard() == true;</code>
+     * <li><code>ContactHeader.getAddress.getUserInfo() == *;</code>
+     * <li><code>ContactHeader.getAddress.isWildCard() == true;</code>
      * <li><code>ContactHeader.getExpires() == 0;</code>
      * </ul>
      *
@@ -312,9 +309,14 @@ public interface HeaderFactory {
     public Header createHeader(String name, String value) throws ParseException;
 
     /**
-     * Creates a new List of Headers based on the newly supplied comma 
-     * seperated list of headers.
-     *
+     * Creates a new List of Headers based on a supplied comma seperated 
+     * list of Header values for a single header name.
+     * This method can be used only for SIP headers whose grammar is of the form
+     * header = header-name HCOLON header-value *(COMMA header-value) that
+     * allows for combining header fields of the same name into a 
+     * comma-separated list.  Note that the Contact header field allows a 
+     * comma-separated list  unless the header field 
+     * value is "*"
      * @param headers the new string comma seperated list of Header values.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the headers value or a List of that Header
@@ -461,8 +463,10 @@ public interface HeaderFactory {
      * unexpectedly while parsing the method value.
      * @return the newly created RAckHeader object.
      * @since v1.1
+     * 
+     * @since 1.2 the sequence numbers are long
      */
-    public RAckHeader createRAckHeader(int rSeqNumber, int cSeqNumber, String method)
+    public RAckHeader createRAckHeader(long rSeqNumber, long cSeqNumber, String method)
                              throws InvalidArgumentException, ParseException;
 
     /**
@@ -473,8 +477,10 @@ public interface HeaderFactory {
      * less than zero or greater than than 2**31-1.
      * @return the newly created RSeqHeader object.
      * @since v1.1
+     * 
+     * @since 1.2 the sequence number is long
      */
-    public RSeqHeader createRSeqHeader(int sequenceNumber)
+    public RSeqHeader createRSeqHeader( long sequenceNumber )
                              throws InvalidArgumentException;
         
     /**
@@ -617,7 +623,7 @@ public interface HeaderFactory {
      * tag values.
      *
      * @param address the new Address object of the address.
-     * @param tag the new string value of the tag.
+     * @param tag the new string value of the tag, this value may be null.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the tag value.
      * @return the newly created ToHeader object.  
@@ -689,7 +695,29 @@ public interface HeaderFactory {
      * @return the newly created WarningHeader object.
      */
     public WarningHeader createWarningHeader(String agent, int code, String comment)
-                          throws InvalidArgumentException, ParseException;    
-    
+                          throws InvalidArgumentException, ParseException;
+	
+	
+	/**
+	 * Creates a new SIP-ETag header with the supplied tag value
+	 * 
+	 * @param etag the new tag token
+	 * @return the newly created SIP-ETag header
+	 * @throws ParseException when an error occurs during parsing of the etag parameter
+	 * 
+	 * @since 1.2
+	 */
+	public SIPETagHeader createSIPETagHeader( String etag ) throws ParseException;
+	
+	/**
+	 * Creates a new SIP-If-Match header with the supplied tag value
+	 * 
+	 * @param etag the new tag token
+	 * @return the newly created SIP-If-Match header
+	 * @throws ParseException when an error occurs during parsing of the etag parameter
+	 * 
+	 * @since 1.2
+	 */
+	public SIPIfMatchHeader createSIPIfMatchHeader( String etag ) throws ParseException;    
 }
 

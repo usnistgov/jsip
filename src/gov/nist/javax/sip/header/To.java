@@ -1,3 +1,28 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 /*******************************************************************************
  * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).       *
  *******************************************************************************/
@@ -7,21 +32,28 @@ import gov.nist.core.*;
 import gov.nist.javax.sip.address.*;
 import java.text.ParseException;
 
+import javax.sip.header.ToHeader;
+
 /**  
 *To SIP Header.
 *
-*@version JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2006-01-31 06:56:21 $
+*@version 1.2 $Revision: 1.6 $ $Date: 2006-07-02 09:50:46 $
 *
-*@author M. Ranganathan <mranga@nist.gov>  <br/>
-*@author Olivier Deruelle <deruelle@nist.gov><br/>
+*@author M. Ranganathan   <br/>
+*@author Olivier Deruelle <br/>
 *
-*<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+*
 *
 */
 
 public final class To
 	extends AddressParametersHeader
 	implements javax.sip.header.ToHeader {
+
+	/**
+	 * Comment for <code>serialVersionUID</code>
+	 */
+	private static final long serialVersionUID = -4057413800584586316L;
 
 	/** default Constructor.
 	 */
@@ -35,30 +67,6 @@ public final class To
 		super(TO);
 		setAddress(from.address);
 		setParameters(from.parameters);
-	}
-
-	/**
-	 * Compare two To headers for equality.
-	 * @param otherHeader Object to set
-	 * @return true if the two headers are the same.
-	 */
-	public boolean equals(Object otherHeader) {
-		try {
-			if (address == null)
-				return false;
-			if (!otherHeader.getClass().equals(this.getClass())) {
-				return false;
-			}
-
-			To otherTo = (To) otherHeader;
-			if (!otherTo.getAddress().equals(address)) {
-				return false;
-			}
-			return true;
-			// exitpoint = 3;
-		} finally {
-			// System.out.println("equals " + retval + exitpoint);
-		}
 	}
 
 	/**
@@ -171,18 +179,30 @@ public final class To
 		return address.getUserAtHostPort();
 	}
 
-	/** Gets a string representation of the Header. 
-	 * This method overrides the
-	 * toString method in java.lang.Object.
-	 *
-	 * @return string representation of Header
-	 */
-	public String toString() {
-		return this.encode();
+	public boolean equals(Object other) {
+		return (other instanceof ToHeader) && super.equals(other);
 	}
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2006/06/19 06:47:27  mranga
+ * javadoc fixups
+ *
+ * Revision 1.4  2006/06/16 15:26:28  mranga
+ * Added NIST disclaimer to all public domain files. Clean up some javadoc. Fixed a leak
+ *
+ * Revision 1.3  2006/01/31 06:57:04  jeroen
+ * it should not be needed to synchronize on the parameters, but for consistency it's better to do it everywhere then
+ * Someone reported a concurrent modification exception in encodeBody
+ *
+ * Revision 1.2  2005/10/09 18:47:53  jeroen
+ * defined equals() in terms of API calls
+ *
+ * Revision 1.1.1.1  2005/10/04 17:12:35  mranga
+ *
+ * Import
+ *
+ *
  * Revision 1.4  2004/06/17 15:22:29  mranga
  * Reviewed by:   mranga
  *

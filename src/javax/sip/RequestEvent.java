@@ -2,27 +2,23 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Module Name   : JAIN SIP Specification
+ * Module Name   : JSIP Specification
  * File Name     : RequestEvent.java
  * Author        : Phelim O'Doherty
  *
  *  HISTORY
  *  Version   Date      Author              Comments
  *  1.1     08/10/2002  Phelim O'Doherty    Initial version
+ * 	1.2 	02/15/2005	M. Ranganathan		getDialog get the current
+ * 											dialog.
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 package javax.sip;
@@ -57,7 +53,9 @@ import javax.sip.message.Request;
  * that needs passed to the application encapsulated in a RequestEvent.
  * </ul>
  *
- * @author Sun Microsystems
+ * @author BEA Systems, Inc. 
+ * @author NIST
+ * @version 1.2
  * @since v1.1
  */
 public class RequestEvent extends EventObject {
@@ -73,10 +71,11 @@ public class RequestEvent extends EventObject {
     * this Request was sent
     * @param request - the Request message received by the SipProvider
     */
-    public RequestEvent(Object source, ServerTransaction serverTransaction, Request request) {
+    public RequestEvent(Object source, ServerTransaction serverTransaction, Dialog dialog, Request request) {
         super(source);
         m_transaction = serverTransaction;
         m_request = request;
+        m_dialog  = dialog;
    }
 
     /**
@@ -96,8 +95,24 @@ public class RequestEvent extends EventObject {
     public Request getRequest() {
         return m_request;
     }
+    
+    /**
+     * Gets the dialog with which this Event is associated.
+     * This method separates transaction support from dialog support. This 
+     * enables application developers to access the dialog associated to this event 
+     * without having to query the transaction associated to the event.  
+     * 
+     * @return the dialog with which the RequestEvent is associated or null if 
+     * no dialog exists.
+     * @since v1.2
+     */
+    public Dialog getDialog() {
+        return m_dialog;
+    }
+    
 
     // internal variables
     private Request m_request;
     private ServerTransaction m_transaction;
+    private Dialog  m_dialog;
 }

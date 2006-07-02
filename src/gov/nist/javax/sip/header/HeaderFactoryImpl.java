@@ -1,9 +1,34 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement.
+* 
+*/
 /*******************************************************************************
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
 *******************************************************************************/
 package gov.nist.javax.sip.header;
+import gov.nist.javax.sip.header.ims.*;	/* IMS headers - issued by jmf */
 
 import javax.sip.header.*;
+
 import gov.nist.javax.sip.parser.*;
 import javax.sip.address.*;
 import java.text.ParseException;
@@ -11,13 +36,19 @@ import javax.sip.InvalidArgumentException;
 import java.util.*;
 import gov.nist.javax.sip.address.*;
 
+/*
+* This file contains enhancements contributed by Alexandre Silva Santos 
+* (PT-Inovação) and Miguel Freitas 
+*/
+
 /** Implementation of the JAIN SIP  HeaderFactory
 * 
-* @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2005-05-24 08:50:49 $
+* @version 1.2 $Revision: 1.5 $ $Date: 2006-07-02 09:50:48 $
+* @since 1.1
 *
-*@author M. Ranganathan <mranga@nist.gov>  <br/>
-*@author Olivier Deruelle <deruelle@nist.gov><br/>
-*<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+*@author M. Ranganathan   <br/>
+*@author Olivier Deruelle <br/>
+*
 *
 */
 public class HeaderFactoryImpl implements HeaderFactory {
@@ -181,7 +212,7 @@ public class HeaderFactoryImpl implements HeaderFactory {
 	 * unexpectedly while parsing the method value.
 	 * @return the newly created CSeqHeader object.
 	 */
-	public CSeqHeader createCSeqHeader(int sequenceNumber, String method)
+	public CSeqHeader createCSeqHeader( long sequenceNumber, String method)
 		throws ParseException, InvalidArgumentException {
 		if (sequenceNumber < 0)
 			throw new InvalidArgumentException("bad arg " + sequenceNumber);
@@ -649,8 +680,8 @@ public class HeaderFactoryImpl implements HeaderFactory {
 	 * @since v1.1
 	 */
 	public RAckHeader createRAckHeader(
-		int rSeqNumber,
-		int cSeqNumber,
+		long rSeqNumber,
+		long cSeqNumber,
 		String method)
 		throws InvalidArgumentException, ParseException {
 		if (method == null)
@@ -674,7 +705,7 @@ public class HeaderFactoryImpl implements HeaderFactory {
 	 * @return the newly created RSeqHeader object.
 	 * @since v1.1
 	 */
-	public RSeqHeader createRSeqHeader(int sequenceNumber)
+	public RSeqHeader createRSeqHeader(long sequenceNumber)
 		throws InvalidArgumentException {
 		if (sequenceNumber < 0)
 			throw new InvalidArgumentException(
@@ -720,6 +751,7 @@ public class HeaderFactoryImpl implements HeaderFactory {
 	* @return the newly created RecordRouteHeader object.  
 	*/
 	public RecordRouteHeader createRecordRouteHeader(Address address) {
+		if ( address == null) throw new NullPointerException("Null argument!");
 		RecordRoute recordRoute = new RecordRoute();
 		recordRoute.setAddress(address);
 
@@ -964,7 +996,7 @@ public class HeaderFactoryImpl implements HeaderFactory {
 		int port,
 		String transport,
 		String branch)
-		throws ParseException {
+		throws ParseException, InvalidArgumentException {
 		// This should be changed.
 		if (host == null || transport == null)
 			throw new NullPointerException("null arg");
@@ -972,7 +1004,6 @@ public class HeaderFactoryImpl implements HeaderFactory {
 		if (branch != null)
 			via.setBranch(branch);
 
-		// Added by Daniel Martinez <dani@dif.um.es>
 		// for supporting IPv6 addresses
 		if(host.indexOf(':') >= 0 &&
 		   host.indexOf('[') < 0)
@@ -1037,7 +1068,6 @@ public class HeaderFactoryImpl implements HeaderFactory {
 	 *
 	 * @param errorInfo - the new URI value of the errorInfo.
 	 * @return the newly created ErrorInfoHeader object.
-	 * @since v1.1
 	 */
 	public ErrorInfoHeader createErrorInfoHeader(URI errorInfo) {
 		if (errorInfo == null)
@@ -1084,7 +1114,7 @@ public class HeaderFactoryImpl implements HeaderFactory {
 					return null;
 				}
 			} else {
-				return (Header) ((SIPHeaderList) sipHeader).first();
+				return (Header) ((SIPHeaderList) sipHeader).getFirst();
 			}
 		} else {
 			return (Header) sipHeader;
@@ -1122,38 +1152,266 @@ public class HeaderFactoryImpl implements HeaderFactory {
 		return referTo;
 	}
 
+	
+
+	/*
+	 * (non-Javadoc)
+	 * @see javax.sip.header.HeaderFactory#createSIPETagHeader(java.lang.String)
+	 */
+	public SIPETagHeader createSIPETagHeader(String etag) throws ParseException {
+		return new SIPETag(etag);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see javax.sip.header.HeaderFactory#createSIPIfMatchHeader(java.lang.String)
+	 */
+	public SIPIfMatchHeader createSIPIfMatchHeader(String etag) throws ParseException {
+		return new SIPIfMatch(etag);
+	}
+	
+	//////////////////////////////////////////////////////////////////////////
+	// The following headers are not part of the JSIP spec. 
+	// They are IMS headers (contributed by Miguel Martins PT Innovacau).
+	///////////////////////////////////////////////////////////////////////////
+	
+	public AccessNetworkInfoHeader createAccessNetworkInfoHeader()
+	{
+		
+		AccessNetworkInfo accessNetworkInfo = new AccessNetworkInfo();
+		
+		return accessNetworkInfo;
+	}
+	
+	
+     /**
+     * P-Asserted-Identity header
+     */
+	public AssertedIdentityHeader createAssertedIdentityHeader(Address address)
+		throws NullPointerException, ParseException
+	{	
+		if (address == null)
+			throw new NullPointerException("null address!");
+		
+		AssertedIdentity assertedIdentity = new AssertedIdentity();
+		assertedIdentity.setAddress(address);
+		
+		return assertedIdentity;
+		
+		
+	}
+	
+	
+	public AssociatedURIHeader createAssociatedURIHeader(URI assocURI)
+	{	
+		if (assocURI == null)
+			throw new NullPointerException("null associatedURI!");
+		
+		AssociatedURI associatedURI = new AssociatedURI();
+		associatedURI.setAssociatedURI(assocURI);
+		
+		return associatedURI;
+		
+		
+	}
+	
+	
+     /**
+     * AuthenticationHeaderIms
+     *
+     */
+    public AuthenticationHeaderIms createAuthenticationHeaderIms()
+    	throws ParseException
+    {
+    	AuthenticationHeaderIms authenticationHeaderIms = new AuthenticationHeaderIms();
+    	
+    	return authenticationHeaderIms;
+    }
+    
+    
+    
+    /**
+     * AuthorizationHeaderIms
+     *
+     */ 
+    public AuthorizationHeaderIms createAuthorizationHeaderIms()
+    	throws ParseException
+    {
+    	AuthorizationIms authorizationIms = new AuthorizationIms();
+    	
+    	return authorizationIms;
+    }
+    
+	
+	
 	/**
+     * P-Called-Party-ID header
+     */
+    public CalledPartyIDHeader createCalledPartyIDHeader(Address address)
+    {
+    	if (address == null)
+			throw new NullPointerException("null address!");
+		
+    	CalledPartyID calledPartyID = new CalledPartyID();
+    	calledPartyID.setAddress(address);
+		
+		return calledPartyID;
+    }
+	
+	
+
+    /**
+     * P-Charging-Function-Addresses header
+     */
+    public ChargingFunctionAddressesHeader createChargingFunctionAddressesHeader() 
+    {
+    	
+    	ChargingFunctionAddresses cfa = new ChargingFunctionAddresses();
+
+		return cfa;
+    }
+    	
+    	
+    /**
+     * P-Charging-Vector header
+     * 
+     */
+    public ChargingVectorHeader createChargingVectorHeader(String icid)
+    	throws ParseException
+    {
+    	
+    	// verificar todos os parametros de entrada
+    	if (icid == null)
+			throw new NullPointerException("null icid arg!");
+    	
+    	ChargingVector chargingVector = new ChargingVector();
+    	chargingVector.setICID(icid);
+    	
+    	return chargingVector;
+    
+    }
+    
+    
+    /**
+     * P-Media-Authorization 
+     */
+    public MediaAuthorizationHeader createMediaAuthorizationHeader(String token)
+    	throws InvalidArgumentException, ParseException
+    {
+
+    	if (token == null || token == "")
+			throw new InvalidArgumentException("The Media-Authorization-Token parameter is null or empty");
+
+    	
+    	MediaAuthorization mediaAuthorization = new MediaAuthorization();		
+    	mediaAuthorization.setMediaAuthorizationToken(token);
+    	
+    	return mediaAuthorization;
+    }
+    
+    
+    /**
+     * PATH header
+     */
+    public PathHeader createPathHeader(Address address)
+    {
+    	if (address == null)
+			throw new NullPointerException("null address!");
+    	
+    	
+    	Path path = new Path();
+    	path.setAddress(address);
+    	
+    	return path;
+    }
+    
+    
+    
+    	
+    /**
+     * P-Preferred-Identity header 
+     */
+    public PreferredIdentityHeader createPreferredIdentityHeader(Address address)
+    {
+    	
+    	if (address == null)
+			throw new NullPointerException("null address!");
+		
+    	PreferredIdentity preferredIdentity = new PreferredIdentity();
+    	preferredIdentity.setAddress(address);
+		
+		return preferredIdentity;
+
+    }
+    
+    
+    
+    /**
+     * Privacy header
+     */
+    public PrivacyHeader createPrivacyHeader(String privacyType)
+    {
+    	if (privacyType == null)
+    		throw new NullPointerException("null privacyType arg");
+    	
+    	Privacy privacy = new Privacy(privacyType);
+    	
+    	return privacy;
+   
+    }
+    
+    
+    /**
+     * SERVICE-ROUTE header:
+     */
+    public ServiceRouteHeader createServiceRouteHeader(Address address)
+    {
+    
+    	if (address == null)
+			throw new NullPointerException("null address!");
+    	
+    	ServiceRoute serviceRoute = new ServiceRoute();
+    	serviceRoute.setAddress(address);
+    	
+    	return serviceRoute;
+    	
+    }
+    
+    
+    
+    /**
+     * P-Visited-Network-ID header
+     */
+    public VisitedNetworkIDHeader createVisitedNetworkIDHeader()
+    {
+    	
+    	VisitedNetworkID visitedNetworkID = new VisitedNetworkID();
+    	
+    	return visitedNetworkID;
+    }
+    
+    
+    /**
+     * WWWAuthenticateHeaderIms
+     */
+    public WWWAuthenticateHeaderIms createWWWAuthenticateHeaderIms()
+    {
+    	WWWAuthenticateIms wwwAuthenticateIms = new WWWAuthenticateIms();
+    	
+    	return wwwAuthenticateIms;
+    }
+	
+   
+    //////////////////////////////////////////////////////////
+    // Constructor
+    //////////////////////////////////////////////////////////
+    /**
 	 * Default constructor.
 	 */
 	public HeaderFactoryImpl() {
 
 	}
+	
+
 
 }
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.3  2004/01/22 13:26:29  sverker
- * Issue number:
- * Obtained from:
- * Submitted by:  sverker
- * Reviewed by:   mranga
- *
- * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
- *
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- */

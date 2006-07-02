@@ -1,3 +1,28 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 package gov.nist.javax.sip;
 
 import java.util.*;
@@ -5,19 +30,20 @@ import gov.nist.javax.sip.stack.*;
 import gov.nist.javax.sip.message.*;
 import javax.sip.message.*;
 import javax.sip.*;
+
+import EDU.oswego.cs.dl.util.concurrent.Semaphore;
 import gov.nist.core.*;
 import java.io.*;
+/*bug fixes SIPQuest  communications and Shu-Lin Chen. */
 
 /**
  * Event Scanner to deliver events to the Listener.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.20 $ $Date: 2005-03-29 03:50:02 $
+ * @version 1.2 $Revision: 1.21 $ $Date: 2006-07-02 09:54:24 $
  * 
- * @author M. Ranganathan <mranga@nist.gov><br/>
- * bug fixes SIPQuest communications and Shu-Lin Chen. <br/>
- *
- * <a href=" {@docRoot}/uncopyright.html">This code is in the public domain. </a>
- *  
+ * @author M. Ranganathan <br/> 
+ * 
+ * 
  */
 class EventScanner implements Runnable {
 
@@ -30,8 +56,7 @@ class EventScanner implements Runnable {
 
 	private int[] eventMutex = { 0 };
 
-	private SipStackImpl sipStackImpl;
-
+	private SipStackImpl sipStack;
 
 	public EventScanner(SipStackImpl sipStackImpl) {
 		this.pendingEvents = new LinkedList();
@@ -39,9 +64,9 @@ class EventScanner implements Runnable {
 		// This needs to be set to false else the
 		// main thread mysteriously exits.
 		myThread.setDaemon(false);
-		//endif
-		//
-		this.sipStackImpl = sipStackImpl;
+
+		this.sipStack = sipStackImpl;
+
 		myThread.setName("EventScannerThread");
 
 		myThread.start();
@@ -49,17 +74,15 @@ class EventScanner implements Runnable {
 	}
 
 	public void addEvent(EventWrapper eventWrapper) {
-
+		sipStack.getLogWriter().logDebug("addEvent " + eventWrapper);
 		synchronized (this.eventMutex) {
 
 			pendingEvents.add(eventWrapper);
 
 			// Add the event into the pending events list
 
-
 			eventMutex.notify();
 		}
-
 
 	}
 
@@ -83,170 +106,220 @@ class EventScanner implements Runnable {
 
 	public void deliverEvent(EventWrapper eventWrapper) {
 		EventObject sipEvent = eventWrapper.sipEvent;
-		SipListener sipListener = ((SipProviderImpl) sipEvent.getSource()).sipListener;
+		if (sipStack.isLoggingEnabled())
+			sipStack.getLogWriter().logDebug(
+				"sipEvent = " + sipEvent + "source = " + sipEvent.getSource());
+		SipListener sipListener = null;
+
+		if (!(sipEvent instanceof IOExceptionEvent)) {
+			sipListener = ((SipProviderImpl) sipEvent.getSource()).sipListener;
+		} else {
+			sipListener = sipStack.getSipListener();
+		}
 
 		if (sipEvent instanceof RequestEvent) {
-		  
-			// Check if this request has already created a
-			// transaction
-			SIPRequest sipRequest = (SIPRequest) ((RequestEvent) sipEvent)
-					.getRequest();
-			  
-		    if (LogWriter.needsLogging)
-			sipStackImpl.logMessage("deliverEvent : " 
-				+ sipRequest.getFirstLine() + 
-				" transaction " + eventWrapper.transaction );
-			// If this is a dialog creating method for which a server
-			// transaction already exists or a method which is
-			// not dialog creating and not within an existing dialog
-			// (special handling for cancel) then check to see if
-			// the listener already created a transaction to handle
-			// this request and discard the duplicate request if a
-			// transaction already exists. If the listener chose
-			// to handle the request statelessly, then the listener
-			// will see the retransmission.
-			// Note that in both of these two cases, JAIN SIP will allow
-			// you to handle the request statefully or statelessly.
-			// An example of the latter case is REGISTER and an example
-			// of the former case is INVITE.
-			if (sipStackImpl.isDialogCreated(sipRequest.getMethod())) {
-				SIPServerTransaction tr = (SIPServerTransaction) sipStackImpl
-						.findTransaction(sipRequest, true);
-				SIPDialog dialog = sipStackImpl.getDialog(sipRequest
-						.getDialogId(true));
-				synchronized (this) {
-					if (tr != null && !tr.passToListener()) {
-						if (LogWriter.needsLogging)
-							sipStackImpl
-									.logMessage("transaction already exists! " + tr);
-						return;
-					} else if (sipStackImpl.findPendingTransaction(sipRequest) != null) {
-						if (LogWriter.needsLogging)
-							sipStackImpl
-									.logMessage("transaction already exists!!");
-						return;
-					} else {
-						// Put it in the pending list so that if a repeat
-						// request comes along it will not get assigned a new
-						// transaction
-						SIPServerTransaction st = (SIPServerTransaction) eventWrapper.transaction;
-						sipStackImpl.putPendingTransaction(st);
-					}
-				}
-			} else if ((!sipRequest.getMethod().equals(Request.CANCEL))
-					&& sipStackImpl.getDialog(sipRequest.getDialogId(true)) == null) {
-				// not dialog creating and not a cancel.
-				// transaction already processed this message.
-				SIPTransaction tr = sipStackImpl.findTransaction(sipRequest,
-						true);
-				// If transaction already exists bail.
-				if (tr != null) {
-					if (LogWriter.needsLogging)
-						sipStackImpl.logMessage("transaction already exists!");
-					return;
-				}
-			}
-			// Set up a pointer to the transaction.
-			sipRequest.setTransaction(eventWrapper.transaction);
-			// Processing incoming CANCEL.
-			if (sipRequest.getMethod().equals(Request.CANCEL)) {
-				SIPTransaction tr = sipStackImpl.findCancelTransaction(sipRequest,
-						true);
-				if (tr != null
-						&& tr.getState() == SIPTransaction.TERMINATED_STATE) {
-					// If transaction already exists but it is
-					// too late to cancel the transaction then
-					// just respond OK to the CANCEL and bail.
-					if (LogWriter.needsLogging)
-						sipStackImpl
-								.logMessage("Too late to cancel Transaction");
-					// send OK and just ignore the CANCEL.
-					try {
-						tr.sendMessage(sipRequest.createResponse(Response.OK));
-					} catch (IOException ex) {
-						// Ignore?
-					}
-					return;
-				} 
-				if (LogWriter.needsLogging)
-						sipStackImpl.logMessage("Cancel transaction = " + tr );
-				
-			}
-
-			// Change made by SIPquest
 			try {
+				// Check if this request has already created a
+				// transaction
+				SIPRequest sipRequest = (SIPRequest) ((RequestEvent) sipEvent)
+						.getRequest();
 
-				if (LogWriter.needsLogging) {
-					sipStackImpl.logMessage("Calling listener "
-							+ sipRequest.getFirstLine());
-					sipStackImpl.logMessage("Calling listener " + eventWrapper.transaction);
-                                }
-				if (sipListener != null)
-					sipListener.processRequest((RequestEvent) sipEvent);
-				if ( LogWriter.needsLogging) {
-				    sipStackImpl.logMessage("Done processing Message " + sipRequest.getFirstLine());
+				if (sipStack.isLoggingEnabled()) {
+					sipStack.getLogWriter().logDebug(
+							"deliverEvent : "
+									+ sipRequest.getFirstLine()
+									+ " transaction "
+									+ eventWrapper.transaction
+									+ " sipEvent.serverTx = "
+									+ ((RequestEvent) sipEvent)
+											.getServerTransaction());
 				}
-				sipStackImpl
+
+				// Discard the duplicate request if a
+				// transaction already exists. If the listener chose
+				// to handle the request statelessly, then the listener
+				// will see the retransmission.
+				// Note that in both of these two cases, JAIN SIP will allow
+				// you to handle the request statefully or statelessly.
+				// An example of the latter case is REGISTER and an example
+				// of the former case is INVITE.
+
+				SIPServerTransaction tx = (SIPServerTransaction) sipStack
+						.findTransaction(sipRequest, true);
+
+				if (tx != null && !tx.passToListener()) {
+					if (sipStack.isLoggingEnabled())
+						sipStack.getLogWriter().logDebug(
+								"transaction already exists! " + tx);
+					return;
+				} else if (sipStack.findPendingTransaction(sipRequest) != null) {
+					if (sipStack.isLoggingEnabled())
+						sipStack.getLogWriter().logDebug(
+								"transaction already exists!!");
+
+					return;
+				} else {
+					// Put it in the pending list so that if a repeat
+					// request comes along it will not get assigned a
+					// new transaction
+					SIPServerTransaction st = (SIPServerTransaction) eventWrapper.transaction;
+					sipStack.putPendingTransaction(st);
+				}
+
+				
+
+				// Set up a pointer to the transaction.
+				sipRequest.setTransaction(eventWrapper.transaction);
+				// Change made by SIPquest
+				try {
+
+					if (sipStack.isLoggingEnabled()) {
+						sipStack.getLogWriter()
+								.logDebug(
+										"Calling listener "
+												+ sipRequest.getFirstLine());
+						sipStack.getLogWriter().logDebug(
+								"Calling listener " + eventWrapper.transaction);
+					}
+					if (sipListener != null)
+						sipListener.processRequest((RequestEvent) sipEvent);
+
+					if (sipStack.isLoggingEnabled()) {
+						sipStack.getLogWriter().logDebug(
+								"Done processing Message "
+										+ sipRequest.getFirstLine());
+					}
+					if (eventWrapper.transaction != null) {
+						
+						SIPDialog dialog = (SIPDialog) eventWrapper.transaction.getDialog();
+						if (dialog != null)
+							dialog.requestConsumed();
+					
+					}
+				} catch (Exception ex) {
+					// We cannot let this thread die under any
+					// circumstances. Protect ourselves by logging
+					// errors to the console but continue.
+					sipStack.getLogWriter().logException(ex);
+				}
+			} finally {
+				if (sipStack.isLoggingEnabled()) {
+					sipStack.getLogWriter().logDebug(
+							"Done processing Message "
+									+ ((SIPRequest) (((RequestEvent) sipEvent)
+											.getRequest())).getFirstLine());
+				}
+				if (eventWrapper.transaction != null &&
+						((SIPServerTransaction) eventWrapper.transaction)
+						.passToListener()) {
+					((SIPServerTransaction) eventWrapper.transaction)
+							.releaseSem();
+				}
+			
+				if (eventWrapper.transaction != null ) 
+					sipStack
 						.removePendingTransaction((SIPServerTransaction) eventWrapper.transaction);
-				if (eventWrapper.transaction != null) {
-					SIPDialog dialog = (SIPDialog) eventWrapper.transaction
-							.getDialog();
-					// Tell the dialog that request has been consumed - this
-					// copies the remote seqno
-					if (dialog != null)
-						dialog.requestConsumed();
+				if ( eventWrapper.transaction.getOriginalRequest().getMethod().equals(Request.ACK)) {
+					// Set the tx state to terminated so it is removed from the stack
+					// if the user configured to get notification on ACK termination
+					eventWrapper.transaction.setState(TransactionState.TERMINATED);
 				}
-			} catch (Exception ex) {
-				// We cannot let this thread die under any
-				// circumstances. Protect ourselves by logging
-				// errors to the console but continue.
-				ex.printStackTrace();
-			}
-			if (eventWrapper.transaction != null) {
-				((SIPServerTransaction) eventWrapper.transaction)
-						.clearPending();
 			}
 
 		} else if (sipEvent instanceof ResponseEvent) {
-			// Change made by SIPquest
 			try {
-				if (LogWriter.needsLogging) {
-					SIPResponse sipResponse = (SIPResponse) ((ResponseEvent) sipEvent)
-							.getResponse();
-					sipStackImpl.logMessage("Calling listener for "
-							+ sipResponse.getFirstLine());
+				ResponseEvent responseEvent = (ResponseEvent) sipEvent;
+				SIPResponse sipResponse = (SIPResponse) responseEvent
+						.getResponse();
+				SIPDialog sipDialog = ((SIPDialog) responseEvent.getDialog());
+				try {
+					if (sipStack.isLoggingEnabled()) {
+
+						sipStack.getLogWriter().logDebug(
+								"Calling listener for "
+										+ sipResponse.getFirstLine());
+					}
+					if (sipListener != null) {
+						SIPTransaction tx = eventWrapper.transaction;
+						if (tx != null) {
+							tx.setPassToListener();
+						}
+						sipListener.processResponse((ResponseEvent) sipEvent);
+					}
+
+					/*
+					 * If the response for a request within a dialog is a 481
+					 * (Call/Transaction Does Not Exist) or a 408 (Request
+					 * Timeout), the UAC SHOULD terminate the dialog.
+					 */
+					if ((sipDialog != null && ( sipDialog.getState() == null || !sipDialog.getState().equals(
+							DialogState.TERMINATED)))
+							&& (sipResponse.getStatusCode() == Response.CALL_OR_TRANSACTION_DOES_NOT_EXIST || sipResponse
+									.getStatusCode() == Response.REQUEST_TIMEOUT)) {
+						if (sipStack.getLogWriter().isLoggingEnabled()) {
+							sipStack.getLogWriter().logDebug(
+									"Removing dialog on 408 or 481 response");
+						}
+						sipDialog.doDeferredDelete();
+					}
+
+					/*
+					 * The Client tx disappears after the first 2xx response
+					 * However, additional 2xx responses may arrive later for
+					 * example in the following scenario:
+					 * 
+					 * Multiple 2xx responses may arrive at the UAC for a single
+					 * INVITE request due to a forking proxy. Each response is
+					 * distinguished by the tag parameter in the To header
+					 * field, and each represents a distinct dialog, with a
+					 * distinct dialog identifier.
+					 * 
+					 * If the Listener does not ACK the 200 then we assume he
+					 * does not care about the dialog and gc the dialog after some
+					 * time.
+					 * 
+					 */
+					if (sipResponse.getCSeq().getMethod()
+							.equals(Request.INVITE)
+							&& sipDialog != null
+							&& sipResponse.getStatusCode() == 200
+							&& sipDialog.getLastAck() == null) {
+						if (sipStack.getLogWriter().isLoggingEnabled()) {
+							sipStack.getLogWriter().logDebug(
+									"Garbage collecting unacknowledged dialog");
+						}
+						sipDialog.doDeferredDelete();
+
+					}
+				} catch (Exception ex) {
+					// We cannot let this thread die under any
+					// circumstances. Protect ourselves by logging
+					// errors to the console but continue.
+					sipStack.getLogWriter().logException(ex);
 				}
-				if (sipListener != null)
-					sipListener.processResponse((ResponseEvent) sipEvent);
-			} catch (Exception ex) {
-				// We cannot let this thread die under any
-				// circumstances. Protect ourselves by logging
-				// errors to the console but continue.
-				ex.printStackTrace();
+				// The original request is not needed except for INVITE
+				// transactions -- null the pointers to the transactions so
+				// that state may be released.
+				SIPClientTransaction ct = (SIPClientTransaction) eventWrapper.transaction;
+				if (ct != null
+						&& TransactionState.COMPLETED == ct.getState()
+						&& ct.getOriginalRequest() != null
+						&& !ct.getOriginalRequest().getMethod().equals(
+								Request.INVITE)) {
+					// reduce the state to minimum
+					// This assumes that the application will not need
+					// to access the request once the transaction is
+					// completed.
+					ct.clearState();
+				}
+				// mark no longer in the event queue.
+			} finally {
+				if (eventWrapper.transaction != null
+						&& eventWrapper.transaction.passToListener()) {
+					eventWrapper.transaction.releaseSem();
+				}
 			}
-			// The original request is not needed except for INVITE
-			// transactions -- null the pointers to the transactions so
-			// that state may be released.
-			SIPClientTransaction ct = (SIPClientTransaction) eventWrapper.transaction;
-			if (ct != null
-					&& TransactionState.COMPLETED == ct.getState()
-					&& ct.getOriginalRequest() != null
-					&& !ct.getOriginalRequest().getMethod().equals(
-							Request.INVITE)) {
-				// reduce the state to minimum
-				// This assumes that the application will not need
-				// to access the request once the transaction is
-				// completed.
-				ct.clearState();
-			}
-			// mark no longer in the event queue.
-			if (ct != null) {
-				// If responses have been received in the window
-				// notify the pending response thread so he can take care of it.
-				// cannot do this in the context of the current thread else it
-				// will deadlock.
-				ct.clearPending();
-			}
+
 		} else if (sipEvent instanceof TimeoutEvent) {
 			// Change made by SIPquest
 			try {
@@ -257,16 +330,44 @@ class EventScanner implements Runnable {
 				// We cannot let this thread die under any
 				// circumstances. Protect ourselves by logging
 				// errors to the console but continue.
-				ex.printStackTrace();
+				sipStack.getLogWriter().logException(ex);
 			}
-			//Mark that TImeout event has been processed
-			//Bug fix by Shu-Lin
-			if (eventWrapper.transaction != null) {
-			   eventWrapper.transaction.clearPending();
+
+		} else if (sipEvent instanceof IOExceptionEvent) {
+			try {
+				if (sipListener != null)
+					sipListener.processIOException((IOExceptionEvent) sipEvent);
+			} catch (Exception ex) {
+				sipStack.getLogWriter().logException(ex);
+			}
+		} else if (sipEvent instanceof TransactionTerminatedEvent) {
+			try {
+				if (sipStack.isLoggingEnabled()) {
+					sipStack.getLogWriter().logDebug(
+							"About to deliver transactionTerminatedEvent");
+					sipStack.getLogWriter().logDebug("tx = " + 
+							((TransactionTerminatedEvent) sipEvent).getClientTransaction());
+					sipStack.getLogWriter().logDebug("tx = " + 
+							((TransactionTerminatedEvent) sipEvent).getServerTransaction());
+					
+				}
+				if (sipListener != null)
+					sipListener
+							.processTransactionTerminated((TransactionTerminatedEvent) sipEvent);
+			} catch (Exception ex) {
+				sipStack.getLogWriter().logException(ex);
+			}
+		} else if (sipEvent instanceof DialogTerminatedEvent) {
+			try {
+				if (sipListener != null)
+					sipListener
+							.processDialogTerminated((DialogTerminatedEvent) sipEvent);
+			} catch (Exception ex) {
+				sipStack.getLogWriter().logException(ex);
 			}
 		} else {
-			if (LogWriter.needsLogging)
-				sipStackImpl.logMessage("bad event" + sipEvent);
+
+			sipStack.getLogWriter().logFatalError("bad event" + sipEvent);
 		}
 
 	}
@@ -279,7 +380,6 @@ class EventScanner implements Runnable {
 
 	public void run() {
 		while (true) {
-			EventObject sipEvent = null;
 			EventWrapper eventWrapper = null;
 
 			LinkedList eventsToDeliver;
@@ -290,8 +390,9 @@ class EventScanner implements Runnable {
 					// haven't
 					// been stopped. If we have, then let the thread die.
 					if (this.isStopped) {
-						if (LogWriter.needsLogging)
-							sipStackImpl.logMessage("Stopped event scanner!!");
+						if (sipStack.isLoggingEnabled())
+							sipStack.getLogWriter().logDebug(
+									"Stopped event scanner!!");
 						return;
 					}
 
@@ -301,7 +402,7 @@ class EventScanner implements Runnable {
 						eventMutex.wait();
 					} catch (InterruptedException ex) {
 						// Let the thread die a normal death
-						sipStackImpl.logMessage("Interrupted!");
+						sipStack.getLogWriter().logDebug("Interrupted!");
 						return;
 					}
 				}
@@ -317,9 +418,10 @@ class EventScanner implements Runnable {
 			ListIterator iterator = eventsToDeliver.listIterator();
 			while (iterator.hasNext()) {
 				eventWrapper = (EventWrapper) iterator.next();
-				if (LogWriter.needsLogging) {
-					sipStackImpl.logMessage("Processing " + eventWrapper
-							+ "nevents " + eventsToDeliver.size());
+				if (sipStack.isLoggingEnabled()) {
+					sipStack.getLogWriter().logDebug(
+							"Processing " + eventWrapper + "nevents "
+									+ eventsToDeliver.size());
 				}
 				deliverEvent(eventWrapper);
 

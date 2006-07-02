@@ -2,27 +2,25 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Module Name   : JAIN SIP Specification
+ * Module Name   : JSIP Specification
  * File Name     : Transaction.java
  * Author        : Phelim O'Doherty
  *
  *  HISTORY
  *  Version   Date      Author              Comments
  *  1.1     08/10/2002  Phelim O'Doherty    Initial version
+ *  1.2     12/15/2004  M. Ranganathan      Clarified behavior of getDialog when 
+ *                      Phelim O'Doherty    AUTOMATIC_DIALOG_SUPPORT is set to off.
+ *                                          Added two methods - set/getApplicationData
+ *                                          Added terminate method.    
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 package javax.sip;
@@ -44,7 +42,9 @@ import java.io.Serializable;
  * common between client and server transactions.
  *
  * @see TransactionState
- * @author Sun Microsystems
+ * @author BEA Systems, Inc. 
+ * @author NIST
+ * @version 1.2
  * @since v1.1
  */
 
@@ -55,22 +55,39 @@ public interface Transaction extends Serializable{
      * exists for a transaction when a session is setup between a User Agent 
      * Client and a User Agent Server, either by a 1xx Provisional Response 
      * for an early dialog or a 200OK Response for a committed dialog.
-     * <p>
-     * An implementation must always associate a dialog with a transaction 
-     * which may result in the creation of a 'dummy' dialog so that the 
-     * application may always query the dialog  from the Transaction. However 
-     * if a dialog is not yet initialized, the Dialog.getState() must return 
-     * null to indicate that the dialog has been created but is not yet 
-     * mapped by the stack to any specific state.
+     * 
+     * <ul>
+     * <li>If the stack is configured with the AUTOMATIC_DIALOG_SUPPORT property set to
+     * </it>ON</it> ( default behavior ) then the following behavior is defined:
+     * <ul>
+     * <li>If the transaction is associated with an existing Dialog or could result
+     * in a Dialog being created in the future (ie. the stack is configured
+     * to recognize the method as a Dialog creating method or is one of the
+     * natively supported dialog creating methods such as INVITE, SUBSCRIBE or
+     * REFER), then the implementation must either associate the transaction
+     * with the existing Dialog or create a Dialog with null state. 
+     * <li>If the Transaction is neither dialog creating nor can be associated with
+     * an existing dialog, then the implementation must return null when the
+     * application issues getDialog on the transaction.
+     * </ul>
+     * <li>If the stack is configured with AUTOMATIC_DIALOG property set to </it>OFF</it>
+     * then the stack does not automatically create a Dialog for a transaction nor does 
+     * it maintain an association between dialog and transaction on behalf of the
+     * application. Hence this method will return null.
+     * It is the responsibility of the application to create a Dialog and associate
+     * it with the transaction when the response is sent. 
+     * </ul>
      *
-     * @return the dialog object of this transaction object.
+     * @return the dialog object of this transaction object or null if no 
+     * dialog exists.
      * @see Dialog
      */    
     public Dialog getDialog();    
 
     /**
-     * Returns the current state of the transaction. The allowable states for 
-     * client and server transactions are defined in their respective objects.
+     * Returns the current state of the transaction. Returns the current 
+     * TransactionState of this Transaction or null if a ClientTransaction has 
+     * yet been used to send a message.
      *
      * @return a TransactionState object determining the current state of the 
      * transaction.
@@ -134,6 +151,48 @@ public interface Transaction extends Serializable{
      * @return the Request message that created this transaction. 
      */
     public Request getRequest(); 
+    
+    
+    /**
+     * This method allows applications to associate application context with 
+     * the transaction. This specification does not define the format of this 
+     * data, this the responsibility of the application and is dependent 
+     * on the application. This capability may be useful for proxy servers 
+     * to associate the transaction to some application state. The context of 
+     * this application data is un-interpreted by the stack.
+     * 
+     * @param applicationData - un-interpreted application data.
+     * @since v1.2
+     *
+     */
+    
+    public void setApplicationData (Object applicationData);
+    
+    
+    /**
+     * Returns the application data associated with the transaction.This
+     * specification does not define the format of this application specific
+     * data. This is the responsibility of the application. 
+     * 
+     * @return application data associated with the transaction by the application.
+     * @since v1.2
+     *
+     */
+    public Object getApplicationData();
+    
+    /**
+     * Terminate this transaction and immediately release all stack resources 
+     * associated with it. When a transaction is terminated using this method, 
+     * a transaction terminated event is sent to the listener. If the 
+     * transaction is already associated with a dialog, it cannot be terminated 
+     * using this method. Instead, the dialog should be deleted to remove the 
+     * transaction.
+     * 
+     * @throws ObjectInUseException if the transaction cannot be terminated as 
+     * it is associated to a dialog.
+     * @since v1.2
+     */
+    public void terminate() throws ObjectInUseException;
  
     
 }

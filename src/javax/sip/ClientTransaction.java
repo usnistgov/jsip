@@ -2,27 +2,22 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Module Name   : JAIN SIP Specification
+ * Module Name   : JSIP Specification
  * File Name     : ClientTransaction.java
  * Author        : Phelim O'Doherty
  *
  *  HISTORY
  *  Version   Date      Author              Comments
  *  1.1     08/10/2002  Phelim O'Doherty    Initial version
+ *  1.2     16/06/2005  Phelim O'Doherty    Deprecated createAck method.
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 package javax.sip;
@@ -65,7 +60,9 @@ import javax.sip.message.Request;
  * <b>Non-Invite Transaction:</b><br>
  * Trying --> Proceeding --> Completed --> Terminated
  * 
- * @author  Sun Microsystems
+ * @author BEA Systems, Inc.
+ * @author NIST
+ * @version 1.2
  * @since v1.1
  */
 public interface ClientTransaction extends Transaction {
@@ -129,9 +126,8 @@ public interface ClientTransaction extends Transaction {
      * header field elapsing.  However, this is generally unnecessary since
      * the endpoints involved will take care of signaling the end of the
      * transaction.
-     * <li> Other Requests - A CANCEL can be sent on any other request the proxy
-     * has generated at any time, subject to receiving a provisional response
-     * to that request.
+     * <li> Other Requests - An implementation of this specification does
+     * not need to support CANCELing non-INVITE transactions.
      * </ul>
      * </ul> 
      *
@@ -144,15 +140,22 @@ public interface ClientTransaction extends Transaction {
     
     /**
      * Creates a new Ack message from the Request associated with this client
-     * transaction. This ACK can be used to acknowledge the response to the 
-     * request sent by this transaction. It is recommended that a 
-     * ClientTransaction be created to send the ACK.
+     * transaction. This ACK can be used to acknowledge the 2xx response to the 
+     * request sent by this transaction.
      *
      * @return the new ACK Request specific to the Request of this client
      * transaction.
      * @throws SipException if this method is called before a final response 
      * is received for the transaction.
-     */    
+     * @deprecated Since v1.2 - since a transaction that received
+     * a 2xx response terminates immediately, it cannot be used for creating
+     * the ack. If this transaction created a dialog, the 
+     * {@link Dialog#createAck(int)} method
+     * should be used. Otherwise the stack will automatically create and
+     * send the ACK for non-2xx responses that need to be acknowledged. 
+     * That is the application should never need to use this method.
+     * @since v1.2
+     */
     public Request createAck() throws SipException;  
     
 }

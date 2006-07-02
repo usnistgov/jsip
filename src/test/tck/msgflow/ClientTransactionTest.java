@@ -1,3 +1,22 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), and others. 
+* This software is has been contributed to the public domain. 
+* As a result, a formal license is not needed to use the software.
+* 
+* This software is provided "AS IS."  
+* NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* 
+*/
 package test.tck.msgflow;
 
 import junit.framework.*;
@@ -42,6 +61,10 @@ public class ClientTransactionTest extends MessageFlowHarness {
 						+ "create a new client transaction",
 					exc);
 			}
+			
+			// see if creating a dialog matters
+			tran.getDialog();
+			
 			Request cancel = null;
 			try {
 				cancel = tran.createCancel();
@@ -69,9 +92,9 @@ public class ClientTransactionTest extends MessageFlowHarness {
 				"The CSeqHeader's sequence number of the original and "
 					+ "the cancel request do not match",
 				((CSeqHeader) cancel.getHeader(CSeqHeader.NAME))
-					.getSequenceNumber()
+					.getSequenceNumberLong()
 					== ((CSeqHeader) invite.getHeader(CSeqHeader.NAME))
-						.getSequenceNumber());
+						.getSequenceNumberLong());
 			assertEquals(
 				"The CSeqHeader's method of the cancel request was not CANCEL",
 				((CSeqHeader) cancel.getHeader(CSeqHeader.NAME)).getMethod(),
@@ -90,6 +113,23 @@ public class ClientTransactionTest extends MessageFlowHarness {
 			assertFalse(
 				"Cancel request had more than one ViaHeader.",
 				cancelVias.hasNext());
+			
+			assertEquals( "To tags must match", 
+				((ToHeader) invite.getHeader("to")).getTag(),
+				((ToHeader) cancel.getHeader("to")).getTag()
+			); 
+			
+			assertEquals( "From tags must match", 
+					((FromHeader) invite.getHeader("from")).getTag(),
+					((FromHeader) cancel.getHeader("from")).getTag()
+			); 
+			
+			assertEquals( "Max-Forwards must match", 
+					invite.getHeader( MaxForwardsHeader.NAME ),
+					cancel.getHeader( MaxForwardsHeader.NAME )
+			); 
+			
+			
 		} catch (Throwable exc) {
 			exc.printStackTrace();
 			fail(exc.getClass().getName() + ": " + exc.getMessage());
@@ -143,118 +183,8 @@ public class ClientTransactionTest extends MessageFlowHarness {
 
 	}
 
-	/**
-	 * Tests creating of ACK requests.
-	 */
-	public void testCreateAck() {
-		try {
-			// 1. Create and send the original request
-
-			Request invite = createTiInviteRequest(null, null, null);
-			RequestEvent receivedRequestEvent = null;
-			ClientTransaction tran = null;
-			try {
-				tran = tiSipProvider.getNewClientTransaction(invite);
-				eventCollector.collectRequestEvent(riSipProvider);
-				tran.sendRequest();
-				waitForMessage();
-				receivedRequestEvent =
-					eventCollector.extractCollectedRequestEvent();
-				if (receivedRequestEvent == null
-					|| receivedRequestEvent.getRequest() == null)
-					throw new TiUnexpectedError("The sent request was not received by the RI!");
-			} catch (TooManyListenersException ex) {
-				throw new TckInternalError(
-					"A TooManyListenersException was thrown while trying to add "
-						+ "a SipListener to an RI SipProvider.",
-					ex);
-			} catch (SipException ex) {
-				throw new TiUnexpectedError(
-					"The TI failed to send the request!",
-					ex);
-			}
-			Request receivedRequest = receivedRequestEvent.getRequest();
-			// 2. Create and send the response
-			Response ok = null;
-			try {
-				ok =
-					riMessageFactory.createResponse(
-						Response.OK,
-						receivedRequest);
-                // BUG submitted by Ben Evans (Opencloud): 
-				// need to set contact header on dialog-creating response
-                ok.setHeader(createRiContact());
-			} catch (ParseException ex) {
-				throw new TckInternalError(
-					"Failed to create an OK response!",
-					ex);
-			}
-			//Send the response using the RI and collect using TI
-			try {
-				eventCollector.collectResponseEvent(tiSipProvider);
-			} catch (TooManyListenersException ex) {
-				throw new TiUnexpectedError("Error while trying to add riSipProvider");
-			}
-			try {
-				riSipProvider.sendResponse(ok);
-			} catch (SipException ex) {
-				throw new TckInternalError(
-					"Could not send back the response",
-					ex);
-			}
-			waitForMessage();
-			ResponseEvent responseEvent =
-				eventCollector.extractCollectedResponseEvent();
-			//3. Now let's create the ack
-			if (responseEvent == null || responseEvent.getResponse() == null)
-				throw new TiUnexpectedError("The TI failed to receive the response!");
-			if (responseEvent.getClientTransaction() != tran)
-				throw new TiUnexpectedError(
-					"The TI has associated a new ClientTransaction to a response "
-						+ "instead of using existing one!");
-			Request ack = null;
-			try {
-				ack = tran.createAck();
-			} catch (SipException ex) {
-				ex.printStackTrace();
-				fail("A SipException was thrown while creating an ack request");
-			}
-			assertNotNull("ClientTransaction.createAck returned null!", ack);
-			assertEquals(
-				"The created request did not have a CANCEL method.",
-				ack.getMethod(),
-				Request.ACK);
-			assertEquals(
-				"Request-URIs of the original and the ack request do not match",
-				ack.getRequestURI(),
-				invite.getRequestURI());
-			assertEquals(
-				"Call-IDs of the original and the ack request do not match",
-				ack.getHeader(CallIdHeader.NAME),
-				invite.getHeader(CallIdHeader.NAME));
-			assertEquals(
-				"ToHeaders of the original and the ack request do not match",
-				ack.getHeader(ToHeader.NAME),
-				invite.getHeader(ToHeader.NAME));
-			assertTrue(
-				"The CSeqHeader's sequence number of the original and "
-					+ "the ack request do not match",
-				((CSeqHeader) ack.getHeader(CSeqHeader.NAME))
-					.getSequenceNumber()
-					== ((CSeqHeader) invite.getHeader(CSeqHeader.NAME))
-						.getSequenceNumber());
-			assertEquals(
-				"The CSeqHeader's method of the ack request was not ACK",
-				((CSeqHeader) ack.getHeader(CSeqHeader.NAME)).getMethod(),
-				Request.ACK);
-		} catch (Throwable exc) {
-			exc.printStackTrace();
-			fail(exc.getClass().getName() + ": " + exc.getMessage());
-		}
-
-		assertTrue(new Exception().getStackTrace()[0].toString(), true);
-
-	}
+	//mranga: removed testCreateAck -- should not test for deprecated functionality
+	// in the TCK.
 
 	//==================== end of tests
 

@@ -1,26 +1,60 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 /*******************************************************************************
  * Product of NIST/ITL Advanced Networking Technologies Division (ANTD)         *
  *******************************************************************************/
 package gov.nist.javax.sip.message;
 
+import gov.nist.javax.sip.SIPConstants;
+import gov.nist.javax.sip.Utils;
 import gov.nist.javax.sip.address.*;
+
 import java.util.LinkedList;
 import java.util.Iterator;
 import java.io.UnsupportedEncodingException;
 import gov.nist.core.*;
 
 import gov.nist.javax.sip.header.*;
+
 import java.text.ParseException;
+
+import javax.sip.SipException;
+import javax.sip.Transaction;
+import javax.sip.message.Request;
 
 
 /**
  * SIP Response structure.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2005-04-16 20:38:52 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2006-07-02 09:54:05 $
+ * @since 1.1
  *
- * @author M. Ranganathan <mranga@nist.gov>  <br/>
+ * @author M. Ranganathan   <br/>
  *
- * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+ * 
  */
 public final class SIPResponse
 	extends SIPMessage
@@ -239,6 +273,10 @@ public final class SIPResponse
 				retval = "Session Not acceptable";
 				break;
 
+			case CONDITIONAL_REQUEST_FAILED:
+				retval = "Conditional request failed";
+				break;
+				
 			default :
 				retval = "Unkown Reason";
 
@@ -349,19 +387,36 @@ public final class SIPResponse
 	 * Check the response structure. Must have from, to CSEQ and VIA
 	 * headers.
 	 */
-	protected void checkHeaders() throws ParseException {
+	public void checkHeaders() throws ParseException {
 		if (getCSeq() == null) {
-			throw new ParseException(CSeq.NAME, 0);
+			throw new ParseException(CSeq.NAME+ " Is missing ", 0);
 		}
 		if (getTo() == null) {
-			throw new ParseException(To.NAME, 0);
+			throw new ParseException(To.NAME+ " Is missing ", 0);
 		}
 		if (getFrom() == null) {
-			throw new ParseException(From.NAME, 0);
+			throw new ParseException(From.NAME+ " Is missing ", 0);
 		}
 		if (getViaHeaders() == null) {
-			throw new ParseException(Via.NAME, 0);
+			throw new ParseException(Via.NAME+ " Is missing ", 0);
 		}
+		if (getCallId() == null) {
+			throw new ParseException(CallID.NAME + " Is missing ", 0);
+		}
+		Contact contact = this.getContactHeader();
+		
+		if (contact != null && contact.isWildCard()) {
+			throw new ParseException("Bad contact header -- should not be wild card!",0);
+		}
+		if (getStatusCode() > 699)
+			throw new ParseException("Unknown error code!" + getStatusCode(), 0);
+//		 Check for badly formatted message.
+		if (getStatusCode() == 100
+				&& getToTag() != null) {
+			throw new ParseException(
+					"Trying response should not have a To header tag parameter",0);
+		}
+
 	}
 
 	/**
@@ -419,31 +474,7 @@ public final class SIPResponse
 			retval.statusLine = (StatusLine) this.statusLine.clone();
 		return retval;
 	}
-	/**
-	 * Replace a portion of this response with a new structure (given by
-	 * newObj). This method finds a sub-structure that encodes to cText
-	 * and has the same type as the second arguement and replaces this
-	 * portion with the second argument.
-	 * @param cText is the text that we want to replace.
-	 * @param newObj is the new object that we want to put in place of
-	 * 	cText.
-	 * @param matchSubstring boolean to indicate whether to match on
-	 *   substrings when searching for a replacement.
-	 */
-	public void replace(
-		String cText,
-		GenericObject newObj,
-		boolean matchSubstring) {
-		if (cText == null || newObj == null)
-			throw new IllegalArgumentException("null args!");
-		if (newObj instanceof SIPHeader)
-			throw new IllegalArgumentException(
-				"Bad replacement class " + newObj.getClass().getName());
-
-		if (statusLine != null)
-			statusLine.replace(cText, newObj, matchSubstring);
-		super.replace(cText, newObj, matchSubstring);
-	}
+	
 
 	/**
 	 * Compare for equality.
@@ -469,18 +500,14 @@ public final class SIPResponse
 		} else if (matchObj == this)
 			return true;
 		SIPResponse that = (SIPResponse) matchObj;
-		// System.out.println("---------------------------------------");
-		// System.out.println("matching " + this.encode());
-		// System.out.println("matchObj " + that.encode());
+		
 		StatusLine rline = that.statusLine;
 		if (this.statusLine == null && rline != null)
 			return false;
 		else if (this.statusLine == rline)
 			return super.match(matchObj);
 		else {
-			// System.out.println(statusLine.match(that.statusLine));
-			// System.out.println(super.match(matchObj));
-			// System.out.println("---------------------------------------");
+			
 			return statusLine.match(that.statusLine) && super.match(matchObj);
 		}
 
@@ -518,24 +545,7 @@ public final class SIPResponse
 		return retval;
 	}
 
-	/** Get the dialog identifier. Assume the incoming response
-	 * corresponds to a client dialog for an outgoing request.
-	 * Acknowledgement -- this was contributed by Lamine Brahimi.
-	 *
-	 *@return a string that can be used to identify the dialog.
-	public String getDialogId()  {
-	    CallID cid = (CallID)this.getCallId();
-	    From from = (From) this.getFrom();
-	    String retval = cid.getCallId();
-	    retval += COLON + from.getUserAtHostPort();
-	    retval += COLON;
-	    if (from.getTag() != null)
-	        retval +=  from.getTag();
-	    
-	    
-	    return retval.toLowerCase();
-	}
-	 */
+	
 
 	/** Get a dialog identifier.
 	 * Generates a string that can be used as a dialog identifier.
@@ -606,6 +616,32 @@ public final class SIPResponse
 	}
 
 	/**
+	 * Sets the Via branch for CANCEL or ACK requests
+	 * 
+	 * @param via
+	 * @param method
+	 * @throws ParseException 
+	 */
+	private final void setBranch( Via via, String method ) {
+		String branch;
+		if (method.equals( Request.ACK ) ) {
+			if (statusLine.getStatusCode() >= 300 ) {
+				branch = getTopmostVia().getBranch();	// non-2xx ACK uses same branch
+			} else {
+				branch = Utils.generateBranchId();	// 2xx ACK gets new branch
+			}
+		} else if (method.equals( Request.CANCEL )) {
+			branch = getTopmostVia().getBranch();	// CANCEL uses same branch
+		} else return;
+		
+		try {
+			via.setBranch( branch );
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
 	 * Create a new SIPRequest from the given response. Note that the
 	 * RecordRoute Via and CSeq headers are not copied from the response.
 	 * These have to be added by the caller.
@@ -621,17 +657,10 @@ public final class SIPResponse
 	public SIPRequest createRequest(SipUri requestURI, Via via, CSeq cseq) {
 		SIPRequest newRequest = new SIPRequest();
 		String method = cseq.getMethod();
+		
 		newRequest.setMethod(method);
-		newRequest.setRequestURI(requestURI);
-		if ((method.equalsIgnoreCase("ACK")
-			|| method.equalsIgnoreCase("CANCEL"))
-			&& this.getTopmostVia().getBranch() != null) {
-			// Use the branch id from the OK.
-			try {
-				via.setBranch(this.getTopmostVia().getBranch());
-			} catch (ParseException ex) {
-			}
-		}
+		newRequest.setRequestURI(requestURI);		
+		this.setBranch( via, method );
 		newRequest.setHeader(via);
 		newRequest.setHeader(cseq);
 		Iterator headerIterator = getHeaders();
@@ -642,6 +671,9 @@ public final class SIPResponse
 				|| nextHeader instanceof ViaList
 				|| nextHeader instanceof CSeq
 				|| nextHeader instanceof ContentType
+				|| nextHeader instanceof ContentLength
+				|| nextHeader instanceof RequireList	// JvB: added, duplicate code below
+				|| nextHeader instanceof ContactList	// JvB: dont copy Contact from response either
 				|| nextHeader instanceof RecordRouteList) {
 				continue;
 			}
@@ -654,6 +686,13 @@ public final class SIPResponse
 			} catch (SIPDuplicateHeaderException e) {
 				e.printStackTrace();
 			}
+		}
+		
+		try {
+		  // JvB: all requests need a Max-Forwards
+		  newRequest.attachHeader( new MaxForwards(70), false);
+		} catch (Exception d) {
+		  
 		}
 		return newRequest;
 	}
@@ -683,52 +722,61 @@ public final class SIPResponse
 		if (statusLine == null) return  "";
 		else return statusLine.encode() + super.encode();
 	}
+
+    /**
+     * Generate a request from a response.
+     * 
+     * @param requestURI -- the request URI to assign to the request.
+     * @param via -- the Via header to assign to the request
+     * @param cseq -- the CSeq header to assign to the request
+     * @param from -- the From header to assign to the request
+     * @param to -- the To header to assign to the request
+     * @return -- the newly generated sip request.
+     */
+    public SIPRequest createRequest(SipUri requestURI, Via via, CSeq cseq, From from, To to) {
+    	SIPRequest newRequest = new SIPRequest();
+		String method = cseq.getMethod();
+		
+		newRequest.setMethod(method);
+		newRequest.setRequestURI(requestURI);
+		this.setBranch( via, method );
+		newRequest.setHeader(via);
+		newRequest.setHeader(cseq);
+		Iterator headerIterator = getHeaders();
+		while (headerIterator.hasNext()) {
+			SIPHeader nextHeader = (SIPHeader) headerIterator.next();
+			// Some headers do not belong in a Request ....
+			if (SIPMessage.isResponseHeader(nextHeader)
+				|| nextHeader instanceof ViaList
+				|| nextHeader instanceof CSeq
+				|| nextHeader instanceof ContentType
+				|| nextHeader instanceof ContentLength
+				|| nextHeader instanceof RecordRouteList
+				|| nextHeader instanceof RequireList
+				|| nextHeader instanceof ContactList	// JvB: added
+				|| nextHeader instanceof ContentLength ) {
+				continue;
+			}
+			if (nextHeader instanceof To)
+				nextHeader = (SIPHeader) to;
+			else if (nextHeader instanceof From)
+				nextHeader = (SIPHeader) from;
+			try {
+				newRequest.attachHeader(nextHeader, false);
+			} catch (SIPDuplicateHeaderException e) {
+			    //Should not happen!
+				e.printStackTrace();
+			}
+		}
+		
+		try {
+		  // JvB: all requests need a Max-Forwards
+		  newRequest.attachHeader( new MaxForwards(70), false);
+		} catch (Exception d) {
+		  
+		}
+		
+		return newRequest;
+        
+    }
 }
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.6  2004/09/09 16:49:07  mranga
- * Submitted by:  Christophe Lebel
- * Reviewed by:   M. Ranganathan
- *
- * Return an "Unknown reason" string instead of null for response code not known
- *
- * Revision 1.5  2004/07/25 19:26:44  mranga
- * Reviewed by:   mranga
- * Allows multiple Authorization headers in a message. Some minor cleanup.
- *
- * Revision 1.4  2004/03/25 15:15:05  mranga
- * Reviewed by:   mranga
- * option to log message content added.
- *
- * Revision 1.3  2004/02/18 14:33:02  mranga
- * Submitted by:  Bruno Konik
- * Reviewed by:   mranga
- * Remove extraneous newline in encoding messages. Test for empty sdp announce
- * rather than die with null when null is passed to sdp announce parser.
- * Fixed bug in checking for \n\n when looking for message end.
- *
- * Revision 1.2  2004/01/22 13:26:31  sverker
- * Issue number:
- * Obtained from:
- * Submitted by:  sverker
- * Reviewed by:   mranga
- *
- * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
- *
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- */

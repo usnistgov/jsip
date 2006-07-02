@@ -1,17 +1,43 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 package gov.nist.javax.sip.parser;
 import gov.nist.javax.sip.address.*;
 import gov.nist.core.*;
+
 import java.text.ParseException;
 import java.util.Vector;
 
 /**
  * Parser For SIP and Tel URLs. Other kinds of URL's are handled by the 
  * J2SE 1.4 URL class.
- * @version JAIN-SIP-1.1 $Revision: 1.10 $ $Date: 2005-10-22 23:52:44 $
+ * @version 1.2 $Revision: 1.11 $ $Date: 2006-07-02 09:51:19 $
  *
- * @author M. Ranganathan <mranga@nist.gov>  <br/>
+ * @author M. Ranganathan   <br/>
  *
- * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+ * 
  */
 public class URLParser extends Parser {
 
@@ -83,7 +109,7 @@ public class URLParser extends Parser {
 		while (lexer.hasMoreChars()) {
 			char next = lexer.lookAhead(0);
 			if (next == '['
-				|| next == ']'	// JvB: fixed this one, used to say '['
+				|| next == ']'	// JvB: fixed this one
 				|| next == '/'
 				|| next == ':'
 				|| next == '&'
@@ -191,7 +217,7 @@ public class URLParser extends Parser {
 			char next = lexer.lookAhead(0);
 			if (isMark(next)) {
 				lexer.consume(1);
-				return new StringBuffer().append(next).toString();
+				return new String( new char[]{next} );
 			} else
 				throw createParseException("mark");
 		} finally {
@@ -359,7 +385,8 @@ public class URLParser extends Parser {
 					|| la == '.'
 					|| la == '('
 					|| la == ')'
-					|| Lexer.isDigit(la)) {
+						// JvB: allow 'A'..'F', should be uppercase
+					|| Lexer.isHexDigit(la)) {	
 					lexer.consume(1);
 					s.append(la);
 					lc++;
@@ -392,14 +419,13 @@ public class URLParser extends Parser {
 			if (c == '+')
 				tn = global_phone_number();
 			else if (
-				Lexer.isAlpha(c)
-					|| Lexer.isDigit(c)
-					|| c == '-'
+				Lexer.isHexDigit(c)	// see RFC3966
+					|| c == '#'	
 					|| c == '*'
+					|| c == '-'						
 					|| c == '.'
 					|| c == '('
-					|| c == ')'
-					|| c == '#') {
+					|| c == ')' ) {
 				tn = local_phone_number();
 			} else
 				throw createParseException("unexpected char " + c);
@@ -471,18 +497,57 @@ public class URLParser extends Parser {
 
 	private NameValueList tel_parameters() throws ParseException {
 		NameValueList nvList = new NameValueList();
-		while (true) {
-			NameValue nv = nameValue('=');
-			nvList.add(nv);
-			char tok = lexer.lookAhead(0);
-			if (tok == ';')
-				continue;
-			else
-				break;
+		
+		// JvB: Need to handle 'phone-context' specially
+		// 'isub' (or 'ext') MUST appear first, but we accept any order here
+		NameValue nv;
+		while ( true ) {
+			String pname = paramNameOrValue();
+			
+			// Handle 'phone-context' specially, it may start with '+'
+			if ( pname.equalsIgnoreCase("phone-context")) {
+				nv = phone_context();
+			} else {
+				if (lexer.lookAhead(0) == '=') {
+					lexer.match('=');
+					String value = paramNameOrValue();
+					nv = new NameValue( pname, value );
+				} else {
+					nv = new NameValue( pname, "" );	// flag param
+				}
+			}
+			nvList.add( nv );
+			
+			if ( lexer.lookAhead(0) == ';' ) {
+				lexer.match(';');
+			} else {
+				return nvList;
+			}
 		}
-		return nvList;
+		
 	}
 
+	/**
+	 * Parses the 'phone-context' parameter in tel: URLs
+	 * @throws ParseException
+	 */
+	private NameValue phone_context() throws ParseException {
+		lexer.match('=');
+	
+		char la = lexer.lookAhead(0);
+		Object value;
+		if (la=='+') {	// global-number-digits
+			lexer.consume(1);	// skip '+'
+			value = "+" + base_phone_number();			
+		} else if ( Lexer.isAlpha(la) || Lexer.isDigit(la) ) {
+			Token t = lexer.match( Lexer.ID );	// more broad than allowed
+			value = t.getTokenValue();
+		} else {
+			throw new ParseException( "Invalid phone-context:" + la , -1 );
+		}
+		return new NameValue( "phone-context", value );
+	}
+	
 	/**
 	 * Parse and return a structure for a Tel URL.
 	 * @return a parsed tel url structure.
@@ -711,6 +776,32 @@ public class URLParser extends Parser {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2006/06/19 06:47:27  mranga
+ * javadoc fixups
+ *
+ * Revision 1.8  2006/06/16 15:26:28  mranga
+ * Added NIST disclaimer to all public domain files. Clean up some javadoc. Fixed a leak
+ *
+ * Revision 1.7  2006/05/17 05:20:18  jeroen
+ * fixed phone-context string value being returned
+ *
+ * Revision 1.6  2006/05/15 19:31:11  jeroen
+ * fixed tel: URI case, characters are only allowed in %-encoded form
+ *
+ * Revision 1.5  2006/05/14 21:30:27  jeroen
+ * more fixed tel: URL parsing, in line with RFC3966
+ *
+ * Revision 1.3  2006/05/14 20:20:32  jeroen
+ * fix for local phone numbers
+ *
+ * Revision 1.2  2005/10/22 23:53:35  jeroen
+ * fixed nasty little bug in URI parser: typo in bracket ('[' instead of ']')
+ *
+ * Revision 1.1.1.1  2005/10/04 17:12:36  mranga
+ *
+ * Import
+ *
+ *
  * Revision 1.9  2005/07/14 14:53:58  mranga
  * Submitted by:  mranga
  * Reviewed by:   mranga

@@ -1,21 +1,46 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 package gov.nist.javax.sip.parser;
 
 import gov.nist.javax.sip.header.*;
+import gov.nist.javax.sip.message.SIPRequest;
+
 import java.text.ParseException;
 import javax.sip.*;
-import javax.sip.message.Request;
 
 import gov.nist.core.*;
 
 /**
  * Parser for CSeq headers.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.7 $ $Date: 2005-04-27 14:12:04 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2006-07-02 09:51:12 $
  * 
- * @author M. Ranganathan <mranga@nist.gov>
- * @author Olivier Deruelle <deruelle@nist.gov><a href=" {@docRoot}
- *         /uncopyright.html">This code is in the public domain. </a>
- *  
+ * @author M. Ranganathan 
+ * @author Olivier Deruelle 
+ * 
  */
 public class CSeqParser extends HeaderParser {
 
@@ -36,19 +61,11 @@ public class CSeqParser extends HeaderParser {
             this.lexer.match(':');
             this.lexer.SPorHT();
             String number = this.lexer.number();
-            c.setSequenceNumber(Integer.parseInt(number));
+            c.setSequenceNumber(Long.parseLong(number));
             this.lexer.SPorHT();
-            String m = method();
+            String m = SIPRequest.getCannonicalName( method() );
             
-            // Use the manifest constant to speed up equality checks.
-            if ( m.equalsIgnoreCase(Request.INVITE)) m = Request.INVITE;
-            else if ( m.equalsIgnoreCase(Request.ACK)) m = Request.ACK;
-            else if ( m.equalsIgnoreCase(Request.BYE)) m = Request.BYE;
-            else if ( m.equalsIgnoreCase(Request.INFO)) m = Request.INFO;
-            else if ( m.equalsIgnoreCase(Request.NOTIFY)) m = Request.NOTIFY;
-            else if ( m.equalsIgnoreCase(Request.SUBSCRIBE)) m = Request.SUBSCRIBE;
-            else if ( m.equalsIgnoreCase(Request.PRACK)) m = Request.PRACK;
-            else if ( m.equalsIgnoreCase(Request.CANCEL)) m = Request.CANCEL;
+            
             
             c.setMethod(m);
             this.lexer.SPorHT();
@@ -69,6 +86,30 @@ public class CSeqParser extends HeaderParser {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2006/06/19 06:47:27  mranga
+ * javadoc fixups
+ *
+ * Revision 1.4  2006/06/16 15:26:28  mranga
+ * Added NIST disclaimer to all public domain files. Clean up some javadoc. Fixed a leak
+ *
+ * Revision 1.3  2006/05/22 08:16:15  mranga
+ * Added tests for retransmissionAlert flag
+ * Added tests for transaction terminated event
+ *
+ * Revision 1.2  2006/04/17 17:45:01  jeroen
+ * - Using SIPRequest method to canonicalize request name (current code was omitting some)
+ *
+ * Revision 1.1.1.1  2005/10/04 17:12:35  mranga
+ *
+ * Import
+ *
+ *
+ * Revision 1.7  2005/04/27 14:12:04  mranga
+ * Submitted by:  Mario Mantak
+ * Reviewed by:   mranga
+ *
+ * Added a missing "short form" for event header.
+ *
  * Revision 1.6  2005/04/21 00:01:59  mranga
  * Issue number:
  * Obtained from:

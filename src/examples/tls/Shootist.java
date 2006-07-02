@@ -12,6 +12,7 @@ import java.util.*;
  * is the guy that gets shot.
  *
  *@author Daniel Martinez
+ *@author Ivelin Ivanov
  */
 
 public class Shootist implements SipListener {
@@ -21,6 +22,7 @@ public class Shootist implements SipListener {
 	private static MessageFactory messageFactory;
 	private static HeaderFactory headerFactory;
 	private static SipStack sipStack;
+	private int reInviteCount;
 	private ContactHeader contactHeader;
 	private ListeningPoint tlsListeningPoint;
 	private int counter;
@@ -67,6 +69,7 @@ public class Shootist implements SipListener {
 			headerFactory = null;
 			messageFactory = null;
 			this.tlsListeningPoint = null;
+			this.reInviteCount = 0;
 			System.gc();
 			//Redo this from the start.
 			if (counter < 10 ) 
@@ -154,6 +157,22 @@ public class Shootist implements SipListener {
 				System.out.println("Sending ACK");
 				dialog.sendAck(ackRequest);
 
+				// Send a Re INVITE but this time force it 
+				// to use UDP as the transport. Else, it will
+				// Use whatever transport was used to create
+				// the dialog.
+				if (reInviteCount == 0) {
+				    Request inviteRequest = 
+					dialog.createRequest(Request.INVITE);
+				    ((SipURI)inviteRequest.getRequestURI()).removeParameter("transport");
+				    ((ViaHeader)inviteRequest.getHeader(ViaHeader.NAME)).setTransport("tls");
+				    inviteRequest.addHeader(contactHeader);
+				    try {Thread.sleep(100); } catch (Exception ex) {} 
+				    ClientTransaction ct = 
+					tlsProvider.getNewClientTransaction(inviteRequest);
+				    dialog.sendRequest(ct);
+				    reInviteCount ++;
+				}
 
 			}
 		} catch (Exception ex) {
@@ -164,7 +183,6 @@ public class Shootist implements SipListener {
 	}
 
 	public void processTimeout(javax.sip.TimeoutEvent timeoutEvent) {
-
 		System.out.println("Transaction Time out" );
 	}
 
@@ -208,7 +226,7 @@ public class Shootist implements SipListener {
 		// Set to 0 in your production code for max speed.
 		// You need  16 for logging traces. 32 for debug + traces.
 		// Your code will limp at 32 but it is best for debugging.
-		properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
+		properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "16");
 
 		try {
 			// Create SipStack object
@@ -231,7 +249,7 @@ public class Shootist implements SipListener {
 
 
 			tlsListeningPoint = sipStack.createListeningPoint
-								(5061, "tls");
+								(sipStack.getIPAddress(), 5061, "tls");
 			tlsProvider = sipStack.createSipProvider(tlsListeningPoint);
 			tlsProvider.addSipListener(listener);
 
@@ -269,11 +287,11 @@ public class Shootist implements SipListener {
 			// Create ViaHeaders
 
 			ArrayList viaHeaders = new ArrayList();
-			int port = sipProvider.getListeningPoint().getPort();
+			int port = sipProvider.getListeningPoint(transport).getPort();
 			ViaHeader viaHeader =
 				headerFactory.createViaHeader(
 					sipStack.getIPAddress(),
-					sipProvider.getListeningPoint().getPort(),
+					port,
 					transport,
 					null);
 
@@ -315,7 +333,7 @@ public class Shootist implements SipListener {
 
 			// Create the contact name address.
 			SipURI contactURI = addressFactory.createSipURI(fromName, host);
-			contactURI.setPort(sipProvider.getListeningPoint().getPort());
+			contactURI.setPort(port);
 
 			Address contactAddress = addressFactory.createAddress(contactURI);
 
@@ -324,9 +342,6 @@ public class Shootist implements SipListener {
 
 			contactHeader =
 				headerFactory.createContactHeader(contactAddress);
-
-			contactHeader.setParameter("transport", "tls");
-
 			request.addHeader(contactHeader);
 
 			// Add the extension header.
@@ -381,5 +396,17 @@ public class Shootist implements SipListener {
 	public static void main(String args[]) {
 		new Shootist().init();
 
+	}
+
+	public void processIOException(IOExceptionEvent exceptionEvent) {
+		System.out.println("IOException occured while retransmitting requests:" + exceptionEvent);
+	}
+
+	public void processTransactionTerminated(TransactionTerminatedEvent transactionTerminatedEvent) {
+		System.out.println("Transaction Terminated event: " + transactionTerminatedEvent );
+	}
+
+	public void processDialogTerminated(DialogTerminatedEvent dialogTerminatedEvent) {
+		System.out.println("Dialog Terminated event: " + dialogTerminatedEvent);
 	}
 }

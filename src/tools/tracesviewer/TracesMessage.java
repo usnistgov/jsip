@@ -7,6 +7,7 @@ public class TracesMessage implements Serializable {
 	String messageFrom = null;
 	String messageTo = null;
 	String messageTime = null;
+	String messageTimeStamp = null;
 	String messageString = null;
 	String messageFirstLine = null;
 	String messageStatusInfo = null;
@@ -27,6 +28,7 @@ public class TracesMessage implements Serializable {
 		String messageString,
 		String messageStatusInfo,
 		String messageTransactionId,
+		String messageTimeStamp,
 		String debugLine) {
 		this.messageFrom = messageFrom;
 		this.messageTo = messageTo;
@@ -35,9 +37,28 @@ public class TracesMessage implements Serializable {
 		this.messageFirstLine = messageFirstLine;
 		this.messageStatusInfo = messageStatusInfo;
 		this.messageTransactionId = messageTransactionId;
+		this.messageTimeStamp = messageTimeStamp;
 		this.debugLine = debugLine;
 	}
 
+	private String getKey() {
+		if ( messageTimeStamp != null) {
+			return messageFirstLine+ messageTransactionId+":"+messageTimeStamp;
+		} else {
+			// Generate a random time stamp
+			return messageFirstLine+ messageTransactionId+ ":" + (int) ( Math.random()*1000);
+		}
+	}
+	
+	/**
+	 * To check for insertion into the hash table.
+	 * 
+	 */
+	public int hashCode() {
+		return getKey().hashCode();
+	}
+	
+	
 	public void setFrom(String from) {
 		messageFrom = from;
 	}

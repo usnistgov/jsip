@@ -1,29 +1,59 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 /******************************************************************************
  * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).      *
  ******************************************************************************/
 package gov.nist.javax.sip.header;
 
 import javax.sip.InvalidArgumentException;
+import javax.sip.header.CSeqHeader;
+
 import java.text.ParseException;
 import gov.nist.javax.sip.message.SIPRequest;
 
 /**
  *  CSeq SIP Header.
  *
- * @author M. Ranganathan <mranga@nist.gov>  NIST/ITL/ANTD <br/>
- *
- * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
- *
- * @version JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2004-06-16 02:53:18 $
+ * @author M. Ranganathan    <br/>
+ * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-02 09:50:30 $
+ * @since 1.1
  *
  */
 
 public class CSeq extends SIPHeader implements javax.sip.header.CSeqHeader {
 
 	/**
+	 * Comment for <code>serialVersionUID</code>
+	 */
+	private static final long serialVersionUID = -5405798080040422910L;
+
+	/**
 	 * seqno field
 	 */
-	protected Integer seqno;
+	protected Long seqno;
 
 	/**
 	 * method field
@@ -43,9 +73,9 @@ public class CSeq extends SIPHeader implements javax.sip.header.CSeqHeader {
 	 * @param seqno is the sequence number to assign.
 	 * @param method is the method string.
 	 */
-	public CSeq(int seqno, String method) {
+	public CSeq(long seqno, String method) {
 		this();
-		this.seqno = new Integer(seqno);
+		this.seqno = new Long(seqno);
 		this.method = SIPRequest.getCannonicalName(method);
 	}
 
@@ -56,18 +86,13 @@ public class CSeq extends SIPHeader implements javax.sip.header.CSeqHeader {
 	 * otherwise.
 	 */
 	public boolean equals(Object other) {
-		try {
-			CSeq that = (CSeq) other;
-			if (!this.seqno.equals(that.seqno)) {
-				return false;
-			}
-			if (this.method.compareToIgnoreCase(that.method) != 0) {
-				return false;
-			}
-			return true;
-		} catch (ClassCastException ex) {
-			return false;
+		
+		if (other instanceof CSeqHeader) {
+			final CSeqHeader o = (CSeqHeader) other;
+			return this.getSequenceNumberLong() == o.getSequenceNumberLong()
+				&& this.getMethod().equals( o.getMethod() );
 		}
+		return false;
 	}
 
 	/**
@@ -95,27 +120,27 @@ public class CSeq extends SIPHeader implements javax.sip.header.CSeqHeader {
 		return method;
 	}
 
-	/**
-	 * Sets the sequence number of this CSeqHeader. The sequence number
-	 * MUST be expressible as a 32-bit unsigned integer and MUST be less than
-	 * 2**31.
-	 *
-	 * @param sequenceNumber - the sequence number to set.
-	 * @throws InvalidArgumentException -- if the seq number is <= 0
+	/*
+	 * (non-Javadoc)
+	 * @see javax.sip.header.CSeqHeader#setSequenceNumber(long)
 	 */
-	public void setSequenceNumber(int sequenceNumber)
+	public void setSequenceNumber(long sequenceNumber)
 		throws InvalidArgumentException {
-		if (sequenceNumber < 0)
+		if (sequenceNumber < 0 )
 			throw new InvalidArgumentException(
 				"JAIN-SIP Exception, CSeq, setSequenceNumber(), "
-					+ "the sequence number parameter is < 0");
-		seqno = new Integer(sequenceNumber);
+					+ "the sequence number parameter is < 0 : " + sequenceNumber);
+		else if ( sequenceNumber >  ((long)1)<<32 - 1) 
+			throw new InvalidArgumentException(
+					"JAIN-SIP Exception, CSeq, setSequenceNumber(), "
+						+ "the sequence number parameter is too large : " + sequenceNumber);
+		
+		seqno = new Long(sequenceNumber);
 	}
 
-	/**
-	 * Set the method member
-	 *
-	 * @param meth -- String to set
+	/*
+	 * (non-Javadoc)
+	 * @see javax.sip.header.CSeqHeader#setMethod(java.lang.String)
 	 */
 	public void setMethod(String meth) throws ParseException {
 		if (meth == null)
@@ -125,10 +150,9 @@ public class CSeq extends SIPHeader implements javax.sip.header.CSeqHeader {
 		this.method = SIPRequest.getCannonicalName(meth);
 	}
 
-	/**
-	 * Gets the sequence number of this CSeqHeader.
-	 *
-	 * @return sequence number of the CSeqHeader 
+	/*
+	 * (non-Javadoc)
+	 * @see javax.sip.header.CSeqHeader#getSequenceNumber()
 	 */
 	public int getSequenceNumber() {
 		if (this.seqno == null)
@@ -136,31 +160,16 @@ public class CSeq extends SIPHeader implements javax.sip.header.CSeqHeader {
 		else
 			return this.seqno.intValue();
 	}
+
+	
+	/*
+	 * (non-Javadoc)
+	 * @see javax.sip.header.CSeqHeader#getSequenceNumberLong()
+	 */
+
+	public long getSequenceNumberLong() {
+		
+		return this.seqno.longValue();
+	}
 }
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.2  2004/01/22 13:26:29  sverker
- * Issue number:
- * Obtained from:
- * Submitted by:  sverker
- * Reviewed by:   mranga
- *
- * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
- *
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- */
+

@@ -1,3 +1,28 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 package gov.nist.core;
 
 import java.util.Hashtable;
@@ -6,8 +31,10 @@ import java.text.ParseException;
 
 /** A lexical analyzer that is used by all parsers in our implementation.
  *
+ *@version 1.2 
+ *@since 1.1
  *
- *@author M. Ranganathan <mranga@nist.gov>
+ *@author M. Ranganathan 
  */
 public class LexerCore extends StringTokenizer {
 
@@ -105,16 +132,11 @@ public class LexerCore extends StringTokenizer {
 		this.currentLexerName = "charLexer";
 	}
 
-	public LexerCore(String lexerName) {
-		this();
-		this.currentLexerName = lexerName;
-	}
-
 	/** Initialize the lexer with a buffer.
 	 */
 	public LexerCore(String lexerName, String buffer) {
-		this(lexerName);
-		this.buffer = buffer;
+		super(buffer);
+		this.currentLexerName = lexerName;
 	}
 
 	/** Peek the next id but dont move the buffer pointer forward.
@@ -161,7 +183,7 @@ public class LexerCore extends StringTokenizer {
 					tok.tokenType = ID;
 			} else {
 				char nextChar = getNextChar();
-				tok.tokenValue = new StringBuffer().append(nextChar).toString();
+				tok.tokenValue = String.valueOf(nextChar);
 				if (isAlpha(nextChar)) {
 					tok.tokenType = ALPHA;
 				} else if (isDigit(nextChar)) {
@@ -219,7 +241,7 @@ public class LexerCore extends StringTokenizer {
 					throw new ParseException(buffer + "\nExpecting DIGIT", ptr);
 				this.currentMatch = new Token();
 				this.currentMatch.tokenValue =
-					new StringBuffer().append(next).toString();
+					String.valueOf(next);
 				this.currentMatch.tokenType = tok;
 				consume(1);
 
@@ -228,7 +250,7 @@ public class LexerCore extends StringTokenizer {
 					throw new ParseException(buffer + "\nExpecting ALPHA", ptr);
 				this.currentMatch = new Token();
 				this.currentMatch.tokenValue =
-					new StringBuffer().append(next).toString();
+					String.valueOf(next);
 				this.currentMatch.tokenType = tok;
 				consume(1);
 
@@ -241,7 +263,7 @@ public class LexerCore extends StringTokenizer {
 			if (next == ch.charValue()) {
 				this.currentMatch = new Token();
 				this.currentMatch.tokenValue =
-					new StringBuffer().append(ch.charValue()).toString();
+					String.valueOf(ch.charValue());
 				this.currentMatch.tokenType = tok;
 				consume(1);
 			} else
@@ -652,48 +674,3 @@ public class LexerCore extends StringTokenizer {
 		return new ParseException(this.buffer, this.ptr);
 	}
 }
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.10  2004/08/10 23:15:50  mranga
- * Reviewed by:    mranga
- * improved error message
- *
- * Revision 1.9  2004/03/10 03:37:25  mranga
- * Submitted by:  Ben Evans
- * Reviewed by:  mranga
- * Bug in parsing of via header when there is a number of comma separated headers.
- *
- * Revision 1.8  2004/02/06 20:15:55  mranga
- * Submitted by:  Bruno Konik
- * Reviewed by:   mranga
- * Fixed character sets for parsing of urls and methods.
- *
- * Revision 1.7  2004/01/22 14:23:45  mranga
- * Reviewed by:   mranga
- * Fixed some minor formatting issues.
- *
- * Revision 1.6  2004/01/22 13:26:27  sverker
- * Issue number:
- * Obtained from:
- * Submitted by:  sverker
- * Reviewed by:   mranga
- *
- * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
- *
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- */

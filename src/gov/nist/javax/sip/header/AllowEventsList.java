@@ -1,3 +1,28 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 /*******************************************************************************
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
 *******************************************************************************/
@@ -12,14 +37,26 @@ import javax.sip.header.*;
  * The sip message can have multiple AllowEvents headers which are strung
  * together in a list.
  *
- * @author M. Ranganathan <mranga@nist.gov> <br/>
- * @author Olivier Deruelle <deruelle@nist.gov><br/>
- * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+ * @author M. Ranganathan  <br/>
+ * @author Olivier Deruelle <br/>
+ * 
  *
- * @version JAIN-SIP-1.1 $Revision: 1.2 $ $Date: 2004-01-22 13:26:29 $
+ * @version 1.2 $Revision: 1.3 $ $Date: 2006-07-02 09:50:38 $
+ * @since 1.1
  *
  */
-public class AllowEventsList extends SIPHeaderList {
+public class AllowEventsList extends SIPHeaderList  {
+
+	public Object clone() {
+		AllowEventsList retval = new AllowEventsList();
+		retval.clonehlist(this.hlist);
+		return retval;
+	}
+	
+	/**
+	 * Comment for <code>serialVersionUID</code>
+	 */
+	private static final long serialVersionUID = 1L;
 
 	/** default constructor
 	 */
@@ -38,12 +75,11 @@ public class AllowEventsList extends SIPHeaderList {
 	 *
 	 * AllowEventsHeader.
 	 *
-	 * @since JAIN SIP v1.1
 	 *
 	 */
 	public ListIterator getMethods() {
 		ListIterator li = super.hlist.listIterator();
-		LinkedList ll = new LinkedList();
+		LinkedList  ll = new LinkedList ();
 		while (li.hasNext()) {
 			AllowEvents allowEvents = (AllowEvents) li.next();
 			ll.add(allowEvents.getEventType());
@@ -64,7 +100,6 @@ public class AllowEventsList extends SIPHeaderList {
 	 *
 	 * unexpectedly while parsing the Strings defining the methods supported.
 	 *
-	 * @since JAIN SIP v1.1
 	 *
 	 */
 	public void setMethods(List methods) throws ParseException {
@@ -76,6 +111,3 @@ public class AllowEventsList extends SIPHeaderList {
 		}
 	}
 }
-/*
- * $Log: not supported by cvs2svn $
- */

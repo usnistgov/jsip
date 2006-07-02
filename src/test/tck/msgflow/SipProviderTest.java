@@ -1,3 +1,22 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), and others. 
+* This software is has been contributed to the public domain. 
+* As a result, a formal license is not needed to use the software.
+* 
+* This software is provided "AS IS."  
+* NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* 
+*/
 package test.tck.msgflow;
 
 import junit.framework.*;
@@ -24,7 +43,7 @@ import test.tck.*;
 public class SipProviderTest extends MessageFlowHarness {
 
 	public SipProviderTest(String name) {
-		super(name);
+		super(name,true);
 	}
 
 	//======================= tests ====================================
@@ -67,7 +86,6 @@ public class SipProviderTest extends MessageFlowHarness {
 			fail(exc.getClass().getName() + ": " + exc.getMessage());
 		}
 		assertTrue(new Exception().getStackTrace()[0].toString(), true);
-
 	}
 
 	/**
@@ -124,6 +142,62 @@ public class SipProviderTest extends MessageFlowHarness {
 	}
 
 	/**
+	 * Sends a single ACK request from the RI, and tests if the TI passes it to the 
+	 * application
+	 * 
+	 * ACKs MUST NOT be filtered for stateless proxy applications, they must forward them
+	 */
+	public void testReceiveACK() {
+		try {
+			//create an empty ACK request.
+			Request ack = createRiInviteRequest(null, null, null);
+			ack.setMethod( Request.ACK );
+			RequestEvent receivedRequestEvent = null;
+			try {
+				//Send using RI and collect using TI
+				eventCollector.collectRequestEvent(tiSipProvider);
+				riSipProvider.sendRequest(ack);
+				waitForMessage();
+				receivedRequestEvent =
+					eventCollector.extractCollectedRequestEvent();
+				assertNotNull(
+					"The sent ACK event was not received at the other end!",
+					receivedRequestEvent);
+				assertNotNull(
+					"The sent ACK was not received at the other end!",
+					receivedRequestEvent.getRequest());
+			} catch (TooManyListenersException ex) {
+				//This time adding the listener is (sort of) part of the test
+				//so we fail instead of just "throwing on" the exc
+				ex.printStackTrace();
+				fail(
+					"A TooManyListenersException was thrown while trying to add "
+						+ "a SipListener to a TI SipProvider.");
+			} catch (SipException ex) {
+				throw new TckInternalError(
+					"The RI failed to send the request!",
+					ex);
+			}
+			//question: should we compare sent and received request?
+			//my opinion: finding a discrepancy while comparing requests
+			//would most probably mean a parse error and parsing is not what
+			//we are currently testing
+			//Transaction initiating requests should not have a server transaction
+			//associated with them as the application might decide to handle the
+			//request statelessly
+			assertNull(
+				"The Tested Implementation has implicitly created a ServerTransaction "
+					+ "for the received request. Transactions should only be created "
+					+ "explicitly using the SipProvider.getNewXxxTransaction() method.",
+				receivedRequestEvent.getServerTransaction());
+		} catch (Throwable exc) {
+			exc.printStackTrace();
+			fail(exc.getClass().getName() + ": " + exc.getMessage());
+		}
+		assertTrue(new Exception().getStackTrace()[0].toString(), true);
+	}	
+	
+	/**
 	 * Sends a request from the RI, generates a response at the TI side, sends
 	 * it back and checks whether it arrives at the RI.
 	 */
@@ -173,6 +247,10 @@ public class SipProviderTest extends MessageFlowHarness {
 						via,
 						(MaxForwardsHeader) receivedRequest.getHeader(
 							MaxForwardsHeader.NAME));
+				
+				// JvB: set to-tag for RFC3261 compliance
+				((ToHeader)ok.getHeader("To")).setTag("ok");
+				
 				addStatus(receivedRequest, ok);
 			} catch (ParseException ex) {
 				throw new TiUnexpectedError(
@@ -246,6 +324,10 @@ public class SipProviderTest extends MessageFlowHarness {
 					riMessageFactory.createResponse(
 						Response.OK,
 						receivedRequest);
+				
+				// JvB: set to-tag for RFC3261 compliance
+				((ToHeader)ok.getHeader("To")).setTag("ok");
+				
 				addStatus(receivedRequest, ok);
 			} catch (ParseException ex) {
 				throw new TckInternalError(

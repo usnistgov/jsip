@@ -2,21 +2,15 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Module Name   : JAIN SIP Specification
+ * Module Name   : JSIP Specification
  * File Name     : ContactHeader.java
  * Author        : Phelim O'Doherty
  *
@@ -89,8 +83,10 @@ import javax.sip.InvalidArgumentException;
  * @see HeaderAddress
  * @see Parameters
  *
- * @version v1.1
- * @author Sun Microsystems
+ * @author BEA Systems, Inc. 
+ * @author NIST
+ * @version 1.2
+ * @since 1.1
  */
 
 
@@ -98,7 +94,7 @@ import javax.sip.InvalidArgumentException;
 public interface ContactHeader extends HeaderAddress, Parameters, Header {
 
     /**
-     * Returns the value of the <code>expires</code> parameter as delta-seconds.
+     * Sets the value of the <code>expires</code> parameter as delta-seconds.
      * When a client sends a REGISTER request, it MAY suggest an expiration
      * interval that indicates how long the client would like the registration
      * to be valid for a specific address. There are two ways in which a client
@@ -135,7 +131,9 @@ public interface ContactHeader extends HeaderAddress, Parameters, Header {
 
 
     /**
-     * Returns the value of the <code>expires</code> parameter.
+     * Returns the value of the <code>expires</code> parameter or -1 if no 
+     * expires parameter was specified or if the parameter value cannot be 
+     * parsed as an int.
      *
      * @return value of the <code>expires</code> parameter measured in
      * delta-seconds, O implies removal of Registration specified in Contact 
@@ -202,12 +200,25 @@ public interface ContactHeader extends HeaderAddress, Parameters, Header {
 
 
 
+      /**
+       * Sets a wildcard on this contact address that is "*" is assigned to the 
+       * contact header so that the header will have the format of Contact: *.
+       *
+       * @since v1.2 
+       */
+	public void setWildCard();
+	
+       /**
+        * Returns a boolean value that indicates if the contact header 
+        * has the format of Contact: *. 
+        * @return true if this is a wildcard address, false otherwise.
+        * @since v1.2 
+        */
+	public boolean isWildCard();
+
     /**
-
      * Name of ContactHeader
-
      */
-
     public final static String NAME = "Contact";
 
 

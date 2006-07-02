@@ -1,189 +1,122 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 /*******************************************************************************
-* Product of NIST/ITL Advanced Networking Technologies Division (ANTD)         *
-*******************************************************************************/
+ * Product of NIST/ITL Advanced Networking Technologies Division (ANTD)         *
+ *******************************************************************************/
 package gov.nist.javax.sip.message;
+
 import gov.nist.core.*;
 import gov.nist.javax.sip.header.*;
 import java.util.Hashtable;
 
 /**
- * A map of which of the standard headers may appear as a list 
- * @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2005-02-24 16:14:30 $
+ * A map of which of the standard headers may appear as a list
+ * 
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-02 09:54:06 $
+ * @since 1.1
  */
-class ListMap   {
-	private final static String SIPHEADERS_PACKAGE = 
-			PackageNames.SIPHEADERS_PACKAGE;
-       // A table that indicates whether a header has a list representation or
-       // not (to catch adding of the non-list form when a list exists.)
-       // Entries in this table allow you to look up the list form of a header
-       // (provided it has a list form).
-       private static Hashtable		headerListTable;
-       private static boolean initialized;
-       static { initializeListMap();  }
+class ListMap {
+	// A table that indicates whether a header has a list representation or
+	// not (to catch adding of the non-list form when a list exists.)
+	// Entries in this table allow you to look up the list form of a header
+	// (provided it has a list form). Note that under JAVA-5 we have
+	// typed collections which would render such a list obsolete. However,
+	// we are not using java 5.
+	private static Hashtable headerListTable;
 
+	private static boolean initialized;
+	static {
+		initializeListMap();
+	}
 
-       static private void initializeListMap() {
-	    /* 
-	     * Build a table mapping between objects that have a list form
-	     * and the class of such objects.
-	     */
-	    headerListTable = new Hashtable();
-	    headerListTable.put(
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE +".ExtensionHeaderImpl"),
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".ExtensionHeaderList"));
+	static private void initializeListMap() {
+		/*
+		 * Build a table mapping between objects that have a list form and the
+		 * class of such objects.
+		 */
+		headerListTable = new Hashtable();
+		headerListTable.put(ExtensionHeaderImpl.class, ExtensionHeaderList.class);
 
-	    headerListTable.put(
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE +".Contact"),
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".ContactList"));
+		headerListTable.put(Contact.class, ContactList.class);
 
-	    headerListTable.put(
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".ContentEncoding"),
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".ContentEncodingList"));
+		headerListTable.put(ContentEncoding.class, ContentEncodingList.class);
 
-	    headerListTable.put(
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".Via"),
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".ViaList"));
-	
-	    headerListTable.put(
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".WWWAuthenticate"),
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".WWWAuthenticateList"));
+		headerListTable.put(Via.class, ViaList.class);
 
-	    headerListTable.put(
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".Accept"),
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".AcceptList"));
+		headerListTable.put(WWWAuthenticate.class, WWWAuthenticateList.class);
 
-	    headerListTable.put(
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".AcceptEncoding"),
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".AcceptEncodingList"));
+		headerListTable.put(Accept.class, AcceptList.class);
 
-	    headerListTable.put(
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".AcceptLanguage"),
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".AcceptLanguageList"));
+		headerListTable.put(AcceptEncoding.class, AcceptEncodingList.class);
 
-	    headerListTable.put(
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".ProxyRequire"),
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".ProxyRequireList"));
+		headerListTable.put(AcceptLanguage.class, AcceptLanguageList.class);
 
-	    headerListTable.put(
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".Route"),
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".RouteList"));
+		headerListTable.put(ProxyRequire.class, ProxyRequireList.class);
 
-	    headerListTable.put(
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".Require"),
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".RequireList"));
+		headerListTable.put(Route.class, RouteList.class);
 
-	    headerListTable.put(
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".Warning"),
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".WarningList"));
+		headerListTable.put(Require.class, RequireList.class);
 
-	    headerListTable.put(
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".Unsupported"),
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".UnsupportedList"));
+		headerListTable.put(Warning.class, WarningList.class);
 
-	    headerListTable.put(
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".AlertInfo"),
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".AlertInfoList"));
+		headerListTable.put(Unsupported.class, UnsupportedList.class);
 
-	    headerListTable.put(
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".CallInfo"),
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".CallInfoList"));
+		headerListTable.put(AlertInfo.class, AlertInfoList.class);
 
-	    headerListTable.put(
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".ProxyAuthenticate"),
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE +".ProxyAuthenticateList"));
+		headerListTable.put(CallInfo.class, CallInfoList.class);
 
-	    headerListTable.put(
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".ProxyAuthorization"),
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE +".ProxyAuthorizationList"));
+		headerListTable.put(ProxyAuthenticate.class,ProxyAuthenticateList.class);
 
-	    headerListTable.put(
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".Authorization"),
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE +".AuthorizationList"));
+		headerListTable.put(ProxyAuthorization.class, ProxyAuthorizationList.class);
 
-	   headerListTable.put(
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".Allow"),
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".AllowList"));
+		headerListTable.put(Authorization.class, AuthorizationList.class);
 
-	   headerListTable.put(
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".RecordRoute"),
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".RecordRouteList"));
+		headerListTable.put(Allow.class, AllowList.class);
 
-	   headerListTable.put(
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".ContentLanguage"),
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".ContentLanguageList"));
+		headerListTable.put(RecordRoute.class, RecordRouteList.class);
 
-	   headerListTable.put(
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".ErrorInfo"),
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".ErrorInfoList"));
+		headerListTable.put(ContentLanguage.class, ContentLanguageList.class);
 
-	   headerListTable.put(
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".Supported"),
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".SupportedList"));
+		headerListTable.put(ErrorInfo.class, ErrorInfoList.class);
 
-	   headerListTable.put(
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".InReplyTo"),
-		GenericObject.getClassFromName
-			(SIPHEADERS_PACKAGE + ".InReplyToList"));
+		headerListTable.put(Supported.class, SupportedList.class);
 
+		headerListTable.put(InReplyTo.class,InReplyToList.class);
 
-	    
-	    initialized = true;
+		initialized = true;
 
 	}
 
 	/**
 	 * return true if this has an associated list object.
 	 */
-	static  protected boolean hasList(SIPHeader sipHeader) {
-		if (sipHeader instanceof SIPHeaderList) return false;
-	        else {
+	static protected boolean hasList(SIPHeader sipHeader) {
+		if (sipHeader instanceof SIPHeaderList)
+			return false;
+		else {
 			Class headerClass = sipHeader.getClass();
 			return headerListTable.get(headerClass) != null;
 		}
@@ -192,8 +125,9 @@ class ListMap   {
 	/**
 	 * Return true if this has an associated list object.
 	 */
-	static  protected boolean hasList(Class sipHdrClass) {
-		if (!initialized) initializeListMap();
+	static protected boolean hasList(Class sipHdrClass) {
+		if (!initialized)
+			initializeListMap();
 		return headerListTable.get(sipHdrClass) != null;
 	}
 
@@ -201,60 +135,30 @@ class ListMap   {
 	 * Get the associated list class.
 	 */
 	static protected Class getListClass(Class sipHdrClass) {
-                if (!initialized) initializeListMap();
+		if (!initialized)
+			initializeListMap();
 		return (Class) headerListTable.get(sipHdrClass);
 	}
 
 	/**
-	 * Return a list object for this header if it has an associated
-	 * list object.
+	 * Return a list object for this header if it has an associated list object.
 	 */
-	static protected 
-		SIPHeaderList getList(SIPHeader sipHeader) {
-		if (!initialized) initializeListMap();
+	static protected SIPHeaderList getList(SIPHeader sipHeader) {
+		if (!initialized)
+			initializeListMap();
 		try {
-		   Class headerClass = sipHeader.getClass();
-		   Class listClass = (Class) headerListTable.get(headerClass);
-		   SIPHeaderList shl =  (SIPHeaderList) listClass.newInstance();
-		   shl.setHeaderName(sipHeader.getName());
-		   return shl;
+			Class headerClass = sipHeader.getClass();
+			Class listClass = (Class) headerListTable.get(headerClass);
+			SIPHeaderList shl = (SIPHeaderList) listClass.newInstance();
+			shl.setHeaderName(sipHeader.getName());
+			return shl;
 		} catch (InstantiationException ex) {
-		    ex.printStackTrace();
-		} catch (IllegalAccessException ex)  {
-		    ex.printStackTrace();
+			ex.printStackTrace();
+		} catch (IllegalAccessException ex) {
+			ex.printStackTrace();
 		}
-		return  null;
+		return null;
 	}
 
 }
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.3  2004/07/25 19:26:44  mranga
- * Reviewed by:   mranga
- * Allows multiple Authorization headers in a message. Some minor cleanup.
- *
- * Revision 1.2  2004/01/22 13:26:31  sverker
- * Issue number:
- * Obtained from:
- * Submitted by:  sverker
- * Reviewed by:   mranga
- *
- * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
- *
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- */
+

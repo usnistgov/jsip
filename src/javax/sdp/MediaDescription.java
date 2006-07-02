@@ -131,8 +131,7 @@ public void setAttributes(Vector Attributes)
 /** Returns the value of the specified attribute.
  * @param name the name of the attribute.
  * @throws SdpParseException
- * @return the value of the named attribute, "" (empty string) is returned for 
- *   flag parameters such as 'recvonly'
+ * @return the value of the named attribute
  */
 public String getAttribute(String name)
                     throws SdpParseException;

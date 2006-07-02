@@ -322,8 +322,37 @@ Via: SIP/2.0/UDP 135.180.130.133
 
 ]]>
 </message>
+
 </testcase>
 
+
+<testcase>
+<description>
+<![CDATA[A parser must accept this as a well-formed message.  The application
+using the message must treat the % HEX HEX expansions as equivalent
+to the character being encoded.  The application must not try to
+interpret % as an escape character in those places where % HEX HEX
+("escaped" in the grammar) is not a valid part of the construction.
+In [RFC3261], "escaped" only occurs in the expansions of SIP-URI,
+SIPS-URI, and Reason-Phrase.
+]]>
+</description>
+
+<message>
+<![CDATA[INVITE sip:sips%3Auser%40example.com@example.net SIP/2.0
+To: sip:%75se%72@example.com
+From: <sip:I%20have%20spaces@example.net>;tag=938
+Max-Forwards: 87
+i: esc01.239409asdfakjkn23onasd0-3234
+CSeq: 234234 INVITE
+Via: SIP/2.0/UDP host5.example.net;branch=z9hG4bKkdjuw
+C: application/sdp
+Contact:<sip:cal%6Cer@host5.example.net;%6C%72;n%61me=v%61lue%25%34%31>
+
+]]>
+</message>
+
+</testcase>
 <!-- test9 	-->
 <testcase>
 <description>

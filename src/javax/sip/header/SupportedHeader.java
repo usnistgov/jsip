@@ -2,21 +2,15 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Module Name   : JAIN SIP Specification
+ * Module Name   : JSIP Specification
  * File Name     : SupportedHeader.java
  * Author        : Phelim O'Doherty
  *
@@ -30,33 +24,20 @@ package javax.sip.header;
 
 
 /**
-
  * The Supported header field enumerates all the extensions supported by
-
  * the UAC or UAS. The Supported header field contains a list of option tags,
-
  * that are understood by the UAC or UAS. A User Agent compliant to this specification
-
  * MUST only include option tags corresponding to standards-track RFCs. If
-
  * empty, it means that no extensions are supported.
-
  * <p>
-
  * For Example:<br>
-
  * <code>Supported: 100rel</code>
-
  *
-
  * @see OptionTag
-
  * @see UnsupportedHeader
-
- * @since v1.1
-
- * @author Sun Microsystems
-
+ * @author BEA Systems, Inc. 
+ * @author NIST
+ * @version 1.2
  */
 
 

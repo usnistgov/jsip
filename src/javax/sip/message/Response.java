@@ -2,21 +2,15 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Module Name   : JAIN SIP Specification
+ * Module Name   : JSIP Specification
  * File Name     : Response.java
  * Author        : Phelim O'Doherty
  *
@@ -161,6 +155,7 @@ import java.text.ParseException;
  * <LI>PROXY_AUTHENTICATION_REQUIRED - 407</LI>
  * <LI>REQUEST_TIMEOUT - 408</LI>
  * <LI>GONE - 410</LI>
+ * <LI>CONDITIONAL_REQUEST_FAILED - 412 
  * <LI>REQUEST_ENTITY_TOO_LARGE - 413
  * <LI>REQUEST_URI_TOO_LONG - 414
  * <LI>UNSUPPORTED_MEDIA_TYPE - 415</LI>
@@ -205,8 +200,9 @@ import java.text.ParseException;
  * </tr>
  * </table>
  *
- * @version 1.1
- * @author Sun Microsystems
+ * @author BEA Systems, Inc.
+ * @author NIST
+ * @version 1.2
  * 
  */
 
@@ -464,7 +460,17 @@ public interface Response extends Message {
      * (Not Found) SHOULD be used instead.
      */
     public static final int GONE = 410;
-      
+
+    /**
+     * The server is refusing to service the PUBLISH request because the 
+     * entity-tag in the SIP-If-Match header does not match with existing 
+     * event state
+     *
+     * @since v1.2
+     */
+    public static final int CONDITIONAL_REQUEST_FAILED = 412;
+	
+	
     /**
      * The server is refusing to process a request because the request 
      * entity-body is larger than the server is willing or able to process. The 

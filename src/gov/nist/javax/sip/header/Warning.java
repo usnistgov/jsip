@@ -1,3 +1,28 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 /*******************************************************************************
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
 *******************************************************************************/
@@ -9,15 +34,20 @@ import javax.sip.InvalidArgumentException;
 /**
  * the WarningValue SIPObject. 
  *
- * @author M. Ranganathan <mranga@nist.gov>  <br/>
- * @author Olivier Deruelle <deruelle@nist.gov><br/>
- * @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2004-04-22 22:51:16 $
+ * @author M. Ranganathan   <br/>
+ * @author Olivier Deruelle <br/>
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-02 09:50:58 $
  *
- * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+ * 
  *
  * @see WarningList SIPHeader which strings these together.
  */
 public class Warning extends SIPHeader implements WarningHeader {
+
+	/**
+	 * Comment for <code>serialVersionUID</code>
+	 */
+	private static final long serialVersionUID = -3433328864230783899L;
 
 	/** warn code field, the warn code consists of three digits.
 	 */
@@ -121,6 +151,23 @@ public class Warning extends SIPHeader implements WarningHeader {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2006/06/19 06:47:27  mranga
+ * javadoc fixups
+ *
+ * Revision 1.2  2006/06/16 15:26:28  mranga
+ * Added NIST disclaimer to all public domain files. Clean up some javadoc. Fixed a leak
+ *
+ * Revision 1.1.1.1  2005/10/04 17:12:35  mranga
+ *
+ * Import
+ *
+ *
+ * Revision 1.4  2004/04/22 22:51:16  mranga
+ * Submitted by:  Thomas Froment
+ * Reviewed by:   mranga
+ *
+ * Fixed corner cases.
+ *
  * Revision 1.2  2004/01/22 13:26:30  sverker
  * Issue number:
  * Obtained from:
