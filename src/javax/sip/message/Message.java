@@ -2,31 +2,29 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Module Name   : JAIN SIP Specification
+ * Module Name   : JSIP Specification
  * File Name     : Message.java
  * Author        : Phelim O'Doherty
  *
  *  HISTORY
  *  Version   Date      Author              Comments
  *  1.1     08/10/2002  Phelim O'Doherty    
+ *  1.2     12/15/2004	M. Ranganathan      Clarified comment on clone() method
+ *                                          Clarified the getUnrecognizedHeaders() method
+ *                                          Added removeFirst, addFirst, addLast methods
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 package javax.sip.message;
 
+import javax.sip.SipException;
 import javax.sip.header.*;
 import java.util.*;
 import java.io.Serializable;
@@ -43,7 +41,9 @@ import java.text.ParseException;
  * one or more header fields which describe the routing of the message, and 
  * an optional message-body. The message-body contains a session description 
  * in a format such as Session Description Protocol see 
- * <a href ="http://jcp.org/jsr/detail/141.jsp">JSR 141</a>.
+ * <a href ="http://jcp.org/jsr/detail/141.jsp">JSR 141</a>. 
+ * 
+ 
  * <p>
  * This interface contains common elements of both Request and Response such as:
  * <ul>
@@ -53,13 +53,21 @@ import java.text.ParseException;
  * disposition and length. 
  * <li> Accessor methods to the body content itself.
  * </ul>
- *
+ * <p> Although the SIP Protocol allows headers of a given kind to be interspaced
+ * with headers of different kinds, an implementation of this specification 
+ * is required to organize headers so that headers that can appear multiple
+ * times in a SIP Message (such as the Via header) are grouped together and can
+ * be retrieved collectively and iterated over. Although an implementation may
+ * use short forms internally, the specification refers to all headers by their 
+ * long form names.
+ * 
  * @see Request
  * @see Response
  * @see Header
  *
- * @version 1.1
- * @author Sun Microsystems
+ * @author BEA Systems, Inc.
+ * @author NIST
+ * @version 1.2
  *
  */
 
@@ -87,6 +95,65 @@ public interface Message extends Cloneable, Serializable {
     public void addHeader(Header header);
     
     /**
+     * Adds the new Header to the end of existing list of Headers contained in this 
+     * Message. The Header is added to the end of the List and will appear in 
+     * that order in the SIP Message. 
+     * <p> 
+     * Required Headers that are singletons should not be added to the message 
+     * as they already exist in the message and therefore should be changed using 
+     * the {@link Message#setHeader(Header)} method. This does the same thing
+     * as addHeader in all cases including the Via header.
+     * Add a header explicitly to the end of a list of headers.
+     * 
+     * @param header -- the new Header to be added to the end of the existing
+     * list of headers
+     * @throws NullPointerException -- if the  argument is null.
+     * @throws SipException -- if the header is a singleton and an instance of the header
+     *   already exists.
+     * @since v1.2
+     */
+    public void addLast(Header header) throws SipException, NullPointerException ;
+
+    /**
+     * Adds the new Header to the head of the existing list of Headers 
+     * contained in this Message. 
+     * The Header is added to the  head of the List and will appear in 
+     * that order in the SIP Message. 
+     * <p> 
+     * Required Headers that are singletons should not be added to the message 
+     * as they already exist in the message and therefore should be 
+     * changed using the {@link Message#setHeader(Header)} method. 
+     * 
+     * @throws SipException -- if the header to be added is a singleton and an instance of the header
+     *   already exists.
+     * @throws NullPointerException -- if the  argument is null.
+     * @param header the new Header to be added to the existing Headers List.
+     * @since v1.2
+     */
+    public void addFirst(Header header) throws SipException, NullPointerException;
+
+    /**
+     * Removes the first header from a list of headers.
+     * If there's only one header of this kind, then it is removed
+     * from the message.
+     * @throws NullPointerException -- if the arg is null
+     * @param headerName the name of the header to be removed.
+     * @since v1.2
+     */
+    public void removeFirst(String headerName) throws NullPointerException;
+
+    
+    /**
+     * Removes the last header from a list of headers.
+     * If there's only one header of this kind, then it is removed
+     * from the message.
+     * 
+     * @param headerName the name of the header to be removed.
+     * @since v1.2
+     */
+    public void removeLast(String headerName) throws NullPointerException;    
+    
+    /**
      * Removes the Header of the supplied name from the list of headers in 
      * this Message. If multiple headers exist then they are all removed from 
      * the header list. If no headers exist then this method returns silently.
@@ -99,11 +166,11 @@ public interface Message extends Cloneable, Serializable {
     public void removeHeader(String headerName);         
 
     /**
-     * Gets a ListIterator over all the header names in this Message. Note 
-     * that the order of the Header Names in the ListIterator is same as the 
+     * Gets a ListIterator over the set of all all the header names in this Message. 
+     * Note that the order of the Header Names in the ListIterator is same as the 
      * order in which they appear in the SIP Message. 
      * 
-     * @return the ListIterator over all the Header Names in the Message. 
+     * @return the ListIterator over the set of all the Header Names in the Message. 
      */    
     public ListIterator getHeaderNames();     
     
@@ -131,16 +198,21 @@ public interface Message extends Cloneable, Serializable {
     public Header getHeader(String headerName);
 
     /**
-     * Gets a ListIterator over all the UnrecognizedHeaders in this 
-     * Message. Note the order of the UnrecognizedHeaders in the ListIterator is 
-     * the same as order in which they appeared in the SIP Message.  
-     * UnrecognizedHeaders are headers that the underlying implementation does 
-     * not recognize, if a header is recognized but is badly formatted it will 
-     * be dropped by the underlying implementation and will not be included in 
-     * this list. A Proxy should not delete UnrecognizedHeaders and should 
-     * add these Headers to the end of the header list of the Message that is
-     * being forwarded. A User Agent may display these unrecognized headers to
-     * the user.
+     * Returns a ListIterator over all the UnrecognizedHeaders in this Message. Note
+     * the order of the UnrecognizedHeaders in the ListIterator is the same as
+     * order in which they appeared in the SIP Message. UnrecognizedHeaders are
+     * headers that the underlying implementation does not recognize.  If the
+     * message is missing a required header (From, To, Call-ID, CSeq, Via)
+     * the entire message willl be dropped by the underlying implementation and
+     * the header will not be included in the list. Headers that are part of the
+     * supported set of headers but are not properly formatted will  be included
+     * in this list. Note that Headers that are not part of the supported set of
+     * headers are retrieved as Extension Headers. These must have a name:value
+     * format else they will be rejected by the underling implementation and
+     * included in this list. A Proxy should not delete UnrecognizedHeaders and
+     * should add these Headers to the end of the header list of the Message
+     * that is being forwarded. A User Agent may display these unrecognized
+     * headers to the user. 
      * 
      * @return the ListIterator over all the UnrecognizedHeaders in the Message 
      * represented as Strings, this method returns an empty ListIterator if no 
@@ -334,23 +406,41 @@ public interface Message extends Cloneable, Serializable {
      * <li>Modify necessary headers.
      * <li>Proxy the message using the send methods on the SipProvider.
      * </ul>
+     * 
+     * The message contents are not cloned. 
      *
      * @return a deep copy of Message
      */
     public Object clone();
+        
+    /**
+     * Compare this SIP Message for equality with another.
+     * Implementations need only compare Request/Response line, From, 
+     * To, CallID, MaxForwards, CSeq and Via headers for message equality.
+     *
+     * @param object the object to compare this Message with.
+     * @return <code>true</code> if <code>obj</code> 
+     * is an instance of this class representing the same SIP Message as 
+     * this (on the basis of comparing the headers above), 
+     * <code>false</code> otherwise.
+     */
+    public boolean equals(Object object);
     
+    /**
+     * Gets a integer hashcode representation of the Header. This method 
+     * overrides the hashcode method in java.lang.Object. Only the 
+     * Request/Response line and the required headers should be used to 
+     * generate the unique hashcode of a message.
+     *
+     * @return integer representation of the Message hashcode
+     * @since v1.2
+     */
+    public int hashCode();    
+
     /**
      * Gets string representation of Message
      * @return string representation of Message
      */
     public String toString();
-    /**
-     * Compare this SIP Message for equality with another.
-     *
-     * @param object the object to compare this Message with.
-     * @return <code>true</code> if <code>obj</code> is an instance of this class
-     * representing the same SIP Message as this, <code>false</code> otherwise.
-     */
-    public boolean equals(Object object);
-     
+
 }

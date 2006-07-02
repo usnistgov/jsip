@@ -1,3 +1,28 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 /*******************************************************************************
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
 *******************************************************************************/
@@ -8,17 +33,22 @@ import java.text.ParseException;
 /**
  * RAck SIP Header implementation
  *
- * @version JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2004-04-06 11:11:59 $
+ * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-02 09:50:48 $
  *
- * @author M. Ranganathan <mranga@nist.gov>  <br/>
+ * @author M. Ranganathan   <br/>
  *
- * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+ * 
  */
 public class RAck extends SIPHeader implements javax.sip.header.RAckHeader {
 
-	protected int cSeqNumber;
+	/**
+	 * Comment for <code>serialVersionUID</code>
+	 */
+	private static final long serialVersionUID = 743999286077404118L;
 
-	protected int rSeqNumber;
+	protected long cSeqNumber;
+
+	protected long rSeqNumber;
 
 	protected String method;
 
@@ -48,12 +78,20 @@ public class RAck extends SIPHeader implements javax.sip.header.RAckHeader {
 	/**
 	 * Gets the CSeq sequence number of this RAckHeader.
 	 *
+	 * @deprecated 
 	 * @return the integer value of the cSeq number of the RAckHeader
 	 */
 	public int getCSeqNumber() {
-		return cSeqNumber;
+		return (int) cSeqNumber;
 	}
-
+	/**
+	 * Gets the CSeq sequence number of this RAckHeader.
+	 *
+	* @return the integer value of the cSeq number of the RAckHeader
+	 */
+	public long getCSeqNumberLong() {
+		return  cSeqNumber;
+	}
 	/**
 	 * Gets the method of RAckHeader
 	 *
@@ -66,9 +104,18 @@ public class RAck extends SIPHeader implements javax.sip.header.RAckHeader {
 	/**
 	 * Gets the RSeq sequence number of this RAckHeader.
 	 *
+	 *@deprecated
 	 * @return the integer value of the RSeq number of the RAckHeader
 	 */
 	public int getRSeqNumber() {
+		return (int)rSeqNumber;
+	}
+	/**
+	 * Gets the RSeq sequence number of this RAckHeader.
+	 *
+	 * @return the integer value of the RSeq number of the RAckHeader
+	 */
+	public long getRSeqNumberLong() {
 		return rSeqNumber;
 	}
 
@@ -80,8 +127,8 @@ public class RAck extends SIPHeader implements javax.sip.header.RAckHeader {
 	 * @param cSeqNumber - the new cSeq number of this RAckHeader
 	 * @throws InvalidArgumentException if supplied value is less than zero.
 	 */
-	public void setCSeqNumber(int cSeqNumber) throws InvalidArgumentException {
-		if (cSeqNumber <= 0)
+	public void setCSeqNumber(long cSeqNumber) throws InvalidArgumentException {
+		if (cSeqNumber <= 0 || cSeqNumber > ((long)1)<<32 - 1)
 			throw new InvalidArgumentException("Bad CSeq # " + cSeqNumber);
 		this.cSeqNumber = cSeqNumber;
 	}
@@ -106,14 +153,37 @@ public class RAck extends SIPHeader implements javax.sip.header.RAckHeader {
 	 * @param rSeqNumber - the new rSeq number of this RAckHeader
 	 * @throws InvalidArgumentException if supplied value is less than zero.
 	 */
-	public void setRSeqNumber(int rSeqNumber) throws InvalidArgumentException {
-		if (rSeqNumber <= 0)
+	public void setRSeqNumber(long rSeqNumber) throws InvalidArgumentException {
+		if (rSeqNumber <= 0 || cSeqNumber > ((long)1)<<32 - 1)
 			throw new InvalidArgumentException("Bad rSeq # " + rSeqNumber);
 		this.rSeqNumber = rSeqNumber;
 	}
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2006/06/19 06:47:26  mranga
+ * javadoc fixups
+ *
+ * Revision 1.4  2006/06/16 15:26:28  mranga
+ * Added NIST disclaimer to all public domain files. Clean up some javadoc. Fixed a leak
+ *
+ * Revision 1.3  2006/05/24 06:14:40  mranga
+ * *** empty log message ***
+ *
+ * Revision 1.2  2006/05/22 08:16:08  mranga
+ * Added tests for retransmissionAlert flag
+ * Added tests for transaction terminated event
+ *
+ * Revision 1.1.1.1  2005/10/04 17:12:35  mranga
+ *
+ * Import
+ *
+ *
+ * Revision 1.3  2004/04/06 11:11:59  mranga
+ * Submitted by:  Bruno Konik
+ * Reviewed by:   mranga
+ * Encoding in the wrong order (rseq first and then cseq - was inverted)
+ *
  * Revision 1.2  2004/01/22 13:26:29  sverker
  * Issue number:
  * Obtained from:

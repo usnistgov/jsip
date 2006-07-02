@@ -1,38 +1,40 @@
 package examples.busy;
+
 import javax.sip.*;
 import javax.sip.address.*;
 import javax.sip.header.*;
 import javax.sip.message.*;
 import java.util.*;
 
-
-
 /**
- * This class is a UAC template. Shootist is the guy that shoots and shootme 
- * is the guy that gets shot.
- *
- *@author M. Ranganathan
+ * This class is a UAC template. Shootist is the guy that shoots and shootme is
+ * the guy that gets shot.
+ * 
+ * @author M. Ranganathan
  */
 
 public class Shootist implements SipListener {
 
-	private static SipProvider tcpProvider;
-	private static SipProvider udpProvider;
+
+	private static SipProvider sipProvider;
+
 	private static AddressFactory addressFactory;
+
 	private static MessageFactory messageFactory;
+
 	private static HeaderFactory headerFactory;
+
 	private static SipStack sipStack;
+
 	private ContactHeader contactHeader;
-	private ListeningPoint tcpListeningPoint;
+
 	private ListeningPoint udpListeningPoint;
-	private int counter;
+
 	private ClientTransaction inviteTid;
+
 	private Dialog dialog;
-	private boolean cancelSent;
 
-
-	protected static final String usageString =
-		"java "
+	protected static final String usageString = "java "
 			+ "examples.shootist.Shootist \n"
 			+ ">>>> is your class path set to the root?";
 
@@ -41,20 +43,15 @@ public class Shootist implements SipListener {
 		System.exit(0);
 
 	}
-	
 
 	public void processRequest(RequestEvent requestReceivedEvent) {
 		Request request = requestReceivedEvent.getRequest();
-		ServerTransaction serverTransactionId =
-			requestReceivedEvent.getServerTransaction();
+		ServerTransaction serverTransactionId = requestReceivedEvent
+				.getServerTransaction();
 
-		System.out.println(
-			"\n\nRequest "
-				+ request.getMethod()
-				+ " received at "
-				+ sipStack.getStackName()
-				+ " with server transaction id "
-				+ serverTransactionId);
+		System.out.println("\n\nRequest " + request.getMethod()
+				+ " received at " + sipStack.getStackName()
+				+ " with server transaction id " + serverTransactionId);
 
 		// We are the UAC so the only request we get is the BYE.
 		if (request.getMethod().equals(Request.BYE))
@@ -62,9 +59,8 @@ public class Shootist implements SipListener {
 
 	}
 
-	public void processBye(
-		Request request,
-		ServerTransaction serverTransactionId) {
+	public void processBye(Request request,
+			ServerTransaction serverTransactionId) {
 		try {
 			System.out.println("shootist:  got a bye .");
 			if (serverTransactionId == null) {
@@ -73,12 +69,10 @@ public class Shootist implements SipListener {
 			}
 			Dialog dialog = serverTransactionId.getDialog();
 			System.out.println("Dialog State = " + dialog.getState());
-			Response response = messageFactory.createResponse
-						(200, request);
+			Response response = messageFactory.createResponse(200, request);
 			serverTransactionId.sendResponse(response);
 			System.out.println("shootist:  Sending OK.");
 			System.out.println("Dialog State = " + dialog.getState());
-
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -93,8 +87,7 @@ public class Shootist implements SipListener {
 		ClientTransaction tid = responseReceivedEvent.getClientTransaction();
 		CSeqHeader cseq = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
 
-		System.out.println(
-			"Response received : Status Code = "
+		System.out.println("Response received : Status Code = "
 				+ response.getStatusCode() + " " + cseq);
 		if (tid == null) {
 			System.out.println("Stray response -- dropping ");
@@ -105,46 +98,26 @@ public class Shootist implements SipListener {
 		System.out.println("Dialog State is " + tid.getDialog().getState());
 
 		try {
-			if (   response.getStatusCode() == Response.OK  ) {
-			      if ( cseq.getMethod().equals(Request.INVITE) ) {
-				   Request ackRequest = dialog.createRequest(Request.ACK);
-				   System.out.println("Sending ACK");
-				   dialog.sendAck(ackRequest);
-			      } else if ( cseq.getMethod().equals( Request.CANCEL) ) {
-				if (  dialog.getState() == DialogState.CONFIRMED) {
-					// oops cancel went in too late. Need to hang up the dialog.
-				        System.out.println("Sending BYE -- cancel went in too late !!");
-					Request byeRequest = dialog.createRequest ( Request.BYE);
-					ClientTransaction ct = udpProvider.getNewClientTransaction ( byeRequest );
-					dialog.sendRequest ( ct );
+			if (response.getStatusCode() == Response.OK) {
+				if (cseq.getMethod().equals(Request.INVITE)) {
+					Request ackRequest = dialog.createRequest(Request.ACK);
+					System.out.println("Sending ACK");
+					dialog.sendAck(ackRequest);
+				} else if (cseq.getMethod().equals(Request.CANCEL)) {
+					if (dialog.getState() == DialogState.CONFIRMED) {
+						// oops cancel went in too late. Need to hang up the
+						// dialog.
+						System.out
+								.println("Sending BYE -- cancel went in too late !!");
+						Request byeRequest = dialog.createRequest(Request.BYE);
+						ClientTransaction ct = sipProvider
+								.getNewClientTransaction(byeRequest);
+						dialog.sendRequest(ct);
+
+					}
 
 				}
-			      }
-			} else if (response.getStatusCode() == Response.REQUEST_TERMINATED) {
-				Request ackRequest = tid.createAck();
-				ClientTransaction ct = udpProvider.getNewClientTransaction(ackRequest);
-				ct.sendRequest();
-			} else if ( response.getStatusCode() == Response.BUSY_HERE) {
-				   System.out.println("Busy Here received");
-				// Ack the invite.
-				   
-				   Request ackRequest = null;
-				   
-				   if (dialog.getState()==DialogState.TERMINATED)
-				   	ackRequest = tid.createAck();
-				   else
-				    ackRequest = dialog.createRequest(Request.ACK);
-						
-				   System.out.println("Sending ACK");
-				   dialog.sendAck(ackRequest);
-			} else if ( response.getStatusCode() == Response.RINGING) {
-				// Cancel the invite.
-/*				if ( ! cancelSent ) {
-					cancelSent = true;
-					 sendCancel();
-				}*/
 			}
-			
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.exit(0);
@@ -154,16 +127,17 @@ public class Shootist implements SipListener {
 
 	public void processTimeout(javax.sip.TimeoutEvent timeoutEvent) {
 
-		System.out.println("Transaction Time out" );
+		System.out.println("Transaction Time out");
 	}
-	
-	public void sendCancel ( ) {
+
+	public void sendCancel() {
 		try {
 			System.out.println("Sending cancel");
 			Request cancelRequest = inviteTid.createCancel();
-			ClientTransaction cancelTid = udpProvider.getNewClientTransaction(cancelRequest);
+			ClientTransaction cancelTid = sipProvider
+					.getNewClientTransaction(cancelRequest);
 			cancelTid.sendRequest();
-		} catch ( Exception ex) {
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
@@ -177,35 +151,30 @@ public class Shootist implements SipListener {
 		// If you want to try TCP transport change the following to
 		String transport = "udp";
 		String peerHostPort = "127.0.0.1:5070";
-		properties.setProperty("javax.sip.IP_ADDRESS", "127.0.0.1");
-		properties.setProperty(
-			"javax.sip.OUTBOUND_PROXY", 
-			peerHostPort + "/" + transport);
+		properties.setProperty("javax.sip.OUTBOUND_PROXY", peerHostPort + "/"
+				+ transport);
 		// If you want to use UDP then uncomment this.
 		properties.setProperty("javax.sip.STACK_NAME", "shootist");
-		properties.setProperty("javax.sip.RETRANSMISSION_FILTER", 
-				"on");
-
+		
 		// The following properties are specific to nist-sip
 		// and are not necessarily part of any other jain-sip
 		// implementation.
-		// You can set a max message size for tcp transport to 
+		// You can set a max message size for tcp transport to
 		// guard against denial of service attack.
-		properties.setProperty("gov.nist.javax.sip.MAX_MESSAGE_SIZE", 
-					"1048576");
-		properties.setProperty(
-			"gov.nist.javax.sip.DEBUG_LOG",
-			"shootistdebug.txt");
-		properties.setProperty(
-			"gov.nist.javax.sip.SERVER_LOG",
-			"shootistlog.txt");
+		properties
+				.setProperty("gov.nist.javax.sip.MAX_MESSAGE_SIZE", "1048576");
+		properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
+				"shootistdebuglog.txt");
+		properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
+				"shootistlog.txt");
 
 		// Drop the client connection after we are done with the transaction.
-		properties.setProperty("gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS", "false");
+		properties.setProperty("gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS",
+				"false");
 		// Set to 0 in your production code for max speed.
-		// You need  16 for logging traces. 32 for debug + traces.
+		// You need 16 for logging traces. 32 for debug + traces.
 		// Your code will limp at 32 but it is best for debugging.
-		properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "16");
+		properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "DEBUG");
 
 		try {
 			// Create SipStack object
@@ -224,23 +193,13 @@ public class Shootist implements SipListener {
 			headerFactory = sipFactory.createHeaderFactory();
 			addressFactory = sipFactory.createAddressFactory();
 			messageFactory = sipFactory.createMessageFactory();
-			udpListeningPoint = sipStack.createListeningPoint
-							(5060, "udp");
-			udpProvider = sipStack.createSipProvider
-							(udpListeningPoint);
+			udpListeningPoint = sipStack.createListeningPoint("127.0.0.1",5060, "udp");
+			sipProvider = sipStack.createSipProvider(udpListeningPoint);
 			Shootist listener = this;
-			udpProvider.addSipListener(listener);
+			sipProvider.addSipListener(listener);
 
-
-
-
-			tcpListeningPoint = sipStack.createListeningPoint
-								(5060, "tcp");
-			tcpProvider = sipStack.createSipProvider(tcpListeningPoint);
-			tcpProvider.addSipListener(listener);
-
-			SipProvider sipProvider = transport.equalsIgnoreCase("udp")? 
-					udpProvider: tcpProvider;
+			
+			
 
 			String fromName = "BigGuy";
 			String fromSipAddress = "here.com";
@@ -251,127 +210,102 @@ public class Shootist implements SipListener {
 			String toDisplayName = "The Little Blister";
 
 			// create >From Header
-			SipURI fromAddress =
-				addressFactory.createSipURI(fromName, fromSipAddress);
+			SipURI fromAddress = addressFactory.createSipURI(fromName,
+					fromSipAddress);
 
 			Address fromNameAddress = addressFactory.createAddress(fromAddress);
 			fromNameAddress.setDisplayName(fromDisplayName);
-			FromHeader fromHeader =
-				headerFactory.createFromHeader(fromNameAddress, "12345");
+			FromHeader fromHeader = headerFactory.createFromHeader(
+					fromNameAddress, "12345");
 
 			// create To Header
-			SipURI toAddress =
-				addressFactory.createSipURI(toUser, toSipAddress);
+			SipURI toAddress = addressFactory
+					.createSipURI(toUser, toSipAddress);
 			Address toNameAddress = addressFactory.createAddress(toAddress);
 			toNameAddress.setDisplayName(toDisplayName);
-			ToHeader toHeader =
-				headerFactory.createToHeader(toNameAddress, null);
+			ToHeader toHeader = headerFactory.createToHeader(toNameAddress,
+					null);
 
 			// create Request URI
-			SipURI requestURI =
-				addressFactory.createSipURI(toUser, peerHostPort);
+			SipURI requestURI = addressFactory.createSipURI(toUser,
+					peerHostPort);
 
 			// Create ViaHeaders
 
 			ArrayList viaHeaders = new ArrayList();
-			int port = sipProvider.getListeningPoint().getPort();
-			ViaHeader viaHeader =
-				headerFactory.createViaHeader(
-					sipStack.getIPAddress(),
-					sipProvider.getListeningPoint().getPort(),
-					transport,
-					null);
-
+			ViaHeader viaHeader = headerFactory.createViaHeader("127.0.0.1", sipProvider.getListeningPoint(transport).getPort(),
+					transport, null);
 
 			// add via headers
 			viaHeaders.add(viaHeader);
 
 			// Create ContentTypeHeader
-			ContentTypeHeader contentTypeHeader =
-				headerFactory.createContentTypeHeader("application", "sdp");
+			ContentTypeHeader contentTypeHeader = headerFactory
+					.createContentTypeHeader("application", "sdp");
 
 			// Create a new CallId header
 			CallIdHeader callIdHeader = sipProvider.getNewCallId();
 
 			// Create a new Cseq header
-			CSeqHeader cSeqHeader =
-				headerFactory.createCSeqHeader(1, Request.INVITE);
+			CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(1,
+					Request.INVITE);
 
 			// Create a new MaxForwardsHeader
-			MaxForwardsHeader maxForwards =
-				headerFactory.createMaxForwardsHeader(70);
+			MaxForwardsHeader maxForwards = headerFactory
+					.createMaxForwardsHeader(70);
 
 			// Create the request.
-			Request request =
-				messageFactory.createRequest(
-					requestURI,
-					Request.INVITE,
-					callIdHeader,
-					cSeqHeader,
-					fromHeader,
-					toHeader,
-					viaHeaders,
-					maxForwards);
+			Request request = messageFactory.createRequest(requestURI,
+					Request.INVITE, callIdHeader, cSeqHeader, fromHeader,
+					toHeader, viaHeaders, maxForwards);
 			// Create contact headers
-			String host = sipStack.getIPAddress();
+			String host = "127.0.0.1";
 
 			SipURI contactUrl = addressFactory.createSipURI(fromName, host);
-			contactUrl.setPort(tcpListeningPoint.getPort());
+			contactUrl.setPort(udpListeningPoint.getPort());
 
 			// Create the contact name address.
 			SipURI contactURI = addressFactory.createSipURI(fromName, host);
-			contactURI.setPort(sipProvider.getListeningPoint().getPort());
+			contactURI.setPort(sipProvider.getListeningPoint(transport).getPort());
 
 			Address contactAddress = addressFactory.createAddress(contactURI);
 
 			// Add the contact address.
 			contactAddress.setDisplayName(fromName);
 
-			contactHeader =
-				headerFactory.createContactHeader(contactAddress);
+			contactHeader = headerFactory.createContactHeader(contactAddress);
 			request.addHeader(contactHeader);
 
 			// Add the extension header.
-			Header extensionHeader =
-				headerFactory.createHeader("My-Header", "my header value");
+			Header extensionHeader = headerFactory.createHeader("My-Header",
+					"my header value");
 			request.addHeader(extensionHeader);
 
-			String sdpData =
-				"v=0\r\n"
+			String sdpData = "v=0\r\n"
 					+ "o=4855 13760799956958020 13760799956958020"
-					+ " IN IP4  129.6.55.78\r\n"
-					+ "s=mysession session\r\n"
-					+ "p=+46 8 52018010\r\n"
-					+ "c=IN IP4  129.6.55.78\r\n"
-					+ "t=0 0\r\n"
-					+ "m=audio 6022 RTP/AVP 0 4 18\r\n"
-					+ "a=rtpmap:0 PCMU/8000\r\n"
-					+ "a=rtpmap:4 G723/8000\r\n"
-					+ "a=rtpmap:18 G729A/8000\r\n"
-					+ "a=ptime:20\r\n";
-			byte[]  contents = sdpData.getBytes();
+					+ " IN IP4  129.6.55.78\r\n" + "s=mysession session\r\n"
+					+ "p=+46 8 52018010\r\n" + "c=IN IP4  129.6.55.78\r\n"
+					+ "t=0 0\r\n" + "m=audio 6022 RTP/AVP 0 4 18\r\n"
+					+ "a=rtpmap:0 PCMU/8000\r\n" + "a=rtpmap:4 G723/8000\r\n"
+					+ "a=rtpmap:18 G729A/8000\r\n" + "a=ptime:20\r\n";
+			byte[] contents = sdpData.getBytes();
 
 			request.setContent(contents, contentTypeHeader);
 
-			extensionHeader =
-				headerFactory.createHeader(
-					"My-Other-Header",
+			extensionHeader = headerFactory.createHeader("My-Other-Header",
 					"my new header value ");
 			request.addHeader(extensionHeader);
 
-			Header callInfoHeader =
-				headerFactory.createHeader(
-					"Call-Info",
+			Header callInfoHeader = headerFactory.createHeader("Call-Info",
 					"<http://www.antd.nist.gov>");
 			request.addHeader(callInfoHeader);
-
 
 			// Create the client transaction.
 			inviteTid = sipProvider.getNewClientTransaction(request);
 
 			// send the request out.
 			inviteTid.sendRequest();
-			
+
 			dialog = inviteTid.getDialog();
 
 		} catch (Exception ex) {
@@ -383,6 +317,23 @@ public class Shootist implements SipListener {
 
 	public static void main(String args[]) {
 		new Shootist().init();
+
+	}
+
+	public void processIOException(IOExceptionEvent exceptionEvent) {
+		System.out.println("IOException happened for " + exceptionEvent.getHost() + " port = " 
+					+ exceptionEvent.getPort());
+
+	}
+
+	public void processTransactionTerminated(
+			TransactionTerminatedEvent transactionTerminatedEvent) {
+		System.out.println("Transaction terminated event recieved");
+	}
+
+	public void processDialogTerminated(
+			DialogTerminatedEvent dialogTerminatedEvent) {
+		System.out.println("dialogTerminatedEvent");
 
 	}
 }

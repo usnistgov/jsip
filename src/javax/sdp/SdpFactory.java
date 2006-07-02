@@ -20,8 +20,8 @@ import java.text.*;
  * Please refer to IETF RFC 2327 for a description of SDP.
  *
  *@author Olivier Deruelle <olivier.deruelle@nist.gov>
- *@author M. Ranganathan <mranga@nist.gov>
- *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+ *@author M. Ranganathan 
+ *
  *
  * @version 1.0
  *
@@ -606,8 +606,7 @@ public class SdpFactory extends Object
       throws SdpException
   {
 
-    // Bug report by Brian J. Collins
-    return createConnection("IN", "IPV4", addr);
+     return createConnection("IN", "IP4", addr);
 
   }
 

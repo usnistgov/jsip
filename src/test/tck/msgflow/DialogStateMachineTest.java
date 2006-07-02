@@ -1,3 +1,22 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), and others. 
+* This software is has been contributed to the public domain. 
+* As a result, a formal license is not needed to use the software.
+* 
+* This software is provided "AS IS."  
+* NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* 
+*/
 package test.tck.msgflow;
 
 import junit.framework.*;
@@ -29,7 +48,7 @@ import test.tck.*;
 public class DialogStateMachineTest extends MessageFlowHarness {
 
 	public DialogStateMachineTest(String name) {
-		super(name);
+		super(name,true);	// enable auto-dialog support
 	}
 	//==================== tests ==============================
 	/**
@@ -79,13 +98,13 @@ public class DialogStateMachineTest extends MessageFlowHarness {
 			Response ringing = null;
 			try {
 				ringing =
-					riMessageFactory.createResponse(
+					tiMessageFactory.createResponse(
 						Response.RINGING,
 						inviteReqEvt.getRequest());
 				((ToHeader) ringing.getHeader(ToHeader.NAME)).setTag(
 					Integer.toString(hashCode()));
                 // BUG: set contact header on dialog-creating response
-                ringing.setHeader(createRiContact());
+                ringing.setHeader(createTiContact());
 				riSipProvider.sendResponse(ringing);
 			} catch (Exception e) {
 				throw new TckInternalError(
@@ -114,13 +133,13 @@ public class DialogStateMachineTest extends MessageFlowHarness {
 			Response ok = null;
 			try {
 				ok =
-					riMessageFactory.createResponse(
+					tiMessageFactory.createResponse(
 						Response.OK,
 						inviteReqEvt.getRequest());
 				((ToHeader) ok.getHeader(ToHeader.NAME)).setTag(
 					Integer.toString(hashCode()));
                 // BUG: set contact header on dialog-creating response
-                ok.setHeader(createRiContact());
+                ok.setHeader(createTiContact());
 				riSipProvider.sendResponse(ok);
 			} catch (Exception e) {
 				throw new TckInternalError(
@@ -173,8 +192,9 @@ public class DialogStateMachineTest extends MessageFlowHarness {
 				eventCollector.collectRequestEvent(tiSipProvider);
 				// riSipProvider.sendRequest(invite);
 				// Made this stateful 
-				inviteTransaction =
-					riSipProvider.getNewClientTransaction(invite);
+				inviteTransaction = riSipProvider.getNewClientTransaction(invite);
+				
+				
 				inviteTransaction.sendRequest();
 			} catch (TooManyListenersException exc) {
 				throw new TiUnexpectedError(
@@ -202,12 +222,14 @@ public class DialogStateMachineTest extends MessageFlowHarness {
 			}
 			//get the dialog
 			Dialog dialog = tran.getDialog();
-			//We should have a null state here
+						
+			// We should have a null state here
 			assertNull(
 				"A dialog passed into the "
 					+ dialog.getState()
 					+ " state before sending any response!",
 				dialog.getState());
+				
 			//We will now send RINGING response and see that the Dialog enters an early state
 			//start listening for the response
 			try {
@@ -280,7 +302,10 @@ public class DialogStateMachineTest extends MessageFlowHarness {
 			if (okRespEvt == null || okRespEvt.getResponse() == null)
 				throw new TiUnexpectedError("The TI did not send an OK response.");
 			ClientTransaction ct = okRespEvt.getClientTransaction();
+			
+			// JvB: With auto-dialog-support OFF, this returns *null* !
 			Dialog clientDialog = ct.getDialog();
+			assertNotNull( clientDialog );
 			Request ackReq = clientDialog.createRequest(Request.ACK);
 			clientDialog.sendAck(ackReq);
 			waitForMessage();

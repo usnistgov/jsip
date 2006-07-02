@@ -1,3 +1,28 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 /*******************************************************************************
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD)         *
 *******************************************************************************/
@@ -8,7 +33,7 @@ import gov.nist.javax.sip.message.*;
  * Interface  that provides methods for processing good 
  * and bad messages for the PipelinedMessageParser.
  * 
- * @version JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2004-02-29 00:46:34 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-02 09:51:14 $
  * @see PipelinedMsgParser
  */
 public interface SIPMessageListener extends ParseExceptionListener {
@@ -22,6 +47,22 @@ public interface SIPMessageListener extends ParseExceptionListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.3  2006/06/19 06:47:27  mranga
+ * javadoc fixups
+ *
+ * Revision 1.2  2006/06/16 15:26:28  mranga
+ * Added NIST disclaimer to all public domain files. Clean up some javadoc. Fixed a leak
+ *
+ * Revision 1.1.1.1  2005/10/04 17:12:36  mranga
+ *
+ * Import
+ *
+ *
+ * Revision 1.5  2004/02/29 00:46:34  mranga
+ * Reviewed by:   mranga
+ * Added new configuration property to limit max message size for TCP transport.
+ * The property is gov.nist.javax.sip.MAX_MESSAGE_SIZE
+ *
  * Revision 1.4  2004/01/22 13:26:32  sverker
  * Issue number:
  * Obtained from:

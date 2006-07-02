@@ -2,21 +2,15 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Module Name   : JAIN SIP Specification
+ * Module Name   : JSIP Specification
  * File Name     : TimeStampHeader.java
  * Author        : Phelim O'Doherty
  *
@@ -45,8 +39,10 @@ import javax.sip.InvalidArgumentException;
  * For Example:<br>
  * <code>Timestamp: 54</code>
  *
- * @version 1.1
- * @author Sun Microsystems
+ * @author BEA Systems, Inc. 
+ * @author NIST
+ * @since 1.1
+ * @version 1.2
  */
 
 
@@ -62,6 +58,20 @@ public interface TimeStampHeader extends Header {
      * negative value.
      */
     public void setTimeStamp(float timeStamp) throws InvalidArgumentException;
+    
+    
+    /**
+     *  Sets the timestamp value of this TimeStampHeader to the new timestamp
+     * value passed to this method. This method allows applications to conveniantly
+     * use System.currentTimeMillis to set the timeStamp value.
+     * 
+     * @since v 1.2
+     *
+     * @param timeStamp - the new long timestamp value
+     * @throws InvalidArgumentException if the timestamp value argument is a
+     * negative value. 
+     */
+    public void setTimeStampLong(long timeStamp) throws InvalidArgumentException;
 
     /**
      * Gets the timestamp value of this TimeStampHeader.
@@ -69,15 +79,35 @@ public interface TimeStampHeader extends Header {
      * @return the timestamp value of this TimeStampHeader
      */
     public float getTimeStamp();
+    
+    /**
+     * Gets the timestamp value of this TimeStampHeader.
+     * 
+     * @since v 1.2
+     *
+     * @return the timestamp value of this TimeStampHeader
+     */
+    public long getTimeStampLong();
 
     /**
      * Gets delay of TimeStampHeader. This method returns <code>-1</code> if the
      * delay parameter is not set.
-     *
+     * 
      * @return the delay value of this TimeStampHeader
      */
 
     public float getDelay();
+    
+    /**
+     * Gets delay of TimeStampHeader. This method returns <code>-1</code> if the
+     * delay parameter is not set.
+     * 
+     * @since v 1.2
+     * @return the delay value of this TimeStampHeader as an integer.
+     */
+
+    public int getDelayInt();
+    
 
     /**
      * Sets the new delay value of the TimestampHeader to the delay parameter
@@ -90,6 +120,19 @@ public interface TimeStampHeader extends Header {
 
     public void setDelay(float delay) throws InvalidArgumentException;
     
+    /**
+     * Sets the new delay value of the TimestampHeader to the delay parameter
+     * passed to this method
+     *
+     * @since v 1.2
+     * @param delay - the new int delay value
+     * @throws InvalidArgumentException if the delay value argumenmt is a
+     * negative value other than the default value <code>-1</code>.
+     */
+
+    public void setDelayInt(int delay) throws InvalidArgumentException;
+    
+   
     /**
      * Name of TimeStampHeader
      */

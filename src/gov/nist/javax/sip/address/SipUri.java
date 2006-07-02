@@ -1,20 +1,52 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 /*******************************************************************************
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
 *******************************************************************************/
 package gov.nist.javax.sip.address;
 
+/*
+ *Bug fix contributions
+ *Daniel J. Martinez Manzano <dani@dif.um.es>
+ *Stefan Marx.
+ */
 import gov.nist.core.*;
 import java.util.*;
 import java.text.ParseException;
 
+import javax.sip.address.SipURI;
+
 /**
- * The SipUri structure. 
+ * Implementation of the SipURI interface.
+ * 
  *
- * @author M. Ranganathan <mranga@nist.gov>  <br/>
- * Includes a bug fix by Stefan Marx.
- * @version JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2005-04-16 20:38:47 $
+ * @author M. Ranganathan   <br/>
+ * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-02 09:52:35 $
  *
- * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+ * 
  *
  */
 public class SipUri extends GenericURI implements javax.sip.address.SipURI {
@@ -96,59 +128,70 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 	 * Compare two URIs and return true if they are equal.
 	 * @param that the object to compare to.
 	 * @return true if the object is equal to this object.
+	 * 
+	 * JvB: Updated to define equality in terms of API methods, according to the rules
+	 * in RFC3261 section 19.1.4
+	 * 
+	 * TODO: Need to convert %HEX HEX encoding before comparing
+	 * 
 	 */
 	public boolean equals(Object that) {
 
-		if (that == null)
-			return false;
-
-		if (!this.getClass().equals(that.getClass())) {
-			return false;
-		}
+		// Shortcut for same object
+		if (that==this) return true;
 		
-
-		SipUri other = (SipUri) that;
-
-		// Bug fix contributed by Dave Stuart of Sipquest.com
-		//
-		if (this.uriParms.size() != other.uriParms.size()) {
-			return false;
-		}
-
-		// Compare the authority portion.
-		if (!this.authority.equals(other.authority))
-			return false;
-
-		// compare the parameter lists.
-		ListIterator li = this.uriParms.listIterator();
-		NameValueList hisParms = other.uriParms;
-		while (li.hasNext()) {
-			NameValue nv = (NameValue) li.next();
-			// transport string defaults to udp.
-			if (nv.getName().equals(TRANSPORT)) {
-				String value = (String) nv.getValue();
-				String hisTransport = (String) hisParms.getValue(TRANSPORT);
-				if (hisTransport == null
-					&& value.compareToIgnoreCase(UDP) == 0) {
-					continue;
-				} else if (hisTransport == null) {
-					return false;
-				} else if (hisTransport.compareToIgnoreCase(value) == 0) {
-					continue;
-				}
-			} else {
-				NameValue hisnv = hisParms.getNameValue(nv.getName());
-				if (hisnv == null) {
-					return false;
-				} else if (!hisnv.equals(nv)) {
-					return false;
-				}
+		if (that instanceof SipURI) {
+			final SipURI a = this;
+			final SipURI b = (SipURI) that;
+			
+			// A SIP and SIPS URI are never equivalent
+			if ( a.isSecure() ^ b.isSecure() ) return false;
+		
+			// For two URIs to be equal, the user, password, host, and port
+	        // components must match; comparison of userinfo is case-sensitive
+			if (a.getUser()==null ^ b.getUser()==null) return false;
+			if (a.getUserPassword()==null ^ b.getUserPassword()==null) return false;
+			
+			if (a.getUser()!=null && !a.getUser().equals(b.getUser())) return false;
+			if (a.getUserPassword()!=null && !a.getUserPassword().equals(b.getUserPassword())) return false;
+			if ( a.getHost() == null ^ b.getHost() == null) return false;
+			if (a.getHost() != null && !a.getHost().equalsIgnoreCase(b.getHost())) return false;
+			if (a.getPort() != b.getPort()) return false;
+			
+			// URI parameters
+			for (Iterator i = a.getParameterNames(); i.hasNext();) {
+				String pname = (String) i.next();
+				
+				String p1 = a.getParameter(pname);
+				String p2 = b.getParameter(pname);
+				
+				// those present in both must match (case-insensitive)
+				if (p1!=null && p2!=null && !p1.equalsIgnoreCase(p2)) return false;
 			}
-		}
 
-		// leave headers alone - they are just a screwy way of constructing
-		// an entire sip message header as part of a URL.
-		return true;
+			// user, ttl or method must match when present in either
+			if (a.getUserParam()==null ^ b.getUserParam()==null) return false;
+			if (a.getTTLParam()==-1 ^ b.getTTLParam()==-1) return false;
+			if (a.getMethodParam()==null ^ b.getMethodParam()==null) return false;
+			if (a.getMAddrParam()==null ^ b.getMAddrParam()==null) return false;
+			
+			// Headers: must match according to their definition. That's a bit hard to verify,
+			// so here we take a simpler approach that they must be present in both
+			// and match (case-insensitively) at a String level
+			for (Iterator i = a.getHeaderNames(); i.hasNext();) {
+				String hname = (String) i.next();
+				
+				String h1 = a.getHeader(hname);
+				String h2 = b.getHeader(hname);
+				
+				// those present in both must match (case-insensitive)
+				if (h1!=null && h2!=null && !h1.equalsIgnoreCase(h2)) return false;
+			}			
+			
+			// Finally, we can conclude that they are indeed equal
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -303,7 +346,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 	 */
 	public HostPort getHostPort() {
 
-		if (authority == null)
+		if (authority == null || authority.getHost() == null )
 			return null;
 		else {
 			return authority.getHostPort();
@@ -325,7 +368,9 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 	* @return the host portion of the url.
 	*/
 	public String getHost() {
-		return authority.getHost().encode();
+		if ( authority == null) return null;
+		else if (authority.getHost() == null ) return null;
+		else return authority.getHost().encode();
 	}
 
 	/**
@@ -358,7 +403,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 		String usrtype = (String) uriParms.getValue(USER);
 		if (usrtype == null)
 			return false;
-		return usrtype.equals(PHONE);
+		return usrtype.equalsIgnoreCase(PHONE);
 	}
 
 	/**
@@ -792,9 +837,10 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 		}
 	}
 
-	/** Returns the host part of this SipURI.
-	 *
-	 * @return  the host part of this SipURI
+	/**
+	 * Set the host portion of the SipURI
+	 * 
+	 * @param host host to set.
 	 */
 	public void setHost(String host) throws ParseException {
 		Host h = new Host(host);
@@ -808,11 +854,9 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 	 * Record-Route header field values, and may appear in the URIs in a
 	 * pre-existing route set.
 	 */
-	public void setLrParam() {
-		if (this.uriParms.getValue("lr") != null)
-			return;
+	public void setLrParam() {		
 		NameValue nv = new NameValue("lr", null);
-		this.uriParms.add(nv);
+		this.uriParms.set(nv);	// JvB: fixed to not add duplicates	
 	}
 
 	/**
@@ -858,7 +902,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 	 *
 	 */
 	public void setParameter(String name, String value) throws ParseException {
-		if (name.equals("ttl")) {
+		if (name.equalsIgnoreCase("ttl")) {
 			try {
 				int ttl = Integer.parseInt(value);
 			} catch (NumberFormatException ex) {
@@ -866,8 +910,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 			}
 		}
 		NameValue nv = new NameValue(name, value);
-		uriParms.delete(name);
-		uriParms.add(nv);
+		uriParms.set(nv);
 	}
 
 	/** Sets the scheme of this URI to sip or sips depending on whether the
@@ -892,10 +935,8 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 		if (ttl <= 0)
 			throw new IllegalArgumentException("Bad ttl value");
 		if (uriParms != null) {
-			uriParms.delete("ttl");
 			NameValue nv = new NameValue("ttl", new Integer(ttl));
-			uriParms.add(nv);
-
+			uriParms.set(nv);
 		}
 	}
 
@@ -913,7 +954,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 		if (transport == null)
 			throw new NullPointerException("null arg");
 		if (transport.compareToIgnoreCase("UDP") == 0
-			|| transport.compareToIgnoreCase("TLS") == 0 // Added by Daniel J. Martinez Manzano <dani@dif.um.es>
+			|| transport.compareToIgnoreCase("TLS") == 0 
 			|| transport.compareToIgnoreCase("TCP") == 0) {
 			NameValue nv = new NameValue(TRANSPORT, transport.toLowerCase());
 			uriParms.delete(TRANSPORT);
@@ -941,48 +982,3 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 		return uriParms.getNameValue("lr") != null;
 	}
 }
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.5  2004/10/28 19:02:50  mranga
- * Submitted by:  Daniel Martinez
- * Reviewed by:   M. Ranganathan
- *
- * Added changes for TLS support contributed by Daniel Martinez
- *
- * Revision 1.4  2004/09/26 14:48:03  mranga
- * Submitted by:  John Martin
- * Reviewed by:   mranga
- *
- * Remove unnecssary synchronization.
- *
- * Revision 1.3  2004/07/22 14:22:52  mranga
- * Submitted by:  Dave Stuart
- * Reviewed by:   mranga
- *
- * Fix for equality check. Compare size of parameter lists.
- *
- * Revision 1.2  2004/01/22 13:26:28  sverker
- * Issue number:
- * Obtained from:
- * Submitted by:  sverker
- * Reviewed by:   mranga
- *
- * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
- *
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- */

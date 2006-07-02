@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>JAIN-SIP</name>
+	<name>jain-sip-1.2</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -13,5 +13,6 @@
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
+		<nature>com.nomagic.magicdraw.integrations.eclipse.magicdrawnature</nature>
 	</natures>
 </projectDescription>

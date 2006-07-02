@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<!-- For using ANT:
-Authors:
-Initial: Olivier Deruelle deruelle@nist.gov
+<!-- 
+
+authors of build.xml: Initial: Olivier Deruelle deruelle@nist.gov
 Revisions and fixes by:
 
         M. Ranganathan 		 <mranga@nist.gov>
@@ -17,6 +17,12 @@ Revisions and fixes by:
         Jean Deruelle		 <jeand@nist.gov>
 
         Dan Muresan		 <muresan@gmail.com>
+        
+        Jeroen van Bemmel <jbemmel@lucent.com>
+
+        Ivelin Ivanov <ivelin@mobicents.org>
+
+For using ANT:
 
 Ant is a platform independent build tool.
 Get the tool from www.apache.org and install. Set your path to the ant shell
@@ -24,6 +30,9 @@ Get the tool from www.apache.org and install. Set your path to the ant shell
 
 >From the command prompt, execute the following command:
 ant target
+
+
+
 
 Where avaliable targets are:
 
@@ -41,346 +50,353 @@ Where avaliable targets are:
 
     - compilesdp -> Compiles the sdp
 
-    - compilestack -> Compiles the jainapi
+    - compileapi -> Compiles the jainapi
 
     - clean   -> cleans everything: All the built stuff and temp files.
 
     - init	-> create the classes directory
 
+    - runtck -> Cleans, compile and run the tck.
+
 On my machine I run this as follows:
 c:/jakarta-ant/bin/ant all
 -->
 
-<project name="NIST-SIP" default="all" >
+<project name="NIST-SIP" default="all">
 	<!-- Allow user to override defaults -->
 	<property file="ant-build-config.properties" />
-
-	<!-- javac compilation options -->
-	<property name="javac.deprecation" value="true"/>
-	<property name="javac.optimize" value="true"/>
-	<property name="javac.debug" value="true"/>
-	<property name="javac.debuglevel" value="source,lines,vars"/>
-	<property name="javac.nowarn" value="false"/>
-	<property name="javac.source" value="1.4"/>
-	<property name="javac.target" value="${javac.source}"/>
-
 	<!-- set global properties for this build -->
 	<property name="root" value="." />
 
-	<!-- <property name="jmf.home" value="../jmf"/> -->
-
-	<!-- Where the classes are built -->
-	<property name="classes" value="${root}/classes" />
-
-	<!-- where the docs live -->
-	<property name="docdir" value="${root}/docs/api" />
-
-	<!-- javadoc properties-->
 	<property name="href.nist.homepage" value="http://www-x.antd.nist.gov/" />
 	<property name="href.uncopyright" value="../uncopyright.html" />
+	<property name="href.copyright" value="../copyright.html" />
 	<property name="href.mailto" value="mailto:nist-sip-dev@antd.nist.gov" />
-	<property name="href.distribution" value="http://www-x.antd.nist.gov/proj/iptel/nist-sip-requestform/nist-sip-1.2-requestform.htm"/>
-	
-	<!-- where the src lives -->
-	<property name= "srcroot" value = "${root}/src" />
-	
-	<!-- where are the lib -->
-	<property name= "jain_api_jar" value = "JainSipApi1.1.jar" />
-	<property name= "ri_jar" value = "nist-sip-1.2.jar" />
-	<property name= "sdp_jar" value = "nist-sdp-1.0.jar" />
-	<property name= "sip-sdp-jar" value = "sip-sdp.jar" />
-	<property name = 'junit_jar' value = 'lib/junit.jar'/>
-	<property name = 'jakarta_regexp_jar' value = 'lib/jakarta-regexp-1.3.jar' />
-	<property name = 'tck_jar' value = 'tck.jar'/>
-	
-	
-	<property name ='j2se_api' value='http://java.sun.com/j2se/1.4.2/docs/api'/>
-	
-	<target name="all" depends="clean,compilestack,compileri,compilesdp,sip-sdp-jar,compileexamples,compiletools,javadoc,javadoc-jain" />
+	<property name="href.distribution" value="http://jain-sip.dev.java.net" />
 
+	<property name='tck_jar' value='tck.jar' />
+	<property name="classes" value="${root}/classes" />
+	<property name="retrowoven" value="${root}/retrowoven" />
+	<property name="docdir" value="${root}/javadoc" />
+	<property name="srcroot" value="${root}/src" />
+	<property name="jain_api_jar" value="${root}/JainSipApi1.2.jar" />
+	<property name="jain_api_jar14" value="${root}/JainSipApi1.2_java14.jar" />
+	<property name="ri_jar" value="${root}/JainSipRi1.2.jar" />
+	<property name="ri_jar14" value="${root}/nist-sip-1.2_java14.jar" />
+	<property name="sdp_jar" value="${root}/nist-sdp-1.0.jar" />
+	<property name="sip-sdp-jar" value="${root}/sip-sdp.jar" />
+	<property name="junit_jar" value="${root}/lib/${junit}" />
+	<property name="log4j_jar" value="${root}/lib/log4j-1.2.8.jar" />
+	<property name="concurrent_jar" value="${root}/lib/concurrent.jar" />
+	<property name='j2se_api' value='http://java.sun.com/j2se/1.5/docs/api' />
+
+	<target name="all" depends="make,compileexamples,compiletools,javadoc,javadoc-jain" />
+
+	<target name="make" depends="clean,compileapi,compileri,compilesdp,sip-sdp-jar" />
+
+	<target name="cleanlogs">
+		<delete failonerror="0">
+			<fileset file="*Log.txt" />
+			<fileset file="*Log.txt" />
+			<fileset file="*log.txt" />
+			<fileset file="tckoutput.txt" />
+			<fileset file="*debug.txt" />
+			<fileset file="*Debug.txt" />
+			<fileset dir="./logs" />
+			<fileset dir="./test-reports" />
+			<fileset dir="./src" includes="**/*log*.txt" />
+			<fileset dir="./src" includes="**/*debug*.txt" />
+			<fileset dir="./src" includes="**/*log*.txt" />
+			<fileset dir="./src" includes="**/*debug*.txt" />
+		</delete>
+	</target>
 	<!-- Clean everything -->
-	<target name="clean">
+	<target name="clean" depends="cleanlogs">
 		<delete dir="${classes}/examples" />
 		<delete dir="${classes}/tools" />
 		<delete dir="${classes}/gov" />
 		<delete dir="${classes}/javax" />
-		<delete dir='${classes}'/>
-		
-		<delete file="./${jain_api_jar}"/>
-		<delete file="./${ri_jar}"/>
-		<delete file="./${sdp_jar}"/>
-		<delete file="./${sip-sdp-jar}"/>
-		<delete file="./${tck_jar}"/>
-		
-		<delete dir='javadoc'/>
-		<delete dir='javadoc-jain'/>
-		
+		<delete dir='${classes}' />
+
+		<delete dir='${retrowoven}' />
+
+		<delete file="./${jain_api_jar}" />
+		<delete file="./${jain_api_jar14}" />
+		<delete file="./${ri_jar}" />
+		<delete file="./${ri_jar14}" />
+		<delete file="./${sdp_jar}" />
+		<delete file="./${sip-sdp-jar}" />
+		<delete file="./${tck_jar}" />
+		<delete file="./tracesviewer.jar" />
+
+		<delete dir='javadoc' />
+		<delete dir='javadoc-jain' />
+
 		<!-- files created by running targets -->
-		<delete file='./riDebugLog.txt'/>
-		<delete file='./tcklog.txt'/>
-		<delete file='./tiDebugLog.txt'/>
-		<delete file='./tiMessageLog.txt'/>
-		<delete file='./shootistlog.txt'/>
-		<delete file='./shootmelog.txt'/>
-		
+
 	</target>
 
 	<!-- Create ${classes} -->
 	<target name="init">
-		<mkdir dir="${classes}"/>
+		<mkdir dir="${classes}" />
+
+		<!-- JvB: Check for Java 1.5 -->
+		<available classname="java.lang.ProcessBuilder" property="jdk15.available" />
 	</target>
 
 	<target name="cleandocs">
 		<delete dir="javadoc" />
 	</target>
 
-	<target name="javadoc" >
-		
-		<mkdir dir='javadoc'/>
-			
-		<javadoc packagenames="javax.sip.*,javax.sip.header.*,javax.sip.message.*,javax.sip.address.*,gov.nist.javax.sip.*,gov.nist.javax.sip.address.*,gov.nist.javax.sip.message.*,gov.nist.javax.sip.header.*,gov.nist.javax.sip.stack.*,gov.nist.javax.sip.parser.*"
-				sourcepath="${srcroot}"
-				overview="${docdir}/overview.html"
-				destdir="javadoc"
-				use="true"
-				splitindex="true"
-				windowtitle="JAIN-SIP-1.1 RI For the People !"
-				doctitle="NIST SIP/SDP Parser and Stack (v1.2)"
-				public="true"
-				author="true"
-				version="true"
-				defaultexcludes="yes"
-				additionalparam="-breakiterator">
+	<target name="javadoc">
+		<mkdir dir="${docdir}" />
+		<copy toDir="${docdir}">
+			<fileset dir="src/javax/sip" includes="**/*.html" />
+		</copy>
+
+		<javadoc packagenames="javax.sip.*,javax.sip.header.*,javax.sip.message.*,javax.sip.address.*,gov.nist.javax.sip.*,gov.nist.javax.sip.address.*,gov.nist.javax.sip.message.*,gov.nist.javax.sip.header.*,gov.nist.javas.sip.header.ims.*,gov.nist.javax.sip.stack.*,gov.nist.core.net.*,gov.nist.javax.sip.parser.*" sourcepath="${srcroot}"
+			overview="${docdir}/overview.html" destdir="javadoc" use="true" splitindex="true" windowtitle="The JAIN-SIP-1.2 RI For the People !"
+			doctitle="NIST-SIP: The Reference Implementation for JAIN-SIP 1.2" 
+			public="true" author="true" version="true" defaultexcludes="yes" additionalparam="-breakiterator">
 			<classpath>
-				<pathelement location="${jain_api_jar}"/>
+				<pathelement location="${log4j_jar}" />
+				<pathelement location="${concurrent_jar}" />
+				<pathelement location="${jain_api_jar}" />
 			</classpath>
 			<link href="${j2se_api}" />
 			<header>
 				<![CDATA[
-					<b> NIST SIP Parser and Stack (v1.2) </b>
+					<b> NIST-SIP: The Reference Implementation for JAIN-SIP 1.2 </b>
+				]]>
+			</header>
+		<bottom>
+			<![CDATA[
+					<font size="-1">
+			<a href="${href.nist.homepage}"> A product of the NIST/ITL Advanced Networking Technologies Division. </a>
+			<br>
+				<a href="${href.uncopyright}"> See conditions of use. </a>
+				<br>
+					<a href="${href.mailto}">Submit a bug report or feature request. </a>
+					<br>
+					</font>
+				]]>
+			</bottom>
+			</javadoc>
+		</target>
+
+		<target name="javadoc-jain">
+
+			<mkdir dir='javadoc-jain' />
+
+			<javadoc packagenames="javax.sip.*,javax.sip.header.*,javax.sip.message.*,javax.sip.address.*,javax.sdp.*" sourcepath="${srcroot}" overview="${docdir}/overview.html" destdir="javadoc-jain" use="true" splitindex="true" windowtitle="JAIN-SIP-1.2 RI For the People !" doctitle="NIST SIP/SDP Parser and Stack (v1.3)" public="true" author="true" version="true" defaultexcludes="yes" additionalparam="-breakiterator">
+				<classpath>
+					<pathelement location="${jain_api_jar}" />
+				</classpath>
+				<link href="${j2se_api}" />
+				<header>
+					<![CDATA[
+					<b> JAIN-SIP 1.2 API </b>
 				]]>
 			</header>
 			<bottom>
 				<![CDATA[
 					<font size="-1">
-						<a href="${href.nist.homepage}"> A product of the NIST/ITL Advanced Networking Technologies Division. </a><br>
-						<a href="${href.uncopyright}"> See conditions of use. </a> <br>
-						<a href="${href.mailto}">Submit a bug report or feature request. </a><br>
-					</font>
+				<a href="NIST, BEA Systems, Sun Microsystems and others" </a>
+					<br>
+						<a href="${href.copyright}"> See conditions of use. </a>
+						<br>
+							<a href="${href.mailto}">Submit a bug report or feature request. </a>
+							<br>
+							</font>
 				]]>
 			</bottom>
-		</javadoc>
-	</target>
+					</javadoc>
+				</target>
 
-	<target name="javadoc-jain" >
-		
-		<mkdir dir='javadoc-jain'/>
-			
-		<javadoc packagenames="javax.sip.*,javax.sip.header.*,javax.sip.message.*,javax.sip.address.*,javax.sdp.*"
-				sourcepath="${srcroot}"
-				overview="${docdir}/overview.html"
-				destdir="javadoc-jain"
-				use="true"
-				splitindex="true"
-				windowtitle="JAIN-SIP-1.1 RI For the People !"
-				doctitle="NIST SIP/SDP Parser and Stack (v1.2)"
-				public="true"
-				author="true"
-				version="true"
-				defaultexcludes="yes"
-				additionalparam="-breakiterator">
-			<classpath>
-				<pathelement location="${jain_api_jar}"/>
-			</classpath>
-			<link href="${j2se_api}" />
-			<header>
-				<![CDATA[
-					<b> NIST SIP Parser and Stack (v1.2) </b>
-				]]>
-			</header>
-			<bottom>
-				<![CDATA[
-					<font size="-1">
-						<a href="${href.nist.homepage}"> A product of the NIST/ITL Advanced Networking Technologies Division. </a><br>
-						<a href="${href.uncopyright}"> See conditions of use. </a> <br>
-						<a href="${href.mailto}">Submit a bug report or feature request. </a><br>
-					</font>
-				]]>
-			</bottom>
-		</javadoc>
-	</target>
-	
-	<!-- Compile the stack and libraries -->
-	<target name="compilestack" depends="init">
-		<javac	debug="${javac.debug}" debuglevel="${javac.debuglevel}"
-				source="${javac.source}" target="${javac.target}"
-				nowarn="${javac.nowarn}"
-				deprecation="${javac.deprecation}"
-				optimize="${javac.optimize}"
-				srcdir="${srcroot}"
-				includes="javax/sip/**/*.java"
-				destdir= "${classes}"/>
-		<jar destfile="${jain_api_jar}" basedir="${classes}" includes="javax/sip/**/*.class"/>
-	</target>
+				<!-- Compile the stack and libraries -->
+				<target name="compileapi" depends="init">
+					<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" source="${javac.source}" target="${javac.target}" srcdir="${srcroot}" includes="javax/sip/**/*.java" destdir="${classes}" />
+					<jar destfile="${jain_api_jar}" basedir="${classes}" includes="javax/sip/**/*.class" />
+				</target>
 
-	<target name="compileri"  depends="init">
-		<javac 	debug="${javac.debug}" debuglevel="${javac.debuglevel}"
-				source="${javac.source}" target="${javac.target}"
-				nowarn="${javac.nowarn}"
-				deprecation="${javac.deprecation}"
-				optimize="${javac.optimize}"
-				srcdir="${srcroot}"
-				includes="gov/nist/core/**/*.java, gov/nist/javax/sip/**/*.java"
-				destdir= "${classes}">
-		</javac>
-		<jar destfile="${ri_jar}" basedir="${classes}" includes="gov/nist/**/*.class"/>
-	</target>
+				<target name="compileri" depends="clean,init,compileapi">
+					<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="${srcroot}" source="${javac.source}" target="${javac.target}" includes="gov/nist/core/**/*.java, gov/nist/javax/sip/**/*.java" destdir="${classes}">
+						<classpath>
+							<pathelement location="${log4j_jar}" />
+							<pathelement location="${concurrent_jar}" />
+						</classpath>
+					</javac>
+					<jar destfile="${ri_jar}" basedir="${classes}" includes="gov/nist/**/*.class" />
+				</target>
 
-	<target name="compilesdp"  depends="init">
-		<javac	debug="${javac.debug}" debuglevel="${javac.debuglevel}"
-				source="${javac.source}" target="${javac.target}"
-				nowarn="${javac.nowarn}"
-				deprecation="${javac.deprecation}"
-				optimize="${javac.optimize}"
-				srcdir="${srcroot}"
-				includes="javax/sdp/**/*.java, gov/nist/javax/sdp/**/*.java"
-				destdir= "${classes}">
-		</javac>
-		<jar destfile="${sdp_jar}" basedir="${classes}" includes="gov/nist/javax/sdp/**/*.class,javax/sdp/**/*.class"/>
-	</target>
+				<target name="compilesdp" depends="init">
+					<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="${srcroot}" includes="javax/sdp/**/*.java, gov/nist/javax/sdp/**/*.java" destdir="${classes}">
+					</javac>
+					<jar destfile="${sdp_jar}" basedir="${classes}" includes="gov/nist/javax/sdp/**/*.class,javax/sdp/**/*.class" />
+				</target>
 
-	<target name="sip-sdp-jar"  depends="compilejain">
-		<jar destfile="${sip-sdp-jar}" basedir="${classes}" 
-			includes="javax/**/*.class,gov/nist/**/*.class"/>
-	</target>
+				<target name="sip-sdp-jar" depends="compilejain">
+					<jar destfile="${sip-sdp-jar}" basedir="${classes}" includes="javax/**/*.class,gov/nist/**/*.class" />
+				</target>
 
-	<target name='compilejain' depends='compilestack,compileri,compilesdp'/>
-	
-	<!-- Compile the examples -->
-	<target name="compileexamples" depends="init">
-		<javac 	debug="${javac.debug}" debuglevel="${javac.debuglevel}"
-				source="${javac.source}" target="${javac.target}"
-				nowarn="${javac.nowarn}"
-				deprecation="${javac.deprecation}"
-				optimize="${javac.optimize}"
-				srcdir="${srcroot}"
-				includes="examples/**/*.java"
-				destdir= "${classes}">
-			<classpath>
-				<pathelement location="${jakarta_regexp_jar}" />
-			</classpath>
-		</javac>
-	</target>
+				<target name='compilejain' depends='compileapi,compileri,compilesdp' />
 
-	<!-- Compile the tck -->
-	<target name="compiletck" depends="init,compilestack,compileri,compilesdp">
-		<javac 	debug="${javac.debug}" debuglevel="${javac.debuglevel}"
-				source="${javac.source}" target="${javac.target}"
-				nowarn="${javac.nowarn}"
-				deprecation="${javac.deprecation}"
-				optimize="${javac.optimize}"
-				srcdir="${srcroot}"
-				includes="test/tck/**/*.java"
-				destdir= "${classes}">
-			<classpath>
-				<pathelement location='${junit_jar}'/>
-			</classpath>
-		</javac>
-		<jar destfile="${tck_jar}" basedir="${classes}" includes="test/tck/**/*.class">
-			<manifest>
-				<attribute name="Built-By" value="${user.name}"/>
-				<attribute name="Main-Class" value="test.tck.Tck"/>
-			</manifest>
-		</jar>
-	</target>
+				<!-- Compile the examples -->
+				<target name="compileexamples" depends="init">
+					<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="${srcroot}" includes="examples/**/*.java" destdir="${classes}">
+						<classpath>
+							<pathelement location="${log4j_jar}" />
+							<pathelement location="${junit_jar}" />
+							<pathelement location="${jakarta_regexp_jar}" />
+						</classpath>
+					</javac>
+				</target>
 
-	<target name='runtck' depends='clean,compiletck'>
-	   <!-- clean out all previously compiled code to make sure we use latest and greatest (or buggiest!) -->
-		<java classname="test.tck.Tck" fork="true">
-			<arg value='-mode'/>
-			<arg value='gui'/>
-			<classpath>
-				<pathelement location="${jain_api_jar}"/>
-				<pathelement location="${ri_jar}"/>
-				<pathelement location="${tck_jar}"/>
-				<pathelement location='${junit_jar}'/>
-				
-				<!-- add source path since this will pick up test.tck.gui.images -->
-				<pathelement location='src'/>
-			</classpath>
-		</java>
-	</target>
-	
-	<!-- download and unzip the libs.zip -->
-	<target name="getlibs">
-		<get src="http://is2.antd.nist.gov/pub/nist-sip/libs.zip"
-			dest="./libs.zip" verbose="on"/>
-		<unzip src="libs.zip" dest="./"/>
-	</target>
+				<!-- Compile the tck, always with debug on -->
+				<target name="compiletck" depends="clean,init,compileri">
+					<mkdir dir="${classes}" />
+					<javac debug="on" debuglevel="${javac.debuglevel}" nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="${srcroot}" destdir="${classes}">
+						<include name="test/tck/**/*.java" />
+						<include name="test/rihelper/**/*.java" />
+						<classpath>
+							<pathelement location='${junit_jar}' />
+							<pathelement location='${log4j_jar}' />
+						</classpath>
+					</javac>
+					<jar destfile="${tck_jar}" basedir="${classes}">
+						<include name="test/tck/**/*.class" />
+						<include name="test/rihelper/**/*.class" />
+						<manifest>
+							<attribute name="Built-By" value="${user.name}" />
+							<attribute name="Main-Class" value="test.tck.Tck" />
+						</manifest>
+					</jar>
+				</target>
 
-	<!-- compile to traces viewer jar -->
-	<target name="viewerjar" depends="compiletools">
-		<copy todir="${classes}/tools/tracesviewer/images">
-			<fileset dir="${srcroot}/tools/tracesviewer/images"/>
-		</copy>
-		<jar compress="false" destfile="tracesviewer.jar">
-			<fileset dir="${classes}">
-				<include name="tools/tracesviewer/**/*.*"/>
-			</fileset>
-			<manifest>
-				<attribute name="Built-By" value="${user.name}"/>
-				<attribute name="Main-Class" value="tools.tracesviewer.TracesViewer"/>
-			</manifest>
-		</jar>
-	</target>
+				<!-- JvB: Runs the Retroweaver tool to convert 1.5 .class files
+       to bytecode that 1.4 JVMs can run -->
+				<target name="retroweaver" depends="compileapi,compileri" description="Executes the Retroweaver tool">
 
-	<!-- Compile the tools -->
-	<target name="compiletools" depends="init">
-		<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" source="${javac.source}" target="${javac.target}" nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="${srcroot}" includes="tools/tracesviewer/**/*.java" destdir= "${classes}">
-			<classpath>
-				<pathelement location="${classes}"/>
-			</classpath>
-		</javac>
-		<copy todir="${classes}/tools/tracesviewer/images">
-			<fileset dir="${srcroot}/tools/tracesviewer/images"/>
-		</copy>
-		<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" source="${javac.source}" target="${javac.target}" nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="${srcroot}" includes="tools/sniffer/**/*.java" destdir= "${classes}">
-			<classpath>
-				<pathelement location="${classes}"/>
-			</classpath>
-		</javac>
-	</target>
-	
-	<target name="shootme" description="run the service.">
-        <java classname="examples.shootist.Shootme" fork="true">
-            <classpath>
-                <pathelement location="${classes}"/>
-            </classpath>                       
-        </java>
-    </target>
+					<!-- Copy .class files to a separate directory -->
+					<copy todir="${retrowoven}">
+						<fileset dir="${classes}" includes="**/*.class" />
+					</copy>
 
-    <target name="shootist" description="run the service.">
-        <java classname="examples.shootist.Shootist" fork="true">
-            <classpath>
-                <pathelement location="${classes}"/>
-            </classpath>                       
-        </java>
-    </target>
-	
-    <target name="subscriber" description="run the service.">
-        <java classname="examples.subsnotify.Subscriber" fork="true">
-            <classpath>
-                <pathelement location="${classes}"/>
-            </classpath>                       
-        </java>
-    </target>
+					<java classname="com.rc.retroweaver.Weaver">
+						<arg line="-source ${retrowoven}" />
+						<classpath>
+							<fileset dir="lib">
+								<include name="**/*.jar" />
+							</fileset>
+							<fileset dir="tools">
+								<include name="**/*.jar" />
+							</fileset>
+						</classpath>
+					</java>
 
-    <target name="notifier" description="run the service.">
-        <java classname="examples.subsnotify.Notifier" fork="true">
-            <classpath>
-                <pathelement location="${classes}"/>
-            </classpath>                       
-        </java>
-    </target>
-	
-</project>
+					<!-- Generate a 1.4 version of the jars, including Retroweaver runtime classes (in both) -->
+					<unjar src="lib/retroweaver-rt.jar" dest="${retrowoven}" />
+					<jar destfile="${jain_api_jar14}" basedir="${retrowoven}" includes="javax/sip/**/*.class,com/rc/**/*.class" />
+					<jar destfile="${ri_jar14}" basedir="${retrowoven}" includes="gov/nist/**/*.class,com/rc/**/*.class" />
+				</target>
+
+				<!-- this uses the junit task of ant to run the tck in self test mode -->
+
+				<target name='runtck' depends="compiletck" description="Runs all TCK tests using the ant junit task.">
+					<mkdir dir="test-reports" />
+					<mkdir dir="logs" />
+					<junit fork="yes" showoutput="yes">
+						<classpath>
+							<pathelement location="${jain_api_jar}" />
+							<pathelement location="${ri_jar}" />
+							<pathelement location="${log4j_jar}" />
+							<pathelement location="${tck_jar}" />
+							<pathelement location='${junit_jar}' />
+							<pathelement location='${log4j_jar}' />
+							<pathelement location='${concurrent_jar}' />
+
+							<!-- add source path since this will pick up test.tck.gui.images -->
+							<pathelement location='src' />
+						</classpath>
+
+						<formatter type="xml" />
+
+						<batchtest fork="yes" todir="test-reports" haltonfailure="no">
+							<fileset dir="${srcroot}">
+								<include name="test/tck/**/*Test.java" />
+								<!-- exclude name="**/AllTests.java"/ -->
+							</fileset>
+						</batchtest>
+					</junit>
+					<junitreport todir="./test-reports">
+						<fileset dir="./test-reports">
+							<include name="TEST-*.xml" />
+						</fileset>
+						<report format="frames" todir="./test-reports/html" />
+					</junitreport>
+					<echo>The test report can be found at ./test-reports/html/index.html</echo>
+				</target>
+
+				<target name="runtest" >
+				<java classname="test.tck.msgflow.callflows.subsnotify.UdpSubsnotifyTest">
+					<classpath>
+						<pathelement location="${classes}" />
+						<pathelement location="${jain_api_jar}" />
+						<pathelement location="${ri_jar}" />
+						<pathelement location="${log4j_jar}" />
+						<pathelement location="${tck_jar}" />
+						<pathelement location='${junit_jar}' />
+						<pathelement location='${log4j_jar}' />
+						<pathelement location='${concurrent_jar}' />
+
+						<!-- add source path since this will pick up test.tck.gui.images -->
+						<pathelement location='src' />
+					</classpath>
+				</java>
+				</target>
+
+
+				<!-- download and unzip the libs.zip -->
+				<target name="getlibs">
+					<get src="http://is2.antd.nist.gov/pub/nist-sip/libs.zip" dest="./libs.zip" verbose="on" />
+					<unzip src="libs.zip" dest="./" />
+				</target>
+
+				<!-- compile to traces viewer jar -->
+				<target name="viewerjar">
+					<copy todir="${classes}/tools/tracesviewer/images">
+						<fileset dir="${srcroot}/tools/tracesviewer/images" />
+					</copy>
+					<jar compress="false" destfile="tracesviewer.jar">
+						<fileset dir="${classes}">
+							<include name="tools/tracesviewer/**/*.*" />
+						</fileset>
+						<manifest>
+							<attribute name="Built-By" value="${user.name}" />
+							<attribute name="Main-Class" value="tools.tracesviewer.TracesViewer" />
+						</manifest>
+					</jar>
+				</target>
+
+				<!-- Compile the tools -->
+				<target name="compiletools" depends="init">
+					<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="${srcroot}" includes="tools/tracesviewer/**/*.java" destdir="${classes}">
+						<classpath>
+							<pathelement location="${classes}" />
+						</classpath>
+					</javac>
+					<copy todir="${classes}/tools/tracesviewer/images">
+						<fileset dir="${srcroot}/tools/tracesviewer/images" />
+					</copy>
+					<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" source="${javac.source}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="${srcroot}" includes="tools/sniffer/**/*.java" destdir="${classes}">
+						<classpath>
+							<pathelement location="${classes}" />
+						</classpath>
+					</javac>
+				</target>
+
+
+
+
+
+			</project>

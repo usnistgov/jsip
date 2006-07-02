@@ -1,5 +1,8 @@
 package test.tck.factory;
+import java.text.ParseException;
+
 import javax.sip.address.*;
+
 import junit.framework.*;
 import test.tck.*;
 
@@ -36,8 +39,9 @@ public class AddressFactoryTest extends FactoryTestHarness {
 		SipURI sipUri = null;
 		try {
 			sipUri = tiAddressFactory.createSipURI(name, address);
-			assertTrue(sipUri != null);
+			assertNotNull(sipUri);
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			throw new TiUnexpectedError(ex.getMessage());
 		}
 		return sipUri;
@@ -71,11 +75,16 @@ public class AddressFactoryTest extends FactoryTestHarness {
 		try {
 			// The API has a bug here - there is no way to retrieve the
 			// phone-context parameter. This will be fixed in the next release.
-			int start = tiTelURL.toString().indexOf(':');
-			String phoneNumber = tiTelURL.toString().substring(start+1).trim();
+			//int start = tiTelURL.toString().indexOf(':');
+			//String phoneNumber = tiTelURL.toString().substring(start+1).trim();
+			// String phoneNumber = tiTelURL.getPhoneContext();		// JvB: wrong
+			String phoneNumber = tiTelURL.getPhoneNumber();
 			telUrl = riAddressFactory.createTelURL(phoneNumber);
 			telUrl.setGlobal(tiTelURL.isGlobal());
+			// JvB: set to 'null' should remove it, fixed in impl
+			telUrl.setPhoneContext( tiTelURL.getPhoneContext() );
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			throw new TiUnexpectedError(ex.getMessage());
 		}
 		return telUrl;
@@ -134,6 +143,7 @@ public class AddressFactoryTest extends FactoryTestHarness {
 			addr = riAddressFactory.createAddress(address);
 			assertTrue(addr != null);
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			throw new TckInternalError(ex.getMessage());
 		}
 		return addr;
@@ -149,39 +159,50 @@ public class AddressFactoryTest extends FactoryTestHarness {
 		}
 	}
 
+	public void testStar() {
+		try {
+			Address star = tiAddressFactory.createAddress( "*" );
+			assertTrue( star.isWildcard() );
+			assertTrue( star.getURI().isSipURI() );
+			assertEquals( "*", ((SipURI) star.getURI()).getUser() );
+		} catch (ParseException pe) {
+			pe.printStackTrace();
+			fail( pe.getMessage() );
+		}
+	}
+	
 	public void testAddressFactory() {
 		try {
 
 			for (int i = 0; i < urls.length; i++) {
 				javax.sip.address.URI uri = this.createTiURI(urls[i]);
-				assertTrue(uri != null);
+				assertNotNull(uri);
 				javax.sip.address.Address tiAddress = this.createAddress(uri);
-				assertTrue(tiAddress != null);
+				assertNotNull(tiAddress);
 
 				javax.sip.address.URI riUri = this.createRiURI(urls[i]);
 				javax.sip.address.Address riAddress =
 					this.createRiAddress(riUri);
 				tiAddress = this.createRiAddress(tiAddress.toString());
 
-				assertTrue(
-					riAddress.equals(
-						this.createRiAddressFromTiAddress(tiAddress)));
+				assertEquals( riAddress,
+						this.createRiAddressFromTiAddress(tiAddress) );
 
 			}
 
 			for (int i = 0; i < hosts.length; i++) {
 				javax.sip.address.SipURI tiSipURI;
 				javax.sip.address.SipURI riSipURI;
-				tiSipURI = this.createTiSipURI(null, addresses[i]);
+				tiSipURI = this.createTiSipURI(null, hosts[i]);
 				assertTrue(tiSipURI != null);
 				assertTrue(tiSipURI.isSipURI());
 				assertTrue(!tiSipURI.isSecure());
 				assertTrue(
 					(
 						(SipURI) this.tiAddressFactory.createURI(
-							"sip:" + addresses[i])).equals(
+							"sip:" + hosts[i])).equals(
 						tiSipURI));
-				riSipURI = this.createRiSipURI(null, addresses[i]);
+				riSipURI = this.createRiSipURI(null, hosts[i]);
 				javax.sip.address.Address tiAddress =
 					this.createAddress(tiSipURI);
 				assertTrue(tiAddress != null);
@@ -191,19 +212,19 @@ public class AddressFactoryTest extends FactoryTestHarness {
 					riAddress.equals(
 						this.createRiAddressFromTiAddress(tiAddress)));
 
-				tiSipURI = this.createTiSipURI("jaintck", addresses[i]);
+				tiSipURI = this.createTiSipURI("jaintck", hosts[i]);
 				assertTrue(tiSipURI != null);
 				assertTrue(tiSipURI.isSipURI());
 				assertTrue(!tiSipURI.isSecure());
 				assertTrue(
 					(
 						(SipURI) this.tiAddressFactory.createURI(
-							"sip:jaintck@" + addresses[i])).equals(
+							"sip:jaintck@" + hosts[i])).equals(
 						tiSipURI));
 				tiAddress = this.createAddress(tiSipURI);
 				assertTrue(tiAddress != null);
 
-				riSipURI = this.createRiSipURI("jaintck", addresses[i]);
+				riSipURI = this.createRiSipURI("jaintck", hosts[i]);
 				riAddress = this.createRiAddress(riSipURI);
 				assertTrue(
 					riAddress.equals(
@@ -216,8 +237,12 @@ public class AddressFactoryTest extends FactoryTestHarness {
 				assertTrue(tiTelUrl != null);
 				javax.sip.address.TelURL riTelUrl =
 					this.createRiTelURL(phoneNumbers[i]);
-				assertTrue(
-					riTelUrl.equals(createRiTelURLFromTiTelURL(tiTelUrl)));
+				
+				System.out.println( "TI:" + tiTelUrl );
+				System.out.println( "RI:" + riTelUrl );
+				
+				assertEquals(
+					riTelUrl, createRiTelURLFromTiTelURL(tiTelUrl) );
 			}
 
 			for (int i = 0; i < telUrls.length; i++) {
@@ -238,6 +263,17 @@ public class AddressFactoryTest extends FactoryTestHarness {
 
 	}
 
+	public void testTelURL() throws Exception {
+		// JvB: This weird-looking tel: URL is actually valid, syntactically speaking
+		URI telURL = tiAddressFactory.createURI( "tel:0123456789ABCDEF#*-.();isub=/:-_.!~*'();phone-context=+123-.();-=[]/:" );
+		assertTrue( telURL instanceof TelURL );
+		TelURL t = (TelURL) telURL;
+		assertEquals( "0123456789ABCDEF#*-.()", t.getPhoneNumber() ); 
+		assertEquals( "+123-.()", t.getPhoneContext() );
+		assertEquals( "/:-_.!~*'()", t.getIsdnSubAddress() );
+		assertEquals( "[]/:", t.getParameter("-") );		
+	}
+	
 	public void setUp() {
 
 	}

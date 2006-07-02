@@ -1,3 +1,28 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 /*******************************************************************************
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
 *******************************************************************************/
@@ -8,11 +33,11 @@ import java.text.ParseException;
 /**
  *  Protocol name and version.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2005-10-09 20:24:22 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-02 09:50:36 $
  *
- * @author M. Ranganathan <mranga@nist.gov>  <br/>
+ * @author M. Ranganathan   <br/>
  *
- *<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+ *
  *
  */
 public class Protocol extends SIPObject {
@@ -34,28 +59,6 @@ public class Protocol extends SIPObject {
 	 */
 	protected String transport;
 
-	/**
-	 * Compare two To headers for equality.
-	 * @return true if the two headers are the same.
-	 * @param other Object to set
-	 */
-	public boolean equals(Object other) {
-		if (!other.getClass().equals(this.getClass())) {
-			return false;
-		}
-		Protocol that = (Protocol) other;
-		if (this.protocolName.compareToIgnoreCase(that.protocolName) != 0) {
-			return false;
-		}
-		if (this.transport.compareToIgnoreCase(that.transport) != 0) {
-			return false;
-		}
-		if (this.protocolVersion.compareTo(that.protocolVersion) != 0) {
-			return false;
-		}
-		return true;
-	}	
-	
 	/**
 	 * Return canonical form.
 	 * @return String
@@ -142,8 +145,11 @@ public class Protocol extends SIPObject {
 }
 /*
  * $Log: not supported by cvs2svn $
- * Revision 1.3  2005/10/09 19:48:21  jbemmel
- * bugfix: getProtocol should return e.g. "SIP/2.0", not including transport
+ * Revision 1.4  2006/06/19 06:47:26  mranga
+ * javadoc fixups
+ *
+ * Revision 1.3  2006/06/16 15:26:28  mranga
+ * Added NIST disclaimer to all public domain files. Clean up some javadoc. Fixed a leak
  *
  * Revision 1.2  2005/10/09 18:47:53  jeroen
  * defined equals() in terms of API calls

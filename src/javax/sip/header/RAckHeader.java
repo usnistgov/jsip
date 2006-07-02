@@ -2,21 +2,15 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Module Name   : JAIN SIP Specification
+ * Module Name   : JSIP Specification
  * File Name     : RAckHeader.java
  * Author        : Phelim O'Doherty
  *
@@ -56,7 +50,9 @@ import java.text.ParseException;
  * remove or modify Headers that it does not understand.
  *
  * @since 1.1
- * @author Sun Microsystems
+ * @author BEA Systems, Inc. 
+ * @author NIST
+ * @version 1.2
  */
 
 public interface RAckHeader extends Header {
@@ -81,37 +77,55 @@ public interface RAckHeader extends Header {
     /**
      * Sets the sequence number value of the CSeqHeader of the provisional 
      * response being acknowledged. The sequence number MUST be expressible as 
-     * a 32-bit unsigned integer and MUST be less than 2**31.
+     * a 32-bit unsigned integer and MUST be less than 2**32 -1.
      *
      * @param cSeqNumber - the new cSeq number of this RAckHeader.
      * @throws InvalidArgumentException if supplied value is less than zero.
      */
-    public void setCSeqNumber(int cSeqNumber) throws InvalidArgumentException;
+    public void setCSeqNumber(long cSeqNumber) throws InvalidArgumentException;
 
+    /**
+     * Gets the CSeq sequence number of this RAckHeader.
+     *
+     *@deprecated
+     *@see #getCSeqNumberLong()
+     * @return the integer value of the cSeq number of the RAckHeader.
+     */
+    public int getCSeqNumber();
+    
     /**
      * Gets the CSeq sequence number of this RAckHeader.
      *
      * @return the integer value of the cSeq number of the RAckHeader.
      */
-    public int getCSeqNumber();
+    public long getCSeqNumberLong();
     
 
-    /**
+     /**
      * Sets the sequence number value of the RSeqHeader of the provisional 
      * response being acknowledged. The sequence number MUST be expressible as 
-     * a 32-bit unsigned integer and MUST be less than 2**31.
-     *
+     * a 32-bit unsigned integer and MUST be less than 2**32 -1.
+     * 
      * @param rSeqNumber - the new rSeq number of this RAckHeader.
      * @throws InvalidArgumentException if supplied value is less than zero.
      */
-    public void setRSeqNumber(int rSeqNumber) throws InvalidArgumentException;
+    public void setRSeqNumber(long rSeqNumber) throws InvalidArgumentException;
 
+    /**
+     * Gets the RSeq sequence number of this RAckHeader.
+     *
+     *@deprecated 
+     *@see #getRSeqNumberLong()
+     * @return the integer value of the RSeq number of the RAckHeader.
+     */
+    public int getRSeqNumber(); 
+    
     /**
      * Gets the RSeq sequence number of this RAckHeader.
      *
      * @return the integer value of the RSeq number of the RAckHeader.
      */
-    public int getRSeqNumber();    
+    public long getRSeqNumberLong();    
     
     /**
      * Name of RAckHeader.

@@ -2,21 +2,15 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Module Name   : JAIN SIP Specification
+ * Module Name   : JSIP Specification
  * File Name     : Request.java
  * Author        : Phelim O'Doherty
  *
@@ -46,7 +40,7 @@ import java.text.ParseException;
  * <li>REGISTER - registers contact information with a SIP server.
  * </ul>
  *
- * JAIN SIP also supports the following method name extensions, documented in
+ * JSIP also supports the following method name extensions, documented in
  * the following standards track RFCs:
  * <ul>
  * <li> INFO - used to carry session related control information that is 
@@ -72,6 +66,8 @@ import java.text.ParseException;
  * <li> REFER - requests that the recipient REFER to a resource provided in 
  * the request. This functionality is defined in 
  * <a href = "http://www.ietf.org/rfc/rfc3515.txt">RFC3515</a>.
+ * <li> PUBLISH - for publishing event state. This functionality is defined in 
+ * <a href = "http://www.ietf.org/rfc/rfc3903.txt">RFC3903</a>. 
  * </ul>
  * A valid SIP request formulated by a User Agent Client MUST, at a minimum, contain the 
  * following header fields: To, From, CSeq, Call-ID, Max-Forwards, and Via; all 
@@ -83,8 +79,9 @@ import java.text.ParseException;
  * transactions. These header fields are in addition to the mandatory request 
  * line, which contains the method, Request-URI, and SIP version.
  *
- * @version 1.1
- * @author Sun Microsystems
+ * @author BEA Systems, Inc.
+ * @author NIST
+ * @version 1.2
  */
 
 public interface Request extends Message {
@@ -128,6 +125,8 @@ public interface Request extends Message {
      */
     public void setRequestURI(URI requestURI);
 
+    
+    
 // Request Constants
     
     /**
@@ -469,6 +468,15 @@ public interface Request extends Message {
     *
     * @since v1.1
     */
-    public static final String UPDATE = "UPDATE";     
+    public static final String UPDATE = "UPDATE";
+    
+    /**
+     * PUBLISH is an extension method that allows a client to publish event state
+     * (such as presence information). It is sent outside of any dialog, and is not
+     * dialog creating. The Allow header is used to indicate support for PUBLISH.
+     *
+     * @since v1.2
+     */
+    public static final String PUBLISH = "PUBLISH";    
 }
 

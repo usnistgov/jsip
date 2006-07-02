@@ -14,7 +14,7 @@ import tools.tracesviewer.*;
 * This code was completed as part of a class project in TLEN 5843
 * Singaling Protocols, taught by Professor Douglas C. Sicker, Ph.D. at
 * the University of Colorado, Boulder.
-* Minor modifications to the code were made by M. Ranganathan <mranga@nist.gov>.
+* Minor modifications to the code were made by M. Ranganathan .
 *
 */
 public class SniffFileParser {

@@ -2,21 +2,15 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Module Name   : JAIN SIP Specification
+ * Module Name   : JSIP Specification
  * File Name     : CSeqHeader.java
  * Author        : Phelim O'Doherty
  *
@@ -70,8 +64,10 @@ import java.text.ParseException;
  * For Example:<br>
  * <code>CSeq: 4711 INVITE</code>
  *
- * @version 1.1
- * @author Sun Microsystems
+ *
+ * @author BEA Systems, Inc. 
+ * @author NIST
+ * @version 1.2
  *
  */
 
@@ -96,23 +92,54 @@ public interface CSeqHeader extends Header {
     /**
      * Sets the sequence number value of the CSeqHeader. The sequence number
      * MUST be expressible as a 32-bit unsigned integer and MUST be less than
-     * 2**31.
+     * 2**32 -1
      *
      * @param sequenceNumber - the new sequence number of this CSeqHeader
      * @throws InvalidArgumentException if supplied value is less than zero.
      * @since v1.1
      */
-    public void setSequenceNumber(int sequenceNumber) 
+    public void setSequenceNumber(long sequenceNumber) 
                                         throws InvalidArgumentException;
 
     /**
      * Gets the sequence number of this CSeqHeader.
      *
+     *@deprecated
      * @return sequence number of the CSeqHeader
      * @since v1.1
      */
     public int getSequenceNumber();
+    
+    /**
+     * Gets the sequence number of this CSeqHeader.
+     *
+     * @return sequence number of the CSeqHeader
+     * @since v1.2
+     */
+    public long getSequenceNumberLong();
 
+    
+    /**
+     * Compare this CSeqHeader for equality with another. This method 
+     * overrides the equals method in javax.sip.Header. This method specifies 
+     * object equality as outlined by  
+     * <a href = "http://www.ietf.org/rfc/rfc3261.txt">RFC3261</a>. 
+     * Two CSeq header fields are considered equal if the sequence number and 
+     * the request method are identical. When comparing header fields, field names 
+     * are always case-insensitive. Unless otherwise stated in the
+     * definition of a particular header field, field values, parameter names,
+     * and parameter values are case-insensitive. Tokens are always
+     * case-insensitive. Unless specified otherwise, values expressed as quoted
+     * strings are case-sensitive.
+     *
+     * @param obj the object to compare this CSeqHeader with.
+     * @return <code>true</code> if <code>obj</code> is an instance of this class
+     * representing the same CseqHeader as this, <code>false</code> otherwise.
+     * @since v1.2
+     */
+    public boolean equals(Object obj);    
+    
+    
      /**
      * Name of the CSeqHeader
      */

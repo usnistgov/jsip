@@ -2,21 +2,15 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Module Name   : JAIN SIP Specification
+ * Module Name   : JSIP Specification
  * File Name     : SipURI.java
  * Author        : Phelim O'Doherty
  *
@@ -110,8 +104,10 @@ import javax.sip.InvalidArgumentException;
  * @see javax.sip.header.ContactHeader
  * @see URI
  *
- * @author Sun Microsystems
- * @since 1.1
+ * @author BEA Systems, Inc. 
+ * @author NIST
+ * 
+ * @version 1.2
  *
  */
 
@@ -131,7 +127,7 @@ public interface SipURI extends URI, Parameters {
     /**
      * Returns the user part of this SipURI.
      *
-     * @return  the user part of this SipURI
+     * @return  the user part of this SipURI, this value may be null.
      */
     public String getUser();
 
@@ -177,7 +173,6 @@ public interface SipURI extends URI, Parameters {
      * Set the host part of this SipURI to the newly supplied <code>host</code> 
      * parameter.
      *
-     * @return host - the new interger value of the host of this SipURI
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the host value.
      */  
@@ -370,6 +365,8 @@ public interface SipURI extends URI, Parameters {
      */
     public void setLrParam();
 
+    
+    
     /**
      * This method returns the URI as a string. 
      *

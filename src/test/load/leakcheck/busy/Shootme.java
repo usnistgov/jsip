@@ -31,8 +31,6 @@ public class Shootme implements SipListener {
 
     private int counter;
 
-    private Dialog dialog;
-
     class Ttask extends TimerTask {
 
         public Ttask() {
@@ -93,6 +91,7 @@ public class Shootme implements SipListener {
     public void processAck(RequestEvent requestEvent,
             ServerTransaction serverTransaction) {
         SipProvider sipProvider = (SipProvider) requestEvent.getSource();
+        System.out.println("sip provider: " + sipProvider);
         try {
             System.out.println("shootme: got an ACK "
                     + requestEvent.getRequest());
@@ -143,6 +142,7 @@ public class Shootme implements SipListener {
     public void processBye(RequestEvent requestEvent,
             ServerTransaction serverTransactionId) {
         SipProvider sipProvider = (SipProvider) requestEvent.getSource();
+        System.out.println("sip provider: " + sipProvider);
         Request request = requestEvent.getRequest();
         try {
             System.out.println("shootme:  got a bye sending OK.");
@@ -248,8 +248,8 @@ public class Shootme implements SipListener {
             headerFactory = sipFactory.createHeaderFactory();
             addressFactory = sipFactory.createAddressFactory();
             messageFactory = sipFactory.createMessageFactory();
-            ListeningPoint lp = sipStack.createListeningPoint(5070, "udp");
-            ListeningPoint lp1 = sipStack.createListeningPoint(5070, "tcp");
+            ListeningPoint lp = sipStack.createListeningPoint(sipStack.getIPAddress(), 5070, "udp");
+            ListeningPoint lp1 = sipStack.createListeningPoint(sipStack.getIPAddress(), 5070, "tcp");
 
             Shootme listener = this;
 
@@ -272,6 +272,17 @@ public class Shootme implements SipListener {
 
     }
 
+
+	public void processIOException(IOExceptionEvent exceptionEvent) {
+		System.out.println("IOException occured while retransmitting requests:" + exceptionEvent);
+	}
+	public void processTransactionTerminated(TransactionTerminatedEvent transactionTerminatedEvent) {
+		System.out.println("Transaction Terminated event: " + transactionTerminatedEvent );
+	}
+	public void processDialogTerminated(DialogTerminatedEvent dialogTerminatedEvent) {
+		System.out.println("Dialog Terminated event: " + dialogTerminatedEvent);
+	}
+        
     public static void main(String args[]) {
         new Shootme().init();
     }

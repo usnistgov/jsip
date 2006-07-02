@@ -2,21 +2,15 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Module Name   : JAIN SIP Specification
+ * Module Name   : JSIP Specification
  * File Name     : RSeqHeader.java
  * Author        : Phelim O'Doherty
  *
@@ -49,7 +43,9 @@ import javax.sip.InvalidArgumentException;
  * remove or modify Headers that it does not understand.
  *
  * @since 1.1
- * @author Sun Microsystems
+ * @author BEA Systems, Inc. 
+ * @author NIST
+ * @version 1.2
  */
 
 public interface RSeqHeader extends Header {
@@ -57,19 +53,28 @@ public interface RSeqHeader extends Header {
     /**
      * Sets the sequence number value of the RSeqHeader of the provisional 
      * response. The sequence number MUST be expressible as a 32-bit unsigned 
-     * integer and MUST be less than 2**31.
+     * integer and MUST be less than 2**32 -1.
      *
      * @param sequenceNumber - the new Sequence number of this RSeqHeader
      * @throws InvalidArgumentException if supplied value is less than zero.
      */
-    public void setSequenceNumber(int sequenceNumber) throws InvalidArgumentException;
+    public void setSequenceNumber(long sequenceNumber) throws InvalidArgumentException;
 
     /**
      * Gets the sequence number of this RSeqHeader.
      *
+     *@deprecated
      * @return the integer value of the Sequence number of the RSeqHeader
      */
     public int getSequenceNumber();    
+    
+    /**
+     * Gets the sequence number of this RSeqHeader.
+     *
+     *
+     * @return the long value of the Sequence number of the RSeqHeader
+     */
+    public long getSequenceNumberLong();    
     
     /**
      * Name of RSeqHeader

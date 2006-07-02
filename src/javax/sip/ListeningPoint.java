@@ -2,21 +2,15 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Module Name   : JAIN SIP Specification
+ * Module Name   : JSIP Specification
  * File Name     : ListeningPoint.java
  * Author        : Phelim O'Doherty
  *
@@ -28,29 +22,21 @@
 package javax.sip;
 
 import java.io.*;
+import java.text.ParseException;
 
 /**
  * This interface represents a unique IP network listening point,
- * which consists of port and transport. A ListeningPoint is a Java
- * representation of the port that a SipProvider messaging entity uses to send
+ * which consists of port transport and IP. A ListeningPoint is a Java
+ * representation of the socket that a SipProvider messaging entity uses to send
  * and receive messages.
  * <p>
- * For any address and port that a server listens on for UDP, it MUST listen on 
- * that same port and address for TCP.  This is because a message may need to 
- * be sent using TCP, rather than UDP, if it is too large. To handle this  
- * a Listening point with the same port but with TCP transport would be 
- * created and attached to a new SipProvider, upon which the SipListener is 
- * registered. However the converse is not true, a server need not listen for 
- * UDP on a particular address and port just because it is listening on that 
- * same address and port for TCP.
- * <p>
- * ListeningPoints can be created from the 
- * {@link SipStack#createListeningPoint(int, String)}. A SipStack object may 
- * have multiple ListeningPoints, while a SipProvider as a messaging entity 
- * may only have a single ListeningPoint.
+ * The ListeningPoint also includes an optional sent-by string parameter.
+ * If set, this string will be placed in the sent-by parameter of the
+ * top most Via header of outgoing requests.
  *
- * @author Sun Microsystems
- * @version 1.1
+ * @author BEA Systems, Inc. 
+ * @author NIST
+ * @version 1.2
  */
 
 public interface ListeningPoint extends Cloneable, Serializable {
@@ -84,12 +70,42 @@ public interface ListeningPoint extends Cloneable, Serializable {
     public String getTransport();
 
     /**
+     * Gets the IP of the ListeningPoint.
+     *
+     * @since v1.2
+     * @return the string value of the IP address.
+     */
+    public String getIPAddress();
+	
+    /**
+     * Sets the sentBy string for this ListeningPoint. The sentBy String is 
+     * placed in the top most Via header of outgoing requests. This parameter 
+     * is optional and if it is not set, the top most Via header will use the 
+     * IP address and port assigned to the listening point for the sentBy field.
+     *
+     * @param sentBy the sentBy string to be set in requests top most Via 
+     * headers.
+     * @throws ParseException which signals that an error has been reached
+     * unexpectedly while parsing the sentBy value.
+     * @since v1.2
+     */
+    public void setSentBy(String sentBy) throws ParseException;
+
+    /**
+     * Gets the sentBy attribute of the ListeningPoint.
+     *
+     * @return the string value of the sentBy attribute.
+     * @since v1.2
+     */
+    public String getSentBy();    
+    
+    /**
      * This method indicates whether the specified object is equal to this 
      * Listening Point. The specified object is equal to this ListeningPoint 
      * if the specified object is a ListeningPoint and the transport and port 
      * in the specified Listening Point is the same as this Listening Point.
      *
-     * @param obj - the object with which to compare this ListeningPoint.
+     * @param obj the object with which to compare this ListeningPoint.
      * @return true if this ListeningPoint is "equal to" the obj argument;
      * false otherwise.
      */

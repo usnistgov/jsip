@@ -1,3 +1,28 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 /*******************************************************************************
  * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).       *
  ******************************************************************************/
@@ -11,7 +36,10 @@ import java.io.PrintWriter;
 import gov.nist.javax.sip.message.*;
 import gov.nist.javax.sip.header.*;
 import gov.nist.core.*;
+
 import java.util.Properties;
+
+import javax.sip.header.TimeStampHeader;
 
 /**
  * Log file wrapper class.
@@ -20,16 +48,17 @@ import java.util.Properties;
  * later access via RMI. The trace can be viewed with a trace viewer (see
  * tools.traceviewerapp).
  *
- * @version  JAIN-SIP-1.1 $Revision: 1.17 $ $Date: 2005-04-04 09:54:57 $
+ * @version 1.2 $Revision: 1.18 $ $Date: 2006-07-02 09:52:44 $
  *
- * @author M. Ranganathan <mranga@nist.gov>  <br/>
+ * @author M. Ranganathan   <br/>
  *
- * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+ * 
  */
 public class ServerLog {
 
 	private boolean logContent;
 
+	
 	protected LogWriter logWriter;
 
 	/**
@@ -79,15 +108,20 @@ public class ServerLog {
 
 	protected String stackIpAddress;
 
-	private SIPMessageStack sipStack;
+	private SIPTransactionStack sipStack;
+	
+
 
 	private Properties configurationProperties;
 
-	public ServerLog(SIPMessageStack sipStack ) {
+	public ServerLog(SIPTransactionStack sipStack,Properties configurationProperties ) {
+	    // Debug log file. Whatever gets logged by us also makes its way into debug log.
 		this.logWriter = sipStack.logWriter;
+		this.sipStack = sipStack;
+		this.setProperties(configurationProperties);
 	}
 	
-	public void setProperties( Properties configurationProperties) {
+	private void setProperties( Properties configurationProperties) {
 		this.configurationProperties = configurationProperties;
 		// Set a descriptive name for the message trace logger.
 		this.description = 
@@ -98,6 +132,34 @@ public class ServerLog {
 		this.logFileName = 
 			 configurationProperties.getProperty
 			("gov.nist.javax.sip.SERVER_LOG") ;
+		String logLevel =
+			configurationProperties.getProperty(
+				"gov.nist.javax.sip.TRACE_LEVEL");
+
+		if (logLevel != null) {
+			try {
+				int ll;
+				if (logLevel.equals("DEBUG")) {
+					ll = TRACE_DEBUG;
+				} else if (logLevel.equals("TRACE")) {
+					ll = TRACE_MESSAGES;
+				} else if (logLevel.equals("ERROR")) {
+					ll = TRACE_EXCEPTION;
+				} else if (logLevel.equals("NONE")) {
+					ll = TRACE_NONE;
+				} else {
+					ll = Integer.parseInt(logLevel);
+				}
+
+				this.setTraceLevel(ll);
+			} catch (NumberFormatException ex) {
+				System.out.println("ServerLog: WARNING Bad integer " + logLevel);
+				System.out.println("logging dislabled ");
+				this.setTraceLevel(0);
+			}
+		}
+		checkLogFile();
+		
 	}
 
 	public void setStackIpAddress(String ipAddress) {
@@ -151,9 +213,7 @@ public class ServerLog {
 						configurationProperties.getProperty("javax.sip.ROUTER_PATH") + "\n" 	+
 						"javax.sip.OUTBOUND_PROXY= " 						+ 
 						configurationProperties.getProperty("javax.sip.OUTBOUND_PROXY") + "\n" 	+
-						"javax.sip.RETRANSMISSION_FILTER= " 					+ 
-						configurationProperties.getProperty("javax.sip.RETRANSMISSION_FILTER")  + "\n" 
-						+ "-->");
+						 "-->");
 				if (auxInfo != null) {
 					printWriter.println(
 						"<description\n logDescription=\""
@@ -163,8 +223,8 @@ public class ServerLog {
 							+ "\"\n auxInfo=\""
 							+ auxInfo
 							+ "\"/>\n ");
-					if (LogWriter.needsLogging) {
-					    	logWriter.logMessage(
+					if (sipStack.isLoggingEnabled()) {
+					    	logWriter.logDebug(
 						"Here are the stack configuration properties \n"			+
 						"javax.sip.IP_ADDRESS= " 						+ 
 						configurationProperties.getProperty("javax.sip.IP_ADDRESS") + "\n" 	+
@@ -172,8 +232,6 @@ public class ServerLog {
 						configurationProperties.getProperty("javax.sip.ROUTER_PATH") + "\n" 	+
 						"javax.sip.OUTBOUND_PROXY= " 						+ 
 						configurationProperties.getProperty("javax.sip.OUTBOUND_PROXY") + "\n" 	+
-						"javax.sip.RETRANSMISSION_FILTER= " 					+ 
-						configurationProperties.getProperty("javax.sip.RETRANSMISSION_FILTER")  + 
 						"gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS= " 					  + 
 						configurationProperties.getProperty("gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS") + "\n" +
 						"gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS= " 					  + 
@@ -183,9 +241,9 @@ public class ServerLog {
 						"gov.nist.javax.sip.THREAD_POOL_SIZE= " 						  + 
 						configurationProperties.getProperty("gov.nist.javax.sip.THREAD_POOL_SIZE")  		  +
 						"\n" );
-						logWriter.logMessage(" ]]> ");
-						logWriter.logMessage("</debug>");
-						logWriter.logMessage(
+						logWriter.logDebug(" ]]> ");
+						logWriter.logDebug("</debug>");
+						logWriter.logDebug(
 							"<description\n logDescription=\""
 								+ description
 								+ "\"\n name=\""
@@ -193,8 +251,8 @@ public class ServerLog {
 								+ "\"\n auxInfo=\""
 								+ auxInfo
 								+ "\"/>\n ");
-						logWriter.logMessage("<debug>");
-						logWriter.logMessage("<![CDATA[ ");
+						logWriter.logDebug("<debug>");
+						logWriter.logDebug("<![CDATA[ ");
 					}
 				} else {
 					printWriter.println(
@@ -203,38 +261,20 @@ public class ServerLog {
 							+ "\"\n name=\""
 							+ stackIpAddress
 							+ "\" />\n");
-					if (LogWriter.needsLogging) {
-					    	logWriter.logMessage(
-						"Here are the stack configuration properties \n"			+
-						"javax.sip.IP_ADDRESS= " 						+ 
-						configurationProperties.getProperty("javax.sip.IP_ADDRESS") + "\n" 	+
-						"javax.sip.IP_ADDRESS= " 						+ 
-						configurationProperties.getProperty("javax.sip.STACK_NAME") + "\n" 	+
-						"javax.sip.ROUTER_PATH= " 						+ 
-						configurationProperties.getProperty("javax.sip.ROUTER_PATH") + "\n" 	+
-						"javax.sip.OUTBOUND_PROXY= " 						+ 
-						configurationProperties.getProperty("javax.sip.OUTBOUND_PROXY") + "\n"  +
-						"javax.sip.RETRANSMISSION_FILTER= " 					+ 
-						configurationProperties.getProperty("javax.sip.RETRANSMISSION_FILTER") + "\n" 		  +
-						"gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS= " 					  + 
-						configurationProperties.getProperty("gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS") + "\n" +
-						"gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS= " 					  + 
-						configurationProperties.getProperty("gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS") + "\n" +
-						"gov.nist.javax.sip.REENTRANT_LISTENER= " 						  + 
-						configurationProperties.getProperty("gov.nist.javax.sip.REENTRANT_LISTENER") + "\n" 	  +
-						"gov.nist.javax.sip.THREAD_POOL_SIZE= " 						  + 
-						configurationProperties.getProperty("gov.nist.javax.sip.THREAD_POOL_SIZE")  		  +
-						"\n");
-						logWriter.logMessage(" ]]>");
-						logWriter.logMessage("</debug>");
-						logWriter.logMessage(
+					if (sipStack.isLoggingEnabled()) {
+					    	logWriter.logDebug(
+						"Here are the stack configuration properties \n" +						 
+						configurationProperties + "\n");
+						logWriter.logDebug(" ]]>");
+						logWriter.logDebug("</debug>");
+						logWriter.logDebug(
 							"<description\n logDescription=\""
 								+ description
 								+ "\"\n name=\""
 								+ stackIpAddress
 								+ "\" />\n");
-						logWriter.logMessage("<debug>");
-						logWriter.logMessage("<![CDATA[ ");
+						logWriter.logDebug("<debug>");
+						logWriter.logDebug("<![CDATA[ ");
 					}
 				}
 			}
@@ -291,12 +331,12 @@ public class ServerLog {
 		} else {
 			printWriter.println(logInfo);
 		}
-		if (LogWriter.needsLogging) {
-			logWriter.logMessage(" ]]>");
-			logWriter.logMessage("</debug>");
-			logWriter.logMessage(logInfo);
-			logWriter.logMessage("<debug>");
-			logWriter.logMessage("<![CDATA[ ");
+		if (sipStack.isLoggingEnabled()) {
+			logWriter.logDebug(" ]]>");
+			logWriter.logDebug("</debug>");
+			logWriter.logDebug(logInfo);
+			logWriter.logDebug("<debug>");
+			logWriter.logDebug("<![CDATA[ ");
 		}
 	}
 
@@ -320,7 +360,8 @@ public class ServerLog {
 		String firstLine,
 		String status,
 		String tid,
-		String time) {
+		String time,
+		long timeStampHeaderValue) {
 
 		MessageLog log =
 			new MessageLog(
@@ -333,7 +374,8 @@ public class ServerLog {
 				status,
 				tid,
 				callId,
-				logWriter.getLineCount());
+				logWriter.getLineCount(),
+				timeStampHeaderValue);
 		logMessage(log.flush());
 	}
 
@@ -346,8 +388,10 @@ public class ServerLog {
 		String firstLine,
 		String status,
 		String tid,
-		long time) {
+		long time,
+		long timestampVal) {
 
+	
 		MessageLog log =
 			new MessageLog(
 				message,
@@ -359,42 +403,12 @@ public class ServerLog {
 				status,
 				tid,
 				callId,
-				logWriter.getLineCount());
+				logWriter.getLineCount(),
+				timestampVal);
 		logMessage(log.flush());
 	}
 
-	/**
-	 * Log a message into the log directory.
-	 * @param message a SIPMessage to log
-	 * @param from from header of the message to log into the log directory
-	 * @param to to header of the message to log into the log directory
-	 * @param sender is the server the sender
-	 * @param callId CallId of the message to log into the log directory.
-	 * @param firstLine First line of the message to display
-	 * @param status Status information (generated while processing message).
-	 * @param tid    is the transaction id for the message.
-	 */
-	private void logMessage(
-		String message,
-		String from,
-		String to,
-		boolean sender,
-		String callId,
-		String firstLine,
-		String status,
-		String tid) {
-		String time = new Long(System.currentTimeMillis()).toString();
-		logMessage(
-			message,
-			from,
-			to,
-			sender,
-			callId,
-			firstLine,
-			status,
-			tid,
-			time);
-	}
+	
 
 	/**
 	 * Log a message into the log directory. 
@@ -417,7 +431,10 @@ public class ServerLog {
 			callId = ((CallID) message.getCallId()).getCallId();
 		String firstLine = message.getFirstLine().trim();
 		String inputText = (logContent ? message.encode() : message.encodeMessage() ) ;
+		//this.sipStack.getLogWriter().logStackTrace();
 		String tid = message.getTransactionId();
+		TimeStamp timestamp = (TimeStamp) message.getHeader(TimeStampHeader.NAME);
+		long tsval = timestamp != null? timestamp.getTimeStampLong(): 0;
 		logMessage(
 			inputText,
 			from,
@@ -427,7 +444,8 @@ public class ServerLog {
 			firstLine,
 			null,
 			tid,
-			time);
+			time,
+			tsval);
 	}
 
 	/**
@@ -452,6 +470,8 @@ public class ServerLog {
 		String firstLine = message.getFirstLine().trim();
 		String inputText = (logContent ? message.encode() : message.encodeMessage() ) ;
 		String tid = message.getTransactionId();
+		TimeStampHeader tsHdr = (TimeStampHeader) message.getHeader(TimeStampHeader.NAME);
+		long tsval = tsHdr == null ? 0 : tsHdr.getTimeStampLong();
 		logMessage(
 			inputText,
 			from,
@@ -461,28 +481,11 @@ public class ServerLog {
 			firstLine,
 			null,
 			tid,
-			time);
+			time,
+			tsval);
 	}
 
-	/**
-	 * Log a message into the log directory. Status information is extracted
-	 * from SIPExtension header. The time associated with the message is the
-	 * current time.
-	 * @param message a SIPMessage to log
-	 * @param from from header of the message to log into the log directory
-	 * @param to to header of the message to log into the log directory
-	 * @param sender is the server the sender
-	 */
-	public void logMessage(
-		SIPMessage message,
-		String from,
-		String to,
-		boolean sender) {
-		logMessage(message, from, to, sender,
-		new Long(System.currentTimeMillis()).toString()
-		);
-	}
-
+	
 	/**
 	 * Log a message into the log directory.
 	 * @param message a SIPMessage to log
@@ -507,6 +510,11 @@ public class ServerLog {
 		String firstLine = message.getFirstLine().trim();
 		String encoded = (logContent ? message.encode() : message.encodeMessage() ) ;
 		String tid = message.getTransactionId();
+		TimeStampHeader tsHeader = (TimeStampHeader) message.getHeader(TimeStampHeader.NAME);
+		long tsVal = 0;
+		if ( tsHeader != null) {
+			tsVal = tsHeader.getTimeStampLong();
+		}
 		logMessage(
 			encoded,
 			from,
@@ -516,7 +524,8 @@ public class ServerLog {
 			firstLine,
 			status,
 			tid,
-			time);
+			time,
+			tsVal);
 	}
 
 	/**
@@ -543,6 +552,8 @@ public class ServerLog {
 		String firstLine = message.getFirstLine().trim();
 		String encoded = (logContent ? message.encode() : message.encodeMessage() ) ;
 		String tid = message.getTransactionId();
+		TimeStampHeader tshdr = (TimeStampHeader) message.getHeader(TimeStampHeader.NAME);
+		long tsval = tshdr == null? 0: tshdr.getTimeStampLong();
 		logMessage(
 			encoded,
 			from,
@@ -552,7 +563,8 @@ public class ServerLog {
 			firstLine,
 			status,
 			tid,
-			time);
+			time,
+			tsval);
 	}
 
 	/**
@@ -670,108 +682,3 @@ public class ServerLog {
 	}
 	 */
 }
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.16  2004/12/01 19:05:16  mranga
- * Reviewed by:   mranga
- * Code cleanup remove the unused SIMULATION code to reduce the clutter.
- * Fix bug in Dialog state machine.
- *
- * Revision 1.15  2004/09/01 02:04:16  xoba
- * Issue number:  no particular issue number.
- *
- * this code passes TCK
- *
- * fixed multiple javadoc errors throughout javax.* and gov.nist.*
- *
- * added junit and log4j jars to cvs module, although log4j is not being used yet.
- *
- * modified and expanded build.xml and fixed javadoc reference to outdated jre documentation (now
- * javadocs hyperlink to jre api documentation). since
- * top-level 'docs' directory already contains cvs-controlled files, i redirected output of javadocs to their
- * own separate directories, which are 'cleaned' along with 'clean' target. also created other javadoc
- * which just outputs javax.* classes for those wishing to develop sip applications without reference to nist.gov.*.
- *
- * completed switchover to NetworkLayer for network access.
- *
- * DID NOT modify makefile's.... so, developers beware.
- *
- *
- *
- *
- *
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- * Revision 1.14  2004/07/07 15:46:59  mranga
- * Submitted by:  Al Straub
- * Reviewed by:   mranga
- *
- * Revision 1.13  2004/06/21 04:59:53  mranga
- * Refactored code - no functional changes.
- *
- * Revision 1.12  2004/04/27 17:18:54  mranga
- * Reviewed by:   mranga
- * Turn off logging of content  by default.
- *
- * Revision 1.11  2004/04/16 16:04:35  mranga
- * Submitted by:  Thomas Froment
- * Reviewed by:   mranga
- * Do not create a log file if logging is disabled.
- *
- * Revision 1.10  2004/03/25 16:37:01  mranga
- * Reviewed by:   mranga
- * Fix up for logging messages.
- *
- * Revision 1.9  2004/03/25 15:15:05  mranga
- * Reviewed by:   mranga
- * option to log message content added.
- *
- * Revision 1.8  2004/02/20 16:36:43  mranga
- * Reviewed by:   mranga
- * Minor changes to debug logging -- record the properties with which the stack
- * was created. Be slightly more forgiving when checking for retransmission
- * filter when configuring stack.
- *
- * Revision 1.7  2004/01/22 18:39:41  mranga
- * Reviewed by:   M. Ranganathan
- * Moved the ifdef SIMULATION and associated tags to the first column so Prep preprocessor can deal with them.
- *
- * Revision 1.6  2004/01/22 13:26:33  sverker
- * Issue number:
- * Obtained from:
- * Submitted by:  sverker
- * Reviewed by:   mranga
- *
- * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
- *
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- */

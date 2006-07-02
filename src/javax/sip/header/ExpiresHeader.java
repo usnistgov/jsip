@@ -2,21 +2,15 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Module Name   : JAIN SIP Specification
+ * Module Name   : JSIP Specification
  * File Name     : ExpiresHeader.java
  * Author        : Phelim O'Doherty
  *
@@ -90,10 +84,9 @@ import javax.sip.InvalidArgumentException;
  * <code>Expires: 5</code>
 
  *
-
- * @version 1.1
-
- * @author Sun Microsystems
+ * @author BEA Systems, Inc. 
+ * @author NIST
+ * @version 1.2
 
  */
 
@@ -102,8 +95,8 @@ import javax.sip.InvalidArgumentException;
 public interface ExpiresHeader extends Header {
 
     /**
-     * Sets the relative expires value of the ExpiresHeader. The expires value
-     * MUST be between zero and (2**31)-1.
+     * Sets the relative expires value of the ExpiresHeader in units of seconds. 
+     * The expires value MUST be between zero and (2**31)-1.
      *
      * @param expires - the new expires value of this ExpiresHeader
      * @throws InvalidArgumentException if supplied value is less than zero.

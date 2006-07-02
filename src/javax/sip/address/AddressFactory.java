@@ -2,21 +2,15 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Module Name   : JAIN SIP Specification
+ * Module Name   : JSIP Specification
  * File Name     : AddressFactory.java
  * Author        : Phelim O'Doherty
  *
@@ -35,8 +29,9 @@ import java.text.ParseException;
  * implementation of this specification. This class is a singleton and can be 
  * retrieved from the {@link javax.sip.SipFactory#createAddressFactory()}.
  *
- * @version 1.1
- * @author Sun Microsystems
+ * @author BEA Systems, Inc. 
+ * @author NIST
+ * @version 1.2
  */
 public interface AddressFactory {
 
@@ -80,7 +75,7 @@ public interface AddressFactory {
                                 throws ParseException;    
 
     /**
-     * Creates a TelURL based on given URI string. The scheme or '+' should 
+     * Creates a TelURL based on given URI string. The scheme should 
      * not be included in the phoneNumber string argument.
      *
      * @param phoneNumber the new string value of the phoneNumber.
@@ -90,9 +85,12 @@ public interface AddressFactory {
     
     /**
      * Creates an Address with the new address string value. The address 
-     * string is parsed in order to create the new Address instance. Create
-     * with a String value of "*" creates a wildcard address. The wildcard 
-     * can be determined if <code>((SipURI)Address.getURI).getUser() == *;</code>.
+     * string is parsed in order to create the new Address instance. 
+     * Valid arguments obey the syntax for <code>name-addr</code> tokens in 
+     * RFC3261, for example "Bob <sip:bob@biloxi.com>".  As a special case, the 
+     * string argument "*" creates a wildcard Address object with the property 
+     * that <code>((SipURI)Address.getURI()).getUser()</code> returns a 
+     * String contain one character "*".
      *
      * @param address - the new string value of the address.
      * @throws ParseException which signals that an error has been reached

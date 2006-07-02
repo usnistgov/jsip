@@ -1,3 +1,28 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 /*******************************************************************************
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
 *******************************************************************************/
@@ -10,15 +35,27 @@ import javax.sip.header.*;
 /**
  * List of ALLOW headers. The sip message can have multiple Allow headers
  *
- * @author M. Ranganathan <mranga@nist.gov>  NIST/ITL/ANTD <br/>
- *
- * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
- *
- * @version JAIN-SIP-1.1 $Revision: 1.2 $ $Date: 2004-01-22 13:26:29 $
+ * @author M. Ranganathan  <br/>
+ * @version 1.2 $Revision: 1.3 $ $Date: 2006-07-02 09:50:59 $
+ * @since 1.1
  *
  */
 public class AllowList extends SIPHeaderList {
 
+	
+	/**
+	 * Comment for <code>serialVersionUID</code>
+	 */
+	private static final long serialVersionUID = -4699795429662562358L;
+	
+	
+	public Object clone() {
+		AllowList retval = new AllowList();
+		retval.clonehlist(this.hlist);
+		return retval;
+	}
+	
+	
 	/** default constructor
 	 */
 	public AllowList() {
@@ -36,16 +73,17 @@ public class AllowList extends SIPHeaderList {
 	 *
 	 * AllowHeader.
 	 *
-	 * @since JAIN SIP v1.1
 	 *
 	 */
 	public ListIterator getMethods() {
-		ListIterator li = super.hlist.listIterator();
-		LinkedList ll = new LinkedList();
-		while (li.hasNext()) {
-			Allow allow = (Allow) li.next();
-			ll.add(allow.getMethod());
+		
+		LinkedList ll = new LinkedList ();
+		
+		for ( Iterator it = this.hlist.iterator(); it.hasNext();) {
+			Allow a = (Allow)it.next();
+			ll.add(a.getMethod());
 		}
+		
 		return ll.listIterator();
 	}
 
@@ -62,7 +100,6 @@ public class AllowList extends SIPHeaderList {
 	 *
 	 * unexpectedly while parsing the Strings defining the methods supported.
 	 *
-	 * @since JAIN SIP v1.1
 	 *
 	 */
 	public void setMethods(List methods) throws ParseException {
@@ -74,6 +111,3 @@ public class AllowList extends SIPHeaderList {
 		}
 	}
 }
-/*
- * $Log: not supported by cvs2svn $
- */

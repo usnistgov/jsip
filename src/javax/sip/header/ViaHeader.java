@@ -2,21 +2,15 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Module Name   : JAIN SIP Specification
+ * Module Name   : JSIP Specification
  * File Name     : ViaHeader.java
  * Author        : Phelim O'Doherty
  *
@@ -42,7 +36,7 @@ import javax.sip.InvalidArgumentException;
  * the transaction created by that request. This parameter is used by both the
  * client and the server.
  * <p>
- * <b>Branch Paramater:<br></b>
+ * <b>Branch Parameter:<br></b>
  * The branch parameter value MUST be unique across space and time for all
  * requests sent by the User Agent. The exceptions to this rule are CANCEL and ACK for
  * non-2xx responses. A CANCEL request will have the same value of the branch
@@ -57,8 +51,8 @@ import javax.sip.InvalidArgumentException;
  * pick such a value), so that servers receiving the request can determine that
  * the branch ID was constructed in the fashion described by this specification
  * (that is, globally unique). Beyond this requirement, the precise format of
- * the branch token is implementation-defined. JAIN SIP defines a convenience 
- * function to generate unique branch idenifiers at 
+ * the branch token is implementation-defined. JSIP defines a convenience 
+ * function to generate unique branch identifiers at 
  * {@link javax.sip.Transaction#getBranchId()}
  * <p>
  * A common way to create the branch value is to compute a cryptographic hash
@@ -82,9 +76,10 @@ import javax.sip.InvalidArgumentException;
  * globally unique for that branch, and contain the requisite magic cookie. Note
  * that this implies that the branch parameter will be different for different
  * instances of a spiraled or looped request through a proxy. If a proxy server
- * receives a Request which contains its own address in a ViaHeader, it must
- * respond with a 482 (Loop Detected) Response. A proxy server must not forward
- * a Request to a multicast group which already appears in any of the ViaHeaders.
+ * receives a Request which contains its own address in a ViaHeader, it SHOULD
+ * check for loops and may respond with a 482 (Loop Detected) Response. A proxy 
+ * server must not forward a Request to a multicast group which already appears 
+ * in any of the ViaHeaders.
  * This prevents a malfunctioning proxy server from causing loops. Also, it
  * cannot be guaranteed that a proxy server can always detect that the address
  * returned by a location service refers to a host listed in the ViaHeader list,
@@ -99,7 +94,7 @@ import javax.sip.InvalidArgumentException;
  * a maddr parameter or is a receiver-tagged field.
  * <li>If the second ViaHeader contains a maddr parameter, send the Response to
  * the multicast address listed there, using the port indicated in "sent-by",
- * or port 5060 if none is present. The Response should be sent using the TTL
+ * or a default port if none is present. The Response should be sent using the TTL
  * indicated in the ttl parameter, or with a TTL of 1 if that parameter is not
  * present. For robustness, Responses must be sent to the address indicated in
  * the maddr parameter even if it is not a multicast address.
@@ -114,7 +109,7 @@ import javax.sip.InvalidArgumentException;
  * <ul>
  * <li>If the first ViaHeader in the Request contains a maddr parameter, send
  * the Response to the multicast address listed there, using the port indicated,
- * or port 5060 if none is present. The Response should be sent using the TTL
+ * or a default port if none is present. The Response should be sent using the TTL
  * indicated in the ttl parameter, or with a TTL of 1 if that parameter is not
  * present. For robustness, Responses must be sent to the address indicated in
  * the maddr parameter even if it is not a multicast address.
@@ -141,11 +136,12 @@ import javax.sip.InvalidArgumentException;
  * received parameter is added only for receiver-added ViaHeaders.
  * <p>
  * Two Via header fields are equal if their sent-protocol and sent-by fields
- * are equal, both have the same set of parameters, and the values of all
- * parameters are equal.
+ * (including port) are equal, both have the same set of parameters, and the 
+ * values of all parameters are equal.
  *
- * @version 1.1
- * @author Sun Microsystems
+ * @author BEA Systems, Inc. 
+ * @author NIST
+ * @version 1.2
  */
 public interface ViaHeader extends Parameters, Header {
 
@@ -153,7 +149,7 @@ public interface ViaHeader extends Parameters, Header {
      * Set the host part of this ViaHeader to the newly supplied <code>host</code> 
      * parameter.
      *
-     * @return host - the new interger value of the host of this ViaHeader
+     * @param host - the new value of the host of this ViaHeader
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the host value.
      */  
@@ -170,14 +166,15 @@ public interface ViaHeader extends Parameters, Header {
      * Set the port part of this ViaHeader to the newly supplied <code>port</code> 
      * parameter.
      *
-     * @param port - the new interger value of the port of this ViaHeader
+     * @param port - the new integer value of the port of this ViaHeader
+     * @throws InvalidArgumentException when the port value is not -1 and <1 or >65535
      */
-    public void setPort(int port);     
+    public void setPort(int port) throws InvalidArgumentException;     
 
     /**
      * Returns the port part of this ViaHeader.
      *
-     * @return the integer value of the port
+     * @return the integer value of the port, -1 if not present
      */    
     public int getPort();  
 
@@ -255,8 +252,8 @@ public interface ViaHeader extends Parameters, Header {
     public void setMAddr(String mAddr) throws ParseException;
 
     /**
-     * Gets the received paramater of the ViaHeader. Returns null if received
-     * does not exist.
+     * Gets the received paramater of the ViaHeader. Returns <code>null</code>
+     * if received does not exist.
      *
      * @return the string received value of ViaHeader
      */
@@ -287,13 +284,53 @@ public interface ViaHeader extends Parameters, Header {
      * only be used by the application when sending Requests outside of a 
      * transaction.
      *
-     * @param branch - the new string branch parmameter of the ViaHeader.
+     * @param branch - the new string branch parameter of the ViaHeader.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the branch value.
      */
     public void setBranch(String branch) throws ParseException;
 
-      
+  
+    
+    /**
+     * Sets the rport flag in this ViaHeader. This allows a client to request 
+     * that the next hop send the response back to the source IP address and 
+     * port from which the request originated, instead of the port in the Via
+     * header. See <a href = "http://www.ietf.org/rfc/rfc3581.txt">RFC3581</a>
+     *
+     * @since v1.2
+     */
+    public void setRPort();
+
+    /**
+     * Returns the rport parameter from this ViaHeader.
+     *
+     * @return the integer value of the rport or -1 if the rport parameter is not set.
+     * @since v1.2
+     */    
+    public int getRPort();     
+    
+    /**
+     * Compare this ViaHeader for equality with another. This method 
+     * overrides the equals method in javax.sip.Header. This method specifies 
+     * object equality as outlined by  
+     * <a href = "http://www.ietf.org/rfc/rfc3261.txt">RFC3261</a>. 
+     * Two Via header fields are equal if their sent-protocol and sent-by fields 
+     * are equal, both have the same set of parameters, and the values of all 
+     * parameters are equal. When comparing header fields, field names are always 
+     * case-insensitive. Unless otherwise stated in the definition of a 
+     * particular header field, field values, parameter names, and parameter 
+     * values are case-insensitive. Tokens are always case-insensitive. Unless 
+     * specified otherwise, values expressed as quoted strings are case-sensitive.
+     *
+     * @param obj the object to compare this ViaHeader with.
+     * @return <code>true</code> if <code>obj</code> is an instance of this class
+     * representing the same ViaHeader as this, <code>false</code> otherwise.
+     * @since v1.2
+     */
+    public boolean equals(Object obj);   
+    
+    
     /**
      * Name of ViaHeader
      */

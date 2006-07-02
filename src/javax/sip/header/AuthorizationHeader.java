@@ -2,21 +2,15 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Module Name   : JAIN SIP Specification
+ * Module Name   : JSIP Specification
  * File Name     : AuthorizationHeader.java
  * Author        : Phelim O'Doherty
  *
@@ -51,8 +45,10 @@ import javax.sip.address.URI;
  * @see Parameters
  * @see WWWAuthenticateHeader
  * @see ProxyAuthorizationHeader
- * @version 1.1
- * @author Sun Microsystems
+ * @author BEA Systems, Inc. 
+ * @author NIST
+ * @version 1.2
+ * @since 1.1
  *
  */
 
@@ -155,7 +151,7 @@ public interface AuthorizationHeader extends Parameters, Header {
     public void setURI(URI uri);
 
     /**
-     * Returns the URI value of this AuthorizationHeader, for example DigestURI. 
+     * Returns the DigestURI value of this AuthorizationHeader.
      *
      * @return the URI representing the URI information, null if value is
      * not set.

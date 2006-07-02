@@ -1,22 +1,51 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 /*******************************************************************************
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
 *******************************************************************************/
 package gov.nist.javax.sip.header;
 
 import gov.nist.core.*;
+import gov.nist.javax.sip.stack.HopImpl;
+
 import java.text.ParseException;
 import javax.sip.*;
+import javax.sip.address.Hop;
+import javax.sip.header.ViaHeader;
 
 /**
  * Via SIPHeader (these are strung together in a ViaList).
  *
  * @see ViaList
  *
- * @version JAIN-SIP-1.1 $Revision: 1.9 $ $Date: 2005-10-09 20:16:11 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2006-07-02 09:50:38 $
  *
- * @author M. Ranganathan <mranga@nist.gov>  <br/>
+ * @author M. Ranganathan   <br/>
  *
- * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+ * 
  *
  */
 public class Via
@@ -56,7 +85,11 @@ public class Via
 	 */
 	protected HostPort sentBy;
 
-	/** comment field
+	/** 
+	 * comment field
+	 * 
+	 * JvB note: RFC3261 does not allow a comment to appear in Via headers, and this 
+	 * is not accessible through the API. Suggest removal
 	 */
 	protected String comment;
 
@@ -67,9 +100,6 @@ public class Via
 		sentProtocol = new Protocol();
 	}
 
-	/**
-	 * JvB: equals() should look something like this
-	 *
 	public boolean equals(Object other) {
 		
 		if (other==this) return true;
@@ -83,27 +113,6 @@ public class Via
 				&& equalParameters( o );
 		} 
 		return false;
-	}
-	*/
-
-	/**
-	 *Compare two via headers for equaltiy.
-	 * @param other Object to set.
-	 * @return true if the two via headers are the same.
-	 */
-	public boolean equals(Object other) {
-		if (!this.getClass().equals(other.getClass())) {
-			return false;
-		}
-		Via that = (Via) other;
-
-		if (!this.sentProtocol.equals(that.sentProtocol)) {
-			return false;
-		}
-		if (!this.sentBy.equals(that.sentBy)) {
-			return false;
-		}
-		return true;
 	}
 	
 	
@@ -132,6 +141,17 @@ public class Via
 	 */
 	public HostPort getSentBy() {
 		return sentBy;
+	}
+	
+	/**
+	 * Get the host, port and transport as a Hop. This is
+	 * useful for the stack to avoid duplication of code.
+	 * 
+	 */
+	public Hop getHop() {
+		HopImpl hop = new HopImpl(sentBy.getHost().getHostname(),
+				sentBy.getPort(),sentProtocol.getTransport());
+		return hop;
 	}
 
 	/**
@@ -248,7 +268,6 @@ public class Via
 	 * Set the host part of this ViaHeader to the newly supplied <code>host</code> 
 	 * parameter.
 	 *
-	 * @return host - the new interger value of the host of this ViaHeader
 	 * @throws ParseException which signals that an error has been reached
 	 * unexpectedly while parsing the host value.
 	 */
@@ -286,15 +305,11 @@ public class Via
 	 *
 	 * @param port - the new integer value of the port of this ViaHeader
 	 */
-	public void setPort( int port ) /*throws InvalidArgumentException*/ {
+	public void setPort(int port) throws InvalidArgumentException {
 
-		/*
-		 * InvalidArgumentException not in 1.1 API
-		 * 
 		if ( port!=-1 && (port<1 || port>65535)) {
 			throw new InvalidArgumentException( "Port value out of range -1, [1..65535]" );
 		}
-		*/
 				
 		if (sentBy == null)
 			sentBy = new HostPort();
@@ -302,13 +317,14 @@ public class Via
 	}
 	
 	/**
-	 * Set the RPort parameter.
-	 * 
-	 * @param rport -- rport parameter to set.
+	 * Set the RPort flag parameter
 	 */
-	public void setrport(int rport) throws InvalidArgumentException {
-	    if ( rport <= 0 ) throw new InvalidArgumentException ("Bad RPort value");
-	    this.setParameter(Via.RPORT,rport);
+	public void setRPort(){
+	    try {
+			this.setParameter(Via.RPORT,"");
+		} catch (ParseException e) {
+			e.printStackTrace();	// should not occur
+		}
 	}
 
 	/**
@@ -328,10 +344,10 @@ public class Via
 	*
 	*@return the rport parameter or -1.
 	*/
-       public int getrport() {
+       public int getRPort() {
          String strRport = getParameter(ParameterNames.RPORT);
          if (strRport != null)
-            return Integer.parseInt( strRport );
+            return new Integer(strRport).intValue();
          else
             return -1;
      	}
@@ -503,10 +519,10 @@ public class Via
 	 * unexpectedly while parsing the branch value.
 	 */
 	public void setBranch(String branch) throws ParseException {
-		if (branch == null)
+		if (branch == null || branch.length()==0)
 			throw new NullPointerException(
 				"JAIN-SIP Exception, "
-					+ "Via, setBranch(), the branch parameter is null.");
+					+ "Via, setBranch(), the branch parameter is null or length 0.");
 
 		setParameter(ParameterNames.BRANCH, branch);
 	}

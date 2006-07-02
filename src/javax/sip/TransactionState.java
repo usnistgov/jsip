@@ -2,27 +2,22 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Module Name   : JAIN SIP Specification
+ * Module Name   : JSIP Specification
  * File Name     : TransactionState.java
  * Author        : Phelim O'Doherty
  *
  *  HISTORY
  *  Version   Date      Author              Comments
  *  1.1     08/10/2002  Phelim O'Doherty    Initial version
+ *  1.2     19/05/2005  Phelim O'Doherty    Added equals and hashcode method
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 
@@ -215,8 +210,9 @@ import java.io.*;
 
  *
 
- * @author Sun Microsystems
-
+ * @author BEA Systems, Inc. 
+ * @author NIST
+ * @version 1.2
  * @since 1.1
 
  */
@@ -321,15 +317,37 @@ public final class TransactionState implements Serializable{
 
     }
 
+    
+    
+    /**
+     * Compare this transaction state for equality with another.
+     * 
+     * @since v1.2
+     * @param obj the object to compare this with.
+     * @return <code>true</code> if <code>obj</code> is an instance of this class
+     * representing the same SLEE state as this, <code>false</code> otherwise.
+     */
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
 
+        return (obj instanceof TransactionState) && ((TransactionState)obj).m_transactionState == m_transactionState;
+    }
 
     /**
+     * Get a hash code value for this transaction state.
+     * 
+     * @since v1.2
+     * @return a hash code value.
+     */
+    public int hashCode() {
+        return m_transactionState;
+    }    
 
-    
+
+    /* 
      * This method returns a string version of this class.
      * 
      * @return The string version of the TransactionState
-
      */
 
     public String toString() {

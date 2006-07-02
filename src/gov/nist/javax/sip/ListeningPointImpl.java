@@ -1,22 +1,50 @@
+/*
+* Conditions Of Use 
+* 
+* This software was developed by employees of the National Institute of
+* Standards and Technology (NIST), an agency of the Federal Government.
+* Pursuant to title 15 Untied States Code Section 105, works of NIST
+* employees are not subject to copyright protection in the United States
+* and are considered to be in the public domain.  As a result, a formal
+* license is not needed to use the software.
+* 
+* This software is provided by NIST as a service and is expressly
+* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+* AND DATA ACCURACY.  NIST does not warrant or make any representations
+* regarding the use of the software or the results thereof, including but
+* not limited to the correctness, accuracy, reliability or usefulness of
+* the software.
+* 
+* Permission to use this software is contingent upon your acceptance
+* of the terms of this agreement
+*  
+* .
+* 
+*/
 package gov.nist.javax.sip;
 
+import java.text.ParseException;
+
 import javax.sip.*;
+
+import gov.nist.javax.sip.header.Via;
 import gov.nist.javax.sip.stack.*;
 
 /**
  * Implementation of the ListeningPoint interface
  *
- * @version JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2004-01-22 13:26:28 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-02 09:54:25 $
  *
- * @author M. Ranganathan <mranga@nist.gov>  <br/>
+ * @author M. Ranganathan   <br/>
  *
- * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+ * 
  *
  */
 public class ListeningPointImpl implements javax.sip.ListeningPoint {
 
-	protected String host;
-
+	
 	protected String transport;
 
 	/** My port. (same thing as in the message processor) */
@@ -31,12 +59,16 @@ public class ListeningPointImpl implements javax.sip.ListeningPoint {
 	/**
 	 * Provider back pointer
 	 */
-	protected SipProviderImpl sipProviderImpl;
+	protected SipProviderImpl sipProvider;
 
 	/**
 	 * Our stack
 	 */
 	protected SipStackImpl sipStack;
+
+	
+
+   
 
 	/**
 	 * Construct a key to refer to this structure from the SIP stack
@@ -60,22 +92,22 @@ public class ListeningPointImpl implements javax.sip.ListeningPoint {
 	 * @return  get the host
 	 */
 	protected String getKey() {
-		return makeKey(host, port, transport);
+		return makeKey(this.getIPAddress(), port, transport);
 	}
 
 	/**
 	 * Set the sip provider for this structure.
-	 * @param sipProviderImpl provider to set
+	 * @param sipProvider provider to set
 	 */
 	protected void setSipProvider(SipProviderImpl sipProviderImpl) {
-		this.sipProviderImpl = sipProviderImpl;
+		this.sipProvider = sipProviderImpl;
 	}
 
 	/**
 	 * Remove the sip provider from this listening point.
 	 */
 	protected void removeSipProvider() {
-		this.sipProviderImpl = null;
+		this.sipProvider = null;
 	}
 
 	/**
@@ -87,9 +119,10 @@ public class ListeningPointImpl implements javax.sip.ListeningPoint {
 		int port,
 		String transport) {
 		this.sipStack = (SipStackImpl) sipStack;
-		this.host = sipStack.getIPAddress();
+		
 		this.port = port;
 		this.transport = transport;
+		
 	}
 
 	/**
@@ -104,13 +137,7 @@ public class ListeningPointImpl implements javax.sip.ListeningPoint {
 		return lip;
 	}
 
-	/** Gets host name of this ListeningPoint
-	 *
-	 * @return host of ListeningPoint
-	 */
-	public String getHost() {
-		return this.sipStack.getHostAddress();
-	}
+	
 
 	/**
 	 * Gets the port of the ListeningPoint. The default port of a ListeningPoint
@@ -144,9 +171,45 @@ public class ListeningPointImpl implements javax.sip.ListeningPoint {
 	 * @return the provider.
 	 */
 	public SipProviderImpl getProvider() {
-		return this.sipProviderImpl;
+		return this.sipProvider;
 	}
+
+    /* (non-Javadoc)
+     * @see javax.sip.ListeningPoint#getIPAddress()
+     */
+    public String getIPAddress() {
+       
+        return this.messageProcessor.getIPAddress().getHostAddress();
+    }
+
+    
+
+    /* (non-Javadoc)
+     * @see javax.sip.ListeningPoint#setSentBy(java.lang.String)
+     */
+    public void setSentBy(String sentBy) throws ParseException {
+        this.messageProcessor.setSentBy(sentBy);
+        
+    }
+
+    /* (non-Javadoc)
+     * @see javax.sip.ListeningPoint#getSentBy()
+     */
+    public String getSentBy() {
+        
+        return this.messageProcessor.getSentBy();
+    }
+    
+    public boolean isSentBySet() {
+    	return this.messageProcessor.isSentBySet();
+    }
+    public Via getViaHeader() {
+        return this.messageProcessor.getViaHeader();
+     }
+    
+    public MessageProcessor getMessageProcessor() {
+        return this.messageProcessor;
+    }
+
+	
 }
-/*
- * $Log: not supported by cvs2svn $
- */

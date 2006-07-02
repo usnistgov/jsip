@@ -2,27 +2,22 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
  * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
- * Module Name   : JAIN SIP Specification
+ * Module Name   : JSIP Specification
  * File Name     : TelURL.java
  * Author        : Phelim O'Doherty
  *
  *  HISTORY
  *  Version   Date      Author              Comments
  *  1.1     08/10/2002  Phelim O'Doherty    Initial version
+ *  1.2     19/05/2005  Phelim O'Doherty    Added phone context methods
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 package javax.sip.address;
@@ -62,8 +57,10 @@ import javax.sip.header.Parameters;
  * See <a href = "http://www.ietf.org/rfc/rfc2806.txt">RFC2806</a> for more 
  * information on the use of TelURL's.
  *
- * @author Sun Microsystems
- * @since 1.1
+ * @author BEA Systems, Inc. 
+ * @author NIST
+ * 
+ * @version 1.2
  */
 
 public interface TelURL extends URI, Parameters {
@@ -142,7 +139,28 @@ public interface TelURL extends URI, Parameters {
      * @return  the value of the <code>isdnSubAddress</code> parameter
      */
     public String getIsdnSubAddress();
+    
+    /**
+     * Sets the phone context of this TelURL.
+     *
+     * @param phoneContext - new value of the <code>phoneContext</code>
+     * parameter
+     * @throws ParseException which signals that an error has been reached
+     * unexpectedly while parsing the phoneContext value.
+     * @since v1.2
+     */
+    public void setPhoneContext(String phoneContext) throws ParseException;
 
+    /**
+     * Returns the value of the <code>phoneContext</code> parameter, or null
+     * if it is not set.
+     *
+     * @return  the value of the <code>phoneContext</code> parameter
+     * @since v1.2
+     */
+    public String getPhoneContext();
+        
+    
     /**
      * This method returns the URI as a string. 
      *

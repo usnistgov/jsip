@@ -9,11 +9,11 @@ import javax.swing.*;
 
 /**
 *
-*@version  JAIN-SIP-1.1
+*@version 1.2
 *
-*@author Olivier Deruelle <deruelle@nist.gov>  <br/>
+*@author Olivier Deruelle   <br/>
 *
-*<a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
+*
 *
 */
 public class AlertFrame extends JOptionPane {
