@@ -37,7 +37,7 @@ import java.security.NoSuchAlgorithmException;
  * and odds and ends.
  * 
  * @author mranga
- * @version 1.2 $Revision: 1.9 $ $Date: 2006-07-02 09:54:25 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2006-07-04 01:51:17 $
  */
 public class Utils {
 
@@ -146,7 +146,7 @@ public class Utils {
 			if (null == digester)
 				digester = MessageDigest.getInstance("MD5");
 			
-			long num = ++counter + (int) Math.random() * 10000
+			long num = ++counter + (int) (Math.random() * 10000)
 					+ System.currentTimeMillis();
 			byte bid[] = digester.digest(Long.toString(num).getBytes());
 			// prepend with a magic cookie to indicate we are bis09 compatible.
