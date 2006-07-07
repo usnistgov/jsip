@@ -15,4 +15,6 @@ see shootmelog.txt and shootistlog.txt appear in this directory.
 You can visualize the trace files using the make target shootmelog
 and shootistlog.
 
+Disclaimer: NIST does not necessarily endorse John Wayne.
+
 Mail questions to mranga@nist.gov or nist-sip-dev@antd.nist.gov
