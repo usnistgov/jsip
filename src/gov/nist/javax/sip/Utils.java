@@ -37,7 +37,7 @@ import java.security.NoSuchAlgorithmException;
  * and odds and ends.
  * 
  * @author mranga
- * @version 1.2 $Revision: 1.10 $ $Date: 2006-07-04 01:51:17 $
+ * @version 1.2 $Revision: 1.11 $ $Date: 2006-07-07 14:52:37 $
  */
 public class Utils {
 
@@ -113,7 +113,7 @@ public class Utils {
 				+ callIDCounter++
 				+ new Double(Math.random() * 10000).toString();
 		try {
-			MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+	 		MessageDigest messageDigest = MessageDigest.getInstance("MD5");
 			byte cid[] = messageDigest.digest(date.getBytes());
 			String cidString = Utils.toHexString(cid);
 			return cidString + "@" + address;
