@@ -39,11 +39,17 @@ SRCROOT = $(ROOT)/src/
 
 DESTINATION = $(ROOT)/classes/
 
+ifeq (${JAVA_HOME}, )
 ifeq (${OS},Windows_NT) 
 	JDK_HOME=${JAVA_HOME}
 else
-	JDK_HOME=/usr/java/j2sdk1.4.2_04
+	JDK_HOME=/home/nist-sip/j2sdk1.4.2
 endif
+else
+	JDK_HOME=${JAVA_HOME}
+endif
+
+
 
 JAIN_API_JAR=JainSipApi1.1.jar
 RI_JAR=nist-sip-1.2.jar
