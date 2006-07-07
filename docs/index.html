@@ -118,15 +118,16 @@ and unzip them at the root of the distribution tree
  <li> The following make targets are relevant: 
       <ul>
  <li> <font color="blue"> make ri </font> makes just the reference  implementation
-for JAIN-SIP.  A jar file nist-sip-1.2.jar will be generated which is the
-RI for JAIN-SIP 1.1. </li>
-        <li> <font color="blue"> make javadoc </font> makes the documentation 
+for JAIN-SIP.  A jar file JainSipRi1.2.jar will be generated which is the
+RI for JAIN-SIP 1.2. </li>
+        <li> <font color="blue"> ant javadoc </font> makes the documentation 
         </li>
-        <li> <font color="blue"> make tools </font> makes the tools </li>
-        <li> <font color="blue"> make examples </font> makes the examples. 
+        <li> <font color="blue"> ant tools </font> makes the tools </li>
+        <li> <font color="blue"> ant examples </font> makes the examples. 
         </li>
-        <li> <font color="blue"> make classfiles </font> makes just  the
-.classes (no docs). </li>
+        <li> <font color="blue"> ant classfiles </font> makes just  the
+        <li> <font color="blue"> ant compiletck </font> makes  the
+tck </li>
       </ul>
  </li>
  
@@ -143,31 +144,16 @@ can build the TCK:
 <ul>
 <li> make the RI using the instructions above. </li>
 <li> make the TCK using the target "tck". All the classes needed for
-the tck are included in jain-sip-1.1.tck.jar. </li>
-<li> You can run the TCK in text or GUI (interactive) mode.
-In GUI mode, run the tck against the test implementation using the following
-command (assuming the class path includes the implementation under test): <br/>
-<it> <font color=blue> java -jar jain-sip-1.1.tck.jar -mode gui </font> </it> 
-<br/>
-A user interface appears and allows you to enter the implementation path.<br/>
-Alternatively, in text mode: <br/>
-<it> <font color = blue> java -jar jain-sip-1.1.tck.jar -mode text [-path impl_path] </font> </it> 
-<br/>
-Where impl_path is the path to your implementation (eg. gov.nist)
-<li>
-<it><font color=blue> java -jar jain-sip-1.1.tck.jar -help </font>
-</it> for more details on command line options. 
-</li>
+the tck are included in tck.jar. </li>
+<li> Edit the tck.properties
+<it> <font color=blue> ant runtck </font> </it> 
 </ul>
 
-
-</li>
-</ul>
 
 <h2><u> Reporting Bugs </u> </h2>
   <font color="red"> To report bugs you need to enable debugging and 
 message logging.  
-Set the gov.nist.javax.sip.TRACE_LEVEL property to 32 to
+Set the gov.nist.javax.sip.TRACE_LEVEL property to DEBUG
 enable debugging (see documentation for gov.nist.javax.SipStackImpl.java). 
 Set the gov.nist.javax.sip.DEBUG_LOG property to  a writeable file name
 (eg. debuglog.txt).
@@ -184,9 +170,6 @@ to do this.
 <h2> <u>Copyrights (or lack thereof) and Other Disclaimers</u></h2>
 
 
-The following notice applies only to those portions of this distribution 
-that were developed at NIST:<br>
-
 
 <font color="#000099"> 
 <p>
@@ -201,7 +184,7 @@ free of any royalty payments or license agreements.
 </p>
 
 <p>
-The NIST-SIP software is provided by NIST as a service and is expressly
+The software is provided by NIST as a service and is expressly
 provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
 OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
 MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
@@ -213,8 +196,7 @@ the software.
 
 <p>
 Permission to use this software is contingent upon your acceptance
-of the terms of this agreement and upon your providing appropriate
-acknowledgments of NIST's ownership of the software. 
+of the terms of this agreement.
 </p>
 
 </font>  
