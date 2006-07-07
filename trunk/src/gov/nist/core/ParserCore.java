@@ -63,7 +63,7 @@ public abstract class ParserCore {
 			if (la == separator ) {
 				lexer.consume(1);
 				lexer.SPorHT();
-				String str = null;
+				String str = null;	
 				if (lexer.lookAhead(0) == '\"')  {
 					 str = lexer.quotedString();
 					  quoted = true;
@@ -71,13 +71,17 @@ public abstract class ParserCore {
 				   lexer.match(LexerCore.ID);
 				   Token value = lexer.getNextToken();
 				   str = value.tokenValue;
+				   
+				   // JvB: flag parameters must be empty string!
+				   if (str==null) str = "";
 				}
 				NameValue nv = 
 				new NameValue(name.tokenValue,str);
 				if (quoted) nv.setQuotedValue();
 				return nv;
 			}  else {
-				return new NameValue(name.tokenValue,null);
+				// JvB: flag parameters must be empty string!
+				return new NameValue(name.tokenValue,"");
 			}
 		} catch (ParseException ex) {
 			return new NameValue(name.tokenValue,null);

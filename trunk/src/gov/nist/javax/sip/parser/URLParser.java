@@ -33,7 +33,7 @@ import java.util.Vector;
 /**
  * Parser For SIP and Tel URLs. Other kinds of URL's are handled by the 
  * J2SE 1.4 URL class.
- * @version 1.2 $Revision: 1.11 $ $Date: 2006-07-02 09:51:19 $
+ * @version 1.2 $Revision: 1.12 $ $Date: 2006-07-07 14:52:38 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -132,7 +132,7 @@ public class URLParser extends Parser {
 		if (debug)
 			dbg_enter("uriParam");
 		try {
-			String pvalue = null;
+			String pvalue = "";
 			String pname = paramNameOrValue();
 			char next = lexer.lookAhead(0);
 			if (next == '=') {
@@ -776,6 +776,9 @@ public class URLParser extends Parser {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2006/07/05 10:50:56  jeroen
+ * use "" for flag values, not null
+ *
  * Revision 1.9  2006/06/19 06:47:27  mranga
  * javadoc fixups
  *
