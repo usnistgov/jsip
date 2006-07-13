@@ -31,7 +31,7 @@ import java.text.ParseException;
 /** 
  * Parser for Email Field
  *
- * @version JAIN-SDP-PUBLIC-RELEASE $Revision: 1.4 $ $Date: 2006-07-02 09:52:55 $
+ * @version JAIN-SDP-PUBLIC-RELEASE $Revision: 1.5 $ $Date: 2006-07-13 09:02:36 $
  *
  * @author Olivier Deruelle  
  * @author M. Ranganathan  

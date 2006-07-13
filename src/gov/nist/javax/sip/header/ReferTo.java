@@ -35,7 +35,7 @@ import gov.nist.javax.sip.address.*;
 /**  
  * ReferTo SIP Header.
  *
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-02 09:50:41 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:40 $
  *
  * @author M. Ranganathan   <br/>
  * @author Olivier Deruelle <br/>

@@ -40,7 +40,7 @@ import java.lang.reflect.*;
 * IMPORTANT NOTE: NetObjectList cannot derive from NetObject as this 
 * will screw up the way in which we attach objects to headers.
 *
-*@version 1.2 $Revision: 1.4 $ $Date: 2006-07-02 09:52:36 $
+*@version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:02:30 $
 *
 *@author M. Ranganathan   <br/>
 *

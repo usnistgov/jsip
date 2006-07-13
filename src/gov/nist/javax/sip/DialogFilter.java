@@ -57,7 +57,7 @@ import java.io.IOException;
  * and event model with the JAIN-SIP stack. This is strictly an implementation
  * class.
  * 
- * @version 1.2 $Revision: 1.1 $ $Date: 2006-07-02 09:54:23 $
+ * @version 1.2 $Revision: 1.2 $ $Date: 2006-07-13 09:02:51 $
  * 
  * @author M. Ranganathan
  */
@@ -718,7 +718,8 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 			 * more appropriate.
 			 */
 			if (sipProvider.isAutomaticDialogSupportEnabled()
-					&& pendingSubscribeClientTx == null) {
+					&& pendingSubscribeClientTx == null
+					&& !sipStack.deliverUnsolicitedNotify ) {
 				/*
 				 * This is the case of the UAC receiving a Stray NOTIFY for
 				 * which it has not previously sent out a SUBSCRIBE and for

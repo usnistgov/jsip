@@ -24,19 +24,12 @@ import javax.sip.address.*;
 import javax.sip.header.*;
 import javax.sip.message.*;
 
-import org.apache.log4j.Appender;
 import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.apache.log4j.helpers.NullEnumeration;
 
-import test.tck.TestHarness;
 import test.tck.msgflow.callflows.ProtocolObjects;
-
-import java.util.*;
-
-import junit.framework.TestCase;
 
 /**
  * This class is a UAC template.
@@ -250,6 +243,7 @@ public class Shootme  implements SipListener {
 					&& ((CSeqHeader) response.getHeader(CSeqHeader.NAME))
 							.getMethod().equals(Request.INVITE)) {
 				this.okRecieved  = true;
+				ReInviteTest.assertNotNull( "INVITE 200 response should match a transaction", tid );
 				Dialog dialog = tid.getDialog();
 				Request request = dialog.createRequest(Request.ACK);
 				dialog.sendAck(request);

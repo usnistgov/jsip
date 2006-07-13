@@ -31,7 +31,7 @@ import java.text.ParseException;
  *
  * @author M. Ranganathan   NIST/ITL/ANTD
  * @since 1.1
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-02 09:50:43 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:45 $
  *
  * 
  */

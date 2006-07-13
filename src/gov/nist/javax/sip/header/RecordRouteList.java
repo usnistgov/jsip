@@ -32,7 +32,7 @@ import javax.sip.header.*;
 /**
  * RecordRoute List of SIP headers (a collection of Addresses)
  *
- * @version 1.2 $Revision: 1.3 $ $Date: 2006-07-02 09:50:42 $
+ * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:44 $
  *
  * @author M. Ranganathan   <br/>
  *

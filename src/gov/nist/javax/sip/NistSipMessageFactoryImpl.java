@@ -43,7 +43,7 @@ import javax.sip.*;
  * messageChannel, the NIST-SIP stack calls the SIPStackMessageFactory
  * implementation that has been registered with it to process the request.)
  * 
- * @version 1.2 $Revision: 1.11 $ $Date: 2006-07-02 09:54:26 $
+ * @version 1.2 $Revision: 1.12 $ $Date: 2006-07-13 09:02:53 $
  * 
  * @author M. Ranganathan <br/>
  * 

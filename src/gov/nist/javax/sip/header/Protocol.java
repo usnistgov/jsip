@@ -33,7 +33,7 @@ import java.text.ParseException;
 /**
  *  Protocol name and version.
  *
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-02 09:50:36 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-13 09:01:24 $
  *
  * @author M. Ranganathan   <br/>
  *

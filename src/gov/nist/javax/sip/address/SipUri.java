@@ -44,7 +44,7 @@ import javax.sip.address.SipURI;
  * 
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-02 09:52:35 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2006-07-13 09:02:28 $
  *
  * 
  *

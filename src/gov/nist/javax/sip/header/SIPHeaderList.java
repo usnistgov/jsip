@@ -47,7 +47,7 @@ import gov.nist.core.*;
  * list are of the same class). We use this for building type homogeneous lists
  * of SIPObjects that appear in SIPHeaders
  * 
- * @version 1.2 $Revision: 1.4 $ $Date: 2005/10/09 18:47:53
+ * @version 1.2 $Revision: 1.5 $ $Date: 2005/10/09 18:47:53
  */
 public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 

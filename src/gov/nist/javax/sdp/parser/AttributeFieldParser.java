@@ -36,7 +36,7 @@ import java.text.*;
 
 /**
  * @author  Olivier Deruelle
- * @version JAIN-SDP-PUBLIC-RELEASE $Revision: 1.4 $ $Date: 2006-07-02 09:52:54 $
+ * @version JAIN-SDP-PUBLIC-RELEASE $Revision: 1.5 $ $Date: 2006-07-13 09:02:35 $
  */
 public class AttributeFieldParser extends SDPParser {
 

@@ -32,7 +32,7 @@ import java.util.EventListener;
  * transacion events.
  *
  * @author Jeff Keyser
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-02 09:52:41 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-13 09:01:03 $
  */
 public interface SIPTransactionEventListener extends EventListener {
 

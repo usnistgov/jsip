@@ -31,7 +31,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * Parser for a list of RelpyTo headers.
  *
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-02 09:51:10 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-13 09:02:16 $
  *
  * @author Olivier Deruelle   <br/>
  * @author M. Ranganathan   <br/>

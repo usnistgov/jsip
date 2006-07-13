@@ -89,7 +89,7 @@ import javax.sip.address.*;
  * Subsequently, the request URI will be used as next hop target
  * 
  * 
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-02 09:52:42 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-13 09:00:55 $
  * 
  * @author M. Ranganathan <br/>
  * 

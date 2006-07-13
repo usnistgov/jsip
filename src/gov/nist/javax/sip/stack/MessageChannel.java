@@ -52,7 +52,7 @@ import javax.sip.header.ContactHeader;
  * Contains additions for support of symmetric NAT contributed
  * by Hagai.
  *
- * @version 1.2 $Revision: 1.14 $ $Date: 2006-07-02 09:52:39 $
+ * @version 1.2 $Revision: 1.15 $ $Date: 2006-07-13 09:00:59 $
  *
  * 
  */

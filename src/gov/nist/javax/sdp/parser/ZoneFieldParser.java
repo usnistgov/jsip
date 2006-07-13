@@ -32,7 +32,7 @@ import java.text.ParseException;
 /**
  * Parser For the Zone field.
  *
- * @version JAIN-SDP-PUBLIC-RELEASE $Revision: 1.3 $ $Date: 2006-07-02 09:52:51 $
+ * @version JAIN-SDP-PUBLIC-RELEASE $Revision: 1.4 $ $Date: 2006-07-13 09:02:37 $
  *
  * @author Olivier Deruelle <deruelle@antd.nist.gov>  
  * @author M. Ranganathan <mranga@antd.nist.gov> <br/>

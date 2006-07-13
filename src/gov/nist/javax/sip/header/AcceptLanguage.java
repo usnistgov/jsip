@@ -36,7 +36,7 @@ import java.util.Locale;
  * Accept Language body.
  *
  * @author M. Ranganathan 
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-02 09:50:37 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:26 $
  * @since 1.1
  *
  *

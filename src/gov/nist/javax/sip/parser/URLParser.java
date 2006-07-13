@@ -33,7 +33,7 @@ import java.util.Vector;
 /**
  * Parser For SIP and Tel URLs. Other kinds of URL's are handled by the 
  * J2SE 1.4 URL class.
- * @version 1.2 $Revision: 1.12 $ $Date: 2006-07-07 14:52:38 $
+ * @version 1.2 $Revision: 1.13 $ $Date: 2006-07-13 09:02:04 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -135,15 +135,17 @@ public class URLParser extends Parser {
 			String pvalue = "";
 			String pname = paramNameOrValue();
 			char next = lexer.lookAhead(0);
+			boolean isFlagParam = true;
 			if (next == '=') {
 				lexer.consume(1);
 				pvalue = paramNameOrValue();
+				isFlagParam = false;
 			}
 			if (pname.toString().equals("") &&
 			    ( pvalue == null || 
 			    pvalue.toString().equals("") ))
 			    return null;
-			else return new NameValue(pname, pvalue);
+			else return new NameValue(pname, pvalue, isFlagParam);
 		} finally {
 			if (debug)
 				dbg_leave("uriParam");
@@ -511,9 +513,9 @@ public class URLParser extends Parser {
 				if (lexer.lookAhead(0) == '=') {
 					lexer.match('=');
 					String value = paramNameOrValue();
-					nv = new NameValue( pname, value );
+					nv = new NameValue( pname, value, false );
 				} else {
-					nv = new NameValue( pname, "" );	// flag param
+					nv = new NameValue( pname, "", true );	// flag param
 				}
 			}
 			nvList.add( nv );
@@ -545,7 +547,7 @@ public class URLParser extends Parser {
 		} else {
 			throw new ParseException( "Invalid phone-context:" + la , -1 );
 		}
-		return new NameValue( "phone-context", value );
+		return new NameValue( "phone-context", value, false );
 	}
 	
 	/**
@@ -650,7 +652,7 @@ public class URLParser extends Parser {
 		String name = lexer.getNextToken('=');
 		lexer.consume(1);
 		String value = hvalue();
-		return new NameValue(name, value);
+		return new NameValue(name, value, false);
 
 	}
 
@@ -776,6 +778,12 @@ public class URLParser extends Parser {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2006/07/11 21:28:34  jeroen
+ * fixed reported issue with 'lr' parameter being encoded as 'lr=' (3)
+ *
+ * Revision 1.11  2006/07/11 20:43:13  jeroen
+ * fixed reported issue with 'lr' parameter being encoded as 'lr='
+ *
  * Revision 1.10  2006/07/05 10:50:56  jeroen
  * use "" for flag values, not null
  *

@@ -34,7 +34,7 @@ import javax.sip.InvalidArgumentException;
  * Accept header : The top level header is actually AcceptList which is a list of
  * Accept headers.
  *
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-02 09:50:41 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:37 $
  * 
  * @since 1.1
  *

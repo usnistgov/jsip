@@ -33,7 +33,7 @@ import gov.nist.javax.sip.message.*;
  * Interface  that provides methods for processing good 
  * and bad messages for the PipelinedMessageParser.
  * 
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-02 09:51:14 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-13 09:02:17 $
  * @see PipelinedMsgParser
  */
 public interface SIPMessageListener extends ParseExceptionListener {

@@ -33,7 +33,7 @@ import javax.sip.header.*;
  * AcceptEncodingList of AccepEncoding headers.
  *
  *@author M. Ranganathan  
- *@version 1.2 $Revision: 1.3 $ $Date: 2006-07-02 09:50:48 $
+ *@version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:17 $
  *@since 1.1
  *
  *

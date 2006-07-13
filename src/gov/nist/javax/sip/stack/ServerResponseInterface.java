@@ -42,7 +42,7 @@ import gov.nist.javax.sip.message.*;
  * It is the applications responsibility to take care of what needs to be
  * done to actually process the response.
  *
- * @version 1.2 $Revision: 1.2 $ $Date: 2006-07-02 09:52:39 $
+ * @version 1.2 $Revision: 1.3 $ $Date: 2006-07-13 09:00:59 $
  *
  * @author M. Ranganathan   <br/>
  *

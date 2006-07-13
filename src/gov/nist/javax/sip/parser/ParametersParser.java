@@ -31,7 +31,7 @@ import java.text.ParseException;
 
 /** parameters parser header.
  *
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-02 09:51:23 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-13 09:02:16 $
  *
  * @author M. Ranganathan   <br/>
  *

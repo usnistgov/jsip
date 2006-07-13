@@ -43,7 +43,7 @@ import gov.nist.javax.sip.address.*;
  *
  * 
  *
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-02 09:50:57 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-13 09:01:41 $
  *
  */
 public abstract class ParametersHeader

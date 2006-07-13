@@ -32,7 +32,7 @@ package gov.nist.javax.sip.header;
  * Root class from which all SIPHeader objects are subclassed.
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.3 $ $Date: 2006-07-02 09:50:44 $
+ * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:46 $
  *
  * 
  */

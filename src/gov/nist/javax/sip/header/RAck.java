@@ -33,7 +33,7 @@ import java.text.ParseException;
 /**
  * RAck SIP Header implementation
  *
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-02 09:50:48 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:16 $
  *
  * @author M. Ranganathan   <br/>
  *

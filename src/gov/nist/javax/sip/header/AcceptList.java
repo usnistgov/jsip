@@ -31,7 +31,7 @@ import javax.sip.header.*;
  * Accept List of  SIP headers. 
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.3 $ $Date: 2006-07-02 09:50:59 $
+ * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:46 $
  *
  * @since 1.1
  *

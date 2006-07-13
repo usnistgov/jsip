@@ -43,7 +43,7 @@ import java.lang.reflect.*;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size).
  * Each UDP message is processed in its own thread).
  * 
- * @version 1.2 $Revision: 1.24 $ $Date: 2006-07-02 09:52:42 $
+ * @version 1.2 $Revision: 1.25 $ $Date: 2006-07-13 09:00:53 $
  * 
  * @author M. Ranganathan  <br/>
  * 

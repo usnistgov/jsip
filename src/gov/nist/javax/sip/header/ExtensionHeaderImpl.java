@@ -32,7 +32,7 @@ package gov.nist.javax.sip.header;
  * A generic extension header for the stack. 
  * The input text of the header gets recorded here.
  *
- * @version 1.2 $Revision: 1.3 $ $Date: 2006-07-02 09:50:53 $
+ * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:26 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>

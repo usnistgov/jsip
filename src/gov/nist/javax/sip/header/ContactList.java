@@ -36,7 +36,7 @@ import java.util.ListIterator;
  * List of contact headers.ContactLists are also maintained in a hashtable
  * for quick lookup.
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-02 09:50:45 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:48 $
  * @since 1.1
  */
 public class ContactList extends SIPHeaderList  {

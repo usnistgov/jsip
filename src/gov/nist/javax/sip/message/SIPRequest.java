@@ -61,7 +61,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.17 $ $Date: 2006-07-02 09:54:07 $
+ * @version 1.2 $Revision: 1.18 $ $Date: 2006-07-13 09:02:47 $
  * @since 1.1
  * 
  * @author M. Ranganathan  <br/>

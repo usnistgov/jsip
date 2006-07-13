@@ -64,27 +64,30 @@ public abstract class ParserCore {
 				lexer.consume(1);
 				lexer.SPorHT();
 				String str = null;	
+				boolean isFlag = false;
 				if (lexer.lookAhead(0) == '\"')  {
 					 str = lexer.quotedString();
-					  quoted = true;
+					 quoted = true;
 				} else {
 				   lexer.match(LexerCore.ID);
 				   Token value = lexer.getNextToken();
 				   str = value.tokenValue;
 				   
 				   // JvB: flag parameters must be empty string!
-				   if (str==null) str = "";
+				   if (str==null) {
+					   str = "";
+					   isFlag = true;
+				   }
 				}
-				NameValue nv = 
-				new NameValue(name.tokenValue,str);
+				NameValue nv = new NameValue(name.tokenValue,str,isFlag);
 				if (quoted) nv.setQuotedValue();
 				return nv;
 			}  else {
 				// JvB: flag parameters must be empty string!
-				return new NameValue(name.tokenValue,"");
+				return new NameValue(name.tokenValue,"",true);
 			}
 		} catch (ParseException ex) {
-			return new NameValue(name.tokenValue,null);
+			return new NameValue(name.tokenValue,null,false);
 		}
 
 		} finally {

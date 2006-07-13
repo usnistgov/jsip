@@ -36,7 +36,7 @@ import javax.sip.header.*;
  * Require  =  "Require" ":" 1#option-tag 
  * </pre>
  *
- * @version 1.2 $Revision: 1.3 $ $Date: 2006-07-02 09:50:42 $
+ * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:42 $
  *
  * @author M. Ranganathan   <br/>
  *
