@@ -33,7 +33,7 @@ import gov.nist.javax.sip.SIPConstants;
 /**
  * Status Line (for SIPReply) messages.
  *
- * @version 1.2 $Revision: 1.3 $ $Date: 2006-07-02 09:51:00 $
+ * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:48 $
  *
  * @author M. Ranganathan   <br/>
  *

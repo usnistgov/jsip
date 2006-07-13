@@ -30,7 +30,7 @@ import java.text.ParseException;
 /**
  * Parser for the SIP status line.
  *
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-02 09:51:26 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-13 09:02:20 $
  *
  * @author M. Ranganathan   <br/>
  *

@@ -254,6 +254,18 @@ public class DialogTest extends MessageFlowHarness {
 	 * that point on.
 	 */
 	public void testSendAck() {
+		this.doTestSendAck(false);
+	}
+
+	/**
+	 * Regression test for broken clients that send ACK to 2xx with same branch as INVITE
+	 */
+	public void testSendAckWithSameBranch() {
+		this.doTestSendAck(true);
+	}
+	
+	
+	private void doTestSendAck( boolean sameBranch ) {
 		try {
 			//We will now send an OK response
 			//start listening for the response
@@ -307,6 +319,13 @@ public class DialogTest extends MessageFlowHarness {
 				ack = dialog.createAck(cseq.getSequenceNumberLong());
 				//System.out.println( "Created ACK:" + ack );
 				//System.out.println( "original INVITE:" + riInvite );
+
+				// This is wrong according to RFC3261, but some clients do this...
+				if (sameBranch) {
+					ViaHeader via = (ViaHeader) ack.getHeader("Via");
+					via.setBranch( ((ViaHeader)riInvite.getHeader("Via")).getBranch() );
+				}
+				
 			} catch (SipException ex) {
 				throw new TiUnexpectedError(
 					"Failed to create an ACK request.",

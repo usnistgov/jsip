@@ -41,7 +41,7 @@ import java.util.*;
  * object that creates new TCP MessageChannels (one for each new
  * accept socket).  
  *
- * @version 1.2 $Revision: 1.23 $ $Date: 2006-07-02 09:52:44 $
+ * @version 1.2 $Revision: 1.24 $ $Date: 2006-07-13 09:01:01 $
  *
  * @author M. Ranganathan   <br/>
  * Acknowledgement: Jeff Keyser suggested that a

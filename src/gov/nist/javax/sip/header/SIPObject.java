@@ -35,7 +35,7 @@ import gov.nist.core.*;
  * specializes the gov.nist.sip.header.GenericObject class for SIPHeader
  * related objects.
  *
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-02 09:50:51 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-13 09:01:24 $
  *
  * @author M. Ranganathan   <br/>
  *

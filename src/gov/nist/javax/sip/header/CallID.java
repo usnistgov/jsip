@@ -35,7 +35,7 @@ import javax.sip.header.CallIdHeader;
  * Call ID SIPHeader.
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-02 09:50:44 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:47 $
  * @since 1.1
  */
 public class CallID

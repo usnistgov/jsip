@@ -35,7 +35,7 @@ import javax.sip.header.*;
 /**
  * TimeStamp SIP Header.
  * 
- * @version 1.2 $Revision: 1.3 $ $Date: 2006-07-02 09:50:43 $
+ * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:45 $
  * 
  * @author M. Ranganathan  <br/>
  * @author Olivier Deruelle <br/>

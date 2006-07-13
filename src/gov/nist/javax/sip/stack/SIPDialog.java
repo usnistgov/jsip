@@ -58,7 +58,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.20 $ $Date: 2006-07-02 09:52:43 $
+ * @version 1.2 $Revision: 1.21 $ $Date: 2006-07-13 09:01:00 $
  * 
  * @author M. Ranganathan
  * 

@@ -35,7 +35,7 @@ import java.text.ParseException;
  * An class that implements this interface is registered with the 
  * parser and is called back from the parser handle parse errors.
  *
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-02 09:51:17 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-13 09:01:55 $
  */
 public interface ParseExceptionListener {
 	/**

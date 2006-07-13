@@ -39,7 +39,7 @@ import gov.nist.javax.sip.parser.*;
 /**
  *  Message Factory implementation 
  *
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-02 09:54:08 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-13 09:02:49 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>

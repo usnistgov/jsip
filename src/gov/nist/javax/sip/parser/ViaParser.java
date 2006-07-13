@@ -33,7 +33,7 @@ import java.text.ParseException;
 /**
  * Parser for via headers.
  * 
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-02 09:51:06 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-13 09:02:05 $
  * @since 1.1
  * 
  * @author Olivier Deruelle

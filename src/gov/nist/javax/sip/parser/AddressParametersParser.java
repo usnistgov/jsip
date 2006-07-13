@@ -32,7 +32,7 @@ import java.text.ParseException;
 /**
  * Address parameters parser.
  *
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-02 09:51:20 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-13 09:02:07 $
  * @author M. Ranganathan 
  * @since 1.1  
  * 

@@ -37,7 +37,7 @@ import java.security.NoSuchAlgorithmException;
  * and odds and ends.
  * 
  * @author mranga
- * @version 1.2 $Revision: 1.11 $ $Date: 2006-07-07 14:52:37 $
+ * @version 1.2 $Revision: 1.12 $ $Date: 2006-07-13 09:02:52 $
  */
 public class Utils {
 
@@ -113,7 +113,7 @@ public class Utils {
 				+ callIDCounter++
 				+ new Double(Math.random() * 10000).toString();
 		try {
-	 		MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+			MessageDigest messageDigest = MessageDigest.getInstance("MD5");
 			byte cid[] = messageDigest.digest(date.getBytes());
 			String cidString = Utils.toHexString(cid);
 			return cidString + "@" + address;
@@ -146,7 +146,7 @@ public class Utils {
 			if (null == digester)
 				digester = MessageDigest.getInstance("MD5");
 			
-			long num = ++counter + (int) (Math.random() * 10000)
+			long num = ++counter + (int)( Math.random() * 10000)
 					+ System.currentTimeMillis();
 			byte bid[] = digester.digest(Long.toString(num).getBytes());
 			// prepend with a magic cookie to indicate we are bis09 compatible.

@@ -33,7 +33,7 @@ import javax.sip.header.*;
 /**
 * Error Info sip header.
 *
-*@version 1.2 $Revision: 1.3 $ $Date: 2006-07-02 09:50:52 $
+*@version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:25 $
 *
 *@author M. Ranganathan   <br/>
 *@since 1.1

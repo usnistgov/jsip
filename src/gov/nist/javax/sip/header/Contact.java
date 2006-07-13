@@ -46,7 +46,7 @@ import javax.sip.header.ContactHeader;
  * @see gov.nist.javax.sip.header.ContactList
  *
  * @author M. Ranganathan  <br/>
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-02 09:50:56 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-13 09:01:38 $
  * @since 1.1
  *
  *

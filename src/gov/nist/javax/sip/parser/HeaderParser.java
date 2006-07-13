@@ -34,7 +34,7 @@ import java.text.ParseException;
  * class. To create a parser for a new header, extend this class and change
  * the createParser class.
  *
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-02 09:51:03 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-13 09:01:56 $
  *
  * @author M. Ranganathan   <br/>
  *

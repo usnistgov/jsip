@@ -35,7 +35,7 @@ import gov.nist.javax.sip.stack.*;
 /**
  * Implementation of the ListeningPoint interface
  *
- * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-02 09:54:25 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2006-07-13 09:02:53 $
  *
  * @author M. Ranganathan   <br/>
  *

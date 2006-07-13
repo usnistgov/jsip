@@ -35,7 +35,7 @@ import javax.sip.header.*;
 /**
  * Organization SIP Header.
  *
- * @version 1.2 $Revision: 1.3 $ $Date: 2006-07-02 09:50:33 $
+ * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:15 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>

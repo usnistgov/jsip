@@ -32,7 +32,7 @@ import javax.sip.header.*;
 /**
 * In-Reply-To SIP header. Keeps a list of InReplyToHeader
 *
-* @version 1.2 $Revision: 1.3 $ $Date: 2006-07-02 09:50:41 $
+* @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:39 $
 * @since 1.1
 *
 *@author M. Ranganathan   <br/>

@@ -29,7 +29,7 @@ import  gov.nist.javax.sip.stack.*;
 import  java.util.*;
 
 /**
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-02 09:54:24 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:02:52 $
  */
 class EventWrapper {
 	

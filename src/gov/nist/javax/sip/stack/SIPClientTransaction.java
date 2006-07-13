@@ -160,7 +160,7 @@ import java.io.IOException;
  * @author M. Ranganathan  <a href=" {@docRoot}/uncopyright.html">This
  *         code is in the public domain. </a>
  * 
- * @version 1.2 $Revision: 1.48 $ $Date: 2006-07-02 09:52:37 $
+ * @version 1.2 $Revision: 1.49 $ $Date: 2006-07-13 09:00:54 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {

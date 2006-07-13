@@ -36,7 +36,7 @@ import java.text.ParseException;
  * @author Jeroen van Bemmel <br/>
  *
  * 
- * @version 1.2 $Revision: 1.1 $ $Date: 2006-07-02 09:51:07 $
+ * @version 1.2 $Revision: 1.2 $ $Date: 2006-07-13 09:02:08 $
  *
  * @since 1.2
  */

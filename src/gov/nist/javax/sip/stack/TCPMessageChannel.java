@@ -63,7 +63,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.33 $ $Date: 2006-07-02 09:52:41 $ 
+ * @version 1.2 $Revision: 1.34 $ $Date: 2006-07-13 09:00:51 $ 
  */
 public class TCPMessageChannel extends MessageChannel implements
 		SIPMessageListener, Runnable {

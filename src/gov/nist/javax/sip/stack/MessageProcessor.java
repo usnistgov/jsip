@@ -44,7 +44,7 @@ import javax.sip.InvalidArgumentException;
  * The main job of the message processor is to instantiate message channels for
  * the given transport.
  * 
- * @version 1.2 $Revision: 1.9 $ $Date: 2006-07-02 09:52:38 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2006-07-13 09:00:58 $
  * 
  * @author M. Ranganathan <br/>
  * 

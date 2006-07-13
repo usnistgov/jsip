@@ -40,22 +40,50 @@ package gov.nist.core;
 */
 public class NameValue extends GenericObject {
 	protected boolean isQuotedString;
+	protected final boolean isFlagParameter;
+	
 	protected String separator;
 	protected String quotes;
 	protected String name;
 	protected Object value;
+	
 	public NameValue() {
 		name = null;
-		value = null;
+		value = "";
 		separator = Separators.EQUALS;
 		this.quotes = "";
+		this.isFlagParameter = false;
 	}
-	public NameValue(String n, Object v) {
+	
+	/**
+	 * New constructor, taking a boolean which is set if the NV pair 
+	 * is a flag
+	 * 
+	 * @param n
+	 * @param v
+	 * @param isFlag
+	 */
+	public NameValue(String n, Object v, boolean isFlag) {
+		
+		// assert (v != null ); // I dont think this assertion is correct mranga
+		
 		name = n;
 		value = v;
 		separator = Separators.EQUALS;
 		quotes = "";
+		this.isFlagParameter = isFlag;
 	}
+	
+	/**
+	 * Original constructor, sets isFlagParameter to 'false'
+	 * 
+	 * @param n
+	 * @param v
+	 */
+	public NameValue(String n, Object v) {
+		this( n, v, false );
+	}
+	
 	/**
 	* Set the separator for the encoding method below.
 	*/
@@ -82,7 +110,7 @@ public class NameValue extends GenericObject {
 		return name;
 	}
 	public Object getValue() {
-		return value;
+		return isFlagParameter ? "" : value;	// never return null for flag params
 	}
 	/**
 	* Set the name member  
@@ -105,7 +133,7 @@ public class NameValue extends GenericObject {
 	*@return an encoded name value (eg. name=value) string.
 	*/
 	public String encode() {
-		if (name != null && value != null) {
+		if (name != null && value != null && !isFlagParameter) {
 			if (GenericObject.isMySubclass(value.getClass())) {
 				GenericObject gv = (GenericObject) value;
 				return name + separator + quotes + gv.encode() + quotes;
@@ -123,7 +151,7 @@ public class NameValue extends GenericObject {
 				return gvlist.encode();
 			}
 			return quotes + value.toString() + quotes;
-		} else if (name != null && value == null) {
+		} else if (name != null && (value == null || isFlagParameter)) {
 			return name;
 		} else
 			return "";

@@ -30,7 +30,7 @@ import java.text.ParseException;
 
 /** Parser for addresses.
  *
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-02 09:51:04 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-13 09:01:57 $
  * @author M. Ranganathan   
  * 
  *

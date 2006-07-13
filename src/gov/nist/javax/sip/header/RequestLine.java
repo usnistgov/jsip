@@ -33,7 +33,7 @@ import gov.nist.javax.sip.address.*;
 /**
  * RequestLine of SIP Request. 
  *
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-02 09:50:37 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:26 $
  * @author M. Ranganathan
  */
 public class RequestLine extends SIPObject {

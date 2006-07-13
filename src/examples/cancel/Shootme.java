@@ -198,6 +198,7 @@ public class Shootme extends TestCase implements SipListener {
 				logger.info("shootme:  null tid.");
 				return;
 			}
+			TestCase.assertTrue(inviteTid != serverTransactionId);
 			Response response = ProtocolObjects.messageFactory.createResponse(200, request);
 			serverTransactionId.sendResponse(response);
 			if (dialog.getState() != DialogState.CONFIRMED) {

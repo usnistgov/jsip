@@ -33,7 +33,7 @@ import java.text.ParseException;
  * the SIP-If-Match header. 
  *
  * @author Jeroen van Bemmel<br/>
- * @version 1.2 $Revision: 1.1 $ $Date: 2006-07-02 09:50:55 $
+ * @version 1.2 $Revision: 1.2 $ $Date: 2006-07-13 09:01:34 $
  * @since 1.2
  */
 public class SIPIfMatch extends SIPHeader implements SIPIfMatchHeader,ExtensionHeader {

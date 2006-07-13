@@ -35,7 +35,7 @@ import java.util.Iterator;
 /**
  * Keeps a list and a hashtable of via header functions.
  *
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-02 09:50:52 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:24 $
  *
  * @author M. Ranganathan   <br/>
  *

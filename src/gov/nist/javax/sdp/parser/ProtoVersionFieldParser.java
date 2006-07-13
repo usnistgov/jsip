@@ -32,7 +32,7 @@ import java.text.*;
 /**
  * Parser for Proto Version.
  *
- * @version JAIN-SDP-PUBLIC-RELEASE $Revision: 1.3 $ $Date: 2006-07-02 09:52:52 $
+ * @version JAIN-SDP-PUBLIC-RELEASE $Revision: 1.4 $ $Date: 2006-07-13 09:02:39 $
  *
  * @author Olivier Deruelle <deruelle@antd.nist.gov> 
  * @author M. Ranganathan 

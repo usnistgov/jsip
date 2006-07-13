@@ -32,7 +32,7 @@ import java.util.ListIterator;
 
 /**
  * A generic extension header list.
- * @version 1.2 $Revision: 1.3 $ $Date: 2006-07-02 09:50:51 $
+ * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:23 $
  * @since 1.1
  */
 public class ExtensionHeaderList extends SIPHeaderList { 

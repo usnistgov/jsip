@@ -37,7 +37,7 @@ import javax.sip.header.FromHeader;
 /**
  * From SIP Header.
  *
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-02 09:50:50 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-13 09:01:23 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>

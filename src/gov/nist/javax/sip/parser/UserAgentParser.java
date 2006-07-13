@@ -32,7 +32,7 @@ import java.text.ParseException;
 /**
  * Parser for UserAgent header.
  * 
- * @version 1.2 $Revision: 1.11 $ $Date: 2006-07-02 09:51:17 $
+ * @version 1.2 $Revision: 1.12 $ $Date: 2006-07-13 09:01:55 $
  * 
  * @author Olivier Deruelle  <br/>
  * @author M. Ranganathan  <br/>

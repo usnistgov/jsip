@@ -34,7 +34,7 @@ import java.text.*;
  * Content Dispositon SIP Header.
  * 
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.3 $ $Date: 2006-07-02 09:50:31 $
+ * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:06 $
  * @since 1.1
  *
  */

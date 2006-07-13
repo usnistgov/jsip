@@ -38,7 +38,7 @@ import gov.nist.javax.sip.message.SIPRequest;
  *  CSeq SIP Header.
  *
  * @author M. Ranganathan    <br/>
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-02 09:50:30 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:06 $
  * @since 1.1
  *
  */

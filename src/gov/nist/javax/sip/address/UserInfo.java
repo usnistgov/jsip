@@ -31,7 +31,7 @@ package gov.nist.javax.sip.address;
 /**
  * User information part of a URL. 
  *
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-02 09:52:34 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:02:29 $
  * @author M. Ranganathan   <br/>
  * Acknowledgement -- Lamine Brahimi 
  * Submitted a bug fix for a this class.

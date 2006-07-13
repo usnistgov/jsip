@@ -36,7 +36,7 @@ import javax.sip.header.*;
  * the UserAgent SIPObject. 
  *
  * @author Olivier Deruelle <br/>
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-02 09:51:00 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:48 $
  *
  * 
  *

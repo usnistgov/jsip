@@ -36,7 +36,7 @@ import javax.sip.header.*;
  * List of ALLOW headers. The sip message can have multiple Allow headers
  *
  * @author M. Ranganathan  <br/>
- * @version 1.2 $Revision: 1.3 $ $Date: 2006-07-02 09:50:59 $
+ * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:45 $
  * @since 1.1
  *
  */
