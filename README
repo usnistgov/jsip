@@ -1,5 +1,5 @@
 
-JAIN-SIP 1.1 Reference Implementation
+JAIN-SIP 1.2 Reference Implementation
 --------------------------------------
 CONTENTS
 -------
@@ -9,41 +9,47 @@ BUILD Notes
 -----------
 Platforms:
 ---------
-You need to install J2SDK 1.3 or above. 1.41 is highly recommended. You can
+You need to install 1.3 or above. 1.5 is highly recommended. You can
 get J2SDK from http://www.javasoft.com
 
-Nist-sip1.2 compiles and runs on Ipaq using the Blackdown jvm (1.3
+compiles and runs on Ipaq using the Blackdown jvm (1.3
 compatible) running on top of Familiar (Linux embedded operating
 system). To add Swing support,  you just need to install an optional
 library. 
 
+With a few changes, this distribution can be made to compile and run 
+on Personal Java.
+
+
+Dependencies
+------------
+
+1. You need to install ant and the junit extension for ant on your machine.
+2. You need to have junit.jar in your classpath.
+3. You need to put concurrent.jar (included in the distribution) in your
+    classpath.
 
 Building It from Scratch
 -------------------------
 The distribution is pre-built but should you feel inclined to make changes,
 or run the examples, you may wish to rebuild everything.
 
-Using the makefile: 
+ant make 
 
-1. edit build-config
-2. make all
+Builds everything.
+
 
 Building the TCK
 ----------------
-The tck needs junit.jar
-1. Build the RI as above.
-2. make tck (builds a jar file containing the TCK).
-3. to run the TCK 
 
-java -jar jain-sip-1.1.tck.jar -mode gui
+Edit tck.properties and set the claspath to your implementation.
 
-Brings up a GUI and allows you to enter the path to your implementation.
+ant runtck 
 
-Using Jakarta ant (get it from the apache web site).
+(builds a jar file containing the TCK and runs it).
 
-You can the provided build.xml file.
-We use make as the build tool of choice. 
-build.xml is not always up to date.
+Look in test-reports  to see the results of your run.
+
 
 ----------------------------------------------------------------------------
 Running the examples
@@ -63,9 +69,8 @@ For those who cannot access CVS thanks to draconian or paranoid
 administrative policies, here is a HTTP url where a nightly source 
 only snapshot is grabbed from the stable CVS repository and dumped:
 
-http://is2.antd.nist.gov/pub/nist-sip/nist-sip-1.2.src.tar.gz 
 
-http://is2.antd.nist.gov/pub/nist-sip/nist-sip-1.2.src.zip 
+http://www.antd.nist.gov/proj/iptel/jain-sip-1.2.tar.gz
 
 
 ----------------------------------------------------------------------------
@@ -90,19 +95,19 @@ Architecture / API design:
 JAIN-SIP:  Phelim O'Doherty (Sun Microsystems) and M. Ranganathan (NIST) 
 JAIN-SDP: The SDP API spec lead is Kelvin Porter from DynamicSoft.
 
-Implementation Lead:
+Implementation:
 ---------------------
 "M. Ranganathan" <mranga@nist.gov>
 
-Implementation Team
--------------------
+Implementation Team ( version 1.2)
+----------------------------------
 "M. Ranganathan" <mranga@nist.gov>
-"Oliver Deruelle" <deruelle@antd.nist.gov>
+"Jeroen van Bemmel" <jeroen@zonnet.nl>
 
-TCK
----
-Emil Ivov <emil_ivov@yahoo.com>
+TCK (version 1.2)
+----------------
 M. Ranganathan  <mranga@nist.gov>
+Jeroen van Bemmel <jeroen@zonnet.nl>
 
 
 
@@ -397,10 +402,9 @@ Visit the jsr 141 page and read the licensing terms for yourself.
 
 http://www.jcp.org/en/jsr/detail?id=141
 
+
 The implementation of the 
-
 javax.sdp code gov.nist.javax.sdp.* is in
-
 the public domain.
 
 The licensing terms for the API are mysteriously in an "expired" state
