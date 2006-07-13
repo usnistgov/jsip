@@ -31,7 +31,7 @@ import javax.sip.header.*;
 
 /**
  * A list of supported headers.
- * @version 1.2 $Revision: 1.3 $ $Date: 2006-07-02 09:50:33 $
+ * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:14 $
  * @see Supported
  */
 public class SupportedList extends SIPHeaderList{

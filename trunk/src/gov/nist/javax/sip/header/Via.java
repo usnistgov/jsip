@@ -41,7 +41,7 @@ import javax.sip.header.ViaHeader;
  *
  * @see ViaList
  *
- * @version 1.2 $Revision: 1.10 $ $Date: 2006-07-02 09:50:38 $
+ * @version 1.2 $Revision: 1.11 $ $Date: 2006-07-13 09:01:29 $
  *
  * @author M. Ranganathan   <br/>
  *

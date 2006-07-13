@@ -39,7 +39,7 @@ import gov.nist.core.*;
  * that can appear in SIPObjects.
  * IMPORTANT NOTE: SIPObjectList cannot derive from SIPObject.
  *
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-02 09:50:32 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:10 $
  *
  * @author M. Ranganathan   <br/>
  *

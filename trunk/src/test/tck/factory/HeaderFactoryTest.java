@@ -2,12 +2,16 @@ package test.tck.factory;
 
 // import gov.nist.javax.sip.header.*;
 import java.lang.reflect.*;
+
+import javax.sip.address.SipURI;
+import javax.sip.address.URI;
 import javax.sip.header.*;
 
 import org.apache.log4j.Logger;
 // import gov.nist.core.*;
 import java.util.*;
 import java.text.*;
+
 import test.tck.*;
 
 /**
@@ -126,10 +130,17 @@ public class HeaderFactoryTest extends FactoryTestHarness {
 					
 					// too strict: equalsIgnoreCase is better
 					assertEquals( p1.getParameter(pname), p2.getParameter(pname) );
-				}
-				
+				}				
 			}
+			
+			/*
+			if (!refHeader.toString().trim().replaceAll( "[\\n\\t\\r ]", "" ).equalsIgnoreCase( headerToTest.toString().trim().replaceAll( "[\\n\\t\\r ]", "" ))) {
+				System.err.println( "\n\n\n##### Difference #####\n" + refHeader + "!=" + headerToTest );
+			}
+			*/
+			
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			throw new TiUnexpectedError(ex.getMessage());
 		} finally {
 			logTestCompleted("testGetMethods(refHeader,headerToTest)");
@@ -229,6 +240,28 @@ public class HeaderFactoryTest extends FactoryTestHarness {
 		} finally {
 			logTestCompleted("testDate()");
 		}		
+	}
+
+	/**
+	 * This tests that header parameters are properly assigned to the header, not the URI,
+	 * when there are no angle brackets
+	 */
+	public void testHeaderParams() {
+		try {
+			Header h = tiHeaderFactory.createHeader( "m", "sip:User1@127.0.0.1:1234;param1" );
+			System.err.println( h );
+			assertTrue( h instanceof ContactHeader );
+			ContactHeader c = (ContactHeader) h;
+			URI u = c.getAddress().getURI();
+			assertTrue( u.isSipURI() );
+			assertNull( "URI must have no params", ((SipURI)u).getParameter("param1") );
+			assertNotNull( "Parameter 'param1' must be assigned to the header", c.getParameter("param1") );
+		} catch (ParseException e) {
+			e.printStackTrace();
+			fail( e.getMessage() );
+		} finally {
+			logTestCompleted("testHeaderParams()");
+		}
 	}
 	
 	public HeaderFactoryTest() {

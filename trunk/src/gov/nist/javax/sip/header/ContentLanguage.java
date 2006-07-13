@@ -76,7 +76,7 @@ import java.util.Locale;
 *   limited to textual documents.
 *</pre>
 * @author M. Ranganathan
-* @version 1.2 $Revision: 1.6 $ $Date: 2006-07-02 09:50:45 $
+* @version 1.2 $Revision: 1.7 $ $Date: 2006-07-13 09:01:47 $
 * @since 1.1
 */
 public class ContentLanguage

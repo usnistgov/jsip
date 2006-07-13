@@ -48,7 +48,7 @@ import javax.sip.header.TimeStampHeader;
  * later access via RMI. The trace can be viewed with a trace viewer (see
  * tools.traceviewerapp).
  *
- * @version 1.2 $Revision: 1.18 $ $Date: 2006-07-02 09:52:44 $
+ * @version 1.2 $Revision: 1.19 $ $Date: 2006-07-13 09:01:01 $
  *
  * @author M. Ranganathan   <br/>
  *

@@ -28,7 +28,7 @@ package gov.nist.javax.sip.parser;
 import gov.nist.core.*;
 
 /**
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-02 09:51:17 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-13 09:01:55 $
  */
 public interface TokenTypes {
 

@@ -54,7 +54,7 @@ import EDU.oswego.cs.dl.util.concurrent.Semaphore;
  * @author M. Ranganathan
  * 
  * 
- * @version 1.2 $Revision: 1.40 $ $Date: 2006-07-02 09:52:40 $
+ * @version 1.2 $Revision: 1.41 $ $Date: 2006-07-13 09:01:00 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
 		javax.sip.Transaction {

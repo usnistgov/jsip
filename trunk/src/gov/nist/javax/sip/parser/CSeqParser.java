@@ -36,7 +36,7 @@ import gov.nist.core.*;
 /**
  * Parser for CSeq headers.
  * 
- * @version 1.2 $Revision: 1.8 $ $Date: 2006-07-02 09:51:12 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2006-07-13 09:02:17 $
  * 
  * @author M. Ranganathan 
  * @author Olivier Deruelle 

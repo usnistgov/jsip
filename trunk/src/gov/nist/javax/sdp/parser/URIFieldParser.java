@@ -36,7 +36,7 @@ import java.text.ParseException;
 /**
  * URI Field Parser.
  *
- * @version JAIN-SDP-PUBLIC-RELEASE $Revision: 1.3 $ $Date: 2006-07-02 09:52:53 $
+ * @version JAIN-SDP-PUBLIC-RELEASE $Revision: 1.4 $ $Date: 2006-07-13 09:02:41 $
  *
  * @author Olivier Deruelle   
  * @author M. Ranganathan  <br/>

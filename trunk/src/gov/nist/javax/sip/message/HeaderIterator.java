@@ -32,7 +32,7 @@ import java.util.NoSuchElementException;
 /**
  * Iterator over lists of headers. Allows for uniform removal handling for singleton headers.
  * @author M. Ranganathan
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-02 09:54:08 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-13 09:02:48 $
  * @since 1.1
  */
 public class HeaderIterator implements ListIterator {

@@ -52,7 +52,7 @@ import java.text.ParseException;
  *  Accept-Language: da, en-gb;q=0.8, en;q=0.7
  *
  * @see AcceptLanguageList
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-02 09:51:08 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-13 09:02:11 $
  *
  * @author Olivier Deruelle  
  * 

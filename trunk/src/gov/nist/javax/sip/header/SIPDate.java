@@ -54,7 +54,7 @@ import java.lang.IllegalArgumentException;
 *       Date: Tue, 15 Nov 1994 08:12:31 GMT
 *</pre>
 *
-*@version 1.2 $Revision: 1.6 $ $Date: 2006-07-02 09:50:48 $
+*@version 1.2 $Revision: 1.7 $ $Date: 2006-07-13 09:01:16 $
 *
 *@author M. Ranganathan   <br/>
 *

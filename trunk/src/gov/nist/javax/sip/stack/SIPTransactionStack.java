@@ -71,7 +71,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.52 $ $Date: 2006-07-02 09:52:38 $
+ * @version 1.2 $Revision: 1.53 $ $Date: 2006-07-13 09:00:55 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {

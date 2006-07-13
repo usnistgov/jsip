@@ -148,7 +148,7 @@ import java.util.TimerTask;
  *                                 
  * </pre>
  * 
- * @version 1.2 $Revision: 1.65 $ $Date: 2006-07-02 09:52:37 $
+ * @version 1.2 $Revision: 1.66 $ $Date: 2006-07-13 09:00:53 $
  * @author M. Ranganathan <br/><a href=" {@docRoot}/uncopyright.html">This
  *         code is in the public domain. </a>
  * 
@@ -859,18 +859,18 @@ public class SIPServerTransaction extends SIPTransaction implements
 			if (statusCode / 100 == 1) {
 				this.setState(TransactionState.PROCEEDING);
 			} else if (200 <= statusCode && statusCode <= 699) {
-				if (!isInviteTransaction()) {
+				
+				// JvB: INVITE ST can never be TRYING, so this is always true
+				// if (!isInviteTransaction()) {
 					this.setState(TransactionState.COMPLETED);
-				} else {
+				/*} else {
 					if (statusCode / 100 == 2) {
 						this.setState(TransactionState.TERMINATED);
 					} else
 						this.setState(TransactionState.COMPLETED);
-				}
+				}*/
 				if (!isReliable()) {
-
 					enableRetransmissionTimer();
-
 				}
 				enableTimeoutTimer(TIMER_J);
 			}
@@ -883,10 +883,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 				// If the response is a failure message,
 				if (statusCode / 100 == 2) {
 					// Set up to catch returning ACKs
-
-					// Recall that the CANCEL's response will go
-					// through this transaction
-					// and this may well be it. Do NOT change the
+					// Do NOT change the
 					// transaction state if this
 					// is a response for a CANCEL.
 					// Wait, instead for the 487 from TU.

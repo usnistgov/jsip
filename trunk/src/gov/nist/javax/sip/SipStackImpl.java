@@ -180,7 +180,7 @@ import gov.nist.core.net.NetworkLayer;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.41 $ $Date: 2006-07-02 09:54:23 $
+ * @version 1.2 $Revision: 1.42 $ $Date: 2006-07-13 09:02:50 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -207,6 +207,10 @@ public class SipStackImpl extends SIPTransactionStack implements
 	// delivered for ACK transactions.
 	boolean deliverTerminatedEventForAck = false;
 
+	// If set to true then the application want to receive
+	// unsolicited NOTIFYs, ie NOTIFYs that don't match any dialog
+	boolean deliverUnsolicitedNotify = false;
+	
 	/**
 	 * Creates a new instance of SipStackImpl.
 	 */
@@ -360,6 +364,10 @@ public class SipStackImpl extends SIPTransactionStack implements
 		this.deliverTerminatedEventForAck = configurationProperties.getProperty
 		("gov.nist.javax.sip.DELIVER_TERMINATED_EVENT_FOR_ACK", "false").equalsIgnoreCase("true");
 
+		this.deliverUnsolicitedNotify = configurationProperties.getProperty
+		("gov.nist.javax.sip.DELIVER_UNSOLICITED_NOTIFY", "false").equalsIgnoreCase("true");
+
+		
 		String forkedSubscriptions = configurationProperties
 				.getProperty("javax.sip.FORKABLE_EVENTS");
 		if (forkedSubscriptions != null) {

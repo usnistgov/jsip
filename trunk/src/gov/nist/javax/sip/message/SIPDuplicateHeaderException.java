@@ -38,7 +38,7 @@ import java.text.ParseException;
  * 1. discard the duplicate  by returning null
  * 2. keep the duplicate by just returning it.
  * 3. Discard the entire message by throwing an exception.
- * @version 1.2 $Revision: 1.3 $ $Date: 2006-07-02 09:54:07 $
+ * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:02:46 $
  * @since 1.1
  * @author M. Ranganathan 
  */

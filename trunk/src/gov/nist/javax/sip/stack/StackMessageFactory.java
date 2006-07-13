@@ -37,7 +37,7 @@ import gov.nist.javax.sip.message.*;
  * When a response comes off the wire, the stack calls newSIPServerResponse
  * to process the response. 
  *
- * @version 1.2 $Revision: 1.3 $ $Date: 2006-07-02 09:52:44 $
+ * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:02 $
  *
  * @author M. Ranganathan   <br/>
  *

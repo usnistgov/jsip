@@ -32,7 +32,7 @@ package gov.nist.javax.sip.header;
 /**
  * WWWAuthenticate SIPHeader (of which there can be several?)
  *
- * @version 1.2 $Revision: 1.2 $ $Date: 2006-07-02 09:50:49 $
+ * @version 1.2 $Revision: 1.3 $ $Date: 2006-07-13 09:01:21 $
  *
  * @author M. Ranganathan   <br/>
  *

@@ -31,7 +31,7 @@ import java.text.ParseException;
 /**
  * Parser for ProxyAuthorization headers.
  *
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-02 09:51:15 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-13 09:02:18 $
  *
  * @author M. Ranganathan   <br/>
  *

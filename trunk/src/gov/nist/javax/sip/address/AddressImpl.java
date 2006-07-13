@@ -37,7 +37,7 @@ import javax.sip.address.*;
  *
  *
  *
- *@version 1.2 $Revision: 1.5 $ $Date: 2006-07-02 09:52:34 $
+ *@version 1.2 $Revision: 1.6 $ $Date: 2006-07-13 09:02:26 $
  *
  */
 public final class AddressImpl

@@ -58,7 +58,7 @@ import gov.nist.core.*;
  * entire message is parsed in one feld swoop).
  *
  *
- * @version 1.2 $Revision: 1.12 $ $Date: 2006-07-02 09:51:14 $
+ * @version 1.2 $Revision: 1.13 $ $Date: 2006-07-13 09:02:18 $
  *
  * @author M. Ranganathan   <br/>
  *

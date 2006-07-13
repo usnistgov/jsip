@@ -32,7 +32,7 @@ import gov.nist.core.*;
 /**
  * To Header parser.
  *
- * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-02 09:51:18 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2006-07-13 09:02:00 $
  *
  * @author Olivier Deruelle   <br/>
  *

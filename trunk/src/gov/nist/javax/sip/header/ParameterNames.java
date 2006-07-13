@@ -27,7 +27,7 @@ package gov.nist.javax.sip.header;
  * A list of commonly occuring parameter names. These are for conveniance so as
  * to avoid typo's
  * 
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-02 09:50:46 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:04 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>

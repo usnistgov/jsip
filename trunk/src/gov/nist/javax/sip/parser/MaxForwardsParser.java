@@ -32,7 +32,7 @@ import java.text.ParseException;
 /**
  * Parser for Max Forwards Header.
  *
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-02 09:51:19 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-13 09:02:05 $
  *
  * @author M. Ranganathan   <br/>
  *

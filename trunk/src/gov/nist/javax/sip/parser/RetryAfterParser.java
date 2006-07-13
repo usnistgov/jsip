@@ -39,7 +39,7 @@ import javax.sip.*;
  * @author M. Ranganathan   
  * 
  *
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-02 09:51:18 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-13 09:01:59 $
  */
 public class RetryAfterParser extends HeaderParser {
 

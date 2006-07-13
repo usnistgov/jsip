@@ -36,7 +36,7 @@ import javax.sip.header.*;
 /**
  * Retry-After SIP Header.
  *
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-02 09:50:49 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:21 $
  *
  * @author M. Ranganathan   <br/>
  * @author Olivier Deruelle <br/>

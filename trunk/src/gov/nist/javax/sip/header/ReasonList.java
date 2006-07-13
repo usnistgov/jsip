@@ -34,7 +34,7 @@ import javax.sip.header.*;
 
 /**
  * List of Reason headers.
- * @version 1.2 $Revision: 1.3 $ $Date: 2006-07-02 09:50:41 $
+ * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:34 $
  *
  * @author M. Ranganathan   <br/>
  *

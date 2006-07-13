@@ -33,7 +33,7 @@ import java.text.ParseException;
  * the SIP-ETag header. 
  *
  * @author Jeroen van Bemmel<br/>
- * @version 1.2 $Revision: 1.1 $ $Date: 2006-07-02 09:50:32 $
+ * @version 1.2 $Revision: 1.2 $ $Date: 2006-07-13 09:01:11 $
  * @since 1.2
  */
 public class SIPETag extends SIPHeader implements SIPETagHeader , ExtensionHeader{

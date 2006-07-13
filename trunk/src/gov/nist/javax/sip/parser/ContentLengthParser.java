@@ -31,7 +31,7 @@ import java.text.ParseException;
 
 /**
  * Parser for Content-Length Header.
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-02 09:51:21 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-13 09:02:14 $
  *
  * @author Olivier Deruelle  <br/>
  * @author M. Ranganathan   <br/>

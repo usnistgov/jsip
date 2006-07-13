@@ -32,7 +32,7 @@ import javax.sip.header.*;
 
 /**
  * List of ProxyAuthorization headers.
- * @version 1.2 $Revision: 1.2 $ $Date: 2006-07-02 09:50:57 $
+ * @version 1.2 $Revision: 1.3 $ $Date: 2006-07-13 09:01:40 $
  *
  * @author M. Ranganathan   <br/>
  *

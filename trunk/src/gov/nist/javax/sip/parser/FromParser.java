@@ -31,7 +31,7 @@ import gov.nist.core.*;
 
 /** From header parser.
  *
- * @version 1.2 $Revision: 1.8 $ $Date: 2006-07-02 09:51:11 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2006-07-13 09:02:16 $
  *
  * @author M. Ranganathan   <br/>
  *

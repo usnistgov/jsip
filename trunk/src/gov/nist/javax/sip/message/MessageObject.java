@@ -36,7 +36,7 @@ import java.lang.reflect.*;
  * are derived. This class is never directly instantiated (and hence it
  * is abstract).
  *
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-02 09:54:05 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:02:48 $
  * @since 1.1 
  *
  * @author M. Ranganathan   <br/>

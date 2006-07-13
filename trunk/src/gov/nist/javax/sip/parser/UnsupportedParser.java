@@ -32,7 +32,7 @@ import java.text.ParseException;
 /**
  * Parser for Unsupported header.
  *
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-02 09:51:03 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-13 09:01:54 $
  *
  * @author Olivier Deruelle   <br/>
  * @author M. Ranganathan   <br/>

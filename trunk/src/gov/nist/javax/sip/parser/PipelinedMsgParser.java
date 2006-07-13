@@ -53,7 +53,7 @@ import java.io.*;
  * This can be accessed from the SIPMessage using the getContent and
  * getContentBytes methods provided by the SIPMessage class. 
  *
- * @version 1.2 $Revision: 1.17 $ $Date: 2006-07-02 09:51:08 $
+ * @version 1.2 $Revision: 1.18 $ $Date: 2006-07-13 09:02:10 $
  *
  * @author  M. Ranganathan 
  *

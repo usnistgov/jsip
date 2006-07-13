@@ -50,7 +50,7 @@ import java.text.ParseException;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.18 $ $Date: 2006-07-02 09:54:04 $
+ * @version 1.2 $Revision: 1.19 $ $Date: 2006-07-13 09:02:47 $
  * @since 1.1
  * 
  * @author M. Ranganathan  <br/>

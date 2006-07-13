@@ -39,7 +39,7 @@ import java.io.*;
 /**
  * Event Scanner to deliver events to the Listener.
  * 
- * @version 1.2 $Revision: 1.21 $ $Date: 2006-07-02 09:54:24 $
+ * @version 1.2 $Revision: 1.22 $ $Date: 2006-07-13 09:02:51 $
  * 
  * @author M. Ranganathan <br/> 
  * 
@@ -148,10 +148,23 @@ class EventScanner implements Runnable {
 						.findTransaction(sipRequest, true);
 
 				if (tx != null && !tx.passToListener()) {
-					if (sipStack.isLoggingEnabled())
-						sipStack.getLogWriter().logDebug(
-								"transaction already exists! " + tx);
-					return;
+				  
+				  // JvB: make an exception for a very rare case: some (broken) UACs use 
+				  // the  same branch parameter for an ACK. Such an ACK should be passed
+				  // to the listener (tx == INVITE ST, terminated upon sending 2xx but
+				  // lingering to catch retransmitted INVITEs)
+				  if (sipRequest.getMethod().equals(Request.ACK) 
+				    && tx.isInviteTransaction()) {
+
+  					if (sipStack.isLoggingEnabled())
+  						sipStack.getLogWriter().logDebug(
+  								"Detected broken client sending ACK with same branch! Passing..." );				      
+				  } else {
+  					if (sipStack.isLoggingEnabled())
+  						sipStack.getLogWriter().logDebug(
+  								"transaction already exists! " + tx);
+  					return;
+  				}
 				} else if (sipStack.findPendingTransaction(sipRequest) != null) {
 					if (sipStack.isLoggingEnabled())
 						sipStack.getLogWriter().logDebug(

@@ -34,7 +34,7 @@ import javax.sip.header.*;
 /**
 * Date Header.
 *
-*@version 1.2 $Revision: 1.4 $ $Date: 2006-07-02 09:50:50 $
+*@version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:23 $
 *
 *@author M. Ranganathan   <br/>
 *@author Olivier Deruelle <br/>

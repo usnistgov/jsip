@@ -34,7 +34,7 @@ import javax.sip.address.URI;
 /**
  * A parser for The SIP contact header.
  * 
- * @version 1.2 $Revision: 1.8 $ $Date: 2006-07-02 09:51:16 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2006-07-13 09:02:23 $
  * @since 1.1
  */
 public class ContactParser extends AddressParametersParser {

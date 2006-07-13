@@ -34,7 +34,7 @@ import gov.nist.core.*;
  * A factory class that does a name lookup on a registered parser and
  * returns a header parser for the given name.
  *
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-02 09:51:20 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-13 09:02:06 $
  *
  * @author M. Ranganathan   <br/>
  *

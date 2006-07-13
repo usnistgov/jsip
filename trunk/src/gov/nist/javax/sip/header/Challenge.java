@@ -34,7 +34,7 @@ import gov.nist.core.*;
  * Challenge part of the Auth header. This is only used by the parser interface
  *
  * @author M. Ranganathan    <br/>
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-02 09:50:56 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:36 $
  * @since 1.1
  *
 */

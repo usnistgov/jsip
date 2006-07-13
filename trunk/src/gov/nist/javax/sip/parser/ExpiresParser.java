@@ -33,7 +33,7 @@ import javax.sip.*;
  * Parser for SIP Expires Parser. Converts from SIP Date to the
  * internal storage (Calendar).
  *
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-02 09:51:09 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-13 09:02:12 $
  *
  * @author M. Ranganathan   <br/>
  *

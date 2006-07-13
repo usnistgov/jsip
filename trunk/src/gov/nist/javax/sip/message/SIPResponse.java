@@ -49,7 +49,7 @@ import javax.sip.message.Request;
 /**
  * SIP Response structure.
  *
- * @version 1.2 $Revision: 1.8 $ $Date: 2006-07-02 09:54:05 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2006-07-13 09:02:45 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>

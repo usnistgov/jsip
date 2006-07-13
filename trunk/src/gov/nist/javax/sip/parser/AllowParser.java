@@ -32,7 +32,7 @@ import java.text.ParseException;
 /**
  * Parser for Allow header.
  *
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-02 09:51:18 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-13 09:01:58 $
  *
  * @author Olivier Deruelle   
  * @author M. Ranganathan  

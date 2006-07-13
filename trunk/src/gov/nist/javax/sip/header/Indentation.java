@@ -32,7 +32,7 @@ package gov.nist.javax.sip.header;
  * @author M. Ranganathan
  * @author O. Deruelle
  * 
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-02 09:50:30 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:03 $
  */
 class Indentation {
 

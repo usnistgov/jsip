@@ -55,7 +55,7 @@ import org.apache.log4j.*;
  * object that creates new TLS MessageChannels (one for each new
  * accept socket).  
  *
- * @version 1.2 $Revision: 1.3 $ $Date: 2006-07-02 09:52:43 $
+ * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:00:59 $
  *
  * @author M. Ranganathan   <br/>
  * 

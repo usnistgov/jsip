@@ -32,7 +32,7 @@ package gov.nist.javax.sip.header;
  * The call identifer that goes into a callID header and a in-reply-to header.
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.3 $ $Date: 2006-07-02 09:50:35 $
+ * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:23 $
  * @see CallID
  * @see InReplyTo
  * @since 1.1

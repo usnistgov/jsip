@@ -34,7 +34,7 @@ import gov.nist.javax.sip.address.*;
  * The Request-Route header is added to a request by any proxy that insists on
  * being in the path of subsequent requests for the same call leg.
  *
- *@version 1.2 $Revision: 1.3 $ $Date: 2006-07-02 09:50:53 $
+ *@version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:26 $
  *
  *@author M. Ranganathan   <br/>
  *

@@ -53,11 +53,10 @@ import java.text.ParseException;
 /**
  * Implementation of the JAIN-SIP provider interface.
  * 
- * @version 1.2 $Revision: 1.32 $ $Date: 2006-07-02 09:54:27 $
+ * @version 1.2 $Revision: 1.33 $ $Date: 2006-07-13 09:02:54 $
  * 
  * @author M. Ranganathan <br/>
  * 
- * </a>
  * 
  */
 
