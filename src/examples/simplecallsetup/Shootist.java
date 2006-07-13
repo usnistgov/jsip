@@ -167,10 +167,10 @@ public class Shootist implements SipListener {
 		// Drop the client connection after we are done with the transaction.
 		properties.setProperty("gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS",
 				"false");
-		// Set to 0 in your production code for max speed.
-		// You need 16 for logging traces. 32 for debug + traces.
+		// Set to 0 (or NONE) in your production code for max speed.
+		// You need 16 (or TRACE) for logging traces. 32 (or DEBUG) for debug + traces.
 		// Your code will limp at 32 but it is best for debugging.
-		properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "16");
+		properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "TRACE");
 
 		try {
 			// Create SipStack object
