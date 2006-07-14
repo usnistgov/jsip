@@ -317,6 +317,9 @@ c:/jakarta-ant/bin/ant all
 
 							<!-- add source path since this will pick up test.tck.gui.images -->
 							<pathelement location='src' />
+
+							<!-- add project root to the classpath in order to make tck.properties accessible. -->
+							<pathelement location="${root}"/>
 						</classpath>
 
 						<formatter type="xml" />
