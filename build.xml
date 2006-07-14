@@ -381,25 +381,20 @@ c:/jakarta-ant/bin/ant all
 					</jar>
 				</target>
 
-				<!-- Compile the tools -->
-				<target name="compiletools" depends="init">
-					<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="${srcroot}" includes="tools/tracesviewer/**/*.java" destdir="${classes}">
-						<classpath>
-							<pathelement location="${classes}" />
-						</classpath>
-					</javac>
-					<copy todir="${classes}/tools/tracesviewer/images">
-						<fileset dir="${srcroot}/tools/tracesviewer/images" />
-					</copy>
-					<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" source="${javac.source}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="${srcroot}" includes="tools/sniffer/**/*.java" destdir="${classes}">
-						<classpath>
-							<pathelement location="${classes}" />
-						</classpath>
-					</javac>
-				</target>
-
-
-
-
-
+	<!-- Compile the tools -->
+	<target name="compiletools" depends="init">
+		<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="${srcroot}" includes="tools/tracesviewer/**/*.java" destdir="${classes}">
+			<classpath>
+				<pathelement location="${classes}" />
+			</classpath>
+		</javac>
+		<copy todir="${classes}/tools/tracesviewer/images">
+			<fileset dir="${srcroot}/tools/tracesviewer/images" />
+		</copy>
+		<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" source="${javac.source}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="${srcroot}" includes="tools/sniffer/**/*.java" destdir="${classes}">
+			<classpath>
+				<pathelement location="${classes}" />
+			</classpath>
+		</javac>
+	</target>
 </project>
