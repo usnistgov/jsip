@@ -305,7 +305,8 @@ c:/jakarta-ant/bin/ant all
 				<target name='runtck' depends="compiletck" description="Runs all TCK tests using the ant junit task.">
 					<mkdir dir="test-reports" />
 					<mkdir dir="logs" />
-					<junit fork="yes" showoutput="yes">
+					
+					<junit fork="yes" showoutput="yes" failureproperty="testing.failed" >
 						<classpath>
 							<pathelement location="${jain_api_jar}" />
 							<pathelement location="${ri_jar}" />
@@ -314,30 +315,25 @@ c:/jakarta-ant/bin/ant all
 							<pathelement location='${junit_jar}' />
 							<pathelement location='${log4j_jar}' />
 							<pathelement location='${concurrent_jar}' />
-
+		
 							<!-- add source path since this will pick up test.tck.gui.images -->
 							<pathelement location='src' />
-
+		
 							<!-- add project root to the classpath in order to make tck.properties accessible. -->
 							<pathelement location="${root}"/>
 						</classpath>
-
 						<formatter type="xml" />
-
+	
 						<batchtest fork="yes" todir="test-reports" haltonfailure="no">
 							<fileset dir="${srcroot}">
-								<include name="test/tck/**/*Test.java" />
-								<!-- exclude name="**/AllTests.java"/ -->
+							<include name="test/tck/**/*Test.java" />
+							<!-- exclude name="**/AllTests.java"/ -->
 							</fileset>
 						</batchtest>
 					</junit>
-					<junitreport todir="./test-reports">
-						<fileset dir="./test-reports">
-							<include name="TEST-*.xml" />
-						</fileset>
-						<report format="frames" todir="./test-reports/html" />
-					</junitreport>
+
 					<echo>The test report can be found at ./test-reports/html/index.html</echo>
+					<fail if="testing.failed"/>	
 				</target>
 
 				<target name="runtest" >
