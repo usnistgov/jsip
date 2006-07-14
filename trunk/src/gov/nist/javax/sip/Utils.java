@@ -1,28 +1,28 @@
 /*
-* Conditions Of Use 
-* 
-* This software was developed by employees of the National Institute of
-* Standards and Technology (NIST), an agency of the Federal Government.
-* Pursuant to title 15 Untied States Code Section 105, works of NIST
-* employees are not subject to copyright protection in the United States
-* and are considered to be in the public domain.  As a result, a formal
-* license is not needed to use the software.
-* 
-* This software is provided by NIST as a service and is expressly
-* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
-* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
-* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
-* AND DATA ACCURACY.  NIST does not warrant or make any representations
-* regarding the use of the software or the results thereof, including but
-* not limited to the correctness, accuracy, reliability or usefulness of
-* the software.
-* 
-* Permission to use this software is contingent upon your acceptance
-* of the terms of this agreement
-*  
-* .
-* 
-*/
+ * Conditions Of Use 
+ * 
+ * This software was developed by employees of the National Institute of
+ * Standards and Technology (NIST), an agency of the Federal Government.
+ * Pursuant to title 15 Untied States Code Section 105, works of NIST
+ * employees are not subject to copyright protection in the United States
+ * and are considered to be in the public domain.  As a result, a formal
+ * license is not needed to use the software.
+ * 
+ * This software is provided by NIST as a service and is expressly
+ * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+ * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+ * AND DATA ACCURACY.  NIST does not warrant or make any representations
+ * regarding the use of the software or the results thereof, including but
+ * not limited to the correctness, accuracy, reliability or usefulness of
+ * the software.
+ * 
+ * Permission to use this software is contingent upon your acceptance
+ * of the terms of this agreement
+ *  
+ * .
+ * 
+ */
 /*******************************************************************************
  * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).       *
  *******************************************************************************/
@@ -37,11 +37,18 @@ import java.security.NoSuchAlgorithmException;
  * and odds and ends.
  * 
  * @author mranga
- * @version 1.2 $Revision: 1.12 $ $Date: 2006-07-13 09:02:52 $
+ * @version 1.2 $Revision: 1.13 $ $Date: 2006-07-14 01:50:28 $
  */
 public class Utils {
 
-	private static MessageDigest digester = null;
+	private static MessageDigest digester;
+	static {
+		try {
+			digester = MessageDigest.getInstance("MD5");
+		} catch (Exception ex) {
+			throw new RuntimeException("Could not intialize Digester ", ex);
+		}
+	}
 
 	private static java.util.Random rand = new java.util.Random();
 
@@ -111,15 +118,10 @@ public class Utils {
 	public static synchronized String generateCallIdentifier(String address) {
 		String date = new Long(System.currentTimeMillis()).toString()
 				+ callIDCounter++
-				+ new Double(Math.random() * 10000).toString();
-		try {
-			MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-			byte cid[] = messageDigest.digest(date.getBytes());
-			String cidString = Utils.toHexString(cid);
-			return cidString + "@" + address;
-		} catch (NoSuchAlgorithmException ex) {
-			return null;
-		}
+				+ new Integer(rand.nextInt()).toString();
+		byte cid[] = digester.digest(date.getBytes());
+		String cidString = Utils.toHexString(cid);
+		return cidString + "@" + address;
 
 	}
 
@@ -131,7 +133,7 @@ public class Utils {
 	 * @return a string that can be used as a tag parameter.
 	 */
 	public static String generateTag() {
-		return new Integer((int) (Math.random() * 10000)).toString();
+		return new Integer(rand.nextInt()).toString();
 	}
 
 	/**
@@ -141,18 +143,14 @@ public class Utils {
 	 * @return a cryptographically random gloablly unique string that can be
 	 *         used as a branch identifier.
 	 */
-	public static synchronized String generateBranchId() {
-		try {
-			if (null == digester)
-				digester = MessageDigest.getInstance("MD5");
-			
-			long num = ++counter + (int)( Math.random() * 10000)
-					+ System.currentTimeMillis();
-			byte bid[] = digester.digest(Long.toString(num).getBytes());
-			// prepend with a magic cookie to indicate we are bis09 compatible.
-			return SIPConstants.BRANCH_MAGIC_COOKIE + Utils.toHexString(bid);
-		} catch (NoSuchAlgorithmException ex) {
-			return null;
-		}
+	public static String generateBranchId() {
+		long num = rand.nextLong()
+			    + Utils.counter ++
+				+ System.currentTimeMillis();
+		byte bid[] = digester.digest(Long.toString(num).getBytes());
+		// prepend with a magic cookie to indicate we are bis09 compatible.
+		return SIPConstants.BRANCH_MAGIC_COOKIE + Utils.toHexString(bid);
+
 	}
+
 }
