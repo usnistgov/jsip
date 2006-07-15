@@ -133,6 +133,7 @@ c:/jakarta-ant/bin/ant all
 		<delete dir='javadoc-jain' />
 
 		<!-- files created by running targets -->
+		<delete file="jain-sip-1.2.jar" failonerror="false"/>
 
 	</target>
 
@@ -339,6 +340,8 @@ c:/jakarta-ant/bin/ant all
 					<jar compress="true" destfile="jain-sip-1.2.jar">
 						<fileset dir="../">
 							<include name="jain-sip/**/*/" />
+							<exclude name="jain-sip/classes/**/*/"/>
+							<exclude name="jain-sip/*.jar"/>
 						</fileset>
 					</jar>
 
