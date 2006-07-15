@@ -129,10 +129,6 @@ public class Shootme extends TestCase implements SipListener {
 			Response response = protocolObjects.messageFactory.createResponse(
 					Response.TRYING, request);
 			ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
-			/**
-			 * We distinguish here after the display header in the Request URI
-			 * to manage the different tags
-			 */
 			Address address = protocolObjects.addressFactory
 					.createAddress("Shootme <sip:" + myAddress + ":" + myPort
 							+";transport="+protocolObjects.transport
