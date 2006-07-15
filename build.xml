@@ -336,25 +336,18 @@ c:/jakarta-ant/bin/ant all
 					<fail if="testing.failed"/>	
 				</target>
 
-				<target name="runtest" >
-				<java classname="test.tck.msgflow.callflows.subsnotify.UdpSubsnotifyTest">
-					<classpath>
-						<pathelement location="${classes}" />
-						<pathelement location="${jain_api_jar}" />
-						<pathelement location="${ri_jar}" />
-						<pathelement location="${log4j_jar}" />
-						<pathelement location="${tck_jar}" />
-						<pathelement location='${junit_jar}' />
-						<pathelement location='${log4j_jar}' />
-						<pathelement location='${concurrent_jar}' />
+				<!-- target for build automation -->
 
-						<!-- add source path since this will pick up test.tck.gui.images -->
-						<pathelement location='src' />
-					</classpath>
-				</java>
+				<target name="cc-buildloop" depends="runtck,javadoc" >
+					<jar compress="true" destfile="jain-sip-1.2.jar" >
+						<fileset dir="../" >
+							<include  name="jain-sip/**/*/" /> 
+						</fileset>
+					</jar>
+
 				</target>
 
-
+		
 				<!-- download and unzip the libs.zip -->
 				<target name="getlibs">
 					<get src="http://is2.antd.nist.gov/pub/nist-sip/libs.zip" dest="./libs.zip" verbose="on" />
