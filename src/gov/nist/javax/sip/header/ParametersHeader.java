@@ -43,7 +43,7 @@ import gov.nist.javax.sip.address.*;
  *
  * 
  *
- * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-13 09:01:41 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2006-07-15 10:38:49 $
  *
  */
 public abstract class ParametersHeader
@@ -482,10 +482,6 @@ public abstract class ParametersHeader
 			
 			String p1 = this.getParameter( pname );
 			String p2 = other.getParameter( pname );
-			
-				//assert( p1 != null );
-			//if ( p1 == null ) throw new RuntimeException ("Assertion check failed");
-			//if (p2==null) return false;
 			
 			// getting them based on this.getParameterNames. Note that p1 may be null
 			// if this is a name-only parameter like rport or lr.

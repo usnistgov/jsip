@@ -57,7 +57,7 @@ public class ProtocolObjects {
 		properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT",
 					(autoDialog? "on": "off"));
 		
-		properties.setProperty("gov.nist.javax.sip.THREAD_POOL_SIZE", "4");
+		properties.setProperty("gov.nist.javax.sip.THREAD_POOL_SIZE", "2");
 		properties.setProperty("gov.nist.javax.sip.REENTRANT_LISTENER", "true");
 
 		// Set to 0 in your production code for max speed.

@@ -155,7 +155,7 @@ public class Shootist extends TestCase implements SipListener {
 					System.out.println("Thrupt = " + NDIALOGS / sec);
 				}
 			}
-			dialog.delete();
+			//dialog.delete();
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
