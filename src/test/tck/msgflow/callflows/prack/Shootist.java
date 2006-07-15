@@ -175,7 +175,7 @@ public class Shootist implements SipListener {
 			}
 		} catch (Exception ex) {
 			TestHarness.fail(ex.getMessage());
-			System.exit(0);
+			
 		}
 
 	}

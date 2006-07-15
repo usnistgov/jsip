@@ -89,7 +89,9 @@ public class Shootme extends TestCase implements SipListener {
 		try {
 			Response response = messageFactory.createResponse(180, request);
 			ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
-			toHeader.setTag("4321"); // Application is supposed to set.
+			String toTag = new Integer((int) (Math.random() * 1000)).toString();
+			toHeader.setTag(toTag); // Application is supposed to set.
+			//System.out.println("toTag = " + toTag);
 
 			Address address =
 				addressFactory.createAddress("Shootme <sip:127.0.0.1:5070>");
@@ -121,7 +123,7 @@ public class Shootme extends TestCase implements SipListener {
 			st.sendResponse(response);
 			response = messageFactory.createResponse(200, request);
 			toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
-			toHeader.setTag("4321"); // Application is supposed to set.
+			toHeader.setTag(toTag); // Application is supposed to set.
 			response.addHeader(contactHeader);
 			st.sendResponse(response);
 		} catch (Exception ex) {
