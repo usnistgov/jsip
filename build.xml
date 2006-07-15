@@ -338,7 +338,7 @@ c:/jakarta-ant/bin/ant all
 
 				<!-- target for build automation -->
 
-				<target name="cc-buildloop" depends="runtck,javadoc" >
+				<target name="cc-buildloop" depends="make,javadoc" >
 					<jar compress="true" destfile="jain-sip-1.2.jar" >
 						<fileset dir="../" >
 							<include  name="jain-sip/**/*/" /> 
