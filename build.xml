@@ -154,10 +154,7 @@ c:/jakarta-ant/bin/ant all
 			<fileset dir="src/javax/sip" includes="**/*.html" />
 		</copy>
 
-		<javadoc packagenames="javax.sip.*,javax.sip.header.*,javax.sip.message.*,javax.sip.address.*,gov.nist.javax.sip.*,gov.nist.javax.sip.address.*,gov.nist.javax.sip.message.*,gov.nist.javax.sip.header.*,gov.nist.javas.sip.header.ims.*,gov.nist.javax.sip.stack.*,gov.nist.core.net.*,gov.nist.javax.sip.parser.*" sourcepath="${srcroot}"
-			overview="${docdir}/overview.html" destdir="javadoc" use="true" splitindex="true" windowtitle="The JAIN-SIP-1.2 RI For the People !"
-			doctitle="NIST-SIP: The Reference Implementation for JAIN-SIP 1.2" 
-			public="true" author="true" version="true" defaultexcludes="yes" additionalparam="-breakiterator">
+		<javadoc packagenames="javax.sip.*,javax.sip.header.*,javax.sip.message.*,javax.sip.address.*,gov.nist.javax.sip.*,gov.nist.javax.sip.address.*,gov.nist.javax.sip.message.*,gov.nist.javax.sip.header.*,gov.nist.javas.sip.header.ims.*,gov.nist.javax.sip.stack.*,gov.nist.core.net.*,gov.nist.javax.sip.parser.*" sourcepath="${srcroot}" overview="${docdir}/overview.html" destdir="javadoc" use="true" splitindex="true" windowtitle="The JAIN-SIP-1.2 RI For the People !" doctitle="NIST-SIP: The Reference Implementation for JAIN-SIP 1.2" public="true" author="true" version="true" defaultexcludes="yes" additionalparam="-breakiterator">
 			<classpath>
 				<pathelement location="${log4j_jar}" />
 				<pathelement location="${concurrent_jar}" />
@@ -305,8 +302,8 @@ c:/jakarta-ant/bin/ant all
 				<target name='runtck' depends="compiletck" description="Runs all TCK tests using the ant junit task.">
 					<mkdir dir="test-reports" />
 					<mkdir dir="logs" />
-					
-					<junit fork="yes" showoutput="yes" failureproperty="testing.failed" >
+
+					<junit fork="yes" showoutput="yes" failureproperty="testing.failed">
 						<classpath>
 							<pathelement location="${jain_api_jar}" />
 							<pathelement location="${ri_jar}" />
@@ -315,44 +312,39 @@ c:/jakarta-ant/bin/ant all
 							<pathelement location='${junit_jar}' />
 							<pathelement location='${log4j_jar}' />
 							<pathelement location='${concurrent_jar}' />
-		
+
 							<!-- add source path since this will pick up test.tck.gui.images -->
 							<pathelement location='src' />
-		
+
 							<!-- add project root to the classpath in order to make tck.properties accessible. -->
-							<pathelement location="${root}"/>
+							<pathelement location="${root}" />
 						</classpath>
 						<formatter type="xml" />
-	
+
 						<batchtest fork="yes" todir="test-reports" haltonfailure="no">
 							<fileset dir="${srcroot}">
-							<include name="test/tck/**/*Test.java" />
-							<!-- exclude name="**/AllTests.java"/ -->
+								<include name="test/tck/**/*Test.java" />
+								<!-- exclude name="**/AllTests.java"/ -->
 							</fileset>
 						</batchtest>
 					</junit>
 
 					<echo>The test report can be found at ./test-reports/html/index.html</echo>
-					<fail if="testing.failed"/>	
+					<fail if="testing.failed" />
 				</target>
 
-				<!-- target for build automation -->
+				<!-- target for build automation. will add runtck later -->
 
-				<target name="cc-buildloop" depends="make,javadoc" >
-					<jar compress="true" destfile="jain-sip-1.2.jar" >
-						<fileset dir="../" >
-							<include  name="jain-sip/**/*/" /> 
+				<target name="cc-buildloop" depends="make,javadoc">
+					<jar compress="true" destfile="jain-sip-1.2.jar">
+						<fileset dir="../">
+							<include name="jain-sip/**/*/" />
 						</fileset>
 					</jar>
 
 				</target>
 
-		
-				<!-- download and unzip the libs.zip -->
-				<target name="getlibs">
-					<get src="http://is2.antd.nist.gov/pub/nist-sip/libs.zip" dest="./libs.zip" verbose="on" />
-					<unzip src="libs.zip" dest="./" />
-				</target>
+
 
 				<!-- compile to traces viewer jar -->
 				<target name="viewerjar">
@@ -370,20 +362,20 @@ c:/jakarta-ant/bin/ant all
 					</jar>
 				</target>
 
-	<!-- Compile the tools -->
-	<target name="compiletools" depends="init">
-		<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="${srcroot}" includes="tools/tracesviewer/**/*.java" destdir="${classes}">
-			<classpath>
-				<pathelement location="${classes}" />
-			</classpath>
-		</javac>
-		<copy todir="${classes}/tools/tracesviewer/images">
-			<fileset dir="${srcroot}/tools/tracesviewer/images" />
-		</copy>
-		<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" source="${javac.source}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="${srcroot}" includes="tools/sniffer/**/*.java" destdir="${classes}">
-			<classpath>
-				<pathelement location="${classes}" />
-			</classpath>
-		</javac>
-	</target>
-</project>
+				<!-- Compile the tools -->
+				<target name="compiletools" depends="init">
+					<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="${srcroot}" includes="tools/tracesviewer/**/*.java" destdir="${classes}">
+						<classpath>
+							<pathelement location="${classes}" />
+						</classpath>
+					</javac>
+					<copy todir="${classes}/tools/tracesviewer/images">
+						<fileset dir="${srcroot}/tools/tracesviewer/images" />
+					</copy>
+					<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" source="${javac.source}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="${srcroot}" includes="tools/sniffer/**/*.java" destdir="${classes}">
+						<classpath>
+							<pathelement location="${classes}" />
+						</classpath>
+					</javac>
+				</target>
+			</project>
