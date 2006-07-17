@@ -69,7 +69,7 @@ public class ProtocolObjects {
 		//The outbound proxy
 		properties.setProperty("javax.sip.OUTBOUND_PROXY", "5080");
 		
-		properties.setProperty("gov.nist.javax.sip.THREAD_POOL_SIZE", "4");
+		properties.setProperty("gov.nist.javax.sip.THREAD_POOL_SIZE", "1");
 
 		
 
