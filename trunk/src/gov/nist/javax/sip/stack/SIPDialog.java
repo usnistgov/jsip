@@ -58,7 +58,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.21 $ $Date: 2006-07-13 09:01:00 $
+ * @version 1.2 $Revision: 1.22 $ $Date: 2006-07-18 18:45:34 $
  * 
  * @author M. Ranganathan
  * 
@@ -666,10 +666,6 @@ public class SIPDialog implements javax.sip.Dialog {
 			MessageChannel messageChannel = lp.getMessageProcessor()
 					.createMessageChannel(inetAddress, hop.getPort());
 			this.lastAck = ackRequest;
-			// Store the route list from the Ack as the route headers
-			// for this dialog
-			if (ackRequest.getRouteHeaders() != null)
-				this.routeList = ackRequest.getRouteHeaders();
 			messageChannel.sendMessage(ackRequest);
 
 		} catch (IOException ex) {

@@ -69,8 +69,8 @@ For those who cannot access CVS thanks to draconian or paranoid
 administrative policies, here is a HTTP url where a nightly source 
 only snapshot is grabbed from the stable CVS repository and dumped:
 
+http://download.java.net/communications/jain-sip/nightly/
 
-http://www.antd.nist.gov/proj/iptel/jain-sip-1.2.tar.gz
 
 
 ----------------------------------------------------------------------------
@@ -147,6 +147,9 @@ acknowledgments of NIST's ownership of the software.
 M. Ranganathan's layman interpretation of the preceeding blather
 ----------------------------------------------------------------
 
+The following words dropped out of the posterior end of a bovine.
+Read if you are feeling idle:
+
 This is public domain code. Do whatever you want with this software.
 That means you can incorporate it into any product you wish or use it
 as-is free of any royalty payments or license agreements.  You may even
@@ -158,11 +161,14 @@ So be afraid. Be very afraid, because I am afraid.
 NIST (ie. the public - including you and I but neither you nor I) owns
 this software.  You may not grab ownership and get in the way of its
 free distribution even if you invest a lot of effort into fixing it.
-This is despite the fact that as it is in the public domain, you already
-own it. Note that this follows from a simple application of reason -
-once you own something, you own something and you may not own it again.
-The software will remain in the public domain for now and ever more
-(ie. until the sun shall shine and stars shall twinkle in the sky)
+In other words, you may not "own" this software.  This is despite the fact
+that as it is in the public domain, you already (collectively) own it.
+In other words, although you own the software, you cannot exclusively own
+the software. Note that this follows from a simple application of reason
+ - once you own something, you own something you may not own it again.
+Hence, since we have already given you (collective) ownership, you cannot own
+it again.  The software will remain in the public domain for now and ever
+more (ie. until the sun shall shine and stars shall twinkle in the sky)
 regardless of your use of it. Please be nice and acknowledge our efforts
 if you find this code to be of use.
 
