@@ -91,10 +91,10 @@ public class AccessNetworkInfo extends ParametersHeader implements
 
 	/**
 	 * 
-	 * @param String
+	 * @param cgi -- String
 	 *            CGI value
-	 * @throws NullPointerException
-	 * @throws ParseException
+	 * @throws NullPointerException -- if null argument passed in
+	 * @throws ParseException -- if bad argument passed in.
 	 */
 	public void setCGI3GPP(String cgi) throws ParseException {
 
@@ -170,10 +170,10 @@ public class AccessNetworkInfo extends ParametersHeader implements
 
 	/**
 	 * 
-	 * @param String
+	 * @param ci3Gpp2 -- String
 	 *            CI 3GPP2 value
-	 * @throws NullPointerException
-	 * @throws ParseException
+	 * @throws NullPointerException -- if arg is null
+	 * @throws ParseException -- if arg is bad.
 	 */
 	public void setCI3GPP2(String ci3Gpp2) throws ParseException {
 		if (ci3Gpp2 == null)

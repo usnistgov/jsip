@@ -93,7 +93,8 @@ public class Privacy
 	
 	/**
 	 * set the privacy type.
-	 * @param String privacy 
+	 * @param  privacy -- privacy type to set.
+	 * 
 	 */
 
 	public void setPrivacy(String privacy) throws ParseException 
@@ -107,6 +108,10 @@ public class Privacy
 		
 	}
 
+	/**
+	 * Suppress direct setting of values.
+	 * 
+	 */
 	public void setValue(String value) throws ParseException {
 		throw new ParseException(value,0);
 		
