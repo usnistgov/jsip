@@ -139,6 +139,12 @@ public class Shootist  implements SipListener {
 
 	}
 
+	/**
+	 * Handle an incoming INVITE request.
+	 * 
+	 * @param request -- request to process
+	 * @param st -- server tx associated with the request.
+	 */
 	public void processInvite(Request request, ServerTransaction st) {
 		try {
 			Response response = ProtocolObjects.messageFactory.createResponse(
@@ -146,19 +152,20 @@ public class Shootist  implements SipListener {
 			((ToHeader) response.getHeader(ToHeader.NAME))
 					.setTag(((ToHeader) request.getHeader(ToHeader.NAME))
 							.getTag());
-
-			Address address = ProtocolObjects.addressFactory
-					.createAddress("Shootme <sip:" + myAddress + ":" + myPort
-							+ ">");
-			ContactHeader contactHeader = ProtocolObjects.headerFactory
-					.createContactHeader(address);
-			response.addHeader(contactHeader);
+			response.addHeader(this.contactHeader);
 			st.sendResponse(response);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.exit(0);
 		}
 	}
+	
+	/**
+	 * Handle an incoming ACK.
+	 * 
+	 * @param request
+	 * @param tid
+	 */
 
 	public void processAck(Request request, ServerTransaction tid) {
 		try {
@@ -209,6 +216,11 @@ public class Shootist  implements SipListener {
 		}
 	}
 
+	
+	/*
+	 * (non-Javadoc)
+	 * @see javax.sip.SipListener#processResponse(javax.sip.ResponseEvent)
+	 */
 	public void processResponse(ResponseEvent responseReceivedEvent) {
 		logger.info("Got a response");
 
@@ -224,8 +236,7 @@ public class Shootist  implements SipListener {
 		logger.info("transaction state is " + tid.getState());
 		logger.info("Dialog = " + tid.getDialog());
 		logger.info("Dialog State is " + tid.getDialog().getState());
-		SipProvider provider = (SipProvider) responseReceivedEvent.getSource();
-
+		
 		try {
 			if (response.getStatusCode() == Response.OK
 					&& ((CSeqHeader) response.getHeader(CSeqHeader.NAME))
@@ -244,26 +255,10 @@ public class Shootist  implements SipListener {
 				logger.info("Sending ACK");
 				dialog.sendAck(ackRequest);
 
-				// Send a Re INVITE but this time force it
-				// to use UDP as the transport. Else, it will
-				// Use whatever transport was used to create
-				// the dialog.
+				// Send a Re INVITE
 				if (reInviteCount == 0) {
 					logger.info("Sending RE-INVITE");
-					Request inviteRequest = dialog
-							.createRequest(Request.INVITE);
-					((SipURI) inviteRequest.getRequestURI())
-							.removeParameter("transport");
-					((ViaHeader) inviteRequest.getHeader(ViaHeader.NAME))
-							.setTransport("udp");
-					inviteRequest.addHeader(contactHeader);
-					MaxForwardsHeader mf = ProtocolObjects.headerFactory
-							.createMaxForwardsHeader(10);
-					inviteRequest.addHeader(mf);
-					
-					ClientTransaction ct = provider
-							.getNewClientTransaction(inviteRequest);
-					dialog.sendRequest(ct);
+					this.sendReInvite();
 					reInviteCount++;
 				} else {
 					this.okReceived = true;
@@ -303,23 +298,25 @@ public class Shootist  implements SipListener {
 		}
 	}
 	
-	public void sendReInvite(SipProvider sipProvider) throws Exception {
+	/**
+	 * Create and send a re-invitation.
+	 * 
+	 * @throws Exception
+	 */
+	public void sendReInvite() throws Exception {
 		Request inviteRequest = dialog.createRequest(Request.INVITE);
-		((SipURI) inviteRequest.getRequestURI()).removeParameter("transport");
 		MaxForwardsHeader mf = ProtocolObjects.headerFactory.createMaxForwardsHeader(10);
-		inviteRequest.addHeader(mf);
-		((ViaHeader) inviteRequest.getHeader(ViaHeader.NAME))
-				.setTransport(ProtocolObjects.transport);
-		Address address = ProtocolObjects.addressFactory.createAddress("Shootme <sip:"
-				+ myAddress + ":" + myPort + ">");
-		ContactHeader contactHeader = ProtocolObjects.headerFactory
-				.createContactHeader(address);
-		inviteRequest.addHeader(contactHeader);
-		ClientTransaction ct = sipProvider
+		inviteRequest.setHeader(mf);
+		inviteRequest.setHeader(this.contactHeader);
+		ClientTransaction ct = provider
 				.getNewClientTransaction(inviteRequest);
 		dialog.sendRequest(ct);
 	}
 
+	/**
+	 * Create and send out the initial invite.
+	 *
+	 */
 	public void sendInvite() {
 
 		try {
@@ -462,19 +459,6 @@ public class Shootist  implements SipListener {
 		}
 	}
 
-	public static void main(String args[]) {
-		try {
-			ProtocolObjects.init("shootist", true);
-			logger.addAppender(new ConsoleAppender(new SimpleLayout()));
-			Shootist shootist = new Shootist(10);
-			shootist.createSipProvider();
-			shootist.provider.addSipListener(shootist);
-			shootist.sendInvite();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-
-	}
 	
 	public void checkState() {
 		TestCase.assertTrue(reInviteCount == 1 && this.okReceived);
@@ -513,4 +497,22 @@ public class Shootist  implements SipListener {
 		logger.info("Dialog Terminated Event!");
 
 	}
+	
+	/////////////////////////////////////////////////////////////////////////////////
+	// main method
+	/////////////////////////////////////////////////////////////////////////////////
+	public static void main(String args[]) {
+		try {
+			ProtocolObjects.init("shootist", true);
+			logger.addAppender(new ConsoleAppender(new SimpleLayout()));
+			Shootist shootist = new Shootist(10);
+			shootist.createSipProvider();
+			shootist.provider.addSipListener(shootist);
+			shootist.sendInvite();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+	}
+	
 }
