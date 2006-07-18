@@ -1,28 +1,28 @@
 /*
-* Conditions Of Use 
-* 
-* This software was developed by employees of the National Institute of
-* Standards and Technology (NIST), an agency of the Federal Government.
-* Pursuant to title 15 Untied States Code Section 105, works of NIST
-* employees are not subject to copyright protection in the United States
-* and are considered to be in the public domain.  As a result, a formal
-* license is not needed to use the software.
-* 
-* This software is provided by NIST as a service and is expressly
-* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
-* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
-* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
-* AND DATA ACCURACY.  NIST does not warrant or make any representations
-* regarding the use of the software or the results thereof, including but
-* not limited to the correctness, accuracy, reliability or usefulness of
-* the software.
-* 
-* Permission to use this software is contingent upon your acceptance
-* of the terms of this agreement
-*  
-* .
-* 
-*/
+ * Conditions Of Use 
+ * 
+ * This software was developed by employees of the National Institute of
+ * Standards and Technology (NIST), an agency of the Federal Government.
+ * Pursuant to title 15 Untied States Code Section 105, works of NIST
+ * employees are not subject to copyright protection in the United States
+ * and are considered to be in the public domain.  As a result, a formal
+ * license is not needed to use the software.
+ * 
+ * This software is provided by NIST as a service and is expressly
+ * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+ * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+ * AND DATA ACCURACY.  NIST does not warrant or make any representations
+ * regarding the use of the software or the results thereof, including but
+ * not limited to the correctness, accuracy, reliability or usefulness of
+ * the software.
+ * 
+ * Permission to use this software is contingent upon your acceptance
+ * of the terms of this agreement
+ *  
+ * .
+ * 
+ */
 package gov.nist.javax.sip;
 
 import java.util.*;
@@ -34,14 +34,15 @@ import javax.sip.*;
 import EDU.oswego.cs.dl.util.concurrent.Semaphore;
 import gov.nist.core.*;
 import java.io.*;
-/*bug fixes SIPQuest  communications and Shu-Lin Chen. */
+
+/* bug fixes SIPQuest communications and Shu-Lin Chen. */
 
 /**
  * Event Scanner to deliver events to the Listener.
  * 
- * @version 1.2 $Revision: 1.22 $ $Date: 2006-07-13 09:02:51 $
+ * @version 1.2 $Revision: 1.23 $ $Date: 2006-07-18 10:45:01 $
  * 
- * @author M. Ranganathan <br/> 
+ * @author M. Ranganathan <br/>
  * 
  * 
  */
@@ -108,7 +109,8 @@ class EventScanner implements Runnable {
 		EventObject sipEvent = eventWrapper.sipEvent;
 		if (sipStack.isLoggingEnabled())
 			sipStack.getLogWriter().logDebug(
-				"sipEvent = " + sipEvent + "source = " + sipEvent.getSource());
+					"sipEvent = " + sipEvent + "source = "
+							+ sipEvent.getSource());
 		SipListener sipListener = null;
 
 		if (!(sipEvent instanceof IOExceptionEvent)) {
@@ -148,23 +150,28 @@ class EventScanner implements Runnable {
 						.findTransaction(sipRequest, true);
 
 				if (tx != null && !tx.passToListener()) {
-				  
-				  // JvB: make an exception for a very rare case: some (broken) UACs use 
-				  // the  same branch parameter for an ACK. Such an ACK should be passed
-				  // to the listener (tx == INVITE ST, terminated upon sending 2xx but
-				  // lingering to catch retransmitted INVITEs)
-				  if (sipRequest.getMethod().equals(Request.ACK) 
-				    && tx.isInviteTransaction()) {
 
-  					if (sipStack.isLoggingEnabled())
-  						sipStack.getLogWriter().logDebug(
-  								"Detected broken client sending ACK with same branch! Passing..." );				      
-				  } else {
-  					if (sipStack.isLoggingEnabled())
-  						sipStack.getLogWriter().logDebug(
-  								"transaction already exists! " + tx);
-  					return;
-  				}
+					// JvB: make an exception for a very rare case: some
+					// (broken) UACs use
+					// the same branch parameter for an ACK. Such an ACK should
+					// be passed
+					// to the listener (tx == INVITE ST, terminated upon sending
+					// 2xx but
+					// lingering to catch retransmitted INVITEs)
+					if (sipRequest.getMethod().equals(Request.ACK)
+							&& tx.isInviteTransaction()) {
+
+						if (sipStack.isLoggingEnabled())
+							sipStack
+									.getLogWriter()
+									.logDebug(
+											"Detected broken client sending ACK with same branch! Passing...");
+					} else {
+						if (sipStack.isLoggingEnabled())
+							sipStack.getLogWriter().logDebug(
+									"transaction already exists! " + tx);
+						return;
+					}
 				} else if (sipStack.findPendingTransaction(sipRequest) != null) {
 					if (sipStack.isLoggingEnabled())
 						sipStack.getLogWriter().logDebug(
@@ -178,8 +185,6 @@ class EventScanner implements Runnable {
 					SIPServerTransaction st = (SIPServerTransaction) eventWrapper.transaction;
 					sipStack.putPendingTransaction(st);
 				}
-
-				
 
 				// Set up a pointer to the transaction.
 				sipRequest.setTransaction(eventWrapper.transaction);
@@ -203,11 +208,12 @@ class EventScanner implements Runnable {
 										+ sipRequest.getFirstLine());
 					}
 					if (eventWrapper.transaction != null) {
-						
-						SIPDialog dialog = (SIPDialog) eventWrapper.transaction.getDialog();
+
+						SIPDialog dialog = (SIPDialog) eventWrapper.transaction
+								.getDialog();
 						if (dialog != null)
 							dialog.requestConsumed();
-					
+
 					}
 				} catch (Exception ex) {
 					// We cannot let this thread die under any
@@ -222,20 +228,24 @@ class EventScanner implements Runnable {
 									+ ((SIPRequest) (((RequestEvent) sipEvent)
 											.getRequest())).getFirstLine());
 				}
-				if (eventWrapper.transaction != null &&
-						((SIPServerTransaction) eventWrapper.transaction)
-						.passToListener()) {
+				if (eventWrapper.transaction != null
+						&& ((SIPServerTransaction) eventWrapper.transaction)
+								.passToListener()) {
 					((SIPServerTransaction) eventWrapper.transaction)
 							.releaseSem();
 				}
-			
-				if (eventWrapper.transaction != null ) 
+
+				if (eventWrapper.transaction != null)
 					sipStack
-						.removePendingTransaction((SIPServerTransaction) eventWrapper.transaction);
-				if ( eventWrapper.transaction.getOriginalRequest().getMethod().equals(Request.ACK)) {
-					// Set the tx state to terminated so it is removed from the stack
-					// if the user configured to get notification on ACK termination
-					eventWrapper.transaction.setState(TransactionState.TERMINATED);
+							.removePendingTransaction((SIPServerTransaction) eventWrapper.transaction);
+				if (eventWrapper.transaction.getOriginalRequest().getMethod()
+						.equals(Request.ACK)) {
+					// Set the tx state to terminated so it is removed from the
+					// stack
+					// if the user configured to get notification on ACK
+					// termination
+					eventWrapper.transaction
+							.setState(TransactionState.TERMINATED);
 				}
 			}
 
@@ -265,8 +275,8 @@ class EventScanner implements Runnable {
 					 * (Call/Transaction Does Not Exist) or a 408 (Request
 					 * Timeout), the UAC SHOULD terminate the dialog.
 					 */
-					if ((sipDialog != null && ( sipDialog.getState() == null || !sipDialog.getState().equals(
-							DialogState.TERMINATED)))
+					if ((sipDialog != null && (sipDialog.getState() == null || !sipDialog
+							.getState().equals(DialogState.TERMINATED)))
 							&& (sipResponse.getStatusCode() == Response.CALL_OR_TRANSACTION_DOES_NOT_EXIST || sipResponse
 									.getStatusCode() == Response.REQUEST_TIMEOUT)) {
 						if (sipStack.getLogWriter().isLoggingEnabled()) {
@@ -288,8 +298,8 @@ class EventScanner implements Runnable {
 					 * distinct dialog identifier.
 					 * 
 					 * If the Listener does not ACK the 200 then we assume he
-					 * does not care about the dialog and gc the dialog after some
-					 * time.
+					 * does not care about the dialog and gc the dialog after
+					 * some time.
 					 * 
 					 */
 					if (sipResponse.getCSeq().getMethod()
@@ -358,11 +368,15 @@ class EventScanner implements Runnable {
 				if (sipStack.isLoggingEnabled()) {
 					sipStack.getLogWriter().logDebug(
 							"About to deliver transactionTerminatedEvent");
-					sipStack.getLogWriter().logDebug("tx = " + 
-							((TransactionTerminatedEvent) sipEvent).getClientTransaction());
-					sipStack.getLogWriter().logDebug("tx = " + 
-							((TransactionTerminatedEvent) sipEvent).getServerTransaction());
-					
+					sipStack.getLogWriter().logDebug(
+							"tx = "
+									+ ((TransactionTerminatedEvent) sipEvent)
+											.getClientTransaction());
+					sipStack.getLogWriter().logDebug(
+							"tx = "
+									+ ((TransactionTerminatedEvent) sipEvent)
+											.getServerTransaction());
+
 				}
 				if (sipListener != null)
 					sipListener

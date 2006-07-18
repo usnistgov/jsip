@@ -39,7 +39,7 @@ import gov.nist.javax.sip.parser.*;
 /**
  *  Message Factory implementation 
  *
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-13 09:02:49 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-18 10:45:00 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
@@ -661,7 +661,7 @@ public class MessageFactoryImpl implements MessageFactory {
 	
 	/** Create a response from a string 
 	 * 
-	 * @param responseString-- string from which to create the message
+	 * @param responseString -- string from which to create the message
 	 *		null string returns an empty message. 
 	 *
 	 */
