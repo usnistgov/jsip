@@ -10,7 +10,7 @@ mailing list.
 
 <li> Sarit Galanos (Radvision) contributed key design ideas for JSIP 1.2.
 
-<li> Olivier Deruelle wrote a lot of the code for 1.1 when he 
+<li> Olivier Deruelle wrote a lot of the code for V 1.1 when he 
 was a guest researcher at NIST </li>
 
 <li> Emil Ivov contributed the TCK for the Transaction and Dialog layer for
@@ -19,17 +19,14 @@ version 1.1 that served as the basis for the v 1.2 TCK. </li>
 <li>Jeroen van Bemmel contributed significant effort to bring the TCK up to 
    version 1.2. Jeroen validated the TCK against another implementation. </li>
 
-<li>
-Ben Evans (Open Cloud) contributed several ideas to the design
+<li> Ben Evans (Open Cloud) contributed several ideas to the design
 of JAIN-SIP 1.2 and participated enthusiastically in mailing list
 discussions. </li>
 
 <li> Jeff Keyser  Contributed the initial version of the Transaction layer 
-	to NIST-SIP 1.1 that served as the basis for NIST-SIP 1.2. 
-	Jeff also suggested the architecture for MessageProcessors and 
-	extensiblity that is a part of the implementation architecture.
-
-
+to NIST-SIP 1.1 that served as the basis for NIST-SIP 1.2. 
+Jeff also suggested the architecture for MessageProcessors and 
+extensiblity that is a part of the implementation architecture.
 </li>
 </ul>
 
@@ -77,7 +74,7 @@ ClientTransaction.createCancel  was added to the API.
 </ul>
 <hline/>
 <p>
-Bug Reports and enhancements for NIST-SIP 1.2 were contributed 
+Bug Reports and enhancements for NIST-SIP were contributed 
 by the following people:
 
 <ul>
@@ -90,13 +87,13 @@ by the following people:
 <li> Emil Ivov Contributed IPV6 Support. Emil Cotributed the Video Softphone
     under GPL Licensing. (See acknowledgement above) later moved to 
     its own java.net project (see sip-communicator.dev.java.net). 
-    Emil noticed spec documentation bugs.  
+    Emil noticed spec documentation bugs. 
     Emil uncovered bugs in the transaction layer
     implementation for several corner cases. Emil and Iain Macdonnell from 
     Sun reported a problem with SDP parsing. Emil discovered a bug in the
     Server transaction implementation. Emil contributed comprehensive 
-    state machine unit tests of the Transaction layer to the TCK 
-    (work in progress). 
+    state machine unit tests of the Transaction layer to the TCK. Emil
+    set up the build automation cruise control scripts.
 
 <li> Andreas Byström reported bugs in set/get methods for Authentication 
     headers (quotes were missing). Andreas reported bugs in the 
@@ -275,12 +272,12 @@ the route header. The stack was previously stripping it.
 A configuration parameter was added to pass the route header up to 
 the application. Bill reported a null pointer exception bug and fixed
 some make file bugs. This design flaw has been rationalized in version
-1.2 of the JSIP API.
+1.2 of the JSIP API. </li>
 
-<li> Stefan Marx found a bug in the SipUriImpl.getHeaderNames function.
+<li> Stefan Marx found a bug in the SipUriImpl.getHeaderNames function. </li>
 
 <li> John Martin from RockSteady noticed some uncessary synchronization
-in the MessageHandler that was removed. 
+in the MessageHandler that was removed.  </li>
 
 <li> Xavi Ferró from Vida Software helped debug a memory leak when 4xx 
 responses are sent in response to dialog creating requests.
@@ -333,6 +330,7 @@ that did not need to use reflection for cloning. </li>
 <li> Jeff Heynie submitted a bug fix for the URL parser </li>
 
 <li> Attila submitted a fix for a race condition in ACK processing </li>
+
 <li> Frank Reif submitted a bug fix for a race condition in 
 SIPServerTransaction </li>
 
@@ -341,7 +339,13 @@ some examples to tck test cases </li>
 
 <li>Yanick Belanger noticed a memory leak in NOTIFY client transaction
 which was fixed. Yankick also made some performance enhancements to the
-parser. </li>
+parser. Yanick noted a bug in random generation of call IDs and  branch IDs. 
+</li>
+
+<li> Kathleen McCallum contributed the Third Party Call Control (tpcc) example
+and the authentication example.
+</li>
+
 
 </ul>
 
