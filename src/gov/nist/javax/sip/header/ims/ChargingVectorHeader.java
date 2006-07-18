@@ -107,7 +107,7 @@ public interface ChargingVectorHeader extends Header, Parameters {
 
 	
 	/**
-	 * @return
+	 * @return -- icid value.
 	 */
 	public String getICID();
 
@@ -125,8 +125,9 @@ public interface ChargingVectorHeader extends Header, Parameters {
 
 	
 	/**
-	 * @param host
-	 * @throws ParseException
+	 * @param host -- set the icid host value.
+	 * 
+	 * @throws ParseException -- if bad host value.
 	 */
 	public void setICIDGeneratedAt(String host) throws ParseException;
 

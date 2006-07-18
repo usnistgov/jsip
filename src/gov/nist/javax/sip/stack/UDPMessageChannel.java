@@ -70,7 +70,7 @@ import javax.sip.message.Response;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.30 $ $Date: 2006-07-13 09:00:49 $
+ * @version 1.2 $Revision: 1.31 $ $Date: 2006-07-18 10:44:58 $
  */
 public class UDPMessageChannel extends MessageChannel implements
 		ParseExceptionListener, Runnable {
@@ -281,9 +281,9 @@ public class UDPMessageChannel extends MessageChannel implements
 
 			if (sipMessage == null) {
 				if (sipStack.isLoggingEnabled()) {
-					this.sipStack.logWriter.logError("Rejecting message !  "
+					this.sipStack.logWriter.logDebug("Rejecting message !  "
 							+ new String(msgBytes));
-					this.sipStack.logWriter.logError("Null message parsed.");
+					this.sipStack.logWriter.logDebug("Null message parsed.");
 				}
 				if (sipStack.threadPoolSize == -1)
 					return;
@@ -308,8 +308,8 @@ public class UDPMessageChannel extends MessageChannel implements
 							+ sipMessage.getViaHeaders());
 				}
 
-				sipStack.logWriter.logDebug("BAD MESSAGE!");
-				sipStack.logWriter.logDebug(badmsg);
+				sipStack.logWriter.logError("BAD MESSAGE!");
+				sipStack.logWriter.logError(badmsg);
 				if (sipStack.threadPoolSize == -1)
 					return;
 				else
