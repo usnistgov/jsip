@@ -193,7 +193,7 @@ public class Shootme  implements SipListener {
 				+ myAddress + ":" + myPort + ">");
 		ContactHeader contactHeader = ProtocolObjects.headerFactory
 				.createContactHeader(address);
-		inviteRequest.addHeader(contactHeader);
+		inviteRequest.setHeader(contactHeader);
 		ClientTransaction ct = sipProvider
 				.getNewClientTransaction(inviteRequest);
 		dialog.sendRequest(ct);
