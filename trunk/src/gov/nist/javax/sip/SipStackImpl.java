@@ -180,7 +180,7 @@ import gov.nist.core.net.NetworkLayer;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.42 $ $Date: 2006-07-13 09:02:50 $
+ * @version 1.2 $Revision: 1.43 $ $Date: 2006-07-20 14:58:32 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -746,6 +746,10 @@ public class SipStackImpl extends SIPTransactionStack implements
 			getLogWriter().logDebug("stopStack -- stoppping the stack");
 		}
 		this.stopStack();
+		this.sipProviders = new LinkedList();
+		this.listeningPoints = new Hashtable();
+		this.eventScanner.forceStop();
+		this.eventScanner = null;
 
 	}
 
@@ -755,9 +759,11 @@ public class SipStackImpl extends SIPTransactionStack implements
 	 * @see javax.sip.SipStack#start()
 	 */
 	public void start() throws ProviderDoesNotExistException, SipException {
-		// For us this check is not really necessary.
-		//if (this.sipProviders.isEmpty())
-		//	throw new ProviderDoesNotExistException("No providers specified");
+		// Start a new event scanner if one does not exist.
+		if ( this.eventScanner == null ) {
+			this.eventScanner = new EventScanner(this);
+		}
+		
 	}
 
 	/**
