@@ -40,7 +40,7 @@ import java.io.*;
 /**
  * Event Scanner to deliver events to the Listener.
  * 
- * @version 1.2 $Revision: 1.23 $ $Date: 2006-07-18 10:45:01 $
+ * @version 1.2 $Revision: 1.24 $ $Date: 2006-07-20 14:58:32 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -50,7 +50,7 @@ class EventScanner implements Runnable {
 
 	private boolean isStopped;
 
-	protected int refCount;
+	private int refCount;
 
 	// SIPquest: Fix for deadlocks
 	private LinkedList pendingEvents = new LinkedList();
@@ -58,6 +58,12 @@ class EventScanner implements Runnable {
 	private int[] eventMutex = { 0 };
 
 	private SipStackImpl sipStack;
+
+	public void incrementRefcount() {
+		synchronized (eventMutex) {
+			this.refCount++;
+		}
+	}
 
 	public EventScanner(SipStackImpl sipStackImpl) {
 		this.pendingEvents = new LinkedList();
@@ -93,16 +99,30 @@ class EventScanner implements Runnable {
 	 */
 
 	public void stop() {
+		synchronized (eventMutex) {
 
-		if (this.refCount > 0)
-			this.refCount--;
+			if (this.refCount > 0)
+				this.refCount--;
 
-		if (this.refCount == 0) {
-			synchronized (eventMutex) {
+			if (this.refCount == 0) {
 				isStopped = true;
 				eventMutex.notify();
+
 			}
 		}
+	}
+	
+	/**
+	 * Brutally stop the event scanner. This does not wait for the refcount to go to 0.
+	 *
+	 */
+	public void forceStop() {
+		synchronized (this.eventMutex) {
+			this.isStopped = true;
+			this.refCount = 0;
+			this.eventMutex.notify();
+		}
+
 	}
 
 	public void deliverEvent(EventWrapper eventWrapper) {
@@ -455,4 +475,6 @@ class EventScanner implements Runnable {
 			}
 		} // end While
 	}
+
+	
 }

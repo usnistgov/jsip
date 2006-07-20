@@ -53,7 +53,7 @@ import java.text.ParseException;
 /**
  * Implementation of the JAIN-SIP provider interface.
  * 
- * @version 1.2 $Revision: 1.33 $ $Date: 2006-07-13 09:02:54 $
+ * @version 1.2 $Revision: 1.34 $ $Date: 2006-07-20 14:58:33 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -152,7 +152,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 	protected SipProviderImpl(SipStackImpl sipStack) {
 		this.eventScanner = sipStack.eventScanner; // for quick access.
 		this.sipStack = sipStack;
-		this.eventScanner.refCount++;
+		this.eventScanner.incrementRefcount();
 		this.listeningPoints = new HashMap();
 		this.automaticDialogSupportEnabled = this.sipStack
 				.isAutomaticDialogSupportEnabled();

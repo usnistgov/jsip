@@ -148,7 +148,7 @@ import java.util.TimerTask;
  *                                 
  * </pre>
  * 
- * @version 1.2 $Revision: 1.66 $ $Date: 2006-07-13 09:00:53 $
+ * @version 1.2 $Revision: 1.67 $ $Date: 2006-07-20 14:58:33 $
  * @author M. Ranganathan <br/><a href=" {@docRoot}/uncopyright.html">This
  *         code is in the public domain. </a>
  * 
@@ -1547,7 +1547,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 			 * to avoid racing with the OK of the subscribe.
 			 */
 			pendingSubscribeTransaction.releaseSem();
-		} else if (this.inviteTransaction != null) {
+		} else if (this.inviteTransaction != null && this.getMethod().equals(Request.CANCEL)) {
 			/*
 			 * When a CANCEL is being processed we take a nested lock on the
 			 * associated INVITE server tx.
