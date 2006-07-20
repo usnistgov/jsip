@@ -55,7 +55,7 @@ Look in test-reports  to see the results of your run.
 Running the examples
 
 Please ensure that the directory  classes  (relative to where you have
-built the distribution) is included in the  classpath.  Makefile targets
+built the distribution) is included in the  classpath. Ant targets
 and shell scripts  are provided in each example directory to run the
 examples.
 
@@ -65,9 +65,9 @@ How to get Source Code Refreshes
 CVS Snapshot
 ------------
 
-For those who cannot access CVS thanks to draconian or paranoid 
-administrative policies, here is a HTTP url where a nightly source 
-only snapshot is grabbed from the stable CVS repository and dumped:
+For those who cannot access CVS thanks to draconian, idiotic or paranoid 
+administrative policies, here is a HTTP url where a cruise control  
+snapshot is grabbed from the stable CVS repository and dumped:
 
 http://download.java.net/communications/jain-sip/nightly/
 
@@ -80,14 +80,26 @@ CVS Access
 The "stable" cvs reposiotory is located on java.net. To download from CVS
 (higly recommended), visit 
 
-http://jain-sip.dev.java.net/source/browse/jain-sip/
+http://jain-sip.dev.java.net/
+
+
 
 And follow the instructions there. 
+
+
+You can browse the source code online here:
+
+http://jain-sip.dev.java.net/source/browse/jain-sip/
+
+
 Note that you need to be logged in to java.net in order to acces the source 
 from cvs.
 
 
 ----------------------------------------------------------------------------
+
+Credits
+--------
 
 Architecture / API design:
 -------------------------
@@ -121,8 +133,8 @@ file:./www/README.html
 
 ----------------------------------------------------------------------------
 
-COPYRIGHT
----------
+COPYRIGHT (or lack thereof)
+---------------------------
 The software was developed by employees of the National Institute of
 Standards and Technology (NIST), an agency of the Federal Government.
 Pursuant to title 15 Untied States Code Section 105, works of NIST
@@ -143,9 +155,11 @@ Permission to use this software is contingent upon your acceptance
 of the terms of this agreement and upon your providing appropriate
 acknowledgments of NIST's ownership of the software. 
 
-----------------------------------------------------------------------------
-M. Ranganathan's layman interpretation of the preceeding blather
-----------------------------------------------------------------
+-------------------------------------------------------------------------
+Blather:
+-------------------------------------------------------------------------
+M. Ranganathan's blathering layman interpretation of the preceeding blather
+------------------------------------------------------------------------
 
 The following words dropped out of the posterior end of a bovine.
 Read if you are feeling idle:
@@ -193,6 +207,8 @@ for something you, I and everybody else already owns.
 
 i.e. Once you had it you had it. You cannot have it again. Owning is believing.
 
+
+Blah blah.. und so wieter....
 
 -------------------------------------------------------------------------
 Here are the licensing terms for JAIN-SIP ( the package javax.sip.* ):
@@ -421,9 +437,7 @@ spamming attacks.
 ------------------------------------------------------------------
 
 If you have read every word of this so  far you deserve a medal.
-Such is the logic of the non-legal mind. Note that non-legal minds
-are not necessarily illegal minds and legal minds are also frequently
-illegal minds.  Also note that a mind is a terrible thing to lose ... or
+Also note that a mind is a terrible thing to lose ... or
 not to have.
 
 Nuff said! have fun with it. 
