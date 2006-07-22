@@ -31,16 +31,12 @@ import gov.nist.javax.sip.message.*;
 import javax.sip.message.*;
 import javax.sip.*;
 
-import EDU.oswego.cs.dl.util.concurrent.Semaphore;
-import gov.nist.core.*;
-import java.io.*;
-
 /* bug fixes SIPQuest communications and Shu-Lin Chen. */
 
 /**
  * Event Scanner to deliver events to the Listener.
  * 
- * @version 1.2 $Revision: 1.24 $ $Date: 2006-07-20 14:58:32 $
+ * @version 1.2 $Revision: 1.25 $ $Date: 2006-07-22 19:00:53 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -401,6 +397,10 @@ class EventScanner implements Runnable {
 				if (sipListener != null)
 					sipListener
 							.processTransactionTerminated((TransactionTerminatedEvent) sipEvent);
+			} catch (AbstractMethodError ame) {
+				// JvB: for backwards compatibility, accept this
+				sipStack.getLogWriter().logWarning( 
+					"Unable to call sipListener.processTransactionTerminated" );				
 			} catch (Exception ex) {
 				sipStack.getLogWriter().logException(ex);
 			}
@@ -409,6 +409,10 @@ class EventScanner implements Runnable {
 				if (sipListener != null)
 					sipListener
 							.processDialogTerminated((DialogTerminatedEvent) sipEvent);
+			} catch (AbstractMethodError ame) {
+				// JvB: for backwards compatibility, accept this
+				sipStack.getLogWriter().logWarning( 
+					"Unable to call sipListener.processDialogTerminated" );
 			} catch (Exception ex) {
 				sipStack.getLogWriter().logException(ex);
 			}
