@@ -63,7 +63,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.34 $ $Date: 2006-07-13 09:00:51 $ 
+ * @version 1.2 $Revision: 1.35 $ $Date: 2006-07-22 19:01:16 $ 
  */
 public class TCPMessageChannel extends MessageChannel implements
 		SIPMessageListener, Runnable {
@@ -411,21 +411,20 @@ public class TCPMessageChannel extends MessageChannel implements
 					this.peerAddress = mySock.getInetAddress();
 					// Check to see if the received parameter matches
 					// the peer address and tag it appropriately.
-					InetAddress sentByAddress = InetAddress.getByName(hop.getHost());
-					if (!sentByAddress
-							.equals(this.peerAddress))
-						v.setParameter(Via.RECEIVED, this.peerAddress
-								.getHostAddress());
-					// @@@ hagai
-					v.setParameter(Via.RPORT, new Integer(this.peerPort)
-							.toString());
-				} catch (java.net.UnknownHostException ex) {
-					// Could not resolve the sender address.
-					if (sipStack.isLoggingEnabled()) {
-						sipStack.logWriter
-								.logDebug("Rejecting message -- could not resolve Via Address");
+
+					// JvB: dont do this. It is both costly and incorrect
+					// Must set received also when it is a FQDN, regardless whether
+					// it resolves to the correct IP address
+					// InetAddress sentByAddress = InetAddress.getByName(hop.getHost());
+					// JvB: if sender added 'rport', must always set received					
+					if ( v.hasParameter(Via.RPORT) 
+						|| !hop.getHost().equals(this.peerAddress)) {
+							v.setParameter(Via.RECEIVED, this.peerAddress.getHostAddress() );
 					}
-					return;
+					// @@@ hagai
+					// JvB: technically, may only do this when Via already contains
+					// rport
+					v.setParameter(Via.RPORT, Integer.toString(this.peerPort));
 				} catch (java.text.ParseException ex) {
 					InternalErrorHandler
 							.handleException(ex, sipStack.logWriter);

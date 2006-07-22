@@ -70,7 +70,7 @@ import javax.sip.message.Response;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.31 $ $Date: 2006-07-18 10:44:58 $
+ * @version 1.2 $Revision: 1.32 $ $Date: 2006-07-22 19:01:17 $
  */
 public class UDPMessageChannel extends MessageChannel implements
 		ParseExceptionListener, Runnable {
@@ -330,40 +330,19 @@ public class UDPMessageChannel extends MessageChannel implements
 					this.peerAddress = packet.getAddress();
 					// Check to see if the received parameter matches
 					// the peer address and tag it appropriately.
-					InetAddress sentByAddress = InetAddress.getByName(hop.getHost());
-					if (!sentByAddress.equals(this.peerAddress)
-					  || isBuggyClient( (SIPRequest) sipMessage )
-					  ) {
-						v.setParameter(Via.RECEIVED, this.peerAddress.getHostAddress());
+
+					// JvB: Better not do a DNS lookup here, this is costly
+					// InetAddress sentByAddress = InetAddress.getByName(hop.getHost());
 					
+					boolean hasRPort = v.hasParameter(Via.RPORT);					
+					if (hasRPort || !hop.getHost().equals(this.peerAddress) ) {
+						v.setParameter(Via.RECEIVED, this.peerAddress.getHostAddress());
+					}
+					
+					if (hasRPort) {
 						v.setParameter(Via.RPORT, Integer.toString(
 								this.peerPacketSourcePort) );
 					}
-
-				} catch (java.net.UnknownHostException ex) {
-					// Could not resolve the sender address.
-					if (sipStack.serverLog
-							.needsLogging(ServerLog.TRACE_MESSAGES)) {
-						this.sipStack.serverLog
-								.logMessage(
-										sipMessage,
-										this.getViaHost() + ":"
-												+ this.getViaPort(),
-										this.getMessageProcessor().
-											getIPAddress().getHostAddress()
-												+ ":" + this.getMessageProcessor().
-															getPort(),
-										"Dropped -- "
-												+ "Could not resolve VIA header address!",
-										false);
-					}
-					if (sipStack.isLoggingEnabled()) {
-						this.sipStack.logWriter
-								.logError("Rejecting message -- "
-										+ "could not resolve Via Address");
-					}
-
-					continue;
 				} catch (java.text.ParseException ex1) {
 					InternalErrorHandler.handleException(ex1);
 				}
@@ -480,7 +459,10 @@ public class UDPMessageChannel extends MessageChannel implements
    * to fix the port to which responses are sent
    *
    * checks for User-Agent: RTC/1.3.5470 (Messenger 5.1.0701)
-   */
+   *
+   * JvB 22/7/2006 better to take this out for the moment, it is
+   *     only a problem in rare cases (unregister)
+   *
   private final boolean isBuggyClient( SIPRequest r ) {
     UserAgent uah = (UserAgent) r.getHeader( UserAgent.NAME );
     if (uah!=null) {
@@ -492,6 +474,7 @@ public class UDPMessageChannel extends MessageChannel implements
     }
     return false;
   }
+  */
 
 	/**
 	 * Implementation of the ParseExceptionListener interface.
