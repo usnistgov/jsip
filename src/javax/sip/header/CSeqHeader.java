@@ -96,11 +96,26 @@ public interface CSeqHeader extends Header {
      *
      * @param sequenceNumber - the new sequence number of this CSeqHeader
      * @throws InvalidArgumentException if supplied value is less than zero.
-     * @since v1.1
+     * @since v1.2
      */
     public void setSequenceNumber(long sequenceNumber) 
                                         throws InvalidArgumentException;
 
+    /**
+     * Sets the sequence number value of the CSeqHeader. The sequence number
+     * MUST be expressible as a 32-bit unsigned integer and MUST be less than
+     * 2**32 -1
+     *
+     * @param sequenceNumber - the new sequence number of this CSeqHeader
+     * @throws InvalidArgumentException if supplied value is less than zero.
+     * @since v1.1
+     * 
+     * @deprecated use {@link #setSequenceNumber(long)} instead
+     */
+    public void setSequenceNumber( int sequenceNumber) 
+                                        throws InvalidArgumentException;
+    
+    
     /**
      * Gets the sequence number of this CSeqHeader.
      *
