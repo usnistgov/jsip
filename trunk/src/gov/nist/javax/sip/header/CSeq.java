@@ -38,7 +38,7 @@ import gov.nist.javax.sip.message.SIPRequest;
  *  CSeq SIP Header.
  *
  * @author M. Ranganathan    <br/>
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:06 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-22 21:31:19 $
  * @since 1.1
  *
  */
@@ -138,6 +138,13 @@ public class CSeq extends SIPHeader implements javax.sip.header.CSeqHeader {
 		seqno = new Long(sequenceNumber);
 	}
 
+	/**
+	 * For backwards compatibility
+	 */
+	public void setSequenceNumber(int sequenceNumber) throws InvalidArgumentException {
+		this.setSequenceNumber( (long) sequenceNumber );
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see javax.sip.header.CSeqHeader#setMethod(java.lang.String)
