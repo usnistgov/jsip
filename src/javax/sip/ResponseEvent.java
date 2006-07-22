@@ -69,15 +69,34 @@ public class ResponseEvent extends EventObject {
     * @param source - the source of ResponseEvent i.e. the SipProvider
     * @param clientTransaction - client transaction upon which
     * this Response was sent
+    * @param dialog - the dialog on which this response was received, can be null
     * @param response - the Response message received by the SipProvider
+    * 
+    * @since 1.2
     */
-    public ResponseEvent(Object source, ClientTransaction clientTransaction, Dialog dialog,  Response response) {
+    public ResponseEvent(Object source, ClientTransaction clientTransaction, Dialog dialog, Response response) {
         super(source);
         m_response = response;
         m_transaction = clientTransaction;
         m_dialog = dialog;
     }
 
+    /**
+     * Constructs a ResponseEvent (backwards compatibility constructor)
+     * Calls the new constructor with 'dialog' set to null
+     * 
+    * @param source - the source of ResponseEvent i.e. the SipProvider
+    * @param clientTransaction - client transaction upon which
+    * this Response was sent
+    * @param response - the Response message received by the SipProvider
+     * 
+     * @deprecated since 1.2, use 
+     * {$link ResponseEvent(Object,ClientTransaction,Dialog,Response)} instead
+     */
+    public ResponseEvent(Object source, ClientTransaction clientTransaction, Response response) {
+    	this( source, clientTransaction, null, response );
+    }
+    
     /**
     * Gets the client transaction associated with this ResponseEvent
     *
