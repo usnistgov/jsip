@@ -66,7 +66,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan 
  * 
  * 
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:00:59 $ 
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-22 19:01:17 $ 
  */
 public final class TLSMessageChannel extends MessageChannel implements
 		SIPMessageListener, Runnable {
@@ -370,6 +370,9 @@ public final class TLSMessageChannel extends MessageChannel implements
 	 * @param sipMessage
 	 *            Mesage to process (this calls the application for processing
 	 *            the message).
+	 *            
+	 * Jvb: note that this code is identical to TCPMessageChannel, refactor 
+	 * some day
 	 */
 	public void processMessage(SIPMessage sipMessage) throws Exception {
 		try {
@@ -401,23 +404,19 @@ public final class TLSMessageChannel extends MessageChannel implements
 				try {
 					this.peerAddress = mySock.getInetAddress();
 					// Check to see if the received parameter matches
-						InetAddress sentByAddress = InetAddress.getByName(hop
-							.getHost());
-
-					if (!sentByAddress.equals(this.peerAddress)) {
-						v.setParameter(Via.RECEIVED, this.peerAddress
-								.getHostAddress());
-						// @@@ hagai
-						v.setParameter(Via.RPORT, new Integer(this.peerPort)
-								.toString());
+					// JvB: dont do this. It is both costly and incorrect
+					// Must set received also when it is a FQDN, regardless whether
+					// it resolves to the correct IP address
+					// InetAddress sentByAddress = InetAddress.getByName(hop.getHost());
+					// JvB: if sender added 'rport', must always set received					
+					if ( v.hasParameter(Via.RPORT) 
+						|| !hop.getHost().equals(this.peerAddress)) {
+							v.setParameter(Via.RECEIVED, this.peerAddress.getHostAddress() );
 					}
-				} catch (java.net.UnknownHostException ex) {
-					// Could not resolve the sender address.
-					if (sipStack.isLoggingEnabled()) {
-						sipStack.logWriter
-								.logDebug("Rejecting message -- could not resolve Via Address");
-					}
-					return;
+					// @@@ hagai
+					// JvB: technically, may only do this when Via already contains
+					// rport
+					v.setParameter(Via.RPORT, Integer.toString(this.peerPort));
 				} catch (java.text.ParseException ex) {
 					InternalErrorHandler.handleException(ex);
 				}
@@ -720,6 +719,29 @@ public final class TLSMessageChannel extends MessageChannel implements
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2006/07/13 09:00:59  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  jeroen van bemmel
+ * Reviewed by:   mranga
+ * Moved some changes from jain-sip-1.2 to java.net
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.16  2006/06/27 12:52:41  mranga
  * Do not update the Local Tag of the dialog if the 2xx has a non null local tag. Fixed a bug in automatic 503 generation if listener is blocked.
  *
@@ -745,6 +767,29 @@ public final class TLSMessageChannel extends MessageChannel implements
  * respojnse arriving at the same time as NOTIFY) and other delights.
  * 
  * $Log: not supported by cvs2svn $
+ * Revision 1.4  2006/07/13 09:00:59  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  jeroen van bemmel
+ * Reviewed by:   mranga
+ * Moved some changes from jain-sip-1.2 to java.net
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.16  2006/06/27 12:52:41  mranga
  * Do not update the Local Tag of the dialog if the 2xx has a non null local tag. Fixed a bug in automatic 503 generation if listener is blocked.
  *
