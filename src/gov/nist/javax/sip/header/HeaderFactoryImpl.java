@@ -43,7 +43,7 @@ import gov.nist.javax.sip.address.*;
 
 /** Implementation of the JAIN SIP  HeaderFactory
 * 
-* @version 1.2 $Revision: 1.6 $ $Date: 2006-07-13 09:01:11 $
+* @version 1.2 $Revision: 1.7 $ $Date: 2006-07-22 18:38:36 $
 * @since 1.1
 *
 *@author M. Ranganathan   <br/>
@@ -225,6 +225,15 @@ public class HeaderFactoryImpl implements HeaderFactory {
 		return cseq;
 	}
 
+	/**
+	 * For backwards compatibility, also accept int
+	 * @deprecated
+	 */
+	public CSeqHeader createCSeqHeader( int sequenceNumber, String method)
+		throws ParseException, InvalidArgumentException {
+		return this.createCSeqHeader( (long) sequenceNumber, method );
+	}
+	
 	/**
 	 * Creates a new CallIdHeader based on the newly supplied callId value. 
 	 * 
