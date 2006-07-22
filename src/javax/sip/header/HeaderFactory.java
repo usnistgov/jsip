@@ -147,6 +147,25 @@ public interface HeaderFactory {
      * unexpectedly while parsing the method value.
      * @return the newly created CSeqHeader object.
      * 
+     * @deprecated Since 1.2 the sequenceNumber is long instead of int, use
+     * 		{@link #createCSeqHeader(long,String)}
+     */
+    public CSeqHeader createCSeqHeader( int sequenceNumber, String method)
+                             throws ParseException, InvalidArgumentException;
+    
+    
+    /**
+     * Creates a new CSeqHeader based on the newly supplied sequence number and 
+     * method values.
+     *
+     * @param sequenceNumber the new long value of the sequence number.
+     * @param method the new string value of the method.
+     * @throws InvalidArgumentException if supplied sequence number is less 
+     * than zero.
+     * @throws ParseException which signals that an error has been reached
+     * unexpectedly while parsing the method value.
+     * @return the newly created CSeqHeader object.
+     * 
      * @since 1.2 the sequenceNumber is long instead of int
      */
     public CSeqHeader createCSeqHeader( long sequenceNumber, String method)
