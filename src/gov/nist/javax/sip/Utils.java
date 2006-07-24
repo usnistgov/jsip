@@ -29,7 +29,6 @@
 package gov.nist.javax.sip;
 
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 /**
  * A few utilities that are used in various places by the stack. This is used to
@@ -37,7 +36,7 @@ import java.security.NoSuchAlgorithmException;
  * and odds and ends.
  * 
  * @author mranga
- * @version 1.2 $Revision: 1.13 $ $Date: 2006-07-14 01:50:28 $
+ * @version 1.2 $Revision: 1.14 $ $Date: 2006-07-24 21:29:55 $
  */
 public class Utils {
 
@@ -131,9 +130,14 @@ public class Utils {
 	 * be unique within a call.
 	 * 
 	 * @return a string that can be used as a tag parameter.
+	 * 
+	 * synchronized: needed for access to 'rand', else risk to generate same 
+	 * tag twice
 	 */
 	public static String generateTag() {
-		return new Integer(rand.nextInt()).toString();
+		synchronized (rand) {
+			return Integer.toHexString( rand.nextInt() );
+		}
 	}
 
 	/**
@@ -143,7 +147,7 @@ public class Utils {
 	 * @return a cryptographically random gloablly unique string that can be
 	 *         used as a branch identifier.
 	 */
-	public static String generateBranchId() {
+	public static synchronized String generateBranchId() {
 		long num = rand.nextLong()
 			    + Utils.counter ++
 				+ System.currentTimeMillis();
