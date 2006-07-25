@@ -70,7 +70,7 @@ import javax.sip.message.Response;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.32 $ $Date: 2006-07-22 19:01:17 $
+ * @version 1.2 $Revision: 1.33 $ $Date: 2006-07-25 19:47:00 $
  */
 public class UDPMessageChannel extends MessageChannel implements
 		ParseExceptionListener, Runnable {
@@ -335,7 +335,7 @@ public class UDPMessageChannel extends MessageChannel implements
 					// InetAddress sentByAddress = InetAddress.getByName(hop.getHost());
 					
 					boolean hasRPort = v.hasParameter(Via.RPORT);					
-					if (hasRPort || !hop.getHost().equals(this.peerAddress) ) {
+					if (hasRPort || !hop.getHost().equals(this.peerAddress.getHostAddress()) ) {
 						v.setParameter(Via.RECEIVED, this.peerAddress.getHostAddress());
 					}
 					
