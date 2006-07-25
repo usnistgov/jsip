@@ -63,7 +63,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.35 $ $Date: 2006-07-22 19:01:16 $ 
+ * @version 1.2 $Revision: 1.36 $ $Date: 2006-07-25 19:47:00 $ 
  */
 public class TCPMessageChannel extends MessageChannel implements
 		SIPMessageListener, Runnable {
@@ -418,7 +418,7 @@ public class TCPMessageChannel extends MessageChannel implements
 					// InetAddress sentByAddress = InetAddress.getByName(hop.getHost());
 					// JvB: if sender added 'rport', must always set received					
 					if ( v.hasParameter(Via.RPORT) 
-						|| !hop.getHost().equals(this.peerAddress)) {
+						|| !hop.getHost().equals(this.peerAddress.getHostAddress())) {
 							v.setParameter(Via.RECEIVED, this.peerAddress.getHostAddress() );
 					}
 					// @@@ hagai
