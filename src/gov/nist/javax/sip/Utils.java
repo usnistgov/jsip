@@ -29,6 +29,7 @@
 package gov.nist.javax.sip;
 
 import java.security.MessageDigest;
+import java.util.HashSet;
 
 /**
  * A few utilities that are used in various places by the stack. This is used to
@@ -36,7 +37,7 @@ import java.security.MessageDigest;
  * and odds and ends.
  * 
  * @author mranga
- * @version 1.2 $Revision: 1.14 $ $Date: 2006-07-24 21:29:55 $
+ * @version 1.2 $Revision: 1.15 $ $Date: 2006-07-25 09:28:40 $
  */
 public class Utils {
 
@@ -115,13 +116,14 @@ public class Utils {
 	 * call identifier in advance of generating a message.
 	 */
 	public static synchronized String generateCallIdentifier(String address) {
-		String date = new Long(System.currentTimeMillis()).toString()
-				+ callIDCounter++
-				+ new Integer(rand.nextInt()).toString();
-		byte cid[] = digester.digest(date.getBytes());
-		String cidString = Utils.toHexString(cid);
-		return cidString + "@" + address;
+		
+			String date = new Long(System.currentTimeMillis() + callIDCounter++
+					+ rand.nextLong()).toString();
+			byte cid[] = digester.digest(date.getBytes());
 
+			String cidString = Utils.toHexString(cid);
+			return cidString + "@" + address;
+	
 	}
 
 	/**
@@ -131,13 +133,13 @@ public class Utils {
 	 * 
 	 * @return a string that can be used as a tag parameter.
 	 * 
-	 * synchronized: needed for access to 'rand', else risk to generate same 
-	 * tag twice
+	 * synchronized: needed for access to 'rand', else risk to generate same tag
+	 * twice
 	 */
-	public static String generateTag() {
-		synchronized (rand) {
-			return Integer.toHexString( rand.nextInt() );
-		}
+	public static synchronized String generateTag() {
+		
+			return Integer.toHexString(rand.nextInt());
+	
 	}
 
 	/**
@@ -148,12 +150,30 @@ public class Utils {
 	 *         used as a branch identifier.
 	 */
 	public static synchronized String generateBranchId() {
-		long num = rand.nextLong()
-			    + Utils.counter ++
-				+ System.currentTimeMillis();
-		byte bid[] = digester.digest(Long.toString(num).getBytes());
-		// prepend with a magic cookie to indicate we are bis09 compatible.
-		return SIPConstants.BRANCH_MAGIC_COOKIE + Utils.toHexString(bid);
+		// 
+	
+		
+			long num = rand.nextLong() + Utils.counter++  + System.currentTimeMillis();
+
+			byte bid[] = digester.digest(Long.toString(num).getBytes());
+			// prepend with a magic cookie to indicate we are bis09 compatible.
+			return SIPConstants.BRANCH_MAGIC_COOKIE + Utils.toHexString(bid);
+		
+
+	}
+
+	public static void main(String[] args) {
+
+		HashSet branchIds = new HashSet();
+		for (int b = 0; b < 100000; b++) {
+			String bid = generateBranchId();
+			if (branchIds.contains(bid)) {
+				throw new RuntimeException("Duplicate Branch ID");
+			} else {
+				branchIds.add(bid);
+			}
+		}
+		System.out.println("Done!!");
 
 	}
 
