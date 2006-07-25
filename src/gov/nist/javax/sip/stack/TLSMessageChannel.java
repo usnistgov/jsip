@@ -66,7 +66,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan 
  * 
  * 
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-22 19:01:17 $ 
+ * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-25 19:47:00 $ 
  */
 public final class TLSMessageChannel extends MessageChannel implements
 		SIPMessageListener, Runnable {
@@ -410,7 +410,7 @@ public final class TLSMessageChannel extends MessageChannel implements
 					// InetAddress sentByAddress = InetAddress.getByName(hop.getHost());
 					// JvB: if sender added 'rport', must always set received					
 					if ( v.hasParameter(Via.RPORT) 
-						|| !hop.getHost().equals(this.peerAddress)) {
+						|| !hop.getHost().equals(this.peerAddress.getHostAddress())) {
 							v.setParameter(Via.RECEIVED, this.peerAddress.getHostAddress() );
 					}
 					// @@@ hagai
@@ -719,6 +719,9 @@ public final class TLSMessageChannel extends MessageChannel implements
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2006/07/22 19:01:17  jbemmel
+ * fixed and optimized setting of received / rport
+ *
  * Revision 1.4  2006/07/13 09:00:59  mranga
  * Issue number:
  * Obtained from:
@@ -767,6 +770,9 @@ public final class TLSMessageChannel extends MessageChannel implements
  * respojnse arriving at the same time as NOTIFY) and other delights.
  * 
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2006/07/22 19:01:17  jbemmel
+ * fixed and optimized setting of received / rport
+ *
  * Revision 1.4  2006/07/13 09:00:59  mranga
  * Issue number:
  * Obtained from:
