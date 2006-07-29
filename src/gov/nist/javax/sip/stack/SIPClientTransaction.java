@@ -160,7 +160,7 @@ import java.io.IOException;
  * @author M. Ranganathan  <a href=" {@docRoot}/uncopyright.html">This
  *         code is in the public domain. </a>
  * 
- * @version 1.2 $Revision: 1.49 $ $Date: 2006-07-13 09:00:54 $
+ * @version 1.2 $Revision: 1.50 $ $Date: 2006-07-29 12:38:01 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -920,12 +920,13 @@ public class SIPClientTransaction extends SIPTransaction implements
 				// retransmission of the INVITE is the application
 				// responsibility.
 
-				if (lastRequest != null) {
-					if (sipStack.generateTimeStampHeader) {
-						int milisec = (int) (System.currentTimeMillis() % 1000000);
+				if (lastRequest != null ) {
+					if (sipStack.generateTimeStampHeader && 
+							lastRequest.getHeader(TimeStampHeader.NAME) != null ) {
+						long milisec = System.currentTimeMillis();
 						TimeStamp timeStamp = new TimeStamp();
 						try {
-							timeStamp.setDelay((float) milisec);
+							timeStamp.setTimeStampLong(milisec);
 						} catch (InvalidArgumentException ex) {
 							InternalErrorHandler.handleException(ex);
 						}

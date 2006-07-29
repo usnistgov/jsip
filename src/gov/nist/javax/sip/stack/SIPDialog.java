@@ -58,7 +58,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.23 $ $Date: 2006-07-22 20:43:58 $
+ * @version 1.2 $Revision: 1.24 $ $Date: 2006-07-29 12:38:00 $
  * 
  * @author M. Ranganathan
  * 
@@ -1821,8 +1821,18 @@ public class SIPDialog implements javax.sip.Dialog {
 		// Check for null.
 		// Bug report and fix by Antonis Karydas.
 
-		if (this.lastAck != null)
+		if (this.lastAck != null) {
+			if (lastAck.getHeader(TimeStampHeader.NAME) != null && sipStack.generateTimeStampHeader) {
+				TimeStamp ts = new TimeStamp();
+				try {
+					ts.setTimeStampLong(System.currentTimeMillis());
+					lastAck.setHeader(ts);
+				} catch (InvalidArgumentException e) {
+
+				}
+			}
 			this.sendAck(lastAck, false);
+		}
 
 	}
 

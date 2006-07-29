@@ -175,12 +175,15 @@ import gov.nist.core.net.NetworkLayer;
  * your own address resolver allows you to customize address lookup.
  * </li>
  * 
- * 
+ * <li><b>gov.nist.javax.sip.AUTO_GENERATE_TIMESTAMP= [true| false] </b><br/> Automatically
+ * generate a getTimeOfDay timestamp for a retransmitted request if the original request contained
+ * a timestamp. This is useful for profiling.
+ * </li>
  * </ul>
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.43 $ $Date: 2006-07-20 14:58:32 $
+ * @version 1.2 $Revision: 1.44 $ $Date: 2006-07-29 12:38:01 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -522,7 +525,12 @@ public class SipStackImpl extends SIPTransactionStack implements
 								.getProperty(
 										"gov.nist.javax.sip.PASS_INVITE_NON_2XX_ACK_TO_LISTENER",
 										"false")).booleanValue();
-
+		
+		this.generateTimeStampHeader = Boolean.valueOf(
+				configurationProperties
+						.getProperty(
+								"gov.nist.javax.sip.AUTO_GENERATE_TIMESTAMP",
+								"false")).booleanValue();
 	}
 
 	/*
