@@ -54,6 +54,8 @@ import javax.sip.message.Response;
  * Bug fix by viswashanti.kadiyala@antepo.com. Hagai Sela addded fixes 
  * for NAT traversal. Jeroen van Bemmel fixed up for buggy clients (such
  * as windows messenger). David Alique fixed an address recording bug.
+ * Jeroen van Bemmel fixed a performance issue where the stack was doing
+ * DNS lookups (potentially unnecessary).
  * 
  */
 
@@ -70,7 +72,7 @@ import javax.sip.message.Response;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.33 $ $Date: 2006-07-25 19:47:00 $
+ * @version 1.2 $Revision: 1.34 $ $Date: 2006-07-29 12:38:00 $
  */
 public class UDPMessageChannel extends MessageChannel implements
 		ParseExceptionListener, Runnable {
