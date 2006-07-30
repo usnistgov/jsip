@@ -53,7 +53,7 @@ import java.text.ParseException;
 /**
  * Implementation of the JAIN-SIP provider interface.
  * 
- * @version 1.2 $Revision: 1.34 $ $Date: 2006-07-20 14:58:33 $
+ * @version 1.2 $Revision: 1.35 $ $Date: 2006-07-30 03:20:23 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -750,6 +750,10 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 		SIPTransaction sipTransaction = (SIPTransaction) transaction;
 
 		if (transaction instanceof ServerTransaction) {
+			SIPServerTransaction st = (SIPServerTransaction) transaction;
+			if (st.getLastResponse() != null ) {
+				throw new SipException("Cannot set dialog after response has been sent");
+			}
 			SIPRequest sipRequest = (SIPRequest) transaction.getRequest();
 			String dialogId = sipRequest.getDialogId(true);
 			dialog = sipStack.getDialog(dialogId);
@@ -758,7 +762,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 				// create and register the dialog and add the inital route set.
 				dialog.addTransaction(sipTransaction);
 				dialog.addRoute(sipRequest);
-				sipTransaction.setDialog(dialog, sipRequest.getDialogId(true));
+				sipTransaction.setDialog(dialog, null);
 			} else {
 				sipTransaction.setDialog(dialog, sipRequest.getDialogId(true));
 			}
@@ -780,7 +784,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 				} else {
 					dialog = sipStack.createDialog(sipTransaction);
 				}
-				sipClientTx.setDialog(dialog, request.getDialogId(false));
+				sipClientTx.setDialog(dialog, null);
 
 			} else {
 				throw new SipException(
