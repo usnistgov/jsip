@@ -160,7 +160,7 @@ import java.io.IOException;
  * @author M. Ranganathan  <a href=" {@docRoot}/uncopyright.html">This
  *         code is in the public domain. </a>
  * 
- * @version 1.2 $Revision: 1.50 $ $Date: 2006-07-29 12:38:01 $
+ * @version 1.2 $Revision: 1.51 $ $Date: 2006-07-30 03:20:22 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -1309,7 +1309,7 @@ public class SIPClientTransaction extends SIPTransaction implements
 			throw new NullPointerException("bad dialog null");
 		}
 		if ( this.defaultDialog == null) this.defaultDialog = sipDialog;
-		if ( sipDialog.getDialogId() != null) {
+		if ( dialogId != null && sipDialog.getDialogId() != null) {
 			this.sipDialogs.put(dialogId, sipDialog);
 			
 		}

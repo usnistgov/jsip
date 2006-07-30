@@ -148,7 +148,7 @@ import java.util.TimerTask;
  *                                 
  * </pre>
  * 
- * @version 1.2 $Revision: 1.67 $ $Date: 2006-07-20 14:58:33 $
+ * @version 1.2 $Revision: 1.68 $ $Date: 2006-07-30 03:20:22 $
  * @author M. Ranganathan <br/><a href=" {@docRoot}/uncopyright.html">This
  *         code is in the public domain. </a>
  * 
@@ -1386,7 +1386,8 @@ public class SIPServerTransaction extends SIPTransaction implements
 			this.sipStack.logWriter.logDebug("setDialog " + this + " dialog = "
 					+ sipDialog);
 		this.dialog = sipDialog;
-		this.dialog.setAssigned();
+		if (dialogId != null)
+			this.dialog.setAssigned();
 		if (this.retransmissionAlertEnabled
 				&& this.retransmissionAlertTimerTask != null) {
 			this.retransmissionAlertTimerTask.cancel();
