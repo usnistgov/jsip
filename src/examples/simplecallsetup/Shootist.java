@@ -79,6 +79,9 @@ public class Shootist implements SipListener {
 		}
 	}
 
+  // Save the created ACK request, to respond to retransmitted 2xx
+  private Request ackRequest;
+
 	public void processResponse(ResponseEvent responseReceivedEvent) {
 		System.out.println("Got a response");
 		Response response = (Response) responseReceivedEvent.getResponse();
@@ -89,6 +92,16 @@ public class Shootist implements SipListener {
 				+ response.getStatusCode() + " " + cseq);
 		if (tid == null) {
 			System.out.println("Stray response -- dropping ");
+			
+			// RFC3261: MUST respond to every 2xx
+			if (ackRequest!=null && dialog!=null) {
+			   System.out.println("re-sending ACK");
+			   try {
+			      dialog.sendAck(ackRequest);
+			   } catch (SipException se) {
+			      se.printStackTrace(); 
+			   }
+			}			
 			return;
 		}
 		System.out.println("transaction state is " + tid.getState());
@@ -98,7 +111,7 @@ public class Shootist implements SipListener {
 		try {
 			if (response.getStatusCode() == Response.OK) {
 				if (cseq.getMethod().equals(Request.INVITE)) {
-					Request ackRequest = dialog.createRequest(Request.ACK);
+					ackRequest = dialog.createRequest(Request.ACK);
 					System.out.println("Sending ACK");
 					dialog.sendAck(ackRequest);
 				} else if (cseq.getMethod().equals(Request.CANCEL)) {
