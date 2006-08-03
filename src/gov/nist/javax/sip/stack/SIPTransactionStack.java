@@ -1,28 +1,28 @@
 /*
-* Conditions Of Use 
-* 
-* This software was developed by employees of the National Institute of
-* Standards and Technology (NIST), an agency of the Federal Government.
-* Pursuant to title 15 Untied States Code Section 105, works of NIST
-* employees are not subject to copyright protection in the United States
-* and are considered to be in the public domain.  As a result, a formal
-* license is not needed to use the software.
-* 
-* This software is provided by NIST as a service and is expressly
-* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
-* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
-* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
-* AND DATA ACCURACY.  NIST does not warrant or make any representations
-* regarding the use of the software or the results thereof, including but
-* not limited to the correctness, accuracy, reliability or usefulness of
-* the software.
-* 
-* Permission to use this software is contingent upon your acceptance
-* of the terms of this agreement
-*  
-* .
-* 
-*/
+ * Conditions Of Use 
+ * 
+ * This software was developed by employees of the National Institute of
+ * Standards and Technology (NIST), an agency of the Federal Government.
+ * Pursuant to title 15 Untied States Code Section 105, works of NIST
+ * employees are not subject to copyright protection in the United States
+ * and are considered to be in the public domain.  As a result, a formal
+ * license is not needed to use the software.
+ * 
+ * This software is provided by NIST as a service and is expressly
+ * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+ * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+ * AND DATA ACCURACY.  NIST does not warrant or make any representations
+ * regarding the use of the software or the results thereof, including but
+ * not limited to the correctness, accuracy, reliability or usefulness of
+ * the software.
+ * 
+ * Permission to use this software is contingent upon your acceptance
+ * of the terms of this agreement
+ *  
+ * .
+ * 
+ */
 package gov.nist.javax.sip.stack;
 
 import gov.nist.javax.sip.DefaultAddressResolver;
@@ -54,11 +54,10 @@ import java.io.IOException;
 import java.net.*;
 
 /*
- * Jeff Keyser : architectural suggestions and contributions.
- * Pierre De Rop and Thomas Froment : Bug reports.
- * Jeyashankher < jai@lucent.com > : bug reports.
+ * Jeff Keyser : architectural suggestions and contributions. Pierre De Rop and
+ * Thomas Froment : Bug reports. Jeyashankher < jai@lucent.com > : bug reports.
  * 
- *
+ * 
  */
 
 /**
@@ -71,33 +70,30 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.53 $ $Date: 2006-07-13 09:00:55 $
+ * @version 1.2 $Revision: 1.54 $ $Date: 2006-08-03 22:30:14 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
-	
+
 	/*
 	 * Number of milliseconds between timer ticks (500).
 	 */
 	public static final int BASE_TIMER_INTERVAL = 500;
 
 	/*
-	 * Connection linger time (seconds) this is the time
-	 * (in seconds) for which we linger the TCP connection
-	 * before closing it.
+	 * Connection linger time (seconds) this is the time (in seconds) for which
+	 * we linger the TCP connection before closing it.
 	 */
 	public static final int CONNECTION_LINGER_TIME = 8;
 
-	
-	 /*
-	  *Table of retransmission Alert timers. 
-	  */
+	/*
+	 * Table of retransmission Alert timers.
+	 */
 	protected ConcurrentHashMap retransmissionAlertTransactions;
 
 	// Table of dialogs.
 	protected ConcurrentHashMap dialogTable;
 
-	
 	// A set of methods that result in dialog creations.
 	protected HashSet dialogCreatingMethods;
 
@@ -111,12 +107,12 @@ public abstract class SIPTransactionStack implements
 	// hashtable for fast lookup
 	private ConcurrentHashMap clientTransactionTable;
 
-	//Set to false if you want hiwat and lowat to be consulted.
+	// Set to false if you want hiwat and lowat to be consulted.
 	private boolean unlimitedTableSize = false;
 
 	// High water mark for ServerTransaction Table
 	// after which requests are dropped.
-	protected  int serverTransactionTableHighwaterMark = 5000;
+	protected int serverTransactionTableHighwaterMark = 5000;
 
 	// Low water mark for Server Tx table size after which
 	// requests are selectively dropped
@@ -124,8 +120,7 @@ public abstract class SIPTransactionStack implements
 
 	// Hashtable for server transactions.
 	private ConcurrentHashMap serverTransactionTable;
-	
-	
+
 	/*
 	 * A wrapper around log4j to help log debug.
 	 */
@@ -174,12 +169,14 @@ public abstract class SIPTransactionStack implements
 
 	/*
 	 * IP address of stack -- this can be re-written by stun.
+	 * 
 	 * @deprecated
 	 */
 	protected String stackAddress;
 
 	/*
 	 * INET address of stack (cached to avoid repeated lookup)
+	 * 
 	 * @deprecated
 	 */
 	protected InetAddress stackInetAddress;
@@ -195,9 +192,8 @@ public abstract class SIPTransactionStack implements
 	protected javax.sip.address.Router router;
 
 	/*
-	 * Number of pre-allocated threads for processing udp messages.
-	 * -1 means no preallocated threads ( dynamically allocated
-	 * threads).
+	 * Number of pre-allocated threads for processing udp messages. -1 means no
+	 * preallocated threads ( dynamically allocated threads).
 	 */
 	protected int threadPoolSize;
 
@@ -241,16 +237,16 @@ public abstract class SIPTransactionStack implements
 	 * for after delivery of first byte of message.
 	 */
 	protected int readTimeout;
-	
+
 	/*
-	 * The socket factory. Can be overriden by applications that
-	 * want direct access to the underlying socket.
+	 * The socket factory. Can be overriden by applications that want direct
+	 * access to the underlying socket.
 	 */
 
 	protected NetworkLayer networkLayer;
 
 	/*
-	 * Outbound proxy String ( to be handed to the outbound proxy class on 
+	 * Outbound proxy String ( to be handed to the outbound proxy class on
 	 * creation).
 	 */
 	protected String outboundProxy;
@@ -303,7 +299,7 @@ public abstract class SIPTransactionStack implements
 		this.dialogCreatingMethods.add(Request.INVITE);
 		this.dialogCreatingMethods.add(Request.SUBSCRIBE);
 		// The default (identity) address lookup scheme
-		
+
 		this.addressResolver = new DefaultAddressResolver();
 
 		// Notify may or may not create a dialog. This is handled in
@@ -382,8 +378,8 @@ public abstract class SIPTransactionStack implements
 	 * retransmission alerts.
 	 * 
 	 * @param dialogId
-	 * @return -- the RetransmissionAlert enabled transaction corresponding
-	 * to the given dialog ID.
+	 * @return -- the RetransmissionAlert enabled transaction corresponding to
+	 *         the given dialog ID.
 	 */
 	public SIPServerTransaction getRetransmissionAlertTransaction(
 			String dialogId) {
@@ -504,7 +500,8 @@ public abstract class SIPTransactionStack implements
 		if (id != null) {
 			Object old = this.dialogTable.remove(id);
 
-			if (old != null && !dialog.testAndSetIsDialogTerminatedEventDelivered()) {
+			if (old != null
+					&& !dialog.testAndSetIsDialogTerminatedEventDelivered()) {
 				DialogTerminatedEvent event = new DialogTerminatedEvent(dialog
 						.getSipProvider(), dialog);
 
@@ -547,8 +544,8 @@ public abstract class SIPTransactionStack implements
 	 * described above).
 	 * 
 	 * @param notifyMessage
-	 * @return -- the matching ClientTransaction with semaphore aquired
-	 * or null if no such client transaction can be found.
+	 * @return -- the matching ClientTransaction with semaphore aquired or null
+	 *         if no such client transaction can be found.
 	 */
 	public SIPClientTransaction findSubscribeTransaction(
 			SIPRequest notifyMessage, ListeningPointImpl listeningPoint) {
@@ -614,7 +611,7 @@ public abstract class SIPTransactionStack implements
 						&& eventHdr.match(hisEvent)
 						&& notifyMessage.getCallId().getCallId()
 								.equalsIgnoreCase(ct.callId.getCallId())) {
-					if ( ct.acquireSem() ) 
+					if (ct.acquireSem())
 						retval = ct;
 					return retval;
 				}
@@ -677,7 +674,7 @@ public abstract class SIPTransactionStack implements
 				if (logWriter.isLoggingEnabled())
 					getLogWriter().logDebug("clientTx: looking for key " + key);
 				retval = (SIPTransaction) clientTransactionTable.get(key);
-				if ( key.startsWith(SIPConstants.BRANCH_MAGIC_COOKIE_LOWER_CASE))
+				if (key.startsWith(SIPConstants.BRANCH_MAGIC_COOKIE_LOWER_CASE))
 					return retval;
 
 			}
@@ -862,11 +859,12 @@ public abstract class SIPTransactionStack implements
 				if (currentTransaction != null) {
 					// Associate the tx with the received request.
 					requestReceived.setTransaction(currentTransaction);
-					if (currentTransaction != null && currentTransaction.acquireSem())
+					if (currentTransaction != null
+							&& currentTransaction.acquireSem())
 						return currentTransaction;
 					else
 						return null;
-					
+
 				}
 				// Creating a new server tx. May fail under heavy load.
 				currentTransaction = createServerTransaction(requestMessageChannel);
@@ -911,7 +909,7 @@ public abstract class SIPTransactionStack implements
 	 * 
 	 * @return A client transaction.
 	 */
-	protected  ServerResponseInterface newSIPServerResponse(
+	protected ServerResponseInterface newSIPServerResponse(
 			SIPResponse responseReceived, MessageChannel responseMessageChannel) {
 
 		// JvB: Need to log before passing the response to the client app, it
@@ -1046,10 +1044,11 @@ public abstract class SIPTransactionStack implements
 	 */
 	public SIPServerTransaction createServerTransaction(
 			MessageChannel encapsulatedMessageChannel) {
-		if (unlimitedTableSize  || this.serverTransactionTable.size() < serverTransactionTableLowaterMark)
+		if (unlimitedTableSize
+				|| this.serverTransactionTable.size() < serverTransactionTableLowaterMark)
 			return new SIPServerTransaction(this, encapsulatedMessageChannel);
 		else if (this.serverTransactionTable.size() >= serverTransactionTableHighwaterMark) {
-			
+
 			return null;
 		} else {
 			float threshold = ((float) (serverTransactionTable.size() - serverTransactionTableLowaterMark))
@@ -1098,11 +1097,13 @@ public abstract class SIPTransactionStack implements
 			// Send a notification to the listener.
 			SipProviderImpl sipProvider = (SipProviderImpl) sipTransaction
 					.getSipProvider();
-			if (removed != null) {
-				TransactionTerminatedEvent event = new TransactionTerminatedEvent(
-						sipProvider, (ServerTransaction) sipTransaction);
+			if (removed != null &&
+				sipTransaction.testAndSetTransactionTerminatedEvent()) {
+					TransactionTerminatedEvent event = new TransactionTerminatedEvent(
+							sipProvider, (ServerTransaction) sipTransaction);
 
-				sipProvider.handleEvent(event, sipTransaction);
+					sipProvider.handleEvent(event, sipTransaction);
+				
 			}
 		} else {
 
@@ -1110,7 +1111,7 @@ public abstract class SIPTransactionStack implements
 			Object removed = clientTransactionTable.remove(key);
 
 			// Send a notification to the listener.
-			if (removed != null) {
+			if (removed != null && sipTransaction.testAndSetTransactionTerminatedEvent()) {
 				SipProviderImpl sipProvider = (SipProviderImpl) sipTransaction
 						.getSipProvider();
 				TransactionTerminatedEvent event = new TransactionTerminatedEvent(
@@ -1422,7 +1423,6 @@ public abstract class SIPTransactionStack implements
 		this.stackInetAddress = InetAddress.getByName(stackAddress);
 	}
 
-	
 	/**
 	 * Get my address.
 	 * 
@@ -1448,7 +1448,7 @@ public abstract class SIPTransactionStack implements
 	}
 
 	/**
-	 * Get the router algorithm. 
+	 * Get the router algorithm.
 	 * 
 	 * @return Router router
 	 */
@@ -1476,10 +1476,6 @@ public abstract class SIPTransactionStack implements
 	public Router getRouter() {
 		return this.router;
 	}
-
-	
-
-	
 
 	/**
 	 * return the status of the toExit flag.
@@ -1512,11 +1508,11 @@ public abstract class SIPTransactionStack implements
 	}
 
 	/**
-	 * Removes a MessageProcessor from this SIPStack. 
+	 * Removes a MessageProcessor from this SIPStack.
 	 * 
 	 * @param oldMessageProcessor
 	 */
-	protected  void removeMessageProcessor(MessageProcessor oldMessageProcessor) {
+	protected void removeMessageProcessor(MessageProcessor oldMessageProcessor) {
 		synchronized (messageProcessors) {
 			if (messageProcessors.remove(oldMessageProcessor)) {
 				oldMessageProcessor.stop();
@@ -1537,8 +1533,6 @@ public abstract class SIPTransactionStack implements
 					.toArray(new MessageProcessor[0]);
 		}
 	}
-
-	
 
 	/**
 	 * Creates the equivalent of a JAIN listening point and attaches to the
@@ -1649,11 +1643,12 @@ public abstract class SIPTransactionStack implements
 	}
 
 	/**
-	 * Return true if a given event can result in a forked subscription.
-	 * The stack is configured with a set of event names that can result
-	 * in forked subscriptions.
+	 * Return true if a given event can result in a forked subscription. The
+	 * stack is configured with a set of event names that can result in forked
+	 * subscriptions.
 	 * 
-	 * @param ename -- event name to check.
+	 * @param ename --
+	 *            event name to check.
 	 * 
 	 */
 	public boolean isEventForked(String ename) {
@@ -1672,15 +1667,15 @@ public abstract class SIPTransactionStack implements
 	public AddressResolver getAddressResolver() {
 		return this.addressResolver;
 	}
-	
+
 	/**
 	 * Set the address resolution interface
 	 * 
 	 * @param addressResolver --
 	 *            the address resolver to set.
 	 */
-	 public void setAddressResolver(AddressResolver addressResolver) {
+	public void setAddressResolver(AddressResolver addressResolver) {
 		this.addressResolver = addressResolver;
-	 }
+	}
 
 }
