@@ -104,7 +104,7 @@ public class Shootme implements SipListener {
                 st = sipProvider.getNewServerTransaction(request);
                 System.out.println("Server transaction created!" + request);
 
-                System.out.println("Note that the dialog is null here. Dialog = " + st.getDialog());
+                System.out.println("Dialog = " + st.getDialog());
                 
                
             } 
@@ -122,6 +122,15 @@ public class Shootme implements SipListener {
           
             System.out.println("Dialog " + dialog);
             
+	    dialog = sipProvider.getNewDialog(st);
+
+            System.out.println("Dialog " + st.getDialog());
+		
+	    if ( dialog != st.getDialog() ) {
+		throw new RuntimeException("Dialog mismatch ");
+
+	    }
+	
             response = messageFactory.createResponse(200, request);
             toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
             toHeader.setTag("4321");

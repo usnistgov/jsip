@@ -34,6 +34,8 @@ public class Shootme implements SipListener {
 
 	private Dialog dialog;
 
+	public static final boolean callerSendsBye = true;
+
 	class MyTimerTask extends TimerTask {
 		Shootme shootme;
 
@@ -91,9 +93,11 @@ public class Shootme implements SipListener {
 			System.out.println("shootme: got an ACK! ");
 			System.out.println("Dialog State = " + dialog.getState());
 			SipProvider provider = (SipProvider) requestEvent.getSource();
-			Request byeRequest = dialog.createRequest(Request.BYE);
-			ClientTransaction ct = provider.getNewClientTransaction(byeRequest);
-			dialog.sendRequest(ct);
+			if (! callerSendsBye) {
+			   Request byeRequest = dialog.createRequest(Request.BYE);
+			   ClientTransaction ct = provider.getNewClientTransaction(byeRequest);
+			   dialog.sendRequest(ct);
+			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
