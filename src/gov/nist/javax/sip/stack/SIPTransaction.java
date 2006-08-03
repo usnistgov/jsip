@@ -54,7 +54,7 @@ import EDU.oswego.cs.dl.util.concurrent.Semaphore;
  * @author M. Ranganathan
  * 
  * 
- * @version 1.2 $Revision: 1.41 $ $Date: 2006-07-13 09:01:00 $
+ * @version 1.2 $Revision: 1.42 $ $Date: 2006-08-03 22:30:14 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
 		javax.sip.Transaction {
@@ -240,6 +240,8 @@ public abstract class SIPTransaction extends MessageChannel implements
 	protected String toTag;
 
 	protected String fromTag;
+	
+	private boolean terminatedEventDelivered;
 
 	public String getBranchId() {
 		return this.branch;
@@ -1157,6 +1159,17 @@ public abstract class SIPTransaction extends MessageChannel implements
 		this.toListener = true;
 
 	}
+	
+	/**
+	 * Flag to test if the terminated event is delivered.
+	 * 
+	 * @return
+	 */
+	protected synchronized boolean testAndSetTransactionTerminatedEvent() {
+		boolean retval = !this.terminatedEventDelivered;
+		this.terminatedEventDelivered = true;
+		return retval;
+	}
 
 	
 	/**
@@ -1184,4 +1197,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 	 */
 	protected abstract void fireTimeoutTimer();
 
+	
+
+	
 }

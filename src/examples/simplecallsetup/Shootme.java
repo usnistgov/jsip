@@ -93,10 +93,11 @@ public class Shootme implements SipListener {
 			System.out.println("shootme: got an ACK! ");
 			System.out.println("Dialog State = " + dialog.getState());
 			SipProvider provider = (SipProvider) requestEvent.getSource();
-			if (! callerSendsBye) {
-			   Request byeRequest = dialog.createRequest(Request.BYE);
-			   ClientTransaction ct = provider.getNewClientTransaction(byeRequest);
-			   dialog.sendRequest(ct);
+			if (!callerSendsBye) {
+				Request byeRequest = dialog.createRequest(Request.BYE);
+				ClientTransaction ct = provider
+						.getNewClientTransaction(byeRequest);
+				dialog.sendRequest(ct);
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -285,7 +286,12 @@ public class Shootme implements SipListener {
 
 	public void processTransactionTerminated(
 			TransactionTerminatedEvent transactionTerminatedEvent) {
-		System.out.println("Transaction terminated event recieved");
+		if (transactionTerminatedEvent.isServerTransaction())
+			System.out.println("Transaction terminated event recieved"
+					+ transactionTerminatedEvent.getServerTransaction());
+		else
+			System.out.println("Transaction terminated "
+					+ transactionTerminatedEvent.getClientTransaction());
 
 	}
 
