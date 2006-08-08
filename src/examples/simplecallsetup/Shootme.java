@@ -171,6 +171,8 @@ public class Shootme implements SipListener {
 			ServerTransaction serverTransactionId) {
 		SipProvider sipProvider = (SipProvider) requestEvent.getSource();
 		Request request = requestEvent.getRequest();
+		Dialog dialog = requestEvent.getDialog();
+		System.out.println("local party = " + dialog.getLocalParty());
 		try {
 			System.out.println("shootme:  got a bye sending OK.");
 			Response response = messageFactory.createResponse(200, request);
@@ -298,6 +300,8 @@ public class Shootme implements SipListener {
 	public void processDialogTerminated(
 			DialogTerminatedEvent dialogTerminatedEvent) {
 		System.out.println("Dialog terminated event recieved");
+		Dialog d = dialogTerminatedEvent.getDialog();
+		System.out.println("Local Party = " + d.getLocalParty());
 
 	}
 
