@@ -148,7 +148,7 @@ import java.util.TimerTask;
  *                                 
  * </pre>
  * 
- * @version 1.2 $Revision: 1.68 $ $Date: 2006-07-30 03:20:22 $
+ * @version 1.2 $Revision: 1.69 $ $Date: 2006-08-08 03:48:12 $
  * @author M. Ranganathan <br/><a href=" {@docRoot}/uncopyright.html">This
  *         code is in the public domain. </a>
  * 
@@ -1004,7 +1004,9 @@ public class SIPServerTransaction extends SIPTransaction implements
 			if (isInviteTransaction() && lastResponse != null) {
 				// null can happen if this is terminating when the timer fires.
 				if (!this.retransmissionAlertEnabled) {
-					super.sendMessage(lastResponse);
+					// Retransmit last response until ack.
+					if ( lastResponse.getStatusCode()/100 >2 )
+						super.sendMessage(lastResponse);
 				} else {
 					// alert the application to retransmit the last response
 					SipProviderImpl sipProvider = (SipProviderImpl) this
