@@ -101,8 +101,8 @@ public class Shootist implements SipListener {
 		}
 	}
 
-  // Save the created ACK request, to respond to retransmitted 2xx
-  private Request ackRequest;
+       // Save the created ACK request, to respond to retransmitted 2xx
+       private Request ackRequest;
 
 	public void processResponse(ResponseEvent responseReceivedEvent) {
 		System.out.println("Got a response");
@@ -112,8 +112,9 @@ public class Shootist implements SipListener {
 
 		System.out.println("Response received : Status Code = "
 				+ response.getStatusCode() + " " + cseq);
+		
+			
 		if (tid == null) {
-			System.out.println("Stray response -- dropping ");
 			
 			// RFC3261: MUST respond to every 2xx
 			if (ackRequest!=null && dialog!=null) {
@@ -282,7 +283,7 @@ public class Shootist implements SipListener {
 			CallIdHeader callIdHeader = sipProvider.getNewCallId();
 
 			// Create a new Cseq header
-			CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(1,
+			CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(1L,
 					Request.INVITE);
 
 			// Create a new MaxForwardsHeader
