@@ -1295,9 +1295,5 @@ public class InviteClientTransactionsStateMachineTest extends MessageFlowHarness
         return new TestSuite( InviteClientTransactionsStateMachineTest.class );
     }
 
-    public static void main( String[] args )
-    {
-        junit.swingui.TestRunner.run( InviteClientTransactionsStateMachineTest.class );
-    }
 
 }

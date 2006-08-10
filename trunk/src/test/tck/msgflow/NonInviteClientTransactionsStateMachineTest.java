@@ -480,9 +480,5 @@ public class NonInviteClientTransactionsStateMachineTest
 		return new TestSuite(NonInviteClientTransactionsStateMachineTest.class);
 	}
 
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.run(
-			NonInviteClientTransactionsStateMachineTest.class);
-	}
 
 }

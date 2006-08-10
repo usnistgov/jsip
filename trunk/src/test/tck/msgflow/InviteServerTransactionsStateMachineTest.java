@@ -1447,9 +1447,5 @@ public class InviteServerTransactionsStateMachineTest
 		return new TestSuite(InviteServerTransactionsStateMachineTest.class);
 	}
 
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.run(
-			InviteServerTransactionsStateMachineTest.class);
-	}
 
 }
