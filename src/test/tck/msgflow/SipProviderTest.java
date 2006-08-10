@@ -501,9 +501,6 @@ public class SipProviderTest extends MessageFlowHarness {
 		return new TestSuite(SipProviderTest.class);
 	}
 
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.run(SipProviderTest.class);
-	}
 
 }
 /**

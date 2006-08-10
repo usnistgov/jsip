@@ -193,7 +193,4 @@ public class ClientTransactionTest extends MessageFlowHarness {
 		return new TestSuite(ClientTransactionTest.class);
 	}
 
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.run(ClientTransactionTest.class);
-	}
 }

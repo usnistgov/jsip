@@ -64,7 +64,7 @@ public class Shootist  implements SipListener {
 	private static String peerHostPort = PEER_ADDRESS + ":" + PEER_PORT;
 
 	// To run on two machines change these to suit.
-	public static final String myAddress = "127.0.0.1";
+	public static final String myAddress = "localhost";
 
 	private static final int myPort = 5060;
 
@@ -236,10 +236,7 @@ public class Shootist  implements SipListener {
 					MaxForwardsHeader mf = protocolObjects.headerFactory
 							.createMaxForwardsHeader(10);
 					inviteRequest.addHeader(mf);
-					try {
-						Thread.sleep(100);
-					} catch (Exception ex) {
-					}
+					Thread.sleep(100);
 					ClientTransaction ct = provider
 							.getNewClientTransaction(inviteRequest);
 					dialog.sendRequest(ct);

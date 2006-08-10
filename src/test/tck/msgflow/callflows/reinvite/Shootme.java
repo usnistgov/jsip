@@ -44,7 +44,7 @@ public class Shootme  implements SipListener {
 	
 	
 	// To run on two machines change these to suit.
-	public static final String myAddress = "127.0.0.1";
+	public static final String myAddress = "localhost";
 
 	public static final int myPort = 5070;
 

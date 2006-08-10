@@ -406,8 +406,5 @@ public class DialogTest extends MessageFlowHarness {
 		return new TestSuite(DialogTest.class);
 	}
 
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.run(DialogTest.class);
-	}
 
 }

@@ -26,7 +26,7 @@ public class ProtocolObjects {
 
 	public final SipStack sipStack;
 
-	private int logLevel = 0;
+	private int logLevel = 32;
 
 	String logFileDirectory = "logs/";
 
