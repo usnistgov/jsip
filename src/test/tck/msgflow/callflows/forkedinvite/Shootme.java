@@ -152,6 +152,12 @@ public class Shootme   implements SipListener {
 			Address address = protocolObjects.addressFactory.createAddress("Shootme <sip:"
 					+ myAddress + ":" + myPort + ">");
 			
+			// Add a random sleep to stagger the two OK's for the benifit of implementations
+			// that may not be too good about handling re-entrancy.
+			int timeToSleep = (int) ( Math.random() * 1000);
+			
+			Thread.sleep(timeToSleep);
+			
 			st.sendResponse(response);
 
 			Response ringingResponse = protocolObjects.messageFactory.createResponse(Response.RINGING,
