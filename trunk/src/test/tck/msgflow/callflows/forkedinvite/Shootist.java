@@ -12,7 +12,6 @@ import org.apache.log4j.SimpleLayout;
 import test.tck.TestHarness;
 import test.tck.msgflow.callflows.ProtocolObjects;
 
-
 import java.util.*;
 
 import junit.framework.TestCase;
@@ -24,46 +23,40 @@ import junit.framework.TestCase;
  * @author M. Ranganathan
  */
 
-public class Shootist  implements SipListener {
+public class Shootist implements SipListener {
 
 	private ContactHeader contactHeader;
 
-	
 	private ClientTransaction inviteTid;
 
 	private int count;
-	
+
 	private SipProvider sipProvider;
-	
+
 	private String host = "127.0.0.1";
-	
-	private int port ;
-	
+
+	private int port;
+
 	private String peerHost = "127.0.0.1";
-	
-	private int peerPort ;
+
+	private int peerPort;
 
 	private ListeningPoint listeningPoint;
-	
+
 	private static String unexpectedException = "Unexpected exception ";
-	
+
 	private static Logger logger = Logger.getLogger(Shootist.class);
-	
-	
+
 	private ProtocolObjects protocolObjects;
 
-
 	private Dialog originalDialog;
-	
-	private HashSet forkedDialogs;
-	
-	
 
+	private HashSet forkedDialogs;
 
 	private Shootist() {
 		this.forkedDialogs = new HashSet();
 	}
-	
+
 	public Shootist(int myPort, int proxyPort, ProtocolObjects protocolObjects) {
 		this();
 		this.protocolObjects = protocolObjects;
@@ -76,14 +69,14 @@ public class Shootist  implements SipListener {
 		ServerTransaction serverTransactionId = requestReceivedEvent
 				.getServerTransaction();
 
-		logger.info("\n\nRequest " + request.getMethod()
-				+ " received at " + protocolObjects.sipStack.getStackName()
+		logger.info("\n\nRequest " + request.getMethod() + " received at "
+				+ protocolObjects.sipStack.getStackName()
 				+ " with server transaction id " + serverTransactionId);
 
 		// We are the UAC so the only request we get is the BYE.
 		if (request.getMethod().equals(Request.BYE))
 			processBye(request, serverTransactionId);
-		else 
+		else
 			TestHarness.fail("Unexpected request ! : " + request);
 
 	}
@@ -98,7 +91,8 @@ public class Shootist  implements SipListener {
 			}
 			Dialog dialog = serverTransactionId.getDialog();
 			logger.info("Dialog State = " + dialog.getState());
-			Response response = protocolObjects.messageFactory.createResponse(200, request);
+			Response response = protocolObjects.messageFactory.createResponse(
+					200, request);
 			serverTransactionId.sendResponse(response);
 			logger.info("shootist:  Sending OK.");
 			logger.info("Dialog State = " + dialog.getState());
@@ -123,7 +117,7 @@ public class Shootist  implements SipListener {
 
 		if (tid != null)
 			logger.info("transaction state is " + tid.getState());
-		else 
+		else
 			logger.info("transaction = " + tid);
 
 		logger.info("Dialog = " + dialog);
@@ -134,33 +128,40 @@ public class Shootist  implements SipListener {
 			logger.info("Dialog is null -- ignoring response!");
 			return;
 		}
-		
-		
+
 		try {
 			if (response.getStatusCode() == Response.OK) {
 				if (cseq.getMethod().equals(Request.INVITE)) {
-					Request ackRequest = dialog.createAck( cseq.getSequenceNumberLong() );
-					
-					TestHarness.assertTrue("Dialog already see in OK", !this.forkedDialogs.contains(dialog));
+					Request ackRequest = dialog.createAck(cseq
+							.getSequenceNumberLong());
+
+					TestHarness.assertTrue("Dialog already see in OK",
+							!this.forkedDialogs.contains(dialog));
 					this.forkedDialogs.add(dialog);
 					// Proxy will fork. I will accept the second dialog
-					// but not the first. 
+					// but not the first.
 					logger.info("count = " + count);
-					if (count == 1) {
+					if (count == 1 ) {
 						logger.info("Sending ACK");
 						dialog.sendAck(ackRequest);
-						TestHarness.assertTrue("Dialog state should be CONFIRMED", dialog.getState() == DialogState.CONFIRMED);
+						TestHarness.assertTrue(
+								"Dialog state should be CONFIRMED", dialog
+										.getState() == DialogState.CONFIRMED);
 						
+
 					} else {
 						// Kill the first dialog by sending a bye.
-						//assertTrue (dialog == this.dialog);
+						// assertTrue (dialog == this.dialog);
 						count++;
-						SipProvider sipProvider = (SipProvider) responseReceivedEvent.getSource();
+						SipProvider sipProvider = (SipProvider) responseReceivedEvent
+								.getSource();
 						Request byeRequest = dialog.createRequest(Request.BYE);
-						ClientTransaction ct = sipProvider.getNewClientTransaction(byeRequest);
+						ClientTransaction ct = sipProvider
+								.getNewClientTransaction(byeRequest);
 						dialog.sendRequest(ct);
-						TestHarness.assertEquals("Dialog state should be terminated",
-								dialog.getState(), DialogState.TERMINATED);
+						TestHarness.assertEquals(
+								"Dialog state should be terminated", dialog
+										.getState(), DialogState.TERMINATED);
 					}
 
 				} else {
@@ -173,13 +174,14 @@ public class Shootist  implements SipListener {
 		}
 
 	}
+
 	public SipProvider createSipProvider() {
 		try {
 			listeningPoint = protocolObjects.sipStack.createListeningPoint(
 					host, port, protocolObjects.transport);
 
 			logger.info("listening point = " + host + " port = " + port);
-			logger.info("listening point = "  + listeningPoint);
+			logger.info("listening point = " + listeningPoint);
 			sipProvider = protocolObjects.sipStack
 					.createSipProvider(listeningPoint);
 			return sipProvider;
@@ -190,15 +192,16 @@ public class Shootist  implements SipListener {
 		}
 
 	}
-	
+
 	public void checkState() {
-		TestHarness.assertEquals("Should see exactly two OK's" , this.count, 1);
+		TestHarness.assertEquals("Should see exactly two OK's", this.count, 1);
 		TestHarness.assertEquals("Should see two distinct dialogs",
-				this.forkedDialogs.size(),2);
-		TestHarness.assertTrue("Should see the original (default) dialog in the forked set", 
+				this.forkedDialogs.size(), 2);
+		TestHarness.assertTrue(
+				"Should see the original (default) dialog in the forked set",
 				this.forkedDialogs.contains(this.originalDialog));
 	}
-	
+
 	public void processTimeout(javax.sip.TimeoutEvent timeoutEvent) {
 
 		logger.info("Transaction Time out");
@@ -244,7 +247,8 @@ public class Shootist  implements SipListener {
 			ArrayList viaHeaders = new ArrayList();
 			ViaHeader viaHeader = protocolObjects.headerFactory
 					.createViaHeader(host, sipProvider.getListeningPoint(
-							protocolObjects.transport).getPort(), protocolObjects.transport, null);
+							protocolObjects.transport).getPort(),
+							protocolObjects.transport, null);
 
 			// add via headers
 			viaHeaders.add(viaHeader);
@@ -265,11 +269,12 @@ public class Shootist  implements SipListener {
 			// Create a new CallId header
 			CallIdHeader callIdHeader = sipProvider.getNewCallId();
 			// JvB: Make sure that the implementation matches the messagefactory
-			callIdHeader = protocolObjects.headerFactory.createCallIdHeader( callIdHeader.getCallId() );
+			callIdHeader = protocolObjects.headerFactory
+					.createCallIdHeader(callIdHeader.getCallId());
 
 			// Create a new Cseq header
 			CSeqHeader cSeqHeader = protocolObjects.headerFactory
-					.createCSeqHeader(1, Request.INVITE);
+					.createCSeqHeader(1L, Request.INVITE);
 
 			// Create a new MaxForwardsHeader
 			MaxForwardsHeader maxForwards = protocolObjects.headerFactory
@@ -288,7 +293,8 @@ public class Shootist  implements SipListener {
 			// Create the contact name address.
 			SipURI contactURI = protocolObjects.addressFactory.createSipURI(
 					fromName, host);
-			contactURI.setPort(sipProvider.getListeningPoint(protocolObjects.transport).getPort());
+			contactURI.setPort(sipProvider.getListeningPoint(
+					protocolObjects.transport).getPort());
 			contactURI.setTransportParam(protocolObjects.transport);
 
 			Address contactAddress = protocolObjects.addressFactory
@@ -330,31 +336,32 @@ public class Shootist  implements SipListener {
 
 			// Create the client transaction.
 			inviteTid = sipProvider.getNewClientTransaction(request);
+			Dialog dialog = inviteTid.getDialog();
+
+			TestHarness.assertTrue("Initial dialog state should be null",
+					dialog.getState() == null);
 
 			// send the request out.
 			inviteTid.sendRequest();
 
-			Dialog dialog = inviteTid.getDialog();
-			
 			this.originalDialog = dialog;
-			
-			TestHarness.assertTrue("Initial dialog state should be null", dialog.getState() == null);
-			TestHarness.assertTrue("Initial transaction state should be CALLING", inviteTid.getState() == TransactionState.CALLING);
+			// This is not a valid test. There is a race condition in this test
+			// the response may have already come in and reset the state of the tx
+			// to proceeding.
+			// TestHarness.assertSame(
+			//		"Initial transaction state should be CALLING", inviteTid
+			//				.getState(), TransactionState.CALLING);
 
 		} catch (Exception ex) {
 			logger.error(unexpectedException, ex);
 			TestHarness.fail(unexpectedException);
-			
+
 		}
 	}
 
-	
-	
-	
 	public void processIOException(IOExceptionEvent exceptionEvent) {
-		logger.info("IOException happened for "
-				+ exceptionEvent.getHost() + " port = "
-				+ exceptionEvent.getPort());
+		logger.info("IOException happened for " + exceptionEvent.getHost()
+				+ " port = " + exceptionEvent.getPort());
 
 	}
 
