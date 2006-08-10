@@ -13,7 +13,7 @@ public class UdpRedirectTest extends AbstractRedirectTestCase {
 
 	}
 	
-//	public void testRedirect2() {
-//		this.shootist.sendInvite();
-//	}
+    public void testRedirect2() {
+		this.shootist.sendInvite();
+	}
 }
