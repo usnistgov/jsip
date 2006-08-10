@@ -64,7 +64,7 @@ public class Shootist  implements SipListener {
 	private static String peerHostPort = PEER_ADDRESS + ":" + PEER_PORT;
 
 	// To run on two machines change these to suit.
-	public static final String myAddress = "localhost";
+	public static final String myAddress = "127.0.0.1";
 
 	private static final int myPort = 5060;
 

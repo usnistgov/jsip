@@ -158,10 +158,10 @@ public class TestHarness extends TestCase {
 		StackTraceElement frameset[] = throwable.getStackTrace();
 		StackTraceElement frame = frameset[2];
 		String className = frame.getClassName();
-		int ind = className.lastIndexOf(".");
-		if (ind != -1) {
-			className = className.substring(ind + 1);
-		}
+		//int ind = className.lastIndexOf(".");
+		//if (ind != -1) {
+		//	className = className.substring(ind + 1);
+		//}
 		
 		logger.info(className + ":" + frame.getMethodName() + "(" +
 						frame.getFileName() + ":"+ frame.getLineNumber() + ")" +  " : Status =  passed ! ");
@@ -196,10 +196,10 @@ public class TestHarness extends TestCase {
 		StackTraceElement frameset[] = throwable.getStackTrace();
 		StackTraceElement frame = frameset[2];
 		String className = frame.getClassName();
-		int ind = className.lastIndexOf(".");
-		if (ind != -1) {
-			className = className.substring(ind + 1);
-		}
+		//int ind = className.lastIndexOf(".");
+		//if (ind != -1) {
+		//	className = className.substring(ind + 1);
+		//}
 		logger.info(className + ":" + frame.getMethodName() + ": Status =  passed ! ");
 		String methodName = frame.getMethodName();
 
