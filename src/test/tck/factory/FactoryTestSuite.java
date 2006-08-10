@@ -13,9 +13,6 @@ import junit.framework.*;
 
 public class FactoryTestSuite extends TestSuite {
 
-	public static void main(String[] args) {
-		junit.swingui.TestRunner.run(FactoryTestSuite.class);
-	}
 
 	public FactoryTestSuite(String name) {
 		super(name);
