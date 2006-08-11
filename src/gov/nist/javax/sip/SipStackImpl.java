@@ -183,7 +183,7 @@ import gov.nist.core.net.NetworkLayer;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.44 $ $Date: 2006-07-29 12:38:01 $
+ * @version 1.2 $Revision: 1.45 $ $Date: 2006-08-11 10:41:14 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -595,7 +595,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 				getLogWriter().logError(
 						"Invalid argument address = " + address + " port = "
 								+ port + " transport = " + transport);
-				throw new InvalidArgumentException(ex.getMessage());
+				throw new InvalidArgumentException(ex.getMessage(),ex);
 			}
 		}
 	}
