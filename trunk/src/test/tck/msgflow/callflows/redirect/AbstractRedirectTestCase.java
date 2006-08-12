@@ -67,7 +67,7 @@ public abstract class AbstractRedirectTestCase extends ScenarioHarness implement
 
 	public void tearDown() {
 		try {
-			Thread.sleep(2000);
+			Thread.sleep(4000);
 			this.shootist.checkState();
 			this.shootme.checkState();
 			tiProtocolObjects.destroy();

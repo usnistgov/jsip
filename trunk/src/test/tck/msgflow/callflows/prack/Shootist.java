@@ -150,6 +150,7 @@ public class Shootist implements SipListener {
 		logger.info("Dialog = " + tid.getDialog());
 		logger.info("Dialog State is " + tid.getDialog().getState());
 		SipProvider provider = (SipProvider) responseReceivedEvent.getSource();
+		dialog = tid.getDialog();
 
 		try {
 			if (response.getStatusCode() == Response.OK) {
@@ -174,7 +175,8 @@ public class Shootist implements SipListener {
 				}
 			}
 		} catch (Exception ex) {
-			TestHarness.fail(ex.getMessage());
+			ex.printStackTrace();
+			TestHarness.fail("Unexpected exception " + ex.getMessage());
 			
 		}
 
@@ -236,7 +238,7 @@ public class Shootist implements SipListener {
 
 
 			// Create a new Cseq header
-			CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(1,
+			CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(1L,
 					Request.INVITE);
 
 			// Create a new MaxForwardsHeader
@@ -280,11 +282,12 @@ public class Shootist implements SipListener {
 			// Create the client transaction.
 			inviteTid = sipProvider.getNewClientTransaction(request);
 
+			this.dialog = inviteTid.getDialog();
+
 			// send the request out.
 			inviteTid.sendRequest();
 
-			dialog = inviteTid.getDialog();
-
+			
 		} catch (Exception ex) {
 			TestHarness.fail("sendInvite failed because of " + ex.getMessage());
 		}

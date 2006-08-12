@@ -410,13 +410,15 @@ public class Shootist  implements SipListener {
 
 			// Create the client transaction.
 			this.inviteTid = provider.getNewClientTransaction(request);
-
+			this.dialog = this.inviteTid.getDialog();
+			// Note that the response may have arrived right away so 
+			// we cannot check after the message is sent.
+			ReInviteTest.assertTrue(this.dialog.getState() == null);
+		
 			// send the request out.
 			this.inviteTid.sendRequest();
 
-			this.dialog = this.inviteTid.getDialog();
-			ReInviteTest.assertTrue(this.dialog.getState() == null);
-			
+				
 		} catch (Exception ex) {
 			logger.error("Unexpected exception", ex);
 			ReInviteTest.fail("unexpected exception");

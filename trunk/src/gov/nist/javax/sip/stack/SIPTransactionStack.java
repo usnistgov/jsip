@@ -70,7 +70,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.54 $ $Date: 2006-08-03 22:30:14 $
+ * @version 1.2 $Revision: 1.55 $ $Date: 2006-08-12 02:35:15 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -1244,7 +1244,7 @@ public abstract class SIPTransactionStack implements
 
 			try {
 
-				Thread.sleep(500);
+				Thread.sleep(1000);
 
 			} catch (InterruptedException ex) {
 			}
