@@ -121,6 +121,7 @@ public class Shootist extends TestHarness implements SipListener {
 				+ response.getStatusCode() + " " + cseq);
 		if (tid == null) {
 			logger.info("Stray response -- dropping ");
+			
 			return;
 		}
 		logger.info("transaction state is " + tid.getState());
@@ -138,7 +139,7 @@ public class Shootist extends TestHarness implements SipListener {
 			} else if  (response.getStatusCode() == Response.MOVED_TEMPORARILY) {
 				// Dialog dies as soon as you get an error response.
 				assertTrue(tid.getDialog().getState() == DialogState.TERMINATED);
-				assertTrue(tid.getDialog() == this.dialog);
+				assertSame("Dialog Identity should be preserved", tid.getDialog(),this.dialog);
 				this.redirectReceived = true;
 				if (cseq.getMethod().equals(Request.INVITE)) {
 					// lookup the contact header
@@ -310,7 +311,7 @@ public class Shootist extends TestHarness implements SipListener {
 
 			// Create a new Cseq header
 			CSeqHeader cSeqHeader = protocolObjects.headerFactory
-					.createCSeqHeader(1, Request.INVITE);
+					.createCSeqHeader(1L, Request.INVITE);
 
 			// Create a new MaxForwardsHeader
 			MaxForwardsHeader maxForwards = protocolObjects.headerFactory
@@ -363,18 +364,18 @@ public class Shootist extends TestHarness implements SipListener {
 			// Create the client transaction.
 			inviteTid = sipProvider.getNewClientTransaction(request);
 
-			// send the request out.
-			inviteTid.sendRequest();
-
+			
 			this.transactionCount ++;
 			
-			assertTrue(inviteTid.getState() == TransactionState.CALLING);
+			//assertTrue(inviteTid.getState() == TransactionState.CALLING);
 			
 			logger.info("client tx = " + inviteTid);
-			dialog = inviteTid.getDialog();
+			this.dialog = inviteTid.getDialog();
 			this.dialogCount++;
-			assertTrue(dialog != null);
-			assertTrue(dialog.getState() == null);
+			assertTrue(this.dialog != null);
+			//assertTrue(dialog.getState() == null);
+			//	send the request out.
+			inviteTid.sendRequest();
 
 		} catch (Exception ex) {
 			logger.error(ex.getMessage(),ex);

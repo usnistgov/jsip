@@ -30,6 +30,7 @@ import gov.nist.javax.sip.message.*;
 import gov.nist.javax.sip.header.*;
 import gov.nist.javax.sip.SIPConstants;
 import gov.nist.javax.sip.SipProviderImpl;
+import gov.nist.javax.sip.Utils;
 
 import javax.sip.address.Hop;
 import javax.sip.header.*;
@@ -148,7 +149,7 @@ import java.util.TimerTask;
  *                                 
  * </pre>
  * 
- * @version 1.2 $Revision: 1.69 $ $Date: 2006-08-08 03:48:12 $
+ * @version 1.2 $Revision: 1.70 $ $Date: 2006-08-12 02:35:15 $
  * @author M. Ranganathan <br/><a href=" {@docRoot}/uncopyright.html">This
  *         code is in the public domain. </a>
  * 
@@ -1214,7 +1215,10 @@ public class SIPServerTransaction extends SIPTransaction implements
 								.getMethod())) {
 					if (dialog.getLocalTag() == null
 							&& sipResponse.getTo().getTag() == null) {
-						throw new SipException("To tag must be set for OK");
+						// Trying to send final response and user forgot to set to
+						// tag on the response -- be nice and assign the tag for
+						// the user.
+						sipResponse.getTo().setTag(Utils.generateTag());
 					} else if (dialog.getLocalTag() != null
 							&& sipResponse.getToTag() == null) {
 						sipResponse.setToTag(dialog.getLocalTag());
@@ -1249,12 +1253,14 @@ public class SIPServerTransaction extends SIPTransaction implements
 			// incoming request has a from tag.
 			String fromTag = ((SIPRequest) this.getRequest()).getFrom()
 					.getTag();
-			if (fromTag != null)
+			if (fromTag != null && sipResponse.getFromTag() != null  && !sipResponse.getFromTag().equals(fromTag)) {
+				throw new SipException("From tag of response does not match sipResponse from tag");
+			} else if (fromTag != null) {
 				sipResponse.getFrom().setTag(fromTag);
-			else {
+			} else {
 				if (sipStack.isLoggingEnabled())
 					sipStack.logWriter
-							.logDebug("WARNING -- Null From tag  Dialog layer in jeopardy!!");
+							.logDebug("WARNING -- Null From tag in request!!");
 			}
 
 			// See if the dialog needs to be inserted into the dialog table
