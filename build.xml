@@ -326,6 +326,7 @@ c:/jakarta-ant/bin/ant all
 						<batchtest fork="yes" todir="test-reports" haltonfailure="no">
 							<fileset dir="${srcroot}">
 								<include name="test/tck/**/*Test.java" />
+								<!-- TCP Tests excluded - its enough to test one transport for TCK compliance  -->
 								<exclude name="**/Tcp*Test.java"/>
 							</fileset>
 						</batchtest>
@@ -334,6 +335,7 @@ c:/jakarta-ant/bin/ant all
 					<echo>The test report can be found at ./test-reports/html/index.html</echo>
 					<fail if="testing.failed" />
 				</target>
+				<!-- only the TCK call flows -->
 				<target name='runtckcallflows' depends="compiletck" description="Runs all TCK tests using the ant junit task.">
 					<mkdir dir="test-reports" />
 					<mkdir dir="logs" />
@@ -370,7 +372,7 @@ c:/jakarta-ant/bin/ant all
 
 				<!-- target for build automation. will add runtck later -->
 
-				<target name="cc-buildloop" depends="make,javadoc">
+				<target name="cc-buildloop" depends="make,runtck,javadoc">
 					<jar compress="true" destfile="jain-sip-1.2.jar">
 						<fileset dir="../">
 							<include name="jain-sip/**/*/" />

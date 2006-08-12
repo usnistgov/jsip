@@ -1,6 +1,5 @@
 package test.tck.msgflow.callflows.redirect;
 
-
 import javax.sip.*;
 import javax.sip.address.*;
 import javax.sip.header.*;
@@ -24,7 +23,6 @@ import junit.framework.TestCase;
 
 public class Shootme extends TestHarness implements SipListener {
 
-	
 	private ProtocolObjects protocolObjects;
 
 	private static final String myAddress = "127.0.0.1";
@@ -83,8 +81,8 @@ public class Shootme extends TestHarness implements SipListener {
 				.getServerTransaction();
 
 		logger.info("\n\nRequest " + request.getMethod() + " received at "
-				+ protocolObjects.sipStack.getStackName() + " with server transaction id "
-				+ serverTransactionId);
+				+ protocolObjects.sipStack.getStackName()
+				+ " with server transaction id " + serverTransactionId);
 
 		if (request.getMethod().equals(Request.INVITE)) {
 			processInvite(requestEvent, serverTransactionId);
@@ -96,9 +94,9 @@ public class Shootme extends TestHarness implements SipListener {
 	}
 
 	public void processResponse(ResponseEvent responseEvent) {
-		if (((CSeqHeader)responseEvent.getResponse().getHeader(CSeqHeader.NAME)).
-				getMethod().equals(Request.BYE))
-			this.byeOkRecieved ++;
+		if (((CSeqHeader) responseEvent.getResponse()
+				.getHeader(CSeqHeader.NAME)).getMethod().equals(Request.BYE))
+			this.byeOkRecieved++;
 		else {
 			fail("unexpected response received");
 		}
@@ -110,17 +108,23 @@ public class Shootme extends TestHarness implements SipListener {
 	public void processAck(RequestEvent requestEvent,
 			ServerTransaction serverTransaction) {
 		try {
-			this.ackCount ++;
+			this.ackCount++;
 			logger.info("shootme: got an ACK! " + requestEvent.getRequest());
-			logger.info("Dialog State = " + dialog.getState() + " sending BYE ");
-			assertTrue(dialog.getState() == DialogState.CONFIRMED);
-			Request bye = dialog.createRequest(Request.BYE);
-			logger.info("bye request = " + bye);
-			
-			ClientTransaction ct = this.sipProvider
-					.getNewClientTransaction(bye);
+			logger
+					.info("Dialog State = " + dialog.getState()
+							+ " sending BYE ");
+			// This check is required because it may be an ACK retransmission
+			// If this is an ACK retransmission, we dont worry about sending BYE
+			// again.
+			if (dialog.getState() == DialogState.CONFIRMED) {
+				Request bye = dialog.createRequest(Request.BYE);
+				logger.info("bye request = " + bye);
+
+				ClientTransaction ct = this.sipProvider
+						.getNewClientTransaction(bye);
 				dialog.sendRequest(ct);
-			assertTrue(dialog.getState() == DialogState.TERMINATED);
+				assertTrue(dialog.getState() == DialogState.TERMINATED);
+			}
 		} catch (Exception ex) {
 			logger.error("unexpected exception", ex);
 			fail("unexpected exception sending bye");
@@ -136,8 +140,8 @@ public class Shootme extends TestHarness implements SipListener {
 		Request request = requestEvent.getRequest();
 		try {
 			this.inviteCount++;
-			logger.info("shootme: got an Invite " + request); 
-			assertTrue(request.getHeader(ContactHeader.NAME) != null );
+			logger.info("shootme: got an Invite " + request);
+			assertTrue(request.getHeader(ContactHeader.NAME) != null);
 			Response response = protocolObjects.messageFactory.createResponse(
 					Response.TRYING, request);
 			ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
@@ -147,31 +151,30 @@ public class Shootme extends TestHarness implements SipListener {
 			 */
 			Address address = protocolObjects.addressFactory
 					.createAddress("Shootme <sip:" + myAddress + ":" + myPort
-							+";transport="+protocolObjects.transport
-							+ ">");
+							+ ";transport=" + protocolObjects.transport + ">");
 			ServerTransaction st = requestEvent.getServerTransaction();
 
 			if (st == null) {
 				st = sipProvider.getNewServerTransaction(request);
 			}
 			Dialog dialog = st.getDialog();
-			
-			assertTrue(this.dialog != dialog);
-			this.dialogCount ++;
-			this.dialog = dialog;
-			
-			logger.info("Shootme: dialog = " + dialog);
-			
 
-			
+			assertTrue(this.dialog != dialog);
+			this.dialogCount++;
+			this.dialog = dialog;
+
+			logger.info("Shootme: dialog = " + dialog);
+
 			st.sendResponse(response);
-			ContactHeader contactHeader = protocolObjects.headerFactory.createContactHeader(address);
+			ContactHeader contactHeader = protocolObjects.headerFactory
+					.createContactHeader(address);
 
 			/**
 			 * We distinguish here after the display header in the Request URI
 			 * to create a final response
 			 */
-			if (((SipURI)(request.getRequestURI())).getParameter("redirection") == null) {
+			if (((SipURI) (request.getRequestURI()))
+					.getParameter("redirection") == null) {
 				Response moved = protocolObjects.messageFactory.createResponse(
 						Response.MOVED_TEMPORARILY, request);
 				moved.addHeader(contactHeader);
@@ -180,16 +183,18 @@ public class Shootme extends TestHarness implements SipListener {
 				st.sendResponse(moved);
 				// Check that the stack is assigning the right state to the
 				// dialog.
-				assertTrue("dialog state should be terminated",dialog.getState() == DialogState.TERMINATED);
-				
+				assertTrue("dialog state should be terminated", dialog
+						.getState() == DialogState.TERMINATED);
+
 			} else {
 				Response ringing = protocolObjects.messageFactory
-				.createResponse(Response.RINGING, request);
+						.createResponse(Response.RINGING, request);
 				toHeader = (ToHeader) ringing.getHeader(ToHeader.NAME);
 				toHeader.setTag("5432"); // Application is supposed to set.
 				st.sendResponse(ringing);
-				assertTrue("server tx state should be proceeding",st.getState() == TransactionState.PROCEEDING);
-			
+				assertTrue("server tx state should be proceeding", st
+						.getState() == TransactionState.PROCEEDING);
+
 				this.okResponse = protocolObjects.messageFactory
 						.createResponse(Response.OK, request);
 				toHeader = (ToHeader) okResponse.getHeader(ToHeader.NAME);
@@ -198,8 +203,7 @@ public class Shootme extends TestHarness implements SipListener {
 				this.inviteTid = st;
 				// Defer sending the OK to simulate the phone ringing.
 				this.inviteRequest = request;
-				
-			    
+
 				new Timer().schedule(new MyTimerTask(this), 1000);
 
 			}
@@ -211,27 +215,25 @@ public class Shootme extends TestHarness implements SipListener {
 
 	private void sendInviteOK() {
 		try {
-				assertTrue(inviteTid.getState() == TransactionState.PROCEEDING);
-			
-				inviteTid.sendResponse(okResponse);
-				logger.info("Dialog = " + inviteTid.getDialog());
-				logger.info("shootme: Dialog state after response: "
-						+ okResponse.getStatusCode() + " "
-						+ inviteTid.getDialog().getState());
-				
-				assertTrue(inviteTid.getState() == TransactionState.TERMINATED);
-			
+			assertTrue(inviteTid.getState() == TransactionState.PROCEEDING);
+
+			inviteTid.sendResponse(okResponse);
+			logger.info("Dialog = " + inviteTid.getDialog());
+			logger.info("shootme: Dialog state after response: "
+					+ okResponse.getStatusCode() + " "
+					+ inviteTid.getDialog().getState());
+
+			assertTrue(inviteTid.getState() == TransactionState.TERMINATED);
+
 		} catch (SipException ex) {
 			logger.error("unexpected exception", ex);
 			fail("unexpected exception");
-			
+
 		} catch (InvalidArgumentException ex) {
 			logger.error("unexpceted exception", ex);
 			fail("unexpected exception");
 		}
 	}
-
-	
 
 	public void processTimeout(javax.sip.TimeoutEvent timeoutEvent) {
 		Transaction transaction;
@@ -248,8 +250,8 @@ public class Shootme extends TestHarness implements SipListener {
 	}
 
 	public SipProvider createProvider() throws Exception {
-		ListeningPoint lp = protocolObjects.sipStack.createListeningPoint("127.0.0.1", myPort,
-				protocolObjects.transport);
+		ListeningPoint lp = protocolObjects.sipStack.createListeningPoint(
+				"127.0.0.1", myPort, protocolObjects.transport);
 		this.sipProvider = protocolObjects.sipStack.createSipProvider(lp);
 		return this.sipProvider;
 	}
@@ -257,8 +259,6 @@ public class Shootme extends TestHarness implements SipListener {
 	public Shootme(ProtocolObjects protocolObjects) {
 		this.protocolObjects = protocolObjects;
 	}
-
-	
 
 	public void processIOException(IOExceptionEvent exceptionEvent) {
 		logger.info("IOException");
@@ -274,14 +274,16 @@ public class Shootme extends TestHarness implements SipListener {
 
 	public void processDialogTerminated(
 			DialogTerminatedEvent dialogTerminatedEvent) {
-		logger.info("Dialog terminated event recieved dialog = 	" + dialogTerminatedEvent.getDialog());
+		logger.info("Dialog terminated event recieved dialog = 	"
+				+ dialogTerminatedEvent.getDialog());
 		this.dialogTerminationCount++;
 
 	}
 
 	public void checkState() {
-		assertTrue(this.inviteCount == 2 && this.ackCount == 1 && this.byeOkRecieved == 1);
-		
+		assertTrue(this.inviteCount == 2 && this.ackCount >= 1
+				&& this.byeOkRecieved >= 1);
+
 	}
 
 }
