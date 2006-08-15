@@ -18,7 +18,6 @@ import java.util.*;
 */
 
 public class MessageLogList extends TreeSet {
-	private String logFileName;
 	protected String description;
 	protected static long startTime;
 

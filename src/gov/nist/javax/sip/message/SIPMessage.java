@@ -50,7 +50,7 @@ import java.text.ParseException;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.19 $ $Date: 2006-07-13 09:02:47 $
+ * @version 1.2 $Revision: 1.20 $ $Date: 2006-08-15 21:44:59 $
  * @since 1.1
  * 
  * @author M. Ranganathan  <br/>
@@ -813,7 +813,7 @@ public abstract class SIPMessage extends MessageObject implements
 			retval.append(hpTo).append(":");
 			String cid = this.callIdHeader.getCallId();
 			retval.append(cid).append(":");
-			retval.append(this.cSeqHeader.getSequenceNumberLong()).append(":")
+			retval.append(this.cSeqHeader.getSequenceNumber()).append(":")
 					.append(this.cSeqHeader.getMethod());
 			if (topVia != null) {
 				retval.append(":").append(topVia.getSentBy().encode());

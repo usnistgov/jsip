@@ -43,7 +43,7 @@ import gov.nist.javax.sip.address.*;
 
 /** Implementation of the JAIN SIP  HeaderFactory
 * 
-* @version 1.2 $Revision: 1.7 $ $Date: 2006-07-22 18:38:36 $
+* @version 1.2 $Revision: 1.8 $ $Date: 2006-08-15 21:44:51 $
 * @since 1.1
 *
 *@author M. Ranganathan   <br/>
@@ -220,7 +220,7 @@ public class HeaderFactoryImpl implements HeaderFactory {
 			throw new NullPointerException("null arg method");
 		CSeq cseq = new CSeq();
 		cseq.setMethod(method);
-		cseq.setSequenceNumber(sequenceNumber);
+		cseq.setSeqNumber(sequenceNumber);
 
 		return cseq;
 	}
@@ -699,10 +699,29 @@ public class HeaderFactoryImpl implements HeaderFactory {
 			throw new InvalidArgumentException("bad cseq/rseq arg");
 		RAck rack = new RAck();
 		rack.setMethod(method);
-		rack.setCSeqNumber(cSeqNumber);
-		rack.setRSeqNumber(rSeqNumber);
+		rack.setCSequenceNumber(cSeqNumber);
+		rack.setRSequenceNumber(rSeqNumber);
 
 		return rack;
+	}
+	
+	/**
+	 * @deprecated
+	 * @see javax.sip.header.HeaderFactory#createRAckHeader(int, int, java.lang.String)
+	 */
+	public RAckHeader createRAckHeader(int rSeqNumber, int cSeqNumber, String method) throws InvalidArgumentException, ParseException {
+		
+		return createRAckHeader((long)rSeqNumber, (long)cSeqNumber, method);
+	}
+
+	
+	/**
+	 * @deprecated
+	 * @see javax.sip.header.HeaderFactory#createRSeqHeader(int)
+	 */
+	public RSeqHeader createRSeqHeader(int sequenceNumber) throws InvalidArgumentException {
+		
+		return createRSeqHeader((long) sequenceNumber) ;
 	}
 
 	/**
@@ -720,7 +739,7 @@ public class HeaderFactoryImpl implements HeaderFactory {
 			throw new InvalidArgumentException(
 				"invalid sequenceNumber arg " + sequenceNumber);
 		RSeq rseq = new RSeq();
-		rseq.setSequenceNumber(sequenceNumber);
+		rseq.setSeqNumber(sequenceNumber);
 
 		return rseq;
 	}
@@ -1420,6 +1439,8 @@ public class HeaderFactoryImpl implements HeaderFactory {
 	public HeaderFactoryImpl() {
 
 	}
+
+	
 	
 
 

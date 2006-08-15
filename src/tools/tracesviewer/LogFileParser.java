@@ -38,8 +38,6 @@ public class LogFileParser extends DefaultHandler {
 
 	private String messageTimeStamp;
 
-	private String fileLocation;
-
 	private StringBuffer message;
 
 	public String logDescription;

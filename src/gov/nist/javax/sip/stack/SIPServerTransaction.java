@@ -149,7 +149,7 @@ import java.util.TimerTask;
  *                                 
  * </pre>
  * 
- * @version 1.2 $Revision: 1.70 $ $Date: 2006-08-12 02:35:15 $
+ * @version 1.2 $Revision: 1.71 $ $Date: 2006-08-15 21:44:52 $
  * @author M. Ranganathan <br/><a href=" {@docRoot}/uncopyright.html">This
  *         code is in the public domain. </a>
  * 
@@ -579,8 +579,8 @@ public class SIPServerTransaction extends SIPTransaction implements
 											messageToTest.getCallId()
 													.getCallId())
 							&& getOriginalRequest().getCSeq()
-									.getSequenceNumberLong() == messageToTest
-									.getCSeq().getSequenceNumberLong()
+									.getSeqNumber() == messageToTest
+									.getCSeq().getSeqNumber()
 							&& topViaHeader.equals(getOriginalRequest()
 									.getViaHeaders().getFirst())) {
 
@@ -1451,7 +1451,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 
 		try {
 			this.rseqNumber++;
-			rseq.setSequenceNumber(this.rseqNumber);
+			rseq.setSeqNumber(this.rseqNumber);
 
 			// start the timer task which will retransmit the reliable response
 			// until the PRACK is received

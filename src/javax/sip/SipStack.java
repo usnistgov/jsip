@@ -69,8 +69,8 @@ import java.util.*;
  * preclude additional values within a configuration properties object if
  * understood by the underlying implementation. In order to change these
  * properties after a SipStack has been initialized the SipStack must be deleted
- * and recreated:
- * <p>
+ * and recreated:<p> 
+ * 
  * <center><table border="1" bordercolorlight="#FFFFFF"
  * bordercolordark="#000000" width="98%" cellpadding="3" cellspacing="0">
  * <p class="title">
@@ -168,7 +168,7 @@ import java.util.*;
  * </td>
  * </tr>
  * <tr>
- * * <tr>
+ * <tr>
  * <td align="left" valign="top">
  * <p class="table">
  * javax.sip.USE_ROUTER_FOR_ALL_URIS
@@ -208,7 +208,7 @@ import java.util.*;
  * </td>
  * </tr>
  *
- * <td>
+ * <tr>
  * <td align="left" valign="top">
  * <p class="table">
  * javax.sip.AUTOMATIC_DIALOG_SUPPORT
@@ -251,13 +251,13 @@ import java.util.*;
  * </blockquote></td>
  * </tr>
  * </table> </center>
- * 
+ * <p> 
  * Backwards Compatibility Note: Note that because the Dialog layer 
  * is now independent of the Transaction layer,
- * the javax.sip.RETRANSMISSION_FILTER property ( see v 1.1 ) has been 
+ * the javax.sip.RETRANSMISSION_FILTER property (see v1.1) has been 
  * deprecatated. 
- *@see ServerTransaction#enableRetransmissionAlerts
- * 
+ *
+ * @see ServerTransaction#enableRetransmissionAlerts
  * @see SipFactory
  * @see SipProvider
  * 

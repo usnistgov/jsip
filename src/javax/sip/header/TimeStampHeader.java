@@ -56,58 +56,51 @@ public interface TimeStampHeader extends Header {
      * @param timeStamp - the new float timestamp value
      * @throws InvalidArgumentException if the timestamp value argument is a
      * negative value.
+     * @deprecated This method is replaced with {@link #setTimeStamp(float)}.
      */
     public void setTimeStamp(float timeStamp) throws InvalidArgumentException;
     
-    
-    /**
-     *  Sets the timestamp value of this TimeStampHeader to the new timestamp
-     * value passed to this method. This method allows applications to conveniantly
-     * use System.currentTimeMillis to set the timeStamp value.
-     * 
-     * @since v 1.2
-     *
-     * @param timeStamp - the new long timestamp value
-     * @throws InvalidArgumentException if the timestamp value argument is a
-     * negative value. 
-     */
-    public void setTimeStampLong(long timeStamp) throws InvalidArgumentException;
-
     /**
      * Gets the timestamp value of this TimeStampHeader.
      *
      * @return the timestamp value of this TimeStampHeader
+     * @deprecated This method is replaced with {@link #getTime()}.
      */
     public float getTimeStamp();
     
     /**
      * Gets the timestamp value of this TimeStampHeader.
      * 
-     * @since v 1.2
+     * @since v1.2
      *
      * @return the timestamp value of this TimeStampHeader
      */
-    public long getTimeStampLong();
+    public long getTime();
 
+    /**
+     *  Sets the timestamp value of this TimeStampHeader to the new timestamp
+     * value passed to this method. This method allows applications to conveniantly
+     * use System.currentTimeMillis to set the timeStamp value.
+     * 
+     * @since v1.2
+     *
+     * @param timeStamp - the new long timestamp value
+     * @throws InvalidArgumentException if the timestamp value argument is a
+     * negative value. 
+     */
+    public void setTime(long timeStamp) throws InvalidArgumentException;    
+    
+    
+    
     /**
      * Gets delay of TimeStampHeader. This method returns <code>-1</code> if the
      * delay parameter is not set.
      * 
      * @return the delay value of this TimeStampHeader
+     * @deprecated This method is replaced with {@link #getTimeDelay()}.
      */
 
-    public float getDelay();
-    
-    /**
-     * Gets delay of TimeStampHeader. This method returns <code>-1</code> if the
-     * delay parameter is not set.
-     * 
-     * @since v 1.2
-     * @return the delay value of this TimeStampHeader as an integer.
-     */
-
-    public int getDelayInt();
-    
+    public float getDelay();    
 
     /**
      * Sets the new delay value of the TimestampHeader to the delay parameter
@@ -116,21 +109,32 @@ public interface TimeStampHeader extends Header {
      * @param delay - the new float delay value
      * @throws InvalidArgumentException if the delay value argumenmt is a
      * negative value other than the default value <code>-1</code>.
+     * @deprecated This method is replaced with {@link #setTimeDelay(int)}.
      */
 
     public void setDelay(float delay) throws InvalidArgumentException;
+
+    /**
+     * Gets delay of TimeStampHeader. This method returns <code>-1</code> if the
+     * delay parameter is not set.
+     * 
+     * @since v1.2
+     * @return the delay value of this TimeStampHeader as an integer.
+     */
+
+    public int getTimeDelay();    
     
     /**
      * Sets the new delay value of the TimestampHeader to the delay parameter
      * passed to this method
      *
-     * @since v 1.2
+     * @since v1.2
      * @param delay - the new int delay value
      * @throws InvalidArgumentException if the delay value argumenmt is a
      * negative value other than the default value <code>-1</code>.
      */
 
-    public void setDelayInt(int delay) throws InvalidArgumentException;
+    public void setTimeDelay(int delay) throws InvalidArgumentException;
     
    
     /**

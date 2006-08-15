@@ -131,8 +131,8 @@ public interface ServerTransaction extends Transaction {
      * when no Dialog is associated with the Server Transaction, as is common
      * for a Proxy server. 
      * When this method is called, the stack will continue to generate {@link Timeout#RETRANSMIT}  
-     * until the application calls {@link Transaction#delete()} or a 
-     * the listener receives a {@link SipListener#processTransactionTerminated() } callback.
+     * until the application calls {@link Transaction#terminate()} or a 
+     * the listener receives a {@link SipListener#processTransactionTerminated(TransactionTerminatedEvent) } callback.
      *  Note that the stack calls 
      * {@link SipListener#processTransactionTerminated(TransactionTerminatedEvent)}asynchronously 
      * after it removes the transaction some time after the Transaction state is set to 

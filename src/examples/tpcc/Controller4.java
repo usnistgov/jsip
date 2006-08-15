@@ -165,7 +165,7 @@ public class Controller4 implements SipListener {
 						// send ACK
 						this.firstDialog = tid.getDialog();
 						Request ackRequest = firstDialog.createAck(cseq
-								.getSequenceNumberLong());
+								.getSeqNumber());
 						logger.info("Sending ACK firtInvite no media");
 						firstDialog.sendAck(ackRequest);
 
@@ -210,12 +210,12 @@ public class Controller4 implements SipListener {
 						// send ack
 						CSeqHeader cseq2 = (CSeqHeader) this.secondDialogOK.getHeader(CSeqHeader.NAME);
 						Request ackRequest = secondDialog.createAck(cseq2
-								.getSequenceNumberLong());// secondDialog.createRequest(Request.ACK);
+								.getSeqNumber());// secondDialog.createRequest(Request.ACK);
 						logger.info("Sending ACK second " + secondDialog);
 						secondDialog.sendAck(ackRequest);// secondDialog.sendAck(ackRequest);
 
 						Request ackRequestFirst = this.firstDialog.createAck(
-										cseq.getSequenceNumberLong());
+										cseq.getSeqNumber());
 						ackRequestFirst.setContent(response.getContent(),
 								(ContentTypeHeader) (response
 										.getHeader("Content-Type")));
@@ -297,8 +297,8 @@ public class Controller4 implements SipListener {
 		}
 
 		// Create a new Cseq header
-		CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(Integer
-				.parseInt(headerValue), Request.INVITE);
+		CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(Long
+				.parseLong(headerValue), Request.INVITE);
 
 		// Create a new MaxForwardsHeader
 		MaxForwardsHeader maxForwards = headerFactory

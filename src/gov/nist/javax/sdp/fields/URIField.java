@@ -41,6 +41,8 @@ import java.net.*;
 */
 
 public class URIField extends SDPField implements javax.sdp.URI {
+	
+	private static final long serialVersionUID = -4322063343955734258L;
 	protected URL url;
 	protected String urlString;
 

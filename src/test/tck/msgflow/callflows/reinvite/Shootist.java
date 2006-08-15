@@ -343,7 +343,7 @@ public class Shootist  implements SipListener {
 
 			// Create a new Cseq header
 			CSeqHeader cSeqHeader = protocolObjects.headerFactory
-					.createCSeqHeader(1, Request.INVITE);
+					.createCSeqHeader(1L, Request.INVITE);
 
 			// Create a new MaxForwardsHeader
 			MaxForwardsHeader maxForwards = protocolObjects.headerFactory

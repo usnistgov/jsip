@@ -132,7 +132,7 @@ public class Shootist extends TestHarness implements SipListener {
 			if (response.getStatusCode() == Response.OK) {
 				logger.info("response = " + response);
 				if (cseq.getMethod().equals(Request.INVITE)) {
-					Request ackRequest = dialog.createAck(cseq.getSequenceNumberLong());
+					Request ackRequest = dialog.createAck(cseq.getSeqNumber());
 					logger.info("Sending ACK");
 					dialog.sendAck(ackRequest);
 				} 
@@ -156,7 +156,7 @@ public class Shootist extends TestHarness implements SipListener {
 							.getHeader(CallIdHeader.NAME));
 					// we take the next cseq
 					long seqNo = (((CSeqHeader) response
-							.getHeader(CSeqHeader.NAME)).getSequenceNumberLong());
+							.getHeader(CSeqHeader.NAME)).getSeqNumber());
 					logger.info("seqNo = " + seqNo);
 					CSeqHeader cseqNew = protocolObjects.headerFactory
 							.createCSeqHeader(++seqNo, "INVITE");

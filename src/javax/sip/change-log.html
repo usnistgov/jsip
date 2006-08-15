@@ -1,237 +1,593 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head><title>Change-Log</title>
+<html xmlns:v="urn:schemas-microsoft-com:vml"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns="http://www.w3.org/TR/REC-html40">
 
-  <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
-                           
-  <meta name="author" content="Phelim O'Doherty"></head><body>
-             
-<h1>Change-Log for JSIP v1.2</h1>
- Authors: Phelim O'Doherty (BEA) M. Ranganathan (NIST)<br>
-             
-<hr size="2" width="100%">       
-<ul>
-             
-</ul>
-                
-<h3>Package javax.sip</h3>
-             
-<ul>
-<li><b>Add new class IOExceptionEvent.java</b><br>
-<li><b>Add new class DialogTerminatedEvent.java</b><br>
-<li><b>Add new class TransactionTerminatedEvent.java</b><br>
-       
-</ul>
-       
-<ul>
-<li><b> Remove the 1-1 mapping from SipProvider to listener. There is 
-now a 1-many mapping from SipListener to SipProvider. Each SipListener
-of a given SipProvider has the same IP Address and Port but differs
-in transport.</b>
-</li>
-       
-</ul>
-       
-<h4>SipProvider<br></h4>
-<ul>
-<li><b>Add new method setRetransmissionFilterEnabled(boolean)</b></li>
-<li><b>Add new method getNewDialog(Transaction).</b> </li> 
-<li><b>Deprecate method getListeningPoint() </b></li>
-<li><b>Add new method getlisteningPoint(String)</b></li>
-</ul>
-       
-<ul>
-<li><b>Deprecate setListeningPoint() and getListeningPoint() methods</b>
-<li><b>Documentation clarification on refined architecture object model.</b></li>
-       
-</ul>
-              
-<h4>Dialog</h4>
-             
-<ul>
-<li><b><it>sendAck() method behavior clarified </it></b><br></li>
-<li><b><it>Add createReliableProvisionalResponse(int) method </it></b>
-<li><b><it>Add sendReliableProvisionalResponse(Response) method</it><b>
-<li><b><it>Add createPrack(Response)  method </it><b>
-<li><b><it>Add createAck(long )  method </it><b>
-<li><b><it>Add getRemoteSequenceNumberLong() method </it><b>
-<li><b><it>Add getLocalSequenceNumberLong()  method</it><b>
-<li><b><it>Add terminateOnBye(boolean ) method </it><b>
-<li><b><it>Deprecate getRemoteSequenceNumber() </it><b>
-<li><b><it>Deprecate getLocalSequenceNumber() </it><b>
-<li><b><it>Deprecate getFirstTransaction() </it><b>
-</ul>
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=us-ascii">
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content="Microsoft Word 11">
+<meta name=Originator content="Microsoft Word 11">
+<link rel=File-List href="change-log_files/filelist.xml">
+<title>JSR 32 - JAIN SIP Specification</title>
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>Phelim O'Doherty</o:Author>
+  <o:LastAuthor>Phelim O'Doherty</o:LastAuthor>
+  <o:Revision>24</o:Revision>
+  <o:TotalTime>172</o:TotalTime>
+  <o:Created>2005-12-20T19:10:00Z</o:Created>
+  <o:LastSaved>2006-08-14T16:54:00Z</o:LastSaved>
+  <o:Pages>1</o:Pages>
+  <o:Words>1000</o:Words>
+  <o:Characters>5703</o:Characters>
+  <o:Company>BEA Systems</o:Company>
+  <o:Lines>47</o:Lines>
+  <o:Paragraphs>13</o:Paragraphs>
+  <o:CharactersWithSpaces>6690</o:CharactersWithSpaces>
+  <o:Version>11.6408</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:Zoom>150</w:Zoom>
+  <w:SpellingState>Clean</w:SpellingState>
+  <w:GrammarState>Clean</w:GrammarState>
+  <w:ValidateAgainstSchemas/>
+  <w:SaveIfXMLInvalid>false</w:SaveIfXMLInvalid>
+  <w:IgnoreMixedContent>false</w:IgnoreMixedContent>
+  <w:AlwaysShowPlaceholderText>false</w:AlwaysShowPlaceholderText>
+  <w:BrowserLevel>MicrosoftInternetExplorer4</w:BrowserLevel>
+ </w:WordDocument>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:LatentStyles DefLockedState="false" LatentStyleCount="156">
+ </w:LatentStyles>
+</xml><![endif]-->
+<style>
+<!--
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-parent:"";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+h2
+	{mso-margin-top-alt:auto;
+	margin-right:0cm;
+	mso-margin-bottom-alt:auto;
+	margin-left:0cm;
+	mso-pagination:widow-orphan;
+	mso-outline-level:2;
+	font-size:18.0pt;
+	font-family:"Times New Roman";
+	font-weight:bold;}
+h3
+	{mso-style-next:Normal;
+	margin-top:12.0pt;
+	margin-right:0cm;
+	margin-bottom:3.0pt;
+	margin-left:0cm;
+	mso-pagination:widow-orphan;
+	page-break-after:avoid;
+	mso-outline-level:3;
+	font-size:13.0pt;
+	font-family:Arial;
+	font-weight:bold;}
+h4
+	{mso-style-next:Normal;
+	margin-top:12.0pt;
+	margin-right:0cm;
+	margin-bottom:3.0pt;
+	margin-left:0cm;
+	mso-pagination:widow-orphan;
+	page-break-after:avoid;
+	mso-outline-level:4;
+	font-size:14.0pt;
+	font-family:"Times New Roman";
+	font-weight:bold;}
+p
+	{mso-margin-top-alt:auto;
+	margin-right:0cm;
+	mso-margin-bottom-alt:auto;
+	margin-left:0cm;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+span.SpellE
+	{mso-style-name:"";
+	mso-spl-e:yes;}
+span.GramE
+	{mso-style-name:"";
+	mso-gram-e:yes;}
+@page Section1
+	{size:595.3pt 841.9pt;
+	margin:72.0pt 90.0pt 72.0pt 90.0pt;
+	mso-header-margin:35.4pt;
+	mso-footer-margin:35.4pt;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+<!--[if gte mso 10]>
+<style>
+ /* Style Definitions */
+ table.MsoNormalTable
+	{mso-style-name:"Table Normal";
+	mso-tstyle-rowband-size:0;
+	mso-tstyle-colband-size:0;
+	mso-style-noshow:yes;
+	mso-style-parent:"";
+	mso-padding-alt:0cm 5.4pt 0cm 5.4pt;
+	mso-para-margin:0cm;
+	mso-para-margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Times New Roman";
+	mso-ansi-language:#0400;
+	mso-fareast-language:#0400;
+	mso-bidi-language:#0400;}
+</style>
+<![endif]-->
+<meta name=description content="Change Log for JAIN SIPv1.1">
+<!--[if gte mso 9]><xml>
+ <o:shapedefaults v:ext="edit" spidmax="6146"/>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <o:shapelayout v:ext="edit">
+  <o:idmap v:ext="edit" data="1"/>
+ </o:shapelayout></xml><![endif]-->
+</head>
 
-<h4>DialogState </h4>
-<ul>
-<li><b><it>Deprecate DialogState.COMPLETED </it></b>
-</ul>
-<h4>Transaction</h4>
-<ul>
- <li><b>getDialog() method behavior clarified</b>
- <li><b>Add getApplicationData() </b> </li>
- <li><b>Add setApplicationData(Object)</b></li>
- <li><b>Add terminate() method </b></li>
-</ul>
-             
-<h4>ServerTransaction</h4>
-<ul>
-<li><b>Add enableRetransmissionAlerts() </b>
-</ul>
- 
-<h4>TransactionState</h4>
-             
-<ul>
-<li><b>Override equals() and hashCode() methods.</b> </li>
-</ul>
-                      
-<h4>ListeningPoint</h4>
-             
-<ul>
-<li><b>Add getIPAddress() method.</b> </li>
-<li><b>Add setSentBy(String) method </b></ul>
-             
-<ul>
-             
-</ul>
-             
-<h4>SipListener</h4>
-             
-<ul>
-<li><b>Add new method processIOException</b><br>
-<li><b>Add new method processTransactionTerminated</b><br>
-<li><b>Add new method processDialogTerminated</b><br>
-</ul>
-                 
-<h4>SipStack</h4>
-             
-<ul>
-<li><b>Add new method createListeningPoint(String, int, String)</b><br>
-<li><b>createListeningPoint(int, String) method behavior as follows:</b><br>
-<li><b>Add new javax.sip.AUTOMATIC_DIALOG_SUPPORT property.</b> <br>
-<li><b>Add new javax.sip.FORKED_EVENTS property </b><br>
-<li><b>Add new javax.sip.USE_ROUTER_FOR_ALL_URIS property. </b><br>
-<li><b>Add start() method </b><br>
-<li><b>Add stop() method </b><br> </li>
-<li><b>Deprecate STACK_ADDRESS property.</b> <br>
-<li><b>Deprecate RETRANSMISSION_FILTER property. </b><br>
-<li><b>Deprecate getIPAddress() </b><br>
-</ul>
-       
-<ul>
-         
-</ul>
-       
-<h4>RequestEvent</h4>
-             
-<ul>
-<li><b>Add new method getDialog()</b><br> </li>
-</ul>
-       
-<h4>ResponseEvent</h4>
-             
-<ul>
-<li><b>Add new method getDialog()</b><br> </li>
-       
-</ul>
-       
-<hr size="2" width="100%">       
-<h3>Package javax.sip.address</h3>
-             
-<b>SipURI</b><br>
-<ul>
-<li><b>Override equals() method<br></li>
-</ul>
-<b>TelURL</b><br>
-<ul>
- <li><b>Add new methods getPhoneContext() and setPhoneContext(String)<br>
- <li><b>Override equals() method<br> </li>
-</ul>
-                   
-<ul>
-</ul>
-             
-<hr size="2" width="100%">       
-<h3>Package javax.sip.header</h3>
+<body lang=EN-GB style='tab-interval:36.0pt'>
 
-<p><b>Added new class SIPETagHeader</b>
+<div class=Section1>
 
-<p><b>Added new class SIPIfMatchHeader </b>
+<h2>JSR 32 - JSIP v1.1 Specification<br>
+Final Change Log</h2>
 
-<h4>ExtensionHeader</h4>
-<ul>
-<li>Clarified the documentation </li>
-</ul>
-<h4>CSeqHeader</h4>
-<ul>
-<li><b>Add geteSequenceNumberLong()</b></li>
-<li><b>Deprecate getSequenceNumber()</b></li>
-</ul>
+<p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span
+style='font-size:13.5pt'>Author</span></b><span style='font-size:13.5pt'>: </span>Phelim
+O'Doherty (Sun), <span class=SpellE>Ranganathan</span> <span class=SpellE>Mudumbai</span>
+(NIST)</p>
 
-<h4>RAckHeader</h4>
-<ul>
-<li><b>Deprecate getRSeqNumber() </b></li>
-<li><b>Add getRSeqNumberLong() </b></li>
-</ul>
+<table class=MsoNormalTable border=1 cellpadding=0 style='mso-cellspacing:1.5pt;
+ mso-padding-alt:0cm 5.4pt 0cm 5.4pt'>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes'>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal align=center style='text-align:center'><b>ACCEPTED CHANGES<o:p></o:p></b></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:1'>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:14.0pt'>General:</span></b><span
+  style='font-size:14.0pt'><o:p></o:p></span></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'>Decoupled the transaction layer from the Dialog layer. <br>
+  Added support for RFC3903 and RFC3581.</p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><o:p>&nbsp;</o:p></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto'><b
+  style='mso-bidi-font-weight:normal'><span style='font-size:14.0pt'>Package <span
+  class=SpellE>javax.sip</span><o:p></o:p></span></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>SipProvider</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Updated architecture in SIP Provider on enhanced <span class=SpellE>ListeningPoint/SipProvider</span>
+  Model. Change the 1-to-1 relationship between <span class=SpellE>SipProvider</span>
+  and <span class=SpellE>ListeningPoint</span>, to 1-to-N.<span
+  style='mso-spacerun:yes'>&nbsp; </span><br>
+  Deprecated <span class=SpellE>getListeningPoint</span> and replaced with <span
+  class=SpellE>getListeningPoints</span> method.<br>
+  Deprecated <span class=SpellE>setListeningPoint</span> method and replaced
+  with <span class=SpellE>addListeningPoint</span> method.<br>
+  Added method to <span class=SpellE>getListeningPoint</span> for a specific
+  transport.<br>
+  Added <span class=SpellE>removeListeningPoint</span> method.<br>
+  Added <span class=SpellE>getNewDialog</span> method for a specific
+  transaction.<br>
+  Added <span class=SpellE>setAutomaticDialogSupportEnabled</span> method.<br>
+  Clarified <span class=SpellE>addListener</span> method.</p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>SipStack</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Added new AUTOMATIC_DIALOG_SUPPORT <span class=SpellE>config</span>
+  parameter to the <span class=SpellE>SipStack</span> properties documentation.<br>
+  Added new FORKABLE_EVENTS <span class=SpellE>config</span> parameter to the <span
+  class=SpellE>SipStack</span> properties documentation.<br>
+  Added new USE_ROUTER_FOR_ALL_URIS <span class=SpellE>config</span> parameter
+  to the <span class=SpellE>SipStack</span> properties documentation.<br>
+  Deprecated RETRANSMISSION_FILTER <span class=SpellE>config</span> parameter
+  on the <span class=SpellE>SipStack</span> properties documentation.<br>
+  Deprecated IP_ADDRESS <span class=SpellE>config</span> parameter in the <span
+  class=SpellE>SipStack</span> properties documentation.<br>
+  Added <span class=SpellE>createListeningPoint</span> method to <span
+  class=SpellE>SipStack</span> with IP address, Port and Transport.<br>
+  Deprecated <span class=SpellE>createListeningPoint</span> method with port
+  and transport arguments.<br>
+  Deprecated <span class=SpellE>isRetransmissionFilterActive</span> method.<br>
+  Add start and stop stack methods.</p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><o:p>&nbsp;</o:p></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>SipListener</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Added capability to process <span class=SpellE>IOException</span>, <span
+  class=SpellE>TransactionTerminated</span>, and <span class=SpellE>DialogTerminated</span>
+  events.</p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>SipFactory</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Clarified model for stack creation. <span class=SpellE>IPAddress</span>
+  is no longer a mandatory property for stack creation. IP Address should be
+  configured via the enhanced <span class=SpellE>ListeningPoint</span>
+  architecture. For backwards compatibility IP Address configuration properties
+  are still supported.<b style='mso-bidi-font-weight:normal'><o:p></o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>ListeningPoint</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Added new <span class=SpellE>getIPAddress</span> method. Assigning IP
+  Address to the <span class=SpellE>ListeningPoint</span> enables the stack to
+  support multi-homed hosts.<b style='mso-bidi-font-weight:normal'><br>
+  </b>Added new <span class=SpellE>getSentBy</span> and <span class=SpellE>setSentBy</span>
+  methods.</p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'>Dialog<br>
+  </b>Clarified <span class=SpellE>getState</span> method - removed use of term
+  pseudo dialogs and highlighted null.<br>
+  Clarified <span class=SpellE>sendAck</span> method behaviour.<b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Deprecated <span class=SpellE>getFirstTransaction</span> method to avoid
+  stack having to track additional state.<b style='mso-bidi-font-weight:normal'><br>
+  </b>Added <span class=SpellE>createReliableProvisionalResponse</span> and <span
+  class=SpellE>sendReliableProvisionalResponse</span> methods.<b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Added <span class=SpellE>createAck</span> and <span class=SpellE>createPrack</span>
+  methods.<b style='mso-bidi-font-weight:normal'><br>
+  </b>Added <span class=SpellE>terminateOnBye</span> method.<br>
+  Added <span class=SpellE>getLocalSeqNumber</span> and <span class=SpellE>getRemoteSeqNumber</span>
+  methods with type long.<br>
+  Deprecated <span class=SpellE>getLocalSequenceNumber</span> and <span
+  class=SpellE>getRemoteSequenceNumber</span> methods with type int.<b
+  style='mso-bidi-font-weight:normal'><o:p></o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>DialogState</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Deprecated COMPLETED state.<b style='mso-bidi-font-weight:normal'><br>
+  </b>Added equals and <span class=SpellE>hashcode</span> methods.<b
+  style='mso-bidi-font-weight:normal'><o:p></o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>TransactionState</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Added equals and <span class=SpellE>hashcode</span> methods.<b
+  style='mso-bidi-font-weight:normal'><o:p></o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>ResponseEvent</b></span><b
+  style='mso-bidi-font-weight:normal'> <br>
+  </b>Added <span class=SpellE>getDialog</span> method and new constructor with
+  Dialog attribute.<b style='mso-bidi-font-weight:normal'><o:p></o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>RequestEvent</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Added <span class=SpellE>getDialog</span> method and new constructor with
+  Dialog attribute.<b style='mso-bidi-font-weight:normal'><o:p></o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'>Transaction<br>
+  </b>Added terminate method.<b style='mso-bidi-font-weight:normal'><br>
+  </b>Added <span class=SpellE>getApplicationData</span> and <span
+  class=SpellE>setApplicationData</span> methods.<br>
+  Clarified <span class=SpellE>getDialog</span> method behaviour.<br>
+  Added equal and <span class=SpellE>hashcode</span> methods.<b
+  style='mso-bidi-font-weight:normal'><o:p></o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>ClientTransaction</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Deprecated <span class=SpellE>createAck</span> method.<b
+  style='mso-bidi-font-weight:normal'><o:p></o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>ServerTransaction</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Added <span class=SpellE>enableRetransmissionAlerts</span> method.<b
+  style='mso-bidi-font-weight:normal'><o:p></o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'>New Classes<br>
+  </b>Added new <span class=SpellE>IOExceptionEvent</span>, <span class=SpellE>DialogTerminatedEvent</span>
+  and <span class=SpellE>TransactionTerminatedEvent</span>.</p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'>New Exceptions<br>
+  </b><span class=SpellE>DialogDoesNotExistException</span>, <span
+  class=SpellE>ProviderDoesNotExistException</span> and <span class=SpellE>TransportAlreadySupportedException</span>.</p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto'><b
+  style='mso-bidi-font-weight:normal'><span style='font-size:14.0pt'>Package <span
+  class=SpellE>javax.sip.address</span><o:p></o:p></span></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>SipURI</b></span><br>
+  Allowable null in <span class=SpellE>getUser</span> method.</p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>TelURL</b></span><b
+  style='mso-bidi-font-weight:normal'> <br>
+  </b>Added <span class=SpellE>setPhoneContext</span> and <span class=SpellE>getPhoneContext</span>
+  methods.<b style='mso-bidi-font-weight:normal'><o:p></o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'>Address<br>
+  </b>Added <span class=SpellE>hashcode</span> and clone methods.</p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'>Router<br>
+  </b>Updated general description of Router functionality.<b style='mso-bidi-font-weight:
+  normal'><br>
+  </b>Deprecated <span class=SpellE>getNextHops</span> method and replaced with
+  <span class=SpellE>getNextHop</span> method.</p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto'><b
+  style='mso-bidi-font-weight:normal'><span style='font-size:14.0pt'>Package <span
+  class=SpellE>javax.sip.header</span><o:p></o:p></span></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>HeaderFactory</b></span><br>
+  Updated <span class=SpellE>createToHeader</span> method to allow <i
+  style='mso-bidi-font-style:normal'>null</i> tag parameter.<br>
+  Added <span class=SpellE>createSIPIfMatchHeader</span> and <span
+  class=SpellE>createSIPETagHeader</span> methods.<br>
+  Deprecated <span class=SpellE><span class=GramE>createCSeqHeader</span></span><span
+  class=GramE>(</span><span class=SpellE>int</span>, String) and replaced with <span
+  class=SpellE>createCSeqHeader</span>(long, String).<br>
+  Deprecated <span class=SpellE><span class=GramE>createRSeqHeader</span></span><span
+  class=GramE>(</span><span class=SpellE>int</span>) and replaced with <span
+  class=SpellE>createRSeqHeader</span>(long).<br>
+  Deprecated <span class=SpellE><span class=GramE>createRAckHeader</span></span><span
+  class=GramE>(</span><span class=SpellE>int</span>, <span class=SpellE>int</span>,
+  String) and replaced with <span class=SpellE>createRAckHeader</span>(long,
+  long, String).</p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'>Header<br>
+  </b>Added <span class=SpellE>hashcode</span> method.<b style='mso-bidi-font-weight:
+  normal'><o:p></o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>ViaHeader</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Added <span class=SpellE>getRPort</span> and <span class=SpellE>setRPort</span>
+  methods.<b style='mso-bidi-font-weight:normal'><o:p></o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>WWWAuthenticateHeader</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Deprecated <span class=SpellE>getURI</span> and <span class=SpellE>setURI</span>
+  methods as they don't exist on this header.<b style='mso-bidi-font-weight:
+  normal'><o:p></o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>CSeqHeader</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Added <span class=SpellE>getSeqNumber</span> and <span class=SpellE>setSeqNumber</span>
+  methods with type long.<br>
+  Deprecated <span class=SpellE>getSequenceNumber</span> and <span
+  class=SpellE>setSequenceNumber</span> with type int.<b style='mso-bidi-font-weight:
+  normal'><o:p></o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>RSeqHeader</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Added <span class=SpellE>getSeqNumber</span> and <span class=SpellE>setSeqNumber</span>
+  methods with type long.<br>
+  Deprecated <span class=SpellE>getSequenceNumber</span> and <span
+  class=SpellE>setSequenceNumber</span> with type int.</p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>RAckHeader</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Added <span class=SpellE>getCSequenceNumber</span> and <span
+  class=SpellE>setCSequenceNumber</span> methods with type long.<br>
+  Deprecated <span class=SpellE>getCSeqNumber</span> and <span class=SpellE>setCSeqNumber</span>
+  with type int<span class=GramE>.</span><br>
+  Added <span class=SpellE>getRSequenceNumber</span> and <span class=SpellE>setRSequenceNumber</span>
+  methods with type long.<br>
+  Deprecated <span class=SpellE>getRSeqNumber</span> and <span class=SpellE>setRSeqNumber</span>
+  with type int.<b style='mso-bidi-font-weight:normal'><o:p></o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>TimeStampHeader</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Added <span class=SpellE>getTime</span> and <span class=SpellE>setTime</span>
+  methods with type long.<br>
+  Deprecated <span class=SpellE>getTimeStamp</span> and <span class=SpellE>setTimeStamp</span>
+  with type int<span class=GramE>.</span><br>
+  Added <span class=SpellE>getTimeDelay</span> and <span class=SpellE>setTimeDelay</span>
+  methods with type int.<br>
+  Deprecated <span class=SpellE>getDelay</span> and <span class=SpellE>setDelay</span>
+  with type float.</p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'>New Headers<br>
+  </b><span class=SpellE>SIPETagHeader</span> and <span class=SpellE>SIPIfMatchHeader</span>
+  for RFC 3909</p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><o:p>&nbsp;</o:p></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto'><b
+  style='mso-bidi-font-weight:normal'><span style='font-size:14.0pt'>Package <span
+  class=SpellE>javax.sip.message</span><o:p></o:p></span></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'>Message<br>
+  </b>Added <span class=SpellE>removeFirst</span>, <span class=SpellE>addFirst</span>,
+  <span class=SpellE>removeLast</span> and <span class=SpellE>addLast</span>
+  methods.<b style='mso-bidi-font-weight:normal'><br>
+  </b>Added <span class=SpellE>hashcode</span> method.<br>
+  <span style='mso-bidi-font-weight:bold'>Clarified <span class=SpellE><span
+  class=GramE>getUnrecognizedHeaders</span></span><span class=GramE>(</span>)
+  method behaviour clarified.<br>
+  Clarified Clone behaviour of message bodies.</span></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>MessageFactory</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Added <span class=SpellE>createResponse</span> method from a String
+  argument.<br>
+  <span style='mso-bidi-font-weight:bold'>Clarified <span class=SpellE><span
+  class=GramE>createRequest</span></span><span class=GramE>(</span>String)</IT>
+  method behaviour.</span> </p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'>Request<br>
+  </b>Added PUBLISH request type.</p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'>Response<br>
+  </b>Added CONDITIONAL_REQUEST_FAILED response code.<br>
+  Added equals method to all mandatory headers.</p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>ContactHeader</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Added <span class=SpellE>setWildCard</span> and <span class=SpellE>isWilcard</span>
+  methods.<b style='mso-bidi-font-weight:normal'><br>
+  </b>Updated <span class=SpellE>getExpires</span> method.<b style='mso-bidi-font-weight:
+  normal'><o:p></o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:2'>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal align=center style='text-align:center'><b>REJECTED CHANGES
+  - Not deemed necessary by Spec leads<o:p></o:p></b></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:3'>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal style='margin-bottom:12.0pt'><o:p>&nbsp;</o:p></p>
+  <h3>Package <span class=SpellE>javax.sip</span></h3>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><o:p>&nbsp;</o:p></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'>Limit the architecture to have a single SipProvider in
+  the architecture.&nbsp; Multiple SipProviders were supported in JSIPv1.1 to
+  enable messaging over different transports. This can still be achieved by
+  limiting a single <span class=SpellE>SipProvider</span> in the system and
+  mandating that the <span class=SpellE>SipProvider</span> uses the same
+  transport for sending responses that was used for sending the outbound
+  request.</p>
+  <h4 style='margin-left:18.0pt'><span class=SpellE><span style='font-size:
+  12.0pt'>SipProvider</span></span><span style='font-size:12.0pt'><br>
+  </span><span style='font-size:12.0pt;font-weight:normal;mso-bidi-font-weight:
+  bold'>Add new method <span class=SpellE><span class=GramE>getNewClientDialog</span></span><span
+  class=GramE>(</span>Response).<br>
+  Add new method <span class=SpellE><span class=GramE>getNewServerDialog</span></span><span
+  class=GramE>(</span>Response).<br>
+  Deprecate <span class=SpellE><span class=GramE>setListeningPoint</span></span><span
+  class=GramE>(</span>) and <span class=SpellE>getListeningPoint</span>()
+  methods<br>
+  Documentation clarification on refined architecture object model.<br
+  style='mso-special-character:line-break'>
+  <![if !supportLineBreakNewLine]><br style='mso-special-character:line-break'>
+  <![endif]></span><span style='font-size:12.0pt'><o:p></o:p></span></h4>
+  <h4 style='margin-left:18.0pt'><span style='font-size:12.0pt'>Dialog<br>
+  </span><span class=SpellE><span class=GramE><span style='font-size:12.0pt;
+  font-weight:normal;mso-bidi-font-weight:bold'>sendAck</span></span></span><span
+  class=GramE><span style='font-size:12.0pt;font-weight:normal;mso-bidi-font-weight:
+  bold'>(</span></span><span style='font-size:12.0pt;font-weight:normal;
+  mso-bidi-font-weight:bold'>) method behaviour clarified. <o:p></o:p></span></h4>
+  <h4 style='margin-left:18.0pt'><span class=SpellE><span class=GramE><span
+  style='font-size:12.0pt'>SipStack</span></span></span><span class=GramE><span
+  style='font-size:12.0pt'><br>
+  </span><span style='font-size:12.0pt;font-weight:normal;mso-bidi-font-weight:
+  bold'>Add new NETWORK_LAYER_PATH property.</span></span><span
+  style='font-size:12.0pt;font-weight:normal;mso-bidi-font-weight:bold'><br>
+  Deprecate <span class=SpellE><span class=GramE>createSipProvider</span></span><span
+  class=GramE>(</span><span class=SpellE>ListeningPoint</span>) method.<br>
+  Add new <span class=SpellE><span class=GramE>createSipProvider</span></span><span
+  class=GramE>(</span>) method.</span><br style='mso-special-character:line-break'>
+  <![if !supportLineBreakNewLine]><br style='mso-special-character:line-break'>
+  <![endif]><span style='font-size:12.0pt'><o:p></o:p></span></h4>
+  <h3>Package <span class=SpellE>javax.sip.address</span></h3>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b><o:p>&nbsp;</o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b>New Classes<br>
+  </b><span style='mso-bidi-font-weight:bold'>Add new interface <span
+  class=SpellE>NetworkLayer.java</span><br style='mso-special-character:line-break'>
+  <![if !supportLineBreakNewLine]><br style='mso-special-character:line-break'>
+  <![endif]></span></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>SipURI</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Didn't add equals method already overridden in Address.<span
+  style='mso-bidi-font-weight:bold'><o:p></o:p></span></p>
+  <h4><span style='font-size:12.0pt'><o:p>&nbsp;</o:p></span></h4>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:4'>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal align=center style='text-align:center'><b>DEFERRED CHANGES<o:p></o:p></b></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:5;mso-yfti-lastrow:yes'>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><o:p>&nbsp;</o:p></p>
+  </td>
+ </tr>
+</table>
 
-<h4>RSeqHeader</h4>
-<ul>
-<li><b>Add getSequenceNumberLong()</b></li>
-<li><b>Deprecate getSequenceNumber()</b> </li>
-<li><b>Change method signature to  setSequenceNumber(long ) from int</b></li>
-</ul>
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
 
-<h4>TimeStampHeader</h4>
-<ul>
-<li><b>Add setTimeStampLong(long )</b><br/>
-<li><b>Add getTimeStampLong() </b><br/></li>
-<li><b>Add setDelayInt()</b><br/></li>
-<li><b>Add getDelayInt() </b><br/></li>
-</ul>
+</div>
 
-             
-<h4>HeaderFactory</h4>
-           
-<ul>
-<li><b><it>createToHeader() method behavior clarified </it></li><br/>
-<li><b>change method signature to:  createCSeqHeader( long sequenceNumber, String method)</b></li><br/>
-<li><b>change method signature to:  createRSeqHeader( long sequenceNumber ) method </b></li><br/>
-<li><b>change method signature to:   createRAckHeader(long rSeqNumber, long cSeqNumber, String method) method </b></li><br/>
-</ul>
-               
-<hr size="2" width="100%">       
-<h3>Package javax.sip.message</h3>
-             
-<h4>Request</h4>
-             
-<ul>
-<li><b><it>clone() method behavior clarified </it> </b> 
-</ul>
-<ul>
-             
-</ul>
-             
-<h4>Message</h4>
-             
-<ul>
-<li><b>getUnrecognizedHeaders() method behavior clarified </b><br/>
-<li><b>Add new method addFirst(Header)</b><br>
-<li><b>Add new method addLast(Header)</b><br/>
-<li><b>Add new method removeFirst(String)</b><br/>
-<li><b>Add new method removeLast(String)</b><br/>
-</li>
-</ul>
-             
-<h4>MessageFactory</h4>
-             
-<ul>
-<li><b>createRequest(String) behavior clarified</b> <br> </li>
-<li><b>Add createResponse(String) method </it> </b> <br>
-</ul>
-             
-<hr size="2" width="100%"><br>
-       <br>
-     <br>
-  <br>
- <br>
+</body>
 
-</body></html>
+</html>

@@ -304,7 +304,7 @@ public class MessageFlowHarness extends TestHarness {
 		callId = headerFactory.createCallIdHeader( callId.getCallId() );
 		
 		// CSeq
-		CSeqHeader cSeq = headerFactory.createCSeqHeader(1, method);
+		CSeqHeader cSeq = headerFactory.createCSeqHeader(1L, method);
 
 		// From
 		Address fromAddress = addressFactory.createAddress(srcSipURI);

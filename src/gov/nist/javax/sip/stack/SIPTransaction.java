@@ -54,7 +54,7 @@ import EDU.oswego.cs.dl.util.concurrent.Semaphore;
  * @author M. Ranganathan
  * 
  * 
- * @version 1.2 $Revision: 1.42 $ $Date: 2006-08-03 22:30:14 $
+ * @version 1.2 $Revision: 1.43 $ $Date: 2006-08-15 21:44:53 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
 		javax.sip.Transaction {
@@ -401,7 +401,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 		this.toTag = this.to.getTag();
 		this.fromTag = this.from.getTag();
 		this.callId = (CallID) newOriginalRequest.getCallId();
-		this.cSeq = newOriginalRequest.getCSeq().getSequenceNumberLong();
+		this.cSeq = newOriginalRequest.getCSeq().getSeqNumber();
 		this.event = (Event) newOriginalRequest.getHeader("Event");
 		this.transactionId = newOriginalRequest.getTransactionId();
 
@@ -984,8 +984,8 @@ public abstract class SIPTransaction extends MessageChannel implements
 						&& getOriginalRequest().getCallId().getCallId().equals(
 								requestToTest.getCallId().getCallId())
 						&& getOriginalRequest().getCSeq()
-								.getSequenceNumberLong() == requestToTest
-								.getCSeq().getSequenceNumberLong()
+								.getSeqNumber() == requestToTest
+								.getCSeq().getSeqNumber()
 						&& topViaHeader.equals(getOriginalRequest()
 								.getViaHeaders().getFirst())) {
 

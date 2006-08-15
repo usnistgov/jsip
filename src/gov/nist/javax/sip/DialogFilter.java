@@ -57,7 +57,7 @@ import java.io.IOException;
  * and event model with the JAIN-SIP stack. This is strictly an implementation
  * class.
  * 
- * @version 1.2 $Revision: 1.2 $ $Date: 2006-07-13 09:02:51 $
+ * @version 1.2 $Revision: 1.3 $ $Date: 2006-08-15 21:44:59 $
  * 
  * @author M. Ranganathan
  */
@@ -525,8 +525,8 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 			if (dialog != null
 					&& transaction != null
 					&& lastTransaction != null
-					&& sipRequest.getCSeq().getSequenceNumberLong() > dialog
-							.getRemoteSequenceNumberLong()
+					&& sipRequest.getCSeq().getSeqNumber() > dialog
+							.getRemoteSeqNumber()
 					&& lastTransaction instanceof SIPServerTransaction
 					&& lastTransaction.isInviteTransaction()
 					&& lastTransaction.getState() != TransactionState.COMPLETED
@@ -571,10 +571,10 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 					&& lastTransaction.getState() != TransactionState.COMPLETED
 					&& lastTransaction.getState() != TransactionState.TERMINATED) {
 
-				if (dialog.getRemoteSequenceNumberLong() + 1 == sipRequest
-						.getCSeq().getSequenceNumberLong()) {
+				if (dialog.getRemoteSeqNumber() + 1 == sipRequest
+						.getCSeq().getSeqNumber()) {
 					dialog.setRemoteSequenceNumber(sipRequest.getCSeq()
-							.getSequenceNumberLong());
+							.getSeqNumber());
 					if (sipStack.isLoggingEnabled())
 						sipStack
 								.getLogWriter()
@@ -625,14 +625,14 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 				if (sipStack.isLoggingEnabled()) {
 					sipStack.getLogWriter().logDebug(
 							"Dropping out of sequence message "
-									+ dialog.getRemoteSequenceNumberLong()
+									+ dialog.getRemoteSeqNumber()
 									+ " " + sipRequest.getCSeq());
 				}
 
 				// send error when stricly higher, ignore when ==
 				// (likely still processing, error would interrupt that)
-				if (dialog.getRemoteSequenceNumberLong() > sipRequest.getCSeq()
-						.getSequenceNumberLong()) {
+				if (dialog.getRemoteSeqNumber() > sipRequest.getCSeq()
+						.getSeqNumber()) {
 
 					if (sipStack.isLoggingEnabled())
 						sipStack
@@ -970,7 +970,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 					return;
 				} else {
 					// 200 retransmission for the final response.
-					if (response.getCSeq().getSequenceNumberLong() == dialog
+					if (response.getCSeq().getSeqNumber() == dialog
 							.getOriginalLocalSequenceNumber()
 							&& response.getCSeq().getMethod().equals(
 									dialog.getMethod())) {
@@ -1134,7 +1134,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 					return;
 				} else {
 					// 200 retransmission for the final response.
-					if (sipResponse.getCSeq().getSequenceNumberLong() == sipDialog
+					if (sipResponse.getCSeq().getSeqNumber() == sipDialog
 							.getOriginalLocalSequenceNumber()
 							&& sipResponse.getCSeq().getMethod().equals(
 									sipDialog.getMethod())

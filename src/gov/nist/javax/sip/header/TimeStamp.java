@@ -1,28 +1,28 @@
 /*
-* Conditions Of Use 
-* 
-* This software was developed by employees of the National Institute of
-* Standards and Technology (NIST), an agency of the Federal Government.
-* Pursuant to title 15 Untied States Code Section 105, works of NIST
-* employees are not subject to copyright protection in the United States
-* and are considered to be in the public domain.  As a result, a formal
-* license is not needed to use the software.
-* 
-* This software is provided by NIST as a service and is expressly
-* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
-* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
-* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
-* AND DATA ACCURACY.  NIST does not warrant or make any representations
-* regarding the use of the software or the results thereof, including but
-* not limited to the correctness, accuracy, reliability or usefulness of
-* the software.
-* 
-* Permission to use this software is contingent upon your acceptance
-* of the terms of this agreement
-*  
-* .
-* 
-*/
+ * Conditions Of Use 
+ * 
+ * This software was developed by employees of the National Institute of
+ * Standards and Technology (NIST), an agency of the Federal Government.
+ * Pursuant to title 15 Untied States Code Section 105, works of NIST
+ * employees are not subject to copyright protection in the United States
+ * and are considered to be in the public domain.  As a result, a formal
+ * license is not needed to use the software.
+ * 
+ * This software is provided by NIST as a service and is expressly
+ * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+ * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+ * AND DATA ACCURACY.  NIST does not warrant or make any representations
+ * regarding the use of the software or the results thereof, including but
+ * not limited to the correctness, accuracy, reliability or usefulness of
+ * the software.
+ * 
+ * Permission to use this software is contingent upon your acceptance
+ * of the terms of this agreement
+ *  
+ * .
+ * 
+ */
 /*******************************************************************************
  * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
  *******************************************************************************/
@@ -35,9 +35,9 @@ import javax.sip.header.*;
 /**
  * TimeStamp SIP Header.
  * 
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:45 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-08-15 21:44:51 $
  * 
- * @author M. Ranganathan  <br/>
+ * @author M. Ranganathan <br/>
  * @author Olivier Deruelle <br/>
  * 
  * 
@@ -50,17 +50,16 @@ public class TimeStamp extends SIPHeader implements TimeStampHeader {
 	 */
 	private static final long serialVersionUID = -3711322366481232720L;
 
-	
 	/**
 	 * timeStamp field
 	 */
 	protected long timeStamp = -1;
 
-	/** 
+	/**
 	 * delay field
 	 */
 	protected int delay = -1;
-	
+
 	protected float delayFloat = -1;
 
 	private float timeStampFloat = -1;
@@ -72,17 +71,23 @@ public class TimeStamp extends SIPHeader implements TimeStampHeader {
 		super(TIMESTAMP);
 		delay = -1;
 	}
-	
+
 	private String getTimeStampAsString() {
-		if (timeStamp == -1 && timeStampFloat == -1) return "";
-		else if (timeStamp != -1) return new Long(timeStamp).toString();
-		else return new Float(timeStampFloat).toString();
+		if (timeStamp == -1 && timeStampFloat == -1)
+			return "";
+		else if (timeStamp != -1)
+			return new Long(timeStamp).toString();
+		else
+			return new Float(timeStampFloat).toString();
 	}
-	
+
 	private String getDelayAsString() {
-		if (delay == -1 && delayFloat == -1) return "";
-		else if (delay != -1) return new Integer(delay).toString();
-		else return new Float(delayFloat).toString();
+		if (delay == -1 && delayFloat == -1)
+			return "";
+		else if (delay != -1)
+			return new Integer(delay).toString();
+		else
+			return new Float(delayFloat).toString();
 	}
 
 	/**
@@ -94,11 +99,14 @@ public class TimeStamp extends SIPHeader implements TimeStampHeader {
 		StringBuffer retval = new StringBuffer();
 		String s1 = getTimeStampAsString();
 		String s2 = getDelayAsString();
-		if ( s1.equals("") && s2.equals("")) return "";
-		if (!s1.equals("")) retval.append(s1);
-		if (!s2.equals("")) retval.append(" ").append(s2);
+		if (s1.equals("") && s2.equals(""))
+			return "";
+		if (!s1.equals(""))
+			retval.append(s1);
+		if (!s2.equals(""))
+			retval.append(" ").append(s2);
 		return retval.toString();
-		
+
 	}
 
 	/**
@@ -117,23 +125,8 @@ public class TimeStamp extends SIPHeader implements TimeStampHeader {
 		delay = -1;
 	}
 
-	/** ***************************************************************************** */
-	/**
-	 * ******************** JAIN-SIP 1.1 methods
-	 * ***********************************
-	 */
-	/** ***************************************************************************** */
-
-	/*
-	 * Sets the timestamp value of this TimeStampHeader to the new timestamp
-	 * value passed to this method.
-	 * 
-	 * @deprecated
-	 * @param timeStamp -
-	 *            the new float timestamp value
-	 * @throws InvalidArgumentException
-	 *             if the timestamp value argument is a negative value.
-	 */
+	
+	
 	public void setTimeStamp(float timeStamp) throws InvalidArgumentException {
 		if (timeStamp < 0)
 			throw new InvalidArgumentException(
@@ -143,26 +136,16 @@ public class TimeStamp extends SIPHeader implements TimeStampHeader {
 		this.timeStampFloat = timeStamp;
 	}
 
-	/*
-	 * Gets the timestamp value of this TimeStampHeader.
-	 * 
-	 * @deprecated
-	 * @return the timestamp value of this TimeStampHeader
-	 */
+	
 	public float getTimeStamp() {
-		return this.timeStampFloat == -1 ? new Float(timeStamp).floatValue(): this.timeStampFloat;
+		return this.timeStampFloat == -1 ? new Float(timeStamp).floatValue()
+				: this.timeStampFloat;
 	}
 
-	/*
-	 * Gets delay of TimeStampHeader. This method return <code>-1</code> if
-	 * the delay paramater is not set.
-	 * 
-	 * @deprecated
-	 * @return the delay value of this TimeStampHeader
-	 */
+	
 
 	public float getDelay() {
-		return delayFloat == -1 ? new Float(delay).floatValue(): delayFloat;
+		return delayFloat == -1 ? new Float(delay).floatValue() : delayFloat;
 	}
 
 	/**
@@ -184,50 +167,30 @@ public class TimeStamp extends SIPHeader implements TimeStampHeader {
 		this.delayFloat = delay;
 		this.delay = -1;
 	}
-	
-	
-	/*
-	 * (non-Javadoc)
-	 * @see javax.sip.header.TimeStampHeader#setTimeStampValue(long)
-	 */
 
-	public void setTimeStampLong(long timeStamp)
-			throws InvalidArgumentException {
-		
-		if (timeStamp < -1 ) throw new InvalidArgumentException ("Illegal timestamp");
+	public long getTime() {
+		return this.timeStamp == -1 ? (long) timeStampFloat : timeStamp;
+	}
+
+	public int getTimeDelay() {
+		return this.delay == -1 ? (int) delayFloat : delay;
+
+	}
+
+	public void setTime(long timeStamp) throws InvalidArgumentException {
+		if (timeStamp < -1)
+			throw new InvalidArgumentException("Illegal timestamp");
 		this.timeStamp = timeStamp;
 		this.timeStampFloat = -1;
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see javax.sip.header.TimeStampHeader#getTimeStampValue()
-	 */
-	public long getTimeStampLong() {
-		return this.timeStamp == -1 ? (long) timeStampFloat : timeStamp;
-	}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see javax.sip.header.TimeStampHeader#getDelayValue()
-	 */
-	public int getDelayInt() {
-		return this.delay == -1 ? (int) delayFloat : delay;
-	}
-	
-	/*
-	 * 
-	 */
-	public void setDelayInt( int delay) throws InvalidArgumentException{
-		
-		if ( delay < -1) throw new InvalidArgumentException("Value out of range " + delay);
-		this.delay = delay ;
+	public void setTimeDelay(int delay) throws InvalidArgumentException {
+		if (delay < -1)
+			throw new InvalidArgumentException("Value out of range " + delay);
+		this.delay = delay;
 		this.delayFloat = -1;
-		
-	}
-	
 
-	
+	}
 
 }

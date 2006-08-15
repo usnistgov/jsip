@@ -90,8 +90,8 @@ public class ResponseEvent extends EventObject {
     * this Response was sent
     * @param response - the Response message received by the SipProvider
      * 
-     * @deprecated since 1.2, use 
-     * {$link ResponseEvent(Object,ClientTransaction,Dialog,Response)} instead
+     * @deprecated Since v1.2. Use 
+     * {@link ResponseEvent(Object,ClientTransaction,Dialog,Response)} instead
      */
     public ResponseEvent(Object source, ClientTransaction clientTransaction, Response response) {
     	this( source, clientTransaction, null, response );

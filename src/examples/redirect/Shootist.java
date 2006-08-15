@@ -130,7 +130,7 @@ public class Shootist extends TestCase implements SipListener {
 			if (response.getStatusCode() == Response.OK) {
 				logger.info("response = " + response);
 				if (cseq.getMethod().equals(Request.INVITE)) {
-					Request ackRequest = dialog.createAck(cseq.getSequenceNumberLong());
+					Request ackRequest = dialog.createAck(cseq.getSeqNumber());
 					logger.info("Sending ACK");
 					dialog.sendAck(ackRequest);
 				} 
@@ -153,8 +153,8 @@ public class Shootist extends TestCase implements SipListener {
 					CallIdHeader callID = ((CallIdHeader) response
 							.getHeader(CallIdHeader.NAME));
 					// we take the next cseq
-					int seqNo = (((CSeqHeader) response
-							.getHeader(CSeqHeader.NAME)).getSequenceNumber());
+					long seqNo = (((CSeqHeader) response
+							.getHeader(CSeqHeader.NAME)).getSeqNumber());
 					logger.info("seqNo = " + seqNo);
 					CSeqHeader cseqNew = protocolObjects.headerFactory
 							.createCSeqHeader(++seqNo, "INVITE");
@@ -305,7 +305,7 @@ public class Shootist extends TestCase implements SipListener {
 
 			// Create a new Cseq header
 			CSeqHeader cSeqHeader = protocolObjects.headerFactory
-					.createCSeqHeader(1, Request.INVITE);
+					.createCSeqHeader(1L, Request.INVITE);
 
 			// Create a new MaxForwardsHeader
 			MaxForwardsHeader maxForwards = protocolObjects.headerFactory

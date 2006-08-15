@@ -28,7 +28,7 @@ public class ShootistAuth implements SipListener {
 	private ListeningPoint udpListeningPoint;
 	private ClientTransaction inviteTid;
 	private Dialog dialog;
-	int invco = 1;
+	long invco = 1;
         String peerHostPort = "127.0.0.1:5070";
         String transport = "udp";
         String USER_AUTH = "auth";

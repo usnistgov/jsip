@@ -172,7 +172,7 @@ public class Referrer implements SipListener {
 
 	public SipProvider createProvider() throws Exception {
 
-		this.listeningPoint = sipStack.createListeningPoint("127.0.0.1", this.myPort,
+		this.listeningPoint = sipStack.createListeningPoint("127.0.0.1", myPort,
 				transport);
 		sipProvider = sipStack.createSipProvider(listeningPoint);
 		return sipProvider;
@@ -230,7 +230,7 @@ public class Referrer implements SipListener {
 
 
 			// Create a new Cseq header
-			CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(1,
+			CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(1L,
 					Request.REFER);
 
 			// Create a new MaxForwardsHeader

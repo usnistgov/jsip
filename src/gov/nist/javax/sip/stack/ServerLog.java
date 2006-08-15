@@ -48,7 +48,7 @@ import javax.sip.header.TimeStampHeader;
  * later access via RMI. The trace can be viewed with a trace viewer (see
  * tools.traceviewerapp).
  *
- * @version 1.2 $Revision: 1.19 $ $Date: 2006-07-13 09:01:01 $
+ * @version 1.2 $Revision: 1.20 $ $Date: 2006-08-15 21:44:53 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -434,7 +434,7 @@ public class ServerLog {
 		//this.sipStack.getLogWriter().logStackTrace();
 		String tid = message.getTransactionId();
 		TimeStamp timestamp = (TimeStamp) message.getHeader(TimeStampHeader.NAME);
-		long tsval = timestamp != null? timestamp.getTimeStampLong(): 0;
+		long tsval = timestamp != null? timestamp.getTime(): 0;
 		logMessage(
 			inputText,
 			from,
@@ -471,7 +471,7 @@ public class ServerLog {
 		String inputText = (logContent ? message.encode() : message.encodeMessage() ) ;
 		String tid = message.getTransactionId();
 		TimeStampHeader tsHdr = (TimeStampHeader) message.getHeader(TimeStampHeader.NAME);
-		long tsval = tsHdr == null ? 0 : tsHdr.getTimeStampLong();
+		long tsval = tsHdr == null ? 0 : tsHdr.getTime();
 		logMessage(
 			inputText,
 			from,
@@ -513,7 +513,7 @@ public class ServerLog {
 		TimeStampHeader tsHeader = (TimeStampHeader) message.getHeader(TimeStampHeader.NAME);
 		long tsVal = 0;
 		if ( tsHeader != null) {
-			tsVal = tsHeader.getTimeStampLong();
+			tsVal = tsHeader.getTime();
 		}
 		logMessage(
 			encoded,
@@ -553,7 +553,7 @@ public class ServerLog {
 		String encoded = (logContent ? message.encode() : message.encodeMessage() ) ;
 		String tid = message.getTransactionId();
 		TimeStampHeader tshdr = (TimeStampHeader) message.getHeader(TimeStampHeader.NAME);
-		long tsval = tshdr == null? 0: tshdr.getTimeStampLong();
+		long tsval = tshdr == null? 0: tshdr.getTime();
 		logMessage(
 			encoded,
 			from,

@@ -1,18 +1,8 @@
 package test.rihelper.javax.sip;
 
-import java.util.*;
-import java.util.StringTokenizer;
+import java.util.Properties;
 
-import javax.sip.*;
-import javax.sip.address.*;
-import javax.sip.message.*;
-import gov.nist.javax.sip.stack.*;
-
-import java.lang.reflect.*;
-import java.net.InetAddress;
-
-import gov.nist.core.*;
-import gov.nist.core.net.NetworkLayer;
+import javax.sip.PeerUnavailableException;
 
 /**
  * Wrapper of SipStack used to self-test the RI.

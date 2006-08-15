@@ -150,7 +150,7 @@ public interface ClientTransaction extends Transaction {
      * @deprecated Since v1.2 - since a transaction that received
      * a 2xx response terminates immediately, it cannot be used for creating
      * the ack. If this transaction created a dialog, the 
-     * {@link Dialog#createAck(int)} method
+     * {@link Dialog#createAck(long)} method
      * should be used. Otherwise the stack will automatically create and
      * send the ACK for non-2xx responses that need to be acknowledged. 
      * That is the application should never need to use this method.

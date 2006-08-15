@@ -537,8 +537,8 @@ public class MessageFactoryTest extends FactoryTestHarness {
 
 			method = Request.INVITE;
 
-			ticSeq = tiHeaderFactory.createCSeqHeader(1, method);
-			ricSeq = riHeaderFactory.createCSeqHeader(1, method);
+			ticSeq = tiHeaderFactory.createCSeqHeader(1L, method);
+			ricSeq = riHeaderFactory.createCSeqHeader(1L, method);
 
 			statusCode = 200;
 
