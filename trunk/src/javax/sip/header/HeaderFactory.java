@@ -147,8 +147,8 @@ public interface HeaderFactory {
      * unexpectedly while parsing the method value.
      * @return the newly created CSeqHeader object.
      * 
-     * @deprecated Since 1.2 the sequenceNumber is long instead of int, use
-     * 		{@link #createCSeqHeader(long,String)}
+     * @deprecated Since 1.2. Use {@link #createCSeqHeader(long, String)} method
+     * with type long.
      */
     public CSeqHeader createCSeqHeader( int sequenceNumber, String method)
                              throws ParseException, InvalidArgumentException;
@@ -166,7 +166,7 @@ public interface HeaderFactory {
      * unexpectedly while parsing the method value.
      * @return the newly created CSeqHeader object.
      * 
-     * @since 1.2 the sequenceNumber is long instead of int
+     * @since v1.2 
      */
     public CSeqHeader createCSeqHeader( long sequenceNumber, String method)
                              throws ParseException, InvalidArgumentException;
@@ -201,7 +201,7 @@ public interface HeaderFactory {
 
     /**
      * Creates a new wildcard ContactHeader. This is used in Register requests
-     * to indicate to the server that it should remove all locations the
+     * to indicate to the server that it should remove all locations
      * at which the user is currently available. This implies that the 
      * following conditions are met:
      * <ul>
@@ -482,12 +482,32 @@ public interface HeaderFactory {
      * unexpectedly while parsing the method value.
      * @return the newly created RAckHeader object.
      * @since v1.1
+     * @deprecated Since 1.2. Use {@link #createRAckHeader(long, long, String)} method
+     * with type long.
      * 
-     * @since 1.2 the sequence numbers are long
      */
-    public RAckHeader createRAckHeader(long rSeqNumber, long cSeqNumber, String method)
+    public RAckHeader createRAckHeader(int rSeqNumber, int cSeqNumber, String method)
                              throws InvalidArgumentException, ParseException;
 
+ 
+    /**
+     * Creates a new RAckHeader based on the newly supplied rSeqNumber, 
+     * cSeqNumber and method values.
+     *
+     * @param rSeqNumber the new long value of the rSeqNumber.
+     * @param cSeqNumber the new long value of the cSeqNumber.
+     * @param method the new string value of the method.
+     * @throws InvalidArgumentException if supplied rSeqNumber or cSeqNumber is 
+     * less than zero or greater than than 2**31-1.
+     * @throws ParseException which signals that an error has been reached
+     * unexpectedly while parsing the method value.
+     * @return the newly created RAckHeader object.
+     * @since v1.2
+     */
+    public RAckHeader createRAckHeader(long rSeqNumber, long cSeqNumber, String method)
+                             throws InvalidArgumentException, ParseException;    
+    
+    
     /**
      * Creates a new RSeqHeader based on the newly supplied sequenceNumber value.
      *
@@ -496,8 +516,22 @@ public interface HeaderFactory {
      * less than zero or greater than than 2**31-1.
      * @return the newly created RSeqHeader object.
      * @since v1.1
+     * @deprecated Since v1.2. Use {@link #createRSeqHeader(long)} method
+     * with type long.
      * 
-     * @since 1.2 the sequence number is long
+     */
+    public RSeqHeader createRSeqHeader( int sequenceNumber )
+                             throws InvalidArgumentException;    
+    
+    
+    /**
+     * Creates a new RSeqHeader based on the newly supplied sequenceNumber value.
+     *
+     * @param sequenceNumber the new long value of the sequenceNumber.
+     * @throws InvalidArgumentException if supplied sequenceNumber is 
+     * less than zero or greater than than 2**31-1.
+     * @return the newly created RSeqHeader object.
+     * @since v1.2
      */
     public RSeqHeader createRSeqHeader( long sequenceNumber )
                              throws InvalidArgumentException;
@@ -724,7 +758,7 @@ public interface HeaderFactory {
 	 * @return the newly created SIP-ETag header
 	 * @throws ParseException when an error occurs during parsing of the etag parameter
 	 * 
-	 * @since 1.2
+	 * @since v1.2
 	 */
 	public SIPETagHeader createSIPETagHeader( String etag ) throws ParseException;
 	
@@ -735,7 +769,7 @@ public interface HeaderFactory {
 	 * @return the newly created SIP-If-Match header
 	 * @throws ParseException when an error occurs during parsing of the etag parameter
 	 * 
-	 * @since 1.2
+	 * @since v1.2
 	 */
 	public SIPIfMatchHeader createSIPIfMatchHeader( String etag ) throws ParseException;    
 }

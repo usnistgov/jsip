@@ -22,7 +22,6 @@ public class DigestClientAuthenticationMethod implements ClientAuthenticationMet
     private String password;
     private String method;
     private String cnonce;
-    private String algorithm;
     private MessageDigest messageDigest;
     
     
@@ -65,9 +64,7 @@ public class DigestClientAuthenticationMethod implements ClientAuthenticationMet
             this.method=method;
         this.cnonce=cnonce;
         if (algorithm==null) throw new Exception("The algorithm parameter is null");
-            this.algorithm=algorithm;
-        
-        try {
+            try {
             messageDigest = MessageDigest.getInstance(algorithm);
         }
         catch ( NoSuchAlgorithmException ex ) {

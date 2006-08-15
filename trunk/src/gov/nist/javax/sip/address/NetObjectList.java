@@ -40,7 +40,7 @@ import java.lang.reflect.*;
 * IMPORTANT NOTE: NetObjectList cannot derive from NetObject as this 
 * will screw up the way in which we attach objects to headers.
 *
-*@version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:02:30 $
+*@version 1.2 $Revision: 1.6 $ $Date: 2006-08-15 21:45:01 $
 *
 *@author M. Ranganathan   <br/>
 *
@@ -48,6 +48,12 @@ import java.lang.reflect.*;
 *
 */
 public class NetObjectList extends GenericObjectList {
+
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1551780600806959023L;
 
 	/**
 	 * Construct a NetObject List given a list name.

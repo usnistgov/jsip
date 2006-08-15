@@ -28,7 +28,6 @@
  *******************************************************************************/
 package gov.nist.javax.sip.stack;
 
-import gov.nist.core.*;
 import gov.nist.javax.sip.SipStackImpl;
 
 import java.io.*;
@@ -58,8 +57,6 @@ class IOHandler {
 
    
     private SipStackImpl sipStack;
-
-    private static String UDP = "udp";
 
     private static String TCP = "tcp";
 

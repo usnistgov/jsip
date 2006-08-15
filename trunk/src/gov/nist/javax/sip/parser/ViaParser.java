@@ -25,7 +25,6 @@
 */
 package gov.nist.javax.sip.parser;
 
-import gov.nist.javax.sip.SIPConstants;
 import gov.nist.javax.sip.header.*;
 import gov.nist.core.*;
 import java.text.ParseException;
@@ -33,7 +32,7 @@ import java.text.ParseException;
 /**
  * Parser for via headers.
  * 
- * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-13 09:02:05 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2006-08-15 21:44:49 $
  * @since 1.1
  * 
  * @author Olivier Deruelle

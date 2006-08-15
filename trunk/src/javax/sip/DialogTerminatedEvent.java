@@ -46,7 +46,7 @@ public class DialogTerminatedEvent extends EventObject {
      * timeout.
      *
      * @param source - the source of TimeoutEvent. 
-     * @param serverTransaction - the server transaction that timed out.
+     * @param dialog - the dialog that timed out.
      */
      public DialogTerminatedEvent(Object source, Dialog dialog) {
          super(source);

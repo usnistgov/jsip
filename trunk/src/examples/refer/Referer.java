@@ -37,8 +37,6 @@ public class Referer implements SipListener {
 
 	private ContactHeader contactHeader;
 
-	private static String notifierPort;
-
 	private static String transport;
 	
 	private int count;
@@ -205,7 +203,7 @@ public class Referer implements SipListener {
 			CallIdHeader callIdHeader = sipProvider.getNewCallId();
 
 			// Create a new Cseq header
-			CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(1,
+			CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(1L,
 					Request.REFER);
 
 			// Create a new MaxForwardsHeader
@@ -263,8 +261,6 @@ public class Referer implements SipListener {
 
 	public static void main(String args[]) throws Exception {
 	
-		notifierPort = args[0];
-
 		transport = "udp";
 
 		SipFactory sipFactory = SipFactory.getInstance();

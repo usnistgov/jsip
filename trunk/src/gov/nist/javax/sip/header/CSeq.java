@@ -38,7 +38,7 @@ import gov.nist.javax.sip.message.SIPRequest;
  *  CSeq SIP Header.
  *
  * @author M. Ranganathan    <br/>
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-22 21:31:19 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2006-08-15 21:44:51 $
  * @since 1.1
  *
  */
@@ -89,7 +89,7 @@ public class CSeq extends SIPHeader implements javax.sip.header.CSeqHeader {
 		
 		if (other instanceof CSeqHeader) {
 			final CSeqHeader o = (CSeqHeader) other;
-			return this.getSequenceNumberLong() == o.getSequenceNumberLong()
+			return this.getSeqNumber() == o.getSeqNumber()
 				&& this.getMethod().equals( o.getMethod() );
 		}
 		return false;
@@ -124,7 +124,7 @@ public class CSeq extends SIPHeader implements javax.sip.header.CSeqHeader {
 	 * (non-Javadoc)
 	 * @see javax.sip.header.CSeqHeader#setSequenceNumber(long)
 	 */
-	public void setSequenceNumber(long sequenceNumber)
+	public void setSeqNumber(long sequenceNumber)
 		throws InvalidArgumentException {
 		if (sequenceNumber < 0 )
 			throw new InvalidArgumentException(
@@ -142,7 +142,7 @@ public class CSeq extends SIPHeader implements javax.sip.header.CSeqHeader {
 	 * For backwards compatibility
 	 */
 	public void setSequenceNumber(int sequenceNumber) throws InvalidArgumentException {
-		this.setSequenceNumber( (long) sequenceNumber );
+		this.setSeqNumber( (long) sequenceNumber );
 	}
 	
 	/*
@@ -169,14 +169,12 @@ public class CSeq extends SIPHeader implements javax.sip.header.CSeqHeader {
 	}
 
 	
-	/*
-	 * (non-Javadoc)
-	 * @see javax.sip.header.CSeqHeader#getSequenceNumberLong()
-	 */
+	
 
-	public long getSequenceNumberLong() {
-		
+	public long getSeqNumber() {
 		return this.seqno.longValue();
 	}
+
+	
 }
 

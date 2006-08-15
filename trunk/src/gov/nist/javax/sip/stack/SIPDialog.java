@@ -58,7 +58,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.24 $ $Date: 2006-07-29 12:38:00 $
+ * @version 1.2 $Revision: 1.25 $ $Date: 2006-08-15 21:44:53 $
  * 
  * @author M. Ranganathan
  * 
@@ -322,7 +322,7 @@ public class SIPDialog implements javax.sip.Dialog {
 		this.sipStack = (SIPTransactionStack) sipProvider.getSipStack();
 		this.setLastResponse(null, sipResponse);
 		this.localSequenceNumber = sipResponse.getCSeq()
-				.getSequenceNumberLong();
+				.getSeqNumber();
 		this.originalLocalSequenceNumber = localSequenceNumber;
 		this.myTag = sipResponse.getFrom().getTag();
 		this.hisTag = sipResponse.getTo().getTag();
@@ -721,7 +721,7 @@ public class SIPDialog implements javax.sip.Dialog {
 			return;
 		SIPServerTransaction tr = this.getInviteTransaction();
 		if (tr != null) {
-			if (tr.getCSeq() == sipRequest.getCSeq().getSequenceNumberLong()) {
+			if (tr.getCSeq() == sipRequest.getCSeq().getSeqNumber()) {
 				this.ackSeen = true;
 				this.lastAck = sipRequest;
 				if (sipStack.isLoggingEnabled()) {
@@ -771,7 +771,7 @@ public class SIPDialog implements javax.sip.Dialog {
 	 * 
 	 */
 	public synchronized void requestConsumed() {
-		this.nextSeqno = new Long(this.getRemoteSequenceNumberLong() + 1);
+		this.nextSeqno = new Long(this.getRemoteSeqNumber() + 1);
 
 		if (sipStack.isLoggingEnabled()) {
 			this.sipStack.logWriter
@@ -797,7 +797,7 @@ public class SIPDialog implements javax.sip.Dialog {
 		// JvB: Acceptable iff remoteCSeq < cseq. remoteCSeq==-1
 		// when not defined yet, so that works too
 		return remoteSequenceNumber < dialogRequest.getCSeq()
-				.getSequenceNumberLong();
+				.getSeqNumber();
 	}
 
 	/**
@@ -859,9 +859,9 @@ public class SIPDialog implements javax.sip.Dialog {
 			sipStack.logWriter.logDebug("localTag = " + getLocalTag());
 			sipStack.logWriter.logDebug("remoteTag = " + getRemoteTag());
 			sipStack.logWriter.logDebug("localSequenceNumer = "
-					+ getLocalSequenceNumberLong());
+					+ getLocalSeqNumber());
 			sipStack.logWriter.logDebug("remoteSequenceNumer = "
-					+ getRemoteSequenceNumberLong());
+					+ getRemoteSeqNumber());
 			sipStack.logWriter.logDebug("ackLine:" + this.getRemoteTag() + " "
 					+ ackLine);
 		}
@@ -993,7 +993,7 @@ public class SIPDialog implements javax.sip.Dialog {
 		d.terminateOnBye = false;
 		d.localSequenceNumber = d.firstTransaction.getCSeq();
 		SIPRequest not = (SIPRequest) notifyST.getRequest();
-		d.remoteSequenceNumber = not.getCSeq().getSequenceNumberLong();
+		d.remoteSequenceNumber = not.getCSeq().getSeqNumber();
 		d.setDialogId(not.getDialogId(true));
 		d.setLocalTag(not.getToTag());
 		d.setRemoteTag(not.getFromTag());
@@ -1089,7 +1089,7 @@ public class SIPDialog implements javax.sip.Dialog {
 				// My tag is assigned when sending response
 			} else {
 				setLocalSequenceNumber(sipRequest.getCSeq()
-						.getSequenceNumberLong());
+						.getSeqNumber());
 				this.originalLocalSequenceNumber = localSequenceNumber;
 				this.myTag = sipRequest.getFrom().getTag();
 				if (myTag == null)
@@ -1113,7 +1113,7 @@ public class SIPDialog implements javax.sip.Dialog {
 		}
 		if (transaction instanceof SIPServerTransaction)
 			setRemoteSequenceNumber(sipRequest.getCSeq()
-					.getSequenceNumberLong());
+					.getSeqNumber());
 
 		// If this is a server transaction record the remote
 		// sequence number to avoid re-processing of requests
@@ -1251,7 +1251,7 @@ public class SIPDialog implements javax.sip.Dialog {
 	 * 
 	 * @see javax.sip.Dialog#getLocalSequenceNumberLong()
 	 */
-	public long getLocalSequenceNumberLong() {
+	public long getLocalSeqNumber() {
 		return this.localSequenceNumber;
 	}
 
@@ -1260,7 +1260,7 @@ public class SIPDialog implements javax.sip.Dialog {
 	 * 
 	 * @see javax.sip.Dialog#getRemoteSequenceNumberLong()
 	 */
-	public long getRemoteSequenceNumberLong() {
+	public long getRemoteSeqNumber() {
 		return this.remoteSequenceNumber;
 	}
 
@@ -1468,7 +1468,7 @@ public class SIPDialog implements javax.sip.Dialog {
 		CSeq cseq = new CSeq();
 		try {
 			cseq.setMethod(method);
-			cseq.setSequenceNumber(this.getLocalSequenceNumberLong());
+			cseq.setSeqNumber(this.getLocalSeqNumber());
 		} catch (Exception ex) {
 			sipStack.getLogWriter().logError("Unexpected error");
 			InternalErrorHandler.handleException(ex);
@@ -1512,14 +1512,14 @@ public class SIPDialog implements javax.sip.Dialog {
 			// the request is actually dispatched
 			if (!method.equals(Request.ACK)) {
 				cseq = (CSeq) sipRequest.getCSeq();
-				cseq.setSequenceNumber(this.localSequenceNumber + 1);
+				cseq.setSeqNumber(this.localSequenceNumber + 1);
 			} else {
 				// This is an ACK request. Get the last transaction and
 				// assign a seq number from there.
 
 				long seqno = this.lastResponse.getCSeq()
-						.getSequenceNumberLong();
-				cseq.setSequenceNumber(seqno);
+						.getSeqNumber();
+				cseq.setSeqNumber(seqno);
 			}
 
 		} catch (InvalidArgumentException ex) {
@@ -1774,8 +1774,8 @@ public class SIPDialog implements javax.sip.Dialog {
 		try {
 			// Increment before setting!!
 			localSequenceNumber++;
-			dialogRequest.getCSeq().setSequenceNumber(
-					getLocalSequenceNumberLong());
+			dialogRequest.getCSeq().setSeqNumber(
+					getLocalSeqNumber());
 		} catch (InvalidArgumentException ex) {
 			ex.printStackTrace();
 		}
@@ -1825,7 +1825,7 @@ public class SIPDialog implements javax.sip.Dialog {
 			if (lastAck.getHeader(TimeStampHeader.NAME) != null && sipStack.generateTimeStampHeader) {
 				TimeStamp ts = new TimeStamp();
 				try {
-					ts.setTimeStampLong(System.currentTimeMillis());
+					ts.setTimeStamp(System.currentTimeMillis());
 					lastAck.setHeader(ts);
 				} catch (InvalidArgumentException e) {
 
@@ -1917,9 +1917,9 @@ public class SIPDialog implements javax.sip.Dialog {
 			RAck rack = new RAck();
 			RSeq rseq = (RSeq) relResponse.getHeader(RSeqHeader.NAME);
 			rack.setMethod(sipResponse.getCSeq().getMethod());
-			rack.setCSeqNumber((int) sipResponse.getCSeq()
-					.getSequenceNumberLong());
-			rack.setRSeqNumber(rseq.getSequenceNumberLong());
+			rack.setCSequenceNumber((int) sipResponse.getCSeq()
+					.getSeqNumber());
+			rack.setRSequenceNumber(rseq.getSeqNumber());
 			sipRequest.setHeader(rack);
 			return (Request) sipRequest;
 		} catch (Exception ex) {
@@ -2395,7 +2395,7 @@ public class SIPDialog implements javax.sip.Dialog {
 		}
 		response.addHeader(require);
 		RSeq rseq = new RSeq();
-		rseq.setSequenceNumber(1); // Note this will change when the response
+		rseq.setSeqNumber(1L); // Note this will change when the response
 		// is sent out.
 
 		return response;
@@ -2452,7 +2452,7 @@ public class SIPDialog implements javax.sip.Dialog {
 			return false;
 		}
 
-		if (rack.getCSeqNumberLong() != cseq.getSequenceNumberLong()) {
+		if (rack.getCSeqNumberLong() != cseq.getSeqNumber()) {
 			if (sipStack.isLoggingEnabled())
 				sipStack.logWriter
 						.logDebug("Dropping Prack -- CSeq Header does not match PRACK");
@@ -2461,7 +2461,7 @@ public class SIPDialog implements javax.sip.Dialog {
 
 		RSeq rseq = (RSeq) sipResponse.getHeader(RSeqHeader.NAME);
 
-		if (rack.getRSeqNumberLong() != rseq.getSequenceNumberLong()) {
+		if (rack.getRSequenceNumber() != rseq.getSeqNumber()) {
 			if (sipStack.isLoggingEnabled())
 				sipStack.logWriter
 						.logDebug("Dropping Prack -- RSeq Header does not match PRACK");
@@ -2598,8 +2598,8 @@ public class SIPDialog implements javax.sip.Dialog {
 		SIPRequest sipRequest = ackTransaction.getOriginalRequest();
 
 		if (isAckSeen()
-				&& getRemoteSequenceNumberLong() == sipRequest.getCSeq()
-						.getSequenceNumberLong()) {
+				&& getRemoteSeqNumber() == sipRequest.getCSeq()
+						.getSeqNumber()) {
 
 			if (sipStack.isLoggingEnabled()) {
 				sipStack.getLogWriter().logDebug(
@@ -2632,8 +2632,8 @@ public class SIPDialog implements javax.sip.Dialog {
 					&& sipResponse != null
 					&& sipResponse.getStatusCode() / 100 == 2
 					&& sipResponse.getCSeq().getMethod().equals(Request.INVITE)
-					&& sipResponse.getCSeq().getSequenceNumberLong() == sipRequest
-							.getCSeq().getSequenceNumberLong()) {
+					&& sipResponse.getCSeq().getSeqNumber() == sipRequest
+							.getCSeq().getSeqNumber()) {
 
 				ackTransaction.setDialog(this, sipResponse.getDialogId(false));
 				// record that we already saw an ACK for
@@ -2655,5 +2655,7 @@ public class SIPDialog implements javax.sip.Dialog {
 			}
 		}
 	}
+
+	
 
 }

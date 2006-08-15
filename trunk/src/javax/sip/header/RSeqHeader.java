@@ -55,26 +55,43 @@ public interface RSeqHeader extends Header {
      * response. The sequence number MUST be expressible as a 32-bit unsigned 
      * integer and MUST be less than 2**32 -1.
      *
+     * @deprecated This method is replaced with {@link #setSeqNumber(long)} with 
+     * type long.
      * @param sequenceNumber - the new Sequence number of this RSeqHeader
      * @throws InvalidArgumentException if supplied value is less than zero.
      */
-    public void setSequenceNumber(long sequenceNumber) throws InvalidArgumentException;
+    public void setSequenceNumber(int sequenceNumber) throws InvalidArgumentException;
 
     /**
      * Gets the sequence number of this RSeqHeader.
      *
-     *@deprecated
+     * @deprecated This method is replaced with {@link #getSeqNumber()} with 
+     * type long.
      * @return the integer value of the Sequence number of the RSeqHeader
      */
     public int getSequenceNumber();    
+
+   
+    /**
+     * Sets the sequence number value of the RSeqHeader. 
+     *
+     * @param sequenceNumber - the new sequence number of this RSeqHeader
+     * @throws InvalidArgumentException if supplied value is less than zero.
+     * @since v1.2
+     */
+    public void setSeqNumber(long sequenceNumber) 
+                                        throws InvalidArgumentException;    
     
     /**
      * Gets the sequence number of this RSeqHeader.
      *
-     *
-     * @return the long value of the Sequence number of the RSeqHeader
+     * @return the sequence number of the RSeqHeader
+     * @since v1.2
      */
-    public long getSequenceNumberLong();    
+    public long getSeqNumber();    
+    
+   
+   
     
     /**
      * Name of RSeqHeader

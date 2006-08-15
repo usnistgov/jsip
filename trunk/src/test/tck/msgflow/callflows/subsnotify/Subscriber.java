@@ -19,14 +19,11 @@
 */
 package test.tck.msgflow.callflows.subsnotify;
 
-import gov.nist.javax.sip.stack.SIPTransactionStack;
-
 import javax.sip.*;
 import javax.sip.address.*;
 import javax.sip.header.*;
 import javax.sip.message.*;
 
-import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -296,7 +293,7 @@ public class Subscriber implements SipListener {
 
 
 			// Create a new Cseq header
-			CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(1,
+			CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(1L,
 					Request.SUBSCRIBE);
 
 			// Create a new MaxForwardsHeader

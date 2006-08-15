@@ -227,7 +227,7 @@ public class Subscriber implements SipListener {
 			CallIdHeader callIdHeader = sipProvider.getNewCallId();
 
 			// Create a new Cseq header
-			CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(1,
+			CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(1L,
 					Request.SUBSCRIBE);
 
 			// Create a new MaxForwardsHeader

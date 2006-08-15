@@ -274,7 +274,7 @@ public class Shootist implements SipListener {
 	void sendInviteRequest(int cmdSeq) {
 		System.out.println("====Send INVITE at times: " + cmdSeq);
 		try {
-			cSeqHeader = headerFactory.createCSeqHeader(1, Request.INVITE);
+			cSeqHeader = headerFactory.createCSeqHeader(1L, Request.INVITE);
 
 			// Create a new CallId header
 			CallIdHeader callIdHeader = sipProvider.getNewCallId();

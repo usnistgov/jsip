@@ -53,8 +53,6 @@ public class Controller implements SipListener {
 
 	String transport = "udp";
 
-	private Dialog dialog;
-
 	protected static final String usageString = "java "
 			+ "examples.ctd.ctdControll \n"
 			+ ">>>> is your class path set to the root?";
@@ -182,7 +180,7 @@ public class Controller implements SipListener {
 						Dialog dialogSecond = tid.getDialog();
 
 						Request ackRequest = dialogSecond.createAck(cseq
-								.getSequenceNumberLong());// dialogSecond.createRequest(Request.ACK);
+								.getSeqNumber());// dialogSecond.createRequest(Request.ACK);
 						System.out.println("Sending ACK second");
 						dialogSecond.sendAck(ackRequest);// dialogSecond.sendAck(ackRequest);
 
@@ -190,7 +188,7 @@ public class Controller implements SipListener {
 								.getResponse().getHeader(CSeqHeader.NAME);
 						Request ackRequestFirst = responseFirstEvent
 								.getDialog().createAck(
-										cseqFirst.getSequenceNumberLong());
+										cseqFirst.getSeqNumber());
 						ackRequestFirst.setContent(response.getContent(),
 								(ContentTypeHeader) (response
 										.getHeader("Content-Type")));
@@ -274,8 +272,8 @@ public class Controller implements SipListener {
 		}
 
 		// Create a new Cseq header
-		CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(Integer
-				.parseInt(headerValue), Request.INVITE);
+		CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(Long
+				.parseLong(headerValue), Request.INVITE);
 
 		// Create a new MaxForwardsHeader
 		MaxForwardsHeader maxForwards = headerFactory

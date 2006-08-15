@@ -69,11 +69,7 @@ public class Shootme extends TestHarness implements SipListener {
 			+ "examples.shootist.Shootist \n"
 			+ ">>>> is your class path set to the root?";
 
-	private static void usage() {
-		logger.info(usageString);
-		System.exit(0);
-
-	}
+	
 
 	public void processRequest(RequestEvent requestEvent) {
 		Request request = requestEvent.getRequest();

@@ -289,7 +289,7 @@ public class Shootist extends TestCase implements SipListener {
 
 			// Create a new Cseq header
 			CSeqHeader cSeqHeader = ProtocolObjects.headerFactory
-					.createCSeqHeader(1, Request.INVITE);
+					.createCSeqHeader(1L, Request.INVITE);
 
 			// Create a new MaxForwardsHeader
 			MaxForwardsHeader maxForwards = ProtocolObjects.headerFactory

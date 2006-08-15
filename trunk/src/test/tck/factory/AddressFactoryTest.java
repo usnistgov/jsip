@@ -199,7 +199,7 @@ public class AddressFactoryTest extends FactoryTestHarness {
 				assertTrue(!tiSipURI.isSecure());
 				assertTrue(
 					(
-						(SipURI) this.tiAddressFactory.createURI(
+						(SipURI) tiAddressFactory.createURI(
 							"sip:" + hosts[i])).equals(
 						tiSipURI));
 				riSipURI = this.createRiSipURI(null, hosts[i]);
@@ -218,7 +218,7 @@ public class AddressFactoryTest extends FactoryTestHarness {
 				assertTrue(!tiSipURI.isSecure());
 				assertTrue(
 					(
-						(SipURI) this.tiAddressFactory.createURI(
+						(SipURI) tiAddressFactory.createURI(
 							"sip:jaintck@" + hosts[i])).equals(
 						tiSipURI));
 				tiAddress = this.createAddress(tiSipURI);

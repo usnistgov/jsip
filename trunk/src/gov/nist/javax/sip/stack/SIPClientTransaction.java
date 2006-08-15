@@ -160,7 +160,7 @@ import java.io.IOException;
  * @author M. Ranganathan  <a href=" {@docRoot}/uncopyright.html">This
  *         code is in the public domain. </a>
  * 
- * @version 1.2 $Revision: 1.51 $ $Date: 2006-07-30 03:20:22 $
+ * @version 1.2 $Revision: 1.52 $ $Date: 2006-08-15 21:44:52 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -926,7 +926,7 @@ public class SIPClientTransaction extends SIPTransaction implements
 						long milisec = System.currentTimeMillis();
 						TimeStamp timeStamp = new TimeStamp();
 						try {
-							timeStamp.setTimeStampLong(milisec);
+							timeStamp.setTimeStamp(milisec);
 						} catch (InvalidArgumentException ex) {
 							InternalErrorHandler.handleException(ex);
 						}

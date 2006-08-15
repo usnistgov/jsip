@@ -152,7 +152,7 @@ public class DialogTest extends MessageFlowHarness {
 			//SeqNum
 			assertTrue(
 				"Dialog.getLocalSequenceNumber() returned a bad value.",
-				1 == dialog.getLocalSequenceNumberLong());
+				1 == dialog.getLocalSeqNumber());
 			//LocalTag
 			assertEquals(
 				"Dialog.getLocalTag() returned a bad tag",
@@ -201,9 +201,9 @@ public class DialogTest extends MessageFlowHarness {
 			//check CSeq number
 			assertEquals(
 				"Dialog.createRequest() returned a request with a bad sequence number.",
-				dialog.getLocalSequenceNumberLong() + 1,
+				dialog.getLocalSeqNumber() + 1,
 				((CSeqHeader) bye.getHeader(CSeqHeader.NAME))
-					.getSequenceNumberLong());
+					.getSeqNumber());
 			//Check From
 			FromHeader byeFrom = (FromHeader) bye.getHeader(FromHeader.NAME);
 			assertEquals(
@@ -316,7 +316,7 @@ public class DialogTest extends MessageFlowHarness {
 			Request ack = null;
 			try {
 				CSeqHeader cseq = (CSeqHeader) okRespEvt.getResponse().getHeader(CSeqHeader.NAME);
-				ack = dialog.createAck(cseq.getSequenceNumberLong());
+				ack = dialog.createAck(cseq.getSeqNumber());
 				//System.out.println( "Created ACK:" + ack );
 				//System.out.println( "original INVITE:" + riInvite );
 

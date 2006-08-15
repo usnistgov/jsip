@@ -75,11 +75,7 @@ public class Shootme  extends TestCase implements SipListener {
 			+ "examples.shootist.Shootist \n"
 			+ ">>>> is your class path set to the root?";
 
-	private static void usage() {
-		logger.info(usageString);
-		System.exit(0);
-
-	}
+	
 
 	public void processRequest(RequestEvent requestEvent) {
 		Request request = requestEvent.getRequest();
