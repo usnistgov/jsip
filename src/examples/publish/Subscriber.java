@@ -209,7 +209,7 @@ public class Subscriber implements SipListener {
 
 			// Create a new Cseq header
 			CSeqHeader cSeqHeader =
-				headerFactory.createCSeqHeader(1, Request.SUBSCRIBE);
+				headerFactory.createCSeqHeader(1L, Request.SUBSCRIBE);
 
 			// Create a new MaxForwardsHeader
 			MaxForwardsHeader maxForwards =

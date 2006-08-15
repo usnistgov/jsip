@@ -150,7 +150,7 @@ public class Referee implements SipListener {
 			referEvent = headerFactory.createEventHeader("refer");
 			
 			// Not necessary, but allowed: id == cseq of REFER
-			long id = ((CSeqHeader) refer.getHeader("CSeq")).getSequenceNumberLong();
+			long id = ((CSeqHeader) refer.getHeader("CSeq")).getSeqNumber();
 			referEvent.setEventId( Long.toString(id) );			
 			
 			sendNotify( Response.TRYING, "Trying" );
@@ -230,7 +230,7 @@ public class Referee implements SipListener {
 			
 			if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
 				try {
-					Request ack = tid.getDialog().createAck( cseq.getSequenceNumberLong() );
+					Request ack = tid.getDialog().createAck( cseq.getSeqNumber() );
 					tid.getDialog().sendAck( ack );
 					
 					// kill it right away
@@ -302,7 +302,7 @@ public class Referee implements SipListener {
 			CallIdHeader callIdHeader = udpProvider.getNewCallId();
 
 			// Create a new Cseq header
-			CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(1,
+			CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(1L,
 					Request.INVITE);
 
 			// Create a new MaxForwardsHeader

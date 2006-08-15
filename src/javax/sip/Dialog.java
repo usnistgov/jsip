@@ -259,8 +259,9 @@ public interface Dialog extends Serializable {
 	 * by one, and this value MUST be placed into the CSeq header field. If the
 	 * local sequence number is empty, an initial value MUST be chosen.
 	 * 
-	 * @deprecated
-	 * @see #getLocalSequenceNumberLong()
+	 * @deprecated This method is replaced with {@link #getLocalSeqNumber()} with 
+         * type long.
+	 * @see #getLocalSeqNumber()
 	 * 
 	 * @return the integer value of the local sequence number, returns zero if
 	 *         not set.
@@ -282,10 +283,11 @@ public interface Dialog extends Serializable {
 	 * by one, and this value MUST be placed into the CSeq header field. If the
 	 * local sequence number is empty, an initial value MUST be chosen.
 	 * 
-	 * @return the integer value of the local sequence number, returns zero if
+	 * @return the value of the local sequence number, returns zero if
 	 *         not set.
+         * @since v1.2
 	 */
-	public long getLocalSequenceNumberLong();
+	public long getLocalSeqNumber();
 
 	/**
 	 * The remote sequence number is used to order requests from its peer User
@@ -303,8 +305,9 @@ public interface Dialog extends Serializable {
 	 * the request is greater than the remote sequence number, the request is in
 	 * order.
 	 * 
-	 * @deprecated
-	 * @see #getRemoteSequenceNumberLong()
+	 * @deprecated This method is replaced with {@link #getRemoteSeqNumber()} with 
+         * type long.
+	 * @see #getRemoteSeqNumber()
 	 * @return the integer value of the remote sequence number, return zero if
 	 *         not set.
 	 */
@@ -327,10 +330,11 @@ public interface Dialog extends Serializable {
 	 * order.
 	 * 
 	 * 
-	 * @return the long value of the remote sequence number, return zero if
+	 * @return the value of the remote sequence number, return zero if
 	 *         not set.
+         * @since v1.2
 	 */
-	public long getRemoteSequenceNumberLong();
+	public long getRemoteSeqNumber();
 
 	/**
 	 * When acting as an User Agent Server the routeset MUST be set to the list
@@ -449,7 +453,7 @@ public interface Dialog extends Serializable {
 	 * @return the newly created Response object.
 	 * @throws InvalidArgumentException
 	 *             when an invalid status code or request method is supplied.
-	 * @thorws SipException when the Dialog is not a server dialog or if this
+	 * @throws SipException when the Dialog is not a server dialog or if this
 	 *         method is called after a final response is sent to the
 	 *         ServerTransactin that created the Dialog.
 	 * 
@@ -716,7 +720,7 @@ public interface Dialog extends Serializable {
 	 * 
 	 * @param terminateFlag --
 	 *            if true then the dialog is terminated when a BYE is received.
-	 * @param SipException --
+	 * @throws SipException --
 	 *            if the dialog is already terminated.
 	 * 
 	 */

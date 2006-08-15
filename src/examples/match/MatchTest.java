@@ -51,7 +51,7 @@ static final String message1 = "INVITE sip:joe@company.com SIP/2.0\r\n"+
 		HeaderFactory headerFactory = sipFactory.createHeaderFactory();
 
 		CSeqHeader cseqHeader = 
-			headerFactory.createCSeqHeader(1,Request.INVITE);
+			headerFactory.createCSeqHeader(1L,Request.INVITE);
 		gov.nist.javax.sip.header.CSeq cseq = (CSeq)cseqHeader;
 	
 		

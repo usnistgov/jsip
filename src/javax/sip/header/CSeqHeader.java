@@ -89,17 +89,7 @@ public interface CSeqHeader extends Header {
      */
     public String getMethod();
 
-    /**
-     * Sets the sequence number value of the CSeqHeader. The sequence number
-     * MUST be expressible as a 32-bit unsigned integer and MUST be less than
-     * 2**32 -1
-     *
-     * @param sequenceNumber - the new sequence number of this CSeqHeader
-     * @throws InvalidArgumentException if supplied value is less than zero.
-     * @since v1.2
-     */
-    public void setSequenceNumber(long sequenceNumber) 
-                                        throws InvalidArgumentException;
+
 
     /**
      * Sets the sequence number value of the CSeqHeader. The sequence number
@@ -110,20 +100,31 @@ public interface CSeqHeader extends Header {
      * @throws InvalidArgumentException if supplied value is less than zero.
      * @since v1.1
      * 
-     * @deprecated use {@link #setSequenceNumber(long)} instead
+     * @deprecated This method is replaced with {@link #setSeqNumber(long)} with 
+     * type long. 
      */
     public void setSequenceNumber( int sequenceNumber) 
                                         throws InvalidArgumentException;
     
-    
     /**
      * Gets the sequence number of this CSeqHeader.
      *
-     *@deprecated
+     * @deprecated This method is replaced with {@link #getSeqNumber()} with 
+     * type long.
      * @return sequence number of the CSeqHeader
      * @since v1.1
      */
     public int getSequenceNumber();
+
+    /**
+     * Sets the sequence number value of the CSeqHeader. 
+     *
+     * @param sequenceNumber - the new sequence number of this CSeqHeader
+     * @throws InvalidArgumentException if supplied value is less than zero.
+     * @since v1.2
+     */
+    public void setSeqNumber(long sequenceNumber) 
+                                        throws InvalidArgumentException;    
     
     /**
      * Gets the sequence number of this CSeqHeader.
@@ -131,7 +132,7 @@ public interface CSeqHeader extends Header {
      * @return sequence number of the CSeqHeader
      * @since v1.2
      */
-    public long getSequenceNumberLong();
+    public long getSeqNumber();
 
     
     /**

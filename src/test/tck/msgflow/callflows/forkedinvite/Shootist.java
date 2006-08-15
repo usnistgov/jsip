@@ -29,8 +29,7 @@ public class Shootist implements SipListener {
 
 	private ClientTransaction inviteTid;
 
-	private int count;
-
+	
 	private SipProvider sipProvider;
 
 	private String host = "127.0.0.1";
@@ -52,6 +51,8 @@ public class Shootist implements SipListener {
 	private Dialog originalDialog;
 
 	private HashSet forkedDialogs;
+
+	private Dialog ackedDialog;
 
 	private Shootist() {
 		this.forkedDialogs = new HashSet();
@@ -133,26 +134,28 @@ public class Shootist implements SipListener {
 			if (response.getStatusCode() == Response.OK) {
 				if (cseq.getMethod().equals(Request.INVITE)) {
 					Request ackRequest = dialog.createAck(cseq
-							.getSequenceNumberLong());
+							.getSeqNumber());
 
-					TestHarness.assertTrue("Dialog already see in OK",
-							!this.forkedDialogs.contains(dialog));
-					this.forkedDialogs.add(dialog);
+						
+					if ( dialog == this.ackedDialog ) {
+						dialog.sendAck(ackRequest);
+						return;
+					}
 					// Proxy will fork. I will accept the second dialog
 					// but not the first.
-					logger.info("count = " + count);
-					if (count == 1 ) {
+				
+					if ( forkedDialogs.size() == 1 ) {
 						logger.info("Sending ACK");
 						dialog.sendAck(ackRequest);
 						TestHarness.assertTrue(
 								"Dialog state should be CONFIRMED", dialog
 										.getState() == DialogState.CONFIRMED);
+						this.ackedDialog = dialog;
 						
 
 					} else {
+						
 						// Kill the first dialog by sending a bye.
-						// assertTrue (dialog == this.dialog);
-						count++;
 						SipProvider sipProvider = (SipProvider) responseReceivedEvent
 								.getSource();
 						Request byeRequest = dialog.createRequest(Request.BYE);
@@ -163,7 +166,8 @@ public class Shootist implements SipListener {
 								"Dialog state should be terminated", dialog
 										.getState(), DialogState.TERMINATED);
 					}
-
+					this.forkedDialogs.add(dialog);
+					
 				} else {
 					logger.info("Response method = " + cseq.getMethod());
 				}
@@ -194,7 +198,6 @@ public class Shootist implements SipListener {
 	}
 
 	public void checkState() {
-		TestHarness.assertEquals("Should see exactly two OK's", this.count, 1);
 		TestHarness.assertEquals("Should see two distinct dialogs",
 				this.forkedDialogs.size(), 2);
 		TestHarness.assertTrue(

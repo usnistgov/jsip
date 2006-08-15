@@ -28,14 +28,13 @@
  *******************************************************************************/
 package gov.nist.javax.sip.message;
 
-import gov.nist.core.*;
 import gov.nist.javax.sip.header.*;
 import java.util.Hashtable;
 
 /**
  * A map of which of the standard headers may appear as a list
  * 
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-13 09:02:46 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2006-08-15 21:44:59 $
  * @since 1.1
  */
 class ListMap {

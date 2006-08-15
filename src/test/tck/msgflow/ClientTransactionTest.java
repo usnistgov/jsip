@@ -92,9 +92,9 @@ public class ClientTransactionTest extends MessageFlowHarness {
 				"The CSeqHeader's sequence number of the original and "
 					+ "the cancel request do not match",
 				((CSeqHeader) cancel.getHeader(CSeqHeader.NAME))
-					.getSequenceNumberLong()
+					.getSeqNumber()
 					== ((CSeqHeader) invite.getHeader(CSeqHeader.NAME))
-						.getSequenceNumberLong());
+						.getSeqNumber());
 			assertEquals(
 				"The CSeqHeader's method of the cancel request was not CANCEL",
 				((CSeqHeader) cancel.getHeader(CSeqHeader.NAME)).getMethod(),

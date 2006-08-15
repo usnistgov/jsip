@@ -31,7 +31,6 @@ package gov.nist.javax.sip;
 
 import gov.nist.javax.sip.stack.*;
 import gov.nist.javax.sip.message.*;
-import gov.nist.core.*;
 import javax.sip.*;
 
 /**
@@ -43,7 +42,7 @@ import javax.sip.*;
  * messageChannel, the NIST-SIP stack calls the SIPStackMessageFactory
  * implementation that has been registered with it to process the request.)
  * 
- * @version 1.2 $Revision: 1.12 $ $Date: 2006-07-13 09:02:53 $
+ * @version 1.2 $Revision: 1.13 $ $Date: 2006-08-15 21:45:00 $
  * 
  * @author M. Ranganathan <br/>
  * 

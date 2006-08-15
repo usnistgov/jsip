@@ -140,7 +140,7 @@ public class Shootist extends TestCase implements SipListener {
 		try {
 			if (response.getStatusCode() == Response.OK) {
 				if (cseq.getMethod().equals(Request.INVITE)) {
-					Request ackRequest = dialog.createAck( cseq.getSequenceNumberLong() );
+					Request ackRequest = dialog.createAck( cseq.getSeqNumber() );
 					logger.info("dialog = " + dialog);
 					
 					// Proxy will fork. I will accept the second dialog
@@ -262,7 +262,7 @@ public class Shootist extends TestCase implements SipListener {
 
 			// Create a new Cseq header
 			CSeqHeader cSeqHeader = ProtocolObjects.headerFactory
-					.createCSeqHeader(1, Request.INVITE);
+					.createCSeqHeader(1L, Request.INVITE);
 
 			// Create a new MaxForwardsHeader
 			MaxForwardsHeader maxForwards = ProtocolObjects.headerFactory

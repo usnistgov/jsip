@@ -81,24 +81,39 @@ public interface RAckHeader extends Header {
      *
      * @param cSeqNumber - the new cSeq number of this RAckHeader.
      * @throws InvalidArgumentException if supplied value is less than zero.
+     * @deprecated This method is replaced with {@link #setCSequenceNumber(long)} 
+     * with type long. 
      */
-    public void setCSeqNumber(long cSeqNumber) throws InvalidArgumentException;
+    public void setCSeqNumber(int cSeqNumber) throws InvalidArgumentException;
 
     /**
      * Gets the CSeq sequence number of this RAckHeader.
      *
-     *@deprecated
-     *@see #getCSeqNumberLong()
+     * @deprecated This method is replaced with {@link #getCSequenceNumber()} 
+     * with type long. 
+     * @see #getCSequenceNumber()
      * @return the integer value of the cSeq number of the RAckHeader.
      */
-    public int getCSeqNumber();
+    public int getCSeqNumber();  
+    
+     /**
+     * Sets the sequence number value of the RSeqHeader of the provisional 
+     * response being acknowledged. 
+     * 
+     * @param cSeqNumber - the new cSeq number of this RAckHeader.
+     * @throws InvalidArgumentException if supplied value is less than zero.
+     * @since v1.2
+     */
+    public void setCSequenceNumber(long cSeqNumber) throws InvalidArgumentException;       
     
     /**
      * Gets the CSeq sequence number of this RAckHeader.
      *
-     * @return the integer value of the cSeq number of the RAckHeader.
+     * @return The value of the CSeq number of the RAckHeader.
+     * @since v1.2
      */
-    public long getCSeqNumberLong();
+    public long getCSequenceNumber();      
+    
     
 
      /**
@@ -108,24 +123,39 @@ public interface RAckHeader extends Header {
      * 
      * @param rSeqNumber - the new rSeq number of this RAckHeader.
      * @throws InvalidArgumentException if supplied value is less than zero.
+     * @deprecated This method is replaced with {@link #setRSequenceNumber(long)} 
+     * with type long. 
      */
-    public void setRSeqNumber(long rSeqNumber) throws InvalidArgumentException;
-
-    /**
-     * Gets the RSeq sequence number of this RAckHeader.
-     *
-     *@deprecated 
-     *@see #getRSeqNumberLong()
-     * @return the integer value of the RSeq number of the RAckHeader.
-     */
-    public int getRSeqNumber(); 
+    public void setRSeqNumber(int rSeqNumber) throws InvalidArgumentException;
     
     /**
      * Gets the RSeq sequence number of this RAckHeader.
      *
+     * @deprecated This method is replaced with {@link #getRSequenceNumber()} 
+     * with type long. 
+     * @see #getRSequenceNumber()
      * @return the integer value of the RSeq number of the RAckHeader.
      */
-    public long getRSeqNumberLong();    
+    public int getRSeqNumber(); 
+
+    
+    /**
+     * Gets the RSeq sequence number of this RAckHeader.
+     *
+     * @return The value of the RSeq number of the RAckHeader.
+     * @since v1.2
+     */
+    public long getRSequenceNumber();    
+    
+     /**
+     * Sets the sequence number value of the RSeqHeader of the provisional 
+     * response being acknowledged. 
+     * 
+     * @param rSeqNumber - the new rSeq number of this RAckHeader.
+     * @throws InvalidArgumentException if supplied value is less than zero.
+     * @since v1.2
+     */
+    public void setRSequenceNumber(long rSeqNumber) throws InvalidArgumentException;       
     
     /**
      * Name of RAckHeader.

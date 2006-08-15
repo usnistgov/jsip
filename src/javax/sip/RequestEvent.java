@@ -69,7 +69,10 @@ public class RequestEvent extends EventObject {
     * @param source - the source of ResponseEvent i.e. the SipProvider
     * @param serverTransaction - server transaction upon which
     * this Request was sent
+    * @param dialog - the dialog asociated to the event 
     * @param request - the Request message received by the SipProvider
+    *
+    * @since v1.2
     */
     public RequestEvent(Object source, ServerTransaction serverTransaction, Dialog dialog, Request request) {
         super(source);
@@ -78,6 +81,28 @@ public class RequestEvent extends EventObject {
         m_dialog  = dialog;
    }
 
+    
+    /**
+    * Constructs a RequestEvent (backwards compatibility constructor)
+    * Calls the new constructor with 'dialog' set to null
+    *
+    * @param source - the source of ResponseEvent i.e. the SipProvider
+    * @param serverTransaction - server transaction upon which
+    * this Request was sent
+    * @param request - the Request message received by the SipProvider
+    *
+    * @deprecated Since v1.2. Use 
+    * {@link RequestEvent(Object, ServerTransaction, Dialog, Request)} instead
+    */
+    public RequestEvent(Object source, ServerTransaction serverTransaction, Request request) {
+        super(source);
+        m_transaction = serverTransaction;
+        m_request = request;
+   }
+    
+    
+    
+    
     /**
     * Gets the server transaction associated with this RequestEvent
     *

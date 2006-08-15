@@ -34,8 +34,6 @@ public class ProtocolObjects {
 
 	private boolean isStarted;
 
-	private boolean isStopped;
-
 	public ProtocolObjects(String stackname, String pathname, String transport,
 			boolean autoDialog) {
 
@@ -130,7 +128,6 @@ public class ProtocolObjects {
 		}
 
 		sipStack.stop();
-		this.isStopped = true;
 	}
 
 	public void start() throws Exception {
