@@ -35,15 +35,7 @@ public class ShootistAuth implements SipListener {
         String PASS_AUTH = "pass";
         String realm = "nist.gov";
 
-	protected static final String usageString = "java "
-			+ "examples.shootist.Shootist \n"
-			+ ">>>> is your class path set to the root?";
-
-	private static void usage() {
-		System.out.println(usageString);
-		System.exit(0);
-
-	}
+	
 
 	public void processRequest(RequestEvent requestReceivedEvent) {
 		Request request = requestReceivedEvent.getRequest();
