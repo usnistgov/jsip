@@ -56,15 +56,7 @@ public class Shootist extends TestCase implements SipListener {
 	
 	private static Logger logger = Logger.getLogger(Shootist.class);
 
-	protected static final String usageString = "java "
-			+ "examples.shootist.Shootist \n"
-			+ ">>>> is your class path set to the root?";
-
-	private static void usage() {
-		logger.info(usageString);
-		System.exit(0);
-
-	}
+	
 
 	public void processRequest(RequestEvent requestReceivedEvent) {
 		Request request = requestReceivedEvent.getRequest();
