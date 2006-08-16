@@ -143,8 +143,8 @@ public class Shootist implements SipListener {
 					}
 					// Proxy will fork. I will accept the second dialog
 					// but not the first.
-				
-					if ( forkedDialogs.size() == 1 ) {
+					this.forkedDialogs.add(dialog);
+					if ( forkedDialogs.size() == 2 ) {
 						logger.info("Sending ACK");
 						dialog.sendAck(ackRequest);
 						TestHarness.assertTrue(
@@ -166,7 +166,7 @@ public class Shootist implements SipListener {
 								"Dialog state should be terminated", dialog
 										.getState(), DialogState.TERMINATED);
 					}
-					this.forkedDialogs.add(dialog);
+					
 					
 				} else {
 					logger.info("Response method = " + cseq.getMethod());
