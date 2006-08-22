@@ -53,103 +53,103 @@ import java.util.TimerTask;
  * Represents a server transaction. Implements the following state machines.
  * 
  * <pre>
- *                                
  *                                 
  *                                  
- *                                                                 |INVITE
- *                                                                 |pass INV to TU
- *                                              INVITE             V send 100 if TU won't in 200ms
- *                                              send response+-----------+
- *                                                  +--------|           |--------+101-199 from TU
- *                                                  |        | Proceeding|        |send response
- *                                                  +-------&gt;|           |&lt;-------+
- *                                                           |           |          Transport Err.
- *                                                           |           |          Inform TU
- *                                                           |           |---------------&gt;+
- *                                                           +-----------+                |
- *                                              300-699 from TU |     |2xx from TU        |
- *                                              send response   |     |send response      |
- *                                                              |     +------------------&gt;+
- *                                                              |                         |
- *                                              INVITE          V          Timer G fires  |
- *                                              send response+-----------+ send response  |
- *                                                  +--------|           |--------+       |
- *                                                  |        | Completed |        |       |
- *                                                  +-------&gt;|           |&lt;-------+       |
- *                                                           +-----------+                |
- *                                                              |     |                   |
- *                                                          ACK |     |                   |
- *                                                          -   |     +------------------&gt;+
- *                                                              |        Timer H fires    |
- *                                                              V        or Transport Err.|
- *                                                           +-----------+  Inform TU     |
- *                                                           |           |                |
- *                                                           | Confirmed |                |
- *                                                           |           |                |
- *                                                           +-----------+                |
- *                                                                 |                      |
- *                                                                 |Timer I fires         |
- *                                                                 |-                     |
- *                                                                 |                      |
- *                                                                 V                      |
- *                                                           +-----------+                |
- *                                                           |           |                |
- *                                                           | Terminated|&lt;---------------+
- *                                                           |           |
- *                                                           +-----------+
+ *                                   
+ *                                                                  |INVITE
+ *                                                                  |pass INV to TU
+ *                                               INVITE             V send 100 if TU won't in 200ms
+ *                                               send response+-----------+
+ *                                                   +--------|           |--------+101-199 from TU
+ *                                                   |        | Proceeding|        |send response
+ *                                                   +-------&gt;|           |&lt;-------+
+ *                                                            |           |          Transport Err.
+ *                                                            |           |          Inform TU
+ *                                                            |           |---------------&gt;+
+ *                                                            +-----------+                |
+ *                                               300-699 from TU |     |2xx from TU        |
+ *                                               send response   |     |send response      |
+ *                                                               |     +------------------&gt;+
+ *                                                               |                         |
+ *                                               INVITE          V          Timer G fires  |
+ *                                               send response+-----------+ send response  |
+ *                                                   +--------|           |--------+       |
+ *                                                   |        | Completed |        |       |
+ *                                                   +-------&gt;|           |&lt;-------+       |
+ *                                                            +-----------+                |
+ *                                                               |     |                   |
+ *                                                           ACK |     |                   |
+ *                                                           -   |     +------------------&gt;+
+ *                                                               |        Timer H fires    |
+ *                                                               V        or Transport Err.|
+ *                                                            +-----------+  Inform TU     |
+ *                                                            |           |                |
+ *                                                            | Confirmed |                |
+ *                                                            |           |                |
+ *                                                            +-----------+                |
+ *                                                                  |                      |
+ *                                                                  |Timer I fires         |
+ *                                                                  |-                     |
+ *                                                                  |                      |
+ *                                                                  V                      |
+ *                                                            +-----------+                |
+ *                                                            |           |                |
+ *                                                            | Terminated|&lt;---------------+
+ *                                                            |           |
+ *                                                            +-----------+
+ *                                   
+ *                                                 Figure 7: INVITE server transaction
+ *                                   
+ *                                   
+ *                                      		Request received
+ *                                                                     |pass to TU
+ *                                   
+ *                                                                     V
+ *                                                               +-----------+
+ *                                                               |           |
+ *                                                               | Trying    |-------------+
+ *                                                               |           |             |
+ *                                                               +-----------+             |200-699 from TU
+ *                                                                     |                   |send response
+ *                                                                     |1xx from TU        |
+ *                                                                     |send response      |
+ *                                                                     |                   |
+ *                                                  Request            V      1xx from TU  |
+ *                                                  send response+-----------+send response|
+ *                                                      +--------|           |--------+    |
+ *                                                      |        | Proceeding|        |    |
+ *                                                      +-------&gt;|           |&lt;-------+    |
+ *                                               +&lt;--------------|           |             |
+ *                                               |Trnsprt Err    +-----------+             |
+ *                                               |Inform TU            |                   |
+ *                                               |                     |                   |
+ *                                               |                     |200-699 from TU    |
+ *                                               |                     |send response      |
+ *                                               |  Request            V                   |
+ *                                               |  send response+-----------+             |
+ *                                               |      +--------|           |             |
+ *                                               |      |        | Completed |&lt;------------+
+ *                                               |      +-------&gt;|           |
+ *                                               +&lt;--------------|           |
+ *                                               |Trnsprt Err    +-----------+
+ *                                               |Inform TU            |
+ *                                               |                     |Timer J fires
+ *                                               |                     |-
+ *                                               |                     |
+ *                                               |                     V
+ *                                               |               +-----------+
+ *                                               |               |           |
+ *                                               +--------------&gt;| Terminated|
+ *                                                               |           |
+ *                                                               +-----------+
+ *                                   
+ *                                   
+ *                                   
+ *                                   
  *                                  
- *                                                Figure 7: INVITE server transaction
- *                                  
- *                                  
- *                                     		Request received
- *                                                                    |pass to TU
- *                                  
- *                                                                    V
- *                                                              +-----------+
- *                                                              |           |
- *                                                              | Trying    |-------------+
- *                                                              |           |             |
- *                                                              +-----------+             |200-699 from TU
- *                                                                    |                   |send response
- *                                                                    |1xx from TU        |
- *                                                                    |send response      |
- *                                                                    |                   |
- *                                                 Request            V      1xx from TU  |
- *                                                 send response+-----------+send response|
- *                                                     +--------|           |--------+    |
- *                                                     |        | Proceeding|        |    |
- *                                                     +-------&gt;|           |&lt;-------+    |
- *                                              +&lt;--------------|           |             |
- *                                              |Trnsprt Err    +-----------+             |
- *                                              |Inform TU            |                   |
- *                                              |                     |                   |
- *                                              |                     |200-699 from TU    |
- *                                              |                     |send response      |
- *                                              |  Request            V                   |
- *                                              |  send response+-----------+             |
- *                                              |      +--------|           |             |
- *                                              |      |        | Completed |&lt;------------+
- *                                              |      +-------&gt;|           |
- *                                              +&lt;--------------|           |
- *                                              |Trnsprt Err    +-----------+
- *                                              |Inform TU            |
- *                                              |                     |Timer J fires
- *                                              |                     |-
- *                                              |                     |
- *                                              |                     V
- *                                              |               +-----------+
- *                                              |               |           |
- *                                              +--------------&gt;| Terminated|
- *                                                              |           |
- *                                                              +-----------+
- *                                  
- *                                  
- *                                  
- *                                  
- *                                 
  * </pre>
  * 
- * @version 1.2 $Revision: 1.71 $ $Date: 2006-08-15 21:44:52 $
+ * @version 1.2 $Revision: 1.72 $ $Date: 2006-08-22 19:02:32 $
  * @author M. Ranganathan <br/><a href=" {@docRoot}/uncopyright.html">This
  *         code is in the public domain. </a>
  * 
@@ -258,6 +258,39 @@ public class SIPServerTransaction extends SIPTransaction implements
 
 	}
 
+	/**
+	 * This timer task will terminate the transaction if the listener does not
+	 * respond in a pre-determined time period. This helps prevent buggy
+	 * listeners (who fail to respond) from causing memory leaks. This allows a
+	 * container to protect itself from buggy code ( that fails to respond to a
+	 * server transaction).
+	 * 
+	 */
+	class ListenerExecutionMaxTimer extends TimerTask {
+		SIPServerTransaction serverTransaction = SIPServerTransaction.this;
+		
+		ListenerExecutionMaxTimer() {}
+
+		public void run() {
+			try {
+				if (serverTransaction.getState() == null) {
+					serverTransaction.terminate();
+					SIPTransactionStack sipStack = serverTransaction
+							.getSIPStack();
+					sipStack.removePendingTransaction(serverTransaction);
+					sipStack.removeTransaction(serverTransaction);
+				}
+			} catch (Exception ex) {
+				sipStack.getLogWriter().logError("unexpected exception", ex);
+			}
+		}
+	}
+
+	/**
+	 * This timer task is for INVITE server transactions. It will send a trying
+	 * in 200 ms. if the TU does not do so.
+	 * 
+	 */
 	class SendTrying extends TimerTask {
 
 		protected SendTrying() {
@@ -430,16 +463,23 @@ public class SIPServerTransaction extends SIPTransaction implements
 	/**
 	 * Creates a new server transaction.
 	 * 
-	 * @param newSIPStack
+	 * @param sipStack
 	 *            Transaction stack this transaction belongs to.
 	 * @param newChannelToUse
 	 *            Channel to encapsulate.
 	 */
-	protected SIPServerTransaction(SIPTransactionStack newSIPStack,
+	protected SIPServerTransaction(SIPTransactionStack sipStack,
 			MessageChannel newChannelToUse) {
 
-		super(newSIPStack, newChannelToUse);
-		this.rseqNumber = (int) (Math.random()) * 1000;
+		super(sipStack, newChannelToUse);
+		
+		if ( sipStack.maxListenerResponseTime != -1 ) {
+			sipStack.timer.schedule(new ListenerExecutionMaxTimer(),
+					sipStack.maxListenerResponseTime*1000);
+		}
+		
+		
+		this.rseqNumber = (int) (Math.random()  * 1000 );
 		// Only one outstanding request for a given server tx.
 
 		if (sipStack.isLoggingEnabled()) {
@@ -578,8 +618,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 									.equalsIgnoreCase(
 											messageToTest.getCallId()
 													.getCallId())
-							&& getOriginalRequest().getCSeq()
-									.getSeqNumber() == messageToTest
+							&& getOriginalRequest().getCSeq().getSeqNumber() == messageToTest
 									.getCSeq().getSeqNumber()
 							&& topViaHeader.equals(getOriginalRequest()
 									.getViaHeaders().getFirst())) {
@@ -860,16 +899,15 @@ public class SIPServerTransaction extends SIPTransaction implements
 			if (statusCode / 100 == 1) {
 				this.setState(TransactionState.PROCEEDING);
 			} else if (200 <= statusCode && statusCode <= 699) {
-				
+
 				// JvB: INVITE ST can never be TRYING, so this is always true
 				// if (!isInviteTransaction()) {
-					this.setState(TransactionState.COMPLETED);
-				/*} else {
-					if (statusCode / 100 == 2) {
-						this.setState(TransactionState.TERMINATED);
-					} else
-						this.setState(TransactionState.COMPLETED);
-				}*/
+				this.setState(TransactionState.COMPLETED);
+				/*
+				 * } else { if (statusCode / 100 == 2) {
+				 * this.setState(TransactionState.TERMINATED); } else
+				 * this.setState(TransactionState.COMPLETED); }
+				 */
 				if (!isReliable()) {
 					enableRetransmissionTimer();
 				}
@@ -1006,7 +1044,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 				// null can happen if this is terminating when the timer fires.
 				if (!this.retransmissionAlertEnabled) {
 					// Retransmit last response until ack.
-					if ( lastResponse.getStatusCode()/100 >2 )
+					if (lastResponse.getStatusCode() / 100 > 2)
 						super.sendMessage(lastResponse);
 				} else {
 					// alert the application to retransmit the last response
@@ -1215,7 +1253,8 @@ public class SIPServerTransaction extends SIPTransaction implements
 								.getMethod())) {
 					if (dialog.getLocalTag() == null
 							&& sipResponse.getTo().getTag() == null) {
-						// Trying to send final response and user forgot to set to
+						// Trying to send final response and user forgot to set
+						// to
 						// tag on the response -- be nice and assign the tag for
 						// the user.
 						sipResponse.getTo().setTag(Utils.generateTag());
@@ -1253,8 +1292,10 @@ public class SIPServerTransaction extends SIPTransaction implements
 			// incoming request has a from tag.
 			String fromTag = ((SIPRequest) this.getRequest()).getFrom()
 					.getTag();
-			if (fromTag != null && sipResponse.getFromTag() != null  && !sipResponse.getFromTag().equals(fromTag)) {
-				throw new SipException("From tag of response does not match sipResponse from tag");
+			if (fromTag != null && sipResponse.getFromTag() != null
+					&& !sipResponse.getFromTag().equals(fromTag)) {
+				throw new SipException(
+						"From tag of response does not match sipResponse from tag");
 			} else if (fromTag != null) {
 				sipResponse.getFrom().setTag(fromTag);
 			} else {
@@ -1556,7 +1597,8 @@ public class SIPServerTransaction extends SIPTransaction implements
 			 * to avoid racing with the OK of the subscribe.
 			 */
 			pendingSubscribeTransaction.releaseSem();
-		} else if (this.inviteTransaction != null && this.getMethod().equals(Request.CANCEL)) {
+		} else if (this.inviteTransaction != null
+				&& this.getMethod().equals(Request.CANCEL)) {
 			/*
 			 * When a CANCEL is being processed we take a nested lock on the
 			 * associated INVITE server tx.

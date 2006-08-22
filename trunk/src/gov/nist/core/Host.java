@@ -30,6 +30,15 @@ package gov.nist.core;
 
 import java.net.*;
 
+/*
+ * IPv6 Support added by Emil Ivov (emil_ivov@yahoo.com)<br/>
+ * Network Research Team (http://www-r2.u-strasbg.fr))<br/>
+ * Louis Pasteur University - Strasbourg - France<br/>
+ * 
+ * Frank Feif reported a bug.
+ * 
+ *
+ */
 /**
  * Stores hostname.
  * @version 1.2
@@ -39,10 +48,7 @@ import java.net.*;
  *
  * 
  *
- * IPv6 Support added by Emil Ivov (emil_ivov@yahoo.com)<br/>
- * Network Research Team (http://www-r2.u-strasbg.fr))<br/>
- * Louis Pasteur University - Strasbourg - France<br/>
- *
+ 
  * Marc Bednarek <bednarek@nist.gov> (Bugfixes).<br/>
  *
  */
@@ -76,7 +82,7 @@ public class Host extends GenericObject {
 		this.hostname = hostName;
 		if (isIPv6Address(hostName))
 			this.addressType = IPV6ADDRESS;
-		this.addressType = IPV4ADDRESS;
+		else  this.addressType = IPV4ADDRESS;
 	}
 
 	/** constructor

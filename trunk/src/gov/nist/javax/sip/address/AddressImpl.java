@@ -37,7 +37,7 @@ import javax.sip.address.*;
  *
  *
  *
- *@version 1.2 $Revision: 1.6 $ $Date: 2006-07-13 09:02:26 $
+ *@version 1.2 $Revision: 1.7 $ $Date: 2006-08-22 19:02:32 $
  *
  */
 public final class AddressImpl
@@ -226,6 +226,14 @@ public final class AddressImpl
 	 */
 	public void setAddess(javax.sip.address.URI address) {
 		this.address = (GenericURI) address;
+	}
+	
+	/**
+	 * hashCode impelmentation
+	 * 
+	 */
+	public int hashCode() {
+		return this.address.hashCode();
 	}
 
 	/**
