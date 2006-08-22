@@ -199,7 +199,7 @@ public class Shootist implements SipListener {
 
 	public void checkState() {
 		TestHarness.assertEquals("Should see two distinct dialogs",
-				this.forkedDialogs.size(), 2);
+				2,this.forkedDialogs.size());
 		TestHarness.assertTrue(
 				"Should see the original (default) dialog in the forked set",
 				this.forkedDialogs.contains(this.originalDialog));
