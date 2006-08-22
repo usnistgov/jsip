@@ -191,7 +191,7 @@ import gov.nist.core.net.NetworkLayer;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.46 $ $Date: 2006-08-22 19:02:33 $
+ * @version 1.2 $Revision: 1.47 $ $Date: 2006-08-22 21:33:41 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -371,9 +371,15 @@ public class SipStackImpl extends SIPTransactionStack implements
 		super.isAutomaticDialogSupportEnabled = configurationProperties
 				.getProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "on")
 				.equalsIgnoreCase("on");
-		super.maxListenerResponseTime = 
+		
+		if ( configurationProperties.getProperty
+			("gov.nist.javax.sip.MAX_LISTENER_RESPONSE_TIME") != null ) {
+			super.maxListenerResponseTime = 
 			Integer.parseInt( configurationProperties.getProperty
-			("gov.nist.javax.sip.MAX_LISTENER_RESPONSE_TIME","-1"));
+			("gov.nist.javax.sip.MAX_LISTENER_RESPONSE_TIME"));
+		} else {
+			super.maxListenerResponseTime = -1;
+		}
 		
 		this.deliverTerminatedEventForAck = configurationProperties.getProperty
 		("gov.nist.javax.sip.DELIVER_TERMINATED_EVENT_FOR_ACK", "false").equalsIgnoreCase("true");
