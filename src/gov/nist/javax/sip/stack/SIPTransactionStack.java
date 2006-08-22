@@ -70,7 +70,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.55 $ $Date: 2006-08-12 02:35:15 $
+ * @version 1.2 $Revision: 1.56 $ $Date: 2006-08-22 19:02:31 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -265,6 +265,12 @@ public abstract class SIPTransactionStack implements
 	protected boolean generateTimeStampHeader;
 
 	protected AddressResolver addressResolver;
+	
+	// Max time that the listener is allowed to take to respond to a
+	// request. Default is "infinity". This property allows
+	// containers to defend against buggy clients (that do not
+	// want to respond to requests).
+	protected int maxListenerResponseTime;
 
 	/**
 	 * Default constructor.
@@ -291,6 +297,8 @@ public abstract class SIPTransactionStack implements
 
 		// The read time out is infinite.
 		this.readTimeout = -1;
+		
+		this.maxListenerResponseTime = -1;
 
 		// a set of methods that result in dialog creation.
 		this.dialogCreatingMethods = new HashSet();

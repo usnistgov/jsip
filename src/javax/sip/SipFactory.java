@@ -133,17 +133,23 @@ public class SipFactory {
 			throws PeerUnavailableException {
 
 		String ipAddress = properties.getProperty("javax.sip.IP_ADDRESS");
+		String name = properties.getProperty("javax.sip.STACK_NAME");
+		if (name == null ) throw new PeerUnavailableException("Missing javax.sip.STACK_NAME property");
 		// IP address was not specified in the properties.
-		// this means that the architecture supports a single sip stack 
+		// this means that the architecture supports a single sip stack
+		// instance per stack name
 		// and each listening point is assinged its own IP address.
 		if ( ipAddress == null) {
+			SipStack mySipStack = (SipStack) this.sipStackByName.get(name);
 			if (mySipStack == null) {
 				mySipStack = createStack(properties);
+				
 			}
 			return mySipStack;
 		} else {
 			// Check to see if a stack with that IP Address is already
-			// created, if so select it to be returned
+			// created, if so select it to be returned. In this case
+			// the Name is not used.
 			int i = 0;
 			for (i = 0; i < sipStackList.size(); i++) {
 				if (((SipStack) sipStackList.get(i)).getIPAddress().equals( ipAddress )) {						
@@ -249,8 +255,8 @@ public class SipFactory {
 		messageFactory = null;
 		headerFactory = null;
 		addressFactory = null;
-		mySipStack = null;
-		pathName = "gov.nist";	// JvB: reset this one too!
+		sipStackByName = new Hashtable();
+		pathName = "gov.nist";	
 	}
 
 	/**
@@ -303,6 +309,8 @@ public class SipFactory {
 			// properties.
 			SipStack  sipStack = (SipStack) sipStackConstructor.newInstance(conArgs);			
 			sipStackList.add(sipStack);
+			String name = properties.getProperty("javax.sip.STACK_NAME");
+			this.sipStackByName.put(name, sipStack);
 			return sipStack;
 		} catch (Exception e) {
 			String errmsg = "The Peer SIP Stack: "
@@ -318,6 +326,7 @@ public class SipFactory {
 	 * are not permitted to create an instance of the SipFactory using "new".
 	 */
 	private SipFactory() {
+		this.sipStackByName = new Hashtable();
 	}
 
 	// default domain to locate Reference Implementation
@@ -326,7 +335,7 @@ public class SipFactory {
 	// My sip stack. The implementation will allow only a single
 	// sip stack in future versions of this specification.
 
-	private SipStack mySipStack = null;
+	private Hashtable sipStackByName;
 
 	// intrenal variable to ensure SipFactory only returns a single instance
 	// of the other Factories and SipStack

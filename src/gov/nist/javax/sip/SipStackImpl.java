@@ -143,6 +143,14 @@ import gov.nist.core.net.NetworkLayer;
  * server transaction state machine) but this is a useful flag for testing. The
  * TCK uses this flag for example. </li>
  * 
+ * <li><b>gov.nist.javax.sip.MAX_LISTENER_EXECUTION_TIME = Integer </b>
+ * <br/>Max time (seconds) before sending a response to a server transaction. 
+ * If a response is not sent within this time period, the transaction will 
+ * be deleted by the stack. Default time is "infinity" - i.e. if the listener 
+ * never responds, the stack will hang on to a reference for the transaction 
+ * and result in a memory leak.
+ * 
+ * 
  * 
  * <li><b>gov.nist.javax.sip.DELIVER_TERMINATED_EVENT_FOR_ACK = [true|false] 
  * <b></b><br/>Default is false. ACK Server Transaction is a Pseuedo-transaction.
@@ -183,7 +191,7 @@ import gov.nist.core.net.NetworkLayer;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.45 $ $Date: 2006-08-11 10:41:14 $
+ * @version 1.2 $Revision: 1.46 $ $Date: 2006-08-22 19:02:33 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -363,6 +371,9 @@ public class SipStackImpl extends SIPTransactionStack implements
 		super.isAutomaticDialogSupportEnabled = configurationProperties
 				.getProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "on")
 				.equalsIgnoreCase("on");
+		super.maxListenerResponseTime = 
+			Integer.parseInt( configurationProperties.getProperty
+			("gov.nist.javax.sip.MAX_LISTENER_RESPONSE_TIME","-1"));
 		
 		this.deliverTerminatedEventForAck = configurationProperties.getProperty
 		("gov.nist.javax.sip.DELIVER_TERMINATED_EVENT_FOR_ACK", "false").equalsIgnoreCase("true");
