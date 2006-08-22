@@ -1,6 +1,5 @@
 package test.tck.msgflow.callflows;
 
-
 import java.util.EventObject;
 import java.util.Hashtable;
 
@@ -17,42 +16,46 @@ import test.tck.TckInternalError;
 import test.tck.TestHarness;
 import test.tck.TiUnexpectedError;
 
-
-
 public abstract class ScenarioHarness extends TestHarness {
 	protected test.tck.msgflow.callflows.ProtocolObjects tiProtocolObjects;
+
 	protected ProtocolObjects riProtocolObjects;
-	
+
 	protected String transport;
-	
+
 	protected Hashtable providerTable;
-	
+
 	// this flag determines whether the tested SIP Stack is shootist or shootme
 	protected boolean testedImplFlag;
-	
-	
 
 	public void setUp() throws Exception {
 		if (testedImplFlag) {
-			this.tiProtocolObjects = new ProtocolObjects(super.getName(),
-					"gov.nist", transport, true);
+			this.tiProtocolObjects = new ProtocolObjects(
+					"ti" + super.getName(), "gov.nist", transport, true);
 
-			if (!getImplementationPath().equals("gov.nist"))
-				this.riProtocolObjects = new ProtocolObjects(
-						super.getName(), super.getImplementationPath(),
-						transport, true);
-			else
-				this.riProtocolObjects = tiProtocolObjects;
+			this.riProtocolObjects = new ProtocolObjects(
+					"ri" + super.getName(), super.getImplementationPath(),
+					transport, true);
+			/*
+			 * if (!getImplementationPath().equals("gov.nist"))
+			 * this.riProtocolObjects = new ProtocolObjects( super.getName(),
+			 * super.getImplementationPath(), transport, true); else
+			 * this.riProtocolObjects = tiProtocolObjects;
+			 */
 
 		} else {
-			this.tiProtocolObjects = new ProtocolObjects(super.getName(),
-					getImplementationPath(), transport, true);
-			if (!getImplementationPath().equals("gov.nist"))
-				this.riProtocolObjects = new ProtocolObjects(
-						super.getName(), super.getImplementationPath(),
-						transport, true);
-			else
-				this.riProtocolObjects = tiProtocolObjects;
+			this.tiProtocolObjects = new ProtocolObjects(
+					"ti" + super.getName(), getImplementationPath(), transport,
+					true);
+			this.riProtocolObjects = new ProtocolObjects(
+					"ri" + super.getName(), "gov.nist", transport, true);
+
+			/*
+			 * if (!getImplementationPath().equals("gov.nist"))
+			 * this.riProtocolObjects = new ProtocolObjects( super.getName(),
+			 * super.getImplementationPath(), transport, true); else
+			 * this.riProtocolObjects = tiProtocolObjects;
+			 */
 
 		}
 	}
@@ -60,10 +63,11 @@ public abstract class ScenarioHarness extends TestHarness {
 	private SipListener getSipListener(EventObject sipEvent) {
 		SipProvider source = (SipProvider) sipEvent.getSource();
 		SipListener listener = (SipListener) providerTable.get(source);
-		if ( listener == null) throw new TckInternalError("Unexpected null listener");
+		if (listener == null)
+			throw new TckInternalError("Unexpected null listener");
 		return listener;
 	}
-	
+
 	public void processRequest(RequestEvent requestEvent) {
 		getSipListener(requestEvent).processRequest(requestEvent);
 
@@ -97,16 +101,11 @@ public abstract class ScenarioHarness extends TestHarness {
 
 	}
 
+	protected ScenarioHarness(String name, boolean autoDialog) {
 
-
-	protected ScenarioHarness (String name, boolean autoDialog ) {
-		
-		super(name,autoDialog);
+		super(name, autoDialog);
 		this.providerTable = new Hashtable();
-		
-		
-		
-	}
 
+	}
 
 }
