@@ -176,20 +176,7 @@ public class TestHarness extends TestCase {
 		}
 	}
 
-	private static void logFailure(String message, Object[] args) {
-		StringBuffer stringBuffer = new StringBuffer(message);
-		stringBuffer.append("(");
-		if (args != null) {
-			for (int i = 0; i < args.length; i++) {
-				stringBuffer
-						.append(args[i] != null ? args[i].toString() : null);
-				if (i < args.length)
-					stringBuffer.append(",");
-			}
-		}
-		stringBuffer.append(")");
-		logFailure(stringBuffer.toString());
-	}
+	
 
 	private static void logSuccess() {
 		Throwable throwable = new Throwable();
@@ -223,12 +210,7 @@ public class TestHarness extends TestCase {
 		
 	}
 
-	private static void logFailure(Throwable sframe, Object[] args) {
-		StackTraceElement frameset[] = sframe.getStackTrace();
-		StackTraceElement frame = frameset[0];
-		sframe.printStackTrace();
-		logFailure(frame.getMethodName(), args);
-	}
+	
 
 	private static void logFailure(String className, String methodName,
 			String reason) {
@@ -397,8 +379,9 @@ public class TestHarness extends TestCase {
 			// if no TI path is specified on the command line, then assume
 			// RI self-test mode
 			
-			String tiPathName = System.getProperty( IMPLEMENTATION_PATH, PATH_RI_HELPER );
-			
+			//String tiPathName = System.getProperty( IMPLEMENTATION_PATH, PATH_RI_HELPER );
+			String tiPathName = System.getProperty( IMPLEMENTATION_PATH, "gov.nist" );
+				
 			// Yes this does access implementation classes but we have to do
 			// things
 			// this way for self test. v1.2 only assumes one instance of
