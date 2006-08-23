@@ -92,7 +92,7 @@ public class RequestEvent extends EventObject {
     * @param request - the Request message received by the SipProvider
     *
     * @deprecated Since v1.2. Use 
-    * {@link RequestEvent(Object, ServerTransaction, Dialog, Request)} instead
+    * {@link #RequestEvent(Object, ServerTransaction, Dialog, Request)} instead
     */
     public RequestEvent(Object source, ServerTransaction serverTransaction, Request request) {
         super(source);
