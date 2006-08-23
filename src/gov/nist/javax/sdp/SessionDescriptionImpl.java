@@ -773,8 +773,8 @@ public class SessionDescriptionImpl implements SessionDescription {
 	/**
 	 * Adds the specified Attribute to this Description object.
 	 * 
-	 * @param Attributes
-	 *            attribute - the attribute to add
+	 * @param 
+	 *            attributes - the attribute to add
 	 * @throws SdpException
 	 *             if the vector is null
 	 */
