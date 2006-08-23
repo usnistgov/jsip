@@ -70,7 +70,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.56 $ $Date: 2006-08-22 19:02:31 $
+ * @version 1.2 $Revision: 1.57 $ $Date: 2006-08-23 00:00:22 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -1294,7 +1294,7 @@ public abstract class SIPTransactionStack implements
 	/**
 	 * Return true if logging is enabled for this stack.
 	 * 
-	 * @return
+	 * @return true if logging is enabled for this stack instance.
 	 */
 	public boolean isLoggingEnabled() {
 		return this.logWriter == null ? false : this.logWriter

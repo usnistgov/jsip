@@ -63,7 +63,7 @@ public abstract class SDPObject
 
 	/**
 	* An introspection based equality predicate for SDPObjects.
-	*@param other is the other object to test against.
+	*@param  that is the other object to test against.
 	*@return true if the objects are equal.
 	*/
 	public boolean equals(Object that) {
