@@ -143,7 +143,7 @@ import gov.nist.core.net.NetworkLayer;
  * server transaction state machine) but this is a useful flag for testing. The
  * TCK uses this flag for example. </li>
  * 
- * <li><b>gov.nist.javax.sip.MAX_LISTENER_EXECUTION_TIME = Integer </b>
+ * <li><b>gov.nist.javax.sip.MAX_LISTENER_RESPONSE_TIME = Integer </b>
  * <br/>Max time (seconds) before sending a response to a server transaction. 
  * If a response is not sent within this time period, the transaction will 
  * be deleted by the stack. Default time is "infinity" - i.e. if the listener 
@@ -191,7 +191,7 @@ import gov.nist.core.net.NetworkLayer;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.47 $ $Date: 2006-08-22 21:33:41 $
+ * @version 1.2 $Revision: 1.48 $ $Date: 2006-08-24 05:35:58 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -377,6 +377,9 @@ public class SipStackImpl extends SIPTransactionStack implements
 			super.maxListenerResponseTime = 
 			Integer.parseInt( configurationProperties.getProperty
 			("gov.nist.javax.sip.MAX_LISTENER_RESPONSE_TIME"));
+			if (super.maxListenerResponseTime <= 0)
+				throw new PeerUnavailableException
+				("Bad configuration parameter gov.nist.javax.sip.MAX_LISTENER_RESPONSE_TIME : should be positive");
 		} else {
 			super.maxListenerResponseTime = -1;
 		}
