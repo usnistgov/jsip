@@ -1,28 +1,28 @@
 /*
-* Conditions Of Use 
-* 
-* This software was developed by employees of the National Institute of
-* Standards and Technology (NIST), an agency of the Federal Government.
-* Pursuant to title 15 Untied States Code Section 105, works of NIST
-* employees are not subject to copyright protection in the United States
-* and are considered to be in the public domain.  As a result, a formal
-* license is not needed to use the software.
-* 
-* This software is provided by NIST as a service and is expressly
-* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
-* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
-* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
-* AND DATA ACCURACY.  NIST does not warrant or make any representations
-* regarding the use of the software or the results thereof, including but
-* not limited to the correctness, accuracy, reliability or usefulness of
-* the software.
-* 
-* Permission to use this software is contingent upon your acceptance
-* of the terms of this agreement
-*  
-* .
-* 
-*/
+ * Conditions Of Use 
+ * 
+ * This software was developed by employees of the National Institute of
+ * Standards and Technology (NIST), an agency of the Federal Government.
+ * Pursuant to title 15 Untied States Code Section 105, works of NIST
+ * employees are not subject to copyright protection in the United States
+ * and are considered to be in the public domain.  As a result, a formal
+ * license is not needed to use the software.
+ * 
+ * This software is provided by NIST as a service and is expressly
+ * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+ * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+ * AND DATA ACCURACY.  NIST does not warrant or make any representations
+ * regarding the use of the software or the results thereof, including but
+ * not limited to the correctness, accuracy, reliability or usefulness of
+ * the software.
+ * 
+ * Permission to use this software is contingent upon your acceptance
+ * of the terms of this agreement
+ *  
+ * .
+ * 
+ */
 package gov.nist.javax.sip.stack;
 
 import gov.nist.javax.sip.message.*;
@@ -44,13 +44,10 @@ import EDU.oswego.cs.dl.util.concurrent.*;
 
 import java.io.IOException;
 
-/* 
- * Jeff Keyser -- initial. 
- * Daniel J. Martinez Manzano --Added support for TLS message channel. 
- * Emil Ivov -- bug fixes.
- * Chris Beardshear -- bug fix.
- * Andreas Bystrom -- bug fixes.
- * Matt Keller (Motorolla) -- bug fix.
+/*
+ * Jeff Keyser -- initial. Daniel J. Martinez Manzano --Added support for TLS
+ * message channel. Emil Ivov -- bug fixes. Chris Beardshear -- bug fix. Andreas
+ * Bystrom -- bug fixes. Matt Keller (Motorolla) -- bug fix.
  */
 
 /**
@@ -58,109 +55,108 @@ import java.io.IOException;
  * (From RFC 3261)
  * 
  * <pre>
- *               
  *                
  *                 
  *                  
- *                  
- *                  
- *                                                 |INVITE from TU
- *                               Timer A fires     |INVITE sent
- *                               Reset A,          V                      Timer B fires
- *                               INVITE sent +-----------+                or Transport Err.
- *                                 +---------|           |---------------+inform TU
- *                                 |         |  Calling  |               |
- *                                 +--------&gt;|           |--------------&gt;|
- *                                           +-----------+ 2xx           |
- *                                              |  |       2xx to TU     |
- *                                              |  |1xx                  |
- *                      300-699 +---------------+  |1xx to TU            |
- *                     ACK sent |                  |                     |
- *                  resp. to TU |  1xx             V                     |
- *                              |  1xx to TU  -----------+               |
- *                              |  +---------|           |               |
- *                              |  |         |Proceeding |--------------&gt;|
- *                              |  +--------&gt;|           | 2xx           |
- *                              |            +-----------+ 2xx to TU     |
- *                              |       300-699    |                     |
- *                              |       ACK sent,  |                     |
- *                              |       resp. to TU|                     |
- *                              |                  |                     |      NOTE:
- *                              |  300-699         V                     |
- *                              |  ACK sent  +-----------+Transport Err. |  transitions
- *                              |  +---------|           |Inform TU      |  labeled with
- *                              |  |         | Completed |--------------&gt;|  the event
- *                              |  +--------&gt;|           |               |  over the action
- *                              |            +-----------+               |  to take
- *                              |              &circ;   |                     |
- *                              |              |   | Timer D fires       |
- *                              +--------------+   | -                   |
- *                                                 |                     |
- *                                                 V                     |
- *                                           +-----------+               |
- *                                           |           |               |
- *                                           | Terminated|&lt;--------------+
- *                                           |           |
- *                                           +-----------+
- *                  
- *                                   Figure 5: INVITE client transaction
- *                  
- *                  
- *                                                     |Request from TU
- *                                                     |send request
- *                                 Timer E             V
- *                                 send request  +-----------+
- *                                     +---------|           |-------------------+
- *                                     |         |  Trying   |  Timer F          |
- *                                     +--------&gt;|           |  or Transport Err.|
- *                                               +-----------+  inform TU        |
- *                                  200-699         |  |                         |
- *                                  resp. to TU     |  |1xx                      |
- *                                  +---------------+  |resp. to TU              |
- *                                  |                  |                         |
- *                                  |   Timer E        V       Timer F           |
- *                                  |   send req +-----------+ or Transport Err. |
- *                                  |  +---------|           | inform TU         |
- *                                  |  |         |Proceeding |------------------&gt;|
- *                                  |  +--------&gt;|           |-----+             |
- *                                  |            +-----------+     |1xx          |
- *                                  |              |      &circ;        |resp to TU   |
- *                                  | 200-699      |      +--------+             |
- *                                  | resp. to TU  |                             |
- *                                  |              |                             |
- *                                  |              V                             |
- *                                  |            +-----------+                   |
- *                                  |            |           |                   |
- *                                  |            | Completed |                   |
- *                                  |            |           |                   |
- *                                  |            +-----------+                   |
- *                                  |              &circ;   |                         |
- *                                  |              |   | Timer K                 |
- *                                  +--------------+   | -                       |
- *                                                     |                         |
- *                                                     V                         |
- *                               NOTE:           +-----------+                   |
- *                                               |           |                   |
- *                           transitions         | Terminated|&lt;------------------+
- *                           labeled with        |           |
- *                           the event           +-----------+
- *                           over the action
- *                           to take
- *                  
- *                                   Figure 6: non-INVITE client transaction
- *                  
- *                  
- *                  
+ *                   
+ *                   
+ *                   
+ *                                                  |INVITE from TU
+ *                                Timer A fires     |INVITE sent
+ *                                Reset A,          V                      Timer B fires
+ *                                INVITE sent +-----------+                or Transport Err.
+ *                                  +---------|           |---------------+inform TU
+ *                                  |         |  Calling  |               |
+ *                                  +--------&gt;|           |--------------&gt;|
+ *                                            +-----------+ 2xx           |
+ *                                               |  |       2xx to TU     |
+ *                                               |  |1xx                  |
+ *                       300-699 +---------------+  |1xx to TU            |
+ *                      ACK sent |                  |                     |
+ *                   resp. to TU |  1xx             V                     |
+ *                               |  1xx to TU  -----------+               |
+ *                               |  +---------|           |               |
+ *                               |  |         |Proceeding |--------------&gt;|
+ *                               |  +--------&gt;|           | 2xx           |
+ *                               |            +-----------+ 2xx to TU     |
+ *                               |       300-699    |                     |
+ *                               |       ACK sent,  |                     |
+ *                               |       resp. to TU|                     |
+ *                               |                  |                     |      NOTE:
+ *                               |  300-699         V                     |
+ *                               |  ACK sent  +-----------+Transport Err. |  transitions
+ *                               |  +---------|           |Inform TU      |  labeled with
+ *                               |  |         | Completed |--------------&gt;|  the event
+ *                               |  +--------&gt;|           |               |  over the action
+ *                               |            +-----------+               |  to take
+ *                               |              &circ;   |                     |
+ *                               |              |   | Timer D fires       |
+ *                               +--------------+   | -                   |
+ *                                                  |                     |
+ *                                                  V                     |
+ *                                            +-----------+               |
+ *                                            |           |               |
+ *                                            | Terminated|&lt;--------------+
+ *                                            |           |
+ *                                            +-----------+
+ *                   
+ *                                    Figure 5: INVITE client transaction
+ *                   
+ *                   
+ *                                                      |Request from TU
+ *                                                      |send request
+ *                                  Timer E             V
+ *                                  send request  +-----------+
+ *                                      +---------|           |-------------------+
+ *                                      |         |  Trying   |  Timer F          |
+ *                                      +--------&gt;|           |  or Transport Err.|
+ *                                                +-----------+  inform TU        |
+ *                                   200-699         |  |                         |
+ *                                   resp. to TU     |  |1xx                      |
+ *                                   +---------------+  |resp. to TU              |
+ *                                   |                  |                         |
+ *                                   |   Timer E        V       Timer F           |
+ *                                   |   send req +-----------+ or Transport Err. |
+ *                                   |  +---------|           | inform TU         |
+ *                                   |  |         |Proceeding |------------------&gt;|
+ *                                   |  +--------&gt;|           |-----+             |
+ *                                   |            +-----------+     |1xx          |
+ *                                   |              |      &circ;        |resp to TU   |
+ *                                   | 200-699      |      +--------+             |
+ *                                   | resp. to TU  |                             |
+ *                                   |              |                             |
+ *                                   |              V                             |
+ *                                   |            +-----------+                   |
+ *                                   |            |           |                   |
+ *                                   |            | Completed |                   |
+ *                                   |            |           |                   |
+ *                                   |            +-----------+                   |
+ *                                   |              &circ;   |                         |
+ *                                   |              |   | Timer K                 |
+ *                                   +--------------+   | -                       |
+ *                                                      |                         |
+ *                                                      V                         |
+ *                                NOTE:           +-----------+                   |
+ *                                                |           |                   |
+ *                            transitions         | Terminated|&lt;------------------+
+ *                            labeled with        |           |
+ *                            the event           +-----------+
+ *                            over the action
+ *                            to take
+ *                   
+ *                                    Figure 6: non-INVITE client transaction
+ *                   
+ *                   
+ *                   
+ *                   
  *                  
  *                 
- *                
  * </pre>
  * 
  * 
- * @author M. Ranganathan  <a href=" {@docRoot}/uncopyright.html">This
- *         code is in the public domain. </a>
+ * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.52 $ $Date: 2006-08-15 21:44:52 $
+ * @version 1.2 $Revision: 1.53 $ $Date: 2006-08-24 05:35:57 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -169,7 +165,7 @@ public class SIPClientTransaction extends SIPTransaction implements
 	// dialogs in the early state. These dialogs all have
 	// the same call ID and same From tag but different to tags.
 
-	private  ConcurrentHashMap sipDialogs;
+	private ConcurrentHashMap sipDialogs;
 
 	private SIPRequest lastRequest;
 
@@ -178,9 +174,9 @@ public class SIPClientTransaction extends SIPTransaction implements
 	private String viaHost;
 
 	// Real ResponseInterface to pass messages to
-	private  ServerResponseInterface respondTo;
+	private ServerResponseInterface respondTo;
 
-	private  SIPDialog defaultDialog;
+	private SIPDialog defaultDialog;
 
 	public class TransactionTimer extends TimerTask {
 
@@ -204,7 +200,6 @@ public class SIPClientTransaction extends SIPTransaction implements
 				}
 
 				sipStack.removeTransaction(clientTransaction);
-				
 
 				try {
 					this.cancel();
@@ -430,9 +425,9 @@ public class SIPClientTransaction extends SIPTransaction implements
 				} else {
 					this.setState(TransactionState.COMPLETED);
 				}
-				//BUGBUG -- This suppresses sending the ACK uncomment this to
+				// BUGBUG -- This suppresses sending the ACK uncomment this to
 				// test 4xx retransmission
-				//if (transactionRequest.getMethod() != Request.ACK)
+				// if (transactionRequest.getMethod() != Request.ACK)
 				super.sendMessage(transactionRequest);
 				return;
 
@@ -449,7 +444,7 @@ public class SIPClientTransaction extends SIPTransaction implements
 				setOriginalRequest(transactionRequest);
 				// Change to trying/calling state
 				// Set state first to avoid race condition..
-				
+
 				if (transactionRequest.getMethod().equals(Request.INVITE)) {
 					this.setState(TransactionState.CALLING);
 				} else if (transactionRequest.getMethod().equals(Request.ACK)) {
@@ -467,9 +462,9 @@ public class SIPClientTransaction extends SIPTransaction implements
 					enableTimeoutTimer(TIMER_F);
 				}
 			}
-			//BUGBUG This supresses sending ACKS -- uncomment to test
+			// BUGBUG This supresses sending ACKS -- uncomment to test
 			// 4xx retransmission.
-			//if (transactionRequest.getMethod() != Request.ACK)
+			// if (transactionRequest.getMethod() != Request.ACK)
 			super.sendMessage(transactionRequest);
 
 		} catch (IOException e) {
@@ -519,7 +514,7 @@ public class SIPClientTransaction extends SIPTransaction implements
 				&& transactionResponse.getTo().getTag() != null) {
 			// add the route before you process the response.
 			dialog.setLastResponse(this, transactionResponse);
-			this.setDialog(dialog, transactionResponse.getDialogId(false) );
+			this.setDialog(dialog, transactionResponse.getDialogId(false));
 		}
 
 		try {
@@ -540,57 +535,57 @@ public class SIPClientTransaction extends SIPTransaction implements
 	 * Implements the state machine for invite client transactions.
 	 * 
 	 * <pre>
-	 *               
 	 *                
 	 *                 
 	 *                  
-	 *                  
-	 *                                                     |Request from TU
-	 *                                                     |send request
-	 *                                 Timer E             V
-	 *                                 send request  +-----------+
-	 *                                     +---------|           |-------------------+
-	 *                                     |         |  Trying   |  Timer F          |
-	 *                                     +--------&gt;|           |  or Transport Err.|
-	 *                                               +-----------+  inform TU        |
-	 *                                  200-699         |  |                         |
-	 *                                  resp. to TU     |  |1xx                      |
-	 *                                  +---------------+  |resp. to TU              |
-	 *                                  |                  |                         |
-	 *                                  |   Timer E        V       Timer F           |
-	 *                                  |   send req +-----------+ or Transport Err. |
-	 *                                  |  +---------|           | inform TU         |
-	 *                                  |  |         |Proceeding |------------------&gt;|
-	 *                                  |  +--------&gt;|           |-----+             |
-	 *                                  |            +-----------+     |1xx          |
-	 *                                  |              |      &circ;        |resp to TU   |
-	 *                                  | 200-699      |      +--------+             |
-	 *                                  | resp. to TU  |                             |
-	 *                                  |              |                             |
-	 *                                  |              V                             |
-	 *                                  |            +-----------+                   |
-	 *                                  |            |           |                   |
-	 *                                  |            | Completed |                   |
-	 *                                  |            |           |                   |
-	 *                                  |            +-----------+                   |
-	 *                                  |              &circ;   |                         |
-	 *                                  |              |   | Timer K                 |
-	 *                                  +--------------+   | -                       |
-	 *                                                     |                         |
-	 *                                                     V                         |
-	 *                               NOTE:           +-----------+                   |
-	 *                                               |           |                   |
-	 *                           transitions         | Terminated|&lt;------------------+
-	 *                           labeled with        |           |
-	 *                           the event           +-----------+
-	 *                           over the action
-	 *                           to take
-	 *                  
-	 *                                   Figure 6: non-INVITE client transaction
-	 *                  
+	 *                   
+	 *                   
+	 *                                                      |Request from TU
+	 *                                                      |send request
+	 *                                  Timer E             V
+	 *                                  send request  +-----------+
+	 *                                      +---------|           |-------------------+
+	 *                                      |         |  Trying   |  Timer F          |
+	 *                                      +--------&gt;|           |  or Transport Err.|
+	 *                                                +-----------+  inform TU        |
+	 *                                   200-699         |  |                         |
+	 *                                   resp. to TU     |  |1xx                      |
+	 *                                   +---------------+  |resp. to TU              |
+	 *                                   |                  |                         |
+	 *                                   |   Timer E        V       Timer F           |
+	 *                                   |   send req +-----------+ or Transport Err. |
+	 *                                   |  +---------|           | inform TU         |
+	 *                                   |  |         |Proceeding |------------------&gt;|
+	 *                                   |  +--------&gt;|           |-----+             |
+	 *                                   |            +-----------+     |1xx          |
+	 *                                   |              |      &circ;        |resp to TU   |
+	 *                                   | 200-699      |      +--------+             |
+	 *                                   | resp. to TU  |                             |
+	 *                                   |              |                             |
+	 *                                   |              V                             |
+	 *                                   |            +-----------+                   |
+	 *                                   |            |           |                   |
+	 *                                   |            | Completed |                   |
+	 *                                   |            |           |                   |
+	 *                                   |            +-----------+                   |
+	 *                                   |              &circ;   |                         |
+	 *                                   |              |   | Timer K                 |
+	 *                                   +--------------+   | -                       |
+	 *                                                      |                         |
+	 *                                                      V                         |
+	 *                                NOTE:           +-----------+                   |
+	 *                                                |           |                   |
+	 *                            transitions         | Terminated|&lt;------------------+
+	 *                            labeled with        |           |
+	 *                            the event           +-----------+
+	 *                            over the action
+	 *                            to take
+	 *                   
+	 *                                    Figure 6: non-INVITE client transaction
+	 *                   
+	 *                   
 	 *                  
 	 *                 
-	 *                
 	 * </pre>
 	 * 
 	 * @param transactionResponse --
@@ -663,53 +658,53 @@ public class SIPClientTransaction extends SIPTransaction implements
 	 * Implements the state machine for invite client transactions.
 	 * 
 	 * <pre>
-	 *               
 	 *                
 	 *                 
 	 *                  
-	 *                  
-	 *                                                 |INVITE from TU
-	 *                               Timer A fires     |INVITE sent
-	 *                               Reset A,          V                      Timer B fires
-	 *                               INVITE sent +-----------+                or Transport Err.
-	 *                                 +---------|           |---------------+inform TU
-	 *                                 |         |  Calling  |               |
-	 *                                 +--------&gt;|           |--------------&gt;|
-	 *                                           +-----------+ 2xx           |
-	 *                                              |  |       2xx to TU     |
-	 *                                              |  |1xx                  |
-	 *                      300-699 +---------------+  |1xx to TU            |
-	 *                     ACK sent |                  |                     |
-	 *                  resp. to TU |  1xx             V                     |
-	 *                              |  1xx to TU  -----------+               |
-	 *                              |  +---------|           |               |
-	 *                              |  |         |Proceeding |--------------&gt;|
-	 *                              |  +--------&gt;|           | 2xx           |
-	 *                              |            +-----------+ 2xx to TU     |
-	 *                              |       300-699    |                     |
-	 *                              |       ACK sent,  |                     |
-	 *                              |       resp. to TU|                     |
-	 *                              |                  |                     |      NOTE:
-	 *                              |  300-699         V                     |
-	 *                              |  ACK sent  +-----------+Transport Err. |  transitions
-	 *                              |  +---------|           |Inform TU      |  labeled with
-	 *                              |  |         | Completed |--------------&gt;|  the event
-	 *                              |  +--------&gt;|           |               |  over the action
-	 *                              |            +-----------+               |  to take
-	 *                              |              &circ;   |                     |
-	 *                              |              |   | Timer D fires       |
-	 *                              +--------------+   | -                   |
-	 *                                                 |                     |
-	 *                                                 V                     |
-	 *                                           +-----------+               |
-	 *                                           |           |               |
-	 *                                           | Terminated|&lt;--------------+
-	 *                                           |           |
-	 *                                           +-----------+
-	 *                  
+	 *                   
+	 *                   
+	 *                                                  |INVITE from TU
+	 *                                Timer A fires     |INVITE sent
+	 *                                Reset A,          V                      Timer B fires
+	 *                                INVITE sent +-----------+                or Transport Err.
+	 *                                  +---------|           |---------------+inform TU
+	 *                                  |         |  Calling  |               |
+	 *                                  +--------&gt;|           |--------------&gt;|
+	 *                                            +-----------+ 2xx           |
+	 *                                               |  |       2xx to TU     |
+	 *                                               |  |1xx                  |
+	 *                       300-699 +---------------+  |1xx to TU            |
+	 *                      ACK sent |                  |                     |
+	 *                   resp. to TU |  1xx             V                     |
+	 *                               |  1xx to TU  -----------+               |
+	 *                               |  +---------|           |               |
+	 *                               |  |         |Proceeding |--------------&gt;|
+	 *                               |  +--------&gt;|           | 2xx           |
+	 *                               |            +-----------+ 2xx to TU     |
+	 *                               |       300-699    |                     |
+	 *                               |       ACK sent,  |                     |
+	 *                               |       resp. to TU|                     |
+	 *                               |                  |                     |      NOTE:
+	 *                               |  300-699         V                     |
+	 *                               |  ACK sent  +-----------+Transport Err. |  transitions
+	 *                               |  +---------|           |Inform TU      |  labeled with
+	 *                               |  |         | Completed |--------------&gt;|  the event
+	 *                               |  +--------&gt;|           |               |  over the action
+	 *                               |            +-----------+               |  to take
+	 *                               |              &circ;   |                     |
+	 *                               |              |   | Timer D fires       |
+	 *                               +--------------+   | -                   |
+	 *                                                  |                     |
+	 *                                                  V                     |
+	 *                                            +-----------+               |
+	 *                                            |           |               |
+	 *                                            | Terminated|&lt;--------------+
+	 *                                            |           |
+	 *                                            +-----------+
+	 *                   
+	 *                   
 	 *                  
 	 *                 
-	 *                
 	 * </pre>
 	 * 
 	 * @param transactionResponse --
@@ -751,7 +746,7 @@ public class SIPClientTransaction extends SIPTransaction implements
 				this.setState(TransactionState.PROCEEDING);
 			} else if (300 <= statusCode && statusCode <= 699) {
 				// Send back an ACK request
-				
+
 				try {
 					sendMessage((SIPRequest) createAck());
 				} catch (SipException ex) {
@@ -858,8 +853,8 @@ public class SIPClientTransaction extends SIPTransaction implements
 			 * 
 			 */
 			sipStack.logWriter
-					.logWarning("Expires header missing in outgoing subscribe --" +
-							" Notifier will assume implied value on event package");
+					.logWarning("Expires header missing in outgoing subscribe --"
+							+ " Notifier will assume implied value on event package");
 		}
 		try {
 			if (this.getOriginalRequest().getMethod().equals(Request.CANCEL)) {
@@ -882,14 +877,19 @@ public class SIPClientTransaction extends SIPTransaction implements
 							"Cannot cancel non-invite requests RFC 3261 9.1");
 
 				}
-			} else if ( this.getOriginalRequest().getMethod().equals(Request.BYE) ||
-				this.getOriginalRequest().getMethod().equals(Request.NOTIFY)) {
-				SIPDialog dialog = sipStack.getDialog(this.getOriginalRequest().getDialogId(false));
-				// I want to behave like a user agent so send the BYE using the Dialog
-				if ( this.getSipProvider().isAutomaticDialogSupportEnabled() &&
-						dialog != null ) {
-					throw new SipException("Dialog is present and AutomaticDialogSupport is enabled for " +
-							" the provider -- Send the Request using the Dialog.sendRequest(transaction)");
+			} else if (this.getOriginalRequest().getMethod()
+					.equals(Request.BYE)
+					|| this.getOriginalRequest().getMethod().equals(
+							Request.NOTIFY)) {
+				SIPDialog dialog = sipStack.getDialog(this.getOriginalRequest()
+						.getDialogId(false));
+				// I want to behave like a user agent so send the BYE using the
+				// Dialog
+				if (this.getSipProvider().isAutomaticDialogSupportEnabled()
+						&& dialog != null) {
+					throw new SipException(
+							"Dialog is present and AutomaticDialogSupport is enabled for "
+									+ " the provider -- Send the Request using the Dialog.sendRequest(transaction)");
 				}
 			}
 			// Only map this after the fist request is sent out.
@@ -920,9 +920,9 @@ public class SIPClientTransaction extends SIPTransaction implements
 				// retransmission of the INVITE is the application
 				// responsibility.
 
-				if (lastRequest != null ) {
-					if (sipStack.generateTimeStampHeader && 
-							lastRequest.getHeader(TimeStampHeader.NAME) != null ) {
+				if (lastRequest != null) {
+					if (sipStack.generateTimeStampHeader
+							&& lastRequest.getHeader(TimeStampHeader.NAME) != null) {
 						long milisec = System.currentTimeMillis();
 						TimeStamp timeStamp = new TimeStamp();
 						try {
@@ -957,16 +957,23 @@ public class SIPClientTransaction extends SIPTransaction implements
 				|| TransactionState.PROCEEDING == this.getState()) {
 			// Timeout occured. If this is asociated with a transaction
 			// creation then kill the dialog.
-			if (dialog != null) {
+			if (dialog != null
+					&& (dialog.getState() == null || dialog.getState() == DialogState.EARLY)) {
 				if (((SIPTransactionStack) getSIPStack()).isDialogCreated(this
 						.getOriginalRequest().getMethod())) {
+					// If this is a re-invite we do not delete the dialog even if the
+					// reinvite times out. Else
 					// terminate the enclosing dialog.
-					dialog.setState(SIPDialog.TERMINATED_STATE);
-				} else if (getOriginalRequest().getMethod().equalsIgnoreCase(
+					dialog.delete();
+				}
+			} else if (dialog != null) {
+				// Guard against the case of BYE time out.
+
+				if (getOriginalRequest().getMethod().equalsIgnoreCase(
 						Request.BYE)
 						&& dialog.isTerminatedOnBye()) {
 					// Terminate the associated dialog on BYE Timeout.
-					dialog.setState(SIPDialog.TERMINATED_STATE);
+					dialog.delete();
 				}
 			}
 		}
@@ -1196,7 +1203,7 @@ public class SIPClientTransaction extends SIPTransaction implements
 			// then
 			// a default dialog is always created.
 
-		synchronized (this) {
+			synchronized (this) {
 				// We need synchronization here because two responses
 				// may compete for the default dialog simultaneously
 				if (defaultDialog != null
@@ -1267,9 +1274,9 @@ public class SIPClientTransaction extends SIPTransaction implements
 				&& this.lastResponse.getStatusCode() != 100) {
 			String dialogId = this.lastResponse.getDialogId(false);
 			retval = (Dialog) getDialog(dialogId);
-		} 
-		
-		if ( retval == null ) {
+		}
+
+		if (retval == null) {
 			retval = (Dialog) this.defaultDialog;
 
 		}
@@ -1289,9 +1296,9 @@ public class SIPClientTransaction extends SIPTransaction implements
 	 *      gov.nist.javax.sip.message.SIPMessage)
 	 */
 	public synchronized SIPDialog getDialog(String dialogId) {
-		SIPDialog retval =  (SIPDialog) this.sipDialogs.get(dialogId);
+		SIPDialog retval = (SIPDialog) this.sipDialogs.get(dialogId);
 		return retval;
-		
+
 	}
 
 	/*
@@ -1302,19 +1309,20 @@ public class SIPClientTransaction extends SIPTransaction implements
 	 */
 	public synchronized void setDialog(SIPDialog sipDialog, String dialogId) {
 		if (sipStack.isLoggingEnabled())
-			sipStack.getLogWriter().logDebug("setDialog: " + dialogId + "sipDialog = " + sipDialog);
-		
-		if ( sipDialog == null ) {
+			sipStack.getLogWriter().logDebug(
+					"setDialog: " + dialogId + "sipDialog = " + sipDialog);
+
+		if (sipDialog == null) {
 			sipStack.logWriter.logError("NULL DIALOG!!");
 			throw new NullPointerException("bad dialog null");
 		}
-		if ( this.defaultDialog == null) this.defaultDialog = sipDialog;
-		if ( dialogId != null && sipDialog.getDialogId() != null) {
+		if (this.defaultDialog == null)
+			this.defaultDialog = sipDialog;
+		if (dialogId != null && sipDialog.getDialogId() != null) {
 			this.sipDialogs.put(dialogId, sipDialog);
-			
+
 		}
-		
-	
+
 	}
 
 	public synchronized SIPDialog getDefaultDialog() {
@@ -1322,5 +1330,4 @@ public class SIPClientTransaction extends SIPTransaction implements
 		return this.defaultDialog;
 	}
 
-	
 }

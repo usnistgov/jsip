@@ -28,6 +28,7 @@ package gov.nist.javax.sip.stack;
 import gov.nist.core.*;
 import gov.nist.javax.sip.message.*;
 import gov.nist.javax.sip.header.*;
+import gov.nist.javax.sip.ListeningPointImpl;
 import gov.nist.javax.sip.SIPConstants;
 import gov.nist.javax.sip.SipProviderImpl;
 import gov.nist.javax.sip.Utils;
@@ -149,7 +150,7 @@ import java.util.TimerTask;
  *                                  
  * </pre>
  * 
- * @version 1.2 $Revision: 1.72 $ $Date: 2006-08-22 19:02:32 $
+ * @version 1.2 $Revision: 1.73 $ $Date: 2006-08-24 05:35:57 $
  * @author M. Ranganathan <br/><a href=" {@docRoot}/uncopyright.html">This
  *         code is in the public domain. </a>
  * 
@@ -279,6 +280,8 @@ public class SIPServerTransaction extends SIPTransaction implements
 							.getSIPStack();
 					sipStack.removePendingTransaction(serverTransaction);
 					sipStack.removeTransaction(serverTransaction);
+					
+					
 				}
 			} catch (Exception ex) {
 				sipStack.getLogWriter().logError("unexpected exception", ex);
