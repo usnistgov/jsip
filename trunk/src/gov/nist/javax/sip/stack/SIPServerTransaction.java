@@ -150,7 +150,7 @@ import java.util.TimerTask;
  *                                  
  * </pre>
  * 
- * @version 1.2 $Revision: 1.73 $ $Date: 2006-08-24 05:35:57 $
+ * @version 1.2 $Revision: 1.74 $ $Date: 2006-08-24 23:24:13 $
  * @author M. Ranganathan <br/><a href=" {@docRoot}/uncopyright.html">This
  *         code is in the public domain. </a>
  * 
@@ -552,8 +552,8 @@ public class SIPServerTransaction extends SIPTransaction implements
 
 					// If the branch parameter exists but
 					// does not start with the magic cookie,
-					if (!messageBranch
-							.startsWith(SIPConstants.BRANCH_MAGIC_COOKIE)) {
+					if (!messageBranch.toLowerCase()
+							.startsWith(SIPConstants.BRANCH_MAGIC_COOKIE_LOWER_CASE)) {
 
 						// Flags this as old
 						// (RFC2543-compatible) client
@@ -581,8 +581,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 					} else {
 						// Matching server side transaction with only the
 						// branch parameter.
-						transactionMatches = getBranch().equalsIgnoreCase(
-								messageBranch)
+						transactionMatches = getBranch().equalsIgnoreCase(messageBranch)
 								&& topViaHeader.getSentBy().equals(
 										((Via) getOriginalRequest()
 												.getViaHeaders().getFirst())
@@ -623,6 +622,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 													.getCallId())
 							&& getOriginalRequest().getCSeq().getSeqNumber() == messageToTest
 									.getCSeq().getSeqNumber()
+							&& getOriginalRequest().getMethod().equals(messageToTest.getCSeq().getMethod())						
 							&& topViaHeader.equals(getOriginalRequest()
 									.getViaHeaders().getFirst())) {
 
