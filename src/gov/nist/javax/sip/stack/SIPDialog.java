@@ -58,7 +58,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.25 $ $Date: 2006-08-15 21:44:53 $
+ * @version 1.2 $Revision: 1.26 $ $Date: 2006-08-24 05:35:57 $
  * 
  * @author M. Ranganathan
  * 
@@ -162,13 +162,14 @@ public class SIPDialog implements javax.sip.Dialog {
 	// Inner classes
 	// //////////////////////////////////////////////////////
 	class LingerTimer extends TimerTask {
-		private SIPDialog dialog;
+	
 
-		public LingerTimer(SIPDialog sipDialog) {
-			this.dialog = sipDialog;
+		public LingerTimer() {
+			
 		}
 
 		public void run() {
+			SIPDialog dialog = SIPDialog.this;
 			sipStack.removeDialog(dialog);
 		}
 
@@ -842,7 +843,7 @@ public class SIPDialog implements javax.sip.Dialog {
 		// Dialog is in terminated state set it up for GC.
 		if (state == TERMINATED_STATE) {
 			if (sipStack.timer != null) { // may be null after shutdown
-				sipStack.timer.schedule(new LingerTimer(this),
+				sipStack.timer.schedule(new LingerTimer(),
 						DIALOG_LINGER_TIME * 1000);
 			}
 			this.stopTimer();
