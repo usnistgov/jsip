@@ -129,7 +129,7 @@ public class SipFactory {
 	 * @throws PeerUnavailableException
 	 *             if the peer class could not be found
 	 */
-	public SipStack createSipStack(Properties properties)
+	public synchronized SipStack createSipStack(Properties properties)
 			throws PeerUnavailableException {
 
 		String ipAddress = properties.getProperty("javax.sip.IP_ADDRESS");
