@@ -53,7 +53,7 @@ import java.text.ParseException;
 /**
  * Implementation of the JAIN-SIP provider interface.
  * 
- * @version 1.2 $Revision: 1.36 $ $Date: 2006-08-03 19:25:29 $
+ * @version 1.2 $Revision: 1.37 $ $Date: 2006-09-05 15:28:10 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -353,6 +353,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 			SIPClientTransaction ct = (SIPClientTransaction) sipStack
 					.createMessageChannel(sipRequest, listeningPoint
 							.getMessageProcessor(), hop);
+			ct.setNextHop(hop);
 			if (ct == null)
 				throw new TransactionUnavailableException("Cound not create tx");
 

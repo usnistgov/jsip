@@ -58,7 +58,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.26 $ $Date: 2006-08-24 05:35:57 $
+ * @version 1.2 $Revision: 1.27 $ $Date: 2006-09-05 15:28:10 $
  * 
  * @author M. Ranganathan
  * 
@@ -1667,7 +1667,10 @@ public class SIPDialog implements javax.sip.Dialog {
 
 		}
 
-		Hop hop = sipStack.getNextHop(dialogRequest);
+		Hop hop = ((SIPClientTransaction) clientTransactionId).getNextHop();
+		
+		//hop = sipStack.getNextHop(dialogRequest);
+		
 
 		try {
 			TCPMessageChannel oldChannel = null;
