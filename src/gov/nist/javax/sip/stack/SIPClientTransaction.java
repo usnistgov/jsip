@@ -156,7 +156,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.53 $ $Date: 2006-08-24 05:35:57 $
+ * @version 1.2 $Revision: 1.54 $ $Date: 2006-09-05 15:28:10 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -177,6 +177,8 @@ public class SIPClientTransaction extends SIPTransaction implements
 	private ServerResponseInterface respondTo;
 
 	private SIPDialog defaultDialog;
+
+	private Hop nextHop;
 
 	public class TransactionTimer extends TimerTask {
 
@@ -1328,6 +1330,24 @@ public class SIPClientTransaction extends SIPTransaction implements
 	public synchronized SIPDialog getDefaultDialog() {
 		// TODO Auto-generated method stub
 		return this.defaultDialog;
+	}
+
+	/**
+	 * Set the next hop ( if it has already been computed).
+	 * @param hop -- the hop that has been previously computed.
+	 */
+	public void setNextHop(Hop hop) {
+		this.nextHop = hop;
+		
+	}
+	
+	/**
+	 * Reeturn the previously computed next hop (avoid computing it twice).
+	 * 
+	 * @return -- next hop previously computed.
+	 */
+	public Hop getNextHop() {
+		return nextHop;
 	}
 
 }
