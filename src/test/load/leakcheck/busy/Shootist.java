@@ -7,9 +7,7 @@ import javax.sip.message.*;
 import java.util.*;
 
 /**
- * This class is a UAC template. Shootist is the guy that shoots and shootme is
- * the guy that gets shot.
- * 
+ * This class is a UAC template. 
  * @author M. Ranganathan
  */
 
