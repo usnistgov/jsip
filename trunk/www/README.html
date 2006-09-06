@@ -279,14 +279,19 @@ some make file bugs. This design flaw has been rationalized in version
 <li> John Martin from RockSteady noticed some uncessary synchronization
 in the MessageHandler that was removed.  </li>
 
-<li> Xavi Ferr� from Vida Software helped debug a memory leak when 4xx 
+<li> Xavi Ferro from Vida Software helped debug a memory leak when 4xx 
 responses are sent in response to dialog creating requests.
 
 <li> Daniel Martinez contributed TLS support. </li>
 
 <li> Hagai Sela added support for symmetric NAT (rport parameter handling
  in via header). Hagai Reported a bug where ACK was not seen by application
-on re-invite. </li>
+on re-invite.  Hagai noticed a bug in computation of next hop 
+for strict routers when the request is sent through 
+Dialog.sendRequest(transaction). This resulted
+in the route being stripped twice. Hagai contributed a bug fix in the
+Dialog implementation for route management for strict routers.
+</li>
 
 <li> Rob Daugherty (Lucent) detected a bug in handling of TCP messages
 and contributed a fix for this. </li>
@@ -344,10 +349,6 @@ parser. Yanick noted a bug in random generation of call IDs and  branch IDs.
 
 <li> Kathleen McCallum contributed the Third Party Call Control (tpcc) example
 and the authentication example.
-</li>
-<li> Hagai Sela noticed a bug in computation of next hop for strict routers when
-the request is sent through Dialog.sendRequest(transaction). This resulted
-in the route being stripped twice.
 </li>
 
 </ul>
