@@ -41,7 +41,7 @@ import javax.sip.header.ViaHeader;
  *
  * @see ViaList
  *
- * @version 1.2 $Revision: 1.11 $ $Date: 2006-07-13 09:01:29 $
+ * @version 1.2 $Revision: 1.12 $ $Date: 2006-09-08 13:49:50 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -170,13 +170,7 @@ public class Via
 		return comment;
 	}
 
-	/**
-	 *  Get the maddr parameter if it exists.
-	 * @return maddr parameter.
-	 */
-	public Host getMaddr() {
-		return (Host) parameters.getValue(ParameterNames.MADDR);
-	}
+	
 
 	/** port of the Via Header.
 	 * @return true if Port exists.
