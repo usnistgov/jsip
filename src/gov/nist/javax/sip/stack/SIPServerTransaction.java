@@ -150,7 +150,7 @@ import java.util.TimerTask;
  *                                  
  * </pre>
  * 
- * @version 1.2 $Revision: 1.75 $ $Date: 2006-09-05 18:12:05 $
+ * @version 1.2 $Revision: 1.76 $ $Date: 2006-09-08 13:49:51 $
  * @author M. Ranganathan <br/><a href=" {@docRoot}/uncopyright.html">This
  *         code is in the public domain. </a>
  * 
@@ -427,10 +427,9 @@ public class SIPServerTransaction extends SIPTransaction implements
 			// address, the response SHOULD be sent using
 			// the TTL indicated in the "ttl" parameter, or with a
 			// TTL of 1 if that parameter is not present.
-			Host maddr = via.getMaddr();
 			String host = null;
-			if (maddr != null) {
-				host = maddr.getHostname();
+			if (via.getMAddr() != null) {
+				host = via.getMAddr();
 			} else {
 				// Otherwise (for unreliable unicast transports),
 				// if the top Via has a "received" parameter, the response MUST
