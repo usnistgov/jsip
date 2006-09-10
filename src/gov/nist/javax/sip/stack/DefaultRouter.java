@@ -48,7 +48,8 @@ import javax.sip.address.*;
  * Bug reported by Will Scullin -- maddr was being ignored when routing
  * requests. Bug reported by Antonis Karydas - the RequestURI can be a non-sip
  * URI Jiang He - use address in route header. Significant changes to conform 
- * to RFC 3261 made by Jeroen van Bemmel
+ * to RFC 3261 made by Jeroen van Bemmel. Hagai Sela contributed a bug fix
+ * to the strict route post processing code.
  * 
  */
 
@@ -89,7 +90,7 @@ import javax.sip.address.*;
  * Subsequently, the request URI will be used as next hop target
  * 
  * 
- * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-13 09:00:55 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2006-09-10 17:52:28 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -246,10 +247,7 @@ public class DefaultRouter implements Router {
 		Route first = (Route) routes.getFirst();
 		SipUri firstUri = (SipUri) first.getAddress().getURI();
 		routes.removeFirst();
-		if ( routes.isEmpty()) {
-			req.removeHeader(RouteHeader.NAME);
-		}
-
+		
 		// Add request-URI as last Route entry
 		AddressImpl addr = new AddressImpl();
 		addr.setAddess(req.getRequestURI()); // don't clone it
