@@ -25,13 +25,15 @@
 */
 package gov.nist.javax.sip.header;
 import gov.nist.core.*;
+import gov.nist.javax.sip.header.ims.*;
+
 import java.util.Hashtable;
 
 /**
  * A mapping class that returns the SIPHeader for a given header name.
  * Add new classes to this map if you are implementing new header types if
  * you want some of the introspection based methods to work.
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:23 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2006-09-10 21:14:32 $
  * @since 1.1
  */
 public class NameMap implements SIPHeaderNames, PackageNames {
@@ -43,7 +45,7 @@ public class NameMap implements SIPHeaderNames, PackageNames {
 	protected static void putNameMap(String headerName, String className) {
 		nameMap.put(
 			headerName.toLowerCase(),
-			SIPHEADERS_PACKAGE + "." + className);
+			className);
 	}
 
 	public static Class getClassFromName(String headerName) {
@@ -74,142 +76,124 @@ public class NameMap implements SIPHeaderNames, PackageNames {
 
 	private static void initializeNameMap() {
 		nameMap = new Hashtable();
-		putNameMap(MIN_EXPIRES, "MinExpires"); // 1
+		putNameMap(MinExpires.NAME, MinExpires.class.getName()); // 1
 
-		putNameMap(ERROR_INFO, "ErrorInfo"); // 2
+		putNameMap(ErrorInfo.NAME, ErrorInfo.class.getName()); // 2
 
-		putNameMap(MIME_VERSION, "MimeVersion"); // 3
+		putNameMap(MimeVersion.NAME, MimeVersion.class.getName()); // 3
 
-		putNameMap(IN_REPLY_TO, "InReplyTo"); // 4
+		putNameMap(InReplyTo.NAME, InReplyTo.class.getName()); // 4
 
-		putNameMap(ALLOW, "Allow"); // 5
+		putNameMap(Allow.NAME, Allow.class.getName()); // 5
 
-		putNameMap(CONTENT_LANGUAGE, "ContentLanguage"); // 6
+		putNameMap(ContentLanguage.NAME, ContentLanguage.class.getName()); // 6
 
-		putNameMap(CALL_INFO, "CallInfo"); //7
+		putNameMap(CALL_INFO, CallInfo.class.getName()); //7
 
-		putNameMap(CSEQ, "CSeq"); //8
+		putNameMap(CSEQ, CSeq.class.getName()); //8
 
-		putNameMap(ALERT_INFO, "AlertInfo"); //9
+		putNameMap(ALERT_INFO, AlertInfo.class.getName()); //9
 
-		putNameMap(ACCEPT_ENCODING, "AcceptEncoding"); //10
+		putNameMap(ACCEPT_ENCODING, AcceptEncoding.class.getName()); //10
 
-		putNameMap(ACCEPT, "Accept"); //11
+		putNameMap(ACCEPT, Accept.class.getName()); //11
 
-		putNameMap(ACCEPT_LANGUAGE, "AcceptLanguage"); //12
+		putNameMap(ACCEPT_LANGUAGE, AcceptLanguage.class.getName()); //12
 
-		putNameMap(RECORD_ROUTE, "RecordRoute"); //13
+		putNameMap(RECORD_ROUTE, RecordRoute.class.getName()); //13
 
-		putNameMap(TIMESTAMP, "TimeStamp"); //14
+		putNameMap(TIMESTAMP, TimeStamp.class.getName()); //14
 
-		putNameMap(TO, "To"); //15
+		putNameMap(TO, To.class.getName()); //15
 
-		putNameMap(VIA, "Via"); //16
+		putNameMap(VIA, Via.class.getName()); //16
 
-		putNameMap(FROM, "From"); //17
+		putNameMap(FROM, From.class.getName()); //17
 
-		putNameMap(CALL_ID, "CallID"); //18
+		putNameMap(CALL_ID, CallID.class.getName()); //18
 
-		putNameMap(AUTHORIZATION, "Authorization"); //19
+		putNameMap(AUTHORIZATION, Authorization.class.getName()); //19
 
-		putNameMap(PROXY_AUTHENTICATE, "ProxyAuthenticate"); //20
+		putNameMap(PROXY_AUTHENTICATE, ProxyAuthenticate.class.getName()); //20
 
-		putNameMap(SERVER, "Server"); //21
+		putNameMap(SERVER, Server.class.getName()); //21
 
-		putNameMap(UNSUPPORTED, "Unsupported"); //22
+		putNameMap(UNSUPPORTED, Unsupported.class.getName()); //22
 
-		putNameMap(RETRY_AFTER, "RetryAfter"); //23
+		putNameMap(RETRY_AFTER, RetryAfter.class.getName()); //23
 
-		putNameMap(CONTENT_TYPE, "ContentType"); //24
+		putNameMap(CONTENT_TYPE, ContentType.class.getName()); //24
 
-		putNameMap(CONTENT_ENCODING, "ContentEncoding"); //25
+		putNameMap(CONTENT_ENCODING, ContentEncoding.class.getName()); //25
 
-		putNameMap(CONTENT_LENGTH, "ContentLength"); //26
+		putNameMap(CONTENT_LENGTH, ContentLength.class.getName()); //26
 
-		putNameMap(ROUTE, "Route"); //27
+		putNameMap(ROUTE, Route.class.getName()); //27
 
-		putNameMap(CONTACT, "Contact"); //28
+		putNameMap(CONTACT, Contact.class.getName()); //28
 
-		putNameMap(WWW_AUTHENTICATE, "WWWAuthenticate"); //29
+		putNameMap(WWW_AUTHENTICATE, WWWAuthenticate.class.getName()); //29
 
-		putNameMap(MAX_FORWARDS, "MaxForwards"); //30
+		putNameMap(MAX_FORWARDS, MaxForwards.class.getName()); //30
 
-		putNameMap(ORGANIZATION, "Organization"); //31
+		putNameMap(ORGANIZATION, Organization.class.getName()); //31
 
-		putNameMap(PROXY_AUTHORIZATION, "ProxyAuthorization"); //32
+		putNameMap(PROXY_AUTHORIZATION, ProxyAuthorization.class.getName()); //32
 
-		putNameMap(PROXY_REQUIRE, "ProxyRequire"); //33
+		putNameMap(PROXY_REQUIRE, ProxyRequire.class.getName()); //33
 
-		putNameMap(REQUIRE, "Require"); //34
+		putNameMap(REQUIRE, Require.class.getName()); //34
 
-		putNameMap(CONTENT_DISPOSITION, "ContentDisposition"); //35
+		putNameMap(CONTENT_DISPOSITION, ContentDisposition.class.getName()); //35
 
-		putNameMap(SUBJECT, "Subject"); //36
+		putNameMap(SUBJECT, Subject.class.getName()); //36
 
-		putNameMap(USER_AGENT, "UserAgent"); //37
+		putNameMap(USER_AGENT, UserAgent.class.getName()); //37
 
-		putNameMap(WARNING, "Warning"); //38
+		putNameMap(WARNING, Warning.class.getName()); //38
 
-		putNameMap(PRIORITY, "Priority"); //39
+		putNameMap(PRIORITY, Priority.class.getName()); //39
 
-		putNameMap(DATE, "SIPDateHeader"); //40
+		putNameMap(DATE, SIPDateHeader.class.getName()); //40
 
-		putNameMap(EXPIRES, "Expires"); //41
+		putNameMap(EXPIRES, Expires.class.getName()); //41
 
-		putNameMap(SUPPORTED, "Supported"); //42
+		putNameMap(SUPPORTED, Supported.class.getName()); //42
 
-		putNameMap(REPLY_TO, "ReplyTo"); // 43
+		putNameMap(REPLY_TO, ReplyTo.class.getName()); // 43
 
-		putNameMap(SUBSCRIPTION_STATE, "SubscriptionState"); //44
+		putNameMap(SUBSCRIPTION_STATE, SubscriptionState.class.getName()); //44
 
-		putNameMap(EVENT, "Event"); //45
+		putNameMap(EVENT, Event.class.getName()); //45
 
-		putNameMap(ALLOW_EVENTS, "AllowEvents"); //46
+		putNameMap(ALLOW_EVENTS, AllowEvents.class.getName()); //46
+		
+		// IMS Specific headers.
+		
+		putNameMap(AccessNetworkInfoHeader.NAME, AccessNetworkInfo.class.getName());
+		
+		putNameMap(AssertedIdentityHeader.NAME, AssertedIdentity.class.getName());
+		
+		putNameMap(AssociatedURIHeader.NAME, AssociatedURIHeader.class.getName());
+		
+		putNameMap(CalledPartyIDHeader.NAME, CalledPartyID.class.getName());
+		
+		putNameMap(ChargingFunctionAddressesHeader.NAME,  ChargingFunctionAddresses.class.getName())	;
+		
+		putNameMap(ChargingVectorHeader.NAME,ChargingVector.class.getName());
+		
+		putNameMap(MediaAuthorizationHeader.NAME,MediaAuthorization.class.getName());
+		
+		putNameMap(Path.NAME, Path.class.getName());
+		
+		putNameMap(PreferredIdentity.NAME, PreferredIdentityHeader.class.getName());
+		
+		putNameMap(Privacy.NAME,Privacy.class.getName());
+		
+		putNameMap(ServiceRoute.NAME, ServiceRoute.class.getName());
+		
+		putNameMap(VisitedNetworkID.NAME, VisitedNetworkID.class.getName());
+		
+		
 	}
 }
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.4  2006/06/19 06:47:26  mranga
- * javadoc fixups
- *
- * Revision 1.3  2006/06/16 15:26:28  mranga
- * Added NIST disclaimer to all public domain files. Clean up some javadoc. Fixed a leak
- *
- * Revision 1.2  2005/10/06 14:54:44  mranga
- * Reverting back to 1.4 by popular demand
- *
- * Revision 1.1.1.1  2005/10/04 17:12:34  mranga
- *
- * Import
- *
- *
- * Revision 1.3  2004/05/07 11:31:40  mranga
- * Submitted by:  Henry Fernandes
- * Reviewed by:   mranga
- * Bad entry in NameMap for TimeStamp
- *
- * Revision 1.2  2004/01/22 13:26:29  sverker
- * Issue number:
- * Obtained from:
- * Submitted by:  sverker
- * Reviewed by:   mranga
- *
- * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
- *
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- */

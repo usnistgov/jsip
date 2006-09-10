@@ -29,12 +29,13 @@
 package gov.nist.javax.sip.message;
 
 import gov.nist.javax.sip.header.*;
+import gov.nist.javax.sip.header.ims.*;
 import java.util.Hashtable;
 
 /**
  * A map of which of the standard headers may appear as a list
  * 
- * @version 1.2 $Revision: 1.7 $ $Date: 2006-08-15 21:44:59 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2006-09-10 21:14:35 $
  * @since 1.1
  */
 class ListMap {
@@ -104,6 +105,20 @@ class ListMap {
 		headerListTable.put(Supported.class, SupportedList.class);
 
 		headerListTable.put(InReplyTo.class,InReplyToList.class);
+		
+		// IMS headers.
+		
+		headerListTable.put(AssociatedURI.class, AssociatedURIList.class);
+		
+		headerListTable.put(MediaAuthorization.class, MediaAuthorizationList.class);
+		
+		headerListTable.put(Path.class, PathList.class);
+		
+		headerListTable.put(Privacy.class,PrivacyList.class);
+		
+		headerListTable.put(ServiceRoute.class, ServiceRouteList.class);
+		
+		headerListTable.put(VisitedNetworkID.class, VisitedNetworkIDList.class);
 
 		initialized = true;
 

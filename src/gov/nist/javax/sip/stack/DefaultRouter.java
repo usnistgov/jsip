@@ -90,7 +90,7 @@ import javax.sip.address.*;
  * Subsequently, the request URI will be used as next hop target
  * 
  * 
- * @version 1.2 $Revision: 1.8 $ $Date: 2006-09-10 17:52:28 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2006-09-10 21:14:29 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -302,14 +302,7 @@ public class DefaultRouter implements Router {
 		return this.defaultRoute;
 	}
 
-	/**
-	 * Get the default route (does the same thing as getOutboundProxy).
-	 * 
-	 * @return the default route.
-	 */
-	public Hop getDefaultRoute() {
-		return this.defaultRoute;
-	}
+
 
 	/*
 	 * (non-Javadoc)
