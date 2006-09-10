@@ -27,6 +27,8 @@
 package gov.nist.javax.sip.header;
 
 import gov.nist.core.*;
+import gov.nist.javax.sip.header.ims.ParameterNamesIms;
+
 import java.text.ParseException;
  /*
  * 2005/06/12: geir.hedemark@telio.no: Changed behaviour of qop parameter in
@@ -41,7 +43,7 @@ import java.text.ParseException;
  * @author Olivier Deruelle 
  * @author M. Ranganathan <br/>
  * @since 1.1
- * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-13 09:01:09 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2006-09-10 21:14:33 $
  * 
  * 
  */
@@ -75,6 +77,10 @@ public abstract class AuthenticationHeader extends ParametersHeader {
 
 	public static final String NONCE = ParameterNames.NONCE;
 
+	public static final String IK = ParameterNamesIms.IK;
+	public static final String CK = ParameterNamesIms.CK;
+	public static final String INTEGRITY_PROTECTED = ParameterNamesIms.INTEGRITY_PROTECTED;
+	
 	protected String scheme;
 
 	public AuthenticationHeader(String name) {
@@ -109,7 +115,10 @@ public abstract class AuthenticationHeader extends ParametersHeader {
 					|| name.equalsIgnoreCase(ParameterNames.OPAQUE)
 					|| name.equalsIgnoreCase(ParameterNames.NEXT_NONCE)
 					|| name.equalsIgnoreCase(ParameterNames.URI)
-					|| name.equalsIgnoreCase(ParameterNames.RESPONSE)) {
+					|| name.equalsIgnoreCase(ParameterNames.RESPONSE )
+					||name.equalsIgnoreCase(ParameterNamesIms.IK)	
+							|| name.equalsIgnoreCase(ParameterNamesIms.CK) 
+							|| name.equalsIgnoreCase(ParameterNamesIms.INTEGRITY_PROTECTED)) {
 				if (((this instanceof Authorization) || (this instanceof ProxyAuthorization))
 						&& name.equalsIgnoreCase(ParameterNames.QOP)) {
 					// NOP, QOP not quoted in authorization headers
@@ -498,4 +507,46 @@ public abstract class AuthenticationHeader extends ParametersHeader {
 	public void setUsername(String username) throws ParseException {
 		this.setParameter(ParameterNames.USERNAME, username);
 	}
+	
+	public void setIK(String ik) throws ParseException {
+		if (ik == null)
+			throw new NullPointerException(
+				"JAIN-SIP Exception, "
+					+ " AuthenticationHeader, setIk(), The auth-param IK parameter is null");
+		setParameter(IK, ik);
+	}
+	
+	public String getIK() {
+		return getParameter(ParameterNamesIms.IK);
+	}
+	
+	public void setCK(String ck) throws ParseException {
+		if (ck == null)
+			throw new NullPointerException(
+				"JAIN-SIP Exception, "
+					+ " AuthenticationHeader, setCk(), The auth-param CK parameter is null");
+		setParameter(CK, ck);
+	}
+	
+	public String getCK() {
+		return getParameter(ParameterNamesIms.CK);
+	}
+	
+	
+	public void setIntegrityProtected(String integrityProtected) throws ParseException
+	{
+		if (integrityProtected == null)
+			throw new NullPointerException(
+				"JAIN-SIP Exception, "
+					+ " AuthenticationHeader, setIntegrityProtected(), The integrity-protected parameter is null");
+		
+		setParameter(INTEGRITY_PROTECTED, integrityProtected);
+	}
+	
+	
+	
+	public String getIntegrityProtected() {
+		return getParameter(ParameterNamesIms.INTEGRITY_PROTECTED);
+	}
+	
 }

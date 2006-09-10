@@ -43,7 +43,7 @@ import gov.nist.javax.sip.address.*;
 
 /** Implementation of the JAIN SIP  HeaderFactory
 * 
-* @version 1.2 $Revision: 1.8 $ $Date: 2006-08-15 21:44:51 $
+* @version 1.2 $Revision: 1.9 $ $Date: 2006-09-10 21:14:33 $
 * @since 1.1
 *
 *@author M. Ranganathan   <br/>
@@ -1244,32 +1244,7 @@ public class HeaderFactoryImpl implements HeaderFactory {
 	}
 	
 	
-     /**
-     * AuthenticationHeaderIms
-     *
-     */
-    public AuthenticationHeaderIms createAuthenticationHeaderIms()
-    	throws ParseException
-    {
-    	AuthenticationHeaderIms authenticationHeaderIms = new AuthenticationHeaderIms();
-    	
-    	return authenticationHeaderIms;
-    }
-    
-    
-    
-    /**
-     * AuthorizationHeaderIms
-     *
-     */ 
-    public AuthorizationHeaderIms createAuthorizationHeaderIms()
-    	throws ParseException
-    {
-    	AuthorizationIms authorizationIms = new AuthorizationIms();
-    	
-    	return authorizationIms;
-    }
-    
+     
 	
 	
 	/**
@@ -1419,15 +1394,7 @@ public class HeaderFactoryImpl implements HeaderFactory {
     }
     
     
-    /**
-     * WWWAuthenticateHeaderIms
-     */
-    public WWWAuthenticateHeaderIms createWWWAuthenticateHeaderIms()
-    {
-    	WWWAuthenticateIms wwwAuthenticateIms = new WWWAuthenticateIms();
-    	
-    	return wwwAuthenticateIms;
-    }
+    
 	
    
     //////////////////////////////////////////////////////////

@@ -28,6 +28,8 @@
 *******************************************************************************/
 package gov.nist.javax.sip.header;
 
+import gov.nist.javax.sip.header.ims.AuthorizationHeaderIms;
+
 import javax.sip.header.*;
 
 /**
@@ -36,13 +38,13 @@ import javax.sip.header.*;
  * @see ProxyAuthorization
  *
  * @author M. Ranganathan   NIST/ITL/ANTD <br/>
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:31 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-09-10 21:14:32 $
  *
  * 
  */
 public class Authorization
 	extends gov.nist.javax.sip.header.AuthenticationHeader
-	implements javax.sip.header.AuthorizationHeader {
+	implements javax.sip.header.AuthorizationHeader, AuthorizationHeaderIms {
 
 	/**
 	 * Comment for <code>serialVersionUID</code>
