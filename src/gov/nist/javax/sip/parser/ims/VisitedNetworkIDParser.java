@@ -37,12 +37,13 @@ import gov.nist.core.Token;
 import gov.nist.javax.sip.header.SIPHeader;
 import gov.nist.javax.sip.parser.Lexer;
 import gov.nist.javax.sip.parser.ParametersParser;
+import gov.nist.javax.sip.parser.TokenTypes;
 
 /**
- * @author ALEXANDRE MIGUEL SILVA SANTOS - Nú 10045401
+ * @author ALEXANDRE MIGUEL SILVA SANTOS 
  */
 
-public class VisitedNetworkIDParser extends ParametersParser implements TokenTypesIms {
+public class VisitedNetworkIDParser extends ParametersParser implements TokenTypes {
 	
 	/**
 	 * Constructor
@@ -50,19 +51,15 @@ public class VisitedNetworkIDParser extends ParametersParser implements TokenTyp
 	 */
 	public VisitedNetworkIDParser(String networkID) {
 		super(networkID);
-		this.selectLexerIms();
+		
 	}
 
 	protected VisitedNetworkIDParser(Lexer lexer) {
 		super(lexer);
-		this.selectLexerIms();
+		
 	}
 
-	public void selectLexerIms() {
 	
-	LexerIms lexerims = new LexerIms();
-	
-	}
 	
 	
 	public SIPHeader parse() throws ParseException {
@@ -73,7 +70,7 @@ public class VisitedNetworkIDParser extends ParametersParser implements TokenTyp
 			dbg_enter("VisitedNetworkIDParser.parse");
 
 		try {
-			this.lexer.match(TokenTypesIms.P_VISITED_NETWORK_ID);
+			this.lexer.match(TokenTypes.P_VISITED_NETWORK_ID);
 			this.lexer.SPorHT();
 			this.lexer.match(':');
 			this.lexer.SPorHT();

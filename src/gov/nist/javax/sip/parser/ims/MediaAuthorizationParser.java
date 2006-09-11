@@ -46,25 +46,22 @@ import gov.nist.javax.sip.parser.TokenTypes;
 
 public class MediaAuthorizationParser 
 	extends HeaderParser
-	implements TokenTypesIms
+	implements TokenTypes
 {
 
 	public MediaAuthorizationParser(String mediaAuthorization)
 	{
 		super(mediaAuthorization);
-		this.selectLexerIms();
+		
 	}
 
 	public MediaAuthorizationParser(Lexer lexer)
 	{
 		super(lexer);
-		this.selectLexerIms();
+		
 	}
 		
-	public void selectLexerIms()
-	{		
-		LexerIms lexerims = new LexerIms();		
-	}
+	
 	 
 	 
 	 
@@ -78,7 +75,7 @@ public class MediaAuthorizationParser
 		
 		try
 		{
-			headerName(TokenTypesIms.P_MEDIA_AUTHORIZATION);
+			headerName(TokenTypes.P_MEDIA_AUTHORIZATION);
 			
 			while (lexer.lookAhead(0) != '\n')
 			{

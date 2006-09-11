@@ -42,24 +42,19 @@ import gov.nist.javax.sip.header.ims.PreferredIdentity;
  * @author ALEXANDRE MIGUEL SILVA SANTOS - Nú 10045401
  */
 
-public class PreferredIdentityParser extends AddressHeaderParser implements TokenTypesIms {
+public class PreferredIdentityParser extends AddressHeaderParser implements TokenTypes {
 	
 	public PreferredIdentityParser(String preferredIdentity) {
 		super(preferredIdentity);
-		this.selectLexerIms();
+		
 	}
 
 	
 	protected PreferredIdentityParser(Lexer lexer) {
 		super(lexer);
-		this.selectLexerIms();
+		
 	}
 
-	public void selectLexerIms() {
-	
-		LexerIms lexerims = new LexerIms();
-	
-	}
 	
 	
 	public GenericObject biparse() throws ParseException {
@@ -73,7 +68,7 @@ public class PreferredIdentityParser extends AddressHeaderParser implements Toke
 				GenericObject xpto = null;
 				boolean isTEL = false;
 		
-				this.lexer.match(TokenTypesIms.P_PREFERRED_IDENTITY);
+				this.lexer.match(TokenTypes.P_PREFERRED_IDENTITY);
 				this.lexer.SPorHT();
 				this.lexer.match(':');
 				this.lexer.SPorHT();

@@ -34,39 +34,36 @@ import gov.nist.javax.sip.header.ims.SIPHeaderNamesIms;
 import gov.nist.core.Token;
 import gov.nist.core.NameValue;
 import gov.nist.javax.sip.header.SIPHeader;
+import gov.nist.javax.sip.parser.HeaderParser;
 import gov.nist.javax.sip.parser.Lexer;
 import gov.nist.javax.sip.parser.ParametersParser;
+import gov.nist.javax.sip.parser.TokenTypes;
 
 
 /**
  * 
- * @author Jose Miguel Freitas 23875
+ * @author Jose Miguel Freitas 
  */
 
 
 public class AccessNetworkInfoParser
-	extends ParametersParser 
-	implements TokenTypesIms 
+	extends HeaderParser
+	implements TokenTypes
 {
 	
 	public AccessNetworkInfoParser(String accessNetwork) {
 				
 		super(accessNetwork);
-		this.selectLexerIms();
-				
+		
 	}
 	
 	
 	protected AccessNetworkInfoParser(Lexer lexer) {
 		super(lexer);
-		this.selectLexerIms();
+		
 	}
 
-	public void selectLexerIms() {
 	
-		LexerIms lexerims = new LexerIms();
-	
-	}
 
 	
 	
@@ -79,7 +76,7 @@ public class AccessNetworkInfoParser
 		if (debug)
 			dbg_enter("AccessNetworkInfoParser.parse");
 		try {
-			headerName(TokenTypesIms.P_ACCESS_NETWORK_INFO);
+			headerName(TokenTypes.P_ACCESS_NETWORK_INFO);
 			AccessNetworkInfo accessNetworkInfo = new AccessNetworkInfo();
 			
 			accessNetworkInfo.setHeaderName(SIPHeaderNamesIms.P_ACCESS_NETWORK_INFO);
@@ -107,146 +104,11 @@ public class AccessNetworkInfoParser
 		}
 		
 		
-		/*
-		AccessNetworkInfoList accessNetworkInfoList = new AccessNetworkInfoList();
-
-		if (debug)
-			dbg_enter("AccessNetworkInfoParser.parse");
-
-		try {
-			this.lexer.match(TokenTypesIms.P_ACCESS_NETWORK_INFO);
-			this.lexer.SPorHT();
-			this.lexer.match(':');
-			this.lexer.SPorHT();
-			
-			while (true) {
-				
-				AccessNetworkInfo accessNetworkInfo = new AccessNetworkInfo();
-				
-				if (this.lexer.lookAhead(0) == '\"')
-					parseQuotedString(accessNetworkInfo);
-				else
-					parseToken(accessNetworkInfo);
-					
-				
-				accessNetworkInfoList.add(accessNetworkInfo);
-				
-				
-				this.lexer.SPorHT();
-				if (lexer.lookAhead(0) == ';')
-				{
-					this.lexer.match(';');
-					this.lexer.SPorHT();
-				} 
-				else if (lexer.lookAhead(0) == '\n')
-					break;
-				else
-					throw createParseException("unexpected char");
-			}
-			return accessNetworkInfoList;
-			
-		} finally {
-			if (debug)
-				dbg_leave("AccessNetworkInfoParser.parse");
-		}
-		*/
+	
 		
 	}
 	
-	protected void parseQuotedString(AccessNetworkInfo accessNetworkInfo) throws ParseException
-	{
-		
-		if (debug)
-			dbg_enter("parseQuotedString");
-		
-		try {
-			
-			StringBuffer retval = new StringBuffer();
-			
-			if (this.lexer.lookAhead(0) != '\"')
-				throw createParseException("unexpected char");
-			this.lexer.consume(1);
-			
-			while (true) {
-				char next = this.lexer.getNextChar();
-				if (next == '\"') {
-					// Got to the terminating quote.
-					break;
-				} else if (next == '\0') {
-					throw new ParseException("unexpected EOL", 1);
-				} else if (next == '\\') {
-					retval.append(next);
-					next = this.lexer.getNextChar();
-					retval.append(next);
-				} else {
-					retval.append(next);
-				}
-			}
-			
-			accessNetworkInfo.setAccessType(retval.toString());
-			super.parse(accessNetworkInfo);
-			
-					
-				
-		}finally {
-			if (debug)
-				dbg_leave("parseQuotedString.parse");
-		}
-		
-	}
-		
-	protected void parseToken(AccessNetworkInfo accessNetworkInfo) throws ParseException 
-	{	
-		Token token = lexer.getNextToken();
-		String value = token.getTokenValue();
-		accessNetworkInfo.setAccessType(value);
-		super.parse(accessNetworkInfo);
-							
-	}
 	
-	
-	
-	
-	/*
-	 * 
-	public SIPHeader parse() throws ParseException
-	{
-
-		if (debug)
-			dbg_enter("AccessNetworkInfoParser.parse");
-		try {
-			headerName(TokenTypesIms.P_ACCESS_NETWORK_INFO);
-			AccessNetworkInfo accessNetworkInfo = new AccessNetworkInfo();
-			
-			accessNetworkInfo.setHeaderName(
-					SIPHeaderNamesIms.P_ACCESS_NETWORK_INFO);
-
-			this.lexer.SPorHT();
-			
-			NameValue nv = super.nameValue();
-			accessNetworkInfo.setParameter(nv);
-			this.lexer.SPorHT();
-			while (lexer.lookAhead(0) == ',') {
-				this.lexer.match(',');
-				this.lexer.SPorHT();
-
-				nv = super.nameValue();
-				accessNetworkInfo.setParameter(nv);
-				this.lexer.SPorHT();
-			}
-			this.lexer.SPorHT();
-			//this.lexer.match('\n');
-
-			return accessNetworkInfo;
-		} finally {
-			if (debug)
-				dbg_leave("AccessNetworkInfoParser.parse");
-		}
-			
-			
-	}
-
-	*/
 	
 	
 }

@@ -26,6 +26,18 @@
 package gov.nist.javax.sip.parser;
 
 import gov.nist.core.*;
+import gov.nist.javax.sip.header.ims.AccessNetworkInfoHeader;
+import gov.nist.javax.sip.header.ims.AssertedIdentityHeader;
+import gov.nist.javax.sip.header.ims.AssociatedURIHeader;
+import gov.nist.javax.sip.header.ims.CalledPartyIDHeader;
+import gov.nist.javax.sip.header.ims.ChargingFunctionAddressesHeader;
+import gov.nist.javax.sip.header.ims.ChargingVectorHeader;
+import gov.nist.javax.sip.header.ims.MediaAuthorizationHeader;
+import gov.nist.javax.sip.header.ims.PathHeader;
+import gov.nist.javax.sip.header.ims.PreferredIdentityHeader;
+import gov.nist.javax.sip.header.ims.ServiceRouteHeader;
+import gov.nist.javax.sip.header.ims.VisitedNetworkIDHeader;
+
 import javax.sip.header.*;
 import java.util.Hashtable;
 
@@ -105,7 +117,7 @@ public class Lexer extends LexerCore {
 				// JvB: added to support RFC3903
 				addKeyword(TokenNames.PUBLISH.toUpperCase(), TokenTypes.PUBLISH);
 				
-				// JvB: MESSAGE not added, intentional ?
+				addKeyword(TokenNames.MESSAGE.toUpperCase(), TokenTypes.MESSAGE);
 				
 			} else if (lexerName.equals("command_keywordLexer")) {
 				addKeyword(
@@ -256,6 +268,23 @@ public class Lexer extends LexerCore {
 				addKeyword(SIPETagHeader.NAME.toUpperCase(), TokenTypes.SIP_ETAG);
 				addKeyword(SIPIfMatchHeader.NAME.toUpperCase(), TokenTypes.SIP_IF_MATCH);
 				
+				// IMS Headers
+				addKeyword(PathHeader.NAME.toUpperCase(), TokenTypes.PATH);
+				addKeyword(ServiceRouteHeader.NAME.toUpperCase(), TokenTypes.SERVICE_ROUTE);
+				addKeyword(AssertedIdentityHeader.NAME.toUpperCase(), TokenTypes.P_ASSERTED_IDENTITY);
+				addKeyword(PreferredIdentityHeader.NAME.toUpperCase(), TokenTypes.P_PREFERRED_IDENTITY);
+				
+				
+				// issued by jmf
+				addKeyword(CalledPartyIDHeader.NAME.toUpperCase(), TokenTypes.P_CALLED_PARTY_ID);
+				addKeyword(AssociatedURIHeader.NAME.toUpperCase(), TokenTypes.P_ASSOCIATED_URI);
+				addKeyword(VisitedNetworkIDHeader.NAME.toUpperCase(), TokenTypes.P_VISITED_NETWORK_ID);
+				addKeyword(ChargingFunctionAddressesHeader.NAME.toUpperCase(), TokenTypes.P_CHARGING_FUNCTION_ADDRESSES);
+				addKeyword(ChargingVectorHeader.NAME.toUpperCase(), TokenTypes.P_VECTOR_CHARGING);
+				addKeyword(AccessNetworkInfoHeader.NAME.toUpperCase(), TokenTypes.P_ACCESS_NETWORK_INFO);
+				addKeyword(MediaAuthorizationHeader.NAME.toUpperCase(), TokenTypes.P_MEDIA_AUTHORIZATION);
+				
+				
 			} else if (lexerName.equals("status_lineLexer")) {
 				addKeyword(TokenNames.SIP.toUpperCase(), TokenTypes.SIP);
 			} else if (lexerName.equals("request_lineLexer")) {
@@ -270,6 +299,29 @@ public class Lexer extends LexerCore {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2006/07/13 09:02:09  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  jeroen van bemmel
+ * Reviewed by:   mranga
+ * Moved some changes from jain-sip-1.2 to java.net
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.5  2006/06/19 06:47:27  mranga
  * javadoc fixups
  *

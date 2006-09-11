@@ -36,9 +36,10 @@ import gov.nist.javax.sip.header.ims.ServiceRouteList;
 import gov.nist.javax.sip.header.SIPHeader;
 import gov.nist.javax.sip.parser.AddressParametersParser;
 import gov.nist.javax.sip.parser.Lexer;
+import gov.nist.javax.sip.parser.TokenTypes;
 
 /**
- * @author ALEXANDRE MIGUEL SILVA SANTOS - Nú 10045401
+ * @author ALEXANDRE MIGUEL SILVA SANTOS 
  */
 
 public class ServiceRouteParser extends AddressParametersParser {
@@ -49,19 +50,15 @@ public class ServiceRouteParser extends AddressParametersParser {
 	 */
 	public ServiceRouteParser(String serviceRoute) {
 		super(serviceRoute);
-		this.selectLexerIms();
+		
 	}
 
 	protected ServiceRouteParser(Lexer lexer) {
 		super(lexer);
-		this.selectLexerIms();
+		
 	}
 	
-	public void selectLexerIms() {
-		
-		LexerIms lexerims = new LexerIms();
-		
-	}
+	
 
 	
 	/**
@@ -77,7 +74,7 @@ public class ServiceRouteParser extends AddressParametersParser {
 			dbg_enter("ServiceRouteParser.parse");
 
 		try {
-			this.lexer.match(TokenTypesIms.SERVICE_ROUTE);
+			this.lexer.match(TokenTypes.SERVICE_ROUTE);
 			this.lexer.SPorHT();
 			this.lexer.match(':');
 			this.lexer.SPorHT();
