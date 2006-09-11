@@ -48,7 +48,8 @@ import java.text.ParseException;
 /*
  * Bugs in this class were reported by Antonis Karydas, Brad Templeton, Jeff
  * Adams, Alex Rootham , Martin Le Clerk, Christophe Anzille, Andreas Bystrom,
- * Lebing Xie, Jeroen van Bemmel.
+ * Lebing Xie, Jeroen van Bemmel. Hagai Sela reported a bug in updating the 
+ * route set (on RE-INVITE).
  */
 
 /**
@@ -58,7 +59,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.28 $ $Date: 2006-09-06 15:29:08 $
+ * @version 1.2 $Revision: 1.29 $ $Date: 2006-09-11 13:55:39 $
  * 
  * @author M. Ranganathan
  * 
@@ -514,7 +515,6 @@ public class SIPDialog implements javax.sip.Dialog {
 			}
 			if (this.dialogState == CONFIRMED_STATE
 					|| this.dialogState == TERMINATED_STATE) {
-				if (sipResponse.getStatusCode() / 100 != 2)
 					return;
 			}
 
