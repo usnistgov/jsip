@@ -33,17 +33,17 @@ import java.text.ParseException;
 
 import gov.nist.javax.sip.header.ims.Path;
 import gov.nist.javax.sip.header.ims.PathList;
-import gov.nist.javax.sip.parser.ims.LexerIms;
 import gov.nist.javax.sip.header.SIPHeader;
 import gov.nist.javax.sip.parser.Lexer;
 import gov.nist.javax.sip.parser.AddressParametersParser;
+import gov.nist.javax.sip.parser.TokenTypes;
 
 /**
- * @author ALEXANDRE MIGUEL SILVA SANTOS - Nú 10045401
+ * @author ALEXANDRE MIGUEL SILVA SANTOS 
  */
 
 
-public class PathParser extends AddressParametersParser implements TokenTypesIms {
+public class PathParser extends AddressParametersParser implements TokenTypes {
 	
 	/**
 	 * Constructor
@@ -51,19 +51,15 @@ public class PathParser extends AddressParametersParser implements TokenTypesIms
 	 */
 	public PathParser(String path) {
 		super(path);
-		this.selectLexerIms();
+		
 	}
 
 	protected PathParser(Lexer lexer) {
 		super(lexer);
-		this.selectLexerIms();
+		
 	}
 
-	public void selectLexerIms() {
 	
-	LexerIms lexerims = new LexerIms();
-	
-	}
 	
 	
 	/**
@@ -80,7 +76,7 @@ public class PathParser extends AddressParametersParser implements TokenTypesIms
 			dbg_enter("PathParser.parse");
 
 		try {
-			this.lexer.match(TokenTypesIms.PATH);
+			this.lexer.match(TokenTypes.PATH);
 			this.lexer.SPorHT();
 			this.lexer.match(':');
 			this.lexer.SPorHT();

@@ -38,7 +38,7 @@ import gov.nist.javax.sip.parser.Lexer;
 import gov.nist.javax.sip.parser.AddressParser;
 
 /**
- * @author ALEXANDRE MIGUEL SILVA SANTOS - Nú 10045401
+ * @author ALEXANDRE MIGUEL SILVA SANTOS 
  */
 
 public class AddressParserIms extends HeaderParser {

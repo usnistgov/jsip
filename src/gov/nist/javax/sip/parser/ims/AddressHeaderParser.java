@@ -39,7 +39,7 @@ import java.text.ParseException;
 import gov.nist.javax.sip.header.ims.AddressHeader;
 
 /**
- * @author ALEXANDRE MIGUEL SILVA SANTOS - Nú 10045401
+ * @author ALEXANDRE MIGUEL SILVA SANTOS 
  */
 
 public class AddressHeaderParser extends HeaderParser {
