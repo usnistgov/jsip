@@ -51,7 +51,7 @@ import gov.nist.javax.sip.header.ims.SIPHeaderNamesIms;
 
 public class PrivacyParser 
 	extends HeaderParser
-	implements TokenTypesIms
+	implements TokenTypes
 {
 
 	
@@ -76,7 +76,7 @@ public class PrivacyParser
 
 		try 
 		{
-			this.headerName(TokenTypesIms.PRIVACY);
+			this.headerName(TokenTypes.PRIVACY);
 			
 			while (lexer.lookAhead(0) != '\n') {
 				this.lexer.SPorHT();

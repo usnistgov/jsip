@@ -36,31 +36,28 @@ import gov.nist.core.NameValue;
 import gov.nist.javax.sip.header.SIPHeader;
 import gov.nist.javax.sip.parser.Lexer;
 import gov.nist.javax.sip.parser.ParametersParser;
+import gov.nist.javax.sip.parser.TokenTypes;
 
 /**
  * @author ALEXANDRE MIGUEL SILVA SANTOS - Nú 10045401
  */
 
-public class ChargingFunctionAddressesParser extends ParametersParser implements TokenTypesIms {
+public class ChargingFunctionAddressesParser extends ParametersParser implements TokenTypes {
 	
 	public ChargingFunctionAddressesParser(String charging) {
 				
 		super(charging);
-		this.selectLexerIms();
+	
 				
 	}
 	
 	
 	protected ChargingFunctionAddressesParser(Lexer lexer) {
 		super(lexer);
-		this.selectLexerIms();
+		
 	}
 
-	public void selectLexerIms() {
 	
-	LexerIms lexerims = new LexerIms();
-	
-	}
 	
 	public SIPHeader parse() throws ParseException {
 		
@@ -68,7 +65,7 @@ public class ChargingFunctionAddressesParser extends ParametersParser implements
 		if (debug)
 			dbg_enter("parse");
 		try {
-			headerName(TokenTypesIms.P_CHARGING_FUNCTION_ADDRESSES);
+			headerName(TokenTypes.P_CHARGING_FUNCTION_ADDRESSES);
 			ChargingFunctionAddresses chargingFunctionAddresses = new ChargingFunctionAddresses();
 			
 			try {

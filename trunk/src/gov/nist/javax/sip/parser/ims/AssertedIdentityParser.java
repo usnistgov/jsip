@@ -31,6 +31,7 @@ package gov.nist.javax.sip.parser.ims;
 
 import gov.nist.core.GenericObject;
 import gov.nist.javax.sip.address.TelephoneNumber;
+import gov.nist.javax.sip.parser.HeaderParser;
 import gov.nist.javax.sip.parser.Lexer;
 import gov.nist.javax.sip.parser.TokenTypes;
 import gov.nist.javax.sip.parser.URLParser;
@@ -43,7 +44,8 @@ import gov.nist.javax.sip.header.ims.AssertedIdentity;
  * @author ALEXANDRE MIGUEL SILVA SANTOS - Nú 10045401
  */
 
-public class AssertedIdentityParser extends AddressHeaderParser implements TokenTypesIms {
+public class AssertedIdentityParser extends AddressHeaderParser 
+implements TokenTypes{
 	
 	/**
 	 * Constructor
@@ -51,19 +53,15 @@ public class AssertedIdentityParser extends AddressHeaderParser implements Token
 	 */
 	public AssertedIdentityParser(String assertedIdentity) {
 		super(assertedIdentity);
-		this.selectLexerIms();
+		
 	}
 
 	protected AssertedIdentityParser(Lexer lexer) {
 		super(lexer);
-		this.selectLexerIms();
+		
 	}
 
-	public void selectLexerIms() {
 	
-	LexerIms lexerims = new LexerIms();
-	
-	}
 	
 	
 	
@@ -78,7 +76,7 @@ public class AssertedIdentityParser extends AddressHeaderParser implements Token
 				GenericObject xpto = null;
 				boolean isTEL = false;
 		
-				this.lexer.match(TokenTypesIms.P_ASSERTED_IDENTITY);
+				this.lexer.match(TokenTypes.P_ASSERTED_IDENTITY);
 				this.lexer.SPorHT();
 				this.lexer.match(':');
 				this.lexer.SPorHT();
