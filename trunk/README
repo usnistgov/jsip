@@ -9,13 +9,12 @@ BUILD Notes
 -----------
 Platforms:
 ---------
-You need to install 1.3 or above. 1.5 is highly recommended. You can
+You need to install J2SDK 1.3 or above. 1.5 is highly recommended. You can
 get J2SDK from http://www.javasoft.com
 
 compiles and runs on Ipaq using the Blackdown jvm (1.3
 compatible) running on top of Familiar (Linux embedded operating
-system). To add Swing support,  you just need to install an optional
-library. 
+system). 
 
 With a few changes, this distribution can be made to compile and run 
 on Personal Java.
@@ -67,9 +66,9 @@ How to get Source Code Refreshes
 CVS Snapshot
 ------------
 
-For those who cannot access CVS thanks to draconian, idiotic or paranoid 
-administrative policies, here is a HTTP url where a cruise control  
-snapshot is grabbed from the stable CVS repository and dumped:
+For those who cannot access CVS thanks to draconian IT administrative
+policies, here is a HTTP url where a cruise control snapshot is grabbed
+from the stable CVS repository and dumped:
 
 http://download.java.net/communications/jain-sip/nightly/
 
@@ -106,8 +105,8 @@ Credits
 Architecture / API design:
 -------------------------
 
-JAIN-SIP:  Phelim O'Doherty (Sun Microsystems) and M. Ranganathan (NIST) 
-JAIN-SDP: The SDP API spec lead is Kelvin Porter from DynamicSoft.
+JAIN-SIP: Joint Spec Leads -- Phelim O'Doherty (BEA) and M. Ranganathan (NIST). 
+JAIN-SDP: The SDP API spec lead is Kelvin Porter from Cisco.
 
 Implementation Lead:
 ---------------------
