@@ -57,7 +57,7 @@ import java.io.IOException;
  * and event model with the JAIN-SIP stack. This is strictly an implementation
  * class.
  * 
- * @version 1.2 $Revision: 1.3 $ $Date: 2006-08-15 21:44:59 $
+ * @version 1.2 $Revision: 1.4 $ $Date: 2006-09-12 21:45:37 $
  * 
  * @author M. Ranganathan
  */
@@ -152,6 +152,34 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 					dialog = null;
 				}
 
+			}
+		}
+
+		/*
+		 * RFC 3261 8.2.2.2 Merged requests: 
+		 * If the request has no tag in the To header field, the UAS core MUST
+		 * check the request against ongoing transactions. If the From tag,
+		 * Call-ID, and CSeq exactly match those associated with an ongoing
+		 * transaction, but the request does not match that transaction (based
+		 * on the matching rules in Section 17.2.3), the UAS core SHOULD
+		 * generate a 482 (Loop Detected) response and pass it to the server
+		 * transaction.
+		 */
+		if ( dialog != null && sipRequest.getToTag() == null ) {
+			SIPServerTransaction sipServerTransaction = sipStack.findMergedTransaction(sipRequest);
+			if  ( sipServerTransaction != null &&
+					! sipServerTransaction.isMessagePartOfTransaction(sipRequest)) {
+				SIPResponse response = sipRequest.createResponse(Response.LOOP_DETECTED);
+				response.setHeader(sipStack.createServerHeaderForStack());
+				if (sipStack.getLogWriter().isLoggingEnabled())
+					sipStack.getLogWriter().logError("Loop detected while processing request");
+				try {
+					sipProvider.sendResponse(response);
+				} catch (SipException e) {
+					if (sipStack.getLogWriter().isLoggingEnabled())
+						sipStack.getLogWriter().logError("Error sending response");
+				}
+				return;
 			}
 		}
 
@@ -571,8 +599,8 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 					&& lastTransaction.getState() != TransactionState.COMPLETED
 					&& lastTransaction.getState() != TransactionState.TERMINATED) {
 
-				if (dialog.getRemoteSeqNumber() + 1 == sipRequest
-						.getCSeq().getSeqNumber()) {
+				if (dialog.getRemoteSeqNumber() + 1 == sipRequest.getCSeq()
+						.getSeqNumber()) {
 					dialog.setRemoteSequenceNumber(sipRequest.getCSeq()
 							.getSeqNumber());
 					if (sipStack.isLoggingEnabled())
@@ -625,8 +653,8 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 				if (sipStack.isLoggingEnabled()) {
 					sipStack.getLogWriter().logDebug(
 							"Dropping out of sequence message "
-									+ dialog.getRemoteSeqNumber()
-									+ " " + sipRequest.getCSeq());
+									+ dialog.getRemoteSeqNumber() + " "
+									+ sipRequest.getCSeq());
 				}
 
 				// send error when stricly higher, ignore when ==
@@ -719,7 +747,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 			 */
 			if (sipProvider.isAutomaticDialogSupportEnabled()
 					&& pendingSubscribeClientTx == null
-					&& !sipStack.deliverUnsolicitedNotify ) {
+					&& !sipStack.deliverUnsolicitedNotify) {
 				/*
 				 * This is the case of the UAC receiving a Stray NOTIFY for
 				 * which it has not previously sent out a SUBSCRIBE and for

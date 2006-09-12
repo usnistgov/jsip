@@ -70,7 +70,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.57 $ $Date: 2006-08-23 00:00:22 $
+ * @version 1.2 $Revision: 1.58 $ $Date: 2006-09-12 21:45:36 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -120,6 +120,10 @@ public abstract class SIPTransactionStack implements
 
 	// Hashtable for server transactions.
 	private ConcurrentHashMap serverTransactionTable;
+
+	// A table of ongoing transactions indexed by mergeId ( for detecting merged
+	// requests.
+	private ConcurrentHashMap mergeTable;
 
 	/*
 	 * A wrapper around log4j to help log debug.
@@ -265,7 +269,7 @@ public abstract class SIPTransactionStack implements
 	protected boolean generateTimeStampHeader;
 
 	protected AddressResolver addressResolver;
-	
+
 	// Max time that the listener is allowed to take to respond to a
 	// request. Default is "infinity". This property allows
 	// containers to defend against buggy clients (that do not
@@ -297,7 +301,7 @@ public abstract class SIPTransactionStack implements
 
 		// The read time out is infinite.
 		this.readTimeout = -1;
-		
+
 		this.maxListenerResponseTime = -1;
 
 		// a set of methods that result in dialog creation.
@@ -319,6 +323,7 @@ public abstract class SIPTransactionStack implements
 
 		clientTransactionTable = new ConcurrentHashMap();
 		serverTransactionTable = new ConcurrentHashMap();
+		mergeTable = new ConcurrentHashMap();
 		retransmissionAlertTransactions = new ConcurrentHashMap();
 
 		// Start the timer event thread.
@@ -345,6 +350,7 @@ public abstract class SIPTransactionStack implements
 		clientTransactionTable = new ConcurrentHashMap();
 		serverTransactionTable = new ConcurrentHashMap();
 		retransmissionAlertTransactions = new ConcurrentHashMap();
+		mergeTable = new ConcurrentHashMap();
 		// Dialog dable.
 		this.dialogTable = new ConcurrentHashMap();
 
@@ -777,6 +783,26 @@ public abstract class SIPTransactionStack implements
 	}
 
 	/**
+	 * See if there is a pending transaction with the same Merge ID as the Merge
+	 * ID obtained from the SIP Request. The Merge table is for handling the
+	 * following condition: If the request has no tag in the To header field,
+	 * the UAS core MUST check the request against ongoing transactions. If the
+	 * From tag, Call-ID, and CSeq exactly match those associated with an
+	 * ongoing transaction, but the request does not match that transaction
+	 * (based on the matching rules in Section 17.2.3), the UAS core SHOULD
+	 * generate a 482 (Loop Detected) response and pass it to the server
+	 * transaction.
+	 */
+	public SIPServerTransaction findMergedTransaction(SIPRequest sipRequest) {
+		String mergeId = sipRequest.getMergeId();
+		if (mergeId != null) {
+			return (SIPServerTransaction) this.mergeTable.get(mergeId);
+		} else {
+			return null;
+		}
+	}
+
+	/**
 	 * Remove a pending Server transaction from the stack. This is called after
 	 * the user code has completed execution in the listener.
 	 * 
@@ -790,6 +816,22 @@ public abstract class SIPTransactionStack implements
 		}
 		this.pendingTransactions.remove(tr.getTransactionId());
 
+	}
+
+	/**
+	 * Remove a transaction from the merge table.
+	 * 
+	 * @param tr -- the server transaction to remove from the merge table.
+	 * 
+	 */
+	public void removeFromMergeTable(SIPServerTransaction tr) {
+		if (logWriter.isLoggingEnabled()) {
+			this.logWriter.logDebug("Removing tx from merge table ");
+		}
+		String key = ((SIPRequest) tr.getRequest()).getMergeId();
+		if (key != null) {
+			this.mergeTable.remove(key);
+		}
 	}
 
 	/**
@@ -1102,16 +1144,17 @@ public abstract class SIPTransactionStack implements
 			Object removed = serverTransactionTable.remove(key);
 			this
 					.removePendingTransaction((SIPServerTransaction) sipTransaction);
+			this.removeFromMergeTable((SIPServerTransaction) sipTransaction);
 			// Send a notification to the listener.
 			SipProviderImpl sipProvider = (SipProviderImpl) sipTransaction
 					.getSipProvider();
-			if (removed != null &&
-				sipTransaction.testAndSetTransactionTerminatedEvent()) {
-					TransactionTerminatedEvent event = new TransactionTerminatedEvent(
-							sipProvider, (ServerTransaction) sipTransaction);
+			if (removed != null
+					&& sipTransaction.testAndSetTransactionTerminatedEvent()) {
+				TransactionTerminatedEvent event = new TransactionTerminatedEvent(
+						sipProvider, (ServerTransaction) sipTransaction);
 
-					sipProvider.handleEvent(event, sipTransaction);
-				
+				sipProvider.handleEvent(event, sipTransaction);
+
 			}
 		} else {
 
@@ -1119,7 +1162,8 @@ public abstract class SIPTransactionStack implements
 			Object removed = clientTransactionTable.remove(key);
 
 			// Send a notification to the listener.
-			if (removed != null && sipTransaction.testAndSetTransactionTerminatedEvent()) {
+			if (removed != null
+					&& sipTransaction.testAndSetTransactionTerminatedEvent()) {
 				SipProviderImpl sipProvider = (SipProviderImpl) sipTransaction
 						.getSipProvider();
 				TransactionTerminatedEvent event = new TransactionTerminatedEvent(
@@ -1167,6 +1211,11 @@ public abstract class SIPTransactionStack implements
 				logWriter.logDebug(" putTransactionHash : " + " key = " + key);
 			}
 			serverTransactionTable.put(key, sipTransaction);
+
+			String mergeKey = sipRequest.getMergeId();
+			if (mergeKey != null) {
+				this.mergeTable.put(mergeKey, sipTransaction);
+			}
 
 		}
 
