@@ -100,9 +100,9 @@ public class ChargingVector
 	public void setICIDGeneratedAt(String host) throws ParseException {
 		
 		
-		if (host == null)
+		if (host == null) 
 			throw new NullPointerException(
-				"JAIN-SIP Exception, "
+			"JAIN-SIP Exception, "
 					+ "P-Charging-Vector, setICIDGeneratedAt(), the host parameter is null.");
 
 		setParameter(ParameterNamesIms.ICID_GENERATED_AT, host);
@@ -118,10 +118,12 @@ public class ChargingVector
 	
 	public void setOriginatingIOI(String origIOI) throws ParseException {
 		
-		if (origIOI == null)
-			throw new NullPointerException(
-				"JAIN-SIP Exception, "
-					+ "P-Charging-Vector, setOriginatingIOI(), the origIOI parameter is null.");
+		if (origIOI == null||origIOI.length()==0) {
+			removeParameter(ParameterNamesIms.ORIG_IOI);
+		} else
+//			throw new NullPointerException(
+//				"JAIN-SIP Exception, "
+//					+ "P-Charging-Vector, setOriginatingIOI(), the origIOI parameter is null.");
 
 		setParameter(ParameterNamesIms.ORIG_IOI, origIOI);	
 
@@ -140,10 +142,12 @@ public class ChargingVector
 	
 	public void setTerminatingIOI(String termIOI) throws ParseException {
 		
-		if (termIOI == null)
-			throw new NullPointerException(
-				"JAIN-SIP Exception, "
-					+ "P-Charging-Vector, setTerminatingIOI(), the termIOI parameter is null.");
+		if (termIOI == null||termIOI.length()==0) {
+			removeParameter(ParameterNamesIms.TERM_IOI);
+		} else
+//			throw new NullPointerException(
+//				"JAIN-SIP Exception, "
+//					+ "P-Charging-Vector, setTerminatingIOI(), the termIOI parameter is null.");
 		setParameter(ParameterNamesIms.TERM_IOI, termIOI);
 
 

@@ -39,7 +39,7 @@ import gov.nist.javax.sip.parser.URLParser;
 import gov.nist.javax.sip.header.ims.PreferredIdentity;
 
 /**
- * @author ALEXANDRE MIGUEL SILVA SANTOS - Nú 10045401
+ * @author ALEXANDRE MIGUEL SILVA SANTOS 
  */
 
 public class PreferredIdentityParser extends AddressHeaderParser implements TokenTypes {
