@@ -39,7 +39,7 @@ import gov.nist.javax.sip.parser.ParametersParser;
 import gov.nist.javax.sip.parser.TokenTypes;
 
 /**
- * @author ALEXANDRE MIGUEL SILVA SANTOS - Nú 10045401
+ * @author ALEXANDRE MIGUEL SILVA SANTOS 
  */
 
 public class ChargingVectorParser 

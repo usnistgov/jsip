@@ -42,7 +42,7 @@ import gov.nist.javax.sip.header.SIPHeader;
 import gov.nist.javax.sip.header.ims.AssertedIdentity;
 
 /**
- * @author ALEXANDRE MIGUEL SILVA SANTOS - Nú 10045401
+ * @author ALEXANDRE MIGUEL SILVA SANTOS 
  */
 
 public class AssertedIdentityParser extends AddressHeaderParser 

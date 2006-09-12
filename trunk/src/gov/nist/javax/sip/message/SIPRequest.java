@@ -61,7 +61,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.18 $ $Date: 2006-07-13 09:02:47 $
+ * @version 1.2 $Revision: 1.19 $ $Date: 2006-09-12 21:45:37 $
  * @since 1.1
  * 
  * @author M. Ranganathan  <br/>
@@ -1115,6 +1115,26 @@ public final class SIPRequest extends SIPMessage implements
 
 	public void setMessageChannel(Object messageChannel) {
 		this.messageChannel = messageChannel;
+	}
+
+	/**
+	 * Generates an Id for checking potentially merged requests.
+	 * 
+	 * @return
+	 */
+	public String getMergeId() {
+		/*
+		 * generate an identifier from the From tag, Call-ID, and CSeq 
+		 */
+		String fromTag = this.getFromTag();
+		String cseq = this.cSeqHeader.toString();
+		String callId = this.callIdHeader.getCallId();
+		
+		if (fromTag != null ) {
+			return new StringBuffer().append ( fromTag ) 
+			.append( ":" ).append( cseq).append( ":" ).append (callId ).toString();
+		} else return null;
+	
 	}
 
 }

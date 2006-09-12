@@ -33,7 +33,7 @@ package gov.nist.javax.sip.parser.ims;
 
 /**
  * 
- * @author Jose Miguel Freitas 23875
+ * @author Jose Miguel Freitas 
  */
 
 
