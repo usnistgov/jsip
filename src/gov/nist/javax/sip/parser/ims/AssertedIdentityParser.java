@@ -38,6 +38,7 @@ import gov.nist.javax.sip.parser.URLParser;
 
 import java.text.ParseException;
 
+import gov.nist.javax.sip.header.SIPHeader;
 import gov.nist.javax.sip.header.ims.AssertedIdentity;
 
 /**
@@ -60,12 +61,9 @@ implements TokenTypes{
 		super(lexer);
 		
 	}
-
 	
 	
-	
-	
-	public GenericObject biparse() throws ParseException {
+	public SIPHeader parse() throws ParseException {
 		
 		if (debug)
 			dbg_enter("AssertedIdentityParser.parse");
@@ -73,7 +71,7 @@ implements TokenTypes{
 		try {
 			
 				
-				GenericObject xpto = null;
+			AssertedIdentity xpto = null;
 				boolean isTEL = false;
 		
 				this.lexer.match(TokenTypes.P_ASSERTED_IDENTITY);
@@ -106,7 +104,7 @@ implements TokenTypes{
 													
 				if(isTEL) {
 													
-					xpto = this.parseTEL();
+					xpto = this.parsexpto();
 					
 					if (lexer.lookAhead(0) == '\n') {
 						
@@ -143,7 +141,7 @@ implements TokenTypes{
 
 						
 	
-	protected GenericObject parsexpto() throws ParseException {
+	protected AssertedIdentity parsexpto() throws ParseException {
 			
 		AssertedIdentity assertedIdentity = new AssertedIdentity();
 		
