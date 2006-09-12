@@ -59,7 +59,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.30 $ $Date: 2006-09-11 14:08:05 $
+ * @version 1.2 $Revision: 1.31 $ $Date: 2006-09-12 13:06:32 $
  * 
  * @author M. Ranganathan
  * 
@@ -492,7 +492,7 @@ public class SIPDialog implements javax.sip.Dialog {
 	 * 
 	 */
 
-	private void setContact(ContactHeader contact) {
+	private void setRemoteTarget(ContactHeader contact) {
 		this.remoteTarget = contact.getAddress();
 	}
 
@@ -505,49 +505,36 @@ public class SIPDialog implements javax.sip.Dialog {
 	 */
 	private synchronized void addRoute(SIPResponse sipResponse) {
 
+		// cannot add route list after the dialog is initialized.
 		try {
 			if (sipStack.isLoggingEnabled()) {
-				sipStack.logWriter.logDebug("setContact: dialogState: " + this
+				sipStack.logWriter.logDebug("addRoute dialogState: " + this
 						+ "state = " + this.getState());
 			}
-			if (sipResponse.getStatusCode() == 100) {
-				// Do nothing for trying messages.
-				return;
-			}
-			if ( this.dialogState == TERMINATED_STATE) {
-				// Do nothing if the dialog state is terminated.
-				return;
-			}
-			// cannot add route list after the dialog is initialized.
-			if (this.dialogState == CONFIRMED_STATE ) {
-				// Remote target is updated on RE-INVITE but not
-				// the route list.
-				if (sipResponse.getStatusCode()/100 == 2 && 
-						!this.isServer() ) {
+
+			if (!isServer()) {
+				// provisional responses should not update the contact list
+				if (sipResponse.getStatusCode() / 100 == 2) {
 					ContactList contactList = sipResponse.getContactHeaders();
 					if (contactList != null) {
-						this.setContact((ContactHeader) contactList.getFirst());
+						// Do a target refresh for this Dialog.
+						if (SIPRequest.isTargetRefresh(sipResponse.getCSeq().getMethod()))
+							this.setRemoteTarget((ContactHeader) contactList
+								.getFirst());
 					}
-				}
-				return;
-			}
-			
-			// Update route list on response if I am a client dialog.
-			if (!isServer()) {
 
-				RecordRouteList rrlist = sipResponse.getRecordRouteHeaders();
-				// Add the route set from the incoming response in reverse
-				// order for record route headers.
-				if (rrlist != null) {
-					this.addRoute(rrlist);
-				} else {
-					// Set the rotue list to the last seen route list.
-					this.routeList = new RouteList();
-				}
-
-				ContactList contactList = sipResponse.getContactHeaders();
-				if (contactList != null) {
-					this.setContact((ContactHeader) contactList.getFirst());
+					if (this.dialogState == EARLY_STATE) {
+						RecordRouteList rrlist = sipResponse
+								.getRecordRouteHeaders();
+						// Add the route set from the incoming response in
+						// reverse order
+						if (rrlist != null) {
+							this.addRoute(rrlist);
+						} else {
+							// Set the rotue list to the last seen route list.
+							this.routeList = new RouteList();
+						}
+					}
 				}
 			}
 
@@ -919,7 +906,7 @@ public class SIPDialog implements javax.sip.Dialog {
 	 */
 	public synchronized void addRoute(SIPRequest sipRequest) {
 		if (sipStack.isLoggingEnabled()) {
-			sipStack.logWriter.logDebug("setContact: dialogState: " + this
+			sipStack.logWriter.logDebug("addRoute: dialogState: " + this
 					+ "state = " + this.getState());
 		}
 		if (this.dialogState == CONFIRMED_STATE
@@ -941,7 +928,7 @@ public class SIPDialog implements javax.sip.Dialog {
 		// the route set.
 		ContactList contactList = sipRequest.getContactHeaders();
 		if (contactList != null) {
-			this.setContact((ContactHeader) contactList.getFirst());
+			this.setRemoteTarget((ContactHeader) contactList.getFirst());
 		}
 	}
 
