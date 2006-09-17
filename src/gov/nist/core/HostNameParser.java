@@ -158,7 +158,14 @@ public class HostNameParser extends ParserCore {
 		}
 	}
 
-	public HostPort hostPort() throws ParseException {
+	/**
+	 * Parses a host:port string
+	 * 
+	 * @param allowWS - whether whitespace is allowed around ':', only true for Via headers
+	 * @return
+	 * @throws ParseException
+	 */
+	public HostPort hostPort( boolean allowWS ) throws ParseException {
 		if (debug)
 			dbg_enter("hostPort");
 		try {
@@ -166,13 +173,13 @@ public class HostNameParser extends ParserCore {
 			HostPort hp = new HostPort();
 			hp.setHost(host);
 			// Has a port?
-			lexer.SPorHT(); // white space before ":port" should be accepted
+			if (allowWS) lexer.SPorHT(); // white space before ":port" should be accepted
 			if (lexer.hasMoreChars()) {				
 				switch (lexer.lookAhead(0))
 				{ 
 				case ':':
 					lexer.consume(1);
-					lexer.SPorHT(); // white space before port number should be accepted
+					if (allowWS) lexer.SPorHT(); // white space before port number should be accepted
 					try {
 						String port = lexer.number();
 						hp.setPort(Integer.parseInt(port));
@@ -193,8 +200,11 @@ public class HostNameParser extends ParserCore {
 					break;
 					
 				default:
-					throw new ParseException( lexer.getBuffer() + " Illegal character in hostname:" + lexer.lookAhead(0), 
-						lexer.getPtr() );
+					if (!allowWS) {
+						throw new ParseException( lexer.getBuffer() + 
+								" Illegal character in hostname:" + lexer.lookAhead(0), 
+								lexer.getPtr() );
+					}
 				}
 			}
 			return hp;
@@ -202,7 +212,6 @@ public class HostNameParser extends ParserCore {
 			if (debug)
 				dbg_leave("hostPort");
 		}
-
 	}
 
 	public static void main(String args[]) throws ParseException {
@@ -220,7 +229,7 @@ public class HostNameParser extends ParserCore {
 		for (int i = 0; i < hostNames.length; i++) {
 			try {
 				HostNameParser hnp = new HostNameParser(hostNames[i]);
-				HostPort hp = hnp.hostPort();
+				HostPort hp = hnp.hostPort(true);
 				System.out.println("["+hp.encode()+"]");
 			} catch (ParseException ex) {
 				System.out.println("exception text = " + ex.getMessage());
