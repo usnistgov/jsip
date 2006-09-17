@@ -33,7 +33,7 @@ import java.util.Vector;
 /**
  * Parser For SIP and Tel URLs. Other kinds of URL's are handled by the 
  * J2SE 1.4 URL class.
- * @version 1.2 $Revision: 1.13 $ $Date: 2006-07-13 09:02:04 $
+ * @version 1.2 $Revision: 1.14 $ $Date: 2006-09-17 14:34:52 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -577,38 +577,30 @@ public class URLParser extends Parser {
 			lexer.match(TokenTypes.SIP);
 			lexer.match(':');
 			retval.setScheme(TokenNames.SIP);
-			int m = lexer.markInputPosition();
-			try {
-				String user = user();
-				char la;
-				la = lexer.lookAhead(0);
-				// name:password@hostPort
+			int startOfUser = lexer.markInputPosition(); 
+			String userOrHost = user();	// Note: user may contain ';', host may not...
+			String passOrPort = null;
+			
+			// name:password or host:port
+			if ( lexer.lookAhead() == ':' ) {
 				lexer.match(':');
-				String password = password();
-				lexer.match('@');
-				HostNameParser hnp = new HostNameParser(this.getLexer());
-				HostPort hp = hnp.hostPort();
-				retval.setUser(user);
-				retval.setUserPassword(password);
-				retval.setHostPort(hp);
-			} catch (ParseException ex) {
-				// name@hostPort
-				try {
-					lexer.rewindInputPosition(m);
-					String user = user();
-					lexer.match('@');
-					HostNameParser hnp = new HostNameParser(this.getLexer());
-					HostPort hp = hnp.hostPort();
-					retval.setUser(user);
-					retval.setHostPort(hp);
-				} catch (ParseException e) {
-					// hostPort
-					lexer.rewindInputPosition(m);
-					HostNameParser hnp = new HostNameParser(this.getLexer());
-					HostPort hp = hnp.hostPort();
-					retval.setHostPort(hp);
-				}
+				passOrPort = password();
 			}
+
+			// name@hostPort
+			if ( lexer.lookAhead() == '@' ) {
+				lexer.match('@');
+				retval.setUser( userOrHost );
+				if (passOrPort!=null) retval.setUserPassword( passOrPort );
+			} else {
+				// then userOrHost was a host, backtrack just in case a ';' was eaten...
+				lexer.rewindInputPosition( startOfUser );
+			}
+
+			HostNameParser hnp = new HostNameParser(this.getLexer());
+			HostPort hp = hnp.hostPort( false );
+			retval.setHostPort(hp);			
+							
 			lexer.selectLexer("charLexer");
 			while (lexer.hasMoreChars()) {
 				if (lexer.lookAhead(0) != ';')
@@ -778,6 +770,29 @@ public class URLParser extends Parser {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2006/07/13 09:02:04  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  jeroen van bemmel
+ * Reviewed by:   mranga
+ * Moved some changes from jain-sip-1.2 to java.net
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.12  2006/07/11 21:28:34  jeroen
  * fixed reported issue with 'lr' parameter being encoded as 'lr=' (3)
  *
