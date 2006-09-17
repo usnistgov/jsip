@@ -55,7 +55,7 @@ import gov.nist.core.*;
  * feld swoop).
  * 
  * 
- * @version 1.2 $Revision: 1.14 $ $Date: 2006-09-10 21:14:35 $
+ * @version 1.2 $Revision: 1.15 $ $Date: 2006-09-17 10:31:33 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -655,7 +655,7 @@ public class StringMsgParser {
 
 	public SipUri parseSIPUrl(String url) throws ParseException {
 		try {
-			return (SipUri) new URLParser(url).parse();
+			return new URLParser(url).sipURL();
 		} catch (ClassCastException ex) {
 			throw new ParseException(url + " Not a SIP URL ", 0);
 		}
@@ -845,7 +845,31 @@ public class StringMsgParser {
 
 }
 /*
- * $Log: not supported by cvs2svn $ Revision 1.13 2006/07/13 09:02:18 mranga Issue
+ * $Log: not supported by cvs2svn $
+ * Revision 1.14  2006/09/10 21:14:35  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  mranga
+ * Reviewed by:   mranga
+ *
+ * Fixes the IMS header class cast problems.
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ * Revision 1.13 2006/07/13 09:02:18 mranga Issue
  * number: Obtained from: Submitted by: jeroen van bemmel Reviewed by: mranga
  * Moved some changes from jain-sip-1.2 to java.net
  * 
