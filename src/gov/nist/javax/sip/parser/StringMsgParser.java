@@ -55,7 +55,7 @@ import gov.nist.core.*;
  * feld swoop).
  * 
  * 
- * @version 1.2 $Revision: 1.15 $ $Date: 2006-09-17 10:31:33 $
+ * @version 1.2 $Revision: 1.16 $ $Date: 2006-09-17 14:34:51 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -603,12 +603,13 @@ public class StringMsgParser {
 	 * @since v1.0
 	 * @exception throws
 	 *                a ParseException when the address is badly formatted.
-	 */
+	 *
 	public HostPort parseHostPort(String hostport) throws ParseException {
 		Lexer lexer = new Lexer("charLexer", hostport);
 		return new HostNameParser(lexer).hostPort();
 
 	}
+	*/
 
 	/**
 	 * Parse a host name and return a parsed structure.
@@ -846,6 +847,9 @@ public class StringMsgParser {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2006/09/17 10:31:33  jbemmel
+ * when asked to parse a sip url, parse a sipURL
+ *
  * Revision 1.14  2006/09/10 21:14:35  mranga
  * Issue number:
  * Obtained from:

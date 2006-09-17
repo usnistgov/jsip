@@ -32,7 +32,7 @@ import java.text.ParseException;
 /**
  * Parser for via headers.
  * 
- * @version 1.2 $Revision: 1.8 $ $Date: 2006-08-15 21:44:49 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2006-09-17 14:34:52 $
  * @since 1.1
  * 
  * @author Olivier Deruelle
@@ -83,7 +83,7 @@ public class ViaParser extends HeaderParser {
 
 		// sent-By
 		HostNameParser hnp = new HostNameParser(this.getLexer());
-		HostPort hostPort = hnp.hostPort();
+		HostPort hostPort = hnp.hostPort( true );
 		v.setSentBy(hostPort);
 
 		// Ignore blanks
