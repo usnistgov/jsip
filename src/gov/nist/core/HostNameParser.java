@@ -148,7 +148,7 @@ public class HostNameParser extends ParserCore {
 			String hostname = hname.toString();
 			if (hostname.equals(""))
 				throw new ParseException(
-					lexer.getBuffer() + ": Illegal Host name ",
+					lexer.getBuffer() + ": Missing host name",
 					lexer.getPtr());
 			else
 				return new Host(hostname);
@@ -167,16 +167,34 @@ public class HostNameParser extends ParserCore {
 			hp.setHost(host);
 			// Has a port?
 			lexer.SPorHT(); // white space before ":port" should be accepted
-			if (lexer.hasMoreChars() && lexer.lookAhead(0) == ':') {
-				lexer.consume(1);
-				lexer.SPorHT(); // white space before port number should be accepted
-				try {
-					String port = lexer.number();
-					hp.setPort(Integer.parseInt(port));
-				} catch (NumberFormatException nfe) {
-					throw new ParseException(
-						lexer.getBuffer() + " :Error parsing port ",
-						lexer.getPtr());
+			if (lexer.hasMoreChars()) {				
+				switch (lexer.lookAhead(0))
+				{ 
+				case ':':
+					lexer.consume(1);
+					lexer.SPorHT(); // white space before port number should be accepted
+					try {
+						String port = lexer.number();
+						hp.setPort(Integer.parseInt(port));
+					} catch (NumberFormatException nfe) {
+						throw new ParseException(
+							lexer.getBuffer() + " :Error parsing port ",
+							lexer.getPtr());
+					}
+					break;
+				
+				case ';':	// OK, can appear in URIs (parameters)
+				case '?':	// same, header parameters
+				case '>':	// OK, can appear in headers
+				case ' ':	// OK, allow whitespace
+				case '\t':
+				case '\r':
+				case '\n':
+					break;
+					
+				default:
+					throw new ParseException( lexer.getBuffer() + " Illegal character in hostname:" + lexer.lookAhead(0), 
+						lexer.getPtr() );
 				}
 			}
 			return hp;
@@ -196,6 +214,7 @@ public class HostNameParser extends ParserCore {
 				":1234",
 				"foo.bar.com:         1234",
 				"foo.bar.com     :      1234   ",
+				"MIK_S:1234"
 			};
 			
 		for (int i = 0; i < hostNames.length; i++) {
