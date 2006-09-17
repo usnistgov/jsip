@@ -41,6 +41,11 @@ import java.lang.String;
 import java.text.ParseException;
 
 import javax.sip.address.Hop;
+import javax.sip.header.CSeqHeader;
+import javax.sip.header.CallIdHeader;
+import javax.sip.header.FromHeader;
+import javax.sip.header.ToHeader;
+import javax.sip.header.ViaHeader;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 
@@ -72,7 +77,7 @@ import javax.sip.message.Response;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.34 $ $Date: 2006-07-29 12:38:00 $
+ * @version 1.2 $Revision: 1.35 $ $Date: 2006-09-17 13:41:14 $
  */
 public class UDPMessageChannel extends MessageChannel implements
 		ParseExceptionListener, Runnable {
@@ -272,6 +277,20 @@ public class UDPMessageChannel extends MessageChannel implements
 
 					sipStack.getLogWriter().logDebug(new String(msgBytes));
 				}
+				
+				// JvB: send a 400 response for requests (except ACK)
+				// Currently only UDP, @todo also other transports
+				String msgString = new String(msgBytes, 0, packetLength);
+				if ( !msgString.startsWith("SIP/") && !msgString.startsWith("ACK ") ) {
+
+					byte[] badReqRes = createBadReqRes( msgString, ex );
+					if (badReqRes!=null) try {
+						this.sendMessage( badReqRes, peerAddress, peerPort, peerProtocol, false );
+					} catch (IOException e) {
+						this.sipStack.logWriter.logException(e);
+					}					
+  				}
+								
 				if (sipStack.threadPoolSize == -1)
 					return;
 				else
@@ -800,4 +819,86 @@ public class UDPMessageChannel extends MessageChannel implements
 	 */
 	public void close() {
 	}
+	
+	/**
+	 * Creates a response to a bad request (ie one that causes a ParseException)
+	 * 
+	 * @param badReq
+	 * @return message bytes, null if unable to formulate response
+	 */
+	private final byte[] createBadReqRes( String badReq, ParseException pe ) {
+
+		StringBuffer buf = new StringBuffer( 512 );
+		buf.append( "SIP/2.0 400 Bad Request (" + pe.getLocalizedMessage() + ')' );
+		
+		// We need the following headers: all Vias, CSeq, Call-ID, From, To
+		if (!copyViaHeaders(badReq, buf)) return null;
+		if (!copyHeader( CSeqHeader.NAME, badReq, buf)) return null;
+		if (!copyHeader( CallIdHeader.NAME, badReq, buf)) return null;
+		if (!copyHeader( FromHeader.NAME, badReq, buf)) return null;
+		if (!copyHeader( ToHeader.NAME, badReq, buf)) return null;
+		
+		// Should add a to-tag if not already present...
+		int toStart = buf.indexOf( ToHeader.NAME );
+		if (toStart!=-1 && buf.indexOf( "tag", toStart) == -1 ) {
+			buf.append( ";tag=badreq" );
+		}
+		
+		// Let's add a Server header too..
+		Server s = sipStack.createServerHeaderForStack();
+		buf.append( "\r\n" + s.toString() );
+		return buf.toString().getBytes();
+	}
+	
+	/**
+	 * Copies a header from a request
+	 * 
+	 * @param name
+	 * @param fromReq
+	 * @param buf
+	 * @return
+	 * 
+	 * Note: some limitations here: does not work for short forms of headers, or continuations;
+	 * 	 problems when header names appear in other parts of the request 
+	 */
+	private static final boolean copyHeader( String name, String fromReq, StringBuffer buf ) {
+		int start = fromReq.indexOf( name );
+		if (start!=-1) {
+			int end = fromReq.indexOf( "\r\n", start );
+			if (end!=-1) {
+				// XX Assumes no continuation here...
+				buf.append( fromReq.subSequence(start-2, end) );	// incl CRLF in front
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Copies all via headers from a request
+	 * 
+	 * @param name
+	 * @param fromReq
+	 * @param buf
+	 * @return
+	 * 
+	 * Note: some limitations here: does not work for short forms of headers, or continuations 
+	 */
+	private static final boolean copyViaHeaders( String fromReq, StringBuffer buf ) {
+		int start = fromReq.indexOf( ViaHeader.NAME );
+		boolean found = false;
+		while (start!=-1) {
+			int end = fromReq.indexOf( "\r\n", start );
+			if (end!=-1) {
+				// XX Assumes no continuation here...
+				buf.append( fromReq.subSequence(start-2, end) );	// incl CRLF in front
+				found = true;				
+				start = fromReq.indexOf( ViaHeader.NAME, end );
+			} else {
+				return false;
+			}
+		}
+		return found;
+	}	
+	
 }
