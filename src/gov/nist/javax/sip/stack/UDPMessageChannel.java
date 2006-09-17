@@ -77,7 +77,7 @@ import javax.sip.message.Response;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.35 $ $Date: 2006-09-17 13:41:14 $
+ * @version 1.2 $Revision: 1.36 $ $Date: 2006-09-17 14:35:07 $
  */
 public class UDPMessageChannel extends MessageChannel implements
 		ParseExceptionListener, Runnable {
@@ -274,7 +274,6 @@ public class UDPMessageChannel extends MessageChannel implements
 					this.sipStack.logWriter.logException(ex);
 				}
 				if (sipStack.isLoggingEnabled()) {
-
 					sipStack.getLogWriter().logDebug(new String(msgBytes));
 				}
 				
@@ -283,12 +282,24 @@ public class UDPMessageChannel extends MessageChannel implements
 				String msgString = new String(msgBytes, 0, packetLength);
 				if ( !msgString.startsWith("SIP/") && !msgString.startsWith("ACK ") ) {
 
-					byte[] badReqRes = createBadReqRes( msgString, ex );
-					if (badReqRes!=null) try {
-						this.sendMessage( badReqRes, peerAddress, peerPort, peerProtocol, false );
-					} catch (IOException e) {
-						this.sipStack.logWriter.logException(e);
-					}					
+					String badReqRes = createBadReqRes( msgString, ex );
+					if (badReqRes!=null) {
+						if (sipStack.isLoggingEnabled()) {
+							sipStack.getLogWriter().logDebug( "Sending automatic 400 Bad Request:");
+							sipStack.getLogWriter().logDebug( badReqRes );
+						}						
+						try {
+							this.sendMessage( badReqRes.getBytes(), peerAddress, 
+									peerPort, peerProtocol, false );
+						} catch (IOException e) {
+							this.sipStack.logWriter.logException(e);
+						}
+					} else {
+						if (sipStack.isLoggingEnabled()) {
+							sipStack.getLogWriter().logDebug( 
+									"Could not formulate automatic 400 Bad Request" );
+						}
+					}
   				}
 								
 				if (sipStack.threadPoolSize == -1)
@@ -826,7 +837,7 @@ public class UDPMessageChannel extends MessageChannel implements
 	 * @param badReq
 	 * @return message bytes, null if unable to formulate response
 	 */
-	private final byte[] createBadReqRes( String badReq, ParseException pe ) {
+	private final String createBadReqRes( String badReq, ParseException pe ) {
 
 		StringBuffer buf = new StringBuffer( 512 );
 		buf.append( "SIP/2.0 400 Bad Request (" + pe.getLocalizedMessage() + ')' );
@@ -847,7 +858,7 @@ public class UDPMessageChannel extends MessageChannel implements
 		// Let's add a Server header too..
 		Server s = sipStack.createServerHeaderForStack();
 		buf.append( "\r\n" + s.toString() );
-		return buf.toString().getBytes();
+		return buf.toString();
 	}
 	
 	/**
