@@ -93,8 +93,13 @@ public class Shootist extends TestHarness implements SipListener {
 			this.transactionCount++;
 			logger.info("shootist:  Sending OK.");
 			logger.info("Dialog State = " + dialog.getState());
-			assertTrue(serverTransactionId.getState() == TransactionState.COMPLETED);
-			assertTrue(dialog.getState() == DialogState.TERMINATED);
+			ViaHeader via = (ViaHeader) request.getHeader(ViaHeader.NAME);
+			if (via.getTransport().equalsIgnoreCase("UDP")) {
+				assertEquals("Check for Transaction State of Completed", TransactionState.COMPLETED,serverTransactionId.getState());
+			} else {
+				assertEquals("Check for Transaction State of Completed", TransactionState.TERMINATED,serverTransactionId.getState());				
+			}
+			assertEquals("Check for Dialog state of terminated",DialogState.TERMINATED, dialog.getState() );
 
 		} catch (Exception ex) {
 			ex.printStackTrace();

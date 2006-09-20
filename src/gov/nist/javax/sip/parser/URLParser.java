@@ -33,7 +33,7 @@ import java.util.Vector;
 /**
  * Parser For SIP and Tel URLs. Other kinds of URL's are handled by the 
  * J2SE 1.4 URL class.
- * @version 1.2 $Revision: 1.14 $ $Date: 2006-09-17 14:34:52 $
+ * @version 1.2 $Revision: 1.15 $ $Date: 2006-09-20 20:02:16 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -567,7 +567,7 @@ public class URLParser extends Parser {
 	/**
 	 * Parse and return a structure for a SIP URL.
 	 * @return a URL structure for a SIP url.
-	 * @throws ParsException if there was a problem parsing.
+	 * @throws ParseException if there was a problem parsing.
 	 */
 	public SipUri sipURL() throws ParseException {
 		if (debug)
@@ -770,6 +770,9 @@ public class URLParser extends Parser {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2006/09/17 14:34:52  jbemmel
+ * cleaned up URL parsing
+ *
  * Revision 1.13  2006/07/13 09:02:04  mranga
  * Issue number:
  * Obtained from:
