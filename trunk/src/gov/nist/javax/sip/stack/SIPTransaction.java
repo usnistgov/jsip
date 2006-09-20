@@ -54,7 +54,7 @@ import EDU.oswego.cs.dl.util.concurrent.Semaphore;
  * @author M. Ranganathan
  * 
  * 
- * @version 1.2 $Revision: 1.43 $ $Date: 2006-08-15 21:44:53 $
+ * @version 1.2 $Revision: 1.44 $ $Date: 2006-09-20 20:02:17 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
 		javax.sip.Transaction {
@@ -606,12 +606,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 	 */
 	final void fireTimer() {
 		// If the timeout timer is enabled,
-		/*
-		 * if (sipStack.isLoggingEnabled()) { sipStack.getLogWriter().logDebug(
-		 * "fireTimer " + this + " retransmissionTicks " +
-		 * retransmissionTimerTicksLeft); }
-		 */
-
+	
 		if (timeoutTimerTicksLeft != -1) {
 			// Count down the timer, and if it has run out,
 			if (--timeoutTimerTicksLeft == 0) {

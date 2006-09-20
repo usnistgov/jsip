@@ -105,21 +105,18 @@ public class Shootme extends TestHarness implements SipListener {
 			ServerTransaction serverTransaction) {
 		try {
 			this.ackCount++;
-			logger.info("shootme: got an ACK! " + requestEvent.getRequest());
-			logger
-					.info("Dialog State = " + dialog.getState()
+			logger.debug("shootme: got an ACK " );
+			logger.debug("Dialog State = " + dialog.getState()
 							+ " sending BYE ");
 			// This check is required because it may be an ACK retransmission
 			// If this is an ACK retransmission, we dont worry about sending BYE
 			// again.
 			if (dialog.getState() == DialogState.CONFIRMED) {
 				Request bye = dialog.createRequest(Request.BYE);
-				logger.info("bye request = " + bye);
-
 				ClientTransaction ct = this.sipProvider
 						.getNewClientTransaction(bye);
 				dialog.sendRequest(ct);
-				assertTrue(dialog.getState() == DialogState.TERMINATED);
+				assertEquals("Check for dialog state of TERMINATED", DialogState.TERMINATED, dialog.getState());
 			}
 		} catch (Exception ex) {
 			logger.error("unexpected exception", ex);
@@ -136,7 +133,7 @@ public class Shootme extends TestHarness implements SipListener {
 		Request request = requestEvent.getRequest();
 		try {
 			this.inviteCount++;
-			logger.info("shootme: got an Invite " + request);
+			logger.info("shootme: got an Invite " + this.inviteCount);
 			assertTrue(request.getHeader(ContactHeader.NAME) != null);
 			Response response = protocolObjects.messageFactory.createResponse(
 					Response.TRYING, request);
