@@ -59,7 +59,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.32 $ $Date: 2006-09-12 22:24:18 $
+ * @version 1.2 $Revision: 1.33 $ $Date: 2006-09-22 04:50:10 $
  * 
  * @author M. Ranganathan
  * 
@@ -174,6 +174,7 @@ public class SIPDialog implements javax.sip.Dialog {
 	}
 
 	class DialogTimerTask extends TimerTask {
+		int nRetransmissions;
 		SIPDialog dialog;
 
 		SIPServerTransaction transaction;
@@ -182,6 +183,7 @@ public class SIPDialog implements javax.sip.Dialog {
 				SIPServerTransaction transaction) {
 			this.dialog = dialog;
 			this.transaction = transaction;
+			this.nRetransmissions  = 0;
 		}
 
 		public void run() {
@@ -189,7 +191,11 @@ public class SIPDialog implements javax.sip.Dialog {
 			// resend last response.
 			if (sipStack.isLoggingEnabled())
 				sipStack.getLogWriter().logDebug("Running dialog timer");
-			if (!dialog.ackSeen) {
+			nRetransmissions ++;
+			if ( nRetransmissions > 8) {
+				this.dialog.setState(SIPDialog.TERMINATED_STATE);
+				this.transaction.raiseErrorEvent(SIPTransactionErrorEvent.TIMEOUT_ERROR);
+			} else if (!dialog.ackSeen ) {
 				// Retransmit to 200 until ack receivedialog.
 				SIPResponse response = transaction.getLastResponse();
 				if (response.getStatusCode() == 200) {
@@ -198,6 +204,7 @@ public class SIPDialog implements javax.sip.Dialog {
 						// resend the last response.
 						if (dialog.toRetransmitFinalResponse())
 							transaction.sendMessage(response);
+						
 					} catch (IOException ex) {
 
 						raiseIOException(transaction.getPeerAddress(),
@@ -212,9 +219,10 @@ public class SIPDialog implements javax.sip.Dialog {
 						// Note that this firing also
 						// drives Listener timeout.
 						SIPTransactionStack stack = dialog.sipStack;
+						//System.out.println("resend 200 response");
 						if (stack.logWriter.isLoggingEnabled()) {
-							stack.logWriter
-									.logDebug("resend 200 response from "
+							stack.logWriter.logDebug
+									("resend 200 response from "
 											+ this.dialog);
 						}
 						transaction.fireTimer();
