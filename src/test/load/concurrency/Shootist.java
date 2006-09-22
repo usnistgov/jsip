@@ -388,7 +388,7 @@ public class Shootist extends TestCase implements SipListener {
 
 		shootist.start = System.currentTimeMillis();
 		for (int i = 0; i < NDIALOGS; i++) {
-			Thread.sleep(3);
+			Thread.sleep(5);
 			shootist.sendInvite();
 		}
 
