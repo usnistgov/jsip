@@ -32,6 +32,7 @@ import gov.nist.javax.sip.address.*;
 import gov.nist.core.*;
 
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Set;
 import java.io.UnsupportedEncodingException;
@@ -43,6 +44,7 @@ import java.text.ParseException;
 import javax.sip.*;
 import javax.sip.header.*;
 
+
 import gov.nist.javax.sip.header.*;
 
 /*
@@ -51,7 +53,7 @@ import gov.nist.javax.sip.header.*;
  * incoming orignial requests without the additional overhead of encoding and
  * decoding messages. Bruno Konik noticed an extraneous newline added to the end
  * of the buffer when encoding it. Incorporates a bug report from Andreas
- * Byström. Szabo Barna noticed a contact in a cancel request - this is a
+ * Bystrï¿½m. Szabo Barna noticed a contact in a cancel request - this is a
  * pointless header for cancel. Antonis Kyardis contributed bug fixes.
  * Jeroen van Bemmel noted that method names are case sensitive, should use equals() 
  * in getting CannonicalName 
@@ -61,7 +63,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.19 $ $Date: 2006-09-12 21:45:37 $
+ * @version 1.2 $Revision: 1.20 $ $Date: 2006-09-22 04:50:11 $
  * @since 1.1
  * 
  * @author M. Ranganathan  <br/>
@@ -89,6 +91,17 @@ public final class SIPRequest extends SIPMessage implements
 	 * A target refresh request and its response MUST have a Contact
 	 */
 	private static final Set targetRefreshMethods = new HashSet();
+	
+	/*
+	 * A table that maps a name string to its cannonical constant.
+	 * This is used to speed up parsing of messages .equals reduces
+	 * to == if we use the constant value.
+	 */
+	private static final Hashtable nameTable = new Hashtable();
+	
+	private static void putName(String name) {
+		nameTable.put(name, name);
+	}
 
 	static {
 		targetRefreshMethods.add(Request.INVITE);
@@ -96,6 +109,24 @@ public final class SIPRequest extends SIPMessage implements
 		targetRefreshMethods.add(Request.SUBSCRIBE);
 		targetRefreshMethods.add(Request.NOTIFY);
 		targetRefreshMethods.add(Request.REFER);
+		
+		putName(Request.INVITE);
+		putName(Request.BYE);
+		putName(Request.CANCEL);
+		putName(Request.ACK);
+		putName(Request.PRACK);
+		putName(Request.INFO);
+		putName(Request.MESSAGE);
+		putName(Request.NOTIFY);
+		putName(Request.OPTIONS);
+		putName(Request.PRACK);
+		putName(Request.PUBLISH);
+		putName(Request.REFER);
+		putName(Request.REGISTER);
+		putName(Request.SUBSCRIBE);
+		putName(Request.UPDATE);
+		
+		
 	}
 
 	/**
@@ -114,34 +145,9 @@ public final class SIPRequest extends SIPMessage implements
 	 * 
 	 */
 	public static String getCannonicalName(String method) {
-		if (method.equals(Request.INVITE))
-			return (Request.INVITE);
-		else if (method.equals(Request.BYE))
-			return (Request.BYE);
-		else if (method.equals(Request.CANCEL))
-			return Request.CANCEL;
-		else if (method.equals(Request.ACK))
-			return Request.ACK;
-		else if (method.equals(Request.PRACK))
-			return Request.PRACK;
-		else if (method.equals(Request.INFO))
-			return Request.INFO;
-		else if (method.equals(Request.UPDATE))
-			return Request.UPDATE;
-		else if (method.equals(Request.REFER))
-			return Request.REFER;
-		else if (method.equals(Request.MESSAGE))
-			return Request.MESSAGE;
-		else if (method.equals(Request.SUBSCRIBE))
-			return Request.SUBSCRIBE;
-		else if (method.equals(Request.NOTIFY))
-			return Request.NOTIFY;
-		else if (method.equals(Request.REGISTER))
-			return Request.REGISTER;
-		else if (method.equals(Request.OPTIONS))
-			return Request.OPTIONS;
-		else if (method.equals(Request.PUBLISH))
-			return Request.PUBLISH;
+	
+		if (nameTable.containsKey(method))
+			return (String) nameTable.get(method);
 		else
 			return method;
 	}
@@ -186,7 +192,7 @@ public final class SIPRequest extends SIPMessage implements
 	public String debugDump() {
 		String superstring = super.debugDump();
 		stringRepresentation = "";
-		sprint(PackageNames.MESSAGE_PACKAGE + ".SIPRequest");
+		sprint(SIPRequest.class.getName());
 		sprint("{");
 		if (requestLine != null)
 			sprint(requestLine.debugDump());
