@@ -57,7 +57,7 @@ import java.io.IOException;
  * and event model with the JAIN-SIP stack. This is strictly an implementation
  * class.
  * 
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-09-12 21:45:37 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-09-26 22:22:59 $
  * 
  * @author M. Ranganathan
  */
@@ -114,6 +114,10 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 		// Look for the registered SIPListener for the message channel.
 
 		SIPServerTransaction transaction = (SIPServerTransaction) this.transactionChannel;
+		if (transaction != null ) {
+			if (sipStack.isLoggingEnabled())
+				sipStack.getLogWriter().logDebug("transaction state = " + transaction.getState());
+		}
 		String dialogId = sipRequest.getDialogId(true);
 		SIPDialog dialog = sipStack.getDialog(dialogId);
 		// Check if we got this request on the contact address of the dialog

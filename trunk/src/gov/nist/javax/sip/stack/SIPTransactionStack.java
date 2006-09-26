@@ -70,7 +70,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.58 $ $Date: 2006-09-12 21:45:36 $
+ * @version 1.2 $Revision: 1.59 $ $Date: 2006-09-26 22:22:58 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -1137,9 +1137,11 @@ public abstract class SIPTransactionStack implements
 	public void removeTransaction(SIPTransaction sipTransaction) {
 		if (logWriter.isLoggingEnabled()) {
 			logWriter.logDebug("Removing Transaction = "
-					+ sipTransaction.getTransactionId());
+					+ sipTransaction.getTransactionId() + " transaction = " + sipTransaction);
 		}
 		if (sipTransaction instanceof SIPServerTransaction) {
+			if (logWriter.isLoggingEnabled())
+				logWriter.logStackTrace();
 			String key = sipTransaction.getTransactionId();
 			Object removed = serverTransactionTable.remove(key);
 			this
