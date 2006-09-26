@@ -63,7 +63,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.20 $ $Date: 2006-09-22 04:50:11 $
+ * @version 1.2 $Revision: 1.21 $ $Date: 2006-09-26 22:22:59 $
  * @since 1.1
  * 
  * @author M. Ranganathan  <br/>
@@ -660,10 +660,7 @@ public final class SIPRequest extends SIPMessage implements
 	 */
 
 	public SIPResponse createResponse(int statusCode) {
-		SIPResponse newResponse;
-		Iterator headerIterator;
-		SIPHeader nextHeader;
-
+		
 		String reasonPhrase = SIPResponse.getReasonPhrase(statusCode);
 		return this.createResponse(statusCode, reasonPhrase);
 

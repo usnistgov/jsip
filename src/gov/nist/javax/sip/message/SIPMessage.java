@@ -50,7 +50,7 @@ import java.text.ParseException;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.20 $ $Date: 2006-08-15 21:44:59 $
+ * @version 1.2 $Revision: 1.21 $ $Date: 2006-09-26 22:22:59 $
  * @since 1.1
  * 
  * @author M. Ranganathan  <br/>
@@ -821,10 +821,11 @@ public abstract class SIPMessage extends MessageObject implements
 					retval.append(":").append(5060);
 				}
 			}
-			String hc = Utils.toHexString(retval.toString().toLowerCase()
-					.getBytes());
-
-			return new Integer(hc.hashCode()).toString();
+			if (this.getCSeq().getMethod().equals(Request.CANCEL))
+				retval.append(Request.CANCEL);
+			return retval.toString().toLowerCase();
+			
+		
 		}
 	}
 
