@@ -150,7 +150,7 @@ import java.util.TimerTask;
  *                                      
  * </pre>
  * 
- * @version 1.2 $Revision: 1.78 $ $Date: 2006-09-22 04:50:10 $
+ * @version 1.2 $Revision: 1.79 $ $Date: 2006-09-27 15:02:44 $
  * @author M. Ranganathan
  * 
  */
@@ -619,8 +619,8 @@ public class SIPServerTransaction extends SIPTransaction implements
 													.getCallId())
 							&& getOriginalRequest().getCSeq().getSeqNumber() == messageToTest
 									.getCSeq().getSeqNumber()
-							// &&
-							// getOriginalRequest().getMethod().equals(messageToTest.getCSeq().getMethod())
+							&& ( (!messageToTest.getCSeq().getMethod().equals(Request.CANCEL))
+							 || getOriginalRequest().getMethod().equals(messageToTest.getCSeq().getMethod()))
 							&& topViaHeader.equals(getOriginalRequest()
 									.getViaHeaders().getFirst())) {
 
