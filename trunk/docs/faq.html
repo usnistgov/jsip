@@ -27,7 +27,7 @@ JAIN-SIP 1.0 and JAIN-SIP
 re-invite?</a> </li>
   <li><a href="#9">Is JAIN-SIP 1.2 Stateful/Stateless or DialogStateful
 ?</a> </li>
-  <li><a href="#10">Why does my application get null transaction ID for
+  <li><a href="#10">Why does my application get a null ServerTransaction for
 INVITE transactions?</a> </li>
   <li><a href="#11">Who manages From/To tags ?</a> </li>
   <li><a href="#12">Why Dialog.sendRequest but no Dialog.sendResponse ?</a>
@@ -168,12 +168,12 @@ hours or maybe a day or two of effort. </li>
   <br>
   <hr size="2" noshade="noshade"><li><a name="8"></a> Does the RI
 support Re-Invite and how do I issue a re-invite? <br>
-Request inviteRequest = dialog.createRequest(Request.INVITE); <br>
-ClientTransaction ct =
-sipProvider.createNewClientTransaction(inviteRequest); <br>
-dialog.sendRequest(ct);<br>
+<pre>
+Request inviteRequest = dialog.createRequest(Request.INVITE);
+ClientTransaction ct = sipProvider.getNewClientTransaction(inviteRequest);
+dialog.sendRequest(ct);
+</pre>
   </li>
-  <br>
   <hr size="2" noshade="noshade"> 
 <li><a name="9"></a> 
 Is JAIN-SIP 1.2 Stateful/Stateless or DialogStateful? <br/>
@@ -187,12 +187,12 @@ Transaction ( new feature added for JAIN-SIP-1.2)
 </li>
   <br>
   <hr size="2" noshade="noshade"> <li><a name="10"></a>Why does my
-application get null transaction ID for INVITE transactions
+application get a null ServerTransaction for INVITE transactions
 ? <br>
 In order to support both statefull and stateless modes of operation,
 the
-INIVITE request gets delivered to your application with a null TID. You
-can choose to create a ServerTransacton and associated dialog using <it>provider.createNewServerTransaction(inviteRequest)</it>
+INIVITE request gets delivered to your application with a null ServerTransaction. You
+can choose to create a ServerTransacton and associated dialog using <it>provider.getNewServerTransaction(inviteRequest)</it>
   </li>
   <br>
   <hr size="2" noshade="noshade"> <li><a name="11"></a>Who manages
@@ -219,14 +219,11 @@ Framework. </li>
   <br>
   <hr size="2" noshade="noshade"><li><a name="14"></a>How do I cancel a
 transaction. <br>
-    <ul>
-      <li> cancelreq = originalClientTransaction.createCancelRequest() </li>
-      <li> ClientTransaction ct =
-sipProvider.getNewClientTransaction(cancelreq) </li>
-      <li> ct.sendRequest()</li>
-    </ul>
-  </li>
-  <br>
+<pre>
+Request cancelRequest = originalClientTransaction.createCancel();
+ClientTransaction ct = sipProvider.getNewClientTransaction(cancelRequest);
+ct.sendRequest();
+</pre>
   <hr size="2" noshade="noshade"><li><a name="15"></a> What is the
 difference between Transaction.sendRequest,
 Dialog.sendRequest and SipProvider.sendRequest <br>
@@ -371,13 +368,10 @@ then please do this in your application. <br>
 incoming server transaction in the case where you are supporting
 multiple
 listening points?<br>
-    <ul>
-      <li> <it> SipProvider sipProvider = sipEvent.getSource(); </it>
-      </li>
-      <li> <it> ListeningPoint lp = sipProvider.getListeningPoint(); </it>
-      </li>
-    </ul>
-    <br>
+<pre>
+SipProvider sipProvider = (SipProvider) sipEvent.getSource();
+ListeningPoint lp = sipProvider.getListeningPoint();
+</pre>
     <hr size="2" noshade="noshade"></li>
   <li><a name="28"></a>Why is my application getting Server Transaction
 timeouts even
@@ -476,10 +470,12 @@ default for this property is inifinity (no limit).
 While sending ACK request for 200 OK should I use transaction.createAck() 
 or Dialog.createRequest(Request.ACK)? <br/>
 Use the following when ACKing final responses <br/>
-request = dialog.createRequest(Request.ACK); <br/>
-ct  = sipProvider.createNewRequest(request);<br/>
-dialog.sendRequest(ClientTransaction); <br/>
+<pre>
+Request ackRequest = dialog.createRequest(Request.ACK);
+dialog.sendAck(ackRequest);
+</pre>
 </li>
+<hr size="2" noshade="noshade">
 <li>
 <a name="35"></a>
 Can I run the stack in an applet?<br/>

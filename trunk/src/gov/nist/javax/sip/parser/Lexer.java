@@ -101,22 +101,18 @@ public class Lexer extends LexerCore {
 		if (currentLexer == null) {
 			addLexer(lexerName);
 			if (lexerName.equals("method_keywordLexer")) {
-				addKeyword(
-					TokenNames.REGISTER.toUpperCase(),
-					TokenTypes.REGISTER);
-				addKeyword(TokenNames.ACK.toUpperCase(), TokenTypes.ACK);
-				addKeyword(
-					TokenNames.OPTIONS.toUpperCase(),
- 					TokenTypes.OPTIONS);
-				addKeyword(TokenNames.BYE.toUpperCase(), TokenTypes.BYE);
-				addKeyword(TokenNames.INVITE.toUpperCase(), TokenTypes.INVITE);
+				addKeyword(TokenNames.REGISTER,TokenTypes.REGISTER);
+				addKeyword(TokenNames.ACK, TokenTypes.ACK);
+				addKeyword(TokenNames.OPTIONS,TokenTypes.OPTIONS);
+				addKeyword(TokenNames.BYE, TokenTypes.BYE);
+				addKeyword(TokenNames.INVITE, TokenTypes.INVITE);
 				addKeyword(TokenNames.SIP.toUpperCase(), TokenTypes.SIP);
-				addKeyword(TokenNames.SUBSCRIBE.toUpperCase(),TokenTypes.SUBSCRIBE);
-				addKeyword(TokenNames.NOTIFY.toUpperCase(), TokenTypes.NOTIFY);	
-				addKeyword(TokenNames.MESSAGE.toUpperCase(),TokenTypes.MESSAGE);
+				addKeyword(TokenNames.SUBSCRIBE,TokenTypes.SUBSCRIBE);
+				addKeyword(TokenNames.NOTIFY, TokenTypes.NOTIFY);	
+				addKeyword(TokenNames.MESSAGE,TokenTypes.MESSAGE);
 				
 				// JvB: added to support RFC3903
-				addKeyword(TokenNames.PUBLISH.toUpperCase(), TokenTypes.PUBLISH);
+				addKeyword(TokenNames.PUBLISH, TokenTypes.PUBLISH);
 				
 				
 			} else if (lexerName.equals("command_keywordLexer")) {
@@ -299,6 +295,28 @@ public class Lexer extends LexerCore {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2006/09/27 15:02:43  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:   mranga
+ * rfc 2543 transaction matching. fix for MESSAGE request type parsing.
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.11  2006/09/26 22:22:59  mranga
  * Issue number:
  * Obtained from:
