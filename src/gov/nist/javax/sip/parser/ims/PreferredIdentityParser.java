@@ -31,11 +31,9 @@ package gov.nist.javax.sip.parser.ims;
 
 import java.text.ParseException;
 
-import gov.nist.core.GenericObject;
-import gov.nist.javax.sip.address.TelephoneNumber;
 import gov.nist.javax.sip.parser.Lexer;
 import gov.nist.javax.sip.parser.TokenTypes;
-import gov.nist.javax.sip.parser.URLParser;
+import gov.nist.javax.sip.header.SIPHeader;
 import gov.nist.javax.sip.header.ims.PreferredIdentity;
 
 /**
@@ -55,124 +53,26 @@ public class PreferredIdentityParser extends AddressHeaderParser implements Toke
 		
 	}
 
-	
-	
-	public GenericObject biparse() throws ParseException {
+	public SIPHeader parse() throws ParseException {
 		
 		if (debug)
 			dbg_enter("PreferredIdentityParser.parse");
 		
 		try {
-			
-				
-				GenericObject xpto = null;
-				boolean isTEL = false;
-		
-				this.lexer.match(TokenTypes.P_PREFERRED_IDENTITY);
-				this.lexer.SPorHT();
-				this.lexer.match(':');
-				this.lexer.SPorHT();
-				
-				String aaa = this.lexer.charAsString(3);
-				
-								
-				if(aaa.equalsIgnoreCase("tel")) {
-					
-					this.lexer.match(TokenTypes.TEL);
-					this.lexer.SPorHT();
-					
-					String bbb = this.lexer.charAsString(1);
-					
-					if(bbb.equalsIgnoreCase(":")) {
+			this.lexer.match(TokenTypes.P_PREFERRED_IDENTITY);
+			this.lexer.SPorHT();
+			this.lexer.match(':');
+			this.lexer.SPorHT();
 						
-						this.lexer.match(':');
-						this.lexer.SPorHT();
-						isTEL = true;
-						
-					}
-						
-				}
-				
-				else
-					isTEL = false;
-													
-				if(isTEL) {
-					
-										
-					xpto = this.parseTEL();
-					
-					if (lexer.lookAhead(0) == '\n') {
-						
-						return xpto;
-					}
-
-					else
-						throw createParseException("unexpected char");
-				
-				}
-					
-				else {
-					
-										
-					xpto = this.parsexpto();
-					
-					if (lexer.lookAhead(0) == '\n') {
-						
-						return xpto;
-					}
-
-					else
-						throw createParseException("unexpected char");
-					
-				}
-		}
-				
-		finally {
+			PreferredIdentity p = new PreferredIdentity();
+			super.parse( p );
+			return p;
+		} finally {
 			if (debug)
 				dbg_leave("PreferredIdentityParser.parse");
 			}
 				
 						
 	}
-
-						
-	
-	protected GenericObject parsexpto() throws ParseException {
-			
-		PreferredIdentity preferredIdentity = new PreferredIdentity();
-		
-		
-						
-		super.parse(preferredIdentity);
-		this.lexer.SPorHT();
-	
-		if (lexer.lookAhead(0) == '\n') {
-				
-			return preferredIdentity;
-		}
-
-		else
-			throw createParseException("unexpected char");							
-				
-	}
-	
-	
-	protected GenericObject parseTEL() throws ParseException {
-		
-		
-		
-		TelephoneNumber telephoneNumber = new TelephoneNumber();
-		
-		URLParser p = new URLParser(this.lexer.byteStringNoComma());
-						
-		telephoneNumber = p.parseTelephoneNumber();
-		
-		return telephoneNumber;
-			
-		
-	}
-	
-	
-	
 
 }
