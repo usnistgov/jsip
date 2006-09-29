@@ -49,7 +49,7 @@ import javax.sip.message.Request;
 /**
  * SIP Response structure.
  *
- * @version 1.2 $Revision: 1.9 $ $Date: 2006-07-13 09:02:45 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2006-09-29 12:59:09 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
@@ -403,19 +403,25 @@ public final class SIPResponse
 		if (getCallId() == null) {
 			throw new ParseException(CallID.NAME + " Is missing ", 0);
 		}
-		Contact contact = this.getContactHeader();
 		
-		if (contact != null && contact.isWildCard()) {
-			throw new ParseException("Bad contact header -- should not be wild card!",0);
-		}
+		
+		// JvB: no need to check this, should not fail if this is the case
+		//
+		// Contact contact = this.getContactHeader();
+		// if (contact != null && contact.isWildCard()) {
+		//	throw new ParseException("Bad contact header -- should not be wild card!",0);
+		// }
 		if (getStatusCode() > 699)
 			throw new ParseException("Unknown error code!" + getStatusCode(), 0);
-//		 Check for badly formatted message.
-		if (getStatusCode() == 100
-				&& getToTag() != null) {
-			throw new ParseException(
-					"Trying response should not have a To header tag parameter",0);
-		}
+
+    // JvB: need to silently ignore this
+    //
+    // Check for badly formatted message.
+		// if (getStatusCode() == 100
+		//		&& getToTag() != null) {
+		//	throw new ParseException(
+		//			"Trying response should not have a To header tag parameter",0);
+		// }
 
 	}
 
