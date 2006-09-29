@@ -36,7 +36,7 @@ import gov.nist.core.*;
  * A factory class that does a name lookup on a registered parser and
  * returns a header parser for the given name.
  *
- * @version 1.2 $Revision: 1.9 $ $Date: 2006-09-11 18:41:32 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2006-09-29 19:40:50 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -236,7 +236,9 @@ public class ParserFactory {
 		//IMS headers
 		parserTable.put(AccessNetworkInfo.NAME.toLowerCase(), AccessNetworkInfoParser.class);
 		parserTable.put(AssertedIdentityHeader.NAME.toLowerCase(), AssertedIdentityParser.class);
+		parserTable.put(PreferredIdentityHeader.NAME.toLowerCase(), PreferredIdentityParser.class);
 		parserTable.put(ChargingVectorHeader.NAME.toLowerCase(), ChargingVectorParser.class);
+		parserTable.put(ChargingFunctionAddressesHeader.NAME.toLowerCase(), ChargingFunctionAddressesParser.class);
 		parserTable.put(MediaAuthorizationHeader.NAME.toLowerCase(), MediaAuthorizationParser.class);
 		parserTable.put(PathHeader.NAME.toLowerCase(), PathParser.class);
 		parserTable.put(PrivacyHeader.NAME.toLowerCase(), PrivacyParser.class);
@@ -256,7 +258,6 @@ public class ParserFactory {
 			throw new ParseException("The header name or value is null", 0);
 
 		Class parserClass = (Class) parserTable.get(headerName.toLowerCase());
-
 		if (parserClass != null) {
 			try {
 
@@ -280,6 +281,28 @@ public class ParserFactory {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2006/09/11 18:41:32  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  mranga
+ * Reviewed by:
+ * Tighter integration of IMS headers.
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.8  2006/08/15 21:44:50  mranga
  * Issue number:
  * Obtained from:
