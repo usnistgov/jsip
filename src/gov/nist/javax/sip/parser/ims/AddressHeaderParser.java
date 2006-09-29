@@ -42,7 +42,7 @@ import gov.nist.javax.sip.header.ims.AddressHeader;
  * @author ALEXANDRE MIGUEL SILVA SANTOS 
  */
 
-public class AddressHeaderParser extends HeaderParser {
+abstract class AddressHeaderParser extends HeaderParser {
 	
 
 	protected AddressHeaderParser(Lexer lexer) {

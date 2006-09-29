@@ -29,12 +29,8 @@
 
 package gov.nist.javax.sip.parser.ims;
 
-import gov.nist.core.GenericObject;
-import gov.nist.javax.sip.address.TelephoneNumber;
-import gov.nist.javax.sip.parser.HeaderParser;
 import gov.nist.javax.sip.parser.Lexer;
 import gov.nist.javax.sip.parser.TokenTypes;
-import gov.nist.javax.sip.parser.URLParser;
 
 import java.text.ParseException;
 
@@ -69,112 +65,19 @@ implements TokenTypes{
 			dbg_enter("AssertedIdentityParser.parse");
 		
 		try {
-			
+			this.lexer.match(TokenTypes.P_ASSERTED_IDENTITY);
+			this.lexer.SPorHT();
+			this.lexer.match(':');
+			this.lexer.SPorHT();
 				
-			AssertedIdentity xpto = null;
-				boolean isTEL = false;
-		
-				this.lexer.match(TokenTypes.P_ASSERTED_IDENTITY);
-				this.lexer.SPorHT();
-				this.lexer.match(':');
-				this.lexer.SPorHT();
-				
-				String aaa = this.lexer.charAsString(3);
-				
-								
-				if(aaa.equalsIgnoreCase("tel")) {
-					
-					this.lexer.match(TokenTypes.TEL);
-					this.lexer.SPorHT();
-					
-					String bbb = this.lexer.charAsString(1);
-					
-					if(bbb.equalsIgnoreCase(":")) {
-						
-						this.lexer.match(':');
-						this.lexer.SPorHT();
-						isTEL = true;
-						
-					}
-						
-				}
-				
-				else
-					isTEL = false;
-													
-				if(isTEL) {
-													
-					xpto = this.parsexpto();
-					
-					if (lexer.lookAhead(0) == '\n') {
-						
-						return xpto;
-					}
-
-					else
-						throw createParseException("unexpected char");
-				
-				}
-					
-				else {
-														
-					xpto = this.parsexpto();
-					
-					if (lexer.lookAhead(0) == '\n') {
-						
-						return xpto;
-					}
-
-					else
-						throw createParseException("unexpected char");
-					
-				}
+			AssertedIdentity pai = new AssertedIdentity();
+			super.parse(pai);
+			return pai;
 		}
 				
 		finally {
 			if (debug)
 				dbg_leave("AssertedIdentityParser.parse");
 			}
-				
-						
-	}
-
-						
-	
-	protected AssertedIdentity parsexpto() throws ParseException {
-			
-		AssertedIdentity assertedIdentity = new AssertedIdentity();
-		
-		
-						
-		super.parse(assertedIdentity);
-		this.lexer.SPorHT();
-	
-		if (lexer.lookAhead(0) == '\n') {
-				
-			return assertedIdentity;
-		}
-
-		else
-			throw createParseException("unexpected char");							
-				
-	}
-	
-	
-	protected GenericObject parseTEL() throws ParseException {
-		
-		
-		
-		TelephoneNumber telephoneNumber = new TelephoneNumber();
-		
-		URLParser p = new URLParser(this.lexer.byteStringNoComma());
-							
-				
-		telephoneNumber = p.parseTelephoneNumber();
-		
-		return telephoneNumber;
-			
-		
-	}
-	
+	}	
 }
