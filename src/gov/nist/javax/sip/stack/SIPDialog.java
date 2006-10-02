@@ -59,7 +59,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.33 $ $Date: 2006-09-22 04:50:10 $
+ * @version 1.2 $Revision: 1.34 $ $Date: 2006-10-02 13:46:07 $
  * 
  * @author M. Ranganathan
  * 
@@ -175,6 +175,7 @@ public class SIPDialog implements javax.sip.Dialog {
 
 	class DialogTimerTask extends TimerTask {
 		int nRetransmissions;
+
 		SIPDialog dialog;
 
 		SIPServerTransaction transaction;
@@ -183,7 +184,7 @@ public class SIPDialog implements javax.sip.Dialog {
 				SIPServerTransaction transaction) {
 			this.dialog = dialog;
 			this.transaction = transaction;
-			this.nRetransmissions  = 0;
+			this.nRetransmissions = 0;
 		}
 
 		public void run() {
@@ -191,11 +192,12 @@ public class SIPDialog implements javax.sip.Dialog {
 			// resend last response.
 			if (sipStack.isLoggingEnabled())
 				sipStack.getLogWriter().logDebug("Running dialog timer");
-			nRetransmissions ++;
-			if ( nRetransmissions > 8) {
+			nRetransmissions++;
+			if (nRetransmissions > 8) {
 				this.dialog.setState(SIPDialog.TERMINATED_STATE);
-				this.transaction.raiseErrorEvent(SIPTransactionErrorEvent.TIMEOUT_ERROR);
-			} else if (!dialog.ackSeen ) {
+				this.transaction
+						.raiseErrorEvent(SIPTransactionErrorEvent.TIMEOUT_ERROR);
+			} else if (!dialog.ackSeen) {
 				// Retransmit to 200 until ack receivedialog.
 				SIPResponse response = transaction.getLastResponse();
 				if (response.getStatusCode() == 200) {
@@ -204,7 +206,7 @@ public class SIPDialog implements javax.sip.Dialog {
 						// resend the last response.
 						if (dialog.toRetransmitFinalResponse())
 							transaction.sendMessage(response);
-						
+
 					} catch (IOException ex) {
 
 						raiseIOException(transaction.getPeerAddress(),
@@ -219,10 +221,10 @@ public class SIPDialog implements javax.sip.Dialog {
 						// Note that this firing also
 						// drives Listener timeout.
 						SIPTransactionStack stack = dialog.sipStack;
-						//System.out.println("resend 200 response");
+						// System.out.println("resend 200 response");
 						if (stack.logWriter.isLoggingEnabled()) {
-							stack.logWriter.logDebug
-									("resend 200 response from "
+							stack.logWriter
+									.logDebug("resend 200 response from "
 											+ this.dialog);
 						}
 						transaction.fireTimer();
@@ -521,24 +523,25 @@ public class SIPDialog implements javax.sip.Dialog {
 			if (sipResponse.getStatusCode() == 100) {
 				// Do nothing for trying messages.
 				return;
-			} else if ( this.dialogState == TERMINATED_STATE) {
+			} else if (this.dialogState == TERMINATED_STATE) {
 				// Do nothing if the dialog state is terminated.
 				return;
-			} else if (this.dialogState == CONFIRMED_STATE ) {
-				// cannot add route list after the dialog is initialized.	
+			} else if (this.dialogState == CONFIRMED_STATE) {
+				// cannot add route list after the dialog is initialized.
 				// Remote target is updated on RE-INVITE but not
 				// the route list.
-				if (sipResponse.getStatusCode()/100 == 2 && 
-						!this.isServer() ) {
+				if (sipResponse.getStatusCode() / 100 == 2 && !this.isServer()) {
 					ContactList contactList = sipResponse.getContactHeaders();
-					if (contactList != null && 
-							SIPRequest.isTargetRefresh(sipResponse.getCSeq().getMethod())) {
-						this.setRemoteTarget((ContactHeader) contactList.getFirst());
+					if (contactList != null
+							&& SIPRequest.isTargetRefresh(sipResponse.getCSeq()
+									.getMethod())) {
+						this.setRemoteTarget((ContactHeader) contactList
+								.getFirst());
 					}
 				}
 				return;
 			}
-			
+
 			// Update route list on response if I am a client dialog.
 			if (!isServer()) {
 
@@ -554,7 +557,9 @@ public class SIPDialog implements javax.sip.Dialog {
 
 				ContactList contactList = sipResponse.getContactHeaders();
 				if (contactList != null) {
-					this.setRemoteTarget((ContactHeader) contactList.getFirst());
+					this
+							.setRemoteTarget((ContactHeader) contactList
+									.getFirst());
 				}
 			}
 
@@ -2259,15 +2264,11 @@ public class SIPDialog implements javax.sip.Dialog {
 				this.setState(SIPDialog.CONFIRMED_STATE);
 				this.setDialogId(sipResponse.getDialogId(true));
 				sipStack.putDialog(this);
-
-				if (statusCode / 100 == 2 && cseqMethod.equals(Request.INVITE)) {
-					SIPServerTransaction sipServerTx = (SIPServerTransaction) transaction;
-					this.startTimer(sipServerTx);
-				}
 			}
 
 			// In any state: start 2xx retransmission timer for INVITE
-			if ((statusCode / 100 == 2) && cseqMethod.equals(Request.INVITE)) {
+			if (transaction instanceof SIPServerTransaction && 
+					(statusCode / 100 == 2) && cseqMethod.equals(Request.INVITE)) {
 				SIPServerTransaction sipServerTx = (SIPServerTransaction) transaction;
 				this.startTimer(sipServerTx);
 			}
