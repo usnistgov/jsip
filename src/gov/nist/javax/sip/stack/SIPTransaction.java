@@ -54,7 +54,7 @@ import EDU.oswego.cs.dl.util.concurrent.Semaphore;
  * @author M. Ranganathan
  * 
  * 
- * @version 1.2 $Revision: 1.44 $ $Date: 2006-09-20 20:02:17 $
+ * @version 1.2 $Revision: 1.45 $ $Date: 2006-10-05 16:53:32 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
 		javax.sip.Transaction {
@@ -234,9 +234,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 	// after the Transaction goes to terminated state.
 	protected int collectionTime;
 
-	// Transaction timer object.
-	// protected TimerTask myTimer;
-
+	
 	protected String toTag;
 
 	protected String fromTag;
@@ -252,10 +250,9 @@ public abstract class SIPTransaction extends MessageChannel implements
 	 * table after it goes into terminated state. This allows connection caching
 	 * and also takes care of race conditins.
 	 * 
-	 * @author M. Ranganathan
 	 * 
 	 */
-	class LingerTimer extends TimerTask {
+	class LingerTimer extends SIPStackTimerTask {
 
 		public LingerTimer() {
 			SIPTransaction sipTransaction = SIPTransaction.this;
@@ -266,7 +263,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 
 		}
 
-		public void run() {
+		public void runTask() {
 			SIPTransaction transaction = SIPTransaction.this;
 			// release the connection associated with this transaction.
 			SIPTransactionStack sipStack = transaction.getSIPStack();

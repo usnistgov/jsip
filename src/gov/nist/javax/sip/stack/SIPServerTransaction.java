@@ -150,7 +150,7 @@ import java.util.TimerTask;
  *                                      
  * </pre>
  * 
- * @version 1.2 $Revision: 1.79 $ $Date: 2006-09-27 15:02:44 $
+ * @version 1.2 $Revision: 1.80 $ $Date: 2006-10-05 16:53:32 $
  * @author M. Ranganathan
  * 
  */
@@ -191,7 +191,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 	 * 
 	 * 
 	 */
-	class RetransmissionAlertTimerTask extends TimerTask {
+	class RetransmissionAlertTimerTask extends SIPStackTimerTask {
 
 		String dialogId;
 
@@ -205,7 +205,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 			this.ticksLeft = this.ticks;
 		}
 
-		public void run() {
+		public void runTask() {
 			SIPServerTransaction serverTransaction = SIPServerTransaction.this;
 			ticksLeft--;
 			if (ticksLeft == -1) {
@@ -217,7 +217,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 
 	}
 
-	class ProvisionalResponseTask extends TimerTask {
+	class ProvisionalResponseTask extends SIPStackTimerTask {
 
 		int ticks;
 
@@ -228,7 +228,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 			this.ticksLeft = this.ticks;
 		}
 
-		public void run() {
+		public void runTask() {
 			SIPServerTransaction serverTransaction = SIPServerTransaction.this;
 			/*
 			 * The reliable provisional response is passed to the transaction
@@ -265,13 +265,13 @@ public class SIPServerTransaction extends SIPTransaction implements
 	 * server transaction).
 	 * 
 	 */
-	class ListenerExecutionMaxTimer extends TimerTask {
+	class ListenerExecutionMaxTimer extends SIPStackTimerTask {
 		SIPServerTransaction serverTransaction = SIPServerTransaction.this;
 
 		ListenerExecutionMaxTimer() {
 		}
 
-		public void run() {
+		public void runTask() {
 			try {
 				if (serverTransaction.getState() == null) {
 					serverTransaction.terminate();
@@ -292,7 +292,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 	 * in 200 ms. if the TU does not do so.
 	 * 
 	 */
-	class SendTrying extends TimerTask {
+	class SendTrying extends SIPStackTimerTask {
 
 		protected SendTrying() {
 			if (sipStack.isLoggingEnabled())
@@ -301,7 +301,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 
 		}
 
-		public void run() {
+		public void runTask() {
 			SIPServerTransaction serverTransaction = SIPServerTransaction.this;
 
 			if (serverTransaction.getRealState() == null
@@ -326,7 +326,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 		}
 	}
 
-	class TransactionTimer extends TimerTask {
+	class TransactionTimer extends SIPStackTimerTask {
 
 		public TransactionTimer() {
 			if (sipStack.logWriter.isLoggingEnabled()) {
@@ -336,7 +336,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 
 		}
 
-		public void run() {
+		public void runTask() {
 			// If the transaction has terminated,
 			if (isTerminated()) {
 				// Keep the transaction hanging around in the transaction table
