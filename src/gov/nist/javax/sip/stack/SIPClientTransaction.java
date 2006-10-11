@@ -156,7 +156,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.55 $ $Date: 2006-10-05 16:53:33 $
+ * @version 1.2 $Revision: 1.56 $ $Date: 2006-10-11 17:52:55 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -725,6 +725,13 @@ public class SIPClientTransaction extends SIPTransaction implements
 			return;
 		} else if (TransactionState.CALLING == this.getState()) {
 			if (statusCode / 100 == 2) {
+
+				// JvB: do this ~before~ calling the application, to avoid retransmissions
+				// of the INVITE after app sends ACK
+				disableRetransmissionTimer();
+				disableTimeoutTimer();
+				this.setState(TransactionState.TERMINATED);
+								
 				// 200 responses are always seen by TU.
 				if (respondTo != null)
 					respondTo
@@ -732,20 +739,17 @@ public class SIPClientTransaction extends SIPTransaction implements
 				else
 					this.semaphore.release();
 
-				disableRetransmissionTimer();
-				disableTimeoutTimer();
-				this.setState(TransactionState.TERMINATED);
 			} else if (statusCode / 100 == 1) {
 				disableRetransmissionTimer();
 				disableTimeoutTimer();
-
+				this.setState(TransactionState.PROCEEDING);
+				
 				if (respondTo != null)
 					respondTo
 							.processResponse(transactionResponse, this, dialog);
 				else
 					this.semaphore.release();
-
-				this.setState(TransactionState.PROCEEDING);
+				
 			} else if (300 <= statusCode && statusCode <= 699) {
 				// Send back an ACK request
 
