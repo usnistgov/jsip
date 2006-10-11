@@ -156,7 +156,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.56 $ $Date: 2006-10-11 17:52:55 $
+ * @version 1.2 $Revision: 1.57 $ $Date: 2006-10-11 17:57:53 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -802,6 +802,14 @@ public class SIPClientTransaction extends SIPTransaction implements
 				} catch (SipException ex) {
 					InternalErrorHandler.handleException(ex);
 				}
+
+				// JvB: update state before passing to app 
+				if (!isReliable()) {
+					this.setState(TransactionState.COMPLETED);
+				} else {
+					this.setState(TransactionState.TERMINATED);
+				}
+								
 				// Pass up to the TU for processing.
 				if (respondTo != null)
 					respondTo
@@ -810,21 +818,18 @@ public class SIPClientTransaction extends SIPTransaction implements
 					this.semaphore.release();
 
 				if (!isReliable()) {
-					this.setState(TransactionState.COMPLETED);
 					enableTimeoutTimer(TIMER_D);
-				} else {
-					this.setState(TransactionState.TERMINATED);
 				}
 			}
 		} else if (TransactionState.COMPLETED == this.getState()) {
 			if (300 <= statusCode && statusCode <= 699) {
 				// Send back an ACK request
 				try {
-					this.semaphore.release();
 					sendMessage((SIPRequest) createAck());
-
 				} catch (SipException ex) {
 					InternalErrorHandler.handleException(ex);
+				} finally {
+					this.semaphore.release();					
 				}
 			}
 
