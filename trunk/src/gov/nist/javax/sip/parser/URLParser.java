@@ -33,7 +33,7 @@ import java.util.Vector;
 /**
  * Parser For SIP and Tel URLs. Other kinds of URL's are handled by the 
  * J2SE 1.4 URL class.
- * @version 1.2 $Revision: 1.15 $ $Date: 2006-09-20 20:02:16 $
+ * @version 1.2 $Revision: 1.16 $ $Date: 2006-10-12 11:59:05 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -309,10 +309,8 @@ public class URLParser extends Parser {
 		Token t2 = (Token) vect.elementAt(1);
 		try {
 
-			// System.out.println("token = "  + t1.getTokenValue());
-			// System.out.println("tokenval = " + t1.getTokenType());
-
-			if (t1.getTokenType() == TokenTypes.SIP) {
+			if (t1.getTokenType() == TokenTypes.SIP || 
+					t1.getTokenType() == TokenTypes.SIPS	) {
 				if (t2.getTokenType() == ':')
 					retval = sipURL();
 				else
@@ -573,10 +571,20 @@ public class URLParser extends Parser {
 		if (debug)
 			dbg_enter("sipURL");
 		SipUri retval = new SipUri();
+		// pmusgrave - handle sips case
+		Token nextToken = lexer.peekNextToken();
+		int sipOrSips = TokenTypes.SIP;
+		String scheme = TokenNames.SIP;
+		if ( nextToken.getTokenType() == TokenTypes.SIPS)
+		{
+			sipOrSips = TokenTypes.SIPS;
+			scheme = TokenNames.SIPS;
+		}
+
 		try {
-			lexer.match(TokenTypes.SIP);
+			lexer.match(sipOrSips);
 			lexer.match(':');
-			retval.setScheme(TokenNames.SIP);
+			retval.setScheme(scheme);
 			int startOfUser = lexer.markInputPosition(); 
 			String userOrHost = user();	// Note: user may contain ';', host may not...
 			String passOrPort = null;
@@ -764,12 +772,52 @@ public class URLParser extends Parser {
 		return uriReference();
 	}
 
+	// quick test routine for debugging type assignment
+	public static void main(String[] args) throws ParseException
+	{
+		// quick test for sips parsing
+		String[] test = { "sip:alice@example.com",
+				     "sips:alice@examples.com" };
+		
+		for ( int i = 0; i < test.length; i++)
+		{
+			URLParser p  = new URLParser(test[i]);
+
+				GenericURI uri = p.parse();
+				System.out.println(test[i] + " is SipUri? " + uri.isSipURI()
+						 + ">" + uri.encode());
+		}
+	}
+	
 	/**
 	
 	**/
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.15  2006/09/20 20:02:16  mranga
+ * Issue number:  72
+ * Obtained from:
+ * Submitted by:  mranga
+ * Reviewed by:   mranga
+ *
+ * Fix Server Transaction State Machine
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.14  2006/09/17 14:34:52  jbemmel
  * cleaned up URL parsing
  *
