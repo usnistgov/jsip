@@ -141,6 +141,12 @@ public class NameValue extends GenericObject {
 	 * Get the encoded representation of this namevalue object. Added
 	 * doublequote for encoding doublequoted values.
 	 * 
+	 * Bug: RFC3261 stipulates that an opaque parameter in authenticate header
+	 * has to be:
+	 * opaque              =  "opaque" EQUAL quoted-string
+	 * so returning just the name is not acceptable. (e.g. LinkSys phones
+	 * are picky about this)
+	 * 
 	 * @since 1.0
 	 * @return an encoded name value (eg. name=value) string.
 	 */
@@ -153,7 +159,11 @@ public class NameValue extends GenericObject {
 				GenericObjectList gvlist = (GenericObjectList) value;
 				return name + separator + gvlist.encode();
 			} else if ( value.toString().equals("")) {
-				return name;
+				// opaque="" bug fix - pmusgrave
+				if (name.toString().equals(gov.nist.javax.sip.header.ParameterNames.OPAQUE))
+					return name + separator + quotes + quotes;
+				else
+					return name;
 			} else 
 				return name + separator + quotes + value.toString() + quotes;
 		} else if (name == null && value != null) {
