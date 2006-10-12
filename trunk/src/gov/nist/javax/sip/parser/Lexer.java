@@ -26,6 +26,9 @@
 package gov.nist.javax.sip.parser;
 
 import gov.nist.core.*;
+
+import gov.nist.javax.sip.header.extensions.*;
+
 import gov.nist.javax.sip.header.ims.AccessNetworkInfoHeader;
 import gov.nist.javax.sip.header.ims.AssertedIdentityHeader;
 import gov.nist.javax.sip.header.ims.AssociatedURIHeader;
@@ -107,6 +110,7 @@ public class Lexer extends LexerCore {
 				addKeyword(TokenNames.BYE, TokenTypes.BYE);
 				addKeyword(TokenNames.INVITE, TokenTypes.INVITE);
 				addKeyword(TokenNames.SIP.toUpperCase(), TokenTypes.SIP);
+				addKeyword(TokenNames.SIPS.toUpperCase(), TokenTypes.SIPS);
 				addKeyword(TokenNames.SUBSCRIBE,TokenTypes.SUBSCRIBE);
 				addKeyword(TokenNames.NOTIFY, TokenTypes.NOTIFY);	
 				addKeyword(TokenNames.MESSAGE,TokenTypes.MESSAGE);
@@ -263,7 +267,17 @@ public class Lexer extends LexerCore {
 				// JvB: added to support RFC3903
 				addKeyword(SIPETagHeader.NAME.toUpperCase(), TokenTypes.SIP_ETAG);
 				addKeyword(SIPIfMatchHeader.NAME.toUpperCase(), TokenTypes.SIP_IF_MATCH);
+
+				// pmusgrave: Add RFC4028 and ReferredBy
+				addKeyword( SessionExpiresHeader.NAME.toUpperCase(), TokenTypes.SESSIONEXPIRES_TO);
+				addKeyword( MinSEHeader.NAME.toUpperCase(), TokenTypes.MINSE_TO);
+				addKeyword( ReferredByHeader.NAME.toUpperCase(), TokenTypes.REFERREDBY_TO);
 				
+
+				// pmusgrave RFC3891
+				addKeyword( ReplacesHeader.NAME.toUpperCase(), TokenTypes.REPLACES_TO);
+
+
 				// IMS Headers
 				addKeyword(PathHeader.NAME.toUpperCase(), TokenTypes.PATH);
 				addKeyword(ServiceRouteHeader.NAME.toUpperCase(), TokenTypes.SERVICE_ROUTE);
@@ -280,7 +294,6 @@ public class Lexer extends LexerCore {
 				addKeyword(AccessNetworkInfoHeader.NAME.toUpperCase(), TokenTypes.P_ACCESS_NETWORK_INFO);
 				addKeyword(MediaAuthorizationHeader.NAME.toUpperCase(), TokenTypes.P_MEDIA_AUTHORIZATION);
 				
-				
 			} else if (lexerName.equals("status_lineLexer")) {
 				addKeyword(TokenNames.SIP.toUpperCase(), TokenTypes.SIP);
 			} else if (lexerName.equals("request_lineLexer")) {
@@ -288,6 +301,7 @@ public class Lexer extends LexerCore {
 			} else if (lexerName.equals("sip_urlLexer")) {
 				addKeyword(TokenNames.TEL.toUpperCase(), TokenTypes.TEL);
 				addKeyword(TokenNames.SIP.toUpperCase(), TokenTypes.SIP);
+				addKeyword(TokenNames.SIPS.toUpperCase(), TokenTypes.SIPS);
 			}
 		}
 	      }
@@ -295,6 +309,28 @@ public class Lexer extends LexerCore {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2006/09/28 15:20:30  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  mranga
+ * Reviewed by:   mranga
+ * fixed faq entries (contributed). Fixed some silly code (needless conversion to upper case) in lexer.java
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.12  2006/09/27 15:02:43  mranga
  * Issue number:
  * Obtained from:

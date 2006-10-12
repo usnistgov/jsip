@@ -26,7 +26,7 @@
 *******************************************************************************/
 package gov.nist.javax.sip.header;
 import gov.nist.javax.sip.header.ims.*;	/* IMS headers - issued by jmf */
-
+import gov.nist.javax.sip.header.extensions.*; // extension headers - pmusgrave
 import javax.sip.header.*;
 
 import gov.nist.javax.sip.parser.*;
@@ -43,7 +43,7 @@ import gov.nist.javax.sip.address.*;
 
 /** Implementation of the JAIN SIP  HeaderFactory
 * 
-* @version 1.2 $Revision: 1.9 $ $Date: 2006-09-10 21:14:33 $
+* @version 1.2 $Revision: 1.10 $ $Date: 2006-10-12 11:57:55 $
 * @since 1.1
 *
 *@author M. Ranganathan   <br/>
@@ -580,6 +580,29 @@ public class HeaderFactoryImpl implements HeaderFactory {
 		return min;
 	}
 
+	/**
+	 * Creates a new MinSEHeader based on the newly supplied expires value.
+	 *
+	 * @param expires - the new integer value of the expires.
+	 * @throws InvalidArgumentException if supplied expires is less 
+	 * than zero.
+	 * @return the newly created ExpiresHeader object.
+	 * 
+	 * TODO: Once interfaces are in javax, change the type to MinSEHeader
+	 * and add to HeaderFactory. - pmusgrave
+	 * 
+	 * pmusgrave
+	 */
+	public ExtensionHeader createMinSEHeader(int expires)
+		throws InvalidArgumentException {
+		if (expires < 0)
+			throw new InvalidArgumentException("bad value " + expires);
+		MinSE e = new MinSE();
+		e.setExpires(expires);
+
+		return e;
+	}
+	
 	/**
 	 * Creates a new OrganizationHeader based on the newly supplied 
 	 * organization value.
@@ -1180,8 +1203,43 @@ public class HeaderFactoryImpl implements HeaderFactory {
 		return referTo;
 	}
 
-	
+	/** Create a ReferredBy Header.
+	 * 
+	 *  pmusgrave
+	 * 
+	 *@param address -- address for the header.
+	 *	 
+	 * TODO: Once interfaces are in javax, change the type to MinSEHeader
+	 * and add to HeaderFactory. - pmusgrave
 
+	 */
+	public ExtensionHeader createReferredByHeader(Address address) {
+		if (address == null)
+			throw new NullPointerException("null address!");
+		ReferredBy referredBy = new ReferredBy();
+		referredBy.setAddress(address);
+		return referredBy;
+	}	
+
+	/**
+	 * Create a Replaces header with a call Id, to and from tag.
+	 * 
+	 * TODO: Once interfaces are in javax, change the type to MinSEHeader
+	 * and add to HeaderFactory. - pmusgrave
+	 * pmusgrave
+	 */
+    public ExtensionHeader createReplacesHeader(String callId, String toTag, 
+    			String fromTag) throws ParseException
+    {
+        Replaces replaces = new Replaces();
+        replaces.setCallId(callId);
+        replaces.setFromTag(fromTag);
+        replaces.setToTag(toTag);
+        
+        return replaces;  	
+    }
+			   
+	
 	/*
 	 * (non-Javadoc)
 	 * @see javax.sip.header.HeaderFactory#createSIPETagHeader(java.lang.String)
@@ -1380,7 +1438,27 @@ public class HeaderFactoryImpl implements HeaderFactory {
     	
     }
     
-    
+	/**
+	 * Creates a new SessionExpiresHeader based on the newly supplied expires value.
+	 *
+	 * @param expires - the new integer value of the expires.
+	 * @throws InvalidArgumentException if supplied expires is less 
+	 * than zero.
+	 * @return the newly created SessionExpiresHeader object.
+	 * 
+	 * TODO: Once interfaces are in javax, change the type to MinSEHeader
+	 * and add to HeaderFactory. - pmusgrave
+	 * pmusgrave
+	 */
+	public ExtensionHeader createSessionExpiresHeader(int expires)
+		throws InvalidArgumentException {
+		if (expires < 0)
+			throw new InvalidArgumentException("bad value " + expires);
+		SessionExpires s = new SessionExpires();
+		s.setExpires(expires);
+
+		return s;
+	}   
     
     /**
      * P-Visited-Network-ID header

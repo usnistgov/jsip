@@ -35,7 +35,7 @@ import java.util.Hashtable;
 /**
  * A map of which of the standard headers may appear as a list
  * 
- * @version 1.2 $Revision: 1.8 $ $Date: 2006-09-10 21:14:35 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2006-10-12 11:57:55 $
  * @since 1.1
  */
 class ListMap {
@@ -119,7 +119,8 @@ class ListMap {
 		headerListTable.put(ServiceRoute.class, ServiceRouteList.class);
 		
 		headerListTable.put(VisitedNetworkID.class, VisitedNetworkIDList.class);
-
+		
+		
 		initialized = true;
 
 	}

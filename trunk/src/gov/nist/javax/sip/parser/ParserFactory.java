@@ -31,12 +31,14 @@ import java.lang.reflect.*;
 import javax.sip.header.*;
 import java.text.ParseException;
 import gov.nist.core.*;
+import gov.nist.javax.sip.header.extensions.*;
+import gov.nist.javax.sip.parser.extensions.*;
 
 /**
  * A factory class that does a name lookup on a registered parser and
  * returns a header parser for the given name.
  *
- * @version 1.2 $Revision: 1.10 $ $Date: 2006-09-29 19:40:50 $
+ * @version 1.2 $Revision: 1.11 $ $Date: 2006-10-12 11:57:54 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -245,6 +247,18 @@ public class ParserFactory {
 		parserTable.put(ServiceRouteHeader.NAME.toLowerCase(), ServiceRouteParser.class);
 		parserTable.put(VisitedNetworkIDHeader.NAME.toLowerCase(), VisitedNetworkIDParser.class);
 
+		// Per RFC 3892 (pmusgrave)
+		parserTable.put(ReferredBy.NAME.toLowerCase(), ReferredByParser.class);
+		parserTable.put("b", ReferToParser.class);
+
+		// Per RFC4028 Session Timers (pmusgrave)
+		parserTable.put(SessionExpires.NAME.toLowerCase(), SessionExpiresParser.class);
+		parserTable.put("x", SessionExpiresParser.class);
+		parserTable.put(MinSE.NAME.toLowerCase(), MinSEParser.class);
+		// (RFC4028 does not give a short form header for MinSE)
+		
+		// Per RFC3891 (pmusgrave)
+		parserTable.put(Replaces.NAME.toLowerCase(), ReplacesParser.class);
 	}
 
 	/**
@@ -281,6 +295,9 @@ public class ParserFactory {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2006/09/29 19:40:50  jbemmel
+ * fixed missing IMS header parsing plumbing
+ *
  * Revision 1.9  2006/09/11 18:41:32  mranga
  * Issue number:
  * Obtained from:
