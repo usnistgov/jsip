@@ -28,11 +28,12 @@
 *******************************************************************************/
 package gov.nist.javax.sip.header;
 import javax.sip.header.*;
+import gov.nist.javax.sip.header.extensions.*;
 
 /**
  * SIPHeader names that are supported by this parser 
  *
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-09-10 21:14:31 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2006-10-12 11:57:55 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -108,5 +109,13 @@ public interface SIPHeaderNames {
 	
 	public static final String SIP_ETAG = SIPETagHeader.NAME; //46
 	public static final String SIP_IF_MATCH = SIPIfMatchHeader.NAME; //47
+	
+	// NewHeights pmusgrave
+	public static final String REFERRED_BY = ReferredByHeader.NAME; //48
+	public static final String SESSION_EXPIRES = SessionExpiresHeader.NAME; //49
+	public static final String MIN_SE = MinSEHeader.NAME; //50
+	public static final String REPLACES = ReplacesHeader.NAME; //51
+	public static final String ACCEPT_CONTACT = AcceptContactHeader.NAME; //52
+
 }
 
