@@ -44,7 +44,7 @@ import javax.sip.address.SipURI;
  * 
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.8 $ $Date: 2006-07-13 09:02:28 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2006-10-12 11:59:06 $
  *
  * 
  *
@@ -223,11 +223,22 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 	/**
 	 * getUser@host
 	 * @return user@host portion of the uri (null if none exists).
+	 * 
+	 * Peter Musgrave - handle null user
 	 */
 	public String getUserAtHost() {
-		String user = authority.getUserInfo().getUser();
+		String user = "";
+		if (authority.getUserInfo() != null)
+			user = authority.getUserInfo().getUser();
+		
 		String host = authority.getHost().encode();
-		return new StringBuffer(user).append(AT).append(host).toString();
+		StringBuffer s = null;
+		if (user.equals("")) {
+			s = new StringBuffer();
+		} else {
+			s = new StringBuffer(user).append(AT);
+		}
+		return s.append(host).toString();
 	}
 
 	/**
