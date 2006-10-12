@@ -28,7 +28,7 @@ package gov.nist.javax.sip.parser;
 import gov.nist.core.*;
 
 /**
- * @version 1.2 $Revision: 1.7 $ $Date: 2006-09-11 18:41:32 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2006-10-12 11:57:54 $
  */
 public interface TokenTypes {
 
@@ -106,6 +106,10 @@ public interface TokenTypes {
 	public static final int PUBLISH = START + 67;
 	public static final int SIP_ETAG = START + 68;
 	public static final int SIP_IF_MATCH = START + 69;	
+
+
+
+
 	public static final int MESSAGE = START + 70;
 	
 	// IMS Headers
@@ -127,7 +131,19 @@ public interface TokenTypes {
 	public static final int P_MEDIA_AUTHORIZATION = START + 82;
 	public static final int P_MEDIA_AUTHORIZATION_TOKEN = START + 83;
 	
+	// pmusgrave - additions
+	public static final int REFERREDBY_TO = START + 84;
 	
+	// pmusgrave RFC4028
+	public static final int SESSIONEXPIRES_TO = START + 85; 
+	public static final int MINSE_TO = START + 86; 
+	
+	// pmusgrave RFC3891
+	public static final int REPLACES_TO = START + 87; 
+
+	// pmusgrave sips bug fix
+	public static final int SIPS = START + 88; 
+
 	public static final int ALPHA = LexerCore.ALPHA;
 	public static final int DIGIT = LexerCore.DIGIT;
 	public static final int ID = LexerCore.ID;
@@ -170,6 +186,28 @@ public interface TokenTypes {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2006/09/11 18:41:32  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  mranga
+ * Reviewed by:
+ * Tighter integration of IMS headers.
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.6  2006/07/13 09:01:55  mranga
  * Issue number:
  * Obtained from:

@@ -33,7 +33,7 @@ import java.util.Hashtable;
  * A mapping class that returns the SIPHeader for a given header name.
  * Add new classes to this map if you are implementing new header types if
  * you want some of the introspection based methods to work.
- * @version 1.2 $Revision: 1.7 $ $Date: 2006-09-29 19:40:49 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2006-10-12 11:57:54 $
  * @since 1.1
  */
 public class NameMap implements SIPHeaderNames, PackageNames {
@@ -167,6 +167,14 @@ public class NameMap implements SIPHeaderNames, PackageNames {
 		putNameMap(EVENT, Event.class.getName()); //45
 
 		putNameMap(ALLOW_EVENTS, AllowEvents.class.getName()); //46
+
+		
+		// pmusgrave - extensions
+		putNameMap(REFERRED_BY, "ReferredBy");
+		putNameMap(SESSION_EXPIRES, "SessionExpires");
+		putNameMap(MIN_SE, "MinSE");
+		putNameMap(REPLACES, "Replaces");
+
 		
 		// IMS Specific headers.
 		
@@ -195,5 +203,6 @@ public class NameMap implements SIPHeaderNames, PackageNames {
 		putNameMap(VisitedNetworkID.NAME, VisitedNetworkID.class.getName());
 		
 		
+
 	}
 }

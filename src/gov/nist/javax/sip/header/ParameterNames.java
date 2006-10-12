@@ -27,7 +27,7 @@ package gov.nist.javax.sip.header;
  * A list of commonly occuring parameter names. These are for conveniance so as
  * to avoid typo's
  * 
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:04 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2006-10-12 11:57:54 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -144,4 +144,8 @@ public interface ParameterNames {
 
 	// @@@ hagai
 	public static final String RPORT = "rport";
+	
+    // Added pmusgrave (Replaces support)
+	public static final String TO_TAG = "to-tag";
+	public static final String FROM_TAG = "from-tag";
 }
