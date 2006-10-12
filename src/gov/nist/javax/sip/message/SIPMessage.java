@@ -50,7 +50,7 @@ import java.text.ParseException;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.21 $ $Date: 2006-09-26 22:22:59 $
+ * @version 1.2 $Revision: 1.22 $ $Date: 2006-10-12 20:53:21 $
  * @since 1.1
  * 
  * @author M. Ranganathan  <br/>
@@ -805,12 +805,12 @@ public abstract class SIPMessage extends MessageObject implements
 			StringBuffer retval = new StringBuffer();
 			From from = (From) this.getFrom();
 			To to = (To) this.getTo();
-			String hpFrom = from.getUserAtHostPort();
-			retval.append(hpFrom).append(":");
+			//String hpFrom = from.getUserAtHostPort();
+			//retval.append(hpFrom).append(":");
 			if (from.hasTag())
 				retval.append(from.getTag()).append(":");
-			String hpTo = to.getUserAtHostPort();
-			retval.append(hpTo).append(":");
+			//String hpTo = to.getUserAtHostPort();
+			//retval.append(hpTo).append(":");
 			String cid = this.callIdHeader.getCallId();
 			retval.append(cid).append(":");
 			retval.append(this.cSeqHeader.getSequenceNumber()).append(":")

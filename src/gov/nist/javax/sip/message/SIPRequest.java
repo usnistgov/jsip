@@ -63,7 +63,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.21 $ $Date: 2006-09-26 22:22:59 $
+ * @version 1.2 $Revision: 1.22 $ $Date: 2006-10-12 20:53:21 $
  * @since 1.1
  * 
  * @author M. Ranganathan  <br/>
@@ -556,23 +556,23 @@ public final class SIPRequest extends SIPMessage implements
 		From from = (From) this.getFrom();
 		To to = (To) this.getTo();
 		if (!isServer) {
-			retval.append(COLON).append(from.getUserAtHostPort());
+			//retval.append(COLON).append(from.getUserAtHostPort());
 			if (from.getTag() != null) {
 				retval.append(COLON);
 				retval.append(from.getTag());
 			}
-			retval.append(COLON).append(to.getUserAtHostPort());
+			//retval.append(COLON).append(to.getUserAtHostPort());
 			if (to.getTag() != null) {
 				retval.append(COLON);
 				retval.append(to.getTag());
 			}
 		} else {
-			retval.append(COLON).append(to.getUserAtHostPort());
+			//retval.append(COLON).append(to.getUserAtHostPort());
 			if (to.getTag() != null) {
 				retval.append(COLON);
 				retval.append(to.getTag());
 			}
-			retval.append(COLON).append(from.getUserAtHostPort());
+			//retval.append(COLON).append(from.getUserAtHostPort());
 			if (from.getTag() != null) {
 				retval.append(COLON);
 				retval.append(from.getTag());
@@ -591,23 +591,23 @@ public final class SIPRequest extends SIPMessage implements
 		CallID cid = (CallID) this.getCallId();
 		StringBuffer retval = new StringBuffer(cid.getCallId());
 		if (!isServer) {
-			retval.append(COLON).append(from.getUserAtHostPort());
+			//retval.append(COLON).append(from.getUserAtHostPort());
 			if (from.getTag() != null) {
 				retval.append(COLON);
 				retval.append(from.getTag());
 			}
-			retval.append(COLON).append(to.getUserAtHostPort());
+			//retval.append(COLON).append(to.getUserAtHostPort());
 			if (toTag != null) {
 				retval.append(COLON);
 				retval.append(toTag);
 			}
 		} else {
-			retval.append(COLON).append(to.getUserAtHostPort());
+			//retval.append(COLON).append(to.getUserAtHostPort());
 			if (toTag != null) {
 				retval.append(COLON);
 				retval.append(toTag);
 			}
-			retval.append(COLON).append(from.getUserAtHostPort());
+			//retval.append(COLON).append(from.getUserAtHostPort());
 			if (from.getTag() != null) {
 				retval.append(COLON);
 				retval.append(from.getTag());
