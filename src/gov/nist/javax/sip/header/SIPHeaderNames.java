@@ -33,7 +33,7 @@ import gov.nist.javax.sip.header.extensions.*;
 /**
  * SIPHeader names that are supported by this parser 
  *
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-10-12 11:57:55 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2006-10-13 10:30:27 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -115,7 +115,6 @@ public interface SIPHeaderNames {
 	public static final String SESSION_EXPIRES = SessionExpiresHeader.NAME; //49
 	public static final String MIN_SE = MinSEHeader.NAME; //50
 	public static final String REPLACES = ReplacesHeader.NAME; //51
-	public static final String ACCEPT_CONTACT = AcceptContactHeader.NAME; //52
 
 }
 
