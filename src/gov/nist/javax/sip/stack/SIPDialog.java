@@ -59,7 +59,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.36 $ $Date: 2006-10-16 19:06:00 $
+ * @version 1.2 $Revision: 1.37 $ $Date: 2006-10-17 19:49:50 $
  * 
  * @author M. Ranganathan
  * 
@@ -197,7 +197,7 @@ public class SIPDialog implements javax.sip.Dialog {
 				this.dialog.setState(SIPDialog.TERMINATED_STATE);
 				this.transaction
 						.raiseErrorEvent(SIPTransactionErrorEvent.TIMEOUT_ERROR);
-			} else if (!dialog.ackSeen) {
+			} else if (!dialog.ackSeen && transaction!=null) {
 				// Retransmit to 200 until ack receivedialog.
 				SIPResponse response = transaction.getLastResponse();
 				if (response.getStatusCode() == 200) {
@@ -2102,7 +2102,8 @@ public class SIPDialog implements javax.sip.Dialog {
 		}
 		String cseqMethod = sipResponse.getCSeq().getMethod();
 
-		if (!this.isServer()) {
+		// JvB: don't use "!this.isServer" here
+		if (transaction instanceof ClientTransaction) {
 			if (sipStack.isDialogCreated(cseqMethod)) {
 				// Make a final tag assignment.
 				if (getState() == null && statusCode / 100 == 1
@@ -2111,24 +2112,21 @@ public class SIPDialog implements javax.sip.Dialog {
 					// confirmed
 					// state
 					setState(SIPDialog.EARLY_STATE);
-					if (sipResponse.getStatusCode() != 100) {
-
-						if (sipResponse.getToTag() != null
-								&& this.getRemoteTag() == null) {
-							setRemoteTag(sipResponse.getToTag());
-							this.setDialogId(sipResponse.getDialogId(false));
-							sipStack.putDialog(this);
-							this.addRoute(sipResponse);
-
-						}
-
+					if (sipResponse.getToTag() != null
+							&& this.getRemoteTag() == null) {
+						setRemoteTag(sipResponse.getToTag());
+						this.setDialogId(sipResponse.getDialogId(false));
+						sipStack.putDialog(this);
+						this.addRoute(sipResponse);
 					}
 				} else if (statusCode / 100 == 2) {
 					// This is a dialog creating method (such as INVITE).
 					// 2xx response -- set the state to the confirmed
 					// state. To tag is MANDATORY for the response.
 
-					if (sipResponse.getToTag() != null
+					// Only do this if method equals initial request!
+					if ( cseqMethod.equals( getMethod() )
+						&& sipResponse.getToTag() != null
 						&& this.getState() != DialogState.CONFIRMED) {
 						setRemoteTag(sipResponse.getToTag());
 						this.setDialogId(sipResponse.getDialogId(false));
@@ -2136,9 +2134,7 @@ public class SIPDialog implements javax.sip.Dialog {
 						this.addRoute(sipResponse);
 
 						setState(SIPDialog.CONFIRMED_STATE);						
-					} else {
-						if (transaction instanceof ClientTransaction
-								&& SIPRequest.isTargetRefresh(cseqMethod))
+					} else if ( SIPRequest.isTargetRefresh(cseqMethod) ) {						
 							doTargetRefresh(sipResponse);
 					}
 
@@ -2191,7 +2187,8 @@ public class SIPDialog implements javax.sip.Dialog {
 				}
 
 			} else if (cseqMethod.equals(Request.NOTIFY)
-					&& this.getMethod().equals(Request.SUBSCRIBE)
+					&& (this.getMethod().equals(Request.SUBSCRIBE)
+							||this.getMethod().equals(Request.REFER))
 					&& sipResponse.getStatusCode() / 100 == 2
 					&& this.getState() == null) {
 				// This is a notify response.
@@ -2203,14 +2200,14 @@ public class SIPDialog implements javax.sip.Dialog {
 					&& isTerminatedOnBye()) {
 				// Dialog will be terminated when the transction is terminated.
 				setState(SIPDialog.TERMINATED_STATE);
-			}
+			}			
 		} else {
 			// Processing Server Dialog.
 
 			if (cseqMethod.equals(Request.CANCEL)
 					&& statusCode / 100 == 2
 					&& (!this.isReInvite())
-					&& sipStack.isDialogCreated(getMethod())
+					// && sipStack.isDialogCreated(getMethod()) (JvB:true by definition)
 					&& (getState() == null || getState().getValue() == SIPDialog.EARLY_STATE)) {
 				// Transaction successfully cancelled but dialog has not yet
 				// been established so delete the dialog.
@@ -2223,16 +2220,12 @@ public class SIPDialog implements javax.sip.Dialog {
 				// status codes just result in leaving the
 				// state in COMPLETED state.
 				this.setState(SIPDialog.TERMINATED_STATE);
-			} else if (cseqMethod.equals(Request.CANCEL)) {
-				if (getState() == null
-						|| getState().getValue() == SIPDialog.EARLY_STATE) {
-					setState(SIPDialog.TERMINATED_STATE);
-				}
 			} else if (getLocalTag() == null
 					&& sipResponse.getTo().getTag() != null
-					&& sipStack.isDialogCreated(cseqMethod)) {
-				setLocalTag(sipResponse.getTo().getTag());
+					&& sipStack.isDialogCreated(cseqMethod)
+					&& cseqMethod.equals( getMethod() )) {
 
+				setLocalTag(sipResponse.getTo().getTag());
 				if (statusCode / 100 != 2) {
 
 					// Check if we want to put the dialog in the dialog table.
@@ -2255,33 +2248,13 @@ public class SIPDialog implements javax.sip.Dialog {
 					this.setDialogId(sipResponse.getDialogId(true));
 					sipStack.putDialog(this);
 				}
-			} else if (sipStack.isDialogCreated(cseqMethod)
-					&& statusCode / 100 == 2) {
-				// 2XX response handling.
-				if (sipResponse.getTo().getTag() != null)
-					setLocalTag(sipResponse.getTo().getTag());
-
-				this.setState(SIPDialog.CONFIRMED_STATE);
-				this.setDialogId(sipResponse.getDialogId(true));
-				sipStack.putDialog(this);
-			}
+			} 
 
 			// In any state: start 2xx retransmission timer for INVITE
-			if (transaction instanceof SIPServerTransaction && 
-					(statusCode / 100 == 2) && cseqMethod.equals(Request.INVITE)) {
+			if ( (statusCode / 100 == 2) && cseqMethod.equals(Request.INVITE)) {
 				SIPServerTransaction sipServerTx = (SIPServerTransaction) transaction;
 				this.startTimer(sipServerTx);
 			}
-
-			// Target refresh processing.
-			if (transaction instanceof ClientTransaction
-					&& statusCode / 100 == 2
-					&& SIPRequest.isTargetRefresh(cseqMethod)) {
-
-				doTargetRefresh(sipResponse);
-
-			}
-
 		}
 
 	}
