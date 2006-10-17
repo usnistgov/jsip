@@ -84,8 +84,9 @@ public class DialogStateMachineTest extends MessageFlowHarness {
 			assertNull(
 				"A dialog passed into the "
 					+ dialog.getState()
-					+ " state before recieving any response!",
+					+ " state before receiving any response!",
 				dialog.getState());
+			
 			//We will now send RINGING response and see that the Dialog enters an early state
 			//start listening for the response
 			try {
@@ -98,13 +99,13 @@ public class DialogStateMachineTest extends MessageFlowHarness {
 			Response ringing = null;
 			try {
 				ringing =
-					tiMessageFactory.createResponse(
+					riMessageFactory.createResponse(
 						Response.RINGING,
 						inviteReqEvt.getRequest());
 				((ToHeader) ringing.getHeader(ToHeader.NAME)).setTag(
 					Integer.toString(hashCode()));
                 // BUG: set contact header on dialog-creating response
-                ringing.setHeader(createTiContact());
+                ringing.setHeader(createRiContact());
 				riSipProvider.sendResponse(ringing);
 			} catch (Exception e) {
 				throw new TckInternalError(
@@ -121,6 +122,36 @@ public class DialogStateMachineTest extends MessageFlowHarness {
 				"The Dialog did not pass into the early state upon reception of a RINGING response",
 				DialogState.EARLY,
 				dialog.getState());
+			
+			// JvB: @todo Test that UPDATE (or PRACK) requests during early dialog 
+			// dont make dialog CONFIRMED
+			/*
+			Request update = null;
+			try {
+				eventCollector.collectRequestEvent(riSipProvider);
+				update = dialog.createRequest( "UPDATE" );
+                update.setHeader(createTiContact());
+				dialog.sendRequest( tiSipProvider.getNewClientTransaction(update) );
+			} catch (Exception e) {
+				throw new TckInternalError(
+					"Failed to create and send an UPDATE request",
+					e);
+			}
+			waitForMessage();			
+			RequestEvent updateEvt =
+				eventCollector.extractCollectedRequestEvent();
+			if (updateEvt == null || updateEvt.getRequest() == null)
+				throw new TiUnexpectedError("The TI did not send the UPDATE request");
+			//The dialog should still be in its EARLY state.
+			assertEquals(
+				"The Dialog did not stay in the EARLY state upon reception of an UPDATE request",
+				DialogState.EARLY,
+				dialog.getState());			
+
+			// finish the UPDATE
+			riSipProvider.sendResponse( riMessageFactory.createResponse(200, updateEvt.getRequest()) );
+			*/
+			
 			//We will now send OK response and see that the Dialog enters a CONFIRMED state
 			//start listening for the response
 			try {
@@ -133,13 +164,13 @@ public class DialogStateMachineTest extends MessageFlowHarness {
 			Response ok = null;
 			try {
 				ok =
-					tiMessageFactory.createResponse(
+					riMessageFactory.createResponse(
 						Response.OK,
 						inviteReqEvt.getRequest());
 				((ToHeader) ok.getHeader(ToHeader.NAME)).setTag(
 					Integer.toString(hashCode()));
                 // BUG: set contact header on dialog-creating response
-                ok.setHeader(createTiContact());
+                ok.setHeader(createRiContact());
 				riSipProvider.sendResponse(ok);
 			} catch (Exception e) {
 				throw new TckInternalError(
