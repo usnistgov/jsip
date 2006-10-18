@@ -59,7 +59,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.37 $ $Date: 2006-10-17 19:49:50 $
+ * @version 1.2 $Revision: 1.38 $ $Date: 2006-10-18 16:37:01 $
  * 
  * @author M. Ranganathan
  * 
@@ -152,6 +152,7 @@ public class SIPDialog implements javax.sip.Dialog {
 	private SipProviderImpl sipProvider;
 
 	private boolean terminateOnBye;
+	private boolean byeSent;	// Flag set when BYE is sent, to disallow new requests
 
 	private Address remoteTarget;
 
@@ -1593,8 +1594,16 @@ public class SIPDialog implements javax.sip.Dialog {
 			if (sipStack.isLoggingEnabled())
 				sipStack.logWriter.logError("null dialog state for " + this);
 			throw new SipException("Bad dialog state " + this.getState());
-
 		}
+		
+		// JvB: added, allow re-sending of BYE after challenge
+		if (byeSent && isTerminatedOnBye() 
+				&& !dialogRequest.getMethod().equals(Request.BYE)) {
+			if (sipStack.isLoggingEnabled())
+				sipStack.logWriter.logError("BYE already sent for " + this);
+			throw new SipException( "Cannot send request; BYE already sent" );			
+		}
+		
 
 		if (dialogRequest.getTopmostVia() == null) {
 			Via via = ((SIPClientTransaction) clientTransactionId)
@@ -1785,8 +1794,10 @@ public class SIPDialog implements javax.sip.Dialog {
 			// part of the RFC.
 			// Note that if the BYE is rejected then the
 			// Dialog should bo back to the ESTABLISHED state.
-			if (dialogRequest.getMethod().equals(Request.BYE))
-				this.setState(TERMINATED_STATE);
+			if (dialogRequest.getMethod().equals(Request.BYE)) {
+				// this.setState(TERMINATED_STATE);
+				this.byeSent = true;
+			}
 		} catch (IOException ex) {
 			throw new SipException("error sending message");
 		}
