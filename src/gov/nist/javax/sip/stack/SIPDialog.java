@@ -59,7 +59,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.38 $ $Date: 2006-10-18 16:37:01 $
+ * @version 1.2 $Revision: 1.39 $ $Date: 2006-10-19 19:51:05 $
  * 
  * @author M. Ranganathan
  * 
@@ -1061,7 +1061,10 @@ public class SIPDialog implements javax.sip.Dialog {
 			this.reInviteFlag = true;
 		}
 
-		// Set state to Completed if we are processing a
+		/* 
+		 * JvB: removed this
+		 * 
+		 * Set state to Completed if we are processing a
 		// BYE transaction for the dialog.
 		// Server transaction terminates after the response to the bye.
 		if (transaction instanceof SIPClientTransaction
@@ -1069,6 +1072,8 @@ public class SIPDialog implements javax.sip.Dialog {
 				&& this.terminateOnBye) {
 			this.setState(TERMINATED_STATE);
 		}
+		*/
+		
 		if (firstTransaction == null) {
 			// Record the local and remote sequenc
 			// numbers and the from and to tags for future
