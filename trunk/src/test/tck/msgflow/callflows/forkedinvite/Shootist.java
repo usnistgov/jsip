@@ -162,9 +162,7 @@ public class Shootist implements SipListener {
 						ClientTransaction ct = sipProvider
 								.getNewClientTransaction(byeRequest);
 						dialog.sendRequest(ct);
-						TestHarness.assertEquals(
-								"Dialog state should be terminated", dialog
-										.getState(), DialogState.TERMINATED);
+					
 					}
 					
 					

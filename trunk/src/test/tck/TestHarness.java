@@ -455,9 +455,9 @@ public class TestHarness extends TestCase {
 		// IP_ADDRESS is deprecated as of jsip 1.2.
 		// Each listening point associated with a stack has its own IP address.
 		properties.setProperty("javax.sip.STACK_NAME", "RiStack");
-		// properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "0");
-
 		properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "0");
+
+		// properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
 		properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
 				"logs/riDebugLog.txt");
 		properties.setProperty("gov.nist.javax.sip.SERVER_LOG",

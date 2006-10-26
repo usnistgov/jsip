@@ -49,7 +49,7 @@ import javax.sip.message.Request;
 /**
  * SIP Response structure.
  *
- * @version 1.2 $Revision: 1.11 $ $Date: 2006-10-12 20:53:21 $
+ * @version 1.2 $Revision: 1.12 $ $Date: 2006-10-26 22:47:59 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
@@ -596,23 +596,23 @@ public final class SIPResponse
 		To to = (To) this.getTo();
 		StringBuffer retval = new StringBuffer(cid.getCallId());
 		if (!isServer) {
-			retval.append(COLON).append(from.getUserAtHostPort());
+			//retval.append(COLON).append(from.getUserAtHostPort());
 			if (from.getTag() != null) {
 				retval.append(COLON);
 				retval.append(from.getTag());
 			}
-			retval.append(COLON).append(to.getUserAtHostPort());
+			//retval.append(COLON).append(to.getUserAtHostPort());
 			if (toTag != null) {
 				retval.append(COLON);
 				retval.append(toTag);
 			}
 		} else {
-			retval.append(COLON).append(to.getUserAtHostPort());
+			//retval.append(COLON).append(to.getUserAtHostPort());
 			if (toTag != null) {
 				retval.append(COLON);
 				retval.append(toTag);
 			}
-			retval.append(COLON).append(from.getUserAtHostPort());
+			//retval.append(COLON).append(from.getUserAtHostPort());
 			if (from.getTag() != null) {
 				retval.append(COLON);
 				retval.append(from.getTag());

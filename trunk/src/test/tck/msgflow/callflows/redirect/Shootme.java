@@ -8,6 +8,7 @@ import javax.sip.message.*;
 import org.apache.log4j.Logger;
 
 import test.tck.TestHarness;
+import test.tck.msgflow.MessageFlowHarness;
 import test.tck.msgflow.callflows.ProtocolObjects;
 
 import java.util.*;
@@ -116,7 +117,6 @@ public class Shootme extends TestHarness implements SipListener {
 				ClientTransaction ct = this.sipProvider
 						.getNewClientTransaction(bye);
 				dialog.sendRequest(ct);
-				assertEquals("Check for dialog state of TERMINATED", DialogState.TERMINATED, dialog.getState());
 			}
 		} catch (Exception ex) {
 			logger.error("unexpected exception", ex);

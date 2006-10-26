@@ -445,7 +445,7 @@ public class MessageFlowHarness extends TestHarness {
 	 * message has been sent so that it has the time to propagate though the
 	 * sending and receiving stack
 	 */
-	protected static void waitForMessage() {
+	public static void waitForMessage() {
 		sleep(MESSAGES_ARRIVE_FOR);
 	}
 	
