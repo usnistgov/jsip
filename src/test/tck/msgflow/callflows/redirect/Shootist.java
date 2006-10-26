@@ -410,6 +410,8 @@ public class Shootist extends TestHarness implements SipListener {
 
 	public void checkState() {
 		//assertTrue(dialogTerminatedCount == dialogCount);
+		logger.info("byeRecieved = " + this.byeReceived);
+		logger.info("redirectRecieved" + this.redirectReceived);
 		assertTrue(this.byeReceived  && this.redirectReceived );
 		
 	}
