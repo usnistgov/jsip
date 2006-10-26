@@ -238,8 +238,9 @@ public class DialogTest extends MessageFlowHarness {
 			}
 			waitForTimeout();
 			DialogTerminatedEvent dte = eventCollector.extractCollectedDialogTerminatedEvent();
-			assertEquals("Dialog terminated event source mismatch", dte.getSource(), tiSipProvider);
-			assertEquals("Dialog terminated event mismatch ", dte.getDialog(), dialog);
+			// Should not see a DTE here because the Dialog is not established.
+			assertNull("DTE is not null", dte);
+			
 		} catch (Throwable exc) {
 			exc.printStackTrace();
 			fail(exc.getClass().getName() + ": " + exc.getMessage());

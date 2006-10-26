@@ -188,8 +188,9 @@ public class DialogStateMachineTest extends MessageFlowHarness {
 				DialogState.CONFIRMED,
 				dialog.getState());
 			//Say bye and go COMPLETED
+			Request bye = null;
 			try {
-				Request bye = dialog.createRequest(Request.BYE);
+				bye = dialog.createRequest(Request.BYE);
 				ClientTransaction byeTran =
 					tiSipProvider.getNewClientTransaction(bye);
 				dialog.sendRequest(byeTran);
@@ -198,10 +199,14 @@ public class DialogStateMachineTest extends MessageFlowHarness {
 					"Failed to create and send a BYE request using a dialog.",
 					e);
 			}
+			// Send response before checking that the state goes to
+			// terminated state.
+			waitForMessage();
+			tiSipProvider.sendResponse(tiMessageFactory.createResponse(200,bye));
+			waitForMessage();
 			assertTrue(
-				"The dialog did not pass into a final (COMPLETED or TERMINATED) state after sending a BYE.",
-				DialogState.COMPLETED.equals(dialog.getState())
-					|| DialogState.TERMINATED.equals(dialog.getState()));
+				"The dialog did not pass into a final ( TERMINATED) state after getting OK for a BYE.",
+				 DialogState.TERMINATED.equals(dialog.getState()));
 		} catch (Throwable exc) {
 			exc.printStackTrace();
 			fail(exc.getClass().getName() + ": " + exc.getMessage());
