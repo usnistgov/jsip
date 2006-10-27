@@ -11,18 +11,17 @@ import javax.sip.header.ExtensionHeader;
 import gov.nist.javax.sip.header.*;
 
 import gov.nist.javax.sip.address.*;
+/*
+* This code has been contributed by the author to the public domain.
+*/
 
 /**  
  * ReferredBy SIP Header. RFC 3892
  *
- * @version JAIN-SIP-1.1 $Revision: 1.1 $ $Date: 2006-10-12 11:57:52 $
+ * @version JAIN-SIP-1.2 
  *
- * @author M. Ranganathan <mranga@nist.gov>  <br/>
- * @author Olivier Deruelle <deruelle@nist.gov><br/>
+ * @author Peter Musgrave. 
  *
- * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
- *
- * Created from ReferTo by Peter Musgrave. 
  *
  */
 public final class ReferredBy
@@ -70,6 +69,11 @@ public final class ReferredBy
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2006/10/12 11:57:52  pmusgrave
+ * Issue number:  79, 80
+ * Submitted by:  pmusgrave@newheights.com
+ * Reviewed by:   mranga
+ *
  * Revision 1.2  2006/03/20 20:52:03  pmusgrave
  * Add RefferedBy to header factory
  * Correct implements statement in ReferredBy
