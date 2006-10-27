@@ -12,18 +12,16 @@ import javax.sip.InvalidArgumentException;
 import javax.sip.header.ExtensionHeader;
 
 import gov.nist.javax.sip.address.*;
+/*
+*This code is in the public domain.
+*/
 
 /**  
  * ReferredBy SIP Header.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.1 $ $Date: 2006-10-12 11:57:52 $
+ * @version JAIN-SIP-1.1 $Revision: 1.2 $ $Date: 2006-10-27 20:58:31 $
  *
- * @author M. Ranganathan <mranga@nist.gov>  <br/>
- * @author Olivier Deruelle <deruelle@nist.gov><br/>
- *
- * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
- *
- * Created from ReferTo by Peter Musgrave. 
+ * @author Peter Musgrave. 
  *
  */
 public final class SessionExpires
