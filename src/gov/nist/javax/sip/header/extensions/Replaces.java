@@ -6,19 +6,19 @@ import java.text.ParseException;
 import gov.nist.javax.sip.header.*;
 
 import javax.sip.header.ExtensionHeader;
+/*
+* This code is in the public domain.
+*/
 
 /**
  * Replaces SIPHeader.
+ * ToDo: add support for early-only flag.
  *
  * @author P, Musgrave <pmusgrave@mkcnetworks.com>  <br/>
  *
- * @version JAIN-SIP-1.1 $Revision: 1.1 $ $Date: 2006-10-12 11:57:51 $
+ * @version JAIN-SIP-1.2 
  *
- * Modeled on From Header.
  *
- * ToDo: add support for early-only flag.
- *
- * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 
 public class Replaces
@@ -186,6 +186,11 @@ public class Replaces
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2006/10/12 11:57:51  pmusgrave
+ * Issue number:  79, 80
+ * Submitted by:  pmusgrave@newheights.com
+ * Reviewed by:   mranga
+ *
  * Revision 1.3  2006/07/19 15:05:20  pmusgrave
  * Modify encodeBody so it uses callId and not CallIdentifier
  *

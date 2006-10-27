@@ -1,6 +1,9 @@
 /*******************************************************************************
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
 *******************************************************************************/
+/*
+* This code has been contributed by the author to the public domain.
+*/
 package gov.nist.javax.sip.header.extensions;
 
 import java.text.ParseException;
@@ -14,11 +17,10 @@ import javax.sip.header.ExtensionHeader;
  * 
  * (Created by modifying Expires.java)
  *
- * @version JAIN-SIP-1.1 $Revision: 1.1 $ $Date: 2006-10-12 11:57:52 $
+ * @version JAIN-SIP-1.1 $Revision: 1.2 $ $Date: 2006-10-27 20:58:31 $
  *
  * @author P. Musgrave <pmusgrave@newheights.com>  <br/>
  *
- * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  */
 public class MinSE
 	extends ParametersHeader implements ExtensionHeader, MinSEHeader {
@@ -29,7 +31,6 @@ public class MinSE
 	/**
 	 * Comment for <code>serialVersionUID</code>
 	 */
-	// TODO: Need a unique UID
 	private static final long serialVersionUID = 3134344915465784267L;
 	
 	/** expires field
@@ -86,7 +87,7 @@ public class MinSE
 	 *
 	 * @throws InvalidArgumentException if supplied value is less than zero.
 	 *
-	 * @since JAIN SIP v1.1
+	 * @since JAIN SIP v1.2
 	 *
 	 */
 	public void setExpires(int expires) throws InvalidArgumentException {
