@@ -43,7 +43,7 @@ import java.text.ParseException;
  * @author Olivier Deruelle 
  * @author M. Ranganathan <br/>
  * @since 1.1
- * @version 1.2 $Revision: 1.8 $ $Date: 2006-09-10 21:14:33 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2006-11-01 02:23:03 $
  * 
  * 
  */
@@ -117,8 +117,8 @@ public abstract class AuthenticationHeader extends ParametersHeader {
 					|| name.equalsIgnoreCase(ParameterNames.URI)
 					|| name.equalsIgnoreCase(ParameterNames.RESPONSE )
 					||name.equalsIgnoreCase(ParameterNamesIms.IK)	
-							|| name.equalsIgnoreCase(ParameterNamesIms.CK) 
-							|| name.equalsIgnoreCase(ParameterNamesIms.INTEGRITY_PROTECTED)) {
+					|| name.equalsIgnoreCase(ParameterNamesIms.CK) 
+					|| name.equalsIgnoreCase(ParameterNamesIms.INTEGRITY_PROTECTED)) {
 				if (((this instanceof Authorization) || (this instanceof ProxyAuthorization))
 						&& name.equalsIgnoreCase(ParameterNames.QOP)) {
 					// NOP, QOP not quoted in authorization headers

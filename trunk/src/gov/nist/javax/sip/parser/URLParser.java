@@ -33,7 +33,7 @@ import java.util.Vector;
 /**
  * Parser For SIP and Tel URLs. Other kinds of URL's are handled by the 
  * J2SE 1.4 URL class.
- * @version 1.2 $Revision: 1.16 $ $Date: 2006-10-12 11:59:05 $
+ * @version 1.2 $Revision: 1.17 $ $Date: 2006-11-01 02:22:50 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -516,7 +516,7 @@ public class URLParser extends Parser {
 					nv = new NameValue( pname, "", true );	// flag param
 				}
 			}
-			nvList.add( nv );
+			nvList.set( nv );
 			
 			if ( lexer.lookAhead(0) == ';' ) {
 				lexer.match(';');
@@ -795,6 +795,10 @@ public class URLParser extends Parser {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2006/10/12 11:59:05  pmusgrave
+ * Issue number:  82 (URIParser should return SipUri for sips URI)
+ * Submitted by:  pmusgrave@newheights.com
+ *
  * Revision 1.15  2006/09/20 20:02:16  mranga
  * Issue number:  72
  * Obtained from:

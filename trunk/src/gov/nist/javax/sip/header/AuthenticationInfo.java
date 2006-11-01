@@ -31,7 +31,7 @@ import java.text.ParseException;
  *
  * @author M. Ranganathan   NIST/ITL/ANTD
  * @since 1.1
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:45 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2006-11-01 02:23:05 $
  *
  * 
  */
@@ -52,7 +52,7 @@ public class AuthenticationInfo
 	}
 
 	public void add(NameValue nv) {
-		parameters.add(nv);
+		parameters.set(nv);
 	}
 
 	/** Value of header encoded in canonical form.

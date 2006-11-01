@@ -31,7 +31,7 @@ import java.util.Iterator;
 /**
  * Telephone number class.
  * @version 1.2
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:02:25 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2006-11-01 02:23:08 $
  *
  * @author M. Ranganathan 
  * 
@@ -57,7 +57,7 @@ public class TelephoneNumber extends NetObject {
 
 	/** Creates new TelephoneNumber */
 	public TelephoneNumber() {
-		parms = new NameValueList("telparms");
+		parms = new NameValueList();
 	}
 
 	/** delete the specified parameter.
@@ -153,7 +153,7 @@ public class TelephoneNumber extends NetObject {
 	 */
 	public void setPostDial(String p) {
 		NameValue nv = new NameValue(POSTDIAL, p);
-		parms.add(nv);
+		parms.set(nv);
 	}
 
 	/** set the specified parameter
@@ -162,7 +162,7 @@ public class TelephoneNumber extends NetObject {
 	 */
 	public void setParm(String name, Object value) {
 		NameValue nv = new NameValue(name, value);
-		parms.add(nv);
+		parms.set(nv);
 	}
 
 	/**
@@ -228,7 +228,7 @@ public class TelephoneNumber extends NetObject {
 
 	public void setParameter(String name, String value) {
 		NameValue nv = new NameValue(name, value);
-		this.parms.add(nv);
+		this.parms.set(nv);
 	}
 
 	public Object clone() {
@@ -238,44 +238,3 @@ public class TelephoneNumber extends NetObject {
 		return retval;
 	}
 }
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.3  2006/06/19 06:47:26  mranga
- * javadoc fixups
- *
- * Revision 1.2  2006/06/16 15:26:29  mranga
- * Added NIST disclaimer to all public domain files. Clean up some javadoc. Fixed a leak
- *
- * Revision 1.1.1.1  2005/10/04 17:12:34  mranga
- *
- * Import
- *
- *
- * Revision 1.3  2005/04/16 20:38:47  dmuresan
- * Canonical clone() implementations for the GenericObject and GenericObjectList hierarchies
- *
- * Revision 1.2  2004/01/22 13:26:28  sverker
- * Issue number:
- * Obtained from:
- * Submitted by:  sverker
- * Reviewed by:   mranga
- *
- * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
- *
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- */
