@@ -36,7 +36,7 @@ import javax.sip.*;
 /**
  * Event Scanner to deliver events to the Listener.
  * 
- * @version 1.2 $Revision: 1.25 $ $Date: 2006-07-22 19:00:53 $
+ * @version 1.2 $Revision: 1.26 $ $Date: 2006-11-01 02:44:17 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -107,10 +107,11 @@ class EventScanner implements Runnable {
 			}
 		}
 	}
-	
+
 	/**
-	 * Brutally stop the event scanner. This does not wait for the refcount to go to 0.
-	 *
+	 * Brutally stop the event scanner. This does not wait for the refcount to
+	 * go to 0.
+	 * 
 	 */
 	public void forceStop() {
 		synchronized (this.eventMutex) {
@@ -399,8 +400,10 @@ class EventScanner implements Runnable {
 							.processTransactionTerminated((TransactionTerminatedEvent) sipEvent);
 			} catch (AbstractMethodError ame) {
 				// JvB: for backwards compatibility, accept this
-				sipStack.getLogWriter().logWarning( 
-					"Unable to call sipListener.processTransactionTerminated" );				
+				sipStack
+						.getLogWriter()
+						.logWarning(
+								"Unable to call sipListener.processTransactionTerminated");
 			} catch (Exception ex) {
 				sipStack.getLogWriter().logException(ex);
 			}
@@ -411,8 +414,8 @@ class EventScanner implements Runnable {
 							.processDialogTerminated((DialogTerminatedEvent) sipEvent);
 			} catch (AbstractMethodError ame) {
 				// JvB: for backwards compatibility, accept this
-				sipStack.getLogWriter().logWarning( 
-					"Unable to call sipListener.processDialogTerminated" );
+				sipStack.getLogWriter().logWarning(
+						"Unable to call sipListener.processDialogTerminated");
 			} catch (Exception ex) {
 				sipStack.getLogWriter().logException(ex);
 			}
@@ -431,54 +434,68 @@ class EventScanner implements Runnable {
 
 	public void run() {
 		while (true) {
-			EventWrapper eventWrapper = null;
+			try {
+				EventWrapper eventWrapper = null;
 
-			LinkedList eventsToDeliver;
-			synchronized (this.eventMutex) {
-				// First, wait for some events to become available.
-				while (pendingEvents.isEmpty()) {
-					// There's nothing in the list, check to make sure we
-					// haven't
-					// been stopped. If we have, then let the thread die.
-					if (this.isStopped) {
-						if (sipStack.isLoggingEnabled())
-							sipStack.getLogWriter().logDebug(
-									"Stopped event scanner!!");
-						return;
+				LinkedList eventsToDeliver;
+				synchronized (this.eventMutex) {
+					// First, wait for some events to become available.
+					while (pendingEvents.isEmpty()) {
+						// There's nothing in the list, check to make sure we
+						// haven't
+						// been stopped. If we have, then let the thread die.
+						if (this.isStopped) {
+							if (sipStack.isLoggingEnabled())
+								sipStack.getLogWriter().logDebug(
+										"Stopped event scanner!!");
+							return;
+						}
+
+						// We haven't been stopped, and the event list is indeed
+						// rather empty. Wait for some events to come along.
+						try {
+							eventMutex.wait();
+						} catch (InterruptedException ex) {
+							// Let the thread die a normal death
+							sipStack.getLogWriter().logDebug("Interrupted!");
+							return;
+						}
 					}
 
-					// We haven't been stopped, and the event list is indeed
-					// rather empty. Wait for some events to come along.
-					try {
-						eventMutex.wait();
-					} catch (InterruptedException ex) {
-						// Let the thread die a normal death
-						sipStack.getLogWriter().logDebug("Interrupted!");
-						return;
-					}
+					// There are events in the 'pending events list' that need
+					// processing. Hold onto the old 'pending Events' list, but
+					// make a new one for the other methods to operate on. This
+					// tap-dancing is to avoid deadlocks and also to ensure that
+					// the list is not modified while we are iterating over it.
+					eventsToDeliver = pendingEvents;
+					pendingEvents = new LinkedList();
 				}
+				ListIterator iterator = eventsToDeliver.listIterator();
+				while (iterator.hasNext()) {
+					eventWrapper = (EventWrapper) iterator.next();
+					if (sipStack.isLoggingEnabled()) {
+						sipStack.getLogWriter().logDebug(
+								"Processing " + eventWrapper + "nevents "
+										+ eventsToDeliver.size());
+					}
+					deliverEvent(eventWrapper);
 
-				// There are events in the 'pending events list' that need
-				// processing. Hold onto the old 'pending Events' list, but
-				// make a new one for the other methods to operate on. This
-				// tap-dancing is to avoid deadlocks and also to ensure that
-				// the list is not modified while we are iterating over it.
-				eventsToDeliver = pendingEvents;
-				pendingEvents = new LinkedList();
-			}
-			ListIterator iterator = eventsToDeliver.listIterator();
-			while (iterator.hasNext()) {
-				eventWrapper = (EventWrapper) iterator.next();
+				}
+			} catch (Exception ex) {
+				if (sipStack.isLoggingEnabled()) {
+					sipStack
+							.getLogWriter()
+							.logError(
+									"Unexpected exception caught -- carrying on bravely",
+									ex);
+				}
+			} finally {
 				if (sipStack.isLoggingEnabled()) {
 					sipStack.getLogWriter().logDebug(
-							"Processing " + eventWrapper + "nevents "
-									+ eventsToDeliver.size());
+							"exitting event processing loop");
 				}
-				deliverEvent(eventWrapper);
-
 			}
 		} // end While
 	}
 
-	
 }
