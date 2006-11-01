@@ -32,7 +32,7 @@ import gov.nist.javax.sip.address.*;
 
 /** An abstract class for headers that take an address and parameters. 
  *
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:39 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2006-11-01 02:23:01 $
  * 
  * @since 1.1
  *
@@ -67,6 +67,17 @@ public abstract class AddressParametersHeader extends ParametersHeader {
 	 */
 	protected AddressParametersHeader(String name) {
 		super(name);
+	}
+	
+	/**
+	 * Constructor given a synch flag.
+	 * 
+	 * @param name
+	 * @param sync
+	 */
+	
+	protected AddressParametersHeader(String name, boolean sync) {
+		super(name,sync);
 	}
 
 	/**

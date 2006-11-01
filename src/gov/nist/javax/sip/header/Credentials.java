@@ -32,7 +32,7 @@ import gov.nist.core.*;
 /**
  * Credentials  that are used in authentication and authorization headers.
  * @author M. Ranganathan
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:32 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2006-11-01 02:22:55 $
  * @since 1.1
  */
 public class Credentials extends SIPObject {
@@ -106,7 +106,7 @@ public class Credentials extends SIPObject {
 		return retval;
 	}
 
-	public void setCredential(NameValue nameValue) {
+	/*public void setCredential(NameValue nameValue) {
 		if (nameValue.getName().compareToIgnoreCase(URI) == 0)
 			nameValue.setQuotedValue();
 		else if (nameValue.getName().compareToIgnoreCase(NONCE) == 0)
@@ -124,7 +124,7 @@ public class Credentials extends SIPObject {
 		else if (nameValue.getName().compareToIgnoreCase(DOMAIN) == 0)
 			nameValue.setQuotedValue();
 		parameters.set(nameValue);
-	}
+	}*/
 
 	public Object clone() {
 		Credentials retval = (Credentials) super.clone();

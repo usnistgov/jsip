@@ -32,6 +32,7 @@ package gov.nist.javax.sip.header.ims;
 
 import gov.nist.core.NameValue;
 import java.text.ParseException;
+import java.util.Iterator;
 import java.util.ListIterator;
 
 import javax.sip.header.ExtensionHeader;
@@ -90,7 +91,7 @@ public class ChargingFunctionAddresses
 				"JAIN-SIP Exception, "
 					+ "P-Charging-Function-Addresses, setChargingCollectionFunctionAddress(), the ccfAddress parameter is null.");
 		
-		this.parameters.add(ParameterNamesIms.CCF, ccfAddress);
+		this.parameters.set(ParameterNamesIms.CCF, ccfAddress);
 		
 	}
 
@@ -113,7 +114,7 @@ public class ChargingFunctionAddresses
 	
 	public ListIterator getChargingCollectionFunctionAddresses() {
 	
-		ListIterator li = this.parameters.listIterator();
+		Iterator li = this.parameters.iterator();
 		ListIterator ccfLIST = null;
 		NameValue nv;
 		boolean removed = false;
@@ -154,7 +155,7 @@ public class ChargingFunctionAddresses
 				"JAIN-SIP Exception, "
 					+ "P-Charging-Function-Addresses, setEventChargingFunctionAddress(), the ecfAddress parameter is null.");
 		
-		this.parameters.add(ParameterNamesIms.ECF, ecfAddress);
+		this.parameters.set(ParameterNamesIms.ECF, ecfAddress);
 		
 	}
 
@@ -177,7 +178,7 @@ public class ChargingFunctionAddresses
 	
 	public ListIterator getEventChargingFunctionAddresses() {
 		
-		ListIterator li = this.parameters.listIterator();
+		Iterator li = this.parameters.iterator();
 		ListIterator ecfLIST = null;
 		NameValue nv;
 		boolean removed = false;
@@ -200,7 +201,7 @@ public class ChargingFunctionAddresses
 	
 	
 	public boolean delete(String value, String name) {
-		ListIterator li = this.parameters.listIterator();
+		Iterator li = this.parameters.iterator();
 		NameValue nv;
 		boolean removed = false;
 		while (li.hasNext()) {
