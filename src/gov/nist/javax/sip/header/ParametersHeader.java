@@ -43,7 +43,7 @@ import gov.nist.javax.sip.address.*;
  *
  * 
  *
- * @version 1.2 $Revision: 1.8 $ $Date: 2006-07-15 10:38:49 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2006-11-01 02:22:59 $
  *
  */
 public abstract class ParametersHeader
@@ -58,6 +58,11 @@ public abstract class ParametersHeader
 	protected ParametersHeader(String hdrName) {
 		super(hdrName);
 		this.parameters = new NameValueList();
+	}
+	
+	protected ParametersHeader(String hdrName, boolean sync) {
+		super(hdrName);
+		this.parameters = new NameValueList(sync);
 	}
 
 	/**
@@ -191,13 +196,8 @@ public abstract class ParametersHeader
 	 */
 	protected void setParameter(String name, int value) {
 		Integer val = new Integer(value);
-		NameValue nv = parameters.getNameValue(name);
-		if (nv != null) {
-			nv.setValue(val);
-		} else {
-			nv = new NameValue(name, val);
-			this.parameters.set(nv);
-		}
+		this.parameters.set(name,val);
+		
 	}
 
 	/**
@@ -217,13 +217,7 @@ public abstract class ParametersHeader
 	 */
 	protected void setParameter(String name, boolean value) {
 		Boolean val = new Boolean(value);
-		NameValue nv = parameters.getNameValue(name);
-		if (nv != null) {
-			nv.setValue(val);
-		} else {
-			nv = new NameValue(name, val);
-			this.parameters.set(nv);
-		}
+		this.parameters.set(name,val);
 	}
 
 	/**
@@ -270,13 +264,7 @@ public abstract class ParametersHeader
 	 *
 	 */
 	protected void setParameter(String name, Object value) {
-		NameValue nv = parameters.getNameValue(name);
-		if (nv != null) {
-			nv.setValue(value);
-		} else {
-			nv = new NameValue(name, value);
-			this.parameters.set(nv);
-		}
+		this.parameters.set(name,value);
 	}
 
 	/** 

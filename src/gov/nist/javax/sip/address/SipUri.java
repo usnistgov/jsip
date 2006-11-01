@@ -44,7 +44,7 @@ import javax.sip.address.SipURI;
  * 
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.9 $ $Date: 2006-10-12 11:59:06 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2006-11-01 02:23:09 $
  *
  * 
  *
@@ -72,8 +72,8 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 
 	public SipUri() {
 		this.scheme = SIP;
-		this.uriParms = new NameValueList("uriparms");
-		this.qheaders = new NameValueList("qheaders");
+		this.uriParms = new NameValueList();
+		this.qheaders = new NameValueList();
 		this.qheaders.setSeparator("&");
 	}
 
@@ -98,7 +98,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 	 * @since v1.0
 	 */
 	public void clearUriParms() {
-		uriParms = new NameValueList("uriparms");
+		uriParms = new NameValueList();
 	}
 	/** 
 	*Clear the password from the user part if it exists.
@@ -121,7 +121,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 	 * Clear all Qheaders.
 	 */
 	public void clearQheaders() {
-		qheaders = new NameValueList("qheaders");
+		qheaders = new NameValueList();
 	}
 
 	/**
@@ -452,7 +452,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 	/** Remove all headers.
 	 */
 	public void removeHeaders() {
-		qheaders = new NameValueList("qheaders");
+		qheaders = new NameValueList();
 	}
 
 	/**
@@ -509,7 +509,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 	public void setDefaultParm(String name, Object value) {
 		if (uriParms.getValue(name) == null) {
 			NameValue nv = new NameValue(name, value);
-			uriParms.add(nv);
+			uriParms.set(nv);
 		}
 	}
 
@@ -544,7 +544,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 	 */
 	public void setUriParm(String name, Object value) {
 		NameValue nv = new NameValue(name, value);
-		uriParms.add(nv);
+		uriParms.set(nv);
 	}
 
 	/** Set the qheaders member
@@ -566,7 +566,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 			nameValue.setValue(host);
 		else {
 			nameValue = new NameValue(MADDR, host);
-			uriParms.add(nameValue);
+			uriParms.set(nameValue);
 		}
 	}
 
@@ -577,8 +577,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 	 * @param usertype New value String value of the method parameter
 	 */
 	public void setUserParam(String usertype) {
-		uriParms.delete(USER);
-		uriParms.add(USER, usertype);
+		uriParms.set(USER, usertype);
 	}
 
 	/** 
@@ -586,7 +585,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 	 * @param method method parameter
 	 */
 	public void setMethod(String method) {
-		uriParms.add(METHOD, method);
+		uriParms.set(METHOD, method);
 	}
 
 	/**
@@ -704,13 +703,8 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 	 * @return an Iterator over all the header names
 	 */
 	public Iterator getHeaderNames() {
-		LinkedList llist = new LinkedList();
-		Iterator it = this.qheaders.listIterator();
-		while (it.hasNext()) {
-			NameValue nv = (NameValue) it.next();
-			llist.add(nv.getName());
-		}
-		return llist.listIterator();
+		return this.qheaders.getNames();
+		
 	}
 
 	/** Returns the value of the <code>lr</code> parameter, or null if this
@@ -839,13 +833,9 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 	 * @param value - a String specifying the header value
 	 */
 	public void setHeader(String name, String value) {
-		if (qheaders.getValue(name) == null) {
-			NameValue nv = new NameValue(name, value);
-			qheaders.add(nv);
-		} else {
-			NameValue nv = qheaders.getNameValue(name);
-			nv.setValue(value);
-		}
+		NameValue nv = new NameValue(name, value);
+		qheaders.set(nv);
+		
 	}
 
 	/**
@@ -866,8 +856,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 	 * pre-existing route set.
 	 */
 	public void setLrParam() {		
-		NameValue nv = new NameValue("lr", null);
-		this.uriParms.set(nv);	// JvB: fixed to not add duplicates	
+		this.uriParms.set("lr",null);	// JvB: fixed to not add duplicates	
 	}
 
 	/**
@@ -920,8 +909,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 				throw new ParseException("bad parameter " + value, 0);
 			}
 		}
-		NameValue nv = new NameValue(name, value);
-		uriParms.set(nv);
+		uriParms.set(name,value);
 	}
 
 	/** Sets the scheme of this URI to sip or sips depending on whether the
@@ -968,8 +956,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 			|| transport.compareToIgnoreCase("TLS") == 0 
 			|| transport.compareToIgnoreCase("TCP") == 0) {
 			NameValue nv = new NameValue(TRANSPORT, transport.toLowerCase());
-			uriParms.delete(TRANSPORT);
-			uriParms.add(nv);
+			uriParms.set(nv);
 		} else
 			throw new ParseException("bad transport " + transport, 0);
 	}
