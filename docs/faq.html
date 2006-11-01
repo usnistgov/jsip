@@ -102,6 +102,14 @@ on? </a> </li>
 <li><a href="#45">How do you build it under the ibm java implementation?</a></li>
 <li><a href="#46">What happens to Terminated Transactions ?</a></li>
 <li><a href="#47">How many Calls Per Second can NIST-SIP Handle ?</a></li>
+<li><a href="#48"> I'm writing a SIP user agent to connect 
+to various SIP resources, and  I'm having an issue where my 
+SipListener is receiving  unexpected
+DialogTerminatedEvent's via processDialogTerminated (..).  These  appear
+to happen almost exactly 40 seconds after an  INVITE is  processed,
+so I'm assuming there's some sort of timeout  issue at work  here.
+I am even sending an ACK for the Dialog. 
+Dear Abby, please tell me what is wrong with my application. </a> </li>
 <li><a href="#questionables"> I have some questionable questions. Where do I look? <a/></li>
 </ol>
 <br/>
@@ -621,12 +629,27 @@ has resources, it responds "200 OK"
 <a name="47"> </a>
 <li> How many calls per second can NIST-SIP handle? <br/> 
 NIST-SIP is suitable for most User Agent Applications. It can handle roughly
-50-75 Calls/Second. Thats usually enough for your average desktop phone
+75 Calls/Second. Thats usually enough for your average desktop phone
 unless you are an extremely busy person.  Proxy server type applications
 requiring higher thruput are best built as stateless applications
 (ie. no transactions or dialogs are allocated).  There are several
 optimizations possible including the use of NIO and lazy parsing. These
 will be implemented as time permits.  </li>
+
+<hr size="2" noshade="noshade"> 
+<a name="48"> </a>
+<li>I'm writing a SIP user agent to connect to various SIP resources,
+and  I'm having an issue where my SipListener is receiving  unexpected
+DialogTerminatedEvent's via processDialogTerminated (..).  These  appear
+to happen almost exactly 40 seconds after an  INVITE is  processed,
+so I'm assuming there's some sort of timeout  issue at work  here.
+I am even sending an ACK for the Dialog. 
+Dear Abby, please tell me what is wrong with my application?
+</br>
+Check to see if you are using Dialog.sendAck in your application. You should
+use Dialog.sendAck to send out the Ack if you have created a Dialog. Otherwise
+the Dialog will time out after a period of time has expired. </li>
+
 
 </ol>
 <a name="questionables"></a> <h2> Frequently Questionable Questions
