@@ -150,7 +150,15 @@ import gov.nist.core.net.NetworkLayer;
  * never responds, the stack will hang on to a reference for the transaction 
  * and result in a memory leak.
  * 
- * 
+ * <li><b>gov.nist.javax.sip.USE_TLS_ACCELERATOR = true|false
+ * </b> <br/>Default value is false. Setting this to true permits the
+ * delegation of TLS encryption/decryption to an external TLS accelerator
+ * hardware. Such deployment requires the SIP stack to make its TLS traffic
+ * goes over an un-encrypted TCP connection to the TLS accelerator. So all TLS
+ * listening points will be listening for plain TCP traffic, and outgoing
+ * messages sent with a TLS provider will not be encrypted. Note that this does
+ * not affect the transport value in the Via header. 
+ * </li> 
  * 
  * <li><b>gov.nist.javax.sip.DELIVER_TERMINATED_EVENT_FOR_ACK = [true|false] 
  * <b></b><br/>Default is false. ACK Server Transaction is a Pseuedo-transaction.
@@ -191,7 +199,7 @@ import gov.nist.core.net.NetworkLayer;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.50 $ $Date: 2006-11-02 15:26:31 $
+ * @version 1.2 $Revision: 1.51 $ $Date: 2006-11-02 21:17:55 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -382,6 +390,14 @@ public class SipStackImpl extends SIPTransactionStack implements
 				("Bad configuration parameter gov.nist.javax.sip.MAX_LISTENER_RESPONSE_TIME : should be positive");
 		} else {
 			super.maxListenerResponseTime = -1;
+		}
+		
+		this.useTlsAccelerator = false;
+		String useTlsAcceleratorFlag = configurationProperties
+				.getProperty("gov.nist.javax.sip.USE_TLS_ACCELERATOR");
+
+		if (useTlsAcceleratorFlag != null && "true".equalsIgnoreCase(useTlsAcceleratorFlag.trim())) {
+			this.useTlsAccelerator = true;
 		}
 		
 		this.deliverTerminatedEventForAck = configurationProperties.getProperty

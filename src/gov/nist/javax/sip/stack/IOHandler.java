@@ -34,7 +34,6 @@ import java.io.*;
 import java.net.*;
 import java.util.Hashtable;
 import java.util.Enumeration;
-import javax.net.ssl.SSLSocket;
 
 /*
  * TLS support Added by Daniel J.Martinez Manzano <dani@dif.um.es>
@@ -196,7 +195,7 @@ class IOHandler {
         } else if (transport.compareToIgnoreCase(TLS) == 0) {
             String key = makeKey(receiverAddress, contactPort);
             synchronized (this.socketTable) {
-                SSLSocket clientSock = (SSLSocket) getSocket(key);
+                Socket clientSock = getSocket(key);
                 while (retry_count < max_retry) {
                     if (clientSock == null) {
                         if (sipStack.isLoggingEnabled()) {
@@ -204,9 +203,13 @@ class IOHandler {
                             sipStack.logWriter.logDebug("port = "
                                     + contactPort);
                         }
-                        clientSock = sipStack.getNetworkLayer()
-                                .createSSLSocket(receiverAddress, contactPort,
-                                        senderAddress);
+                        if (!sipStack.useTlsAccelerator) {
+                            clientSock = sipStack.getNetworkLayer().createSSLSocket(
+                                    receiverAddress, contactPort, senderAddress);
+                        } else {
+                            clientSock = sipStack.getNetworkLayer().createSocket(
+                                    receiverAddress, contactPort, senderAddress);
+                        }
                         OutputStream outputStream = clientSock
                                 .getOutputStream();
                         writeChunks(outputStream, bytes, length);
