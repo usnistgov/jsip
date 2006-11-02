@@ -22,7 +22,7 @@ import java.util.*;
 
 public class ThreadAuditor {
 	/// Threads being monitored
-	private Map<Thread, ThreadHandle> threadHandles = new HashMap<Thread, ThreadHandle>();
+	private Map threadHandles = new HashMap();
 
 	/// How often are threads supposed to ping
 	private long pingIntervalInMillisecs = 0;
@@ -133,10 +133,12 @@ public class ThreadAuditor {
 	 */
 	public synchronized String auditThreads() {
 		String auditReport = null;
-		Map<Thread, StackTraceElement[]> stackTraces = null;
+		Map stackTraces = null;
 
 		// Scan all monitored threads looking for non-responsive ones
-		for (ThreadHandle threadHandle : threadHandles.values()) {
+		Iterator it = threadHandles.values().iterator();
+		while (it.hasNext()) {
+			ThreadHandle threadHandle = (ThreadHandle) it.next();
 			if (!threadHandle.isThreadActive()) {
 				// Get the non-responsive thread
 				Thread thread = threadHandle.getThread();
@@ -153,10 +155,12 @@ public class ThreadAuditor {
 				}
 
 				// Get the stack trace for the non-responsive thread
-				StackTraceElement[] stackTraceElements = stackTraces.get(thread);
+				StackTraceElement[] stackTraceElements = (StackTraceElement[])stackTraces.get(thread);
 				if (stackTraceElements != null && stackTraceElements.length > 0) {
 					auditReport += "      Stack trace:\n";
-					for (StackTraceElement stackTraceElement : stackTraceElements) {
+					
+					for (int i = 0; i < stackTraceElements.length ; i ++ ) {
+						StackTraceElement stackTraceElement = stackTraceElements[i];
 						auditReport += "         " + stackTraceElement.toString() + "\n";
 					}
 				} else {
@@ -177,7 +181,9 @@ public class ThreadAuditor {
 	 */
 	public synchronized String toString() {
 		String toString = "Thread Auditor - List of monitored threads:\n";
-		for (ThreadHandle threadHandle : threadHandles.values()) {
+		Iterator it = threadHandles.values().iterator();
+		while ( it.hasNext()) {
+			ThreadHandle threadHandle = (ThreadHandle)it.next();
 			toString += "   " + threadHandle.toString() + "\n";
 		}
 		return toString;
