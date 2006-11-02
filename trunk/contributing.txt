@@ -13,10 +13,13 @@ The packages prefixed with "tools" are in the public domain. To contribute
 to the code in these packages you have to place your code in the
 public domain.
 
-
 You may contribute examples (i.e. packages prefixed with  "examples") using 
 a standard open source license (for example Apache, GPL, LGPL, BSD etc.) 
 or place your code in the public domain.
+
+Please dont use Java 5 specific features. (no generics, for in loops etc.
+please).  The RI is supposed to work with Java 1.4. Perhaps that will
+change for the next version of JSIP but for now, please stick to Java 1.4.x
 
 Please contribute! Your contributions will be recognized.
 
