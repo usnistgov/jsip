@@ -70,7 +70,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.60 $ $Date: 2006-11-02 04:06:16 $
+ * @version 1.2 $Revision: 1.61 $ $Date: 2006-11-02 21:17:54 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -275,6 +275,12 @@ public abstract class SIPTransactionStack implements
 	// containers to defend against buggy clients (that do not
 	// want to respond to requests).
 	protected int maxListenerResponseTime;
+	
+    /*
+     * Flag to indicate whether the stack will delegate the TLS encryption/decryption
+     * to external hardware.
+     */
+    protected boolean useTlsAccelerator;
 
 	/// Provides a mechanism for applications to check the health of threads in the stack
 	protected ThreadAuditor threadAuditor = new ThreadAuditor();
