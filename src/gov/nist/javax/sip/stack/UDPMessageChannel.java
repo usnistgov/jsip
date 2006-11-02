@@ -79,7 +79,7 @@ import javax.sip.message.Response;
  *
  *
  *
- * @version 1.2 $Revision: 1.37 $ $Date: 2006-10-03 15:48:57 $
+ * @version 1.2 $Revision: 1.38 $ $Date: 2006-11-02 04:06:17 $
  */
 public class UDPMessageChannel extends MessageChannel implements
 		ParseExceptionListener, Runnable {
@@ -127,12 +127,10 @@ public class UDPMessageChannel extends MessageChannel implements
 	 * address of the other from the datagram packet and stashes away the
 	 * pointer to the passed stack structure.
 	 *
-	 * @param packet
-	 *            is the UDP Packet that contains the request.
 	 * @param stack
 	 *            is the shared SIPStack structure
-	 * @param notifier
-	 *            Channel notifier (not very useful for UDP).
+	 * @param messageProcessor
+	 *            is the creating message processor.
 	 */
 	protected UDPMessageChannel(SIPTransactionStack stack,
 			UDPMessageProcessor messageProcessor) {
@@ -156,9 +154,7 @@ public class UDPMessageChannel extends MessageChannel implements
 	 *
 	 * @param stack
 	 *            is the SIP sipStack.
-	 * @param notifier
-	 *            is the channel notifier (not particularly relevant here).
-	 * @param messageProcesor
+	 * @param messageProcessor
 	 *            is the creating message processor.
 	 * @param packet
 	 *            is the incoming datagram packet.
@@ -186,7 +182,7 @@ public class UDPMessageChannel extends MessageChannel implements
 	 *            INET address of the place where we want to send messages.
 	 * @param port
 	 *            target port (where we want to send the message).
-	 * @param stack
+	 * @param sipStack
 	 *            our SIP Stack.
 	 */
 	protected UDPMessageChannel(InetAddress targetAddr, int port,
@@ -208,6 +204,8 @@ public class UDPMessageChannel extends MessageChannel implements
 	 * Run method specified by runnnable.
 	 */
 	public void run() {
+		// Ask the auditor to monitor this thread
+		ThreadAuditor.ThreadHandle threadHandle = sipStack.getThreadAuditor().addCurrentThread();
 
 		while (true) {
 			// Create a new string message parser to parse the list of messages.
@@ -226,8 +224,13 @@ public class UDPMessageChannel extends MessageChannel implements
 						if (!((UDPMessageProcessor) messageProcessor).isRunning)
 							return;
 						try {
+							// Send a heartbeat to the thread auditor
+							threadHandle.ping();
+
+							// Wait for packets
+							// Note: getPingInterval returns 0 (infinite) if the thread auditor is disabled.
 							((UDPMessageProcessor) messageProcessor).messageQueue
-									.wait();
+									.wait(threadHandle.getPingIntervalInMillisecs());
 						} catch (InterruptedException ex) {
 							if (!((UDPMessageProcessor) messageProcessor).isRunning)
 								return;
@@ -573,7 +576,7 @@ public class UDPMessageChannel extends MessageChannel implements
 	/**
 	 * Send a message to a specified receiver address.
 	 *
-	 * @param msgmessage
+	 * @param msg
 	 *            string to send.
 	 * @param peerAddress
 	 *            Address of the place to send it to.
@@ -898,7 +901,6 @@ public class UDPMessageChannel extends MessageChannel implements
 	/**
 	 * Copies all via headers from a request
 	 *
-	 * @param name
 	 * @param fromReq
 	 * @param buf
 	 * @return

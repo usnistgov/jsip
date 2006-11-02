@@ -70,7 +70,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.59 $ $Date: 2006-09-26 22:22:58 $
+ * @version 1.2 $Revision: 1.60 $ $Date: 2006-11-02 04:06:16 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -276,6 +276,38 @@ public abstract class SIPTransactionStack implements
 	// want to respond to requests).
 	protected int maxListenerResponseTime;
 
+	/// Provides a mechanism for applications to check the health of threads in the stack
+	protected ThreadAuditor threadAuditor = new ThreadAuditor();
+
+	/// Timer to regularly ping the thread auditor (on behalf of the timer thread)
+	class PingTimer extends SIPStackTimerTask {
+		/// Timer thread handle
+		ThreadAuditor.ThreadHandle threadHandle;
+
+		/// Constructor
+		public PingTimer(ThreadAuditor.ThreadHandle a_oThreadHandle) {
+			threadHandle = a_oThreadHandle;
+		}
+
+		protected void runTask() {
+			// Check if we still have a timer (it may be null after shutdown)
+			if (timer != null) {
+				// Register the timer task if we haven't done so
+				if (threadHandle == null) {
+					// This happens only once since the thread handle is passed to the next scheduled ping timer
+					threadHandle = getThreadAuditor().addCurrentThread();
+				}
+
+				// Let the thread auditor know that the timer task is alive
+				threadHandle.ping();
+
+				// Schedule the next ping
+				timer.schedule(new PingTimer(threadHandle), threadHandle.getPingIntervalInMillisecs());
+			}
+		}
+
+	}
+
 	/**
 	 * Default constructor.
 	 */
@@ -331,6 +363,10 @@ public abstract class SIPTransactionStack implements
 		this.timer = new Timer();
 		this.pendingTransactions = new ConcurrentHashMap();
 
+		if (getThreadAuditor().isEnabled()) {
+			// Start monitoring the timer thread
+			timer.schedule(new PingTimer(null), 0);
+		}
 	}
 
 	/**
@@ -1652,7 +1688,7 @@ public abstract class SIPTransactionStack implements
 	 * @return A MessageChannel to the specified Hop, or null if no
 	 *         MessageProcessors support contacting that Hop.
 	 * 
-	 * @throws UnknwonHostException
+	 * @throws UnknownHostException
 	 *             If the host in the Hop doesn't exist.
 	 */
 	public MessageChannel createRawMessageChannel(int sourcePort, Hop nextHop)
@@ -1735,6 +1771,15 @@ public abstract class SIPTransactionStack implements
 	 */
 	public void setAddressResolver(AddressResolver addressResolver) {
 		this.addressResolver = addressResolver;
+	}
+
+	/**
+	 * get the thread auditor object
+	 *
+	 * @return -- the thread auditor of the stack
+	 */
+	public ThreadAuditor getThreadAuditor() {
+		return this.threadAuditor;
 	}
 
 }

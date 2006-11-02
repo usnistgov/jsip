@@ -42,7 +42,7 @@ import gov.nist.core.*;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size).
  * Each UDP message is processed in its own thread).
  * 
- * @version 1.2 $Revision: 1.26 $ $Date: 2006-08-15 21:44:52 $
+ * @version 1.2 $Revision: 1.27 $ $Date: 2006-11-02 04:06:18 $
  * 
  * @author M. Ranganathan  <br/>
  * 
@@ -123,6 +123,14 @@ public class UDPMessageProcessor extends MessageProcessor {
 					ipAddress);
 			// Create a new datagram socket.
 			sock.setReceiveBufferSize(MAX_DATAGRAM_SIZE);
+
+			/**
+			 * If the thread auditor is enabled, define a socket timeout value in order to
+			 * prevent sock.receive() from blocking forever
+			 */
+			if (sipStack.getThreadAuditor().isEnabled()) {
+				sock.setSoTimeout((int) sipStack.getThreadAuditor().getPingIntervalInMillisecs());
+			}
 		} catch (SocketException ex) {
 			throw new IOException(ex.getMessage());
 		}
@@ -169,6 +177,10 @@ public class UDPMessageProcessor extends MessageProcessor {
 
 			}
 		}
+
+		// Ask the auditor to monitor this thread
+		ThreadAuditor.ThreadHandle threadHandle = sipStack.getThreadAuditor().addCurrentThread();
+
 		// Somebody asked us to exit. if isRunnning is set to false.
 		while (this.isRunning) {
 			
@@ -178,6 +190,9 @@ public class UDPMessageProcessor extends MessageProcessor {
 				DatagramPacket packet = new DatagramPacket(message, bufsize);
 				sock.receive(packet);
 				
+				// Tell the thread auditor we're alive
+				threadHandle.ping();
+
 			 // This is a simplistic congestion control algorithm.
 			 // It accepts packets if queuesize is < LOWAT. It drops
 			 // requests if the queue size exceeds a HIGHWAT and accepts

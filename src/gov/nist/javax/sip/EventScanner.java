@@ -30,13 +30,14 @@ import gov.nist.javax.sip.stack.*;
 import gov.nist.javax.sip.message.*;
 import javax.sip.message.*;
 import javax.sip.*;
+import gov.nist.core.ThreadAuditor;
 
 /* bug fixes SIPQuest communications and Shu-Lin Chen. */
 
 /**
  * Event Scanner to deliver events to the Listener.
  * 
- * @version 1.2 $Revision: 1.26 $ $Date: 2006-11-01 02:44:17 $
+ * @version 1.2 $Revision: 1.27 $ $Date: 2006-11-02 04:06:12 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -433,6 +434,9 @@ class EventScanner implements Runnable {
 	 */
 
 	public void run() {
+		// Ask the auditor to monitor this thread
+		ThreadAuditor.ThreadHandle threadHandle = sipStack.getThreadAuditor().addCurrentThread();
+
 		while (true) {
 			try {
 				EventWrapper eventWrapper = null;
@@ -454,7 +458,11 @@ class EventScanner implements Runnable {
 						// We haven't been stopped, and the event list is indeed
 						// rather empty. Wait for some events to come along.
 						try {
-							eventMutex.wait();
+							// Send a heartbeat to the thread auditor
+							threadHandle.ping();
+
+							// Wait for events (with a timeout)
+							eventMutex.wait(threadHandle.getPingIntervalInMillisecs());
 						} catch (InterruptedException ex) {
 							// Let the thread die a normal death
 							sipStack.getLogWriter().logDebug("Interrupted!");
