@@ -191,7 +191,7 @@ import gov.nist.core.net.NetworkLayer;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.48 $ $Date: 2006-08-24 05:35:58 $
+ * @version 1.2 $Revision: 1.49 $ $Date: 2006-11-02 04:06:14 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -251,8 +251,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 
 	/**
 	 * Return true if automatic dialog support is enabled for this stack.
-	 * 
-	 * @return
+	 *
+	 * @return boolean, true if automatic dialog support is enabled for this stack
 	 */
 	boolean isAutomaticDialogSupportEnabled() {
 		return super.isAutomaticDialogSupportEnabled;
@@ -537,6 +537,17 @@ public class SipStackImpl extends SIPTransactionStack implements
 		String rel = configurationProperties
 				.getProperty("gov.nist.javax.sip.REENTRANT_LISTENER");
 		this.reEntrantListener = (rel != null && "true".equalsIgnoreCase(rel));
+
+		// Check if a thread audit interval is specified
+		String interval = configurationProperties.getProperty("gov.nist.javax.sip.THREAD_AUDIT_INTERVAL_IN_MILLISECS");
+		if (interval != null) {
+			try {
+				// Make the monitored threads ping the auditor twice as fast as the audits
+				getThreadAuditor().setPingIntervalInMillisecs(Long.valueOf(interval) / 2);
+			} catch (NumberFormatException ex) {
+				System.out.println("THREAD_AUDIT_INTERVAL_IN_MILLISECS - bad value [" + interval + "] " + ex.getMessage());
+			}
+		}
 
 		// JvB: added property for testing
 		this.non2XXAckPassedToListener = Boolean
