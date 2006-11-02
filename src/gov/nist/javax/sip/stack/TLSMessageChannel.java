@@ -48,7 +48,6 @@ import java.net.*;
 import java.io.*;
 import java.text.ParseException;
 
-import javax.net.ssl.SSLSocket;
 import javax.sip.address.Hop;
 import javax.sip.message.Response;
 
@@ -66,12 +65,12 @@ import javax.sip.message.Response;
  * @author M. Ranganathan 
  * 
  * 
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-25 19:47:00 $ 
+ * @version 1.2 $Revision: 1.7 $ $Date: 2006-11-02 21:17:54 $ 
  */
 public final class TLSMessageChannel extends MessageChannel implements
 		SIPMessageListener, Runnable {
 
-	private SSLSocket mySock;
+	private Socket mySock;
 
 	private PipelinedMsgParser myParser;
 
@@ -119,8 +118,8 @@ public final class TLSMessageChannel extends MessageChannel implements
 	 *            Ptr to SIP Stack
 	 */
 
-	protected TLSMessageChannel(SSLSocket sock, SIPTransactionStack sipStack,
-			TLSMessageProcessor msgProcessor) throws IOException {
+	protected TLSMessageChannel(Socket sock, SIPTransactionStack sipStack,
+	                            TLSMessageProcessor msgProcessor) throws IOException {
 		if (sipStack.isLoggingEnabled()) {
 			sipStack.logWriter.logDebug("creating new TLSMessageChannel ");
 			sipStack.logWriter.logStackTrace();
@@ -157,7 +156,7 @@ public final class TLSMessageChannel extends MessageChannel implements
 	 *             if we cannot connect.
 	 */
 	protected TLSMessageChannel(InetAddress inetAddr, int port,
-			SIPTransactionStack sipStack, TLSMessageProcessor messageProcessor)
+	                            SIPTransactionStack sipStack, TLSMessageProcessor messageProcessor)
 			throws IOException {
 		if (sipStack.isLoggingEnabled()) {
 			sipStack.logWriter.logDebug("creating new TLSMessageChannel ");
@@ -245,7 +244,7 @@ public final class TLSMessageChannel extends MessageChannel implements
 	 * @param retry
 	 */
 	private void sendMessage(byte[] msg, boolean retry) throws IOException {
-		SSLSocket sock = (SSLSocket) this.sipStack.ioHandler.sendBytes(this
+		Socket sock = this.sipStack.ioHandler.sendBytes(this
 				.getMessageProcessor().getIPAddress(), this.peerAddress,
 				this.peerPort, this.peerProtocol, msg, retry);
 		// Created a new socket so close the old one and stick the new
@@ -301,10 +300,10 @@ public final class TLSMessageChannel extends MessageChannel implements
 	 *             If there is a problem connecting or sending.
 	 */
 	public void sendMessage(byte message[], InetAddress receiverAddress,
-			int receiverPort, boolean retry) throws IOException {
+	                        int receiverPort, boolean retry) throws IOException {
 		if (message == null || receiverAddress == null)
 			throw new IllegalArgumentException("Null argument");
-		SSLSocket sock = (SSLSocket) this.sipStack.ioHandler.sendBytes(
+		Socket sock = this.sipStack.ioHandler.sendBytes(
 				this.messageProcessor.getIPAddress(), receiverAddress,
 				receiverPort, "TLS", message, retry);
 		//
@@ -343,7 +342,7 @@ public final class TLSMessageChannel extends MessageChannel implements
 	 *             Thrown if we want to reject the message.
 	 */
 	public void handleException(ParseException ex, SIPMessage sipMessage,
-			Class hdrClass, String header, String message)
+	                            Class hdrClass, String header, String message)
 			throws ParseException {
 		if (sipStack.isLoggingEnabled())
 			sipStack.logWriter.logException(ex);
@@ -409,7 +408,7 @@ public final class TLSMessageChannel extends MessageChannel implements
 					// it resolves to the correct IP address
 					// InetAddress sentByAddress = InetAddress.getByName(hop.getHost());
 					// JvB: if sender added 'rport', must always set received					
-					if ( v.hasParameter(Via.RPORT) 
+					if ( v.hasParameter(Via.RPORT)
 						|| !hop.getHost().equals(this.peerAddress.getHostAddress())) {
 							v.setParameter(Via.RECEIVED, this.peerAddress.getHostAddress() );
 					}
@@ -448,7 +447,7 @@ public final class TLSMessageChannel extends MessageChannel implements
 				if (this.sipStack.serverLog
 						.needsLogging(ServerLog.TRACE_MESSAGES)) {
 
-					sipStack.serverLog.logMessage(sipMessage, this.getPeerHostPort().toString() , 
+					sipStack.serverLog.logMessage(sipMessage, this.getPeerHostPort().toString() ,
 							this.messageProcessor.getIPAddress()
 									.getHostAddress()
 									+ ":" + this.messageProcessor.getPort(),
@@ -719,6 +718,28 @@ public final class TLSMessageChannel extends MessageChannel implements
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2006/07/25 19:47:00  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:   mranga
+ * Error in comparing a text string to an ip address when setting recieved.
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.5  2006/07/22 19:01:17  jbemmel
  * fixed and optimized setting of received / rport
  *
@@ -770,6 +791,28 @@ public final class TLSMessageChannel extends MessageChannel implements
  * respojnse arriving at the same time as NOTIFY) and other delights.
  * 
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2006/07/25 19:47:00  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:   mranga
+ * Error in comparing a text string to an ip address when setting recieved.
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.5  2006/07/22 19:01:17  jbemmel
  * fixed and optimized setting of received / rport
  *

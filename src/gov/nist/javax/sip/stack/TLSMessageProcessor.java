@@ -39,14 +39,11 @@
  * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).      *
  ******************************************************************************/
 package gov.nist.javax.sip.stack;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLServerSocket;
 import java.io.IOException;
 import java.net.SocketException;
 import gov.nist.core.*;
 import java.net.*;
 import java.util.*;
-import org.apache.log4j.*;
 
 
 /**
@@ -55,7 +52,7 @@ import org.apache.log4j.*;
  * object that creates new TLS MessageChannels (one for each new
  * accept socket).  
  *
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:00:59 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-11-02 21:17:54 $
  *
  * @author M. Ranganathan   <br/>
  * 
@@ -69,7 +66,7 @@ public class TLSMessageProcessor extends MessageProcessor {
 
 	private Hashtable tlsMessageChannels;
 
-	private SSLServerSocket sock;
+	private ServerSocket sock;
 
 	protected int useCount=0;
 	
@@ -101,8 +98,11 @@ public class TLSMessageProcessor extends MessageProcessor {
 		Thread thread = new Thread(this);
 		thread.setName("TLSMessageProcessorThread");
 		thread.setDaemon(true);
-		this.sock = sipStack.getNetworkLayer().createSSLServerSocket(this.getPort(), 0, 
-		        			this.getIPAddress());
+        if (!sipStack.useTlsAccelerator) {
+            this.sock = sipStack.getNetworkLayer().createSSLServerSocket(this.getPort(), 0, this.getIPAddress());
+        } else {
+            this.sock = sipStack.getNetworkLayer().createServerSocket(getPort(), 0, getIPAddress());
+        }
 		this.isRunning = true;
 		thread.start();
 
@@ -139,7 +139,7 @@ public class TLSMessageProcessor extends MessageProcessor {
 					this.nConnections++;
 				}
 
-				SSLSocket newsock = (SSLSocket) sock.accept();
+				Socket newsock = sock.accept();
 				if ( sipStack.logWriter.isLoggingEnabled())
 					 sipStack.logWriter.logDebug("Accepting new connection!");
 			
