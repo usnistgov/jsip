@@ -191,7 +191,7 @@ import gov.nist.core.net.NetworkLayer;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.49 $ $Date: 2006-11-02 04:06:14 $
+ * @version 1.2 $Revision: 1.50 $ $Date: 2006-11-02 15:26:31 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -543,7 +543,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 		if (interval != null) {
 			try {
 				// Make the monitored threads ping the auditor twice as fast as the audits
-				getThreadAuditor().setPingIntervalInMillisecs(Long.valueOf(interval) / 2);
+				getThreadAuditor().setPingIntervalInMillisecs(Long.valueOf(interval).longValue() / 2);
 			} catch (NumberFormatException ex) {
 				System.out.println("THREAD_AUDIT_INTERVAL_IN_MILLISECS - bad value [" + interval + "] " + ex.getMessage());
 			}
