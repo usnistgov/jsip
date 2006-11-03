@@ -76,7 +76,7 @@ public class ThreadAuditor {
 		 * @return a string representation of the object
 		 */
 		public String toString() {
-			StringBuilder toString = new StringBuilder()
+			StringBuffer toString = new StringBuffer()
 					.append("Thread Name: ").append(thread.getName())
 					.append(", Thread ID: ").append(thread.getId())
 					.append(", Thread State: ").append(thread.getState().toString())
