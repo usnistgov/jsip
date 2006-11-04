@@ -78,8 +78,6 @@ public class ThreadAuditor {
 		public String toString() {
 			StringBuffer toString = new StringBuffer()
 					.append("Thread Name: ").append(thread.getName())
-					.append(", Thread ID: ").append(thread.getId())
-					.append(", Thread State: ").append(thread.getState().toString())
 					.append(", Alive: ").append(thread.isAlive());
 			return toString.toString();
 		}
@@ -133,7 +131,7 @@ public class ThreadAuditor {
 	 */
 	public synchronized String auditThreads() {
 		String auditReport = null;
-		Map stackTraces = null;
+		// Map stackTraces = null;
 
 		// Scan all monitored threads looking for non-responsive ones
 		Iterator it = threadHandles.values().iterator();
@@ -149,23 +147,27 @@ public class ThreadAuditor {
 				}
 				auditReport += "   Thread [" + thread.getName() + "] has failed to respond to an audit request.\n";
 
-				// Get stack traces for all live threads (do this only once per audit)
-				if (stackTraces == null) {
-					stackTraces = Thread.getAllStackTraces();
-				}
-
-				// Get the stack trace for the non-responsive thread
-				StackTraceElement[] stackTraceElements = (StackTraceElement[])stackTraces.get(thread);
-				if (stackTraceElements != null && stackTraceElements.length > 0) {
-					auditReport += "      Stack trace:\n";
-					
-					for (int i = 0; i < stackTraceElements.length ; i ++ ) {
-						StackTraceElement stackTraceElement = stackTraceElements[i];
-						auditReport += "         " + stackTraceElement.toString() + "\n";
-					}
-				} else {
-					auditReport += "      Stack trace is not available.\n";
-				}
+				/*
+				 * Stack traces are not available with JDK 1.4.
+				 * Feel free to uncomment this block to get a better report if you're using JDK 1.5.
+				 */
+				//	// Get stack traces for all live threads (do this only once per audit)
+				//	if (stackTraces == null) {
+				//		stackTraces = Thread.getAllStackTraces();
+				//	}
+				//
+				//	// Get the stack trace for the non-responsive thread
+				//	StackTraceElement[] stackTraceElements = (StackTraceElement[])stackTraces.get(thread);
+				//	if (stackTraceElements != null && stackTraceElements.length > 0) {
+				//		auditReport += "      Stack trace:\n";
+				//
+				//		for (int i = 0; i < stackTraceElements.length ; i ++ ) {
+				//			StackTraceElement stackTraceElement = stackTraceElements[i];
+				//			auditReport += "         " + stackTraceElement.toString() + "\n";
+				//		}
+				//	} else {
+				//		auditReport += "      Stack trace is not available.\n";
+				//	}
 			}
 
 			// Reset the ping status of the thread
