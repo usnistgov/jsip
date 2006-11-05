@@ -28,13 +28,10 @@
  *******************************************************************************/
 package gov.nist.javax.sip.stack;
 
-import java.net.DatagramSocket;
-import java.net.SocketException;
-import java.net.DatagramPacket;
 import java.io.IOException;
 import java.util.LinkedList;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.net.*;
+
 import gov.nist.core.*;
 
 /**
@@ -42,7 +39,7 @@ import gov.nist.core.*;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size).
  * Each UDP message is processed in its own thread).
  * 
- * @version 1.2 $Revision: 1.27 $ $Date: 2006-11-02 04:06:18 $
+ * @version 1.2 $Revision: 1.28 $ $Date: 2006-11-05 23:40:43 $
  * 
  * @author M. Ranganathan  <br/>
  * 
@@ -185,13 +182,13 @@ public class UDPMessageProcessor extends MessageProcessor {
 		while (this.isRunning) {
 			
 			try {
+				// Let the thread auditor know we're up and running
+				threadHandle.ping();
+
 				int bufsize = sock.getReceiveBufferSize();
 				byte message[] = new byte[bufsize];
 				DatagramPacket packet = new DatagramPacket(message, bufsize);
 				sock.receive(packet);
-				
-				// Tell the thread auditor we're alive
-				threadHandle.ping();
 
 			 // This is a simplistic congestion control algorithm.
 			 // It accepts packets if queuesize is < LOWAT. It drops
@@ -238,6 +235,8 @@ public class UDPMessageProcessor extends MessageProcessor {
 				} else {
 					new UDPMessageChannel(sipStack, this, packet);
 				}
+			} catch (SocketTimeoutException ex) {
+			  // This socket timeout alows us to ping the thread auditor periodically
 			} catch (SocketException ex) {
 				if (sipStack.isLoggingEnabled())
 					getSIPStack().logWriter
