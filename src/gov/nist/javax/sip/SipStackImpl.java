@@ -195,8 +195,7 @@ import gov.nist.core.net.NetworkLayer;
  * generate a getTimeOfDay timestamp for a retransmitted request if the original request contained
  * a timestamp. This is useful for profiling.
  * </li>
- * </ul>
- * 
+ *
  * <li> <b>gov.nist.javax.sip.THREAD_AUDIT_INTERVAL_IN_MILLISECS = long </b> <br/> Defines
  * how often the application intends to audit the SIP Stack about the health of its internal
  * threads (the property specifies the time in miliseconds between successive audits).
@@ -206,9 +205,11 @@ import gov.nist.core.net.NetworkLayer;
  * from the application layer (e.g., alarms, traps, reboot, failover, etc.)
  * Thread audits are disabled by default. If this property is not specified, audits will
  * remain disabled. An example of how to use this property is in src/examples/threadaudit. </li>
+ * 
+ * </ul>
  *
  * 
- * @version 1.2 $Revision: 1.52 $ $Date: 2006-11-05 23:33:25 $
+ * @version 1.2 $Revision: 1.53 $ $Date: 2006-11-05 23:36:46 $
  * 
  * @author M. Ranganathan <br/>
  * 
