@@ -197,9 +197,18 @@ import gov.nist.core.net.NetworkLayer;
  * </li>
  * </ul>
  * 
+ * <li> <b>gov.nist.javax.sip.THREAD_AUDIT_INTERVAL_IN_MILLISECS = long </b> <br/> Defines
+ * how often the application intends to audit the SIP Stack about the health of its internal
+ * threads (the property specifies the time in miliseconds between successive audits).
+ * The audit allows the application to detect catastrophic failures like an internal
+ * thread terminating because of an exception or getting stuck in a deadlock condition.
+ * Events like these will make the stack inoperable and therefore require immediate action
+ * from the application layer (e.g., alarms, traps, reboot, failover, etc.)
+ * Thread audits are disabled by default. If this property is not specified, audits will
+ * remain disabled. An example of how to use this property is in src/examples/threadaudit. </li>
+ *
  * 
- * 
- * @version 1.2 $Revision: 1.51 $ $Date: 2006-11-02 21:17:55 $
+ * @version 1.2 $Revision: 1.52 $ $Date: 2006-11-05 23:33:25 $
  * 
  * @author M. Ranganathan <br/>
  * 
