@@ -46,12 +46,12 @@ import javax.sip.header.ContactHeader;
  * @see gov.nist.javax.sip.header.ContactList
  *
  * @author M. Ranganathan  <br/>
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-13 09:01:38 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2006-11-08 23:49:51 $
  * @since 1.1
  *
  *
  */
-public final class Contact
+public  class Contact
 	extends AddressParametersHeader
 	implements javax.sip.header.ContactHeader {
 	/**
