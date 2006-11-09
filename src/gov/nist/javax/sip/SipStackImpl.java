@@ -152,12 +152,16 @@ import gov.nist.core.net.NetworkLayer;
  * 
  * <li><b>gov.nist.javax.sip.USE_TLS_ACCELERATOR = true|false
  * </b> <br/>Default value is false. Setting this to true permits the
- * delegation of TLS encryption/decryption to an external TLS accelerator
- * hardware. Such deployment requires the SIP stack to make its TLS traffic
- * goes over an un-encrypted TCP connection to the TLS accelerator. So all TLS
- * listening points will be listening for plain TCP traffic, and outgoing
- * messages sent with a TLS provider will not be encrypted. Note that this does
- * not affect the transport value in the Via header. 
+ * delegation of TLS encryption/decryption to an external, non SIP-aware, TLS
+ * accelerator hardware. Such deployment requires the SIP stack to make its TLS
+ * traffic goes over un-encrypted TCP connections to the TLS accelerator. So
+ * all TLS listening points will be listening for plain TCP traffic, and
+ * outgoing messages sent with a TLS provider will not be encrypted. Note that
+ * this does not affect the transport value in the Via header. Another
+ * deployment strategy for TLS acceleration would be to use one or a cluster of
+ * outbound proxies that transform the TCP or UDP SIP connection to TLS
+ * connections. This scenario does not need the USE_TLS_ACCELERATOR switch, as
+ * the messages will be sent using a plain TCP or UDP provider.
  * </li> 
  * 
  * <li><b>gov.nist.javax.sip.DELIVER_TERMINATED_EVENT_FOR_ACK = [true|false] 
@@ -209,7 +213,7 @@ import gov.nist.core.net.NetworkLayer;
  * </ul>
  *
  * 
- * @version 1.2 $Revision: 1.53 $ $Date: 2006-11-05 23:36:46 $
+ * @version 1.2 $Revision: 1.54 $ $Date: 2006-11-09 20:18:17 $
  * 
  * @author M. Ranganathan <br/>
  * 
