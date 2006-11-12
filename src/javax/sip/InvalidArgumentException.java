@@ -26,9 +26,7 @@ package javax.sip;
  * This exception class is thrown by an implementation when given an invalid
  * argument such as a invalid numerical value.
  *
- * @author BEA Systems, Inc. 
- * @author NIST
- * 
+ * @author BEA Systems, NIST 
  * @version 1.2
  */
 public class InvalidArgumentException extends Exception {

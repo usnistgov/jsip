@@ -53,9 +53,7 @@ package javax.sip.header;
  * @see HeaderAddress
  * @see Parameters
  *
- * @version 1.1
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 public interface RecordRouteHeader extends HeaderAddress, Parameters, Header {

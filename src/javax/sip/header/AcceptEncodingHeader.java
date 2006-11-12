@@ -41,9 +41,7 @@ import javax.sip.InvalidArgumentException;
  * For Example:<br>
  * <code>Accept-Encoding: gzip</code>
  *
- * @author BEA Systems, Inc. 
- * @author NIST
- * @since v 1.1
+ * @author BEA Systems, NIST
  * @version 1.2
  *
  */
@@ -54,7 +52,6 @@ public interface AcceptEncodingHeader extends Parameters, Encoding, Header {
      * <code>-1</code> indicates the<code>q-value</code> is not set.
      *
      * @return q-value of encoding value, -1 if q-value is not set.
-     * @since v1.1
      */
     public float getQValue();
 
@@ -68,7 +65,6 @@ public interface AcceptEncodingHeader extends Parameters, Encoding, Header {
      * the qValue.
      * @throws InvalidArgumentException if the q parameter value is not
      * <code>-1</code> or between <code>0 and 1</code>.
-     * @since v1.1
      */
     public void setQValue(float qValue) throws InvalidArgumentException;
     

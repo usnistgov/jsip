@@ -26,8 +26,7 @@ package javax.sip;
  * This Exception is thrown when a user attempts to start the SipStack without
  * any SipProviders created to service requests and responses.
  *
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @since 1.2
  */
 

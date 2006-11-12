@@ -261,7 +261,7 @@ import java.util.*;
  * @see SipFactory
  * @see SipProvider
  * 
- * @author BEA Systems, Inc. 
+ * @author BEA Systems,  
  * @author NIST
  * @version 1.2
  *  

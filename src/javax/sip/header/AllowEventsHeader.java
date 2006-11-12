@@ -45,10 +45,8 @@ import java.text.ParseException;
  * <p>
  * Note that "Allow-Events" headers MUST NOT be inserted by proxies.
  *
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
- * @since v1.1
  */
 
 public interface AllowEventsHeader extends Header {

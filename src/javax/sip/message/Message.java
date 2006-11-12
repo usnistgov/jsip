@@ -65,8 +65,7 @@ import java.text.ParseException;
  * @see Response
  * @see Header
  *
- * @author BEA Systems, Inc.
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  *
  */
@@ -406,8 +405,16 @@ public interface Message extends Cloneable, Serializable {
      * <li>Modify necessary headers.
      * <li>Proxy the message using the send methods on the SipProvider.
      * </ul>
-     * 
-     * The message contents are not cloned. 
+     * The message contents are cloned as follows: 
+     * <ul>
+     * <li>If the content is of type byte[] a new byte[] array is allocated and the 
+     * original contents are copied over to the cloned Message. 
+     * <li>If the content is of type String then a new String equal to the old 
+     * String is allocated and assigned to the cloned Message. 
+     * <li>If the content is of type Object and it has a public clone method 
+     * then it is invoked and the resultant Object is used in the new cloned 
+     * Message.
+     * </ul>
      *
      * @return a deep copy of Message
      */

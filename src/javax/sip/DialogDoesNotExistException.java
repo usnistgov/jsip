@@ -26,10 +26,8 @@ package javax.sip;
  * This Exception is thrown when a user attempts to reference
  * Dialog that does currently not exist in the underlying SipProvider
  *
- * @author BEA Systems, Inc.
- * @author NIST
- * 
- * @version 1.2
+ * @author BEA Systems, NIST
+ * @since 1.2
  */
 
 

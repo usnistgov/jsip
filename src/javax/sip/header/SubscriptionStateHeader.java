@@ -55,9 +55,7 @@ import java.text.ParseException;
  * after the number of seconds specified by the "retry-after" parameter). 
  * </ul>
  *
- * @since v1.1
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 

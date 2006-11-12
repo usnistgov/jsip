@@ -49,9 +49,7 @@ import java.text.ParseException;
  * A server must ignore Headers that it does not understand. A proxy must not 
  * remove or modify Headers that it does not understand.
  *
- * @since 1.1
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 
@@ -77,85 +75,37 @@ public interface RAckHeader extends Header {
     /**
      * Sets the sequence number value of the CSeqHeader of the provisional 
      * response being acknowledged. The sequence number MUST be expressible as 
-     * a 32-bit unsigned integer and MUST be less than 2**32 -1.
+     * a 32-bit unsigned integer and MUST be less than 2**31.
      *
      * @param cSeqNumber - the new cSeq number of this RAckHeader.
      * @throws InvalidArgumentException if supplied value is less than zero.
-     * @deprecated This method is replaced with {@link #setCSequenceNumber(long)} 
-     * with type long. 
      */
     public void setCSeqNumber(int cSeqNumber) throws InvalidArgumentException;
 
     /**
      * Gets the CSeq sequence number of this RAckHeader.
      *
-     * @deprecated This method is replaced with {@link #getCSequenceNumber()} 
-     * with type long. 
-     * @see #getCSequenceNumber()
      * @return the integer value of the cSeq number of the RAckHeader.
      */
-    public int getCSeqNumber();  
-    
-     /**
-     * Sets the sequence number value of the RSeqHeader of the provisional 
-     * response being acknowledged. 
-     * 
-     * @param cSeqNumber - the new cSeq number of this RAckHeader.
-     * @throws InvalidArgumentException if supplied value is less than zero.
-     * @since v1.2
-     */
-    public void setCSequenceNumber(long cSeqNumber) throws InvalidArgumentException;       
-    
-    /**
-     * Gets the CSeq sequence number of this RAckHeader.
-     *
-     * @return The value of the CSeq number of the RAckHeader.
-     * @since v1.2
-     */
-    public long getCSequenceNumber();      
-    
+    public int getCSeqNumber();
     
 
-     /**
+    /**
      * Sets the sequence number value of the RSeqHeader of the provisional 
      * response being acknowledged. The sequence number MUST be expressible as 
-     * a 32-bit unsigned integer and MUST be less than 2**32 -1.
-     * 
+     * a 32-bit unsigned integer and MUST be less than 2**31.
+     *
      * @param rSeqNumber - the new rSeq number of this RAckHeader.
      * @throws InvalidArgumentException if supplied value is less than zero.
-     * @deprecated This method is replaced with {@link #setRSequenceNumber(long)} 
-     * with type long. 
      */
     public void setRSeqNumber(int rSeqNumber) throws InvalidArgumentException;
-    
+
     /**
      * Gets the RSeq sequence number of this RAckHeader.
      *
-     * @deprecated This method is replaced with {@link #getRSequenceNumber()} 
-     * with type long. 
-     * @see #getRSequenceNumber()
      * @return the integer value of the RSeq number of the RAckHeader.
      */
-    public int getRSeqNumber(); 
-
-    
-    /**
-     * Gets the RSeq sequence number of this RAckHeader.
-     *
-     * @return The value of the RSeq number of the RAckHeader.
-     * @since v1.2
-     */
-    public long getRSequenceNumber();    
-    
-     /**
-     * Sets the sequence number value of the RSeqHeader of the provisional 
-     * response being acknowledged. 
-     * 
-     * @param rSeqNumber - the new rSeq number of this RAckHeader.
-     * @throws InvalidArgumentException if supplied value is less than zero.
-     * @since v1.2
-     */
-    public void setRSequenceNumber(long rSeqNumber) throws InvalidArgumentException;       
+    public int getRSeqNumber();    
     
     /**
      * Name of RAckHeader.

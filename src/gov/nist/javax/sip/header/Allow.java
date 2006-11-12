@@ -32,12 +32,13 @@ import java.text.ParseException;
  * Allow SIPHeader.
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:13 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-11-12 21:52:38 $
  * @since 1.1
  *
  * 
  */
-public class Allow extends SIPHeader implements javax.sip.header.AllowHeader {
+public final class Allow extends 
+	SIPHeader implements javax.sip.header.AllowHeader {
 
 	/**
 	 * Comment for <code>serialVersionUID</code>

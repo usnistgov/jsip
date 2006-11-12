@@ -64,9 +64,7 @@ import javax.sip.InvalidArgumentException;
  * A server must ignore Headers that it does not understand. A proxy must not 
  * remove or modify Headers that it does not understand.
  *
- * @since 1.1
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 

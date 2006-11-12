@@ -30,9 +30,7 @@ import java.text.ParseException;
  * @see AcceptEncodingHeader
  * @see ContentEncodingHeader
  *
- * @since 1.1
- * @author BEA Systems, Inc.
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 public interface Encoding {

@@ -39,8 +39,7 @@ import java.util.*;
  * Example:<br>
  * Date: Sat, 13 Nov 2010 23:29:00 GMT
  *
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 

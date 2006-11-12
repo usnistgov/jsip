@@ -16,7 +16,11 @@
  *
  *  HISTORY
  *  Version   Date      Author              Comments
- *  1.1     08/10/2002  Phelim O'Doherty    
+ *  1.1     08/10/2002  Phelim O'Doherty 
+ *  1.2     20/12/2005    Jereon Van Bemmel Added create methods for PUBLISH 
+ *                                          headers
+ *  1.2     20/12/2006    Phelim O'Doherty  Added new createCseqHeader with long 
+ *                                          sequence number
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 package javax.sip.header;
@@ -32,8 +36,7 @@ import java.util.*;
  * singleton and can be retrieved from the 
  * {@link javax.sip.SipFactory#createHeaderFactory()}.
  *
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 public interface HeaderFactory {
@@ -78,7 +81,6 @@ public interface HeaderFactory {
      *
      * @param alertInfo the new URI value of the alertInfo
      * @return the newly created AlertInfoHeader object.
-     * @since v1.1
      */
     public AlertInfoHeader createAlertInfoHeader(URI alertInfo);    
 
@@ -91,7 +93,6 @@ public interface HeaderFactory {
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the eventType value.
      * @return the newly created AllowEventsHeader object.
-     * @since v1.1
      */
     public AllowEventsHeader createAllowEventsHeader(String eventType)
                                     throws ParseException;
@@ -116,7 +117,6 @@ public interface HeaderFactory {
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the response value.
      * @return the newly created AuthenticationInfoHeader object.
-     * @since v1.1
      */
     public AuthenticationInfoHeader createAuthenticationInfoHeader(String response) 
                                     throws ParseException; 
@@ -146,31 +146,31 @@ public interface HeaderFactory {
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the method value.
      * @return the newly created CSeqHeader object.
-     * 
+     *
      * @deprecated Since 1.2. Use {@link #createCSeqHeader(long, String)} method
      * with type long.
      */
-    public CSeqHeader createCSeqHeader( int sequenceNumber, String method)
+    public CSeqHeader createCSeqHeader(int sequenceNumber, String method)
                              throws ParseException, InvalidArgumentException;
-    
-    
-    /**
-     * Creates a new CSeqHeader based on the newly supplied sequence number and 
+
+ /**
+     * Creates a new CSeqHeader based on the newly supplied sequence number and
      * method values.
      *
      * @param sequenceNumber the new long value of the sequence number.
      * @param method the new string value of the method.
-     * @throws InvalidArgumentException if supplied sequence number is less 
+     * @throws InvalidArgumentException if supplied sequence number is less
      * than zero.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the method value.
      * @return the newly created CSeqHeader object.
-     * 
-     * @since v1.2 
+     *
+     * @since v1.2
      */
-    public CSeqHeader createCSeqHeader( long sequenceNumber, String method)
-                             throws ParseException, InvalidArgumentException;
-
+    public CSeqHeader createCSeqHeader(long sequenceNumber, String method)
+                             throws ParseException, InvalidArgumentException;    
+    
+    
     /**
      * Creates a new CallIdHeader based on the newly supplied callId value. 
      * 
@@ -201,7 +201,7 @@ public interface HeaderFactory {
 
     /**
      * Creates a new wildcard ContactHeader. This is used in Register requests
-     * to indicate to the server that it should remove all locations
+     * to indicate to the server that it should remove all locations the
      * at which the user is currently available. This implies that the 
      * following conditions are met:
      * <ul>
@@ -223,7 +223,6 @@ public interface HeaderFactory {
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the contentDisposition value.
      * @return the newly created ContentDispositionHeader object.
-     * @since v1.1
      */
     public ContentDispositionHeader createContentDispositionHeader(String contentDispositionType)
                                   throws ParseException;
@@ -246,7 +245,6 @@ public interface HeaderFactory {
      *
      * @param contentLanguage the new Locale value of the contentLanguage.
      * @return the newly created ContentLanguageHeader object.
-     * @since v1.1
      */
     public ContentLanguageHeader createContentLanguageHeader(Locale contentLanguage);   
 
@@ -288,7 +286,6 @@ public interface HeaderFactory {
      *
      * @param errorInfo the new URI value of the errorInfo.
      * @return the newly created ErrorInfoHeader object.
-     * @since v1.1
      */
     public ErrorInfoHeader createErrorInfoHeader(URI errorInfo);  
     
@@ -299,7 +296,6 @@ public interface HeaderFactory {
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the eventType value.
      * @return the newly created EventHeader object.
-     * @since v1.1
      */
     public EventHeader createEventHeader(String eventType) throws ParseException;          
 
@@ -367,7 +363,6 @@ public interface HeaderFactory {
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the callId value.
      * @return the newly created InReplyToHeader object.
-     * @since v1.1
      */
     public InReplyToHeader createInReplyToHeader(String callId)
                                   throws ParseException;   
@@ -391,7 +386,6 @@ public interface HeaderFactory {
      * @throws InvalidArgumentException if supplied majorVersion or minorVersion 
      * is less than zero.
      * @return the newly created MimeVersionHeader object.
-     * @since v1.1
      */
     public MimeVersionHeader createMimeVersionHeader(int majorVersion, int minorVersion)
                               throws InvalidArgumentException; 
@@ -403,7 +397,6 @@ public interface HeaderFactory {
      * @throws InvalidArgumentException if supplied minExpires is less 
      * than zero.
      * @return the newly created MinExpiresHeader object.
-     * @since v1.1
      */
     public MinExpiresHeader createMinExpiresHeader(int minExpires)
                               throws InvalidArgumentException;    
@@ -481,33 +474,10 @@ public interface HeaderFactory {
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the method value.
      * @return the newly created RAckHeader object.
-     * @since v1.1
-     * @deprecated Since 1.2. Use {@link #createRAckHeader(long, long, String)} method
-     * with type long.
-     * 
      */
     public RAckHeader createRAckHeader(int rSeqNumber, int cSeqNumber, String method)
                              throws InvalidArgumentException, ParseException;
 
- 
-    /**
-     * Creates a new RAckHeader based on the newly supplied rSeqNumber, 
-     * cSeqNumber and method values.
-     *
-     * @param rSeqNumber the new long value of the rSeqNumber.
-     * @param cSeqNumber the new long value of the cSeqNumber.
-     * @param method the new string value of the method.
-     * @throws InvalidArgumentException if supplied rSeqNumber or cSeqNumber is 
-     * less than zero or greater than than 2**31-1.
-     * @throws ParseException which signals that an error has been reached
-     * unexpectedly while parsing the method value.
-     * @return the newly created RAckHeader object.
-     * @since v1.2
-     */
-    public RAckHeader createRAckHeader(long rSeqNumber, long cSeqNumber, String method)
-                             throws InvalidArgumentException, ParseException;    
-    
-    
     /**
      * Creates a new RSeqHeader based on the newly supplied sequenceNumber value.
      *
@@ -515,25 +485,8 @@ public interface HeaderFactory {
      * @throws InvalidArgumentException if supplied sequenceNumber is 
      * less than zero or greater than than 2**31-1.
      * @return the newly created RSeqHeader object.
-     * @since v1.1
-     * @deprecated Since v1.2. Use {@link #createRSeqHeader(long)} method
-     * with type long.
-     * 
      */
-    public RSeqHeader createRSeqHeader( int sequenceNumber )
-                             throws InvalidArgumentException;    
-    
-    
-    /**
-     * Creates a new RSeqHeader based on the newly supplied sequenceNumber value.
-     *
-     * @param sequenceNumber the new long value of the sequenceNumber.
-     * @throws InvalidArgumentException if supplied sequenceNumber is 
-     * less than zero or greater than than 2**31-1.
-     * @return the newly created RSeqHeader object.
-     * @since v1.2
-     */
-    public RSeqHeader createRSeqHeader( long sequenceNumber )
+    public RSeqHeader createRSeqHeader(int sequenceNumber)
                              throws InvalidArgumentException;
         
     /**
@@ -547,7 +500,6 @@ public interface HeaderFactory {
      * @throws InvalidArgumentException if supplied cause is 
      * less than zero.
      * @return the newly created ReasonHeader object.
-     * @since v1.1
      */
     public ReasonHeader createReasonHeader(String protocol, int cause, String text) 
                                     throws InvalidArgumentException, ParseException;
@@ -565,7 +517,6 @@ public interface HeaderFactory {
      *
      * @param address the new Address object of the address.
      * @return the newly created ReplyToHeader object.  
-     * @since v1.1
      */
     public ReplyToHeader createReplyToHeader(Address address);
 
@@ -574,7 +525,6 @@ public interface HeaderFactory {
      *
      * @param address the new Address object of the address.
      * @return the newly created ReferToHeader object.  
-     * @since v1.1
      */
     public ReferToHeader createReferToHeader(Address address);    
     
@@ -642,7 +592,6 @@ public interface HeaderFactory {
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the subscriptionState value.
      * @return the newly created SubscriptionStateHeader object.
-     * @since v1.1
      */
     public SubscriptionStateHeader createSubscriptionStateHeader(String subscriptionState) 
                                         throws ParseException;
@@ -758,7 +707,7 @@ public interface HeaderFactory {
 	 * @return the newly created SIP-ETag header
 	 * @throws ParseException when an error occurs during parsing of the etag parameter
 	 * 
-	 * @since v1.2
+	 * @since 1.2
 	 */
 	public SIPETagHeader createSIPETagHeader( String etag ) throws ParseException;
 	
@@ -769,7 +718,7 @@ public interface HeaderFactory {
 	 * @return the newly created SIP-If-Match header
 	 * @throws ParseException when an error occurs during parsing of the etag parameter
 	 * 
-	 * @since v1.2
+	 * @since 1.2
 	 */
 	public SIPIfMatchHeader createSIPIfMatchHeader( String etag ) throws ParseException;    
 }

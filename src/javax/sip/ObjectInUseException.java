@@ -25,13 +25,16 @@ package javax.sip;
 
 
 /**
+
  * This exception is thrown by a method that is unable to delete a specified
+
  * Object because the Object is still in use by the underlying implementation.
+
  *
- * @author BEA Systems, Inc.
- * @author NIST
+
+ * @author BEA Systems, NIST
  * @version 1.2
- * @since 1.1
+
  */
 
 

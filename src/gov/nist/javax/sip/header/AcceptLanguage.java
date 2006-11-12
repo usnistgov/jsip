@@ -36,7 +36,7 @@ import java.util.Locale;
  * Accept Language body.
  *
  * @author M. Ranganathan 
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:26 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2006-11-12 21:52:38 $
  * @since 1.1
  *
  *
@@ -50,7 +50,7 @@ import java.util.Locale;
  *
  * @see AcceptLanguageList
  */
-public class AcceptLanguage
+public final class AcceptLanguage
 	extends ParametersHeader
 	implements AcceptLanguageHeader {
 

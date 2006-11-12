@@ -39,9 +39,7 @@ import javax.sip.InvalidArgumentException;
  * For Example:<br>
  * <code>Timestamp: 54</code>
  *
- * @author BEA Systems, Inc. 
- * @author NIST
- * @since 1.1
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 
@@ -49,7 +47,7 @@ import javax.sip.InvalidArgumentException;
 
 public interface TimeStampHeader extends Header {
 
-    /**
+     /**
      * Sets the timestamp value of this TimeStampHeader to the new timestamp
      * value passed to this method.
      *
@@ -141,6 +139,5 @@ public interface TimeStampHeader extends Header {
      * Name of TimeStampHeader
      */
     public final static String NAME = "Timestamp";
-
 }
 

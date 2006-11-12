@@ -49,10 +49,8 @@ import java.util.*;
  *
  * @see Timeout
  *
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
- * @since v1.1
  */
 public class TimeoutEvent extends EventObject {
 

@@ -34,8 +34,7 @@ package javax.sip;
 
  *
 
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
 
  */

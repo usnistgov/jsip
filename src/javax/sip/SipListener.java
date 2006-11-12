@@ -40,7 +40,7 @@ import java.util.EventListener;
  * are received from the network to the application via the underlying stack
  * implementation.
  * <li>{@link ResponseEvent}- these are response messages emitted as events by
- * the SipProvider. Response events represent Response messages i.e. 2XX's, that
+ * the SipProvider. Response events represent Response messages i.e. 2xx's, that
  * are received from the network to the application via the underlying stack
  * implementation.
  * <li>{@link TimeoutEvent}- these are timeout notifications emitted as events
@@ -52,9 +52,18 @@ import java.util.EventListener;
  * events by the SipProvider. IOException events represent failure in the
  * underlying SipProvider IO Layer. These IO Exception events notify the 
  * application that a failure has occured while accessing a socket.
+ * <li>{@link TransactionTerminatedEvent}- these are Transaction Terminated 
+ * notifications emitted as events by the SipProvider. TransactionTerminated 
+ * events represent a transaction termination and notify the 
+ * application of the termination.
+ * <li>{@link DialogTerminatedEvent}- these are Dialog Terminated 
+ * notifications emitted as events by the SipProvider. DialogTerminated 
+ * events represent a Dialog termination and notify the 
+ * application of the termination.
  * </ul>
  * <p>
- * An application will only receive Request, Response, Timeout and IOExceptionEvent 
+ * An application will only receive Request, Response, Timeout, 
+ * TransactionTerminated, DialogTerminated and IOException 
  * events once it has registered as an EventListener of a SipProvider. The 
  * application registers with the SipProvider by invoking the
  * {@link SipProvider#addSipListener(SipListener)}passing itself as an
@@ -70,16 +79,16 @@ import java.util.EventListener;
  * Note: An application that implements the SipListener interface, may act as a
  * proxy object and pass all events to higher level core application programming
  * logic that is outside the scope of this specification. For example a SIP
- * Servlet, JSLEE or an EJB SIP implementation can implement the UAS, UAC
- * and Proxy core application respectively in there respective container
- * environments utilizing this specification to talk to the SIP network.
+ * Servlet, or a JSLEE implementation can implement a back to back UA or
+ * Proxy core application respectively in there respective container
+ * environments utilizing this specification to talk the SIP protocol.
  * <p>
  * <b>Messaging Model: </b> <br>
  * An application can send messages by passing {@link javax.sip.message.Request}
  * and {@link javax.sip.message.Response}messages to that the following object:
  * <ul>
  * <li>Request and response messages can be sent statelessly via the
- * SipProvider using the sendXXX methods on the {@link javax.sip.SipProvider}.
+ * SipProvider using the send methods on the {@link javax.sip.SipProvider}.
  * <li>Request messages can be sent transaction stateful via the
  * ClientTransaction using the {@link ClientTransaction#sendRequest()}method.
  * <li>Response messages can be sent transaction stateful via the
@@ -90,15 +99,14 @@ import java.util.EventListener;
  * </ul>
  * Although this specification provides the capabilities to send messages both
  * statelessly and statefully it is mandated that an application will not send
- * the same message both statefully and statelessly. <br>
+ * the same message both statefully and statelessly. 
  * The messages sent by the application are not Event's as the event model is
  * uni-directional from the SipProvider to the SipListener, i.e. the SipListener
  * listens for Events from the SipProvider, but the SipProvider does not listen
  * for Events on the SipListener. The rationale is the application knows when to
  * initiate requests and responses i.e setup a call or respond to a network
  * event, however an application doesn't know when it will receive a network
- * event, hence the application must listen for these network events. The
- * traditional way to do this in Java is the Java event model.
+ * event, hence the application must listen for these network events. 
  * <p>
  * <b>Session Negotiation </b> <br>
  * There are special rules for message bodies of Request and Responses that
@@ -120,10 +128,11 @@ import java.util.EventListener;
  * @see RequestEvent
  * @see ResponseEvent
  * @see TimeoutEvent
- * @see IOExceptionEvent 
+ * @see IOExceptionEvent
+ * @see TransactionTerminatedEvent
+ * @see DialogTerminatedEvent
  * 
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 public interface SipListener extends EventListener {
@@ -168,7 +177,7 @@ public interface SipListener extends EventListener {
      * session. For 2xx responses, the processing is done by the UAS
      * application, to guarantee the three way handshake of an INVITE
      * transaction. This specification defines a utility thats enables the
-     * SipProvider to handle the 2XX processing for an INVITE transaction, see
+     * SipProvider to handle the 2xx processing for an INVITE transaction, see
      * the {@link SipStack#isRetransmissionFilterActive()}method. If the
      * invitation is not accepted, a 3xx, 4xx, 5xx or 6xx response is sent by
      * the application, depending on the reason for the rejection. Alternatively
@@ -259,7 +268,6 @@ public interface SipListener extends EventListener {
      * <li>NOT perform special processing for CANCEL requests.
      * </ul>
      * 
-     * @since v1.1
      * @param requestEvent -
      *            requestEvent fired from the SipProvider to the SipListener
      *            representing a Request received from the network.
@@ -353,7 +361,6 @@ public interface SipListener extends EventListener {
      * Via header using the {@link SipProvider#sendResponse(Response)}method.
      * </ul>
      * 
-     * @since v1.1
      * @param responseEvent -
      *            the responseEvent fired from the SipProvider to the
      *            SipListener representing a Response received from the network.

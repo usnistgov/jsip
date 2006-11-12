@@ -53,7 +53,7 @@ import java.text.ParseException;
 /**
  * Implementation of the JAIN-SIP provider interface.
  * 
- * @version 1.2 $Revision: 1.38 $ $Date: 2006-09-28 15:20:30 $
+ * @version 1.2 $Revision: 1.39 $ $Date: 2006-11-12 21:52:50 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -604,12 +604,21 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 	public void sendRequest(Request request) throws SipException {
 		if (!sipStack.isAlive())
 			throw new SipException("Stack is stopped.");
+		if (request.getMethod().equals(Request.ACK)){
+			Dialog dialog = sipStack.getDialog(((SIPRequest)request).getDialogId(false));
+			if ( dialog != null && dialog.getState() != null) {
+				sipStack.getLogWriter().logWarning
+				("Dialog exists -- you may want to use Dialog.sendAck() "+ dialog.getState());
+			}
+		}
 		Hop hop = sipStack.getRouter((SIPRequest)request).getNextHop(request);
 		if (hop == null)
 			throw new SipException("could not determine next hop!");
 		SIPRequest sipRequest = (SIPRequest) request;
 		if (sipRequest.getTopmostVia() == null)
 			throw new SipException("Invalid SipRequest -- no via header!");
+		
+		
 
 		try {
 			/*

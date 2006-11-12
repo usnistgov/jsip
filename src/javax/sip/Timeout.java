@@ -104,10 +104,8 @@ import java.io.*;
  * </ul>
  * </ul>
  *
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
- * @since 1.1
  */
 public final class Timeout implements Serializable{
 

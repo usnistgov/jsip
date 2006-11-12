@@ -93,8 +93,7 @@ import java.text.ParseException;
  * To: Duke sip:duke@jcp.org;tag=287447</code>
  *
  * @see HeaderAddress
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 public interface ToHeader extends HeaderAddress, Parameters, Header {

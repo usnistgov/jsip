@@ -41,8 +41,7 @@ import javax.sip.address.Address;
  * @see RouteHeader
  * @see ToHeader
  *
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 public interface HeaderAddress {

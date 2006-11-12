@@ -47,9 +47,9 @@ import javax.sip.message.Response;
  * application-layer retransmissions, matching of responses to requests, and 
  * application-layer timeouts. 
  * <p>
- * The server transaction id must be unique within the underlying 
- * implementation. This id is commonly taken from the branch parameter in the
- * topmost via (for RFC3261 compliant clients), but may also be computed as a
+ * The server transaction Id must be unique within the underlying 
+ * implementation. This Id is commonly taken from the branch parameter in the
+ * topmost Via header (for RFC3261 compliant clients), but may also be computed as a
  * cryptographic hash of the To tag, From tag, Call-ID header field, the 
  * Request-URI of the request received (before translation), the topmost Via 
  * header, and the sequence number from the CSeq header field, in addition to 
@@ -66,10 +66,8 @@ import javax.sip.message.Response;
  * <b>Non-Invite Transaction:</b><br>
  * Trying --> Proceeding --> Completed --> Terminated
  * 
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
- * @since v1.1
  */
 public interface ServerTransaction extends Transaction {
 

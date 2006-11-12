@@ -71,8 +71,7 @@ import java.text.ParseException;
 
  * Priority: non-urgent</code>
  *
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
 
  */

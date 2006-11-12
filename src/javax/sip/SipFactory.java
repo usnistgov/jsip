@@ -17,6 +17,9 @@
  *  HISTORY
  *  Version   Date      Author              Comments
  *  1.1     08/10/2002  Phelim O'Doherty    
+ *  1.2     20/12/2005  Phelim O'Doherty    Modified to enable single stack 
+ *                                          instance if no IP Address config 
+ *                                          property.
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 
@@ -72,15 +75,15 @@ import java.lang.reflect.Constructor;
  * <p>
  * <code>'pathname'.'lower-level package structure and classname'.</code>
  * <p>
- * For example an application can use the SipFactory to instantiate a Sun
- * Microsystems's peer SipStack object by setting the pathname to
- * <code>com.sun</code> and calling the createSipStack method. The SipFactory
+ * For example an application can use the SipFactory to instantiate a NIST
+ * peer SipStack object by setting the pathname to
+ * <code>gov.nist</code> and calling the createSipStack method. The SipFactory
  * would return a new instance of the SipStack object at the following location:
- * <code>com.sun.javax.sip.SipStackImpl.java</code> Because the space of
+ * <code>gov.nist.javax.sip.SipStackImpl.java</code> Because the space of
  * domain names is managed, this scheme ensures that collisions between two
  * different vendor's implementations will not happen. For example: a different
- * vendor with a domain name 'foo.com' would have their peer SipStack object
- * located at <code>com.foo.javax.sip.SipStackImpl.java</code>.
+ * vendor with a domain name 'bea.com' would have their peer SipStack object
+ * located at <code>com.bea.javax.sip.SipStackImpl.java</code>.
  * <p>
  * <b>Default Namespace:</b><br>
  * This specification defines a default namespace for the SipFactory, this
@@ -93,8 +96,7 @@ import java.lang.reflect.Constructor;
  * stack from that of the Reference Implementation. An application can not mix
  * different vendor's peer implementation objects.
  * 
- * @author BEA Systems, Inc.
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 
@@ -113,22 +115,27 @@ public class SipFactory {
 		return myFactory;
 	}
 
-	/**
-	 * Creates an instance of a SipStack implementation based on the
-	 * configuration properties object passed to this method. If a
-	 * "javax.sip.IP_ADDRESS" is supplied, this method ensures that only one
-	 * instance of a SipStack is returned to the application per IP Address, no
-	 * matter how often this method is called for the same IP Address. Different
-	 * SipStack instances are returned for each different IP address. If an
-	 * "javax.sip.IP_ADDRESS" property is not specified, then the
-	 * "javax.sip.STACK_NAME" uniquely identifies the stack. See
-	 * {@link SipStack} for the expected format of the <code>properties</code>
-	 * argument. Note that as of v1.2 the IP address is no longer a mandatory
-	 * argument when creating the SIP stack.
-	 * 
-	 * @throws PeerUnavailableException
-	 *             if the peer class could not be found
-	 */
+      /**
+       * Creates an instance of a SipStack implementation based on the
+       * configuration properties object passed to this method. The 
+       * recommended behaviour is to not specify an
+       * "javax.sip.IP_ADDRESS" property in the Properties argument, in this 
+       * case the "javax.sip.STACK_NAME" uniquely identifies the stack. 
+       * A new stack instance will be returned for each different stack name 
+       * associated with a specific vendor implementation. The 
+       * ListeningPoint is used to configure the IP Address argument. 
+       * For backwards compatability, if a "javax.sip.IP_ADDRESS" is supplied, 
+       * this method ensures that only one instance of a SipStack is returned 
+       * to the application for that IP Address, independent of the number of 
+       * times this method is called. Different SipStack instances are 
+       * returned for each different IP address.
+       * <p> 
+       * See {@link SipStack} for the expected format of the 
+       * <code>properties</code> argument. 
+       * 
+       * @throws PeerUnavailableException
+       *             if the peer class could not be found
+       */
 	public synchronized SipStack createSipStack(Properties properties)
 			throws PeerUnavailableException {
 
@@ -136,20 +143,19 @@ public class SipFactory {
 		String name = properties.getProperty("javax.sip.STACK_NAME");
 		if (name == null ) throw new PeerUnavailableException("Missing javax.sip.STACK_NAME property");
 		// IP address was not specified in the properties.
-		// this means that the architecture supports a single sip stack
+		// This means that the architecture supports a single sip stack 
 		// instance per stack name
 		// and each listening point is assinged its own IP address.
 		if ( ipAddress == null) {
 			SipStack mySipStack = (SipStack) this.sipStackByName.get(name);
 			if (mySipStack == null) {
 				mySipStack = createStack(properties);
-				
 			}
 			return mySipStack;
 		} else {
 			// Check to see if a stack with that IP Address is already
-			// created, if so select it to be returned. In this case
-			// the Name is not used.
+			// created, if so select it to be returned. In this case the
+			// the name is not used.
 			int i = 0;
 			for (i = 0; i < sipStackList.size(); i++) {
 				if (((SipStack) sipStackList.get(i)).getIPAddress().equals( ipAddress )) {						
@@ -247,8 +253,6 @@ public class SipFactory {
 	 * implementation of this specification before it creates another vendors
 	 * implementation of this specification by changing the <var>pathname</var>
 	 * of the SipFactory.
-	 * 
-	 * @since v1.1
 	 */
 	public void resetFactory() {
 		sipStackList.clear();
@@ -297,7 +301,7 @@ public class SipFactory {
 			// create parameters argument to identify constructor
 			Class[] paramTypes = new Class[1];
 			paramTypes[0] = Class.forName("java.util.Properties");
-			// get constructor of SipSatck in order to instantiate
+			// get constructor of SipStack in order to instantiate
 			Constructor sipStackConstructor = Class.forName(
 					getPathName() + ".javax.sip.SipStackImpl").getConstructor(
 					paramTypes);
@@ -311,7 +315,7 @@ public class SipFactory {
 			sipStackList.add(sipStack);
 			String name = properties.getProperty("javax.sip.STACK_NAME");
 			this.sipStackByName.put(name, sipStack);
-			return sipStack;
+                        return sipStack;    
 		} catch (Exception e) {
 			String errmsg = "The Peer SIP Stack: "
 					+ getPathName()

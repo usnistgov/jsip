@@ -39,8 +39,7 @@ import java.util.*;
  * @see ViaHeader
  * @see UserAgentHeader
  *
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 public interface ServerHeader extends Header {

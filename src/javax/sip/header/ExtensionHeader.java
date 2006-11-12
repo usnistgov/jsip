@@ -37,8 +37,7 @@ import java.text.ParseException;
  * Headers that are not part of the current version of this specification 
  * <b>MUST</b> implement ExtensionHeader.
  *
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST. 
  * @since 1.1
  * @version 1.2
  */

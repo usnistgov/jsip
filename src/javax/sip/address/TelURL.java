@@ -57,9 +57,7 @@ import javax.sip.header.Parameters;
  * See <a href = "http://www.ietf.org/rfc/rfc2806.txt">RFC2806</a> for more 
  * information on the use of TelURL's.
  *
- * @author BEA Systems, Inc. 
- * @author NIST
- * 
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 

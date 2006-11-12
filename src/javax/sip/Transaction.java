@@ -42,10 +42,8 @@ import java.io.Serializable;
  * common between client and server transactions.
  *
  * @see TransactionState
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
- * @since v1.1
  */
 
 public interface Transaction extends Serializable{

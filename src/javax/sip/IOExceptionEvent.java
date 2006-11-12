@@ -43,8 +43,7 @@ import java.util.EventObject;
  * attempts to resend a pending request. Note that synchronous IO Exceptions
  * are presented to the caller as SipException.
  * 
- * @author BEA Systems, Inc.
- * @author NIST 
+ * @author BEA Systems, NIST 
  * @since v1.2
  */
 public class IOExceptionEvent extends EventObject {

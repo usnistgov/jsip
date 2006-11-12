@@ -28,8 +28,7 @@ import java.util.Iterator;
  * This interface defines methods for accessing generic parameters for 
  * Headers that contain generic parameter values.
  *
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 public interface Parameters {
