@@ -84,8 +84,7 @@ import javax.sip.InvalidArgumentException;
  * <code>Expires: 5</code>
 
  *
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
 
  */
@@ -100,7 +99,6 @@ public interface ExpiresHeader extends Header {
      *
      * @param expires - the new expires value of this ExpiresHeader
      * @throws InvalidArgumentException if supplied value is less than zero.
-     * @since v1.1
      */
 
     public void setExpires(int expires) throws InvalidArgumentException;
@@ -110,7 +108,6 @@ public interface ExpiresHeader extends Header {
      * relative time.
      *
      * @return the expires value of the ExpiresHeader.
-     * @since v1.1
      */
 
     public int getExpires();

@@ -36,9 +36,7 @@ import java.text.ParseException;
  * For Example:<br>
  * <code>In-Reply-To: 70710@saturn.jcp.org, 17320@saturn.jcp.org</code>
  *
- * @since 1.1
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 public interface InReplyToHeader extends Header {

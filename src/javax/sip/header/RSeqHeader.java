@@ -42,9 +42,7 @@ import javax.sip.InvalidArgumentException;
  * A server must ignore Headers that it does not understand. A proxy must not 
  * remove or modify Headers that it does not understand.
  *
- * @since 1.1
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 
@@ -53,10 +51,8 @@ public interface RSeqHeader extends Header {
     /**
      * Sets the sequence number value of the RSeqHeader of the provisional 
      * response. The sequence number MUST be expressible as a 32-bit unsigned 
-     * integer and MUST be less than 2**32 -1.
+     * integer and MUST be less than 2**31.
      *
-     * @deprecated This method is replaced with {@link #setSeqNumber(long)} with 
-     * type long.
      * @param sequenceNumber - the new Sequence number of this RSeqHeader
      * @throws InvalidArgumentException if supplied value is less than zero.
      */
@@ -65,33 +61,9 @@ public interface RSeqHeader extends Header {
     /**
      * Gets the sequence number of this RSeqHeader.
      *
-     * @deprecated This method is replaced with {@link #getSeqNumber()} with 
-     * type long.
      * @return the integer value of the Sequence number of the RSeqHeader
      */
     public int getSequenceNumber();    
-
-   
-    /**
-     * Sets the sequence number value of the RSeqHeader. 
-     *
-     * @param sequenceNumber - the new sequence number of this RSeqHeader
-     * @throws InvalidArgumentException if supplied value is less than zero.
-     * @since v1.2
-     */
-    public void setSeqNumber(long sequenceNumber) 
-                                        throws InvalidArgumentException;    
-    
-    /**
-     * Gets the sequence number of this RSeqHeader.
-     *
-     * @return the sequence number of the RSeqHeader
-     * @since v1.2
-     */
-    public long getSeqNumber();    
-    
-   
-   
     
     /**
      * Name of RSeqHeader

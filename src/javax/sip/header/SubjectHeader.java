@@ -44,8 +44,7 @@ import java.text.ParseException;
  * <code>Subject: Where is the Moscone?</code>
 
  *
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
 
  */

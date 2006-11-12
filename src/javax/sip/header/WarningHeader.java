@@ -76,8 +76,7 @@ import javax.sip.InvalidArgumentException;
  * For Example:<br>
  * <code>Warning: 307 isi.edu "Session parameter 'foo' not understood"</code>
  *
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 

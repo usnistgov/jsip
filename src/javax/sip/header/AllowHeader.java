@@ -38,10 +38,8 @@ import java.text.ParseException;
  * For Example:<br>
  * <code>Allow: INVITE, ACK, OPTIONS, CANCEL, BYE</code>
  *
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
- * @since 1.1
  */
 public interface AllowHeader extends Header {
 
@@ -54,7 +52,6 @@ public interface AllowHeader extends Header {
      * in this AllowHeader
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the method supported.
-     * @since v1.1
      */
     public void setMethod(String method) throws ParseException;
 
@@ -63,7 +60,6 @@ public interface AllowHeader extends Header {
      * defined in this Allow Header.
      *
      * @return the string identifing the method of AllowHeader.
-     * @since v1.1
      */
     public String getMethod();
 

@@ -26,8 +26,7 @@ package javax.sip;
  * The TransactionUnavailableException indicates that a vendor's implementation 
  * could not create a Transaction for some reason.
  *
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 public class TransactionUnavailableException extends SipException {

@@ -185,8 +185,8 @@ public class Shootme extends TestHarness implements SipListener {
 				toHeader = (ToHeader) ringing.getHeader(ToHeader.NAME);
 				toHeader.setTag("5432"); // Application is supposed to set.
 				st.sendResponse(ringing);
-				assertTrue("server tx state should be proceeding", st
-						.getState() == TransactionState.PROCEEDING);
+				assertEquals("server tx state should be proceeding", st
+						.getState(),TransactionState.PROCEEDING);
 
 				this.okResponse = protocolObjects.messageFactory
 						.createResponse(Response.OK, request);
@@ -216,7 +216,7 @@ public class Shootme extends TestHarness implements SipListener {
 					+ okResponse.getStatusCode() + " "
 					+ inviteTid.getDialog().getState());
 
-			assertTrue(inviteTid.getState() == TransactionState.TERMINATED);
+			assertEquals("invite tx state should be terminated", inviteTid.getState(),TransactionState.TERMINATED);
 
 		} catch (SipException ex) {
 			logger.error("unexpected exception", ex);

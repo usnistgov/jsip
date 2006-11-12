@@ -32,10 +32,8 @@ import java.text.ParseException;
  * For Example:<br>
  * <code>Authentication-Info: nextnonce="47364c23432d2e131a5fb210812c"</code>
  *
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
- * @since 1.1
  */
 public interface AuthenticationInfoHeader extends Parameters, Header {
 
@@ -46,7 +44,6 @@ public interface AuthenticationInfoHeader extends Parameters, Header {
      * @param nextNonce - the new nextNonce String of this AuthenticationInfoHeader.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the nextNonce value.
-     * @since v1.1
      */
     public void setNextNonce(String nextNonce) throws ParseException;
 
@@ -55,7 +52,6 @@ public interface AuthenticationInfoHeader extends Parameters, Header {
      *
      * @return the String representing the nextNonce information, null if value is
      * not set.
-     * @since v1.1
      */
     public String getNextNonce();   
     
@@ -66,7 +62,6 @@ public interface AuthenticationInfoHeader extends Parameters, Header {
      * @param qop - the new Qop string of this AuthenticationInfoHeader.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the Qop value.
-     * @since v1.1
      */
     public void setQop(String qop) throws ParseException;
 
@@ -75,7 +70,6 @@ public interface AuthenticationInfoHeader extends Parameters, Header {
      *
      * @return the string representing the messageQop information, null if the 
      * value is not set.
-     * @since v1.1
      */
     public String getQop();        
 
@@ -86,7 +80,6 @@ public interface AuthenticationInfoHeader extends Parameters, Header {
      * @param cNonce - the new cNonce String of this AuthenticationInfoHeader.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the cNonce value.
-     * @since v1.1
      */
     public void setCNonce(String cNonce) throws ParseException;
 
@@ -95,7 +88,6 @@ public interface AuthenticationInfoHeader extends Parameters, Header {
      *
      * @return the String representing the cNonce information, null if value is
      * not set.
-     * @since v1.1
      */
     public String getCNonce();  
     
@@ -106,7 +98,6 @@ public interface AuthenticationInfoHeader extends Parameters, Header {
      * @param nonceCount - the new nonceCount integer of this AuthenticationInfoHeader.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the nonceCount value.
-     * @since v1.1
      */
     public void setNonceCount(int nonceCount) throws ParseException;
 
@@ -115,7 +106,6 @@ public interface AuthenticationInfoHeader extends Parameters, Header {
      *
      * @return the integer representing the nonceCount information, -1 if value is
      * not set.
-     * @since v1.1
      */
     public int getNonceCount();    
     
@@ -126,7 +116,6 @@ public interface AuthenticationInfoHeader extends Parameters, Header {
      * @param response - the new response String of this AuthenticationInfoHeader.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the Response.
-     * @since v1.1
      */
     public void setResponse(String response) throws ParseException;
 
@@ -134,7 +123,6 @@ public interface AuthenticationInfoHeader extends Parameters, Header {
      * Returns the Response value of this AuthenticationInfoHeader.
      *
      * @return the String representing the Response information.
-     * @since v1.1
      */
     public String getResponse();    
     

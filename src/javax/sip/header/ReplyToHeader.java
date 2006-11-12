@@ -48,8 +48,7 @@ package javax.sip.header;
  * @see Parameters
 
  *
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
 
  *

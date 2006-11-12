@@ -16,7 +16,9 @@
  *
  *  HISTORY
  *  Version   Date      Author              Comments
- *  1.1     08/10/2002  Phelim O'Doherty    
+ *  1.1     08/10/2002  Phelim O'Doherty
+ *  1.2     11/06/2006  Phelim O'Doherty    Changed Cseq to type long
+ *    
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 package javax.sip.header;
@@ -64,9 +66,7 @@ import java.text.ParseException;
  * For Example:<br>
  * <code>CSeq: 4711 INVITE</code>
  *
- *
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  *
  */
@@ -88,8 +88,6 @@ public interface CSeqHeader extends Header {
      * @return method of CSeqHeader
      */
     public String getMethod();
-
-
 
     /**
      * Sets the sequence number value of the CSeqHeader. The sequence number

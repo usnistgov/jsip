@@ -31,11 +31,11 @@ import java.text.ParseException;
  *
  * @author M. Ranganathan   NIST/ITL/ANTD
  * @since 1.1
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-11-01 02:23:05 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2006-11-12 21:52:39 $
  *
  * 
  */
-public class AuthenticationInfo
+public final class AuthenticationInfo
 	extends ParametersHeader
 	implements javax.sip.header.AuthenticationInfoHeader {
 

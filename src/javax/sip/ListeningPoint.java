@@ -34,8 +34,7 @@ import java.text.ParseException;
  * If set, this string will be placed in the sent-by parameter of the
  * top most Via header of outgoing requests.
  *
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 
@@ -127,22 +126,17 @@ public interface ListeningPoint extends Cloneable, Serializable {
     /**
      * Transport constant: SCTP
      *
-     * @since v1.1
      */
     public static final String SCTP = "SCTP";
 
     /**
      * Transport constant: TLS over TCP 
-     *
-     * @since v1.1
      */
     public static final String TLS = "TLS";
 
     /**
      * Port Constant: Default port 5060. This constant should only be used
      * when the transport of the ListeningPoint is set to UDP, TCP or SCTP.
-     *
-     * @since v1.1
      */
     public static final int PORT_5060 = 5060;
 
@@ -150,8 +144,6 @@ public interface ListeningPoint extends Cloneable, Serializable {
      * Port Constant: Default port 5061. This constant should only be used
      * when the transport of the Listening Point is set to TLS over TCP or TCP 
      * assuming the scheme is "sips".
-     *
-     * @since v1.1
      */
     public static final int PORT_5061 = 5061;
 

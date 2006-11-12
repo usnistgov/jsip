@@ -33,8 +33,7 @@ import java.util.EventObject;
  * all internal book keeping records for a given transaction - thereby
  * allowing the Listener to unmap its own data structures.
  * 
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @since v1.2
  *
  */

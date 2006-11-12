@@ -58,9 +58,7 @@ import java.text.ParseException;
  * @see ContentEncodingHeader
  * @see ContentLanguageHeader
  *
- * @since 1.1
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 public interface ContentDispositionHeader extends Parameters, Header {

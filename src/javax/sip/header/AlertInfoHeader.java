@@ -40,9 +40,7 @@ import javax.sip.address.URI;
  * For Example:<br>
  * <code>Alert-Info: <http://jcp.org/yeeha.wav></code>
  *
- * @author BEA Systems, Inc. 
- * @author NIST
- * @since v 1.1
+* @author BEA Systems, NIST
  * @version 1.2
  */
 
@@ -53,7 +51,6 @@ public interface AlertInfoHeader extends Parameters, Header {
      * parameter value.
      *
      * @param alertInfo the new Alert Info URI of this AlertInfoHeader.
-     * @since v1.1
      */
     public void setAlertInfo(URI alertInfo);
 
@@ -61,7 +58,6 @@ public interface AlertInfoHeader extends Parameters, Header {
      * Returns the AlertInfo value of this AlertInfoHeader.
      *
      * @return the URI representing the AlertInfo.
-     * @since v1.1
      */
     public URI getAlertInfo();
     

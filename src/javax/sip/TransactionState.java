@@ -210,10 +210,8 @@ import java.io.*;
 
  *
 
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
- * @since 1.1
 
  */
 
@@ -322,10 +320,10 @@ public final class TransactionState implements Serializable{
     /**
      * Compare this transaction state for equality with another.
      * 
-     * @since v1.2
+     * @since 1.2
      * @param obj the object to compare this with.
      * @return <code>true</code> if <code>obj</code> is an instance of this class
-     * representing the same SLEE state as this, <code>false</code> otherwise.
+     * representing the same transaction state as this, <code>false</code> otherwise.
      */
     public boolean equals(Object obj) {
         if (obj == this) return true;
@@ -336,7 +334,7 @@ public final class TransactionState implements Serializable{
     /**
      * Get a hash code value for this transaction state.
      * 
-     * @since v1.2
+     * @since 1.2
      * @return a hash code value.
      */
     public int hashCode() {

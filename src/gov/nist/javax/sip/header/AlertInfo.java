@@ -36,11 +36,11 @@ import javax.sip.address.*;
  * 
  * @since 1.1
  * 
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:25 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2006-11-12 21:52:39 $
  *
  * 
  */
-public class AlertInfo
+public final class AlertInfo
 	extends ParametersHeader
 	implements javax.sip.header.AlertInfoHeader {
 

@@ -1191,6 +1191,7 @@ public class InviteServerTransactionsStateMachineTest
 					ex);
 			}
 			//Send the initial request
+			//riSipProvider.setAutomaticDialogSupportEnabled(false);
 			try {
 				eventCollector.collectRequestEvent(tiSipProvider);
 				riSipProvider.sendRequest(invite);
@@ -1430,8 +1431,8 @@ public class InviteServerTransactionsStateMachineTest
 			try {
 				riSipProvider.sendRequest(ack);
 			} catch (SipException ex) {
-				ex.printStackTrace();
-				fail("error sending ack ");
+				
+				fail("error sending ack ",ex);
 			}
 		} catch (Throwable exc) {
 			exc.printStackTrace();

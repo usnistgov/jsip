@@ -76,10 +76,9 @@ import javax.sip.InvalidArgumentException;
  * globally unique for that branch, and contain the requisite magic cookie. Note
  * that this implies that the branch parameter will be different for different
  * instances of a spiraled or looped request through a proxy. If a proxy server
- * receives a Request which contains its own address in a ViaHeader, it SHOULD
- * check for loops and may respond with a 482 (Loop Detected) Response. A proxy 
- * server must not forward a Request to a multicast group which already appears 
- * in any of the ViaHeaders.
+ * receives a Request which contains its own address in a ViaHeader, it must
+ * respond with a 482 (Loop Detected) Response. A proxy server must not forward
+ * a Request to a multicast group which already appears in any of the ViaHeaders.
  * This prevents a malfunctioning proxy server from causing loops. Also, it
  * cannot be guaranteed that a proxy server can always detect that the address
  * returned by a location service refers to a host listed in the ViaHeader list,
@@ -94,7 +93,7 @@ import javax.sip.InvalidArgumentException;
  * a maddr parameter or is a receiver-tagged field.
  * <li>If the second ViaHeader contains a maddr parameter, send the Response to
  * the multicast address listed there, using the port indicated in "sent-by",
- * or a default port if none is present. The Response should be sent using the TTL
+ * or port 5060 if none is present. The Response should be sent using the TTL
  * indicated in the ttl parameter, or with a TTL of 1 if that parameter is not
  * present. For robustness, Responses must be sent to the address indicated in
  * the maddr parameter even if it is not a multicast address.
@@ -109,7 +108,7 @@ import javax.sip.InvalidArgumentException;
  * <ul>
  * <li>If the first ViaHeader in the Request contains a maddr parameter, send
  * the Response to the multicast address listed there, using the port indicated,
- * or a default port if none is present. The Response should be sent using the TTL
+ * or port 5060 if none is present. The Response should be sent using the TTL
  * indicated in the ttl parameter, or with a TTL of 1 if that parameter is not
  * present. For robustness, Responses must be sent to the address indicated in
  * the maddr parameter even if it is not a multicast address.
@@ -139,8 +138,7 @@ import javax.sip.InvalidArgumentException;
  * (including port) are equal, both have the same set of parameters, and the 
  * values of all parameters are equal.
  *
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 public interface ViaHeader extends Parameters, Header {
@@ -252,8 +250,8 @@ public interface ViaHeader extends Parameters, Header {
     public void setMAddr(String mAddr) throws ParseException;
 
     /**
-     * Gets the received paramater of the ViaHeader. Returns <code>null</code>
-     * if received does not exist.
+     * Gets the received paramater of the ViaHeader. Returns null if received
+     * does not exist.
      *
      * @return the string received value of ViaHeader
      */
@@ -284,28 +282,32 @@ public interface ViaHeader extends Parameters, Header {
      * only be used by the application when sending Requests outside of a 
      * transaction.
      *
-     * @param branch - the new string branch parameter of the ViaHeader.
+     * @param branch - the new string branch parmameter of the ViaHeader.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the branch value.
      */
     public void setBranch(String branch) throws ParseException;
 
-  
-    
     /**
-     * Sets the rport flag in this ViaHeader. This allows a client to request 
-     * that the next hop send the response back to the source IP address and 
-     * port from which the request originated, instead of the port in the Via
-     * header. See <a href = "http://www.ietf.org/rfc/rfc3581.txt">RFC3581</a>
+     * Set the rport part of this ViaHeader. This method indicates to the 
+     * remote party that you want it to use rport. It is the applications 
+     * responsisbility to call this method to inform the implementation to set 
+     * the value of the rport. This allows a client 
+     * to request that the server send the response back to the source IP 
+     * address and port from which the request originated. 
+     * See <a href = "http://www.ietf.org/rfc/rfc3581.txt">RFC3581</a>
      *
+     *
+     * @throws InvalidArgumentException if rport value is an illegal integer ( <=0 ).
      * @since v1.2
      */
-    public void setRPort();
+    public void setRPort() throws InvalidArgumentException;     
 
     /**
-     * Returns the rport parameter from this ViaHeader.
+     * Returns the rport part of this ViaHeader.
      *
-     * @return the integer value of the rport or -1 if the rport parameter is not set.
+     * @return the integer value of the rport or -1 if the rport parameter 
+     * is not set.
      * @since v1.2
      */    
     public int getRPort();     

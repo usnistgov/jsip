@@ -68,9 +68,7 @@ import javax.sip.InvalidArgumentException;
  * For example:<br>
  * <code>Accept: application/sdp;level=1, application/x-private, text/html</code>
  *
- * @author BEA Systems, Inc. 
- * @author NIST
- * @since v 1.1
+* @author BEA Systems, NIST
  * @version 1.2
  *
  */

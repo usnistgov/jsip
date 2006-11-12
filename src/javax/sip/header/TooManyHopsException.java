@@ -27,8 +27,7 @@ import javax.sip.SipException;
  * This Exception is thrown when a user attempts decrement the Hop count when
  * the message as already reached its max number of forwards.
  *
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 public class TooManyHopsException extends SipException {

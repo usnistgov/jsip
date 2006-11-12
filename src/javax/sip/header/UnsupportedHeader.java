@@ -29,8 +29,7 @@ package javax.sip.header;
  *
  * @see SupportedHeader
  * @see RequireHeader
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 

@@ -46,9 +46,7 @@ package javax.sip.header;
  * @see ContentTypeHeader
  * @see ContentLanguageHeader
  *
- * @author BEA Systems, Inc. 
- * @author NIST
- * @since 1.1
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 

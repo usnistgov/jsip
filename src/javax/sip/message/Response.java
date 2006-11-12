@@ -42,7 +42,7 @@ import java.text.ParseException;
  * the server contacted is performing some further action and does not yet have 
  * a definitive response. 
  * <ul>
- * <li> JAIN SIP also supports the delivery of reliable provisional responses as defined in 
+ * <li> This specification also supports the delivery of reliable provisional responses as defined in 
  * <a href = "http://www.ietf.org/rfc/rfc3262.txt">RFC 3262</a>. When 
  * the UAC creates a new request, it can insist on reliable delivery of 
  * provisional responses for that request. To do that, it inserts a Require 
@@ -104,9 +104,10 @@ import java.text.ParseException;
  * with the Response, since that message body is likely to include 
  * human-readable information which will explain the unusual status.
  * <p>
- * JAIN SIP supports the response codes defined in RFC3261 and also the response 
- * code extensions for the event notification framework, documented in 
- * <a href = "http://www.ietf.org/rfc/rfc3262.txt">RFC3265</a>, these are 
+ * This specification supports the response codes defined in RFC3261 and also the response 
+ * code extensions for the event notification framework and PUBLISH, documented in 
+ * <a href = "http://www.ietf.org/rfc/rfc3262.txt">RFC3265</a> and 
+ * <a href = "http://www.ietf.org/rfc/rfc3909.txt">RFC3909</a>, these are 
  * highlighted in italic. Class status codes (x00, i.e. 100) are are highlighted 
  * in bold.
  * </p>
@@ -155,7 +156,7 @@ import java.text.ParseException;
  * <LI>PROXY_AUTHENTICATION_REQUIRED - 407</LI>
  * <LI>REQUEST_TIMEOUT - 408</LI>
  * <LI>GONE - 410</LI>
- * <LI>CONDITIONAL_REQUEST_FAILED - 412 
+ * <LI><i>CONDITIONAL_REQUEST_FAILED - 412 (Extension RFC3909)<i>
  * <LI>REQUEST_ENTITY_TOO_LARGE - 413
  * <LI>REQUEST_URI_TOO_LONG - 414
  * <LI>UNSUPPORTED_MEDIA_TYPE - 415</LI>
@@ -200,8 +201,7 @@ import java.text.ParseException;
  * </tr>
  * </table>
  *
- * @author BEA Systems, Inc.
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  * 
  */
@@ -289,8 +289,6 @@ public interface Response extends Message {
      * the progress of the call that is not otherwise classified. The 
      * Reason-Phrase, header fields, or message body MAY be used to convey more 
      * details about the call progress.
-     * 
-     * @since v1.1
      */
     public static final int SESSION_PROGRESS = 183;      
 
@@ -315,8 +313,6 @@ public interface Response extends Message {
      * status monitor or some estimate of when the user can expect the request 
      * to be fulfilled. This response code is specific to the event notification 
      * framework. 
-     *
-     * @since v1.1
      */
     public static final int ACCEPTED = 202;    
     
@@ -464,7 +460,7 @@ public interface Response extends Message {
     /**
      * The server is refusing to service the PUBLISH request because the 
      * entity-tag in the SIP-If-Match header does not match with existing 
-     * event state
+     * event state.
      *
      * @since v1.2
      */
@@ -478,16 +474,12 @@ public interface Response extends Message {
      * the request. If the condition is temporary, the server SHOULD include a 
      * Retry-After header field to indicate that it is temporary and after what
      * time the client MAY try again.
-     *
-     * @since v1.1
      */
     public static final int REQUEST_ENTITY_TOO_LARGE = 413;    
     
     /**
      * The server is refusing to service the request because the Request-URI
      * is longer than the server is willing to interpret.
-     *
-     * @since v1.1
      */
     public static final int REQUEST_URI_TOO_LONG = 414;
 
@@ -502,9 +494,7 @@ public interface Response extends Message {
 
     /**
      * The server cannot process the request because the scheme of the URI in 
-     * the Request-URI is unknown to the server. 
-     *
-     * @since v1.1  
+     * the Request-URI is unknown to the server.  
      */
     public static final int UNSUPPORTED_URI_SCHEME = 416; 
     
@@ -526,8 +516,6 @@ public interface Response extends Message {
      * listed in the Supported header field, servers SHOULD process the request 
      * using baseline SIP capabilities and any extensions supported by the 
      * client.
-     * 
-     * @since v1.1
      */
     public static final int EXTENSION_REQUIRED = 421;    
     
@@ -536,8 +524,6 @@ public interface Response extends Message {
      * resource refreshed by the request is too short. This response can be 
      * used by a registrar to reject a registration whose Contact header field 
      * expiration time was too small. 
-     * 
-     * @since v1.1
      */
     public static final int INTERVAL_TOO_BRIEF = 423;    
     
@@ -555,8 +541,6 @@ public interface Response extends Message {
      * This status is also returned by a redirect or proxy server that 
      * recognizes the user identified by the Request-URI, but does not currently 
      * have a valid forwarding location for that user.
-     * 
-     * @since v1.1
      */
     public static final int TEMPORARILY_UNAVAILABLE = 480;    
     
@@ -616,8 +600,6 @@ public interface Response extends Message {
     /**
      * The request was terminated by a BYE or CANCEL request. This response is 
      * never returned for a CANCEL request itself.
-     *
-     * @since v1.1
      */
     public static final int REQUEST_TERMINATED = 487;
     
@@ -629,8 +611,6 @@ public interface Response extends Message {
      * according to the Accept header field in the INVITE (or application/sdp 
      * if not present), the same as a message body in a 200 (OK) response to 
      * an OPTIONS request.
-     *
-     * @since v1.1
      */
     public static final int NOT_ACCEPTABLE_HERE = 488;    
     
@@ -639,16 +619,12 @@ public interface Response extends Message {
      * server did not understand the event package specified in a "Event" 
      * header field. This response code is specific to the event notification 
      * framework. 
-     *
-     * @since v1.1
      */
     public static final int BAD_EVENT = 489;     
     
     /**
      * The request was received by a UAS that had a pending request within
      * the same dialog. 
-     *
-     * @since v1.1
      */
     public static final int REQUEST_PENDING = 491;   
     
@@ -658,8 +634,6 @@ public interface Response extends Message {
      * appropriate decryption key. This response MAY have a single body 
      * containing an appropriate public key that should be used to encrypt MIME 
      * bodies sent to this UA.  
-     *
-     * @since v1.1
      */
     public static final int UNDECIPHERABLE = 493;           
     
@@ -703,8 +677,6 @@ public interface Response extends Message {
      * <p>
      * Servers MAY refuse the connection or drop the request instead of 
      * responding with 503 (Service Unavailable).
-     *
-     * @since v1.1
      */
     public static final int SERVICE_UNAVAILABLE = 503;
 
@@ -727,8 +699,6 @@ public interface Response extends Message {
     /**
      * The server was unable to process the request since the message length 
      * exceeded its capabilities.
-     *
-     * @since v1.1
      */
     public static final int MESSAGE_TOO_LARGE = 513; 
         

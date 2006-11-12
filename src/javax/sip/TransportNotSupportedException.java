@@ -25,8 +25,7 @@ package javax.sip;
  * The TransportNotSupportedException indicates that a specific transport is 
  * not supported by a vendor's implementation of this specification.
  *
- * @author BEA Systems, Inc.
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 

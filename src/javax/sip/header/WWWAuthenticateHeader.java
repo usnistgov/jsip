@@ -43,8 +43,7 @@ import javax.sip.address.URI;
  * algorithm=MD5</code>
  *
  * @see Parameters
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 
@@ -56,7 +55,6 @@ public interface WWWAuthenticateHeader extends Parameters, Header {
      *
      * @param scheme - the new string value that identifies the challenge 
      * information scheme.
-     * @since v1.1
      */
     public void setScheme(String scheme);
 
@@ -65,7 +63,6 @@ public interface WWWAuthenticateHeader extends Parameters, Header {
      * Returns the scheme of the challenge information for this WWWAuthenticateHeader.
      *
      * @return the string value of the challenge information.
-     * @since v1.1
      */
     public String getScheme();    
     
@@ -79,7 +76,6 @@ public interface WWWAuthenticateHeader extends Parameters, Header {
      * @param realm the new Realm String of this WWWAuthenicateHeader.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the realm.
-     * @since v1.1
      */
     public void setRealm(String realm) throws ParseException;
 
@@ -89,7 +85,6 @@ public interface WWWAuthenticateHeader extends Parameters, Header {
      *
      * @return the String representing the Realm information, null if value is
      * not set.
-     * @since v1.1
      */
     public String getRealm();
 
@@ -100,7 +95,6 @@ public interface WWWAuthenticateHeader extends Parameters, Header {
      * @param nonce - the new nonce String of this WWWAuthenicateHeader.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the nonce value.
-     * @since v1.1
      */
     public void setNonce(String nonce) throws ParseException;
 
@@ -109,7 +103,6 @@ public interface WWWAuthenticateHeader extends Parameters, Header {
      *
      * @return the String representing the nonce information, null if value is
      * not set.
-     * @since v1.1
      */
     public String getNonce();    
     
@@ -117,8 +110,7 @@ public interface WWWAuthenticateHeader extends Parameters, Header {
      * Sets the URI of the WWWAuthenicateHeader to the URI parameter value.
      *
      * @param uri - the new URI of this WWWAuthenicateHeader.
-     * @deprecated URI is not a supported parameter for this header.
-     * @since v1.2
+     * @deprecated Since v1.2. URI is not a supported parameter for this header.
      */
     public void setURI(URI uri);
 
@@ -127,9 +119,8 @@ public interface WWWAuthenticateHeader extends Parameters, Header {
      *
      * @return the URI representing the URI information, null if value is
      * not set.
-     * @deprecated URI is not a supported parameter for this header. This method 
-     * should return null.
-     * @since v1.2
+     * @deprecated Since v1.2. URI is not a supported parameter for this 
+     * header. This method should return null.
      */
     public URI getURI();            
     
@@ -140,7 +131,6 @@ public interface WWWAuthenticateHeader extends Parameters, Header {
      * @param algorithm - the new algorithm String of this WWWAuthenicateHeader.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the algorithm value.
-     * @since v1.1
      */
     public void setAlgorithm(String algorithm) throws ParseException;
 
@@ -149,7 +139,6 @@ public interface WWWAuthenticateHeader extends Parameters, Header {
      *
      * @return the String representing the Algorithm information, null if the 
      * value is not set.
-     * @since v1.1
      */
     public String getAlgorithm();        
     
@@ -160,7 +149,6 @@ public interface WWWAuthenticateHeader extends Parameters, Header {
      * @param qop - the new Qop string of this WWWAuthenicateHeader.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the Qop value.
-     * @since v1.1
      */
     public void setQop(String qop) throws ParseException;
 
@@ -169,7 +157,6 @@ public interface WWWAuthenticateHeader extends Parameters, Header {
      *
      * @return the string representing the Qop information, null if the 
      * value is not set.
-     * @since v1.1
      */
     public String getQop();        
     
@@ -180,7 +167,6 @@ public interface WWWAuthenticateHeader extends Parameters, Header {
      * @param opaque - the new Opaque string of this WWWAuthenicateHeader.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the opaque value.
-     * @since v1.1
      */
     public void setOpaque(String opaque) throws ParseException;
 
@@ -189,7 +175,6 @@ public interface WWWAuthenticateHeader extends Parameters, Header {
      *
      * @return the String representing the Opaque information, null if the 
      * value is not set.
-     * @since v1.1
      */
     public String getOpaque();    
 
@@ -200,7 +185,6 @@ public interface WWWAuthenticateHeader extends Parameters, Header {
      * @param domain - the new Domain string of this WWWAuthenicateHeader.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the domain.
-     * @since v1.1
      */
     public void setDomain(String domain) throws ParseException;
 
@@ -210,7 +194,6 @@ public interface WWWAuthenticateHeader extends Parameters, Header {
      *
      * @return the String representing the Domain information, null if value is
      * not set.
-     * @since v1.1
      */
     public String getDomain();       
     
@@ -219,7 +202,6 @@ public interface WWWAuthenticateHeader extends Parameters, Header {
      * stale parameter value.
      *
      * @param stale - the new boolean value of the stale parameter.
-     * @since v1.1
      */
     public void setStale(boolean stale);
 
@@ -228,7 +210,6 @@ public interface WWWAuthenticateHeader extends Parameters, Header {
      * WWWAuthenicateHeader. 
      *
      * @return the boolean representing if the challenge is stale.
-     * @since v1.1
      */
     public boolean isStale();      
  

@@ -63,9 +63,7 @@ import java.text.ParseException;
  * associated with the body of its SUBSCRIBE requests or parameters for the 
  * Event header, those semantics apply.
  *
- * @since v1.1
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 

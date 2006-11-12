@@ -60,10 +60,8 @@ import javax.sip.message.Request;
  * <b>Non-Invite Transaction:</b><br>
  * Trying --> Proceeding --> Completed --> Terminated
  * 
- * @author BEA Systems, Inc.
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
- * @since v1.1
  */
 public interface ClientTransaction extends Transaction {
 
@@ -147,14 +145,13 @@ public interface ClientTransaction extends Transaction {
      * transaction.
      * @throws SipException if this method is called before a final response 
      * is received for the transaction.
-     * @deprecated Since v1.2 - since a transaction that received
+     * @deprecated Since v1.2. As a transaction that received
      * a 2xx response terminates immediately, it cannot be used for creating
-     * the ack. If this transaction created a dialog, the 
+     * the corresponding ACK. If this transaction created a dialog, the 
      * {@link Dialog#createAck(long)} method
      * should be used. Otherwise the stack will automatically create and
      * send the ACK for non-2xx responses that need to be acknowledged. 
      * That is the application should never need to use this method.
-     * @since v1.2
      */
     public Request createAck() throws SipException;  
     
