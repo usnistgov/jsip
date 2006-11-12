@@ -24,9 +24,8 @@ package javax.sip;
  * The TransportAlreadySupportedException indicates that a specific transport is 
  * already supported by a SipProvider via its ListeningPoints.
  *
- * @author BEA Systems, Inc.
- * @author NIST
- * @version 1.2
+ * @author BEA Systems, NIST
+ * @since 1.2
  */
 
 public class TransportAlreadySupportedException extends SipException {

@@ -33,16 +33,14 @@ import java.util.EventObject;
  * all internal book keeping records for a given dialog, allowing the 
  * Listener to unmap its own data structures.
  * 
- * @author BEA Systems, Inc. 
- * @author NIST
- * 
+ * @author BEA Systems, NIST
  * @since v1.2
  *
  */
 public class DialogTerminatedEvent extends EventObject {
     
     /**
-     * Constructs a DialogTerminatedEvent to indicate a server retransmission or transaction
+     * Constructs a DialogTerminatedEvent to indicate a dialog
      * timeout.
      *
      * @param source - the source of TimeoutEvent. 

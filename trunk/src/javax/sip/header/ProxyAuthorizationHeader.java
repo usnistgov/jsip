@@ -92,8 +92,7 @@ package javax.sip.header;
  * @see Parameters
 
  * @see ProxyAuthenticateHeader
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
 
  */

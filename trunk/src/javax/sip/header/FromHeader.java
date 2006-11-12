@@ -126,8 +126,7 @@ import java.text.ParseException;
  * From: sip:+12125551212@phone2net.com;tag=887s<br>
  * From: Anonymous sip:c8oqz84zk7z@privacy.org;tag=hyh8</code>
  *
- * @author BEA Systems, Inc.
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 public interface FromHeader extends HeaderAddress, Parameters, Header {

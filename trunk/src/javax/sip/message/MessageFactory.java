@@ -34,8 +34,7 @@ import java.util.List;
  * This class is a singleton and can be retrieved from the 
  * {@link javax.sip.SipFactory#createMessageFactory()}.
  *
- * @author BEA Systems, Inc.
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 public interface MessageFactory {

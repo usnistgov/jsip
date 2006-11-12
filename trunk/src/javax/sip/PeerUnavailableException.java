@@ -26,10 +26,8 @@ package javax.sip;
  * The PeerUnavailableException indicates that a vendor's implementation of a 
  * JAIN SIP interface could not be created for some reason.
  *
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
- * @since v1.1
  */
 public class PeerUnavailableException extends SipException {
 

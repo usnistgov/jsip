@@ -45,10 +45,8 @@ import javax.sip.address.URI;
  * @see Parameters
  * @see WWWAuthenticateHeader
  * @see ProxyAuthorizationHeader
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
- * @since 1.1
  *
  */
 
@@ -61,7 +59,6 @@ public interface AuthorizationHeader extends Parameters, Header {
      *
      * @param scheme - the new string value that identifies the response 
      * information scheme.
-     * @since v1.1
      */
     public void setScheme(String scheme);
 
@@ -70,7 +67,6 @@ public interface AuthorizationHeader extends Parameters, Header {
      * Returns the scheme of the Response information for this AuthorizationHeader.
      *
      * @return the string value of the response information.
-     * @since v1.1
      */
     public String getScheme();
 
@@ -84,7 +80,6 @@ public interface AuthorizationHeader extends Parameters, Header {
      * @param realm the new Realm String of this AuthorizationHeader.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the realm.
-     * @since v1.1
      */
     public void setRealm(String realm) throws ParseException;
 
@@ -95,7 +90,6 @@ public interface AuthorizationHeader extends Parameters, Header {
      *
      * @return the String representing the Realm information, null if value is
      * not set.
-     * @since v1.1
      */
     public String getRealm();
 
@@ -106,7 +100,6 @@ public interface AuthorizationHeader extends Parameters, Header {
      * @param username the new Username String of this AuthorizationHeader.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the username.
-     * @since v1.1
      */
     public void setUsername(String username) throws ParseException;
 
@@ -116,7 +109,6 @@ public interface AuthorizationHeader extends Parameters, Header {
      *
      * @return the String representing the Username information, null if value is
      * not set.
-     * @since v1.1
      */
     public String getUsername();
 
@@ -128,7 +120,6 @@ public interface AuthorizationHeader extends Parameters, Header {
      * @param nonce - the new nonce String of this AuthorizationHeader.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the nonce value.
-     * @since v1.1
      */
     public void setNonce(String nonce) throws ParseException;
 
@@ -137,7 +128,6 @@ public interface AuthorizationHeader extends Parameters, Header {
      *
      * @return the String representing the nonce information, null if value is
      * not set.
-     * @since v1.1
      */
     public String getNonce();    
     
@@ -146,7 +136,6 @@ public interface AuthorizationHeader extends Parameters, Header {
      * parameter value.
      *
      * @param uri - the new URI of this AuthorizationHeader.
-     * @since v1.1
      */
     public void setURI(URI uri);
 
@@ -155,7 +144,6 @@ public interface AuthorizationHeader extends Parameters, Header {
      *
      * @return the URI representing the URI information, null if value is
      * not set.
-     * @since v1.1
      */
     public URI getURI();     
     
@@ -166,7 +154,6 @@ public interface AuthorizationHeader extends Parameters, Header {
      * @param response - the new response String of this AuthorizationHeader.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the Response.
-     * @since v1.1
      */
     public void setResponse(String response) throws ParseException;
 
@@ -174,7 +161,6 @@ public interface AuthorizationHeader extends Parameters, Header {
      * Returns the Response value of this AuthorizationHeader.
      *
      * @return the String representing the Response information.
-     * @since v1.1
      */
     public String getResponse();
 
@@ -185,7 +171,6 @@ public interface AuthorizationHeader extends Parameters, Header {
      * @param algorithm - the new algorithm String of this AuthorizationHeader.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the algorithm value.
-     * @since v1.1
      */
     public void setAlgorithm(String algorithm) throws ParseException;
 
@@ -194,7 +179,6 @@ public interface AuthorizationHeader extends Parameters, Header {
      *
      * @return the String representing the Algorithm information, null if the 
      * value is not set.
-     * @since v1.1
      */
     public String getAlgorithm();    
 
@@ -205,7 +189,6 @@ public interface AuthorizationHeader extends Parameters, Header {
      * @param cNonce - the new cNonce String of this AuthorizationHeader.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the cNonce value.
-     * @since v1.1
      */
     public void setCNonce(String cNonce) throws ParseException;
 
@@ -214,7 +197,6 @@ public interface AuthorizationHeader extends Parameters, Header {
      *
      * @return the String representing the cNonce information, null if value is
      * not set.
-     * @since v1.1
      */
     public String getCNonce();        
     
@@ -225,7 +207,6 @@ public interface AuthorizationHeader extends Parameters, Header {
      * @param opaque - the new Opaque string of this AuthorizationHeader.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the opaque value.
-     * @since v1.1
      */
     public void setOpaque(String opaque) throws ParseException;
 
@@ -234,7 +215,6 @@ public interface AuthorizationHeader extends Parameters, Header {
      *
      * @return the String representing the Opaque information, null if the 
      * value is not set.
-     * @since v1.1
      */
     public String getOpaque();    
 
@@ -245,7 +225,6 @@ public interface AuthorizationHeader extends Parameters, Header {
      * @param qop - the new Qop string of this AuthorizationHeader.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the Qop value.
-     * @since v1.1
      */
     public void setQop(String qop) throws ParseException;
 
@@ -254,7 +233,6 @@ public interface AuthorizationHeader extends Parameters, Header {
      *
      * @return the string representing the Qop information, null if the 
      * value is not set.
-     * @since v1.1
      */
     public String getQop();    
     
@@ -265,7 +243,6 @@ public interface AuthorizationHeader extends Parameters, Header {
      * @param nonceCount - the new nonceCount integer of this AuthorizationHeader.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the nonceCount value.
-     * @since v1.1
      */
     public void setNonceCount(int nonceCount) throws ParseException;
 
@@ -274,7 +251,6 @@ public interface AuthorizationHeader extends Parameters, Header {
      *
      * @return the integer representing the nonceCount information, -1 if value is
      * not set.
-     * @since v1.1
      */
     public int getNonceCount();    
     

@@ -61,8 +61,7 @@ package javax.sip.header;
  *
  * @see Parameters
  * @see ProxyAuthorizationHeader
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 public interface ProxyAuthenticateHeader extends WWWAuthenticateHeader {

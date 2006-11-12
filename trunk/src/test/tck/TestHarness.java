@@ -5,6 +5,7 @@ import gov.nist.javax.sip.address.AddressFactoryImpl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -216,6 +217,11 @@ public class TestHarness extends TestCase {
 			String reason) {
 		println(" Test in function " + className
 				+ ":" + methodName + " failed because of " + reason);
+		
+		StringWriter stringWriter = new StringWriter();
+		new Exception().printStackTrace(new PrintWriter(stringWriter));
+		println(stringWriter.getBuffer().toString());
+		
 		testPassed = false;
 		if (abortOnFail) {
 			new Exception().printStackTrace();
@@ -345,9 +351,13 @@ public class TestHarness extends TestCase {
 
 	public static void fail(String message) {
 		logFailure(message);
-		new Exception().printStackTrace();
-		
+			
 		TestCase.fail(message);
+	}
+	
+	public static void fail(String message, Exception ex) {
+		logFailure(message);
+		logger.error(message,ex);
 	}
 
 	public static void fail() {

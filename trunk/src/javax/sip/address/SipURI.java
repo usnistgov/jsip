@@ -104,9 +104,7 @@ import javax.sip.InvalidArgumentException;
  * @see javax.sip.header.ContactHeader
  * @see URI
  *
- * @author BEA Systems, Inc. 
- * @author NIST
- * 
+ * @author BEA Systems, NIST 
  * @version 1.2
  *
  */
@@ -173,6 +171,7 @@ public interface SipURI extends URI, Parameters {
      * Set the host part of this SipURI to the newly supplied <code>host</code> 
      * parameter.
      *
+     * @param host - the new interger value of the host of this SipURI
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the host value.
      */  

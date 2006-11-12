@@ -69,7 +69,9 @@ import java.io.Serializable;
  * determined by the sequence of messages that occur on the initial dialog.
  * <p>
  * <b>Invite Dialog States:</b><br>
- * Null --> Early --> Confirmed --> Terminated <b>Other Dialog-creating requests
+ * Null --> Early --> Confirmed --> Terminated 
+ * <p>
+ * <b>Other Dialog-creating Requests
  * Dialog States (ie. SUBSCRIBE):</b><br>
  * Null --> Confirmed --> Terminated.
  * <p>
@@ -102,39 +104,38 @@ import java.io.Serializable;
  * a Retry-After header field with a randomly chosen value of between 0 and 10
  * seconds.
  * 
- * In v1.2 of this specification, the implementation handles retransmissions of
+ * In this release of this specification, the implementation handles retransmissions of
  * Responses that are specified as being handled by the UA core, if there is an
  * associated Dialog for a given transaction.
- * 
  * If there is no associated Dialog for a given transaction, the application
- * will be alerted to perform the retransmissions required by the UA core if it
- * wishes to be alerted. It should explicitly request such alerts  see 
- * {@link ServerTransaction#enableRetransmissionAlerts()}. To
- * achieve this behavior the SipProvider will deliver retransmission timer
- * events to the Listener with {@link Timeout#RETRANSMIT} notification so the
- * Listener is alerted to retransmit the Response see
+ * will be alerted to perform the retransmissions required by the UA core if 
+ * desired. Applications should explicitly request such alerts see 
+ * {@link ServerTransaction#enableRetransmissionAlerts()}. Once enabled the 
+ * SipProvider will deliver retransmission timer
+ * events to the Listener with a {@link Timeout#RETRANSMIT} notification. The
+ * SipListener can then retransmit the Response as necessary, see
  * {@link SipListener#processTimeout(TimeoutEvent)}.
- * 
+ * <p>
  * For INVITE Client Transactions:
  * <ul>
  * <li>UAC ACKs first 2xx response </li>
- * <li>Additional 2xx responses  will be Acked automatically if a Dialog is asssociated with the response</li>
- * <li>Additional 2xx responses will be presented to the listener if no dialog is associated with the response. In such 
- * a case the listener is expected to ACK the 2XX response.
+ * <li>Additional 2xx responses  will be ACKed automatically if a Dialog is 
+ *  asssociated with the response</li>
+ * <li>Additional 2xx responses will be presented to the listener if no dialog 
+ * is associated with the response. In such a case the listener is expected to 
+ * ACK the 2xx response.
  * </ul>
  * 
- * For an INVITE Server Transaction 2XX response 
- * ( also see {@link ServerTransaction#sendResponse(Response) }
- *  and {@link ServerTransaction#enableRetransmissionAlerts()}:
+ * For INVITE Server Transaction 2xx response:
  * <ul>
- * <li> Application sends first 2XX response.
+ * <li> Application sends first 2xx response {@link ServerTransaction#sendResponse(Response)}.
  * <li> If a Dialog is not associated with a ServerTransaction, and if the
  * application explicitly requests to be notified of such timeouts (see
  * {@link ServerTransaction#enableRetransmissionAlerts()} the SipListener is
- * periodically alerted to retransmit 2XX responses for the ServerTransaction.</li>
+ * periodically alerted to retransmit 2xx responses for the ServerTransaction.</li>
  * <li> If a Dialog is associated with a ServerTransaction then the
- * implementation takes care of retransmitting final responses until Ack is
- * received and the SipListener will receive no notifications to retransmit
+ * implementation takes care of retransmitting final responses until the ACK is
+ * received i.e. the SipListener will receive no notifications to retransmit
  * responses.
  * </ul>
  * 
@@ -151,8 +152,7 @@ import java.io.Serializable;
  * alerted for retransmissions of Reliable Provisional responses:
  * <ul>
  * <li> The application sends a reliable provisional Response to an Invite
- * Dialog using
- * {@link javax.sip.Dialog#sendReliableProvisionalResponse(Response) }
+ * Dialog using {@link javax.sip.Dialog#sendReliableProvisionalResponse(Response) }
  * <li> The Stack takes care of retransmitting the provisional response with
  * exponentially increasing intervals until a PRACK is received or the
  * Transaction times out.
@@ -162,18 +162,16 @@ import java.io.Serializable;
  * <p>
  * Multiple 2xx responses may arrive at the UAC for a single INVITE request due
  * to a forking proxy. Each response is distinguished by the tag parameter in
- * the To header field, and each represents a distinct Dialog, with a distinct
+ * the TO header field, and each represents a distinct Dialog, with a distinct
  * Dialog identifier. In this case the first 2xx terminates the original INVITE
- * additional 2XX responses will be presented to the SipListener as a ResponseEvent
+ * additional 2xx responses will be presented to the SipListener as a ResponseEvent
  * with null Server Transaction ID but with a valid and distinct Dialog. The 
- * Listener is expected to ACK the 2XX response - otherwise the Dialog is 
- * terminated after a timeout. 
+ * Listener is expected to ACK the 2xx response - otherwise the Dialog is 
+ * terminated immediately. 
  * 
  * 
- * @author BEA Systems, Inc.
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
- * @since v1.1
  */
 
 public interface Dialog extends Serializable {
@@ -242,7 +240,6 @@ public interface Dialog extends Serializable {
 	 * @return the Call-Id for this dialog
 	 */
 	public CallIdHeader getCallId();
-
 
 	/**
 	 * The local sequence number is used to order requests from this User Agent
@@ -360,7 +357,7 @@ public interface Dialog extends Serializable {
 	public Iterator getRouteSet();
 
 	/**
-	 * Returns true if this Dialog is secure i.e. if the request was sent over a
+	 * Returns true if this Dialog is secure, for example if the request was sent over a
 	 * "sips:" scheme, or a "sip:" scheme over TLS.
 	 * 
 	 * @return <code>true</code> if this dialog was secure, and
@@ -369,8 +366,8 @@ public interface Dialog extends Serializable {
 	public boolean isSecure();
 
 	/**
-	 * Returns whether this Dialog is a server dialog (i.e. this side was
-	 * initially acting as a UAS).
+	 * Returns whether this Dialog is a server dialog, for example this side 
+         * was initially acting as a UAS.
 	 * 
 	 * @return <code>true</code> if this is a server dialog and
 	 *         <code>false</code> if it is a client dialog.
@@ -446,10 +443,10 @@ public interface Dialog extends Serializable {
 	 * {@link Dialog#sendReliableProvisionalResponse( Response)} method.
 	 * <p>
 	 * 
-	 * @since v1.2
+	 * @since 1.2
 	 * 
 	 * @param statusCode
-	 *             the statusCode value of this Response.
+	 *            the new integer of the statusCode value of this Message.
 	 * @return the newly created Response object.
 	 * @throws InvalidArgumentException
 	 *             when an invalid status code or request method is supplied.
@@ -524,7 +521,7 @@ public interface Dialog extends Serializable {
 	 * responses.
 	 * <p>
 	 * 
-	 * @since v1.2
+	 * @since 1.2
 	 * 
 	 * @param relResponse -
 	 *            the reliable provisional response
@@ -573,7 +570,7 @@ public interface Dialog extends Serializable {
 	 * @throws DialogDoesNotExistException
 	 *             if the Dialog is not yet established (i.e. dialog state
 	 *             equals null) or is terminated.
-	 * @since v1.2
+	 * @since 1.2
 	 */
 	public Request createPrack(Response relResponse)
 			throws DialogDoesNotExistException, SipException;
@@ -593,7 +590,7 @@ public interface Dialog extends Serializable {
 	 *             if the cseq does not relate to a previously sent INVITE or if
 	 *             the Method that created the Dialog is not an INVITE ( for
 	 *             example SUBSCRIBE)
-	 * @since v1.2
+	 * @since 1.2
 	 */
 	public Request createAck(long cseq) throws InvalidArgumentException,
 			SipException;
@@ -649,6 +646,7 @@ public interface Dialog extends Serializable {
 	 * provided methods that do not expect a BYE to terminate a dialog. Such is
 	 * the case with SUBSCRIBE/NOTIFY within a Dialog that is created with an
 	 * INIVTE.
+         *
 	 */
 	public void delete();
 
@@ -658,8 +656,8 @@ public interface Dialog extends Serializable {
 	 * determined based on whether this is a server or client Dialog, see
 	 * {@link Dialog#isServer()}.
 	 * 
-	 * @deprecated -- removed to reduce the amount of state that the stack needs
-	 *             to track.
+	 * @deprecated Since v1.2. Reduces the amount of state that 
+         * the stack needs to keep track of.
 	 * @return the Transaction that created the Dialog.
 	 */
 	public Transaction getFirstTransaction();
@@ -722,6 +720,7 @@ public interface Dialog extends Serializable {
 	 *            if true then the dialog is terminated when a BYE is received.
 	 * @throws SipException --
 	 *            if the dialog is already terminated.
+         * @since 1.2
 	 * 
 	 */
 	public void terminateOnBye(boolean terminateFlag) throws SipException;

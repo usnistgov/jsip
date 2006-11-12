@@ -27,8 +27,7 @@ package javax.sip;
  * a client or server transaction that does currently not exist in the
  * underlying SipProvider
  *
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 

@@ -35,9 +35,7 @@ import javax.sip.InvalidArgumentException;
  * For Example:<br>
  * <code>MIME-Version: 1.0</code>
  *
- * @since 1.1
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 public interface MimeVersionHeader extends Header {

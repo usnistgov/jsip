@@ -40,7 +40,7 @@ import java.text.ParseException;
  * <li>REGISTER - registers contact information with a SIP server.
  * </ul>
  *
- * JSIP also supports the following method name extensions, documented in
+ * This specifications also supports the following method name extensions, documented in
  * the following standards track RFCs:
  * <ul>
  * <li> INFO - used to carry session related control information that is 
@@ -79,8 +79,7 @@ import java.text.ParseException;
  * transactions. These header fields are in addition to the mandatory request 
  * line, which contains the method, Request-URI, and SIP version.
  *
- * @author BEA Systems, Inc.
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 
@@ -255,7 +254,6 @@ public interface Request extends Message {
     * Contact may also be used to specifically announce support for NOTIFY 
     * messages when registering. 
     *
-    * @since v1.1
     */    
     public static final String NOTIFY = "NOTIFY";          
 
@@ -311,7 +309,6 @@ public interface Request extends Message {
     * Contact may also be used to specifically announce support for SUBSCRIBE 
     * messages when registering. 
     *
-    * @since v1.1
     */
     public static final String SUBSCRIBE = "SUBSCRIBE";    
     
@@ -348,7 +345,6 @@ public interface Request extends Message {
     * SHOULD also add a Date header field containing the time the message is sent.
     * Most SIP requests are used to setup and modify communication sessions. 
     *
-    * @since v1.1
     */
     public static final String MESSAGE = "MESSAGE";
 
@@ -387,7 +383,6 @@ public interface Request extends Message {
     * sent outside the context of a dialog MAY fork, and if it is accepted 
     * by multiple agents, MAY create multiple subscriptions.
     *
-    * @since v1.1
     */    
     public static final String REFER = "REFER";    
 
@@ -416,7 +411,6 @@ public interface Request extends Message {
     * in the SIP call state or the sessions initiated by SIP MUST NOT be sent 
     * in an INFO message. 
     *
-    * @since v1.1
     */    
     public static final String INFO = "INFO";    
     
@@ -443,7 +437,6 @@ public interface Request extends Message {
     * PRACK requests MAY contain bodies, which are interpreted according to 
     * their type and disposition.
     *
-    * @since v1.1
     */
     public static final String PRACK = "PRACK";    
 
@@ -466,14 +459,54 @@ public interface Request extends Message {
     * the possibility of user approval. Such approval will frequently be needed, 
     * and is possible with a re-INVITE.
     *
-    * @since v1.1
     */
     public static final String UPDATE = "UPDATE";
     
     /**
      * PUBLISH is an extension method that allows a client to publish event state
      * (such as presence information). It is sent outside of any dialog, and is not
-     * dialog creating. The Allow header is used to indicate support for PUBLISH.
+     * dialog creating. PUBLISH is similar to REGISTER in that it allows a user 
+     * to create, modify, and remove state in another entity which manages this
+     * state on behalf of the user.  Addressing a PUBLISH request is identical 
+     * to addressing a SUBSCRIBE request.  The Request-URI of a PUBLISH request 
+     * is populated with the address of the resource for which the user wishes 
+     * to publish event state.  The user may in turn have multiple User Agents 
+     * or endpoints that publish event state. Each endpoint may publish its own 
+     * unique state, out of which the event state compositor generates the 
+     * composite event state of the resource.  In addition to a particular 
+     * resource, all published event state is associated with a specific event 
+     * package. Through a subscription to that event package, the user is able 
+     * to discover the composite event state of all of the active publications.
+     *<p>
+     * PUBLISH requests create soft state in the event state compositor. This 
+     * event soft state has a defined lifetime and will expire after a 
+     * negotiated amount of time, requiring the publication to be refreshed 
+     * by subsequent PUBLISH requests. There may also be event hard state 
+     * provisioned for each resource for a particular event package. This event 
+     * state represents the resource state that is present at all times, and 
+     * does not expire.The event state compositor may use event hard state in 
+     * the absence of, or in addition to, event soft state provided through 
+     * the PUBLISH mechanism.
+     * <p>
+     * Clients may probe for the support of PUBLISH using theOPTIONS request. 
+     * The presence of "PUBLISH" in the "Allow" header field in a response to 
+     * an OPTIONS request indicates support for the PUBLISH method. In addition, 
+     * the "Allow-Events" header field indicates the supported event packages.
+     * <p>
+     * A PUBLISH request does not establish a dialog. A UAC MAY include a
+     * Route header field in a PUBLISH request based on a pre-existing route set.
+     * The Record-Route header field has no meaning in PUBLISH requests or 
+     * responses, and MUST be ignored if present. In particular, the UAC MUST 
+     * NOT create a new route set based on the presence or absence of a 
+     * Record-Route header field in any response to a PUBLISH request. The 
+     * PUBLISH request MAY contain a Contact header field, but including
+     * one in a PUBLISH request has no meaning in the event publication
+     * context and will be ignored. A PUBLISH request may be sent within an 
+     * existing dialog.  In that case, the request is received in the context 
+     * of any media session or sessions associated with that dialog. A new 
+     * PUBLISH should not be sent (not a re-transmission) for the same 
+     * Request-URI, until they have received a final response for the previous 
+     * one or the previous PUBLISH request has timed out.
      *
      * @since v1.2
      */

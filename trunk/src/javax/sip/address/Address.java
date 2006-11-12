@@ -36,8 +36,7 @@ import java.text.ParseException;
  * @see SipURI
  * @see TelURL
  *
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  *
  */

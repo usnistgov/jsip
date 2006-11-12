@@ -71,8 +71,7 @@ import java.text.ParseException;
  * @see Parameters
 
  * @see Header
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
 
  */
@@ -97,8 +96,6 @@ public interface RetryAfterHeader extends Header, Parameters {
 
      * @throws InvalidArgumentException if supplied value is less than zero.
 
-     * @since v1.1
-
      */
 
     public void setRetryAfter(int retryAfter) throws InvalidArgumentException;
@@ -114,8 +111,6 @@ public interface RetryAfterHeader extends Header, Parameters {
      *
 
      * @return the retry after value of the RetryAfterHeader.
-
-     * @since v1.1
 
      */
 
@@ -171,8 +166,6 @@ public interface RetryAfterHeader extends Header, Parameters {
 
      * @throws InvalidArgumentException if supplied value is less than zero.
 
-     * @since v1.1
-
      */
 
     public void setDuration(int duration) throws InvalidArgumentException;
@@ -190,8 +183,6 @@ public interface RetryAfterHeader extends Header, Parameters {
      * @return the duration value of the RetryAfterHeader, return zero if not 
 
      * set.
-
-     * @since v1.1
 
      */
 

@@ -61,8 +61,7 @@ import javax.sip.InvalidArgumentException;
  * <code>Max-Forwards: 6</code>
 
  *
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
 
  */

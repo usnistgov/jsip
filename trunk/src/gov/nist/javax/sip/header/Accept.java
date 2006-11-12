@@ -34,7 +34,7 @@ import javax.sip.InvalidArgumentException;
  * Accept header : The top level header is actually AcceptList which is a list of
  * Accept headers.
  *
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:37 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2006-11-12 21:52:39 $
  * 
  * @since 1.1
  *
@@ -43,7 +43,7 @@ import javax.sip.InvalidArgumentException;
  * 
  *
  */
-public class Accept
+public final class Accept
 	extends ParametersHeader
 	implements javax.sip.header.AcceptHeader {
 

@@ -37,7 +37,7 @@ import java.text.ParseException;
  * 
  * @author M. Ranganathan 
  * @author Olivier Deruelle <br/>
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:08 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2006-11-12 21:52:39 $
  * @since 1.1
  * 
  * <pre>
@@ -65,7 +65,7 @@ import java.text.ParseException;
  * </pre>
  * 
  */
-public class AcceptEncoding extends ParametersHeader implements
+public final class AcceptEncoding extends ParametersHeader implements
 		AcceptEncodingHeader {
 
 	/**

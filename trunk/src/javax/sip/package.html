@@ -1,5 +1,5 @@
 <body>
-<p> This package contains the main interfaces that model the JSIP architecture 
+<p> This package contains the main interfaces that model the architecture 
   from both an application developer and a stack vendor view.</p>
          
 <ul>
@@ -14,21 +14,21 @@
      An application must register with
      a  SipProvider to listen for Events by implementing the 
      SipListener interface.
-     A single SipListener interface is mandated in the 
-      JAIN SIP architecture.<br>
+     A single SipListener interface is mandated in the architecture.<br>
          <br>
        </li>
        <li>Stack Vendors View:<br>
-     The stack vendor implements all the interfaces in the JAIN SIP specification 
-  excluding the SIPListener interface, however the two most important interfaces 
+     The stack vendor implements all the interfaces in this specification 
+  excluding the SipListener interface, 
+   however the two most important interfaces 
   from the architecture point of view are the <a href="SipStack.html">SipStack</a> 
-  and the <a href="SipProvider.html">SipProvider</a> interfaces.</li>
+  and the <a href="SipProvider.html">SipProvider</a> interfaces.<br></li>
                    
   <ul>
          <li>                                        
-      <p>SipStack - This interface can be viewed as the management interface
-  of the JSIP architecture and as such only one may exist per IP address.
-  The SipStack interface encapsulates the dynamic management characteristics
+      <p>SipStack - This interface can be viewed as the stack management interface
+  of the architecture. The SipStack interface encapsulates the dynamic 
+management characteristics
   of the SIP stack, such as ListeningPoints which encapsulate port
  and   transport. As well as the central	
  point for the creation and querying of SipProviders in the architecture
@@ -36,7 +36,7 @@
   </li>
     <li>                                        
     <p>SipProvider - This interface can be viewed as the messaging
-  interface of the JSIP architecture. Multiple SipProviders are allowed
+  interface of the architecture. Multiple SipProviders are allowed
   within the architecture. This interface defines the methods that allow
   an application implementing the SipListener to register with the SipProvider
   to recieve incoming requests and responses. The methods defined &nbsp;to
@@ -49,7 +49,7 @@
      
 </ul>
         <b>Messaging model:</b><br>
-The JSIP architecture specifies that outgoing messages are sent via the
+The architecture specifies that outgoing messages are sent via the
 SipProvider and can either be of type <a href="message/Request.html">Request
 </a>or <a href="message/Response.html">Response</a>. This action is initiated
 by the application. Incoming messages

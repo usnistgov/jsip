@@ -25,10 +25,8 @@ package javax.sip;
  * This Exception is thrown when a user attempts to get a transaction to handle
  * a message when infact a transaction is already handling this message. 
  *
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
- * @since v1.1
  */
 public class TransactionAlreadyExistsException extends SipException {
 

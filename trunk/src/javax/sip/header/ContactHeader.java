@@ -79,14 +79,12 @@ import javax.sip.InvalidArgumentException;
  * For Example:<br>
  * <code> Contact: "Mr. Watson" sip:watson@worcester.jcp.org;
  * q=0.7; expires=3600, "Mr. Watson" mailto:watson@jcp.org.com; q=0.1
- *
+ * </code>
  * @see HeaderAddress
  * @see Parameters
  *
- * @author BEA Systems, Inc. 
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
- * @since 1.1
  */
 
 
@@ -123,7 +121,6 @@ public interface ContactHeader extends HeaderAddress, Parameters, Header {
      * @param expires new relative value of the expires parameter.
      * 0 implies removal of Registration specified in Contact Header.
      * @throws InvalidArgumentException if supplied value is less than zero.
-     * @since v1.1
      */
 
     public void setExpires(int expires) throws InvalidArgumentException;
@@ -138,7 +135,6 @@ public interface ContactHeader extends HeaderAddress, Parameters, Header {
      * @return value of the <code>expires</code> parameter measured in
      * delta-seconds, O implies removal of Registration specified in Contact 
      * Header.
-     * @since v1.1
      */
 
     public int getExpires();
@@ -168,7 +164,6 @@ public interface ContactHeader extends HeaderAddress, Parameters, Header {
      * @param qValue - the new float value of the q-value parameter.
      * @throws InvalidArgumentException if the q-value parameter value is not
      * <code>-1</code> or between <code>0 and 1</code>.
-     * @since v1.1
      */
     public void setQValue(float qValue) throws InvalidArgumentException;
 
@@ -191,8 +186,6 @@ public interface ContactHeader extends HeaderAddress, Parameters, Header {
      * @return the <code>q-value</code> parameter of this ContactHeader, -1 if
 
      * the q-value is not set.
-
-     * @since v1.1
 
      */
 

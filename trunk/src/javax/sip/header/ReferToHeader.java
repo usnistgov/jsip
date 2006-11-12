@@ -32,9 +32,7 @@ package javax.sip.header;
  * encryption. The resource identified by the Refer-To URI is contacted using 
  * the normal mechanisms for that URI type. 
  *
- * @since v1.1
- * @author BEA Systems, Inc.
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 public interface ReferToHeader extends HeaderAddress, Parameters, Header {

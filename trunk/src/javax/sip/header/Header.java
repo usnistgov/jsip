@@ -89,8 +89,7 @@ import java.io.Serializable;
  * Even though an arbitrary number of parameter pairs may be attached to a 
  * header object, any given parameter-name MUST NOT appear more than once.
  * 
- * @author BEA Systems, Inc.
- * @author NIST
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 
