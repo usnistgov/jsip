@@ -110,6 +110,8 @@ to happen almost exactly 40 seconds after an  INVITE is  processed,
 so I'm assuming there's some sort of timeout  issue at work  here.
 I am even sending an ACK for the Dialog. 
 Dear Abby, please tell me what is wrong with my application. </a> </li>
+<li><a href="#49">I really like my Router implementation and want to send subliminal suggestions
+to him. How do I communicate with the Router</a> </li>
 <li><a href="#questionables"> I have some questionable questions. Where do I look? <a/></li>
 </ol>
 <br/>
@@ -649,7 +651,23 @@ Dear Abby, please tell me what is wrong with my application?
 Check to see if you are using Dialog.sendAck in your application. You should
 use Dialog.sendAck to send out the Ack if you have created a Dialog. Otherwise
 the Dialog will time out after a period of time has expired. </li>
+<hr size="2" noshade="noshade"> 
 
+<li><a name="#49"> </a>I really like my Router implementation and want to send subliminal suggestions
+to him. How do I communicate with the Router</a> </li>
+
+<li>Specify your Router implementation as a property when you create the stack. Then access
+the created object using 
+
+<pre>
+Router myRouter  = (MyRouter)sipStack.getRouter();
+
+Now send your subliminal message to the Router using
+
+myRouter.sendSubliminalMessage()
+
+</pre>
+</li>
 
 </ol>
 <a name="questionables"></a> <h2> Frequently Questionable Questions
