@@ -473,8 +473,11 @@ public interface SipStack {
      * {@link javax.sip.TimeoutEvent}'s, however an application will be
      * notified if the underlying transaction expires with a
      * {@link Timeout#TRANSACTION}notification encapsulated in a TimeoutEvent.
-     * @deprecated for backwards compatibility implementations should return true.
-     * 
+     *
+     * @deprecated Since v1.2. This retransmission filter property has been deprecated
+     * as a SIP Stack property. Applications can enable retransmission alerts by using the
+     * {@link ServerTransaction#enableRetransmissionAlerts()} method.
+     *
      * @return the value of the retransmission filter, <code>true</code> if
      *         the filter is set, <code>false</code> otherwise.
      * @since v1.1
