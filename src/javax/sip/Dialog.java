@@ -165,9 +165,12 @@ import java.io.Serializable;
  * the TO header field, and each represents a distinct Dialog, with a distinct
  * Dialog identifier. In this case the first 2xx terminates the original INVITE
  * additional 2xx responses will be presented to the SipListener as a ResponseEvent
- * with null Server Transaction ID but with a valid and distinct Dialog. The 
+ * with null Client Transaction ID but with a valid and distinct Dialog. The 
  * Listener is expected to ACK the 2xx response - otherwise the Dialog is 
- * terminated immediately. 
+ * terminated after a timeout period. Note that unless automatic dialog creation
+ * is explictly disabled, the 2xx ResponseEvent will always contain a Dialog whether
+ * or not the outgoing INVITE was sent through a ClientTransaction or statelessly
+ * via a SipProvider.
  * 
  * 
  * @author BEA Systems, NIST
