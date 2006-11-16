@@ -25,7 +25,7 @@ import java.text.ParseException;
 
 /**
  * This interface represents an Extension SIP header that was not defined at the
- * baseline (version 1.1 ) of JAIN SIP. Extension Headers can be added as 
+ * baseline of this specification. Extension Headers can be added as 
  * required by extending this interface assuming other endpoints understand the Header. 
  * Any Header that extends this class must define a "NAME" String constant identifying the name 
  * of the extension Header. A server must ignore Headers that it does not 
@@ -37,8 +37,7 @@ import java.text.ParseException;
  * Headers that are not part of the current version of this specification 
  * <b>MUST</b> implement ExtensionHeader.
  *
- * @author BEA Systems, NIST. 
- * @since 1.1
+ * @author BEA Systems, NIST 
  * @version 1.2
  */
 
