@@ -33,7 +33,7 @@ import java.util.Vector;
 /**
  * Parser For SIP and Tel URLs. Other kinds of URL's are handled by the 
  * J2SE 1.4 URL class.
- * @version 1.2 $Revision: 1.17 $ $Date: 2006-11-01 02:22:50 $
+ * @version 1.2 $Revision: 1.18 $ $Date: 2006-11-16 16:17:08 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -784,6 +784,7 @@ public class URLParser extends Parser {
 			URLParser p  = new URLParser(test[i]);
 
 				GenericURI uri = p.parse();
+				System.out.println("uri type returned " + uri.getClass().getName());
 				System.out.println(test[i] + " is SipUri? " + uri.isSipURI()
 						 + ">" + uri.encode());
 		}
@@ -793,141 +794,4 @@ public class URLParser extends Parser {
 	
 	**/
 }
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.16  2006/10/12 11:59:05  pmusgrave
- * Issue number:  82 (URIParser should return SipUri for sips URI)
- * Submitted by:  pmusgrave@newheights.com
- *
- * Revision 1.15  2006/09/20 20:02:16  mranga
- * Issue number:  72
- * Obtained from:
- * Submitted by:  mranga
- * Reviewed by:   mranga
- *
- * Fix Server Transaction State Machine
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- * Revision 1.14  2006/09/17 14:34:52  jbemmel
- * cleaned up URL parsing
- *
- * Revision 1.13  2006/07/13 09:02:04  mranga
- * Issue number:
- * Obtained from:
- * Submitted by:  jeroen van bemmel
- * Reviewed by:   mranga
- * Moved some changes from jain-sip-1.2 to java.net
- *
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- * Revision 1.12  2006/07/11 21:28:34  jeroen
- * fixed reported issue with 'lr' parameter being encoded as 'lr=' (3)
- *
- * Revision 1.11  2006/07/11 20:43:13  jeroen
- * fixed reported issue with 'lr' parameter being encoded as 'lr='
- *
- * Revision 1.10  2006/07/05 10:50:56  jeroen
- * use "" for flag values, not null
- *
- * Revision 1.9  2006/06/19 06:47:27  mranga
- * javadoc fixups
- *
- * Revision 1.8  2006/06/16 15:26:28  mranga
- * Added NIST disclaimer to all public domain files. Clean up some javadoc. Fixed a leak
- *
- * Revision 1.7  2006/05/17 05:20:18  jeroen
- * fixed phone-context string value being returned
- *
- * Revision 1.6  2006/05/15 19:31:11  jeroen
- * fixed tel: URI case, characters are only allowed in %-encoded form
- *
- * Revision 1.5  2006/05/14 21:30:27  jeroen
- * more fixed tel: URL parsing, in line with RFC3966
- *
- * Revision 1.3  2006/05/14 20:20:32  jeroen
- * fix for local phone numbers
- *
- * Revision 1.2  2005/10/22 23:53:35  jeroen
- * fixed nasty little bug in URI parser: typo in bracket ('[' instead of ']')
- *
- * Revision 1.1.1.1  2005/10/04 17:12:36  mranga
- *
- * Import
- *
- *
- * Revision 1.9  2005/07/14 14:53:58  mranga
- * Submitted by:  mranga
- * Reviewed by:   mranga
- *
- * Applied Jeff Heynie's bug fix for URL parser.
- *
- * Revision 1.8  2004/07/28 14:13:55  mranga
- * Submitted by:  mranga
- *
- * Move out the test code to a separate test/unit class.
- * Fixed some encode methods.
- *
- * Revision 1.7  2004/04/22 22:51:18  mranga
- * Submitted by:  Thomas Froment
- * Reviewed by:   mranga
- *
- * Fixed corner cases.
- *
- * Revision 1.6  2004/02/06 20:15:55  mranga
- * Submitted by:  Bruno Konik
- * Reviewed by:   mranga
- * Fixed character sets for parsing of urls and methods.
- *
- * Revision 1.5  2004/01/22 13:26:32  sverker
- * Issue number:
- * Obtained from:
- * Submitted by:  sverker
- * Reviewed by:   mranga
- *
- * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
- *
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- */
+

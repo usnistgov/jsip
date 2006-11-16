@@ -160,7 +160,7 @@ public class SdpFactory extends Object
     {
 
       attributeImpl.setName(name);
-      if (value != null) attributeImpl.setValue(value);
+      attributeImpl.setValueAllowNull(value);
 
     }
     catch (SdpException s)

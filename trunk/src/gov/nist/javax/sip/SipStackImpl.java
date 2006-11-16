@@ -213,7 +213,7 @@ import gov.nist.core.net.NetworkLayer;
  * </ul>
  *
  * 
- * @version 1.2 $Revision: 1.54 $ $Date: 2006-11-09 20:18:17 $
+ * @version 1.2 $Revision: 1.55 $ $Date: 2006-11-16 16:17:11 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -804,6 +804,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 					"Stack does not have a default IP Address!");
 		return this.createListeningPoint(super.stackAddress, port, transport);
 	}
+	
+	
 
 	/*
 	 * (non-Javadoc)
@@ -821,6 +823,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 		this.eventScanner = null;
 
 	}
+	
+	
 
 	/*
 	 * (non-Javadoc)

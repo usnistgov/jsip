@@ -158,6 +158,20 @@ public class AttributeField extends SDPField implements javax.sdp.Attribute {
 			setAttribute(nameValue);
 		}
 	}
+	
+	/**
+	 * Allow for null value when setting the value.
+	 * 
+	 * @param value -- can be null.
+	 */
+	
+	public void setValueAllowNull(String value)  {
+		NameValue nameValue = getAttribute();
+		if (nameValue == null)
+			nameValue = new NameValue();
+		nameValue.setValue(value);
+		setAttribute(nameValue);
+	}
 
 	public Object clone() {
 		AttributeField retval = (AttributeField) super.clone();
