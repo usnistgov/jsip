@@ -31,7 +31,7 @@ import java.text.*;
 
 /**
  * @author  deruelle
- * @version JAIN-SDP-PUBLIC-RELEASE $Revision: 1.5 $ $Date: 2006-07-13 09:02:36 $
+ * @version JAIN-SDP-PUBLIC-RELEASE $Revision: 1.6 $ $Date: 2006-11-16 19:05:44 $
  */
 public class OriginFieldParser extends SDPParser {
 
@@ -56,13 +56,20 @@ public class OriginFieldParser extends SDPParser {
 
 			lexer.match(LexerCore.ID);
 			Token sessionId = lexer.getNextToken();
-			originField.setSessId(Long.parseLong(sessionId.getTokenValue()));
+			// guard against very long session IDs
+			String sessId = sessionId.getTokenValue();
+			if ( sessId.length() > 18)
+				sessId = sessId.substring( sessId.length() - 18);
+			originField.setSessId(Long.parseLong(sessId));
 			this.lexer.SPorHT();
 
 			lexer.match(LexerCore.ID);
 			Token sessionVersion = lexer.getNextToken();
-			originField.setSessVersion(
-				Long.parseLong(sessionVersion.getTokenValue()));
+			// guard against very long session Verion
+			String sessVer = sessionVersion.getTokenValue();
+			if ( sessVer.length() > 18)
+				sessVer = sessVer.substring( sessVer.length() - 18);
+			originField.setSessVersion(Long.parseLong(sessVer));
 			this.lexer.SPorHT();
 
 			lexer.match(LexerCore.ID);
@@ -85,7 +92,7 @@ public class OriginFieldParser extends SDPParser {
 			throw new ParseException(lexer.getBuffer(), lexer.getPtr());
 		}
 	}
-
+	
 	public SDPField parse() throws ParseException {
 		return this.originField();
 	}
@@ -93,7 +100,7 @@ public class OriginFieldParser extends SDPParser {
 	public static void main(String[] args) throws ParseException {
 		String origin[] =
 			{   "o=- 4322650003578 0 IN IP4 192.53.18.122\r\n",
-				"o=4855 13760799956958020 13760799956958020 IN IP4 166.35.224.216\n",
+				"o=4855 12345678901234567890 12345678901234567890 IN IP4 166.35.224.216\n",
 				"o=mh/andley 2890844526 2890842807 IN IP4 126.16.64.4\n",
 				"o=UserB 2890844527 2890844527 IN IP4 everywhere.com\n",
 				"o=UserA 2890844526 2890844526 IN IP4 here.com\n",
@@ -113,6 +120,29 @@ public class OriginFieldParser extends SDPParser {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2006/07/13 09:02:36  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  jeroen van bemmel
+ * Reviewed by:   mranga
+ * Moved some changes from jain-sip-1.2 to java.net
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.4  2006/06/19 06:47:26  mranga
  * javadoc fixups
  *
