@@ -110,8 +110,13 @@ to happen almost exactly 40 seconds after an  INVITE is  processed,
 so I'm assuming there's some sort of timeout  issue at work  here.
 I am even sending an ACK for the Dialog. 
 Dear Abby, please tell me what is wrong with my application. </a> </li>
-<li><a href="#49">I really like my Router implementation and want to send subliminal suggestions
+<li><a href="#49">I really like my Router implementation and want to send subliminal suggestions </li>
 to him. How do I communicate with the Router</a> </li>
+<li><a href="#50"> I want to loosen up on the parsing of headers. However,
+I cannot extend your Header implementation classes. If I supply my
+own implementation of a header, I get ClassCastException. Why not let me
+extend the implementation classes? </a>
+</li>
 <li><a href="#questionables"> I have some questionable questions. Where do I look? <a/></li>
 </ol>
 <br/>
@@ -668,6 +673,24 @@ myRouter.sendSubliminalMessage()
 
 </pre>
 </li>
+<hr size="2" noshade="noshade"> 
+<li><a name="#50"></a> I want to loosen up on the parsing of headers. However,
+I cannot extend your Header implementation classes. If I supply my
+own implementation of a header to setHeader, I get ClassCastException. 
+Why not let me extend the implementation classes or supply my own
+Header implementation classes?  <br/>
+The point behind JAIN is to try to make your application portable
+across different implementations of the standard. This includes Native
+code implementations of the stack, Headers etc.  If we allowed for
+applications to be able to pass in their own implementations of  Header
+objects, this would not be possible. Hence, to simplify implementation
+headaches, and ensure portability, a conscious decision was made to not
+necessitate a requirement that a given provider be able to recognize
+Header implementations other than those created by  its own factory.
+If you want to modify the way in which Headers are parsed etc. the
+simplest thing to do would be to hack the source code.
+</li>
+
 
 </ol>
 <a name="questionables"></a> <h2> Frequently Questionable Questions
