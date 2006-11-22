@@ -54,7 +54,7 @@ import EDU.oswego.cs.dl.util.concurrent.Semaphore;
  * @author M. Ranganathan
  * 
  * 
- * @version 1.2 $Revision: 1.45 $ $Date: 2006-10-05 16:53:32 $
+ * @version 1.2 $Revision: 1.46 $ $Date: 2006-11-22 04:26:07 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
 		javax.sip.Transaction {
@@ -263,7 +263,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 
 		}
 
-		public void runTask() {
+		protected void runTask() {
 			SIPTransaction transaction = SIPTransaction.this;
 			// release the connection associated with this transaction.
 			SIPTransactionStack sipStack = transaction.getSIPStack();
