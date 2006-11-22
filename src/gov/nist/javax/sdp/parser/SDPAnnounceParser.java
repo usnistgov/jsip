@@ -55,35 +55,48 @@ public class SDPAnnounceParser extends ParserCore {
 		String line = null;
 		// Return trivially if there is no sdp announce message
 		// to be parsed. Bruno Konik noticed this bug.
-		if (message == null ) return;
+		if (message == null) return;
 		sdpMessage = new Vector();
 		// Strip off leading and trailing junk.
 		String sdpAnnounce = message.trim() + "\r\n";
 		// Bug fix by Andreas Bystrom.
 		while (start < sdpAnnounce.length()) {
-			int add = 0;
-			int index = sdpAnnounce.indexOf("\n", start);
-			int index2 = sdpAnnounce.indexOf("\r", start);
+			// Major re-write by Ricardo Borba.
+			int lfPos = sdpAnnounce.indexOf("\n", start);
+			int crPos = sdpAnnounce.indexOf("\r", start);
 
-			if (index > 0 && index2 < 0) {
+			if (lfPos > 0 && crPos < 0) {
 				// there are only "\n" separators
-				line = sdpAnnounce.substring(start, index);
-				start = index + 1;
-			} else if (index < 0 && index2 > 0) {
+				line = sdpAnnounce.substring(start, lfPos);
+				start = lfPos + 1;
+			} else if (lfPos < 0 && crPos > 0) {
 				//bug fix: there are only "\r" separators
-				line = sdpAnnounce.substring(start, index2);
-				start = index2 + 1;
-			} else if (index > 0 && index2 > 0) {
+				line = sdpAnnounce.substring(start, crPos);
+				start = crPos + 1;
+			} else if (lfPos > 0 && crPos > 0) {
 				// there are "\r\n" or "\n\r" (if exists) separators
-				if (index > index2) {
-					line = sdpAnnounce.substring(start, index2);
-					start = index + 1;
+				if (lfPos > crPos) {
+					// assume "\r\n" for now
+					line = sdpAnnounce.substring(start, crPos);
+					// Check if the "\r" and "\n" are close together
+					if (lfPos == crPos + 1) {
+						start = lfPos + 1; // "\r\n"
+					} else {
+						start = crPos + 1; // "\r" followed by the next record and a "\n" further away
+					}
 				} else {
-					line = sdpAnnounce.substring(start, index);
-					start = index2 + 1;
+					// assume "\n\r" for now
+					line = sdpAnnounce.substring(start, lfPos);
+					// Check if the "\n" and "\r" are close together
+					if (crPos == lfPos + 1) {
+						start = crPos + 1; // "\n\r"
+					} else {
+						start = lfPos + 1; // "\n" followed by the next record and a "\r" further away
+					}
 				}
-			} else if (index < 0 && index2 < 0) // end
+			} else if (lfPos < 0 && crPos < 0) { // end
 				break;
+			}
 			sdpMessage.addElement(line);
 		}
 	}
@@ -126,6 +139,29 @@ public class SDPAnnounceParser extends ParserCore {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2006/07/13 09:02:37  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  jeroen van bemmel
+ * Reviewed by:   mranga
+ * Moved some changes from jain-sip-1.2 to java.net
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.3  2006/06/19 06:47:26  mranga
  * javadoc fixups
  *
