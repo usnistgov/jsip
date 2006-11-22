@@ -150,7 +150,7 @@ import java.util.TimerTask;
  *                                      
  * </pre>
  * 
- * @version 1.2 $Revision: 1.80 $ $Date: 2006-10-05 16:53:32 $
+ * @version 1.2 $Revision: 1.81 $ $Date: 2006-11-22 04:28:08 $
  * @author M. Ranganathan
  * 
  */
@@ -205,7 +205,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 			this.ticksLeft = this.ticks;
 		}
 
-		public void runTask() {
+		protected void runTask() {
 			SIPServerTransaction serverTransaction = SIPServerTransaction.this;
 			ticksLeft--;
 			if (ticksLeft == -1) {
@@ -228,7 +228,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 			this.ticksLeft = this.ticks;
 		}
 
-		public void runTask() {
+		protected void runTask() {
 			SIPServerTransaction serverTransaction = SIPServerTransaction.this;
 			/*
 			 * The reliable provisional response is passed to the transaction
@@ -271,7 +271,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 		ListenerExecutionMaxTimer() {
 		}
 
-		public void runTask() {
+		protected void runTask() {
 			try {
 				if (serverTransaction.getState() == null) {
 					serverTransaction.terminate();
@@ -301,7 +301,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 
 		}
 
-		public void runTask() {
+		protected void runTask() {
 			SIPServerTransaction serverTransaction = SIPServerTransaction.this;
 
 			if (serverTransaction.getRealState() == null
@@ -336,7 +336,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 
 		}
 
-		public void runTask() {
+		protected void runTask() {
 			// If the transaction has terminated,
 			if (isTerminated()) {
 				// Keep the transaction hanging around in the transaction table
@@ -1298,9 +1298,9 @@ public class SIPServerTransaction extends SIPTransaction implements
 			if (this.pendingReliableResponse != null
 					&& response.getStatusCode() / 100 == 2
 					&& this.pendingReliableResponse.getContentTypeHeader()
-							.getContentType().equals("application")
+							.getContentType().equalsIgnoreCase("application")
 					&& this.pendingReliableResponse.getContentTypeHeader()
-							.getContentSubType().equals("sdp")) {
+							.getContentSubType().equalsIgnoreCase("sdp")) {
 				throw new SipException(
 						"cannot send response -- unacked povisional");
 			} else {
