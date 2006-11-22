@@ -59,7 +59,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.40 $ $Date: 2006-10-26 22:48:00 $
+ * @version 1.2 $Revision: 1.41 $ $Date: 2006-11-22 04:26:07 $
  * 
  * @author M. Ranganathan
  * 
@@ -163,13 +163,13 @@ public class SIPDialog implements javax.sip.Dialog {
 	// //////////////////////////////////////////////////////
 	// Inner classes
 	// //////////////////////////////////////////////////////
-	class LingerTimer extends TimerTask {
+	class LingerTimer extends SIPStackTimerTask {
 
 		public LingerTimer() {
 
 		}
 
-		public void run() {
+		protected void runTask() {
 			SIPDialog dialog = SIPDialog.this;
 			sipStack.removeDialog(dialog);
 		}
@@ -190,7 +190,7 @@ public class SIPDialog implements javax.sip.Dialog {
 			this.nRetransmissions = 0;
 		}
 
-		public void runTask() {
+		protected void runTask() {
 			// If I ACK has not been seen on Dialog,
 			// resend last response.
 			if (sipStack.isLoggingEnabled())
@@ -254,9 +254,9 @@ public class SIPDialog implements javax.sip.Dialog {
 	 * 
 	 */
 
-	class DialogDeleteTask extends TimerTask {
+	class DialogDeleteTask extends SIPStackTimerTask {
 
-		public void run() {
+		protected void runTask() {
 			if (isAckSeen())
 				this.cancel();
 			else

@@ -25,6 +25,8 @@
  */
 package gov.nist.javax.sip.parser;
 
+import gov.nist.javax.sip.stack.SIPStackTimerTask;
+
 import java.io.*;
 import java.util.*;
 
@@ -52,7 +54,7 @@ public class Pipeline extends InputStream {
 
 	private TimerTask myTimerTask;
 
-	class MyTimer extends TimerTask {
+	class MyTimer extends SIPStackTimerTask {
 		Pipeline pipeline;
 
 		private boolean isCancelled;
@@ -61,7 +63,7 @@ public class Pipeline extends InputStream {
 			this.pipeline = pipeline;
 		}
 
-		public void run() {
+		protected void runTask() {
 			if (this.isCancelled)
 				return;
 			pipeline.close();

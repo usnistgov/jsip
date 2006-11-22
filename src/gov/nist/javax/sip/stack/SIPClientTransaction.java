@@ -156,7 +156,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.57 $ $Date: 2006-10-11 17:57:53 $
+ * @version 1.2 $Revision: 1.58 $ $Date: 2006-11-22 04:26:06 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -186,7 +186,7 @@ public class SIPClientTransaction extends SIPTransaction implements
 
 		}
 
-		public void runTask() {
+		protected void runTask() {
 			SIPClientTransaction clientTransaction;
 			SIPTransactionStack sipStack;
 			clientTransaction = SIPClientTransaction.this;
