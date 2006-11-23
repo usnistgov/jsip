@@ -37,7 +37,7 @@ import gov.nist.core.ThreadAuditor;
 /**
  * Event Scanner to deliver events to the Listener.
  * 
- * @version 1.2 $Revision: 1.27 $ $Date: 2006-11-02 04:06:12 $
+ * @version 1.2 $Revision: 1.28 $ $Date: 2006-11-23 17:24:37 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -434,11 +434,11 @@ class EventScanner implements Runnable {
 	 */
 
 	public void run() {
-		// Ask the auditor to monitor this thread
-		ThreadAuditor.ThreadHandle threadHandle = sipStack.getThreadAuditor().addCurrentThread();
+		try {
+			// Ask the auditor to monitor this thread
+			ThreadAuditor.ThreadHandle threadHandle = sipStack.getThreadAuditor().addCurrentThread();
 
-		while (true) {
-			try {
+			while (true) {
 				EventWrapper eventWrapper = null;
 
 				LinkedList eventsToDeliver;
@@ -486,24 +486,23 @@ class EventScanner implements Runnable {
 								"Processing " + eventWrapper + "nevents "
 										+ eventsToDeliver.size());
 					}
-					deliverEvent(eventWrapper);
-
+					try {
+						deliverEvent(eventWrapper);
+					} catch (Exception e) {
+						if (sipStack.isLoggingEnabled()) {
+							sipStack.getLogWriter().logError(
+									"Unexpected exception caught while delivering event -- carrying on bravely", e);
+						}
+					}
 				}
-			} catch (Exception ex) {
-				if (sipStack.isLoggingEnabled()) {
-					sipStack
-							.getLogWriter()
-							.logError(
-									"Unexpected exception caught -- carrying on bravely",
-									ex);
-				}
-			} finally {
-				if (sipStack.isLoggingEnabled()) {
-					sipStack.getLogWriter().logDebug(
-							"exitting event processing loop");
+			} // end While
+		} finally {
+			if (sipStack.isLoggingEnabled()) {
+				if (!this.isStopped) {
+					sipStack.getLogWriter().logFatalError("Event scanner exited abnormally");
 				}
 			}
-		} // end While
+		}
 	}
 
 }
