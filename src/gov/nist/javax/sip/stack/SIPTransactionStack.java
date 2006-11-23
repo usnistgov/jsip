@@ -30,19 +30,13 @@ import gov.nist.javax.sip.ListeningPointImpl;
 import gov.nist.javax.sip.SIPConstants;
 import gov.nist.javax.sip.SipProviderImpl;
 import gov.nist.javax.sip.message.*;
-import gov.nist.javax.sip.address.AddressImpl;
-import gov.nist.javax.sip.address.SipUri;
 import gov.nist.javax.sip.header.*;
 import gov.nist.core.*;
 import gov.nist.core.net.AddressResolver;
 import gov.nist.core.net.DefaultNetworkLayer;
 import gov.nist.core.net.NetworkLayer;
 
-import javax.sip.ClientTransaction;
-import javax.sip.DialogTerminatedEvent;
-import javax.sip.ServerTransaction;
-import javax.sip.SipException;
-import javax.sip.TransactionTerminatedEvent;
+import javax.sip.*;
 import javax.sip.message.*;
 import javax.sip.address.*;
 import javax.sip.header.*;
@@ -70,7 +64,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.61 $ $Date: 2006-11-02 21:17:54 $
+ * @version 1.2 $Revision: 1.62 $ $Date: 2006-11-23 17:26:58 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -1788,4 +1782,151 @@ public abstract class SIPTransactionStack implements
 		return this.threadAuditor;
 	}
 
+	///
+	/// Stack Audit methods
+	///
+
+	/**
+	 * Audits the SIP Stack for leaks
+	 *
+	 * @return Audit report, null if no leaks were found
+	 */
+	public String auditStack(Set activeCallIDs,
+							 long leakedDialogTimer,
+							 long leakedTransactionTimer) {
+		String auditReport = null;
+		String leakedDialogs = auditDialogs(activeCallIDs, leakedDialogTimer);
+		String leakedServerTransactions = auditTransactions(serverTransactionTable, leakedTransactionTimer);
+		String leakedClientTransactions = auditTransactions(clientTransactionTable, leakedTransactionTimer);
+		if (leakedDialogs != null || leakedServerTransactions != null || leakedClientTransactions != null) {
+			auditReport = "SIP Stack Audit:\n"
+					+ (leakedDialogs != null ? leakedDialogs : "")
+					+ (leakedServerTransactions != null ? leakedServerTransactions : "")
+					+ (leakedClientTransactions != null ? leakedClientTransactions : "");
+		}
+		return auditReport;
+	}
+
+	/**
+	 * Audits SIP dialogs for leaks
+	 * - Compares the dialogs in the dialogTable with a list of Call IDs passed by the application.
+	 * - Dialogs that are not known by the application are leak suspects.
+	 * - Kill the dialogs that are still around after the timer specified.
+	 *
+	 * @return Audit report, null if no dialog leaks were found
+	 */
+	private String auditDialogs(Set activeCallIDs,
+								long leakedDialogTimer) {
+		String auditReport = "  Leaked dialogs:\n";
+		int leakedDialogs = 0;
+		long currentTime = System.currentTimeMillis();
+
+		// Make a shallow copy of the dialog list.
+		// This copy will remain intact as leaked dialogs are removed by the stack.
+		LinkedList dialogs;
+		synchronized (dialogTable) {
+			dialogs = new LinkedList(dialogTable.values());
+		}
+
+		// Iterate through the dialogDialog, get the callID of each dialog and check if it's in the
+		// list of active calls passed by the application. If it isn't, start the timer on it.
+		// If the timer has expired, kill the dialog.
+		Iterator it = dialogs.iterator();
+		while (it.hasNext()) {
+			// Get the next dialog
+			SIPDialog itDialog = (SIPDialog) it.next();
+
+			// Get the call id associated with this dialog
+			CallIdHeader callIdHeader = (itDialog != null ? itDialog.getCallId() : null);
+			String callID = (callIdHeader != null ? callIdHeader.getCallId() : null);
+
+			// Check if the application knows about this call id
+			if (callID != null && !activeCallIDs.contains(callID)) {
+				// Application doesn't know anything about this dialog...
+				if (itDialog.auditTag == 0) {
+					// Mark this dialog as suspect
+					itDialog.auditTag = currentTime;
+				} else {
+					// We already audited this dialog before. Check if his time's up.
+					if (currentTime - itDialog.auditTag >= leakedDialogTimer) {
+						// Leaked dialog found
+						leakedDialogs++;
+
+						// Generate report
+						DialogState dialogState = itDialog.getState();
+						String dialogReport = "dialog id: " + itDialog.getDialogId()
+								+ ", dialog state: " + (dialogState != null ? dialogState.toString() : "null");
+						auditReport += "    " + dialogReport + "\n";
+
+						// Kill it
+						itDialog.setState(SIPDialog.TERMINATED_STATE);
+						logWriter.logDebug("auditDialogs: leaked " + dialogReport);
+					}
+				}
+			}
+		}
+
+		// Return final report
+		if (leakedDialogs > 0) {
+			auditReport += "    Total: " + Integer.toString(leakedDialogs) + " leaked dialogs detected and removed.\n";
+		} else {
+			auditReport = null;
+		}
+		return auditReport;
+	}
+
+	/**
+	 * Audits SIP transactions for leaks
+	 *
+	 * @return Audit report, null if no transaction leaks were found
+	 */
+	private String auditTransactions(ConcurrentHashMap transactionsMap,
+									 long a_nLeakedTransactionTimer) {
+		String auditReport = "  Leaked transactions:\n";
+		int leakedTransactions = 0;
+		long currentTime = System.currentTimeMillis();
+
+		// Make a shallow copy of the transaction list.
+		// This copy will remain intact as leaked transactions are removed by the stack.
+		LinkedList transactionsList = new LinkedList(transactionsMap.values());
+
+		// Iterate through our copy
+		Iterator it = transactionsList.iterator();
+		while (it.hasNext()) {
+			SIPTransaction sipTransaction = (SIPTransaction) it.next();
+			if (sipTransaction != null) {
+				if (sipTransaction.auditTag == 0) {
+					// First time we see this transaction. Mark it as audited.
+					sipTransaction.auditTag = currentTime;
+				} else {
+					// We've seen this transaction before. Check if his time's up.
+					if (currentTime - sipTransaction.auditTag >= a_nLeakedTransactionTimer) {
+						// Leaked transaction found
+						leakedTransactions++;
+
+						// Generate some report
+						TransactionState transactionState = sipTransaction.getState();
+						SIPRequest origRequest = sipTransaction.getOriginalRequest();
+						String origRequestMethod = (origRequest != null ? origRequest.getMethod() : null);
+						String transactionReport = sipTransaction.getClass().getName()
+								+ ", state: " + (transactionState != null ? transactionState.toString() : "null")
+								+ ", OR: " + (origRequestMethod != null ? origRequestMethod : "null");
+						auditReport += "    " + transactionReport + "\n";
+
+						// Kill it
+						removeTransaction(sipTransaction);
+						logWriter.logDebug("auditTransactions: leaked " + transactionReport);
+					}
+				}
+			}
+		}
+
+		// Return final report
+		if (leakedTransactions > 0) {
+			auditReport += "    Total: " + Integer.toString(leakedTransactions) + " leaked transactions detected and removed.\n";
+		} else {
+			auditReport = null;
+		}
+		return auditReport;
+	}
 }
