@@ -54,7 +54,7 @@ import EDU.oswego.cs.dl.util.concurrent.Semaphore;
  * @author M. Ranganathan
  * 
  * 
- * @version 1.2 $Revision: 1.46 $ $Date: 2006-11-22 04:26:07 $
+ * @version 1.2 $Revision: 1.47 $ $Date: 2006-11-23 17:26:58 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
 		javax.sip.Transaction {
@@ -122,6 +122,9 @@ public abstract class SIPTransaction extends MessageChannel implements
 	// here.
 
 	protected String transactionId; // Transaction Id.
+
+	// Audit tag used by the SIP Stack audit
+	public long auditTag = 0;
 
 	/**
 	 * Initialized but no state assigned.

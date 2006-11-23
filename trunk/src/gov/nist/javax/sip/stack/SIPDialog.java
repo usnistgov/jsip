@@ -59,7 +59,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.41 $ $Date: 2006-11-22 04:26:07 $
+ * @version 1.2 $Revision: 1.42 $ $Date: 2006-11-23 17:26:57 $
  * 
  * @author M. Ranganathan
  * 
@@ -127,6 +127,9 @@ public class SIPDialog implements javax.sip.Dialog {
 
 	// This is for debugging only.
 	private int ackLine;
+
+	// Audit tag used by the SIP Stack audit
+	public long auditTag = 0;
 
 	// The following fields are extracted from the request that created the
 	// Dialog.
