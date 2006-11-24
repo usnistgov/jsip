@@ -86,6 +86,260 @@ public class SessionDescriptionImpl implements SessionDescription {
 	public SessionDescriptionImpl() {
 	}
 
+	/**
+	 * Copy constructor, creates a deep copy of another SessionDescription.
+	 *
+	 * @param otherSessionDescription - the SessionDescription to copy from.
+	 * @throws SdpException - if there is a problem constructing the SessionDescription.
+	 */
+	public SessionDescriptionImpl(SessionDescription otherSessionDescription)
+			throws SdpException
+	{
+		// If the other session description is null there's nothing to initialize
+		if (otherSessionDescription == null) return;
+
+		// OK to clone the version field, no deep copy required
+		Version otherVersion = otherSessionDescription.getVersion();
+		if (otherVersion != null) {
+			this.setVersion((Version) otherVersion.clone());
+		}
+
+		// OK to clone the origin field, class already does a deep copy
+		Origin otherOrigin = otherSessionDescription.getOrigin();
+		if (otherOrigin != null) {
+			this.setOrigin((Origin) otherOrigin.clone());
+		}
+
+		// OK to clone the session name, no deep copy required
+		SessionName otherSessionName = otherSessionDescription.getSessionName();
+		if (otherSessionName != null) {
+			this.setSessionName((SessionName) otherSessionName.clone());
+		}
+
+		// OK to clone the information field, just a string, no deep copy required
+		Info otherInfo = otherSessionDescription.getInfo();
+		if (otherInfo != null) {
+			this.setInfo((Info) otherInfo.clone());
+		}
+
+		// URI field requires deep copy
+		URIField otherUriField = (URIField) otherSessionDescription.getURI();
+		if (otherUriField != null) {
+			URIField newUF = new URIField();
+			newUF.setURI(otherUriField.toString());
+			this.setURI(newUF);
+		}
+
+		// OK to clone the connection field, class already does a deep copy
+		Connection otherConnection = (Connection) otherSessionDescription.getConnection();
+		if (otherConnection != null) {
+			this.setConnection((Connection) otherConnection.clone());
+		}
+
+		// OK to clone the key field, just a couple of strings
+		Key otherKey = (Key) otherSessionDescription.getKey();
+		if (otherKey != null) {
+			this.setKey((Key) otherKey.clone());
+		}
+
+		// Deep copy each vector, starting with time descriptions
+		Vector otherTimeDescriptions = otherSessionDescription.getTimeDescriptions(false);
+		if (otherTimeDescriptions != null) {
+			Vector newTDs = new Vector();
+			Iterator itTimeDescriptions = otherTimeDescriptions.iterator();
+			while (itTimeDescriptions.hasNext()) {
+				TimeDescriptionImpl otherTimeDescription = (TimeDescriptionImpl) itTimeDescriptions.next();
+				if (otherTimeDescription != null) {
+					TimeField otherTimeField = (TimeField) otherTimeDescription.getTime().clone();
+					TimeDescriptionImpl newTD = new TimeDescriptionImpl(otherTimeField);
+					Vector otherRepeatTimes = otherTimeDescription.getRepeatTimes(false);
+					if (otherRepeatTimes != null) {
+						Iterator itRepeatTimes = otherRepeatTimes.iterator();
+						while (itRepeatTimes.hasNext()) {
+							RepeatField otherRepeatField = (RepeatField) itRepeatTimes.next();
+							if (otherRepeatField != null) {
+								// RepeatField clone is a deep copy
+								RepeatField newRF = (RepeatField) otherRepeatField.clone();
+								newTD.addRepeatField(newRF);
+							}
+						}
+					}
+					newTDs.add(newTD);
+				}
+			}
+			this.setTimeDescriptions(newTDs);
+		}
+
+		// Deep copy the email list
+		Vector otherEmails = otherSessionDescription.getEmails(false);
+		if (otherEmails != null) {
+			Vector newEmails = new Vector();
+			Iterator itEmails = otherEmails.iterator();
+			while (itEmails.hasNext()) {
+				EmailField otherEmailField = (EmailField) itEmails.next();
+				if (otherEmailField != null) {
+					// Email field clone is a deep copy
+					EmailField newEF = (EmailField) otherEmailField.clone();
+					newEmails.add(newEF);
+				}
+			}
+			this.setEmails(newEmails);
+		}
+
+		// Deep copy the phone list
+		Vector otherPhones = otherSessionDescription.getPhones(false);
+		if (otherPhones != null) {
+			Vector newPhones = new Vector();
+			Iterator itPhones = otherPhones.iterator();
+			while (itPhones.hasNext()) {
+				PhoneField otherPhoneField = (PhoneField) itPhones.next();
+				if (otherPhoneField != null) {
+					// Phone field clone is a deep copy
+					PhoneField newPF = (PhoneField) otherPhoneField.clone();
+					newPhones.add(newPF);
+				}
+			}
+			this.setPhones(newPhones);
+		}
+
+		// Deep copy the zone adjustments list
+		Vector otherZAs = otherSessionDescription.getZoneAdjustments(false);
+		if (otherZAs != null) {
+			Vector newZAs = new Vector();
+			Iterator itZAs = otherZAs.iterator();
+			while (itZAs.hasNext()) {
+				ZoneField otherZoneField = (ZoneField) itZAs.next();
+				if (otherZoneField != null) {
+					// Zone field clone is a deep copy
+					ZoneField newPF = (ZoneField) otherZoneField.clone();
+					newZAs.add(newPF);
+				}
+			}
+			this.setZoneAdjustments(newZAs);
+		}
+
+		// Deep copy the bandwidth list
+		Vector otherBandwidths = otherSessionDescription.getBandwidths(false);
+		if (otherBandwidths != null) {
+			Vector newBandwidths = new Vector();
+			Iterator itBandwidths = otherBandwidths.iterator();
+			while (itBandwidths.hasNext()) {
+				BandwidthField otherBandwidthField = (BandwidthField) itBandwidths.next();
+				if (otherBandwidthField != null) {
+					// Bandwidth field clone() is a shallow copy but object is not deep
+					BandwidthField newBF = (BandwidthField) otherBandwidthField.clone();
+					newBandwidths.add(newBF);
+				}
+			}
+			this.setBandwidths(newBandwidths);
+		}
+
+		// Deep copy the attribute list
+		Vector otherAttributes = otherSessionDescription.getAttributes(false);
+		if (otherAttributes != null) {
+			Vector newAttributes = new Vector();
+			Iterator itAttributes = otherAttributes.iterator();
+			while (itAttributes.hasNext()) {
+				AttributeField otherAttributeField = (AttributeField) itAttributes.next();
+				if (otherAttributeField != null) {
+					// Attribute field clone() makes a deep copy but be careful: it may use reflection to copy one of its members
+					AttributeField newBF = (AttributeField) otherAttributeField.clone();
+					newAttributes.add(newBF);
+				}
+			}
+			this.setAttributes(newAttributes);
+		}
+
+		// Deep copy the media descriptions
+		Vector otherMediaDescriptions = otherSessionDescription.getMediaDescriptions(false);
+		if (otherMediaDescriptions != null) {
+			Vector newMDs = new Vector();
+			Iterator itMediaDescriptions = otherMediaDescriptions.iterator();
+			while (itMediaDescriptions.hasNext()) {
+				MediaDescriptionImpl otherMediaDescription = (MediaDescriptionImpl) itMediaDescriptions.next();
+				if (otherMediaDescription != null) {
+					MediaDescriptionImpl newMD = new MediaDescriptionImpl();
+
+					// Copy the media field
+					MediaField otherMediaField = otherMediaDescription.getMediaField();
+					if (otherMediaField != null) {
+						// Media field clone() makes a shallow copy, so don't use clone()
+						MediaField newMF = new MediaField();
+						newMF.setMedia(otherMediaField.getMedia());
+						newMF.setPort(otherMediaField.getPort());
+						newMF.setNports(otherMediaField.getNports());
+						newMF.setProto(otherMediaField.getProto());
+						Vector otherFormats = otherMediaField.getFormats();
+						if (otherFormats != null) {
+							Vector newFormats = new Vector();
+							Iterator itFormats = otherFormats.iterator();
+							while (itFormats.hasNext()) {
+								Object otherFormat = itFormats.next();
+								if (otherFormat != null) {
+									// Convert all format objects to strings in order to avoid reflection
+									newFormats.add(String.valueOf(otherFormat));
+								}
+							}
+							newMF.setFormats(newFormats);
+						}
+						newMD.setMedia(newMF);
+					}
+
+					// Copy the information field (it's a shallow object, ok to clone)
+					InformationField otherInfoField = otherMediaDescription.getInformationField();
+					if (otherInfoField != null) {
+						newMD.setInformationField((InformationField) otherInfoField.clone());
+					}
+
+					// Copy the connection field. OK to use clone(), already does a deep copy.
+					ConnectionField otherConnectionField = otherMediaDescription.getConnectionField();
+					if (otherConnectionField != null) {
+						newMD.setConnectionField((ConnectionField) otherConnectionField.clone());
+					}
+
+					// Copy the bandwidth fields
+					Vector otherBFs = otherMediaDescription.getBandwidths(false);
+					if (otherBFs != null) {
+						Vector newBFs = new Vector();
+						Iterator itBFs = otherBFs.iterator();
+						while (itBFs.hasNext()) {
+							BandwidthField otherBF = (BandwidthField) itBFs.next();
+							if (otherBF != null) {
+								// BandwidthField is a shallow object, ok to use clone
+								newBFs.add((BandwidthField) otherBF.clone());
+							}
+						}
+						newMD.setBandwidths(newBFs);
+					}
+
+					// Copy the key field (shallow object)
+					KeyField otherKeyField = otherMediaDescription.getKeyField();
+					if (otherKeyField != null) {
+						newMD.setKeyField((KeyField) otherKeyField.clone());
+					}
+
+					// Copy the attributes
+					Vector otherAFs = otherMediaDescription.getAttributeFields();
+					if (otherAFs != null) {
+						Vector newAFs = new Vector();
+						Iterator itAFs = otherAFs.iterator();
+						while (itAFs.hasNext()) {
+							AttributeField otherAF = (AttributeField) itAFs.next();
+							if (otherAF != null) {
+								// AttributeField clone() already makes a deep copy, but be careful. It will use reflection
+								// unless the attribute is a String or any other immutable object.
+								newAFs.add((AttributeField) otherAF.clone());
+							}
+						}
+						newMD.setAttributeFields(newAFs);
+					}
+					newMDs.add(newMD);
+				}
+			}
+			this.setMediaDescriptions(newMDs);
+		}
+	}
+
 	public void addField(SDPField sdpField) throws ParseException {
 		try {
 			if (sdpField instanceof ProtoVersionField) {
@@ -159,57 +413,18 @@ public class SessionDescriptionImpl implements SessionDescription {
 	}
 
 	/**
-	 * Public clone declaration.
-	 * 
-	 * @throws CloneNotSupportedException
-	 *             if clone method is not supported
-	 * @return Object
+	 * Creates and returns a deep copy of this object
+	 *
+	 * @return     a clone of this instance.
+	 * @exception  CloneNotSupportedException  if this instance cannot be cloned.
 	 */
 	public Object clone() throws CloneNotSupportedException {
-		Class myClass = this.getClass();
-		SessionDescriptionImpl hi;
 		try {
-			hi = (SessionDescriptionImpl) myClass.newInstance();
-		} catch (InstantiationException ex) {
-			return null;
-		} catch (IllegalAccessException ex) {
-			return null;
+			return new SessionDescriptionImpl(this);
+		} catch (SdpException e) {
+			// throw this exception to indicate that this instance cannot be cloned
+			throw new CloneNotSupportedException();
 		}
-
-		hi.versionImpl = (ProtoVersionField) this.versionImpl.clone();
-		hi.originImpl = (OriginField) this.originImpl.clone();
-		hi.sessionNameImpl = (SessionNameField) this.sessionNameImpl.clone();
-
-		// Was bombing out with null pointer. Steve Crossley sent in a
-		// fix.
-		if (this.infoImpl != null) {
-			hi.infoImpl = (InformationField) this.infoImpl.clone();
-		}
-		if (this.uriImpl != null) {
-			hi.uriImpl = (URIField) this.uriImpl.clone();
-		}
-		if (this.connectionImpl != null) {
-			hi.connectionImpl = (ConnectionField) this.connectionImpl.clone();
-		}
-		if (this.keyImpl != null) {
-			hi.keyImpl = (KeyField) this.keyImpl.clone();
-		}
-
-		hi.timeDescriptions = this.timeDescriptions == null ? null
-				: (Vector) this.timeDescriptions.clone();
-		hi.emailList = this.emailList == null ? null : (Vector) this.emailList
-				.clone();
-		hi.phoneList = this.phoneList == null ? null : (Vector) this.phoneList
-				.clone();
-		hi.zoneAdjustments = this.zoneAdjustments == null ? null
-				: (Vector) this.zoneAdjustments.clone();
-		hi.bandwidthList = this.bandwidthList == null ? null
-				: (Vector) this.bandwidthList.clone();
-		hi.attributesList = this.attributesList == null ? null
-				: (Vector) this.attributesList.clone();
-		hi.mediaDescriptions = this.mediaDescriptions == null ? null
-				: (Vector) this.mediaDescriptions.clone();
-		return hi;
 	}
 
 	/**
@@ -365,7 +580,7 @@ public class SessionDescriptionImpl implements SessionDescription {
 	 * 
 	 * @param create
 	 *            boolean to set
-	 * @throws SdpException
+	 * @throws SdpParseException
 	 * @return the email address.
 	 */
 	public Vector getEmails(boolean create) throws SdpParseException {
@@ -773,8 +988,7 @@ public class SessionDescriptionImpl implements SessionDescription {
 	/**
 	 * Adds the specified Attribute to this Description object.
 	 * 
-	 * @param 
-	 *            attributes - the attribute to add
+	 * @param attributes - the attribute to add
 	 * @throws SdpException
 	 *             if the vector is null
 	 */
