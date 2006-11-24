@@ -99,7 +99,20 @@ public class SdpFactory extends Object
     return sessionDescriptionImpl;
   }
 
-  /** Creates a SessionDescription populated with the information
+	/**
+	 * Creates a new SessionDescription, deep copy of another SessionDescription.
+	 *
+	 * @param otherSessionDescription - the SessionDescription to copy from.
+	 * @return a new SessionDescription, exact and deep copy of the otherSessionDescription.
+	 * @throws SdpException - if there is a problem constructing the SessionDescription.
+	 */
+	public SessionDescription createSessionDescription(SessionDescription otherSessionDescription)
+			throws SdpException
+	{
+		return new SessionDescriptionImpl(otherSessionDescription);
+	}
+
+	/** Creates a SessionDescription populated with the information
    *     contained within the string parameter.
    *
    *     Note: unknown field types should not cause exceptions.
