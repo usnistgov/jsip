@@ -1,13 +1,13 @@
 /*
-* Conditions Of Use 
-* 
+* Conditions Of Use
+*
 * This software was developed by employees of the National Institute of
 * Standards and Technology (NIST), an agency of the Federal Government.
 * Pursuant to title 15 Untied States Code Section 105, works of NIST
 * employees are not subject to copyright protection in the United States
 * and are considered to be in the public domain.  As a result, a formal
 * license is not needed to use the software.
-* 
+*
 * This software is provided by NIST as a service and is expressly
 * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
 * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
@@ -16,12 +16,12 @@
 * regarding the use of the software or the results thereof, including but
 * not limited to the correctness, accuracy, reliability or usefulness of
 * the software.
-* 
+*
 * Permission to use this software is contingent upon your acceptance
 * of the terms of this agreement
-*  
+*
 * .
-* 
+*
 */
 /******************************************************************************
  * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).      *
@@ -48,16 +48,16 @@ import java.text.ParseException;
  * Contributions (bug fixes) made by:
  * Daniel J. Martinez Manzano,
  * Hagai Sela. Bug reports by Shanti Kadiyala,
- * Rhys Ulerich Bug,Victor Hugo 
+ * Rhys Ulerich Bug,Victor Hugo
  */
 /**
  * Implementation of the JAIN-SIP provider interface.
- * 
- * @version 1.2 $Revision: 1.39 $ $Date: 2006-11-12 21:52:50 $
- * 
+ *
+ * @version 1.2 $Revision: 1.40 $ $Date: 2006-12-02 00:47:15 $
+ *
  * @author M. Ranganathan <br/>
- * 
- * 
+ *
+ *
  */
 
 
@@ -83,6 +83,16 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 	private boolean automaticDialogSupportEnabled;
 
 	/**
+	 * A string containing the 0.0.0.0 IPv4 ANY address.
+	 */
+	private String IN_ADDR_ANY = "0.0.0.0";
+
+	/**
+	 * A string containing the ::0 IPv6 ANY address.
+	 */
+	private String IN6_ADDR_ANY = "::0";
+
+	/**
 	 * Stop processing messages for this provider. Post an empty message to our
 	 * message processing queue that signals us to quit.
 	 */
@@ -100,7 +110,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.sip.SipProvider#getListeningPoint(java.lang.String)
 	 */
 	public ListeningPoint getListeningPoint(String transport) {
@@ -114,10 +124,10 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 	 * Handle the SIP event - because we have only one listener and we are
 	 * already in the context of a separate thread, we dont need to enque the
 	 * event and signal another thread.
-	 * 
+	 *
 	 * @param sipEvent
 	 *            is the event to process.
-	 * 
+	 *
 	 */
 
 	public void handleEvent(EventObject sipEvent, SIPTransaction transaction) {
@@ -160,7 +170,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#clone()
 	 */
 	protected Object clone() throws java.lang.CloneNotSupportedException {
@@ -169,7 +179,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean equals(Object obj) {
@@ -178,7 +188,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.sip.SipProvider#addSipListener(javax.sip.SipListener)
 	 */
 	public void addSipListener(SipListener sipListener)
@@ -199,7 +209,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 
 	/*
 	 * This method is deprecated (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.sip.SipProvider#getListeningPoint()
 	 */
 
@@ -213,7 +223,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.sip.SipProvider#getNewCallId()
 	 */
 	public CallIdHeader getNewCallId() {
@@ -230,7 +240,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.sip.SipProvider#getNewClientTransaction(javax.sip.message.Request)
 	 */
 	public ClientTransaction getNewClientTransaction(Request request)
@@ -256,7 +266,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 		} catch (ParseException ex) {
 			throw new TransactionUnavailableException(ex.getMessage());
 		}
-		
+
 		/*
 		 * User decided to give us his own via header branch. Lets see if it
 		 * results in a clash. If so reject the request.
@@ -266,27 +276,30 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 				sipStack.findTransaction((SIPRequest)request, false) != null) {
 			throw new TransactionUnavailableException("Transaction already exists!");
 		}
-		
-		
+
+
 		String transport = sipRequest.getTopmostVia().getTransport();
 		ListeningPointImpl listeningPoint = (ListeningPointImpl) this
 				.getListeningPoint(transport);
 		// Check to see if the sentby  of the topmost via header matches the sentby of our listening point.
-		if (listeningPoint == null || 
-				!listeningPoint.getSentBy().equalsIgnoreCase(sipRequest.getTopmostVia().getSentBy().toString())) {
+		// Check whether the sentby of the topmost via header matches the sentby
+		// of our listening point. Mismatch is only ok if we're bound on 0.0.0.0
+		if (listeningPoint == null
+			|| (!listeningPoint.getSentBy().equalsIgnoreCase(IN_ADDR_ANY)
+				&& !listeningPoint.getSentBy().equalsIgnoreCase(IN6_ADDR_ANY)
+				&& !listeningPoint.getSentBy().equalsIgnoreCase(
+					  sipRequest.getTopmostVia().getSentBy().toString())) )
+		{
 			if (sipStack.isLoggingEnabled()) {
 				sipStack.getLogWriter().logError(
-						"listeningPoint " + listeningPoint);
+					"listeningPoint " + listeningPoint);
 				if (listeningPoint != null)
 					sipStack.getLogWriter().logError(
 							"port = " + listeningPoint.getPort());
-
 			}
 			throw new TransactionUnavailableException(
-					"sentBy does not match the sentby setting of the ListeningPoint "
-					+ " listeningPoint sentBy = " + listeningPoint.getSentBy() +
-					"topmost VIA sentBy = "
-					+ sipRequest.getTopmostVia().getSentBy().toString());
+				"sentBy does not match the sentby setting of the ListeningPoint "
+				+ sipRequest.getTopmostVia().getSentBy().toString());
 		}
 
 		if (request.getMethod().equalsIgnoreCase(Request.CANCEL)) {
@@ -400,7 +413,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.sip.SipProvider#getNewServerTransaction(javax.sip.message.Request)
 	 */
 	public ServerTransaction getNewServerTransaction(Request request)
@@ -539,7 +552,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 					MessageChannel mc = (MessageChannel) sipRequest
 							.getMessageChannel();
 					transaction = sipStack.createServerTransaction(mc);
-					if ( transaction == null) 
+					if ( transaction == null)
 						throw new TransactionUnavailableException("Transaction unavailable -- too many servrer transactions");
 
 					transaction.setOriginalRequest(sipRequest);
@@ -567,7 +580,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.sip.SipProvider#getSipStack()
 	 */
 	public SipStack getSipStack() {
@@ -576,7 +589,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.sip.SipProvider#removeSipListener(javax.sip.SipListener)
 	 */
 	public void removeSipListener(SipListener sipListener) {
@@ -598,7 +611,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.sip.SipProvider#sendRequest(javax.sip.message.Request)
 	 */
 	public void sendRequest(Request request) throws SipException {
@@ -617,8 +630,8 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 		SIPRequest sipRequest = (SIPRequest) request;
 		if (sipRequest.getTopmostVia() == null)
 			throw new SipException("Invalid SipRequest -- no via header!");
-		
-		
+
+
 
 		try {
 			/*
@@ -665,7 +678,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.sip.SipProvider#sendResponse(javax.sip.message.Response)
 	 */
 	public void sendResponse(Response response) throws SipException {
@@ -721,7 +734,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.sip.SipProvider#setListeningPoint(javax.sip.ListeningPoint)
 	 */
 	public void setListeningPoint(ListeningPoint listeningPoint) {
@@ -740,7 +753,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.sip.SipProvider#getNewDialog(javax.sip.Transaction)
 	 */
 
@@ -765,7 +778,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 			SIPServerTransaction st = (SIPServerTransaction) transaction;
 			Response response = st.getLastResponse();
 			if ( response != null ) {
-				if (response.getStatusCode() != 100) 
+				if (response.getStatusCode() != 100)
 					throw new SipException("Cannot set dialog after response has been sent");
 			}
 			SIPRequest sipRequest = (SIPRequest) transaction.getRequest();
@@ -812,7 +825,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 	/**
 	 * Invoked when an error has ocurred with a transaction. Propagate up to the
 	 * listeners.
-	 * 
+	 *
 	 * @param transactionErrorEvent
 	 *            Error event.
 	 */
@@ -884,7 +897,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.sip.SipProvider#getListeningPoints()
 	 */
 	public ListeningPoint[] getListeningPoints() {
@@ -897,7 +910,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.sip.SipProvider#addListeningPoint(javax.sip.ListeningPoint)
 	 */
 	public void addListeningPoint(ListeningPoint listeningPoint)
@@ -933,7 +946,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.sip.SipProvider#removeListeningPoint(javax.sip.ListeningPoint)
 	 */
 	public void removeListeningPoint(ListeningPoint listeningPoint)
@@ -961,7 +974,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.sip.SipProvider#setAutomaticDialogSupportEnabled(boolean)
 	 */
 	public void setAutomaticDialogSupportEnabled(
