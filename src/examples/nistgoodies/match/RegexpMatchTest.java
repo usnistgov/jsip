@@ -7,7 +7,7 @@
 * matches and portions that use regular expressions for matching. 
 * You might find this useful for bulding test frameworks.
 */
-package examples.match;
+package examples.nistgoodies.match;
 import gov.nist.core.Match;
 import gov.nist.javax.sip.address.SipUri;
 import gov.nist.javax.sip.header.RequestLine;
