@@ -38,6 +38,7 @@ public class ContentTypeParserTest extends ParserTestCase {
 			String content[] = {
 				"c: text/html; charset=ISO-8859-4\n",
 				"Content-Type: text/html; charset=ISO-8859-4\n",
+				"Content-Type: multipart/mixed; boundary=p25-issi-body-boundary\n",
 				"Content-Type: application/sdp\n",
 	                        "Content-Type: application/sdp; o=we ;l=ek ; i=end \n"
 	                };

@@ -29,18 +29,20 @@
 
 package gov.nist.javax.sip.stack;
 
+import gov.nist.javax.sip.LogRecord;
+
 /**
  * This class stores a message along with some other informations
  * Used to log messages.
  *
- *@version 1.2 $Revision: 1.7 $ $Date: 2006-07-13 09:00:56 $
+ *@version 1.2 $Revision: 1.8 $ $Date: 2006-12-04 16:59:11 $
  *
  * @author M. Ranganathan   <br/>
  * @author Marc Bednarek  <br/>
  * 
  *
  */
-class MessageLog {
+class MessageLog implements LogRecord {
 
 	private String message;
 
@@ -54,16 +56,15 @@ class MessageLog {
 
 	private String firstLine;
 
-	private String statusMessage;
-
 	private String tid;
 
 	private String callId;
 
-	private int debugLine;
-
 	private long timeStampHeaderValue;
 
+	/* (non-Javadoc)
+	 * @see gov.nist.javax.sip.stack.LogRecord#equals(java.lang.Object)
+	 */
 	public boolean equals(Object other) {
 		if (!(other instanceof MessageLog)) {
 			return false;
@@ -85,10 +86,8 @@ class MessageLog {
 		String timeStamp,
 		boolean isSender,
 		String firstLine,
-		String statusMessage,
 		String tid,
 		String callId,
-		int lineCount,
 		long timeStampHeaderValue) {
 		if (message == null || message.equals(""))
 			throw new IllegalArgumentException("null msg");
@@ -106,16 +105,12 @@ class MessageLog {
 		}
 		this.isSender = isSender;
 		this.firstLine = firstLine;
-		this.statusMessage = statusMessage;
 		this.tid = tid;
 		this.callId = callId;
-		this.debugLine = lineCount;
 		this.timeStampHeaderValue = timeStampHeaderValue;
 	}
 
-	protected long getTimeStamp() {
-		return this.timeStamp;
-	}
+	
 
 	public MessageLog(
 		String message,
@@ -124,10 +119,8 @@ class MessageLog {
 		long timeStamp,
 		boolean isSender,
 		String firstLine,
-		String statusMessage,
 		String tid,
 		String callId,
-		int lineCount,
 		long timestampVal) {
 		if (message == null || message.equals(""))
 			throw new IllegalArgumentException("null msg");
@@ -139,105 +132,20 @@ class MessageLog {
 		this.timeStamp = timeStamp;
 		this.isSender = isSender;
 		this.firstLine = firstLine;
-		this.statusMessage = statusMessage;
 		this.tid = tid;
 		this.callId = callId;
-		this.debugLine = lineCount;
 		this.timeStampHeaderValue = timestampVal;
 	}
 
-	public String flush(long startTime) {
-		String log;
-
-		if (statusMessage != null) {
-			log =
-				"<message\nfrom=\""
-					+ source
-					+ "\" \nto=\""
-					+ destination
-					+ "\" \ntime=\""
-					+ (timeStamp - startTime)
-					+ "\"" 
-					+ (this.timeStampHeaderValue != 0 ? "\ntimeStamp = \"" + timeStampHeaderValue + "\"": "")
-					+ "\nisSender=\""
-					+ isSender
-					+ "\" \nstatusMessage=\""
-					+ statusMessage
-					+ "\" \ntransactionId=\""
-					+ tid
-					+ "\" \ncallId=\""
-					+ callId
-					+ "\" \nfirstLine=\""
-					+ firstLine.trim()
-					+ "\" \ndebugLine=\""
-					+ debugLine
-					+ "\">\n";
-			log += "<![CDATA[";
-			log += message;
-			log += "]]>\n";
-			log += "</message>\n";
-		} else {
-			log =
-				"<message\nfrom=\""
-					+ source
-					+ "\" \nto=\""
-					+ destination
-					+ "\" \ntime=\""
-					+ (timeStamp - startTime)+ "\" "
-					+ (this.timeStampHeaderValue != 0 ? "\ntimeStamp = \"" + timeStampHeaderValue + "\"": "")
-					+ "\nisSender=\""
-					+ isSender
-					+ "\" \ntransactionId=\""
-					+ tid
-					+ "\" \ncallId=\""
-					+ callId
-					+ "\" \nfirstLine=\""
-					+ firstLine.trim()
-					+ "\" \ndebugLine=\""
-					+ debugLine
-					+ "\">\n";
-			log += "<![CDATA[";
-			log += message;
-			log += "]]>\n";
-			log += "</message>\n";
-		}
-		return log;
-	}
-	/**
-	 * Get an XML String for this message
+	
+	/* (non-Javadoc)
+	 * @see gov.nist.javax.sip.stack.LogRecord#toString()
 	 */
 
-	public String flush() {
+	public String toString() {
 		String log;
 
-		if (statusMessage != null) {
-			log =
-				"<message\nfrom=\""
-					+ source
-					+ "\" \nto=\""
-					+ destination
-					+ "\" \ntime=\""
-					+ timeStamp
-					+ "\"" 
-					+(this.timeStampHeaderValue != 0 ? "\ntimeStamp = \"" + timeStampHeaderValue + "\"": "")
-					+"\nisSender=\""
-					+ isSender
-					+ "\" \nstatusMessage=\""
-					+ statusMessage
-					+ "\" \ntransactionId=\""
-					+ tid
-					+ "\" \nfirstLine=\""
-					+ firstLine.trim()
-					+ "\" \ncallId=\""
-					+ callId
-					+ "\" \ndebugLine=\""
-					+ debugLine
-					+ "\" \n>\n";
-			log += "<![CDATA[";
-			log += message;
-			log += "]]>\n";
-			log += "</message>\n";
-		} else {
+		
 			log =
 				"<message\nfrom=\""
 					+ source
@@ -254,15 +162,13 @@ class MessageLog {
 					+ "\" \ncallId=\""
 					+ callId
 					+ "\" \nfirstLine=\""
-					+ firstLine.trim()
-					+ "\" \ndebugLine=\""
-					+ debugLine
-					+ "\" \n>\n";
+					+ firstLine.trim() + "\"" +
+					" \n>\n";
 			log += "<![CDATA[";
 			log += message;
 			log += "]]>\n";
 			log += "</message>\n";
-		}
+	
 		return log;
 	}
 }

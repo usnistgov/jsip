@@ -27,6 +27,7 @@ package gov.nist.javax.sip.stack;
 
 import gov.nist.javax.sip.DefaultAddressResolver;
 import gov.nist.javax.sip.ListeningPointImpl;
+import gov.nist.javax.sip.LogRecordFactory;
 import gov.nist.javax.sip.SIPConstants;
 import gov.nist.javax.sip.SipProviderImpl;
 import gov.nist.javax.sip.message.*;
@@ -64,7 +65,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.62 $ $Date: 2006-11-23 17:26:58 $
+ * @version 1.2 $Revision: 1.63 $ $Date: 2006-12-04 16:59:12 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -279,6 +280,8 @@ public abstract class SIPTransactionStack implements
 	/// Provides a mechanism for applications to check the health of threads in the stack
 	protected ThreadAuditor threadAuditor = new ThreadAuditor();
 
+	protected LogRecordFactory messageLogFactory;
+	
 	/// Timer to regularly ping the thread auditor (on behalf of the timer thread)
 	class PingTimer extends SIPStackTimerTask {
 		/// Timer thread handle

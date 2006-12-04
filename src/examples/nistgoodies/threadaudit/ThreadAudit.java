@@ -1,4 +1,4 @@
-package examples.threadaudit;
+package examples.nistgoodies.threadaudit;
 
 import gov.nist.javax.sip.SipStackImpl;
 
