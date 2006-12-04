@@ -164,8 +164,8 @@ import gov.nist.core.net.NetworkLayer;
  * the messages will be sent using a plain TCP or UDP provider.
  * </li> 
  * 
- * <li><b>gov.nist.javax.sip.DELIVER_TERMINATED_EVENT_FOR_ACK = [true|false] 
- * <b></b><br/>Default is false. ACK Server Transaction is a Pseuedo-transaction.
+ * <li><b>gov.nist.javax.sip.DELIVER_TERMINATED_EVENT_FOR_ACK = [true|false]</b>
+ * <br/>Default is <it>false</it>. ACK Server Transaction is a Pseuedo-transaction.
  * If you want termination notification on ACK transactions (so all server
  * transactions can be handled uniformly in user code during cleanup), then
  * set this flag to <it>true</it>.
@@ -192,10 +192,12 @@ import gov.nist.core.net.NetworkLayer;
  * qualified class path for an implementation of the AddressResolver interface.
  * The AddressResolver allows you to support lookup schemes for addresses
  * that are not directly resolvable to IP adresses using getHostByName. Specifying
- * your own address resolver allows you to customize address lookup.
+ * your own address resolver allows you to customize address lookup. The default
+ * address resolver is a pass-through address resolver (i.e. just returns the
+ * input string without doing a resolution). See gov.nist.javax.sip.DefaultAddressResolver.
  * </li>
  * 
- * <li><b>gov.nist.javax.sip.AUTO_GENERATE_TIMESTAMP= [true| false] </b><br/> Automatically
+ * <li><b>gov.nist.javax.sip.AUTO_GENERATE_TIMESTAMP= [true| false] </b><br/> (default is false) Automatically
  * generate a getTimeOfDay timestamp for a retransmitted request if the original request contained
  * a timestamp. This is useful for profiling.
  * </li>
@@ -210,10 +212,17 @@ import gov.nist.core.net.NetworkLayer;
  * Thread audits are disabled by default. If this property is not specified, audits will
  * remain disabled. An example of how to use this property is in src/examples/threadaudit. </li>
  * 
+ * <li><b>gov.nist.javax.sip.LOG_FACTORY = classpath </b> <br/> The fully qualified
+ * classpath for an implementation of the MessageLogFactory. The stack calls the 
+ * MessageLogFactory functions to log that are received or sent. Implementing thes
+ * function allows you log auxiliary information related to the application 
+ * or environmental conditions into the log stream. The log factory must have a default constructor.
+ *  </li>
+ * 
  * </ul>
  *
  * 
- * @version 1.2 $Revision: 1.55 $ $Date: 2006-11-16 16:17:11 $
+ * @version 1.2 $Revision: 1.56 $ $Date: 2006-12-04 16:59:19 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -592,6 +601,22 @@ public class SipStackImpl extends SIPTransactionStack implements
 						.getProperty(
 								"gov.nist.javax.sip.AUTO_GENERATE_TIMESTAMP",
 								"false")).booleanValue();
+		
+		String messageLogFactoryClasspath = configurationProperties.getProperty(
+				"gov.nist.javax.sip.LOG_FACTORY");
+		if ( messageLogFactoryClasspath != null ) {
+			try {
+				Class clazz = Class.forName(messageLogFactoryClasspath);
+				Constructor c = clazz.getConstructor(new Class[0]);
+				this.messageLogFactory =  (LogRecordFactory) c.newInstance( new Object[0] );
+			} catch ( Exception ex) {
+				System.out.println("Bad configuration value for LOG_FACTORY -- using default logger");
+				this.messageLogFactory  = new DefaultMessageLogFactory();
+			}
+			
+		} else {
+			this.messageLogFactory = new DefaultMessageLogFactory();
+		}
 	}
 
 	/*
@@ -851,6 +876,16 @@ public class SipStackImpl extends SIPTransactionStack implements
 		return this.sipListener;
 	}
 
+	
+	/**
+	 * Get the message log factory registered with the stack.
+	 * 
+	 * @return -- the messageLogFactory of the stack.
+	 */
+	public LogRecordFactory getLogRecordFactory() {
+		return super.messageLogFactory;
+	}
+	
 	
 
 }

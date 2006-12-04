@@ -8,7 +8,7 @@
 * matching.
 */
 
-package examples.match;
+package examples.nistgoodies.match;
 
 import javax.sip.*;
 import javax.sip.header.*;

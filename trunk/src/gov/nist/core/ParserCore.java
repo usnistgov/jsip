@@ -130,6 +130,8 @@ public abstract class ParserCore {
 		return nameValue('=');
 	}
 	
+	
+	
 	protected void peekLine(String rule) {
 		if (debug) {
 			Debug.println(rule +" " + lexer.peekLine());

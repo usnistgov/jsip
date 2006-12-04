@@ -33,6 +33,8 @@ import java.io.IOException;
 import java.io.FileWriter;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+
+import gov.nist.javax.sip.LogRecord;
 import gov.nist.javax.sip.message.*;
 import gov.nist.javax.sip.header.*;
 import gov.nist.core.*;
@@ -48,7 +50,7 @@ import javax.sip.header.TimeStampHeader;
  * later access via RMI. The trace can be viewed with a trace viewer (see
  * tools.traceviewerapp).
  *
- * @version 1.2 $Revision: 1.20 $ $Date: 2006-08-15 21:44:53 $
+ * @version 1.2 $Revision: 1.21 $ $Date: 2006-12-04 16:59:11 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -340,46 +342,8 @@ public class ServerLog {
 		}
 	}
 
-	/**
-	 * Log a message into the log directory.
-	 * @param message a SIPMessage to log
-	 * @param from from header of the message to log into the log directory
-	 * @param to to header of the message to log into the log directory
-	 * @param sender is the server the sender (true if I am the sender).
-	 * @param callId CallId of the message to log into the log directory.
-	 * @param firstLine First line of the message to display
-	 * @param status Status information (generated while processing message).
-	 * @param time the reception time (or date).
-	 */
-	private synchronized void logMessage(
-		String message,
-		String from,
-		String to,
-		boolean sender,
-		String callId,
-		String firstLine,
-		String status,
-		String tid,
-		String time,
-		long timeStampHeaderValue) {
-
-		MessageLog log =
-			new MessageLog(
-				message,
-				from,
-				to,
-				time,
-				sender,
-				firstLine,
-				status,
-				tid,
-				callId,
-				logWriter.getLineCount(),
-				timeStampHeaderValue);
-		logMessage(log.flush());
-	}
-
-	private synchronized void logMessage(
+	
+	private  void logMessage(
 		String message,
 		String from,
 		String to,
@@ -392,61 +356,23 @@ public class ServerLog {
 		long timestampVal) {
 
 	
-		MessageLog log =
-			new MessageLog(
+		LogRecord log =
+			this.sipStack.messageLogFactory.createLogRecord(
 				message,
 				from,
 				to,
 				time,
 				sender,
 				firstLine,
-				status,
 				tid,
 				callId,
-				logWriter.getLineCount(),
 				timestampVal);
-		logMessage(log.flush());
+		logMessage(log.toString());
 	}
 
 	
 
-	/**
-	 * Log a message into the log directory. 
-	 * @param message a SIPMessage to log
-	 * @param from from header of the message to log into the log directory
-	 * @param to to header of the message to log into the log directory
-	 * @param sender is the server the sender
-	 * @param time is the time to associate with the message.
-	 */
-	public void logMessage(
-		SIPMessage message,
-		String from,
-		String to,
-		boolean sender,
-		String time) {
-		checkLogFile();
-		CallID cid = (CallID) message.getCallId();
-		String callId = null;
-		if (cid != null)
-			callId = ((CallID) message.getCallId()).getCallId();
-		String firstLine = message.getFirstLine().trim();
-		String inputText = (logContent ? message.encode() : message.encodeMessage() ) ;
-		//this.sipStack.getLogWriter().logStackTrace();
-		String tid = message.getTransactionId();
-		TimeStamp timestamp = (TimeStamp) message.getHeader(TimeStampHeader.NAME);
-		long tsval = timestamp != null? timestamp.getTime(): 0;
-		logMessage(
-			inputText,
-			from,
-			to,
-			sender,
-			callId,
-			firstLine,
-			null,
-			tid,
-			time,
-			tsval);
-	}
+	
 
 	/**
 	 * Log a message into the log directory.
@@ -486,47 +412,7 @@ public class ServerLog {
 	}
 
 	
-	/**
-	 * Log a message into the log directory.
-	 * @param message a SIPMessage to log
-	 * @param from from header of the message to log into the log directory
-	 * @param to to header of the message to log into the log directory
-	 * @param status the status to log. 
-	 * @param sender is the server the sender or receiver (true if sender).
-	 * @param time is the reception time.
-	 */
-	public void logMessage(
-		SIPMessage message,
-		String from,
-		String to,
-		String status,
-		boolean sender,
-		String time) {
-		checkLogFile();
-		CallID cid = (CallID) message.getCallId();
-		String callId = null;
-		if (cid != null)
-			callId = cid.getCallId();
-		String firstLine = message.getFirstLine().trim();
-		String encoded = (logContent ? message.encode() : message.encodeMessage() ) ;
-		String tid = message.getTransactionId();
-		TimeStampHeader tsHeader = (TimeStampHeader) message.getHeader(TimeStampHeader.NAME);
-		long tsVal = 0;
-		if ( tsHeader != null) {
-			tsVal = tsHeader.getTime();
-		}
-		logMessage(
-			encoded,
-			from,
-			to,
-			sender,
-			callId,
-			firstLine,
-			status,
-			tid,
-			time,
-			tsVal);
-	}
+	
 
 	/**
 	 * Log a message into the log directory.
