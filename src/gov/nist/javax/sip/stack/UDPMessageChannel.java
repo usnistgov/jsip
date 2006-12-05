@@ -79,7 +79,7 @@ import javax.sip.message.Response;
  *
  *
  *
- * @version 1.2 $Revision: 1.39 $ $Date: 2006-12-04 16:59:12 $
+ * @version 1.2 $Revision: 1.40 $ $Date: 2006-12-05 05:18:50 $
  */
 public class UDPMessageChannel extends MessageChannel implements
 		ParseExceptionListener, Runnable {
@@ -204,8 +204,8 @@ public class UDPMessageChannel extends MessageChannel implements
 	 * Run method specified by runnnable.
 	 */
 	public void run() {
-		// Ask the auditor to monitor this thread
-		ThreadAuditor.ThreadHandle threadHandle = sipStack.getThreadAuditor().addCurrentThread();
+		// Assume no thread pooling (bug fix by spierhj)
+		ThreadAuditor.ThreadHandle threadHandle = null;
 
 		while (true) {
 			// Create a new string message parser to parse the list of messages.
@@ -224,6 +224,11 @@ public class UDPMessageChannel extends MessageChannel implements
 						if (!((UDPMessageProcessor) messageProcessor).isRunning)
 							return;
 						try {
+							// We're part of a thread pool. Ask the auditor to monitor this thread.
+							if (threadHandle == null) {
+								threadHandle = sipStack.getThreadAuditor().addCurrentThread();
+							}
+
 							// Send a heartbeat to the thread auditor
 							threadHandle.ping();
 
