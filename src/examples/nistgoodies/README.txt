@@ -15,5 +15,5 @@ features. If you have a specific feature to suggest, mail the users
 list.
 
 Caution : Use of these features may result in your application becoming
-unportable across vendor implementations of the JSIP standard.
+unportable across different vendor implementations of the JSIP standard.
 
