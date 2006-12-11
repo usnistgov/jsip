@@ -150,7 +150,7 @@ import java.util.TimerTask;
  *                                      
  * </pre>
  * 
- * @version 1.2 $Revision: 1.81 $ $Date: 2006-11-22 04:28:08 $
+ * @version 1.2 $Revision: 1.82 $ $Date: 2006-12-11 03:44:25 $
  * @author M. Ranganathan
  * 
  */
@@ -733,7 +733,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 
 				// JvB: For the purpose of testing a TI, added a property to
 				// pass it anyway
-				if (sipStack.non2XXAckPassedToListener) {
+				if (sipStack.isNon2XXAckPassedToListener()) {
 					// This is useful for test applications that want to see
 					// all messages.
 					requestOf.processRequest(transactionRequest, this);
