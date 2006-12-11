@@ -207,7 +207,9 @@ public class Shootist extends TestHarness implements SipListener {
 					logger.info("New TID = " + inviteTid);
 					Thread.sleep(500);
 					inviteTid.sendRequest();
-					assertTrue(inviteTid.getState() == TransactionState.CALLING);
+					// The 100 response could have returned and changed the state of the transaction and hence this test is not valid.
+					// assertEquals("Expected calling state was " + inviteTid.getState(), inviteTid.getState(),TransactionState.CALLING);
+					
 					logger.info("sendReqeust succeeded " + inviteTid);
 					Dialog dialog = inviteTid.getDialog();
 					assertTrue("Stack must allocate a new dialog", dialog != this.dialog);

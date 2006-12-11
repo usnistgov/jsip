@@ -156,7 +156,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.58 $ $Date: 2006-11-22 04:26:06 $
+ * @version 1.2 $Revision: 1.59 $ $Date: 2006-12-11 03:44:26 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -744,11 +744,12 @@ public class SIPClientTransaction extends SIPTransaction implements
 				disableTimeoutTimer();
 				this.setState(TransactionState.PROCEEDING);
 				
-				if (respondTo != null)
+				if (respondTo != null) 
 					respondTo
 							.processResponse(transactionResponse, this, dialog);
-				else
+				else 
 					this.semaphore.release();
+				
 				
 			} else if (300 <= statusCode && statusCode <= 699) {
 				// Send back an ACK request

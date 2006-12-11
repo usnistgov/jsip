@@ -222,7 +222,7 @@ import gov.nist.core.net.NetworkLayer;
  * </ul>
  *
  * 
- * @version 1.2 $Revision: 1.56 $ $Date: 2006-12-04 16:59:19 $
+ * @version 1.2 $Revision: 1.57 $ $Date: 2006-12-11 03:44:28 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -589,12 +589,12 @@ public class SipStackImpl extends SIPTransactionStack implements
 		}
 
 		// JvB: added property for testing
-		this.non2XXAckPassedToListener = Boolean
+		this.setNon2XXAckPassedToListener(Boolean
 				.valueOf(
 						configurationProperties
 								.getProperty(
 										"gov.nist.javax.sip.PASS_INVITE_NON_2XX_ACK_TO_LISTENER",
-										"false")).booleanValue();
+										"false")).booleanValue());
 		
 		this.generateTimeStampHeader = Boolean.valueOf(
 				configurationProperties
@@ -608,14 +608,14 @@ public class SipStackImpl extends SIPTransactionStack implements
 			try {
 				Class clazz = Class.forName(messageLogFactoryClasspath);
 				Constructor c = clazz.getConstructor(new Class[0]);
-				this.messageLogFactory =  (LogRecordFactory) c.newInstance( new Object[0] );
+				this.logRecordFactory =  (LogRecordFactory) c.newInstance( new Object[0] );
 			} catch ( Exception ex) {
 				System.out.println("Bad configuration value for LOG_FACTORY -- using default logger");
-				this.messageLogFactory  = new DefaultMessageLogFactory();
+				this.logRecordFactory  = new DefaultMessageLogFactory();
 			}
 			
 		} else {
-			this.messageLogFactory = new DefaultMessageLogFactory();
+			this.logRecordFactory = new DefaultMessageLogFactory();
 		}
 	}
 
@@ -883,7 +883,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 	 * @return -- the messageLogFactory of the stack.
 	 */
 	public LogRecordFactory getLogRecordFactory() {
-		return super.messageLogFactory;
+		return super.logRecordFactory;
 	}
 	
 	

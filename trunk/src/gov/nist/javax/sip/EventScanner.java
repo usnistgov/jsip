@@ -37,7 +37,7 @@ import gov.nist.core.ThreadAuditor;
 /**
  * Event Scanner to deliver events to the Listener.
  * 
- * @version 1.2 $Revision: 1.28 $ $Date: 2006-11-23 17:24:37 $
+ * @version 1.2 $Revision: 1.29 $ $Date: 2006-12-11 03:44:28 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -177,7 +177,9 @@ class EventScanner implements Runnable {
 					// 2xx but
 					// lingering to catch retransmitted INVITEs)
 					if (sipRequest.getMethod().equals(Request.ACK)
-							&& tx.isInviteTransaction()) {
+							&& tx.isInviteTransaction() &&
+							( tx.getLastResponse().getStatusCode()/100 == 2 ||
+								sipStack.isNon2XXAckPassedToListener())) {
 
 						if (sipStack.isLoggingEnabled())
 							sipStack

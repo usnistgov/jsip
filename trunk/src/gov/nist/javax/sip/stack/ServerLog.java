@@ -50,7 +50,7 @@ import javax.sip.header.TimeStampHeader;
  * later access via RMI. The trace can be viewed with a trace viewer (see
  * tools.traceviewerapp).
  *
- * @version 1.2 $Revision: 1.21 $ $Date: 2006-12-04 16:59:11 $
+ * @version 1.2 $Revision: 1.22 $ $Date: 2006-12-11 03:44:25 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -357,7 +357,7 @@ public class ServerLog {
 
 	
 		LogRecord log =
-			this.sipStack.messageLogFactory.createLogRecord(
+			this.sipStack.logRecordFactory.createLogRecord(
 				message,
 				from,
 				to,

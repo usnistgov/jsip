@@ -65,7 +65,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.63 $ $Date: 2006-12-04 16:59:12 $
+ * @version 1.2 $Revision: 1.64 $ $Date: 2006-12-11 03:44:24 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -149,7 +149,7 @@ public abstract class SIPTransactionStack implements
 	/*
 	 * Flag used for testing TI, bypasses filtering of ACK to non-2xx
 	 */
-	protected boolean non2XXAckPassedToListener;
+	private boolean non2XXAckPassedToListener;
 
 	/*
 	 * Class that handles caching of TCP/TLS connections.
@@ -280,7 +280,7 @@ public abstract class SIPTransactionStack implements
 	/// Provides a mechanism for applications to check the health of threads in the stack
 	protected ThreadAuditor threadAuditor = new ThreadAuditor();
 
-	protected LogRecordFactory messageLogFactory;
+	protected LogRecordFactory logRecordFactory;
 	
 	/// Timer to regularly ping the thread auditor (on behalf of the timer thread)
 	class PingTimer extends SIPStackTimerTask {
@@ -1775,6 +1775,16 @@ public abstract class SIPTransactionStack implements
 	public void setAddressResolver(AddressResolver addressResolver) {
 		this.addressResolver = addressResolver;
 	}
+	
+	/**
+	 * Set the logger factory.
+	 * 
+	 * @param logRecordFactory -- 
+	 * 		the log record factory to set.
+	 */
+	public void setLogRecordFactory(LogRecordFactory logRecordFactory) {
+		this.logRecordFactory = logRecordFactory;
+	}
 
 	/**
 	 * get the thread auditor object
@@ -1931,5 +1941,17 @@ public abstract class SIPTransactionStack implements
 			auditReport = null;
 		}
 		return auditReport;
+	}
+
+	public void setNon2XXAckPassedToListener (boolean passToListener) {
+		this.non2XXAckPassedToListener = passToListener;
+	}
+	
+
+	/**
+	 * @return the non2XXAckPassedToListener
+	 */
+	public boolean isNon2XXAckPassedToListener() {
+		return non2XXAckPassedToListener;
 	}
 }
