@@ -47,7 +47,7 @@ public class VisitedNetworkIDParser extends ParametersParser implements TokenTyp
 	
 	/**
 	 * Constructor
-	 * @param recordRoute message to parse to set
+	 * @param networkID -- header value
 	 */
 	public VisitedNetworkIDParser(String networkID) {
 		super(networkID);

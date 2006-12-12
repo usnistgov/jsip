@@ -109,8 +109,7 @@ public class Parser {
 		System.out.println("Parsed SIP Response is :\n" + sipResponse);
 		contentBytes = sipResponse.getRawContent();
 		contentString = new String(contentBytes);
-		//sd = sdpFactory
-		//		.createSessionDescription(contentString);
+		sd = sdpFactory.createSessionDescription(contentString);
 		//System.out.println("Parsed Content is :\n" + sd.toString());
 		
 	}

@@ -4,6 +4,8 @@ import javax.sip.*;
 import javax.sip.address.*;
 import javax.sip.header.*;
 import javax.sip.message.*;
+
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -77,6 +79,25 @@ public class Shootme implements SipListener {
 			processBye(requestEvent, serverTransactionId);
 		} else if (request.getMethod().equals(Request.CANCEL)) {
 			processCancel(requestEvent, serverTransactionId);
+		} else {
+			try {
+				serverTransactionId.sendResponse( messageFactory.createResponse( 202, request ) );
+				
+				// send one back
+				SipProvider prov = (SipProvider) requestEvent.getSource();
+				Request refer = requestEvent.getDialog().createRequest("REFER");
+				requestEvent.getDialog().sendRequest( prov.getNewClientTransaction(refer) );				
+				
+			} catch (SipException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvalidArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 	}

@@ -10,10 +10,6 @@ import gov.nist.javax.sip.parser.*;
 /**
  * ReferredBy Header parser.
  *
- * @version 
- *
- * @author 
- *
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>
  * 
  * Based on JAIN ReferToParser
@@ -23,7 +19,7 @@ public class ReferredByParser extends AddressParametersParser {
 
 	/**
 	 * Creates new ToParser
-	 * @param referTo String to set
+	 * @param referBy String to set
 	 */
 	public ReferredByParser(String referBy) {
 		super(referBy);
