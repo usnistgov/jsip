@@ -86,9 +86,11 @@ c:/jakarta-ant/bin/ant all
 	<property name="sdp_jar" value="${root}/nist-sdp-1.0.jar" />
 	<property name="sip-sdp-jar" value="${root}/sip-sdp.jar" />
 	<property name="unit_test_jar" value="${root}/nist-unit.jar" />
-	<property name="log4j_jar" value="${root}/lib/log4j-1.2.8.jar" />
-	<property name="concurrent_jar" value="${root}/lib/concurrent.jar" />
+	<property name="log4j_jar" value="${root}/lib/${log4j}" />
+	<property name="concurrent_jar" value="${root}/lib/${concurrent}" />
 	<property name='j2se_api' value='http://java.sun.com/j2se/1.5/docs/api' />
+	<property name="junit_jar" value = "${root}/lib/${junit}" />
+
 
 	<target name="all" depends="make,compileexamples,compiletools,javadoc,javadoc-jain" />
 
