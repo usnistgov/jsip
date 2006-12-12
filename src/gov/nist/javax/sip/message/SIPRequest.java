@@ -63,7 +63,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.22 $ $Date: 2006-10-12 20:53:21 $
+ * @version 1.2 $Revision: 1.23 $ $Date: 2006-12-12 19:08:18 $
  * @since 1.1
  * 
  * @author M. Ranganathan  <br/>
@@ -1123,7 +1123,7 @@ public final class SIPRequest extends SIPMessage implements
 	/**
 	 * Generates an Id for checking potentially merged requests.
 	 * 
-	 * @return
+	 * @return String to check for merged requests
 	 */
 	public String getMergeId() {
 		/*

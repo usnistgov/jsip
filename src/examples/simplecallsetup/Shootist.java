@@ -4,6 +4,8 @@ import javax.sip.*;
 import javax.sip.address.*;
 import javax.sip.header.*;
 import javax.sip.message.*;
+
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -76,6 +78,20 @@ public class Shootist implements SipListener {
 		// We are the UAC so the only request we get is the BYE.
 		if (request.getMethod().equals(Request.BYE))
 			processBye(request, serverTransactionId);
+		else {
+			try {
+				serverTransactionId.sendResponse( messageFactory.createResponse(202,request) );
+			} catch (SipException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvalidArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 
 	}
 
@@ -128,9 +144,9 @@ public class Shootist implements SipListener {
 			return;
 		}
 		// If the caller is supposed to send the bye
-		if ( Shootme.callerSendsBye && !byeTaskRunning) {
+		if ( examples.simplecallsetup.Shootme.callerSendsBye && !byeTaskRunning) {
 			byeTaskRunning = true;
-			new Timer().schedule(new ByeTask(dialog), 2000) ;
+			new Timer().schedule(new ByeTask(dialog), 4000) ;
 		}
 		System.out.println("transaction state is " + tid.getState());
 		System.out.println("Dialog = " + tid.getDialog());
@@ -142,6 +158,10 @@ public class Shootist implements SipListener {
 					ackRequest = dialog.createRequest(Request.ACK);
 					System.out.println("Sending ACK");
 					dialog.sendAck(ackRequest);
+					
+					// JvB: test REFER, reported bug in tag handling
+					dialog.sendRequest(  sipProvider.getNewClientTransaction( dialog.createRequest("REFER") )); 
+					
 				} else if (cseq.getMethod().equals(Request.CANCEL)) {
 					if (dialog.getState() == DialogState.CONFIRMED) {
 						// oops cancel went in too late. Need to hang up the

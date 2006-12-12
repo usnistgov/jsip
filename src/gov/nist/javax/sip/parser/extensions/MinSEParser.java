@@ -12,8 +12,6 @@ import javax.sip.*;
  * 
  *    Min-SE  =  "Min-SE" HCOLON delta-seconds *(SEMI generic-param)
  *
- * @version  
- *
  * @author P. Musgrave <pmusgrave@newheights.com>
  *
  * <a href="{@docRoot}/uncopyright.html">This code is in the public domain.</a>

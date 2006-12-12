@@ -144,8 +144,7 @@ public class AccessNetworkInfo extends ParametersHeader implements
 
 	/**
 	 * 
-	 * @param String
-	 *            DSL location value
+	 * @param dslLocation - DSL location value
 	 * @throws NullPointerException
 	 * @throws ParseException
 	 */
