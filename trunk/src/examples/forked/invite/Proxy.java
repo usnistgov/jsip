@@ -199,10 +199,11 @@ public class Proxy extends TestCase implements SipListener {
 					this.inviteServerTxProvider.sendResponse(newResponse);
 				}
 			} else {
-				// Should never see this.
+				// Can be BYE due to Record-Route
 				logger.info("Got a non-invite response " + response);
-				
-				
+				SipProvider p = (SipProvider) responseEvent.getSource();
+				response.removeFirst( ViaHeader.NAME );
+				p.sendResponse( response );
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
