@@ -47,7 +47,7 @@ public class PathParser extends AddressParametersParser implements TokenTypes {
 	
 	/**
 	 * Constructor
-	 * @param recordRoute message to parse to set
+	 * @param path -- Path header value
 	 */
 	public PathParser(String path) {
 		super(path);

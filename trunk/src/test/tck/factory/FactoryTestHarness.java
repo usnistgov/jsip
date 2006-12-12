@@ -308,6 +308,7 @@ public class FactoryTestHarness extends TestHarness {
 			"Subscription-State: pending;generic=void\n",
 			"Supported: 100rel \n",
 			"Supported: foo1\n",
+			"Supported:\n",   // JvB: it may be empty! bug in parser
 			
 			// JvB: added
 			"k: foo1\n",

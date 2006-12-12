@@ -46,7 +46,7 @@ implements TokenTypes{
 	
 	/**
 	 * Constructor
-	 * @param recordRoute message to parse to set
+	 * @param assertedIdentity -- AID to set
 	 */
 	public AssertedIdentityParser(String assertedIdentity) {
 		super(assertedIdentity);

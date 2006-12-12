@@ -94,7 +94,7 @@ public class Shootme implements SipListener {
 			ContactHeader contactHeader = headerFactory
 					.createContactHeader(address);
 			response.addHeader(contactHeader);
-			inviteTid.sendResponse(response);
+			inviteTid.sendResponse(response);			
 		} catch (Exception ex) {
 			ex.printStackTrace();
 

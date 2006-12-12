@@ -24,7 +24,7 @@ public interface LogRecordFactory {
 	 * @param firstLine  -- the first line of the message to be logged.
 	 * @param tid -- the transaction id
 	 * @param callId -- the call id
-	 * @param tsHeaderValue -- the timestamp header value of the incoming message.
+	 * @param timestampVal -- the timestamp header value of the incoming message.
 	 * 
 	 * @return -- a log record with the appropriate fields set.
 	 */

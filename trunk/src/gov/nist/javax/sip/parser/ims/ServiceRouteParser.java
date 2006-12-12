@@ -46,7 +46,7 @@ public class ServiceRouteParser extends AddressParametersParser {
 	
 	/**
 	 * Constructor
-	 * @param recordRoute message to parse to set
+	 * @param serviceRoute - header value
 	 */
 	public ServiceRouteParser(String serviceRoute) {
 		super(serviceRoute);
