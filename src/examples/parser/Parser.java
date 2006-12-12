@@ -1,12 +1,18 @@
 package examples.parser;
 
+import gov.nist.javax.sip.header.ims.AssertedIdentityHeader;
+import gov.nist.javax.sip.header.ims.PreferredIdentity;
+import gov.nist.javax.sip.header.ims.PreferredIdentityHeader;
+
 import java.util.Properties;
 
-import javax.sdp.SdpFactory;
-import javax.sdp.SessionDescription;
+//import javax.sdp.SdpFactory;
+//import javax.sdp.SessionDescription;
 import javax.sip.SipException;
 import javax.sip.SipFactory;
 import javax.sip.address.AddressFactory;
+import javax.sip.header.ExtensionHeader;
+import javax.sip.header.Header;
 import javax.sip.header.HeaderFactory;
 import javax.sip.message.MessageFactory;
 import javax.sip.message.Request;
@@ -47,6 +53,8 @@ public class Parser {
 				+ "Accept: application/sdp ;level=1,application/x-tia-p25-issi\r\n"
 				+ "Call-ID: c6a12ddad0ddc1946d9f443c884a7768@127.0.0.1\r\n"
 				+ "Content-Type: application/sdp;level=1\r\n"
+				+ "P-Asserted-Identity: <sip:x>\r\n"
+				+ "P-Preferred-Identity: <sip:x>\r\n"
 				+ "Content-Length: 145\r\n\r\n"
 				+ "v=0\r\n"
 				+ "o=- 30576 0 IN IP4 127.0.0.1\r\n"
@@ -58,12 +66,23 @@ public class Parser {
 		Request sipRequest = messageFactory.createRequest(request);
 		byte[] contentBytes = sipRequest.getRawContent();
 		String contentString = new String(contentBytes);
-		SdpFactory sdpFactory = SdpFactory.getInstance();
-		SessionDescription sd = sdpFactory
-				.createSessionDescription(contentString);
+		//SdpFactory sdpFactory = SdpFactory.getInstance();
+		//SessionDescription sd = sdpFactory
+		//		.createSessionDescription(contentString);
 		
+		AssertedIdentityHeader h = (AssertedIdentityHeader)sipRequest.getHeader(AssertedIdentityHeader.NAME);
+		System.out.println( h.getClass() );
+		System.out.println( h instanceof ExtensionHeader );
+		System.out.println( h instanceof AssertedIdentityHeader );
+		
+		PreferredIdentityHeader h2 = (PreferredIdentityHeader) sipRequest.getHeader(PreferredIdentityHeader.NAME);
+		System.out.println( h2.getClass() );
+		System.out.println( h2 instanceof ExtensionHeader );
+		System.out.println( h2 instanceof PreferredIdentityHeader );
+
+			
 		System.out.println("Parsed SIPRequest is :\n" + sipRequest.toString());
-		System.out.println("Parsed Content is :\n" + sd.toString());
+		//System.out.println("Parsed Content is :\n" + sd.toString());
 		
 		// Similarly, if you get a response via a socket, you can use the jsip api to parse it
 		String response = "SIP/2.0 200 OK\r\n"+
@@ -90,9 +109,9 @@ public class Parser {
 		System.out.println("Parsed SIP Response is :\n" + sipResponse);
 		contentBytes = sipResponse.getRawContent();
 		contentString = new String(contentBytes);
-		sd = sdpFactory
-				.createSessionDescription(contentString);
-		System.out.println("Parsed Content is :\n" + sd.toString());
+		//sd = sdpFactory
+		//		.createSessionDescription(contentString);
+		//System.out.println("Parsed Content is :\n" + sd.toString());
 		
 	}
 
