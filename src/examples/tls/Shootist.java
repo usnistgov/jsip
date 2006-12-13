@@ -329,11 +329,14 @@ public class Shootist implements SipListener {
 			String host = sipStack.getIPAddress();
 
 			SipURI contactUrl = addressFactory.createSipURI(fromName, host);
+			
 			contactUrl.setPort(tlsListeningPoint.getPort());
 
 			// Create the contact name address.
 			SipURI contactURI = addressFactory.createSipURI(fromName, host);
 			contactURI.setPort(port);
+			
+			contactURI.setTransportParam("tls");
 
 			Address contactAddress = addressFactory.createAddress(contactURI);
 
