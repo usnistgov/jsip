@@ -8,6 +8,8 @@ import java.util.Properties;
 
 //import javax.sdp.SdpFactory;
 //import javax.sdp.SessionDescription;
+import javax.sdp.SdpFactory;
+import javax.sdp.SessionDescription;
 import javax.sip.SipException;
 import javax.sip.SipFactory;
 import javax.sip.address.AddressFactory;
@@ -109,8 +111,9 @@ public class Parser {
 		System.out.println("Parsed SIP Response is :\n" + sipResponse);
 		contentBytes = sipResponse.getRawContent();
 		contentString = new String(contentBytes);
-		sd = sdpFactory.createSessionDescription(contentString);
-		//System.out.println("Parsed Content is :\n" + sd.toString());
+		SdpFactory sdpFactory = SdpFactory.getInstance();
+		SessionDescription sd = sdpFactory.createSessionDescription(contentString);
+		System.out.println("Parsed Content is :\n" + sd.toString());
 		
 	}
 
