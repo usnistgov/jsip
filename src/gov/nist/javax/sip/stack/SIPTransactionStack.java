@@ -65,7 +65,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.64 $ $Date: 2006-12-11 03:44:24 $
+ * @version 1.2 $Revision: 1.65 $ $Date: 2006-12-15 16:19:45 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -1201,6 +1201,10 @@ public abstract class SIPTransactionStack implements
 
 			String key = sipTransaction.getTransactionId();
 			Object removed = clientTransactionTable.remove(key);
+			
+			if (logWriter.isLoggingEnabled()) {
+				logWriter.logDebug("REMOVED client tx " + removed + " KEY = " + key);
+			}
 
 			// Send a notification to the listener.
 			if (removed != null
