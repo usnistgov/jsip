@@ -59,7 +59,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.42 $ $Date: 2006-11-23 17:26:57 $
+ * @version 1.2 $Revision: 1.43 $ $Date: 2006-12-21 19:16:27 $
  * 
  * @author M. Ranganathan
  * 
@@ -2330,6 +2330,15 @@ public class SIPDialog implements javax.sip.Dialog {
 
 	}
 
+	private static final boolean optionPresent( ListIterator l, String option ) {
+		while ( l.hasNext() )
+		{
+			OptionTag opt = (OptionTag) l.next();
+			if ( opt!=null && option.equalsIgnoreCase(opt.getOptionTag()) ) return true;
+		}
+		return false;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -2357,11 +2366,13 @@ public class SIPDialog implements javax.sip.Dialog {
 		if (!request.getMethod().equals(Request.INVITE))
 			throw new SipException("Bad method");
 
-		if (request.getHeader(Supported.NAME) == null)
-			throw new SipException("No Suported header in the request");
-
-		if (request.getHeader(RequireHeader.NAME) == null)
-			throw new SipException("No require header in the request");
+		ListIterator list = request.getHeaders(SupportedHeader.NAME);
+		if ( list==null || !optionPresent(list,"100rel")) {
+			list = request.getHeaders(RequireHeader.NAME);
+			if ( list==null || !optionPresent(list,"100rel")) {
+				throw new SipException("No Supported/Require 100rel header in the request");		
+			}
+		}		
 
 		SIPResponse response = request.createResponse(statusCode);
 		/*
