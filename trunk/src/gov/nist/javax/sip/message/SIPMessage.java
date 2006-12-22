@@ -50,7 +50,7 @@ import java.text.ParseException;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.22 $ $Date: 2006-10-12 20:53:21 $
+ * @version 1.2 $Revision: 1.23 $ $Date: 2006-12-22 02:23:30 $
  * @since 1.1
  * 
  * @author M. Ranganathan  <br/>
@@ -837,7 +837,7 @@ public abstract class SIPMessage extends MessageObject implements
 	public int hashCode() {
 		if (this.callIdHeader == null)
 			throw new RuntimeException(
-					"Invalid message! Cannot compute hashcode!! ");
+					"Invalid message! Cannot compute hashcode! call-id header is missing !");
 		else
 			return this.callIdHeader.getCallId().hashCode();
 	}
