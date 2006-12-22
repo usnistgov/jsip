@@ -156,7 +156,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.60 $ $Date: 2006-12-22 02:23:29 $
+ * @version 1.2 $Revision: 1.61 $ $Date: 2006-12-22 12:22:38 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -994,8 +994,12 @@ public class SIPClientTransaction extends SIPTransaction implements
 			// Got a timeout error on a cancel.
 			if ( this.getOriginalRequest().getMethod().equalsIgnoreCase(Request.CANCEL)) {
 				SIPClientTransaction inviteTx = (SIPClientTransaction) this.getOriginalRequest().getInviteTransaction();
-				if ( inviteTx != null && (inviteTx.getState() == TransactionState.CALLING ||
-							inviteTx.getState() == TransactionState.PROCEEDING)) {
+				if ( inviteTx != null &&( (inviteTx.getState() == TransactionState.CALLING ||
+							inviteTx.getState() == TransactionState.PROCEEDING) )&&
+							inviteTx.getDialog() != null) {
+					// A proxy server should have started TIMER C and take care of the
+					// Termination using transaction.terminate() by itself (i.e. this is 
+					// not the job of the stack at this point.
 					inviteTx.setState(TransactionState.TERMINATED);
 					
 				}
