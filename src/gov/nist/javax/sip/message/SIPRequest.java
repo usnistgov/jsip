@@ -63,7 +63,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.23 $ $Date: 2006-12-12 19:08:18 $
+ * @version 1.2 $Revision: 1.24 $ $Date: 2006-12-22 02:23:32 $
  * @since 1.1
  * 
  * @author M. Ranganathan  <br/>
@@ -83,6 +83,8 @@ public final class SIPRequest extends SIPMessage implements
 	protected RequestLine requestLine;
 
 	private Object messageChannel;
+	
+	private Object inviteTransaction; // The original invite request for a given cancel request
 
 	/**
 	 * Set of target refresh methods, currently: INVITE, UPDATE, SUBSCRIBE,
@@ -1139,5 +1141,21 @@ public final class SIPRequest extends SIPMessage implements
 		} else return null;
 	
 	}
+
+	/**
+	 * @param inviteTransaction the inviteTransaction to set
+	 */
+	public void setInviteTransaction(Object inviteTransaction) {
+		this.inviteTransaction = inviteTransaction;
+	}
+
+	/**
+	 * @return the inviteTransaction
+	 */
+	public Object getInviteTransaction() {
+		return inviteTransaction;
+	}
+	
+	
 
 }

@@ -156,7 +156,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.59 $ $Date: 2006-12-11 03:44:26 $
+ * @version 1.2 $Revision: 1.60 $ $Date: 2006-12-22 02:23:29 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -991,6 +991,16 @@ public class SIPClientTransaction extends SIPTransaction implements
 		}
 		if (TransactionState.COMPLETED != this.getState()) {
 			raiseErrorEvent(SIPTransactionErrorEvent.TIMEOUT_ERROR);
+			// Got a timeout error on a cancel.
+			if ( this.getOriginalRequest().getMethod().equalsIgnoreCase(Request.CANCEL)) {
+				SIPClientTransaction inviteTx = (SIPClientTransaction) this.getOriginalRequest().getInviteTransaction();
+				if ( inviteTx != null && (inviteTx.getState() == TransactionState.CALLING ||
+							inviteTx.getState() == TransactionState.PROCEEDING)) {
+					inviteTx.setState(TransactionState.TERMINATED);
+					
+				}
+			}
+			
 		} else {
 			this.setState(TransactionState.TERMINATED);
 		}
@@ -1011,8 +1021,11 @@ public class SIPClientTransaction extends SIPTransaction implements
 
 		if (originalRequest.getMethod().equalsIgnoreCase(Request.ACK))
 			throw new SipException("Cannot Cancel ACK!");
-		else
-			return originalRequest.createCancelRequest();
+		else {
+			SIPRequest cancelRequest =  originalRequest.createCancelRequest();
+			cancelRequest.setInviteTransaction(this);
+			return cancelRequest;
+		}
 	}
 
 	/*
