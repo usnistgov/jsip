@@ -29,18 +29,7 @@ import gov.nist.core.*;
 
 import gov.nist.javax.sip.header.extensions.*;
 
-import gov.nist.javax.sip.header.ims.AccessNetworkInfoHeader;
-import gov.nist.javax.sip.header.ims.AssertedIdentityHeader;
-import gov.nist.javax.sip.header.ims.AssociatedURIHeader;
-import gov.nist.javax.sip.header.ims.CalledPartyIDHeader;
-import gov.nist.javax.sip.header.ims.ChargingFunctionAddressesHeader;
-import gov.nist.javax.sip.header.ims.ChargingVectorHeader;
-import gov.nist.javax.sip.header.ims.MediaAuthorizationHeader;
-import gov.nist.javax.sip.header.ims.PathHeader;
-import gov.nist.javax.sip.header.ims.PreferredIdentityHeader;
-import gov.nist.javax.sip.header.ims.PrivacyHeader;
-import gov.nist.javax.sip.header.ims.ServiceRouteHeader;
-import gov.nist.javax.sip.header.ims.VisitedNetworkIDHeader;
+import gov.nist.javax.sip.header.ims.*;
 
 import javax.sip.header.*;
 import java.util.Hashtable;
@@ -259,29 +248,37 @@ public class Lexer extends LexerCore {
 					addKeyword(PathHeader.NAME.toUpperCase(), TokenTypes.PATH);
 					addKeyword(ServiceRouteHeader.NAME.toUpperCase(),
 							TokenTypes.SERVICE_ROUTE);
-					addKeyword(AssertedIdentityHeader.NAME.toUpperCase(),
+					addKeyword(PAssertedIdentityHeader.NAME.toUpperCase(),
 							TokenTypes.P_ASSERTED_IDENTITY);
-					addKeyword(PreferredIdentityHeader.NAME.toUpperCase(),
+					addKeyword(PPreferredIdentityHeader.NAME.toUpperCase(),
 							TokenTypes.P_PREFERRED_IDENTITY);
 					addKeyword(PrivacyHeader.NAME.toUpperCase(),
 							TokenTypes.PRIVACY);
 
-					// issued by jmf
-					addKeyword(CalledPartyIDHeader.NAME.toUpperCase(),
+					// issued by Miguel Freitas
+					addKeyword(PCalledPartyIDHeader.NAME.toUpperCase(),
 							TokenTypes.P_CALLED_PARTY_ID);
-					addKeyword(AssociatedURIHeader.NAME.toUpperCase(),
+					addKeyword(PAssociatedURIHeader.NAME.toUpperCase(),
 							TokenTypes.P_ASSOCIATED_URI);
-					addKeyword(VisitedNetworkIDHeader.NAME.toUpperCase(),
+					addKeyword(PVisitedNetworkIDHeader.NAME.toUpperCase(),
 							TokenTypes.P_VISITED_NETWORK_ID);
-					addKeyword(ChargingFunctionAddressesHeader.NAME
+					addKeyword(PChargingFunctionAddressesHeader.NAME
 							.toUpperCase(),
 							TokenTypes.P_CHARGING_FUNCTION_ADDRESSES);
-					addKeyword(ChargingVectorHeader.NAME.toUpperCase(),
+					addKeyword(PChargingVectorHeader.NAME.toUpperCase(),
 							TokenTypes.P_VECTOR_CHARGING);
-					addKeyword(AccessNetworkInfoHeader.NAME.toUpperCase(),
+					addKeyword(PAccessNetworkInfoHeader.NAME.toUpperCase(),
 							TokenTypes.P_ACCESS_NETWORK_INFO);
-					addKeyword(MediaAuthorizationHeader.NAME.toUpperCase(),
+					addKeyword(PMediaAuthorizationHeader.NAME.toUpperCase(),
 							TokenTypes.P_MEDIA_AUTHORIZATION);
+
+					addKeyword(SecurityServerHeader.NAME.toUpperCase(), 
+							TokenTypes.SECURITY_SERVER);
+					addKeyword(SecurityVerifyHeader.NAME.toUpperCase(), 
+							TokenTypes.SECURITY_VERIFY);
+					addKeyword(SecurityClientHeader.NAME.toUpperCase(), 
+							TokenTypes.SECURITY_CLIENT);
+					// end //
 
 				} else if (lexerName.equals("status_lineLexer")) {
 					addKeyword(TokenNames.SIP.toUpperCase(), TokenTypes.SIP);

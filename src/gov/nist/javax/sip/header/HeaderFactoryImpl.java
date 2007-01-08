@@ -25,7 +25,7 @@
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
 *******************************************************************************/
 package gov.nist.javax.sip.header;
-import gov.nist.javax.sip.header.ims.*;	/* IMS headers - issued by jmf */
+import gov.nist.javax.sip.header.ims.*;	/* IMS headers - issued by Miguel Freitas */
 import gov.nist.javax.sip.header.extensions.*; // extension headers - pmusgrave
 import javax.sip.header.*;
 
@@ -38,12 +38,12 @@ import gov.nist.javax.sip.address.*;
 
 /*
 * This file contains enhancements contributed by Alexandre Silva Santos 
-* (PT-Inovação) and Miguel Freitas 
+* (PT-Inovacao) and Miguel Freitas 
 */
 
 /** Implementation of the JAIN SIP  HeaderFactory
 * 
-* @version 1.2 $Revision: 1.10 $ $Date: 2006-10-12 11:57:55 $
+* @version 1.2 $Revision: 1.11 $ $Date: 2007-01-08 19:24:56 $
 * @since 1.1
 *
 *@author M. Ranganathan   <br/>
@@ -1258,13 +1258,17 @@ public class HeaderFactoryImpl implements HeaderFactory {
 	
 	//////////////////////////////////////////////////////////////////////////
 	// The following headers are not part of the JSIP spec. 
-	// They are IMS headers (contributed by Miguel Martins PT Innovacau).
+	// They are IMS headers 
+	// (contributed by Miguel Freitas - PT Inovacao and Telecommunications Institute)
 	///////////////////////////////////////////////////////////////////////////
 	
-	public AccessNetworkInfoHeader createAccessNetworkInfoHeader()
+	/**
+	 * creates a P-Access-Network-Info header
+	 * @return newly created P-Access-Network-Info header
+	 */
+	public PAccessNetworkInfoHeader createPAccessNetworkInfoHeader()
 	{
-		
-		AccessNetworkInfo accessNetworkInfo = new AccessNetworkInfo();
+		PAccessNetworkInfo accessNetworkInfo = new PAccessNetworkInfo();
 		
 		return accessNetworkInfo;
 	}
@@ -1272,14 +1276,18 @@ public class HeaderFactoryImpl implements HeaderFactory {
 	
      /**
      * P-Asserted-Identity header
+     * @param address - Address
+     * @return newly created P-Asserted-Identity header
+     * @throws ParseException
+     * @throws NullPointerException
      */
-	public AssertedIdentityHeader createAssertedIdentityHeader(Address address)
+	public PAssertedIdentityHeader createPAssertedIdentityHeader(Address address)
 		throws NullPointerException, ParseException
 	{	
 		if (address == null)
 			throw new NullPointerException("null address!");
 		
-		AssertedIdentity assertedIdentity = new AssertedIdentity();
+		PAssertedIdentity assertedIdentity = new PAssertedIdentity();
 		assertedIdentity.setAddress(address);
 		
 		return assertedIdentity;
@@ -1287,33 +1295,41 @@ public class HeaderFactoryImpl implements HeaderFactory {
 		
 	}
 	
-	
-	public AssociatedURIHeader createAssociatedURIHeader(URI assocURI)
-	{	
+		
+    /**
+     * Creates a new P-Associated-URI header based on the supplied address
+     * @param assocURI - Address
+	 * @return newly created P-Associated-URI header
+     * @throws NullPointerException if the supplied address is null
+     * @throws ParseException
+     */
+     public PAssociatedURIHeader createPAssociatedURIHeader(Address assocURI)
+     {	
 		if (assocURI == null)
-			throw new NullPointerException("null associatedURI!");
+		   throw new NullPointerException("null associatedURI!");
+			
+		PAssociatedURI associatedURI = new PAssociatedURI();
+		associatedURI.setAddress(assocURI);
 		
-		AssociatedURI associatedURI = new AssociatedURI();
-		associatedURI.setAssociatedURI(assocURI);
-		
-		return associatedURI;
-		
-		
+		return associatedURI;	
 	}
 	
 	
-     
 	
-	
-	/**
+
+    /**
      * P-Called-Party-ID header
+     * @param address - Address
+     * @return newly created P-Called-Party-ID header
+     * @throws NullPointerException
+     * @throws ParseException
      */
-    public CalledPartyIDHeader createCalledPartyIDHeader(Address address)
+    public PCalledPartyIDHeader createPCalledPartyIDHeader(Address address)
     {
     	if (address == null)
 			throw new NullPointerException("null address!");
 		
-    	CalledPartyID calledPartyID = new CalledPartyID();
+    	PCalledPartyID calledPartyID = new PCalledPartyID();
     	calledPartyID.setAddress(address);
 		
 		return calledPartyID;
@@ -1323,11 +1339,11 @@ public class HeaderFactoryImpl implements HeaderFactory {
 
     /**
      * P-Charging-Function-Addresses header
+	 * @return newly created P-Charging-Function-Addresses header
      */
-    public ChargingFunctionAddressesHeader createChargingFunctionAddressesHeader() 
+    public PChargingFunctionAddressesHeader createPChargingFunctionAddressesHeader() 
     {
-    	
-    	ChargingFunctionAddresses cfa = new ChargingFunctionAddresses();
+    	PChargingFunctionAddresses cfa = new PChargingFunctionAddresses();
 
 		return cfa;
     }
@@ -1335,17 +1351,18 @@ public class HeaderFactoryImpl implements HeaderFactory {
     	
     /**
      * P-Charging-Vector header
-     * 
+     * @param icid - icid string
+	 * @return newly created P-Charging-Vector header
+     * @throws NullPointerException
+     * @throws ParseException
      */
-    public ChargingVectorHeader createChargingVectorHeader(String icid)
+    public PChargingVectorHeader createChargingVectorHeader(String icid)
     	throws ParseException
     {
-    	
-    	// verificar todos os parametros de entrada
     	if (icid == null)
-			throw new NullPointerException("null icid arg!");
+		throw new NullPointerException("null icid arg!");
     	
-    	ChargingVector chargingVector = new ChargingVector();
+    	PChargingVector chargingVector = new PChargingVector();
     	chargingVector.setICID(icid);
     	
     	return chargingVector;
@@ -1354,25 +1371,63 @@ public class HeaderFactoryImpl implements HeaderFactory {
     
     
     /**
-     * P-Media-Authorization 
+     * P-Media-Authorization header
+     * @param token - token string
+	 * @return newly created P-Media-Authorizarion header
+     * @throws InvalidArgumentException
+     * @throws ParseException
      */
-    public MediaAuthorizationHeader createMediaAuthorizationHeader(String token)
+    public PMediaAuthorizationHeader createPMediaAuthorizationHeader(String token)
     	throws InvalidArgumentException, ParseException
     {
-
     	if (token == null || token == "")
 			throw new InvalidArgumentException("The Media-Authorization-Token parameter is null or empty");
 
     	
-    	MediaAuthorization mediaAuthorization = new MediaAuthorization();		
+    	PMediaAuthorization mediaAuthorization = new PMediaAuthorization();		
     	mediaAuthorization.setMediaAuthorizationToken(token);
     	
     	return mediaAuthorization;
     }
+       
+	
+    /**
+     * P-Preferred-Identity header 
+     * @param address - Address
+	 * @return newly created P-Preferred-Identity header
+     * @throws NullPointerException
+     */
+    public PPreferredIdentityHeader createPPreferredIdentityHeader(Address address)
+    {
+    	if (address == null)
+			throw new NullPointerException("null address!");
+		
+    	PPreferredIdentity preferredIdentity = new PPreferredIdentity();
+    	preferredIdentity.setAddress(address);
+		
+		return preferredIdentity;
+
+    }
+        
+    /**
+     * P-Visited-Network-ID header
+     * @return newly created P-Visited-Network-ID header
+     */
+    public PVisitedNetworkIDHeader createPVisitedNetworkIDHeader()
+    {    	
+    	PVisitedNetworkID visitedNetworkID = new PVisitedNetworkID();
+    	
+    	return visitedNetworkID;
+    }
+    
     
     
     /**
      * PATH header
+     * @param address - Address
+	 * @return newly created Path header
+     * @throws NullPointerException
+     * @throws ParseException
      */
     public PathHeader createPathHeader(Address address)
     {
@@ -1386,29 +1441,12 @@ public class HeaderFactoryImpl implements HeaderFactory {
     	return path;
     }
     
-    
-    
-    	
-    /**
-     * P-Preferred-Identity header 
-     */
-    public PreferredIdentityHeader createPreferredIdentityHeader(Address address)
-    {
-    	
-    	if (address == null)
-			throw new NullPointerException("null address!");
-		
-    	PreferredIdentity preferredIdentity = new PreferredIdentity();
-    	preferredIdentity.setAddress(address);
-		
-		return preferredIdentity;
 
-    }
-    
-    
-    
     /**
      * Privacy header
+     * @param privacyType - privacy type string
+	 * @return newly created Privacy header
+     * @throws NullPointerException
      */
     public PrivacyHeader createPrivacyHeader(String privacyType)
     {
@@ -1423,11 +1461,13 @@ public class HeaderFactoryImpl implements HeaderFactory {
     
     
     /**
-     * SERVICE-ROUTE header:
+     * Service-Route header
+     * @param address - Address
+	 * @return newly created Service-Route header
+     * @throws NullPointerException
      */
     public ServiceRouteHeader createServiceRouteHeader(Address address)
     {
-    
     	if (address == null)
 			throw new NullPointerException("null address!");
     	
@@ -1438,6 +1478,40 @@ public class HeaderFactoryImpl implements HeaderFactory {
     	
     }
     
+    /**
+     * Security-Server header
+	 * @return newly created Security-Server header
+     */
+    public SecurityServerHeader createSecurityServerHeader()
+    {
+    	SecurityServer secServer = new SecurityServer();
+    	return secServer;
+    }
+
+    /**
+     * Security-Client header
+     * @return newly created Security-Client header
+     */
+    public SecurityClientHeader createSecurityClientHeader()
+    {
+    	SecurityClient secClient = new SecurityClient();
+    	return secClient;
+    }
+
+    /**
+     * Security-Verify header
+     * @return newly created Security-Verify header
+     */
+    public SecurityVerifyHeader createSecurityVerifyHeader()
+    {
+    	SecurityVerify secVerify = new SecurityVerify();
+    	return secVerify;
+    }
+    
+
+    
+
+
 	/**
 	 * Creates a new SessionExpiresHeader based on the newly supplied expires value.
 	 *
@@ -1459,18 +1533,7 @@ public class HeaderFactoryImpl implements HeaderFactory {
 
 		return s;
 	}   
-    
-    /**
-     * P-Visited-Network-ID header
-     */
-    public VisitedNetworkIDHeader createVisitedNetworkIDHeader()
-    {
-    	
-    	VisitedNetworkID visitedNetworkID = new VisitedNetworkID();
-    	
-    	return visitedNetworkID;
-    }
-    
+
     
     
 	

@@ -45,7 +45,7 @@ public interface ParameterNamesIms extends ParameterNames {
 	public static final String ORIG_IOI = "orig-ioi";
 	public static final String TERM_IOI = "term-ioi";
 	
-	/* issued by jmf */
+	// issued by Miguel Freitas //
 	// P-Access-Network-ID
 	public static final String CGI_3GPP = "cgi-3gpp";
 	public static final String UTRAN_CELL_ID_3GPP = "utran-cell-id-3gpp";
@@ -65,7 +65,18 @@ public interface ParameterNamesIms extends ParameterNames {
 	public static final String DSL_BEARER_ITEM = "dsl-bearer-item";
 	public static final String DSL_BEARER_SIG = "dsl-bearer-sig";
 	
-	
+	// sec-agree (Security-Server, Security-Client, Security-Verify)
+	public static final String ALG 	  = "alg";
+	public static final String EALG   = "ealg";
+	public static final String Q 	  = "q";
+	public static final String PROT   = "prot";
+	public static final String MOD	  = "mod";
+	public static final String SPI_C  = "spi-c";
+	public static final String SPI_S  = "spi-s";
+	public static final String PORT_C = "port-c";
+	public static final String PORT_S = "port-s";
+	public static final String D_VER  = "d-ver";
+	// end //
 	
 	
 	

@@ -35,7 +35,7 @@ import gov.nist.core.*;
  * specializes the gov.nist.sip.header.GenericObject class for SIPHeader
  * related objects.
  *
- * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-13 09:01:24 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2007-01-08 19:24:57 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -44,9 +44,6 @@ import gov.nist.core.*;
  */
 
 public abstract class SIPObject extends GenericObject {
-	protected static final String SIPHEADERS_PACKAGE =
-		PackageNames.SIPHEADERS_PACKAGE;
-	protected static final String SIP_PACKAGE = PackageNames.SIP_PACKAGE;
 
 	/** default Constructor
 	 */

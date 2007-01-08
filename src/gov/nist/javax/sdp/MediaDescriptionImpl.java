@@ -65,9 +65,17 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 
 		if (bandwidthFields != null) {
 			for (int i = 0; i < bandwidthFields.size(); i++) {
+
+				// issued by Miguel Freitas (IT) PTInovacao
+				retval.append(
+						((SDPField) bandwidthFields.elementAt(i)).encode());
+				
+				/* original code
 				BandwidthField bandwidthField =
 					(BandwidthField) bandwidthFields.elementAt(i);
 				retval.append(bandwidthField.encode());
+				*/
+				// end //
 			}
 		}
 
@@ -90,6 +98,9 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 	public MediaDescriptionImpl() {
 		this.bandwidthFields = new Vector();
 		this.attributeFields = new Vector();
+
+		// issued by Miguel Freitas (AV) PTInovacao
+		this.preconditionFields = new PreconditionFields();
 	}
 	public MediaField getMediaField() {
 		return mediaField;
@@ -151,7 +162,10 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 
 	}
 
-	protected void addAttribute(AttributeField af) {
+	// issued by Miguel Freitas //
+	public void addAttribute(AttributeField af) {
+	// protected void addAttribute(AttributeField af) {
+	// end //
 		this.attributeFields.add(af);
 	}
 
@@ -280,14 +294,28 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 		if (name == null)
 			throw new SdpException("The name is null");
 		else {
-			for (int i = 0; i < bandwidthFields.size(); i++) {
+			int i = 0;	// issued by Miguel Freitas (IT) PTInovacao
+			for (i = 0; i < bandwidthFields.size(); i++) {
 				BandwidthField bandwidthField =
-					(BandwidthField) bandwidthFields.elementAt(i);
+					(BandwidthField) this.bandwidthFields.elementAt(i);
 				String type = bandwidthField.getBwtype();
 				if (type != null && type.equals(name))
+				{
 					bandwidthField.setBandwidth(value);
+
+					break; // issued by Miguel Freitas (IT) PTInovacao
+				}
 			}
 
+			// issued by Miguel Freitas (IT) PTInovacao
+			if (i == this.bandwidthFields.size())
+			{
+				BandwidthField bandwidthField = new BandwidthField();
+				bandwidthField.setType(name);
+				bandwidthField.setValue(value);
+				this.bandwidthFields.add(bandwidthField);
+			}
+			// end //
 		}
 	}
 
@@ -555,4 +583,56 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 		}
 	}
 
+	
+	
+	
+/////////////////////////////////////////////////////////////////// 
+// Precondition Mechanism 
+//	based in 3GPP TS 24.229 and precondition mechanism (RFC 3312)
+// issued by Miguel Freitas (IT) PTinovacao
+///////////////////////////////////////////////////////////////////
+	
+	
+	/** 
+	 * Precondition Mechanism - precondition fields for the media description 
+	 */
+	// Precondition Attribute Fields
+	protected PreconditionFields preconditionFields;
+	
+	
+	/**
+	 * <p>Set the Media Description's Precondition Fields</p>
+	 * <p>issued by Miguel Freitas (IT) PTInovacao</p>
+	 * @param precondition Vector containing PreconditionFields
+	 * @throws SdpException
+	 */
+	public void setPreconditionFields(Vector precondition) throws SdpException
+	{
+		this.preconditionFields.setPreconditions(precondition);
+	}
+	
+	/**
+	 * <p>Set the Media Description's Precondition Fields</p>
+	 * <p>issued by Miguel Freitas (IT) PTInovacao</p>
+	 * @param precondition PreconditionFields parameter
+	 */
+	public void setPreconditions(PreconditionFields precondition)
+	{	
+		this.preconditionFields = precondition;
+	}
+	
+	/**  
+	 * <p>Get attribute fields of segmented precondition</p>
+	 * <p>issued by Miguel Freitas (IT) PTInovacao</p>
+	 * @return Vector of attribute fields (segmented precondition)
+	 */
+	public Vector getPreconditionFields() 
+	{
+		return this.preconditionFields.getPreconditions();
+	}
+	
+	// end //
+	
+	
+	
 }

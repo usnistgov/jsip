@@ -24,7 +24,7 @@
 * 
 */
 /*******************************************
- * PRODUCT OF PT INOVAO - EST DEPARTMENT *
+ * PRODUCT OF PT INOVACAO - EST DEPARTMENT *
  *******************************************/
 
 package gov.nist.javax.sip.parser.ims;
@@ -36,7 +36,7 @@ import gov.nist.javax.sip.parser.Lexer;
 
 import java.text.ParseException;
 
-import gov.nist.javax.sip.header.ims.AddressHeader;
+import gov.nist.javax.sip.header.ims.AddressHeaderIms;
 
 /**
  * @author ALEXANDRE MIGUEL SILVA SANTOS 
@@ -53,7 +53,7 @@ abstract class AddressHeaderParser extends HeaderParser {
 		super(buffer);
 	}
 
-	protected void parse(AddressHeader addressHeader)
+	protected void parse(AddressHeaderIms addressHeader)
 		throws ParseException {
 		dbg_enter("AddressHeaderParser.parse");
 		try {
