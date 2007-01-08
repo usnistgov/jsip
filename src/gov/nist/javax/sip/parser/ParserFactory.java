@@ -38,7 +38,7 @@ import gov.nist.javax.sip.parser.extensions.*;
  * A factory class that does a name lookup on a registered parser and
  * returns a header parser for the given name.
  *
- * @version 1.2 $Revision: 1.11 $ $Date: 2006-10-12 11:57:54 $
+ * @version 1.2 $Revision: 1.12 $ $Date: 2007-01-08 19:24:21 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -236,16 +236,24 @@ public class ParserFactory {
 		parserTable.put(SIPIfMatchHeader.NAME.toLowerCase(), SIPIfMatchParser.class);
 		
 		//IMS headers
-		parserTable.put(AccessNetworkInfo.NAME.toLowerCase(), AccessNetworkInfoParser.class);
-		parserTable.put(AssertedIdentityHeader.NAME.toLowerCase(), AssertedIdentityParser.class);
-		parserTable.put(PreferredIdentityHeader.NAME.toLowerCase(), PreferredIdentityParser.class);
-		parserTable.put(ChargingVectorHeader.NAME.toLowerCase(), ChargingVectorParser.class);
-		parserTable.put(ChargingFunctionAddressesHeader.NAME.toLowerCase(), ChargingFunctionAddressesParser.class);
-		parserTable.put(MediaAuthorizationHeader.NAME.toLowerCase(), MediaAuthorizationParser.class);
+		parserTable.put(PAccessNetworkInfoHeader.NAME.toLowerCase(), PAccessNetworkInfoParser.class);
+		parserTable.put(PAssertedIdentityHeader.NAME.toLowerCase(), PAssertedIdentityParser.class);
+		parserTable.put(PPreferredIdentityHeader.NAME.toLowerCase(), PPreferredIdentityParser.class);
+		parserTable.put(PChargingVectorHeader.NAME.toLowerCase(), PChargingVectorParser.class);
+		parserTable.put(PChargingFunctionAddressesHeader.NAME.toLowerCase(), PChargingFunctionAddressesParser.class);
+		parserTable.put(PMediaAuthorizationHeader.NAME.toLowerCase(), PMediaAuthorizationParser.class);
 		parserTable.put(PathHeader.NAME.toLowerCase(), PathParser.class);
 		parserTable.put(PrivacyHeader.NAME.toLowerCase(), PrivacyParser.class);
 		parserTable.put(ServiceRouteHeader.NAME.toLowerCase(), ServiceRouteParser.class);
-		parserTable.put(VisitedNetworkIDHeader.NAME.toLowerCase(), VisitedNetworkIDParser.class);
+		parserTable.put(PVisitedNetworkIDHeader.NAME.toLowerCase(), PVisitedNetworkIDParser.class);
+
+		parserTable.put(PAssociatedURIHeader.NAME.toLowerCase(), PAssociatedURIParser.class);
+		parserTable.put(PCalledPartyIDHeader.NAME.toLowerCase(), PCalledPartyIDParser.class);
+
+		parserTable.put(SecurityServerHeader.NAME.toLowerCase(), SecurityServerParser.class);
+		parserTable.put(SecurityClientHeader.NAME.toLowerCase(), SecurityClientParser.class);
+		parserTable.put(SecurityVerifyHeader.NAME.toLowerCase(), SecurityVerifyParser.class);
+
 
 		// Per RFC 3892 (pmusgrave)
 		parserTable.put(ReferredBy.NAME.toLowerCase(), ReferredByParser.class);
@@ -295,6 +303,11 @@ public class ParserFactory {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2006/10/12 11:57:54  pmusgrave
+ * Issue number:  79, 80
+ * Submitted by:  pmusgrave@newheights.com
+ * Reviewed by:   mranga
+ *
  * Revision 1.10  2006/09/29 19:40:50  jbemmel
  * fixed missing IMS header parsing plumbing
  *

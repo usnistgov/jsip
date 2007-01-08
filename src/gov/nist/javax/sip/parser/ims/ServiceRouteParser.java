@@ -39,6 +39,8 @@ import gov.nist.javax.sip.parser.Lexer;
 import gov.nist.javax.sip.parser.TokenTypes;
 
 /**
+ * Service-Route header parser.
+ * 
  * @author ALEXANDRE MIGUEL SILVA SANTOS 
  */
 
@@ -46,7 +48,6 @@ public class ServiceRouteParser extends AddressParametersParser {
 	
 	/**
 	 * Constructor
-	 * @param serviceRoute - header value
 	 */
 	public ServiceRouteParser(String serviceRoute) {
 		super(serviceRoute);

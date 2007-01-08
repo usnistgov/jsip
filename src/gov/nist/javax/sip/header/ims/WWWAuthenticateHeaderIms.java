@@ -24,7 +24,7 @@
 * 
 */
 /*******************************************
- * PRODUCT OF PT INOVAO - EST DEPARTMENT *
+ * PRODUCT OF PT INOVACAO - EST DEPARTMENT *
  *******************************************/
 
 package gov.nist.javax.sip.header.ims;
@@ -35,11 +35,11 @@ import javax.sip.header.WWWAuthenticateHeader;
 
 
 /**
- * Extension to WWW-authenticate header (3GPP TS 24229-5d0)
+ * Extension to WWW-authenticate header (3GPP TS 24229-5d0).
  * 
- * Defines a new authentication parameter (auth-param) for the WWW-Authenticate header
+ * <p>Defines a new authentication parameter (auth-param) for the WWW-Authenticate header
  * used in a 401 (Unauthorized) response to the REGISTER request. 
- * For more information, see RFC 2617 [21] subclause 3.2.1.
+ * For more information, see RFC 2617 [21] subclause 3.2.1.</p>
  * 
  * <pre>
  * 	auth-param = 1#( integrity-key / cipher-key )
@@ -55,7 +55,7 @@ import javax.sip.header.WWWAuthenticateHeader;
 
 public interface WWWAuthenticateHeaderIms extends WWWAuthenticateHeader
 {
-	// issued by jmf
+	// issued by Miguel Freitas
 	public static final String IK = ParameterNamesIms.IK;
 	public static final String CK = ParameterNamesIms.CK;
 	

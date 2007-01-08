@@ -9,6 +9,12 @@ package javax.sdp;
 import java.io.*;
 import java.util.*;
 
+// issued by Miguel Freitas - work-around
+import gov.nist.javax.sdp.fields.PreconditionFields;
+import gov.nist.javax.sdp.fields.AttributeField;
+// end //
+
+
 /** A MediaDescription identifies the set of medias that may be received on a specific port or set of ports. It includes:
  *
  *     a mediaType (e.g., audio, video, etc.)
@@ -218,5 +224,48 @@ public Vector getMimeParameters()
 public void addDynamicPayloads(Vector payloadNames,
                                Vector payloadValues)
                         throws SdpException;
+
+
+
+
+
+//////////////////////////////////////////////
+// changes made by PT-INOVACAO
+//////////////////////////////////////////////
+
+/**
+ * <p>Set PreconditionFields for the Media Description</p>
+ * 
+ * issued by Miguel Freitas (IT) PTInovacao
+ * @param segPrecondition Vector with values to ser
+ * @throws SdpException
+ */
+public void setPreconditionFields(Vector segPrecondition) throws SdpException;
+
+/**
+ * <p>Set PreconditionFields for the Media Description</p>
+ * 
+ * issued by Miguel Freitas (IT) PTInovacao
+ * @param segPrecondition PreconditionFields with values to set
+ */
+public void setPreconditions(PreconditionFields segPrecondition);
+
+/**
+ * <p>Get all Precondition Fields in the Media Descritpion</p> 
+ * 
+ * issued by Miguel Freitas (IT) PTInovacao
+ * @return Vector precondition fields
+ */
+public Vector getPreconditionFields();
+
+/**
+ * <p>Add Media Attribute based on an AttributeField value</p>
+ * 
+ * issued by Miguel Freitas (IT) PTInovacao
+ * @param at AttributeField
+ */
+public void addAttribute(AttributeField at);
+
+
 }
 

@@ -25,7 +25,7 @@
 * 
 */
 /*******************************************
- * PRODUCT OF PT INOVAO - EST DEPARTMENT *
+ * PRODUCT OF PT INOVACAO - EST DEPARTMENT *
  *******************************************/
 
 package gov.nist.javax.sip.header.ims;
@@ -49,7 +49,7 @@ import javax.sip.header.AuthorizationHeader;
 public interface AuthorizationHeaderIms extends AuthorizationHeader
 {
 	
-	// issued by jmf
+	// issued by Miguel Freitas (IT) PT-Inovacao
 	public static final String YES 	= "yes";
 	public static final String NO 	= "no";
 

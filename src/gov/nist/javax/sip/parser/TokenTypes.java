@@ -28,7 +28,7 @@ package gov.nist.javax.sip.parser;
 import gov.nist.core.*;
 
 /**
- * @version 1.2 $Revision: 1.8 $ $Date: 2006-10-12 11:57:54 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2007-01-08 19:24:22 $
  */
 public interface TokenTypes {
 
@@ -123,14 +123,15 @@ public interface TokenTypes {
 	
 	
 	
-	// issued by jmf
+	// issued by Miguel Freitas - IMS headers
 	public static final int PRIVACY = START + 78;
 	public static final int P_ACCESS_NETWORK_INFO = START + 79;
 	public static final int P_CALLED_PARTY_ID = START + 80;
 	public static final int P_ASSOCIATED_URI = START + 81;
 	public static final int P_MEDIA_AUTHORIZATION = START + 82;
 	public static final int P_MEDIA_AUTHORIZATION_TOKEN = START + 83;
-	
+
+
 	// pmusgrave - additions
 	public static final int REFERREDBY_TO = START + 84;
 	
@@ -143,6 +144,13 @@ public interface TokenTypes {
 
 	// pmusgrave sips bug fix
 	public static final int SIPS = START + 88; 
+
+
+	// issued by Miguel Freitas - SIP Security Agreement (RFC3329)
+	public static final int SECURITY_SERVER = START + 89;
+	public static final int SECURITY_CLIENT = START + 90;
+	public static final int SECURITY_VERIFY = START + 91;
+
 
 	public static final int ALPHA = LexerCore.ALPHA;
 	public static final int DIGIT = LexerCore.DIGIT;
@@ -186,6 +194,11 @@ public interface TokenTypes {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2006/10/12 11:57:54  pmusgrave
+ * Issue number:  79, 80
+ * Submitted by:  pmusgrave@newheights.com
+ * Reviewed by:   mranga
+ *
  * Revision 1.7  2006/09/11 18:41:32  mranga
  * Issue number:
  * Obtained from:

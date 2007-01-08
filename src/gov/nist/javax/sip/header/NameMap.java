@@ -33,7 +33,7 @@ import java.util.Hashtable;
  * A mapping class that returns the SIPHeader for a given header name.
  * Add new classes to this map if you are implementing new header types if
  * you want some of the introspection based methods to work.
- * @version 1.2 $Revision: 1.8 $ $Date: 2006-10-12 11:57:54 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2007-01-08 19:24:57 $
  * @since 1.1
  */
 public class NameMap implements SIPHeaderNames, PackageNames {
@@ -178,29 +178,29 @@ public class NameMap implements SIPHeaderNames, PackageNames {
 		
 		// IMS Specific headers.
 		
-		putNameMap(AccessNetworkInfoHeader.NAME, AccessNetworkInfo.class.getName());
+		putNameMap(PAccessNetworkInfoHeader.NAME, PAccessNetworkInfo.class.getName());
 		
-		putNameMap(AssertedIdentityHeader.NAME, AssertedIdentity.class.getName());
+		putNameMap(PAssertedIdentityHeader.NAME, PAssertedIdentity.class.getName());
 		
-		putNameMap(AssociatedURIHeader.NAME, AssociatedURI.class.getName());
+		putNameMap(PAssociatedURIHeader.NAME, PAssociatedURI.class.getName());
 		
-		putNameMap(CalledPartyIDHeader.NAME, CalledPartyID.class.getName());
+		putNameMap(PCalledPartyIDHeader.NAME, PCalledPartyID.class.getName());
 		
-		putNameMap(ChargingFunctionAddressesHeader.NAME,  ChargingFunctionAddresses.class.getName())	;
+		putNameMap(PChargingFunctionAddressesHeader.NAME,  PChargingFunctionAddresses.class.getName())	;
 		
-		putNameMap(ChargingVectorHeader.NAME,ChargingVector.class.getName());
+		putNameMap(PChargingVectorHeader.NAME,PChargingVector.class.getName());
 		
-		putNameMap(MediaAuthorizationHeader.NAME,MediaAuthorization.class.getName());
+		putNameMap(PMediaAuthorizationHeader.NAME,PMediaAuthorization.class.getName());
 		
 		putNameMap(Path.NAME, Path.class.getName());
 		
-		putNameMap(PreferredIdentity.NAME, PreferredIdentity.class.getName());
+		putNameMap(PPreferredIdentity.NAME, PPreferredIdentity.class.getName());
 		
 		putNameMap(Privacy.NAME,Privacy.class.getName());
 		
 		putNameMap(ServiceRoute.NAME, ServiceRoute.class.getName());
 		
-		putNameMap(VisitedNetworkID.NAME, VisitedNetworkID.class.getName());
+		putNameMap(PVisitedNetworkID.NAME, PVisitedNetworkID.class.getName());
 		
 		
 

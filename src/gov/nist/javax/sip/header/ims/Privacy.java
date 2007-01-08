@@ -23,12 +23,11 @@
 * .
 * 
 */
-/*
- *
- * Aveiro University - Portugal
- * DET - ECT
- * 
- */ 
+/*****************************************************************************
+ * PRODUCT OF PT INOVACAO - EST DEPARTMENT and Aveiro University - Portugal)   *
+ *****************************************************************************/
+
+
 
 
 package gov.nist.javax.sip.header.ims;
@@ -36,12 +35,14 @@ package gov.nist.javax.sip.header.ims;
 import java.text.ParseException;
 
 import javax.sip.header.ExtensionHeader;
+import javax.sip.header.Parameters;
 
 import gov.nist.javax.sip.header.ParametersHeader;
 
 /**
+ * Privacy SIP header - RFC 3323.
  * 
- * @author Jose Miguel Freitas 23875
+ * @author Miguel Freitas (IT) PT-Inovacao
  */
 
 
@@ -50,6 +51,9 @@ public class Privacy
 	implements PrivacyHeader, SIPHeaderNamesIms,ExtensionHeader
 {
 
+	/**
+	 * Privacy type
+	 */
 	protected String privacy;
 	
 	
@@ -83,7 +87,10 @@ public class Privacy
 
 	
 	
-
+	/**
+	 * Get privacy type
+	 * @return privacy type
+	 */
 	public String getPrivacy()
 	{
 		return privacy;
@@ -94,7 +101,6 @@ public class Privacy
 	/**
 	 * set the privacy type.
 	 * @param  privacy -- privacy type to set.
-	 * 
 	 */
 
 	public void setPrivacy(String privacy) throws ParseException 
@@ -116,7 +122,19 @@ public class Privacy
 		throw new ParseException(value,0);
 		
 	}
+
 	
+	public boolean equals(Object other)
+	{
+		if (other instanceof PrivacyHeader)
+		{
+			PrivacyHeader o = (PrivacyHeader) other;
+			return (this.getPrivacy().equals( o.getPrivacy() ) 
+				&& this.equalParameters( (Parameters) o ));
+		}
+		return false;
+		
+	}
 
 	
 }

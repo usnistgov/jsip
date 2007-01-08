@@ -24,7 +24,7 @@
 * 
 */
 /*******************************************
- * PRODUCT OF PT INOVAO - EST DEPARTMENT *
+ * PRODUCT OF PT INOVACAO - EST DEPARTMENT *
  *******************************************/
 
 package gov.nist.javax.sip.header.ims;
@@ -58,7 +58,7 @@ public class Path
 	 */
 	public Path()
 	{
-		// issued by jmf
+		// issued by Miguel Freitas
 		super(NAME);
 
 	}

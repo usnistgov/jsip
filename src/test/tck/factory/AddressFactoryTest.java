@@ -116,7 +116,11 @@ public class AddressFactoryTest extends FactoryTestHarness {
 		javax.sip.address.URI uri) {
 		javax.sip.address.Address addr = null;
 		try {
+			System.out.println("Uri = " + uri);
+			
 			addr = tiAddressFactory.createAddress(uri);
+			System.out.println("addr = " + addr);
+			System.out.println("createAddress returns " + tiAddressFactory.createAddress(uri.toString()));
 			assertTrue(
 				addr.equals(tiAddressFactory.createAddress(uri.toString())));
 		} catch (Exception ex) {
