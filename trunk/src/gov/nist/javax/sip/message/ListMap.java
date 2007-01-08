@@ -35,7 +35,7 @@ import java.util.Hashtable;
 /**
  * A map of which of the standard headers may appear as a list
  * 
- * @version 1.2 $Revision: 1.9 $ $Date: 2006-10-12 11:57:55 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2007-01-08 19:24:56 $
  * @since 1.1
  */
 class ListMap {
@@ -108,9 +108,9 @@ class ListMap {
 		
 		// IMS headers.
 		
-		headerListTable.put(AssociatedURI.class, AssociatedURIList.class);
+		headerListTable.put(PAssociatedURI.class, PAssociatedURIList.class);
 		
-		headerListTable.put(MediaAuthorization.class, MediaAuthorizationList.class);
+		headerListTable.put(PMediaAuthorization.class, PMediaAuthorizationList.class);
 		
 		headerListTable.put(Path.class, PathList.class);
 		
@@ -118,10 +118,16 @@ class ListMap {
 		
 		headerListTable.put(ServiceRoute.class, ServiceRouteList.class);
 		
-		headerListTable.put(VisitedNetworkID.class, VisitedNetworkIDList.class);
+		headerListTable.put(PVisitedNetworkID.class, PVisitedNetworkIDList.class);
 		
+		headerListTable.put(SecurityClient.class, SecurityClientList.class);
+	   
+		headerListTable.put(SecurityServer.class, SecurityServerList.class);
 		
-		initialized = true;
+		headerListTable.put(SecurityVerify.class, SecurityVerifyList.class);
+	   
+	    
+	    initialized = true;
 
 	}
 

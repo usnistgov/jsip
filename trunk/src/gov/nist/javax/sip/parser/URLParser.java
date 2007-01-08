@@ -33,7 +33,7 @@ import java.util.Vector;
 /**
  * Parser For SIP and Tel URLs. Other kinds of URL's are handled by the 
  * J2SE 1.4 URL class.
- * @version 1.2 $Revision: 1.18 $ $Date: 2006-11-16 16:17:08 $
+ * @version 1.2 $Revision: 1.19 $ $Date: 2007-01-08 19:24:19 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -45,7 +45,8 @@ public class URLParser extends Parser {
 		this.lexer = new Lexer("sip_urlLexer", url);
 	}
 
-	URLParser(Lexer lexer) {
+	// public tag added - issued by Miguel Freitas
+	public URLParser(Lexer lexer) {
 		this.lexer = lexer;
 		this.lexer.selectLexer("sip_urlLexer");
 	}

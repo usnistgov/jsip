@@ -23,16 +23,16 @@
 * .
 * 
 */
-/*
- * Aveiro University - DET - ECT
- */
+/************************************************************************************************
+ * PRODUCT OF PT INOVACAO - EST DEPARTMENT and Telecommunications Institute (Aveiro, Portugal)  *
+ ************************************************************************************************/
 
 
 package gov.nist.javax.sip.parser.ims;
 
 /**
  *  
- * @author Jose Miguel Freitas 
+ * @author Miguel Freitas (IT) PT-Inovacao
  */
 
 

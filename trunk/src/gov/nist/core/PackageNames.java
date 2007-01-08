@@ -52,4 +52,8 @@ public interface PackageNames {
 	// SDP packages
 	public static final String SDP_PACKAGE = "gov.nist.javax.sdp";
 	public static final String SDP_PARSER_PACKAGE = SDP_PACKAGE + ".parser";
+	
+	
+		
+	
 }

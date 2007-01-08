@@ -23,12 +23,9 @@
 * .
 * 
 */
-/*
- *
- * Aveiro University - Portugal
- * DET - ECT
- * 
- */
+/*****************************************************************************
+ * PRODUCT OF PT INOVACAO - EST DEPARTMENT and Aveiro University - Portugal)   *
+ *****************************************************************************/
 
 package gov.nist.javax.sip.header.ims;
 
@@ -37,8 +34,9 @@ import gov.nist.javax.sip.header.SIPHeaderList;
 
 
 /**
+ * List of Privacy headers.
  * 
- * @author Jose Miguel Freitas 23875
+ * @author Miguel Freitas (IT) PT-Inovacao
  */
 
 

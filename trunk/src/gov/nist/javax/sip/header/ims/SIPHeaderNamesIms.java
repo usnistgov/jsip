@@ -24,7 +24,7 @@
 * 
 */
 /*******************************************
- * PRODUCT OF PT INOVAO - EST DEPARTMENT *
+ * PRODUCT OF PT INOVACAO - EST DEPARTMENT *
  *******************************************/
 
 package gov.nist.javax.sip.header.ims;
@@ -39,21 +39,22 @@ public interface SIPHeaderNamesIms
 
 	public static final String PATH = PathHeader.NAME;
 	public static final String SERVICE_ROUTE = ServiceRouteHeader.NAME;
-	public static final String P_ASSERTED_IDENTITY = AssertedIdentityHeader.NAME;
-	public static final String P_PREFERRED_IDENTITY = PreferredIdentityHeader.NAME;
-	public static final String CALLED_PARTY_ID = CalledPartyIDHeader.NAME;
-	public static final String P_VISITED_NETWORK_ID = VisitedNetworkIDHeader.NAME;
-	public static final String P_CHARGING_FUNCTION_ADDRESSES = ChargingFunctionAddressesHeader.NAME;
-	public static final String P_CHARGING_VECTOR = ChargingVectorHeader.NAME;
+	public static final String P_ASSERTED_IDENTITY = PAssertedIdentityHeader.NAME;
+	public static final String P_PREFERRED_IDENTITY = PPreferredIdentityHeader.NAME;
+	public static final String CALLED_PARTY_ID = PCalledPartyIDHeader.NAME;
+	public static final String P_VISITED_NETWORK_ID = PVisitedNetworkIDHeader.NAME;
+	public static final String P_CHARGING_FUNCTION_ADDRESSES = PChargingFunctionAddressesHeader.NAME;
+	public static final String P_CHARGING_VECTOR = PChargingVectorHeader.NAME;
 
 	
-	// issued by jmf
+	// issued by Miguel Freitas 
 	public static final String PRIVACY = PrivacyHeader.NAME;
-	public static final String P_ASSOCIATED_URI = AssociatedURIHeader.NAME;
-	public static final String P_MEDIA_AUTHORIZATION = MediaAuthorizationHeader.NAME;
-	public static final String P_ACCESS_NETWORK_INFO = AccessNetworkInfoHeader.NAME;
-	
-	
+	public static final String P_ASSOCIATED_URI = PAssociatedURIHeader.NAME;
+	public static final String P_MEDIA_AUTHORIZATION = PMediaAuthorizationHeader.NAME;
+	public static final String P_ACCESS_NETWORK_INFO = PAccessNetworkInfoHeader.NAME;
+	public static final String SECURITY_SERVER = SecurityServerHeader.NAME;
+	public static final String SECURITY_CLIENT = SecurityClientHeader.NAME;
+	public static final String SECURITY_VERIFY = SecurityVerifyHeader.NAME;
 	
 }
 

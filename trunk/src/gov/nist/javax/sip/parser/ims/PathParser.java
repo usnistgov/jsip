@@ -24,7 +24,7 @@
 * 
 */
 /*******************************************
- * PRODUCT OF PT INOVAO - EST DEPARTMENT *
+ * PRODUCT OF PT INOVACAO - EST DEPARTMENT *
  *******************************************/
 
 package gov.nist.javax.sip.parser.ims;
@@ -47,7 +47,6 @@ public class PathParser extends AddressParametersParser implements TokenTypes {
 	
 	/**
 	 * Constructor
-	 * @param path -- Path header value
 	 */
 	public PathParser(String path) {
 		super(path);
