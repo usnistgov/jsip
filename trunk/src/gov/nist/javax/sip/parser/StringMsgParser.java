@@ -44,6 +44,10 @@ import gov.nist.javax.sip.message.SIPResponse;
 
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
+/*
+ * Acknowledgement: 1/12/2007: Yanick Belanger rewrote the parsing loops to make them
+ * simpler and quicker.
+ */
 
 /**
  * Parse SIP message and parts of SIP messages such as URI's etc from memory and
@@ -60,13 +64,11 @@ import java.text.ParseException;
  * feld swoop).
  * 
  * 
- * @version 1.2 $Revision: 1.17 $ $Date: 2007-01-12 16:24:55 $
+ * @version 1.2 $Revision: 1.18 $ $Date: 2007-01-12 19:49:11 $
  * 
  * @author M. Ranganathan <br/>
  * 
- * Acknowledgement: 1/12/2007: Yanick Belanger rewrote the parsing loops to make them
- * simpler and quicker.
- * 
+  * 
  */
 public class StringMsgParser {
 
