@@ -50,5 +50,10 @@ public class PrivacyList extends SIPHeaderList {
 	}
 	
 	
+	public Object clone() {
+		PrivacyList retval = new PrivacyList();		
+		return retval.clonehlist(this.hlist);
+	}
+
 	
 }

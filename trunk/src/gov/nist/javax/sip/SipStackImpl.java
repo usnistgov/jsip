@@ -222,7 +222,7 @@ import gov.nist.core.net.NetworkLayer;
  * </ul>
  *
  * 
- * @version 1.2 $Revision: 1.57 $ $Date: 2006-12-11 03:44:28 $
+ * @version 1.2 $Revision: 1.58 $ $Date: 2007-01-12 01:45:45 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -755,6 +755,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 		sipProviders.remove(sipProvider);
 		if (sipProviders.isEmpty()) {
 			this.stopStack();
+			this.serverLog.closeLogFile();
 		}
 	}
 

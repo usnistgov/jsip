@@ -69,7 +69,7 @@ public class PMediaAuthorization
 	/**
 	 *  P-Media-Authorization Token
 	 */
-	protected String token;
+	private String token;
 	
 	
 	/**
@@ -133,5 +133,12 @@ public class PMediaAuthorization
 
 	}
 
+	
+	public Object clone() {
+		PMediaAuthorization retval = (PMediaAuthorization) super.clone();
+		if (this.token != null) 
+			retval.token = this.token;
+		return retval;
+	}
 	
 }

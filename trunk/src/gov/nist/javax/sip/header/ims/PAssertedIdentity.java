@@ -87,11 +87,17 @@ public class PAssertedIdentity
 		return retval.toString();
 	}
 
+	
+	public Object clone() {
+		PAssertedIdentity retval = (PAssertedIdentity) super.clone();
+		return retval;
+	}
+	
+	
 	public void setValue(String value) throws ParseException {
 		throw new ParseException(value,0);
 		
 	}
-	
 	
 
 }
