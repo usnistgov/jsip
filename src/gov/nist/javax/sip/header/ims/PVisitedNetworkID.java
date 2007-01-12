@@ -49,11 +49,13 @@ public class PVisitedNetworkID
 	extends gov.nist.javax.sip.header.ParametersHeader
 	implements PVisitedNetworkIDHeader, SIPHeaderNamesIms, ExtensionHeader {
 	
-	
-	protected String networkID;
+	/**
+	 * visited Network ID
+	 */
+	private String networkID;
 
 	// issued by Miguel Freitas
-	protected boolean isQuoted;
+	private boolean isQuoted;
 	
 	
 	public PVisitedNetworkID() {
@@ -149,6 +151,14 @@ public class PVisitedNetworkID
 		return false;
 	}
 
+	
+	public Object clone() {
+		PVisitedNetworkID retval = (PVisitedNetworkID) super.clone();
+		if (this.networkID != null)
+			retval.networkID = this.networkID;
+		retval.isQuoted = this.isQuoted;
+		return retval;
+	}
 	
 
 }

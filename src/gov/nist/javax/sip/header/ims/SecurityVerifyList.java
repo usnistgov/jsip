@@ -55,6 +55,12 @@ public class SecurityVerifyList extends SIPHeaderList
 	{	
 		super(SecurityVerify.class, SecurityVerifyHeader.NAME);
 	}
+
+	public Object clone() {
+		SecurityVerifyList retval = new SecurityVerifyList();		
+		return retval.clonehlist(this.hlist);
+	}
+	
 	
 }
 

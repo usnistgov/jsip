@@ -47,4 +47,9 @@ public class PMediaAuthorizationList extends SIPHeaderList
 	}
 	
 	
+	public Object clone() {
+		PMediaAuthorizationList retval = new PMediaAuthorizationList();		
+		return retval.clonehlist(this.hlist);
+	}
+
 }

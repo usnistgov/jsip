@@ -30,6 +30,7 @@ package gov.nist.javax.sip.header.ims;
 
 
 import gov.nist.javax.sip.header.SIPHeaderList;
+import gov.nist.javax.sip.header.WWWAuthenticateList;
 import gov.nist.javax.sip.header.ims.PAssociatedURIHeader;
 
 
@@ -56,4 +57,8 @@ public class PAssociatedURIList extends SIPHeaderList
 	}
 	
 
+	public Object clone() {
+		PAssociatedURIList retval = new PAssociatedURIList();		
+		return retval.clonehlist(this.hlist);
+	}
 }

@@ -42,4 +42,9 @@ public class ServiceRouteList extends SIPHeaderList {
 		super(ServiceRoute.class, ServiceRouteHeader.NAME);
 	}
 
+	public Object clone() {
+		ServiceRouteList retval = new ServiceRouteList();		
+		return retval.clonehlist(this.hlist);
+	}
+	
 }

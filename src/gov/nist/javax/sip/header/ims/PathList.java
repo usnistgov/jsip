@@ -42,4 +42,10 @@ public class PathList extends SIPHeaderList {
 		super(Path.class, PathHeader.NAME);
 	}
 
+	// issued by Miguel Freitas
+	public Object clone() {
+		PathList retval = new PathList();		
+		return retval.clonehlist(this.hlist);
+	}
+
 }

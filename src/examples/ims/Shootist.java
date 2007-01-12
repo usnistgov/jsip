@@ -4,23 +4,7 @@ import gov.nist.javax.sip.header.AllowList;
 import gov.nist.javax.sip.header.HeaderFactoryImpl;
 import gov.nist.javax.sip.header.RequireList;
 import gov.nist.javax.sip.header.SupportedList;
-import gov.nist.javax.sip.header.ims.PAccessNetworkInfoHeader;
-import gov.nist.javax.sip.header.ims.PAssertedIdentityHeader;
-import gov.nist.javax.sip.header.ims.PAssociatedURIHeader;
-import gov.nist.javax.sip.header.ims.PAssociatedURIList;
-import gov.nist.javax.sip.header.ims.PCalledPartyIDHeader;
-import gov.nist.javax.sip.header.ims.PChargingFunctionAddressesHeader;
-import gov.nist.javax.sip.header.ims.PChargingVectorHeader;
-import gov.nist.javax.sip.header.ims.PMediaAuthorizationHeader;
-import gov.nist.javax.sip.header.ims.PMediaAuthorizationList;
-import gov.nist.javax.sip.header.ims.PPreferredIdentityHeader;
-import gov.nist.javax.sip.header.ims.PVisitedNetworkIDHeader;
-import gov.nist.javax.sip.header.ims.PVisitedNetworkIDList;
-import gov.nist.javax.sip.header.ims.PrivacyHeader;
-import gov.nist.javax.sip.header.ims.SecurityClientHeader;
-import gov.nist.javax.sip.header.ims.SecurityServerHeader;
-import gov.nist.javax.sip.header.ims.SecurityVerifyHeader;
-import gov.nist.javax.sip.header.ims.SecurityVerifyList;
+import gov.nist.javax.sip.header.ims.*;
 
 import javax.sip.*;
 import javax.sip.address.*;
@@ -131,7 +115,8 @@ public class Shootist implements SipListener {
 	public void processInviteOK(Response ok, ClientTransaction ct)
 	{
 		
-		HeaderFactoryImpl headerFactoryImpl = new HeaderFactoryImpl();
+		HeaderFactoryImpl headerFactoryImpl = 
+			(HeaderFactoryImpl) headerFactory;
 		
 		try
 		{
@@ -533,6 +518,7 @@ public class Shootist implements SipListener {
 			secClient.setPortServer(4166);
 			request.addHeader(secClient);
 			
+			
 			// P-Access-Network-Info
 			PAccessNetworkInfoHeader accessInfo =
 				headerFactoryImpl.createPAccessNetworkInfoHeader();
@@ -619,6 +605,114 @@ public class Shootist implements SipListener {
 			mediaAuthList.add(mediaAuth2);
 			request.addHeader(mediaAuthList);
 			
+
+			// Path header
+			PathList pathList = new PathList();
+			PathHeader path1 = 
+				headerFactoryImpl.createPathHeader(fromNameAddress);
+			PathHeader path2 = 
+				headerFactoryImpl.createPathHeader(toNameAddress);
+			pathList.add(path1);
+			pathList.add(path2);
+			request.addHeader(pathList);
+			
+			
+			
+			/*
+			 * test clone() and equal()
+			 */
+			/*
+			SecurityClientHeader secClientClone =
+				(SecurityClientHeader) secClient.clone();
+			System.out.println(" --> Security-Client clone = " 
+					+ secClientClone.toString());
+			System.out.println("    equals? " 
+					+ secClientClone.equals(secClient));
+
+			PAccessNetworkInfo paniClone =
+				(PAccessNetworkInfo) accessInfo.clone();
+			System.out.println(" --> P-Access-Network-Info clone = " 
+					+ paniClone.toString());
+			System.out.println("    equals? " 
+					+ paniClone.equals(accessInfo));
+			
+			Privacy privacyClone =
+				(Privacy) privacy.clone();
+			System.out.println(" --> Privacy clone = " 
+					+ privacyClone.toString());
+			System.out.println("    equals? " 
+					+ privacyClone.equals(privacy));
+			
+			PPreferredIdentity preferredIDClone =
+				(PPreferredIdentity) preferredID.clone();
+			System.out.println(" --> P-Preferred-Identity clone = " 
+					+ preferredIDClone.toString());
+			System.out.println("    equals? " 
+					+ preferredIDClone.equals(preferredID));
+			
+			PCalledPartyID calledPartyIDClone =
+				(PCalledPartyID) calledPartyID.clone();
+			System.out.println(" --> P-Called-Party-ID clone = " 
+					+ calledPartyIDClone.toString());
+			System.out.println("    equals? " 
+					+ calledPartyIDClone.equals(calledPartyID));
+			
+			PVisitedNetworkIDList visNetListClone =
+				(PVisitedNetworkIDList) visNetList.clone();
+			System.out.println(" --> P-Visited-Network-ID list clone = " 
+					+ visNetListClone.toString());
+			System.out.println("    equals? " 
+					+ visNetListClone.equals(visNetList));
+			System.out.println("    equals? " 
+					+ visNetListClone.equals(visitedNetworkID1));
+			
+			PAssociatedURIList associatedListClone =
+				(PAssociatedURIList) associatedList.clone();
+			System.out.println(" --> P-Associated-URI list clone = " 
+					+ associatedListClone.toString());
+			System.out.println("    equals? " 
+					+ associatedListClone.equals(associatedList));
+			
+			PAssertedIdentity assertedIDClone =
+				(PAssertedIdentity) assertedID.clone();
+			System.out.println(" --> P-Asserted-Identity clone = " 
+					+ assertedIDClone.toString());
+			System.out.println("    equals? " 
+					+ assertedIDClone.equals(assertedID));
+			
+			PChargingFunctionAddresses chargAddrClone =
+				(PChargingFunctionAddresses) chargAddr.clone();
+			System.out.println(" --> P-Charging-Function-Addresses clone = " 
+					+ chargAddrClone.toString());
+			System.out.println("    equals? " 
+					+ chargAddrClone.equals(chargAddr));
+			
+			PChargingVector chargVectClone =
+				(PChargingVector) chargVect.clone();
+			System.out.println(" --> P-Charging-Vector clone = " 
+					+ chargVectClone.toString());
+			System.out.println("    equals? " 
+					+ chargVectClone.equals(chargVect));
+			
+			PMediaAuthorizationList mediaAuthListClone =
+				(PMediaAuthorizationList) mediaAuthList.clone();
+			System.out.println(" --> P-Media-Authorization list clone = " 
+					+ mediaAuthListClone.toString());
+			System.out.println("    equals? " 
+					+ mediaAuthListClone.equals(mediaAuthList));
+			
+			PathList pathListClone =
+				(PathList) pathList.clone();
+			System.out.println(" --> Path list clone = " 
+					+ pathListClone.toString());
+			System.out.println("    equals? " 
+					+ pathListClone.equals(pathList));
+			System.out.println("    pathClone -> path1 equals? " 
+					+ pathListClone.equals(path1));
+			System.out.println("    path1 -> path2 equals? " 
+					+ path1.equals(path2));
+			
+			*/
 			
 			//////////////////////////////////////////////////
 			
