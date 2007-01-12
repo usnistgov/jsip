@@ -156,7 +156,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.61 $ $Date: 2006-12-22 12:22:38 $
+ * @version 1.2 $Revision: 1.62 $ $Date: 2007-01-12 22:33:30 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -846,10 +846,13 @@ public class SIPClientTransaction extends SIPTransaction implements
 	public void sendRequest() throws SipException {
 		SIPRequest sipRequest = this.getOriginalRequest();
 
+		if ( this.getState() != null) throw new SipException ("Request already sent");
+		
 		if (sipStack.getLogWriter().isLoggingEnabled()) {
 			sipStack.logWriter.logDebug("sendRequest() " + sipRequest);
 		}
-
+		
+	
 		try {
 			sipRequest.checkHeaders();
 		} catch (ParseException ex) {
