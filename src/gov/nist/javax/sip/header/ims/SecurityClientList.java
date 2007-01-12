@@ -52,6 +52,12 @@ public class SecurityClientList extends SIPHeaderList
 	{	
 		super(SecurityClient.class, SecurityClientHeader.NAME);
 	}
+
+	
+	public Object clone() {
+		SecurityClientList retval = new SecurityClientList();		
+		return retval.clonehlist(this.hlist);
+	}
 	
 }
 

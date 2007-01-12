@@ -43,8 +43,9 @@ import gov.nist.javax.sip.header.ParametersHeader;
  * @since 1.2
  */
 
-public class PAccessNetworkInfo extends ParametersHeader implements
-		PAccessNetworkInfoHeader, ExtensionHeader {
+public class PAccessNetworkInfo 
+	extends ParametersHeader
+	implements PAccessNetworkInfoHeader, ExtensionHeader {
 
 	// TODO: serialVersionUID
 	
@@ -274,5 +275,14 @@ public class PAccessNetworkInfo extends ParametersHeader implements
 	public boolean equals(Object other) {
 		return (other instanceof PAccessNetworkInfoHeader) && super.equals(other);
 	}
+	
+	/*
+	 * Makes a deep clone. (ParametersHeader)
+	 */
+	public Object clone() {
+		PAccessNetworkInfo retval = (PAccessNetworkInfo) super.clone();
+		return retval;
+	}
+	
 
 }

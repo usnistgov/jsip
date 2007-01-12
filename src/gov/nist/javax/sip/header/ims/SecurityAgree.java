@@ -53,7 +53,8 @@ import gov.nist.javax.sip.header.ParametersHeader;
  */
 
 
-public abstract class SecurityAgree extends ParametersHeader
+public abstract class SecurityAgree 
+	extends ParametersHeader
 {
 	//TODO serialVersionUID
 	//private static final long serialVersionUID = -6671234553927258745L;
@@ -64,7 +65,7 @@ public abstract class SecurityAgree extends ParametersHeader
 	/**
 	 * Security Mechanism value
 	 */
-	protected String secMechanism;
+	private String secMechanism;
 
 	
 	/**
@@ -354,6 +355,14 @@ public abstract class SecurityAgree extends ParametersHeader
 		
 	}
 
+	
+	public Object clone() {
+		SecurityAgree retval = (SecurityAgree) super.clone();
+		if (this.secMechanism != null)
+			retval.secMechanism = this.secMechanism;
+		return retval;
+	}
+	
 	
 }
 

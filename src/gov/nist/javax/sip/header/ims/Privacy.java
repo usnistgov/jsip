@@ -37,6 +37,7 @@ import java.text.ParseException;
 import javax.sip.header.ExtensionHeader;
 import javax.sip.header.Parameters;
 
+import gov.nist.core.NameValueList;
 import gov.nist.javax.sip.header.ParametersHeader;
 
 /**
@@ -54,7 +55,7 @@ public class Privacy
 	/**
 	 * Privacy type
 	 */
-	protected String privacy;
+	private String privacy;
 	
 	
 	/** 
@@ -136,5 +137,14 @@ public class Privacy
 		
 	}
 
+	
+	public Object clone() {
+		Privacy retval = (Privacy) super.clone();
+		if (this.privacy != null)
+			retval.privacy = this.privacy;
+		return retval;
+	}
+	
+	
 	
 }

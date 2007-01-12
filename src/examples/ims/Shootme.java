@@ -126,8 +126,9 @@ public class Shootme implements SipListener {
 		 */
 		
 		// work-around for IMS headers
-		HeaderFactoryImpl headerFactoryImpl = new HeaderFactoryImpl();
-		
+		//HeaderFactoryImpl headerFactoryImpl = new HeaderFactoryImpl();
+		HeaderFactoryImpl headerFactoryImpl = (HeaderFactoryImpl)headerFactory;
+				
 		// check headers Allow, Require and Supported
 		
 		// Allow header
@@ -261,6 +262,7 @@ public class Shootme implements SipListener {
 					System.out.print(associatedURI.getAssociatedURI().toString());
 					if (associatedURIList.hasNext())
 						System.out.print(", ");
+					
 				}
             }
             else
@@ -275,7 +277,7 @@ public class Shootme implements SipListener {
 		
 		
 		// check P-Access-Network-Info 
-		PAccessNetworkInfoHeader accessInfo;
+		PAccessNetworkInfoHeader accessInfo = null;
 		try {
 			accessInfo = (PAccessNetworkInfoHeader) 
 				request.getHeader(PAccessNetworkInfoHeader.NAME);
@@ -299,7 +301,17 @@ public class Shootme implements SipListener {
 		{
 			System.out.println("(!) Exception getting P-Access-Network-Info header! - " + ex);
 		}
-
+		
+		// check if .clone() and .equals() is working
+		if (accessInfo != null)
+		{
+			PAccessNetworkInfo accessInfoClone = 
+				(PAccessNetworkInfo) accessInfo.clone();
+			
+			System.out.println("--> clone = " + accessInfoClone.toString());
+			System.out.println("--> equals? " + accessInfoClone.equals(accessInfo));
+		}
+		
 		
 		// check P-Visited-Network-ID
 		ListIterator visitedNetList;
@@ -535,6 +547,21 @@ public class Shootme implements SipListener {
 			
 		}
 		
+		// check Path header
+		ListIterator pathList = request.getHeaders(PathHeader.NAME);
+		if (pathList != null && pathList.hasNext())
+		{
+			System.out.print(".: Path received : ");
+			while (pathList.hasNext())
+			{
+				PathHeader path = (PathHeader)pathList.next();
+				if (path != null)
+					System.out.print(path.getAddress().toString());
+				if (pathList.hasNext())
+					System.out.print(", ");
+			}
+			System.out.println("");
+		}
 		
 		/////////////////////////////////////////
 		

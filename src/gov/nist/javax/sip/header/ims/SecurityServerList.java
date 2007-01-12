@@ -53,6 +53,11 @@ public class SecurityServerList extends SIPHeaderList
 	{	
 		super(SecurityServer.class, SecurityServerHeader.NAME);
 	}
+
+	public Object clone() {
+		SecurityServerList retval = new SecurityServerList();		
+		return retval.clonehlist(this.hlist);
+	}
 	
 }
 
