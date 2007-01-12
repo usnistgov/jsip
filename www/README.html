@@ -351,6 +351,8 @@ some examples to tck test cases </li>
 <li>Yanick Belanger noticed a memory leak in NOTIFY client transaction
 which was fixed. Yankick also made some performance enhancements to the
 parser. Yanick noted a bug in random generation of call IDs and  branch IDs. 
+Yakick contributed code to support offloading of TLS requests.
+Yanick contributed performance enhamcements and cleanup to StringMsgParser.
 </li>
 
 <li> Kathleen McCallum contributed the Third Party Call Control (tpcc) example
@@ -358,10 +360,10 @@ and the authentication example. </li>
 
 <li> Jose Miguel Frietas, Nuno Silva ( PT INOVAO - EST DEPARTMENT ) and 
 Alexandre Miguel Silva Santos ( Aveiro University - Portugal) contributed
-parsers and headers for IMS </li>
+parsers and headers for IMS. These are included in the Implementation
+of the Factory interfaces but are not yet part of the JSIP standard. </li>
 
-
-<li> Lebing Xie fixed bugs in the contributed IMS headers. </li>
+<li>Lebing Xie fixed bugs in the contributed IMS headers. </li>
 
 <li>Ricardo Borba (Natural Convergence) reported bugs in the Dialog 
 implementation and also in the UDP Message processor. Ricardo contributed
@@ -369,7 +371,8 @@ a patch for UDPMessageProcessor.java </li>
 
 <li>Brett Buckingham (Natural Convergence) submitted a patch for a
 reliable timer that does not cause the stack to die when a cancelled
-timer is cancelled during stack stop and restart </li>
+timer is cancelled during stack stop and restart. Brett contributed
+a fix for RFC2543 CANCEL handling.</li>
 
 <li>Peter Musgrave (Newheights Networks) contributed code for 
 RFC 3892 (Refer method ) and Session Timer (RFC 4028) headers 
