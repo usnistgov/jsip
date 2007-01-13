@@ -39,6 +39,13 @@
 		<arg value="10000" />
 		</java>
 	</target>
+	<target name="selftest" depends="make" description="run the example UAs.">
+		<delete file="shootistdebug.txt" />
+		<delete file="shootistlog.txt" />
+		<java classname="${packageprefix}.SelfxTest" fork="true" maxmemory="128m" classpathref="project.class.path" >
+		<arg value="10000" />
+		</java>
+	</target>
 	<target name="clean" description="clean the logs">
 		<delete failonerror="0">
 		   <fileset file="*debug.txt" />
