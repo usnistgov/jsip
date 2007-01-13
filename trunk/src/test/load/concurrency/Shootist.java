@@ -6,6 +6,8 @@ import javax.sip.header.*;
 import javax.sip.message.*;
 import java.util.*;
 
+import test.load.concurrency.*;
+
 import junit.framework.TestCase;
 
 
@@ -17,27 +19,27 @@ import junit.framework.TestCase;
 
 public class Shootist extends TestCase implements SipListener {
 
-	private static AddressFactory addressFactory;
+	static AddressFactory addressFactory;
 
-	private static MessageFactory messageFactory;
+	static MessageFactory messageFactory;
 
-	private static HeaderFactory headerFactory;
+	static HeaderFactory headerFactory;
 
-	private static SipStack sipStack;
+	static SipStack sipStack;
 
-	private ContactHeader contactHeader;
+	ContactHeader contactHeader;
 
-	private ListeningPoint listeningPoint;
+	ListeningPoint listeningPoint;
 
-	private SipProvider sipProvider;
+	SipProvider sipProvider;
 
-	private static String transport;
+	static String transport;
 
 	int byeCount;
 
 	int ackCount;
 
-	private long start;
+	long start;
 
 	static int NDIALOGS = 1000;
 
@@ -388,7 +390,7 @@ public class Shootist extends TestCase implements SipListener {
 
 		shootist.start = System.currentTimeMillis();
 		for (int i = 0; i < NDIALOGS; i++) {
-			Thread.sleep(3);
+			Thread.sleep(5);
 			shootist.sendInvite();
 		}
 

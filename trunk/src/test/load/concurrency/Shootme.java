@@ -16,12 +16,12 @@ import junit.framework.TestCase;
 
 public class Shootme extends TestCase implements SipListener {
 
-	private static AddressFactory addressFactory;
-	private static MessageFactory messageFactory;
-	private static HeaderFactory headerFactory;
-	private static SipStack sipStack;
+	static AddressFactory addressFactory;
+	static MessageFactory messageFactory;
+	static HeaderFactory headerFactory;
+	static SipStack sipStack;
 	
-	private static String transport;
+	static String transport;
 
 
 
