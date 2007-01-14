@@ -65,7 +65,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.65 $ $Date: 2006-12-15 16:19:45 $
+ * @version 1.2 $Revision: 1.66 $ $Date: 2007-01-14 19:43:10 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -1355,6 +1355,7 @@ public abstract class SIPTransactionStack implements
 		this.serverTransactionTable.clear();
 
 		this.dialogTable.clear();
+		this.serverLog.closeLogFile();
 
 	}
 
