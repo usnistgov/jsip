@@ -35,7 +35,7 @@ import javax.sip.header.*;
 /**  
  *SubscriptionState header
  *
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:46 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2007-01-17 18:59:35 $
  *
  * @author Olivier Deruelle <br/>
  * 
@@ -69,10 +69,10 @@ public class SubscriptionState
 	* @throws InvalidArgumentException if supplied value is less than zero.
 	*/
 	public void setExpires(int expires) throws InvalidArgumentException {
-		if (expires <= 0)
+		if (expires < 0)
 			throw new InvalidArgumentException(
 				"JAIN-SIP "
-					+ "Exception, SubscriptionState, setExpires(), the expires parameter is <=0");
+					+ "Exception, SubscriptionState, setExpires(), the expires parameter is  < 0");
 		this.expires = expires;
 	}
 
