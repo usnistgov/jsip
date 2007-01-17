@@ -59,7 +59,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.43 $ $Date: 2006-12-21 19:16:27 $
+ * @version 1.2 $Revision: 1.44 $ $Date: 2007-01-17 20:26:23 $
  * 
  * @author M. Ranganathan
  * 
@@ -157,7 +157,8 @@ public class SIPDialog implements javax.sip.Dialog {
 	private boolean terminateOnBye;
 
 	private boolean byeSent; // Flag set when BYE is sent, to disallow new
-								// requests
+
+	// requests
 
 	private Address remoteTarget;
 
@@ -182,13 +183,9 @@ public class SIPDialog implements javax.sip.Dialog {
 	class DialogTimerTask extends SIPStackTimerTask {
 		int nRetransmissions;
 
-		SIPDialog dialog;
-
 		SIPServerTransaction transaction;
 
-		public DialogTimerTask(SIPDialog dialog,
-				SIPServerTransaction transaction) {
-			this.dialog = dialog;
+		public DialogTimerTask(SIPServerTransaction transaction) {
 			this.transaction = transaction;
 			this.nRetransmissions = 0;
 		}
@@ -196,14 +193,17 @@ public class SIPDialog implements javax.sip.Dialog {
 		protected void runTask() {
 			// If I ACK has not been seen on Dialog,
 			// resend last response.
+			SIPDialog dialog = SIPDialog.this;
 			if (sipStack.isLoggingEnabled())
 				sipStack.getLogWriter().logDebug("Running dialog timer");
 			nRetransmissions++;
+			SIPServerTransaction transaction = this.transaction;
 			if (nRetransmissions > 8) {
-				this.dialog.setState(SIPDialog.TERMINATED_STATE);
-				this.transaction
-						.raiseErrorEvent(SIPTransactionErrorEvent.TIMEOUT_ERROR);
-			} else if (!dialog.ackSeen && transaction != null) {
+				dialog.setState(SIPDialog.TERMINATED_STATE);
+				if (transaction != null)
+					transaction
+							.raiseErrorEvent(SIPTransactionErrorEvent.TIMEOUT_ERROR);
+			} else if ((!dialog.ackSeen) && (transaction != null)) {
 				// Retransmit to 200 until ack receivedialog.
 				SIPResponse response = transaction.getLastResponse();
 				if (response.getStatusCode() == 200) {
@@ -231,7 +231,7 @@ public class SIPDialog implements javax.sip.Dialog {
 						if (stack.logWriter.isLoggingEnabled()) {
 							stack.logWriter
 									.logDebug("resend 200 response from "
-											+ this.dialog);
+											+ dialog);
 						}
 						transaction.fireTimer();
 					}
@@ -240,9 +240,7 @@ public class SIPDialog implements javax.sip.Dialog {
 
 			// Stop running this timer if the dialog is in the
 			// confirmed state or ack seen if retransmit filter on.
-			if (this.dialog.isAckSeen()
-					|| this.dialog.dialogState == TERMINATED_STATE) {
-				this.dialog = null;
+			if (dialog.isAckSeen() || dialog.dialogState == TERMINATED_STATE) {
 				this.transaction = null;
 				this.cancel();
 
@@ -602,8 +600,9 @@ public class SIPDialog implements javax.sip.Dialog {
 			sipStack.logWriter.logDebug("getRouteList for " + this);
 			if (retval != null)
 				sipStack.logWriter.logDebug("RouteList = " + retval.encode());
-			if ( routeList != null )
-				sipStack.logWriter.logDebug("myRouteList = " + routeList.encode());
+			if (routeList != null)
+				sipStack.logWriter.logDebug("myRouteList = "
+						+ routeList.encode());
 			sipStack.logWriter.logDebug("----- ");
 		}
 		return retval;
@@ -840,7 +839,8 @@ public class SIPDialog implements javax.sip.Dialog {
 
 	public void setState(int state) {
 		if (sipStack.isLoggingEnabled()) {
-			sipStack.logWriter.logDebug("Setting dialog state for " + this + "newState = " + state);
+			sipStack.logWriter.logDebug("Setting dialog state for " + this
+					+ "newState = " + state);
 			sipStack.logWriter.logStackTrace();
 			if (state != -1 && state != this.dialogState)
 				if (sipStack.isLoggingEnabled()) {
@@ -1882,9 +1882,9 @@ public class SIPDialog implements javax.sip.Dialog {
 					"Starting dialog timer for " + getDialogId());
 		this.ackSeen = false;
 		if (this.timerTask != null) {
-			this.timerTask.transaction = transaction;
+			this.timerTask.transaction = transaction;	
 		} else {
-			this.timerTask = new DialogTimerTask(this, transaction);
+			this.timerTask = new DialogTimerTask(transaction);
 			sipStack.timer.schedule(timerTask,
 					SIPTransactionStack.BASE_TIMER_INTERVAL,
 					SIPTransactionStack.BASE_TIMER_INTERVAL);
@@ -2124,7 +2124,8 @@ public class SIPDialog implements javax.sip.Dialog {
 		if (sipStack.isLoggingEnabled()) {
 			sipStack.getLogWriter().logStackTrace();
 			sipStack.getLogWriter().logDebug("cseqMethod = " + cseqMethod);
-			sipStack.getLogWriter().logDebug("dialogState = " + this.getState());
+			sipStack.getLogWriter()
+					.logDebug("dialogState = " + this.getState());
 			sipStack.getLogWriter().logDebug("method = " + this.getMethod());
 			sipStack.getLogWriter().logDebug("statusCode = " + statusCode);
 			sipStack.getLogWriter().logDebug("transaction = " + transaction);
@@ -2155,8 +2156,7 @@ public class SIPDialog implements javax.sip.Dialog {
 					// state. To tag is MANDATORY for the response.
 
 					// Only do this if method equals initial request!
-					
-					
+
 					if (cseqMethod.equals(getMethod())
 							&& sipResponse.getToTag() != null
 							&& this.getState() != DialogState.CONFIRMED) {
@@ -2235,8 +2235,7 @@ public class SIPDialog implements javax.sip.Dialog {
 		} else {
 			// Processing Server Dialog.
 
-			if (cseqMethod.equals(Request.CANCEL)
-					&& statusCode / 100 == 2
+			if (cseqMethod.equals(Request.CANCEL) && statusCode / 100 == 2
 					&& (!this.isReInvite())
 					// && sipStack.isDialogCreated(getMethod()) (JvB:true by
 					// definition)
@@ -2330,15 +2329,15 @@ public class SIPDialog implements javax.sip.Dialog {
 
 	}
 
-	private static final boolean optionPresent( ListIterator l, String option ) {
-		while ( l.hasNext() )
-		{
+	private static final boolean optionPresent(ListIterator l, String option) {
+		while (l.hasNext()) {
 			OptionTag opt = (OptionTag) l.next();
-			if ( opt!=null && option.equalsIgnoreCase(opt.getOptionTag()) ) return true;
+			if (opt != null && option.equalsIgnoreCase(opt.getOptionTag()))
+				return true;
 		}
 		return false;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -2367,12 +2366,13 @@ public class SIPDialog implements javax.sip.Dialog {
 			throw new SipException("Bad method");
 
 		ListIterator list = request.getHeaders(SupportedHeader.NAME);
-		if ( list==null || !optionPresent(list,"100rel")) {
+		if (list == null || !optionPresent(list, "100rel")) {
 			list = request.getHeaders(RequireHeader.NAME);
-			if ( list==null || !optionPresent(list,"100rel")) {
-				throw new SipException("No Supported/Require 100rel header in the request");		
+			if (list == null || !optionPresent(list, "100rel")) {
+				throw new SipException(
+						"No Supported/Require 100rel header in the request");
 			}
-		}		
+		}
 
 		SIPResponse response = request.createResponse(statusCode);
 		/*
