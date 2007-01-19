@@ -43,7 +43,7 @@ import java.text.ParseException;
  * @author Olivier Deruelle 
  * @author M. Ranganathan <br/>
  * @since 1.1
- * @version 1.2 $Revision: 1.9 $ $Date: 2006-11-01 02:23:03 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2007-01-19 18:53:18 $
  * 
  * 
  */
@@ -154,6 +154,7 @@ public abstract class AuthenticationHeader extends ParametersHeader {
 	 * @return canonical string.
 	 */
 	public String encodeBody() {
+		this.parameters.setSeparator(Separators.COMMA);
 		return this.scheme + SP + parameters.encode();
 	}
 
