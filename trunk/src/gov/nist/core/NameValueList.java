@@ -203,6 +203,7 @@ public class NameValueList {
 
 	public Object clone() {
 		NameValueList retval = new NameValueList();
+		retval.setSeparator(this.separator);
 		Iterator it = this.hmap.values().iterator();
 		while (it.hasNext()) {
 			retval.set((NameValue) ((NameValue) it.next()).clone());

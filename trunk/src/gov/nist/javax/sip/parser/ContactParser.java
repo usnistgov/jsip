@@ -27,6 +27,7 @@ import gov.nist.javax.sip.address.AddressImpl;
 import gov.nist.javax.sip.address.SipUri;
 import gov.nist.javax.sip.header.*;
 import java.text.ParseException;
+import java.util.HashSet;
 import java.util.Iterator;
 
 import javax.sip.address.URI;
@@ -34,7 +35,7 @@ import javax.sip.address.URI;
 /**
  * A parser for The SIP contact header.
  * 
- * @version 1.2 $Revision: 1.9 $ $Date: 2006-07-13 09:02:23 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2007-01-19 18:53:18 $
  * @since 1.1
  */
 public class ContactParser extends AddressParametersParser {
@@ -76,7 +77,12 @@ public class ContactParser extends AddressParametersParser {
 			if (address.getAddressType() == AddressImpl.ADDRESS_SPEC
 					&& uri instanceof SipUri) {
 				SipUri	 sipUri = (SipUri) uri;
-				for (Iterator it = sipUri.getParameterNames(); it.hasNext();) {
+				HashSet parameterNames = new HashSet();
+				for (Iterator it = sipUri.getParameterNames(); it.hasNext(); ) {
+					parameterNames.add(it.next());
+				}
+				// This avoids the concurrent modification exception.
+				for (Iterator it = parameterNames.iterator(); it.hasNext();) {
 					String name = (String) it.next();
 					String val = sipUri.getParameter(name);
 					sipUri.removeParameter(name);
