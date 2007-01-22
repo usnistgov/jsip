@@ -30,6 +30,9 @@ package gov.nist.javax.sip.address;
 import gov.nist.core.*;
 import javax.sip.address.*;
 
+/*
+ * BUG Fix from Antonis Kadris.
+ */
 /**
  * Address structure. Imbeds a URI and adds a display name.
  *
@@ -37,7 +40,7 @@ import javax.sip.address.*;
  *
  *
  *
- *@version 1.2 $Revision: 1.7 $ $Date: 2006-08-22 19:02:32 $
+ *@version 1.2 $Revision: 1.8 $ $Date: 2007-01-22 18:44:20 $
  *
  */
 public final class AddressImpl
@@ -117,7 +120,6 @@ public final class AddressImpl
 	/** Get the user@host:port for the address field. This assumes
 	 * that the encapsulated object is a SipUri. 
 	 *
-	 * BUG Fix from Antonis Kadris.
 	 *
 	 *@return string containing user@host:port.
 	 */

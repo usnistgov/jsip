@@ -1,28 +1,28 @@
 /*
-* Conditions Of Use 
-* 
-* This software was developed by employees of the National Institute of
-* Standards and Technology (NIST), an agency of the Federal Government.
-* Pursuant to title 15 Untied States Code Section 105, works of NIST
-* employees are not subject to copyright protection in the United States
-* and are considered to be in the public domain.  As a result, a formal
-* license is not needed to use the software.
-* 
-* This software is provided by NIST as a service and is expressly
-* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
-* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
-* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
-* AND DATA ACCURACY.  NIST does not warrant or make any representations
-* regarding the use of the software or the results thereof, including but
-* not limited to the correctness, accuracy, reliability or usefulness of
-* the software.
-* 
-* Permission to use this software is contingent upon your acceptance
-* of the terms of this agreement
-*  
-* .
-* 
-*/
+ * Conditions Of Use 
+ * 
+ * This software was developed by employees of the National Institute of
+ * Standards and Technology (NIST), an agency of the Federal Government.
+ * Pursuant to title 15 Untied States Code Section 105, works of NIST
+ * employees are not subject to copyright protection in the United States
+ * and are considered to be in the public domain.  As a result, a formal
+ * license is not needed to use the software.
+ * 
+ * This software is provided by NIST as a service and is expressly
+ * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+ * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+ * AND DATA ACCURACY.  NIST does not warrant or make any representations
+ * regarding the use of the software or the results thereof, including but
+ * not limited to the correctness, accuracy, reliability or usefulness of
+ * the software.
+ * 
+ * Permission to use this software is contingent upon your acceptance
+ * of the terms of this agreement
+ *  
+ * .
+ * 
+ */
 package gov.nist.javax.sdp;
 
 import javax.sdp.*;
@@ -30,27 +30,40 @@ import gov.nist.javax.sdp.fields.*;
 import java.util.*;
 import gov.nist.core.*;
 
-/** Fieldementation of Media Description interface.
-*@version  JSR141-PUBLIC-REVIEW (subject to change).
-*
-*@author Olivier Deruelle <deruelle@antd.nist.gov>
-*@author M. Ranganathan   <br/>
-*
-*
-*/
+/*
+ * Includes code contributed by
+ * Miguel Freitas (IT) PTInovacao -- modifications for IMS.
+ */
+
+/**
+ * Fieldementation of Media Description interface.
+ * 
+ * @version JSR141-PUBLIC-REVIEW (subject to change).
+ * 
+ * @author Olivier Deruelle <deruelle@antd.nist.gov>
+ * @author M. Ranganathan <br/>
+ * 
+ * 
+ */
 public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 
 	protected MediaField mediaField;
+
 	protected InformationField informationField;
+
 	protected ConnectionField connectionField;
+
 	protected Vector bandwidthFields;
+
 	protected KeyField keyField;
+
 	protected Vector attributeFields;
 
 	/**
-	* Encode to a canonical form.
-	*@since v1.0
-	*/
+	 * Encode to a canonical form.
+	 * 
+	 * @since v1.0
+	 */
 	public String encode() {
 		StringBuffer retval = new StringBuffer();
 
@@ -67,15 +80,22 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 			for (int i = 0; i < bandwidthFields.size(); i++) {
 
 				// issued by Miguel Freitas (IT) PTInovacao
-				retval.append(
-						((SDPField) bandwidthFields.elementAt(i)).encode());
-				
-				/* original code
-				BandwidthField bandwidthField =
-					(BandwidthField) bandwidthFields.elementAt(i);
-				retval.append(bandwidthField.encode());
-				*/
+				retval.append(((SDPField) bandwidthFields.elementAt(i))
+						.encode());
+
+				/*
+				 * original code BandwidthField bandwidthField =
+				 * (BandwidthField) bandwidthFields.elementAt(i);
+				 * retval.append(bandwidthField.encode());
+				 */
 				// end //
+			}
+			if (preconditionFields != null) {
+				int precondSize = preconditionFields.getPreconditionSize();
+				for (int i = 0; i < precondSize; i++) {
+					retval.append(((SDPField) preconditionFields
+							.getPreconditions().elementAt(i)).encode());
+				}
 			}
 		}
 
@@ -84,8 +104,8 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 
 		if (attributeFields != null) {
 			for (int i = 0; i < attributeFields.size(); i++)
-				retval.append(
-					((SDPField) attributeFields.elementAt(i)).encode());
+				retval.append(((SDPField) attributeFields.elementAt(i))
+						.encode());
 		}
 
 		return retval.toString();
@@ -102,59 +122,72 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 		// issued by Miguel Freitas (AV) PTInovacao
 		this.preconditionFields = new PreconditionFields();
 	}
+
 	public MediaField getMediaField() {
 		return mediaField;
 	}
+
 	public InformationField getInformationField() {
 		return informationField;
 	}
+
 	public ConnectionField getConnectionField() {
 		return connectionField;
 	}
+
 	public KeyField getKeyField() {
 		return keyField;
 	}
+
 	public Vector getAttributeFields() {
 		return attributeFields;
 	}
+
 	/**
-	* Set the mediaField member  
-	*/
+	 * Set the mediaField member
+	 */
 	public void setMediaField(MediaField m) {
 		mediaField = m;
 	}
+
 	/**
-	* Set the informationField member  
-	*/
+	 * Set the informationField member
+	 */
 	public void setInformationField(InformationField i) {
 		informationField = i;
 	}
+
 	/**
-	* Set the connectionField member  
-	*/
+	 * Set the connectionField member
+	 */
 	public void setConnectionField(ConnectionField c) {
 		connectionField = c;
 	}
+
 	/**
-	* Set the bandwidthField member  
-	*/
+	 * Set the bandwidthField member
+	 */
 	public void addBandwidthField(BandwidthField b) {
 		bandwidthFields.add(b);
 	}
+
 	/**
-	* Set the keyField member  
-	*/
+	 * Set the keyField member
+	 */
 	public void setKeyField(KeyField k) {
 		keyField = k;
 	}
+
 	/**
-	* Set the attributeFields member  
-	*/
+	 * Set the attributeFields member
+	 */
 	public void setAttributeFields(Vector a) {
 		attributeFields = a;
 	}
 
-	/** Return the Media field of the description.
+	/**
+	 * Return the Media field of the description.
+	 * 
 	 * @return the Media field of the description.
 	 */
 	public Media getMedia() {
@@ -164,24 +197,28 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 
 	// issued by Miguel Freitas //
 	public void addAttribute(AttributeField af) {
-	// protected void addAttribute(AttributeField af) {
-	// end //
+		// protected void addAttribute(AttributeField af) {
+		// end //
 		this.attributeFields.add(af);
 	}
 
 	protected boolean hasAttribute(String name) {
 		for (int i = 0; i < this.attributeFields.size(); i++) {
-			AttributeField af =
-				(AttributeField) this.attributeFields.elementAt(i);
+			AttributeField af = (AttributeField) this.attributeFields
+					.elementAt(i);
 			if (af.getAttribute().getName().equals(name))
 				return true;
 		}
 		return false;
 	}
 
-	/** Set the Media field of the description.
-	 * @param media to set
-	 * @throws SdpException if the media field is null
+	/**
+	 * Set the Media field of the description.
+	 * 
+	 * @param media
+	 *            to set
+	 * @throws SdpException
+	 *             if the media field is null
 	 */
 	public void setMedia(Media media) throws SdpException {
 		if (media == null)
@@ -192,7 +229,9 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 			throw new SdpException("A mediaField parameter is required");
 	}
 
-	/** Returns value of the info field (i=) of this object.
+	/**
+	 * Returns value of the info field (i=) of this object.
+	 * 
 	 * @return value of the info field (i=) of this object.
 	 */
 	public Info getInfo() {
@@ -204,9 +243,13 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 		}
 	}
 
-	/** Sets the i= field of this object.
-	 * @param i to set
-	 * @throws SdpException if the info is null
+	/**
+	 * Sets the i= field of this object.
+	 * 
+	 * @param i
+	 *            to set
+	 * @throws SdpException
+	 *             if the info is null
 	 */
 	public void setInfo(Info i) throws SdpException {
 		if (i == null)
@@ -217,10 +260,12 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 			throw new SdpException("A informationField parameter is required");
 	}
 
-	/** Returns the connection information associated with this object. This may
-	 * be null for SessionDescriptions if all Media
-	 * objects have a connection object and may be null for Media objects if the 
-	 * corresponding session connection is non-null.
+	/**
+	 * Returns the connection information associated with this object. This may
+	 * be null for SessionDescriptions if all Media objects have a connection
+	 * object and may be null for Media objects if the corresponding session
+	 * connection is non-null.
+	 * 
 	 * @return connection
 	 */
 	public Connection getConnection() {
@@ -229,9 +274,13 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 
 	}
 
-	/** Set the connection data for this entity
-	 * @param conn to set
-	 * @throws SdpException if the connexion is null
+	/**
+	 * Set the connection data for this entity
+	 * 
+	 * @param conn
+	 *            to set
+	 * @throws SdpException
+	 *             if the connexion is null
 	 */
 	public void setConnection(Connection conn) throws SdpException {
 		if (conn == null)
@@ -243,8 +292,11 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 			throw new SdpException("bad implementation");
 	}
 
-	/** Returns the Bandwidth of the specified type.
-	 * @param create type of the Bandwidth to return
+	/**
+	 * Returns the Bandwidth of the specified type.
+	 * 
+	 * @param create
+	 *            type of the Bandwidth to return
 	 * @return the Bandwidth or null if undefined
 	 */
 
@@ -252,9 +304,13 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 		return bandwidthFields;
 	}
 
-	/** set the value of the Bandwidth with the specified type
-	 * @param bandwidths type of the Bandwidth object whose value is requested
-	 * @throws SdpException if vector is null
+	/**
+	 * set the value of the Bandwidth with the specified type
+	 * 
+	 * @param bandwidths
+	 *            type of the Bandwidth object whose value is requested
+	 * @throws SdpException
+	 *             if vector is null
 	 */
 	public void setBandwidths(Vector bandwidths) throws SdpException {
 		if (bandwidths == null)
@@ -262,8 +318,11 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 		this.bandwidthFields = bandwidths;
 	}
 
-	/** Returns the integer value of the specified bandwidth name.
-	 * @param name the name of the bandwidth type.
+	/**
+	 * Returns the integer value of the specified bandwidth name.
+	 * 
+	 * @param name
+	 *            the name of the bandwidth type.
 	 * @throws SdpParseException
 	 * @return the value of the named bandwidth
 	 */
@@ -275,8 +334,8 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 			return -1;
 		else {
 			for (int i = 0; i < bandwidthFields.size(); i++) {
-				BandwidthField bandwidthField =
-					(BandwidthField) bandwidthFields.elementAt(i);
+				BandwidthField bandwidthField = (BandwidthField) bandwidthFields
+						.elementAt(i);
 				String type = bandwidthField.getBwtype();
 				if (type != null && type.equals(name))
 					return bandwidthField.getBandwidth();
@@ -285,22 +344,26 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 		}
 	}
 
-	/** Sets the value of the specified bandwidth type.
-	 * @param name the name of the bandwidth type.
-	 * @param value  the value of the named bandwidth type.
-	 * @throws SdpException if the name is null
+	/**
+	 * Sets the value of the specified bandwidth type.
+	 * 
+	 * @param name
+	 *            the name of the bandwidth type.
+	 * @param value
+	 *            the value of the named bandwidth type.
+	 * @throws SdpException
+	 *             if the name is null
 	 */
 	public void setBandwidth(String name, int value) throws SdpException {
 		if (name == null)
 			throw new SdpException("The name is null");
 		else {
-			int i = 0;	// issued by Miguel Freitas (IT) PTInovacao
+			int i = 0; // issued by Miguel Freitas (IT) PTInovacao
 			for (i = 0; i < bandwidthFields.size(); i++) {
-				BandwidthField bandwidthField =
-					(BandwidthField) this.bandwidthFields.elementAt(i);
+				BandwidthField bandwidthField = (BandwidthField) this.bandwidthFields
+						.elementAt(i);
 				String type = bandwidthField.getBwtype();
-				if (type != null && type.equals(name))
-				{
+				if (type != null && type.equals(name)) {
 					bandwidthField.setBandwidth(value);
 
 					break; // issued by Miguel Freitas (IT) PTInovacao
@@ -308,8 +371,7 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 			}
 
 			// issued by Miguel Freitas (IT) PTInovacao
-			if (i == this.bandwidthFields.size())
-			{
+			if (i == this.bandwidthFields.size()) {
 				BandwidthField bandwidthField = new BandwidthField();
 				bandwidthField.setType(name);
 				bandwidthField.setValue(value);
@@ -319,8 +381,11 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 		}
 	}
 
-	/** Removes the specified bandwidth type.
-	 * @param name the name of the bandwidth type.
+	/**
+	 * Removes the specified bandwidth type.
+	 * 
+	 * @param name
+	 *            the name of the bandwidth type.
 	 */
 	public void removeBandwidth(String name) {
 		if (name == null) {
@@ -328,8 +393,8 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 		} else {
 			int i = 0;
 			for (i = 0; i < bandwidthFields.size(); i++) {
-				BandwidthField bandwidthField =
-					(BandwidthField) bandwidthFields.elementAt(i);
+				BandwidthField bandwidthField = (BandwidthField) bandwidthFields
+						.elementAt(i);
 				String type = bandwidthField.getBwtype();
 				if (type != null && type.equals(name))
 					break;
@@ -340,7 +405,9 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 		}
 	}
 
-	/** Returns the key data.
+	/**
+	 * Returns the key data.
+	 * 
 	 * @return the key data.
 	 */
 	public Key getKey() {
@@ -351,10 +418,14 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 		}
 	}
 
-	/** Sets encryption key information. This consists of a method and an 
+	/**
+	 * Sets encryption key information. This consists of a method and an
 	 * encryption key included inline.
-	 * @param key  the encryption key data; depending on method may be null
-	 * @throws SdpException if the key is null
+	 * 
+	 * @param key
+	 *            the encryption key data; depending on method may be null
+	 * @throws SdpException
+	 *             if the key is null
 	 */
 	public void setKey(Key key) throws SdpException {
 		if (key == null)
@@ -366,35 +437,44 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 			throw new SdpException("A keyField parameter is required");
 	}
 
-	/** Returns the set of attributes for this Description as a 
-	 * Vector of Attribute  objects in the order they were parsed.
-	 * @param create specifies whether to return null or a 
-	 * new empty Vector in case
-	 * no attributes exists for this Description
+	/**
+	 * Returns the set of attributes for this Description as a Vector of
+	 * Attribute objects in the order they were parsed.
+	 * 
+	 * @param create
+	 *            specifies whether to return null or a new empty Vector in case
+	 *            no attributes exists for this Description
 	 * @return attributes for this Description
 	 */
 	public Vector getAttributes(boolean create) {
 		return attributeFields;
 	}
 
-	/** Adds the specified Attribute to this Description object.
-	 * @param attributes  -- the attribute to add
-	 * @throws SdpException -- if the attributes is null
+	/**
+	 * Adds the specified Attribute to this Description object.
+	 * 
+	 * @param attributes --
+	 *            the attribute to add
+	 * @throws SdpException --
+	 *             if the attributes is null
 	 */
 	public void setAttributes(Vector attributes) throws SdpException {
 		this.attributeFields = attributes;
 	}
 
-	/** Returns the value of the specified attribute.
-	 * @param name the name of the attribute.
+	/**
+	 * Returns the value of the specified attribute.
+	 * 
+	 * @param name
+	 *            the name of the attribute.
 	 * @throws SdpParseException
 	 * @return the value of the named attribute
 	 */
 	public String getAttribute(String name) throws SdpParseException {
 		if (name != null) {
 			for (int i = 0; i < this.attributeFields.size(); i++) {
-				AttributeField af =
-					(AttributeField) this.attributeFields.elementAt(i);
+				AttributeField af = (AttributeField) this.attributeFields
+						.elementAt(i);
 				if (name.equals(af.getAttribute().getName()))
 					return (String) af.getAttribute().getValue();
 			}
@@ -403,10 +483,15 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 			throw new NullPointerException("null arg!");
 	}
 
-	/** Sets the value of the specified attribute
-	 * @param name the name of the attribute.
-	 * @param value the value of the named attribute.
-	 * @throws SdpException if the parameters are null
+	/**
+	 * Sets the value of the specified attribute
+	 * 
+	 * @param name
+	 *            the name of the attribute.
+	 * @param value
+	 *            the value of the named attribute.
+	 * @throws SdpException
+	 *             if the parameters are null
 	 */
 	public void setAttribute(String name, String value) throws SdpException {
 		if (name == null)
@@ -415,8 +500,8 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 
 			int i = 0;
 			for (i = 0; i < this.attributeFields.size(); i++) {
-				AttributeField af =
-					(AttributeField) this.attributeFields.elementAt(i);
+				AttributeField af = (AttributeField) this.attributeFields
+						.elementAt(i);
 				if (af.getAttribute().getName().equals(name)) {
 					NameValue nv = af.getAttribute();
 					nv.setValue(value);
@@ -436,8 +521,11 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 		}
 	}
 
-	/** Removes the attribute specified by the value parameter.
-	 * @param name the name of the attribute.
+	/**
+	 * Removes the attribute specified by the value parameter.
+	 * 
+	 * @param name
+	 *            the name of the attribute.
 	 */
 	public void removeAttribute(String name) {
 		if (name == null)
@@ -445,8 +533,8 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 		if (name != null) {
 			int i = 0;
 			for (i = 0; i < this.attributeFields.size(); i++) {
-				AttributeField af =
-					(AttributeField) this.attributeFields.elementAt(i);
+				AttributeField af = (AttributeField) this.attributeFields
+						.elementAt(i);
 				if (af.getAttribute().getName().equals(name))
 					break;
 			}
@@ -456,46 +544,40 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 		}
 	}
 
-	/** Returns a Vector containing a string indicating the MIME type for each of the 
-	 * codecs in this description.
-	 *
-	 *     A MIME value is computed for each codec in the media description.
-	 *
-	 *     The MIME type is computed in the following fashion:
-	 *          The type is the mediaType from the media field.
-	 *          The subType is determined by the protocol.
-	 *
-	 *     The result is computed as the string of the form:
-	 *
-	 *     type + '/' + subType
-	 *
-	 *     The subType portion is computed in the following fashion.
-	 *     RTP/AVP
-	 *          the subType is returned as the codec name. This will either be extracted 
-	 * from the rtpmap attribute or computed.
-	 *     other
-	 *          the protocol is returned as the subType.
-	 *
-	 *     If the protocol is RTP/AVP and the rtpmap attribute for a codec is absent,
-	 * then the codec name will be computed in the
-	 *     following fashion.
-	 *     String indexed in table SdpConstants.avpTypeNames
-	 *          if the value is an int greater than or equal to 0 and less than 
-	 * AVP_DEFINED_STATIC_MAX, and has been assigned a
-	 *          value.
-	 *     SdpConstant.RESERVED
-	 *          if the value is an int greater than or equal to 0 and less than 
-	 * AVP_DEFINED_STATIC_MAX, and has not been
-	 *          assigned a value.
-	 *     SdpConstant.UNASSIGNED
-	 *          An int greater than or equal to AVP_DEFINED_STATIC_MAX and less than
-	 * AVP_DYNAMIC_MIN - currently
-	 *          unassigned.
-	 *     SdpConstant.DYNAMIC
-	 *          Any int less than 0 or greater than or equal to AVP_DYNAMIC_MIN
-	 * @throws SdpException if there is a problem extracting the parameters.
-	 * @return a Vector containing a string indicating the MIME type for each of the
-	 * codecs in this description
+	/**
+	 * Returns a Vector containing a string indicating the MIME type for each of
+	 * the codecs in this description.
+	 * 
+	 * A MIME value is computed for each codec in the media description.
+	 * 
+	 * The MIME type is computed in the following fashion: The type is the
+	 * mediaType from the media field. The subType is determined by the
+	 * protocol.
+	 * 
+	 * The result is computed as the string of the form:
+	 * 
+	 * type + '/' + subType
+	 * 
+	 * The subType portion is computed in the following fashion. RTP/AVP the
+	 * subType is returned as the codec name. This will either be extracted from
+	 * the rtpmap attribute or computed. other the protocol is returned as the
+	 * subType.
+	 * 
+	 * If the protocol is RTP/AVP and the rtpmap attribute for a codec is
+	 * absent, then the codec name will be computed in the following fashion.
+	 * String indexed in table SdpConstants.avpTypeNames if the value is an int
+	 * greater than or equal to 0 and less than AVP_DEFINED_STATIC_MAX, and has
+	 * been assigned a value. SdpConstant.RESERVED if the value is an int
+	 * greater than or equal to 0 and less than AVP_DEFINED_STATIC_MAX, and has
+	 * not been assigned a value. SdpConstant.UNASSIGNED An int greater than or
+	 * equal to AVP_DEFINED_STATIC_MAX and less than AVP_DYNAMIC_MIN - currently
+	 * unassigned. SdpConstant.DYNAMIC Any int less than 0 or greater than or
+	 * equal to AVP_DYNAMIC_MIN
+	 * 
+	 * @throws SdpException
+	 *             if there is a problem extracting the parameters.
+	 * @return a Vector containing a string indicating the MIME type for each of
+	 *         the codecs in this description
 	 */
 	public Vector getMimeTypes() throws SdpException {
 		MediaField mediaField = (MediaField) getMedia();
@@ -519,25 +601,28 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 		return v;
 	}
 
-	/** Returns a Vector containing a string of parameters for each of the codecs in 
-	 * this description.
-	 *
-	 *     A parameter string is computed for each codec.
-	 *
-	 *     The parameter string is computed in the following fashion.
-	 *
-	 *     The rate is extracted from the rtpmap or static data.
-	 *
-	 *     The number of channels is extracted from the rtpmap or static data.
-	 *
-	 *     The ptime is extracted from the ptime attribute.
-	 *
-	 *     The maxptime is extracted from the maxptime attribute.
-	 *
-	 *     Any additional parameters are extracted from the ftmp attribute.
-	 * @throws SdpException if there is a problem extracting the parameters.
-	 * @return a Vector containing a string of parameters for each of the codecs in 
-	 * this description.
+	/**
+	 * Returns a Vector containing a string of parameters for each of the codecs
+	 * in this description.
+	 * 
+	 * A parameter string is computed for each codec.
+	 * 
+	 * The parameter string is computed in the following fashion.
+	 * 
+	 * The rate is extracted from the rtpmap or static data.
+	 * 
+	 * The number of channels is extracted from the rtpmap or static data.
+	 * 
+	 * The ptime is extracted from the ptime attribute.
+	 * 
+	 * The maxptime is extracted from the maxptime attribute.
+	 * 
+	 * Any additional parameters are extracted from the ftmp attribute.
+	 * 
+	 * @throws SdpException
+	 *             if there is a problem extracting the parameters.
+	 * @return a Vector containing a string of parameters for each of the codecs
+	 *         in this description.
 	 */
 	public Vector getMimeParameters() throws SdpException {
 		String rate = getAttribute("rate");
@@ -552,17 +637,22 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 		return result;
 	}
 
-	/** Adds dynamic media types to the description.
-	 * @param payloadNames a Vector of String - each one the name of a dynamic payload
-	 * to be added (usually an integer larger
-	 *          than SdpConstants.AVP_DYNAMIC_MIN).
-	 * @param payloadValues a Vector of String - each contains the value describing 
-	 * the correlated dynamic payloads to be added
-	 * @throws SdpException  if either vector is null or empty.
-	 * if the vector sizes are unequal.
+	/**
+	 * Adds dynamic media types to the description.
+	 * 
+	 * @param payloadNames
+	 *            a Vector of String - each one the name of a dynamic payload to
+	 *            be added (usually an integer larger than
+	 *            SdpConstants.AVP_DYNAMIC_MIN).
+	 * @param payloadValues
+	 *            a Vector of String - each contains the value describing the
+	 *            correlated dynamic payloads to be added
+	 * @throws SdpException
+	 *             if either vector is null or empty. if the vector sizes are
+	 *             unequal.
 	 */
 	public void addDynamicPayloads(Vector payloadNames, Vector payloadValues)
-		throws SdpException {
+			throws SdpException {
 		MediaField mediaField = (MediaField) getMedia();
 		if (payloadNames == null || payloadValues == null)
 			throw new SdpException(" The vectors are null");
@@ -583,56 +673,63 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 		}
 	}
 
-	
-	
-	
-/////////////////////////////////////////////////////////////////// 
-// Precondition Mechanism 
-//	based in 3GPP TS 24.229 and precondition mechanism (RFC 3312)
-// issued by Miguel Freitas (IT) PTinovacao
-///////////////////////////////////////////////////////////////////
-	
-	
-	/** 
-	 * Precondition Mechanism - precondition fields for the media description 
+	// /////////////////////////////////////////////////////////////////
+	// Precondition Mechanism
+	// based in 3GPP TS 24.229 and precondition mechanism (RFC 3312)
+	// issued by Miguel Freitas (IT) PTinovacao
+	// /////////////////////////////////////////////////////////////////
+
+	/**
+	 * Precondition Mechanism - precondition fields for the media description
 	 */
 	// Precondition Attribute Fields
 	protected PreconditionFields preconditionFields;
-	
-	
+
 	/**
-	 * <p>Set the Media Description's Precondition Fields</p>
-	 * <p>issued by Miguel Freitas (IT) PTInovacao</p>
-	 * @param precondition Vector containing PreconditionFields
+	 * <p>
+	 * Set the Media Description's Precondition Fields
+	 * </p>
+	 * <p>
+	 * issued by Miguel Freitas (IT) PTInovacao
+	 * </p>
+	 * 
+	 * @param precondition
+	 *            Vector containing PreconditionFields
 	 * @throws SdpException
 	 */
-	public void setPreconditionFields(Vector precondition) throws SdpException
-	{
+	public void setPreconditionFields(Vector precondition) throws SdpException {
 		this.preconditionFields.setPreconditions(precondition);
 	}
-	
+
 	/**
-	 * <p>Set the Media Description's Precondition Fields</p>
-	 * <p>issued by Miguel Freitas (IT) PTInovacao</p>
-	 * @param precondition PreconditionFields parameter
+	 * <p>
+	 * Set the Media Description's Precondition Fields
+	 * </p>
+	 * <p>
+	 * issued by Miguel Freitas (IT) PTInovacao
+	 * </p>
+	 * 
+	 * @param precondition
+	 *            PreconditionFields parameter
 	 */
-	public void setPreconditions(PreconditionFields precondition)
-	{	
+	public void setPreconditions(PreconditionFields precondition) {
 		this.preconditionFields = precondition;
 	}
-	
-	/**  
-	 * <p>Get attribute fields of segmented precondition</p>
-	 * <p>issued by Miguel Freitas (IT) PTInovacao</p>
+
+	/**
+	 * <p>
+	 * Get attribute fields of segmented precondition
+	 * </p>
+	 * <p>
+	 * issued by Miguel Freitas (IT) PTInovacao
+	 * </p>
+	 * 
 	 * @return Vector of attribute fields (segmented precondition)
 	 */
-	public Vector getPreconditionFields() 
-	{
+	public Vector getPreconditionFields() {
 		return this.preconditionFields.getPreconditions();
 	}
-	
+
 	// end //
-	
-	
-	
+
 }
