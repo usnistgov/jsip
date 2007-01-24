@@ -160,9 +160,13 @@ public class NameValue extends GenericObject {
 				return name + separator + gvlist.encode();
 			} else if ( value.toString().equals("")) {
 				// opaque="" bug fix - pmusgrave
-				if (name.toString().equals(gov.nist.javax.sip.header.ParameterNames.OPAQUE))
+				/*if (name.toString().equals(gov.nist.javax.sip.header.ParameterNames.OPAQUE))
 					return name + separator + quotes + quotes;
 				else
+					return name;*/
+				if ( this.isQuotedString ) {
+					return name + separator + quotes + quotes;
+				} else 
 					return name;
 			} else 
 				return name + separator + quotes + value.toString() + quotes;
