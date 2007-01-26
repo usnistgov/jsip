@@ -1,20 +1,13 @@
 package examples.parser;
 
-import gov.nist.javax.sip.header.ims.AssertedIdentityHeader;
-import gov.nist.javax.sip.header.ims.PreferredIdentity;
-import gov.nist.javax.sip.header.ims.PreferredIdentityHeader;
+import gov.nist.javax.sip.header.ims.PAssertedIdentityHeader;
+import gov.nist.javax.sip.header.ims.PPreferredIdentityHeader;
 
-import java.util.Properties;
-
-//import javax.sdp.SdpFactory;
-//import javax.sdp.SessionDescription;
 import javax.sdp.SdpFactory;
 import javax.sdp.SessionDescription;
-import javax.sip.SipException;
 import javax.sip.SipFactory;
 import javax.sip.address.AddressFactory;
 import javax.sip.header.ExtensionHeader;
-import javax.sip.header.Header;
 import javax.sip.header.HeaderFactory;
 import javax.sip.message.MessageFactory;
 import javax.sip.message.Request;
@@ -72,15 +65,15 @@ public class Parser {
 		//SessionDescription sd = sdpFactory
 		//		.createSessionDescription(contentString);
 		
-		AssertedIdentityHeader h = (AssertedIdentityHeader)sipRequest.getHeader(AssertedIdentityHeader.NAME);
+		PAssertedIdentityHeader h = (PAssertedIdentityHeader)sipRequest.getHeader(PAssertedIdentityHeader.NAME);
 		System.out.println( h.getClass() );
 		System.out.println( h instanceof ExtensionHeader );
-		System.out.println( h instanceof AssertedIdentityHeader );
+		System.out.println( h instanceof PAssertedIdentityHeader );
 		
-		PreferredIdentityHeader h2 = (PreferredIdentityHeader) sipRequest.getHeader(PreferredIdentityHeader.NAME);
+		PPreferredIdentityHeader h2 = (PPreferredIdentityHeader) sipRequest.getHeader(PPreferredIdentityHeader.NAME);
 		System.out.println( h2.getClass() );
 		System.out.println( h2 instanceof ExtensionHeader );
-		System.out.println( h2 instanceof PreferredIdentityHeader );
+		System.out.println( h2 instanceof PPreferredIdentityHeader );
 
 			
 		System.out.println("Parsed SIPRequest is :\n" + sipRequest.toString());
