@@ -79,7 +79,7 @@ import javax.sip.message.Response;
  *
  *
  *
- * @version 1.2 $Revision: 1.40 $ $Date: 2006-12-05 05:18:50 $
+ * @version 1.2 $Revision: 1.41 $ $Date: 2007-01-26 16:50:45 $
  */
 public class UDPMessageChannel extends MessageChannel implements
 		ParseExceptionListener, Runnable {
@@ -139,7 +139,7 @@ public class UDPMessageChannel extends MessageChannel implements
 
 		Thread mythread = new Thread(this);
 
-		this.myAddress = messageProcessor.getIPAddress().getHostAddress();
+		this.myAddress = messageProcessor.getIpAddress().getHostAddress();
 		this.myPort = messageProcessor.getPort();
 
 		mythread.setName("UDPMessageChannelThread");
@@ -166,7 +166,7 @@ public class UDPMessageChannel extends MessageChannel implements
 		super.messageProcessor = messageProcessor;
 		this.sipStack = stack;
 
-		this.myAddress = messageProcessor.getIPAddress().getHostAddress();
+		this.myAddress = messageProcessor.getIpAddress().getHostAddress();
 		this.myPort = messageProcessor.getPort();
 		Thread mythread = new Thread(this);
 		mythread.setDaemon(true);
@@ -191,7 +191,7 @@ public class UDPMessageChannel extends MessageChannel implements
 		peerPort = port;
 		peerProtocol = "UDP";
 		super.messageProcessor = messageProcessor;
-		this.myAddress = messageProcessor.getIPAddress().getHostAddress();
+		this.myAddress = messageProcessor.getIpAddress().getHostAddress();
 		this.myPort = messageProcessor.getPort();
 		this.sipStack = sipStack;
 		if (sipStack.isLoggingEnabled()) {
@@ -701,7 +701,7 @@ public class UDPMessageChannel extends MessageChannel implements
 		} else {
 			// Use TCP to talk back to the sender.
 			Socket outputSocket = sipStack.ioHandler.sendBytes(
-					this.messageProcessor.getIPAddress(),
+					this.messageProcessor.getIpAddress(),
 					peerAddress, peerPort, "tcp", msg, retry
 					);
 			OutputStream myOutputStream = outputSocket.getOutputStream();
@@ -735,7 +735,7 @@ public class UDPMessageChannel extends MessageChannel implements
 	 * @return The stack address for our sipStack.
 	 */
 	public String getHost() {
-		return messageProcessor.getIPAddress().getHostAddress();
+		return messageProcessor.getIpAddress().getHostAddress();
 	}
 
 	/**

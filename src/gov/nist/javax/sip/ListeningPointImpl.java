@@ -35,7 +35,7 @@ import gov.nist.javax.sip.stack.*;
 /**
  * Implementation of the ListeningPoint interface
  *
- * @version 1.2 $Revision: 1.8 $ $Date: 2006-07-13 09:02:53 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2007-01-26 16:50:43 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -179,7 +179,7 @@ public class ListeningPointImpl implements javax.sip.ListeningPoint {
      */
     public String getIPAddress() {
        
-        return this.messageProcessor.getIPAddress().getHostAddress();
+        return this.messageProcessor.getIpAddress().getHostAddress();
     }
 
     

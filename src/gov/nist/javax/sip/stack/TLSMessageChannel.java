@@ -65,7 +65,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan 
  * 
  * 
- * @version 1.2 $Revision: 1.7 $ $Date: 2006-11-02 21:17:54 $ 
+ * @version 1.2 $Revision: 1.8 $ $Date: 2007-01-26 16:50:45 $ 
  */
 public final class TLSMessageChannel extends MessageChannel implements
 		SIPMessageListener, Runnable {
@@ -126,7 +126,7 @@ public final class TLSMessageChannel extends MessageChannel implements
 		}
 		mySock = sock;
 		peerAddress = mySock.getInetAddress();
-		myAddress = msgProcessor.getIPAddress().getHostAddress();
+		myAddress = msgProcessor.getIpAddress().getHostAddress();
 		myClientInputStream = mySock.getInputStream();
 
 		mythread = new Thread(this);
@@ -168,7 +168,7 @@ public final class TLSMessageChannel extends MessageChannel implements
 		this.peerProtocol = "TLS";
 		this.sipStack = sipStack;
 		this.tlsMessageProcessor = messageProcessor;
-		this.myAddress = messageProcessor.getIPAddress().getHostAddress();
+		this.myAddress = messageProcessor.getIpAddress().getHostAddress();
 		this.key = MessageChannel.getKey(peerAddress, peerPort, "TLS");
 		super.messageProcessor = messageProcessor;
 
@@ -245,7 +245,7 @@ public final class TLSMessageChannel extends MessageChannel implements
 	 */
 	private void sendMessage(byte[] msg, boolean retry) throws IOException {
 		Socket sock = this.sipStack.ioHandler.sendBytes(this
-				.getMessageProcessor().getIPAddress(), this.peerAddress,
+				.getMessageProcessor().getIpAddress(), this.peerAddress,
 				this.peerPort, this.peerProtocol, msg, retry);
 		// Created a new socket so close the old one and stick the new
 		// one in its place but dont do this if it is a datagram socket.
@@ -304,7 +304,7 @@ public final class TLSMessageChannel extends MessageChannel implements
 		if (message == null || receiverAddress == null)
 			throw new IllegalArgumentException("Null argument");
 		Socket sock = this.sipStack.ioHandler.sendBytes(
-				this.messageProcessor.getIPAddress(), receiverAddress,
+				this.messageProcessor.getIpAddress(), receiverAddress,
 				receiverPort, "TLS", message, retry);
 		//
 		// Created a new socket so close the old one and s
@@ -448,7 +448,7 @@ public final class TLSMessageChannel extends MessageChannel implements
 						.needsLogging(ServerLog.TRACE_MESSAGES)) {
 
 					sipStack.serverLog.logMessage(sipMessage, this.getPeerHostPort().toString() ,
-							this.messageProcessor.getIPAddress()
+							this.messageProcessor.getIpAddress()
 									.getHostAddress()
 									+ ":" + this.messageProcessor.getPort(),
 							false, receptionTime);
@@ -718,6 +718,9 @@ public final class TLSMessageChannel extends MessageChannel implements
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2006/11/02 21:17:54  belangery
+ * Added a feature for delegation of TLS encryption/decryption to an external TLS accelerator hardware. Such deployment requires the SIP stack to make its TLS traffic goes over an un-encrypted TCP connection to the TLS accelerator.
+ *
  * Revision 1.6  2006/07/25 19:47:00  mranga
  * Issue number:
  * Obtained from:
@@ -791,6 +794,9 @@ public final class TLSMessageChannel extends MessageChannel implements
  * respojnse arriving at the same time as NOTIFY) and other delights.
  * 
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2006/11/02 21:17:54  belangery
+ * Added a feature for delegation of TLS encryption/decryption to an external TLS accelerator hardware. Such deployment requires the SIP stack to make its TLS traffic goes over an un-encrypted TCP connection to the TLS accelerator.
+ *
  * Revision 1.6  2006/07/25 19:47:00  mranga
  * Issue number:
  * Obtained from:

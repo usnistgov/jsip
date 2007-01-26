@@ -53,7 +53,7 @@ import java.text.ParseException;
 /**
  * Implementation of the JAIN-SIP provider interface.
  *
- * @version 1.2 $Revision: 1.40 $ $Date: 2006-12-02 00:47:15 $
+ * @version 1.2 $Revision: 1.41 $ $Date: 2007-01-26 16:50:43 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -285,8 +285,10 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 		// Check whether the sentby of the topmost via header matches the sentby
 		// of our listening point. Mismatch is only ok if we're bound on 0.0.0.0
 		if (listeningPoint == null
-			|| (!listeningPoint.getSentBy().equalsIgnoreCase(IN_ADDR_ANY)
-				&& !listeningPoint.getSentBy().equalsIgnoreCase(IN6_ADDR_ANY)
+			|| (!listeningPoint.getMessageProcessor().getSavedIpAddress().
+					equals(IN_ADDR_ANY)
+				&& !listeningPoint.getMessageProcessor().getSavedIpAddress().
+					equals(IN6_ADDR_ANY)
 				&& !listeningPoint.getSentBy().equalsIgnoreCase(
 					  sipRequest.getTopmostVia().getSentBy().toString())) )
 		{
