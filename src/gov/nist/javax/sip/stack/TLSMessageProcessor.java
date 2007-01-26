@@ -53,7 +53,7 @@ import javax.net.ssl.*;
  * object that creates new TLS MessageChannels (one for each new
  * accept socket).
  *
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-12-02 00:47:10 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2007-01-26 16:50:45 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -101,13 +101,13 @@ public class TLSMessageProcessor extends MessageProcessor {
 		thread.setDaemon(true);
 		if (!sipStack.useTlsAccelerator) {
 			this.sock = sipStack.getNetworkLayer().createSSLServerSocket(
-										this.getPort(), 0, this.getIPAddress());
+										this.getPort(), 0, this.getIpAddress());
 			((SSLServerSocket)this.sock).setNeedClientAuth(false);
 			((SSLServerSocket)this.sock).setUseClientMode(true);
 			((SSLServerSocket)this.sock).setWantClientAuth(true);
 		} else {
 			this.sock = sipStack.getNetworkLayer().createServerSocket(
-										this.getPort(), 0, getIPAddress());
+										this.getPort(), 0, getIpAddress());
 		}
 		this.isRunning = true;
 		thread.start();

@@ -27,6 +27,9 @@ package gov.nist.javax.sip.stack;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.Socket;
+import java.net.SocketAddress;
+
 import gov.nist.core.*;
 import gov.nist.javax.sip.*;
 import gov.nist.javax.sip.header.*;
@@ -44,19 +47,33 @@ import javax.sip.InvalidArgumentException;
  * The main job of the message processor is to instantiate message channels for
  * the given transport.
  * 
- * @version 1.2 $Revision: 1.10 $ $Date: 2006-07-13 09:00:58 $
+ * @version 1.2 $Revision: 1.11 $ $Date: 2007-01-26 16:50:44 $
  * 
  * @author M. Ranganathan <br/>
  * 
  */
 public abstract class MessageProcessor implements Runnable {
+	/**
+	 * A string containing the 0.0.0.0 IPv4 ANY address.
+	 */
+	protected static final String IN_ADDR_ANY = "0.0.0.0";
 
+	/**
+	 * A string containing the ::0 IPv6 ANY address.
+	 */
+	protected static final String IN6_ADDR_ANY = "::0";
     /**
      * My Sent by string ( which I use to set the outgoing via header)
      */
     private  String sentBy;
 
     private HostPort sentByHostPort;
+    
+    /*
+     * The IP Address that was originally assigned ( Can be ANY )
+     */
+    
+    private String savedIpAddress;
 
     /**
      * The IP address where I am listening.
@@ -90,6 +107,7 @@ public abstract class MessageProcessor implements Runnable {
      */
     public MessageProcessor(InetAddress ipAddress, int port, String transport) {
 
+    	this.savedIpAddress = ipAddress.getHostAddress();
         this.ipAddress = ipAddress;
         this.port = port;
         this.transport = transport;
@@ -131,7 +149,7 @@ public abstract class MessageProcessor implements Runnable {
                 via.setTransport(this.getTransport());
             } else {
                 Host host = new Host();
-                host.setHostname(this.getIPAddress().getHostAddress());
+                host.setHostname(this.getIpAddress().getHostAddress());
                 via.setHost(host);
                 via.setPort(this.getPort());
                 via.setTransport(this.getTransport());
@@ -170,12 +188,24 @@ public abstract class MessageProcessor implements Runnable {
     }
 
     /**
+     * Get the saved IP Address.
+     */
+    public String getSavedIpAddress() {
+    	return this.savedIpAddress;
+    }
+    /**
      * @return the ip address for this message processor.
      */
-    public InetAddress getIPAddress() {
-
-        return this.ipAddress;
+    public InetAddress getIpAddress() {
+    	  return this.ipAddress;
     }
+    /**
+	 * @param ipAddress the ipAddress to set
+	 */
+	protected void setIpAddress(InetAddress ipAddress) {
+		this.sentByHostPort.setHost( new Host(ipAddress.getHostAddress()));
+		this.ipAddress = ipAddress;
+	}
 
     /**
      * Set the sentby string. This is used for stamping outgoing messages sent
@@ -303,5 +333,9 @@ public abstract class MessageProcessor implements Runnable {
 		return transport.equalsIgnoreCase("TLS")?5061:5060;
 	}
 
+	
+
+	
+	
   
 }

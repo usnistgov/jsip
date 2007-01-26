@@ -52,7 +52,7 @@ import javax.sip.header.ContactHeader;
  * Contains additions for support of symmetric NAT contributed
  * by Hagai.
  *
- * @version 1.2 $Revision: 1.15 $ $Date: 2006-07-13 09:00:59 $
+ * @version 1.2 $Revision: 1.16 $ $Date: 2007-01-26 16:50:45 $
  *
  * 
  */
@@ -153,7 +153,7 @@ public abstract class MessageChannel {
 	 * @return host of this messsage channel.
 	 */
 	public String getHost() {
-		return this.getMessageProcessor().getIPAddress().getHostAddress();
+		return this.getMessageProcessor().getIpAddress().getHostAddress();
 	}
 
 	/**

@@ -63,7 +63,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.36 $ $Date: 2006-07-25 19:47:00 $ 
+ * @version 1.2 $Revision: 1.37 $ $Date: 2007-01-26 16:50:44 $ 
  */
 public class TCPMessageChannel extends MessageChannel implements
 		SIPMessageListener, Runnable {
@@ -132,7 +132,7 @@ public class TCPMessageChannel extends MessageChannel implements
 		}
 		mySock = sock;
 		peerAddress = mySock.getInetAddress();
-		myAddress = msgProcessor.getIPAddress().getHostAddress();
+		myAddress = msgProcessor.getIpAddress().getHostAddress();
 		myClientInputStream = mySock.getInputStream();
 		myClientOutputStream = mySock.getOutputStream();
 		mythread = new Thread(this);
@@ -174,7 +174,7 @@ public class TCPMessageChannel extends MessageChannel implements
 		this.peerProtocol = "TCP";
 		this.sipStack = sipStack;
 		this.tcpMessageProcessor = messageProcessor;
-		this.myAddress = messageProcessor.getIPAddress().getHostAddress();
+		this.myAddress = messageProcessor.getIpAddress().getHostAddress();
 		// Bug report by Vishwashanti Raj Kadiayl
 		this.key = MessageChannel.getKey(peerAddress, peerPort, "TCP");
 		super.messageProcessor = messageProcessor;
@@ -252,7 +252,7 @@ public class TCPMessageChannel extends MessageChannel implements
 	 */
 	private void sendMessage(byte[] msg, boolean retry) throws IOException {
 		Socket sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor
-				.getIPAddress(), this.peerAddress, this.peerPort,
+				.getIpAddress(), this.peerAddress, this.peerPort,
 				this.peerProtocol, msg, retry);
 		// Created a new socket so close the old one and stick the new
 		// one in its place but dont do this if it is a datagram socket.
@@ -311,7 +311,7 @@ public class TCPMessageChannel extends MessageChannel implements
 		if (message == null || receiverAddress == null)
 			throw new IllegalArgumentException("Null argument");
 		Socket sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor
-				.getIPAddress(), receiverAddress, receiverPort, "TCP", message,
+				.getIpAddress(), receiverAddress, receiverPort, "TCP", message,
 				retry);
 		//
 		// Created a new socket so close the old one and s
@@ -501,7 +501,7 @@ public class TCPMessageChannel extends MessageChannel implements
 
 					sipStack.serverLog.logMessage(sipMessage,
 							this.getPeerHostPort().toString() , this
-							.getMessageProcessor().getIPAddress()
+							.getMessageProcessor().getIpAddress()
 							.getHostAddress()
 							+ ":" + this.getMessageProcessor().getPort(),
 							false, receptionTime);
