@@ -114,28 +114,18 @@ c:/jakarta-ant/bin/ant all
 	</target>
 	<!-- Clean everything -->
 	<target name="clean" depends="cleanlogs">
-		<delete dir="${classes}/examples" />
-		<delete dir="${classes}/tools" />
-		<delete dir="${classes}/gov" />
-		<delete dir="${classes}/javax" />
-		<delete dir='${classes}' />
-
-		<delete dir='${retrowoven}' />
-
-		<delete file="./${jain_api_jar}" />
-		<delete file="./${jain_api_jar14}" />
-		<delete file="./${ri_jar}" />
-		<delete file="./${ri_jar14}" />
-		<delete file="./${sdp_jar}" />
-		<delete file="./${sip-sdp-jar}" />
-		<delete file="./${tck_jar}" />
-		<delete file="./tracesviewer.jar" />
-
-		<delete dir='javadoc' />
-		<delete dir='javadoc-jain' />
-
-		<!-- files created by running targets -->
-		<delete file="jain-sip-1.2.jar" failonerror="false"/>
+		<delete dir="${classes}"  quiet="true" failonerror="false" />
+		<delete dir="${retrowoven}" quiet="true"  failonerror="false" />
+		<delete file="./${jain_api_jar}" failonerror="false"/>
+		<delete file="./${jain_api_jar14}" failonerror="false" />
+		<delete file="./${ri_jar}" failonerror="false" />
+		<delete file="./${ri_jar14}" failonerror="false" />
+		<delete file="./${sdp_jar}" failonerror="false" />
+		<delete file="./${sip-sdp-jar}" failonerror="false" />
+		<delete file="./${tck_jar}" failonerror="false" />
+		<delete file="./tracesviewer.jar" failonerror="false" />
+		<delete dir='javadoc' quiet="true" failonerror="false" />
+		<delete dir='javadoc-jain' quiet="true" failonerror="false" />
 
 	</target>
 

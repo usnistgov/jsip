@@ -39,7 +39,7 @@ import gov.nist.core.*;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size).
  * Each UDP message is processed in its own thread).
  * 
- * @version 1.2 $Revision: 1.28 $ $Date: 2006-11-05 23:40:43 $
+ * @version 1.2 $Revision: 1.29 $ $Date: 2007-01-26 16:50:44 $
  * 
  * @author M. Ranganathan  <br/>
  * 
@@ -127,6 +127,15 @@ public class UDPMessageProcessor extends MessageProcessor {
 			 */
 			if (sipStack.getThreadAuditor().isEnabled()) {
 				sock.setSoTimeout((int) sipStack.getThreadAuditor().getPingIntervalInMillisecs());
+			}
+			if ( ipAddress.getHostAddress().equals(IN_ADDR_ANY)  ||
+				 ipAddress.getHostAddress().equals(IN6_ADDR_ANY)){
+				// Store the address to which we are actually bound
+				// Note that on WINDOWS this is actually broken. It will
+				// return IN_ADDR_ANY again. On linux it will return the 
+				// address to which the socket was actually bound.
+				super.setIpAddress( sock.getLocalAddress() );
+				
 			}
 		} catch (SocketException ex) {
 			throw new IOException(ex.getMessage());

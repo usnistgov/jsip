@@ -250,8 +250,7 @@ public class Shootist implements SipListener {
 			headerFactory = sipFactory.createHeaderFactory();
 			addressFactory = sipFactory.createAddressFactory();
 			messageFactory = sipFactory.createMessageFactory();
-			udpListeningPoint = sipStack.createListeningPoint("127.0.0.1",
-					5060, "udp");
+			udpListeningPoint = sipStack.createListeningPoint("127.0.0.1", 5060, "udp");
 			sipProvider = sipStack.createSipProvider(udpListeningPoint);
 			Shootist listener = this;
 			sipProvider.addSipListener(listener);
@@ -288,7 +287,8 @@ public class Shootist implements SipListener {
 			// Create ViaHeaders
 
 			ArrayList viaHeaders = new ArrayList();
-			ViaHeader viaHeader = headerFactory.createViaHeader("127.0.0.1",
+			String ipAddress = udpListeningPoint.getIPAddress();
+			ViaHeader viaHeader = headerFactory.createViaHeader(ipAddress,
 					sipProvider.getListeningPoint(transport).getPort(),
 					transport, null);
 
