@@ -163,7 +163,6 @@ public class PChargingFunctionAddresses
 		Iterator li = this.parameters.iterator();
 		ListIterator ccfLIST = null;
 		NameValue nv;
-		boolean removed = false;
 		while (li.hasNext()) {
 			nv = (NameValue) li.next();
 			if (nv.getName().equalsIgnoreCase(ParameterNamesIms.CCF)) {

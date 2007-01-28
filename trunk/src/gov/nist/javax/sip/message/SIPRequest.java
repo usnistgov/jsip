@@ -63,7 +63,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.24 $ $Date: 2006-12-22 02:23:32 $
+ * @version 1.2 $Revision: 1.25 $ $Date: 2007-01-28 13:06:22 $
  * @since 1.1
  * 
  * @author M. Ranganathan  <br/>
@@ -589,7 +589,6 @@ public final class SIPRequest extends SIPMessage implements
 	 */
 	public String getDialogId(boolean isServer, String toTag) {
 		From from = (From) this.getFrom();
-		To to = (To) this.getTo();
 		CallID cid = (CallID) this.getCallId();
 		StringBuffer retval = new StringBuffer(cid.getCallId());
 		if (!isServer) {
@@ -637,7 +636,6 @@ public final class SIPRequest extends SIPMessage implements
 		}
 		byte[] superbytes = super.encodeAsBytes();
 		byte[] retval = new byte[rlbytes.length + superbytes.length];
-		int i = 0;
 		System.arraycopy(rlbytes, 0, retval, 0, rlbytes.length);
 		System.arraycopy(superbytes, 0, retval, rlbytes.length,
 				superbytes.length);

@@ -53,7 +53,7 @@ import javax.net.ssl.*;
  * object that creates new TLS MessageChannels (one for each new
  * accept socket).
  *
- * @version 1.2 $Revision: 1.7 $ $Date: 2007-01-26 16:50:45 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2007-01-28 13:06:23 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -151,8 +151,7 @@ public class TLSMessageProcessor extends MessageProcessor {
 
 				// Note that for an incoming message channel, the
 				// thread is already running
-				TLSMessageChannel tlsMessageChannel =
-					new TLSMessageChannel(newsock, sipStack, this);
+				new TLSMessageChannel(newsock, sipStack, this);
 			} catch (SocketException ex) {
 				this.isRunning = false;
 			} catch (IOException ex) {
