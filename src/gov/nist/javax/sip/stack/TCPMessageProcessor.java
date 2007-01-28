@@ -41,7 +41,7 @@ import java.util.*;
  * object that creates new TCP MessageChannels (one for each new
  * accept socket).  
  *
- * @version 1.2 $Revision: 1.25 $ $Date: 2007-01-26 16:50:44 $
+ * @version 1.2 $Revision: 1.26 $ $Date: 2007-01-28 13:06:23 $
  *
  * @author M. Ranganathan   <br/>
  * Acknowledgement: Jeff Keyser suggested that a
@@ -145,8 +145,7 @@ public class TCPMessageProcessor extends MessageProcessor {
 				}
 				// Note that for an incoming message channel, the
 				// thread is already running
-				TCPMessageChannel tcpMessageChannel =
-					new TCPMessageChannel(newsock, sipStack, this);
+				new TCPMessageChannel(newsock, sipStack, this);
 			} catch (SocketException ex) {
 				this.isRunning = false;
 			} catch (IOException ex) {
@@ -310,6 +309,29 @@ public class TCPMessageProcessor extends MessageProcessor {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.25  2007/01/26 16:50:44  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  mranga
+ * Reviewed by:   mranga
+ *
+ * Fixed for INADDR_ANY
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.24  2006/07/13 09:01:01  mranga
  * Issue number:
  * Obtained from:

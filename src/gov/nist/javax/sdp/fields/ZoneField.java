@@ -130,7 +130,6 @@ public class ZoneField
 		if (map == null)
 			throw new SdpException("The map is null");
 		else {
-			SDPObjectList zoneAdjustments = getZoneAdjustments();
 			for (Enumeration e = map.keys(); e.hasMoreElements();) {
 				Object o = e.nextElement();
 				if (o instanceof Date) {

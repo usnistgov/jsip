@@ -653,7 +653,7 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 	 */
 	public void addDynamicPayloads(Vector payloadNames, Vector payloadValues)
 			throws SdpException {
-		MediaField mediaField = (MediaField) getMedia();
+		
 		if (payloadNames == null || payloadValues == null)
 			throw new SdpException(" The vectors are null");
 		else {

@@ -49,7 +49,7 @@ import javax.sip.message.Request;
 /**
  * SIP Response structure.
  *
- * @version 1.2 $Revision: 1.12 $ $Date: 2006-10-26 22:47:59 $
+ * @version 1.2 $Revision: 1.13 $ $Date: 2007-01-28 13:06:22 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
@@ -593,7 +593,6 @@ public final class SIPResponse
 	public String getDialogId(boolean isServer, String toTag) {
 		CallID cid = (CallID) this.getCallId();
 		From from = (From) this.getFrom();
-		To to = (To) this.getTo();
 		StringBuffer retval = new StringBuffer(cid.getCallId());
 		if (!isServer) {
 			//retval.append(COLON).append(from.getUserAtHostPort());

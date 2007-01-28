@@ -63,7 +63,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.37 $ $Date: 2007-01-26 16:50:44 $ 
+ * @version 1.2 $Revision: 1.38 $ $Date: 2007-01-28 13:06:23 $ 
  */
 public class TCPMessageChannel extends MessageChannel implements
 		SIPMessageListener, Runnable {
@@ -560,7 +560,6 @@ public class TCPMessageChannel extends MessageChannel implements
 	 * messages until we are done or the other end has closed.
 	 */
 	public void run() {
-		String message;
 		Pipeline hispipe = null;
 		// Create a pipeline to connect to our message parser.
 		hispipe = new Pipeline(myClientInputStream, sipStack.readTimeout,

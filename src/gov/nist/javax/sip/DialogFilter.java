@@ -57,7 +57,7 @@ import java.io.IOException;
  * and event model with the JAIN-SIP stack. This is strictly an implementation
  * class.
  * 
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-09-26 22:22:59 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2007-01-28 13:06:24 $
  * 
  * @author M. Ranganathan
  */
@@ -359,7 +359,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 				}
 				return;
 
-			} else {
+			} else if ( dialog != null ) {
 				if (!dialog.handlePrack(sipRequest)) {
 					sipStack.getLogWriter().logDebug(
 							"Dropping out of sequence PRACK ");
@@ -377,6 +377,8 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 						InternalErrorHandler.handleException(ex);
 					}
 				}
+			} else {
+				sipStack.getLogWriter().logDebug("Processing PRACK without a DIALOG -- this must be a proxy element" );
 			}
 
 		} else if (sipRequest.getMethod().equals(Request.BYE)) {
