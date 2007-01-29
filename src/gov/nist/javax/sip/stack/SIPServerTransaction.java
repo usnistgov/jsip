@@ -150,7 +150,7 @@ import java.util.TimerTask;
  *                                      
  * </pre>
  * 
- * @version 1.2 $Revision: 1.82 $ $Date: 2006-12-11 03:44:25 $
+ * @version 1.2 $Revision: 1.83 $ $Date: 2007-01-29 19:41:10 $
  * @author M. Ranganathan
  * 
  */
@@ -587,12 +587,11 @@ public class SIPServerTransaction extends SIPTransaction implements
 					}
 
 				} else {
-					// If this is an RFC2543-compliant message,
-					// This code is really here for backwards compatibility. It
-					// is a weak check.
-					// If RequestURI, To tag, From tag,
-					// CallID, CSeq number, and top Via
-					// headers are the same,
+					// This is an RFC2543-compliant message; this code is here for backwards compatibility.
+					// It is a weak check.
+					// If RequestURI, To tag, From tag, CallID, CSeq number, and top Via headers are the same, the
+					// SIPMessage matches this transaction.  An exception is for a CANCEL request, which is not deemed
+					// to be part of an otherwise-matching INVITE transaction.
 					String originalFromTag = super.fromTag;
 
 					String thisFromTag = messageToTest.getFrom().getTag();
@@ -605,7 +604,12 @@ public class SIPServerTransaction extends SIPTransaction implements
 
 					boolean skipTo = (originalToTag == null || thisToTag == null);
 					boolean isResponse = (messageToTest instanceof SIPResponse);
-					if ((isResponse || getOriginalRequest().getRequestURI()
+					// Issue #96: special case handling for a CANCEL request - the CSeq method of the original request must
+					// be CANCEL for it to have a chance at matching.
+					if (messageToTest.getCSeq().getMethod().equalsIgnoreCase(Request.CANCEL) &&
+							! getOriginalRequest().getCSeq().getMethod().equalsIgnoreCase(Request.CANCEL)) {
+						transactionMatches = false;
+					} else if ((isResponse || getOriginalRequest().getRequestURI()
 							.equals(
 									((SIPRequest) messageToTest)
 											.getRequestURI()))
