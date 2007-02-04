@@ -147,10 +147,12 @@ public class Shootme implements SipListener {
 
 			st.sendResponse(response);
 
-			// reliable provisional response.
-
-			Response okResponse = messageFactory.createResponse(183, request);
-			ToHeader toHeader = (ToHeader) okResponse.getHeader(ToHeader.NAME);
+			// reliable provisional response. Use the API here!
+			// Response okResponse = messageFactory.createResponse(183, request);
+			Response sessionProgress = dialog.createReliableProvisionalResponse( 
+					Response.SESSION_PROGRESS );
+			
+			ToHeader toHeader = (ToHeader) sessionProgress.getHeader(ToHeader.NAME);
 			this.toTag = "4321";
 			toHeader.setTag(toTag); // Application is supposed to set.
 			this.inviteTid = st;
@@ -158,9 +160,8 @@ public class Shootme implements SipListener {
 
 			System.out.println("sending reliable provisional response.");
 
-			RequireHeader requireHeader = headerFactory.createRequireHeader("100rel");
-			okResponse.addHeader(requireHeader);
-			dialog.sendReliableProvisionalResponse(okResponse);
+			// It is essential to use this API here!
+			dialog.sendReliableProvisionalResponse(sessionProgress);
 
 			// new Timer().schedule(new MyTimerTask(this), 100);
 		} catch (Exception ex) {
