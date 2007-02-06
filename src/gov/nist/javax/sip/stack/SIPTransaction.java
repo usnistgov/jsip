@@ -54,7 +54,7 @@ import EDU.oswego.cs.dl.util.concurrent.Semaphore;
  * @author M. Ranganathan
  * 
  * 
- * @version 1.2 $Revision: 1.47 $ $Date: 2006-11-23 17:26:58 $
+ * @version 1.2 $Revision: 1.48 $ $Date: 2007-02-06 15:47:49 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
 		javax.sip.Transaction {
@@ -530,7 +530,20 @@ public abstract class SIPTransaction extends MessageChannel implements
 	 *            New state of this transaction.
 	 */
 	public void setState(TransactionState newState) {
-		currentState = newState;
+		// PATCH submitted by sribeyron
+		if (currentState == TransactionState.COMPLETED) {
+			if (newState != TransactionState.TERMINATED && newState != TransactionState.CONFIRMED)
+				newState = TransactionState.COMPLETED;
+		}
+		if (currentState == TransactionState.CONFIRMED) {
+			if (newState != TransactionState.TERMINATED)
+				newState = TransactionState.CONFIRMED;
+		}
+		if (currentState != TransactionState.TERMINATED)
+			currentState = newState;
+		else
+			newState = currentState;
+		// END OF PATCH
 		if (sipStack.isLoggingEnabled()) {
 			sipStack.logWriter.logDebug("Transaction:setState " + newState
 					+ " " + this + " branchID = " + this.getBranch()
@@ -538,6 +551,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 			sipStack.logWriter.logStackTrace();
 		}
 	}
+	
 
 	/**
 	 * Gets the current state of this transaction.
