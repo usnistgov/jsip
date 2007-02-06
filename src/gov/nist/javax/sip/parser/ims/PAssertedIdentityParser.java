@@ -36,6 +36,8 @@ import java.text.ParseException;
 
 import gov.nist.javax.sip.header.SIPHeader;
 import gov.nist.javax.sip.header.ims.PAssertedIdentity;
+import gov.nist.javax.sip.header.ims.PAssertedIdentityList;
+import gov.nist.javax.sip.header.ims.SIPHeaderNamesIms;
 
 import gov.nist.javax.sip.parser.AddressParametersParser;
 
@@ -67,15 +69,35 @@ public class PAssertedIdentityParser
 		if (debug)
 			dbg_enter("AssertedIdentityParser.parse");
 		
+		PAssertedIdentityList assertedIdList = new PAssertedIdentityList();
+		
 		try {
-			this.lexer.match(TokenTypes.P_ASSERTED_IDENTITY);
-			this.lexer.SPorHT();
-			this.lexer.match(':');
-			this.lexer.SPorHT();
-				
+			
+			headerName(TokenTypes.P_ASSERTED_IDENTITY);
+
 			PAssertedIdentity pai = new PAssertedIdentity();
+			pai.setHeaderName(SIPHeaderNamesIms.P_ASSOCIATED_URI);
+			
 			super.parse(pai);
-			return pai;
+			assertedIdList.add(pai);
+			
+			this.lexer.SPorHT();
+			while (lexer.lookAhead(0) == ',')
+			{
+				this.lexer.match(',');
+				this.lexer.SPorHT();
+
+				pai = new PAssertedIdentity();
+				super.parse(pai);
+				assertedIdList.add(pai);
+				
+				this.lexer.SPorHT();
+			}
+			this.lexer.SPorHT();
+			this.lexer.match('\n');
+			
+			return assertedIdList;
+			
 		}
 				
 		finally {

@@ -36,17 +36,23 @@ package gov.nist.javax.sip.parser.ims;
  * @author Miguel Freitas (IT) PT-Inovacao
  */
 
+/*
+ * Privacy-hdr  =  "Privacy" HCOLON priv-value *(";" priv-value)
+ * priv-value   =   "header" / "session" / "user" / "none" / "critical" / token
+ */
 
 import gov.nist.core.*;
 import gov.nist.javax.sip.header.SIPHeader;
-import gov.nist.javax.sip.parser.HeaderParser;
 import gov.nist.javax.sip.parser.Lexer;
 import gov.nist.javax.sip.parser.TokenTypes;
+import gov.nist.javax.sip.parser.HeaderParser;
 
 import java.text.ParseException;
+
 import gov.nist.javax.sip.header.ims.Privacy;
 import gov.nist.javax.sip.header.ims.PrivacyList;
 import gov.nist.javax.sip.header.ims.SIPHeaderNamesIms;
+
 
 
 public class PrivacyParser 
@@ -68,12 +74,11 @@ public class PrivacyParser
 
 	public SIPHeader parse() throws ParseException
 	{
-	
-		PrivacyList privacyList = new PrivacyList();
-		
 		if (debug)
 			dbg_enter("PrivacyParser.parse");
 
+		PrivacyList privacyList = new PrivacyList();
+		
 		try 
 		{
 			this.headerName(TokenTypes.PRIVACY);
@@ -83,26 +88,19 @@ public class PrivacyParser
 				
 				Privacy privacy = new Privacy();
 				privacy.setHeaderName(SIPHeaderNamesIms.PRIVACY);
-				
 
 				this.lexer.match(TokenTypes.ID);
 				Token token = lexer.getNextToken();
-				
 				privacy.setPrivacy(token.getTokenValue());
-				
 				this.lexer.SPorHT();
-
 				privacyList.add(privacy);
 				
-				
-				while (lexer.lookAhead(0) == ',') 
+				// Parsing others option-tags
+				while (lexer.lookAhead(0) == ';') 
 				{
-					this.lexer.match(',');
+					this.lexer.match(';');
 					this.lexer.SPorHT();
-
 					privacy = new Privacy();
-
-					// Parsing the option tag
 					this.lexer.match(TokenTypes.ID);
 					token = lexer.getNextToken();
 					privacy.setPrivacy(token.getTokenValue());
@@ -111,14 +109,36 @@ public class PrivacyParser
 					privacyList.add(privacy);
 				}
 			}
+			
+			return privacyList;
+			
 		}
 		finally {
 			if (debug)
 				dbg_leave("PrivacyParser.parse");
 		}
 	
-		
-		return privacyList;
 	}
+
+	
+	/** Test program */
+    public static void main(String args[]) throws ParseException
+    {
+		String rou[] = {
+				
+			    "Privacy: none\n", 
+			    "Privacy: none;id;user\n"
+			};
+			
+		for (int i = 0; i < rou.length; i++ ) {
+		    PrivacyParser rp = 
+			  new PrivacyParser(rou[i]);
+		    PrivacyList list = (PrivacyList) rp.parse();
+		    System.out.println("encoded = " +list.encode());
+		}
+    }
+	
+	
 	
 }
+

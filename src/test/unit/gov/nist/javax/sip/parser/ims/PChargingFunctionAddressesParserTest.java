@@ -41,11 +41,13 @@ public class PChargingFunctionAddressesParserTest extends ParserTestCase
 		 
 		 "P-Charging-Function-Addresses: ccf=token; ecf=\"test quoted str\"\n",
 		 
-		 "P-Charging-Function-Addresses: ccf=192.1.1.1; ccf=192.1.1.2; ecf=192.1.1.3; ecf=192.1.1.4\n",
+		 "P-Charging-Function-Addresses: ccf=192.1.1.1; ccf=192.1.1.2; ecf=192.1.1.3; ecf=192.1.1.4\n"
 		 
+		 /*
 		 "P-Charging-Function-Addresses: ccf=[5555::b99:c88:d77:e66]; ccf=[5555::a55:b44:c33:d22]; " +
 		 	"ecf=[5555::1ff:2ee:3dd:4cc]; ecf=[5555::6aa:7bb:8cc:9dd]\n"
-		
+		 */
+		 
 		};		
 		
 		super.testParser(PChargingFunctionAddressesParser.class,chargAddr);
