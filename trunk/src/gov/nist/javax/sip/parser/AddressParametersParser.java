@@ -32,7 +32,7 @@ import java.text.ParseException;
 /**
  * Address parameters parser.
  *
- * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-13 09:02:07 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2007-02-06 16:40:02 $
  * @author M. Ranganathan 
  * @since 1.1  
  * 
@@ -55,14 +55,15 @@ public class AddressParametersParser extends ParametersParser {
 			AddressImpl addr = addressParser.address();
 			addressParametersHeader.setAddress(addr);
 			lexer.SPorHT();
+			char la = this.lexer.lookAhead(0);
 			if ( this.lexer.hasMoreChars() &&
-			     this.lexer.lookAhead(0) != '\0' &&
-			     this.lexer.lookAhead(0) != '\n' &&
+			     la != '\0' &&
+			     la != '\n' &&
 			     this.lexer.startsId()) {
 
 			     super.parseNameValueList(addressParametersHeader);
-			      
-				
+
+
 			}  else super.parse(addressParametersHeader);
 		
 		} catch (ParseException ex) {

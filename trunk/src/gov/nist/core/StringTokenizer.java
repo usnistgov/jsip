@@ -53,22 +53,19 @@ public class StringTokenizer {
 		bufferLen = buffer.length();
 		ptr = 0;
 	}
-
+	
 	public String nextToken() {
-		StringBuffer retval = new StringBuffer();
-
+		int startIdx = ptr;
+		
 		while (ptr < bufferLen) {
-			if (buffer.charAt(ptr) == '\n') {
-				retval.append(buffer.charAt(ptr));
-				ptr++;
+			char c = buffer.charAt(ptr);
+			ptr++;
+			if (c == '\n') {
 				break;
-			} else {
-				retval.append(buffer.charAt(ptr));
-				ptr++;
 			}
 		}
 
-		return retval.toString();
+		return buffer.substring(startIdx, ptr);
 	}
 
 	public boolean hasMoreChars() {
@@ -76,17 +73,9 @@ public class StringTokenizer {
 	}
 
 	public static boolean isHexDigit(char ch) {
-		if (isDigit(ch))
-			return true;
-		else {
-			char ch1 = Character.toUpperCase(ch);
-			return ch1 == 'A'
-				|| ch1 == 'B'
-				|| ch1 == 'C'
-				|| ch1 == 'D'
-				|| ch1 == 'E'
-				|| ch1 == 'F';
-		}
+		return (ch >= 'A' && ch <= 'F') ||
+			   (ch >= 'a' && ch <= 'f') ||
+			   isDigit(ch);
 	}
 
 	public static boolean isAlpha(char ch) {
@@ -102,16 +91,14 @@ public class StringTokenizer {
 	}
 
 	public String getLine() {
-		StringBuffer retval = new StringBuffer();
+		int startIdx = ptr;
 		while (ptr < bufferLen && buffer.charAt(ptr) != '\n') {
-			retval.append(buffer.charAt(ptr));
 			ptr++;
 		}
 		if (ptr < bufferLen && buffer.charAt(ptr) == '\n') {
-			retval.append('\n');
 			ptr++;
-		}
-		return retval.toString();
+		}		
+		return buffer.substring(startIdx, ptr);
 	}
 
 	public String peekLine() {
@@ -127,10 +114,12 @@ public class StringTokenizer {
 
 	public char lookAhead(int k) throws ParseException {
 		// Debug.out.println("ptr = " + ptr);
-		if (ptr + k < bufferLen)
+		try {
 			return buffer.charAt(ptr + k);
-		else
+		}
+		catch (IndexOutOfBoundsException e) {
 			return '\0';
+		}
 	}
 
 	public char getNextChar() throws ParseException {
@@ -164,20 +153,16 @@ public class StringTokenizer {
 	/** Get the next token from the buffer.
 	*/
 	public String getNextToken(char delim) throws ParseException {
-		StringBuffer retval = new StringBuffer();
+		int startIdx = ptr;
 		while (true) {
 			char la = lookAhead(0);
-			
-			//System.out.println("la = " + la);
-			
 			if (la == delim)
 				break;
 			else if (la == '\0')
 				throw new ParseException("EOL reached", 0);
-			retval.append(buffer.charAt(ptr));
 			consume(1);
 		}
-		return retval.toString();
+		return buffer.substring(startIdx, ptr);
 	}
 
 	/** get the SDP field name of the line

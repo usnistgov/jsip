@@ -38,22 +38,15 @@ package gov.nist.javax.sip.parser.ims;
  */
 
 
-import gov.nist.core.*;
+import gov.nist.core.NameValue;
+import gov.nist.core.Token;
+import gov.nist.javax.sip.header.SIPHeaderList;
+import gov.nist.javax.sip.header.ims.*;
 import gov.nist.javax.sip.parser.HeaderParser;
 import gov.nist.javax.sip.parser.Lexer;
 import gov.nist.javax.sip.parser.TokenTypes;
-import gov.nist.javax.sip.header.SIPHeaderList;
-import gov.nist.javax.sip.header.ims.SecurityClient;
-import gov.nist.javax.sip.header.ims.SecurityClientList;
-import gov.nist.javax.sip.header.ims.SecurityServer;
-import gov.nist.javax.sip.header.ims.SecurityServerList;
-import gov.nist.javax.sip.header.ims.SecurityVerify;
-import gov.nist.javax.sip.header.ims.SecurityVerifyList;
 
 import java.text.ParseException;
-
-
-import gov.nist.javax.sip.header.ims.SecurityAgree;
 
 
 
@@ -107,13 +100,14 @@ public class SecurityAgreeParser extends HeaderParser
 		Token type = lexer.getNextToken();
 		header.setSecurityMechanism(type.getTokenValue());
 		this.lexer.SPorHT();
-		
-		if (lexer.lookAhead(0) == '\n')
+
+		char la = lexer.lookAhead(0);
+		if (la == '\n')
 		{
 			list.add(header);
 			return list;
 		}
-		else if (lexer.lookAhead(0) == ';')
+		else if (la == ';')
 			this.lexer.match(';');
 		
 		this.lexer.SPorHT();
@@ -124,9 +118,10 @@ public class SecurityAgreeParser extends HeaderParser
 				
 				this.parseParameter(header);
 				this.lexer.SPorHT();
-				if (lexer.lookAhead(0) == '\n' || lexer.lookAhead(0) == '\0')
+				char laInLoop = lexer.lookAhead(0);
+				if (laInLoop == '\n' || laInLoop == '\0')
 					break;
-				else if (lexer.lookAhead(0) == ',')
+				else if (laInLoop == ',')
 				{
 					list.add(header);
 					if (header.getClass().isInstance(new SecurityClient())) {
@@ -143,7 +138,7 @@ public class SecurityAgreeParser extends HeaderParser
 					lexer.match(TokenTypes.ID);
 					type = lexer.getNextToken();
 					header.setSecurityMechanism(type.getTokenValue());
-					
+
 				}
 				this.lexer.SPorHT();
 				

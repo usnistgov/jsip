@@ -29,15 +29,15 @@
 
 package gov.nist.javax.sip.parser.ims;
 
-import java.text.ParseException;
-
-import gov.nist.javax.sip.header.ims.PVisitedNetworkID;
-import gov.nist.javax.sip.header.ims.PVisitedNetworkIDList;
 import gov.nist.core.Token;
 import gov.nist.javax.sip.header.SIPHeader;
+import gov.nist.javax.sip.header.ims.PVisitedNetworkID;
+import gov.nist.javax.sip.header.ims.PVisitedNetworkIDList;
 import gov.nist.javax.sip.parser.Lexer;
 import gov.nist.javax.sip.parser.ParametersParser;
 import gov.nist.javax.sip.parser.TokenTypes;
+
+import java.text.ParseException;
 
 /**
  * P-Visited-Network-ID header parser.
@@ -101,13 +101,14 @@ public class PVisitedNetworkIDParser extends ParametersParser implements TokenTy
 				visitedNetworkIDList.add(visitedNetworkID);
 				
 				this.lexer.SPorHT();
-				if (lexer.lookAhead(0) == ',') {
+				char la = lexer.lookAhead(0);
+				if (la == ',') {
 					this.lexer.match(',');
 					this.lexer.SPorHT();
-				} else if (lexer.lookAhead(0) == '\n')
+				} else if (la == '\n')
 					break;
 				else
-					throw createParseException("unexpected char = " + lexer.lookAhead(0));
+					throw createParseException("unexpected char = " + la);
 			}
 			return visitedNetworkIDList;
 		} finally {

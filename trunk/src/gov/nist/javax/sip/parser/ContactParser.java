@@ -25,17 +25,19 @@ package gov.nist.javax.sip.parser;
 
 import gov.nist.javax.sip.address.AddressImpl;
 import gov.nist.javax.sip.address.SipUri;
-import gov.nist.javax.sip.header.*;
+import gov.nist.javax.sip.header.Contact;
+import gov.nist.javax.sip.header.ContactList;
+import gov.nist.javax.sip.header.SIPHeader;
+
+import javax.sip.address.URI;
 import java.text.ParseException;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import javax.sip.address.URI;
-
 /**
  * A parser for The SIP contact header.
  * 
- * @version 1.2 $Revision: 1.10 $ $Date: 2007-01-19 18:53:18 $
+ * @version 1.2 $Revision: 1.11 $ $Date: 2007-02-06 16:40:02 $
  * @since 1.1
  */
 public class ContactParser extends AddressParametersParser {
@@ -91,10 +93,11 @@ public class ContactParser extends AddressParametersParser {
 			}
 			retval.add(contact);
 			this.lexer.SPorHT();
-			if (lexer.lookAhead(0) == ',') {
+			char la = lexer.lookAhead(0);
+			if (la == ',') {
 				this.lexer.match(',');
 				this.lexer.SPorHT();
-			} else if (lexer.lookAhead(0) == '\n' || lexer.lookAhead(0) == '\0')
+			} else if (la == '\n' || la == '\0')
 				break;
 			else
 				throw createParseException("unexpected char");
