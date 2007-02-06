@@ -174,9 +174,10 @@ public class HostNameParser extends ParserCore {
 			hp.setHost(host);
 			// Has a port?
 			if (allowWS) lexer.SPorHT(); // white space before ":port" should be accepted
-			if (lexer.hasMoreChars()) {				
-				switch (lexer.lookAhead(0))
-				{ 
+			if (lexer.hasMoreChars()) {
+				char la = lexer.lookAhead(0);
+				switch (la)
+				{
 				case ':':
 					lexer.consume(1);
 					if (allowWS) lexer.SPorHT(); // white space before port number should be accepted
@@ -189,7 +190,7 @@ public class HostNameParser extends ParserCore {
 							lexer.getPtr());
 					}
 					break;
-				
+
 				case ';':	// OK, can appear in URIs (parameters)
 				case '?':	// same, header parameters
 				case '>':	// OK, can appear in headers
@@ -198,11 +199,11 @@ public class HostNameParser extends ParserCore {
 				case '\r':
 				case '\n':
 					break;
-					
+
 				default:
 					if (!allowWS) {
-						throw new ParseException( lexer.getBuffer() + 
-								" Illegal character in hostname:" + lexer.lookAhead(0), 
+						throw new ParseException( lexer.getBuffer() +
+								" Illegal character in hostname:" + lexer.lookAhead(0),
 								lexer.getPtr() );
 					}
 				}

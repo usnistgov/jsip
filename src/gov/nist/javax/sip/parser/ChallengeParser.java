@@ -32,7 +32,7 @@ import java.text.ParseException;
 /**
  * Parser for the challenge portion of the authentication header.
  *
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-13 09:02:15 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2007-02-06 16:40:02 $
  * @since 1.1
  *
  * @author Olivier Deruelle    <br/>
@@ -96,7 +96,8 @@ public abstract class ChallengeParser extends HeaderParser {
 			while (lexer.lookAhead(0) != '\n') {
 				this.parseParameter(header);
 				this.lexer.SPorHT();
-				if (lexer.lookAhead(0) == '\n' || lexer.lookAhead(0) == '\0')
+				char la = lexer.lookAhead(0);
+				if (la == '\n' || la == '\0')
 					break;
 				this.lexer.match(',');
 				this.lexer.SPorHT();

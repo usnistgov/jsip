@@ -29,14 +29,14 @@
 
 package gov.nist.javax.sip.parser.ims;
 
-import java.text.ParseException;
-
+import gov.nist.javax.sip.header.SIPHeader;
 import gov.nist.javax.sip.header.ims.Path;
 import gov.nist.javax.sip.header.ims.PathList;
-import gov.nist.javax.sip.header.SIPHeader;
-import gov.nist.javax.sip.parser.Lexer;
 import gov.nist.javax.sip.parser.AddressParametersParser;
+import gov.nist.javax.sip.parser.Lexer;
 import gov.nist.javax.sip.parser.TokenTypes;
+
+import java.text.ParseException;
 
 /**
  * @author ALEXANDRE MIGUEL SILVA SANTOS 
@@ -84,10 +84,11 @@ public class PathParser extends AddressParametersParser implements TokenTypes {
 				super.parse(path);
 				pathList.add(path);
 				this.lexer.SPorHT();
-				if (lexer.lookAhead(0) == ',') {
+				char la = lexer.lookAhead(0);
+				if (la == ',') {
 					this.lexer.match(',');
 					this.lexer.SPorHT();
-				} else if (lexer.lookAhead(0) == '\n')
+				} else if (la == '\n')
 					break;
 				else
 					throw createParseException("unexpected char");
