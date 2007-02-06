@@ -53,7 +53,7 @@ import javax.sip.header.Parameters;
  */
 
 
-public interface PrivacyHeader extends Parameters, Header
+public interface PrivacyHeader extends Header
 {
 
     /**

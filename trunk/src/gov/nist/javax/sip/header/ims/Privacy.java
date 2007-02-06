@@ -38,7 +38,7 @@ import javax.sip.header.ExtensionHeader;
 import javax.sip.header.Parameters;
 
 import gov.nist.core.NameValueList;
-import gov.nist.javax.sip.header.ParametersHeader;
+import gov.nist.javax.sip.header.SIPHeader;
 
 /**
  * Privacy SIP header - RFC 3323.
@@ -48,8 +48,8 @@ import gov.nist.javax.sip.header.ParametersHeader;
 
 
 public class Privacy
-	extends ParametersHeader
-	implements PrivacyHeader, SIPHeaderNamesIms,ExtensionHeader
+	extends SIPHeader
+	implements PrivacyHeader, SIPHeaderNamesIms, ExtensionHeader
 {
 
 	/**
@@ -83,7 +83,7 @@ public class Privacy
 	 */
 	public String encodeBody()
 	{
-		return privacy;
+		return this.privacy;
 	}
 
 	
@@ -123,15 +123,14 @@ public class Privacy
 		throw new ParseException(value,0);
 		
 	}
-
+	
 	
 	public boolean equals(Object other)
 	{
 		if (other instanceof PrivacyHeader)
 		{
 			PrivacyHeader o = (PrivacyHeader) other;
-			return (this.getPrivacy().equals( o.getPrivacy() ) 
-				&& this.equalParameters( (Parameters) o ));
+			return (this.getPrivacy().equals( o.getPrivacy() ));
 		}
 		return false;
 		

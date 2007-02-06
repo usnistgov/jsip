@@ -83,7 +83,8 @@ public class PAssertedIdentity
 		}
 
 		
-		
+		if (!parameters.isEmpty())
+			retval.append(COMMA + this.parameters.encode());
 		return retval.toString();
 	}
 

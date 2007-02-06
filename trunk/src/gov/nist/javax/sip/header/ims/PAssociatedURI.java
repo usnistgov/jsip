@@ -117,7 +117,7 @@ public class PAssociatedURI
 		
 
 		if (!parameters.isEmpty())
-			retval.append(COLON + this.parameters.encode());
+			retval.append(COMMA + this.parameters.encode());
 		return retval.toString();
 	}
 	

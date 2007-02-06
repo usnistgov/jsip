@@ -35,7 +35,7 @@ public class PAssertedIdentityParserTest extends ParserTestCase
 		String[] preferredID =  {
 		 "P-Asserted-Identity: <sip:bob@atlanta.com>\n",
 		 
-		 "P-Asserted-Identity: \"AliceA\" <sip:alice@atlanta.com>\n"
+		 "P-Asserted-Identity: <sip:alice@atlanta.com>, <tel:+1-201-555-0123>\n"
 		 		
 		};		
 		

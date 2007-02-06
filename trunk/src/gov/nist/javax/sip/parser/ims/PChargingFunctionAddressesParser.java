@@ -55,6 +55,8 @@ import java.text.ParseException;
  * hostname           = *( domainlabel "." ) toplabel [ "." ]
  * domainlabel        = alphanum / alphanum *( alphanum / "-" ) alphanum
  * toplabel           = ALPHA / ALPHA *( alphanum / "-" ) alphanum
+ * ipv6reference      = "[" IPv6address "]"
+ * 
  * </pre>
  * 
  * @author ALEXANDRE MIGUEL SILVA SANTOS 
@@ -97,7 +99,7 @@ public class PChargingFunctionAddressesParser
 					char la = lexer.lookAhead(0);
 					if (la == '\n' || la == '\0')
 						break;
-
+					
 					this.lexer.match(';');
 					this.lexer.SPorHT();
 				}
@@ -173,9 +175,3 @@ public class PChargingFunctionAddressesParser
 	
 	
 }
-	
-	
-	
-
-
-	
