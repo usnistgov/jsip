@@ -65,7 +65,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.66 $ $Date: 2007-01-14 19:43:10 $
+ * @version 1.2 $Revision: 1.67 $ $Date: 2007-02-06 18:55:34 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -833,6 +833,7 @@ public abstract class SIPTransactionStack implements
 	 * transaction.
 	 */
 	public SIPServerTransaction findMergedTransaction(SIPRequest sipRequest) {
+		if ( ! this.isDialogCreated(sipRequest.getMethod() )) return null;
 		String mergeId = sipRequest.getMergeId();
 		if (mergeId != null) {
 			return (SIPServerTransaction) this.mergeTable.get(mergeId);
@@ -870,6 +871,19 @@ public abstract class SIPTransactionStack implements
 		String key = ((SIPRequest) tr.getRequest()).getMergeId();
 		if (key != null) {
 			this.mergeTable.remove(key);
+		}
+	}
+	
+	/**
+	 * Put this into the merge request table.
+	 * 
+	 * @param SIPServerTransaction -- transaction to put into the merge table.
+	 * 
+	 */
+	public void putInMergeTable(SIPServerTransaction sipTransaction, SIPRequest sipRequest) {
+		String mergeKey = sipRequest.getMergeId();
+		if (mergeKey != null) {
+			this.mergeTable.put(mergeKey, sipTransaction);
 		}
 	}
 
@@ -1183,9 +1197,12 @@ public abstract class SIPTransactionStack implements
 				logWriter.logStackTrace();
 			String key = sipTransaction.getTransactionId();
 			Object removed = serverTransactionTable.remove(key);
+			String method = sipTransaction.getMethod();
 			this
 					.removePendingTransaction((SIPServerTransaction) sipTransaction);
-			this.removeFromMergeTable((SIPServerTransaction) sipTransaction);
+			if ( this.isDialogCreated(method)) {
+				this.removeFromMergeTable((SIPServerTransaction) sipTransaction);
+			}
 			// Send a notification to the listener.
 			SipProviderImpl sipProvider = (SipProviderImpl) sipTransaction
 					.getSipProvider();
@@ -1257,10 +1274,7 @@ public abstract class SIPTransactionStack implements
 			}
 			serverTransactionTable.put(key, sipTransaction);
 
-			String mergeKey = sipRequest.getMergeId();
-			if (mergeKey != null) {
-				this.mergeTable.put(mergeKey, sipTransaction);
-			}
+			
 
 		}
 
