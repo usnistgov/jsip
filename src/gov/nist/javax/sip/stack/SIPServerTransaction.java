@@ -150,7 +150,7 @@ import java.util.TimerTask;
  *                                      
  * </pre>
  * 
- * @version 1.2 $Revision: 1.83 $ $Date: 2007-01-29 19:41:10 $
+ * @version 1.2 $Revision: 1.84 $ $Date: 2007-02-06 18:55:34 $
  * @author M. Ranganathan
  * 
  */
@@ -1517,6 +1517,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 					.remove(this.retransmissionAlertTimerTask.dialogId);
 
 		}
+	
 		this.retransmissionAlertEnabled = false;
 
 	}

@@ -57,7 +57,7 @@ import java.io.IOException;
  * and event model with the JAIN-SIP stack. This is strictly an implementation
  * class.
  * 
- * @version 1.2 $Revision: 1.6 $ $Date: 2007-01-28 13:06:24 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2007-02-06 18:55:35 $
  * 
  * @author M. Ranganathan
  */
@@ -290,6 +290,9 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 						dialog.addTransaction(transaction);
 						dialog.addRoute(sipRequest);
 						transaction.setDialog(dialog, dialogId);
+						if ( sipStack.isDialogCreated(sipRequest.getMethod())) {
+							sipStack.putInMergeTable(transaction, sipRequest);
+						}
 						/*
 						 * Note that ACK is a pseudo transaction. It is never
 						 * added to the stack and you do not get transaction
