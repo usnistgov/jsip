@@ -53,7 +53,7 @@ import java.text.ParseException;
 /**
  * Implementation of the JAIN-SIP provider interface.
  *
- * @version 1.2 $Revision: 1.41 $ $Date: 2007-01-26 16:50:43 $
+ * @version 1.2 $Revision: 1.42 $ $Date: 2007-02-06 18:55:35 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -316,6 +316,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 				if (ct.getDialog() != null) {
 					((SIPClientTransaction) retval).setDialog((SIPDialog) ct
 							.getDialog(), sipRequest.getDialogId(false));
+					
 				}
 				return retval;
 			}
@@ -477,6 +478,9 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 
 				}
 				transaction.setDialog(dialog, sipRequest.getDialogId(true));
+				if (sipStack.isDialogCreated(sipRequest.getMethod())) {
+					sipStack.putInMergeTable(transaction, sipRequest);
+				}
 				dialog.addRoute(sipRequest);
 				if (dialog.getRemoteTag() != null
 						&& dialog.getLocalTag() != null) {
@@ -792,8 +796,12 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 				dialog.addTransaction(sipTransaction);
 				dialog.addRoute(sipRequest);
 				sipTransaction.setDialog(dialog, null);
+				
 			} else {
 				sipTransaction.setDialog(dialog, sipRequest.getDialogId(true));
+			}
+			if ( sipStack.isDialogCreated(sipRequest.getMethod())) {
+				sipStack.putInMergeTable(st, sipRequest);
 			}
 		} else {
 
