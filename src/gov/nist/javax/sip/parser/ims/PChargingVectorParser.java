@@ -29,14 +29,14 @@
 
 package gov.nist.javax.sip.parser.ims;
 
-import java.text.ParseException;
-
-import gov.nist.javax.sip.header.ims.PChargingVector;
 import gov.nist.core.NameValue;
 import gov.nist.javax.sip.header.SIPHeader;
+import gov.nist.javax.sip.header.ims.PChargingVector;
 import gov.nist.javax.sip.parser.Lexer;
 import gov.nist.javax.sip.parser.ParametersParser;
 import gov.nist.javax.sip.parser.TokenTypes;
+
+import java.text.ParseException;
 
 /**
  * P-Charging-Vector header parser.
@@ -74,7 +74,8 @@ extends ParametersParser implements TokenTypes {
 				while (lexer.lookAhead(0) != '\n') {
 					this.parseParameter(chargingVector);
 					this.lexer.SPorHT();
-					if (lexer.lookAhead(0) == '\n' || lexer.lookAhead(0) == '\0')
+					char la = lexer.lookAhead(0);
+					if (la == '\n' || la == '\0')
 						break;
 					this.lexer.match(';');
 					this.lexer.SPorHT();

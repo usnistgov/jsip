@@ -29,15 +29,14 @@
 
 package gov.nist.javax.sip.parser.ims;
 
-import java.text.ParseException;
-
-import gov.nist.javax.sip.header.ims.PChargingFunctionAddresses;
 import gov.nist.core.NameValue;
-import gov.nist.core.NameValueList;
 import gov.nist.javax.sip.header.SIPHeader;
+import gov.nist.javax.sip.header.ims.PChargingFunctionAddresses;
 import gov.nist.javax.sip.parser.Lexer;
 import gov.nist.javax.sip.parser.ParametersParser;
 import gov.nist.javax.sip.parser.TokenTypes;
+
+import java.text.ParseException;
 
 
 /**
@@ -95,7 +94,8 @@ public class PChargingFunctionAddressesParser
 					
 					this.parseParameter(chargingFunctionAddresses);
 					this.lexer.SPorHT();
-					if (lexer.lookAhead(0) == '\n' || lexer.lookAhead(0) == '\0')
+					char la = lexer.lookAhead(0);
+					if (la == '\n' || la == '\0')
 						break;
 
 					this.lexer.match(';');

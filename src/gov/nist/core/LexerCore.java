@@ -338,7 +338,7 @@ public class LexerCore extends StringTokenizer {
 	}
 
 	public String ttoken() {
-		StringBuffer nextId = new StringBuffer();
+		int startIdx = ptr;
 		try {
 			while (hasMoreChars()) {
 				char nextChar = lookAhead(0);
@@ -356,19 +356,18 @@ public class LexerCore extends StringTokenizer {
 					|| nextChar == '.'
 					|| nextChar == '*') {
 					consume(1);
-					nextId.append(nextChar);
 				} else
 					break;
 
 			}
-			return nextId.toString();
+			return buffer.substring(startIdx, ptr);
 		} catch (ParseException ex) {
-			return nextId.toString();
+			return null;
 		}
 	}
 
 	public String ttokenAllowSpace() {
-		StringBuffer nextId = new StringBuffer();
+		int startIdx = ptr;
 		try {
 			while (hasMoreChars()) {
 				char nextChar = lookAhead(0);
@@ -386,20 +385,19 @@ public class LexerCore extends StringTokenizer {
 					|| nextChar == ' '
 					|| nextChar == '\t'
 					|| nextChar == '*') {
-					nextId.append(nextChar);
 					consume(1);
 				} else
 					break;
 
 			}
-			return nextId.toString();
+			return buffer.substring(startIdx, ptr);
 		} catch (ParseException ex) {
-			return nextId.toString();
+			return null;
 		}
 	}
 
 	public String ttokenSafe() {
-		StringBuffer nextId = new StringBuffer();
+		int startIdx = ptr;
 		try {
 			while (hasMoreChars()) {
 				char nextChar = lookAhead(0);
@@ -429,15 +427,14 @@ public class LexerCore extends StringTokenizer {
 					|| nextChar == '?'
 					|| nextChar == '\"'
 					|| nextChar == '*' ) {
-					nextId.append(nextChar);
 					consume(1);
 				} else
 					break;
 
 			}
-			return nextId.toString();
+			return buffer.substring(startIdx, ptr); 
 		} catch (ParseException ex) {
-			return nextId.toString();
+			return null;
 		}
 	}
 

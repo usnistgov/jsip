@@ -64,7 +64,7 @@ import java.text.ParseException;
  * feld swoop).
  * 
  * 
- * @version 1.2 $Revision: 1.18 $ $Date: 2007-01-12 19:49:11 $
+ * @version 1.2 $Revision: 1.19 $ $Date: 2007-02-06 16:40:03 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -511,29 +511,53 @@ public class StringMsgParser {
 	 *                if there was an error parsing the message.
 	 */
 	public SIPHeader parseSIPHeader(String header) throws ParseException {
-		header += "\n\n";
-		// Handle line folding.
-		StringBuffer nmessage = new StringBuffer(header.length() + 5);
-		int counter = 0;
-		// eat leading spaces and carriage returns (necessary??)
-		int i = 0;
-		while (header.charAt(i) == '\n' || header.charAt(i) == '\t'
-				|| header.charAt(i) == ' ')
-			i++;
-		for (; i < header.length(); i++) {
-			if (i < header.length() - 1
-					&& (header.charAt(i) == '\n' && (header.charAt(i + 1) == '\t' || header
-							.charAt(i + 1) == ' '))) {
-				nmessage.append(' ');
-				i++;
-			} else {
-				nmessage.append(header.charAt(i));
-			}
+		int start = 0;
+		int end = header.length() - 1;
+		try {
+			// Squeeze out any leading control character.
+			while (header.charAt(start) <= 0x20)
+				start++;
+			
+			// Squeeze out any trailing control character.
+			while (header.charAt(end) <= 0x20)
+				end--;
 		}
-
-		nmessage.append('\n');
-
-		HeaderParser hp = ParserFactory.createParser(nmessage.toString());
+		catch (ArrayIndexOutOfBoundsException e) {
+			// Array contains only control char.
+			throw new ParseException("Empty header.", 0);
+		}
+		
+		StringBuffer buffer = new StringBuffer(end + 1);
+		int i = start;
+		int lineStart = start;
+		boolean endOfLine = false;
+		while (i <= end) {
+			char c = header.charAt(i);
+			if (c == '\r' || c == '\n') {
+				if (!endOfLine) {
+					buffer.append(header.substring(lineStart, i));
+					endOfLine = true;
+				}
+			}
+			else {
+				if (endOfLine) {
+					endOfLine = false;
+					if (c == ' ' || c == '\t') {
+						buffer.append(' ');
+						lineStart = i + 1;
+					}
+					else {
+						lineStart = i;
+					}
+				}
+			}
+			
+			i++;
+		}
+		buffer.append(header.substring(lineStart, i));
+		buffer.append('\n');
+		
+		HeaderParser hp = ParserFactory.createParser(buffer.toString());
 		if (hp == null)
 			throw new ParseException("could not create parser", 0);
 		return hp.parse();
