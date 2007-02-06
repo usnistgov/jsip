@@ -19,46 +19,46 @@
 * the software.
 * 
 * Permission to use this software is contingent upon your acceptance
-* of the terms of this agreement
-*  
-* .
+* of the terms of this agreement.
 * 
 */
-
-/************************************************************************************************
- * PRODUCT OF PT INOVACAO - EST DEPARTMENT and Telecommunications Institute (Aveiro, Portugal)  *
- ************************************************************************************************/
+/*******************************************
+ * PRODUCT OF PT INOVACAO - EST DEPARTMENT   *
+ *******************************************/
 
 package gov.nist.javax.sip.header.ims;
 
 
-
 import gov.nist.javax.sip.header.SIPHeaderList;
-import gov.nist.javax.sip.header.ims.SecurityServer;
 
 
 /**
- * List of Security-Server headers.
- * 
- * <p></p>
+ * List of P-Asserted-Identity headers
  * 
  * @author Miguel Freitas (IT) PT-Inovacao
  */
 
+/*
+ * PAssertedID = "P-Asserted-Identity" HCOLON PAssertedID-value
+ *               *(COMMA PAssertedID-value)
+ * PAssertedID-value = name-addr / addr-spec
+ */
 
-public class SecurityServerList extends SIPHeaderList
+
+public class PAssertedIdentityList extends SIPHeaderList
 {
-
-	public SecurityServerList()
-	{	
-		super(SecurityServer.class, SecurityServerHeader.NAME);
-	}
-
-	public Object clone() {
-		SecurityServerList retval = new SecurityServerList();		
-		return retval.clonehlist(this.hlist);
+	
+	/**
+	 * constructor.
+	 */
+	public PAssertedIdentityList()
+	{
+		super(PAssertedIdentity.class, PAssertedIdentityHeader.NAME);
 	}
 	
+
+	public Object clone() {
+		PAssertedIdentityList retval = new PAssertedIdentityList();		
+		return retval.clonehlist(this.hlist);
+	}
 }
-
-

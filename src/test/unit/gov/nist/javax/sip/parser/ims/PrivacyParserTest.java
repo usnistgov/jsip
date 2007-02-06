@@ -33,7 +33,8 @@ public class PrivacyParserTest extends ParserTestCase
 		// TODO Auto-generated method stub
 		
 		String[] privacy =  {
-		 "Privacy: none\n"
+		 "Privacy: none\n", 
+		 "Privacy: id;user\n"
 		 		
 		};		
 		

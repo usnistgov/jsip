@@ -38,6 +38,7 @@ import java.util.LinkedList;
 import javax.sip.header.Header;
 
 import gov.nist.core.*;
+import gov.nist.javax.sip.header.ims.PrivacyHeader;
 
 /**
  * 
@@ -47,7 +48,7 @@ import gov.nist.core.*;
  * list are of the same class). We use this for building type homogeneous lists
  * of SIPObjects that appear in SIPHeaders
  * 
- * @version 1.2 $Revision: 1.5 $ $Date: 2005/10/09 18:47:53
+ * @version 1.2 $Revision: 1.6 $ $Date: 2005/10/09 18:47:53
  */
 public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 
@@ -548,7 +549,10 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 			encoding.append(body);
 			// if (body.equals("")) System.out.println("BODY == ");
 			if (iterator.hasNext()) {
-				encoding.append(Separators.COMMA);
+				if ( ! this.headerName.equals(PrivacyHeader.NAME))
+						encoding.append(Separators.COMMA);
+				else 
+						encoding.append(Separators.SEMICOLON);
 				continue;
 			} else
 				break;
