@@ -63,7 +63,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.25 $ $Date: 2007-01-28 13:06:22 $
+ * @version 1.2 $Revision: 1.26 $ $Date: 2007-02-12 19:45:06 $
  * @since 1.1
  * 
  * @author M. Ranganathan  <br/>
@@ -285,12 +285,12 @@ public final class SIPRequest extends SIPMessage implements
 
 			if (requestLine.getUri() instanceof SipUri) {
 				String scheme = ((SipUri) requestLine.getUri()).getScheme();
-				if ("sips".equals(scheme)) {
+				if ("sips".equalsIgnoreCase(scheme)) {
 					SipUri sipUri = (SipUri) this.getContactHeader()
 							.getAddress().getURI();
 					if (!sipUri.getScheme().equals("sips")) {
 						throw new ParseException(
-								"Scheme for contact should be sips", 0);
+								"Scheme for contact should be sips:" + sipUri, 0);
 					}
 				}
 			}
