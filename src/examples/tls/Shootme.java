@@ -104,7 +104,8 @@ public class Shootme implements SipListener {
 			ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
 			toHeader.setTag("4321"); // Application is supposed to set.
 			Address address =
-				addressFactory.createAddress("Shootme <sip:" + myAddress+ ":" + myPort + ";transport=tls>");
+				addressFactory.createAddress("Shootme <sips:" + myAddress+ ":" + myPort + ">"
+				/*+ ";transport=tls>"*/ );
 			ContactHeader contactHeader =
 				headerFactory.createContactHeader(address);
 
@@ -303,6 +304,29 @@ public class Shootme implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2006/12/13 15:15:28  mranga
+ * Issue number:  90
+ * Obtained from:
+ * Submitted by:  Zohair
+ * Reviewed by:  mranga
+ *
+ * Fixed transport = tls in the example.
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.4  2006/07/13 09:02:54  mranga
  * Issue number:
  * Obtained from:

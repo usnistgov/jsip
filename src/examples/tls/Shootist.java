@@ -157,16 +157,13 @@ public class Shootist implements SipListener {
 				System.out.println("Sending ACK");
 				dialog.sendAck(ackRequest);
 
-				// Send a Re INVITE but this time force it 
-				// to use UDP as the transport. Else, it will
-				// Use whatever transport was used to create
-				// the dialog.
+				// Send a Re INVITE
 				if (reInviteCount == 0) {
-				    Request inviteRequest = 
-					dialog.createRequest(Request.INVITE);
-				    ((SipURI)inviteRequest.getRequestURI()).removeParameter("transport");
-				    ((ViaHeader)inviteRequest.getHeader(ViaHeader.NAME)).setTransport("tls");
-				    inviteRequest.addHeader(contactHeader);
+				    Request inviteRequest = dialog.createRequest(Request.INVITE);
+				    //((SipURI)inviteRequest.getRequestURI()).removeParameter("transport");
+				    //((ViaHeader)inviteRequest.getHeader(ViaHeader.NAME)).setTransport("tls");
+				    // inviteRequest.addHeader(contactHeader);
+				    				    
 				    try {Thread.sleep(100); } catch (Exception ex) {} 
 				    ClientTransaction ct = 
 					tlsProvider.getNewClientTransaction(inviteRequest);
@@ -266,6 +263,7 @@ public class Shootist implements SipListener {
 			// create >From Header
 			SipURI fromAddress =
 				addressFactory.createSipURI(fromName, fromSipAddress);
+			fromAddress.setSecure(true);
 
 			Address fromNameAddress = addressFactory.createAddress(fromAddress);
 			fromNameAddress.setDisplayName(fromDisplayName);
@@ -275,6 +273,7 @@ public class Shootist implements SipListener {
 			// create To Header
 			SipURI toAddress =
 				addressFactory.createSipURI(toUser, toSipAddress);
+			toAddress.setSecure(true);
 			Address toNameAddress = addressFactory.createAddress(toAddress);
 			toNameAddress.setDisplayName(toDisplayName);
 			ToHeader toHeader =
@@ -283,6 +282,7 @@ public class Shootist implements SipListener {
 			// create Request URI
 			SipURI requestURI =
 				addressFactory.createSipURI(toUser, peerHostPort);
+			requestURI.setSecure( true );
 
 			// Create ViaHeaders
 
@@ -328,15 +328,15 @@ public class Shootist implements SipListener {
 			// Create contact headers
 			String host = sipStack.getIPAddress();
 
-			SipURI contactUrl = addressFactory.createSipURI(fromName, host);
-			
-			contactUrl.setPort(tlsListeningPoint.getPort());
+			//SipURI contactUrl = addressFactory.createSipURI(fromName, host);			
+			//contactUrl.setPort(tlsListeningPoint.getPort());
 
 			// Create the contact name address.
 			SipURI contactURI = addressFactory.createSipURI(fromName, host);
+			contactURI.setSecure( true );
 			contactURI.setPort(port);
 			
-			contactURI.setTransportParam("tls");
+			// contactURI.setTransportParam("tls");
 
 			Address contactAddress = addressFactory.createAddress(contactURI);
 
