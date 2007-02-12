@@ -39,12 +39,14 @@
  * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).      *
  ******************************************************************************/
 package gov.nist.javax.sip.stack;
+import gov.nist.core.HostPort;
+
+import javax.net.ssl.SSLServerSocket;
 import java.io.IOException;
-import java.net.SocketException;
-import gov.nist.core.*;
 import java.net.*;
-import java.util.*;
-import javax.net.ssl.*;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Iterator;
 
 
 /**
@@ -53,7 +55,7 @@ import javax.net.ssl.*;
  * object that creates new TLS MessageChannels (one for each new
  * accept socket).
  *
- * @version 1.2 $Revision: 1.8 $ $Date: 2007-01-28 13:06:23 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2007-02-12 16:09:56 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -103,7 +105,7 @@ public class TLSMessageProcessor extends MessageProcessor {
 			this.sock = sipStack.getNetworkLayer().createSSLServerSocket(
 										this.getPort(), 0, this.getIpAddress());
 			((SSLServerSocket)this.sock).setNeedClientAuth(false);
-			((SSLServerSocket)this.sock).setUseClientMode(true);
+			((SSLServerSocket)this.sock).setUseClientMode(false);
 			((SSLServerSocket)this.sock).setWantClientAuth(true);
 		} else {
 			this.sock = sipStack.getNetworkLayer().createServerSocket(
