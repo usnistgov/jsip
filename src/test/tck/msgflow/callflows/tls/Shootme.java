@@ -79,7 +79,6 @@ public class Shootme  implements SipListener {
 		Request request = requestEvent.getRequest();
 		ServerTransaction serverTransactionId = requestEvent
 				.getServerTransaction();
-
 		logger.info("\n\nRequest " + request.getMethod()
 				+ " received at " + protocolObjects.sipStack.getStackName()
 				+ " with server transaction id " + serverTransactionId);
@@ -122,7 +121,7 @@ public class Shootme  implements SipListener {
 	 * Process the invite request.
 	 */
 	public void processInvite(RequestEvent requestEvent,
-			ServerTransaction serverTransaction) {
+			ServerTransaction st) {
 		SipProvider sipProvider = (SipProvider) requestEvent.getSource();
 		Request request = requestEvent.getRequest();
 		logger.info("Got an INVITE  " + request);
@@ -137,8 +136,6 @@ public class Shootme  implements SipListener {
 			ContactHeader contactHeader = protocolObjects.headerFactory
 					.createContactHeader(address);
 			response.addHeader(contactHeader);
-			ServerTransaction st = requestEvent.getServerTransaction();
-
 			if (st == null) {
 				st = sipProvider.getNewServerTransaction(request);
 				logger.info("Server transaction created!" + request);

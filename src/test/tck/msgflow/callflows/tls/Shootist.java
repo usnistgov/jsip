@@ -217,6 +217,8 @@ public class Shootist  implements SipListener {
 				// sipProvider.getNewClientTransaction(cancel);
 				Dialog dialog = tid.getDialog();
 				Request ackRequest = dialog.createRequest(Request.ACK);
+				TlsTest.assertTrue( "Secure URI", 
+						((SipURI)ackRequest.getRequestURI()).isSecure() );
 				logger.info("Ack request to send = " + ackRequest);
 				logger.info("Sending ACK");
 				dialog.sendAck(ackRequest);
@@ -244,7 +246,7 @@ public class Shootist  implements SipListener {
 			}
 		} catch (Exception ex) {
 			logger.error(ex);
-			TlsTest.fail("unexpceted exception");
+			TlsTest.fail("unexpected exception");
 		}
 
 	}
@@ -402,7 +404,7 @@ public class Shootist  implements SipListener {
 			request.addHeader(extensionHeader);
 
 			Header callInfoHeader = protocolObjects.headerFactory.createHeader(
-					"Call-Info", "<http://www.antd.nist.gov>");
+					"Call-Info", "<http://[::1]/test.html>");
 			request.addHeader(callInfoHeader);
 
 			// Create the client transaction.
