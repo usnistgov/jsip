@@ -33,7 +33,7 @@ import java.util.Vector;
 /**
  * Parser For SIP and Tel URLs. Other kinds of URL's are handled by the 
  * J2SE 1.4 URL class.
- * @version 1.2 $Revision: 1.20 $ $Date: 2007-02-12 15:19:26 $
+ * @version 1.2 $Revision: 1.21 $ $Date: 2007-02-12 21:40:12 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -284,12 +284,22 @@ public class URLParser extends Parser {
 		}
 	}
 
-	protected String uricString() {
+	protected String uricString() throws ParseException {
 		StringBuffer retval = new StringBuffer();
 		while (true) {
 			String next = uric();
-			if (next == null)
+			if (next == null) {
+				char la = lexer.lookAhead(0);
+				// JvB: allow IPv6 addresses in generic URI strings
+				// e.g. http://[::1]
+				if ( la == '[' ) {
+					HostNameParser hnp = new HostNameParser(this.getLexer());
+					HostPort hp = hnp.hostPort( false );
+					retval.append(hp.toString());
+					continue;
+				}
 				break;
+			}
 			retval.append(next);
 		}
 		return retval.toString();

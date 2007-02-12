@@ -198,6 +198,7 @@ public class HostNameParser extends ParserCore {
 				case '\t':
 				case '\r':
 				case '\n':
+				case '/':	// e.g. http://[::1]/xyz.html
 					break;
 
 				default:
