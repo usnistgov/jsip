@@ -156,7 +156,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.63 $ $Date: 2007-02-06 18:55:35 $
+ * @version 1.2 $Revision: 1.64 $ $Date: 2007-02-12 20:45:18 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -913,7 +913,7 @@ public class SIPClientTransaction extends SIPTransaction implements
 
 		} catch (IOException ex) {
 			this.setState(TransactionState.TERMINATED);
-			throw new SipException("IO Error sending request");
+			throw new SipException("IO Error sending request", ex);
 
 		}
 
