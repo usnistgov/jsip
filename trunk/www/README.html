@@ -365,9 +365,26 @@ of the Factory interfaces but are not yet part of the JSIP standard. </li>
 
 <li>Lebing Xie fixed bugs in the contributed IMS headers. </li>
 
-<li>Ricardo Borba (Natural Convergence) reported bugs in the Dialog 
+<li>Ricardo Borba (Natural Convergence) reported bugs in the Dialog
 implementation and also in the UDP Message processor. Ricardo contributed
-a patch for UDPMessageProcessor.java </li>
+a patch for UDPMessageProcessor.java. Ricardo made several contibutions
+related to hardening the stack and guarding it against application
+programming errors:
+
+<ul>
+<li> --  Fixed Session Description to allow it to take a null session name.
+<li> --  Fixed Sdp parser to handle mixed \r , \n and \r\n
+<li> --  Fixed case sensitivity issue with content type and content subtype.
+<li> --  Added a Safe timer task. If an exception occurs in the timer the stack does not exit.
+<li> --  EventScanner.java : Fixed exception handling so that exceptions in the listener dont exit the stack.
+<li> --  SessionDescriptorImpl is now a deep copy
+<li> -- Added listener thread (liveness) auditing facitlity
+<li> -- Added Transaction table (leak) auditng facility.
+</ul>
+
+These will be of particular importance to you if you are building robust server applications. Examples have been provided for these new facilities.
+
+</li>
 
 <li>Brett Buckingham (Natural Convergence) submitted a patch for a
 reliable timer that does not cause the stack to die when a cancelled

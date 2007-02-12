@@ -76,7 +76,7 @@ public class PAssertedIdentityParser
 			headerName(TokenTypes.P_ASSERTED_IDENTITY);
 
 			PAssertedIdentity pai = new PAssertedIdentity();
-			pai.setHeaderName(SIPHeaderNamesIms.P_ASSOCIATED_URI);
+			pai.setHeaderName(SIPHeaderNamesIms.P_ASSERTED_IDENTITY);
 			
 			super.parse(pai);
 			assertedIdList.add(pai);
