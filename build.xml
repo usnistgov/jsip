@@ -328,6 +328,8 @@ c:/jakarta-ant/bin/ant all
 								<include name="test/tck/**/*Test.java" />
 								<!-- TCP Tests excluded - its enough to test one transport for TCK compliance  -->
 								<exclude name="**/Tcp*Test.java"/>
+								<!-- Tls Tests excluded for tck compliance  -->
+								<exclude name="test/tck/msgflow/callflows/tls/*Test.java"/>
 							</fileset>
 						</batchtest>
 					</junit>
@@ -361,7 +363,6 @@ c:/jakarta-ant/bin/ant all
 						<batchtest fork="yes" todir="test-reports" haltonfailure="no">
 							<fileset dir="${srcroot}">
 								<include name="test/tck/msgflow/callflows/**/*Test.java" />
-								<!-- exclude name="**/AllTests.java"/ -->
 							</fileset>
 						</batchtest>
 					</junit>
@@ -372,16 +373,6 @@ c:/jakarta-ant/bin/ant all
 
 				<!-- target for build automation. will add runtck later -->
 
-				<target name="cc-buildloop" depends="make,runtck,javadoc">
-					<jar compress="true" destfile="jain-sip-1.2.jar">
-						<fileset dir="../">
-							<include name="jain-sip/**/*/" />
-							<exclude name="jain-sip/classes/**/*/"/>
-							<exclude name="jain-sip/*.jar"/>
-						</fileset>
-					</jar>
-
-				</target>
 
 
 
@@ -450,5 +441,15 @@ c:/jakarta-ant/bin/ant all
 		<echo>The test report can be found at ./test-reports-parsert /html/index.html</echo>
 		<fail if="testing.failed" />
 	</target>
+	<target name="cc-buildloop" depends="make,runtck,runtckcallflows,unittest,javadoc">
+			<jar compress="true" destfile="jain-sip-1.2.jar">
+					<fileset dir="../">
+						<include name="jain-sip/**/*/" />
+						<exclude name="jain-sip/classes/**/*/"/>
+						<exclude name="jain-sip/*.jar"/>
+					</fileset>
+			</jar>
 
-			</project>
+	</target>
+
+</project>
