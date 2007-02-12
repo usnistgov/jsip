@@ -31,7 +31,7 @@ import java.util.Iterator;
 /**
  * Implementation of the TelURL interface.
  *
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:02:28 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2007-02-12 15:19:19 $
  *
  * @author M. Ranganathan  
  * 
@@ -156,7 +156,13 @@ public class TelURLImpl
 	}
 
 	public String encode() {
-		return this.scheme + ":" + telephoneNumber.encode();
+		return encode(new StringBuffer()).toString();
+	}
+
+	public StringBuffer encode(StringBuffer buffer) {
+		buffer.append(this.scheme).append(':');
+		telephoneNumber.encode(buffer);
+		return buffer;
 	}
 
 	/** Deep copy clone operation.

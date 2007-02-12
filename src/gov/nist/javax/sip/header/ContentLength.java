@@ -69,7 +69,7 @@ import javax.sip.header.ContentLengthHeader;
 *
 *@author M. Ranganathan   <br/>
 *@author Olivier Deruelle <br/>
-*@version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:25 $
+*@version 1.2 $Revision: 1.5 $ $Date: 2007-02-12 15:19:21 $
 *@since 1.1
 */
 public class ContentLength
@@ -126,10 +126,15 @@ public class ContentLength
 	 * @return String
 	 */
 	public String encodeBody() {
+		return encodeBody(new StringBuffer()).toString();
+	}
+
+	protected StringBuffer encodeBody(StringBuffer buffer) {
 		if (contentLength == null)
-			return "0";
+			buffer.append("0");
 		else
-			return contentLength.toString();
+			buffer.append(contentLength.toString());
+		return buffer;
 	}
 
 	/**

@@ -35,7 +35,7 @@ import java.text.ParseException;
  *
  * 
  * @author "M. Ranganathan"  <br/>
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:08 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2007-02-12 15:19:21 $
  * @since 1.1
  */
 public final class CallInfo
@@ -61,14 +61,20 @@ public final class CallInfo
 	 * @return String 
 	 */
 	public String encodeBody() {
-		StringBuffer encoding = new StringBuffer();
+		return encodeBody(new StringBuffer()).toString();
+	}
 
-		encoding.append(LESS_THAN).append(info.toString()).append(GREATER_THAN);
+	protected StringBuffer encodeBody(StringBuffer buffer) {
+		buffer.append(LESS_THAN);
+		info.encode(buffer);
+		buffer.append(GREATER_THAN);
 
-		if (parameters != null && !parameters.isEmpty())
-			encoding.append(SEMICOLON).append(parameters.encode());
+		if (parameters != null && !parameters.isEmpty()) {
+			buffer.append(SEMICOLON);
+			parameters.encode(buffer);
+		}
 
-		return encoding.toString();
+		return buffer;
 	}
 
 	/**

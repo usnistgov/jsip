@@ -99,9 +99,16 @@ public class Host extends GenericObject {
 	 * @return String
 	 */
 	public String encode() {
-		if (addressType == IPV6ADDRESS && !isIPv6Reference(hostname))
-			return "[" + hostname + "]";
-		return hostname;
+		return encode(new StringBuffer()).toString();
+	}
+
+	public StringBuffer encode(StringBuffer buffer) {
+		if (addressType == IPV6ADDRESS && !isIPv6Reference(hostname)) {
+			buffer.append('[').append(hostname).append(']');
+		} else {
+			buffer.append(hostname);
+		}
+		return buffer;
 	}
 
 	/**

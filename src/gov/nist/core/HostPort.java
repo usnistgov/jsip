@@ -66,11 +66,14 @@ public final class HostPort extends GenericObject {
 	 * @return String
 	 */
 	public String encode() {
-		StringBuffer retval = new StringBuffer();
-		retval.append(host.encode());
+		return encode(new StringBuffer()).toString();
+	}
+
+	public StringBuffer encode(StringBuffer buffer) {
+		host.encode(buffer);
 		if (port != -1)
-			retval.append(COLON).append(port);
-		return retval.toString();
+			buffer.append(COLON).append(port);
+		return buffer;
 	}
 
 	/** returns true if the two objects are equals, false otherwise.

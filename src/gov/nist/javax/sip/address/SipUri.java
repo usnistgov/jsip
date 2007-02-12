@@ -44,7 +44,7 @@ import javax.sip.address.SipURI;
  * 
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.10 $ $Date: 2006-11-01 02:23:09 $
+ * @version 1.2 $Revision: 1.11 $ $Date: 2007-02-12 15:19:19 $
  *
  * 
  *
@@ -199,16 +199,22 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 	 * @return String 
 	 */
 	public String encode() {
-		StringBuffer retval = new StringBuffer(scheme).append(COLON);
+		return encode(new StringBuffer()).toString();
+	}
+
+	public StringBuffer encode(StringBuffer buffer) {
+		buffer.append(scheme).append(COLON);
 		if (authority != null)
-			retval.append(authority.encode());
+			authority.encode(buffer);
 		if (!uriParms.isEmpty()) {
-			retval.append(SEMICOLON).append(uriParms.encode());
+			buffer.append(SEMICOLON);
+			uriParms.encode(buffer);
 		}
 		if (!qheaders.isEmpty()) {
-			retval.append(QUESTION).append(qheaders.encode());
+			buffer.append(QUESTION);
+			qheaders.encode(buffer);
 		}
-		return retval.toString();
+		return buffer;
 	}
 
 	/** Return a string representation.

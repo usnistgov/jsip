@@ -30,7 +30,7 @@ import java.text.ParseException;
 
 /** Parser for addresses.
  *
- * @version 1.2 $Revision: 1.8 $ $Date: 2007-02-06 16:40:02 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2007-02-12 15:19:26 $
  * @author M. Ranganathan   
  * 
  *
@@ -51,7 +51,7 @@ public class AddressParser extends Parser {
 			dbg_enter("nameAddr");
 		try {
 			if (this.lexer.lookAhead(0) == '<') {
-				this.lexer.match('<');
+				this.lexer.consume(1);
 				this.lexer.selectLexer("sip_urlLexer");
 				this.lexer.SPorHT();
 				URLParser uriParser = new URLParser((Lexer) lexer);
@@ -133,6 +133,9 @@ public class AddressParser extends Parser {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2007/02/06 16:40:02  belangery
+ * Introduced simple code optimizations.
+ *
  * Revision 1.7  2006/07/13 09:01:57  mranga
  * Issue number:
  * Obtained from:

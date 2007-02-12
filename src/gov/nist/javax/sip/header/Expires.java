@@ -33,7 +33,7 @@ import javax.sip.*;
 /**
  * Expires SIP Header.
  *
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:23 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2007-02-12 15:19:22 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
@@ -64,7 +64,11 @@ public class Expires
 	 * @return String
 	 */
 	public String encodeBody() {
-		return new Integer(expires).toString();
+		return encodeBody(new StringBuffer()).toString();
+	}
+
+	protected StringBuffer encodeBody(StringBuffer buffer) {
+		return buffer.append(expires);
 	}
 
 	/**

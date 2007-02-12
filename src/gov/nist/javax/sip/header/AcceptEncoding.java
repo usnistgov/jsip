@@ -37,7 +37,7 @@ import java.text.ParseException;
  * 
  * @author M. Ranganathan 
  * @author Olivier Deruelle <br/>
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-11-12 21:52:39 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2007-02-12 15:19:20 $
  * @since 1.1
  * 
  * <pre>
@@ -91,14 +91,17 @@ public final class AcceptEncoding extends ParametersHeader implements
 	 * @return the value of this header encoded into a string.
 	 */
 	protected String encodeBody() {
-		StringBuffer encoding = new StringBuffer();
+		return encode(new StringBuffer()).toString();
+	}
+
+	protected StringBuffer encodeBody(StringBuffer buffer) {
 		if (contentCoding != null) {
-			encoding.append(contentCoding);
+			buffer.append(contentCoding);
 		}
 		if (parameters != null && !parameters.isEmpty()) {
-			encoding.append(SEMICOLON).append(parameters.encode());
+			buffer.append(SEMICOLON).append(parameters.encode());
 		}
-		return encoding.toString();
+		return buffer;
 	}
 
 	/**

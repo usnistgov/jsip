@@ -28,16 +28,16 @@
  *******************************************************************************/
 package gov.nist.javax.sip.header;
 
-import gov.nist.core.*;
-import gov.nist.javax.sip.address.*;
-import java.text.ParseException;
+import gov.nist.core.HostPort;
+import gov.nist.javax.sip.address.AddressImpl;
 
 import javax.sip.header.ToHeader;
+import java.text.ParseException;
 
 /**
  * To SIP Header.
  * 
- * @version 1.2 $Revision: 1.8 $ $Date: 2006-11-01 02:23:02 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2007-02-12 15:19:25 $
  * 
  * @author M. Ranganathan <br/>
  * @author Olivier Deruelle <br/>
@@ -86,22 +86,25 @@ public final class To extends AddressParametersHeader implements
 	 * @return String
 	 */
 	protected String encodeBody() {
-		if (address == null)
-			return null;
-		String retval = "";
-		if (address.getAddressType() == AddressImpl.ADDRESS_SPEC) {
-			retval += LESS_THAN;
-		}
-		retval += address.encode();
-		if (address.getAddressType() == AddressImpl.ADDRESS_SPEC) {
-			retval += GREATER_THAN;
-		}
+		return encodeBody(new StringBuffer()).toString();
+	}
 
-		if (!parameters.isEmpty()) {
-				retval += SEMICOLON + parameters.encode();
-			
+	protected StringBuffer encodeBody(StringBuffer buffer) {
+		if (address != null) {
+			if (address.getAddressType() == AddressImpl.ADDRESS_SPEC) {
+				buffer.append(LESS_THAN);
+			}
+			address.encode(buffer);
+			if (address.getAddressType() == AddressImpl.ADDRESS_SPEC) {
+				buffer.append(GREATER_THAN);
+			}
+	
+			if (!parameters.isEmpty()) {
+				buffer.append(SEMICOLON);
+				parameters.encode(buffer);
+			}
 		}
-		return retval;
+		return buffer;
 	}
 
 	/**

@@ -33,7 +33,7 @@ import java.text.ParseException;
 /**
  *  Protocol name and version.
  *
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-13 09:01:24 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2007-02-12 15:19:23 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -64,11 +64,17 @@ public class Protocol extends SIPObject {
 	 * @return String
 	 */
 	public String encode() {
-		return protocolName.toUpperCase()
-			+ SLASH
-			+ protocolVersion
-			+ SLASH
-			+ transport.toUpperCase();
+		return encode(new StringBuffer()).toString();
+	}
+
+	public StringBuffer encode(StringBuffer buffer) {
+		buffer.append(protocolName.toUpperCase())
+				.append(SLASH)
+				.append(protocolVersion)
+				.append(SLASH)
+				.append(transport.toUpperCase());
+		
+		return buffer;
 	}
 
 	/** get the protocol name
@@ -145,6 +151,29 @@ public class Protocol extends SIPObject {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2006/07/13 09:01:24  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  jeroen van bemmel
+ * Reviewed by:   mranga
+ * Moved some changes from jain-sip-1.2 to java.net
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.4  2006/06/19 06:47:26  mranga
  * javadoc fixups
  *

@@ -35,7 +35,7 @@ import java.lang.reflect.*;
 /**
  * Root object for all objects in this package.
  *
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-13 09:02:29 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2007-02-12 15:19:18 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -66,12 +66,6 @@ public abstract class NetObject extends GenericObject {
 	public NetObject() {
 		super();
 	}
-
-	/**
-	 * Encode into canonical form.
-	 * @return String
-	 */
-	public abstract String encode();
 
 	/**
 	 * An introspection based equality predicate for SIPObjects.

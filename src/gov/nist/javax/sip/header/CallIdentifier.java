@@ -32,7 +32,7 @@ package gov.nist.javax.sip.header;
  * The call identifer that goes into a callID header and a in-reply-to header.
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:23 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2007-02-12 15:19:21 $
  * @see CallID
  * @see InReplyTo
  * @since 1.1
@@ -85,11 +85,15 @@ public final class CallIdentifier extends SIPObject {
 	 * @return String to set
 	 */
 	public String encode() {
+		return encode(new StringBuffer()).toString();
+	}
+
+	public StringBuffer encode(StringBuffer buffer) {
+		buffer.append(localId);
 		if (host != null) {
-			return localId + AT + host;
-		} else {
-			return localId;
+			buffer.append(AT).append(host);
 		}
+		return buffer;
 	}
 
 	/**

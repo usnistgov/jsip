@@ -79,15 +79,21 @@ public class StringTokenizer {
 	}
 
 	public static boolean isAlpha(char ch) {
-		boolean retval = Character.isUpperCase(ch) || Character.isLowerCase(ch);
-		// Debug.println("isAlpha is returning " + retval  + " for " + ch);
-		return retval;
+		if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')) {
+			return true;
+		}
+		else {
+			return Character.isUpperCase(ch) || Character.isLowerCase(ch);
+		}
 	}
 
 	public static boolean isDigit(char ch) {
-		boolean retval = Character.isDigit(ch);
-		// Debug.println("isDigit is returning " + retval + " for " + ch);
-		return retval;
+		if (ch >= '0' && ch <= '9') {
+			return true;
+		}
+		else {
+			return Character.isDigit(ch);
+		}
 	}
 
 	public String getLine() {
