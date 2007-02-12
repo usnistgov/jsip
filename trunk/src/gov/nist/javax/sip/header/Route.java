@@ -28,14 +28,14 @@
  ******************************************************************************/
 package gov.nist.javax.sip.header;
 
-import javax.sip.header.RouteHeader;
+import gov.nist.javax.sip.address.AddressImpl;
 
-import gov.nist.javax.sip.address.*;
+import javax.sip.header.RouteHeader;
 
 /**
  * Route  SIPHeader Object
  *
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:10 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2007-02-12 15:19:23 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -84,19 +84,25 @@ public class Route
 	 *@return a canonical encoding of the header.
 	 */
 	public String encodeBody() {
+		return encodeBody(new StringBuffer()).toString();
+	}
+
+	protected StringBuffer encodeBody(StringBuffer buffer) {
 		boolean addrFlag = address.getAddressType() == AddressImpl.NAME_ADDR;
-		StringBuffer encoding = new StringBuffer();
 		if (!addrFlag) {
-			encoding.append("<").append(address.encode()).append(">");
+			buffer.append('<');
+			address.encode(buffer);
+			buffer.append('>');
 		} else {
-			encoding.append(address.encode());
+			address.encode(buffer);
 		}
 		if (!parameters.isEmpty()) {
-			encoding.append(SEMICOLON).append(parameters.encode());
+			buffer.append(SEMICOLON);
+			parameters.encode(buffer);
 		}
-		return encoding.toString();
+		return buffer;
 	}
-	
+
 	public boolean equals(Object other) {
 		return (other instanceof RouteHeader) && super.equals(other);
 	}

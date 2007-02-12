@@ -33,12 +33,13 @@
 *******************************************************************************/
 package gov.nist.javax.sip.header;
 
-import gov.nist.core.*;
-import gov.nist.javax.sip.address.*;
+import gov.nist.core.NameValue;
+import gov.nist.core.NameValueList;
+import gov.nist.javax.sip.address.AddressImpl;
 
-import java.text.ParseException;
 import javax.sip.InvalidArgumentException;
 import javax.sip.header.ContactHeader;
+import java.text.ParseException;
 
 /**
  * Contact Item. 
@@ -46,7 +47,7 @@ import javax.sip.header.ContactHeader;
  * @see gov.nist.javax.sip.header.ContactList
  *
  * @author M. Ranganathan  <br/>
- * @version 1.2 $Revision: 1.8 $ $Date: 2006-11-12 21:52:38 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2007-02-12 15:19:21 $
  * @since 1.1
  *
  *
@@ -96,22 +97,30 @@ public final  class Contact
 	 * @return string encoding of the header value.
 	 */
 	protected String encodeBody() {
-		StringBuffer encoding = new StringBuffer();
-		if (wildCardFlag) {
-			return encoding.append("*").toString();
-		}
-		// Bug report by Joao Paulo
-		if (address.getAddressType() == AddressImpl.NAME_ADDR) {
-			encoding.append(address.encode());
-		} else {
-			// Encoding in canonical form must have <> around address.
-			encoding.append("<").append(address.encode()).append(">");
-		}
-		if (!parameters.isEmpty()) {
-			encoding.append(SEMICOLON).append(parameters.encode());
-		}
+		return encodeBody(new StringBuffer()).toString();
+	}
 
-		return encoding.toString();
+	protected StringBuffer encodeBody(StringBuffer buffer) {
+		if (wildCardFlag) {
+			buffer.append('*');
+		}
+		else {
+			// Bug report by Joao Paulo
+			if (address.getAddressType() == AddressImpl.NAME_ADDR) {
+				address.encode(buffer);
+			} else {
+				// Encoding in canonical form must have <> around address.
+				buffer.append('<');
+				address.encode(buffer);
+				buffer.append('>');
+			}
+			if (!parameters.isEmpty()) {
+				buffer.append(SEMICOLON);
+				parameters.encode(buffer);
+			}
+		}
+		
+		return buffer;
 	}
 
 	/** get the Contact list.

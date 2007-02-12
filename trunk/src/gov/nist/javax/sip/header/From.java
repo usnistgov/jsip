@@ -28,16 +28,16 @@
  ******************************************************************************/
 package gov.nist.javax.sip.header;
 
-import gov.nist.core.*;
-import gov.nist.javax.sip.address.*;
-import java.text.ParseException;
+import gov.nist.core.HostPort;
+import gov.nist.javax.sip.address.AddressImpl;
 
 import javax.sip.header.FromHeader;
+import java.text.ParseException;
 
 /**
  * From SIP Header.
  *
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-13 09:01:23 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2007-02-12 15:19:22 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
@@ -68,32 +68,27 @@ public final class From
 	}
 
 	/**
-	 * Encode the header into a String.
-	 *
-	 * @return String
-	 */
-	public String encode() {
-		return headerName + COLON + SP + encodeBody() + NEWLINE;
-	}
-
-	/**
 	 * Encode the header content into a String.
 	 *
 	 * @return String
 	 */
 	protected String encodeBody() {
-		String retval = "";
+		return encodeBody(new StringBuffer()).toString();
+	}
+
+	protected StringBuffer encodeBody(StringBuffer buffer) {
 		if (address.getAddressType() == AddressImpl.ADDRESS_SPEC) {
-			retval += LESS_THAN;
+			buffer.append(LESS_THAN);
 		}
-		retval += address.encode();
+		address.encode(buffer);
 		if (address.getAddressType() == AddressImpl.ADDRESS_SPEC) {
-			retval += GREATER_THAN;
+			buffer.append(GREATER_THAN);
 		}
 		if (!parameters.isEmpty()) {
-			retval += SEMICOLON + parameters.encode();
+			buffer.append(SEMICOLON);
+			parameters.encode(buffer);
 		}
-		return retval;
+		return buffer;
 	}
 
 	/**

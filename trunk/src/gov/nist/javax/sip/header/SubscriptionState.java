@@ -29,13 +29,13 @@
 package gov.nist.javax.sip.header;
 
 import javax.sip.InvalidArgumentException;
+import javax.sip.header.SubscriptionStateHeader;
 import java.text.ParseException;
-import javax.sip.header.*;
 
 /**  
  *SubscriptionState header
  *
- * @version 1.2 $Revision: 1.5 $ $Date: 2007-01-17 18:59:35 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2007-02-12 15:19:24 $
  *
  * @author Olivier Deruelle <br/>
  * 
@@ -164,20 +164,24 @@ public class SubscriptionState
 	 * @return the string encoded header body.
 	 */
 	public String encodeBody() {
-		String res = "";
+		return encodeBody(new StringBuffer()).toString();
+	}
+
+	protected StringBuffer encodeBody(StringBuffer buffer) {
 		if (state != null)
-			res += state;
+			buffer.append(state);
 		if (reasonCode != null)
-			res += ";reason=" + reasonCode;
+			buffer.append(";reason=").append(reasonCode);
 		if (expires != -1)
-			res += ";expires=" + expires;
+			buffer.append(";expires=").append(expires);
 		if (retryAfter != -1)
-			res += ";retry-after=" + retryAfter;
+			buffer.append(";retry-after=").append(retryAfter);
 
 		if (!parameters.isEmpty()) {
-			res += SEMICOLON + parameters.encode();
+			buffer.append(SEMICOLON);
+			parameters.encode(buffer);
 		}
-		return res;
+		return buffer;
 	}
 }
 

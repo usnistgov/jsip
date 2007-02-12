@@ -151,38 +151,57 @@ public class NameValue extends GenericObject {
 	 * @return an encoded name value (eg. name=value) string.
 	 */
 	public String encode() {
+		return encode(new StringBuffer()).toString();
+	}
+
+	public StringBuffer encode(StringBuffer buffer) {
 		if (name != null && value != null && !isFlagParameter) {
 			if (GenericObject.isMySubclass(value.getClass())) {
 				GenericObject gv = (GenericObject) value;
-				return name + separator + quotes + gv.encode() + quotes;
+				buffer.append(name).append(separator).append(quotes);
+				gv.encode(buffer);
+				buffer.append(quotes);
+				return buffer;
 			} else if (GenericObjectList.isMySubclass(value.getClass())) {
 				GenericObjectList gvlist = (GenericObjectList) value;
-				return name + separator + gvlist.encode();
-			} else if ( value.toString().equals("")) {
+				buffer.append(name).append(separator).append(gvlist.encode());
+				return buffer;
+			} else if ( value.toString().length() == 0) {
 				// opaque="" bug fix - pmusgrave
 				/*if (name.toString().equals(gov.nist.javax.sip.header.ParameterNames.OPAQUE))
 					return name + separator + quotes + quotes;
 				else
 					return name;*/
 				if ( this.isQuotedString ) {
-					return name + separator + quotes + quotes;
-				} else 
-					return name;
-			} else 
-				return name + separator + quotes + value.toString() + quotes;
+					buffer.append(name).append(separator).append(quotes).append(quotes);
+					return buffer;
+				} else { 
+					buffer.append(name);
+					return buffer;
+				}
+			} else { 
+				buffer.append(name).append(separator).append(quotes).append(value.toString()).append(quotes);
+				return buffer;
+			}
 		} else if (name == null && value != null) {
 			if (GenericObject.isMySubclass(value.getClass())) {
 				GenericObject gv = (GenericObject) value;
-				return gv.encode();
+				gv.encode(buffer);
+				return buffer;
 			} else if (GenericObjectList.isMySubclass(value.getClass())) {
 				GenericObjectList gvlist = (GenericObjectList) value;
-				return gvlist.encode();
+				buffer.append(gvlist.encode());
+				return buffer;
+			} else {
+				buffer.append(quotes).append(value.toString()).append(quotes);
+				return buffer;
 			}
-			return quotes + value.toString() + quotes;
 		} else if (name != null && (value == null || isFlagParameter)) {
-			return name;
-		} else
-			return "";
+			buffer.append(name);
+			return buffer;
+		} else {
+			return buffer;
+		}
 	}
 
 	public Object clone() {

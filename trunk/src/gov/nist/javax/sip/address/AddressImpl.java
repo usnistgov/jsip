@@ -40,7 +40,7 @@ import javax.sip.address.*;
  *
  *
  *
- *@version 1.2 $Revision: 1.8 $ $Date: 2007-01-22 18:44:20 $
+ *@version 1.2 $Revision: 1.9 $ $Date: 2007-02-12 15:19:18 $
  *
  */
 public final class AddressImpl
@@ -158,22 +158,29 @@ public final class AddressImpl
 	 * @return String canonical encoded version of this address.
 	 */
 	public String encode() {
-		if (this.addressType == WILD_CARD)
-			return "*";
-		StringBuffer encoding = new StringBuffer();
-		if (displayName != null) {
-			encoding.append(DOUBLE_QUOTE).append(displayName).append(
-				DOUBLE_QUOTE).append(
-				SP);
+		return encode(new StringBuffer()).toString();
+	}
+
+	public StringBuffer encode(StringBuffer buffer) {
+		if (this.addressType == WILD_CARD) {
+			buffer.append('*');
 		}
-		if (address != null) {
-			if (addressType == NAME_ADDR || displayName != null)
-				encoding.append(LESS_THAN);
-			encoding.append(address.encode());
-			if (addressType == NAME_ADDR || displayName != null)
-				encoding.append(GREATER_THAN);
+		else {
+			if (displayName != null) {
+				buffer.append(DOUBLE_QUOTE)
+						.append(displayName)
+						.append(DOUBLE_QUOTE)
+						.append(SP);
+			}
+			if (address != null) {
+				if (addressType == NAME_ADDR || displayName != null)
+					buffer.append(LESS_THAN);
+				address.encode(buffer);
+				if (addressType == NAME_ADDR || displayName != null)
+					buffer.append(GREATER_THAN);
+			}
 		}
-		return encoding.toString();
+		return buffer;
 	}
 
 	public AddressImpl() {

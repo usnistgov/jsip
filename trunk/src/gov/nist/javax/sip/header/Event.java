@@ -34,7 +34,7 @@ import java.text.ParseException;
 /**
 * Event SIP Header.
 *
-*@version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:30 $
+*@version 1.2 $Revision: 1.6 $ $Date: 2007-02-12 15:19:22 $
 *@since 1.1
 *
 *@author M. Ranganathan   <br/>
@@ -108,14 +108,18 @@ public class Event extends ParametersHeader implements EventHeader {
 	 * @return String
 	 */
 	public String encodeBody() {
-		StringBuffer retval = new StringBuffer();
+		return encodeBody(new StringBuffer()).toString();
+	}
 
+	protected StringBuffer encodeBody(StringBuffer buffer) {
 		if (eventType != null)
-			retval.append(SP + eventType);
+			buffer.append(SP).append(eventType);
 
-		if (!parameters.isEmpty())
-			retval.append(SEMICOLON + this.parameters.encode());
-		return retval.toString();
+		if (!parameters.isEmpty()) {
+			buffer.append(SEMICOLON);
+			this.parameters.encode(buffer);
+		}
+		return buffer;
 	}
 
 	/**

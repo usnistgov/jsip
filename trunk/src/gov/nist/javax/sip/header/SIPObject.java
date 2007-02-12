@@ -27,15 +27,19 @@
  * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).     *
  *****************************************************************************/
 package gov.nist.javax.sip.header;
-import java.lang.reflect.*;
-import gov.nist.core.*;
+import gov.nist.core.GenericObject;
+import gov.nist.core.GenericObjectList;
+import gov.nist.core.InternalErrorHandler;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 /**
  * Root class for all singleton objects in this package:
  * specializes the gov.nist.sip.header.GenericObject class for SIPHeader
  * related objects.
  *
- * @version 1.2 $Revision: 1.8 $ $Date: 2007-01-08 19:24:57 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2007-02-12 15:19:24 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -63,6 +67,13 @@ public abstract class SIPObject extends GenericObject {
 	 * @return String
 	 */
 	public abstract String encode();
+
+	/** Encode the header into the given StringBuffer.
+	 * Default implemation calls encode().
+	 */
+	public StringBuffer encode(StringBuffer buffer) {
+		return buffer.append(encode());
+	}
 
 	/**
 	 * An introspection based equality predicate for SIPObjects.

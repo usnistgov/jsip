@@ -49,7 +49,7 @@ import javax.sip.message.Request;
 /**
  * SIP Response structure.
  *
- * @version 1.2 $Revision: 1.13 $ $Date: 2007-01-28 13:06:22 $
+ * @version 1.2 $Revision: 1.14 $ $Date: 2007-02-12 15:19:25 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
@@ -538,16 +538,9 @@ public final class SIPResponse
 		}
 		byte[] superbytes = super.encodeAsBytes();
 		byte[] retval = new byte[slbytes.length + superbytes.length];
-		int i = 0;
-		if (slbytes != null) {
-			for (i = 0; i < slbytes.length; i++) {
-				retval[i] = slbytes[i];
-			}
-		}
-
-		for (int j = 0; j < superbytes.length; j++, i++) {
-			retval[i] = superbytes[j];
-		}
+		System.arraycopy(slbytes, 0, retval, 0, slbytes.length);
+		System.arraycopy(superbytes, 0, retval, slbytes.length,
+				superbytes.length);
 		return retval;
 	}
 

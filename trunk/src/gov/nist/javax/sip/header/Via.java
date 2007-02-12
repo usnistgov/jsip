@@ -28,20 +28,23 @@
 *******************************************************************************/
 package gov.nist.javax.sip.header;
 
-import gov.nist.core.*;
+import gov.nist.core.Host;
+import gov.nist.core.HostPort;
+import gov.nist.core.NameValue;
+import gov.nist.core.NameValueList;
 import gov.nist.javax.sip.stack.HopImpl;
 
-import java.text.ParseException;
-import javax.sip.*;
+import javax.sip.InvalidArgumentException;
 import javax.sip.address.Hop;
 import javax.sip.header.ViaHeader;
+import java.text.ParseException;
 
 /**
  * Via SIPHeader (these are strung together in a ViaList).
  *
  * @see ViaList
  *
- * @version 1.2 $Revision: 1.12 $ $Date: 2006-09-08 13:49:50 $
+ * @version 1.2 $Revision: 1.13 $ $Date: 2007-02-12 15:19:25 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -246,16 +249,21 @@ public class Via
 	 * A.K.A headerValue.
 	 */
 	protected String encodeBody() {
-		StringBuffer encoding = new StringBuffer();
-		encoding.append(sentProtocol.encode()).append(SP).append(
-			sentBy.encode());	
+		return encodeBody(new StringBuffer()).toString();
+	}
+
+	protected StringBuffer encodeBody(StringBuffer buffer) {
+		sentProtocol.encode(buffer);
+		buffer.append(SP);
+		sentBy.encode(buffer);	
 		if (!parameters.isEmpty()) {
-			encoding.append(SEMICOLON).append(parameters.encode());
+			buffer.append(SEMICOLON);
+			parameters.encode(buffer);
 		}
 		if (comment != null) {
-			encoding.append(SP).append(LPAREN).append(comment).append(RPAREN);
+			buffer.append(SP).append(LPAREN).append(comment).append(RPAREN);
 		}
-		return encoding.toString();
+		return buffer;
 	}
 
 	/**

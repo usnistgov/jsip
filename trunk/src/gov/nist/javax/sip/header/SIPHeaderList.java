@@ -28,17 +28,13 @@
  ******************************************************************************/
 package gov.nist.javax.sip.header;
 
-import java.lang.reflect.Constructor;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.LinkedList;
+import gov.nist.core.GenericObject;
+import gov.nist.core.Separators;
+import gov.nist.javax.sip.header.ims.PrivacyHeader;
 
 import javax.sip.header.Header;
-
-import gov.nist.core.*;
-import gov.nist.javax.sip.header.ims.PrivacyHeader;
+import java.lang.reflect.Constructor;
+import java.util.*;
 
 /**
  * 
@@ -48,7 +44,7 @@ import gov.nist.javax.sip.header.ims.PrivacyHeader;
  * list are of the same class). We use this for building type homogeneous lists
  * of SIPObjects that appear in SIPHeaders
  * 
- * @version 1.2 $Revision: 1.6 $ $Date: 2005/10/09 18:47:53
+ * @version 1.2 $Revision: 1.7 $ $Date: 2005/10/09 18:47:53
  */
 public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 
@@ -183,28 +179,35 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 	 *         (Contains string append of each encoded header).
 	 */
 	public String encode() {
-		if (hlist.isEmpty())
-			return headerName + ":" + Separators.NEWLINE;
-		StringBuffer encoding = new StringBuffer();
-		// The following headers do not have comma separated forms for
-		// multiple headers. Thus, they must be encoded separately.
-		if (this.headerName.equals(SIPHeaderNames.WWW_AUTHENTICATE)
-				|| this.headerName.equals(SIPHeaderNames.PROXY_AUTHENTICATE)
-				|| this.headerName.equals(SIPHeaderNames.AUTHORIZATION)
-				|| this.headerName.equals(SIPHeaderNames.PROXY_AUTHORIZATION)
-				|| this instanceof ExtensionHeaderList) {
-			ListIterator li = hlist.listIterator();
-			while (li.hasNext()) {
-				SIPHeader sipheader = (SIPHeader) li.next();
-				encoding.append(sipheader.encode());
-			}
-			return encoding.toString();
-		} else {
-			// These can be concatenated together in an comma separated
-			// list.
-			return headerName + Separators.COLON + Separators.SP
-					+ this.encodeBody() + Separators.NEWLINE;
+		return encode(new StringBuffer()).toString();
+	}
+
+	public StringBuffer encode(StringBuffer buffer) {
+		if (hlist.isEmpty()) {
+			buffer.append(headerName).append(':').append(Separators.NEWLINE);
 		}
+		else {
+			// The following headers do not have comma separated forms for
+			// multiple headers. Thus, they must be encoded separately.
+			if (this.headerName.equals(SIPHeaderNames.WWW_AUTHENTICATE)
+					|| this.headerName.equals(SIPHeaderNames.PROXY_AUTHENTICATE)
+					|| this.headerName.equals(SIPHeaderNames.AUTHORIZATION)
+					|| this.headerName.equals(SIPHeaderNames.PROXY_AUTHORIZATION)
+					|| this instanceof ExtensionHeaderList) {
+				ListIterator li = hlist.listIterator();
+				while (li.hasNext()) {
+					SIPHeader sipheader = (SIPHeader) li.next();
+					sipheader.encode(buffer);
+				}
+			} else {
+				// These can be concatenated together in an comma separated
+				// list.
+				buffer.append(headerName).append(Separators.COLON).append(Separators.SP);
+				this.encodeBody(buffer);
+				buffer.append(Separators.NEWLINE);
+			}
+		}
+		return buffer;
 	}
 
 	/**
@@ -539,26 +542,27 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 	 * is protected.
 	 */
 	protected String encodeBody() {
+		return encodeBody(new StringBuffer()).toString();
+	}
 
-		StringBuffer encoding = new StringBuffer();
+	protected StringBuffer encodeBody(StringBuffer buffer) {
 		ListIterator iterator = this.listIterator();
 		while (true) {
 			SIPHeader siphdr = (SIPHeader) iterator.next();
 			if ( siphdr == this ) throw new RuntimeException ("Unexpected circularity in SipHeaderList");
-			String body = siphdr.encodeBody();
-			encoding.append(body);
+			siphdr.encodeBody(buffer);
 			// if (body.equals("")) System.out.println("BODY == ");
 			if (iterator.hasNext()) {
-				if ( ! this.headerName.equals(PrivacyHeader.NAME))
-						encoding.append(Separators.COMMA);
+				if (!this.headerName.equals(PrivacyHeader.NAME))
+					buffer.append(Separators.COMMA);
 				else 
-						encoding.append(Separators.SEMICOLON);
+					buffer.append(Separators.SEMICOLON);
 				continue;
 			} else
 				break;
 
 		}
-		return encoding.toString();
+		return buffer;
 	}
 
 	/**
