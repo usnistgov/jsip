@@ -55,7 +55,7 @@ import java.util.Iterator;
  * object that creates new TLS MessageChannels (one for each new
  * accept socket).
  *
- * @version 1.2 $Revision: 1.9 $ $Date: 2007-02-12 16:09:56 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2007-02-12 19:46:26 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -94,6 +94,14 @@ public class TLSMessageProcessor extends MessageProcessor {
 
 	}
 
+	// RFC3261: TLS_RSA_WITH_AES_128_CBC_SHA MUST be supported
+    // RFC3261: TLS_RSA_WITH_3DES_EDE_CBC_SHA SHOULD be supported for backwards compat    
+    private static final String[] CIPHERSUITES = {
+        "TLS_RSA_WITH_AES_128_CBC_SHA",		// AES difficult to get with c++/Windows 
+        // "TLS_RSA_WITH_3DES_EDE_CBC_SHA", // Unsupported by Sun impl,
+        "SSL_RSA_WITH_3DES_EDE_CBC_SHA",	// For backwards comp., C++
+    };	
+	
 	/**
 	 * Start the processor.
 	 */
@@ -107,6 +115,7 @@ public class TLSMessageProcessor extends MessageProcessor {
 			((SSLServerSocket)this.sock).setNeedClientAuth(false);
 			((SSLServerSocket)this.sock).setUseClientMode(false);
 			((SSLServerSocket)this.sock).setWantClientAuth(true);
+			((SSLServerSocket)this.sock).setEnabledCipherSuites( CIPHERSUITES );
 		} else {
 			this.sock = sipStack.getNetworkLayer().createServerSocket(
 										this.getPort(), 0, getIpAddress());
