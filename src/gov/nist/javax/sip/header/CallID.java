@@ -27,15 +27,14 @@
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
 *******************************************************************************/
 package gov.nist.javax.sip.header;
-import java.text.ParseException;
-
 import javax.sip.header.CallIdHeader;
+import java.text.ParseException;
 
 /**
  * Call ID SIPHeader.
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:47 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2007-02-12 15:19:21 $
  * @since 1.1
  */
 public class CallID
@@ -80,10 +79,14 @@ public class CallID
 	 *@return String encoded body part of the header.
 	 */
 	public String encodeBody() {
-		if (callIdentifier == null)
-			return null;
-		else
-			return callIdentifier.encode();
+		return encodeBody(new StringBuffer()).toString();
+	}
+
+	protected StringBuffer encodeBody(StringBuffer buffer) {
+		if (callIdentifier != null)
+			callIdentifier.encode(buffer);
+		
+		return buffer;
 	}
 
 	/**

@@ -28,17 +28,22 @@
  ******************************************************************************/
 package gov.nist.javax.sip.message;
 
-import java.io.UnsupportedEncodingException;
-import gov.nist.javax.sip.*;
-import java.util.*;
-import java.lang.reflect.*;
-import gov.nist.core.*;
+import gov.nist.core.InternalErrorHandler;
+import gov.nist.javax.sip.SIPConstants;
 import gov.nist.javax.sip.header.*;
-import gov.nist.javax.sip.parser.*;
+import gov.nist.javax.sip.parser.HeaderParser;
+import gov.nist.javax.sip.parser.ParserFactory;
+import gov.nist.javax.sip.parser.PipelinedMsgParser;
+import gov.nist.javax.sip.parser.StringMsgParser;
+
+import javax.sip.InvalidArgumentException;
+import javax.sip.SipException;
 import javax.sip.header.*;
 import javax.sip.message.Request;
-import javax.sip.*;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.text.ParseException;
+import java.util.*;
 
 /*
  * Yanick Belanger sent in a patch for the right content length when the content is a String.
@@ -50,7 +55,7 @@ import java.text.ParseException;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.23 $ $Date: 2006-12-22 02:23:30 $
+ * @version 1.2 $Revision: 1.24 $ $Date: 2007-02-12 15:19:25 $
  * @since 1.1
  * 
  * @author M. Ranganathan  <br/>
@@ -174,12 +179,11 @@ public abstract class SIPMessage extends MessageObject implements
 			while (it.hasNext()) {
 				SIPHeader siphdr = (SIPHeader) it.next();
 				if (!(siphdr instanceof ContentLength))
-					encoding.append(siphdr.encode());
+					siphdr.encode(encoding);
 			}
 		}
 
-		return encoding.append(contentLengthHeader.encode()).append(NEWLINE)
-				.toString();
+		return contentLengthHeader.encode(encoding).append(NEWLINE).toString();
 	}
 
 	/**
@@ -351,11 +355,12 @@ public abstract class SIPMessage extends MessageObject implements
 			while (it.hasNext()) {
 				SIPHeader siphdr = (SIPHeader) it.next();
 				if (!(siphdr instanceof ContentLength))
-					encoding.append(siphdr.encode());
+					siphdr.encode(encoding);
 
 			}
 		}
-		encoding.append(contentLengthHeader.encode()).append(NEWLINE);
+		contentLengthHeader.encode(encoding);
+		encoding.append(NEWLINE);
 
 		byte[] retval = null;
 		byte[] content = this.getRawContent();

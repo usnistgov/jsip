@@ -33,7 +33,7 @@ import java.util.Vector;
 /**
  * Parser For SIP and Tel URLs. Other kinds of URL's are handled by the 
  * J2SE 1.4 URL class.
- * @version 1.2 $Revision: 1.19 $ $Date: 2007-01-08 19:24:19 $
+ * @version 1.2 $Revision: 1.20 $ $Date: 2007-02-12 15:19:26 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -510,7 +510,7 @@ public class URLParser extends Parser {
 				nv = phone_context();
 			} else {
 				if (lexer.lookAhead(0) == '=') {
-					lexer.match('=');
+					lexer.consume(1);
 					String value = paramNameOrValue();
 					nv = new NameValue( pname, value, false );
 				} else {
@@ -520,7 +520,7 @@ public class URLParser extends Parser {
 			nvList.set( nv );
 			
 			if ( lexer.lookAhead(0) == ';' ) {
-				lexer.match(';');
+				lexer.consume(1);
 			} else {
 				return nvList;
 			}
@@ -592,13 +592,13 @@ public class URLParser extends Parser {
 			
 			// name:password or host:port
 			if ( lexer.lookAhead() == ':' ) {
-				lexer.match(':');
+				lexer.consume(1);
 				passOrPort = password();
 			}
 
 			// name@hostPort
 			if ( lexer.lookAhead() == '@' ) {
-				lexer.match('@');
+				lexer.consume(1);
 				retval.setUser( userOrHost );
 				if (passOrPort!=null) retval.setUserPassword( passOrPort );
 			} else {

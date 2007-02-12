@@ -32,7 +32,7 @@ import javax.sip.address.URI;
  * Implementation of the URI class. This relies on the 1.4 URI class.
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-08-22 19:02:33 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2007-02-12 15:19:18 $
  *
  * 
  */
@@ -59,7 +59,7 @@ public class GenericURI extends NetObject implements javax.sip.address.URI {
 
 	/** Constructor given the URI string
 	 * @param uriString The imbedded URI string.
-	 * @throws URISyntaxException When there is a syntaz error in the imbedded URI.
+	 * @throws java.net.URISyntaxException When there is a syntaz error in the imbedded URI.
 	 */
 	public GenericURI(String uriString) throws ParseException {
 		try {
@@ -76,7 +76,10 @@ public class GenericURI extends NetObject implements javax.sip.address.URI {
 	 */
 	public String encode() {
 		return uriString;
+	}
 
+	public StringBuffer encode(StringBuffer buffer) {
+		return buffer.append(uriString);
 	}
 
 	/** Encode this URI.

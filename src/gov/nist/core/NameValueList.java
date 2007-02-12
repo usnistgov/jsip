@@ -28,13 +28,11 @@
  *******************************************************************************/
 package gov.nist.core;
 
-import java.util.HashMap;
-import java.util.ListIterator;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
-
 import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Implements a simple NameValue association with a quick lookup function (via a
@@ -82,26 +80,29 @@ public class NameValueList {
 	 * @since v1.0
 	 */
 	public String encode() {
-		if (hmap.isEmpty())
-			return "";
-		StringBuffer encoding = new StringBuffer();
-		Iterator iterator = hmap.values().iterator();
-		if (iterator.hasNext()) {
-			while (true) {
-				Object obj = iterator.next();
-				if (obj instanceof GenericObject) {
-					GenericObject gobj = (GenericObject) obj;
-					encoding.append(gobj.encode());
-				} else {
-					encoding.append(obj.toString());
+		return encode(new StringBuffer()).toString();
+	}
+	
+	public StringBuffer encode(StringBuffer buffer) {
+		if (!hmap.isEmpty()) {
+			Iterator iterator = hmap.values().iterator();
+			if (iterator.hasNext()) {
+				while (true) {
+					Object obj = iterator.next();
+					if (obj instanceof GenericObject) {
+						GenericObject gobj = (GenericObject) obj;
+						gobj.encode(buffer);
+					} else {
+						buffer.append(obj.toString());
+					}
+					if (iterator.hasNext())
+						buffer.append(separator);
+					else
+						break;
 				}
-				if (iterator.hasNext())
-					encoding.append(separator);
-				else
-					break;
 			}
 		}
-		return encoding.toString();
+		return buffer;
 	}
 
 	public String toString() {

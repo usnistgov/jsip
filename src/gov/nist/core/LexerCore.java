@@ -258,17 +258,17 @@ public class LexerCore extends StringTokenizer {
 
 		} else {
 			// This is a direct character spec.
-			Character ch = new Character((char) tok);
+			char ch = (char) tok;
 			char next = lookAhead(0);
-			if (next == ch.charValue()) {
-				this.currentMatch = new Token();
+			if (next == ch) {
+				/*this.currentMatch = new Token();
 				this.currentMatch.tokenValue =
-					String.valueOf(ch.charValue());
-				this.currentMatch.tokenType = tok;
+					String.valueOf(ch);
+				this.currentMatch.tokenType = tok;*/
 				consume(1);
 			} else
 				throw new ParseException(
-					buffer + "\nExpecting  >>>" + ch.charValue() + "<<< got >>>" 
+					buffer + "\nExpecting  >>>" + ch + "<<< got >>>" 
 					+ next + "<<<", ptr);
 		}
 		return this.currentMatch;

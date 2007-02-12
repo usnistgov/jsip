@@ -28,17 +28,17 @@
  ******************************************************************************/
 package gov.nist.javax.sip.header;
 
+import gov.nist.javax.sip.message.SIPRequest;
+
 import javax.sip.InvalidArgumentException;
 import javax.sip.header.CSeqHeader;
-
 import java.text.ParseException;
-import gov.nist.javax.sip.message.SIPRequest;
 
 /**
  *  CSeq SIP Header.
  *
  * @author M. Ranganathan    <br/>
- * @version 1.2 $Revision: 1.7 $ $Date: 2006-08-15 21:44:51 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2007-02-12 15:19:20 $
  * @since 1.1
  *
  */
@@ -109,7 +109,11 @@ public class CSeq extends SIPHeader implements javax.sip.header.CSeqHeader {
 	 * @return encoded string.
 	 */
 	public String encodeBody() {
-		return seqno + SP + method.toUpperCase();
+		return encodeBody(new StringBuffer()).toString();
+	}
+
+	protected StringBuffer encodeBody(StringBuffer buffer) {
+		return buffer.append(seqno).append(SP).append(method.toUpperCase());
 	}
 
 	/**

@@ -31,7 +31,7 @@ import java.util.Iterator;
 /**
  * Telephone number class.
  * @version 1.2
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-11-01 02:23:08 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2007-02-12 15:19:19 $
  *
  * @author M. Ranganathan 
  * 
@@ -181,15 +181,18 @@ public class TelephoneNumber extends NetObject {
 	}
 
 	public String encode() {
-		String retval = "";
+		return encode(new StringBuffer()).toString();
+	}
+
+	public StringBuffer encode(StringBuffer buffer) {
 		if (isglobal)
-			retval += "+";
-		retval += phoneNumber;
+			buffer.append('+');
+		buffer.append(phoneNumber);
 		if (!parms.isEmpty()) {
-			retval += SEMICOLON;
-			retval += parms.encode();
+			buffer.append(SEMICOLON);
+			parms.encode(buffer);
 		}
-		return retval;
+		return buffer;
 	}
 
 	/**

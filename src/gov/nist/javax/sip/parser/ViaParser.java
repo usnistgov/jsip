@@ -32,7 +32,7 @@ import java.text.ParseException;
 /**
  * Parser for via headers.
  * 
- * @version 1.2 $Revision: 1.9 $ $Date: 2006-09-17 14:34:52 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2007-02-12 15:19:27 $
  * @since 1.1
  * 
  * @author Olivier Deruelle
@@ -91,7 +91,7 @@ public class ViaParser extends HeaderParser {
 
 		// parameters
 		while (lexer.lookAhead(0) == ';') {
-			this.lexer.match(';');
+			this.lexer.consume(1);
 			this.lexer.SPorHT();
 			NameValue nameValue = this.nameValue();
 			String name = nameValue.getName();

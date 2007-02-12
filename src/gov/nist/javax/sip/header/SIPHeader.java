@@ -32,7 +32,7 @@ package gov.nist.javax.sip.header;
  * Root class from which all SIPHeader objects are subclassed.
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:46 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2007-02-12 15:19:24 $
  *
  * 
  */
@@ -115,13 +115,27 @@ public abstract class SIPHeader
 	/** Encode this header into canonical form.
 	*/
 	public String encode() {
-		return this.headerName + COLON + SP + this.encodeBody() + NEWLINE;
+		return encode(new StringBuffer()).toString();
+	}
+
+	public StringBuffer encode(StringBuffer buffer) {
+		buffer.append(this.headerName).append(COLON).append(SP);
+		this.encodeBody(buffer);
+		buffer.append(NEWLINE);
+		return buffer;
 	}
 
 	/** Encode the body of this header (the stuff that follows headerName).
 	* A.K.A headerValue.
 	*/
 	protected abstract String encodeBody();
+
+	/** Encode the body of this header in the given buffer.
+	 * Default implementation calls encodeBody();
+	 */
+	protected StringBuffer encodeBody(StringBuffer buffer) {
+		return buffer.append(encodeBody());
+	}
 
 	/** Alias for getHeaderValue.
 	 */

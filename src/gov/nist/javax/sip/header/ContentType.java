@@ -28,9 +28,8 @@
 *******************************************************************************/
 package gov.nist.javax.sip.header;
 
-import java.text.ParseException;
-
 import javax.sip.header.ContentTypeHeader;
+import java.text.ParseException;
 
 /**
 *  ContentType SIP Header 
@@ -58,7 +57,7 @@ import javax.sip.header.ContentTypeHeader;
 *
 *@author M. Ranganathan   <br/>
 *@author Olivier Deruelle <br/>
-*@version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:25 $
+*@version 1.2 $Revision: 1.6 $ $Date: 2007-02-12 15:19:22 $
 *@since 1.1
 *
 */
@@ -104,13 +103,16 @@ public class ContentType
 	 * @return String.
 	 */
 	public String encodeBody() {
-		if (hasParameters())
-			return new StringBuffer(mediaRange.encode())
-				.append(SEMICOLON)
-				.append(parameters.encode())
-				.toString();
-		else
-			return mediaRange.encode();
+		return encodeBody(new StringBuffer()).toString();
+	}
+
+	protected StringBuffer encodeBody(StringBuffer buffer) {
+		mediaRange.encode(buffer);
+		if (hasParameters()) {
+			buffer.append(SEMICOLON);
+			parameters.encode(buffer);
+		}
+		return buffer;
 	}
 
 	/** get the mediaRange field.
