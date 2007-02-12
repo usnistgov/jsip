@@ -35,7 +35,7 @@ import java.util.Hashtable;
 /**
  * A map of which of the standard headers may appear as a list
  * 
- * @version 1.2 $Revision: 1.10 $ $Date: 2007-01-08 19:24:56 $
+ * @version 1.2 $Revision: 1.11 $ $Date: 2007-02-12 20:00:37 $
  * @since 1.1
  */
 class ListMap {
@@ -126,6 +126,7 @@ class ListMap {
 		
 		headerListTable.put(SecurityVerify.class, SecurityVerifyList.class);
 	   
+		headerListTable.put(PAssertedIdentity.class, PAssertedIdentityList.class);
 	    
 	    initialized = true;
 
