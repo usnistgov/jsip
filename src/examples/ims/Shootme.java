@@ -340,16 +340,26 @@ public class Shootme implements SipListener {
 		
 
 		// check Privacy
-		PrivacyHeader privacy;
+		ListIterator privacyList;
 		try {
-			privacy = (PrivacyHeader) request.getHeader(PrivacyHeader.NAME);
-			if (privacy != null)
+			privacyList = request.getHeaders(PrivacyHeader.NAME);
+			if (privacyList != null && privacyList.hasNext())
 			{
-				System.out.println(".: Privacy = " + privacy.getPrivacy());
+				System.out.print(".: Privacy = ");
+				while (privacyList.hasNext())
+				{
+					PrivacyHeader privacy = 
+						(PrivacyHeader) privacyList.next();
+					System.out.print(privacy.getPrivacy());
+					if (privacyList.hasNext())
+						System.out.print("; ");
+				}
+				System.out.println("");
 			}
 			else
 				System.out.println(".: NOT received Privacy ! ");
 		}
+		
 		catch (Exception ex)
 		{
 			System.out.println("(!) Exception getting Privacy header! - " + ex);
@@ -380,13 +390,22 @@ public class Shootme implements SipListener {
 		
 		
 		// P-Asserted-Identity
-		PAssertedIdentityHeader assertedID;
+		ListIterator assertedIDList;
 		try {
-			assertedID = (PAssertedIdentityHeader) 
-				request.getHeader(PAssertedIdentityHeader.NAME);
-			if (assertedID != null)
+			assertedIDList =  
+				request.getHeaders(PAssertedIdentityHeader.NAME);
+			if (assertedIDList != null && assertedIDList.hasNext())
 			{
-				System.out.println(".: P-Asserted-Identity = " + assertedID.getAddress().toString());
+				System.out.print(".: P-Asserted-Identity = ");
+				while (assertedIDList.hasNext())
+				{
+					PAssertedIdentityHeader assertedID = 
+						(PAssertedIdentityHeader) assertedIDList.next();
+					System.out.print(assertedID.getAddress().toString());
+					if (assertedIDList.hasNext())
+						System.out.print(", ");
+				}
+				System.out.println("");
 			}
 			else
 				System.out.println(".: NOT received P-Asserted-Identity... ");

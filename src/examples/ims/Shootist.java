@@ -527,8 +527,12 @@ public class Shootist implements SipListener {
 			request.addHeader(accessInfo);
 
 			// Privacy
-			PrivacyHeader privacy = headerFactoryImpl.createPrivacyHeader("none");
-			request.addHeader(privacy);
+			PrivacyList privList = new PrivacyList();
+			PrivacyHeader privacy = headerFactoryImpl.createPrivacyHeader("header");
+			privList.add(privacy);
+			PrivacyHeader privacy2 = headerFactoryImpl.createPrivacyHeader("user");
+			privList.add(privacy2);
+			request.addHeader(privList);
 			
 			// P-Preferred-Identity
 			PPreferredIdentityHeader preferredID =
@@ -576,9 +580,20 @@ public class Shootist implements SipListener {
 			
 			
 			// P-Asserted-Identity
+			PAssertedIdentityList assertedIDList = new PAssertedIdentityList();
 			PAssertedIdentityHeader assertedID =
-				headerFactoryImpl.createPAssertedIdentityHeader(toNameAddress);
-			request.addHeader(assertedID);
+				headerFactoryImpl.createPAssertedIdentityHeader(
+						addressFactory.createAddress(toAddress));
+			assertedIDList.add(assertedID);
+			
+			TelURL tel = addressFactory.createTelURL("+1-201-555-0123");
+			Address telAddress = addressFactory.createAddress(tel);
+			toNameAddress.setDisplayName(toDisplayName);
+			PAssertedIdentityHeader assertedID2 =
+				headerFactoryImpl.createPAssertedIdentityHeader(telAddress);
+			assertedIDList.add(assertedID2);
+			request.addHeader(assertedIDList);
+			
 			
 			// P-Charging-Function-Addresses
 			PChargingFunctionAddressesHeader chargAddr =
