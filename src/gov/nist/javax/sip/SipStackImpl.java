@@ -222,7 +222,7 @@ import gov.nist.core.net.NetworkLayer;
  * </ul>
  *
  * 
- * @version 1.2 $Revision: 1.59 $ $Date: 2007-01-14 19:43:11 $
+ * @version 1.2 $Revision: 1.60 $ $Date: 2007-02-13 21:02:18 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -811,7 +811,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 	 * 
 	 * @see java.lang.Object#finalize()
 	 */
-	public void finalize() {
+	protected void finalize() {
 		this.stopStack();
 	}
 
