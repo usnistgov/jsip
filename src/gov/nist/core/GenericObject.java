@@ -71,7 +71,7 @@ public abstract class GenericObject implements Serializable, Cloneable {
 	protected static final String PERCENT = Separators.PERCENT;
 
 	protected static final Set immutableClasses = new HashSet (10);
-	protected static final String[] immutableClassNames ={ 
+	static final String[] immutableClassNames ={ 
 		"String", "Character",
 		"Boolean", "Byte", "Short", "Integer", "Long",
 		"Float", "Double"

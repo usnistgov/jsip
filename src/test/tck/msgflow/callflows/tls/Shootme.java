@@ -186,16 +186,6 @@ public class Shootme  implements SipListener {
 
 	public void sendReInvite(SipProvider sipProvider) throws Exception {
 		Request inviteRequest = dialog.createRequest(Request.INVITE);
-		//((SipURI) inviteRequest.getRequestURI()).removeParameter("transport");
-		//MaxForwardsHeader mf = protocolObjects.headerFactory.createMaxForwardsHeader(10);
-		//inviteRequest.addHeader(mf);
-		//((ViaHeader) inviteRequest.getHeader(ViaHeader.NAME))
-		//		.setTransport(protocolObjects.transport);
-		//Address address = protocolObjects.addressFactory.createAddress("Shootme <sips:"
-		//		+ myAddress + ":" + myPort + ">");
-		//ContactHeader contactHeader = protocolObjects.headerFactory
-		//		.createContactHeader(address);
-		//inviteRequest.addHeader(contactHeader);
 		ClientTransaction ct = sipProvider
 				.getNewClientTransaction(inviteRequest);
 		dialog.sendRequest(ct);

@@ -83,8 +83,8 @@ public class LexerCore extends StringTokenizer {
 	public static final int AND = (int) '&';
 	public static final int UNDERSCORE = (int) '_';
 
-	protected static Hashtable globalSymbolTable;
-	protected static Hashtable lexerTables;
+	protected static final Hashtable globalSymbolTable;
+	protected static final Hashtable lexerTables;
 	protected Hashtable currentLexer;
 	protected String currentLexerName;
 	protected Token currentMatch;
