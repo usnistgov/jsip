@@ -70,8 +70,8 @@ public class TlsTest extends ScenarioHarness implements SipListener {
 
 		try {
 			// setup TLS properties
-			System.setProperty( "javax.net.ssl.keyStore", "src/test/tck/msgflow/callflows/tls/testkeys" );
-			System.setProperty( "javax.net.ssl.trustStore", "src/test/tck/msgflow/callflows/tls/testkeys" );
+			System.setProperty( "javax.net.ssl.keyStore",  TlsTest.class.getResource("testkeys").getPath() ); 
+			System.setProperty( "javax.net.ssl.trustStore", TlsTest.class.getResource("testkeys").getPath() ); 
 			System.setProperty( "javax.net.ssl.keyStorePassword", "passphrase" );			
 			System.setProperty( "javax.net.ssl.keyStoreType", "jks" );
 			
