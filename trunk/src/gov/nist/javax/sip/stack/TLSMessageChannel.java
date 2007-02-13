@@ -65,7 +65,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan 
  * 
  * 
- * @version 1.2 $Revision: 1.8 $ $Date: 2007-01-26 16:50:45 $ 
+ * @version 1.2 $Revision: 1.9 $ $Date: 2007-02-13 21:02:16 $ 
  */
 public final class TLSMessageChannel extends MessageChannel implements
 		SIPMessageListener, Runnable {
@@ -116,6 +116,8 @@ public final class TLSMessageChannel extends MessageChannel implements
 	 * 
 	 * @param sipStack
 	 *            Ptr to SIP Stack
+	 * 
+	 * @param msgProcessor -- the message processor that created us.
 	 */
 
 	protected TLSMessageChannel(Socket sock, SIPTransactionStack sipStack,
@@ -152,6 +154,7 @@ public final class TLSMessageChannel extends MessageChannel implements
 	 *            inet address to connect to.
 	 * @param sipStack
 	 *            is the sip sipStack from which we are created.
+	 * @param messageProcessor -- the message processor that created us.
 	 * @throws IOException
 	 *             if we cannot connect.
 	 */
@@ -559,7 +562,6 @@ public final class TLSMessageChannel extends MessageChannel implements
 	 * messages until we are done or the other end has closed.
 	 */
 	public void run() {
-		String message;
 		Pipeline hispipe = null;
 		// Create a pipeline to connect to our message parser.
 		hispipe = new Pipeline(myClientInputStream, sipStack.readTimeout,
@@ -716,292 +718,3 @@ public final class TLSMessageChannel extends MessageChannel implements
 		return true;
 	}
 }
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.7  2006/11/02 21:17:54  belangery
- * Added a feature for delegation of TLS encryption/decryption to an external TLS accelerator hardware. Such deployment requires the SIP stack to make its TLS traffic goes over an un-encrypted TCP connection to the TLS accelerator.
- *
- * Revision 1.6  2006/07/25 19:47:00  mranga
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:   mranga
- * Error in comparing a text string to an ip address when setting recieved.
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- * Revision 1.5  2006/07/22 19:01:17  jbemmel
- * fixed and optimized setting of received / rport
- *
- * Revision 1.4  2006/07/13 09:00:59  mranga
- * Issue number:
- * Obtained from:
- * Submitted by:  jeroen van bemmel
- * Reviewed by:   mranga
- * Moved some changes from jain-sip-1.2 to java.net
- *
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- * Revision 1.16  2006/06/27 12:52:41  mranga
- * Do not update the Local Tag of the dialog if the 2xx has a non null local tag. Fixed a bug in automatic 503 generation if listener is blocked.
- *
- * Revision 1.15  2006/06/19 06:47:27  mranga
- * javadoc fixups
- *
- * Revision 1.14  2006/06/16 15:26:28  mranga
- * Added NIST disclaimer to all public domain files. Clean up some javadoc. Fixed a leak
- *
- * Revision 1.13  2006/06/13 06:34:32  mranga
- * Javadoc fixups and code  rearrangement. Enough javadoc tweaking for the day :-)
- *
- * Revision 1.12  2006/06/11 18:51:04  mranga
- * sentBy check for via headers fixed. Added Address lookup facility.
- * Revision 1.11 2006/06/10 14:04:47 mranga
- * Added more rate limiting mechanism. Stack will now return an error if the
- * server transaction table is too large. Fixed another performance bug.
- * Performance now at 76 to 79 caps on self test.
- * 
- * 
- * Revision 1.10 2006/06/04 18:49:31 mranga Got forked subscriptions scenario
- * worked out. FIxed some terrible race conditons with forked subscriptions (
- * respojnse arriving at the same time as NOTIFY) and other delights.
- * 
- * $Log: not supported by cvs2svn $
- * Revision 1.7  2006/11/02 21:17:54  belangery
- * Added a feature for delegation of TLS encryption/decryption to an external TLS accelerator hardware. Such deployment requires the SIP stack to make its TLS traffic goes over an un-encrypted TCP connection to the TLS accelerator.
- *
- * Revision 1.6  2006/07/25 19:47:00  mranga
- * Issue number:
- * Obtained from:
- * Submitted by:
- * Reviewed by:   mranga
- * Error in comparing a text string to an ip address when setting recieved.
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- * Revision 1.5  2006/07/22 19:01:17  jbemmel
- * fixed and optimized setting of received / rport
- *
- * Revision 1.4  2006/07/13 09:00:59  mranga
- * Issue number:
- * Obtained from:
- * Submitted by:  jeroen van bemmel
- * Reviewed by:   mranga
- * Moved some changes from jain-sip-1.2 to java.net
- *
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- * Revision 1.16  2006/06/27 12:52:41  mranga
- * Do not update the Local Tag of the dialog if the 2xx has a non null local tag. Fixed a bug in automatic 503 generation if listener is blocked.
- *
- * Revision 1.15  2006/06/19 06:47:27  mranga
- * javadoc fixups
- *
- * Revision 1.14  2006/06/16 15:26:28  mranga
- * Added NIST disclaimer to all public domain files. Clean up some javadoc. Fixed a leak
- *
- * Revision 1.13  2006/06/13 06:34:32  mranga
- * Javadoc fixups and code  rearrangement. Enough javadoc tweaking for the day :-)
- *
- * Revision 1.12  2006/06/11 18:51:04  mranga
- * sentBy check for via headers fixed. Added Address lookup facility.
- *
- * Revision 1.11  2006/06/10 14:04:47  mranga
- * Added more rate limiting mechanism. Stack will now return an error if the server transaction table is too large. Fixed another performance bug. Performance now at 76 to 79 caps on self test.
- *
- *
- * Revision 1.10  2006/06/04 18:49:31  mranga
- * Got forked subscriptions scenario worked out. FIxed some terrible race conditons with forked subscriptions ( respojnse arriving at the same time as NOTIFY) and other delights.
- *
- * 
- * Revision 1.9 2006/05/22 18:39:02 mranga Fixed a deadlock which occurs under
- * heavy load (fix provided by Attila Ackossis). Fixed condition where ACKS are
- * dropped under heavy load. Revision 1.8 2006/03/16 21:15:43 mranga Fixes
- * reentrancy problem Revision 1.7 2006/03/15 02:22:54 mranga fixed some
- * reentrancy problems
- * 
- * Revision 1.6 2006/03/10 22:19:50 mranga Fixed a deadlock problem. Added a
- * redirect example
- * 
- * Revision 1.5 2006/03/01 21:32:56 mranga Bug fixes galore
- * 
- * Revision 1.4 2005/11/28 02:13:56 mranga *** empty log message ***
- * 
- * Revision 1.3 2005/11/21 19:20:29 mranga *** empty log message ***
- * 
- * Revision 1.2 2005/11/14 22:36:01 mranga Interim update of source code
- * 
- * Revision 1.1.1.1 2005/10/04 17:12:36 mranga
- * 
- * Import
- * 
- * Revision 1.2 2004/11/28 17:32:26 mranga Submitted by: hagai sela Reviewed by:
- * mranga
- * 
- * Support for symmetric nats
- * 
- * Revision 1.1 2004/10/28 19:02:51 mranga Submitted by: Daniel Martinez
- * Reviewed by: M. Ranganathan
- * 
- * Added changes for TLS support contributed by Daniel Martinez
- * 
- * Revision 1.31 2004/08/23 23:56:20 mranga Reviewed by: mranga forgot to set
- * isDaemon in one or two places where threads were being created and cleaned up
- * some minor junk.
- * 
- * Revision 1.30 2004/07/16 17:13:56 mranga Submitted by: Damand Joost Reviewed
- * by: mranga
- * 
- * Make threads into daemon threads, use address for received = parameter on via
- * 
- * Revision 1.29 2004/06/21 05:42:33 mranga Reviewed by: mranga more code
- * smithing
- * 
- * Revision 1.28 2004/06/21 04:59:53 mranga Refactored code - no functional
- * changes.
- * 
- * Revision 1.27 2004/05/30 18:55:58 mranga Reviewed by: mranga Move to timers
- * and eliminate the Transaction scanner Thread to improve scalability and
- * reduce cpu usage.
- * 
- * Revision 1.26 2004/05/18 15:26:45 mranga Reviewed by: mranga Attempted fix at
- * race condition bug. Remove redundant exception (never thrown). Clean up some
- * extraneous junk.
- * 
- * Revision 1.25 2004/05/16 14:13:23 mranga Reviewed by: mranga Fixed the
- * use-count issue reported by Peter Parnes. Added property to prevent against
- * content-length dos attacks.
- * 
- * Revision 1.24 2004/04/22 22:51:19 mranga Submitted by: Thomas Froment
- * Reviewed by: mranga
- * 
- * Fixed corner cases.
- * 
- * Revision 1.23 2004/04/21 16:25:22 mranga Reviewed by: mranga Record IP
- * address of peer in TCP connection as soon as connection is made. Remove range
- * check on Warning.java
- * 
- * Revision 1.22 2004/03/30 17:53:56 mranga Reviewed by: mranga more reference
- * counting cleanup
- * 
- * Revision 1.21 2004/03/30 16:40:30 mranga Reviewed by: mranga more tweaks to
- * reference counting for cleanup.
- * 
- * Revision 1.20 2004/03/30 15:38:18 mranga Reviewed by: mranga Name the threads
- * so as to facilitate debugging.
- * 
- * Revision 1.19 2004/03/19 23:41:30 mranga Reviewed by: mranga Fixed connection
- * and thread caching.
- * 
- * Revision 1.18 2004/03/19 17:26:20 mranga Reviewed by: mranga Fixed silly bug.
- * 
- * Revision 1.17 2004/03/19 17:06:19 mranga Reviewed by: mranga Fixed some
- * sipStack cleanup issues. Stack should release all resources when finalized.
- * 
- * Revision 1.16 2004/03/19 04:22:22 mranga Reviewed by: mranga Added IO Pacing
- * for long writes - split write into chunks and flush after each chunk to avoid
- * socket back pressure.
- * 
- * Revision 1.15 2004/03/18 22:01:20 mranga Reviewed by: mranga Get rid of the
- * PipedInputStream from pipelined parser to avoid a copy.
- * 
- * Revision 1.14 2004/03/09 00:34:45 mranga Reviewed by: mranga Added TCP
- * connection management for client and server side Transactions. See
- * configuration parameter gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false
- * Releases Server TCP Connections after linger time
- * gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS=false Releases Client TCP
- * Connections after linger time
- * 
- * Revision 1.13 2004/03/07 22:25:25 mranga Reviewed by: mranga Added a new
- * configuration parameter that instructs the sipStack to drop a server
- * connection after server transaction termination set
- * gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false for this Default behavior
- * is true.
- * 
- * Revision 1.12 2004/03/05 20:36:55 mranga Reviewed by: mranga put in some
- * debug printfs and cleaned some things up.
- * 
- * Revision 1.11 2004/02/29 15:32:59 mranga Reviewed by: mranga bug fixes on
- * limiting the max message size.
- * 
- * Revision 1.10 2004/02/29 00:46:35 mranga Reviewed by: mranga Added new
- * configuration property to limit max message size for TCP transport. The
- * property is gov.nist.javax.sip.MAX_MESSAGE_SIZE
- * 
- * Revision 1.9 2004/01/22 18:39:41 mranga Reviewed by: M. Ranganathan Moved the
- * ifdef SIMULATION and associated tags to the first column so Prep preprocessor
- * can deal with them.
- * 
- * Revision 1.8 2004/01/22 13:26:33 sverker Issue number: Obtained from:
- * Submitted by: sverker Reviewed by: mranga
- * 
- * Major reformat of code to conform with style guide. Resolved compiler and
- * javadoc warnings. Added CVS tags.
- * 
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number: CVS: If this change addresses one or more issues, CVS:
- * then enter the issue number(s) here. CVS: Obtained from: CVS: If this change
- * has been taken from another system, CVS: then name the system in this line,
- * otherwise delete it. CVS: Submitted by: CVS: If this code has been
- * contributed to the project by someone else; i.e., CVS: they sent us a patch
- * or a set of diffs, then include their name/email CVS: address here. If this
- * is your work then delete this line. CVS: Reviewed by: CVS: If we are doing
- * pre-commit code reviews and someone else has CVS: reviewed your changes,
- * include their name(s) here. CVS: If you have not had it reviewed then delete
- * this line.
- * 
- */

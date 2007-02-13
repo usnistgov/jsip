@@ -65,7 +65,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.67 $ $Date: 2007-02-06 18:55:34 $
+ * @version 1.2 $Revision: 1.68 $ $Date: 2007-02-13 21:02:16 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -1358,12 +1358,13 @@ public abstract class SIPTransactionStack implements
 			this.ioHandler.closeAll();
 			// Let the processing complete.
 
-			try {
+			
+		}
+		try {
 
-				Thread.sleep(1000);
+			Thread.sleep(1000);
 
-			} catch (InterruptedException ex) {
-			}
+		} catch (InterruptedException ex) {
 		}
 		this.clientTransactionTable.clear();
 		this.serverTransactionTable.clear();

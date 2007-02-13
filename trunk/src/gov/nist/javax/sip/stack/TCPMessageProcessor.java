@@ -41,7 +41,7 @@ import java.util.*;
  * object that creates new TCP MessageChannels (one for each new
  * accept socket).  
  *
- * @version 1.2 $Revision: 1.26 $ $Date: 2007-01-28 13:06:23 $
+ * @version 1.2 $Revision: 1.27 $ $Date: 2007-02-13 21:02:16 $
  *
  * @author M. Ranganathan   <br/>
  * Acknowledgement: Jeff Keyser suggested that a
@@ -123,8 +123,7 @@ public class TCPMessageProcessor extends MessageProcessor {
 					// willing to handle an "infinite" number of
 					// simultaneous connections (no resource limitation).
 					// This is the default behavior.
-					while (this.isRunning
-						&& sipStack.maxConnections != -1
+					while ( sipStack.maxConnections != -1
 						&& this.nConnections >= sipStack.maxConnections) {
 						try {
 							this.wait();
@@ -307,175 +306,3 @@ public class TCPMessageProcessor extends MessageProcessor {
 		return false;
 	}
 }
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.25  2007/01/26 16:50:44  mranga
- * Issue number:
- * Obtained from:
- * Submitted by:  mranga
- * Reviewed by:   mranga
- *
- * Fixed for INADDR_ANY
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- * Revision 1.24  2006/07/13 09:01:01  mranga
- * Issue number:
- * Obtained from:
- * Submitted by:  jeroen van bemmel
- * Reviewed by:   mranga
- * Moved some changes from jain-sip-1.2 to java.net
- *
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- * Revision 1.7  2006/06/19 06:47:27  mranga
- * javadoc fixups
- *
- * Revision 1.6  2006/06/16 15:26:28  mranga
- * Added NIST disclaimer to all public domain files. Clean up some javadoc. Fixed a leak
- *
- * Revision 1.5  2006/05/31 07:47:27  mranga
- * Added a simple server congestion control algorithm.
- *
- * Cleaned up some code.
- *
- * Ranga
- *
- * Revision 1.4  2005/12/05 22:33:07  mranga
- * *** empty log message ***
- *
- * Revision 1.3  2005/11/21 19:20:29  mranga
- * *** empty log message ***
- *
- * Revision 1.2  2005/11/14 22:36:01  mranga
- * Interim update of source code
- *
- * Revision 1.1.1.1  2005/10/04 17:12:36  mranga
- *
- * Import
- *
- *
- * Revision 1.22  2004/12/01 19:05:16  mranga
- * Reviewed by:   mranga
- * Code cleanup remove the unused SIMULATION code to reduce the clutter.
- * Fix bug in Dialog state machine.
- *
- * Revision 1.21  2004/09/04 14:59:54  mranga
- * Reviewed by:   mranga
- *
- * Added a method to expose the Thread for the message processors so that
- * stack.stop() can join to wait for the threads to die rather than sleep().
- * Feature requested by Mike Andrews.
- *
- * Revision 1.20  2004/08/30 16:04:47  mranga
- * Submitted by:  Mike Andrews
- * Reviewed by:   mranga
- *
- * Added a network layer.
- *
- * Revision 1.19  2004/08/23 23:56:21  mranga
- * Reviewed by:   mranga
- * forgot to set isDaemon in one or two places where threads were being
- * created and cleaned up some minor junk.
- *
- * Revision 1.18  2004/06/21 04:59:53  mranga
- * Refactored code - no functional changes.
- *
- * Revision 1.17  2004/05/14 20:20:03  mranga
- *
- * Submitted by:  Dave Stuart
- * Reviewed by:  mranga
- *
- * Stun support hacks -- use the original address specified to bind tcp transport
- * socket.
- *
- * Revision 1.16  2004/03/30 16:40:30  mranga
- * Reviewed by:   mranga
- * more tweaks to reference counting for cleanup.
- *
- * Revision 1.15  2004/03/30 15:38:18  mranga
- * Reviewed by:   mranga
- * Name the threads so as to facilitate debugging.
- *
- * Revision 1.14  2004/03/25 19:01:44  mranga
- * Reviewed by:   mranga
- * check for key before removing it from cache
- *
- * Revision 1.13  2004/03/25 18:08:15  mranga
- * Reviewed by:   mranga
- * Fix connection caching for ill behaved clients which connect multiple times
- * for the same incoming request.
- *
- * Revision 1.12  2004/03/25 15:15:05  mranga
- * Reviewed by:   mranga
- * option to log message content added.
- *
- * Revision 1.11  2004/03/19 23:41:30  mranga
- * Reviewed by:   mranga
- * Fixed connection and thread caching.
- *
- * Revision 1.10  2004/03/19 17:06:20  mranga
- * Reviewed by:   mranga
- * Fixed some stack cleanup issues. Stack should release all resources when
- * finalized.
- *
- * Revision 1.9  2004/01/22 18:39:42  mranga
- * Reviewed by:   M. Ranganathan
- * Moved the ifdef SIMULATION and associated tags to the first column so Prep preprocessor can deal with them.
- *
- * Revision 1.8  2004/01/22 14:23:45  mranga
- * Reviewed by:   mranga
- * Fixed some minor formatting issues.
- *
- * Revision 1.7  2004/01/22 13:26:33  sverker
- * Issue number:
- * Obtained from:
- * Submitted by:  sverker
- * Reviewed by:   mranga
- *
- * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
- *
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- */

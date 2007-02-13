@@ -55,7 +55,7 @@ import java.util.Iterator;
  * object that creates new TLS MessageChannels (one for each new
  * accept socket).
  *
- * @version 1.2 $Revision: 1.10 $ $Date: 2007-02-12 19:46:26 $
+ * @version 1.2 $Revision: 1.11 $ $Date: 2007-02-13 21:02:16 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -141,8 +141,7 @@ public class TLSMessageProcessor extends MessageProcessor {
 					// willing to handle an "infinite" number of
 					// simultaneous connections (no resource limitation).
 					// This is the default behavior.
-					while (this.isRunning
-						&& sipStack.maxConnections != -1
+					while ( sipStack.maxConnections != -1
 						&& this.nConnections >= sipStack.maxConnections) {
 						try {
 							this.wait();
