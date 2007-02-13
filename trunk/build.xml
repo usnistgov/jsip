@@ -341,6 +341,7 @@ c:/jakarta-ant/bin/ant all
 				<target name='runtckcallflows' depends="compiletck" description="Runs all TCK tests using the ant junit task.">
 					<mkdir dir="test-reports" />
 					<mkdir dir="logs" />
+					<copy file="src/test/tck/msgflow/callflows/tls/testkeys" toDir = "classes/test/tck/msgflow/callflows/tls" />
 
 					<junit fork="yes" showoutput="yes" failureproperty="testing.failed">
 						<classpath>
