@@ -65,7 +65,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.68 $ $Date: 2007-02-13 21:02:16 $
+ * @version 1.2 $Revision: 1.69 $ $Date: 2007-02-14 02:04:39 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -877,7 +877,7 @@ public abstract class SIPTransactionStack implements
 	/**
 	 * Put this into the merge request table.
 	 * 
-	 * @param SIPServerTransaction -- transaction to put into the merge table.
+	 * @param sipTransaction -- transaction to put into the merge table.
 	 * 
 	 */
 	public void putInMergeTable(SIPServerTransaction sipTransaction, SIPRequest sipRequest) {
