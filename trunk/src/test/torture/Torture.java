@@ -41,6 +41,8 @@ import java.util.Enumeration;
 import javax.xml.parsers.SAXParserFactory;
 // endif
 import org.xml.sax.Attributes;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -113,6 +115,15 @@ public class Torture extends DefaultHandler implements ParseExceptionListener,
 	private String testMessageType;
 
 	private static final String XML_DOCTYPE_IDENTIFIER = "<?xml version='1.0' encoding='us-ascii'?>";
+	
+	class MyEntityResolver implements  EntityResolver {
+
+		public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+			
+			return new InputSource( Torture.class.getResourceAsStream("torture.dtd"));
+		}
+		
+	}
 
 	class TestLogWriter extends PrintStream {
 		public void println(String stuff) {
@@ -607,17 +618,18 @@ public class Torture extends DefaultHandler implements ParseExceptionListener,
 	}
 	public void doTests() throws Exception {
 		String fileName ;
-		fileName = "src/test/torture/torture.xml";
+		fileName = "torture.xml";
 	
 		try {
 			SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
 			XMLReader saxParser = saxParserFactory.newSAXParser()
 					.getXMLReader();
 
+			saxParser.setEntityResolver(new MyEntityResolver());
 			saxParser.setContentHandler(this);
 			saxParser
 					.setFeature("http://xml.org/sax/features/validation", true);
-			saxParser.parse(fileName);
+			saxParser.parse(new InputSource ( Torture.class.getResourceAsStream(fileName)));
 			System.out.println("Elapsed time = "
 					+ (System.currentTimeMillis() - startTime) / counter);
 			
