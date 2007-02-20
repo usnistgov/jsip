@@ -60,44 +60,27 @@ public class HostNameParser extends ParserCore {
 		lexer.selectLexer("charLexer");
 	}
 
-	protected String domainLabel() throws ParseException {
-		StringBuffer retval = new StringBuffer();
+    private static final char[] VALID_DOMAIN_LABEL_CHAR =
+        new char[] {LexerCore.ALPHADIGIT_VALID_CHARS, '-'};
+    protected void consumeDomainLabel() throws ParseException {
 		if (debug)
 			dbg_enter("domainLabel");
 		try {
-			while (lexer.hasMoreChars()) {
-				char la = lexer.lookAhead(0);
-				if (LexerCore.isAlpha(la)) {
-					lexer.consume(1);
-					retval.append(la);
-				} else if (LexerCore.isDigit(la)) {
-					lexer.consume(1);
-					retval.append(la);
-				} else if (la == '-') {
-					lexer.consume(1);
-					retval.append(la);
-				} else
-					break;
-			}
-			//Debug.println("returning " + retval.toString());
-			return retval.toString();
+            lexer.consumeValidChars(VALID_DOMAIN_LABEL_CHAR);
 		} finally {
 			if (debug)
 				dbg_leave("domainLabel");
 		}
 	}
 
-	protected String ipv6Reference() throws ParseException {
+    protected String ipv6Reference() throws ParseException {
 		StringBuffer retval = new StringBuffer();
 		if (debug)
 			dbg_enter("ipv6Reference");
 		try {
 			while (lexer.hasMoreChars()) {
 				char la = lexer.lookAhead(0);
-				if (LexerCore.isHexDigit(la)) {
-					lexer.consume(1);
-					retval.append(la);
-				} else if (la == '.' || la == ':' || la == '[') {
+				if (LexerCore.isHexDigit(la) || la == '.' || la == ':' || la == '[') {
 					lexer.consume(1);
 					retval.append(la);
 				} else if (la == ']') {
@@ -121,32 +104,30 @@ public class HostNameParser extends ParserCore {
 		if (debug)
 			dbg_enter("host");
 		try {
-			StringBuffer hname = new StringBuffer();
+			String hostname;
 
 			//IPv6 referene
 			if (lexer.lookAhead(0) == '[') {
-				hname.append(ipv6Reference());
+				hostname = ipv6Reference();
 			}
 			//IPv4 address or hostname
 			else {
-				String nextTok = domainLabel();
-				hname.append(nextTok);
+                int startPtr = lexer.getPtr();
+                consumeDomainLabel();
 				// Bug reported by Stuart Woodsford (used to barf on
 				// more than 4 components to the name).
 				while (lexer.hasMoreChars()) {
 					// Reached the end of the buffer.
 					if (lexer.lookAhead(0) == '.') {
 						lexer.consume(1);
-						nextTok = domainLabel();
-						hname.append(".");
-						hname.append(nextTok);
+						consumeDomainLabel();
 					} else
 						break;
 				}
-			}
+                hostname = lexer.getBuffer().substring(startPtr, lexer.getPtr());
+            }
 
-			String hostname = hname.toString();
-			if (hostname.equals(""))
+			if (hostname.length() == 0)
 				throw new ParseException(
 					lexer.getBuffer() + ": Missing host name",
 					lexer.getPtr());
