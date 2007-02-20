@@ -437,8 +437,48 @@ public class LexerCore extends StringTokenizer {
 			return null;
 		}
 	}
+    
+    static final char ALPHA_VALID_CHARS = Character.MAX_VALUE;
+    static final char DIGIT_VALID_CHARS = Character.MAX_VALUE - 1;
+    static final char ALPHADIGIT_VALID_CHARS = Character.MAX_VALUE - 2;
+    public void consumeValidChars(char[] validChars) {
+        int validCharsLength = validChars.length;
+		try {
+			while (hasMoreChars()) {
+				char nextChar = lookAhead(0);
+                boolean isValid = false;
+                for (int i = 0; i < validCharsLength; i++) {
+                    char validChar = validChars[i];
+                    switch(validChar) {
+                        case ALPHA_VALID_CHARS:
+                            isValid = isAlpha(nextChar);
+                            break;
+                        case DIGIT_VALID_CHARS:
+                            isValid = isDigit(nextChar);
+                            break;
+                        case ALPHADIGIT_VALID_CHARS:
+                            isValid = isAlpha(nextChar) || isDigit(nextChar);
+                            break;
+                        default:
+                            isValid = nextChar == validChar;
+                    }
+                    if (isValid) {
+                        break;
+                    }
+                }
+                if (isValid) {
+                    consume(1);
+                }
+                else {
+                    break;
+                }
+            }
+		} catch (ParseException ex) {
+			
+		}
+    }
 
-	/** Parse a comment string cursor is at a ". Leave cursor at closing "
+    /** Parse a comment string cursor is at a ". Leave cursor at closing "
 	*@return the substring containing the quoted string excluding the
 	* closing quote.
 	*/
