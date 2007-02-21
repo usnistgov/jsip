@@ -69,6 +69,8 @@ public class MessageFlowHarness extends TestHarness {
 	protected static final String EXTENSION_HDR = "Status-Extension";
 
 	protected static int counter;
+	
+	
 
 	// timeout values depend on pc, mine is not that powerful :)
 	protected static long MESSAGES_ARRIVE_FOR = 2000;
@@ -154,11 +156,11 @@ public class MessageFlowHarness extends TestHarness {
 	 */
 	public void setUp() throws java.lang.Exception {
 
-		riListeningPoint = riSipStack.createListeningPoint(LOCAL_ADDRESS, 6050,
+		riListeningPoint = riSipStack.createListeningPoint(LOCAL_ADDRESS, RI_PORT,
 				"udp");
 		riSipProvider = riSipStack.createSipProvider(riListeningPoint);
 
-		tiListeningPoint = tiSipStack.createListeningPoint(LOCAL_ADDRESS, 5060,
+		tiListeningPoint = tiSipStack.createListeningPoint(LOCAL_ADDRESS, TI_PORT,
 				"udp");
 		tiSipProvider = tiSipStack.createSipProvider(tiListeningPoint);
 

@@ -63,7 +63,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.26 $ $Date: 2007-02-12 19:45:06 $
+ * @version 1.2 $Revision: 1.27 $ $Date: 2007-02-21 21:47:06 $
  * @since 1.1
  * 
  * @author M. Ranganathan  <br/>
@@ -80,7 +80,7 @@ public final class SIPRequest extends SIPMessage implements
 
 	private Object transactionPointer;
 
-	protected RequestLine requestLine;
+	private RequestLine requestLine;
 
 	private Object messageChannel;
 	
@@ -626,6 +626,11 @@ public final class SIPRequest extends SIPMessage implements
 	 */
 
 	public byte[] encodeAsBytes() {
+		if (this.requestLine == null) {
+			// Encoding a null message. Return 0 byte array.
+			return new byte[0];
+		}
+		
 		byte[] rlbytes = null;
 		if (requestLine != null) {
 			try {
@@ -1152,6 +1157,15 @@ public final class SIPRequest extends SIPMessage implements
 	 */
 	public Object getInviteTransaction() {
 		return inviteTransaction;
+	}
+
+	/**
+	 * Return true if this is a null request (i.e. does not have a request line ).
+	 * 
+	 * @return true  if null request.
+	 */
+	public boolean isNullRequest() {
+			return this.requestLine == null;
 	}
 	
 	

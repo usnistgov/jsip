@@ -39,7 +39,7 @@ import gov.nist.javax.sip.parser.*;
 /**
  *  Message Factory implementation 
  *
- * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-18 10:45:00 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2007-02-21 21:47:05 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
@@ -646,7 +646,7 @@ public class MessageFactoryImpl implements MessageFactory {
 	 */
 	public javax.sip.message.Request createRequest(String requestString)
 		throws java.text.ParseException {
-		if (requestString == null)
+		if ( requestString == null || requestString.equals("") )
 			return new SIPRequest();
 
 		StringMsgParser smp = new StringMsgParser();

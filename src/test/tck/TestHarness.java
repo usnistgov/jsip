@@ -36,8 +36,10 @@ public class TestHarness extends TestCase {
 
 	protected static final String LOCAL_ADDRESS = "127.0.0.1";
 
-	private static final String PATH_RI_HELPER = "test.rihelper";
-
+	protected static final int TI_PORT = 5060;
+	
+	protected static final int RI_PORT = 6050;
+	
 	// Keep these static but initialize from the constructor to allow
 	// changing from the GUI
 	protected static String logFileName = "tcklog.txt";
@@ -482,6 +484,10 @@ public class TestHarness extends TestCase {
 		properties.setProperty(
 				"gov.nist.javax.sip.PASS_INVITE_NON_2XX_ACK_TO_LISTENER",
 				"true");
+		// For testing sending of stateless null keepalive messages.
+		//@see test.tck.msgflow.SipProviderTest.testSendNullRequest
+		properties.setProperty("javax.sip.OUTBOUND_PROXY", LOCAL_ADDRESS + ":" + TI_PORT + "/udp");
+
 
 		return properties;
 	}
@@ -489,6 +495,8 @@ public class TestHarness extends TestCase {
 	/**
 	 * Returns a properties object containing all TI settings. The result from
 	 * this method is passed to the SipFactory when creating the TI Stack
+	 * 
+	 * 
 	 */
 	public static Properties getTiProperties() {
 		// TODO collect all system properties
@@ -506,6 +514,9 @@ public class TestHarness extends TestCase {
 				"logs/tiDebugLog.txt");
 		properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
 				"logs/tiMessageLog.txt");
+		// For testing sending of stateless null keepalive messages.
+		//@see test.tck.msgflow.SipProviderTest.testSendNullRequest
+		properties.setProperty("javax.sip.OUTBOUND_PROXY", LOCAL_ADDRESS + ":" + RI_PORT + "/udp");
 
 		return properties;
 	}
