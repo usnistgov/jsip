@@ -222,7 +222,7 @@ import gov.nist.core.net.NetworkLayer;
  * </ul>
  *
  * 
- * @version 1.2 $Revision: 1.60 $ $Date: 2007-02-13 21:02:18 $
+ * @version 1.2 $Revision: 1.61 $ $Date: 2007-02-21 21:47:05 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -329,6 +329,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 
 		// Default router -- use this for routing SIP URIs.
 		// Our router does not do DNS lookups.
+		this.outboundProxy = configurationProperties
+			.getProperty("javax.sip.OUTBOUND_PROXY");
 
 		this.defaultRouter = new DefaultRouter(this, outboundProxy);
 
@@ -337,8 +339,6 @@ public class SipStackImpl extends SIPTransactionStack implements
 				.getProperty("javax.sip.ROUTER_PATH");
 		if (routerPath == null)
 			routerPath = "gov.nist.javax.sip.stack.DefaultRouter";
-		String outboundProxy = configurationProperties
-				.getProperty("javax.sip.OUTBOUND_PROXY");
 
 		try {
 			Class routerClass = Class.forName(routerPath);

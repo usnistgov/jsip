@@ -65,7 +65,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.69 $ $Date: 2007-02-14 02:04:39 $
+ * @version 1.2 $Revision: 1.70 $ $Date: 2007-02-21 21:47:04 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -1571,7 +1571,9 @@ public abstract class SIPTransactionStack implements
 	 * @return Router router
 	 */
 	public Router getRouter(SIPRequest request) {
-		if (this.useRouterForAll) {
+		if ( request.getRequestLine() == null ) {
+			return this.defaultRouter;
+		} else if (this.useRouterForAll) {
 			return this.router;
 		} else {
 			if (request.getRequestURI().getScheme().equals("sip")

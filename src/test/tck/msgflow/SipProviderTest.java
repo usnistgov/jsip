@@ -87,6 +87,43 @@ public class SipProviderTest extends MessageFlowHarness {
 		}
 		assertTrue(new Exception().getStackTrace()[0].toString(), true);
 	}
+	/**
+	 *Sends a empty request and assures that the other side does not see the request.
+	 *
+	 */
+	public void testSendNullRequest() {
+		try {
+			try {
+				Request nullRequest = riMessageFactory.createRequest("");
+				
+				//Send using RI and collect using TI
+				eventCollector.collectRequestEvent(tiSipProvider);
+				riSipProvider.sendRequest(nullRequest);
+				waitForMessage();
+				RequestEvent receivedRequestEvent =
+					eventCollector.extractCollectedRequestEvent();
+				
+				if (receivedRequestEvent != null )
+					throw new TiUnexpectedError("The the sent null string request should not generate a request event!");
+			} catch (TooManyListenersException ex) {
+				throw new TiUnexpectedError(
+					"A TooManyListenersException was thrown while trying to add "
+						+ "a SipListener to a TI SipProvider.",
+					ex);
+			} catch (SipException ex) {
+				throw new TckInternalError(
+					"The RI failed to send the request!",
+					ex);
+			} catch (ParseException ex) {
+				throw new TiUnexpectedError("The null request did not parse and create an empty message!");
+			}
+		
+		} catch (Throwable exc) {
+			exc.printStackTrace();
+			fail(exc.getClass().getName() + ": " + exc.getMessage());
+		}
+		assertTrue(new Exception().getStackTrace()[0].toString(), true);	
+	}
 
 	/**
 	 * Send a simple invite request from the RI and check whether it is properly
@@ -493,7 +530,7 @@ public class SipProviderTest extends MessageFlowHarness {
 		}
 		assertTrue(new Exception().getStackTrace()[0].toString(), true);
 	}
-
+	
 	//==================== end of tests
 
 	//====== STATIC JUNIT ==========
