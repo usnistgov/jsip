@@ -64,8 +64,6 @@ public class ProtocolObjects {
 		// Dont use the router for all requests.
 		properties.setProperty("javax.sip.USE_ROUTER_FOR_ALL_URIS", "false");
 		
-		//The outbound proxy
-		properties.setProperty("javax.sip.OUTBOUND_PROXY", "5080");
 		
 		properties.setProperty("gov.nist.javax.sip.THREAD_POOL_SIZE", "1");
 
@@ -80,6 +78,10 @@ public class ProtocolObjects {
 		try {
 			// Create SipStack object
 			sipStack = sipFactory.createSipStack(properties);
+			
+			NonSipUriRouter router = (NonSipUriRouter) sipStack.getRouter();
+			
+			router.setMyPort(5080);
 
 			System.out.println("createSipStack " + sipStack);
 		} catch (Exception e) {

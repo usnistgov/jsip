@@ -2,6 +2,7 @@ package test.tck.msgflow.callflows;
 
 import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.StringTokenizer;
 
 import javax.sip.SipException;
 import javax.sip.SipStack;
@@ -42,13 +43,14 @@ public class NonSipUriRouter implements Router {
 		
 	}
 	public NonSipUriRouter( SipStack sipStack, String outboundProxy) {
-		try {
-		this.myPort = Integer.parseInt(outboundProxy);
-		} catch ( Exception ex ) {
-			TestCase.fail("Unexpected exception ");
-		}
+		
 		
 	}
+	
+	public void setMyPort ( int myPort ) {
+		this.myPort = myPort;
+	}
+	
 	public Hop getOutboundProxy() {
 		
 		return new HopImpl();

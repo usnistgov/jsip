@@ -55,7 +55,7 @@ import java.util.*;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.24 $ $Date: 2007-02-12 15:19:25 $
+ * @version 1.2 $Revision: 1.25 $ $Date: 2007-02-21 21:47:06 $
  * @since 1.1
  * 
  * @author M. Ranganathan  <br/>
@@ -1218,11 +1218,11 @@ public abstract class SIPMessage extends MessageObject implements
 		if (content == null)
 			throw new NullPointerException("null content");
 		this.setHeader(contentTypeHeader);
-		if (content instanceof String) {
-			this.messageContent = (String) content;
-		} else if (content instanceof byte[]) {
+		if (content instanceof byte[]) {
 			this.messageContentBytes = (byte[]) content;
-		} else
+		} else  if (content instanceof String) {
+			this.messageContent = (String) content;
+		} else 
 			this.messageContentObject = content;
 
 		computeContentLength(content);
@@ -1236,10 +1236,10 @@ public abstract class SIPMessage extends MessageObject implements
 	public Object getContent() {
 		if (this.messageContentObject != null)
 			return messageContentObject;
-		else if (this.messageContentBytes != null)
-			return this.messageContentBytes;
 		else if (this.messageContent != null)
 			return this.messageContent;
+		else if (this.messageContentBytes != null)
+			return this.messageContentBytes;	
 		else
 			return null;
 	}

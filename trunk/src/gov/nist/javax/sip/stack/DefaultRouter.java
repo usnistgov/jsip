@@ -1,28 +1,28 @@
 /*
-* Conditions Of Use 
-* 
-* This software was developed by employees of the National Institute of
-* Standards and Technology (NIST), an agency of the Federal Government.
-* Pursuant to title 15 Untied States Code Section 105, works of NIST
-* employees are not subject to copyright protection in the United States
-* and are considered to be in the public domain.  As a result, a formal
-* license is not needed to use the software.
-* 
-* This software is provided by NIST as a service and is expressly
-* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
-* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
-* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
-* AND DATA ACCURACY.  NIST does not warrant or make any representations
-* regarding the use of the software or the results thereof, including but
-* not limited to the correctness, accuracy, reliability or usefulness of
-* the software.
-* 
-* Permission to use this software is contingent upon your acceptance
-* of the terms of this agreement
-*  
-* .
-* 
-*/
+ * Conditions Of Use 
+ * 
+ * This software was developed by employees of the National Institute of
+ * Standards and Technology (NIST), an agency of the Federal Government.
+ * Pursuant to title 15 Untied States Code Section 105, works of NIST
+ * employees are not subject to copyright protection in the United States
+ * and are considered to be in the public domain.  As a result, a formal
+ * license is not needed to use the software.
+ * 
+ * This software is provided by NIST as a service and is expressly
+ * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+ * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+ * AND DATA ACCURACY.  NIST does not warrant or make any representations
+ * regarding the use of the software or the results thereof, including but
+ * not limited to the correctness, accuracy, reliability or usefulness of
+ * the software.
+ * 
+ * Permission to use this software is contingent upon your acceptance
+ * of the terms of this agreement
+ *  
+ * .
+ * 
+ */
 /*******************************************************************************
  * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).       *
  ******************************************************************************/
@@ -47,9 +47,9 @@ import javax.sip.address.*;
 /*
  * Bug reported by Will Scullin -- maddr was being ignored when routing
  * requests. Bug reported by Antonis Karydas - the RequestURI can be a non-sip
- * URI Jiang He - use address in route header. Significant changes to conform 
- * to RFC 3261 made by Jeroen van Bemmel. Hagai Sela contributed a bug fix
- * to the strict route post processing code.
+ * URI Jiang He - use address in route header. Significant changes to conform to
+ * RFC 3261 made by Jeroen van Bemmel. Hagai Sela contributed a bug fix to the
+ * strict route post processing code.
  * 
  */
 
@@ -90,30 +90,40 @@ import javax.sip.address.*;
  * Subsequently, the request URI will be used as next hop target
  * 
  * 
- * @version 1.2 $Revision: 1.9 $ $Date: 2006-09-10 21:14:29 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2007-02-21 21:47:04 $
  * 
  * @author M. Ranganathan <br/>
  * 
  */
 public class DefaultRouter implements Router {
 
-	protected final SipStackImpl sipStack;
+	private SipStackImpl sipStack;
 
-	protected Hop defaultRoute;
+	private Hop defaultRoute;
+
+	private DefaultRouter() {
+
+	}
 
 	/**
 	 * Constructor.
 	 */
 	public DefaultRouter(SipStack sipStack, String defaultRoute) {
 		this.sipStack = (SipStackImpl) sipStack;
-
 		if (defaultRoute != null) {
-			this.defaultRoute = (Hop)
-				this.sipStack.getAddressResolver().resolveAddress((Hop)(new HopImpl(defaultRoute)));
+			try {
+				this.defaultRoute = (Hop) this.sipStack.getAddressResolver()
+						.resolveAddress((Hop) (new HopImpl(defaultRoute)));
+			} catch (IllegalArgumentException ex) {
+				// The outbound proxy is optional. If specified it should be host:port/transport.
+				((SIPTransactionStack) sipStack)
+						.getLogWriter()
+						.logError(
+								"Invalid default route specification - need host:port/transport");
+				throw ex;
+			}
 		}
 	}
-
-	
 
 	/**
 	 * Return addresses for default proxy to forward the request to. The list is
@@ -152,8 +162,10 @@ public class DefaultRouter implements Router {
 		SIPRequest sipRequest = (SIPRequest) request;
 
 		RequestLine requestLine = sipRequest.getRequestLine();
-		if (requestLine == null)
-			throw new IllegalArgumentException("Bad message");
+		if (requestLine == null) {
+			System.out.println("Returning default route" + defaultRoute);
+			return defaultRoute;
+		}
 		javax.sip.address.URI requestURI = requestLine.getUri();
 		if (requestURI == null)
 			throw new IllegalArgumentException("Bad message: Null requestURI");
@@ -195,8 +207,8 @@ public class DefaultRouter implements Router {
 
 				Hop hop = createHop(sipUri);
 				if (sipStack.isLoggingEnabled())
-					sipStack.logWriter.logDebug("NextHop based on Route:"
-							+ hop);
+					sipStack.logWriter
+							.logDebug("NextHop based on Route:" + hop);
 				return hop;
 			} else {
 				throw new SipException("First Route not a SIP URI");
@@ -222,37 +234,39 @@ public class DefaultRouter implements Router {
 			if (hop != null && sipStack.isLoggingEnabled())
 				sipStack.logWriter.logDebug("Used request-URI for nextHop = "
 						+ hop.toString());
-			else if ( sipStack.isLoggingEnabled()) {
-				sipStack.logWriter.logDebug("returning null hop -- loop detected");
+			else if (sipStack.isLoggingEnabled()) {
+				sipStack.logWriter
+						.logDebug("returning null hop -- loop detected");
 			}
 			return hop;
 
 		} else {
 			// The internal router should never be consulted for non-sip URIs.
-			InternalErrorHandler.handleException("Unexpected non-sip URI", this.sipStack.logWriter);
+			InternalErrorHandler.handleException("Unexpected non-sip URI",
+					this.sipStack.logWriter);
 			return null;
 		}
 
 	}
 
 	/**
-	 * Performs strict router fix according to RFC3261 section 16.6 step 6 
+	 * Performs strict router fix according to RFC3261 section 16.6 step 6
 	 * 
 	 * pre: top route header in request has no 'lr' parameter in URI post:
 	 * request-URI added as last route header, new req-URI = top-route-URI
 	 */
 	public void fixStrictRouting(SIPRequest req) {
-		
+
 		RouteList routes = req.getRouteHeaders();
 		Route first = (Route) routes.getFirst();
 		SipUri firstUri = (SipUri) first.getAddress().getURI();
 		routes.removeFirst();
-		
+
 		// Add request-URI as last Route entry
 		AddressImpl addr = new AddressImpl();
 		addr.setAddess(req.getRequestURI()); // don't clone it
 		Route route = new Route(addr);
-		
+
 		routes.add(route); // as last one
 		req.setRequestURI(firstUri);
 		if (sipStack.getLogWriter().isLoggingEnabled()) {
@@ -286,8 +300,9 @@ public class DefaultRouter implements Router {
 		String host = sipUri.getMAddrParam() != null ? sipUri.getMAddrParam()
 				: sipUri.getHost();
 		AddressResolver addressResolver = this.sipStack.getAddressResolver();
-		return addressResolver.resolveAddress( new HopImpl(host, port, transport));
-		
+		return addressResolver
+				.resolveAddress(new HopImpl(host, port, transport));
+
 	}
 
 	/**
@@ -301,8 +316,6 @@ public class DefaultRouter implements Router {
 	public javax.sip.address.Hop getOutboundProxy() {
 		return this.defaultRoute;
 	}
-
-
 
 	/*
 	 * (non-Javadoc)
