@@ -90,7 +90,7 @@ import javax.sip.address.*;
  * Subsequently, the request URI will be used as next hop target
  * 
  * 
- * @version 1.2 $Revision: 1.10 $ $Date: 2007-02-21 21:47:04 $
+ * @version 1.2 $Revision: 1.11 $ $Date: 2007-02-22 21:00:57 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -163,7 +163,6 @@ public class DefaultRouter implements Router {
 
 		RequestLine requestLine = sipRequest.getRequestLine();
 		if (requestLine == null) {
-			System.out.println("Returning default route" + defaultRoute);
 			return defaultRoute;
 		}
 		javax.sip.address.URI requestURI = requestLine.getUri();
