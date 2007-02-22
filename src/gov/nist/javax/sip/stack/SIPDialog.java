@@ -59,7 +59,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.46 $ $Date: 2007-02-22 22:34:11 $
+ * @version 1.2 $Revision: 1.47 $ $Date: 2007-02-22 22:47:08 $
  * 
  * @author M. Ranganathan
  * 
@@ -1730,8 +1730,6 @@ public class SIPDialog implements javax.sip.Dialog {
 								+ oldTLSChannel.useCount);
 				}
 			}
-			((SIPClientTransaction) clientTransactionId)
-					.setEncapsulatedChannel(messageChannel);
 
 			if (messageChannel == null) {
 				// At this point the procedures of 8.1.2
@@ -1758,12 +1756,16 @@ public class SIPDialog implements javax.sip.Dialog {
 				Hop outboundProxy = sipStack.getRouter(dialogRequest)
 						.getOutboundProxy();
 				if (outboundProxy == null)
-					throw new SipException("No route found!");
+					throw new SipException("No route found! hop=" + hop );
 				messageChannel = sipStack.createRawMessageChannel(
 						this.firstTransaction.getPort(), outboundProxy);
-				((SIPClientTransaction) clientTransactionId)
+				if (messageChannel!=null)
+					((SIPClientTransaction) clientTransactionId)
 						.setEncapsulatedChannel(messageChannel);
 			} else {
+				((SIPClientTransaction) clientTransactionId)
+					.setEncapsulatedChannel(messageChannel);				
+				
 				if (sipStack.isLoggingEnabled())
 					sipStack.logWriter.logDebug("using message channel "
 							+ messageChannel);
