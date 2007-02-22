@@ -59,7 +59,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.45 $ $Date: 2007-02-12 19:45:30 $
+ * @version 1.2 $Revision: 1.46 $ $Date: 2007-02-22 22:34:11 $
  * 
  * @author M. Ranganathan
  * 
@@ -1785,7 +1785,7 @@ public class SIPDialog implements javax.sip.Dialog {
 		} catch (Exception ex) {
 			if (sipStack.isLoggingEnabled())
 				sipStack.logWriter.logException(ex);
-			throw new SipException("Cold not create message channel");
+			throw new SipException("Could not create message channel", ex);
 		}
 
 		try {
@@ -1809,7 +1809,7 @@ public class SIPDialog implements javax.sip.Dialog {
 				this.byeSent = true;
 			}
 		} catch (IOException ex) {
-			throw new SipException("error sending message");
+			throw new SipException("error sending message", ex);
 		}
 
 	}
