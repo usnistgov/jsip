@@ -25,9 +25,8 @@
 */
 package gov.nist.core;
 
-import java.util.Hashtable;
-import java.util.Vector;
 import java.text.ParseException;
+import java.util.Hashtable;
 
 /** A lexical analyzer that is used by all parsers in our implementation.
  *
@@ -165,22 +164,23 @@ public class LexerCore extends StringTokenizer {
 	/** Look ahead for one token.
 	 */
 	public Token peekNextToken() throws ParseException {
-		return (Token) peekNextToken(1).elementAt(0);
+		return (Token) peekNextToken(1)[0];
 	}
 
-	public Vector peekNextToken(int ntokens) throws ParseException {
+	public Token[] peekNextToken(int ntokens) throws ParseException {
 		int old = ptr;
-		Vector retval = new Vector();
+		Token[] retval = new Token[ntokens];
 		for (int i = 0; i < ntokens; i++) {
 			Token tok = new Token();
 			if (startsId()) {
 				String id = ttoken();
 				tok.tokenValue = id;
-				if (currentLexer.containsKey(id.toUpperCase())) {
-					Integer type = (Integer) currentLexer.get(id.toUpperCase());
-					tok.tokenType = type.intValue();
-				} else
-					tok.tokenType = ID;
+                String idUppercase = id.toUpperCase();
+                if (currentLexer.containsKey(idUppercase)) {
+                    Integer type = (Integer) currentLexer.get(idUppercase);
+                    tok.tokenType = type.intValue();
+                } else
+                    tok.tokenType = ID;
 			} else {
 				char nextChar = getNextChar();
 				tok.tokenValue = String.valueOf(nextChar);
@@ -191,7 +191,7 @@ public class LexerCore extends StringTokenizer {
 				} else
 					tok.tokenType = (int) nextChar;
 			}
-			retval.addElement(tok);
+			retval[i] = tok;
 		}
 		savedPtr = ptr;
 		ptr = old;
