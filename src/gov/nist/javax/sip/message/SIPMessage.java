@@ -55,7 +55,7 @@ import java.util.*;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.25 $ $Date: 2007-02-21 21:47:06 $
+ * @version 1.2 $Revision: 1.26 $ $Date: 2007-02-23 14:56:05 $
  * @since 1.1
  * 
  * @author M. Ranganathan  <br/>
@@ -604,13 +604,14 @@ public abstract class SIPMessage extends MessageObject implements
 			h = header;
 		}
 
-		if (replaceFlag) {
-			nameTable.remove(header.getName().toLowerCase());
-		} else if (nameTable.containsKey(header.getName().toLowerCase())
+        String headerNameLowerCase = SIPHeaderNamesCache.toLowerCase(h.getName());
+        if (replaceFlag) {
+			nameTable.remove(headerNameLowerCase);
+		} else if (nameTable.containsKey(headerNameLowerCase)
 				&& !(h instanceof SIPHeaderList)) {
 			if (h instanceof ContentLength) {
 				try {
-					ContentLength cl = (ContentLength) header;
+					ContentLength cl = (ContentLength) h;
 					contentLengthHeader.setContentLength(cl.getContentLength());
 				} catch (InvalidArgumentException e) {
 				}
@@ -624,7 +625,6 @@ public abstract class SIPMessage extends MessageObject implements
 		// Delete the original header from our list structure.
 		if (originalHeader != null) {
 			ListIterator li = headers.listIterator();
-
 			while (li.hasNext()) {
 				SIPHeader next = (SIPHeader) li.next();
 				if (next.equals(originalHeader)) {
@@ -633,19 +633,18 @@ public abstract class SIPMessage extends MessageObject implements
 			}
 		}
 
-		if (getHeader(header.getName()) == null) {
-			nameTable.put(header.getName().toLowerCase(), h);
+		if (!nameTable.containsKey(headerNameLowerCase)) {
+			nameTable.put(headerNameLowerCase, h);
 			headers.add(h);
 		} else {
 			if (h instanceof SIPHeaderList) {
-				SIPHeaderList hdrlist = (SIPHeaderList) nameTable.get(header
-						.getName().toLowerCase());
+				SIPHeaderList hdrlist = (SIPHeaderList) nameTable.get(headerNameLowerCase);
 				if (hdrlist != null)
 					hdrlist.concatenate((SIPHeaderList) h, top);
 				else
-					nameTable.put(h.getName().toLowerCase(), h);
+					nameTable.put(headerNameLowerCase, h);
 			} else {
-				nameTable.put(h.getName().toLowerCase(), h);
+				nameTable.put(headerNameLowerCase, h);
 			}
 		}
 
@@ -677,8 +676,8 @@ public abstract class SIPMessage extends MessageObject implements
 	 */
 	public void removeHeader(String headerName, boolean top) {
 
-		SIPHeader toRemove = (SIPHeader) nameTable
-				.get(headerName.toLowerCase());
+        String headerNameLowerCase = SIPHeaderNamesCache.toLowerCase(headerName);
+        SIPHeader toRemove = (SIPHeader) nameTable.get(headerNameLowerCase);
 		// nothing to do then we are done.
 		if (toRemove == null)
 			return;
@@ -693,15 +692,15 @@ public abstract class SIPMessage extends MessageObject implements
 				ListIterator li = this.headers.listIterator();
 				while (li.hasNext()) {
 					SIPHeader sipHeader = (SIPHeader) li.next();
-					if (sipHeader.getName().equalsIgnoreCase(headerName))
+					if (sipHeader.getName().equalsIgnoreCase(headerNameLowerCase))
 						li.remove();
 				}
 				
 				// JvB: also remove it from the nameTable! Else NPE in DefaultRouter
-				nameTable.remove( headerName.toLowerCase() );
+				nameTable.remove(headerNameLowerCase);
 			}
 		} else {
-			this.nameTable.remove(headerName.toLowerCase());
+			this.nameTable.remove(headerNameLowerCase);
 			if (toRemove instanceof From) {
 				this.fromHeader = null;
 			} else if (toRemove instanceof To) {
@@ -735,31 +734,31 @@ public abstract class SIPMessage extends MessageObject implements
 
 		if (headerName == null)
 			throw new NullPointerException("null arg");
-		SIPHeader toRemove = (SIPHeader) nameTable
-				.get(headerName.toLowerCase());
+        String headerNameLowerCase = SIPHeaderNamesCache.toLowerCase(headerName);
+        SIPHeader removed = (SIPHeader) nameTable.remove(headerNameLowerCase);
 		// nothing to do then we are done.
-		if (toRemove == null)
+		if (removed == null)
 			return;
-		nameTable.remove(headerName.toLowerCase());
+
 		// Remove the fast accessor fields.
-		if (toRemove instanceof From) {
+		if (removed instanceof From) {
 			this.fromHeader = null;
-		} else if (toRemove instanceof To) {
+		} else if (removed instanceof To) {
 			this.toHeader = null;
-		} else if (toRemove instanceof CSeq) {
+		} else if (removed instanceof CSeq) {
 			this.cSeqHeader = null;
-		} else if (toRemove instanceof CallID) {
+		} else if (removed instanceof CallID) {
 			this.callIdHeader = null;
-		} else if (toRemove instanceof MaxForwards) {
+		} else if (removed instanceof MaxForwards) {
 			this.maxForwardsHeader = null;
-		} else if (toRemove instanceof ContentLength) {
+		} else if (removed instanceof ContentLength) {
 			this.contentLengthHeader = null;
 		}
 
 		ListIterator li = this.headers.listIterator();
 		while (li.hasNext()) {
 			SIPHeader sipHeader = (SIPHeader) li.next();
-			if (sipHeader.getName().equalsIgnoreCase(headerName))
+			if (sipHeader.getName().equalsIgnoreCase(headerNameLowerCase))
 				li.remove();
 
 		}
@@ -869,26 +868,30 @@ public abstract class SIPMessage extends MessageObject implements
 	 * @return header -- the first header of the given name.
 	 */
 	public Header getHeader(String headerName) {
-		if (headerName == null)
+		return getHeaderLowerCase(SIPHeaderNamesCache.toLowerCase(headerName));
+	}
+    
+    private Header getHeaderLowerCase(String lowerCaseHeaderName) {
+		if (lowerCaseHeaderName == null)
 			throw new NullPointerException("bad name");
-		SIPHeader sipHeader = (SIPHeader) this.nameTable.get(headerName
-				.toLowerCase());
+		SIPHeader sipHeader = (SIPHeader) nameTable.get(lowerCaseHeaderName);
 		if (sipHeader instanceof SIPHeaderList)
 			return (Header) ((SIPHeaderList) sipHeader).getFirst();
 		else
 			return (Header) sipHeader;
-	}
+    }
 
-	/**
+    /**
 	 * Get the contentType header (null if one does not exist).
 	 * 
 	 * @return contentType header
 	 */
-	public ContentType getContentTypeHeader() {
-		return (ContentType) this.getHeader(ContentTypeHeader.NAME);
+    public ContentType getContentTypeHeader() {
+		return (ContentType) getHeaderLowerCase(CONTENT_TYPE_LOWERCASE);
 	}
+    private static final String CONTENT_TYPE_LOWERCASE = SIPHeaderNamesCache.toLowerCase(ContentTypeHeader.NAME);
 
-	/**
+    /**
 	 * Get the from header.
 	 * 
 	 * @return -- the from header.
@@ -903,18 +906,21 @@ public abstract class SIPMessage extends MessageObject implements
 	 * @return List containing ErrorInfo headers.
 	 */
 	public ErrorInfoList getErrorInfoHeaders() {
-		return (ErrorInfoList) this.getSIPHeaderList(ErrorInfo.NAME);
+		return (ErrorInfoList) getSIPHeaderListLowerCase(ERROR_LOWERCASE);
 	}
+    private static final String ERROR_LOWERCASE = SIPHeaderNamesCache.toLowerCase(ErrorInfo.NAME);
 
-	/**
+    /**
 	 * Get the Contact list of headers (null if one does not exist).
 	 * 
 	 * @return List containing Contact headers.
 	 */
 	public ContactList getContactHeaders() {
-		return (ContactList) this.getSIPHeaderList(ContactHeader.NAME);
+		return (ContactList) this.getSIPHeaderListLowerCase(CONTACT_LOWERCASE);
 	}
-	/**
+    private static final String CONTACT_LOWERCASE = SIPHeaderNamesCache.toLowerCase(ContactHeader.NAME);
+    
+    /**
 	 * Get the contact header ( the first contact header) which is all
 	 * we need for the most part.
 	 * 
@@ -935,10 +941,11 @@ public abstract class SIPMessage extends MessageObject implements
 	 * @return List containing Via headers.
 	 */
 	public ViaList getViaHeaders() {
-		return (ViaList) getSIPHeaderList(ViaHeader.NAME);
+		return (ViaList) getSIPHeaderListLowerCase(VIA_LOWERCASE);
 	}
+    private static final String VIA_LOWERCASE = SIPHeaderNamesCache.toLowerCase(ViaHeader.NAME);
 
-	/**
+    /**
 	 * Set A list of via headers.
 	 * 
 	 * @param viaList
@@ -992,10 +999,11 @@ public abstract class SIPMessage extends MessageObject implements
 	 * @return Authorization header.
 	 */
 	public Authorization getAuthorization() {
-		return (Authorization) this.getHeader(AuthorizationHeader.NAME);
+		return (Authorization) getHeaderLowerCase(AUTHORIZATION_LOWERCASE);
 	}
+    private static final String AUTHORIZATION_LOWERCASE = SIPHeaderNamesCache.toLowerCase(AuthorizationHeader.NAME);
 
-	/**
+    /**
 	 * Get the MaxForwards header (null if one does not exist).
 	 * 
 	 * @return Max-Forwards header
@@ -1021,10 +1029,11 @@ public abstract class SIPMessage extends MessageObject implements
 	 * @return List containing Route headers
 	 */
 	public RouteList getRouteHeaders() {
-		return (RouteList) getSIPHeaderList(RouteHeader.NAME);
+		return (RouteList) getSIPHeaderListLowerCase(ROUTE_LOWERCASE);
 	}
+    private static final String ROUTE_LOWERCASE = SIPHeaderNamesCache.toLowerCase(RouteHeader.NAME);
 
-	/**
+    /**
 	 * Get the CallID header (null if one does not exist)
 	 * 
 	 * @return Call-ID header .
@@ -1062,10 +1071,11 @@ public abstract class SIPMessage extends MessageObject implements
 	 * @return Record-Route header
 	 */
 	public RecordRouteList getRecordRouteHeaders() {
-		return (RecordRouteList) this.getSIPHeaderList(RecordRouteHeader.NAME);
+		return (RecordRouteList) this.getSIPHeaderListLowerCase(RECORDROUTE_LOWERCASE);
 	}
+    private static final String RECORDROUTE_LOWERCASE = SIPHeaderNamesCache.toLowerCase(RecordRouteHeader.NAME);
 
-	/**
+    /**
 	 * Get the To header (null if one does not exist).
 	 * 
 	 * @return To header
@@ -1107,8 +1117,7 @@ public abstract class SIPMessage extends MessageObject implements
 		if (this.messageContent == null && this.messageContentBytes == null)
 			return null;
 		else if (this.messageContent == null) {
-			ContentType contentTypeHeader = (ContentType) this.nameTable
-					.get(ContentType.NAME.toLowerCase());
+			ContentType contentTypeHeader = getContentTypeHeader();
 			if (contentTypeHeader != null) {
 				String charset = contentTypeHeader.getCharset();
 				if (charset != null) {
@@ -1141,8 +1150,7 @@ public abstract class SIPMessage extends MessageObject implements
 			} else if (this.messageContentObject != null) {
 				String messageContent = this.messageContentObject.toString();
 				byte[] messageContentBytes;
-				ContentType contentTypeHeader = (ContentType) this.nameTable
-						.get(ContentTypeHeader.NAME.toLowerCase());
+				ContentType contentTypeHeader = getContentTypeHeader();
 				if (contentTypeHeader != null) {
 					String charset = contentTypeHeader.getCharset();
 					if (charset != null) {
@@ -1157,8 +1165,7 @@ public abstract class SIPMessage extends MessageObject implements
 				return messageContentBytes;
 			} else if (this.messageContent != null) {
 				byte[] messageContentBytes;
-				ContentType contentTypeHeader = (ContentType) this.nameTable
-						.get(ContentTypeHeader.NAME.toLowerCase());
+				ContentType contentTypeHeader = getContentTypeHeader();
 				if (contentTypeHeader != null) {
 					String charset = contentTypeHeader.getCharset();
 					if (charset != null) {
@@ -1304,8 +1311,7 @@ public abstract class SIPMessage extends MessageObject implements
 		if (content != null) {
 			if (content instanceof String) {
 				String charset = null;
-				ContentType contentTypeHeader = (ContentType) this.nameTable
-						.get(ContentTypeHeader.NAME.toLowerCase());
+				ContentType contentTypeHeader = getContentTypeHeader();
 				if (contentTypeHeader != null) {
 					charset = contentTypeHeader.getCharset();
 				}
@@ -1354,8 +1360,7 @@ public abstract class SIPMessage extends MessageObject implements
 	public ListIterator getHeaders(String headerName) {
 		if (headerName == null)
 			throw new NullPointerException("null headerName");
-		SIPHeader sipHeader = (SIPHeader) nameTable.get(headerName
-				.toLowerCase());
+		SIPHeader sipHeader = (SIPHeader) nameTable.get(SIPHeaderNamesCache.toLowerCase(headerName));
 		// empty iterator
 		if (sipHeader == null)
 			return new LinkedList().listIterator();
@@ -1366,13 +1371,12 @@ public abstract class SIPMessage extends MessageObject implements
 		}
 	}
 
-	private SIPHeaderList getSIPHeaderList(String headerName) {
-		return (SIPHeaderList) nameTable.get(headerName.toLowerCase());
+    private SIPHeaderList getSIPHeaderListLowerCase(String lowerCaseHeaderName) {
+		return (SIPHeaderList) nameTable.get(lowerCaseHeaderName);
 	}
 
 	private LinkedList getHeaderList(String headerName) {
-		SIPHeader sipHeader = (SIPHeader) nameTable.get(headerName
-				.toLowerCase());
+		SIPHeader sipHeader = (SIPHeader) nameTable.get(SIPHeaderNamesCache.toLowerCase(headerName));
 		if (sipHeader == null)
 			return null;
 		else if (sipHeader instanceof SIPHeaderList)
@@ -1392,7 +1396,7 @@ public abstract class SIPMessage extends MessageObject implements
 	 * @return true if the header is present in the message
 	 */
 	public boolean hasHeader(String headerName) {
-		return nameTable.containsKey(headerName.toLowerCase());
+		return nameTable.containsKey(SIPHeaderNamesCache.toLowerCase(headerName));
 	}
 
 	/**
@@ -1560,8 +1564,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 		while (it.hasNext()) {
 			SIPHeader mine = (SIPHeader) it.next();
-			SIPHeader his = (SIPHeader) (otherMessage.nameTable.get(mine
-					.getName().toLowerCase()));
+			SIPHeader his = (SIPHeader) (otherMessage.nameTable.get(SIPHeaderNamesCache.toLowerCase(mine.getName())));
 			if (his == null) {
 				return false;
 			} else if (!his.equals(mine)) {
@@ -1577,41 +1580,41 @@ public abstract class SIPMessage extends MessageObject implements
 	 * @return the contentDisposition header
 	 */
 	public javax.sip.header.ContentDispositionHeader getContentDisposition() {
-		return (ContentDispositionHeader) this
-				.getHeader(ContentDispositionHeader.NAME);
+		return (ContentDispositionHeader) getHeaderLowerCase(CONTENT_DISPOSITION_LOWERCASE);
 	}
+    private static final String CONTENT_DISPOSITION_LOWERCASE = SIPHeaderNamesCache.toLowerCase(ContentDispositionHeader.NAME); 
 
-	/**
+    /**
 	 * get the content encoding header.
 	 * 
 	 * @return the contentEncoding header.
 	 */
 	public javax.sip.header.ContentEncodingHeader getContentEncoding() {
-		return (ContentEncodingHeader) this
-				.getHeader(ContentEncodingHeader.NAME);
+		return (ContentEncodingHeader) getHeaderLowerCase(CONTENT_ENCODING_LOWERCASE);
 	}
+    private static final String CONTENT_ENCODING_LOWERCASE = SIPHeaderNamesCache.toLowerCase(ContentEncodingHeader.NAME);
 
-	/**
+    /**
 	 * Get the contentLanguage header.
 	 * 
 	 * @return the content language header.
 	 */
 	public javax.sip.header.ContentLanguageHeader getContentLanguage() {
-		return (ContentLanguageHeader) getHeader(ContentLanguageHeader.NAME);
-
+		return (ContentLanguageHeader) getHeaderLowerCase(CONTENT_LANGUAGE_LOWERCASE);
 	}
+    private static final String CONTENT_LANGUAGE_LOWERCASE = SIPHeaderNamesCache.toLowerCase(ContentLanguageHeader.NAME);
 
-	/**
+    /**
 	 * Get the exipres header.
 	 * 
 	 * @return the expires header or null if one does not exist.
 	 */
 	public javax.sip.header.ExpiresHeader getExpires() {
-		return (ExpiresHeader) getHeader(ExpiresHeader.NAME);
-
+		return (ExpiresHeader) getHeaderLowerCase(EXPIRES_LOWERCASE);
 	}
+    private static final String EXPIRES_LOWERCASE = SIPHeaderNamesCache.toLowerCase(ExpiresHeader.NAME);
 
-	/**
+    /**
 	 * Set the expiresHeader
 	 * 
 	 * @param expiresHeader --

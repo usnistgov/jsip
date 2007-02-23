@@ -33,7 +33,7 @@ import java.util.Vector;
 /**
  * Parser For SIP and Tel URLs. Other kinds of URL's are handled by the 
  * J2SE 1.4 URL class.
- * @version 1.2 $Revision: 1.21 $ $Date: 2007-02-12 21:40:12 $
+ * @version 1.2 $Revision: 1.22 $ $Date: 2007-02-23 14:56:06 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -315,9 +315,9 @@ public class URLParser extends Parser {
 		if (debug)
 			dbg_enter("uriReference");
 		GenericURI retval = null;
-		Vector vect = lexer.peekNextToken(2);
-		Token t1 = (Token) vect.elementAt(0);
-		Token t2 = (Token) vect.elementAt(1);
+		Token[] tokens = lexer.peekNextToken(2);
+		Token t1 = (Token) tokens[0];
+		Token t2 = (Token) tokens[1];
 		try {
 
 			if (t1.getTokenType() == TokenTypes.SIP || 
@@ -648,10 +648,10 @@ public class URLParser extends Parser {
 	}
 
 	public String peekScheme() throws ParseException {
-		Vector tokens = lexer.peekNextToken(1);
-		if (tokens.size() == 0)
+		Token[] tokens = lexer.peekNextToken(1);
+		if (tokens.length == 0)
 			return null;
-		String scheme = ((Token) tokens.elementAt(0)).getTokenValue();
+		String scheme = ((Token) tokens[0]).getTokenValue();
 		return scheme;
 	}
 

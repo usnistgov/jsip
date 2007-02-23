@@ -32,13 +32,14 @@ import javax.sip.header.*;
 import java.text.ParseException;
 import gov.nist.core.*;
 import gov.nist.javax.sip.header.extensions.*;
+import gov.nist.javax.sip.header.SIPHeaderNamesCache;
 import gov.nist.javax.sip.parser.extensions.*;
 
 /**
  * A factory class that does a name lookup on a registered parser and
  * returns a header parser for the given name.
  *
- * @version 1.2 $Revision: 1.12 $ $Date: 2007-01-08 19:24:21 $
+ * @version 1.2 $Revision: 1.13 $ $Date: 2007-02-23 14:56:06 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -279,7 +280,7 @@ public class ParserFactory {
 		if (headerName == null || headerValue == null)
 			throw new ParseException("The header name or value is null", 0);
 
-		Class parserClass = (Class) parserTable.get(headerName.toLowerCase());
+		Class parserClass = (Class) parserTable.get(SIPHeaderNamesCache.toLowerCase(headerName));
 		if (parserClass != null) {
 			try {
 
@@ -303,6 +304,30 @@ public class ParserFactory {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2007/01/08 19:24:21  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  Miguel Freitas
+ * Reviewed by:   mranga
+ *
+ * Miguel -- please implement a deep clone method for the IMS headers.
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.11  2006/10/12 11:57:54  pmusgrave
  * Issue number:  79, 80
  * Submitted by:  pmusgrave@newheights.com
