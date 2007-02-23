@@ -24,14 +24,15 @@
 * 
 */
 package gov.nist.javax.sip.parser;
-import gov.nist.core.*;
+import gov.nist.core.Debug;
+import gov.nist.core.ParserCore;
+import gov.nist.core.Token;
 import java.text.ParseException;
-import java.util.Vector;
 
 /**
  * Base parser class.
  *
- * @version 1.2 $Revision: 1.7 $ $Date: 2006-09-27 15:02:43 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2007-02-23 14:56:05 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -75,8 +76,8 @@ public abstract class Parser extends ParserCore implements TokenTypes {
 		try {
 			if (debug)
 				dbg_enter("method");
-			Vector tokens = this.lexer.peekNextToken(1);
-			Token token = (Token) tokens.elementAt(0);
+			Token[] tokens = this.lexer.peekNextToken(1);
+			Token token = (Token) tokens[0];
 			if (token.getTokenType() == INVITE
 				|| token.getTokenType() == ACK
 				|| token.getTokenType() == OPTIONS
@@ -101,6 +102,28 @@ public abstract class Parser extends ParserCore implements TokenTypes {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2006/09/27 15:02:43  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:   mranga
+ * rfc 2543 transaction matching. fix for MESSAGE request type parsing.
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.6  2006/07/13 09:02:18  mranga
  * Issue number:
  * Obtained from:
