@@ -395,23 +395,10 @@ public class Shootist extends TestCase implements SipListener {
 		shootist.start = System.currentTimeMillis();
 		for (int i = 0; i < NDIALOGS; i++) {
 			if ( transport.equals("udp")) {
-				Thread.sleep(3); // need to fix the stack so this is handled internally.
-			 /*if ( (  (SipStackImpl)sipStack).getClientTransactionTableSize() > 1000) {
-					try {
-						
-						float fract  =  ((float) (((SipStackImpl)sipStack).getClientTransactionTableSize())  - 1000)    / 1000  ;
-						
-						int timeToSleep = (int) (  fract * 5.0 ) + 3;
-						Thread.sleep(timeToSleep);
-					} catch (Exception ex) {
-						
-					}
-				} else {
-					Thread.sleep(3);
-				}*/
-			
-		 	} else {
-				Thread.sleep(1) ; // TCP Congestion control takes care of this.
+				Thread.sleep(3); // Add a sleep here so we dont drop calls. Adjust this according to the capability of your machine.
+								// On my machine, I need to sleep for 3 milis else I drop calls.
+			} else {
+				Thread.sleep(1) ; // TCP Congestion control takes care of blocking sender so sleep can be less.
 			}
 			shootist.sendInvite();
 		}

@@ -89,7 +89,7 @@ public class Shootme extends TestCase implements SipListener {
 			//System.out.println("toTag = " + toTag);
 
 			Address address =
-				addressFactory.createAddress("Shootme <sip:127.0.0.1:5070>");
+				addressFactory.createAddress("Shootme <sip:127.0.0.1:5070;transport=" + transport + ">");
 
 			ContactHeader contactHeader =
 				headerFactory.createContactHeader(address);

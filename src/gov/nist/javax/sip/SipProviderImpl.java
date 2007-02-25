@@ -52,7 +52,7 @@ import java.text.ParseException;
 /**
  * Implementation of the JAIN-SIP provider interface.
  * 
- * @version 1.2 $Revision: 1.43 $ $Date: 2007-02-21 21:47:05 $
+ * @version 1.2 $Revision: 1.44 $ $Date: 2007-02-25 20:50:34 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -370,6 +370,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 				sipRequest.getTopmostVia().setBranch(branchId);
 			}
 			branchId = sipRequest.getTopmostVia().getBranch();
+			
 			SIPClientTransaction ct = (SIPClientTransaction) sipStack
 					.createMessageChannel(sipRequest, listeningPoint
 							.getMessageProcessor(), hop);
@@ -645,8 +646,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 		SIPRequest sipRequest = (SIPRequest) request;
 		// Check if we have a valid via.
 		// Null request is used to send default proxy keepalive messages.
-		if ((!sipRequest.isNullRequest())
-				&& sipRequest.getTopmostVia() == null)
+		if ((!sipRequest.isNullRequest()) && sipRequest.getTopmostVia() == null)
 			throw new SipException("Invalid SipRequest -- no via header!");
 
 		try {

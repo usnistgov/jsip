@@ -156,7 +156,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.64 $ $Date: 2007-02-12 20:45:18 $
+ * @version 1.2 $Revision: 1.65 $ $Date: 2007-02-25 20:50:32 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -1187,6 +1187,11 @@ public class SIPClientTransaction extends SIPTransaction implements
 			this.collectionTime = TIMER_J;
 
 		}
+		if ( super.getState() != TransactionState.COMPLETED && 
+				( newState == TransactionState.COMPLETED ||
+						newState == TransactionState.TERMINATED)) {
+			sipStack.decrementActiveClientTransactionCount();
+		} 
 		super.setState(newState);
 	}
 
