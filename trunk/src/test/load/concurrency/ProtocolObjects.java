@@ -39,11 +39,6 @@ public class ProtocolObjects {
 		sipFactory = SipFactory.getInstance();
 		sipFactory.setPathName("gov.nist");
 		Properties properties = new Properties();
-		// If you want to try TCP transport change the following to
-		
-		
-		
-		// If you want to use UDP then uncomment this.
 		properties.setProperty("javax.sip.STACK_NAME", stackname);
 
 		// The following properties are specific to nist-sip
@@ -51,13 +46,14 @@ public class ProtocolObjects {
 		// implementation.
 		properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
 			logFileDirectory +	stackname + "debuglog.txt");
+		properties.setProperty("gov.nist.javax.sip.MAX_CLiENT_TRANSACTIONS", new Integer(1000).toString());
 		properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
 				logFileDirectory + stackname + "log.txt");
 	
 		properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT",
 					(autoDialog? "on": "off"));
 		
-		properties.setProperty("gov.nist.javax.sip.THREAD_POOL_SIZE", "2");
+		properties.setProperty("gov.nist.javax.sip.THREAD_POOL_SIZE", "3");
 		properties.setProperty("gov.nist.javax.sip.REENTRANT_LISTENER", "true");
 
 		// Set to 0 in your production code for max speed.

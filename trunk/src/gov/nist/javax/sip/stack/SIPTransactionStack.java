@@ -65,7 +65,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.71 $ $Date: 2007-02-25 16:25:31 $
+ * @version 1.2 $Revision: 1.72 $ $Date: 2007-02-25 20:50:32 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -103,7 +103,11 @@ public abstract class SIPTransactionStack implements
 	private ConcurrentHashMap clientTransactionTable;
 
 	// Set to false if you want hiwat and lowat to be consulted.
-	private boolean unlimitedTableSize = false;
+	private boolean unlimitedServerTransactionTableSize = false;
+	
+	// Set to false if you want unlimited size of client trnansactin table.
+	
+	protected boolean unlimitedClientTransactionTableSize = false;
 
 	// High water mark for ServerTransaction Table
 	// after which requests are dropped.
@@ -112,6 +116,16 @@ public abstract class SIPTransactionStack implements
 	// Low water mark for Server Tx table size after which
 	// requests are selectively dropped
 	protected int serverTransactionTableLowaterMark = 4000;
+
+	// Hiwater mark for client transaction table
+
+	protected int clientTransactionTableHiwaterMark = 1000;
+
+	// Low water mark for client tx table.
+
+	protected int clientTransactionTableLowaterMark = 800;
+
+	private int activeClientTransactionCount;
 
 	// Hashtable for server transactions.
 	private ConcurrentHashMap serverTransactionTable;
@@ -270,24 +284,26 @@ public abstract class SIPTransactionStack implements
 	// containers to defend against buggy clients (that do not
 	// want to respond to requests).
 	protected int maxListenerResponseTime;
-	
-    /*
-     * Flag to indicate whether the stack will delegate the TLS encryption/decryption
-     * to external hardware.
-     */
-    protected boolean useTlsAccelerator;
 
-	/// Provides a mechanism for applications to check the health of threads in the stack
+	/*
+	 * Flag to indicate whether the stack will delegate the TLS
+	 * encryption/decryption to external hardware.
+	 */
+	protected boolean useTlsAccelerator;
+
+	// / Provides a mechanism for applications to check the health of threads in
+	// the stack
 	protected ThreadAuditor threadAuditor = new ThreadAuditor();
 
 	protected LogRecordFactory logRecordFactory;
-	
-	/// Timer to regularly ping the thread auditor (on behalf of the timer thread)
+
+	// / Timer to regularly ping the thread auditor (on behalf of the timer
+	// thread)
 	class PingTimer extends SIPStackTimerTask {
-		/// Timer thread handle
+		// / Timer thread handle
 		ThreadAuditor.ThreadHandle threadHandle;
 
-		/// Constructor
+		// / Constructor
 		public PingTimer(ThreadAuditor.ThreadHandle a_oThreadHandle) {
 			threadHandle = a_oThreadHandle;
 		}
@@ -297,7 +313,8 @@ public abstract class SIPTransactionStack implements
 			if (timer != null) {
 				// Register the timer task if we haven't done so
 				if (threadHandle == null) {
-					// This happens only once since the thread handle is passed to the next scheduled ping timer
+					// This happens only once since the thread handle is passed
+					// to the next scheduled ping timer
 					threadHandle = getThreadAuditor().addCurrentThread();
 				}
 
@@ -305,7 +322,8 @@ public abstract class SIPTransactionStack implements
 				threadHandle.ping();
 
 				// Schedule the next ping
-				timer.schedule(new PingTimer(threadHandle), threadHandle.getPingIntervalInMillisecs());
+				timer.schedule(new PingTimer(threadHandle), threadHandle
+						.getPingIntervalInMillisecs());
 			}
 		}
 
@@ -833,7 +851,8 @@ public abstract class SIPTransactionStack implements
 	 * transaction.
 	 */
 	public SIPServerTransaction findMergedTransaction(SIPRequest sipRequest) {
-		if ( ! this.isDialogCreated(sipRequest.getMethod() )) return null;
+		if (!this.isDialogCreated(sipRequest.getMethod()))
+			return null;
 		String mergeId = sipRequest.getMergeId();
 		if (mergeId != null) {
 			return (SIPServerTransaction) this.mergeTable.get(mergeId);
@@ -861,7 +880,8 @@ public abstract class SIPTransactionStack implements
 	/**
 	 * Remove a transaction from the merge table.
 	 * 
-	 * @param tr -- the server transaction to remove from the merge table.
+	 * @param tr --
+	 *            the server transaction to remove from the merge table.
 	 * 
 	 */
 	public void removeFromMergeTable(SIPServerTransaction tr) {
@@ -873,14 +893,16 @@ public abstract class SIPTransactionStack implements
 			this.mergeTable.remove(key);
 		}
 	}
-	
+
 	/**
 	 * Put this into the merge request table.
 	 * 
-	 * @param sipTransaction -- transaction to put into the merge table.
+	 * @param sipTransaction --
+	 *            transaction to put into the merge table.
 	 * 
 	 */
-	public void putInMergeTable(SIPServerTransaction sipTransaction, SIPRequest sipRequest) {
+	public void putInMergeTable(SIPServerTransaction sipTransaction,
+			SIPRequest sipRequest) {
 		String mergeKey = sipRequest.getMergeId();
 		if (mergeKey != null) {
 			this.mergeTable.put(mergeKey, sipTransaction);
@@ -1147,7 +1169,7 @@ public abstract class SIPTransactionStack implements
 	 */
 	public SIPServerTransaction createServerTransaction(
 			MessageChannel encapsulatedMessageChannel) {
-		if (unlimitedTableSize
+		if (unlimitedServerTransactionTableSize
 				|| this.serverTransactionTable.size() < serverTransactionTableLowaterMark)
 			return new SIPServerTransaction(this, encapsulatedMessageChannel);
 		else if (this.serverTransactionTable.size() >= serverTransactionTableHighwaterMark) {
@@ -1167,9 +1189,10 @@ public abstract class SIPTransactionStack implements
 		}
 
 	}
-	
+
 	/**
 	 * Get the size of the client transaction table.
+	 * 
 	 * @return -- size of the ct table.
 	 */
 	public int getClientTransactionTableSize() {
@@ -1198,7 +1221,8 @@ public abstract class SIPTransactionStack implements
 	public void removeTransaction(SIPTransaction sipTransaction) {
 		if (logWriter.isLoggingEnabled()) {
 			logWriter.logDebug("Removing Transaction = "
-					+ sipTransaction.getTransactionId() + " transaction = " + sipTransaction);
+					+ sipTransaction.getTransactionId() + " transaction = "
+					+ sipTransaction);
 		}
 		if (sipTransaction instanceof SIPServerTransaction) {
 			if (logWriter.isLoggingEnabled())
@@ -1208,8 +1232,9 @@ public abstract class SIPTransactionStack implements
 			String method = sipTransaction.getMethod();
 			this
 					.removePendingTransaction((SIPServerTransaction) sipTransaction);
-			if ( this.isDialogCreated(method)) {
-				this.removeFromMergeTable((SIPServerTransaction) sipTransaction);
+			if (this.isDialogCreated(method)) {
+				this
+						.removeFromMergeTable((SIPServerTransaction) sipTransaction);
 			}
 			// Send a notification to the listener.
 			SipProviderImpl sipProvider = (SipProviderImpl) sipTransaction
@@ -1226,9 +1251,10 @@ public abstract class SIPTransactionStack implements
 
 			String key = sipTransaction.getTransactionId();
 			Object removed = clientTransactionTable.remove(key);
-			
+
 			if (logWriter.isLoggingEnabled()) {
-				logWriter.logDebug("REMOVED client tx " + removed + " KEY = " + key);
+				logWriter.logDebug("REMOVED client tx " + removed + " KEY = "
+						+ key);
 			}
 
 			// Send a notification to the listener.
@@ -1264,11 +1290,31 @@ public abstract class SIPTransactionStack implements
 	}
 
 	/**
-	 * Hash table for quick lookup of transactions.
+	 * Hash table for quick lookup of transactions. Here we wait for room if
+	 * needed.
 	 */
 	private void addTransactionHash(SIPTransaction sipTransaction) {
 		SIPRequest sipRequest = sipTransaction.getOriginalRequest();
 		if (sipTransaction instanceof SIPClientTransaction) {
+			if (!this.unlimitedClientTransactionTableSize) {
+				if (this.activeClientTransactionCount > clientTransactionTableHiwaterMark) {
+
+					try {
+						synchronized (this.clientTransactionTable) {
+							this.clientTransactionTable.wait();
+						}
+
+					} catch (Exception ex) {
+						if (logWriter.isLoggingEnabled()) {
+							logWriter.logError(
+									"Exception occured while waiting for room",
+									ex);
+						}
+
+					}
+				}
+			}
+			this.activeClientTransactionCount++;
 			String key = sipRequest.getTransactionId();
 			clientTransactionTable.put(key, sipTransaction);
 			if (logWriter.isLoggingEnabled()) {
@@ -1282,10 +1328,20 @@ public abstract class SIPTransactionStack implements
 			}
 			serverTransactionTable.put(key, sipTransaction);
 
-			
-
 		}
 
+	}
+
+	protected void decrementActiveClientTransactionCount() {
+		this.activeClientTransactionCount--;
+		if (this.activeClientTransactionCount <= this.clientTransactionTableLowaterMark
+				&& !this.unlimitedClientTransactionTableSize) {
+			synchronized (this.clientTransactionTable) {
+
+				clientTransactionTable.notify();
+
+			}
+		}
 	}
 
 	/**
@@ -1355,6 +1411,9 @@ public abstract class SIPTransactionStack implements
 		synchronized (this) {
 			this.notifyAll();
 		}
+		synchronized (this.clientTransactionTable) {
+			clientTransactionTable.notifyAll();
+		}
 
 		synchronized (this.messageProcessors) {
 			// Threads must periodically check this flag.
@@ -1366,7 +1425,6 @@ public abstract class SIPTransactionStack implements
 			this.ioHandler.closeAll();
 			// Let the processing complete.
 
-			
 		}
 		try {
 
@@ -1579,7 +1637,7 @@ public abstract class SIPTransactionStack implements
 	 * @return Router router
 	 */
 	public Router getRouter(SIPRequest request) {
-		if ( request.getRequestLine() == null ) {
+		if (request.getRequestLine() == null) {
 			return this.defaultRouter;
 		} else if (this.useRouterForAll) {
 			return this.router;
@@ -1805,12 +1863,12 @@ public abstract class SIPTransactionStack implements
 	public void setAddressResolver(AddressResolver addressResolver) {
 		this.addressResolver = addressResolver;
 	}
-	
+
 	/**
 	 * Set the logger factory.
 	 * 
-	 * @param logRecordFactory -- 
-	 * 		the log record factory to set.
+	 * @param logRecordFactory --
+	 *            the log record factory to set.
 	 */
 	public void setLogRecordFactory(LogRecordFactory logRecordFactory) {
 		this.logRecordFactory = logRecordFactory;
@@ -1818,61 +1876,67 @@ public abstract class SIPTransactionStack implements
 
 	/**
 	 * get the thread auditor object
-	 *
+	 * 
 	 * @return -- the thread auditor of the stack
 	 */
 	public ThreadAuditor getThreadAuditor() {
 		return this.threadAuditor;
 	}
 
-	///
-	/// Stack Audit methods
-	///
+	// /
+	// / Stack Audit methods
+	// /
 
 	/**
 	 * Audits the SIP Stack for leaks
-	 *
+	 * 
 	 * @return Audit report, null if no leaks were found
 	 */
-	public String auditStack(Set activeCallIDs,
-							 long leakedDialogTimer,
-							 long leakedTransactionTimer) {
+	public String auditStack(Set activeCallIDs, long leakedDialogTimer,
+			long leakedTransactionTimer) {
 		String auditReport = null;
 		String leakedDialogs = auditDialogs(activeCallIDs, leakedDialogTimer);
-		String leakedServerTransactions = auditTransactions(serverTransactionTable, leakedTransactionTimer);
-		String leakedClientTransactions = auditTransactions(clientTransactionTable, leakedTransactionTimer);
-		if (leakedDialogs != null || leakedServerTransactions != null || leakedClientTransactions != null) {
+		String leakedServerTransactions = auditTransactions(
+				serverTransactionTable, leakedTransactionTimer);
+		String leakedClientTransactions = auditTransactions(
+				clientTransactionTable, leakedTransactionTimer);
+		if (leakedDialogs != null || leakedServerTransactions != null
+				|| leakedClientTransactions != null) {
 			auditReport = "SIP Stack Audit:\n"
 					+ (leakedDialogs != null ? leakedDialogs : "")
-					+ (leakedServerTransactions != null ? leakedServerTransactions : "")
-					+ (leakedClientTransactions != null ? leakedClientTransactions : "");
+					+ (leakedServerTransactions != null ? leakedServerTransactions
+							: "")
+					+ (leakedClientTransactions != null ? leakedClientTransactions
+							: "");
 		}
 		return auditReport;
 	}
 
 	/**
-	 * Audits SIP dialogs for leaks
-	 * - Compares the dialogs in the dialogTable with a list of Call IDs passed by the application.
-	 * - Dialogs that are not known by the application are leak suspects.
-	 * - Kill the dialogs that are still around after the timer specified.
-	 *
+	 * Audits SIP dialogs for leaks - Compares the dialogs in the dialogTable
+	 * with a list of Call IDs passed by the application. - Dialogs that are not
+	 * known by the application are leak suspects. - Kill the dialogs that are
+	 * still around after the timer specified.
+	 * 
 	 * @return Audit report, null if no dialog leaks were found
 	 */
-	private String auditDialogs(Set activeCallIDs,
-								long leakedDialogTimer) {
+	private String auditDialogs(Set activeCallIDs, long leakedDialogTimer) {
 		String auditReport = "  Leaked dialogs:\n";
 		int leakedDialogs = 0;
 		long currentTime = System.currentTimeMillis();
 
 		// Make a shallow copy of the dialog list.
-		// This copy will remain intact as leaked dialogs are removed by the stack.
+		// This copy will remain intact as leaked dialogs are removed by the
+		// stack.
 		LinkedList dialogs;
 		synchronized (dialogTable) {
 			dialogs = new LinkedList(dialogTable.values());
 		}
 
-		// Iterate through the dialogDialog, get the callID of each dialog and check if it's in the
-		// list of active calls passed by the application. If it isn't, start the timer on it.
+		// Iterate through the dialogDialog, get the callID of each dialog and
+		// check if it's in the
+		// list of active calls passed by the application. If it isn't, start
+		// the timer on it.
 		// If the timer has expired, kill the dialog.
 		Iterator it = dialogs.iterator();
 		while (it.hasNext()) {
@@ -1880,8 +1944,10 @@ public abstract class SIPTransactionStack implements
 			SIPDialog itDialog = (SIPDialog) it.next();
 
 			// Get the call id associated with this dialog
-			CallIdHeader callIdHeader = (itDialog != null ? itDialog.getCallId() : null);
-			String callID = (callIdHeader != null ? callIdHeader.getCallId() : null);
+			CallIdHeader callIdHeader = (itDialog != null ? itDialog
+					.getCallId() : null);
+			String callID = (callIdHeader != null ? callIdHeader.getCallId()
+					: null);
 
 			// Check if the application knows about this call id
 			if (callID != null && !activeCallIDs.contains(callID)) {
@@ -1890,20 +1956,25 @@ public abstract class SIPTransactionStack implements
 					// Mark this dialog as suspect
 					itDialog.auditTag = currentTime;
 				} else {
-					// We already audited this dialog before. Check if his time's up.
+					// We already audited this dialog before. Check if his
+					// time's up.
 					if (currentTime - itDialog.auditTag >= leakedDialogTimer) {
 						// Leaked dialog found
 						leakedDialogs++;
 
 						// Generate report
 						DialogState dialogState = itDialog.getState();
-						String dialogReport = "dialog id: " + itDialog.getDialogId()
-								+ ", dialog state: " + (dialogState != null ? dialogState.toString() : "null");
+						String dialogReport = "dialog id: "
+								+ itDialog.getDialogId()
+								+ ", dialog state: "
+								+ (dialogState != null ? dialogState.toString()
+										: "null");
 						auditReport += "    " + dialogReport + "\n";
 
 						// Kill it
 						itDialog.setState(SIPDialog.TERMINATED_STATE);
-						logWriter.logDebug("auditDialogs: leaked " + dialogReport);
+						logWriter.logDebug("auditDialogs: leaked "
+								+ dialogReport);
 					}
 				}
 			}
@@ -1911,7 +1982,8 @@ public abstract class SIPTransactionStack implements
 
 		// Return final report
 		if (leakedDialogs > 0) {
-			auditReport += "    Total: " + Integer.toString(leakedDialogs) + " leaked dialogs detected and removed.\n";
+			auditReport += "    Total: " + Integer.toString(leakedDialogs)
+					+ " leaked dialogs detected and removed.\n";
 		} else {
 			auditReport = null;
 		}
@@ -1920,17 +1992,18 @@ public abstract class SIPTransactionStack implements
 
 	/**
 	 * Audits SIP transactions for leaks
-	 *
+	 * 
 	 * @return Audit report, null if no transaction leaks were found
 	 */
 	private String auditTransactions(ConcurrentHashMap transactionsMap,
-									 long a_nLeakedTransactionTimer) {
+			long a_nLeakedTransactionTimer) {
 		String auditReport = "  Leaked transactions:\n";
 		int leakedTransactions = 0;
 		long currentTime = System.currentTimeMillis();
 
 		// Make a shallow copy of the transaction list.
-		// This copy will remain intact as leaked transactions are removed by the stack.
+		// This copy will remain intact as leaked transactions are removed by
+		// the stack.
 		LinkedList transactionsList = new LinkedList(transactionsMap.values());
 
 		// Iterate through our copy
@@ -1942,23 +2015,34 @@ public abstract class SIPTransactionStack implements
 					// First time we see this transaction. Mark it as audited.
 					sipTransaction.auditTag = currentTime;
 				} else {
-					// We've seen this transaction before. Check if his time's up.
+					// We've seen this transaction before. Check if his time's
+					// up.
 					if (currentTime - sipTransaction.auditTag >= a_nLeakedTransactionTimer) {
 						// Leaked transaction found
 						leakedTransactions++;
 
 						// Generate some report
-						TransactionState transactionState = sipTransaction.getState();
-						SIPRequest origRequest = sipTransaction.getOriginalRequest();
-						String origRequestMethod = (origRequest != null ? origRequest.getMethod() : null);
-						String transactionReport = sipTransaction.getClass().getName()
-								+ ", state: " + (transactionState != null ? transactionState.toString() : "null")
-								+ ", OR: " + (origRequestMethod != null ? origRequestMethod : "null");
+						TransactionState transactionState = sipTransaction
+								.getState();
+						SIPRequest origRequest = sipTransaction
+								.getOriginalRequest();
+						String origRequestMethod = (origRequest != null ? origRequest
+								.getMethod()
+								: null);
+						String transactionReport = sipTransaction.getClass()
+								.getName()
+								+ ", state: "
+								+ (transactionState != null ? transactionState
+										.toString() : "null")
+								+ ", OR: "
+								+ (origRequestMethod != null ? origRequestMethod
+										: "null");
 						auditReport += "    " + transactionReport + "\n";
 
 						// Kill it
 						removeTransaction(sipTransaction);
-						logWriter.logDebug("auditTransactions: leaked " + transactionReport);
+						logWriter.logDebug("auditTransactions: leaked "
+								+ transactionReport);
 					}
 				}
 			}
@@ -1966,22 +2050,33 @@ public abstract class SIPTransactionStack implements
 
 		// Return final report
 		if (leakedTransactions > 0) {
-			auditReport += "    Total: " + Integer.toString(leakedTransactions) + " leaked transactions detected and removed.\n";
+			auditReport += "    Total: " + Integer.toString(leakedTransactions)
+					+ " leaked transactions detected and removed.\n";
 		} else {
 			auditReport = null;
 		}
 		return auditReport;
 	}
 
-	public void setNon2XXAckPassedToListener (boolean passToListener) {
+	public void setNon2XXAckPassedToListener(boolean passToListener) {
 		this.non2XXAckPassedToListener = passToListener;
 	}
-	
 
 	/**
 	 * @return the non2XXAckPassedToListener
 	 */
 	public boolean isNon2XXAckPassedToListener() {
 		return non2XXAckPassedToListener;
+	}
+
+	
+
+	/**
+	 * Get the count of client transactions that is not in the completed or terminated state.
+	 * 
+	 * @return the activeClientTransactionCount
+	 */
+	public int getActiveClientTransactionCount() {
+		return activeClientTransactionCount;
 	}
 }
