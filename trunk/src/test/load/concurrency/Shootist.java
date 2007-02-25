@@ -1,5 +1,7 @@
 package test.load.concurrency;
 
+import gov.nist.javax.sip.SipStackImpl;
+
 import javax.sip.*;
 import javax.sip.address.*;
 import javax.sip.header.*;
@@ -258,6 +260,7 @@ public class Shootist extends TestCase implements SipListener {
 			// create Request URI
 			SipURI requestURI = addressFactory.createSipURI(toUser,
 					toSipAddress);
+			requestURI.setTransportParam(transport);
 
 			// Create ViaHeaders
 
@@ -295,6 +298,7 @@ public class Shootist extends TestCase implements SipListener {
 			// Create the contact name address.
 			SipURI contactURI = addressFactory.createSipURI(fromName, host);
 			contactURI.setPort(port);
+			contactURI.setTransportParam(transport);
 
 			Address contactAddress = addressFactory.createAddress(contactURI);
 
@@ -390,7 +394,25 @@ public class Shootist extends TestCase implements SipListener {
 
 		shootist.start = System.currentTimeMillis();
 		for (int i = 0; i < NDIALOGS; i++) {
-			Thread.sleep(5);
+			if ( transport.equals("udp")) {
+				Thread.sleep(3); // need to fix the stack so this is handled internally.
+			 /*if ( (  (SipStackImpl)sipStack).getClientTransactionTableSize() > 1000) {
+					try {
+						
+						float fract  =  ((float) (((SipStackImpl)sipStack).getClientTransactionTableSize())  - 1000)    / 1000  ;
+						
+						int timeToSleep = (int) (  fract * 5.0 ) + 3;
+						Thread.sleep(timeToSleep);
+					} catch (Exception ex) {
+						
+					}
+				} else {
+					Thread.sleep(3);
+				}*/
+			
+		 	} else {
+				Thread.sleep(1) ; // TCP Congestion control takes care of this.
+			}
 			shootist.sendInvite();
 		}
 

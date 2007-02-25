@@ -34,7 +34,7 @@ import javax.sip.InvalidArgumentException;
  * Accept header : The top level header is actually AcceptList which is a list of
  * Accept headers.
  *
- * @version 1.2 $Revision: 1.7 $ $Date: 2007-02-12 15:19:20 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2007-02-25 16:25:31 $
  * 
  * @since 1.1
  *
@@ -96,7 +96,6 @@ public final class Accept
 		if (mediaRange != null)
 			mediaRange.encode(buffer);
 		if (parameters != null && !parameters.isEmpty()) {
-			buffer.append(SP);
 			buffer.append(';');
 			parameters.encode(buffer);
 		}
