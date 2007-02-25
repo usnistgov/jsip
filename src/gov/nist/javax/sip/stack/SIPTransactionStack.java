@@ -65,7 +65,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.70 $ $Date: 2007-02-21 21:47:04 $
+ * @version 1.2 $Revision: 1.71 $ $Date: 2007-02-25 16:25:31 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -1166,6 +1166,14 @@ public abstract class SIPTransactionStack implements
 
 		}
 
+	}
+	
+	/**
+	 * Get the size of the client transaction table.
+	 * @return -- size of the ct table.
+	 */
+	public int getClientTransactionTableSize() {
+		return this.clientTransactionTable.size();
 	}
 
 	/**
