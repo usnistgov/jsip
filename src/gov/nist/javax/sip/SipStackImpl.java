@@ -51,15 +51,15 @@ import gov.nist.core.net.NetworkLayer;
  * array when you create the JAIN-SIP statck):
  * <ul>
  * 
- * <li><b>gov.nist.javax.sip.TRACE_LEVEL = integer </b><br/> Currently only TRACE
- * (16) and DEBUG is meaningful. If this is set to 16 or above, then incoming valid
- * messages are logged in SERVER_LOG. If you set this to 32 and specify a
- * DEBUG_LOG then vast amounts of trace information will be dumped in to the
- * specified DEBUG_LOG. The server log accumulates the signaling trace. <a
- * href="{@docRoot}/tools/tracesviewer/tracesviewer.html"> This can be viewed
- * using the trace viewer tool .</a> Please send us both the server log and
- * debug log when reporting non-obvious problems. You can also use the strings
- * DEBUG or INFO for level 32 and 16 respectively</li>
+ * <li><b>gov.nist.javax.sip.TRACE_LEVEL = integer </b><br/> Currently only
+ * TRACE (16) and DEBUG is meaningful. If this is set to 16 or above, then
+ * incoming valid messages are logged in SERVER_LOG. If you set this to 32 and
+ * specify a DEBUG_LOG then vast amounts of trace information will be dumped in
+ * to the specified DEBUG_LOG. The server log accumulates the signaling trace.
+ * <a href="{@docRoot}/tools/tracesviewer/tracesviewer.html"> This can be
+ * viewed using the trace viewer tool .</a> Please send us both the server log
+ * and debug log when reporting non-obvious problems. You can also use the
+ * strings DEBUG or INFO for level 32 and 16 respectively</li>
  * 
  * <li><b>gov.nist.javax.sip.SERVER_LOG = fileName </b><br/> Log valid
  * incoming messages here. If this is left null AND the TRACE_LEVEL is above 16
@@ -131,11 +131,18 @@ import gov.nist.core.net.NetworkLayer;
  * <li> <b>gov.nist.javax.sip.MAX_CONNECTIONS = integer </b> <br/> Max number of
  * simultaneous TCP connections handled by stack. </li>
  * 
- * <li><b>gov.nist.javax.sip.MAX_SERVER_TRANSACTIONS = integer </b> <br/> Maximum
- * size of server transaction table. The low water mark is 80% of the high water
- * mark. Requests are selectively dropped in the lowater mark to highwater mark
- * range. Requests are unconditionally accepted if the table is smaller than the
- * low water mark. The default highwater mark is 5000 </li>
+ * <li><b>gov.nist.javax.sip.MAX_SERVER_TRANSACTIONS = integer </b> <br/>
+ * Maximum size of server transaction table. The low water mark is 80% of the
+ * high water mark. Requests are selectively dropped in the lowater mark to
+ * highwater mark range. Requests are unconditionally accepted if the table is
+ * smaller than the low water mark. The default highwater mark is 5000 </li>
+ * 
+ *  <li><b>gov.nist.javax.sip.MAX_CLIENT_TRANSACTIONS = integer </b> <br/>
+ * Max number of active client transactions before the caller blocks and
+ * waits for the number to drop below a threshold. Default is unlimited,
+ * i.e. the caller never blocks and waits for a client transaction to
+ * become available (i.e. it does its own resource management in the
+ * application). </li>
  * 
  * <li><b>gov.nist.javax.sip.PASS_INIVTE_NON2XX_ACK_TO_LISTENER = true|false
  * </b> <br/> If true then the listener will see the ACK for non-2xx responses
@@ -143,33 +150,31 @@ import gov.nist.core.net.NetworkLayer;
  * server transaction state machine) but this is a useful flag for testing. The
  * TCK uses this flag for example. </li>
  * 
- * <li><b>gov.nist.javax.sip.MAX_LISTENER_RESPONSE_TIME = Integer </b>
- * <br/>Max time (seconds) before sending a response to a server transaction. 
- * If a response is not sent within this time period, the transaction will 
- * be deleted by the stack. Default time is "infinity" - i.e. if the listener 
- * never responds, the stack will hang on to a reference for the transaction 
- * and result in a memory leak.
+ * <li><b>gov.nist.javax.sip.MAX_LISTENER_RESPONSE_TIME = Integer </b> <br/>Max
+ * time (seconds) before sending a response to a server transaction. If a
+ * response is not sent within this time period, the transaction will be deleted
+ * by the stack. Default time is "infinity" - i.e. if the listener never
+ * responds, the stack will hang on to a reference for the transaction and
+ * result in a memory leak.
  * 
- * <li><b>gov.nist.javax.sip.USE_TLS_ACCELERATOR = true|false
- * </b> <br/>Default value is false. Setting this to true permits the
- * delegation of TLS encryption/decryption to an external, non SIP-aware, TLS
- * accelerator hardware. Such deployment requires the SIP stack to make its TLS
- * traffic goes over un-encrypted TCP connections to the TLS accelerator. So
- * all TLS listening points will be listening for plain TCP traffic, and
- * outgoing messages sent with a TLS provider will not be encrypted. Note that
- * this does not affect the transport value in the Via header. Another
- * deployment strategy for TLS acceleration would be to use one or a cluster of
- * outbound proxies that transform the TCP or UDP SIP connection to TLS
- * connections. This scenario does not need the USE_TLS_ACCELERATOR switch, as
- * the messages will be sent using a plain TCP or UDP provider.
- * </li> 
+ * <li><b>gov.nist.javax.sip.USE_TLS_ACCELERATOR = true|false </b> <br/>Default
+ * value is false. Setting this to true permits the delegation of TLS
+ * encryption/decryption to an external, non SIP-aware, TLS accelerator
+ * hardware. Such deployment requires the SIP stack to make its TLS traffic goes
+ * over un-encrypted TCP connections to the TLS accelerator. So all TLS
+ * listening points will be listening for plain TCP traffic, and outgoing
+ * messages sent with a TLS provider will not be encrypted. Note that this does
+ * not affect the transport value in the Via header. Another deployment strategy
+ * for TLS acceleration would be to use one or a cluster of outbound proxies
+ * that transform the TCP or UDP SIP connection to TLS connections. This
+ * scenario does not need the USE_TLS_ACCELERATOR switch, as the messages will
+ * be sent using a plain TCP or UDP provider. </li>
  * 
  * <li><b>gov.nist.javax.sip.DELIVER_TERMINATED_EVENT_FOR_ACK = [true|false]</b>
- * <br/>Default is <it>false</it>. ACK Server Transaction is a Pseuedo-transaction.
- * If you want termination notification on ACK transactions (so all server
- * transactions can be handled uniformly in user code during cleanup), then
- * set this flag to <it>true</it>.
- * </li>
+ * <br/>Default is <it>false</it>. ACK Server Transaction is a
+ * Pseuedo-transaction. If you want termination notification on ACK transactions
+ * (so all server transactions can be handled uniformly in user code during
+ * cleanup), then set this flag to <it>true</it>. </li>
  * 
  * <li> <b>gov.nist.javax.sip.READ_TIMEOUT = integer </b> <br/> This is relevant
  * for incoming TCP connections to prevent starvation at the server. This
@@ -188,41 +193,43 @@ import gov.nist.core.net.NetworkLayer;
  * under active development (may be extended to support security and other
  * features). </li>
  * 
- * <li><b>gov.nist.javax.sip.ADDRESS_RESOLVER = classpath </b><br/> The fully 
+ * <li><b>gov.nist.javax.sip.ADDRESS_RESOLVER = classpath </b><br/> The fully
  * qualified class path for an implementation of the AddressResolver interface.
- * The AddressResolver allows you to support lookup schemes for addresses
- * that are not directly resolvable to IP adresses using getHostByName. Specifying
+ * The AddressResolver allows you to support lookup schemes for addresses that
+ * are not directly resolvable to IP adresses using getHostByName. Specifying
  * your own address resolver allows you to customize address lookup. The default
  * address resolver is a pass-through address resolver (i.e. just returns the
- * input string without doing a resolution). See gov.nist.javax.sip.DefaultAddressResolver.
- * </li>
+ * input string without doing a resolution). See
+ * gov.nist.javax.sip.DefaultAddressResolver. </li>
  * 
- * <li><b>gov.nist.javax.sip.AUTO_GENERATE_TIMESTAMP= [true| false] </b><br/> (default is false) Automatically
- * generate a getTimeOfDay timestamp for a retransmitted request if the original request contained
- * a timestamp. This is useful for profiling.
- * </li>
- *
- * <li> <b>gov.nist.javax.sip.THREAD_AUDIT_INTERVAL_IN_MILLISECS = long </b> <br/> Defines
- * how often the application intends to audit the SIP Stack about the health of its internal
- * threads (the property specifies the time in miliseconds between successive audits).
- * The audit allows the application to detect catastrophic failures like an internal
- * thread terminating because of an exception or getting stuck in a deadlock condition.
- * Events like these will make the stack inoperable and therefore require immediate action
- * from the application layer (e.g., alarms, traps, reboot, failover, etc.)
- * Thread audits are disabled by default. If this property is not specified, audits will
- * remain disabled. An example of how to use this property is in src/examples/threadaudit. </li>
+ * <li><b>gov.nist.javax.sip.AUTO_GENERATE_TIMESTAMP= [true| false] </b><br/>
+ * (default is false) Automatically generate a getTimeOfDay timestamp for a
+ * retransmitted request if the original request contained a timestamp. This is
+ * useful for profiling. </li>
  * 
- * <li><b>gov.nist.javax.sip.LOG_FACTORY = classpath </b> <br/> The fully qualified
- * classpath for an implementation of the MessageLogFactory. The stack calls the 
- * MessageLogFactory functions to log that are received or sent. Implementing thes
- * function allows you log auxiliary information related to the application 
- * or environmental conditions into the log stream. The log factory must have a default constructor.
- *  </li>
+ * <li> <b>gov.nist.javax.sip.THREAD_AUDIT_INTERVAL_IN_MILLISECS = long </b>
+ * <br/> Defines how often the application intends to audit the SIP Stack about
+ * the health of its internal threads (the property specifies the time in
+ * miliseconds between successive audits). The audit allows the application to
+ * detect catastrophic failures like an internal thread terminating because of
+ * an exception or getting stuck in a deadlock condition. Events like these will
+ * make the stack inoperable and therefore require immediate action from the
+ * application layer (e.g., alarms, traps, reboot, failover, etc.) Thread audits
+ * are disabled by default. If this property is not specified, audits will
+ * remain disabled. An example of how to use this property is in
+ * src/examples/threadaudit. </li>
+ * 
+ * <li><b>gov.nist.javax.sip.LOG_FACTORY = classpath </b> <br/> The fully
+ * qualified classpath for an implementation of the MessageLogFactory. The stack
+ * calls the MessageLogFactory functions to log that are received or sent.
+ * Implementing thes function allows you log auxiliary information related to
+ * the application or environmental conditions into the log stream. The log
+ * factory must have a default constructor. </li>
  * 
  * </ul>
- *
  * 
- * @version 1.2 $Revision: 1.61 $ $Date: 2007-02-21 21:47:05 $
+ * 
+ * @version 1.2 $Revision: 1.62 $ $Date: 2007-02-25 20:50:34 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -252,7 +259,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 	// If set to true then the application want to receive
 	// unsolicited NOTIFYs, ie NOTIFYs that don't match any dialog
 	boolean deliverUnsolicitedNotify = false;
-	
+
 	/**
 	 * Creates a new instance of SipStackImpl.
 	 */
@@ -282,8 +289,9 @@ public class SipStackImpl extends SIPTransactionStack implements
 
 	/**
 	 * Return true if automatic dialog support is enabled for this stack.
-	 *
-	 * @return boolean, true if automatic dialog support is enabled for this stack
+	 * 
+	 * @return boolean, true if automatic dialog support is enabled for this
+	 *         stack
 	 */
 	boolean isAutomaticDialogSupportEnabled() {
 		return super.isAutomaticDialogSupportEnabled;
@@ -330,7 +338,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 		// Default router -- use this for routing SIP URIs.
 		// Our router does not do DNS lookups.
 		this.outboundProxy = configurationProperties
-			.getProperty("javax.sip.OUTBOUND_PROXY");
+				.getProperty("javax.sip.OUTBOUND_PROXY");
 
 		this.defaultRouter = new DefaultRouter(this, outboundProxy);
 
@@ -402,34 +410,37 @@ public class SipStackImpl extends SIPTransactionStack implements
 		super.isAutomaticDialogSupportEnabled = configurationProperties
 				.getProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "on")
 				.equalsIgnoreCase("on");
-		
-		if ( configurationProperties.getProperty
-			("gov.nist.javax.sip.MAX_LISTENER_RESPONSE_TIME") != null ) {
-			super.maxListenerResponseTime = 
-			Integer.parseInt( configurationProperties.getProperty
-			("gov.nist.javax.sip.MAX_LISTENER_RESPONSE_TIME"));
+
+		if (configurationProperties
+				.getProperty("gov.nist.javax.sip.MAX_LISTENER_RESPONSE_TIME") != null) {
+			super.maxListenerResponseTime = Integer
+					.parseInt(configurationProperties
+							.getProperty("gov.nist.javax.sip.MAX_LISTENER_RESPONSE_TIME"));
 			if (super.maxListenerResponseTime <= 0)
-				throw new PeerUnavailableException
-				("Bad configuration parameter gov.nist.javax.sip.MAX_LISTENER_RESPONSE_TIME : should be positive");
+				throw new PeerUnavailableException(
+						"Bad configuration parameter gov.nist.javax.sip.MAX_LISTENER_RESPONSE_TIME : should be positive");
 		} else {
 			super.maxListenerResponseTime = -1;
 		}
-		
+
 		this.useTlsAccelerator = false;
 		String useTlsAcceleratorFlag = configurationProperties
 				.getProperty("gov.nist.javax.sip.USE_TLS_ACCELERATOR");
 
-		if (useTlsAcceleratorFlag != null && "true".equalsIgnoreCase(useTlsAcceleratorFlag.trim())) {
+		if (useTlsAcceleratorFlag != null
+				&& "true".equalsIgnoreCase(useTlsAcceleratorFlag.trim())) {
 			this.useTlsAccelerator = true;
 		}
-		
-		this.deliverTerminatedEventForAck = configurationProperties.getProperty
-		("gov.nist.javax.sip.DELIVER_TERMINATED_EVENT_FOR_ACK", "false").equalsIgnoreCase("true");
 
-		this.deliverUnsolicitedNotify = configurationProperties.getProperty
-		("gov.nist.javax.sip.DELIVER_UNSOLICITED_NOTIFY", "false").equalsIgnoreCase("true");
+		this.deliverTerminatedEventForAck = configurationProperties
+				.getProperty(
+						"gov.nist.javax.sip.DELIVER_TERMINATED_EVENT_FOR_ACK",
+						"false").equalsIgnoreCase("true");
 
-		
+		this.deliverUnsolicitedNotify = configurationProperties.getProperty(
+				"gov.nist.javax.sip.DELIVER_UNSOLICITED_NOTIFY", "false")
+				.equalsIgnoreCase("true");
+
 		String forkedSubscriptions = configurationProperties
 				.getProperty("javax.sip.FORKABLE_EVENTS");
 		if (forkedSubscriptions != null) {
@@ -471,7 +482,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 			try {
 				Class clazz = Class.forName(path);
 				Constructor c = clazz.getConstructor(new Class[0]);
-				this.addressResolver = (AddressResolver) c.newInstance(new Object[0]);
+				this.addressResolver = (AddressResolver) c
+						.newInstance(new Object[0]);
 			} catch (Exception e) {
 				throw new PeerUnavailableException(
 						"can't find or instantiate AddressResolver implementation: "
@@ -501,18 +513,34 @@ public class SipStackImpl extends SIPTransactionStack implements
 			}
 		}
 
-		String transactionTableSize = configurationProperties
+		String serverTransactionTableSize = configurationProperties
 				.getProperty("gov.nist.javax.sip.MAX_SERVER_TRANSACTIONS");
-		if (transactionTableSize != null) {
+		if (serverTransactionTableSize != null) {
 			try {
 				this.serverTransactionTableHighwaterMark = new Integer(
-						transactionTableSize).intValue();
+						serverTransactionTableSize).intValue();
 				this.serverTransactionTableLowaterMark = this.serverTransactionTableHighwaterMark * 80 / 100;
 				// Lowater is 80% of highwater
 			} catch (NumberFormatException ex) {
 				System.out.println("transaction table size - bad value "
 						+ ex.getMessage());
 			}
+		}
+
+		String clientTransactionTableSize = configurationProperties
+				.getProperty("gov.nist.javax.sip.MAX_CLIENT_TRANSACTIONS");
+		if (clientTransactionTableSize != null) {
+			try {
+				this.clientTransactionTableHiwaterMark = new Integer(
+						clientTransactionTableSize).intValue();
+				this.clientTransactionTableLowaterMark = this.clientTransactionTableLowaterMark * 80 / 100;
+				// Lowater is 80% of highwater
+			} catch (NumberFormatException ex) {
+				System.out.println("transaction table size - bad value "
+						+ ex.getMessage());
+			}
+		} else {
+			this.unlimitedClientTransactionTableSize = true;
 		}
 
 		super.cacheServerConnections = true;
@@ -578,42 +606,49 @@ public class SipStackImpl extends SIPTransactionStack implements
 		this.reEntrantListener = (rel != null && "true".equalsIgnoreCase(rel));
 
 		// Check if a thread audit interval is specified
-		String interval = configurationProperties.getProperty("gov.nist.javax.sip.THREAD_AUDIT_INTERVAL_IN_MILLISECS");
+		String interval = configurationProperties
+				.getProperty("gov.nist.javax.sip.THREAD_AUDIT_INTERVAL_IN_MILLISECS");
 		if (interval != null) {
 			try {
-				// Make the monitored threads ping the auditor twice as fast as the audits
-				getThreadAuditor().setPingIntervalInMillisecs(Long.valueOf(interval).longValue() / 2);
+				// Make the monitored threads ping the auditor twice as fast as
+				// the audits
+				getThreadAuditor().setPingIntervalInMillisecs(
+						Long.valueOf(interval).longValue() / 2);
 			} catch (NumberFormatException ex) {
-				System.out.println("THREAD_AUDIT_INTERVAL_IN_MILLISECS - bad value [" + interval + "] " + ex.getMessage());
+				System.out
+						.println("THREAD_AUDIT_INTERVAL_IN_MILLISECS - bad value ["
+								+ interval + "] " + ex.getMessage());
 			}
 		}
 
 		// JvB: added property for testing
-		this.setNon2XXAckPassedToListener(Boolean
-				.valueOf(
-						configurationProperties
-								.getProperty(
-										"gov.nist.javax.sip.PASS_INVITE_NON_2XX_ACK_TO_LISTENER",
-										"false")).booleanValue());
-		
+		this
+				.setNon2XXAckPassedToListener(Boolean
+						.valueOf(
+								configurationProperties
+										.getProperty(
+												"gov.nist.javax.sip.PASS_INVITE_NON_2XX_ACK_TO_LISTENER",
+												"false")).booleanValue());
+
 		this.generateTimeStampHeader = Boolean.valueOf(
-				configurationProperties
-						.getProperty(
-								"gov.nist.javax.sip.AUTO_GENERATE_TIMESTAMP",
-								"false")).booleanValue();
-		
-		String messageLogFactoryClasspath = configurationProperties.getProperty(
-				"gov.nist.javax.sip.LOG_FACTORY");
-		if ( messageLogFactoryClasspath != null ) {
+				configurationProperties.getProperty(
+						"gov.nist.javax.sip.AUTO_GENERATE_TIMESTAMP", "false"))
+				.booleanValue();
+
+		String messageLogFactoryClasspath = configurationProperties
+				.getProperty("gov.nist.javax.sip.LOG_FACTORY");
+		if (messageLogFactoryClasspath != null) {
 			try {
 				Class clazz = Class.forName(messageLogFactoryClasspath);
 				Constructor c = clazz.getConstructor(new Class[0]);
-				this.logRecordFactory =  (LogRecordFactory) c.newInstance( new Object[0] );
-			} catch ( Exception ex) {
-				System.out.println("Bad configuration value for LOG_FACTORY -- using default logger");
-				this.logRecordFactory  = new DefaultMessageLogFactory();
+				this.logRecordFactory = (LogRecordFactory) c
+						.newInstance(new Object[0]);
+			} catch (Exception ex) {
+				System.out
+						.println("Bad configuration value for LOG_FACTORY -- using default logger");
+				this.logRecordFactory = new DefaultMessageLogFactory();
 			}
-			
+
 		} else {
 			this.logRecordFactory = new DefaultMessageLogFactory();
 		}
@@ -681,7 +716,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 				getLogWriter().logError(
 						"Invalid argument address = " + address + " port = "
 								+ port + " transport = " + transport);
-				throw new InvalidArgumentException(ex.getMessage(),ex);
+				throw new InvalidArgumentException(ex.getMessage(), ex);
 			}
 		}
 	}
@@ -829,8 +864,6 @@ public class SipStackImpl extends SIPTransactionStack implements
 					"Stack does not have a default IP Address!");
 		return this.createListeningPoint(super.stackAddress, port, transport);
 	}
-	
-	
 
 	/*
 	 * (non-Javadoc)
@@ -846,11 +879,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 		this.listeningPoints = new Hashtable();
 		this.eventScanner.forceStop();
 		this.eventScanner = null;
-		
 
 	}
-	
-	
 
 	/*
 	 * (non-Javadoc)
@@ -859,10 +889,10 @@ public class SipStackImpl extends SIPTransactionStack implements
 	 */
 	public void start() throws ProviderDoesNotExistException, SipException {
 		// Start a new event scanner if one does not exist.
-		if ( this.eventScanner == null ) {
+		if (this.eventScanner == null) {
 			this.eventScanner = new EventScanner(this);
 		}
-		
+
 	}
 
 	/**
@@ -877,7 +907,6 @@ public class SipStackImpl extends SIPTransactionStack implements
 		return this.sipListener;
 	}
 
-	
 	/**
 	 * Get the message log factory registered with the stack.
 	 * 
@@ -886,7 +915,5 @@ public class SipStackImpl extends SIPTransactionStack implements
 	public LogRecordFactory getLogRecordFactory() {
 		return super.logRecordFactory;
 	}
-	
-	
 
 }
