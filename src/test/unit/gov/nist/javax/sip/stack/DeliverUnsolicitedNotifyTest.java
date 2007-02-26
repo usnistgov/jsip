@@ -98,7 +98,7 @@ public class DeliverUnsolicitedNotifyTest extends TestCase implements
 
 	public void processResponse(ResponseEvent responseEvent) {
 		this.notifyResponseSeen = true;
-
+		
 	}
 
 	public void processTimeout(TimeoutEvent timeoutEvent) {
@@ -139,6 +139,7 @@ public class DeliverUnsolicitedNotifyTest extends TestCase implements
 			this.headerFactory = sipFactory.createHeaderFactory();
 			// Create the request.
 			this.messageFactory = sipFactory.createMessageFactory();
+			sipProvider.addSipListener(this);
 
 			timer.schedule(new TimerTask() {
 
@@ -260,6 +261,7 @@ public class DeliverUnsolicitedNotifyTest extends TestCase implements
 			ClientTransaction ct = sipProvider.getNewClientTransaction(request);
 
 			ct.sendRequest();
+			Thread.sleep(10000);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			fail("Unexpected exception sending request");
