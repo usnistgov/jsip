@@ -65,7 +65,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.72 $ $Date: 2007-02-25 20:50:32 $
+ * @version 1.2 $Revision: 1.73 $ $Date: 2007-02-26 03:48:54 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -107,7 +107,7 @@ public abstract class SIPTransactionStack implements
 	
 	// Set to false if you want unlimited size of client trnansactin table.
 	
-	protected boolean unlimitedClientTransactionTableSize = false;
+	protected boolean unlimitedClientTransactionTableSize = true;
 
 	// High water mark for ServerTransaction Table
 	// after which requests are dropped.
@@ -117,7 +117,8 @@ public abstract class SIPTransactionStack implements
 	// requests are selectively dropped
 	protected int serverTransactionTableLowaterMark = 4000;
 
-	// Hiwater mark for client transaction table
+	// Hiwater mark for client transaction table. These defaults can be overriden by stack 
+	// configuration.
 
 	protected int clientTransactionTableHiwaterMark = 1000;
 
@@ -1332,6 +1333,11 @@ public abstract class SIPTransactionStack implements
 
 	}
 
+	/**
+	 * This method is called when a client tx transitions to the Completed or Terminated
+	 * state. 
+	 *
+	 */
 	protected void decrementActiveClientTransactionCount() {
 		this.activeClientTransactionCount--;
 		if (this.activeClientTransactionCount <= this.clientTransactionTableLowaterMark
