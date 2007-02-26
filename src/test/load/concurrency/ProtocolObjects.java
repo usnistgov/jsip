@@ -2,8 +2,6 @@
 package test.load.concurrency;
 
 import java.util.Properties;
-
-import javax.sip.PeerUnavailableException;
 import javax.sip.SipException;
 import javax.sip.SipFactory;
 import javax.sip.SipStack;
@@ -46,14 +44,13 @@ public class ProtocolObjects {
 		// implementation.
 		properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
 			logFileDirectory +	stackname + "debuglog.txt");
-		properties.setProperty("gov.nist.javax.sip.MAX_CLiENT_TRANSACTIONS", new Integer(1000).toString());
 		properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
 				logFileDirectory + stackname + "log.txt");
 	
 		properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT",
 					(autoDialog? "on": "off"));
 		
-		properties.setProperty("gov.nist.javax.sip.THREAD_POOL_SIZE", "3");
+        properties.setProperty("gov.nist.javax.sip.THREAD_POOL_SIZE", "40");
 		properties.setProperty("gov.nist.javax.sip.REENTRANT_LISTENER", "true");
 
 		// Set to 0 in your production code for max speed.
