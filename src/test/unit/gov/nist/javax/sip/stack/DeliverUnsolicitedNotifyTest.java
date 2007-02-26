@@ -71,6 +71,8 @@ public class DeliverUnsolicitedNotifyTest extends TestCase implements
 
 	private String transport;
 
+	private SipStack sipStack;
+
 	private static Timer timer = new Timer();
 
 	public void processDialogTerminated(
@@ -139,7 +141,7 @@ public class DeliverUnsolicitedNotifyTest extends TestCase implements
 		try {
 			this.port = 6050;
 			this.transport = "udp";
-			SipStack sipStack = sipFactory.createSipStack(properties);
+			this.sipStack = sipFactory.createSipStack(properties);
 			this.listeningPoint = sipStack.createListeningPoint("127.0.0.1",
 					port, transport);
 			sipProvider = sipStack.createSipProvider(listeningPoint);
@@ -154,6 +156,7 @@ public class DeliverUnsolicitedNotifyTest extends TestCase implements
 					if (!notifySeen || !notifyResponseSeen) {
 						fail("Did not see expected event");
 					}
+					sipStack.stop();
 
 				}
 
