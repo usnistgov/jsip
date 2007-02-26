@@ -15,8 +15,7 @@ public class SelfTest {
 		Shootist.sipStack = ProtocolObjects.sipStack;
 		Shootist.transport = ProtocolObjects.transport;
 		Shootist shootist = new Shootist();
-		SipProvider sipProvider = shootist.createProvider();
-		sipProvider.addSipListener(shootist);
+        shootist.createProvider(shootist);
 		
 		ProtocolObjects.init("shootme", true);
 		Shootme.addressFactory = ProtocolObjects.addressFactory;
@@ -25,7 +24,7 @@ public class SelfTest {
 		Shootme.sipStack = ProtocolObjects.sipStack;
 		Shootme.transport = ProtocolObjects.transport;
 		Shootme shootme = new Shootme();
-		sipProvider = shootme.createSipProvider();
+		SipProvider sipProvider = shootme.createSipProvider();
 		sipProvider.addSipListener(shootme);
 
 		shootist.start = System.currentTimeMillis();

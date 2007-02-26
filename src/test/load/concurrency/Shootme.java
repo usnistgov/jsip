@@ -1,10 +1,29 @@
 package test.load.concurrency;
-import javax.sip.*;
-import javax.sip.address.*;
-import javax.sip.header.*;
-import javax.sip.message.*;
-import java.util.*;
-
+import javax.sip.ClientTransaction;
+import javax.sip.Dialog;
+import javax.sip.DialogTerminatedEvent;
+import javax.sip.IOExceptionEvent;
+import javax.sip.ListeningPoint;
+import javax.sip.RequestEvent;
+import javax.sip.ResponseEvent;
+import javax.sip.ServerTransaction;
+import javax.sip.SipException;
+import javax.sip.SipListener;
+import javax.sip.SipProvider;
+import javax.sip.SipStack;
+import javax.sip.Transaction;
+import javax.sip.TransactionAlreadyExistsException;
+import javax.sip.TransactionTerminatedEvent;
+import javax.sip.address.Address;
+import javax.sip.address.AddressFactory;
+import javax.sip.header.CSeqHeader;
+import javax.sip.header.ContactHeader;
+import javax.sip.header.ContentTypeHeader;
+import javax.sip.header.HeaderFactory;
+import javax.sip.header.ToHeader;
+import javax.sip.message.MessageFactory;
+import javax.sip.message.Request;
+import javax.sip.message.Response;
 import junit.framework.TestCase;
 
 /**
@@ -199,11 +218,9 @@ public class Shootme extends TestCase implements SipListener {
 	}
 
 	public SipProvider createSipProvider() throws Exception {
-		ListeningPoint listeningPoint = sipStack.createListeningPoint("127.0.0.1", 5070,transport);
+		ListeningPoint listeningPoint = sipStack.createListeningPoint("127.0.0.1", 5070, transport);
 		SipProvider sipProvider = sipStack.createSipProvider(listeningPoint);
 		return sipProvider;
-		
-		
 	}
 
 	public void processIOException(IOExceptionEvent exceptionEvent) {
@@ -216,7 +233,7 @@ public class Shootme extends TestCase implements SipListener {
 		//System.out.println("Dialog Terminated event: " + dialogTerminatedEvent);
 		this.terminationCount ++;
 		
-		if (terminationCount %1000 == 0 ) System.out.println("DialogTermination count = " + this.terminationCount);
+		if (terminationCount %100 == 0 ) System.out.println("DialogTermination count = " + this.terminationCount);
 	}
 
 	public static void main(String args[]) throws Exception {
