@@ -52,7 +52,7 @@ import java.text.ParseException;
 /**
  * Implementation of the JAIN-SIP provider interface.
  * 
- * @version 1.2 $Revision: 1.44 $ $Date: 2007-02-25 20:50:34 $
+ * @version 1.2 $Revision: 1.45 $ $Date: 2007-02-26 21:04:30 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -446,7 +446,8 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 
 			SIPClientTransaction ct = sipStack.findSubscribeTransaction(
 					sipRequest, (ListeningPointImpl) this.getListeningPoint());
-			if (ct == null) {
+			/* Issue 104 */
+			if (ct == null && ! sipStack.deliverUnsolicitedNotify) {
 				throw new TransactionUnavailableException(
 						"Cannot find matching Subscription ");
 			}
@@ -497,7 +498,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 				// transaction.
 				// You cannot create a server tx except for dialog creating
 				// transactions.
-				// after that, all subsequent transactions are created for you
+				// After that, all subsequent transactions are created for you
 				// by the stack.
 				transaction = (SIPServerTransaction) sipStack.findTransaction(
 						(SIPRequest) request, true);
