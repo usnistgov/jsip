@@ -8,9 +8,7 @@ import java.util.TimerTask;
 import javax.sip.ClientTransaction;
 import javax.sip.DialogTerminatedEvent;
 import javax.sip.IOExceptionEvent;
-import javax.sip.InvalidArgumentException;
 import javax.sip.ListeningPoint;
-import javax.sip.PeerUnavailableException;
 import javax.sip.RequestEvent;
 import javax.sip.ResponseEvent;
 import javax.sip.ServerTransaction;
@@ -20,7 +18,6 @@ import javax.sip.SipProvider;
 import javax.sip.SipStack;
 import javax.sip.TimeoutEvent;
 import javax.sip.TransactionTerminatedEvent;
-import javax.sip.TransportNotSupportedException;
 import javax.sip.address.Address;
 import javax.sip.address.AddressFactory;
 import javax.sip.address.SipURI;
@@ -39,19 +36,12 @@ import javax.sip.message.MessageFactory;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
-
 import junit.framework.TestCase;
 
 public class DeliverUnsolicitedNotifyTest extends TestCase implements
 		SipListener {
 
-	static Logger logger = Logger.getLogger(DeliverUnsolicitedNotifyTest.class);
-	static {
-		logger.addAppender(new ConsoleAppender(new SimpleLayout()));
-	}
+	
 
 	private boolean notifySeen = false;
 
@@ -101,7 +91,7 @@ public class DeliverUnsolicitedNotifyTest extends TestCase implements
 			st.sendResponse(response);
 
 		} catch (Exception ex) {
-			logger.error("Unexpected exception ", ex);
+			ex.printStackTrace();
 			fail("Unexpected exception ");
 		}
 	}
@@ -271,7 +261,7 @@ public class DeliverUnsolicitedNotifyTest extends TestCase implements
 
 			ct.sendRequest();
 		} catch (Exception ex) {
-			logger.error("Unexpected exception sending request", ex);
+			ex.printStackTrace();
 			fail("Unexpected exception sending request");
 		}
 	}
