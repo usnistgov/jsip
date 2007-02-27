@@ -156,7 +156,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.65 $ $Date: 2007-02-25 20:50:32 $
+ * @version 1.2 $Revision: 1.66 $ $Date: 2007-02-27 02:39:41 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -179,6 +179,8 @@ public class SIPClientTransaction extends SIPTransaction implements
 	private SIPDialog defaultDialog;
 
 	private Hop nextHop;
+
+	private boolean notifyOnRetransmit;
 
 	public class TransactionTimer extends SIPStackTimerTask {
 
@@ -288,6 +290,7 @@ public class SIPClientTransaction extends SIPTransaction implements
 		setBranch(Utils.generateBranchId());
 		this.messageProcessor = newChannelToUse.messageProcessor;
 		this.setEncapsulatedChannel(newChannelToUse);
+		this.notifyOnRetransmit  = false;
 
 		// This semaphore guards the listener from being
 		// re-entered for this transaction. That is
@@ -948,6 +951,11 @@ public class SIPClientTransaction extends SIPTransaction implements
 						lastRequest.setHeader(timeStamp);
 					}
 					super.sendMessage(lastRequest);
+					if (this.notifyOnRetransmit) {
+						TimeoutEvent txTimeout = new TimeoutEvent(this.getSipProvider(),
+								this, Timeout.RETRANSMIT);
+						this.getSipProvider().handleEvent(txTimeout, this);
+					}
 				}
 
 			}
@@ -1384,6 +1392,23 @@ public class SIPClientTransaction extends SIPTransaction implements
 	 */
 	public Hop getNextHop() {
 		return nextHop;
+	}
+
+	/**
+	 * Set this flag if you want your Listener to get Timeout.RETRANSMIT notifications
+	 * each time a retransmission occurs.
+	 * 
+	 * @param notifyOnRetransmit the notifyOnRetransmit to set
+	 */
+	public void setNotifyOnRetransmit(boolean notifyOnRetransmit) {
+		this.notifyOnRetransmit = notifyOnRetransmit;
+	}
+
+	/**
+	 * @return the notifyOnRetransmit
+	 */
+	public boolean isNotifyOnRetransmit() {
+		return notifyOnRetransmit;
 	}
 
 }
