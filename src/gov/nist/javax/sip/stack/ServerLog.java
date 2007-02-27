@@ -50,7 +50,7 @@ import javax.sip.header.TimeStampHeader;
  * later access via RMI. The trace can be viewed with a trace viewer (see
  * tools.traceviewerapp).
  *
- * @version 1.2 $Revision: 1.23 $ $Date: 2007-01-12 01:45:44 $
+ * @version 1.2 $Revision: 1.24 $ $Date: 2007-02-27 02:39:41 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -373,7 +373,8 @@ public class ServerLog {
 				tid,
 				callId,
 				timestampVal);
-		logMessage(log.toString());
+		if ( log != null )
+			logMessage(log.toString());
 	}
 
 	
