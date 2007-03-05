@@ -59,7 +59,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.47 $ $Date: 2007-02-22 22:47:08 $
+ * @version 1.2 $Revision: 1.48 $ $Date: 2007-03-05 04:30:17 $
  * 
  * @author M. Ranganathan
  * 
@@ -198,7 +198,16 @@ public class SIPDialog implements javax.sip.Dialog {
 				sipStack.getLogWriter().logDebug("Running dialog timer");
 			nRetransmissions++;
 			SIPServerTransaction transaction = this.transaction;
-			if (nRetransmissions > 8) {
+			/*
+			 * Issue 106. Section 13.3.1.4 RFC 3261 The 2xx response is passed
+			 * to the transport with an interval that starts at T1 seconds and
+			 * doubles for each retransmission until it reaches T2 seconds If
+			 * the server retransmits the 2xx response for 64*T1 seconds without
+			 * receiving an ACK, the dialog is confirmed, but the session SHOULD
+			 * be terminated.
+			 */
+
+			if (nRetransmissions > 64*SIPTransaction.T1 ) {
 				dialog.setState(SIPDialog.TERMINATED_STATE);
 				if (transaction != null)
 					transaction

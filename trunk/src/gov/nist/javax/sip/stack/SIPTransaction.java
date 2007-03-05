@@ -54,7 +54,7 @@ import EDU.oswego.cs.dl.util.concurrent.Semaphore;
  * @author M. Ranganathan
  * 
  * 
- * @version 1.2 $Revision: 1.48 $ $Date: 2007-02-06 15:47:49 $
+ * @version 1.2 $Revision: 1.49 $ $Date: 2007-03-05 04:30:15 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
 		javax.sip.Transaction {
@@ -63,24 +63,31 @@ public abstract class SIPTransaction extends MessageChannel implements
 
 	// to see the event.
 
-	protected static final int BASE_TIMER_INTERVAL = SIPTransactionStack.BASE_TIMER_INTERVAL;
+	protected  int BASE_TIMER_INTERVAL = SIPTransactionStack.BASE_TIMER_INTERVAL;
+	/**
+	 * 5 sec Maximum duration a message will remain in the network
+	 */
+	protected int T4 = 5000 / BASE_TIMER_INTERVAL;
+
+	/**
+	 * The maximum retransmit interval for non-INVITE requests and INVITE
+	 * responses
+	 */
+	protected int T2 = 4000 / BASE_TIMER_INTERVAL;
+	protected int TIMER_I = T4;
+
+	protected  int TIMER_K = T4;
+
+	protected int TIMER_D = 32000 / BASE_TIMER_INTERVAL;
+
+	protected  int TIMER_C = 3 * 60 * 1000 / BASE_TIMER_INTERVAL;
 
 	/**
 	 * One timer tick.
 	 */
 	protected static final int T1 = 1;
 
-	/**
-	 * 5 sec Maximum duration a message will remain in the network
-	 */
-	protected static final int T4 = 5000 / BASE_TIMER_INTERVAL;
-
-	/**
-	 * The maximum retransmit interval for non-INVITE requests and INVITE
-	 * responses
-	 */
-	protected static final int T2 = 4000 / BASE_TIMER_INTERVAL;
-
+	
 	/**
 	 * INVITE request retransmit interval, for UDP only
 	 */
@@ -97,14 +104,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 
 	protected static final int TIMER_H = 64;
 
-	protected static final int TIMER_I = T4;
-
-	protected static final int TIMER_K = T4;
-
-	protected static final int TIMER_D = 32000 / BASE_TIMER_INTERVAL;
-
-	protected static final int TIMER_C = 3 * 60 * 1000 / BASE_TIMER_INTERVAL;
-
+	
 	// Proposed feature for next release.
 	protected Object applicationData;
 
@@ -1027,7 +1027,17 @@ public abstract class SIPTransaction extends MessageChannel implements
 	 *            the new integer value of the retransmit timer in milliseconds.
 	 */
 	public void setRetransmitTimer(int retransmitTimer) {
-		throw new UnsupportedOperationException("Feature not supported");
+	
+		 BASE_TIMER_INTERVAL = SIPTransactionStack.BASE_TIMER_INTERVAL;
+		 T4 = 5000 / BASE_TIMER_INTERVAL;
+
+		T2 = 4000 / BASE_TIMER_INTERVAL;
+		TIMER_I = T4;
+
+		TIMER_K = T4;
+
+		TIMER_D = 32000 / BASE_TIMER_INTERVAL;
+
 	}
 
 	/**
