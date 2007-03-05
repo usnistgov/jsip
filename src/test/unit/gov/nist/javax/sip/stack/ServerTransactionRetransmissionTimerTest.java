@@ -276,7 +276,7 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
 			// You need 16 (or TRACE) for logging traces. 32 (or DEBUG) for
 			// debug + traces.
 			// Your code will limp at 32 but it is best for debugging.
-			properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "DEBUG");
+			properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "0");
 
 			try {
 				// Create SipStack object
@@ -685,7 +685,7 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
 			properties.setProperty("javax.sip.STACK_NAME", "shootme");
 			// You need 16 for logging traces. 32 for debug + traces.
 			// Your code will limp at 32 but it is best for debugging.
-			properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
+			properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "0");
 			properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
 					"shootmedebug.txt");
 			properties.setProperty("gov.nist.javax.sip.SERVER_LOG",

@@ -242,6 +242,10 @@ c:/jakarta-ant/bin/ant all
 					<copy file="src/test/torture/torture.xml" toDir="classes/test/torture/" />
 					<copy file="src/test/torture/torture.dtd" toDir="classes/test/torture/" />
 					<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="${srcroot}" includes="test/unit/**/*.java,test/torture/**/*.java" destdir="${classes}">
+						<classpath>
+							<pathelement location="${log4j_jar}" />
+							<pathelement location="${junit_jar}" />
+						</classpath>
 					</javac>
 					<jar destfile="${unit_test_jar}" basedir="${classes}" includes="test/unit/**/*.class,test/torture/**/*" />
 				</target>
