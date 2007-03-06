@@ -65,7 +65,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.73 $ $Date: 2007-02-26 03:48:54 $
+ * @version 1.2 $Revision: 1.74 $ $Date: 2007-03-06 03:48:12 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -1038,12 +1038,7 @@ public abstract class SIPTransactionStack implements
 	protected ServerResponseInterface newSIPServerResponse(
 			SIPResponse responseReceived, MessageChannel responseMessageChannel) {
 
-		// JvB: Need to log before passing the response to the client app, it
-		// gets modified!
-		if (serverLog.needsLogging(ServerLog.TRACE_MESSAGES)) {
-			responseMessageChannel.logResponse(responseReceived, System
-					.currentTimeMillis(), "before processing");
-		}
+		
 
 		// Iterator through all client transactions
 		Iterator transactionIterator;
@@ -1086,11 +1081,21 @@ public abstract class SIPTransactionStack implements
 
 			// If no transaction exists to handle this message,
 			if (currentTransaction == null) {
-
+//				 JvB: Need to log before passing the response to the client app, it
+				// gets modified!
+				if (serverLog.needsLogging(ServerLog.TRACE_MESSAGES)) {
+					responseMessageChannel.logResponse(responseReceived, System
+							.currentTimeMillis(), "before processing");
+				}
 				// Pass the message directly to the TU
 				return sipMessageFactory.newSIPServerResponse(responseReceived,
 						responseMessageChannel);
 
+			} else {
+				if (serverLog.needsLogging(ServerLog.TRACE_MESSAGES)) {
+					currentTransaction.logResponse(responseReceived, System
+							.currentTimeMillis(), "before processing");
+				}
 			}
 		}
 

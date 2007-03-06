@@ -59,7 +59,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.48 $ $Date: 2007-03-05 04:30:17 $
+ * @version 1.2 $Revision: 1.49 $ $Date: 2007-03-06 03:48:12 $
  * 
  * @author M. Ranganathan
  * 
@@ -219,7 +219,7 @@ public class SIPDialog implements javax.sip.Dialog {
 					try {
 
 						// resend the last response.
-						if (dialog.toRetransmitFinalResponse())
+						if (dialog.toRetransmitFinalResponse(transaction.T2))
 							transaction.sendMessage(response);
 
 					} catch (IOException ex) {
@@ -1828,9 +1828,12 @@ public class SIPDialog implements javax.sip.Dialog {
 	/**
 	 * Return yes if the last response is to be retransmitted.
 	 */
-	protected boolean toRetransmitFinalResponse() {
+	private boolean toRetransmitFinalResponse(int T2) {
 		if (--retransmissionTicksLeft == 0) {
-			this.retransmissionTicksLeft = 2 * prevRetransmissionTicks;
+			if ( 2* prevRetransmissionTicks <= T2 )
+				this.retransmissionTicksLeft = 2 * prevRetransmissionTicks;
+			else 
+				this.retransmissionTicksLeft = prevRetransmissionTicks;
 			this.prevRetransmissionTicks = retransmissionTicksLeft;
 			return true;
 		} else
