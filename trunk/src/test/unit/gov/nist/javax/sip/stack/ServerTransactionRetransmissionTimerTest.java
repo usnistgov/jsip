@@ -149,7 +149,7 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
 			if (examples.simplecallsetup.Shootme.callerSendsBye
 					&& !byeTaskRunning) {
 				byeTaskRunning = true;
-				new Timer().schedule(new ByeTask(dialog), 15000); // Frank
+				new Timer().schedule(new ByeTask(dialog), 30000); // Frank
 																	// Reif:
 																	// modified
 																	// from 4000
@@ -169,8 +169,8 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
 						// *****************************************************************
 						// BEGIN
 						// Frank Reif: delayed-ack after 6s
-						logger.info("Sending ACK after 10s ...");
-						new Timer().schedule(new AckTimerTask(dialog), 10000);
+						logger.info("Sending ACK after 15s ...");
+						new Timer().schedule(new AckTimerTask(dialog), 15000);
 
 						// JvB: test REFER, reported bug in tag handling
 						// dialog.sendRequest(
@@ -214,7 +214,7 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
 			}
 
 			public void run() {
-				logger.info("10s are over: now sending ACK");
+				logger.info("15s are over: now sending ACK");
 				try {
 					ackRequest = dialog.createRequest(Request.ACK);
 					dialog.sendAck(ackRequest);
