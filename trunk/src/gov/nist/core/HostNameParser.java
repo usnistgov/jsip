@@ -61,7 +61,7 @@ public class HostNameParser extends ParserCore {
 	}
 
     private static final char[] VALID_DOMAIN_LABEL_CHAR =
-        new char[] {LexerCore.ALPHADIGIT_VALID_CHARS, '-'};
+        new char[] {LexerCore.ALPHADIGIT_VALID_CHARS, '-', '.'};
     protected void consumeDomainLabel() throws ParseException {
 		if (debug)
 			dbg_enter("domainLabel");
@@ -114,16 +114,6 @@ public class HostNameParser extends ParserCore {
 			else {
                 int startPtr = lexer.getPtr();
                 consumeDomainLabel();
-				// Bug reported by Stuart Woodsford (used to barf on
-				// more than 4 components to the name).
-				while (lexer.hasMoreChars()) {
-					// Reached the end of the buffer.
-					if (lexer.lookAhead(0) == '.') {
-						lexer.consume(1);
-						consumeDomainLabel();
-					} else
-						break;
-				}
                 hostname = lexer.getBuffer().substring(startPtr, lexer.getPtr());
             }
 

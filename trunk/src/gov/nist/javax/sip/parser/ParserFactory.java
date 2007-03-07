@@ -39,7 +39,7 @@ import gov.nist.javax.sip.parser.extensions.*;
  * A factory class that does a name lookup on a registered parser and
  * returns a header parser for the given name.
  *
- * @version 1.2 $Revision: 1.13 $ $Date: 2007-02-23 14:56:06 $
+ * @version 1.2 $Revision: 1.14 $ $Date: 2007-03-07 14:29:46 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -50,10 +50,12 @@ public class ParserFactory {
 
 	private static Hashtable parserTable;
 	private static Class[] constructorArgs;
+    private static Hashtable parserConstructorCache;
 
-	static {
+    static {
 		parserTable = new Hashtable();
-		constructorArgs = new Class[1];
+        parserConstructorCache = new Hashtable();
+        constructorArgs = new Class[1];
 		constructorArgs[0] = String.class;
 		parserTable.put(ReplyToHeader.NAME.toLowerCase(), ReplyToParser.class);
 
@@ -283,8 +285,11 @@ public class ParserFactory {
 		Class parserClass = (Class) parserTable.get(SIPHeaderNamesCache.toLowerCase(headerName));
 		if (parserClass != null) {
 			try {
-
-				Constructor cons = parserClass.getConstructor(constructorArgs);
+				Constructor cons = (Constructor) parserConstructorCache.get(parserClass);
+                if (cons == null) {
+                    cons = parserClass.getConstructor(constructorArgs);
+                    parserConstructorCache.put(parserClass, cons);
+                }
 				Object[] args = new Object[1];
 				args[0] = line;
 				HeaderParser retval = (HeaderParser) cons.newInstance(args);
@@ -304,6 +309,9 @@ public class ParserFactory {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.13  2007/02/23 14:56:06  belangery
+ * Added performance improvement around header name lowercase conversion.
+ *
  * Revision 1.12  2007/01/08 19:24:21  mranga
  * Issue number:
  * Obtained from:

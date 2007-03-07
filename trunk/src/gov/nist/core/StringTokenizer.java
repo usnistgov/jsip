@@ -79,24 +79,37 @@ public class StringTokenizer {
 	}
 
 	public static boolean isAlpha(char ch) {
-		if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')) {
-			return true;
-		}
-		else {
-			return Character.isUpperCase(ch) || Character.isLowerCase(ch);
+        if (ch <= 127) {
+            return ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z'));
+        }
+        else {
+			return Character.isLowerCase(ch) || Character.isUpperCase(ch);
 		}
 	}
 
 	public static boolean isDigit(char ch) {
-		if (ch >= '0' && ch <= '9') {
-			return true;
+        if (ch <= 127) {
+            return (ch <= '9' && ch >= '0');
 		}
 		else {
 			return Character.isDigit(ch);
 		}
 	}
+    
+    public static boolean isAlphaDigit(char ch) {
+        if (ch <= 127) {
+            return (ch >= 'a' && ch <= 'z') ||
+                (ch >= 'A' && ch <= 'Z') ||
+                (ch <= '9' && ch >= '0');
+        }
+        else {
+            return Character.isLowerCase(ch) ||
+                Character.isUpperCase(ch) ||
+                Character.isDigit(ch);
+        }
+    }
 
-	public String getLine() {
+    public String getLine() {
 		int startIdx = ptr;
 		while (ptr < bufferLen && buffer.charAt(ptr) != '\n') {
 			ptr++;

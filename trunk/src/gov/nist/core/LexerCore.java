@@ -276,29 +276,39 @@ public class LexerCore extends StringTokenizer {
 
 	public void SPorHT() {
 		try {
-			while (lookAhead(0) == ' ' || lookAhead(0) == '\t')
+            char c = lookAhead(0);
+            while (c == ' ' || c == '\t') {
 				consume(1);
-		} catch (ParseException ex) {
+                c = lookAhead(0);
+            }
+        } catch (ParseException ex) {
 			// Ignore
 		}
 	}
 	public boolean startsId() {
 		try {
 			char nextChar = lookAhead(0);
-			return (
-				isAlpha(nextChar)
-					|| isDigit(nextChar)
-					|| nextChar == '_'
-					|| nextChar == '+'
-					|| nextChar == '-'
-					|| nextChar == '!'
-					|| nextChar == '`'
-					|| nextChar == '\''
-					|| nextChar == '~'
-					|| nextChar == '%' // bug fix by Bruno Konik
-					|| nextChar == '.'
-					|| nextChar == '*');
-		} catch (ParseException ex) {
+            if (isAlphaDigit(nextChar)) {
+                return true;
+            }
+            else {
+                switch (nextChar) {
+                    case '_':
+                    case '+':
+                    case '-':
+                    case '!':
+                    case '`':
+                    case '\'':
+                    case '~':
+                    case '%': // bug fix by Bruno Konik
+                    case '.':
+                    case '*':
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        } catch (ParseException ex) {
 			return false;
 		}
 	}
@@ -306,32 +316,39 @@ public class LexerCore extends StringTokenizer {
 	public boolean startsSafeToken() {
 		try {
 			char nextChar = lookAhead(0);
-			return ( isAlpha(nextChar)
-				|| isDigit(nextChar)
-				|| nextChar == '_'
-				|| nextChar == '+'
-				|| nextChar == '-'
-				|| nextChar == '!'
-				|| nextChar == '`'
-				|| nextChar == '\''
-				|| nextChar == '~'
-				|| nextChar == '.'
-				|| nextChar == '/'
-				|| nextChar == '}'
-				|| nextChar == '{'
-				|| nextChar == ']'
-				|| nextChar == '['
-				|| nextChar == '^'
-				|| nextChar == '|'
-				|| nextChar == '~'
-				|| nextChar == '#'
-				|| nextChar == '@'
-				|| nextChar == '$'
-				|| nextChar == ':'
-				|| nextChar == ';'
-				|| nextChar == '?'
-				|| nextChar == '\"'
-				|| nextChar == '*' ) ;
+            if (isAlphaDigit(nextChar)) {
+                return true;
+            }
+            else {
+                switch (nextChar) {
+                    case '_':
+                    case '+':
+                    case '-':
+                    case '!':
+                    case '`':
+                    case '\'':
+                    case '.':
+                    case '/':
+                    case '}':
+                    case '{':
+                    case ']':
+                    case '[':
+                    case '^':
+                    case '|':
+                    case '~':
+                    case '#':
+                    case '@':
+                    case '$':
+                    case ':':
+                    case ';':
+                    case '?':
+                    case '\"':
+                    case '*':
+                        return true;
+                    default:
+                        return false;
+                }
+            }
 		} catch (ParseException ex) {
 			return false;
 		}
@@ -342,24 +359,32 @@ public class LexerCore extends StringTokenizer {
 		try {
 			while (hasMoreChars()) {
 				char nextChar = lookAhead(0);
-				//Debug.println("nextChar = " + nextChar);
-				if (isAlpha(nextChar)
-					|| isDigit(nextChar)
-					|| nextChar == '_'
-					|| nextChar == '+'
-					|| nextChar == '-'
-					|| nextChar == '!'
-					|| nextChar == '`'
-					|| nextChar == '\''
-					|| nextChar == '~'
-					|| nextChar == '%' // bug fix by Bruno Konik
-					|| nextChar == '.'
-					|| nextChar == '*') {
-					consume(1);
-				} else
-					break;
-
-			}
+                if (isAlphaDigit(nextChar)) {
+                    consume(1);
+                }
+                else {
+                    boolean isValidChar = false;
+                    switch (nextChar) {
+                        case '_':
+                        case '+':
+                        case '-':
+                        case '!':
+                        case '`':
+                        case '\'':
+                        case '~':
+                        case '%': // bug fix by Bruno Konik
+                        case '.':
+                        case '*':
+                            isValidChar = true;
+                    }
+                    if (isValidChar) {
+                        consume(1);
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
 			return buffer.substring(startIdx, ptr);
 		} catch (ParseException ex) {
 			return null;
@@ -371,25 +396,34 @@ public class LexerCore extends StringTokenizer {
 		try {
 			while (hasMoreChars()) {
 				char nextChar = lookAhead(0);
-				//Debug.println("nextChar = " + nextChar);
-				if (isAlpha(nextChar)
-					|| isDigit(nextChar)
-					|| nextChar == '_'
-					|| nextChar == '+'
-					|| nextChar == '-'
-					|| nextChar == '!'
-					|| nextChar == '`'
-					|| nextChar == '\''
-					|| nextChar == '~'
-					|| nextChar == '.'
-					|| nextChar == ' '
-					|| nextChar == '\t'
-					|| nextChar == '*') {
-					consume(1);
-				} else
-					break;
+                if (isAlphaDigit(nextChar)) {
+                    consume(1);
+                }
+                else {
+                    boolean isValidChar = false;
+                    switch (nextChar) {
+                        case '_':
+                        case '+':
+                        case '-':
+                        case '!':
+                        case '`':
+                        case '\'':
+                        case '~':
+                        case '.':
+                        case ' ':
+                        case '\t':
+                        case '*':
+                            isValidChar = true;
+                    }
+                    if (isValidChar) {
+                        consume(1);
+                    }
+                    else {
+                        break;
+                    }
+                }
 
-			}
+            }
 			return buffer.substring(startIdx, ptr);
 		} catch (ParseException ex) {
 			return null;
@@ -401,37 +435,45 @@ public class LexerCore extends StringTokenizer {
 		try {
 			while (hasMoreChars()) {
 				char nextChar = lookAhead(0);
-				if (isAlpha(nextChar)
-					|| isDigit(nextChar)
-					|| nextChar == '_'
-					|| nextChar == '+'
-					|| nextChar == '-'
-					|| nextChar == '!'
-					|| nextChar == '`'
-					|| nextChar == '\''
-					|| nextChar == '~'
-					|| nextChar == '.'
-					|| nextChar == '/'
-					|| nextChar == '}'
-					|| nextChar == '{'
-					|| nextChar == ']'
-					|| nextChar == '['
-					|| nextChar == '^'
-					|| nextChar == '|'
-					|| nextChar == '~'
-					|| nextChar == '#'
-					|| nextChar == '@'
-					|| nextChar == '$'
-					|| nextChar == ':'
-					|| nextChar == ';'
-					|| nextChar == '?'
-					|| nextChar == '\"'
-					|| nextChar == '*' ) {
-					consume(1);
-				} else
-					break;
-
-			}
+                if (isAlphaDigit(nextChar)) {
+                    consume(1);
+                }
+                else {
+                    boolean isValidChar = false;
+                    switch (nextChar) {
+                        case '_':
+                        case '+':
+                        case '-':
+                        case '!':
+                        case '`':
+                        case '\'':
+                        case '.':
+                        case '/':
+                        case '}':
+                        case '{':
+                        case ']':
+                        case '[':
+                        case '^':
+                        case '|':
+                        case '~':
+                        case '#':
+                        case '@':
+                        case '$':
+                        case ':':
+                        case ';':
+                        case '?':
+                        case '\"':
+                        case '*':
+                            isValidChar = true;
+                    }
+                    if (isValidChar) {
+                        consume(1);
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
 			return buffer.substring(startIdx, ptr); 
 		} catch (ParseException ex) {
 			return null;
@@ -457,7 +499,7 @@ public class LexerCore extends StringTokenizer {
                             isValid = isDigit(nextChar);
                             break;
                         case ALPHADIGIT_VALID_CHARS:
-                            isValid = isAlpha(nextChar) || isDigit(nextChar);
+                            isValid = isAlphaDigit(nextChar);
                             break;
                         default:
                             isValid = nextChar == validChar;
@@ -483,7 +525,7 @@ public class LexerCore extends StringTokenizer {
 	* closing quote.
 	*/
 	public String quotedString() throws ParseException {
-		StringBuffer retval = new StringBuffer();
+		int startIdx = ptr + 1;
 		if (lookAhead(0) != '\"')
 			return null;
 		consume(1);
@@ -497,17 +539,13 @@ public class LexerCore extends StringTokenizer {
 					this.buffer + " :unexpected EOL",
 					this.ptr);
 			} else if (next == '\\') {
-				retval.append(next);
-				next = getNextChar();
-				retval.append(next);
-			} else {
-				retval.append(next);
+				consume(1);
 			}
 		}
-		return retval.toString();
+		return buffer.substring(startIdx, ptr - 1);
 	}
 
-	/** Parse a comment string cursor is at a "(". Leave cursor at )
+    /** Parse a comment string cursor is at a "(". Leave cursor at )
 	*@return the substring containing the comment excluding the
 	* closing brace.
 	*/
@@ -583,24 +621,14 @@ public class LexerCore extends StringTokenizer {
 	}
 
 	public static String charAsString(char ch) {
-		return new Character(ch).toString();
+		return String.valueOf(ch);
 	}
 
 	/** Lookahead in the inputBuffer for n chars and return as a string.
 	 * Do not consume the input.
 	 */
 	public String charAsString(int nchars) {
-
-		StringBuffer retval = new StringBuffer();
-		try {
-			for (int i = 0; i < nchars; i++) {
-				retval.append(lookAhead(i));
-			}
-			return retval.toString();
-		} catch (ParseException ex) {
-			return retval.toString();
-
-		}
+        return buffer.substring(ptr, ptr + nchars);
 	}
 
 	/** Get and consume the next number.
@@ -609,26 +637,24 @@ public class LexerCore extends StringTokenizer {
 	 */
 	public String number() throws ParseException {
 
-		StringBuffer retval = new StringBuffer();
+		int startIdx = ptr;
 		try {
 			if (!isDigit(lookAhead(0))) {
 				throw new ParseException(
 					buffer + ": Unexpected token at " + lookAhead(0),
 					ptr);
 			}
-			retval.append(lookAhead(0));
 			consume(1);
 			while (true) {
 				char next = lookAhead(0);
 				if (isDigit(next)) {
-					retval.append(next);
 					consume(1);
 				} else
 					break;
 			}
-			return retval.toString();
+			return buffer.substring(startIdx, ptr);
 		} catch (ParseException ex) {
-			return retval.toString();
+			return buffer.substring(startIdx, ptr);
 		}
 	}
 
