@@ -79,7 +79,7 @@ import javax.sip.message.Response;
  *
  *
  *
- * @version 1.2 $Revision: 1.41 $ $Date: 2007-01-26 16:50:45 $
+ * @version 1.2 $Revision: 1.42 $ $Date: 2007-03-08 05:20:19 $
  */
 public class UDPMessageChannel extends MessageChannel implements
 		ParseExceptionListener, Runnable {
@@ -416,7 +416,7 @@ public class UDPMessageChannel extends MessageChannel implements
 			// This is a request - process it.
 			//So far so good -- we will commit this message if
 			// all processing is OK.
-			if (sipStack.serverLog.needsLogging(ServerLog.TRACE_MESSAGES)) {
+			if (sipStack.logWriter.isLoggingEnabled(ServerLog.TRACE_MESSAGES)) {
 
 				this.sipStack.serverLog.logMessage(sipMessage,
 						this.getPeerHostPort().toString(), this.getHost()
@@ -485,6 +485,7 @@ public class UDPMessageChannel extends MessageChannel implements
 					.newSIPServerResponse(sipResponse, this);
 			if (sipServerResponse != null) {
 				try {
+					
 					sipServerResponse.processResponse(sipResponse, this);
 				} finally {
 					if (sipServerResponse instanceof SIPTransaction &&
@@ -573,7 +574,7 @@ public class UDPMessageChannel extends MessageChannel implements
 		sendMessage(msg, peerAddress, peerPort, peerProtocol,
 				sipMessage instanceof SIPRequest);
 
-		if (sipStack.serverLog.needsLogging(ServerLog.TRACE_MESSAGES))
+		if (sipStack.logWriter.isLoggingEnabled(ServerLog.TRACE_MESSAGES))
 			logMessage(sipMessage, peerAddress, peerPort, time);
 	}
 
@@ -613,13 +614,14 @@ public class UDPMessageChannel extends MessageChannel implements
 				peerPort);
 		try {
 			DatagramSocket sock;
+			boolean created = false;
+			
 			if (sipStack.udpFlag) {
 				// Use the socket from the message processor (for firewall
 				// support use the same socket as the message processor
 				// socket -- feature request # 18 from java.net). This also
 				// makes the whole thing run faster!
-
-				sock = ((UDPMessageProcessor) messageProcessor).sock;
+					sock = ((UDPMessageProcessor) messageProcessor).sock;
 
 				// Bind the socket to the stack address in case there
 				// are multiple interfaces on the machine (feature reqeust
@@ -628,9 +630,10 @@ public class UDPMessageChannel extends MessageChannel implements
 			} else {
 				// bind to any interface and port.
 				sock = new DatagramSocket();
+				created = true;
 			}
 			sock.send(reply);
-			if (!sipStack.udpFlag)
+			if (created)
 				sock.close();
 		} catch (IOException ex) {
 			throw ex;

@@ -50,7 +50,7 @@ import javax.sip.header.TimeStampHeader;
  * later access via RMI. The trace can be viewed with a trace viewer (see
  * tools.traceviewerapp).
  *
- * @version 1.2 $Revision: 1.24 $ $Date: 2007-02-27 02:39:41 $
+ * @version 1.2 $Revision: 1.25 $ $Date: 2007-03-08 05:20:19 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -68,7 +68,7 @@ public class ServerLog {
 	 */
 	public static final int TRACE_NONE = 0;
 
-	public static final int TRACE_MESSAGES = 16;
+	public static final int TRACE_MESSAGES = LogWriter.TRACE_MESSAGES;
 	
 	/**
 	 * Trace exception processing
@@ -291,14 +291,7 @@ public class ServerLog {
 		}
 	}
 
-	/**
-	 * Check to see if logging is enabled at a level (avoids
-	 * unecessary message formatting.
-	 * @param logLevel level at which to check.
-	 */
-	public boolean needsLogging(int logLevel) {
-		return traceLevel >= logLevel;
-	}
+	
 
 	/**
 	 * Global check for whether to log or not. To minimize the time
@@ -480,17 +473,7 @@ public class ServerLog {
 		);
 	}
 
-	/**
-	 * Log a message into the log file.
-	 * @param msgLevel Logging level for this message.
-	 * @param tracemsg message to write out.
-	 */
-	public void traceMsg(int msgLevel, String tracemsg) {
-		if (needsLogging(msgLevel)) {
-			traceWriter.println(tracemsg);
-			logMessage(tracemsg);
-		}
-	}
+	
 
 	/**
 	 * Log an exception stack trace.

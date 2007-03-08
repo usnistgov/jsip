@@ -15,7 +15,8 @@ import java.util.*;
 import junit.framework.TestCase;
 
 public class ServerTransactionRetransmissionTimerTest extends TestCase {
-	
+	public static final boolean callerSendsBye = true;
+
 	private static Logger logger = Logger.getLogger( ServerTransactionRetransmissionTimerTest.class);
 	static {
 		if ( ! logger.getAllAppenders().hasMoreElements())
@@ -146,7 +147,7 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
 				return;
 			}
 			// If the caller is supposed to send the bye
-			if (examples.simplecallsetup.Shootme.callerSendsBye
+			if (callerSendsBye
 					&& !byeTaskRunning) {
 				byeTaskRunning = true;
 				new Timer().schedule(new ByeTask(dialog), 30000); // Frank
@@ -197,8 +198,9 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
 					}
 				}
 			} catch (Exception ex) {
-				ex.printStackTrace();
-				System.exit(0);
+				logger.error("Unexpected exception", ex);
+				fail("Unexpected exception");
+				
 			}
 
 		}
@@ -230,18 +232,7 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
 		public void processTimeout(javax.sip.TimeoutEvent timeoutEvent) {
 
 			logger.info("Transaction Time out");
-		}
-
-		public void sendCancel() {
-			try {
-				logger.info("Sending cancel");
-				Request cancelRequest = inviteTid.createCancel();
-				ClientTransaction cancelTid = sipProvider
-						.getNewClientTransaction(cancelRequest);
-				cancelTid.sendRequest();
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
+			fail("Unexpected exception -- ");
 		}
 
 		public void init() {
@@ -477,8 +468,7 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
 
 		private Dialog dialog;
 
-		public static final boolean callerSendsBye = true;
-
+		
 		class MyTimerTask extends TimerTask {
 			Shootme shootme;
 
@@ -553,7 +543,8 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
 					dialog.sendRequest(ct);
 				}
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				logger.error("Unexpected exception", ex);
+				fail("unexpected exception");
 			}
 
 		}
@@ -597,8 +588,8 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
 
 				new Timer().schedule(new MyTimerTask(this), 1000);
 			} catch (Exception ex) {
-				ex.printStackTrace();
-				System.exit(0);
+				logger.error("Unexpected exception");
+				fail("Unexpected exception");
 			}
 		}
 
@@ -611,10 +602,9 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
 					logger.info("shootme: Dialog state after 200: "
 							+ inviteTid.getDialog().getState());
 				}
-			} catch (SipException ex) {
-				ex.printStackTrace();
-			} catch (InvalidArgumentException ex) {
-				ex.printStackTrace();
+			} catch (Exception ex) {
+				logger.error("Unexpected exception",ex);
+				fail("Unexpected exception");
 			}
 		}
 
@@ -635,8 +625,8 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
 						+ serverTransactionId.getDialog().getState());
 
 			} catch (Exception ex) {
-				ex.printStackTrace();
-				System.exit(0);
+				logger.error("UNexpected exception",ex);
+				fail("UNexpected exception");
 
 			}
 		}
