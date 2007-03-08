@@ -42,11 +42,13 @@ import javax.sdp.*;
 */
 public class OriginField extends SDPField implements javax.sdp.Origin {
 	protected String username;
-	protected long sessId;
-	protected long sessVersion;
+	//protected long sessId;
+	//protected long sessVersion;
 	protected String nettype; // IN
 	protected String addrtype; // IPV4/6
 	protected Host address;
+	private String sessIdString;
+	private String sessVersionString;
 
 	public OriginField() {
 		super(ORIGIN_FIELD);
@@ -63,13 +65,23 @@ public class OriginField extends SDPField implements javax.sdp.Origin {
 	* Get the sessionID member.
 	*/
 	public long getSessId() {
-		return sessId;
+	
+		return new Long(this.sessIdString).longValue();
+	}
+	
+	public String getSessIdAsString() {
+		return this.sessIdString;
 	}
 	/**
 	* Get the sessionVersion member.
 	*/
 	public long getSessVersion() {
-		return sessVersion;
+		
+		return new Long(sessVersionString).longValue();
+	}
+	
+	public String getSessVersionAsString() {
+		return this.sessVersionString;
 	}
 	/**
 	* Get the netType member.
@@ -93,13 +105,28 @@ public class OriginField extends SDPField implements javax.sdp.Origin {
 	* Set the sessId member  
 	*/
 	public void setSessId(long s) {
-		sessId = s;
+		this.sessIdString = new Long(s).toString();
+	}
+	
+	/**
+	 * This is a work around for some implementations that do not set a long
+	 * session id.
+	 */
+	public void setSessionId(String sessId) {
+		this.sessIdString = sessId;
 	}
 	/**
 	* Set the sessVersion member  
 	*/
 	public void setSessVersion(long s) {
-		sessVersion = s;
+		sessVersionString = new Long(s).toString();
+	}
+	
+	/**
+	 * Set the session version as a string.
+	 */
+	public void setSessVersion(String s) {
+		this.sessVersionString = s;
 	}
 	/**
 	* Set the nettype member  
@@ -241,12 +268,13 @@ public class OriginField extends SDPField implements javax.sdp.Origin {
 	 * @since v1.0
 	 */
 	public String encode() {
-		return ORIGIN_FIELD
+			
+			return ORIGIN_FIELD
 			+ username
 			+ Separators.SP
-			+ sessId
+			+ sessIdString
 			+ Separators.SP
-			+ sessVersion
+			+ sessVersionString
 			+ Separators.SP
 			+ nettype
 			+ Separators.SP

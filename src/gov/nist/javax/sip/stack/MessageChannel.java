@@ -52,7 +52,7 @@ import javax.sip.header.ContactHeader;
  * Contains additions for support of symmetric NAT contributed
  * by Hagai.
  *
- * @version 1.2 $Revision: 1.16 $ $Date: 2007-01-26 16:50:45 $
+ * @version 1.2 $Revision: 1.17 $ $Date: 2007-03-08 05:20:20 $
  *
  * 
  */
@@ -288,7 +288,7 @@ public abstract class MessageChannel {
 		InetAddress address,
 		int port,
 		long time) {
-		if (! getSIPStack().serverLog.needsLogging(ServerLog.TRACE_MESSAGES)) return;
+		if (! getSIPStack().logWriter.isLoggingEnabled(ServerLog.TRACE_MESSAGES)) return;
 	
 	
 		// Default port.

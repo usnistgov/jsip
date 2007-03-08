@@ -65,7 +65,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan 
  * 
  * 
- * @version 1.2 $Revision: 1.9 $ $Date: 2007-02-13 21:02:16 $ 
+ * @version 1.2 $Revision: 1.10 $ $Date: 2007-03-08 05:20:20 $ 
  */
 public final class TLSMessageChannel extends MessageChannel implements
 		SIPMessageListener, Runnable {
@@ -286,7 +286,7 @@ public final class TLSMessageChannel extends MessageChannel implements
 
 		this.sendMessage(msg, sipMessage instanceof SIPRequest);
 
-		if (this.sipStack.serverLog.needsLogging(ServerLog.TRACE_MESSAGES))
+		if (this.sipStack.logWriter.isLoggingEnabled(ServerLog.TRACE_MESSAGES))
 			logMessage(sipMessage, peerAddress, peerPort, time);
 	}
 
@@ -447,8 +447,8 @@ public final class TLSMessageChannel extends MessageChannel implements
 				if (sipStack.isLoggingEnabled()) {
 					sipStack.logWriter.logDebug("----Processing Message---");
 				}
-				if (this.sipStack.serverLog
-						.needsLogging(ServerLog.TRACE_MESSAGES)) {
+				if (this.sipStack.logWriter
+						.isLoggingEnabled(ServerLog.TRACE_MESSAGES)) {
 
 					sipStack.serverLog.logMessage(sipMessage, this.getPeerHostPort().toString() ,
 							this.messageProcessor.getIpAddress()
