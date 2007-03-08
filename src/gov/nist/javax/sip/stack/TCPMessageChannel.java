@@ -63,7 +63,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.38 $ $Date: 2007-01-28 13:06:23 $ 
+ * @version 1.2 $Revision: 1.39 $ $Date: 2007-03-08 05:20:19 $ 
  */
 public class TCPMessageChannel extends MessageChannel implements
 		SIPMessageListener, Runnable {
@@ -290,7 +290,7 @@ public class TCPMessageChannel extends MessageChannel implements
 
 		this.sendMessage(msg, sipMessage instanceof SIPRequest);
 
-		if (this.sipStack.serverLog.needsLogging(ServerLog.TRACE_MESSAGES))
+		if (this.sipStack.logWriter.isLoggingEnabled(ServerLog.TRACE_MESSAGES))
 			logMessage(sipMessage, peerAddress, peerPort, time);
 	}
 
@@ -496,8 +496,8 @@ public class TCPMessageChannel extends MessageChannel implements
 					// Service is overloaded -- send back an error and drop the request.
 					this.sendMessage(response);
 				}
-				if (this.sipStack.serverLog
-						.needsLogging(ServerLog.TRACE_MESSAGES)) {
+				if (this.sipStack.logWriter
+						.isLoggingEnabled(ServerLog.TRACE_MESSAGES)) {
 
 					sipStack.serverLog.logMessage(sipMessage,
 							this.getPeerHostPort().toString() , this

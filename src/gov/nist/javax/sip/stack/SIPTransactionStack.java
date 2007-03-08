@@ -65,7 +65,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.74 $ $Date: 2007-03-06 03:48:12 $
+ * @version 1.2 $Revision: 1.75 $ $Date: 2007-03-08 05:20:19 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -104,9 +104,9 @@ public abstract class SIPTransactionStack implements
 
 	// Set to false if you want hiwat and lowat to be consulted.
 	private boolean unlimitedServerTransactionTableSize = false;
-	
+
 	// Set to false if you want unlimited size of client trnansactin table.
-	
+
 	protected boolean unlimitedClientTransactionTableSize = true;
 
 	// High water mark for ServerTransaction Table
@@ -117,7 +117,8 @@ public abstract class SIPTransactionStack implements
 	// requests are selectively dropped
 	protected int serverTransactionTableLowaterMark = 4000;
 
-	// Hiwater mark for client transaction table. These defaults can be overriden by stack 
+	// Hiwater mark for client transaction table. These defaults can be
+	// overriden by stack
 	// configuration.
 
 	protected int clientTransactionTableHiwaterMark = 1000;
@@ -1038,8 +1039,6 @@ public abstract class SIPTransactionStack implements
 	protected ServerResponseInterface newSIPServerResponse(
 			SIPResponse responseReceived, MessageChannel responseMessageChannel) {
 
-		
-
 		// Iterator through all client transactions
 		Iterator transactionIterator;
 		// Next transaction in the set
@@ -1081,21 +1080,18 @@ public abstract class SIPTransactionStack implements
 
 			// If no transaction exists to handle this message,
 			if (currentTransaction == null) {
-//				 JvB: Need to log before passing the response to the client app, it
+				// JvB: Need to log before passing the response to the client
+				// app, it
 				// gets modified!
-				if (serverLog.needsLogging(ServerLog.TRACE_MESSAGES)) {
+				if (this.logWriter.isLoggingEnabled(LogWriter.TRACE_MESSAGES)) {
 					responseMessageChannel.logResponse(responseReceived, System
 							.currentTimeMillis(), "before processing");
 				}
+
 				// Pass the message directly to the TU
 				return sipMessageFactory.newSIPServerResponse(responseReceived,
 						responseMessageChannel);
 
-			} else {
-				if (serverLog.needsLogging(ServerLog.TRACE_MESSAGES)) {
-					currentTransaction.logResponse(responseReceived, System
-							.currentTimeMillis(), "before processing");
-				}
 			}
 		}
 
@@ -1103,6 +1099,12 @@ public abstract class SIPTransactionStack implements
 		// from the superclass
 		currentTransaction.setResponseInterface(sipMessageFactory
 				.newSIPServerResponse(responseReceived, currentTransaction));
+
+		if (this.logWriter.isLoggingEnabled(LogWriter.TRACE_MESSAGES)) {
+			currentTransaction.logResponse(responseReceived, System
+					.currentTimeMillis(), "before processing");
+		}
+
 		if (currentTransaction.acquireSem())
 			return currentTransaction;
 		else
@@ -1339,9 +1341,9 @@ public abstract class SIPTransactionStack implements
 	}
 
 	/**
-	 * This method is called when a client tx transitions to the Completed or Terminated
-	 * state. 
-	 *
+	 * This method is called when a client tx transitions to the Completed or
+	 * Terminated state.
+	 * 
 	 */
 	protected void decrementActiveClientTransactionCount() {
 		this.activeClientTransactionCount--;
@@ -2080,10 +2082,9 @@ public abstract class SIPTransactionStack implements
 		return non2XXAckPassedToListener;
 	}
 
-	
-
 	/**
-	 * Get the count of client transactions that is not in the completed or terminated state.
+	 * Get the count of client transactions that is not in the completed or
+	 * terminated state.
 	 * 
 	 * @return the activeClientTransactionCount
 	 */

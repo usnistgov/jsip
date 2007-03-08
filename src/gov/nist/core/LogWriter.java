@@ -343,7 +343,7 @@ public class LogWriter {
 	}
 	
 	public boolean isLoggingEnabled( int logLevel ) {
-		return this.needsLogging && logLevel < traceLevel;
+		return this.needsLogging && logLevel <= traceLevel;
 	}
 
 	public void logError(String message, Exception ex) {
