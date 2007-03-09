@@ -101,24 +101,22 @@ Click here to join the NIST-SIP Mailing List at the NIST Advanced Networking Tec
 <li> The JAIN-SIP 1.2 RI offers you thread liveness monitoring features.
 <li> The JAIN-SIP 1.2 RI offers you support for TLS accelerators and 
 thread monitoring.
-<li> The JAIN-SIP 1.2 Interfaces have been submitted to JCP PMO for
-approval.
 <li> The JAIN-SIP RI offers you IMS header support.
 <li> The JAIN-SIP 1.2 API has been finalized and the change log is 
-now up to date. No more changes to the JAIN-SIP API will be made.
+now up to date. 
 <li> The TCK for JSIP-1.2 is Complete.
 If you are implementing this specification,
 you can test your implementation against the TCK 
-<li>The CVS repository has been moved from NIST to java.net. </li>
-<li>
-<b> After much tweaking and optimizing the stack performance
-has improved considerably. Using TCP for transport, a thread pool of size
-40 and a P4 3.2 GHZ single core with hyperthreading and 2GB of RAM, a
-thruput of 267 CAPS has been reported.  Using UDP for transport, on a P4
-single core, 2 GHZ machine with 1 Gb of RAM and with no hyperthreading, It
-can sustain 75 CAPS. Load tests were performed using test in 
-test/load/concurrency. No memory leaks were seen after 1000000 calls. </b>
-
+<li>The stack performance measures in at 476 CAPS on a P5 dual core,
+3.2 GHZ using TCP for transport. Using P4 3.2 GHZ single core with
+hyperthreading and 2GB of RAM, a thruput of 267 CAPS has been reported.
+On a dual core 3.4 Mhz P5 with 1 Gig RAM a thruput of 476 CAPS has been
+reported.  Using UDP for transport, on a P4 single core, 2 GHZ machine
+with 1 Gb of RAM and with no hyperthreading a a performance of 82 CAPS
+was observed.  Using TCP for the same scenario, we measure in at 200
+CAPS. Load tests were performed using test in test/load/concurrency. No
+memory leaks were seen after 1000000 calls.  Thanks to Yanick Belanger
+for several performance improvements and measurement.  </li>
 <li> The JAIN-SIP wiki is making progress. 
 Contribute material an how to tips to the JAIN-SIP Wiki ! </li>
 </ul>
