@@ -34,7 +34,9 @@ public class RouteParserTest extends ParserTestCase {
 	     "Route: <sip:TIA-P25-U2Uorig@AF.003.1300.p25dr;lr>\n",
 	     // pmusgrave - illegal (must have <>'s )
 	     // "Route: sip:alice@atlanta.com, sip:bob@biloxi.com, sip:carol@chicago.com\n",
-		"Route: <sip:bigbox3.site3.atlanta.com;lr>,<sip:server10.biloxi.com;lr>\n"};		super.testParser(RouteParser.class,routes);
+		"Route: <sip:bigbox3.site3.atlanta.com;lr>,<sip:server10.biloxi.com;lr>\n",
+		"Route: <sip:3Zqkv5dajqaaas0tCjCxT0xH2ZEuEMsFl0xoasip%3A%2B3519116786244%40siplab.domain.com@213.0.115.163:7070;lr>\n"};		
+		super.testParser(RouteParser.class,routes);
 	}
 
 }
