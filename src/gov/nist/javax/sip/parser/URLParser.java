@@ -38,7 +38,7 @@ import java.text.ParseException;
 /**
  * Parser For SIP and Tel URLs. Other kinds of URL's are handled by the 
  * J2SE 1.4 URL class.
- * @version 1.2 $Revision: 1.23 $ $Date: 2007-03-07 14:29:47 $
+ * @version 1.2 $Revision: 1.24 $ $Date: 2007-03-12 18:33:19 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -808,7 +808,8 @@ public class URLParser extends Parser {
 	{
 		// quick test for sips parsing
 		String[] test = { "sip:alice@example.com",
-				     "sips:alice@examples.com" };
+				     "sips:alice@examples.com" ,
+				     "sip:3Zqkv5dajqaaas0tCjCxT0xH2ZEuEMsFl0xoasip%3A%2B3519116786244%40siplab.domain.com@213.0.115.163:7070"};
 		
 		for ( int i = 0; i < test.length; i++)
 		{
