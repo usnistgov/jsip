@@ -65,7 +65,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan 
  * 
  * 
- * @version 1.2 $Revision: 1.10 $ $Date: 2007-03-08 05:20:20 $ 
+ * @version 1.2 $Revision: 1.11 $ $Date: 2007-03-17 01:04:32 $ 
  */
 public final class TLSMessageChannel extends MessageChannel implements
 		SIPMessageListener, Runnable {
@@ -536,6 +536,13 @@ public final class TLSMessageChannel extends MessageChannel implements
 						.newSIPServerResponse(sipResponse, this);
 				if (sipServerResponse != null) {
 					try {
+						if ( sipServerResponse instanceof SIPClientTransaction  &&
+								!((SIPClientTransaction)sipServerResponse).checkFromTag(sipResponse)) {
+							if (sipStack.isLoggingEnabled())
+								sipStack.logWriter.logError("Dropping response message with invalid tag >>> " + sipResponse);
+							return;
+						}
+							
 						sipServerResponse.processResponse(sipResponse, this);
 					} finally {
 						if (sipServerResponse instanceof SIPTransaction
