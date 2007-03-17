@@ -55,7 +55,7 @@ import java.util.*;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.26 $ $Date: 2007-02-23 14:56:05 $
+ * @version 1.2 $Revision: 1.27 $ $Date: 2007-03-17 01:04:33 $
  * @since 1.1
  * 
  * @author M. Ranganathan  <br/>
@@ -1371,10 +1371,31 @@ public abstract class SIPMessage extends MessageObject implements
 		}
 	}
 
+	/**
+	 * Get a header of the given name as a string. This concatenates the headers
+	 * of a given type as a comma separted list. This is useful for formatting and
+	 * printing headers.
+	 * 
+	 * @param name
+	 * @return the header as a formatted string
+	 */
+	public String getHeaderAsFormattedString(String name) {
+		String lowerCaseName  = name.toLowerCase();
+		if ( this.nameTable.containsKey(lowerCaseName) ) {
+			return this.nameTable.get(lowerCaseName).toString();
+		} else {
+			return this.getHeader(name).toString();
+		}
+	}
     private SIPHeaderList getSIPHeaderListLowerCase(String lowerCaseHeaderName) {
 		return (SIPHeaderList) nameTable.get(lowerCaseHeaderName);
 	}
 
+    /**
+     * Get a list of headers of the given name ( or null if no such header exists ).
+     * @param headerName -- a header name from which to retrieve the list.
+     * @return -- a list of headers with that name.
+     */
 	private LinkedList getHeaderList(String headerName) {
 		SIPHeader sipHeader = (SIPHeader) nameTable.get(SIPHeaderNamesCache.toLowerCase(headerName));
 		if (sipHeader == null)

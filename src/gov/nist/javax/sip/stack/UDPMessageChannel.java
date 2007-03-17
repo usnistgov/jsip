@@ -79,7 +79,7 @@ import javax.sip.message.Response;
  *
  *
  *
- * @version 1.2 $Revision: 1.42 $ $Date: 2007-03-08 05:20:19 $
+ * @version 1.2 $Revision: 1.43 $ $Date: 2007-03-17 01:04:32 $
  */
 public class UDPMessageChannel extends MessageChannel implements
 		ParseExceptionListener, Runnable {
@@ -485,7 +485,13 @@ public class UDPMessageChannel extends MessageChannel implements
 					.newSIPServerResponse(sipResponse, this);
 			if (sipServerResponse != null) {
 				try {
-					
+					if ( sipServerResponse instanceof SIPClientTransaction  &&
+							!((SIPClientTransaction)sipServerResponse).checkFromTag(sipResponse)) {
+						if (sipStack.isLoggingEnabled())
+							sipStack.logWriter.logError("Dropping response message with invalid tag >>> " + sipResponse);
+						return;
+					}
+						
 					sipServerResponse.processResponse(sipResponse, this);
 				} finally {
 					if (sipServerResponse instanceof SIPTransaction &&
