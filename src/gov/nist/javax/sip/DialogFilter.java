@@ -57,7 +57,7 @@ import java.io.IOException;
  * and event model with the JAIN-SIP stack. This is strictly an implementation
  * class.
  * 
- * @version 1.2 $Revision: 1.7 $ $Date: 2007-02-06 18:55:35 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2007-03-17 01:04:33 $
  * 
  * @author M. Ranganathan
  */
@@ -1136,6 +1136,17 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 					"Transaction = " + transaction + " sipDialog = "
 							+ sipDialog);
 
+		if ( this.transactionChannel != null) {
+			String originalFrom = ((SIPRequest)this.transactionChannel.getRequest()).getFromTag();
+			if ( originalFrom == null ^ sipResponse.getFrom().getTag() == null) {
+				sipStack.getLogWriter().logDebug("From tag mismatch -- dropping response");
+				return;
+			}
+			if ( originalFrom != null && !originalFrom.equalsIgnoreCase(sipResponse.getFrom().getTag())) {
+				sipStack.getLogWriter().logDebug("From tag mismatch -- dropping response");
+				return;
+			}
+		}
 		if (sipStack.isDialogCreated(method)
 				&& sipResponse.getStatusCode() != 100
 				&& sipResponse.getFrom().getTag() != null
