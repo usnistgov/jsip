@@ -50,7 +50,7 @@ import javax.sip.header.TimeStampHeader;
  * later access via RMI. The trace can be viewed with a trace viewer (see
  * tools.traceviewerapp).
  *
- * @version 1.2 $Revision: 1.25 $ $Date: 2007-03-08 05:20:19 $
+ * @version 1.2 $Revision: 1.26 $ $Date: 2007-04-10 15:07:56 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -223,14 +223,14 @@ public class ServerLog {
 						configurationProperties.getProperty("javax.sip.OUTBOUND_PROXY") + "\n" 	+
 						 "-->");
 				if (auxInfo != null) {
-					printWriter.println(
+					/* printWriter.println(
 						"<description\n logDescription=\""
 							+ description
 							+ "\"\n name=\""
 							+ stackIpAddress
 							+ "\"\n auxInfo=\""
 							+ auxInfo
-							+ "\"/>\n ");
+							+ "\"/>\n "); */
 					if (sipStack.isLoggingEnabled()) {
 					    	logWriter.logDebug(
 						"Here are the stack configuration properties \n"			+
@@ -263,12 +263,12 @@ public class ServerLog {
 						logWriter.logDebug("<![CDATA[ ");
 					}
 				} else {
-					printWriter.println(
+					/* printWriter.println(
 						"<description\n logDescription=\""
 							+ description
 							+ "\"\n name=\""
 							+ stackIpAddress
-							+ "\" />\n");
+							+ "\" />\n"); */
 					if (sipStack.isLoggingEnabled()) {
 					    	logWriter.logDebug(
 						"Here are the stack configuration properties \n" +						 

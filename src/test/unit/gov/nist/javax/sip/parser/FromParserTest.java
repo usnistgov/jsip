@@ -35,6 +35,7 @@ public class FromParserTest extends ParserTestCase {
 	public void testParser() {
 		
 			String from[] = {
+			"From: +00123456 <sip:+00123456;cpc=ordinary@192.168.3.35;user=phone>;tag=0082-000001c3-025d\n",
 			"From: foobar at com<sip:4855@166.34.120.100 >;tag=1024181795\n",
 			"From: sip:user@company.com\n",
 			"From: sip:caller@university.edu\n",
