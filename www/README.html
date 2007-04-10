@@ -376,14 +376,14 @@ related to hardening the stack and guarding it against application
 programming errors:
 
 <ul>
-<li> --  Fixed Session Description to allow it to take a null session name.
-<li> --  Fixed Sdp parser to handle mixed \r , \n and \r\n
-<li> --  Fixed case sensitivity issue with content type and content subtype.
-<li> --  Added a Safe timer task. If an exception occurs in the timer the stack does not exit.
-<li> --  EventScanner.java : Fixed exception handling so that exceptions in the listener dont exit the stack.
-<li> --  SessionDescriptorImpl is now a deep copy
-<li> -- Added listener thread (liveness) auditing facitlity
-<li> -- Added Transaction table (leak) auditng facility.
+<li> Fixed Session Description to allow it to take a null session name.
+<li> Fixed Sdp parser to handle mixed \r , \n and \r\n
+<li> Fixed case sensitivity issue with content type and content subtype.
+<li> Added a Safe timer task. If an exception occurs in the timer the stack does not exit.
+<li> EventScanner.java : Fixed exception handling so that exceptions in the listener dont exit the stack.
+<li> SessionDescriptorImpl is now a deep copy
+<li> Added listener thread (liveness) auditing facitlity
+<li> Added Transaction table (leak) auditng facility.
 </ul>
 
 These will be of particular importance to you if you are building robust server applications. Examples have been provided for these new facilities.
@@ -399,6 +399,14 @@ a fix for RFC2543 CANCEL handling.</li>
 RFC 3892 (Refer method ) and Session Timer (RFC 4028) headers 
 and parsers for the same.  </li>
 
+<li>Hai Phan noticed that responding with a From tag different from the
+original request From tag with automatic dialog support enabled, resulted
+in memory leak due to Dialogs getting allocated despite invalid
+Responses.
+</li>
+
+<li> John Barton noticed an
+ issue with PRACK being dropped under heavy load. 
 </li>
 
 </ul>
