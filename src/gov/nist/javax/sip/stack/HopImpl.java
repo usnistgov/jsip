@@ -40,7 +40,7 @@ import java.util.StringTokenizer;
  * Routing algorithms return a list of hops to which the request is
  * routed.
  *
- * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-13 09:00:52 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2007-04-24 18:16:31 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -49,7 +49,7 @@ import java.util.StringTokenizer;
  
  *
  */
-public class HopImpl extends Object implements javax.sip.address.Hop {
+public final class HopImpl extends Object implements javax.sip.address.Hop {
 	protected String host;
 	protected int port;
 	protected String transport;
@@ -90,69 +90,59 @@ public class HopImpl extends Object implements javax.sip.address.Hop {
 	 * @throws IllegalArgument exception if string is not properly formatted or null.
 	 */
 	HopImpl(String hop) throws IllegalArgumentException {
+		
 		if (hop == null)
 			throw new IllegalArgumentException("Null arg!");
+				
 		// System.out.println("hop = " + hop);
-		StringTokenizer stringTokenizer = new StringTokenizer(hop + "/");
-		String hostPort = stringTokenizer.nextToken("/").trim();
-		transport = stringTokenizer.nextToken().trim();
-		// System.out.println("Hop: transport = " + transport);
-		if (transport == null)
-			transport = "UDP";
-		else if (transport == "")
-			transport = "UDP";
+		int brack = hop.indexOf(']');
+		int colon = hop.indexOf(':',brack);
+		int slash = hop.indexOf('/',colon);
+		
+		if (colon>0) {
+			this.host = hop.substring(0,colon);
+			String portstr;
+			if (slash>0) {				
+				portstr = hop.substring(colon+1,slash);
+				this.transport = hop.substring(slash+1);
+			} else {
+				portstr = hop.substring(colon+1);
+				this.transport = "UDP";
+			}
+			try {
+				port = Integer.parseInt(portstr);
+			} catch (NumberFormatException ex) {
+				throw new IllegalArgumentException("Bad port spec");
+			}
+		} else {
+			if (slash>0) {
+				this.host = hop.substring(0,slash);
+				this.transport = hop.substring(slash+1);
+				this.port = transport.equalsIgnoreCase("TLS") ? 5061 : 5060;
+			} else {
+				this.host = hop;
+				this.transport = "UDP";
+				this.port = 5060;
+			}
+		}
+		
+		// Validate it
+		if (host == null || host.length() == 0)
+			throw new IllegalArgumentException("no host!");
+
+		// normalize
+		this.host = this.host.trim();
+		this.transport = this.transport.trim();
+				
+		if ((brack>0) && host.charAt(0)!='[') {
+			throw new IllegalArgumentException("Bad IPv6 reference spec");
+		}
+				
 		if (transport.compareToIgnoreCase("UDP") != 0
 			&& transport.compareToIgnoreCase("TLS") != 0 // Added by Daniel J. Martinez Manzano <dani@dif.um.es>
 			&& transport.compareToIgnoreCase("TCP") != 0) {
 			System.out.println("Bad transport string " + transport);
 			throw new IllegalArgumentException(hop);
-		}
-
-		String portString = null;
-		//IPv6 hostport
-		if (hostPort.charAt(0) == '[') {
-			int rightSqBrackIndex = hostPort.indexOf(']');
-			if (rightSqBrackIndex == -1)
-				throw new IllegalArgumentException("Bad IPv6 reference spec");
-
-			host = hostPort.substring(0, rightSqBrackIndex + 1);
-
-			int portColon = hostPort.indexOf(':', rightSqBrackIndex);
-			if (portColon != -1)
-				try {
-					portString = hostPort.substring(portColon + 1).trim();
-				} catch (IndexOutOfBoundsException exc) {
-					//Do nothing - handled later
-				}
-		}
-		//IPv6 address and no port
-		else if (hostPort.indexOf(':') != hostPort.lastIndexOf(":")) {
-			host = '[' + hostPort + ']';
-		} else //no square brackets and a single or zero colons => IPv4 hostPort
-			{
-			int portColon = hostPort.indexOf(':');
-			if (portColon == -1)
-				host = hostPort;
-			else {
-				host = hostPort.substring(0, portColon).trim();
-				try {
-					portString = hostPort.substring(portColon + 1).trim();
-				} catch (IndexOutOfBoundsException exc) {
-					//Do nothing - handled later
-				}
-			}
-		}
-
-		if (host == null || host.equals(""))
-			throw new IllegalArgumentException("no host!");
-		if (portString == null || portString.equals("")) {
-			port = 5060;
-		} else {
-			try {
-				port = Integer.parseInt(portString);
-			} catch (NumberFormatException ex) {
-				throw new IllegalArgumentException("Bad port spec");
-			}
 		}
 	}
 
