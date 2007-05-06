@@ -179,4 +179,11 @@ public class AttributeField extends SDPField implements javax.sdp.Attribute {
 			retval.attribute = (NameValue) this.attribute.clone();
 		return retval;
 	}
+	
+	public boolean equals(Object that ) {
+		if ( ! (that instanceof AttributeField)) return false;
+		AttributeField other = (AttributeField) that	;
+		return other.getAttribute().getName().equalsIgnoreCase(this.getAttribute().getName()) &&
+				this.getAttribute().getValue().equals(other.getAttribute().getValue());
+	}
 }

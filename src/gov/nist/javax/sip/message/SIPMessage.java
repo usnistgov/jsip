@@ -55,7 +55,7 @@ import java.util.*;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.27 $ $Date: 2007-03-17 01:04:33 $
+ * @version 1.2 $Revision: 1.28 $ $Date: 2007-05-06 17:44:37 $
  * @since 1.1
  * 
  * @author M. Ranganathan  <br/>
@@ -230,6 +230,7 @@ public abstract class SIPMessage extends MessageObject implements
 						.listIterator();
 				while (outerIterator.hasNext()) {
 					SIPHeader hisHeader = (SIPHeader) outerIterator.next();
+					if (hisHeader instanceof ContentLength ) continue;
 					ListIterator innerIterator = myHeaders.listIterator();
 					boolean found = false;
 					while (innerIterator.hasNext()) {
