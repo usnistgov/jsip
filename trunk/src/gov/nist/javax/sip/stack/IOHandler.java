@@ -76,18 +76,31 @@ class IOHandler {
         this.socketTable = new Hashtable();
        
     }
-
-    protected synchronized void putSocket(String key, Socket sock) {
-        socketTable.put(key, sock);
+    
+    
+    protected void putSocket(String key, Socket sock) {
+        synchronized (this.socketTable)
+        {
+                socketTable.put(key, sock);
+        }
     }
 
-    protected synchronized Socket getSocket(String key) {
-        return (Socket) socketTable.get(key);
+    protected Socket getSocket(String key) {
+        synchronized (this.socketTable)
+        {
+                return (Socket) socketTable.get(key);
+        }
     }
 
     protected void removeSocket(String key) {
-        socketTable.remove(key);
+        synchronized (this.socketTable)
+        {
+                socketTable.remove(key);
+        }
     }
+
+
+   
 
     /**
      * A private function to write things out. This needs to be syncrhonized as
