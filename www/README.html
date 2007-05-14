@@ -413,6 +413,11 @@ Responses.
 addresses.
 </li>
 
+<li>Ryan Mitchell Noticed that the ACK for 3xx responses should not use
+the contact header for constructing the Request URI. Using the contact header
+will direct the ACK to thw new location. This was fixed in the RI.
+</li>
+
 </ul>
 
 
