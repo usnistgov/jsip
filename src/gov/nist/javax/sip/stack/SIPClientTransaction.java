@@ -156,7 +156,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.67 $ $Date: 2007-03-17 01:04:32 $
+ * @version 1.2 $Revision: 1.68 $ $Date: 2007-05-14 15:47:47 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -1073,9 +1073,14 @@ public class SIPClientTransaction extends SIPTransaction implements
 		// Pull the record route headers from the last reesponse.
 		RecordRouteList recordRouteList = lastResponse.getRecordRouteHeaders();
 		if (recordRouteList == null) {
-			Contact contact = null;
-			if (lastResponse.getContactHeaders() != null) {
-				contact = (Contact) lastResponse.getContactHeaders().getFirst();
+			// If the record route list is null then we can 
+			// construct the ACK from the specified contact header.
+			// Note the 3xx check here because 3xx is a redirect.
+			// The contact header for the 3xx is the redirected
+			// location so we cannot use that to construct the
+			// request URI.
+			if (lastResponse.getContactHeaders() != null && lastResponse.getStatusCode()/100 != 3) {
+				Contact contact = (Contact) lastResponse.getContactHeaders().getFirst();
 				javax.sip.address.URI uri = (javax.sip.address.URI) contact
 						.getAddress().getURI().clone();
 				ackRequest.setRequestURI(uri);
