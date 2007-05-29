@@ -27,7 +27,7 @@ package gov.nist.javax.sip.header;
  * A list of commonly occuring parameter names. These are for conveniance so as
  * to avoid typo's
  * 
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-10-12 11:57:54 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2007-05-29 19:57:57 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -148,4 +148,12 @@ public interface ParameterNames {
     // Added pmusgrave (Replaces support)
 	public static final String TO_TAG = "to-tag";
 	public static final String FROM_TAG = "from-tag";
+	
+	// pmusgrave (outbound and gruu)
+	// draft-sip-outbouund-08
+	// draft-sip-gruu-12
+	public static final String SIP_INSTANCE = "+sip.instance";
+	public static final String PUB_GRUU = "pub-gruu";
+	public static final String TEMP_GRUU = "temp-gruu";
+	public static final String GRUU = "gruu";
 }

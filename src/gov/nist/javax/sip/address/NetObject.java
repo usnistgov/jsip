@@ -35,7 +35,7 @@ import java.lang.reflect.*;
 /**
  * Root object for all objects in this package.
  *
- * @version 1.2 $Revision: 1.7 $ $Date: 2007-02-12 15:19:18 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2007-05-29 19:57:57 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -60,6 +60,11 @@ public abstract class NetObject extends GenericObject {
 
 	// Added by Daniel J. Martinez Manzano <dani@dif.um.es>
 	protected static final String TLS = "tls";
+	
+	// Added by Peter Musgrave <pmusgrave@newheights.com>
+	// params for outbound and gruu drafts
+	protected static final String GRUU = "gr";
+
 
 	/** Default constructor
 	 */
