@@ -44,7 +44,7 @@ import javax.sip.address.SipURI;
  * 
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.11 $ $Date: 2007-02-12 15:19:19 $
+ * @version 1.2 $Revision: 1.12 $ $Date: 2007-05-29 19:57:56 $
  *
  * 
  *
@@ -985,4 +985,40 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 	public boolean hasLrParam() {
 		return uriParms.getNameValue("lr") != null;
 	}
+	
+	/*
+	 * pmusgrave@newheights.com
+	 * Additions for gruu and outbound drafts
+	 */ 
+	/**
+	 * Returns whether the <code>gr</code> parameter is set.
+	 * 
+	 * Not part on the interface since gruu is not part of the base RFC3261.
+	 */
+	public boolean hasGrParam() {
+		return uriParms.getNameValue(GRUU) != null;
+	}
+
+	/**
+	 * Sets the <code>gr</code> parameter.
+	 * 
+	 * Not part on the interface since gruu is not part of the base RFC3261.
+	 */
+	public void setGrParam(String value) {
+			this.uriParms.set(GRUU, value);	// JvB: fixed to not add duplicates	
+	}
+	
+	/**
+	 * Sets the <code>gr</code> parameter.
+	 * 
+	 * Not part on the interface since gruu is not part of the base RFC3261.
+	 */
+	public String getGrParam() {
+			return (String) this.uriParms.getValue(GRUU);	// JvB: fixed to not add duplicates	
+	}
+	
+	/**
+	 *remove the +sip-instance value from the parameter list if it exists.
+	 */
+
 }

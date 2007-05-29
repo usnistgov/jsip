@@ -47,7 +47,7 @@ import java.text.ParseException;
  * @see gov.nist.javax.sip.header.ContactList
  *
  * @author M. Ranganathan  <br/>
- * @version 1.2 $Revision: 1.9 $ $Date: 2007-02-12 15:19:21 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2007-05-29 19:57:57 $
  * @since 1.1
  *
  *
@@ -244,4 +244,50 @@ public final  class Contact
 		return (other instanceof ContactHeader) && super.equals(other);
 	}
     
+	public void removeSipInstanceParam() {
+		if (parameters != null)
+			parameters.delete(ParameterNames.SIP_INSTANCE);
+	}
+	
+	public String getSipInstanceParam() {
+		return (String) parameters.getValue(ParameterNames.SIP_INSTANCE);
+	}
+	
+	public void setSipInstanceParam(String value) {
+		this.parameters.set(ParameterNames.SIP_INSTANCE, value);
+	}
+	
+	/**
+	 *remove the pub-gruu value from the parameter list if it exists.
+	 */
+	public void removePubGruuParam() {
+		if (parameters != null)
+			parameters.delete(ParameterNames.PUB_GRUU);
+	}
+	
+	public String getPubGruuParam() {
+		return (String) parameters.getValue(ParameterNames.PUB_GRUU);
+	}
+	
+	public void setPubGruuParam(String value)
+	{
+		this.parameters.set(ParameterNames.PUB_GRUU, value);
+	}
+	
+	/**
+	 *remove the pub-gruu value from the parameter list if it exists.
+	 */
+	public void removeTempGruuParam() {
+		if (parameters != null)
+			parameters.delete(ParameterNames.TEMP_GRUU);
+	}
+	
+	public String getTempGruuParam() {
+		return (String) parameters.getValue(ParameterNames.TEMP_GRUU);
+	}
+	
+	public void setTempGruuParam(String value)
+	{
+		this.parameters.set(ParameterNames.TEMP_GRUU, value);
+	}
 }
