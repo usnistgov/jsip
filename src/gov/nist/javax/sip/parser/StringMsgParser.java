@@ -64,7 +64,7 @@ import java.text.ParseException;
  * feld swoop).
  * 
  * 
- * @version 1.2 $Revision: 1.19 $ $Date: 2007-02-06 16:40:03 $
+ * @version 1.2 $Revision: 1.20 $ $Date: 2007-06-02 21:30:36 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -170,9 +170,10 @@ public class StringMsgParser {
 
 			if (currentLine.length() == 0) {
 				// Last header line, process the previous buffered header.
-				if (currentHeader != null) {
-					processHeader(currentHeader, message);
-				}
+				if (currentHeader != null && message != null) {
+ 					processHeader(currentHeader, message);
+ 				}
+				
 			}
 			else {
 				if (isFirstLine) {
@@ -187,9 +188,9 @@ public class StringMsgParser {
 						currentHeader += currentLine.substring(1);
 					}
 					else {
-						if (currentHeader != null) {
-							processHeader(currentHeader, message);
-						}
+						if (currentHeader != null && message != null) {
+ 							processHeader(currentHeader, message);
+ 						}
 						currentHeader = currentLine;
 					}
 				}
@@ -201,9 +202,9 @@ public class StringMsgParser {
 			i++;
 
 			isFirstLine = false;
-		}
-		while (currentLine.length() > 0);
+		} while (currentLine.length() > 0); // End do - while
 		
+		if (message == null) throw new ParseException("Bad message", 0);
 		message.setSize(i);
 		
 		if (readBody && message.getContentLength() != null &&
