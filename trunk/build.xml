@@ -235,7 +235,7 @@ c:/jakarta-ant/bin/ant all
 				<target name="compilesdp" depends="init">
 					<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="${srcroot}" includes="javax/sdp/**/*.java, gov/nist/javax/sdp/**/*.java" destdir="${classes}">
 					</javac>
-					<jar destfile="${sdp_jar}" basedir="${classes}" includes="gov/nist/javax/sdp/**/*.class,javax/sdp/**/*.class" />
+					<jar destfile="${sdp_jar}" basedir="${classes}" includes="gov/nist/core/**/*.class,gov/nist/javax/sdp/**/*.class,javax/sdp/**/*.class" />
 				</target>
 
 				<target name="compileunit" depends="clean, init, sip-sdp-jar">
