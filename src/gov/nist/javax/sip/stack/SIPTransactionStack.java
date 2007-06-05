@@ -65,7 +65,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.75 $ $Date: 2007-03-08 05:20:19 $
+ * @version 1.2 $Revision: 1.76 $ $Date: 2007-06-05 12:28:13 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -1783,6 +1783,8 @@ public abstract class SIPTransactionStack implements
 	/**
 	 * Creates a new MessageChannel for a given Hop.
 	 * 
+	 * @param sourceIpAddress - Ip address of the source of this message.
+	 * 
 	 * @param sourcePort -
 	 *            source port of the message channel to be created.
 	 * 
@@ -1795,7 +1797,7 @@ public abstract class SIPTransactionStack implements
 	 * @throws UnknownHostException
 	 *             If the host in the Hop doesn't exist.
 	 */
-	public MessageChannel createRawMessageChannel(int sourcePort, Hop nextHop)
+	public MessageChannel createRawMessageChannel(String sourceIpAddress, int sourcePort, Hop nextHop)
 			throws UnknownHostException {
 		Host targetHost;
 		HostPort targetHostPort;
@@ -1819,6 +1821,7 @@ public abstract class SIPTransactionStack implements
 			// transport is found,
 			if (nextHop.getTransport().equalsIgnoreCase(
 					nextProcessor.getTransport())
+					&& sourceIpAddress.equals(nextProcessor.getIpAddress().getHostAddress())
 					&& sourcePort == nextProcessor.getPort()) {
 				try {
 					// Create a channel to the target
