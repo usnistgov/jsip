@@ -52,7 +52,7 @@ import java.text.ParseException;
 /**
  * Implementation of the JAIN-SIP provider interface.
  * 
- * @version 1.2 $Revision: 1.45 $ $Date: 2007-02-26 21:04:30 $
+ * @version 1.2 $Revision: 1.46 $ $Date: 2007-06-05 12:28:15 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -667,8 +667,8 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 			if (this.listeningPoints.containsKey(hop.getTransport()
 					.toUpperCase()))
 				messageChannel = sipStack.createRawMessageChannel(
-						((ListeningPointImpl) this.getListeningPoint(hop
-								.getTransport())).port, hop);
+						this.getListeningPoint(hop.getTransport()).getIPAddress(),
+						this.getListeningPoint(hop.getTransport()).getPort(), hop);
 			if (messageChannel != null) {
 				messageChannel.sendMessage((SIPMessage) sipRequest);
 			} else {
@@ -744,6 +744,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 						"whoopsa daisy! no listening point found for transport "
 								+ transport);
 			MessageChannel messageChannel = sipStack.createRawMessageChannel(
+					this.getListeningPoint(hop.getTransport()).getIPAddress(),
 					listeningPoint.port, hop);
 			messageChannel.sendMessage(sipResponse);
 		} catch (IOException ex) {
