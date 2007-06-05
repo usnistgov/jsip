@@ -150,7 +150,7 @@ import java.util.TimerTask;
  *                                      
  * </pre>
  * 
- * @version 1.2 $Revision: 1.84 $ $Date: 2007-02-06 18:55:34 $
+ * @version 1.2 $Revision: 1.85 $ $Date: 2007-06-05 12:28:14 $
  * @author M. Ranganathan
  * 
  */
@@ -451,7 +451,9 @@ public class SIPServerTransaction extends SIPTransaction implements
 					port, transport));
 
 			MessageChannel messageChannel = ((SIPTransactionStack) getSIPStack())
-					.createRawMessageChannel(this.getPort(), hop);
+					.createRawMessageChannel(
+							this.getSipProvider().getListeningPoint(hop.getTransport()).getIPAddress(),
+							this.getPort(), hop);
 			if (messageChannel != null)
 				messageChannel.sendMessage(transactionResponse);
 			else
