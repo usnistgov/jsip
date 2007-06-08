@@ -63,7 +63,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.27 $ $Date: 2007-02-21 21:47:06 $
+ * @version 1.2 $Revision: 1.28 $ $Date: 2007-06-08 22:34:12 $
  * @since 1.1
  * 
  * @author M. Ranganathan  <br/>
@@ -892,6 +892,54 @@ public final class SIPRequest extends SIPMessage implements
 		return newRequest;
 	}
 
+	/**
+	 * Creates an ACK for non-2xx responses according to RFC3261 17.1.1.3
+	 * 
+	 * @return A SIPRequest with an ACK method.
+	 * @throws SipException 
+	 * @throws NullPointerException 
+	 * @throws ParseException
+	 * 
+	 * @author jvb
+	 */
+	public final SIPRequest createErrorAck( To responseToHeader ) 
+		throws SipException, ParseException {
+
+		/*
+		The ACK request constructed by the client transaction MUST contain
+		   values for the Call-ID, From, and Request-URI that are equal to the
+		   values of those header fields in the request passed to the transport
+		   by the client transaction (call this the "original request").  The To
+		   header field in the ACK MUST equal the To header field in the
+		   response being acknowledged, and therefore will usually differ from
+		   the To header field in the original request by the addition of the
+		   tag parameter.  The ACK MUST contain a single Via header field, and
+		   this MUST be equal to the top Via header field of the original
+		   request.  The CSeq header field in the ACK MUST contain the same
+		   value for the sequence number as was present in the original request,
+		   but the method parameter MUST be equal to "ACK".
+		*/
+		SIPRequest newRequest = new SIPRequest();		
+		newRequest.setRequestLine((RequestLine) this.requestLine.clone());
+		newRequest.setMethod(Request.ACK);
+		newRequest.setHeader( (Header) this.callIdHeader.clone() );
+		newRequest.setHeader( (Header) this.fromHeader.clone() );
+		newRequest.setHeader( (Header) responseToHeader.clone() );
+		newRequest.addFirst( (Header) this.getTopmostVia().clone() );
+		newRequest.setHeader( (Header) cSeqHeader.clone() );
+		newRequest.getCSeq().setMethod( Request.ACK );
+
+		/*
+		 If the INVITE request whose response is being acknowledged had Route
+   		 header fields, those header fields MUST appear in the ACK.  This is
+   		 to ensure that the ACK can be routed properly through any downstream
+   		 stateless proxies. 
+		 */
+		newRequest.setHeader( (SIPHeaderList) this.getRouteHeaders().clone() );
+
+		return newRequest;
+	}	
+	
 	/**
 	 * Create a new default SIPRequest from the original request. Warning: the
 	 * newly created SIPRequest, shares the headers of this request but we
