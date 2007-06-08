@@ -87,6 +87,15 @@ public class Shootme extends TestCase implements SipListener {
 	}
 
 	public void processResponse(ResponseEvent responseEvent) {
+	  
+	  Response r = responseEvent.getResponse();
+ 		logger.info("\n\nResponse " + r.getStatusCode() + " received at "
+				+ protocolObjects.sipStack.getStackName() );
+	  
+	  ClientTransaction ct = responseEvent.getClientTransaction();
+	  assertNotNull( ct );
+	  assertNotNull( ct.getDialog() );
+	  assertEquals( DialogState.TERMINATED, ct.getDialog().getState() );
 	}
 
 	/**
@@ -104,7 +113,9 @@ public class Shootme extends TestCase implements SipListener {
 			ClientTransaction ct = this.sipProvider
 					.getNewClientTransaction(bye);
 				dialog.sendRequest(ct);
-			assertTrue(dialog.getState() == DialogState.TERMINATED);
+			
+			// JvB: not yet, set upon receiving BYE OK response
+			// assertEquals( DialogState.TERMINATED, dialog.getState() );
 		} catch (Exception ex) {
 			logger.error("unexpected exception", ex);
 			fail("unexpected exception sending bye");
