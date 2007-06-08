@@ -156,7 +156,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.68 $ $Date: 2007-05-14 15:47:47 $
+ * @version 1.2 $Revision: 1.69 $ $Date: 2007-06-08 22:34:01 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -758,8 +758,8 @@ public class SIPClientTransaction extends SIPTransaction implements
 				// Send back an ACK request
 
 				try {
-					sendMessage((SIPRequest) createAck());
-				} catch (SipException ex) {
+					sendMessage( (SIPRequest) createErrorAck() );
+				} catch (Exception ex) {
 					InternalErrorHandler.handleException(ex);
 				}
 				// When in either the "Calling" or "Proceeding" states,
@@ -802,8 +802,8 @@ public class SIPClientTransaction extends SIPTransaction implements
 			} else if (300 <= statusCode && statusCode <= 699) {
 				// Send back an ACK request
 				try {
-					sendMessage((SIPRequest) createAck());
-				} catch (SipException ex) {
+					sendMessage((SIPRequest) createErrorAck() );
+				} catch (Exception ex) {
 					InternalErrorHandler.handleException(ex);
 				}
 
@@ -829,8 +829,8 @@ public class SIPClientTransaction extends SIPTransaction implements
 			if (300 <= statusCode && statusCode <= 699) {
 				// Send back an ACK request
 				try {
-					sendMessage((SIPRequest) createAck());
-				} catch (SipException ex) {
+					sendMessage((SIPRequest) createErrorAck());
+				} catch (Exception ex) {
 					InternalErrorHandler.handleException(ex);
 				} finally {
 					this.semaphore.release();
@@ -1140,6 +1140,30 @@ public class SIPClientTransaction extends SIPTransaction implements
 
 	}
 
+	
+	/*
+	 * Creates an ACK for an error response, according to RFC3261 section 17.1.1.3
+	 * 
+	 * Note that this is different from an ACK for 2xx
+	 */
+	private final Request createErrorAck() throws SipException, ParseException {
+		SIPRequest originalRequest = this.getOriginalRequest();
+		if (originalRequest == null)
+			throw new SipException("bad state " + getState());
+		if (!getMethod().equals(Request.INVITE)) {
+			throw new SipException("Can only ACK an INVITE!");
+		} else if (lastResponse == null) {
+			throw new SipException("bad Transaction state");
+		} else if (lastResponse.getStatusCode() < 200) {
+			if (sipStack.isLoggingEnabled()) {
+				sipStack.logWriter.logDebug("lastResponse = " + lastResponse);
+			}
+			throw new SipException("Cannot ACK a provisional response!");
+		}
+		return originalRequest.createErrorAck( (To) lastResponse.getTo() );
+	}	
+	
+	
 	/**
 	 * Set the port of the recipient.
 	 */
