@@ -1,28 +1,28 @@
 /*
-* Conditions Of Use 
-* 
-* This software was developed by employees of the National Institute of
-* Standards and Technology (NIST), an agency of the Federal Government.
-* Pursuant to title 15 Untied States Code Section 105, works of NIST
-* employees are not subject to copyright protection in the United States
-* and are considered to be in the public domain.  As a result, a formal
-* license is not needed to use the software.
-* 
-* This software is provided by NIST as a service and is expressly
-* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
-* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
-* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
-* AND DATA ACCURACY.  NIST does not warrant or make any representations
-* regarding the use of the software or the results thereof, including but
-* not limited to the correctness, accuracy, reliability or usefulness of
-* the software.
-* 
-* Permission to use this software is contingent upon your acceptance
-* of the terms of this agreement
-*  
-* .
-* 
-*/
+ * Conditions Of Use 
+ * 
+ * This software was developed by employees of the National Institute of
+ * Standards and Technology (NIST), an agency of the Federal Government.
+ * Pursuant to title 15 Untied States Code Section 105, works of NIST
+ * employees are not subject to copyright protection in the United States
+ * and are considered to be in the public domain.  As a result, a formal
+ * license is not needed to use the software.
+ * 
+ * This software is provided by NIST as a service and is expressly
+ * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+ * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+ * AND DATA ACCURACY.  NIST does not warrant or make any representations
+ * regarding the use of the software or the results thereof, including but
+ * not limited to the correctness, accuracy, reliability or usefulness of
+ * the software.
+ * 
+ * Permission to use this software is contingent upon your acceptance
+ * of the terms of this agreement
+ *  
+ * .
+ * 
+ */
 /*******************************************************************************
  * Product of NIST/ITL Advanced Networking Technologies Division (ANTD)         *
  *******************************************************************************/
@@ -44,7 +44,6 @@ import java.text.ParseException;
 import javax.sip.*;
 import javax.sip.header.*;
 
-
 import gov.nist.javax.sip.header.*;
 
 /*
@@ -54,19 +53,19 @@ import gov.nist.javax.sip.header.*;
  * decoding messages. Bruno Konik noticed an extraneous newline added to the end
  * of the buffer when encoding it. Incorporates a bug report from Andreas
  * Bystr�m. Szabo Barna noticed a contact in a cancel request - this is a
- * pointless header for cancel. Antonis Kyardis contributed bug fixes.
- * Jeroen van Bemmel noted that method names are case sensitive, should use equals() 
- * in getting CannonicalName 
+ * pointless header for cancel. Antonis Kyardis contributed bug fixes. Jeroen
+ * van Bemmel noted that method names are case sensitive, should use equals() in
+ * getting CannonicalName
  * 
  */
 
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.28 $ $Date: 2007-06-08 22:34:12 $
+ * @version 1.2 $Revision: 1.29 $ $Date: 2007-06-09 00:06:46 $
  * @since 1.1
  * 
- * @author M. Ranganathan  <br/>
+ * @author M. Ranganathan <br/>
  * 
  * 
  * 
@@ -83,8 +82,9 @@ public final class SIPRequest extends SIPMessage implements
 	private RequestLine requestLine;
 
 	private Object messageChannel;
-	
-	private Object inviteTransaction; // The original invite request for a given cancel request
+
+	private Object inviteTransaction; // The original invite request for a
+										// given cancel request
 
 	/**
 	 * Set of target refresh methods, currently: INVITE, UPDATE, SUBSCRIBE,
@@ -93,14 +93,14 @@ public final class SIPRequest extends SIPMessage implements
 	 * A target refresh request and its response MUST have a Contact
 	 */
 	private static final Set targetRefreshMethods = new HashSet();
-	
+
 	/*
-	 * A table that maps a name string to its cannonical constant.
-	 * This is used to speed up parsing of messages .equals reduces
-	 * to == if we use the constant value.
+	 * A table that maps a name string to its cannonical constant. This is used
+	 * to speed up parsing of messages .equals reduces to == if we use the
+	 * constant value.
 	 */
 	private static final Hashtable nameTable = new Hashtable();
-	
+
 	private static void putName(String name) {
 		nameTable.put(name, name);
 	}
@@ -111,7 +111,7 @@ public final class SIPRequest extends SIPMessage implements
 		targetRefreshMethods.add(Request.SUBSCRIBE);
 		targetRefreshMethods.add(Request.NOTIFY);
 		targetRefreshMethods.add(Request.REFER);
-		
+
 		putName(Request.INVITE);
 		putName(Request.BYE);
 		putName(Request.CANCEL);
@@ -127,8 +127,7 @@ public final class SIPRequest extends SIPMessage implements
 		putName(Request.REGISTER);
 		putName(Request.SUBSCRIBE);
 		putName(Request.UPDATE);
-		
-		
+
 	}
 
 	/**
@@ -141,13 +140,12 @@ public final class SIPRequest extends SIPMessage implements
 	/**
 	 * Set to standard constants to speed up processing. this makes equals
 	 * comparisons run much faster in the stack because then it is just identity
-	 * comparision. Character by char comparison is not required.
-	 * The method returns the String CONSTANT corresponding to the
-	 * String name.
+	 * comparision. Character by char comparison is not required. The method
+	 * returns the String CONSTANT corresponding to the String name.
 	 * 
 	 */
 	public static String getCannonicalName(String method) {
-	
+
 		if (nameTable.containsKey(method))
 			return (String) nameTable.get(method);
 		else
@@ -220,10 +218,10 @@ public final class SIPRequest extends SIPMessage implements
 		if (getTo() == null) {
 			throw new ParseException(prefix + ToHeader.NAME, 0);
 		}
-		
-		if ( this.callIdHeader == null || this.callIdHeader.getCallId() == null || 
-				callIdHeader.getCallId().equals("")) {
-			throw new ParseException(prefix + CallIdHeader.NAME,0);
+
+		if (this.callIdHeader == null || this.callIdHeader.getCallId() == null
+				|| callIdHeader.getCallId().equals("")) {
+			throw new ParseException(prefix + CallIdHeader.NAME, 0);
 		}
 		if (getFrom() == null) {
 			throw new ParseException(prefix + FromHeader.NAME, 0);
@@ -273,15 +271,13 @@ public final class SIPRequest extends SIPMessage implements
 		if (requestLine.getMethod().equals(Request.INVITE)
 				|| requestLine.getMethod().equals(Request.SUBSCRIBE)
 				|| requestLine.getMethod().equals(Request.REFER)) {
-			if (this.getContactHeader() == null ) {
+			if (this.getContactHeader() == null) {
 				// Make sure this is not a target refresh. If this is a target
 				// refresh its ok not to have a contact header. Otherwise
 				// contact header is mandatory.
-				if ( this.getToTag() == null)
+				if (this.getToTag() == null)
 					throw new ParseException(prefix + ContactHeader.NAME, 0);
 			}
-			
-			
 
 			if (requestLine.getUri() instanceof SipUri) {
 				String scheme = ((SipUri) requestLine.getUri()).getScheme();
@@ -290,20 +286,22 @@ public final class SIPRequest extends SIPMessage implements
 							.getAddress().getURI();
 					if (!sipUri.getScheme().equals("sips")) {
 						throw new ParseException(
-								"Scheme for contact should be sips:" + sipUri, 0);
+								"Scheme for contact should be sips:" + sipUri,
+								0);
 					}
 				}
 			}
 		}
-		
-		
+
 		/*
 		 * Contact header is mandatory for a SIP INVITE request.
 		 */
-		if ( this.getContactHeader() == null && ( this.getMethod().equals(Request.INVITE)
-				|| this.getMethod().equals(Request.REFER)
-				|| this.getMethod().equals(Request.SUBSCRIBE))) {
-			throw new ParseException("Contact Header is Mandatory for a SIP INVITE", 0);
+		if (this.getContactHeader() == null
+				&& (this.getMethod().equals(Request.INVITE)
+						|| this.getMethod().equals(Request.REFER) || this
+						.getMethod().equals(Request.SUBSCRIBE))) {
+			throw new ParseException(
+					"Contact Header is Mandatory for a SIP INVITE", 0);
 		}
 
 		if (requestLine != null
@@ -558,23 +556,23 @@ public final class SIPRequest extends SIPMessage implements
 		From from = (From) this.getFrom();
 		To to = (To) this.getTo();
 		if (!isServer) {
-			//retval.append(COLON).append(from.getUserAtHostPort());
+			// retval.append(COLON).append(from.getUserAtHostPort());
 			if (from.getTag() != null) {
 				retval.append(COLON);
 				retval.append(from.getTag());
 			}
-			//retval.append(COLON).append(to.getUserAtHostPort());
+			// retval.append(COLON).append(to.getUserAtHostPort());
 			if (to.getTag() != null) {
 				retval.append(COLON);
 				retval.append(to.getTag());
 			}
 		} else {
-			//retval.append(COLON).append(to.getUserAtHostPort());
+			// retval.append(COLON).append(to.getUserAtHostPort());
 			if (to.getTag() != null) {
 				retval.append(COLON);
 				retval.append(to.getTag());
 			}
-			//retval.append(COLON).append(from.getUserAtHostPort());
+			// retval.append(COLON).append(from.getUserAtHostPort());
 			if (from.getTag() != null) {
 				retval.append(COLON);
 				retval.append(from.getTag());
@@ -592,23 +590,23 @@ public final class SIPRequest extends SIPMessage implements
 		CallID cid = (CallID) this.getCallId();
 		StringBuffer retval = new StringBuffer(cid.getCallId());
 		if (!isServer) {
-			//retval.append(COLON).append(from.getUserAtHostPort());
+			// retval.append(COLON).append(from.getUserAtHostPort());
 			if (from.getTag() != null) {
 				retval.append(COLON);
 				retval.append(from.getTag());
 			}
-			//retval.append(COLON).append(to.getUserAtHostPort());
+			// retval.append(COLON).append(to.getUserAtHostPort());
 			if (toTag != null) {
 				retval.append(COLON);
 				retval.append(toTag);
 			}
 		} else {
-			//retval.append(COLON).append(to.getUserAtHostPort());
+			// retval.append(COLON).append(to.getUserAtHostPort());
 			if (toTag != null) {
 				retval.append(COLON);
 				retval.append(toTag);
 			}
-			//retval.append(COLON).append(from.getUserAtHostPort());
+			// retval.append(COLON).append(from.getUserAtHostPort());
 			if (from.getTag() != null) {
 				retval.append(COLON);
 				retval.append(from.getTag());
@@ -630,7 +628,7 @@ public final class SIPRequest extends SIPMessage implements
 			// Encoding a null message. Return 0 byte array.
 			return new byte[0];
 		}
-		
+
 		byte[] rlbytes = null;
 		if (requestLine != null) {
 			try {
@@ -665,7 +663,7 @@ public final class SIPRequest extends SIPMessage implements
 	 */
 
 	public SIPResponse createResponse(int statusCode) {
-		
+
 		String reasonPhrase = SIPResponse.getReasonPhrase(statusCode);
 		return this.createResponse(statusCode, reasonPhrase);
 
@@ -715,15 +713,14 @@ public final class SIPRequest extends SIPMessage implements
 					|| nextHeader instanceof To
 					|| nextHeader instanceof ViaList
 					|| nextHeader instanceof CallID
-					|| (statusCode / 100 <= 2 && statusCode / 100 > 1 && 
-						nextHeader instanceof RecordRouteList)
+					|| (statusCode / 100 <= 2 && statusCode / 100 > 1 && nextHeader instanceof RecordRouteList)
 					// No record routing for error and 100
 					|| nextHeader instanceof CSeq
 					// We just copy TimeStamp for all headers (not just 100).
-					||  nextHeader instanceof TimeStamp) {
+					|| nextHeader instanceof TimeStamp) {
 
 				try {
-					
+
 					newResponse.attachHeader((SIPHeader) nextHeader.clone(),
 							false);
 				} catch (SIPDuplicateHeaderException e) {
@@ -896,50 +893,53 @@ public final class SIPRequest extends SIPMessage implements
 	 * Creates an ACK for non-2xx responses according to RFC3261 17.1.1.3
 	 * 
 	 * @return A SIPRequest with an ACK method.
-	 * @throws SipException 
-	 * @throws NullPointerException 
+	 * @throws SipException
+	 * @throws NullPointerException
 	 * @throws ParseException
 	 * 
 	 * @author jvb
 	 */
-	public final SIPRequest createErrorAck( To responseToHeader ) 
-		throws SipException, ParseException {
+	public final SIPRequest createErrorAck(To responseToHeader)
+			throws SipException, ParseException {
 
 		/*
-		The ACK request constructed by the client transaction MUST contain
-		   values for the Call-ID, From, and Request-URI that are equal to the
-		   values of those header fields in the request passed to the transport
-		   by the client transaction (call this the "original request").  The To
-		   header field in the ACK MUST equal the To header field in the
-		   response being acknowledged, and therefore will usually differ from
-		   the To header field in the original request by the addition of the
-		   tag parameter.  The ACK MUST contain a single Via header field, and
-		   this MUST be equal to the top Via header field of the original
-		   request.  The CSeq header field in the ACK MUST contain the same
-		   value for the sequence number as was present in the original request,
-		   but the method parameter MUST be equal to "ACK".
-		*/
-		SIPRequest newRequest = new SIPRequest();		
+		 * The ACK request constructed by the client transaction MUST contain
+		 * values for the Call-ID, From, and Request-URI that are equal to the
+		 * values of those header fields in the request passed to the transport
+		 * by the client transaction (call this the "original request"). The To
+		 * header field in the ACK MUST equal the To header field in the
+		 * response being acknowledged, and therefore will usually differ from
+		 * the To header field in the original request by the addition of the
+		 * tag parameter. The ACK MUST contain a single Via header field, and
+		 * this MUST be equal to the top Via header field of the original
+		 * request. The CSeq header field in the ACK MUST contain the same value
+		 * for the sequence number as was present in the original request, but
+		 * the method parameter MUST be equal to "ACK".
+		 */
+		SIPRequest newRequest = new SIPRequest();
 		newRequest.setRequestLine((RequestLine) this.requestLine.clone());
 		newRequest.setMethod(Request.ACK);
-		newRequest.setHeader( (Header) this.callIdHeader.clone() );
-		newRequest.setHeader( (Header) this.fromHeader.clone() );
-		newRequest.setHeader( (Header) responseToHeader.clone() );
-		newRequest.addFirst( (Header) this.getTopmostVia().clone() );
-		newRequest.setHeader( (Header) cSeqHeader.clone() );
-		newRequest.getCSeq().setMethod( Request.ACK );
+		newRequest.setHeader((Header) this.callIdHeader.clone());
+		newRequest.setHeader((Header) this.fromHeader.clone());
+		newRequest.setHeader((Header) responseToHeader.clone());
+		newRequest.addFirst((Header) this.getTopmostVia().clone());
+		newRequest.setHeader((Header) cSeqHeader.clone());
+		newRequest.getCSeq().setMethod(Request.ACK);
 
 		/*
-		 If the INVITE request whose response is being acknowledged had Route
-   		 header fields, those header fields MUST appear in the ACK.  This is
-   		 to ensure that the ACK can be routed properly through any downstream
-   		 stateless proxies. 
+		 * If the INVITE request whose response is being acknowledged had Route
+		 * header fields, those header fields MUST appear in the ACK. This is to
+		 * ensure that the ACK can be routed properly through any downstream
+		 * stateless proxies.
 		 */
-		newRequest.setHeader( (SIPHeaderList) this.getRouteHeaders().clone() );
+		if (this.getRouteHeaders() != null) {
+			newRequest
+					.setHeader((SIPHeaderList) this.getRouteHeaders().clone());
+		}
 
 		return newRequest;
-	}	
-	
+	}
+
 	/**
 	 * Create a new default SIPRequest from the original request. Warning: the
 	 * newly created SIPRequest, shares the headers of this request but we
@@ -1180,21 +1180,23 @@ public final class SIPRequest extends SIPMessage implements
 	 */
 	public String getMergeId() {
 		/*
-		 * generate an identifier from the From tag, Call-ID, and CSeq 
+		 * generate an identifier from the From tag, Call-ID, and CSeq
 		 */
 		String fromTag = this.getFromTag();
 		String cseq = this.cSeqHeader.toString();
 		String callId = this.callIdHeader.getCallId();
-		
-		if (fromTag != null ) {
-			return new StringBuffer().append ( fromTag ) 
-			.append( ":" ).append( cseq).append( ":" ).append (callId ).toString();
-		} else return null;
-	
+
+		if (fromTag != null) {
+			return new StringBuffer().append(fromTag).append(":").append(cseq)
+					.append(":").append(callId).toString();
+		} else
+			return null;
+
 	}
 
 	/**
-	 * @param inviteTransaction the inviteTransaction to set
+	 * @param inviteTransaction
+	 *            the inviteTransaction to set
 	 */
 	public void setInviteTransaction(Object inviteTransaction) {
 		this.inviteTransaction = inviteTransaction;
@@ -1210,12 +1212,10 @@ public final class SIPRequest extends SIPMessage implements
 	/**
 	 * Return true if this is a null request (i.e. does not have a request line ).
 	 * 
-	 * @return true  if null request.
+	 * @return true if null request.
 	 */
 	public boolean isNullRequest() {
-			return this.requestLine == null;
+		return this.requestLine == null;
 	}
-	
-	
 
 }
