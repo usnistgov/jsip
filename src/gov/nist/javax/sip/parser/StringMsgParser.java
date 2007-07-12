@@ -64,7 +64,7 @@ import java.text.ParseException;
  * feld swoop).
  * 
  * 
- * @version 1.2 $Revision: 1.20 $ $Date: 2007-06-02 21:30:36 $
+ * @version 1.2 $Revision: 1.21 $ $Date: 2007-07-12 15:39:53 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -250,6 +250,8 @@ public class StringMsgParser {
 		catch (ArrayIndexOutOfBoundsException e) {
 			// Array contains only control char, return null.
 			return null;
+		} catch (StringIndexOutOfBoundsException ex) {
+			return null;
 		}
 
 		// Iterate thru the request/status line and headers.
@@ -269,6 +271,8 @@ public class StringMsgParser {
 			}
 			catch (ArrayIndexOutOfBoundsException e) {
 				// End of the message.
+				break;
+			} catch ( StringIndexOutOfBoundsException ex) {
 				break;
 			}
 
