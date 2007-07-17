@@ -32,7 +32,7 @@ import gov.nist.javax.sip.header.*;
 
 /**
  * Default constants for SIP.
- * @version 1.2 $Revision: 1.7 $ $Date: 2006-07-13 09:02:50 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2007-07-17 16:41:51 $
  */
 public interface SIPConstants
 	extends
@@ -53,6 +53,8 @@ public interface SIPConstants
 	public static final String BRANCH_MAGIC_COOKIE = "z9hG4bK";
 	
 	public static final String BRANCH_MAGIC_COOKIE_LOWER_CASE = "z9hg4bk";
+	
+	public static final String BRANCH_MAGIC_COOKIE_UPPER_CASE = "Z9HG4BK";
 
 	/**
 	 * constant SIP_VERSION_STRING 

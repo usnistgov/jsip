@@ -54,7 +54,7 @@ import EDU.oswego.cs.dl.util.concurrent.Semaphore;
  * @author M. Ranganathan
  * 
  * 
- * @version 1.2 $Revision: 1.49 $ $Date: 2007-03-05 04:30:15 $
+ * @version 1.2 $Revision: 1.50 $ $Date: 2007-07-17 16:41:50 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
 		javax.sip.Transaction {
@@ -114,7 +114,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 
 	protected boolean isMapped;
 
-	protected Semaphore semaphore;
+	private Semaphore semaphore;
 
 	protected boolean isSemaphoreAquired;
 
@@ -1131,6 +1131,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 			}
 			return this.semaphore.attempt(10000);
 		} catch (Exception ex) {
+			sipStack.logWriter.logError("Unexpected exception acquiring sem",ex);
 			InternalErrorHandler.handleException(ex);
 			return false;
 		} finally {
@@ -1145,18 +1146,30 @@ public abstract class SIPTransaction extends MessageChannel implements
 	 */
 	public void releaseSem() {
 		try {
-			if (sipStack.getLogWriter().isLoggingEnabled()) {
-				sipStack.getLogWriter().logDebug("releaseSem [[[[" + this);
-				sipStack.getLogWriter().logStackTrace();
-			}
+			
 			this.toListener = false;
-			this.isSemaphoreAquired = false;
-			this.semaphore.release();
+			this.semRelease();
 
 		} catch (Exception ex) {
+			sipStack.logWriter.logError("Unexpected exception releasing sem",ex);
 
 		}
 
+	}
+	
+	protected void semRelease() {
+		try {
+			if (sipStack.getLogWriter().isLoggingEnabled()) {
+				sipStack.getLogWriter().logDebug("semRelease ]]]]" + this);
+				sipStack.getLogWriter().logStackTrace();
+			}
+			this.isSemaphoreAquired = false;	
+			this.semaphore.release();
+
+		} catch (Exception ex) {
+			sipStack.logWriter.logError("Unexpected exception releasing sem",ex);
+
+		}
 	}
 
 	/**
