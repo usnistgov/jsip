@@ -65,7 +65,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.76 $ $Date: 2007-06-05 12:28:13 $
+ * @version 1.2 $Revision: 1.77 $ $Date: 2007-07-17 16:41:49 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -1054,9 +1054,10 @@ public abstract class SIPTransactionStack implements
 		currentTransaction = (SIPClientTransaction) clientTransactionTable
 				.get(key);
 
-		if (currentTransaction == null
-				|| !currentTransaction
-						.isMessagePartOfTransaction(responseReceived)) {
+		if (  currentTransaction == null 
+				|| (!currentTransaction
+						.isMessagePartOfTransaction(responseReceived) &&
+						!key.startsWith(SIPConstants.BRANCH_MAGIC_COOKIE_LOWER_CASE) )) {
 			// Loop through all client transactions
 
 			transactionIterator = clientTransactionTable.values().iterator();

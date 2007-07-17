@@ -156,7 +156,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.69 $ $Date: 2007-06-08 22:34:01 $
+ * @version 1.2 $Revision: 1.70 $ $Date: 2007-07-17 16:41:50 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -311,7 +311,12 @@ public class SIPClientTransaction extends SIPTransaction implements
 	 *            ResponseInterface to send messages to.
 	 */
 	public void setResponseInterface(ServerResponseInterface newRespondTo) {
-
+		if ( sipStack.isLoggingEnabled()) {
+			sipStack.logWriter.logDebug("Setting response interface for " + this + " to " + newRespondTo);
+			if ( newRespondTo == null) 
+				sipStack.logWriter.logDebug("WARNING -- setting to null!");
+		}
+		
 		respondTo = newRespondTo;
 
 	}
@@ -609,18 +614,20 @@ public class SIPClientTransaction extends SIPTransaction implements
 				enableTimeoutTimer(TIMER_F);
 				// According to RFC, the TU has to be informed on
 				// this transition.
-				if (respondTo != null)
+				if (respondTo != null) {
 					respondTo.processResponse(transactionResponse, this,
 							sipDialog);
-				else
-					this.semaphore.release();
+				} else {
+					this.semRelease();
+				}
 			} else if (200 <= statusCode && statusCode <= 699) {
 				// Send the response up to the TU.
-				if (respondTo != null)
+				if (respondTo != null) {
 					respondTo.processResponse(transactionResponse, this,
 							sipDialog);
-				else
-					this.semaphore.release();
+				} else {
+					this.semRelease();
+				}
 				if (!isReliable()) {
 					this.setState(TransactionState.COMPLETED);
 					enableTimeoutTimer(TIMER_K);
@@ -630,17 +637,19 @@ public class SIPClientTransaction extends SIPTransaction implements
 			}
 		} else if (TransactionState.PROCEEDING == this.getState()) {
 			if (statusCode / 100 == 1) {
-				if (respondTo != null)
+				if (respondTo != null) {
 					respondTo.processResponse(transactionResponse, this,
 							sipDialog);
-				else
-					this.semaphore.release();
+				} else {
+					this.semRelease();
+				}
 			} else if (200 <= statusCode && statusCode <= 699) {
-				if (respondTo != null)
+				if (respondTo != null) {
 					respondTo.processResponse(transactionResponse, this,
 							sipDialog);
-				else
-					this.semaphore.release();
+				} else {
+					this.semRelease();
+				}
 				disableRetransmissionTimer();
 				disableTimeoutTimer();
 				if (!isReliable()) {
@@ -655,7 +664,7 @@ public class SIPClientTransaction extends SIPTransaction implements
 				getSIPStack().logWriter
 						.logDebug(" Not sending response to TU! " + getState());
 			}
-			this.semaphore.release();
+			this.semRelease();
 		}
 	}
 
@@ -724,7 +733,7 @@ public class SIPClientTransaction extends SIPTransaction implements
 
 		if (TransactionState.TERMINATED == this.getState()) {
 			// Do nothing in the terminated state.
-			this.semaphore.release();
+			this.semRelease();
 			return;
 		} else if (TransactionState.CALLING == this.getState()) {
 			if (statusCode / 100 == 2) {
@@ -740,28 +749,34 @@ public class SIPClientTransaction extends SIPTransaction implements
 				if (respondTo != null)
 					respondTo
 							.processResponse(transactionResponse, this, dialog);
-				else
-					this.semaphore.release();
+				else {
+					this.semRelease();
+				}
 
 			} else if (statusCode / 100 == 1) {
 				disableRetransmissionTimer();
 				disableTimeoutTimer();
 				this.setState(TransactionState.PROCEEDING);
 
-				if (respondTo != null)
+				if (respondTo != null) 
 					respondTo
 							.processResponse(transactionResponse, this, dialog);
-				else
-					this.semaphore.release();
+				else {
+					this.semRelease();
+				}
 
 			} else if (300 <= statusCode && statusCode <= 699) {
 				// Send back an ACK request
 
 				try {
 					sendMessage( (SIPRequest) createErrorAck() );
+					
 				} catch (Exception ex) {
-					InternalErrorHandler.handleException(ex);
-				}
+					sipStack.logWriter.logError("Unexpected Exception sending ACK -- sending error AcK ",ex);
+
+					
+				} 
+
 				// When in either the "Calling" or "Proceeding" states,
 				// reception of response with status code from 300-699
 				// MUST cause the client transaction to
@@ -770,11 +785,12 @@ public class SIPClientTransaction extends SIPTransaction implements
 				// the TU, and the client transaction MUST generate an
 				// ACK request.
 
-				if (respondTo != null)
+				if (respondTo != null) {
 					respondTo
 							.processResponse(transactionResponse, this, dialog);
-				else
-					this.semaphore.release();
+				} else {
+					this.semRelease();
+				}
 
 				if (!isReliable()) {
 					this.setState(TransactionState.COMPLETED);
@@ -786,18 +802,20 @@ public class SIPClientTransaction extends SIPTransaction implements
 			}
 		} else if (TransactionState.PROCEEDING == this.getState()) {
 			if (statusCode / 100 == 1) {
-				if (respondTo != null)
+				if (respondTo != null) {
 					respondTo
 							.processResponse(transactionResponse, this, dialog);
-				else
-					this.semaphore.release();
+				} else {
+					this.semRelease();
+				}
 			} else if (statusCode / 100 == 2) {
 				this.setState(TransactionState.TERMINATED);
-				if (respondTo != null)
+				if (respondTo != null) {
 					respondTo
 							.processResponse(transactionResponse, this, dialog);
-				else
-					this.semaphore.release();
+				} else {
+					this.semRelease();
+				}
 
 			} else if (300 <= statusCode && statusCode <= 699) {
 				// Send back an ACK request
@@ -818,8 +836,9 @@ public class SIPClientTransaction extends SIPTransaction implements
 				if (respondTo != null)
 					respondTo
 							.processResponse(transactionResponse, this, dialog);
-				else
-					this.semaphore.release();
+				else {
+					this.semRelease();
+				}
 
 				if (!isReliable()) {
 					enableTimeoutTimer(TIMER_D);
@@ -833,7 +852,7 @@ public class SIPClientTransaction extends SIPTransaction implements
 				} catch (Exception ex) {
 					InternalErrorHandler.handleException(ex);
 				} finally {
-					this.semaphore.release();
+					this.semRelease();
 				}
 			}
 

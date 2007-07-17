@@ -150,7 +150,7 @@ import java.util.TimerTask;
  *                                      
  * </pre>
  * 
- * @version 1.2 $Revision: 1.85 $ $Date: 2007-06-05 12:28:14 $
+ * @version 1.2 $Revision: 1.86 $ $Date: 2007-07-17 16:41:50 $
  * @author M. Ranganathan
  * 
  */
@@ -754,7 +754,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 
 					}
 
-					this.semaphore.release();
+					this.semRelease();
 				}
 				return;
 
@@ -765,7 +765,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 
 				if (TransactionState.PROCEEDING == getRealState()
 						|| TransactionState.COMPLETED == getRealState()) {
-					this.semaphore.release();
+					this.semRelease();
 					// Resend the last response to
 					// the client
 					if (lastResponse != null) {
@@ -780,7 +780,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 					if (requestOf != null)
 						requestOf.processRequest(transactionRequest, this);
 					else
-						this.semaphore.release();
+						this.semRelease();
 				}
 				sipStack.logWriter
 						.logDebug("completed processing retransmitted request : "
@@ -803,12 +803,12 @@ public class SIPServerTransaction extends SIPTransaction implements
 					if (toTu) {
 						requestOf.processRequest(transactionRequest, this);
 					} else
-						this.semaphore.release();
+						this.semRelease();
 				} else {
 					if (requestOf != null)
 						requestOf.processRequest(transactionRequest, this);
 					else
-						this.semaphore.release();
+						this.semRelease();
 				}
 			} else {
 				// This seems like a common bug so I am allowing it through!
@@ -827,7 +827,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 						}
 						requestOf.processRequest(transactionRequest, this);
 					} else {
-						this.semaphore.release();
+						this.semRelease();
 					}
 
 				} else if (transactionRequest.getMethod()
@@ -835,7 +835,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 					if (sipStack.isLoggingEnabled())
 						sipStack.logWriter
 								.logDebug("Too late to cancel Transaction");
-					this.semaphore.release();
+					this.semRelease();
 					// send OK and just ignore the CANCEL.
 					try {
 						this.sendMessage(transactionRequest
@@ -850,7 +850,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 			}
 
 		} catch (IOException e) {
-			this.semaphore.release();
+			this.semRelease();
 			this.raiseIOExceptionEvent();
 		}
 
