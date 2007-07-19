@@ -65,7 +65,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.77 $ $Date: 2007-07-17 16:41:49 $
+ * @version 1.2 $Revision: 1.78 $ $Date: 2007-07-19 15:46:18 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -1096,6 +1096,8 @@ public abstract class SIPTransactionStack implements
 			}
 		}
 
+		// Aquire the sem -- previous request may still be processing.
+		boolean acquired = currentTransaction.acquireSem();
 		// Set ths transaction's encapsulated response interface
 		// from the superclass
 		currentTransaction.setResponseInterface(sipMessageFactory
@@ -1106,7 +1108,7 @@ public abstract class SIPTransactionStack implements
 					.currentTimeMillis(), "before processing");
 		}
 
-		if (currentTransaction.acquireSem())
+		if (acquired)
 			return currentTransaction;
 		else
 			return null;
