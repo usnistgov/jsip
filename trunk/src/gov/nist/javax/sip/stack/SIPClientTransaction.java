@@ -156,7 +156,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.70 $ $Date: 2007-07-17 16:41:50 $
+ * @version 1.2 $Revision: 1.71 $ $Date: 2007-07-19 15:46:19 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -313,8 +313,10 @@ public class SIPClientTransaction extends SIPTransaction implements
 	public void setResponseInterface(ServerResponseInterface newRespondTo) {
 		if ( sipStack.isLoggingEnabled()) {
 			sipStack.logWriter.logDebug("Setting response interface for " + this + " to " + newRespondTo);
-			if ( newRespondTo == null) 
+			if ( newRespondTo == null)  {
+				sipStack.logWriter.logStackTrace();
 				sipStack.logWriter.logDebug("WARNING -- setting to null!");
+			}
 		}
 		
 		respondTo = newRespondTo;
