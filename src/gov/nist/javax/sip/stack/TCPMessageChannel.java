@@ -1,28 +1,28 @@
 /*
-* Conditions Of Use 
-* 
-* This software was developed by employees of the National Institute of
-* Standards and Technology (NIST), an agency of the Federal Government.
-* Pursuant to title 15 Untied States Code Section 105, works of NIST
-* employees are not subject to copyright protection in the United States
-* and are considered to be in the public domain.  As a result, a formal
-* license is not needed to use the software.
-* 
-* This software is provided by NIST as a service and is expressly
-* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
-* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
-* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
-* AND DATA ACCURACY.  NIST does not warrant or make any representations
-* regarding the use of the software or the results thereof, including but
-* not limited to the correctness, accuracy, reliability or usefulness of
-* the software.
-* 
-* Permission to use this software is contingent upon your acceptance
-* of the terms of this agreement
-*  
-* .
-* 
-*/
+ * Conditions Of Use 
+ * 
+ * This software was developed by employees of the National Institute of
+ * Standards and Technology (NIST), an agency of the Federal Government.
+ * Pursuant to title 15 Untied States Code Section 105, works of NIST
+ * employees are not subject to copyright protection in the United States
+ * and are considered to be in the public domain.  As a result, a formal
+ * license is not needed to use the software.
+ * 
+ * This software is provided by NIST as a service and is expressly
+ * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+ * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+ * AND DATA ACCURACY.  NIST does not warrant or make any representations
+ * regarding the use of the software or the results thereof, including but
+ * not limited to the correctness, accuracy, reliability or usefulness of
+ * the software.
+ * 
+ * Permission to use this software is contingent upon your acceptance
+ * of the terms of this agreement
+ *  
+ * .
+ * 
+ */
 /******************************************************************************
  * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).      *
  ******************************************************************************/
@@ -39,31 +39,30 @@ import java.text.ParseException;
 import javax.sip.address.Hop;
 import javax.sip.message.Response;
 
-/* Ahmet Uyar
-* <auyar@csit.fsu.edu>sent in a bug report for TCP operation of the
-* JAIN sipStack. Niklas Uhrberg suggested that a mechanism be added to
-* limit the number of simultaneous open connections. The TLS
-* Adaptations were contributed by Daniel Martinez. Hagai Sela
-* contributed a bug fix for symmetric nat. Jeroen van Bemmel
-* added compensation for buggy clients ( Microsoft RTC clients ).
-* Bug fixes by viswashanti.kadiyala@antepo.com, Joost Yervante Damand				
-*/
-
+/*
+ * Ahmet Uyar <auyar@csit.fsu.edu>sent in a bug report for TCP operation of the
+ * JAIN sipStack. Niklas Uhrberg suggested that a mechanism be added to limit
+ * the number of simultaneous open connections. The TLS Adaptations were
+ * contributed by Daniel Martinez. Hagai Sela contributed a bug fix for
+ * symmetric nat. Jeroen van Bemmel added compensation for buggy clients (
+ * Microsoft RTC clients ). Bug fixes by viswashanti.kadiyala@antepo.com, Joost
+ * Yervante Damand
+ */
 
 /**
- * This is a stack abstraction for TCP connections. This abstracts a stream of parsed
- * messages. The SIP sipStack starts this from the main SIPStack class for each
- * connection that it accepts. It starts a message parser in its own thread and
- * talks to the message parser via a pipe. The message parser calls back via the
- * parseError or processMessage functions that are defined as part of the
- * SIPMessageListener interface.
+ * This is a stack abstraction for TCP connections. This abstracts a stream of
+ * parsed messages. The SIP sipStack starts this from the main SIPStack class
+ * for each connection that it accepts. It starts a message parser in its own
+ * thread and talks to the message parser via a pipe. The message parser calls
+ * back via the parseError or processMessage functions that are defined as part
+ * of the SIPMessageListener interface.
  * 
  * @see gov.nist.javax.sip.parser.PipelinedMsgParser
  * 
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.40 $ $Date: 2007-03-17 01:04:32 $ 
+ * @version 1.2 $Revision: 1.41 $ $Date: 2007-07-24 19:18:45 $
  */
 public class TCPMessageChannel extends MessageChannel implements
 		SIPMessageListener, Runnable {
@@ -251,13 +250,24 @@ public class TCPMessageChannel extends MessageChannel implements
 	 * @param retry
 	 */
 	private void sendMessage(byte[] msg, boolean retry) throws IOException {
+		
+		/* Patch from kircuv@dev.java.net (Issue 119 ) This patch
+		 * avoids the case where two TCPMessageChannels are now pointing to the same 
+		 * socket.getInputStream(). 
+		 */
+		Socket s = this.sipStack.ioHandler.getSocket(IOHandler.makeKey(
+				this.peerAddress, this.peerPort));
 		Socket sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor
 				.getIpAddress(), this.peerAddress, this.peerPort,
 				this.peerProtocol, msg, retry);
+		
+	
 		// Created a new socket so close the old one and stick the new
 		// one in its place but dont do this if it is a datagram socket.
 		// (could have replied via udp but received via tcp!).
-		if (sock != mySock && sock != null) {
+		if (mySock == null && s != null) {
+			this.uncache();
+		} else if (sock != mySock && sock != null) {
 			try {
 				if (mySock != null)
 					mySock.close();
@@ -310,13 +320,21 @@ public class TCPMessageChannel extends MessageChannel implements
 			int receiverPort, boolean retry) throws IOException {
 		if (message == null || receiverAddress == null)
 			throw new IllegalArgumentException("Null argument");
+		/* Patch from kircuv@dev.java.net (Issue 119 ) This patch
+		 * avoids the case where two TCPMessageChannels are now pointing to the same 
+		 * socket.getInputStream(). 
+		 */
+		Socket s = this.sipStack.ioHandler.getSocket(IOHandler.makeKey(
+				receiverAddress, receiverPort));
 		Socket sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor
 				.getIpAddress(), receiverAddress, receiverPort, "TCP", message,
 				retry);
 		//
 		// Created a new socket so close the old one and s
 		// Check for null (bug fix sent in by Christophe)
-		if (sock != mySock && sock != null) {
+		if (mySock == null && s != null) {
+			this.uncache();
+		} else if (sock != mySock && sock != null) {
 			try {
 				if (mySock != null)
 					mySock.close();
@@ -413,16 +431,21 @@ public class TCPMessageChannel extends MessageChannel implements
 					// the peer address and tag it appropriately.
 
 					// JvB: dont do this. It is both costly and incorrect
-					// Must set received also when it is a FQDN, regardless whether
+					// Must set received also when it is a FQDN, regardless
+					// whether
 					// it resolves to the correct IP address
-					// InetAddress sentByAddress = InetAddress.getByName(hop.getHost());
-					// JvB: if sender added 'rport', must always set received					
-					if ( v.hasParameter(Via.RPORT) 
-						|| !hop.getHost().equals(this.peerAddress.getHostAddress())) {
-							v.setParameter(Via.RECEIVED, this.peerAddress.getHostAddress() );
+					// InetAddress sentByAddress =
+					// InetAddress.getByName(hop.getHost());
+					// JvB: if sender added 'rport', must always set received
+					if (v.hasParameter(Via.RPORT)
+							|| !hop.getHost().equals(
+									this.peerAddress.getHostAddress())) {
+						v.setParameter(Via.RECEIVED, this.peerAddress
+								.getHostAddress());
 					}
 					// @@@ hagai
-					// JvB: technically, may only do this when Via already contains
+					// JvB: technically, may only do this when Via already
+					// contains
 					// rport
 					v.setParameter(Via.RPORT, Integer.toString(this.peerPort));
 				} catch (java.text.ParseException ex) {
@@ -492,15 +515,17 @@ public class TCPMessageChannel extends MessageChannel implements
 				} else {
 					this.sipStack.logWriter
 							.logWarning("Dropping request -- could not acquire semaphore in 10 sec");
-					SIPResponse  response = sipRequest.createResponse(Response.SERVICE_UNAVAILABLE);
-					// Service is overloaded -- send back an error and drop the request.
+					SIPResponse response = sipRequest
+							.createResponse(Response.SERVICE_UNAVAILABLE);
+					// Service is overloaded -- send back an error and drop the
+					// request.
 					this.sendMessage(response);
 				}
 				if (this.sipStack.logWriter
 						.isLoggingEnabled(ServerLog.TRACE_MESSAGES)) {
 
-					sipStack.serverLog.logMessage(sipMessage,
-							this.getPeerHostPort().toString() , this
+					sipStack.serverLog.logMessage(sipMessage, this
+							.getPeerHostPort().toString(), this
 							.getMessageProcessor().getIpAddress()
 							.getHostAddress()
 							+ ":" + this.getMessageProcessor().getPort(),
@@ -509,12 +534,15 @@ public class TCPMessageChannel extends MessageChannel implements
 				}
 			} else {
 				SIPResponse sipResponse = (SIPResponse) sipMessage;
-				if (sipResponse.getStatusCode() == 100) sipResponse.getTo().removeParameter("tag");
+				if (sipResponse.getStatusCode() == 100)
+					sipResponse.getTo().removeParameter("tag");
 				try {
 					sipResponse.checkHeaders();
 				} catch (ParseException ex) {
 					if (sipStack.isLoggingEnabled())
-						sipStack.logWriter.logError("Dropping Badly formatted response message >>> " + sipResponse);
+						sipStack.logWriter
+								.logError("Dropping Badly formatted response message >>> "
+										+ sipResponse);
 					return;
 				}
 				// This is a response message - process it.
@@ -536,13 +564,16 @@ public class TCPMessageChannel extends MessageChannel implements
 						.newSIPServerResponse(sipResponse, this);
 				if (sipServerResponse != null) {
 					try {
-						if ( sipServerResponse instanceof SIPClientTransaction  &&
-								!((SIPClientTransaction)sipServerResponse).checkFromTag(sipResponse)) {
+						if (sipServerResponse instanceof SIPClientTransaction
+								&& !((SIPClientTransaction) sipServerResponse)
+										.checkFromTag(sipResponse)) {
 							if (sipStack.isLoggingEnabled())
-								sipStack.logWriter.logError("Dropping response message with invalid tag >>> " + sipResponse);
+								sipStack.logWriter
+										.logError("Dropping response message with invalid tag >>> "
+												+ sipResponse);
 							return;
 						}
-							
+
 						sipServerResponse.processResponse(sipResponse, this);
 					} finally {
 						if (sipServerResponse instanceof SIPTransaction
