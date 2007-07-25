@@ -52,7 +52,7 @@ import java.text.ParseException;
 /**
  * Implementation of the JAIN-SIP provider interface.
  * 
- * @version 1.2 $Revision: 1.46 $ $Date: 2007-06-05 12:28:15 $
+ * @version 1.2 $Revision: 1.47 $ $Date: 2007-07-25 20:44:12 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -449,7 +449,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 			/* Issue 104 */
 			if (ct == null && ! sipStack.deliverUnsolicitedNotify) {
 				throw new TransactionUnavailableException(
-						"Cannot find matching Subscription ");
+						"Cannot find matching Subscription (and gov.nist.javax.sip.DELIVER_UNSOLICITED_NOTIFY not set)");
 			}
 		}
 		if (sipStack.isDialogCreated(sipRequest.getMethod())) {
