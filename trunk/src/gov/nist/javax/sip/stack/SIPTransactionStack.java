@@ -65,7 +65,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.78 $ $Date: 2007-07-19 15:46:18 $
+ * @version 1.2 $Revision: 1.79 $ $Date: 2007-08-04 05:17:13 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -1054,10 +1054,10 @@ public abstract class SIPTransactionStack implements
 		currentTransaction = (SIPClientTransaction) clientTransactionTable
 				.get(key);
 
-		if (  currentTransaction == null 
+		if (currentTransaction == null
 				|| (!currentTransaction
-						.isMessagePartOfTransaction(responseReceived) &&
-						!key.startsWith(SIPConstants.BRANCH_MAGIC_COOKIE_LOWER_CASE) )) {
+						.isMessagePartOfTransaction(responseReceived) && !key
+						.startsWith(SIPConstants.BRANCH_MAGIC_COOKIE_LOWER_CASE))) {
 			// Loop through all client transactions
 
 			transactionIterator = clientTransactionTable.values().iterator();
@@ -1100,13 +1100,27 @@ public abstract class SIPTransactionStack implements
 		boolean acquired = currentTransaction.acquireSem();
 		// Set ths transaction's encapsulated response interface
 		// from the superclass
-		currentTransaction.setResponseInterface(sipMessageFactory
-				.newSIPServerResponse(responseReceived, currentTransaction));
-
 		if (this.logWriter.isLoggingEnabled(LogWriter.TRACE_MESSAGES)) {
 			currentTransaction.logResponse(responseReceived, System
 					.currentTimeMillis(), "before processing");
 		}
+		
+		if (acquired) {
+			ServerResponseInterface sri =sipMessageFactory
+			.newSIPServerResponse(responseReceived,
+					currentTransaction);
+			if ( sri != null) {
+				currentTransaction.setResponseInterface(sri);
+			} else {
+				if ( this.logWriter.isLoggingEnabled() ) {
+					this.logWriter.logDebug("returning null - serverResponseInterface is null!");
+				}
+				currentTransaction.releaseSem();
+				return null;
+			}
+		}
+
+		
 
 		if (acquired)
 			return currentTransaction;
@@ -1786,7 +1800,8 @@ public abstract class SIPTransactionStack implements
 	/**
 	 * Creates a new MessageChannel for a given Hop.
 	 * 
-	 * @param sourceIpAddress - Ip address of the source of this message.
+	 * @param sourceIpAddress -
+	 *            Ip address of the source of this message.
 	 * 
 	 * @param sourcePort -
 	 *            source port of the message channel to be created.
@@ -1800,8 +1815,8 @@ public abstract class SIPTransactionStack implements
 	 * @throws UnknownHostException
 	 *             If the host in the Hop doesn't exist.
 	 */
-	public MessageChannel createRawMessageChannel(String sourceIpAddress, int sourcePort, Hop nextHop)
-			throws UnknownHostException {
+	public MessageChannel createRawMessageChannel(String sourceIpAddress,
+			int sourcePort, Hop nextHop) throws UnknownHostException {
 		Host targetHost;
 		HostPort targetHostPort;
 		Iterator processorIterator;
@@ -1824,7 +1839,8 @@ public abstract class SIPTransactionStack implements
 			// transport is found,
 			if (nextHop.getTransport().equalsIgnoreCase(
 					nextProcessor.getTransport())
-					&& sourceIpAddress.equals(nextProcessor.getIpAddress().getHostAddress())
+					&& sourceIpAddress.equals(nextProcessor.getIpAddress()
+							.getHostAddress())
 					&& sourcePort == nextProcessor.getPort()) {
 				try {
 					// Create a channel to the target
