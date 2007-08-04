@@ -54,7 +54,7 @@ import EDU.oswego.cs.dl.util.concurrent.Semaphore;
  * @author M. Ranganathan
  * 
  * 
- * @version 1.2 $Revision: 1.50 $ $Date: 2007-07-17 16:41:50 $
+ * @version 1.2 $Revision: 1.51 $ $Date: 2007-08-04 05:17:14 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
 		javax.sip.Transaction {
@@ -1124,18 +1124,21 @@ public abstract class SIPTransaction extends MessageChannel implements
 	 * 
 	 */
 	public boolean acquireSem() {
+		boolean retval = false;
 		try {
 			if (sipStack.getLogWriter().isLoggingEnabled()) {
 				sipStack.getLogWriter().logDebug("acquireSem [[[[" + this);
 				sipStack.getLogWriter().logStackTrace();
 			}
-			return this.semaphore.attempt(10000);
+			retval  = this.semaphore.attempt(10000);
+			sipStack.getLogWriter().logDebug("acquireSem() returning : " + retval);
+			return retval;
 		} catch (Exception ex) {
 			sipStack.logWriter.logError("Unexpected exception acquiring sem",ex);
 			InternalErrorHandler.handleException(ex);
 			return false;
 		} finally {
-			this.isSemaphoreAquired = true;
+			this.isSemaphoreAquired = retval;
 		}
 
 	}
