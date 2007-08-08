@@ -57,7 +57,7 @@ import java.io.IOException;
  * and event model with the JAIN-SIP stack. This is strictly an implementation
  * class.
  * 
- * @version 1.2 $Revision: 1.8 $ $Date: 2007-03-17 01:04:33 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2007-08-08 15:53:42 $
  * 
  * @author M. Ranganathan
  */
@@ -499,7 +499,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 				// Found an invite tx corresponding to the CANCEL.
 				// Set up the client tx and pass up to listener.
 				transaction.setDialog((SIPDialog) st.getDialog(), dialogId);
-				// transaction = st;
+				dialog = (SIPDialog) st.getDialog();
 			} else if (st == null
 					&& sipProvider.isAutomaticDialogSupportEnabled()
 					&& transaction != null) {
@@ -507,6 +507,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 				// Automatic dialog support is enabled so I must behave like
 				// an endpoint on this provider.
 				// Send the error response for the cancel.
+				
 				SIPResponse response = sipRequest
 						.createResponse(Response.CALL_OR_TRANSACTION_DOES_NOT_EXIST);
 				Server server = sipStack.createServerHeaderForStack();
