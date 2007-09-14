@@ -62,7 +62,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.29 $ $Date: 2007-06-09 00:06:46 $
+ * @version 1.2 $Revision: 1.30 $ $Date: 2007-09-14 18:16:31 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -771,6 +771,10 @@ public final class SIPRequest extends SIPMessage implements
 			// Contact header shold not be present in ACK or cancel.
 			else if (nextHeader instanceof ContactList)
 				continue;
+      else if (nextHeader instanceof Expires)
+				continue;
+		  // JvB @todo many more headers shouldn't be copied here
+
 
 			// CSeq method for a cancel request must be cancel.
 			if (nextHeader instanceof CSeq) {
@@ -864,7 +868,7 @@ public final class SIPRequest extends SIPMessage implements
 				} else {
 					nextHeader = (SIPHeader) nextHeader.clone();
 				}
-			} else if (nextHeader instanceof ContactList) {
+			} else if (nextHeader instanceof ContactList || nextHeader instanceof Expires) {
 				// CONTACT header does not apply for ACK requests.
 				continue;
 			} else if (nextHeader instanceof ViaList) {
