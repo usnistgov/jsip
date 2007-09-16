@@ -54,7 +54,7 @@ import EDU.oswego.cs.dl.util.concurrent.Semaphore;
  * @author M. Ranganathan
  * 
  * 
- * @version 1.2 $Revision: 1.52 $ $Date: 2007-09-14 18:13:11 $
+ * @version 1.2 $Revision: 1.53 $ $Date: 2007-09-16 18:58:53 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
 		javax.sip.Transaction {
@@ -579,14 +579,15 @@ public abstract class SIPTransaction extends MessageChannel implements
 	 *            occurs.
 	 */
 	protected final void enableRetransmissionTimer(int tickCount) {
-    if ( isInviteTransaction() ) {
-      retransmissionTimerTicksLeft = tickCount;
-    } else {
-      // non-INVITE transactions are capped at T2
-      retransmissionTimerTicksLeft = Math.min(tickCount,
-        MAXIMUM_RETRANSMISSION_TICK_COUNT);
-    }
-    retransmissionTimerLastTickCount = retransmissionTimerTicksLeft;
+		// For INVITE Client transactions, double interval each time
+		if ( isInviteTransaction() && (this instanceof SIPClientTransaction) ) {
+	      retransmissionTimerTicksLeft = tickCount;
+	    } else {
+	      // non-INVITE transactions and 3xx-6xx responses are capped at T2
+	      retransmissionTimerTicksLeft = Math.min(tickCount,
+	        MAXIMUM_RETRANSMISSION_TICK_COUNT);
+	    }
+	    retransmissionTimerLastTickCount = retransmissionTimerTicksLeft;
   }
 
 	/**
