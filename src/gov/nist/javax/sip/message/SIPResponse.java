@@ -49,7 +49,7 @@ import javax.sip.message.Request;
 /**
  * SIP Response structure.
  *
- * @version 1.2 $Revision: 1.14 $ $Date: 2007-02-12 15:19:25 $
+ * @version 1.2 $Revision: 1.15 $ $Date: 2007-09-17 17:18:16 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
@@ -675,6 +675,8 @@ public final class SIPResponse
 				|| nextHeader instanceof RecordRouteList) {
 				continue;
 			}
+			// ACK does not have an expires header (issue 126).
+			if ( method.equals(Request.ACK) && nextHeader instanceof Expires) continue;
 			if (nextHeader instanceof To)
 				nextHeader = (SIPHeader) nextHeader.clone();
 			else if (nextHeader instanceof From)
