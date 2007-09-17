@@ -150,7 +150,7 @@ import java.util.TimerTask;
  *                                      
  * </pre>
  * 
- * @version 1.2 $Revision: 1.87 $ $Date: 2007-09-17 15:13:04 $
+ * @version 1.2 $Revision: 1.88 $ $Date: 2007-09-17 15:26:31 $
  * @author M. Ranganathan
  * 
  */
@@ -1250,9 +1250,8 @@ public class SIPServerTransaction extends SIPTransaction implements
 		}
 		
 		if ( sipResponse.getToTag() != null && ((SIPRequest)this.getRequest()).getToTag() == null && 
-				!sipStack.isDialogCreated(((SIPRequest)this.getRequest()).getMethod())) {
-				throw new SipException(
-					"Response has a to tag, for a request that is not dialog creating and not in dialog");
+				((SIPRequest)this.getRequest()).getMethod().equals(Request.CANCEL)) {
+				throw new SipException("Response has a to tag, for a request that is not dialog creating and not in dialog");
 			
 		}
 
