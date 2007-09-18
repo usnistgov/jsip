@@ -156,7 +156,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.71 $ $Date: 2007-07-19 15:46:19 $
+ * @version 1.2 $Revision: 1.72 $ $Date: 2007-09-18 14:47:35 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -311,14 +311,15 @@ public class SIPClientTransaction extends SIPTransaction implements
 	 *            ResponseInterface to send messages to.
 	 */
 	public void setResponseInterface(ServerResponseInterface newRespondTo) {
-		if ( sipStack.isLoggingEnabled()) {
-			sipStack.logWriter.logDebug("Setting response interface for " + this + " to " + newRespondTo);
-			if ( newRespondTo == null)  {
+		if (sipStack.isLoggingEnabled()) {
+			sipStack.logWriter.logDebug("Setting response interface for "
+					+ this + " to " + newRespondTo);
+			if (newRespondTo == null) {
 				sipStack.logWriter.logStackTrace();
 				sipStack.logWriter.logDebug("WARNING -- setting to null!");
 			}
 		}
-		
+
 		respondTo = newRespondTo;
 
 	}
@@ -760,7 +761,7 @@ public class SIPClientTransaction extends SIPTransaction implements
 				disableTimeoutTimer();
 				this.setState(TransactionState.PROCEEDING);
 
-				if (respondTo != null) 
+				if (respondTo != null)
 					respondTo
 							.processResponse(transactionResponse, this, dialog);
 				else {
@@ -771,13 +772,15 @@ public class SIPClientTransaction extends SIPTransaction implements
 				// Send back an ACK request
 
 				try {
-					sendMessage( (SIPRequest) createErrorAck() );
-					
-				} catch (Exception ex) {
-					sipStack.logWriter.logError("Unexpected Exception sending ACK -- sending error AcK ",ex);
+					sendMessage((SIPRequest) createErrorAck());
 
-					
-				} 
+				} catch (Exception ex) {
+					sipStack.logWriter
+							.logError(
+									"Unexpected Exception sending ACK -- sending error AcK ",
+									ex);
+
+				}
 
 				// When in either the "Calling" or "Proceeding" states,
 				// reception of response with status code from 300-699
@@ -822,7 +825,7 @@ public class SIPClientTransaction extends SIPTransaction implements
 			} else if (300 <= statusCode && statusCode <= 699) {
 				// Send back an ACK request
 				try {
-					sendMessage((SIPRequest) createErrorAck() );
+					sendMessage((SIPRequest) createErrorAck());
 				} catch (Exception ex) {
 					InternalErrorHandler.handleException(ex);
 				}
@@ -1094,14 +1097,16 @@ public class SIPClientTransaction extends SIPTransaction implements
 		// Pull the record route headers from the last reesponse.
 		RecordRouteList recordRouteList = lastResponse.getRecordRouteHeaders();
 		if (recordRouteList == null) {
-			// If the record route list is null then we can 
+			// If the record route list is null then we can
 			// construct the ACK from the specified contact header.
 			// Note the 3xx check here because 3xx is a redirect.
 			// The contact header for the 3xx is the redirected
 			// location so we cannot use that to construct the
 			// request URI.
-			if (lastResponse.getContactHeaders() != null && lastResponse.getStatusCode()/100 != 3) {
-				Contact contact = (Contact) lastResponse.getContactHeaders().getFirst();
+			if (lastResponse.getContactHeaders() != null
+					&& lastResponse.getStatusCode() / 100 != 3) {
+				Contact contact = (Contact) lastResponse.getContactHeaders()
+						.getFirst();
 				javax.sip.address.URI uri = (javax.sip.address.URI) contact
 						.getAddress().getURI().clone();
 				ackRequest.setRequestURI(uri);
@@ -1161,9 +1166,9 @@ public class SIPClientTransaction extends SIPTransaction implements
 
 	}
 
-	
 	/*
-	 * Creates an ACK for an error response, according to RFC3261 section 17.1.1.3
+	 * Creates an ACK for an error response, according to RFC3261 section
+	 * 17.1.1.3
 	 * 
 	 * Note that this is different from an ACK for 2xx
 	 */
@@ -1181,10 +1186,9 @@ public class SIPClientTransaction extends SIPTransaction implements
 			}
 			throw new SipException("Cannot ACK a provisional response!");
 		}
-		return originalRequest.createErrorAck( (To) lastResponse.getTo() );
-	}	
-	
-	
+		return originalRequest.createErrorAck((To) lastResponse.getTo());
+	}
+
 	/**
 	 * Set the port of the recipient.
 	 */
@@ -1281,8 +1285,8 @@ public class SIPClientTransaction extends SIPTransaction implements
 
 	/**
 	 * Check if the From tag of the response matches the from tag of the
-	 * original message. A Response with a tag mismatch should be dropped
-	 * if a Dialog has been created for the original request.
+	 * original message. A Response with a tag mismatch should be dropped if a
+	 * Dialog has been created for the original request.
 	 * 
 	 * @param sipResponse
 	 * @return
@@ -1317,6 +1321,16 @@ public class SIPClientTransaction extends SIPTransaction implements
 	public void processResponse(SIPResponse sipResponse,
 			MessageChannel incomingChannel) {
 		SipStackImpl sipStack = (SipStackImpl) this.getSIPStack();
+		String originalToTag = this.originalRequest.getToTag();
+		// Workaround for asterisk bug.
+		if (originalToTag == null && sipResponse.getToTag() != null
+				&& sipResponse.getCSeq().getMethod().equals(Request.CANCEL)) {
+			sipStack
+					.getLogWriter()
+					.logDebug(
+							"CANCEL has a to tag while original Request does not have to tag -- stripping the spurious tag. ");
+			sipResponse.getTo().removeParameter("tag");
+		}
 
 		// If a dialog has already been created for this response,
 		// pass it up.
