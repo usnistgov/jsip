@@ -150,7 +150,7 @@ import java.util.TimerTask;
  *                                      
  * </pre>
  * 
- * @version 1.2 $Revision: 1.88 $ $Date: 2007-09-17 15:26:31 $
+ * @version 1.2 $Revision: 1.89 $ $Date: 2007-09-18 20:02:46 $
  * @author M. Ranganathan
  * 
  */
@@ -1249,11 +1249,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 					"CSeq method does not match Request method of request that created the tx.");
 		}
 		
-		if ( sipResponse.getToTag() != null && ((SIPRequest)this.getRequest()).getToTag() == null && 
-				((SIPRequest)this.getRequest()).getMethod().equals(Request.CANCEL)) {
-				throw new SipException("Response has a to tag, for a request that is not dialog creating and not in dialog");
-			
-		}
+		
 
 		/*
 		 * 200-class responses to SUBSCRIBE requests also MUST contain an
