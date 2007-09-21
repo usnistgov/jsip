@@ -62,7 +62,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.41 $ $Date: 2007-07-24 19:18:45 $
+ * @version 1.2 $Revision: 1.42 $ $Date: 2007-09-21 17:12:58 $
  */
 public class TCPMessageChannel extends MessageChannel implements
 		SIPMessageListener, Runnable {
@@ -534,8 +534,9 @@ public class TCPMessageChannel extends MessageChannel implements
 				}
 			} else {
 				SIPResponse sipResponse = (SIPResponse) sipMessage;
-				if (sipResponse.getStatusCode() == 100)
-					sipResponse.getTo().removeParameter("tag");
+				// JvB: dont do this
+				//if (sipResponse.getStatusCode() == 100)
+				//	sipResponse.getTo().removeParameter("tag");
 				try {
 					sipResponse.checkHeaders();
 				} catch (ParseException ex) {
