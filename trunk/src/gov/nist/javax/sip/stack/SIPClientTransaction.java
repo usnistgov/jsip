@@ -156,7 +156,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.72 $ $Date: 2007-09-18 14:47:35 $
+ * @version 1.2 $Revision: 1.73 $ $Date: 2007-09-21 15:57:47 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -524,7 +524,7 @@ public class SIPClientTransaction extends SIPTransaction implements
 		this.lastResponse = transactionResponse;
 
 		if (dialog != null && transactionResponse.getStatusCode() != 100
-				&& transactionResponse.getTo().getTag() != null) {
+				&&( transactionResponse.getTo().getTag() != null || sipStack.isRfc2543Supported()) ) {
 			// add the route before you process the response.
 			dialog.setLastResponse(this, transactionResponse);
 			this.setDialog(dialog, transactionResponse.getDialogId(false));
@@ -1322,13 +1322,12 @@ public class SIPClientTransaction extends SIPTransaction implements
 			MessageChannel incomingChannel) {
 		SipStackImpl sipStack = (SipStackImpl) this.getSIPStack();
 		String originalToTag = this.originalRequest.getToTag();
-		// Workaround for asterisk bug.
 		if (originalToTag == null && sipResponse.getToTag() != null
 				&& sipResponse.getCSeq().getMethod().equals(Request.CANCEL)) {
 			sipStack
 					.getLogWriter()
 					.logDebug(
-							"CANCEL has a to tag while original Request does not have to tag -- stripping the spurious tag. ");
+							"CANCEL has a to tag while original Request does not have to tag -- stripping the tag. ");
 			sipResponse.getTo().removeParameter("tag");
 		}
 

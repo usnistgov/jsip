@@ -59,7 +59,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.51 $ $Date: 2007-06-05 12:28:14 $
+ * @version 1.2 $Revision: 1.52 $ $Date: 2007-09-21 15:57:47 $
  * 
  * @author M. Ranganathan
  * 
@@ -2160,7 +2160,7 @@ public class SIPDialog implements javax.sip.Dialog {
 					// confirmed
 					// state
 					setState(SIPDialog.EARLY_STATE);
-					if (sipResponse.getToTag() != null
+					if (( sipResponse.getToTag() != null || sipStack.rfc2543Supported)
 							&& this.getRemoteTag() == null) {
 						setRemoteTag(sipResponse.getToTag());
 						this.setDialogId(sipResponse.getDialogId(false));
@@ -2175,7 +2175,7 @@ public class SIPDialog implements javax.sip.Dialog {
 					// Only do this if method equals initial request!
 
 					if (cseqMethod.equals(getMethod())
-							&& sipResponse.getToTag() != null
+							&& ( sipResponse.getToTag() != null || sipStack.rfc2543Supported)
 							&& this.getState() != DialogState.CONFIRMED) {
 						setRemoteTag(sipResponse.getToTag());
 						this.setDialogId(sipResponse.getDialogId(false));

@@ -65,7 +65,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.79 $ $Date: 2007-08-04 05:17:13 $
+ * @version 1.2 $Revision: 1.80 $ $Date: 2007-09-21 15:57:47 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -291,7 +291,12 @@ public abstract class SIPTransactionStack implements
 	 * Flag to indicate whether the stack will delegate the TLS
 	 * encryption/decryption to external hardware.
 	 */
-	protected boolean useTlsAccelerator;
+	protected boolean useTlsAccelerator = false;
+	
+	// A flag that indicates whether or not RFC 2543 clients are fully supported.
+	// If this is set to true, then To tag checking on the Dialog layer is 
+	// disabled in a few places - resulting in possible breakage of forked dialogs.
+	protected boolean rfc2543Supported = false;
 
 	// / Provides a mechanism for applications to check the health of threads in
 	// the stack
@@ -2112,5 +2117,10 @@ public abstract class SIPTransactionStack implements
 	 */
 	public int getActiveClientTransactionCount() {
 		return activeClientTransactionCount;
+	}
+
+	public boolean isRfc2543Supported() {
+	
+		return this.rfc2543Supported;
 	}
 }
