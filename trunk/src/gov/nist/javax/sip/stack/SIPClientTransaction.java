@@ -156,7 +156,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.73 $ $Date: 2007-09-21 15:57:47 $
+ * @version 1.2 $Revision: 1.74 $ $Date: 2007-09-21 17:12:42 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -1320,6 +1320,9 @@ public class SIPClientTransaction extends SIPTransaction implements
 	 */
 	public void processResponse(SIPResponse sipResponse,
 			MessageChannel incomingChannel) {
+		
+		
+		/* JvB: dont do this
 		SipStackImpl sipStack = (SipStackImpl) this.getSIPStack();
 		String originalToTag = this.originalRequest.getToTag();
 		if (originalToTag == null && sipResponse.getToTag() != null
@@ -1330,13 +1333,22 @@ public class SIPClientTransaction extends SIPTransaction implements
 							"CANCEL has a to tag while original Request does not have to tag -- stripping the tag. ");
 			sipResponse.getTo().removeParameter("tag");
 		}
+		*/
 
 		// If a dialog has already been created for this response,
-		// pass it up.
-
+		// pass it up.		
+		SIPDialog dialog = null;
 		String dialogId = sipResponse.getDialogId(false);
-		SIPDialog dialog = this.getDialog(dialogId);
-
+		if ( sipResponse.getCSeq().getMethod().equals(Request.CANCEL) && lastRequest!=null ) {
+		  // JvB for CANCEL: use invite CT in CANCEL request to get dialog (instead of stripping tag)
+		  SIPClientTransaction ict = (SIPClientTransaction) lastRequest.getInviteTransaction();
+		  if (ict!=null) {
+		    dialog = ict.defaultDialog;  
+		  }
+		} else {		  
+		  dialog = this.getDialog(dialogId);
+    }
+        
 		if (dialog == null) {
 
 			// Dialog cannot be found for the response.
