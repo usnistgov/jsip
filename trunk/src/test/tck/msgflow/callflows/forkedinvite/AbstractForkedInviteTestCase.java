@@ -45,7 +45,7 @@ public class AbstractForkedInviteTestCase extends ScenarioHarness implements
 	private static Logger logger = Logger.getLogger("test.tck");
 
 	
-	private Shootme shootme;
+	protected Shootme shootme;
 
 	private Shootme shootme2;
 

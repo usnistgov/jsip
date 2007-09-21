@@ -115,7 +115,8 @@ public class Shootist implements SipListener {
 				+ response.getStatusCode() + " " + cseq);
 
 		Dialog dialog = responseReceivedEvent.getDialog();
-
+		TestHarness.assertNotNull( dialog );	
+		
 		if (tid != null)
 			logger.info("transaction state is " + tid.getState());
 		else
@@ -123,16 +124,12 @@ public class Shootist implements SipListener {
 
 		logger.info("Dialog = " + dialog);
 
-		if (dialog != null) {
-			logger.info("Dialog state is " + dialog.getState());
-		} else {
-			logger.info("Dialog is null -- ignoring response!");
-			return;
-		}
+		logger.info("Dialog state is " + dialog.getState());
 
 		try {
 			if (response.getStatusCode() == Response.OK) {
 				if (cseq.getMethod().equals(Request.INVITE)) {
+					TestHarness.assertEquals( DialogState.CONFIRMED, dialog.getState() );
 					Request ackRequest = dialog.createAck(cseq
 							.getSeqNumber());
 
@@ -161,14 +158,15 @@ public class Shootist implements SipListener {
 						Request byeRequest = dialog.createRequest(Request.BYE);
 						ClientTransaction ct = sipProvider
 								.getNewClientTransaction(byeRequest);
-						dialog.sendRequest(ct);
-					
+						dialog.sendRequest(ct);					
 					}
 					
 					
 				} else {
 					logger.info("Response method = " + cseq.getMethod());
 				}
+			} else if ( response.getStatusCode() == Response.RINGING ) {
+				TestHarness.assertEquals( DialogState.EARLY, dialog.getState() );
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -201,6 +199,9 @@ public class Shootist implements SipListener {
 		TestHarness.assertTrue(
 				"Should see the original (default) dialog in the forked set",
 				this.forkedDialogs.contains(this.originalDialog));
+		
+		// cleanup
+		forkedDialogs.clear();
 	}
 
 	public void processTimeout(javax.sip.TimeoutEvent timeoutEvent) {
