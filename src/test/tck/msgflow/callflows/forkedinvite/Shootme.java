@@ -52,24 +52,30 @@ public class Shootme   implements SipListener {
 	
 	private boolean ackSeen;
 	
+	private boolean actAsNonRFC3261UAS;
 	
-	
+	/**
+	 * Causes this UAS to act as a non-RFC3261 UAS, i.e. does not set a to-tag
+	 */
+	void setNonRFC3261( boolean b ) {
+		this.actAsNonRFC3261UAS = b;
+	}	
 	
 	class MyTimerTask extends TimerTask {
 		RequestEvent  requestEvent;
-		String toTag;
+		// String toTag;
 		ServerTransaction serverTx;
 
-		public MyTimerTask(RequestEvent requestEvent,ServerTransaction tx, String toTag) {
+		public MyTimerTask(RequestEvent requestEvent,ServerTransaction tx) {
 			logger.info("MyTimerTask ");
 			this.requestEvent = requestEvent;
-			this.toTag = toTag;
+			// this.toTag = toTag;
 			this.serverTx = tx;
 
 		}
 
 		public void run() {
-			sendInviteOK(requestEvent,serverTx,toTag);
+			sendInviteOK(requestEvent,serverTx);
 		}
 
 	}
@@ -157,8 +163,8 @@ public class Shootme   implements SipListener {
 			ContactHeader contactHeader = protocolObjects.headerFactory.createContactHeader(address);
 			response.addHeader(contactHeader);
 			ToHeader toHeader = (ToHeader) ringingResponse.getHeader(ToHeader.NAME);
-			String toTag = new Integer((int) (Math.random() * 10000)).toString();
-			toHeader.setTag(toTag); // Application is supposed to set.
+			String toTag = actAsNonRFC3261UAS ? null : new Integer((int) (Math.random() * 10000)).toString();
+			if (!actAsNonRFC3261UAS) toHeader.setTag(toTag); // Application is supposed to set.
 			ringingResponse.addHeader(contactHeader);
 			st.sendResponse(ringingResponse);
 			Dialog dialog =  st.getDialog();
@@ -166,14 +172,14 @@ public class Shootme   implements SipListener {
 			
 			this.inviteSeen = true;
 
-			new Timer().schedule(new MyTimerTask(requestEvent,st,toTag), 500);
+			new Timer().schedule(new MyTimerTask(requestEvent,st/*,toTag*/), 500);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.exit(0);
 		}
 	}
 
-	private void sendInviteOK(RequestEvent requestEvent, ServerTransaction inviteTid, String toTag) {
+	private void sendInviteOK(RequestEvent requestEvent, ServerTransaction inviteTid) {
 		try {
 			logger.info("sendInviteOK: " + inviteTid);
 			if (inviteTid.getState() != TransactionState.COMPLETED) {
