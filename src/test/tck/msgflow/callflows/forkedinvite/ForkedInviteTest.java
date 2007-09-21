@@ -12,11 +12,14 @@ public class ForkedInviteTest extends AbstractForkedInviteTestCase {
 
 	public void testForkedInvite() {
 		this.shootist.sendInvite();
-
 	}
 
-	public void testForkedInvite2() {
+	/**
+	 * Test forking in combination with one non-RFC3261 UAS
+	 */
+	public void testForkedInviteNonRFC3261() {
+		shootme.setNonRFC3261( true );
 		this.shootist.sendInvite();
 	}
-
+	
 }
