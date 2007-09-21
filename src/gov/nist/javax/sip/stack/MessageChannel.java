@@ -52,7 +52,7 @@ import javax.sip.header.ContactHeader;
  * Contains additions for support of symmetric NAT contributed
  * by Hagai.
  *
- * @version 1.2 $Revision: 1.17 $ $Date: 2007-03-08 05:20:20 $
+ * @version 1.2 $Revision: 1.18 $ $Date: 2007-09-21 15:57:48 $
  *
  * 
  */
@@ -204,6 +204,7 @@ public abstract class MessageChannel {
 		}
 		return rawIpSourceAddress;
 	}
+	
 
 	/**
 	 * generate a key given the inet address port and transport.

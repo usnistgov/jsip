@@ -226,10 +226,15 @@ import gov.nist.core.net.NetworkLayer;
  * the application or environmental conditions into the log stream. The log
  * factory must have a default constructor. </li>
  * 
+ * <li><b>gov.nist.javax.sip.RFC_2543_SUPPORT_ENABLED = [true|false] </b><br/> Whether or not
+ * RFC 2543 is fully supported in the stack. If RFC2543 is fully supported then 
+ * check for To tag is disabled in a few places. This may result in forked dialogs
+ * not working correctly. If you are not concerned with Dialog forking, you 
+ * can set this flag to true. </li>
  * </ul>
  * 
  * 
- * @version 1.2 $Revision: 1.62 $ $Date: 2007-02-25 20:50:34 $
+ * @version 1.2 $Revision: 1.63 $ $Date: 2007-09-21 15:57:48 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -652,6 +657,9 @@ public class SipStackImpl extends SIPTransactionStack implements
 		} else {
 			this.logRecordFactory = new DefaultMessageLogFactory();
 		}
+		
+		super.rfc2543Supported =  configurationProperties.getProperty
+				("gov.nist.javax.sip.RFC_2543_SUPPORT_ENABLED","false").equalsIgnoreCase("true");
 	}
 
 	/*
