@@ -156,7 +156,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.74 $ $Date: 2007-09-21 17:12:42 $
+ * @version 1.2 $Revision: 1.75 $ $Date: 2007-10-02 22:23:28 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -936,6 +936,8 @@ public class SIPClientTransaction extends SIPTransaction implements
 			}
 			// Only map this after the fist request is sent out.
 			this.isMapped = true;
+			if ( ! this.transactionTimerStarted)
+				this.startTransactionTimer();
 			this.sendMessage(sipRequest);
 
 		} catch (IOException ex) {
@@ -1267,9 +1269,10 @@ public class SIPClientTransaction extends SIPTransaction implements
 	 */
 	protected void startTransactionTimer() {
 		TimerTask myTimer = new TransactionTimer();
+		this.transactionTimerStarted  = true;
 		sipStack.timer.schedule(myTimer,
-				SIPTransactionStack.BASE_TIMER_INTERVAL,
-				SIPTransactionStack.BASE_TIMER_INTERVAL);
+				BASE_TIMER_INTERVAL,
+				BASE_TIMER_INTERVAL);
 	}
 
 	/*

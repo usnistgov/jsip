@@ -54,7 +54,7 @@ import EDU.oswego.cs.dl.util.concurrent.Semaphore;
  * @author M. Ranganathan
  * 
  * 
- * @version 1.2 $Revision: 1.53 $ $Date: 2007-09-16 18:58:53 $
+ * @version 1.2 $Revision: 1.54 $ $Date: 2007-10-02 22:23:27 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
 		javax.sip.Transaction {
@@ -192,6 +192,8 @@ public abstract class SIPTransaction extends MessageChannel implements
 	protected int peerPacketSourcePort;
 
 	protected InetAddress peerPacketSourceAddress;
+	
+	protected boolean transactionTimerStarted = false;
 
 	// Transaction branch ID
 	private String branch;
@@ -1034,7 +1036,9 @@ public abstract class SIPTransaction extends MessageChannel implements
 	 */
 	public void setRetransmitTimer(int retransmitTimer) {
 	
-		 BASE_TIMER_INTERVAL = SIPTransactionStack.BASE_TIMER_INTERVAL;
+		if ( retransmitTimer <= 0) throw new IllegalArgumentException("Retransmit timer must be positive!");
+		if ( this.transactionTimerStarted ) throw new IllegalStateException("Transaction timer is already started");
+		 BASE_TIMER_INTERVAL = retransmitTimer;
 		 T4 = 5000 / BASE_TIMER_INTERVAL;
 
 		T2 = 4000 / BASE_TIMER_INTERVAL;
@@ -1043,6 +1047,8 @@ public abstract class SIPTransaction extends MessageChannel implements
 		TIMER_K = T4;
 
 		TIMER_D = 32000 / BASE_TIMER_INTERVAL;
+		
+		
 
 	}
 
