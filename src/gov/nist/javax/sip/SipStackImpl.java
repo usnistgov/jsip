@@ -144,7 +144,7 @@ import gov.nist.core.net.NetworkLayer;
  * become available (i.e. it does its own resource management in the
  * application). </li>
  * 
- * <li><b>gov.nist.javax.sip.PASS_INIVTE_NON2XX_ACK_TO_LISTENER = true|false
+ * <li><b>gov.nist.javax.sip.PASS_INVITE_NON_2XX_ACK_TO_LISTENER = true|false
  * </b> <br/> If true then the listener will see the ACK for non-2xx responses
  * for server transactions. This is not standard behavior per RFC 3261 (INVITE
  * server transaction state machine) but this is a useful flag for testing. The
@@ -234,7 +234,7 @@ import gov.nist.core.net.NetworkLayer;
  * </ul>
  * 
  * 
- * @version 1.2 $Revision: 1.63 $ $Date: 2007-09-21 15:57:48 $
+ * @version 1.2 $Revision: 1.64 $ $Date: 2007-10-02 21:55:49 $
  * 
  * @author M. Ranganathan <br/>
  * 
