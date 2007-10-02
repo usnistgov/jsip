@@ -65,7 +65,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.80 $ $Date: 2007-09-21 15:57:47 $
+ * @version 1.2 $Revision: 1.81 $ $Date: 2007-10-02 22:23:27 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -296,7 +296,7 @@ public abstract class SIPTransactionStack implements
 	// A flag that indicates whether or not RFC 2543 clients are fully supported.
 	// If this is set to true, then To tag checking on the Dialog layer is 
 	// disabled in a few places - resulting in possible breakage of forked dialogs.
-	protected boolean rfc2543Supported = false;
+	protected boolean rfc2543Supported = true;
 
 	// / Provides a mechanism for applications to check the health of threads in
 	// the stack
@@ -928,7 +928,7 @@ public abstract class SIPTransactionStack implements
 		if (transaction.isMapped)
 			return;
 		addTransactionHash(transaction);
-		transaction.startTransactionTimer();
+		//transaction.startTransactionTimer();
 		transaction.isMapped = true;
 	}
 
@@ -1170,7 +1170,7 @@ public abstract class SIPTransactionStack implements
 		// clientTransactionTable.put(returnChannel.getTransactionId(),
 		// returnChannel);
 		// Add the transaction timer for the state machine.
-		returnChannel.startTransactionTimer();
+		//returnChannel.startTransactionTimer();
 		return returnChannel;
 
 	}
@@ -1241,7 +1241,7 @@ public abstract class SIPTransactionStack implements
 		if (logWriter.isLoggingEnabled())
 			logWriter.logDebug("added transaction " + clientTransaction);
 		addTransactionHash(clientTransaction);
-		clientTransaction.startTransactionTimer();
+		//clientTransaction.startTransactionTimer();
 	}
 
 	/**
@@ -1316,7 +1316,7 @@ public abstract class SIPTransactionStack implements
 		serverTransaction.map();
 
 		addTransactionHash(serverTransaction);
-		serverTransaction.startTransactionTimer();
+		//serverTransaction.startTransactionTimer();
 	}
 
 	/**

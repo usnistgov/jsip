@@ -32,7 +32,7 @@ import gov.nist.javax.sip.address.*;
 
 /** An abstract class for headers that take an address and parameters. 
  *
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-11-01 02:23:01 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2007-10-02 22:23:28 $
  * 
  * @since 1.1
  *
@@ -104,6 +104,8 @@ public abstract class AddressParametersHeader extends ParametersHeader {
 	 */
 	public boolean equals(Object other) {
 		if (this==other) return true;
+		
+		if ( !this.getClass().equals(other.getClass())) return false;
 		
 		if (other instanceof HeaderAddress && other instanceof Parameters) {
 			final HeaderAddress o = (HeaderAddress) other;
