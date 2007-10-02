@@ -150,7 +150,7 @@ import java.util.TimerTask;
  *                                      
  * </pre>
  * 
- * @version 1.2 $Revision: 1.89 $ $Date: 2007-09-18 20:02:46 $
+ * @version 1.2 $Revision: 1.90 $ $Date: 2007-10-02 22:23:27 $
  * @author M. Ranganathan
  * 
  */
@@ -459,6 +459,8 @@ public class SIPServerTransaction extends SIPTransaction implements
 			else
 				throw new IOException("Could not create a message channel for "
 						+ hop);
+			if ( ! this.transactionTimerStarted)
+				this.startTransactionTimer();
 		}
 	}
 
@@ -1476,9 +1478,10 @@ public class SIPServerTransaction extends SIPTransaction implements
 		if (sipStack.timer != null) {
 			// The timer is set to null when the Stack is
 			// shutting down.
+			this.transactionTimerStarted = true;
 			TimerTask myTimer = new TransactionTimer();
 			sipStack.timer.schedule(myTimer, 0,
-					SIPTransactionStack.BASE_TIMER_INTERVAL);
+					BASE_TIMER_INTERVAL);
 		}
 	}
 
