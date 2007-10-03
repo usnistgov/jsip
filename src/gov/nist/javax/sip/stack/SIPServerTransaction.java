@@ -150,7 +150,7 @@ import java.util.TimerTask;
  *                                      
  * </pre>
  * 
- * @version 1.2 $Revision: 1.90 $ $Date: 2007-10-02 22:23:27 $
+ * @version 1.2 $Revision: 1.91 $ $Date: 2007-10-03 08:25:41 $
  * @author M. Ranganathan
  * 
  */
@@ -382,85 +382,93 @@ public class SIPServerTransaction extends SIPTransaction implements
 	private void sendResponse(SIPResponse transactionResponse)
 			throws IOException {
 
-		// RFC18.2.2. Sending Responses
-		// The server transport uses the value of the top Via header field in
-		// order
-		// to determine where to send a response.
-		// It MUST follow the following process:
-		// If the "sent-protocol" is a reliable transport
-		// protocol such as TCP or SCTP,
-		// or TLS over those, the response MUST be
-		// sent using the existing connection
-		// to the source of the original request
-		// that created the transaction, if that connection is still open.
-		if (isReliable()) {
+		try {
+			// RFC18.2.2. Sending Responses
+			// The server transport uses the value of the top Via header field
+			// in
+			// order
+			// to determine where to send a response.
+			// It MUST follow the following process:
+			// If the "sent-protocol" is a reliable transport
+			// protocol such as TCP or SCTP,
+			// or TLS over those, the response MUST be
+			// sent using the existing connection
+			// to the source of the original request
+			// that created the transaction, if that connection is still open.
+			if (isReliable()) {
 
-			getMessageChannel().sendMessage(transactionResponse);
+				getMessageChannel().sendMessage(transactionResponse);
 
-			// TODO If that connection attempt fails, the server SHOULD
-			// use SRV 3263 procedures
-			// for servers in order to determine the IP address
-			// and port to open the connection and send the response to.
+				// TODO If that connection attempt fails, the server SHOULD
+				// use SRV 3263 procedures
+				// for servers in order to determine the IP address
+				// and port to open the connection and send the response to.
 
-		} else {
-			Via via = transactionResponse.getTopmostVia();
-			String transport = via.getTransport();
-			if (transport == null)
-				throw new IOException("missing transport!");
-			// @@@ hagai Symmetric NAT support
-			int port = via.getRPort();
-			if (port == -1)
-				port = via.getPort();
-			if (port == -1) {
-				if (transport.equalsIgnoreCase("TLS"))
-					port = 5061;
-				else
-					port = 5060;
-			}
-
-			// Otherwise, if the Via header field value contains a
-			// "maddr" parameter, the response MUST be forwarded to
-			// the address listed there, using the port indicated in "sent-by",
-			// or port 5060 if none is present. If the address is a multicast
-			// address, the response SHOULD be sent using
-			// the TTL indicated in the "ttl" parameter, or with a
-			// TTL of 1 if that parameter is not present.
-			String host = null;
-			if (via.getMAddr() != null) {
-				host = via.getMAddr();
 			} else {
-				// Otherwise (for unreliable unicast transports),
-				// if the top Via has a "received" parameter, the response MUST
-				// be sent to the
-				// address in the "received" parameter, using the port indicated
-				// in the
-				// "sent-by" value, or using port 5060 if none is specified
-				// explicitly.
-				host = via.getParameter(Via.RECEIVED);
-				if (host == null) {
-					// Otherwise, if it is not receiver-tagged, the response
-					// MUST be
-					// sent to the address indicated by the "sent-by" value,
-					// using the procedures in Section 5
-					// RFC 3263 PROCEDURE TO BE DONE HERE
-					host = via.getHost();
+				Via via = transactionResponse.getTopmostVia();
+				String transport = via.getTransport();
+				if (transport == null)
+					throw new IOException("missing transport!");
+				// @@@ hagai Symmetric NAT support
+				int port = via.getRPort();
+				if (port == -1)
+					port = via.getPort();
+				if (port == -1) {
+					if (transport.equalsIgnoreCase("TLS"))
+						port = 5061;
+					else
+						port = 5060;
 				}
+
+				// Otherwise, if the Via header field value contains a
+				// "maddr" parameter, the response MUST be forwarded to
+				// the address listed there, using the port indicated in
+				// "sent-by",
+				// or port 5060 if none is present. If the address is a
+				// multicast
+				// address, the response SHOULD be sent using
+				// the TTL indicated in the "ttl" parameter, or with a
+				// TTL of 1 if that parameter is not present.
+				String host = null;
+				if (via.getMAddr() != null) {
+					host = via.getMAddr();
+				} else {
+					// Otherwise (for unreliable unicast transports),
+					// if the top Via has a "received" parameter, the response
+					// MUST
+					// be sent to the
+					// address in the "received" parameter, using the port
+					// indicated
+					// in the
+					// "sent-by" value, or using port 5060 if none is specified
+					// explicitly.
+					host = via.getParameter(Via.RECEIVED);
+					if (host == null) {
+						// Otherwise, if it is not receiver-tagged, the response
+						// MUST be
+						// sent to the address indicated by the "sent-by" value,
+						// using the procedures in Section 5
+						// RFC 3263 PROCEDURE TO BE DONE HERE
+						host = via.getHost();
+					}
+				}
+
+				Hop hop = sipStack.addressResolver.resolveAddress(new HopImpl(
+						host, port, transport));
+
+				MessageChannel messageChannel = ((SIPTransactionStack) getSIPStack())
+						.createRawMessageChannel(this.getSipProvider()
+								.getListeningPoint(hop.getTransport())
+								.getIPAddress(), this.getPort(), hop);
+				if (messageChannel != null)
+					messageChannel.sendMessage(transactionResponse);
+				else
+					throw new IOException(
+							"Could not create a message channel for " + hop);
+
 			}
-
-			Hop hop = sipStack.addressResolver.resolveAddress(new HopImpl(host,
-					port, transport));
-
-			MessageChannel messageChannel = ((SIPTransactionStack) getSIPStack())
-					.createRawMessageChannel(
-							this.getSipProvider().getListeningPoint(hop.getTransport()).getIPAddress(),
-							this.getPort(), hop);
-			if (messageChannel != null)
-				messageChannel.sendMessage(transactionResponse);
-			else
-				throw new IOException("Could not create a message channel for "
-						+ hop);
-			if ( ! this.transactionTimerStarted)
-				this.startTransactionTimer();
+		} finally {
+			 if (!this.transactionTimerStarted) this.startTransactionTimer();
 		}
 	}
 
@@ -591,10 +599,13 @@ public class SIPServerTransaction extends SIPTransaction implements
 					}
 
 				} else {
-					// This is an RFC2543-compliant message; this code is here for backwards compatibility.
+					// This is an RFC2543-compliant message; this code is here
+					// for backwards compatibility.
 					// It is a weak check.
-					// If RequestURI, To tag, From tag, CallID, CSeq number, and top Via headers are the same, the
-					// SIPMessage matches this transaction.  An exception is for a CANCEL request, which is not deemed
+					// If RequestURI, To tag, From tag, CallID, CSeq number, and
+					// top Via headers are the same, the
+					// SIPMessage matches this transaction. An exception is for
+					// a CANCEL request, which is not deemed
 					// to be part of an otherwise-matching INVITE transaction.
 					String originalFromTag = super.fromTag;
 
@@ -608,13 +619,16 @@ public class SIPServerTransaction extends SIPTransaction implements
 
 					boolean skipTo = (originalToTag == null || thisToTag == null);
 					boolean isResponse = (messageToTest instanceof SIPResponse);
-					// Issue #96: special case handling for a CANCEL request - the CSeq method of the original request must
+					// Issue #96: special case handling for a CANCEL request -
+					// the CSeq method of the original request must
 					// be CANCEL for it to have a chance at matching.
-					if (messageToTest.getCSeq().getMethod().equalsIgnoreCase(Request.CANCEL) &&
-							! getOriginalRequest().getCSeq().getMethod().equalsIgnoreCase(Request.CANCEL)) {
+					if (messageToTest.getCSeq().getMethod().equalsIgnoreCase(
+							Request.CANCEL)
+							&& !getOriginalRequest().getCSeq().getMethod()
+									.equalsIgnoreCase(Request.CANCEL)) {
 						transactionMatches = false;
-					} else if ((isResponse || getOriginalRequest().getRequestURI()
-							.equals(
+					} else if ((isResponse || getOriginalRequest()
+							.getRequestURI().equals(
 									((SIPRequest) messageToTest)
 											.getRequestURI()))
 							&& (skipFrom || originalFromTag
@@ -627,8 +641,10 @@ public class SIPServerTransaction extends SIPTransaction implements
 													.getCallId())
 							&& getOriginalRequest().getCSeq().getSeqNumber() == messageToTest
 									.getCSeq().getSeqNumber()
-							&& ( (!messageToTest.getCSeq().getMethod().equals(Request.CANCEL))
-							 || getOriginalRequest().getMethod().equals(messageToTest.getCSeq().getMethod()))
+							&& ((!messageToTest.getCSeq().getMethod().equals(
+									Request.CANCEL)) || getOriginalRequest()
+									.getMethod()
+									.equals(messageToTest.getCSeq().getMethod()))
 							&& topViaHeader.equals(getOriginalRequest()
 									.getViaHeaders().getFirst())) {
 
@@ -1250,8 +1266,6 @@ public class SIPServerTransaction extends SIPTransaction implements
 			throw new SipException(
 					"CSeq method does not match Request method of request that created the tx.");
 		}
-		
-		
 
 		/*
 		 * 200-class responses to SUBSCRIBE requests also MUST contain an
@@ -1480,8 +1494,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 			// shutting down.
 			this.transactionTimerStarted = true;
 			TimerTask myTimer = new TransactionTimer();
-			sipStack.timer.schedule(myTimer, 0,
-					BASE_TIMER_INTERVAL);
+			sipStack.timer.schedule(myTimer, 0, BASE_TIMER_INTERVAL);
 		}
 	}
 
@@ -1524,7 +1537,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 					.remove(this.retransmissionAlertTimerTask.dialogId);
 
 		}
-	
+
 		this.retransmissionAlertEnabled = false;
 
 	}
