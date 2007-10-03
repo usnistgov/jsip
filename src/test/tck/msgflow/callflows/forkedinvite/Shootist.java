@@ -113,6 +113,7 @@ public class Shootist implements SipListener {
 
 		logger.info("Response received : Status Code = "
 				+ response.getStatusCode() + " " + cseq);
+		logger.info("Response = " + response);
 
 		Dialog dialog = responseReceivedEvent.getDialog();
 		TestHarness.assertNotNull( dialog );	
