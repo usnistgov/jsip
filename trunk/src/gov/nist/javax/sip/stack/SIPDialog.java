@@ -59,7 +59,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.52 $ $Date: 2007-09-21 15:57:47 $
+ * @version 1.2 $Revision: 1.53 $ $Date: 2007-10-03 00:45:33 $
  * 
  * @author M. Ranganathan
  * 
@@ -2599,6 +2599,7 @@ public class SIPDialog implements javax.sip.Dialog {
 		} else {
 			SIPClientTransaction ct = (SIPClientTransaction) this
 					.getFirstTransaction();
+			if ( ct == null) return null;
 			SIPRequest sipRequest = ct.getOriginalRequest();
 			return sipRequest.getContactHeader();
 		}
