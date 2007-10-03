@@ -150,7 +150,7 @@ import java.util.TimerTask;
  *                                      
  * </pre>
  * 
- * @version 1.2 $Revision: 1.91 $ $Date: 2007-10-03 08:25:41 $
+ * @version 1.2 $Revision: 1.92 $ $Date: 2007-10-03 18:45:36 $
  * @author M. Ranganathan
  * 
  */
@@ -468,7 +468,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 
 			}
 		} finally {
-			 if (!this.transactionTimerStarted) this.startTransactionTimer();
+			  this.startTransactionTimer();
 		}
 	}
 
@@ -1488,7 +1488,8 @@ public class SIPServerTransaction extends SIPTransaction implements
 	/**
 	 * Start the timer task.
 	 */
-	protected void startTransactionTimer() {
+	protected synchronized void startTransactionTimer() {
+		if ( this.transactionTimerStarted) return;
 		if (sipStack.timer != null) {
 			// The timer is set to null when the Stack is
 			// shutting down.
