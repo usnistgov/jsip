@@ -156,7 +156,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.75 $ $Date: 2007-10-02 22:23:28 $
+ * @version 1.2 $Revision: 1.76 $ $Date: 2007-10-03 08:25:41 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -405,85 +405,92 @@ public class SIPClientTransaction extends SIPTransaction implements
 	 */
 	public void sendMessage(SIPMessage messageToSend) throws IOException {
 
-		// Message typecast as a request
-		SIPRequest transactionRequest;
-
-		transactionRequest = (SIPRequest) messageToSend;
-
-		// Set the branch id for the top via header.
-		Via topVia = (Via) transactionRequest.getViaHeaders().getFirst();
-		// Tack on a branch identifier to match responses.
 		try {
-			topVia.setBranch(getBranch());
-		} catch (java.text.ParseException ex) {
-		}
+			// Message typecast as a request
+			SIPRequest transactionRequest;
 
-		if (sipStack.getLogWriter().isLoggingEnabled()) {
-			sipStack.getLogWriter()
-					.logDebug("Sending Message " + messageToSend);
-			sipStack.getLogWriter().logDebug(
-					"TransactionState " + this.getState());
-		}
-		// If this is the first request for this transaction,
-		if (TransactionState.PROCEEDING == getState()
-				|| TransactionState.CALLING == getState()) {
+			transactionRequest = (SIPRequest) messageToSend;
 
-			// If this is a TU-generated ACK request,
-			if (transactionRequest.getMethod().equals(Request.ACK)) {
+			// Set the branch id for the top via header.
+			Via topVia = (Via) transactionRequest.getViaHeaders().getFirst();
+			// Tack on a branch identifier to match responses.
+			try {
+				topVia.setBranch(getBranch());
+			} catch (java.text.ParseException ex) {
+			}
 
-				// Send directly to the underlying
-				// transport and close this transaction
-				if (isReliable()) {
-					this.setState(TransactionState.TERMINATED);
-				} else {
-					this.setState(TransactionState.COMPLETED);
+			if (sipStack.getLogWriter().isLoggingEnabled()) {
+				sipStack.getLogWriter().logDebug(
+						"Sending Message " + messageToSend);
+				sipStack.getLogWriter().logDebug(
+						"TransactionState " + this.getState());
+			}
+			// If this is the first request for this transaction,
+			if (TransactionState.PROCEEDING == getState()
+					|| TransactionState.CALLING == getState()) {
+
+				// If this is a TU-generated ACK request,
+				if (transactionRequest.getMethod().equals(Request.ACK)) {
+
+					// Send directly to the underlying
+					// transport and close this transaction
+					if (isReliable()) {
+						this.setState(TransactionState.TERMINATED);
+					} else {
+						this.setState(TransactionState.COMPLETED);
+					}
+					// BUGBUG -- This suppresses sending the ACK uncomment this
+					// to
+					// test 4xx retransmission
+					// if (transactionRequest.getMethod() != Request.ACK)
+					super.sendMessage(transactionRequest);
+					return;
+
 				}
-				// BUGBUG -- This suppresses sending the ACK uncomment this to
-				// test 4xx retransmission
+
+			}
+			try {
+
+				// Send the message to the server
+				lastRequest = transactionRequest;
+				if (getState() == null) {
+					// Save this request as the one this transaction
+					// is handling
+					setOriginalRequest(transactionRequest);
+					// Change to trying/calling state
+					// Set state first to avoid race condition..
+
+					if (transactionRequest.getMethod().equals(Request.INVITE)) {
+						this.setState(TransactionState.CALLING);
+					} else if (transactionRequest.getMethod().equals(
+							Request.ACK)) {
+						// Acks are never retransmitted.
+						this.setState(TransactionState.TERMINATED);
+					} else {
+						this.setState(TransactionState.TRYING);
+					}
+					if (!isReliable()) {
+						enableRetransmissionTimer();
+					}
+					if (isInviteTransaction()) {
+						enableTimeoutTimer(TIMER_B);
+					} else {
+						enableTimeoutTimer(TIMER_F);
+					}
+				}
+				// BUGBUG This supresses sending ACKS -- uncomment to test
+				// 4xx retransmission.
 				// if (transactionRequest.getMethod() != Request.ACK)
 				super.sendMessage(transactionRequest);
-				return;
+
+			} catch (IOException e) {
+
+				this.setState(TransactionState.TERMINATED);
+				throw e;
 
 			}
-
-		}
-		try {
-
-			// Send the message to the server
-			lastRequest = transactionRequest;
-			if (getState() == null) {
-				// Save this request as the one this transaction
-				// is handling
-				setOriginalRequest(transactionRequest);
-				// Change to trying/calling state
-				// Set state first to avoid race condition..
-
-				if (transactionRequest.getMethod().equals(Request.INVITE)) {
-					this.setState(TransactionState.CALLING);
-				} else if (transactionRequest.getMethod().equals(Request.ACK)) {
-					// Acks are never retransmitted.
-					this.setState(TransactionState.TERMINATED);
-				} else {
-					this.setState(TransactionState.TRYING);
-				}
-				if (!isReliable()) {
-					enableRetransmissionTimer();
-				}
-				if (isInviteTransaction()) {
-					enableTimeoutTimer(TIMER_B);
-				} else {
-					enableTimeoutTimer(TIMER_F);
-				}
-			}
-			// BUGBUG This supresses sending ACKS -- uncomment to test
-			// 4xx retransmission.
-			// if (transactionRequest.getMethod() != Request.ACK)
-			super.sendMessage(transactionRequest);
-
-		} catch (IOException e) {
-
-			this.setState(TransactionState.TERMINATED);
-			throw e;
+		} finally {
+			if (!this.transactionTimerStarted) this.startTransactionTimer();
 
 		}
 
@@ -523,8 +530,10 @@ public class SIPClientTransaction extends SIPTransaction implements
 
 		this.lastResponse = transactionResponse;
 
-		if (dialog != null && transactionResponse.getStatusCode() != 100
-				&&( transactionResponse.getTo().getTag() != null || sipStack.isRfc2543Supported()) ) {
+		if (dialog != null
+				&& transactionResponse.getStatusCode() != 100
+				&& (transactionResponse.getTo().getTag() != null || sipStack
+						.isRfc2543Supported())) {
 			// add the route before you process the response.
 			dialog.setLastResponse(this, transactionResponse);
 			this.setDialog(dialog, transactionResponse.getDialogId(false));
@@ -936,8 +945,6 @@ public class SIPClientTransaction extends SIPTransaction implements
 			}
 			// Only map this after the fist request is sent out.
 			this.isMapped = true;
-			if ( ! this.transactionTimerStarted)
-				this.startTransactionTimer();
 			this.sendMessage(sipRequest);
 
 		} catch (IOException ex) {
@@ -1269,9 +1276,8 @@ public class SIPClientTransaction extends SIPTransaction implements
 	 */
 	protected void startTransactionTimer() {
 		TimerTask myTimer = new TransactionTimer();
-		this.transactionTimerStarted  = true;
-		sipStack.timer.schedule(myTimer,
-				BASE_TIMER_INTERVAL,
+		this.transactionTimerStarted = true;
+		sipStack.timer.schedule(myTimer, BASE_TIMER_INTERVAL,
 				BASE_TIMER_INTERVAL);
 	}
 
@@ -1323,35 +1329,35 @@ public class SIPClientTransaction extends SIPTransaction implements
 	 */
 	public void processResponse(SIPResponse sipResponse,
 			MessageChannel incomingChannel) {
-		
-		
-		/* JvB: dont do this
-		SipStackImpl sipStack = (SipStackImpl) this.getSIPStack();
-		String originalToTag = this.originalRequest.getToTag();
-		if (originalToTag == null && sipResponse.getToTag() != null
-				&& sipResponse.getCSeq().getMethod().equals(Request.CANCEL)) {
-			sipStack
-					.getLogWriter()
-					.logDebug(
-							"CANCEL has a to tag while original Request does not have to tag -- stripping the tag. ");
-			sipResponse.getTo().removeParameter("tag");
-		}
-		*/
+
+		/*
+		 * JvB: dont do this SipStackImpl sipStack = (SipStackImpl)
+		 * this.getSIPStack(); String originalToTag =
+		 * this.originalRequest.getToTag(); if (originalToTag == null &&
+		 * sipResponse.getToTag() != null &&
+		 * sipResponse.getCSeq().getMethod().equals(Request.CANCEL)) { sipStack
+		 * .getLogWriter() .logDebug( "CANCEL has a to tag while original
+		 * Request does not have to tag -- stripping the tag. ");
+		 * sipResponse.getTo().removeParameter("tag"); }
+		 */
 
 		// If a dialog has already been created for this response,
-		// pass it up.		
+		// pass it up.
 		SIPDialog dialog = null;
 		String dialogId = sipResponse.getDialogId(false);
-		if ( sipResponse.getCSeq().getMethod().equals(Request.CANCEL) && lastRequest!=null ) {
-		  // JvB for CANCEL: use invite CT in CANCEL request to get dialog (instead of stripping tag)
-		  SIPClientTransaction ict = (SIPClientTransaction) lastRequest.getInviteTransaction();
-		  if (ict!=null) {
-		    dialog = ict.defaultDialog;  
-		  }
-		} else {		  
-		  dialog = this.getDialog(dialogId);
-    }
-        
+		if (sipResponse.getCSeq().getMethod().equals(Request.CANCEL)
+				&& lastRequest != null) {
+			// JvB for CANCEL: use invite CT in CANCEL request to get dialog
+			// (instead of stripping tag)
+			SIPClientTransaction ict = (SIPClientTransaction) lastRequest
+					.getInviteTransaction();
+			if (ict != null) {
+				dialog = ict.defaultDialog;
+			}
+		} else {
+			dialog = this.getDialog(dialogId);
+		}
+
 		if (dialog == null) {
 
 			// Dialog cannot be found for the response.

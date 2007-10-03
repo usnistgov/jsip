@@ -1,28 +1,28 @@
 /*
-* Conditions Of Use 
-* 
-* This software was developed by employees of the National Institute of
-* Standards and Technology (NIST), an agency of the Federal Government.
-* Pursuant to title 15 Untied States Code Section 105, works of NIST
-* employees are not subject to copyright protection in the United States
-* and are considered to be in the public domain.  As a result, a formal
-* license is not needed to use the software.
-* 
-* This software is provided by NIST as a service and is expressly
-* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
-* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
-* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
-* AND DATA ACCURACY.  NIST does not warrant or make any representations
-* regarding the use of the software or the results thereof, including but
-* not limited to the correctness, accuracy, reliability or usefulness of
-* the software.
-* 
-* Permission to use this software is contingent upon your acceptance
-* of the terms of this agreement
-*  
-* .
-* 
-*/
+ * Conditions Of Use 
+ * 
+ * This software was developed by employees of the National Institute of
+ * Standards and Technology (NIST), an agency of the Federal Government.
+ * Pursuant to title 15 Untied States Code Section 105, works of NIST
+ * employees are not subject to copyright protection in the United States
+ * and are considered to be in the public domain.  As a result, a formal
+ * license is not needed to use the software.
+ * 
+ * This software is provided by NIST as a service and is expressly
+ * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+ * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+ * AND DATA ACCURACY.  NIST does not warrant or make any representations
+ * regarding the use of the software or the results thereof, including but
+ * not limited to the correctness, accuracy, reliability or usefulness of
+ * the software.
+ * 
+ * Permission to use this software is contingent upon your acceptance
+ * of the terms of this agreement
+ *  
+ * .
+ * 
+ */
 package gov.nist.javax.sip.stack;
 
 import gov.nist.javax.sip.header.*;
@@ -41,8 +41,7 @@ import EDU.oswego.cs.dl.util.concurrent.Semaphore;
 
 /*
  * Modifications for TLS Support added by Daniel J. Martinez Manzano
- *         <dani@dif.um.es>
- * Bug fixes by Jeroen van Bemmel (JvB) and others.
+ * <dani@dif.um.es> Bug fixes by Jeroen van Bemmel (JvB) and others.
  */
 
 /**
@@ -54,7 +53,7 @@ import EDU.oswego.cs.dl.util.concurrent.Semaphore;
  * @author M. Ranganathan
  * 
  * 
- * @version 1.2 $Revision: 1.54 $ $Date: 2007-10-02 22:23:27 $
+ * @version 1.2 $Revision: 1.55 $ $Date: 2007-10-03 08:25:40 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
 		javax.sip.Transaction {
@@ -87,7 +86,6 @@ public abstract class SIPTransaction extends MessageChannel implements
 	 */
 	protected static final int T1 = 1;
 
-	
 	/**
 	 * INVITE request retransmit interval, for UDP only
 	 */
@@ -104,7 +102,6 @@ public abstract class SIPTransaction extends MessageChannel implements
 
 	protected static final int TIMER_H = 64;
 
-	
 	// Proposed feature for next release.
 	protected Object applicationData;
 
@@ -192,7 +189,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 	protected int peerPacketSourcePort;
 
 	protected InetAddress peerPacketSourceAddress;
-	
+
 	protected boolean transactionTimerStarted = false;
 
 	// Transaction branch ID
@@ -239,11 +236,10 @@ public abstract class SIPTransaction extends MessageChannel implements
 	// after the Transaction goes to terminated state.
 	protected int collectionTime;
 
-	
 	protected String toTag;
 
 	protected String fromTag;
-	
+
 	private boolean terminatedEventDelivered;
 
 	public String getBranchId() {
@@ -281,7 +277,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 			if (transaction instanceof SIPClientTransaction) {
 				sipStack.removeTransaction(transaction);
 				transaction.close();
-				
+
 			} else if (transaction instanceof ServerTransaction) {
 				// Remove it from the set
 				if (sipStack.isLoggingEnabled())
@@ -534,7 +530,8 @@ public abstract class SIPTransaction extends MessageChannel implements
 	public void setState(TransactionState newState) {
 		// PATCH submitted by sribeyron
 		if (currentState == TransactionState.COMPLETED) {
-			if (newState != TransactionState.TERMINATED && newState != TransactionState.CONFIRMED)
+			if (newState != TransactionState.TERMINATED
+					&& newState != TransactionState.CONFIRMED)
 				newState = TransactionState.COMPLETED;
 		}
 		if (currentState == TransactionState.CONFIRMED) {
@@ -553,7 +550,6 @@ public abstract class SIPTransaction extends MessageChannel implements
 			sipStack.logWriter.logStackTrace();
 		}
 	}
-	
 
 	/**
 	 * Gets the current state of this transaction.
@@ -582,15 +578,15 @@ public abstract class SIPTransaction extends MessageChannel implements
 	 */
 	protected final void enableRetransmissionTimer(int tickCount) {
 		// For INVITE Client transactions, double interval each time
-		if ( isInviteTransaction() && (this instanceof SIPClientTransaction) ) {
-	      retransmissionTimerTicksLeft = tickCount;
-	    } else {
-	      // non-INVITE transactions and 3xx-6xx responses are capped at T2
-	      retransmissionTimerTicksLeft = Math.min(tickCount,
-	        MAXIMUM_RETRANSMISSION_TICK_COUNT);
-	    }
-	    retransmissionTimerLastTickCount = retransmissionTimerTicksLeft;
-  }
+		if (isInviteTransaction() && (this instanceof SIPClientTransaction)) {
+			retransmissionTimerTicksLeft = tickCount;
+		} else {
+			// non-INVITE transactions and 3xx-6xx responses are capped at T2
+			retransmissionTimerTicksLeft = Math.min(tickCount,
+					MAXIMUM_RETRANSMISSION_TICK_COUNT);
+		}
+		retransmissionTimerLastTickCount = retransmissionTimerTicksLeft;
+	}
 
 	/**
 	 * Turns off retransmission events for this transaction.
@@ -628,7 +624,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 	 */
 	final void fireTimer() {
 		// If the timeout timer is enabled,
-	
+
 		if (timeoutTimerTicksLeft != -1) {
 			// Count down the timer, and if it has run out,
 			if (--timeoutTimerTicksLeft == 0) {
@@ -739,8 +735,13 @@ public abstract class SIPTransaction extends MessageChannel implements
 		// that was specified when the transaction was
 		// created. Bug was noted by Bruce Evangelder
 		// soleo communications.
-		encapsulatedChannel.sendMessage(messageToSend, this.peerInetAddress,
-				this.peerPort);
+		try {
+			encapsulatedChannel.sendMessage(messageToSend,
+					this.peerInetAddress, this.peerPort);
+		} finally {
+			if (!this.transactionTimerStarted)
+				this.startTransactionTimer();
+		}
 	}
 
 	/**
@@ -945,8 +946,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 		transactionMatches = false;
 
 		if (this.getOriginalRequest() == null
-				|| this.getOriginalRequest().getMethod().equals(
-						Request.CANCEL))
+				|| this.getOriginalRequest().getMethod().equals(Request.CANCEL))
 			return false;
 		// Get the topmost Via header and its branch parameter
 		viaHeaders = requestToTest.getViaHeaders();
@@ -1000,8 +1000,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 								requestToTest.getFrom())
 						&& getOriginalRequest().getCallId().getCallId().equals(
 								requestToTest.getCallId().getCallId())
-						&& getOriginalRequest().getCSeq()
-								.getSeqNumber() == requestToTest
+						&& getOriginalRequest().getCSeq().getSeqNumber() == requestToTest
 								.getCSeq().getSeqNumber()
 						&& topViaHeader.equals(getOriginalRequest()
 								.getViaHeaders().getFirst())) {
@@ -1035,11 +1034,15 @@ public abstract class SIPTransaction extends MessageChannel implements
 	 *            the new integer value of the retransmit timer in milliseconds.
 	 */
 	public void setRetransmitTimer(int retransmitTimer) {
-	
-		if ( retransmitTimer <= 0) throw new IllegalArgumentException("Retransmit timer must be positive!");
-		if ( this.transactionTimerStarted ) throw new IllegalStateException("Transaction timer is already started");
-		 BASE_TIMER_INTERVAL = retransmitTimer;
-		 T4 = 5000 / BASE_TIMER_INTERVAL;
+
+		if (retransmitTimer <= 0)
+			throw new IllegalArgumentException(
+					"Retransmit timer must be positive!");
+		if (this.transactionTimerStarted)
+			throw new IllegalStateException(
+					"Transaction timer is already started");
+		BASE_TIMER_INTERVAL = retransmitTimer;
+		T4 = 5000 / BASE_TIMER_INTERVAL;
 
 		T2 = 4000 / BASE_TIMER_INTERVAL;
 		TIMER_I = T4;
@@ -1047,8 +1050,6 @@ public abstract class SIPTransaction extends MessageChannel implements
 		TIMER_K = T4;
 
 		TIMER_D = 32000 / BASE_TIMER_INTERVAL;
-		
-		
 
 	}
 
@@ -1059,7 +1060,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 		this.encapsulatedChannel.close();
 		if (sipStack.isLoggingEnabled())
 			sipStack.logWriter.logDebug("Closing " + this.encapsulatedChannel);
-		
+
 	}
 
 	public boolean isSecure() {
@@ -1142,11 +1143,13 @@ public abstract class SIPTransaction extends MessageChannel implements
 				sipStack.getLogWriter().logDebug("acquireSem [[[[" + this);
 				sipStack.getLogWriter().logStackTrace();
 			}
-			retval  = this.semaphore.attempt(10000);
-			sipStack.getLogWriter().logDebug("acquireSem() returning : " + retval);
+			retval = this.semaphore.attempt(10000);
+			sipStack.getLogWriter().logDebug(
+					"acquireSem() returning : " + retval);
 			return retval;
 		} catch (Exception ex) {
-			sipStack.logWriter.logError("Unexpected exception acquiring sem",ex);
+			sipStack.logWriter.logError("Unexpected exception acquiring sem",
+					ex);
 			InternalErrorHandler.handleException(ex);
 			return false;
 		} finally {
@@ -1161,28 +1164,30 @@ public abstract class SIPTransaction extends MessageChannel implements
 	 */
 	public void releaseSem() {
 		try {
-			
+
 			this.toListener = false;
 			this.semRelease();
 
 		} catch (Exception ex) {
-			sipStack.logWriter.logError("Unexpected exception releasing sem",ex);
+			sipStack.logWriter.logError("Unexpected exception releasing sem",
+					ex);
 
 		}
 
 	}
-	
+
 	protected void semRelease() {
 		try {
 			if (sipStack.getLogWriter().isLoggingEnabled()) {
 				sipStack.getLogWriter().logDebug("semRelease ]]]]" + this);
 				sipStack.getLogWriter().logStackTrace();
 			}
-			this.isSemaphoreAquired = false;	
+			this.isSemaphoreAquired = false;
 			this.semaphore.release();
 
 		} catch (Exception ex) {
-			sipStack.logWriter.logError("Unexpected exception releasing sem",ex);
+			sipStack.logWriter.logError("Unexpected exception releasing sem",
+					ex);
 
 		}
 	}
@@ -1206,7 +1211,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 		this.toListener = true;
 
 	}
-	
+
 	/**
 	 * Flag to test if the terminated event is delivered.
 	 * 
@@ -1218,7 +1223,6 @@ public abstract class SIPTransaction extends MessageChannel implements
 		return retval;
 	}
 
-	
 	/**
 	 * Start the timer that runs the transaction state machine.
 	 * 
@@ -1244,7 +1248,4 @@ public abstract class SIPTransaction extends MessageChannel implements
 	 */
 	protected abstract void fireTimeoutTimer();
 
-	
-
-	
 }
