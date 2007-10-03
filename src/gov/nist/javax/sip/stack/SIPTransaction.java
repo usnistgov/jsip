@@ -53,7 +53,7 @@ import EDU.oswego.cs.dl.util.concurrent.Semaphore;
  * @author M. Ranganathan
  * 
  * 
- * @version 1.2 $Revision: 1.55 $ $Date: 2007-10-03 08:25:40 $
+ * @version 1.2 $Revision: 1.56 $ $Date: 2007-10-03 18:45:36 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
 		javax.sip.Transaction {
@@ -739,8 +739,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 			encapsulatedChannel.sendMessage(messageToSend,
 					this.peerInetAddress, this.peerPort);
 		} finally {
-			if (!this.transactionTimerStarted)
-				this.startTransactionTimer();
+			this.startTransactionTimer();
 		}
 	}
 
