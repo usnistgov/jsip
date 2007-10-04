@@ -58,7 +58,7 @@ import java.util.*;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.29 $ $Date: 2007-07-17 16:41:50 $
+ * @version 1.2 $Revision: 1.30 $ $Date: 2007-10-04 19:16:26 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -823,23 +823,22 @@ public abstract class SIPMessage extends MessageObject implements
 			// String hpFrom = from.getUserAtHostPort();
 			// retval.append(hpFrom).append(":");
 			if (from.hasTag())
-				retval.append(from.getTag()).append(":");
+				retval.append(from.getTag()).append("-");
 			// String hpTo = to.getUserAtHostPort();
 			// retval.append(hpTo).append(":");
 			String cid = this.callIdHeader.getCallId();
-			retval.append(cid).append(":");
-			retval.append(this.cSeqHeader.getSequenceNumber()).append(":")
+			retval.append(cid).append("-");
+			retval.append(this.cSeqHeader.getSequenceNumber()).append("-")
 					.append(this.cSeqHeader.getMethod());
 			if (topVia != null) {
-				retval.append(":").append(topVia.getSentBy().encode());
+				retval.append("-").append(topVia.getSentBy().encode());
 				if (!topVia.getSentBy().hasPort()) {
-					retval.append(":").append(5060);
+					retval.append("-").append(5060);
 				}
 			}
 			if (this.getCSeq().getMethod().equals(Request.CANCEL))
 				retval.append(Request.CANCEL);
-			return retval.toString().toLowerCase();
-
+			return retval.toString().toLowerCase().replace(":", "-");
 		}
 	}
 
@@ -1535,7 +1534,8 @@ public abstract class SIPMessage extends MessageObject implements
 		// Content length is never stored. Just computed.
 		SIPHeader sh = (SIPHeader) sipHeader;
 		try {
-			if (sipHeader instanceof ViaHeader) {
+			if ((sipHeader instanceof ViaHeader) ||
+				(sipHeader instanceof RecordRouteHeader)) {
 				attachHeader(sh, false, true);
 			} else {
 				attachHeader(sh, false, false);
