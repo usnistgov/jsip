@@ -51,6 +51,7 @@ import java.net.*;
 /*
  * Jeff Keyser : architectural suggestions and contributions. Pierre De Rop and
  * Thomas Froment : Bug reports. Jeyashankher < jai@lucent.com > : bug reports.
+ * Jeroen van Bemmel : Bug fixes.
  * 
  * 
  */
@@ -65,7 +66,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.81 $ $Date: 2007-10-02 22:23:27 $
+ * @version 1.2 $Revision: 1.82 $ $Date: 2007-10-04 18:58:52 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
