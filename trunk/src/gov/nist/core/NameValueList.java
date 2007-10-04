@@ -30,6 +30,7 @@ package gov.nist.core;
 
 import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -47,7 +48,7 @@ import java.util.Map;
  * 
  */
 
-public class NameValueList {
+public class NameValueList implements Serializable {
 
 	private Map hmap;
 
