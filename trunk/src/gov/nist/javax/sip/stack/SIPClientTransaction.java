@@ -156,7 +156,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.77 $ $Date: 2007-10-03 18:45:36 $
+ * @version 1.2 $Revision: 1.78 $ $Date: 2007-10-04 18:58:53 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -1331,17 +1331,7 @@ public class SIPClientTransaction extends SIPTransaction implements
 	public void processResponse(SIPResponse sipResponse,
 			MessageChannel incomingChannel) {
 
-		/*
-		 * JvB: dont do this SipStackImpl sipStack = (SipStackImpl)
-		 * this.getSIPStack(); String originalToTag =
-		 * this.originalRequest.getToTag(); if (originalToTag == null &&
-		 * sipResponse.getToTag() != null &&
-		 * sipResponse.getCSeq().getMethod().equals(Request.CANCEL)) { sipStack
-		 * .getLogWriter() .logDebug( "CANCEL has a to tag while original
-		 * Request does not have to tag -- stripping the tag. ");
-		 * sipResponse.getTo().removeParameter("tag"); }
-		 */
-
+	
 		// If a dialog has already been created for this response,
 		// pass it up.
 		SIPDialog dialog = null;

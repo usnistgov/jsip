@@ -62,7 +62,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.30 $ $Date: 2007-09-14 18:16:31 $
+ * @version 1.2 $Revision: 1.31 $ $Date: 2007-10-04 18:58:55 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -924,6 +924,7 @@ public final class SIPRequest extends SIPMessage implements
 		newRequest.setRequestLine((RequestLine) this.requestLine.clone());
 		newRequest.setMethod(Request.ACK);
 		newRequest.setHeader((Header) this.callIdHeader.clone());
+		newRequest.setHeader((Header) this.maxForwardsHeader.clone()); //ISSUE 130 fix 
 		newRequest.setHeader((Header) this.fromHeader.clone());
 		newRequest.setHeader((Header) responseToHeader.clone());
 		newRequest.addFirst((Header) this.getTopmostVia().clone());
