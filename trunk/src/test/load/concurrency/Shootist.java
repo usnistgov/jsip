@@ -219,7 +219,7 @@ public class Shootist extends TestCase implements SipListener {
 					dialog.sendAck(ackRequest);
 
 					Appdata appData = (Appdata) dialog.getApplicationData();
-					appData.ackCount++;
+					if ( appData != null ) appData.ackCount++;
 				}
 
 			}
