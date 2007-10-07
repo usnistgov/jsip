@@ -156,7 +156,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.78 $ $Date: 2007-10-04 18:58:53 $
+ * @version 1.2 $Revision: 1.79 $ $Date: 2007-10-07 17:41:18 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -744,7 +744,36 @@ public class SIPClientTransaction extends SIPTransaction implements
 		int statusCode = transactionResponse.getStatusCode();
 
 		if (TransactionState.TERMINATED == this.getState()) {
-			// Do nothing in the terminated state.
+			boolean ackAlreadySent = false;
+			if (dialog != null && dialog.isAckSeen() && dialog.getLastAck() != null)
+			{
+				if (dialog.getLastAck().getCSeq().getSeqNumber() == transactionResponse.getCSeq().getSeqNumber())
+				{
+					//the last ack sent corresponded to this response
+					ackAlreadySent = true;
+				}
+			}
+			// retransmit the ACK for this response.
+			if (ackAlreadySent
+					&& transactionResponse.getCSeq().getMethod().equals(
+							dialog.getMethod()))
+			{
+				try
+				{
+					// Found the dialog - resend the ACK and
+					// dont pass up the null transaction
+					if (sipStack.isLoggingEnabled())
+						sipStack.getLogWriter().logDebug(
+								"resending ACK");
+
+					dialog.resendAck();
+				}
+				catch (SipException ex)
+				{
+					// What to do here ?? kill the dialog?
+				}
+			}
+			
 			this.semRelease();
 			return;
 		} else if (TransactionState.CALLING == this.getState()) {
