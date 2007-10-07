@@ -57,7 +57,7 @@ import java.io.IOException;
  * and event model with the JAIN-SIP stack. This is strictly an implementation
  * class.
  * 
- * @version 1.2 $Revision: 1.12 $ $Date: 2007-09-18 14:47:35 $
+ * @version 1.2 $Revision: 1.13 $ $Date: 2007-10-07 17:41:18 $
  * 
  * @author M. Ranganathan
  */
@@ -1007,12 +1007,18 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 					}
 					return;
 				} else {
+					boolean ackAlreadySent = false;
+					if (dialog.isAckSeen() && dialog.getLastAck() != null) {
+						if (dialog.getLastAck().getCSeq().getSeqNumber() == response.getCSeq().getSeqNumber()) {
+							//the last ack sent corresponded to this 200
+							ackAlreadySent = true;
+						}
+					}
 					// 200 retransmission for the final response.
-					if (response.getCSeq().getSeqNumber() == dialog
-							.getOriginalLocalSequenceNumber()
+					if (ackAlreadySent
 							&& response.getCSeq().getMethod().equals(
-									dialog.getMethod())) {
-						try {
+									dialog.getMethod()))	{
+						try	{
 							// Found the dialog - resend the ACK and
 							// dont pass up the null transaction
 							if (sipStack.isLoggingEnabled()) {
@@ -1174,7 +1180,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 				if (sipResponse.getStatusCode() / 100 != 2) {
 					if (sipStack.isLoggingEnabled())
 						sipStack.getLogWriter().logDebug(
-								"staus code != 200 ; statusCode = "
+								"status code != 200 ; statusCode = "
 										+ sipResponse.getStatusCode());
 					return;
 				} else if (sipDialog.getState() == DialogState.TERMINATED) {
@@ -1184,12 +1190,17 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 					}
 					return;
 				} else {
+					boolean ackAlreadySent = false;
+					if (sipDialog.isAckSeen() && sipDialog.getLastAck() != null) {
+						if (sipDialog.getLastAck().getCSeq().getSeqNumber() == sipResponse.getCSeq().getSeqNumber()) {
+							//the last ack sent corresponded to this 200
+							ackAlreadySent = true;
+						}
+					}
 					// 200 retransmission for the final response.
-					if (sipResponse.getCSeq().getSeqNumber() == sipDialog
-							.getOriginalLocalSequenceNumber()
+					if (ackAlreadySent
 							&& sipResponse.getCSeq().getMethod().equals(
-									sipDialog.getMethod())
-							&& sipDialog.isAckSeen()) {
+									sipDialog.getMethod()))	{
 						try {
 							// Found the dialog - resend the ACK and
 							// dont pass up the null transaction

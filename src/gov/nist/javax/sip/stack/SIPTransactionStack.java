@@ -66,7 +66,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.82 $ $Date: 2007-10-04 18:58:52 $
+ * @version 1.2 $Revision: 1.83 $ $Date: 2007-10-07 17:41:17 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -576,11 +576,12 @@ public abstract class SIPTransactionStack implements
 	public void removeDialog(SIPDialog dialog) {
 
 		String id = dialog.getDialogId();
+	
 		if (id != null) {
 			Object old = this.dialogTable.remove(id);
 
-			if (old != null
-					&& !dialog.testAndSetIsDialogTerminatedEventDelivered()) {
+			if (/* old != null
+					&&*/ !dialog.testAndSetIsDialogTerminatedEventDelivered()) {
 				DialogTerminatedEvent event = new DialogTerminatedEvent(dialog
 						.getSipProvider(), dialog);
 
