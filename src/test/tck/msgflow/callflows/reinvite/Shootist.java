@@ -75,6 +75,8 @@ public class Shootist  implements SipListener {
 	private boolean byeOkRecieved;
 
 	private boolean byeSent;
+	
+	int reInviteReceivedCount;
 
 	
 	private static Logger logger = Logger.getLogger(Shootist.class);
@@ -124,6 +126,7 @@ public class Shootist  implements SipListener {
 
 	public void processInvite(Request request, ServerTransaction st) {
 		try {
+			this.reInviteReceivedCount++;
 			Dialog dialog = st.getDialog();
 			Response response = protocolObjects.messageFactory.createResponse(
 					Response.OK, request);
@@ -138,6 +141,7 @@ public class Shootist  implements SipListener {
 					.createContactHeader(address);
 			response.addHeader(contactHeader);
 			st.sendResponse(response);
+			ReInviteTest.assertEquals("Dialog for reinvite must match original dialog", dialog, this.dialog);
 		} catch (Exception ex) {
 			logger.error("unexpected exception",ex);
 			ReInviteTest.fail("unexpected exception");
@@ -428,8 +432,9 @@ public class Shootist  implements SipListener {
 	
 	
 	public void checkState() {
-		ReInviteTest.assertTrue(reInviteCount == 1 && this.okReceived);
-		ReInviteTest.assertTrue(this.byeSent && this.byeOkRecieved);
+		ReInviteTest.assertTrue("Expect to send a re-invite" , reInviteCount == 1 && this.okReceived);
+		ReInviteTest.assertTrue("Expect to send a bye and get OK for the bye", this.byeSent && this.byeOkRecieved);
+		ReInviteTest.assertEquals("Expecting a re-invite",this.reInviteReceivedCount, 1);
 		
 	}
 
