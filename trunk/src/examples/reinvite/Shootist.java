@@ -147,6 +147,7 @@ public class Shootist  implements SipListener {
 	 */
 	public void processInvite(Request request, ServerTransaction st) {
 		try {
+			System.out.println("Processing Re-INVITE ");
 			Response response = ProtocolObjects.messageFactory.createResponse(
 					Response.OK, request);
 			((ToHeader) response.getHeader(ToHeader.NAME))
@@ -154,6 +155,7 @@ public class Shootist  implements SipListener {
 							.getTag());
 			response.addHeader(this.contactHeader);
 			st.sendResponse(response);
+			TestCase.assertEquals("Re-Inivte Dialog must match ", this.dialog,st.getDialog() );
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.exit(0);
