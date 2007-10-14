@@ -1,5 +1,5 @@
 <project>
-  <modelVersion>1.2</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
   <groupId>javax.sip</groupId>
   <artifactId>jain-sip-ri</artifactId>
   <version>@VERSION@</version>
