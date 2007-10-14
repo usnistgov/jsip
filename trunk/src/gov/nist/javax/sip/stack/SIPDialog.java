@@ -46,10 +46,13 @@ import java.net.InetAddress;
 import java.text.ParseException;
 
 /*
+ * Acknowledgements:
+ * 
  * Bugs in this class were reported by Antonis Karydas, Brad Templeton, Jeff
  * Adams, Alex Rootham , Martin Le Clerk, Christophe Anzille, Andreas Bystrom,
  * Lebing Xie, Jeroen van Bemmel. Hagai Sela reported a bug in updating the
- * route set (on RE-INVITE).
+ * route set (on RE-INVITE). Jens Tinfors submitted a bug fix and the .equals
+ * method.
  */
 
 /**
@@ -59,7 +62,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.54 $ $Date: 2007-10-07 17:41:18 $
+ * @version 1.2 $Revision: 1.55 $ $Date: 2007-10-14 18:14:33 $
  * 
  * @author M. Ranganathan
  * 
@@ -1018,6 +1021,10 @@ public class SIPDialog implements javax.sip.Dialog {
 		d.setDialogId(not.getDialogId(true));
 		d.setLocalTag(not.getToTag());
 		d.setRemoteTag(not.getFromTag());
+		// to properly create the Dialog object. 
+		// If not the stack will throw an exception when creating the response.
+		d.setLastResponse(subscribeTx, subscribeTx.getLastResponse());
+
 
 		// Dont use setLocal / setRemote here, they make other assumptions
 		d.localParty = not.getTo().getAddress();
@@ -2608,6 +2615,23 @@ public class SIPDialog implements javax.sip.Dialog {
 			return sipRequest.getContactHeader();
 		}
 	}
+
+	/**
+	 * Override for the equals method.
+	 */
+	 public boolean equals(Object obj) { 
+         if (!obj.getClass().equals(this.getClass())) {
+             return false;
+         }
+         
+         if ( obj == this ) return true;  
+         else if(obj != null && this.getDialogId() != null && ! this.getDialogId().equals("")) { 
+             return this.getDialogId().equals(((Dialog)obj).getDialogId());
+         } else {
+             return true;
+         }
+     }
+
 
 	/**
 	 * Do the necessary processing to handle an ACK directed at this Dialog.
