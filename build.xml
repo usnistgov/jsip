@@ -81,9 +81,9 @@ c:/jakarta-ant/bin/ant all
 	<property name="retrowoven" value="${root}/retrowoven" />
 	<property name="docdir" value="${root}/javadoc" />
 	<property name="srcroot" value="${root}/src" />
-	<property name="jain_api_jar" value="${root}/JainSipApi1.2.jar" />
-	<property name="jain_api_jar14" value="${root}/JainSipApi1.2_java14.jar" />
-	<property name="ri_jar" value="${root}/JainSipRi1.2.jar" />
+	<property name="jain_api_jar" value="${root}/jain-sip-api-1.2.jar" />
+	<property name="jain_api_jar14" value="${root}/jain-sip-api-1.2_java14.jar" />
+	<property name="ri_jar" value="${root}/jain-sip-ri-1.2.jar" />
 	<property name="ri_jar14" value="${root}/nist-sip-1.2_java14.jar" />
 	<property name="sdp_jar" value="${root}/nist-sdp-1.0.jar" />
 	<property name="sip-sdp-jar" value="${root}/sip-sdp.jar" />
@@ -502,5 +502,35 @@ c:/jakarta-ant/bin/ant all
 						</classpath>
 					</javac>
 				</target>
+
+				<!-- Push the jar to maven -->
+				<target name="push-to-maven-prepare">
+  					<taskdef resource="maven-repository-importer.properties">
+    					<classpath>
+      						<pathelement path="tools/maven-repository-importer-1.2.jar" />
+    					</classpath>
+  					</taskdef>
+ 				 	<delete dir="build/maven-repo" /><!-- clean it -->
+  					<maven-repository-importer destdir="build/maven-repo" version = "1.2" >
+    						<artifact jar="jain-sip-api-1.2.jar"  pom="poms/api-pom.xml"  />
+    						<artifact jar="jain-sip-ri-1.2.jar" pom="poms/ri-pom.xml"  />
+  					</maven-repository-importer>
+				</target>
+
+				<target name="push-to-maven" depends="push-to-maven-prepare">
+ 			        <!-- import to CVS-->
+  				<tstamp />
+  				<echo>importing to CVS...</echo>
+  				<cvs dest="build/maven-repo">
+    					<commandline>
+      						<argument value="-d:pserver:${user.name}@cvs.dev.java.net:/cvs" />
+      						<argument line="-z9 import -ko -W *.jar -kb -m" />
+      						<argument value="deploying new jars to the java.net maven repository" />
+      						<argument value="jain-sip/repo" />
+      						<argument line="deployment-to-maven-repository t${DSTAMP}${TSTAMP}" />
+   			 		</commandline>
+  				</cvs>
+				</target>
+				
 
 			</project>
