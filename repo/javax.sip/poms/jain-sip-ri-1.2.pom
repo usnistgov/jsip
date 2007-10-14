@@ -1,9 +1,9 @@
 <project>
   <modelVersion>1.2</modelVersion>
   <groupId>javax.sip</groupId>
-  <artifactId>jain-sip-api</artifactId>
+  <artifactId>jain-sip-ri</artifactId>
   <version>1.2</version>
-  <name>JAIN-SIP API</name>
+  <name>JAIN-SIP Refence Implementation</name>
 
   <url>https://jain-sip.dev.java.net/</url>
 
