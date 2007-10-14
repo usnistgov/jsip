@@ -22,8 +22,7 @@ console.
 
 You can look at the results of your run in test-reports/html/index.html
 
-To post a challenge to the tck : send mail to the nist-sip@antd.nist.gov 
-mailing list or  the nist-sip-dev@antd.nist.gov mailing list (membership 
-not required to send mail to the latter).
+To post a challenge to the tck : send mail to the user@jain-sip.dev.java.net
+mailing list 
 
 
