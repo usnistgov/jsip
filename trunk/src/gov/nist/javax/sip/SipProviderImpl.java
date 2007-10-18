@@ -40,6 +40,8 @@ import javax.sip.header.*;
 import javax.sip.address.*;
 import javax.sip.*;
 
+import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
+
 import gov.nist.core.*;
 import java.io.*;
 import java.net.UnknownHostException;
@@ -52,7 +54,7 @@ import java.text.ParseException;
 /**
  * Implementation of the JAIN-SIP provider interface.
  * 
- * @version 1.2 $Revision: 1.47 $ $Date: 2007-07-25 20:44:12 $
+ * @version 1.2 $Revision: 1.48 $ $Date: 2007-10-18 17:59:58 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -70,7 +72,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 	 * A set of listening points associated with the provider At most one LP per
 	 * transport
 	 */
-	private HashMap listeningPoints;
+	private ConcurrentHashMap listeningPoints;
 
 	private EventScanner eventScanner;
 
@@ -161,7 +163,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 		this.eventScanner = sipStack.eventScanner; // for quick access.
 		this.sipStack = sipStack;
 		this.eventScanner.incrementRefcount();
-		this.listeningPoints = new HashMap();
+		this.listeningPoints = new ConcurrentHashMap();
 		this.automaticDialogSupportEnabled = this.sipStack
 				.isAutomaticDialogSupportEnabled();
 	}
@@ -757,7 +759,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 	 * 
 	 * @see javax.sip.SipProvider#setListeningPoint(javax.sip.ListeningPoint)
 	 */
-	public void setListeningPoint(ListeningPoint listeningPoint) {
+	public synchronized void setListeningPoint(ListeningPoint listeningPoint) {
 		if (listeningPoint == null)
 			throw new NullPointerException("Null listening point");
 		ListeningPointImpl lp = (ListeningPointImpl) listeningPoint;
@@ -925,7 +927,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 	 * 
 	 * @see javax.sip.SipProvider#getListeningPoints()
 	 */
-	public ListeningPoint[] getListeningPoints() {
+	public synchronized ListeningPoint[] getListeningPoints() {
 
 		ListeningPoint[] retval = new ListeningPointImpl[this.listeningPoints
 				.size()];
@@ -938,7 +940,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 	 * 
 	 * @see javax.sip.SipProvider#addListeningPoint(javax.sip.ListeningPoint)
 	 */
-	public void addListeningPoint(ListeningPoint listeningPoint)
+	public synchronized void addListeningPoint(ListeningPoint listeningPoint)
 			throws ObjectInUseException {
 		ListeningPointImpl lp = (ListeningPointImpl) listeningPoint;
 		if (lp.sipProvider != null && lp.sipProvider != this)
@@ -974,7 +976,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 	 * 
 	 * @see javax.sip.SipProvider#removeListeningPoint(javax.sip.ListeningPoint)
 	 */
-	public void removeListeningPoint(ListeningPoint listeningPoint)
+	public synchronized void removeListeningPoint(ListeningPoint listeningPoint)
 			throws ObjectInUseException {
 		ListeningPointImpl lp = (ListeningPointImpl) listeningPoint;
 		if (lp.messageProcessor.inUse())
@@ -987,7 +989,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 	 * Remove all the listening points for this sip provider. This is called
 	 * when the stack removes the Provider
 	 */
-	public void removeListeningPoints() {
+	public synchronized void removeListeningPoints() {
 		for (Iterator it = this.listeningPoints.values().iterator(); it
 				.hasNext();) {
 			ListeningPointImpl lp = (ListeningPointImpl) it.next();
