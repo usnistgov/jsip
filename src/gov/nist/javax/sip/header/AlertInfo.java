@@ -26,6 +26,8 @@
 *******************************************************************************/
 package gov.nist.javax.sip.header;
 
+import java.text.ParseException;
+
 import gov.nist.javax.sip.address.*;
 import javax.sip.address.*;
 
@@ -36,7 +38,7 @@ import javax.sip.address.*;
  * 
  * @since 1.1
  * 
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-11-12 21:52:39 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2007-10-18 17:48:08 $
  *
  * 
  */
@@ -51,6 +53,9 @@ public final class AlertInfo
 	/** URI field
 	 */
 	protected GenericURI uri;
+	/** String field
+	 */
+	protected String string;
 
 	/** Constructor
 	 */
@@ -64,7 +69,11 @@ public final class AlertInfo
 	 */
 	protected String encodeBody() {
 		StringBuffer encoding = new StringBuffer();
-		encoding.append(LESS_THAN).append(uri.encode()).append(GREATER_THAN);
+		if (uri != null) {
+			encoding.append(LESS_THAN).append(uri.encode()).append(GREATER_THAN);
+		} else if (string != null) {
+			encoding.append(string);
+		}
 		if (!parameters.isEmpty()) {
 			encoding.append(SEMICOLON).append(parameters.encode());
 		}
@@ -80,17 +89,40 @@ public final class AlertInfo
 	}
 
 	/**
+	 * Set the string member
+	 * @param string String to set
+	 */
+	public void setAlertInfo(String string) {
+		this.string = string;
+	}
+	
+	/**
 	 * Returns the AlertInfo value of this AlertInfoHeader.
 	 * @return the URI representing the AlertInfo.
 	 */
 	public URI getAlertInfo() {
-		return (URI) this.uri;
+		URI alertInfoUri = null;
+		
+		if (this.uri != null) {
+			alertInfoUri = (URI) this.uri;
+		} else {
+			try {
+				alertInfoUri = (URI) new GenericURI(string);
+			} catch (ParseException e) {
+				;  // Eat the exception.
+			}
+		}
+		
+		return alertInfoUri;
 	}
 
 	public Object clone() {
 		AlertInfo retval = (AlertInfo) super.clone();
-		if (this.uri != null)
+		if (this.uri != null) {
 			retval.uri = (GenericURI) this.uri.clone();
+		} else if (this.string != null) {
+			retval.string = this.string;
+		}
 		return retval;
 	}
 }
