@@ -43,7 +43,7 @@ import gov.nist.javax.sip.address.*;
 
 /** Implementation of the JAIN SIP  HeaderFactory
 * 
-* @version 1.2 $Revision: 1.11 $ $Date: 2007-01-08 19:24:56 $
+* @version 1.2 $Revision: 1.12 $ $Date: 2007-10-18 17:48:08 $
 * @since 1.1
 *
 *@author M. Ranganathan   <br/>
@@ -113,7 +113,7 @@ public class HeaderFactoryImpl implements HeaderFactory {
 	/**
 	 * Creates a new AlertInfoHeader based on the newly supplied alertInfo value.
 	 *
-	 * @param alertInfo - the new string value of the alertInfo
+	 * @param alertInfo - the new URI value of the alertInfo
 	 * @return the newly created AlertInfoHeader object.
 	 * @since v1.1
 	 */
