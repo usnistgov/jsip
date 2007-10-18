@@ -150,7 +150,7 @@ import java.util.TimerTask;
  *                                      
  * </pre>
  * 
- * @version 1.2 $Revision: 1.92 $ $Date: 2007-10-03 18:45:36 $
+ * @version 1.2 $Revision: 1.93 $ $Date: 2007-10-18 16:03:45 $
  * @author M. Ranganathan
  * 
  */
@@ -1495,7 +1495,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 			// shutting down.
 			this.transactionTimerStarted = true;
 			TimerTask myTimer = new TransactionTimer();
-			sipStack.timer.schedule(myTimer, 0, BASE_TIMER_INTERVAL);
+			sipStack.timer.schedule(myTimer, BASE_TIMER_INTERVAL, BASE_TIMER_INTERVAL);
 		}
 	}
 
