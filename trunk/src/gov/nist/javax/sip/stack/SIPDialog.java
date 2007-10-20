@@ -52,7 +52,9 @@ import java.text.ParseException;
  * Adams, Alex Rootham , Martin Le Clerk, Christophe Anzille, Andreas Bystrom,
  * Lebing Xie, Jeroen van Bemmel. Hagai Sela reported a bug in updating the
  * route set (on RE-INVITE). Jens Tinfors submitted a bug fix and the .equals
- * method.
+ * method.	 Jan Schaumloeffel contributed a buf fix ( memory leak was happening
+ * when 180 contained a To tag.
+ *
  */
 
 /**
@@ -62,7 +64,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.55 $ $Date: 2007-10-14 18:14:33 $
+ * @version 1.2 $Revision: 1.56 $ $Date: 2007-10-20 05:43:17 $
  * 
  * @author M. Ranganathan
  * 
@@ -210,7 +212,7 @@ public class SIPDialog implements javax.sip.Dialog {
 			 * be terminated.
 			 */
 
-			if (nRetransmissions > 64*SIPTransaction.T1 ) {
+			if (nRetransmissions > 64 * SIPTransaction.T1) {
 				dialog.setState(SIPDialog.TERMINATED_STATE);
 				if (transaction != null)
 					transaction
@@ -747,7 +749,7 @@ public class SIPDialog implements javax.sip.Dialog {
 		SIPServerTransaction tr = this.getInviteTransaction();
 		if (tr != null) {
 			if (tr.getCSeq() == sipRequest.getCSeq().getSeqNumber()) {
-				if (this.timerTask != null)	{
+				if (this.timerTask != null) {
 					this.timerTask.cancel();
 					this.timerTask = null;
 				}
@@ -1021,10 +1023,9 @@ public class SIPDialog implements javax.sip.Dialog {
 		d.setDialogId(not.getDialogId(true));
 		d.setLocalTag(not.getToTag());
 		d.setRemoteTag(not.getFromTag());
-		// to properly create the Dialog object. 
+		// to properly create the Dialog object.
 		// If not the stack will throw an exception when creating the response.
 		d.setLastResponse(subscribeTx, subscribeTx.getLastResponse());
-
 
 		// Dont use setLocal / setRemote here, they make other assumptions
 		d.localParty = not.getTo().getAddress();
@@ -1532,7 +1533,8 @@ public class SIPDialog implements javax.sip.Dialog {
 		if (SIPRequest.isTargetRefresh(method)) {
 			ContactHeader contactHeader = this.sipProvider
 					.createContactForProvider(lp.getTransport());
-			((SipURI) contactHeader.getAddress().getURI()).setSecure( this.isSecure() );
+			((SipURI) contactHeader.getAddress().getURI()).setSecure(this
+					.isSecure());
 			sipRequest.setHeader(contactHeader);
 		}
 
@@ -1710,8 +1712,9 @@ public class SIPDialog implements javax.sip.Dialog {
 			TLSMessageChannel oldTLSChannel = null;
 
 			MessageChannel messageChannel = sipStack.createRawMessageChannel(
-					this.getSipProvider().getListeningPoint(hop.getTransport()).getIPAddress(),
-					this.firstTransaction.getPort(), hop);
+					this.getSipProvider().getListeningPoint(hop.getTransport())
+							.getIPAddress(), this.firstTransaction.getPort(),
+					hop);
 			if (((SIPClientTransaction) clientTransactionId)
 					.getMessageChannel() instanceof TCPMessageChannel) {
 				// Remove this from the connection cache if it is in the
@@ -1777,17 +1780,18 @@ public class SIPDialog implements javax.sip.Dialog {
 				Hop outboundProxy = sipStack.getRouter(dialogRequest)
 						.getOutboundProxy();
 				if (outboundProxy == null)
-					throw new SipException("No route found! hop=" + hop );
-				messageChannel = sipStack.createRawMessageChannel(
-						this.getSipProvider().getListeningPoint(outboundProxy.getTransport()).getIPAddress(),
+					throw new SipException("No route found! hop=" + hop);
+				messageChannel = sipStack.createRawMessageChannel(this
+						.getSipProvider().getListeningPoint(
+								outboundProxy.getTransport()).getIPAddress(),
 						this.firstTransaction.getPort(), outboundProxy);
-				if (messageChannel!=null)
+				if (messageChannel != null)
 					((SIPClientTransaction) clientTransactionId)
-						.setEncapsulatedChannel(messageChannel);
+							.setEncapsulatedChannel(messageChannel);
 			} else {
 				((SIPClientTransaction) clientTransactionId)
-					.setEncapsulatedChannel(messageChannel);				
-				
+						.setEncapsulatedChannel(messageChannel);
+
 				if (sipStack.isLoggingEnabled())
 					sipStack.logWriter.logDebug("using message channel "
 							+ messageChannel);
@@ -1843,9 +1847,9 @@ public class SIPDialog implements javax.sip.Dialog {
 	 */
 	private boolean toRetransmitFinalResponse(int T2) {
 		if (--retransmissionTicksLeft == 0) {
-			if ( 2* prevRetransmissionTicks <= T2 )
+			if (2 * prevRetransmissionTicks <= T2)
 				this.retransmissionTicksLeft = 2 * prevRetransmissionTicks;
-			else 
+			else
 				this.retransmissionTicksLeft = prevRetransmissionTicks;
 			this.prevRetransmissionTicks = retransmissionTicksLeft;
 			return true;
@@ -1910,7 +1914,7 @@ public class SIPDialog implements javax.sip.Dialog {
 					"Starting dialog timer for " + getDialogId());
 		this.ackSeen = false;
 		if (this.timerTask != null) {
-			this.timerTask.transaction = transaction;	
+			this.timerTask.transaction = transaction;
 		} else {
 			this.timerTask = new DialogTimerTask(transaction);
 			sipStack.timer.schedule(timerTask,
@@ -2171,7 +2175,7 @@ public class SIPDialog implements javax.sip.Dialog {
 					// confirmed
 					// state
 					setState(SIPDialog.EARLY_STATE);
-					if (( sipResponse.getToTag() != null || sipStack.rfc2543Supported)
+					if ((sipResponse.getToTag() != null || sipStack.rfc2543Supported)
 							&& this.getRemoteTag() == null) {
 						setRemoteTag(sipResponse.getToTag());
 						this.setDialogId(sipResponse.getDialogId(false));
@@ -2186,7 +2190,7 @@ public class SIPDialog implements javax.sip.Dialog {
 					// Only do this if method equals initial request!
 
 					if (cseqMethod.equals(getMethod())
-							&& ( sipResponse.getToTag() != null || sipStack.rfc2543Supported)
+							&& (sipResponse.getToTag() != null || sipStack.rfc2543Supported)
 							&& this.getState() != DialogState.CONFIRMED) {
 						setRemoteTag(sipResponse.getToTag());
 						this.setDialogId(sipResponse.getDialogId(false));
@@ -2279,33 +2283,37 @@ public class SIPDialog implements javax.sip.Dialog {
 				// status codes just result in leaving the
 				// state in COMPLETED state.
 				this.setState(SIPDialog.TERMINATED_STATE);
-			} else if (getLocalTag() == null
-					&& sipResponse.getTo().getTag() != null
-					&& sipStack.isDialogCreated(cseqMethod)
-					&& cseqMethod.equals(getMethod())) {
+			} else {
+				boolean doPutDialog = false;
 
-				setLocalTag(sipResponse.getTo().getTag());
+				if (getLocalTag() == null
+						&& sipResponse.getTo().getTag() != null
+						&& sipStack.isDialogCreated(cseqMethod)
+						&& cseqMethod.equals(getMethod())) {
+					setLocalTag(sipResponse.getTo().getTag());
+
+					doPutDialog = true;
+				}
+
 				if (statusCode / 100 != 2) {
-
-					// Check if we want to put the dialog in the dialog table.
-					// A dialog is put into the dialog table when the server
-					// transaction is responded to by a provisional response
-					// or a final response. The Dialog is terminated
-					// if the response is an error response.
-
 					if (statusCode / 100 == 1) {
-						setState(SIPDialog.EARLY_STATE);
+						if (doPutDialog) {
 
-						this.setDialogId(sipResponse.getDialogId(true));
-						sipStack.putDialog(this);
+							setState(SIPDialog.EARLY_STATE);
+							this.setDialogId(sipResponse.getDialogId(true));
+							sipStack.putDialog(this);
+						}
 					} else {
 						this.setState(SIPDialog.TERMINATED_STATE);
 					}
+
 				} else {
-					// 2XX response handling.
-					this.setState(SIPDialog.CONFIRMED_STATE);
-					this.setDialogId(sipResponse.getDialogId(true));
-					sipStack.putDialog(this);
+					if (doPutDialog) {
+						this.setState(SIPDialog.CONFIRMED_STATE);
+
+						this.setDialogId(sipResponse.getDialogId(true));
+						sipStack.putDialog(this);
+					}
 				}
 			}
 
@@ -2554,7 +2562,8 @@ public class SIPDialog implements javax.sip.Dialog {
 
 		SIPServerTransaction serverTransaction = (SIPServerTransaction) this
 				.getFirstTransaction();
-		// put into the dialog table before sending the response so as to avoid race
+		// put into the dialog table before sending the response so as to avoid
+		// race
 		// condition with PRACK
 		this.setLastResponse(serverTransaction, sipResponse);
 
@@ -2562,7 +2571,6 @@ public class SIPDialog implements javax.sip.Dialog {
 
 		serverTransaction.sendReliableProvisionalResponse(relResponse);
 
-		
 	}
 
 	/*
@@ -2610,7 +2618,8 @@ public class SIPDialog implements javax.sip.Dialog {
 		} else {
 			SIPClientTransaction ct = (SIPClientTransaction) this
 					.getFirstTransaction();
-			if ( ct == null) return null;
+			if (ct == null)
+				return null;
 			SIPRequest sipRequest = ct.getOriginalRequest();
 			return sipRequest.getContactHeader();
 		}
@@ -2619,19 +2628,20 @@ public class SIPDialog implements javax.sip.Dialog {
 	/**
 	 * Override for the equals method.
 	 */
-	 public boolean equals(Object obj) { 
-         if (!obj.getClass().equals(this.getClass())) {
-             return false;
-         }
-         
-         if ( obj == this ) return true;  
-         else if(obj != null && this.getDialogId() != null && ! this.getDialogId().equals("")) { 
-             return this.getDialogId().equals(((Dialog)obj).getDialogId());
-         } else {
-             return true;
-         }
-     }
+	public boolean equals(Object obj) {
+		if (!obj.getClass().equals(this.getClass())) {
+			return false;
+		}
 
+		if (obj == this)
+			return true;
+		else if (obj != null && this.getDialogId() != null
+				&& !this.getDialogId().equals("")) {
+			return this.getDialogId().equals(((Dialog) obj).getDialogId());
+		} else {
+			return true;
+		}
+	}
 
 	/**
 	 * Do the necessary processing to handle an ACK directed at this Dialog.

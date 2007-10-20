@@ -57,7 +57,7 @@ import java.io.IOException;
  * and event model with the JAIN-SIP stack. This is strictly an implementation
  * class.
  * 
- * @version 1.2 $Revision: 1.13 $ $Date: 2007-10-07 17:41:18 $
+ * @version 1.2 $Revision: 1.14 $ $Date: 2007-10-20 05:43:17 $
  * 
  * @author M. Ranganathan
  */
@@ -642,6 +642,8 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 		// Sequence numbers are supposed to be incremented
 		// sequentially within a dialog for RFC 3261
 		// Note BYE, CANCEL and ACK is handled above - so no check here.
+		
+		sipStack.getLogWriter().logDebug("CHECK FOR OUT OF SEQ MESSAGE " + dialog + " transaction " + transaction);
 
 		if (dialog != null && transaction != null
 				&& !sipRequest.getMethod().equals(Request.BYE)
@@ -649,7 +651,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 				&& !sipRequest.getMethod().equals(Request.ACK)
 				&& !sipRequest.getMethod().equals(Request.PRACK)) {
 
-			if (!dialog.isRequestConsumable(sipRequest)) {
+			if ( !dialog.isRequestConsumable(sipRequest)) {
 
 				/*
 				 * RFC 3261: "UAS Behavior" section (12.2.2): If the remote
