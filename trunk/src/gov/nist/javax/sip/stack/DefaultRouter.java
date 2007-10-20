@@ -41,6 +41,7 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import javax.sip.header.RouteHeader;
+import javax.sip.header.ViaHeader;
 import javax.sip.message.*;
 import javax.sip.address.*;
 
@@ -90,7 +91,7 @@ import javax.sip.address.*;
  * Subsequently, the request URI will be used as next hop target
  * 
  * 
- * @version 1.2 $Revision: 1.11 $ $Date: 2007-02-22 21:00:57 $
+ * @version 1.2 $Revision: 1.12 $ $Date: 2007-10-20 05:56:56 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -204,7 +205,7 @@ public class DefaultRouter implements Router {
 								.logDebug("Route post processing fixed strict routing");
 				}
 
-				Hop hop = createHop(sipUri);
+				Hop hop = createHop(sipUri,request);
 				if (sipStack.isLoggingEnabled())
 					sipStack.logWriter
 							.logDebug("NextHop based on Route:" + hop);
@@ -215,7 +216,7 @@ public class DefaultRouter implements Router {
 
 		} else if (requestURI.isSipURI()
 				&& ((SipURI) requestURI).getMAddrParam() != null) {
-			Hop hop = createHop((SipURI) requestURI);
+			Hop hop = createHop((SipURI) requestURI,request);
 			if (sipStack.isLoggingEnabled())
 				sipStack.logWriter
 						.logDebug("Using request URI maddr to route the request = "
@@ -229,7 +230,7 @@ public class DefaultRouter implements Router {
 								+ defaultRoute.toString());
 			return defaultRoute;
 		} else if (requestURI.isSipURI()) {
-			Hop hop = createHop((SipURI) requestURI);
+			Hop hop = createHop((SipURI) requestURI,request);
 			if (hop != null && sipStack.isLoggingEnabled())
 				sipStack.logWriter.logDebug("Used request-URI for nextHop = "
 						+ hop.toString());
@@ -279,13 +280,17 @@ public class DefaultRouter implements Router {
 	 * @param sipUri
 	 * @return
 	 */
+	
 
-	private final Hop createHop(SipURI sipUri) {
+	private final Hop createHop(SipURI sipUri, Request request) {
 		// always use TLS when secure
 		String transport = sipUri.isSecure() ? SIPConstants.TLS : sipUri
 				.getTransportParam();
-		if (transport == null)
-			transport = SIPConstants.UDP;
+		if (transport == null) {
+			//@see issue 131
+			ViaHeader via = (ViaHeader) request.getHeader(ViaHeader.NAME);
+			transport = via.getTransport();
+		}
 
 		int port;
 		if (sipUri.getPort() != -1) {
