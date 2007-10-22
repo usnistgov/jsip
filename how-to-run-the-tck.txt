@@ -1,7 +1,7 @@
 
 Here are instructions on how to configure and run the TCK
 ---------------------------------------------------------
-Pre-requisites: ant, junit, log4j and concurrent.jar.
+Pre-requisites: ant, junit and log4j.
 
 The TCK is run as an ant junit target from build.xml
 

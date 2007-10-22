@@ -53,6 +53,10 @@ import java.net.*;
  *
  */
 public class Host extends GenericObject {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7233564517978323344L;
 	protected static final int HOSTNAME = 1;
 	protected static final int IPV4ADDRESS = 2;
 	protected static final int IPV6ADDRESS = 3;

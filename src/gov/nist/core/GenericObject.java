@@ -70,7 +70,7 @@ public abstract class GenericObject implements Serializable, Cloneable {
 	protected static final String HT = Separators.HT;
 	protected static final String PERCENT = Separators.PERCENT;
 
-	protected static final Set immutableClasses = new HashSet (10);
+	protected static final Set<Class<?>> immutableClasses = new HashSet<Class<?>> (10);
 	static final String[] immutableClassNames ={ 
 		"String", "Character",
 		"Boolean", "Byte", "Short", "Integer", "Long",
@@ -122,7 +122,7 @@ public abstract class GenericObject implements Serializable, Cloneable {
 		return matchExpression;
 	}
 
-	public static Class getClassFromName(String className) {
+	public static Class<?> getClassFromName(String className) {
 		try {
 			return Class.forName(className);
 		} catch (Exception ex) {
@@ -131,13 +131,10 @@ public abstract class GenericObject implements Serializable, Cloneable {
 		}
 	}
 
-	public static boolean isMySubclass(Class other) {
-		try {
+	public static boolean isMySubclass(Class<?> other) {
+		
 			return GenericObject.class.isAssignableFrom(other);
-		} catch (Exception ex) {
-			InternalErrorHandler.handleException(ex);
-		}
-		return false;
+		
 	}
 
 	/** Clones the given object.
@@ -150,12 +147,12 @@ public abstract class GenericObject implements Serializable, Cloneable {
 	public static Object makeClone(Object obj) {
 		if (obj == null)
 			throw new NullPointerException("null obj!");
-		Class c = obj.getClass();
+		Class<?> c = obj.getClass();
 		Object clone_obj = obj;
 		if (immutableClasses.contains (c))
 			return obj;
 		else if (c.isArray ()) {
-			Class ec = c.getComponentType();
+			Class<?> ec = c.getComponentType();
 			if (! ec.isPrimitive())
 				clone_obj = ((Object []) obj).clone();
 			else {
@@ -223,7 +220,7 @@ public abstract class GenericObject implements Serializable, Cloneable {
 		// Base case.
 		if (mergeObject == null)
 			return;
-		Class myclass = this.getClass();
+		Class<?> myclass = this.getClass();
 		while (true) {
 			Field[] fields = myclass.getDeclaredFields();
 			for (int i = 0; i < fields.length; i++) {
@@ -236,8 +233,7 @@ public abstract class GenericObject implements Serializable, Cloneable {
 				} else if (Modifier.isInterface(modifier)) {
 					continue;
 				}
-				Class fieldType = f.getType();
-				String fieldName = f.getName();
+				Class<?> fieldType = f.getType();
 				String fname = fieldType.toString();
 				try {
 					// Primitive fields are printed with type: value
@@ -411,8 +407,8 @@ public abstract class GenericObject implements Serializable, Cloneable {
 	public boolean equals(Object that) {
 		if (!this.getClass().equals(that.getClass()))
 			return false;
-		Class myclass = this.getClass();
-		Class hisclass = that.getClass();
+		Class<?> myclass = this.getClass();
+		Class<?> hisclass = that.getClass();
 		while (true) {
 			Field[] fields = myclass.getDeclaredFields();
 			Field[] hisfields = hisclass.getDeclaredFields();
@@ -423,7 +419,7 @@ public abstract class GenericObject implements Serializable, Cloneable {
 				int modifier = f.getModifiers();
 				if ((modifier & Modifier.PRIVATE) == Modifier.PRIVATE)
 					continue;
-				Class fieldType = f.getType();
+				Class<?> fieldType = f.getType();
 				String fieldName = f.getName();
 				if (fieldName.compareTo("stringRepresentation") == 0) {
 					continue;
@@ -497,9 +493,9 @@ public abstract class GenericObject implements Serializable, Cloneable {
 		if (!this.getClass().equals(other.getClass()))
 			return false;
 		GenericObject that = (GenericObject) other;
-		Class myclass = this.getClass();
+		Class<?> myclass = this.getClass();
 		Field[] fields = myclass.getDeclaredFields();
-		Class hisclass = other.getClass();
+		Class<?> hisclass = other.getClass();
 		Field[] hisfields = hisclass.getDeclaredFields();
 		for (int i = 0; i < fields.length; i++) {
 			Field f = fields[i];
@@ -508,7 +504,7 @@ public abstract class GenericObject implements Serializable, Cloneable {
 			int modifier = f.getModifiers();
 			if ((modifier & Modifier.PRIVATE) == Modifier.PRIVATE)
 				continue;
-			Class fieldType = f.getType();
+			Class<?> fieldType = f.getType();
 			String fieldName = f.getName();
 			if (fieldName.compareTo("stringRepresentation") == 0) {
 				continue;
@@ -593,7 +589,7 @@ public abstract class GenericObject implements Serializable, Cloneable {
 
 	public String debugDump() {
 		stringRepresentation = "";
-		Class myclass = getClass();
+		Class<?> myclass = getClass();
 		sprint(myclass.getName());
 		sprint("{");
 		Field[] fields = myclass.getDeclaredFields();
@@ -603,7 +599,7 @@ public abstract class GenericObject implements Serializable, Cloneable {
 			int modifier = f.getModifiers();
 			if ((modifier & Modifier.PRIVATE) == Modifier.PRIVATE)
 				continue;
-			Class fieldType = f.getType();
+			Class<?> fieldType = f.getType();
 			String fieldName = f.getName();
 			if (fieldName.compareTo("stringRepresentation") == 0) {
 				// avoid nasty recursions...

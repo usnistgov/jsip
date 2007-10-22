@@ -112,7 +112,7 @@ public abstract class SecurityAgree
 		} 
 		else
 		{
-			nv.setValue(value);
+			nv.setValueAsObject(value);
 		}
 		
 	}

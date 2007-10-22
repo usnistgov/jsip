@@ -96,10 +96,10 @@ public class HeaderFactoryTest extends FactoryTestHarness {
 				Object refType = null;
 				try {
 					refType = methods[i].invoke(refHeader, (Object[]) null);
-				} catch (Exception ex) {
-					throw new TckInternalError(
-						"Invocation failure " + methodName);
-				}
+				} catch (InvocationTargetException ex1 ) {
+					ex1.getCause().printStackTrace();
+					throw new TckInternalError("Invocation failure " +methodName);
+				} 
 				String ftype = returnType.toString();
 				if (returnType.isPrimitive()) {
 					Object testValue = methods[i].invoke(headerToTest, (Object[])null);
@@ -139,7 +139,11 @@ public class HeaderFactoryTest extends FactoryTestHarness {
 			}
 			*/
 			
+		} catch (InvocationTargetException ex ) {
+			ex.getCause().printStackTrace();
+			throw new TiUnexpectedError(ex.getMessage());
 		} catch (Exception ex) {
+			
 			ex.printStackTrace();
 			throw new TiUnexpectedError(ex.getMessage());
 		} finally {

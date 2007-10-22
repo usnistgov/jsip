@@ -160,8 +160,8 @@ public class StringTokenizer {
 
 	/** Get a Vector of the buffer tokenized by lines
 	 */
-	public Vector getLines() {
-		Vector result = new Vector();
+	public Vector<String> getLines() {
+		Vector<String> result = new Vector<String>();
 		while (hasMoreChars()) {
 			String line = getLine();
 			result.addElement(line);

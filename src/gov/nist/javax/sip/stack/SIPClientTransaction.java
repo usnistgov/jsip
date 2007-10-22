@@ -40,8 +40,7 @@ import javax.sip.*;
 import javax.sip.address.*;
 import javax.sip.header.*;
 
-import EDU.oswego.cs.dl.util.concurrent.*;
-
+import java.util.concurrent.*;
 import java.io.IOException;
 
 /*
@@ -156,7 +155,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.79 $ $Date: 2007-10-07 17:41:18 $
+ * @version 1.2 $Revision: 1.80 $ $Date: 2007-10-22 03:38:27 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {

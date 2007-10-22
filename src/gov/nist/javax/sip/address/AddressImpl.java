@@ -40,12 +40,15 @@ import javax.sip.address.*;
  *
  *
  *
- *@version 1.2 $Revision: 1.9 $ $Date: 2007-02-12 15:19:18 $
+ *@version 1.2 $Revision: 1.10 $ $Date: 2007-10-22 03:38:22 $
  *
  */
 public final class AddressImpl
 	extends NetObject
 	implements javax.sip.address.Address {
+
+	
+	private static final long serialVersionUID = 429592779568617259L;
 
 	/** Constant field.
 	 */

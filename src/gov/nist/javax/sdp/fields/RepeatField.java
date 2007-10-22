@@ -43,6 +43,8 @@ import javax.sdp.*;
 *
 */
 public class RepeatField extends SDPField implements javax.sdp.RepeatTime {
+	
+	private static final long serialVersionUID = -6415338212212641819L;
 	protected TypedTime repeatInterval;
 	protected TypedTime activeDuration;
 	protected SDPObjectList offsets;

@@ -31,8 +31,6 @@ package gov.nist.core;
 import java.util.*;
 import java.io.Serializable;
 
-import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
-
 /**
  * Implements a homogenous consistent linked list. All the objects in the linked
  * list must derive from the same root class. This is a useful constraint to
@@ -46,8 +44,8 @@ import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
  * 
  * 
  */
-public abstract class GenericObjectList extends LinkedList implements
-		Serializable, Cloneable, List {
+public abstract class GenericObjectList extends LinkedList<GenericObject> implements
+		Serializable, Cloneable{
 	// Useful constants.
 	protected static final String SEMICOLON = Separators.SEMICOLON;
 
@@ -97,15 +95,14 @@ public abstract class GenericObjectList extends LinkedList implements
 
 	protected String listName; // For debugging
 
-	private ListIterator myListIterator;
+	private ListIterator<? extends GenericObject> myListIterator;
 
 	private String stringRep;
 
-	protected Class myClass;
+	protected Class<?> myClass;
 
 	protected String separator;
-	
-	
+
 	protected String getIndentation() {
 		char[] chars = new char[indentation];
 		java.util.Arrays.fill(chars, ' ');
@@ -119,13 +116,9 @@ public abstract class GenericObjectList extends LinkedList implements
 		return obj instanceof Cloneable;
 	}
 
-	public static boolean isMySubclass(Class other) {
-		try {
-			return GenericObjectList.class.isAssignableFrom(other);
-		} catch (Exception ex) {
-			InternalErrorHandler.handleException(ex);
-		}
-		return false;
+	public static boolean isMySubclass(Class<?> other) {
+		return GenericObjectList.class.isAssignableFrom(other);
+		
 	}
 
 	/**
@@ -133,7 +126,7 @@ public abstract class GenericObjectList extends LinkedList implements
 	 */
 	public Object clone() {
 		GenericObjectList retval = (GenericObjectList) super.clone();
-		for (ListIterator iter = retval.listIterator(); iter.hasNext();) {
+		for (ListIterator<GenericObject> iter = retval.listIterator(); iter.hasNext();) {
 			GenericObject obj = (GenericObject) ((GenericObject) iter.next())
 					.clone();
 			iter.set(obj);
@@ -141,12 +134,7 @@ public abstract class GenericObjectList extends LinkedList implements
 		return retval;
 	}
 
-	/**
-	 * Sets the class that all our elements derive from.
-	 */
-	public Class getMyClass() {
-		return myClass;
-	}
+	
 
 	public void setMyClass(Class cl) {
 		myClass = cl;
@@ -293,20 +281,13 @@ public abstract class GenericObjectList extends LinkedList implements
 		sprint("{");
 		while (obj != null) {
 			sprint("[");
-			try {
-				if (Class.forName(
-						PackageNames.CORE_PACKAGE + ".GenericObjectList")
-						.isAssignableFrom(obj.getClass())) {
-					sprint(((GenericObjectList) obj)
-							.debugDump(this.indentation));
-				} else if (Class.forName(
-						PackageNames.CORE_PACKAGE + ".GenericObject")
-						.isAssignableFrom(obj.getClass())) {
-					sprint(((GenericObject) obj).debugDump(this.indentation));
-				}
-			} catch (ClassNotFoundException ex) {
-				InternalErrorHandler.handleException(ex);
+
+			if (GenericObjectList.class.isAssignableFrom(obj.getClass())) {
+				sprint(((GenericObjectList) obj).debugDump(this.indentation));
+			} else if (GenericObject.class.isAssignableFrom(obj.getClass())) {
+				sprint(((GenericObject) obj).debugDump(this.indentation));
 			}
+
 			obj = next();
 			sprint("]");
 		}

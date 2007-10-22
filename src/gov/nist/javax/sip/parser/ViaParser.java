@@ -32,7 +32,7 @@ import java.text.ParseException;
 /**
  * Parser for via headers.
  * 
- * @version 1.2 $Revision: 1.10 $ $Date: 2007-02-12 15:19:27 $
+ * @version 1.2 $Revision: 1.11 $ $Date: 2007-10-22 03:38:20 $
  * @since 1.1
  * 
  * @author Olivier Deruelle
@@ -96,7 +96,7 @@ public class ViaParser extends HeaderParser {
 			NameValue nameValue = this.nameValue();
 			String name = nameValue.getName();
 			if (name.equals(Via.BRANCH)) {
-				String branchId = (String) nameValue.getValue();
+				String branchId = (String) nameValue.getValueAsObject();
 				if (branchId == null)
 					throw new ParseException("null branch Id", lexer.getPtr());
 
