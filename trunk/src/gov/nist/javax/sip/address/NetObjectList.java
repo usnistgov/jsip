@@ -40,7 +40,7 @@ import java.lang.reflect.*;
 * IMPORTANT NOTE: NetObjectList cannot derive from NetObject as this 
 * will screw up the way in which we attach objects to headers.
 *
-*@version 1.2 $Revision: 1.6 $ $Date: 2006-08-15 21:45:01 $
+*@version 1.2 $Revision: 1.7 $ $Date: 2007-10-22 03:38:22 $
 *
 *@author M. Ranganathan   <br/>
 *
@@ -69,19 +69,11 @@ public class NetObjectList extends GenericObjectList {
 	 * @param lname String to set
 	 * @param cname Class to set
 	 */
-	public NetObjectList(String lname, Class cname) {
+	public NetObjectList(String lname, Class<?> cname) {
 		super(lname, cname);
 	}
 
-	/**
-	 * Construct a NetObject List given a list name and a class for
-	 * the objects that go into the list.
-	 * @param lname String to set
-	 * @param cname String to set
-	 */
-	public NetObjectList(String lname, String cname) {
-		super(lname, cname);
-	}
+	
 
 	/**
 	 * Construct an empty NetObjectList.
@@ -114,13 +106,7 @@ public class NetObjectList extends GenericObjectList {
 		return (NetObject) super.first();
 	}
 
-	/**
-	 * Get the class for all objects in my list.
-	 * @return Class
-	 */
-	public Class getMyClass() {
-		return super.getMyClass();
-	}
+	
 
 	/** returns the next element
 	 * @return GenericObject

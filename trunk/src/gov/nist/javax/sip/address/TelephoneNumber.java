@@ -31,7 +31,7 @@ import java.util.Iterator;
 /**
  * Telephone number class.
  * @version 1.2
- * @version 1.2 $Revision: 1.7 $ $Date: 2007-02-12 15:19:19 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2007-10-22 03:38:23 $
  *
  * @author M. Ranganathan 
  * 
@@ -221,7 +221,7 @@ public class TelephoneNumber extends NetObject {
 	 * @return an Iterator over all the parameter names
 	 *
 	 */
-	public Iterator getParameterNames() {
+	public Iterator<String> getParameterNames() {
 		return this.parms.getNames();
 	}
 

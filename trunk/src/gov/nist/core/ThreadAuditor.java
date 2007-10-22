@@ -22,7 +22,7 @@ import java.util.*;
 
 public class ThreadAuditor {
 	/// Threads being monitored
-	private Map threadHandles = new HashMap();
+	private Map<Thread,ThreadHandle> threadHandles = new HashMap<Thread,ThreadHandle>();
 
 	/// How often are threads supposed to ping
 	private long pingIntervalInMillisecs = 0;
@@ -134,7 +134,7 @@ public class ThreadAuditor {
 		// Map stackTraces = null;
 
 		// Scan all monitored threads looking for non-responsive ones
-		Iterator it = threadHandles.values().iterator();
+		Iterator<ThreadHandle> it = threadHandles.values().iterator();
 		while (it.hasNext()) {
 			ThreadHandle threadHandle = (ThreadHandle) it.next();
 			if (!threadHandle.isThreadActive()) {
@@ -183,7 +183,7 @@ public class ThreadAuditor {
 	 */
 	public synchronized String toString() {
 		String toString = "Thread Auditor - List of monitored threads:\n";
-		Iterator it = threadHandles.values().iterator();
+		Iterator<ThreadHandle> it = threadHandles.values().iterator();
 		while ( it.hasNext()) {
 			ThreadHandle threadHandle = (ThreadHandle)it.next();
 			toString += "   " + threadHandle.toString() + "\n";

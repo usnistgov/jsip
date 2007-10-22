@@ -89,7 +89,6 @@ c:/jakarta-ant/bin/ant all
 	<property name="sip-sdp-jar" value="${root}/sip-sdp.jar" />
 	<property name="unit_test_jar" value="${root}/nist-unit.jar" />
 	<property name="log4j_jar" value="${root}/lib/${log4j}" />
-	<property name="concurrent_jar" value="${root}/lib/${concurrent}" />
 	<property name='j2se_api' value='http://java.sun.com/j2se/1.5/docs/api' />
 	<property name="junit_jar" value="${root}/lib/${junit}" />
 
@@ -153,7 +152,6 @@ c:/jakarta-ant/bin/ant all
 		<javadoc packagenames="javax.sip.*,javax.sip.header.*,javax.sip.message.*,javax.sip.address.*,gov.nist.javax.sip.*,gov.nist.javax.sip.address.*,gov.nist.javax.sip.message.*,gov.nist.javax.sip.header.*,gov.nist.javas.sip.header.ims.*,gov.nist.javax.sip.stack.*,gov.nist.core.net.*,gov.nist.javax.sip.parser.*,javax.sdp.*,gov.nist.javax.sdp.*,gov.nist.javax.sdp.fields.*" sourcepath="${srcroot}" overview="${docdir}/overview.html" destdir="javadoc" use="true" splitindex="true" windowtitle="The JAIN-SIP-1.2 RI For the People !" doctitle="NIST-SIP: The Reference Implementation for JAIN-SIP 1.2" public="true" author="true" version="true" defaultexcludes="yes" additionalparam="-breakiterator">
 			<classpath>
 				<pathelement location="${log4j_jar}" />
-				<pathelement location="${concurrent_jar}" />
 				<pathelement location="${jain_api_jar}" />
 			</classpath>
 			<link href="${j2se_api}" />
@@ -216,7 +214,6 @@ c:/jakarta-ant/bin/ant all
 					<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="${srcroot}" source="${javac.source}" target="${javac.target}" includes="gov/nist/core/**/*.java, gov/nist/javax/sip/**/*.java" destdir="${classes}">
 						<classpath>
 							<pathelement location="${log4j_jar}" />
-							<pathelement location="${concurrent_jar}" />
 						</classpath>
 					</javac>
 
@@ -226,7 +223,6 @@ c:/jakarta-ant/bin/ant all
 					<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="${srcroot}" source="${javac.source}" target="${javac.target}" includes="gov/nist/core/**/*.java, gov/nist/javax/sip/**/*.java" destdir="${classes}">
 						<classpath>
 							<pathelement location="${log4j_jar}" />
-							<pathelement location="${concurrent_jar}" />
 						</classpath>
 					</javac>
 					<jar destfile="${ri_jar}" basedir="${classes}" includes="gov/nist/**/*.class" />
@@ -330,7 +326,6 @@ c:/jakarta-ant/bin/ant all
 							<pathelement location="${tck_jar}" />
 							<pathelement location='${junit_jar}' />
 							<pathelement location='${log4j_jar}' />
-							<pathelement location='${concurrent_jar}' />
 
 							<!-- add source path since this will pick up test.tck.gui.images -->
 							<pathelement location='src' />
@@ -368,7 +363,6 @@ c:/jakarta-ant/bin/ant all
 							<pathelement location="${tck_jar}" />
 							<pathelement location='${junit_jar}' />
 							<pathelement location='${log4j_jar}' />
-							<pathelement location='${concurrent_jar}' />
 
 							<!-- add source path since this will pick up test.tck.gui.images -->
 							<pathelement location='src' />
@@ -410,7 +404,6 @@ c:/jakarta-ant/bin/ant all
 							<pathelement location='${junit_jar}' />
 							<pathelement location='${log4j_jar}' />
 							<pathelement location='${unit_test_jar}' />
-							<pathelement location='${concurrent_jar}' />
 
 							<!-- add project root to the classpath in order to make tck.properties accessible. -->
 							<pathelement location="${root}" />
@@ -439,7 +432,6 @@ c:/jakarta-ant/bin/ant all
 							<pathelement location='${junit_jar}' />
 							<pathelement location='${log4j_jar}' />
 							<pathelement location='${unit_test_jar}' />
-							<pathelement location='${concurrent_jar}' />
 
 							<!-- add project root to the classpath in order to make tck.properties accessible. -->
 							<pathelement location="${root}" />

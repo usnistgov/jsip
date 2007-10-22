@@ -31,7 +31,7 @@ import java.text.ParseException;
  *
  * @author M. Ranganathan   NIST/ITL/ANTD
  * @since 1.1
- * @version 1.2 $Revision: 1.7 $ $Date: 2006-11-12 21:52:39 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2007-10-22 03:38:18 $
  *
  * 
  */
@@ -230,6 +230,6 @@ public final class AuthenticationInfo
 			}
 			super.setParameter(nv);
 		} else
-			nv.setValue(value);
+			nv.setValueAsObject(value);
 	}
 }

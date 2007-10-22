@@ -32,7 +32,7 @@ import gov.nist.core.*;
 /**
  * Authority part of a URI structure. Section 3.2.2 RFC2396
  *
- * @version 1.2 $Revision: 1.7 $ $Date: 2007-02-12 15:19:18 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2007-10-22 03:38:22 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -40,6 +40,8 @@ import gov.nist.core.*;
  *
  */
 public class Authority extends NetObject {
+
+	private static final long serialVersionUID = -3570349777347017894L;
 
 	/** hostport field
 	 */
@@ -226,6 +228,9 @@ public class Authority extends NetObject {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2007/02/12 15:19:18  belangery
+ * Changed the encode() and encodeBody() methods of SIP headers and basic classes to make them use the same StringBuffer instance during the encoding phase.
+ *
  * Revision 1.6  2006/07/13 09:02:27  mranga
  * Issue number:
  * Obtained from:

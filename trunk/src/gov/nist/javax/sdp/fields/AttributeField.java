@@ -116,7 +116,7 @@ public class AttributeField extends SDPField implements javax.sdp.Attribute {
 		if (nameValue == null)
 			return false;
 		else {
-			Object value = nameValue.getValue();
+			Object value = nameValue.getValueAsObject();
 			if (value == null)
 				return false;
 			else
@@ -133,7 +133,7 @@ public class AttributeField extends SDPField implements javax.sdp.Attribute {
 		if (nameValue == null)
 			return null;
 		else {
-			Object value = nameValue.getValue();
+			Object value = nameValue.getValueAsObject();
 			if (value == null)
 				return null;
 			else if (value instanceof String)
@@ -154,7 +154,7 @@ public class AttributeField extends SDPField implements javax.sdp.Attribute {
 			NameValue nameValue = getAttribute();
 			if (nameValue == null)
 				nameValue = new NameValue();
-			nameValue.setValue(value);
+			nameValue.setValueAsObject(value);
 			setAttribute(nameValue);
 		}
 	}
@@ -169,7 +169,7 @@ public class AttributeField extends SDPField implements javax.sdp.Attribute {
 		NameValue nameValue = getAttribute();
 		if (nameValue == null)
 			nameValue = new NameValue();
-		nameValue.setValue(value);
+		nameValue.setValueAsObject(value);
 		setAttribute(nameValue);
 	}
 
@@ -184,6 +184,6 @@ public class AttributeField extends SDPField implements javax.sdp.Attribute {
 		if ( ! (that instanceof AttributeField)) return false;
 		AttributeField other = (AttributeField) that	;
 		return other.getAttribute().getName().equalsIgnoreCase(this.getAttribute().getName()) &&
-				this.getAttribute().getValue().equals(other.getAttribute().getValue());
+				this.getAttribute().getValueAsObject().equals(other.getAttribute().getValueAsObject());
 	}
 }

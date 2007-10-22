@@ -33,11 +33,10 @@ import gov.nist.core.*;
 import java.io.IOException;
 import java.util.*;
 import java.net.InetAddress;
+import java.util.concurrent.*;
 
 import javax.sip.*;
 import javax.sip.message.*;
-
-import EDU.oswego.cs.dl.util.concurrent.Semaphore;
 
 /*
  * Modifications for TLS Support added by Daniel J. Martinez Manzano
@@ -53,7 +52,7 @@ import EDU.oswego.cs.dl.util.concurrent.Semaphore;
  * @author M. Ranganathan
  * 
  * 
- * @version 1.2 $Revision: 1.56 $ $Date: 2007-10-03 18:45:36 $
+ * @version 1.2 $Revision: 1.57 $ $Date: 2007-10-22 03:38:27 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
 		javax.sip.Transaction {
@@ -1142,7 +1141,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 				sipStack.getLogWriter().logDebug("acquireSem [[[[" + this);
 				sipStack.getLogWriter().logStackTrace();
 			}
-			retval = this.semaphore.attempt(10000);
+			retval = this.semaphore.tryAcquire(10000, TimeUnit.MILLISECONDS);
 			sipStack.getLogWriter().logDebug(
 					"acquireSem() returning : " + retval);
 			return retval;

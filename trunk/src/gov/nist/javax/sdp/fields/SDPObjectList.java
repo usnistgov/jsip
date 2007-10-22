@@ -50,10 +50,9 @@ public class SDPObjectList extends GenericObjectList {
 	 */
 
 	public void mergeObjects(GenericObjectList mergeList) {
-		if (!mergeList.getMyClass().equals(this.getMyClass()))
-			throw new IllegalArgumentException("class mismatch");
-		Iterator it1 = this.listIterator();
-		Iterator it2 = mergeList.listIterator();
+		
+		Iterator<GenericObject> it1 = this.listIterator();
+		Iterator<GenericObject> it2 = mergeList.listIterator();
 		while (it1.hasNext()) {
 			GenericObject outerObj = (GenericObject) it1.next();
 			while (it2.hasNext()) {
@@ -80,7 +79,7 @@ public class SDPObjectList extends GenericObjectList {
 	}
 
 	public SDPObjectList() {
-		super(null, SDPFIELDS_PACKAGE + ".SDPObject");
+		super(null, SDPObject.class);
 	}
 
 	public SDPObjectList(String lname) {
@@ -95,9 +94,7 @@ public class SDPObjectList extends GenericObjectList {
 		return (SDPObject) super.next();
 	}
 
-	public GenericObject next(ListIterator li) {
-		return (SDPObject) super.next(li);
-	}
+	
 
 	public String encode() {
 		StringBuffer retval = new StringBuffer();

@@ -28,12 +28,14 @@
  *******************************************************************************/
 package gov.nist.core;
 
-import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Implements a simple NameValue association with a quick lookup function (via a
@@ -48,9 +50,12 @@ import java.util.Map;
  * 
  */
 
-public class NameValueList implements Serializable {
+public class NameValueList implements Serializable, Map<String,NameValue> {
 
-	private Map hmap;
+	
+	private static final long serialVersionUID = -6998271876574260243L;
+
+	private Map<String,NameValue> hmap;
 
 	private String separator;
 
@@ -59,15 +64,15 @@ public class NameValueList implements Serializable {
 	 */
 	public NameValueList() {
 		this.separator = ";";
-		this.hmap = new HashMap();
+		this.hmap = new HashMap<String,NameValue>();
 	}
 
 	public NameValueList(boolean sync) {
 		this.separator = ";";
 		if (sync)
-			this.hmap = new ConcurrentHashMap();
+			this.hmap = new ConcurrentHashMap<String,NameValue>();
 		else
-			this.hmap = new HashMap();
+			this.hmap = new HashMap<String,NameValue>();
 	}
 
 	public void setSeparator(String separator) {
@@ -86,7 +91,7 @@ public class NameValueList implements Serializable {
 	
 	public StringBuffer encode(StringBuffer buffer) {
 		if (!hmap.isEmpty()) {
-			Iterator iterator = hmap.values().iterator();
+			Iterator<NameValue> iterator = hmap.values().iterator();
 			if (iterator.hasNext()) {
 				while (true) {
 					Object obj = iterator.next();
@@ -115,7 +120,7 @@ public class NameValueList implements Serializable {
 	 */
 
 	public void set(NameValue nv) {
-		this.hmap.put(nv.name.toLowerCase(), nv);
+		this.hmap.put(nv.getName().toLowerCase(), nv);
 	}
 
 	/**
@@ -143,7 +148,7 @@ public class NameValueList implements Serializable {
 		if (hmap.size() != other.hmap.size()) {
 			return false;
 		}
-		Iterator li = this.hmap.keySet().iterator();
+		Iterator<String> li = this.hmap.keySet().iterator();
 
 		while (li.hasNext()) {
 			String key = (String) li.next();
@@ -163,7 +168,7 @@ public class NameValueList implements Serializable {
 	public Object getValue(String name) {
 		NameValue nv = this.getNameValue(name.toLowerCase());
 		if (nv != null)
-			return nv.value;
+			return nv.getValueAsObject();
 		else
 			return null;
 	}
@@ -206,7 +211,7 @@ public class NameValueList implements Serializable {
 	public Object clone() {
 		NameValueList retval = new NameValueList();
 		retval.setSeparator(this.separator);
-		Iterator it = this.hmap.values().iterator();
+		Iterator<NameValue> it = this.hmap.values().iterator();
 		while (it.hasNext()) {
 			retval.set((NameValue) ((NameValue) it.next()).clone());
 		}
@@ -232,7 +237,7 @@ public class NameValueList implements Serializable {
 	 * 
 	 * @return the iterator.
 	 */
-	public Iterator iterator() {
+	public Iterator<NameValue> iterator() {
 		return this.hmap.values().iterator();
 	}
 
@@ -241,7 +246,7 @@ public class NameValueList implements Serializable {
 	 * 
 	 * @return a list iterator that has the names of the parameters.
 	 */
-	public Iterator getNames() {
+	public Iterator<String> getNames() {
 		return this.hmap.keySet().iterator();
 
 	}
@@ -259,5 +264,82 @@ public class NameValueList implements Serializable {
 			return ((GenericObject) val).encode();
 		else
 			return val.toString();
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see java.util.Map#clear()
+	 */
+
+	public void clear() {
+		this.hmap.clear();	
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.util.Map#containsKey(java.lang.Object)
+	 */
+	public boolean containsKey(Object key) {
+		return this.hmap.containsKey(key.toString().toLowerCase());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.util.Map#containsValue(java.lang.Object)
+	 */
+	public boolean containsValue(Object value) {
+		return this.hmap.containsValue(value);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.util.Map#entrySet()
+	 */
+	public Set<java.util.Map.Entry<String, NameValue>> entrySet() {
+		return this.hmap.entrySet();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.util.Map#get(java.lang.Object)
+	 */
+	public NameValue get(Object key) {
+		return this.hmap.get(key.toString().toLowerCase());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.util.Map#keySet()
+	 */
+	public Set<String> keySet() {
+		return this.hmap.keySet();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.util.Map#put(java.lang.Object, java.lang.Object)
+	 */
+	public NameValue put(String name, NameValue nameValue) {
+		return this.hmap.put(name, nameValue);
+	}
+
+	public void putAll(Map<? extends String, ? extends NameValue> map) {
+		this.hmap.putAll(map);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.util.Map#remove(java.lang.Object)
+	 */
+	public NameValue remove(Object key) {
+		return this.hmap.remove(key.toString().toLowerCase());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.util.Map#values()
+	 */
+	public Collection<NameValue> values() {
+		return this.hmap.values();
 	}
 }

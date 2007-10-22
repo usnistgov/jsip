@@ -35,7 +35,7 @@ import java.lang.reflect.*;
 /**
  * Root object for all objects in this package.
  *
- * @version 1.2 $Revision: 1.8 $ $Date: 2007-05-29 19:57:57 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2007-10-22 03:38:23 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -79,8 +79,8 @@ public abstract class NetObject extends GenericObject {
 	public boolean equals(Object that) {
 		if (!this.getClass().equals(that.getClass()))
 			return false;
-		Class myclass = this.getClass();
-		Class hisclass = that.getClass();
+		Class<?> myclass = this.getClass();
+		Class<?> hisclass = that.getClass();
 		while (true) {
 			Field[] fields = myclass.getDeclaredFields();
 			Field[] hisfields = hisclass.getDeclaredFields();
@@ -91,7 +91,7 @@ public abstract class NetObject extends GenericObject {
 				int modifier = f.getModifiers();
 				if ((modifier & Modifier.PRIVATE) == Modifier.PRIVATE)
 					continue;
-				Class fieldType = f.getType();
+				Class<?> fieldType = f.getType();
 				String fieldName = f.getName();
 				if (fieldName.compareTo("stringRepresentation") == 0) {
 					continue;
@@ -169,8 +169,8 @@ public abstract class NetObject extends GenericObject {
 		// System.out.println("Comparing " + that.encode());
 		// System.out.println("this = " + this.encode());
 
-		Class hisclass = other.getClass();
-		Class myclass = this.getClass();
+		Class<?> hisclass = other.getClass();
+		Class<?> myclass = this.getClass();
 		while (true) {
 			Field[] fields = myclass.getDeclaredFields();
 			Field[] hisfields = hisclass.getDeclaredFields();
@@ -181,7 +181,7 @@ public abstract class NetObject extends GenericObject {
 				int modifier = f.getModifiers();
 				if ((modifier & Modifier.PRIVATE) == Modifier.PRIVATE)
 					continue;
-				Class fieldType = f.getType();
+				Class<?> fieldType = f.getType();
 				String fieldName = f.getName();
 				if (fieldName.compareTo("stringRepresentation") == 0) {
 					continue;
@@ -278,7 +278,7 @@ public abstract class NetObject extends GenericObject {
 	 */
 	public String debugDump() {
 		stringRepresentation = "";
-		Class myclass = getClass();
+		Class<?> myclass = getClass();
 		sprint(myclass.getName());
 		sprint("{");
 		Field[] fields = myclass.getDeclaredFields();
@@ -288,7 +288,7 @@ public abstract class NetObject extends GenericObject {
 			int modifier = f.getModifiers();
 			if ((modifier & Modifier.PRIVATE) == Modifier.PRIVATE)
 				continue;
-			Class fieldType = f.getType();
+			Class<?> fieldType = f.getType();
 			String fieldName = f.getName();
 			if (fieldName.compareTo("stringRepresentation") == 0) {
 				// avoid nasty recursions...

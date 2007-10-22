@@ -39,7 +39,7 @@ import gov.nist.core.*;
  * that can appear in SIPObjects.
  * IMPORTANT NOTE: SIPObjectList cannot derive from SIPObject.
  *
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:10 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2007-10-22 03:38:18 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -47,7 +47,8 @@ import gov.nist.core.*;
  */
 public class SIPObjectList extends GenericObjectList {
 
-	
+
+	private static final long serialVersionUID = -3015154738977508905L;
 
 	/**
 	 * Construct a SIPObject List given a list name.
@@ -57,25 +58,8 @@ public class SIPObjectList extends GenericObjectList {
 		super(lname);
 	}
 
-	/**
-	 * Construct a SIPObject List given a list name and a class for
-	 * the objects that go into the list.
-	 * @param lname String to set
-	 * @param cname Class to set
-	 */
-	public SIPObjectList(String lname, Class cname) {
-		super(lname, cname);
-	}
-
-	/**
-	 * Construct a SIPObject List given a list name and a class for
-	 * the objects that go into the list.
-	 * @param lname String to set
-	 * @param cname String to set
-	 */
-	public SIPObjectList(String lname, String cname) {
-		super(lname, cname);
-	}
+	
+	
 
 	/**
 	 * Construct an empty SIPObjectList.
@@ -100,10 +84,8 @@ public class SIPObjectList extends GenericObjectList {
 	 */
 
 	public void mergeObjects(GenericObjectList mergeList) {
-		if (!mergeList.getMyClass().equals(this.getMyClass()))
-			throw new IllegalArgumentException("class mismatch");
-		Iterator it1 = this.listIterator();
-		Iterator it2 = mergeList.listIterator();
+		Iterator<GenericObject> it1 = this.listIterator();
+		Iterator<GenericObject> it2 = mergeList.listIterator();
 		while (it1.hasNext()) {
 			GenericObject outerObj = (GenericObject) it1.next();
 			while (it2.hasNext()) {
@@ -138,14 +120,7 @@ public class SIPObjectList extends GenericObjectList {
 		return (SIPObject) super.first();
 	}
 
-	/**
-	 * Get the class of the supported objects of this list.
-	 * @return Class
-	 */
-	public Class getMyClass() {
-		return super.getMyClass();
-	}
-
+	
 	/**
 	 * Get the next object of this list (assumes that first() has been
 	 * called prior to calling this method.)
@@ -155,14 +130,6 @@ public class SIPObjectList extends GenericObjectList {
 		return (SIPObject) super.next();
 	}
 
-	/**
-	 * Get the next object of this list.
-	 * @param li ListIterator to set
-	 * @return GenericObject
-	 */
-	public GenericObject next(ListIterator li) {
-		return (SIPObject) super.next(li);
-	}
 
 	
 	
@@ -178,14 +145,6 @@ public class SIPObjectList extends GenericObjectList {
 		return super.debugDump(indent);
 	}
 
-	/**
-	 * Set the class of the supported objects of this list.
-	 *
-	 * @param cl Class to set
-	 */
-	public void setMyClass(Class cl) {
-		super.setMyClass(cl);
-	}
 
 	
 
