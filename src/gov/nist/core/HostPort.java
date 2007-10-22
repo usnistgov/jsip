@@ -41,6 +41,9 @@ import java.net.*;
 */
 public final class HostPort extends GenericObject {
 
+	
+	private static final long serialVersionUID = -7103412227431884523L;
+
 	// host / ipv4/ ipv6/ 
 	/** host field
 	 */

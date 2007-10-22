@@ -40,7 +40,7 @@ import javax.sip.header.*;
 import javax.sip.address.*;
 import javax.sip.*;
 
-import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import gov.nist.core.*;
 import java.io.*;
@@ -54,7 +54,7 @@ import java.text.ParseException;
 /**
  * Implementation of the JAIN-SIP provider interface.
  * 
- * @version 1.2 $Revision: 1.48 $ $Date: 2007-10-18 17:59:58 $
+ * @version 1.2 $Revision: 1.49 $ $Date: 2007-10-22 03:38:32 $
  * 
  * @author M. Ranganathan <br/>
  * 

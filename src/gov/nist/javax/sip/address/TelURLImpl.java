@@ -31,7 +31,7 @@ import java.util.Iterator;
 /**
  * Implementation of the TelURL interface.
  *
- * @version 1.2 $Revision: 1.6 $ $Date: 2007-02-12 15:19:19 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2007-10-22 03:38:23 $
  *
  * @author M. Ranganathan  
  * 
@@ -39,6 +39,9 @@ import java.util.Iterator;
 public class TelURLImpl
 	extends GenericURI
 	implements javax.sip.address.TelURL {
+
+	
+	private static final long serialVersionUID = 5873527320305915954L;
 
 	protected String scheme;
 
@@ -184,7 +187,7 @@ public class TelURLImpl
 		telephoneNumber.setParameter(name, value);
 	}
 
-	public Iterator getParameterNames() {
+	public Iterator<String> getParameterNames() {
 		return telephoneNumber.getParameterNames();
 	}
 

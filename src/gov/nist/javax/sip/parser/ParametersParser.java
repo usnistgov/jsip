@@ -31,7 +31,7 @@ import java.text.ParseException;
 
 /** parameters parser header.
  *
- * @version 1.2 $Revision: 1.8 $ $Date: 2006-12-04 16:59:12 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2007-10-22 03:38:20 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -70,7 +70,7 @@ public abstract class ParametersParser extends HeaderParser {
 		while (true) {
 		        this.lexer.SPorHT();
 			NameValue nv = nameValue();
-			parametersHeader.setParameter(nv.getName(), (String) nv.getValue());
+			parametersHeader.setParameter(nv.getName(), (String) nv.getValueAsObject());
 			// eat white space
 			this.lexer.SPorHT();
 			if (lexer.lookAhead(0) != ';')  break;

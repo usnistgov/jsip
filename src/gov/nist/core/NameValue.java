@@ -28,6 +28,8 @@
  *******************************************************************************/
 package gov.nist.core;
 
+import java.util.Map.Entry;
+
 /*
  * Bug reports and fixes: Kirby Kiem, Jeroen van Bemmel.
  */
@@ -42,18 +44,21 @@ package gov.nist.core;
  * 
  * 
  */
-public class NameValue extends GenericObject {
+public class NameValue extends GenericObject implements Entry<String,String> {
+	
+	private static final long serialVersionUID = -1857729012596437950L;
+
 	protected boolean isQuotedString;
 
 	protected final boolean isFlagParameter;
 
-	protected String separator;
+	private String separator;
 
-	protected String quotes;
+	private String quotes;
 
-	protected String name;
+	private String name;
 
-	protected Object value;
+	private Object value;
 
 	public NameValue() {
 		name = null;
@@ -118,7 +123,7 @@ public class NameValue extends GenericObject {
 		return name;
 	}
 
-	public Object getValue() {
+	public Object getValueAsObject() {
 		return isFlagParameter ? "" : value; // never return null for flag
 												// params
 	}
@@ -133,7 +138,7 @@ public class NameValue extends GenericObject {
 	/**
 	 * Set the value member
 	 */
-	public void setValue(Object v) {
+	public void setValueAsObject(Object v) {
 		value = v;
 	}
 
@@ -240,6 +245,35 @@ public class NameValue extends GenericObject {
 			return val.compareToIgnoreCase(val1) == 0;
 		} else
 			return this.value.equals(that.value);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.util.Map$Entry#getKey()
+	 */
+	public String getKey() {
+		
+		return this.name;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.util.Map$Entry#getValue()
+	 */
+	public String getValue() {
+		
+		return  value == null ? null : this.value.toString();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.util.Map$Entry#setValue(java.lang.Object)
+	 */
+	public String setValue(String value) {
+		String retval = this.value == null ? null : value.toString();
+		this.value = value;
+		return retval;
+		
 	}
 
 }

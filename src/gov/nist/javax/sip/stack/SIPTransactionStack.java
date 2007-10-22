@@ -42,8 +42,7 @@ import javax.sip.message.*;
 import javax.sip.address.*;
 import javax.sip.header.*;
 
-import EDU.oswego.cs.dl.util.concurrent.ConcurrentHashMap;
-
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.*;
 import java.io.IOException;
 import java.net.*;
@@ -66,7 +65,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.83 $ $Date: 2007-10-07 17:41:17 $
+ * @version 1.2 $Revision: 1.84 $ $Date: 2007-10-22 03:38:27 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {

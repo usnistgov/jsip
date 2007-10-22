@@ -43,7 +43,7 @@ import java.text.ParseException;
  * @author Olivier Deruelle 
  * @author M. Ranganathan <br/>
  * @since 1.1
- * @version 1.2 $Revision: 1.10 $ $Date: 2007-01-19 18:53:18 $
+ * @version 1.2 $Revision: 1.11 $ $Date: 2007-10-22 03:38:18 $
  * 
  * 
  */
@@ -133,7 +133,7 @@ public abstract class AuthenticationHeader extends ParametersHeader {
 			}
 			super.setParameter(nv);
 		} else
-			nv.setValue(value);
+			nv.setValueAsObject(value);
 
 	}
 

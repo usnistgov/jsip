@@ -476,7 +476,7 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 				AttributeField af = (AttributeField) this.attributeFields
 						.elementAt(i);
 				if (name.equals(af.getAttribute().getName()))
-					return (String) af.getAttribute().getValue();
+					return (String) af.getAttribute().getValueAsObject();
 			}
 			return null;
 		} else
@@ -504,7 +504,7 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 						.elementAt(i);
 				if (af.getAttribute().getName().equals(name)) {
 					NameValue nv = af.getAttribute();
-					nv.setValue(value);
+					nv.setValueAsObject(value);
 					break;
 				}
 

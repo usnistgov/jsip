@@ -47,7 +47,7 @@ import java.text.ParseException;
  * @see gov.nist.javax.sip.header.ContactList
  *
  * @author M. Ranganathan  <br/>
- * @version 1.2 $Revision: 1.10 $ $Date: 2007-05-29 19:57:57 $
+ * @version 1.2 $Revision: 1.11 $ $Date: 2007-10-22 03:38:18 $
  * @since 1.1
  *
  *
@@ -83,7 +83,7 @@ public final  class Contact
 	public void setParameter(String name, String value) throws ParseException {
 		NameValue nv = parameters.getNameValue(name);
 		if (nv != null) {
-			nv.setValue(value);
+			nv.setValueAsObject(value);
 		} else {
 			nv = new NameValue(name, value);
 			if (name.equalsIgnoreCase("methods"))

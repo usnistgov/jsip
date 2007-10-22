@@ -32,11 +32,15 @@ import javax.sip.address.URI;
  * Implementation of the URI class. This relies on the 1.4 URI class.
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.7 $ $Date: 2007-02-12 15:19:18 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2007-10-22 03:38:22 $
  *
  * 
  */
 public class GenericURI extends NetObject implements javax.sip.address.URI {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3237685256878068790L;
 	public static final String SIP = ParameterNames.SIP_URI_SCHEME;
 	public static final String SIPS = ParameterNames.SIPS_URI_SCHEME;
 	public static final String TEL = ParameterNames.TEL_URI_SCHEME;

@@ -29,6 +29,8 @@
 
 package gov.nist.javax.sip.header;
 import gov.nist.core.*;
+
+import java.io.Serializable;
 import java.text.ParseException;
 import java.util.*;
 
@@ -43,12 +45,12 @@ import gov.nist.javax.sip.address.*;
  *
  * 
  *
- * @version 1.2 $Revision: 1.9 $ $Date: 2006-11-01 02:22:59 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2007-10-22 03:38:18 $
  *
  */
 public abstract class ParametersHeader
 	extends SIPHeader
-	implements javax.sip.header.Parameters {
+	implements javax.sip.header.Parameters, Serializable {
 	protected NameValueList parameters;
 
 	protected ParametersHeader() {
@@ -95,7 +97,7 @@ public abstract class ParametersHeader
 	 * @return an Iterator over all the parameter names
 	 */
 
-	public Iterator getParameterNames() {
+	public Iterator<String> getParameterNames() {
 		return parameters.getNames();
 	}
 
@@ -141,7 +143,7 @@ public abstract class ParametersHeader
 	public void setParameter(String name, String value) throws ParseException {
 		NameValue nv = parameters.getNameValue(name);
 		if (nv != null) {
-			nv.setValue(value);
+			nv.setValueAsObject(value);
 		} else {
 			nv = new NameValue(name, value);
 			this.parameters.set(nv);
@@ -170,7 +172,7 @@ public abstract class ParametersHeader
 		throws ParseException {
 		NameValue nv = parameters.getNameValue(name);
 		if (nv != null) {
-			nv.setValue(value);
+			nv.setValueAsObject(value);
 			nv.setQuotedValue();
 		} else {
 			nv = new NameValue(name, value);
@@ -238,7 +240,7 @@ public abstract class ParametersHeader
 		Float val = new Float(value);
 		NameValue nv = parameters.getNameValue(name);
 		if (nv != null) {
-			nv.setValue(val);
+			nv.setValueAsObject(val);
 		} else {
 			nv = new NameValue(name, val);
 			this.parameters.set(nv);
@@ -298,7 +300,6 @@ public abstract class ParametersHeader
 	 * @param nameValue - the name value of the parameter to set.
 	 */
 	public void setParameter(NameValue nameValue) {
-		//System.out.println("setParameter " + this + " nbv = " + nameValue);
 		this.parameters.set(nameValue);
 	}
 

@@ -170,7 +170,7 @@ public class PChargingFunctionAddresses
 				NameValue ccfNV = new NameValue();
 				
 				ccfNV.setName(nv.getName());
-				ccfNV.setValue(nv.getValue());
+				ccfNV.setValueAsObject(nv.getValueAsObject());
 				
 				ccfLIST.add(ccfNV);
 				
@@ -253,7 +253,7 @@ public class PChargingFunctionAddresses
 				NameValue ecfNV = new NameValue();
 				
 				ecfNV.setName(nv.getName());
-				ecfNV.setValue(nv.getValue());
+				ecfNV.setValueAsObject(nv.getValueAsObject());
 				
 				ecfLIST.add(ecfNV);
 				
@@ -276,7 +276,7 @@ public class PChargingFunctionAddresses
 		boolean removed = false;
 		while (li.hasNext()) {
 			nv = (NameValue) li.next();
-			if (((String) nv.getValue()).equalsIgnoreCase(value) && nv.getName().equalsIgnoreCase(name)) {
+			if (((String) nv.getValueAsObject()).equalsIgnoreCase(value) && nv.getName().equalsIgnoreCase(name)) {
 				li.remove();
 				removed = true;
 			}

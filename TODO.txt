@@ -1,0 +1,8 @@
+
+Notes for the next version:
+
+1. Add support for IMS headers.
+
+2. Add AddressFactory.createAddress() ( no args ).
+
+3. Intoduce AddressParametersHeader interface (SIP Servlets implementation support).

@@ -44,12 +44,14 @@ import javax.sip.address.SipURI;
  * 
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.12 $ $Date: 2007-05-29 19:57:56 $
+ * @version 1.2 $Revision: 1.13 $ $Date: 2007-10-22 03:38:23 $
  *
  * 
  *
  */
 public class SipUri extends GenericURI implements javax.sip.address.SipURI {
+
+	private static final long serialVersionUID = 7749781076218987044L;
 
 	protected String scheme;
 
@@ -569,7 +571,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 		Host host = new Host();
 		host.setAddress(mAddr);
 		if (nameValue != null)
-			nameValue.setValue(host);
+			nameValue.setValueAsObject(host);
 		else {
 			nameValue = new NameValue(MADDR, host);
 			uriParms.set(nameValue);
@@ -732,7 +734,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 		NameValue maddr = uriParms.getNameValue(MADDR);
 		if (maddr == null)
 			return null;
-		String host = (String) maddr.getValue();
+		String host = (String) maddr.getValueAsObject();
 		return host;
 	}
 
