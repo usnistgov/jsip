@@ -1,16 +1,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-  <!-- this is not a complete pom -->
   <modelVersion>4.0.0</modelVersion>
-  <groupId>javax.sip</groupId>
+  <parent>
+    <groupId>javax.sip</groupId>
+    <version>1.2</version>
+    <artifactId>jain-sip</artifactId>
+  </parent>
+
   <artifactId>jain-sip-ri</artifactId>
   <packaging>jar</packaging>
-  <version>1.2</version>
-  <name>jain-sip</name>
+  <name>jain-sip-ri</name>
   <url>http://jain-sip.dev.java.net</url>
-   <build>
-	<sourceDirectory>../../src</sourceDirectory>
+  <build>
+	<sourceDirectory>../../src/gov/nist</sourceDirectory>
 	<plugins>
 		<plugin>
 			<groupId>org.apache.maven.plugins</groupId>
@@ -18,15 +21,19 @@
 			<configuration>
 				<source>1.5</source>
 				<target>1.5</target>
+				<includes>
+					<include>**/javax/sip/**</include>
+					<include>**/core/**</include>
+				</includes>
 			</configuration>
 		</plugin>
 	</plugins>
 	<resources>
 		<resource>
-			<directory>../target/gov/nist</directory>
+			<directory>target/gov/</directory>
 			<includes>
-				<include>sip/**</include>
-				<include>core/**</include>
+				<include>nist/javax/sip/**</include>
+				<include>nist/core/**</include>
 			</includes>
 			<excludes>
 				<exclude>**/*.java</exclude>
@@ -34,13 +41,13 @@
 		</resource>
 	</resources>
 
-   </build>
+  </build>
 
 
   <distributionManagement>
      <repository>
 	    <id>local-repository</id>
-	    <url>${jain-sip-m2-repo.java.net.url}</url>
+	    <url>${m2-repo.java.net.url}</url>
      </repository>
    </distributionManagement>
 
@@ -52,9 +59,9 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <groupId>javax.sip</groupId>
+      <artifactId>jain-sip-api</artifactId>
+      <version>1.2</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
