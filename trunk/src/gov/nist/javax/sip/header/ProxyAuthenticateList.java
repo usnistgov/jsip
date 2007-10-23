@@ -32,14 +32,14 @@ import javax.sip.header.*;
 
 /**
  * List of ProxyAuthenticate headers.
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:35 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2007-10-23 17:34:51 $
  *
  * @author M. Ranganathan   <br/>
  *
  * 
  *
  */
-public class ProxyAuthenticateList extends SIPHeaderList {
+public class ProxyAuthenticateList extends SIPHeaderList<ProxyAuthenticate> {
 	
 
 	/**

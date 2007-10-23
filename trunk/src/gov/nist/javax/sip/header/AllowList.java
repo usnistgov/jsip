@@ -36,11 +36,11 @@ import javax.sip.header.*;
  * List of ALLOW headers. The sip message can have multiple Allow headers
  *
  * @author M. Ranganathan  <br/>
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:45 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2007-10-23 17:34:51 $
  * @since 1.1
  *
  */
-public class AllowList extends SIPHeaderList {
+public class AllowList extends SIPHeaderList<Allow> {
 
 	
 	/**
@@ -75,11 +75,11 @@ public class AllowList extends SIPHeaderList {
 	 *
 	 *
 	 */
-	public ListIterator getMethods() {
+	public ListIterator<String> getMethods() {
 		
-		LinkedList ll = new LinkedList ();
+		LinkedList<String> ll = new LinkedList<String> ();
 		
-		for ( Iterator it = this.hlist.iterator(); it.hasNext();) {
+		for ( Iterator<Allow> it = this.hlist.iterator(); it.hasNext();) {
 			Allow a = (Allow)it.next();
 			ll.add(a.getMethod());
 		}

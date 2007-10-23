@@ -40,8 +40,11 @@ import gov.nist.javax.sip.header.SIPHeaderList;
  */
 
 
-public class PrivacyList extends SIPHeaderList {
+public class PrivacyList extends SIPHeaderList<Privacy> {
 	
+	private static final long serialVersionUID = 1798720509806307461L;
+
+
 	/** 
 	 * Default constructor
 	 */

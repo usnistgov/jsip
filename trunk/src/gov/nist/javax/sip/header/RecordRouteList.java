@@ -32,19 +32,16 @@ import javax.sip.header.*;
 /**
  * RecordRoute List of SIP headers (a collection of Addresses)
  *
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:44 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2007-10-23 17:34:50 $
  *
  * @author M. Ranganathan   <br/>
  *
  *
  *
  */
-public class RecordRouteList extends SIPHeaderList  {
+public class RecordRouteList extends SIPHeaderList<RecordRoute>  {
 
-	/**
-	 * Comment for <code>serialVersionUID</code>
-	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1724940469426766691L;
 	public Object clone() {
 		RecordRouteList retval = new RecordRouteList();
 		retval.clonehlist(this.hlist);

@@ -30,29 +30,37 @@ package gov.nist.javax.sip.header;
 
 import java.util.ListIterator;
 
+import javax.sip.header.ExtensionHeader;
+
 /**
  * A generic extension header list.
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:23 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2007-10-23 17:34:51 $
  * @since 1.1
  */
-public class ExtensionHeaderList extends SIPHeaderList { 
+public class ExtensionHeaderList extends SIPHeaderList<ExtensionHeader> { 
 
 	
+	
+	private static final long serialVersionUID = 4681326807149890197L;
+
+
 	public Object clone() {
 		ExtensionHeaderList retval = new ExtensionHeaderList(headerName);
 		retval.clonehlist(this.hlist);
 		return retval;
 	}
 	public ExtensionHeaderList(String hName) {
-		super( ExtensionHeaderImpl.class, hName);
+		super( ExtensionHeader.class, hName);
 	}
+	
 	public ExtensionHeaderList() {
-		this(null);
+		super(ExtensionHeader.class,null);
 	}
+	
 	
 	public String encode() {
 		StringBuffer retval = new StringBuffer();
-		ListIterator it = this.listIterator();
+		ListIterator<ExtensionHeader> it = this.listIterator();
 		while(it.hasNext()) {
 		   ExtensionHeaderImpl eh = (ExtensionHeaderImpl) it.next();
 		   retval.append(eh.encode());

@@ -34,7 +34,11 @@ import javax.sip.header.*;
 *@version 1.2
 *@since 1.1
 */
-public final class ContentEncodingList extends SIPHeaderList {
+public final class ContentEncodingList extends SIPHeaderList<ContentEncoding> {
+	
+	private static final long serialVersionUID = 7365216146576273970L;
+
+
 	public Object clone() {
 		ContentEncodingList retval = new ContentEncodingList();
 		retval.clonehlist(this.hlist);

@@ -34,7 +34,7 @@ import gov.nist.javax.sip.header.SIPHeaderList;
  * @author ALEXANDRE MIGUEL SILVA SANTOS - Nú 10045401
  */
 
-public class PathList extends SIPHeaderList {
+public class PathList extends SIPHeaderList<Path> {
 	
 	/** Default constructor
 	 */
@@ -42,7 +42,7 @@ public class PathList extends SIPHeaderList {
 		super(Path.class, PathHeader.NAME);
 	}
 
-	// issued by Miguel Freitas
+	
 	public Object clone() {
 		PathList retval = new PathList();		
 		return retval.clonehlist(this.hlist);

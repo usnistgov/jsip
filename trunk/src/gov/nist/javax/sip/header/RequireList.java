@@ -36,15 +36,17 @@ import javax.sip.header.*;
  * Require  =  "Require" ":" 1#option-tag 
  * </pre>
  *
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:42 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2007-10-23 17:34:50 $
  *
  * @author M. Ranganathan   <br/>
  *
  * 
  */
-public final class RequireList extends SIPHeaderList {
+public final class RequireList extends SIPHeaderList<Require> {
 
 	
+	private static final long serialVersionUID = -1760629092046963213L;
+
 	public Object clone() {
 		RequireList retval = new RequireList();
 		retval.clonehlist(this.hlist);

@@ -41,11 +41,13 @@ import javax.sip.header.*;
  * @author Olivier Deruelle <br/>
  * 
  *
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:29 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2007-10-23 17:34:51 $
  * @since 1.1
  *
  */
-public class AllowEventsList extends SIPHeaderList  {
+public class AllowEventsList extends SIPHeaderList<AllowEvents>  {
+
+	private static final long serialVersionUID = -684763195336212992L;
 
 	public Object clone() {
 		AllowEventsList retval = new AllowEventsList();
@@ -53,11 +55,7 @@ public class AllowEventsList extends SIPHeaderList  {
 		return retval;
 	}
 	
-	/**
-	 * Comment for <code>serialVersionUID</code>
-	 */
-	private static final long serialVersionUID = 1L;
-
+	
 	/** default constructor
 	 */
 	public AllowEventsList() {
@@ -77,9 +75,9 @@ public class AllowEventsList extends SIPHeaderList  {
 	 *
 	 *
 	 */
-	public ListIterator getMethods() {
-		ListIterator li = super.hlist.listIterator();
-		LinkedList  ll = new LinkedList ();
+	public ListIterator<String> getMethods() {
+		ListIterator<AllowEvents> li = super.hlist.listIterator();
+		LinkedList<String>  ll = new LinkedList<String> ();
 		while (li.hasNext()) {
 			AllowEvents allowEvents = (AllowEvents) li.next();
 			ll.add(allowEvents.getEventType());

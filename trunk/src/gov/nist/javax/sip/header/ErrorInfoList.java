@@ -33,7 +33,7 @@ import javax.sip.header.*;
 /**
 * Error Info sip header.
 *
-*@version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:25 $
+*@version 1.2 $Revision: 1.5 $ $Date: 2007-10-23 17:34:51 $
 *
 *@author M. Ranganathan   <br/>
 *@since 1.1
@@ -52,7 +52,7 @@ import javax.sip.header.*;
 *</pre>
 *
 */
-public class ErrorInfoList extends SIPHeaderList{
+public class ErrorInfoList extends SIPHeaderList<ErrorInfo>{
 
 	/**
 	 * 

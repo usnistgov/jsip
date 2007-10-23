@@ -45,8 +45,12 @@ import gov.nist.javax.sip.header.ims.SecurityClient;
  */
 
 
-public class SecurityClientList extends SIPHeaderList
+public class SecurityClientList extends SIPHeaderList<SecurityClient>
 {
+
+	
+	private static final long serialVersionUID = 3094231003329176217L;
+
 
 	public SecurityClientList()
 	{	

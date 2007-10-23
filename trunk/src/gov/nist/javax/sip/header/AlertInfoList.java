@@ -35,7 +35,7 @@ import javax.sip.header.*;
 *
 *
 */
-public class AlertInfoList extends SIPHeaderList {
+public class AlertInfoList extends SIPHeaderList<AlertInfo> {
 	
 	
 	
