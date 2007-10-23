@@ -33,13 +33,14 @@ import javax.sip.header.*;
  * AcceptEncodingList of AccepEncoding headers.
  *
  *@author M. Ranganathan  
- *@version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:17 $
+ *@version 1.2 $Revision: 1.5 $ $Date: 2007-10-23 17:34:51 $
  *@since 1.1
  *
  *
  */
-public class AcceptEncodingList extends SIPHeaderList{
+public class AcceptEncodingList extends SIPHeaderList<AcceptEncoding>{
 
+	@Override
 	public Object clone() {
 		AcceptEncodingList retval = new AcceptEncodingList();
 		retval.clonehlist(this.hlist);

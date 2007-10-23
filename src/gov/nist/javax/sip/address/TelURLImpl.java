@@ -25,13 +25,15 @@
 */
 package gov.nist.javax.sip.address;
 
+import gov.nist.core.NameValueList;
+
 import java.text.ParseException;
 import java.util.Iterator;
 
 /**
  * Implementation of the TelURL interface.
  *
- * @version 1.2 $Revision: 1.7 $ $Date: 2007-10-22 03:38:23 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2007-10-23 17:34:56 $
  *
  * @author M. Ranganathan  
  * 
@@ -189,6 +191,10 @@ public class TelURLImpl
 
 	public Iterator<String> getParameterNames() {
 		return telephoneNumber.getParameterNames();
+	}
+	
+	public NameValueList getParameters() {
+		return telephoneNumber.getParameters();
 	}
 
 	public void removeParameter(String name) {

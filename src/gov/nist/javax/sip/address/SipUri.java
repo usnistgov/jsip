@@ -44,7 +44,7 @@ import javax.sip.address.SipURI;
  * 
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.13 $ $Date: 2007-10-22 03:38:23 $
+ * @version 1.2 $Revision: 1.14 $ $Date: 2007-10-23 17:34:56 $
  *
  * 
  *
@@ -296,14 +296,14 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI {
 	 * Accessor for URI parameters
 	 * @return A name-value list containing the parameters.
 	 */
-	public NameValueList getUriParms() {
+	public NameValueList getParameters() {
 		return uriParms;
 	}
 
 	/** Remove the URI parameters.
 	*
 	*/
-	public void removeUriParms() {
+	public void removeParameters() {
 		this.uriParms = new NameValueList();
 	}
 

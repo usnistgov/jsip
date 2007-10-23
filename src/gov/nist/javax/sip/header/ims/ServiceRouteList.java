@@ -34,8 +34,11 @@ import gov.nist.javax.sip.header.SIPHeaderList;
  * @author ALEXANDRE MIGUEL SILVA SANTOS - Nú 10045401
  */
 
-public class ServiceRouteList extends SIPHeaderList {
+public class ServiceRouteList extends SIPHeaderList<ServiceRoute> {
 	
+	
+	private static final long serialVersionUID = -4264811439080938519L;
+
 	/** Default constructor
 	 */
 	public ServiceRouteList() {

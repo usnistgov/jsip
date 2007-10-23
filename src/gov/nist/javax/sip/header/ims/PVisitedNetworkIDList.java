@@ -38,8 +38,10 @@ import gov.nist.javax.sip.header.ims.PVisitedNetworkIDHeader;
  * @author ALEXANDRE MIGUEL SILVA SANTOS - Nú 10045401
  */
 
-public class PVisitedNetworkIDList extends SIPHeaderList {
+public class PVisitedNetworkIDList extends SIPHeaderList<PVisitedNetworkID> {
 	
+	private static final long serialVersionUID = -4346667490341752478L;
+
 	/** Default constructor
 	 */
 	public PVisitedNetworkIDList() {

@@ -32,14 +32,14 @@ package gov.nist.javax.sip.header;
 /**
  * WWWAuthenticate SIPHeader (of which there can be several?)
  *
- * @version 1.2 $Revision: 1.3 $ $Date: 2006-07-13 09:01:21 $
+ * @version 1.2 $Revision: 1.4 $ $Date: 2007-10-23 17:34:49 $
  *
  * @author M. Ranganathan   <br/>
  *
  * 
  *
  */
-public class AuthorizationList extends SIPHeaderList {
+public class AuthorizationList extends SIPHeaderList<Authorization> {
 
 	
 	/**

@@ -34,18 +34,16 @@ import javax.sip.header.*;
 
 /**
  * List of Reason headers.
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:34 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2007-10-23 17:34:49 $
  *
  * @author M. Ranganathan   <br/>
  *
  * 
  */
-public final class ReasonList extends SIPHeaderList {
+public final class ReasonList extends SIPHeaderList<Reason> {
 
-	/**
-	 * Comment for <code>serialVersionUID</code>
-	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 7459989997463160670L;
+
 	public Object clone() {
 		ReasonList retval = new ReasonList();
 		retval.clonehlist(this.hlist);

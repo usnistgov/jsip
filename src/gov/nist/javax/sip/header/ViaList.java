@@ -35,14 +35,16 @@ import java.util.Iterator;
 /**
  * Keeps a list and a hashtable of via header functions.
  *
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:24 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2007-10-23 17:34:52 $
  *
  * @author M. Ranganathan   <br/>
  *
  * 
  *
  */
-public final class ViaList extends SIPHeaderList{
+public final class ViaList extends SIPHeaderList<Via> {
+	
+	private static final long serialVersionUID = 3899679374556152313L;
 	
 	public Object clone() {
 		ViaList retval = new ViaList();		
