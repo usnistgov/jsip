@@ -32,14 +32,14 @@ import javax.sip.header.*;
 
 /**
  * List of ProxyAuthorization headers.
- * @version 1.2 $Revision: 1.3 $ $Date: 2006-07-13 09:01:40 $
+ * @version 1.2 $Revision: 1.4 $ $Date: 2007-10-23 17:34:52 $
  *
  * @author M. Ranganathan   <br/>
  *
  * 
  *
  */
-public class ProxyAuthorizationList extends SIPHeaderList{
+public class ProxyAuthorizationList extends SIPHeaderList<ProxyAuthorization>{
 
 	/**
 	 * Comment for <code>serialVersionUID</code>

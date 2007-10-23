@@ -32,14 +32,14 @@ import javax.sip.header.*;
 /**
  * Proxy Require SIPSIPObject (list of option tags)
  *
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:29 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2007-10-23 17:34:52 $
  *
  * @author M. Ranganathan   <br/>
  *
  * 
  *
  */
-public class ProxyRequireList extends SIPHeaderList {
+public class ProxyRequireList extends SIPHeaderList<ProxyRequire> {
 
 	/**
 	 * Comment for <code>serialVersionUID</code>

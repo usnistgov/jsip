@@ -33,14 +33,14 @@ import javax.sip.header.*;
 /**
  * A list of Warning headers.
  *
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:11 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2007-10-23 17:34:50 $
  *
  * @author M. Ranganathan   <br/>
  *
  *
  *
  */
-public class WarningList extends SIPHeaderList {
+public class WarningList extends SIPHeaderList<Warning> {
 
 	/**
 	 * Comment for <code>serialVersionUID</code>

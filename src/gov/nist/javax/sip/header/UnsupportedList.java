@@ -33,10 +33,14 @@ import javax.sip.header.*;
 
 /**
  * List of Unsupported headers.
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:47 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2007-10-23 17:34:51 $
  * @author M. Ranganathan
  */
-public class UnsupportedList extends SIPHeaderList {
+public class UnsupportedList extends SIPHeaderList<Unsupported> {
+
+	
+	private static final long serialVersionUID = -4052610269407058661L;
+
 
 	/** Default Constructor
 	 */

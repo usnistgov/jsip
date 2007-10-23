@@ -32,19 +32,16 @@ import  javax.sip.header.*;
 /**
  * WWWAuthenticate SIPHeader (of which there can be several?)
  *
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:26 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2007-10-23 17:34:50 $
  *
  * @author M. Ranganathan   <br/>
  *
  * 
  *
  */
-public class WWWAuthenticateList extends SIPHeaderList {
+public class WWWAuthenticateList extends SIPHeaderList<WWWAuthenticate> {
 
 	
-	/**
-	 * Comment for <code>serialVersionUID</code>
-	 */
 	private static final long serialVersionUID = -6978902284285501346L;
 	
 	

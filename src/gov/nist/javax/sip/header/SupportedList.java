@@ -31,10 +31,15 @@ import javax.sip.header.*;
 
 /**
  * A list of supported headers.
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:14 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2007-10-23 17:34:52 $
  * @see Supported
  */
-public class SupportedList extends SIPHeaderList{
+public class SupportedList extends SIPHeaderList<Supported>{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4539299544895602367L;
 
 	public Object clone() {
 		SupportedList retval = new SupportedList();

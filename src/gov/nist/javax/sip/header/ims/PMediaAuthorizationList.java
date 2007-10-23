@@ -38,8 +38,9 @@ import gov.nist.javax.sip.header.SIPHeaderList;
  * @author Miguel Freitas (IT) PT-Inovacao
  */
 
-public class PMediaAuthorizationList extends SIPHeaderList
-{
+public class PMediaAuthorizationList extends SIPHeaderList<PMediaAuthorization> {
+	private static final long serialVersionUID = -8226328073989632317L;
+
 
 	public PMediaAuthorizationList()
 	{

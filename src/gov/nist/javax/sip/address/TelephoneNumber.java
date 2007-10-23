@@ -26,12 +26,13 @@
 package gov.nist.javax.sip.address;
 
 import gov.nist.core.*;
+
 import java.util.Iterator;
 
 /**
  * Telephone number class.
  * @version 1.2
- * @version 1.2 $Revision: 1.8 $ $Date: 2007-10-22 03:38:23 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2007-10-23 17:34:55 $
  *
  * @author M. Ranganathan 
  * 
@@ -53,18 +54,18 @@ public class TelephoneNumber extends NetObject {
 
 	/** parmeters list
 	 */
-	protected NameValueList parms;
+	protected NameValueList parameters;
 
 	/** Creates new TelephoneNumber */
 	public TelephoneNumber() {
-		parms = new NameValueList();
+		parameters = new NameValueList();
 	}
 
 	/** delete the specified parameter.
 	 * @param name String to set
 	 */
 	public void deleteParm(String name) {
-		parms.delete(name);
+		parameters.delete(name);
 	}
 
 	/** get the PhoneNumber field
@@ -78,7 +79,7 @@ public class TelephoneNumber extends NetObject {
 	 * @return String
 	 */
 	public String getPostDial() {
-		return (String) parms.getValue(POSTDIAL);
+		return (String) parameters.getValue(POSTDIAL);
 	}
 
 	/**
@@ -86,14 +87,14 @@ public class TelephoneNumber extends NetObject {
 	 * @return String
 	 */
 	public String getIsdnSubaddress() {
-		return (String) parms.getValue(ISUB);
+		return (String) parameters.getValue(ISUB);
 	}
 
 	/** returns true if th PostDial field exists
 	 * @return boolean
 	 */
 	public boolean hasPostDial() {
-		return parms.getValue(POSTDIAL) != null;
+		return parameters.getValue(POSTDIAL) != null;
 	}
 
 	/** return true if this header has parameters.
@@ -101,7 +102,7 @@ public class TelephoneNumber extends NetObject {
 	 * @return boolean
 	 */
 	public boolean hasParm(String pname) {
-		return parms.hasNameValue(pname);
+		return parameters.hasNameValue(pname);
 	}
 
 	/**
@@ -123,7 +124,7 @@ public class TelephoneNumber extends NetObject {
 	/** remove the PostDial field
 	 */
 	public void removePostDial() {
-		parms.delete(POSTDIAL);
+		parameters.delete(POSTDIAL);
 	}
 
 	/**
@@ -138,7 +139,7 @@ public class TelephoneNumber extends NetObject {
 	 * @param p NameValueList to set
 	 */
 	public void setParameters(NameValueList p) {
-		parms = p;
+		parameters = p;
 	}
 
 	/** set the Global field
@@ -153,7 +154,7 @@ public class TelephoneNumber extends NetObject {
 	 */
 	public void setPostDial(String p) {
 		NameValue nv = new NameValue(POSTDIAL, p);
-		parms.set(nv);
+		parameters.set(nv);
 	}
 
 	/** set the specified parameter
@@ -162,7 +163,7 @@ public class TelephoneNumber extends NetObject {
 	 */
 	public void setParm(String name, Object value) {
 		NameValue nv = new NameValue(name, value);
-		parms.set(nv);
+		parameters.set(nv);
 	}
 
 	/**
@@ -188,9 +189,9 @@ public class TelephoneNumber extends NetObject {
 		if (isglobal)
 			buffer.append('+');
 		buffer.append(phoneNumber);
-		if (!parms.isEmpty()) {
+		if (!parameters.isEmpty()) {
 			buffer.append(SEMICOLON);
-			parms.encode(buffer);
+			parameters.encode(buffer);
 		}
 		return buffer;
 	}
@@ -205,7 +206,7 @@ public class TelephoneNumber extends NetObject {
 	 *
 	 */
 	public String getParameter(String name) {
-		Object val = parms.getValue(name);
+		Object val = parameters.getValue(name);
 		if (val == null)
 			return null;
 		if (val instanceof GenericObject)
@@ -222,22 +223,26 @@ public class TelephoneNumber extends NetObject {
 	 *
 	 */
 	public Iterator<String> getParameterNames() {
-		return this.parms.getNames();
+		return this.parameters.getNames();
 	}
 
 	public void removeParameter(String parameter) {
-		this.parms.delete(parameter);
+		this.parameters.delete(parameter);
 	}
 
 	public void setParameter(String name, String value) {
 		NameValue nv = new NameValue(name, value);
-		this.parms.set(nv);
+		this.parameters.set(nv);
 	}
 
 	public Object clone() {
 		TelephoneNumber retval = (TelephoneNumber) super.clone();
-		if (this.parms != null)
-			retval.parms = (NameValueList) this.parms.clone();
+		if (this.parameters != null)
+			retval.parameters = (NameValueList) this.parameters.clone();
 		return retval;
+	}
+
+	public NameValueList getParameters() {
+		return this.parameters;
 	}
 }

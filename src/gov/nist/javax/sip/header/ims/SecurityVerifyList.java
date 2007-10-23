@@ -48,8 +48,11 @@ import gov.nist.javax.sip.header.ims.SecurityVerify;
 
 
 
-public class SecurityVerifyList extends SIPHeaderList
+public class SecurityVerifyList extends SIPHeaderList<SecurityVerify>
 {
+
+	
+	private static final long serialVersionUID = 563201040577795125L;
 
 	public SecurityVerifyList()
 	{	

@@ -36,18 +36,13 @@ import java.util.ListIterator;
  * List of contact headers.ContactLists are also maintained in a hashtable
  * for quick lookup.
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:01:48 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2007-10-23 17:34:50 $
  * @since 1.1
  */
-public class ContactList extends SIPHeaderList  {
+public class ContactList extends SIPHeaderList<Contact>  {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-
-
+	private static final long serialVersionUID = 1224806837758986814L;
+	
 	public Object clone() {
 		ContactList retval = new ContactList();
 		retval.clonehlist(this.hlist);

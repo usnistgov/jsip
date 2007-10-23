@@ -44,43 +44,24 @@ import java.util.*;
  * list are of the same class). We use this for building type homogeneous lists
  * of SIPObjects that appear in SIPHeaders
  * 
- * @version 1.2 $Revision: 1.7 $ $Date: 2005/10/09 18:47:53
+ * @version 1.2 $Revision: 1.8 $ $Date: 2005/10/09 18:47:53
  */
-public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
+public abstract class SIPHeaderList<HDR extends Header> extends SIPHeader implements java.util.List<HDR>, Header {
 
 	/**
 	 * hlist field.
 	 */
-	protected List hlist;
-
-	private Class myClass;
+	protected List<HDR> hlist;
+	
+	private Class<HDR> myClass;
 
 	public String getName() {
 		return this.headerName;
 	}
 
-	/**
-	 * Constructor
-	 * 
-	 * @param hl
-	 *            SIPObjectList to set
-	 * @param hname
-	 *            String to set
-	 */
-	protected SIPHeaderList(List hl, String hname) {
-		this.headerName = hname;
-		hlist = hl;
-	}
-
-	/**
-	 * Constructor
-	 * 
-	 * @param hName
-	 *            String to set
-	 */
-	protected SIPHeaderList(String hName) {
-		this.headerName = hName;
-		hlist = new LinkedList();
+	
+	private SIPHeaderList() {
+		hlist = new LinkedList<HDR>();
 	}
 
 	/**
@@ -91,11 +72,10 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 	 * @param hname
 	 *            String to set
 	 */
-	protected SIPHeaderList(Class objclass, String hname) {
+	protected SIPHeaderList(Class<HDR> objclass, String hname) {
+		this();
 		this.headerName = hname;
-		hlist = new LinkedList();
-		this.myClass = objclass;
-
+		this.myClass =  objclass;
 	}
 
 	/**
@@ -104,7 +84,7 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 	 * 
 	 * @param objectToAdd
 	 */
-	public boolean add(Object objectToAdd) {
+	public boolean add(HDR objectToAdd) {
 		hlist.add(objectToAdd);
 		return true;
 	}
@@ -116,7 +96,7 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 	 * @param obj
 	 *            Genericobject to set
 	 */
-	public void addFirst(Object obj) {
+	public void addFirst(HDR obj) {
 		hlist.add(0, obj);
 	}
 
@@ -128,7 +108,7 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 	 * @param top
 	 *            is true if we want to add to the top of the list.
 	 */
-	public void add(Object sipheader, boolean top) {
+	public void add(HDR sipheader, boolean top) {
 		if (top)
 			this.addFirst(sipheader);
 		else
@@ -147,7 +127,7 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 	 * @throws IllegalArgumentException
 	 *             if the two lists are not compatible
 	 */
-	public void concatenate(SIPHeaderList other, boolean topFlag)
+	public void concatenate(SIPHeaderList<HDR> other, boolean topFlag)
 			throws IllegalArgumentException {
 		if (!topFlag) {
 			this.addAll(other);
@@ -158,19 +138,7 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 
 	}
 
-	/**
-	 * Concatenate two compatible lists. This appends the new list to the end of
-	 * this list (which is the most common mode for this operation).
-	 * 
-	 * @param other
-	 *            SIPHeaderList
-	 * @throws IllegalArgumentException
-	 *             if the two lists are not compatible
-	 */
-	public void concatenate(SIPHeaderList other)
-			throws IllegalArgumentException {
-		this.concatenate(other, false);
-	}
+	
 
 	/**
 	 * Encode a list of sip headers. Headers are returned in cannonical form.
@@ -218,13 +186,13 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 	 *         headers.
 	 */
 
-	public List getHeadersAsEncodedStrings() {
-		List retval = new LinkedList();
+	public List<String> getHeadersAsEncodedStrings() {
+		List<String> retval = new LinkedList<String>();
 
-		ListIterator li = hlist.listIterator();
+		ListIterator<HDR> li = hlist.listIterator();
 		while (li.hasNext()) {
-			SIPHeader sipheader = (SIPHeader) li.next();
-			retval.add(sipheader.encode());
+			HDR sipheader = li.next();
+			retval.add(sipheader.toString());
 
 		}
 
@@ -237,11 +205,11 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 	 * 
 	 * @return SIPHeader first element of the list.
 	 */
-	public SIPHeader getFirst() {
+	public HDR getFirst() {
 		if (hlist == null || hlist.isEmpty())
 			return null;
 		else
-			return (SIPHeader) hlist.get(0);
+			return  hlist.get(0);
 	}
 
 	/**
@@ -249,10 +217,10 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 	 * 
 	 * @return SIPHeader last element of the list.
 	 */
-	public SIPHeader getLast() {
+	public HDR getLast() {
 		if (hlist == null || hlist.isEmpty())
 			return null;
-		return (SIPHeader) hlist.get(hlist.size() - 1);
+		return  hlist.get(hlist.size() - 1);
 	}
 
 	/**
@@ -260,8 +228,8 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 	 * 
 	 * @return Class of header supported by this list.
 	 */
-	public Class getMyClass() {
-		return this.myClass;
+	public Class<HDR> getMyClass() {
+		return  this.myClass;
 	}
 
 	/**
@@ -278,7 +246,7 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 	 * 
 	 * @return the generated ListIterator
 	 */
-	public ListIterator listIterator() {
+	public ListIterator<HDR> listIterator() {
 
 		return hlist.listIterator(0);
 	}
@@ -288,7 +256,7 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 	 * 
 	 * @return the imedded linked list of SIP headers.
 	 */
-	public List getHeaderList() {
+	public List<HDR> getHeaderList() {
 		return this.hlist;
 	}
 
@@ -299,7 +267,7 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 	 *            position for the list iterator to return
 	 * @return the generated list iterator
 	 */
-	public ListIterator listIterator(int position) {
+	public ListIterator<HDR> listIterator(int position) {
 		return hlist.listIterator(position);
 	}
 
@@ -341,7 +309,7 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 	 * @param cl
 	 *            class to set
 	 */
-	protected void setMyClass(Class cl) {
+	protected void setMyClass(Class<HDR> cl) {
 		this.myClass = cl;
 	}
 
@@ -360,7 +328,7 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 		sprint(indent + className);
 		sprint(indent + "{");
 
-		for (Iterator it = hlist.iterator(); it.hasNext();) {
+		for (Iterator<HDR> it = hlist.iterator(); it.hasNext();) {
 			SIPHeader sipHdr = (SIPHeader) it.next();
 			sprint(indent + sipHdr.debugDump());
 		}
@@ -405,7 +373,7 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 	 *            SIPHeader structure to add.
 	 */
 
-	public void add(int index, Object sipHeader)
+	public void add(int index, HDR  sipHeader)
 			throws IndexOutOfBoundsException {
 		hlist.add(index, sipHeader);
 	}
@@ -419,13 +387,14 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 	 *            of headers in the target (order of the headers is not
 	 *            important).
 	 */
+	@SuppressWarnings("unchecked")
 	public boolean equals(Object other) {
 
 		if (other == this)
 			return true;
 
 		if (other instanceof SIPHeaderList) {
-			SIPHeaderList that = (SIPHeaderList) other;
+			SIPHeaderList<HDR> that = (SIPHeaderList<HDR>) other;
 			if (this.hlist == that.hlist)
 				return true;
 			else if (this.hlist == null)
@@ -439,23 +408,23 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 	 * Template match against a template. null field in template indicates wild
 	 * card match.
 	 */
-	public boolean match(SIPHeaderList template) {
+	public boolean match(SIPHeaderList<?> template) {
 		if (template == null)
 			return true;
 		if (!this.getClass().equals(template.getClass()))
 			return false;
-		SIPHeaderList that = (SIPHeaderList) template;
+		SIPHeaderList<HDR> that = (SIPHeaderList<HDR>) template;
 		if (this.hlist == that.hlist)
 			return true;
 		else if (this.hlist == null)
 			return false;
 		else {
 
-			for (Iterator it = template.hlist.iterator(); it.hasNext();) {
+			for (Iterator<HDR> it = that.hlist.iterator(); it.hasNext();) {
 				SIPHeader sipHdr = (SIPHeader) it.next();
 
 				boolean found = false;
-				for (Iterator it1 = this.hlist.iterator(); it1.hasNext()
+				for (Iterator<HDR> it1 = this.hlist.iterator(); it1.hasNext()
 						&& !found;) {
 					SIPHeader sipHdr1 = (SIPHeader) it1.next();
 					found = sipHdr1.match(sipHdr);
@@ -467,28 +436,7 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 		}
 	}
 
-	/**
-	 * Merge this with a given template.
-	 * 
-	 * @param mergeHdrList
-	 *            the template to merge with.
-	 */
-
-	public void merge(SIPHeaderList mergeHdrList) {
-		if (mergeHdrList == null)
-			return;
-
-		Iterator it1 = this.listIterator();
-		Iterator it2 = mergeHdrList.listIterator();
-		while (it1.hasNext()) {
-			GenericObject outerObj = (GenericObject) it1.next();
-			while (it2.hasNext()) {
-				Object innerObj = it2.next();
-				outerObj.merge(innerObj);
-			}
-		}
-	}
-
+	
 	/**
 	 * make a clone of this header list.
 	 * 
@@ -496,23 +444,23 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 	 */
 	public Object clone() {
 		try {
-			Class clazz = this.getClass();
+			Class<?> clazz = this.getClass();
 
-			Constructor cons = clazz.getConstructor((Class[])null);
-
-			SIPHeaderList retval = (SIPHeaderList) cons.newInstance((Object[])null);
-
+			Constructor<?> cons = clazz.getConstructor((Class[])null);
+			SIPHeaderList<HDR> retval = (SIPHeaderList<HDR>) cons.newInstance((Object[])null);
+			retval.headerName = this.headerName;
+			retval.myClass  = this.myClass;
 			return retval.clonehlist(this.hlist);
 		} catch (Exception ex) {
 			throw new RuntimeException("Could not clone!", ex);
 		}
 	}
 
-	protected final SIPHeaderList clonehlist(List hlistToClone) {
+	protected final SIPHeaderList<HDR> clonehlist(List<HDR> hlistToClone) {
 		if (hlistToClone != null) {
-			for (Iterator it = hlistToClone.iterator(); it.hasNext();) {
-				SIPHeader h = (SIPHeader) it.next();
-				this.hlist.add(h.clone());
+			for (Iterator<HDR> it = (Iterator<HDR>) hlistToClone.iterator(); it.hasNext();) {
+				HDR h = it.next();
+				this.hlist.add((HDR)h.clone());
 			}
 		}
 		return this;
@@ -546,7 +494,7 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 	}
 
 	protected StringBuffer encodeBody(StringBuffer buffer) {
-		ListIterator iterator = this.listIterator();
+		ListIterator<HDR> iterator = this.listIterator();
 		while (true) {
 			SIPHeader siphdr = (SIPHeader) iterator.next();
 			if ( siphdr == this ) throw new RuntimeException ("Unexpected circularity in SipHeaderList");
@@ -564,24 +512,22 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 		}
 		return buffer;
 	}
-
-	/**
-	 * Add a collection of headers.
-	 * 
-	 * @param collection --
-	 *            a collection containing the headers to add.
-	 * 
-	 */
-	public boolean addAll(Collection collection) {
+	
+	public boolean addAll(Collection<? extends HDR> collection) {
 		return this.hlist.addAll(collection);
 	}
 
-	/**
-	 * Add all the elements of this collection.
-	 */
-	public boolean addAll(int index, Collection collection) {
+	public boolean addAll(int index, Collection<? extends HDR> collection) {
 		return this.hlist.addAll(index, collection);
+		
 	}
+
+	public boolean containsAll(Collection<?> collection) {
+		return this.hlist.containsAll(collection);
+	}
+
+	
+
 
 	public void clear() {
 		this.hlist.clear();
@@ -591,15 +537,6 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 		return this.hlist.contains(header);
 	}
 
-	/**
-	 * Check if the list contains all the headers in this collection.
-	 * 
-	 * @param collection --
-	 *            the collection of headers to test against.
-	 */
-	public boolean containsAll(Collection collection) {
-		return this.hlist.containsAll(collection);
-	}
 
 	/**
 	 * Get the object at the specified location.
@@ -608,8 +545,8 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 	 *            location from which to get the object.
 	 * 
 	 */
-	public Object get(int index) {
-		return this.hlist.get(index);
+	public HDR get(int index) {
+		return  this.hlist.get(index);
 	}
 
 	/**
@@ -629,7 +566,7 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 	 * 
 	 */
 
-	public java.util.Iterator iterator() {
+	public java.util.Iterator<HDR> iterator() {
 		return this.hlist.listIterator();
 	}
 
@@ -664,7 +601,7 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 	 *            index at which to remove the object
 	 */
 
-	public Object remove(int index) {
+	public HDR remove(int index) {
 		return this.hlist.remove(index);
 	}
 
@@ -672,7 +609,7 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 	 * Remove all the elements.
 	 * @see List#removeAll(java.util.Collection)
 	 */
-	public boolean removeAll(java.util.Collection collection) {
+	public boolean removeAll(java.util.Collection<?> collection) {
 		return this.hlist.removeAll(collection);
 	}
 
@@ -681,7 +618,7 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 	 * @see List#retainAll(java.util.Collection)
 	 * @param collection
 	 */
-	public boolean retainAll(java.util.Collection collection) {
+	public boolean retainAll(java.util.Collection<?> collection) {
 		return this.hlist.retainAll(collection);
 	}
 
@@ -690,7 +627,7 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 	 * 
 	 * @see List#subList(int, int)
 	 */
-	public java.util.List subList(int index1, int index2) {
+	public java.util.List<HDR> subList(int index1, int index2) {
 		return this.hlist.subList(index1, index2);
 
 	}
@@ -709,7 +646,7 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 	 * 
 	 * @see List#set(int, java.lang.Object)
 	 */
-	public Object set(int position, Object sipHdr) {
+	public HDR set(int position, HDR sipHdr) {
 
 		return hlist.set(position, sipHdr);
 
@@ -721,9 +658,15 @@ public class SIPHeaderList extends SIPHeader implements java.util.List, Header {
 	 * @see List#toArray(java.lang.Object[])
 	 */
 
-	public Object[] toArray(Object[] array) {
+	public HDR[] toArray(HDR[] array) {
 
 		return hlist.toArray(array);
+	}
+
+	
+
+	public <T> T[] toArray(T[] a) {
+		return hlist.toArray(a);
 	}
 
 }

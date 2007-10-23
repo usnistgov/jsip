@@ -34,15 +34,18 @@ import java.util.*;
 /**
  * A list of Route Headers.
  *
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-13 09:01:24 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2007-10-23 17:34:49 $
  *
  * @author M. Ranganathan   <br/>
  *
  * 
  *
  */
-public class RouteList extends SIPHeaderList {
+public class RouteList extends SIPHeaderList<Route> {
 	
+	private static final long serialVersionUID = 3407603519354809748L;
+
+
 	/** default constructor
 	 */
 	public RouteList() {
@@ -71,8 +74,8 @@ public class RouteList extends SIPHeaderList {
 		RouteList that = (RouteList) other;
 		if (this.size() != that.size())
 			return false;
-		ListIterator it = this.listIterator();
-		ListIterator it1 = that.listIterator();
+		ListIterator<Route> it = this.listIterator();
+		ListIterator<Route> it1 = that.listIterator();
 		while (it.hasNext()) {
 			Route route = (Route) it.next();
 			Route route1 = (Route) it1.next();

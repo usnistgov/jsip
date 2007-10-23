@@ -32,7 +32,7 @@ import javax.sip.header.*;
 /**
 * In-Reply-To SIP header. Keeps a list of InReplyToHeader
 *
-* @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:39 $
+* @version 1.2 $Revision: 1.5 $ $Date: 2007-10-23 17:34:51 $
 * @since 1.1
 *
 *@author M. Ranganathan   <br/>
@@ -40,11 +40,10 @@ import javax.sip.header.*;
 *
 *
 */
-public final class InReplyToList extends SIPHeaderList  {
+public final class InReplyToList extends SIPHeaderList<InReplyTo>  {
 
 	
-	
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -7993498496830999237L;
 
 	public Object clone() {
 		InReplyToList retval = new InReplyToList();

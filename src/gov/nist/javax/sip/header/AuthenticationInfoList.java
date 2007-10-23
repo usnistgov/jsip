@@ -36,7 +36,7 @@ import javax.sip.header.*;
 *@author M. Ranganathan   <br/>
 *
 */
-public class AuthenticationInfoList extends SIPHeaderList {
+public class AuthenticationInfoList extends SIPHeaderList<AuthenticationInfo> {
 	
 	private static final long serialVersionUID = 1L;
 

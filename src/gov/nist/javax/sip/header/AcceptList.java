@@ -31,13 +31,13 @@ import javax.sip.header.*;
  * Accept List of  SIP headers. 
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:46 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2007-10-23 17:34:52 $
  *
  * @since 1.1
  *
  * @see Accept
  */
-public class AcceptList extends SIPHeaderList {
+public class AcceptList extends SIPHeaderList<Accept> {
 
 	
 	/**
@@ -45,6 +45,7 @@ public class AcceptList extends SIPHeaderList {
 	 */
 	private static final long serialVersionUID = -1800813338560484831L;
 	
+	@Override
 	public Object clone() {
 		AcceptList retval = new AcceptList();
 		retval.clonehlist(this.hlist);

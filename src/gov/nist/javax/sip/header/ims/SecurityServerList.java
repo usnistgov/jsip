@@ -46,8 +46,11 @@ import gov.nist.javax.sip.header.ims.SecurityServer;
  */
 
 
-public class SecurityServerList extends SIPHeaderList
+public class SecurityServerList extends SIPHeaderList<SecurityServer>
 {
+
+	
+	private static final long serialVersionUID = -1392066520803180238L;
 
 	public SecurityServerList()
 	{	
