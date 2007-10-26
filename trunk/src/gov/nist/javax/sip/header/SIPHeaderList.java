@@ -44,7 +44,7 @@ import java.util.*;
  * list are of the same class). We use this for building type homogeneous lists
  * of SIPObjects that appear in SIPHeaders
  * 
- * @version 1.2 $Revision: 1.10 $ $Date: 2005/10/09 18:47:53
+ * @version 1.2 $Revision: 1.11 $ $Date: 2005/10/09 18:47:53
  */
 public abstract class SIPHeaderList<HDR extends SIPHeader> extends SIPHeader implements java.util.List<HDR>, Header {
 
@@ -653,7 +653,7 @@ public abstract class SIPHeaderList<HDR extends SIPHeader> extends SIPHeader imp
 	}
 
 
-	@Override
+	
 	public <T> T[] toArray(T[] array) {
 		return this.hlist.toArray(array);
 	}
