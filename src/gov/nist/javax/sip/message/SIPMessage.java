@@ -58,7 +58,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.31 $ $Date: 2007-10-26 03:53:18 $
+ * @version 1.2 $Revision: 1.32 $ $Date: 2007-10-26 15:54:52 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -73,7 +73,7 @@ public abstract class SIPMessage extends MessageObject implements
 	/**
 	 * unparsed headers
 	 */
-	protected LinkedList unrecognizedHeaders;
+	protected LinkedList<String> unrecognizedHeaders;
 
 	/**
 	 * List of parsed headers (in the order they were added)
@@ -477,7 +477,7 @@ public abstract class SIPMessage extends MessageObject implements
 	 * class.
 	 */
 	public SIPMessage() {
-		this.unrecognizedHeaders = new LinkedList<SIPHeader>();
+		this.unrecognizedHeaders = new LinkedList<String>();
 		this.headers = new ConcurrentLinkedQueue<SIPHeader>();
 		nameTable = new Hashtable<String,SIPHeader>();
 		try {
@@ -596,7 +596,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 		if (ListMap.hasList(header)
 				&& !SIPHeaderList.class.isAssignableFrom(header.getClass())) {
-			SIPHeaderList hdrList = ListMap.getList(header);
+			SIPHeaderList<SIPHeader> hdrList = ListMap.getList(header);
 			hdrList.add(header);
 			h = hdrList;
 		} else {
@@ -979,7 +979,7 @@ public abstract class SIPMessage extends MessageObject implements
 	 *            a headerList to set
 	 */
 
-	public void setHeader(SIPHeaderList sipHeaderList) {
+	public void setHeader(SIPHeaderList<Via> sipHeaderList) {
 		this.setHeader((Header) sipHeaderList);
 	}
 
@@ -1381,16 +1381,17 @@ public abstract class SIPMessage extends MessageObject implements
 	 *            is the name of the header to get.
 	 * @return a header or header list that contians the retrieved header.
 	 */
-	public ListIterator getHeaders(String headerName) {
+	@SuppressWarnings("unchecked")
+	public ListIterator<SIPHeader> getHeaders(String headerName) {
 		if (headerName == null)
 			throw new NullPointerException("null headerName");
 		SIPHeader sipHeader = (SIPHeader) nameTable.get(SIPHeaderNamesCache
 				.toLowerCase(headerName));
 		// empty iterator
 		if (sipHeader == null)
-			return new LinkedList().listIterator();
+			return new LinkedList<SIPHeader>().listIterator();
 		if (sipHeader instanceof SIPHeaderList) {
-			return ((SIPHeaderList) sipHeader).listIterator();
+			return ((SIPHeaderList<SIPHeader>) sipHeader).listIterator();
 		} else {
 			return new HeaderIterator(this, sipHeader);
 		}
@@ -1413,8 +1414,8 @@ public abstract class SIPMessage extends MessageObject implements
 		}
 	}
 
-	private SIPHeaderList<?> getSIPHeaderListLowerCase(String lowerCaseHeaderName) {
-		return (SIPHeaderList<?>) nameTable.get(lowerCaseHeaderName);
+	private SIPHeader getSIPHeaderListLowerCase(String lowerCaseHeaderName) {
+		return nameTable.get(lowerCaseHeaderName);
 	}
 
 	/**
@@ -1578,7 +1579,7 @@ public abstract class SIPMessage extends MessageObject implements
 	 * 
 	 * @return a linked list containing unrecongnized headers.
 	 */
-	public ListIterator getUnrecognizedHeaders() {
+	public ListIterator<String> getUnrecognizedHeaders() {
 		return this.unrecognizedHeaders.listIterator();
 	}
 
