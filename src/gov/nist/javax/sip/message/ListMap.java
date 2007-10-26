@@ -35,7 +35,7 @@ import java.util.Hashtable;
 /**
  * A map of which of the standard headers may appear as a list
  * 
- * @version 1.2 $Revision: 1.11 $ $Date: 2007-02-12 20:00:37 $
+ * @version 1.2 $Revision: 1.12 $ $Date: 2007-10-26 15:54:51 $
  * @since 1.1
  */
 class ListMap {
@@ -45,7 +45,7 @@ class ListMap {
 	// (provided it has a list form). Note that under JAVA-5 we have
 	// typed collections which would render such a list obsolete. However,
 	// we are not using java 5.
-	private static Hashtable headerListTable;
+	private static Hashtable<Class<?>,Class<?>> headerListTable;
 
 	private static boolean initialized;
 	static {
@@ -57,7 +57,7 @@ class ListMap {
 		 * Build a table mapping between objects that have a list form and the
 		 * class of such objects.
 		 */
-		headerListTable = new Hashtable();
+		headerListTable = new Hashtable<Class<?>, Class<?>>();
 		headerListTable.put(ExtensionHeaderImpl.class, ExtensionHeaderList.class);
 
 		headerListTable.put(Contact.class, ContactList.class);
@@ -169,8 +169,8 @@ class ListMap {
 		if (!initialized)
 			initializeListMap();
 		try {
-			Class headerClass = sipHeader.getClass();
-			Class listClass = (Class) headerListTable.get(headerClass);
+			Class<? extends SIPHeader> headerClass = sipHeader.getClass();
+			Class<? extends SIPHeaderList<?>> listClass = (Class) headerListTable.get(headerClass);
 			SIPHeaderList shl = (SIPHeaderList) listClass.newInstance();
 			shl.setHeaderName(sipHeader.getName());
 			return shl;
