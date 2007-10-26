@@ -35,10 +35,10 @@ import javax.sip.header.Header;
 
 /**
  * A generic extension header list.
- * @version 1.2 $Revision: 1.6 $ $Date: 2007-10-23 18:07:50 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2007-10-26 03:53:17 $
  * @since 1.1
  */
-public class ExtensionHeaderList extends SIPHeaderList<ExtensionHeader> { 
+public class ExtensionHeaderList extends SIPHeaderList<ExtensionHeaderImpl> { 
 
 	
 	
@@ -51,17 +51,17 @@ public class ExtensionHeaderList extends SIPHeaderList<ExtensionHeader> {
 		return retval;
 	}
 	public ExtensionHeaderList(String hName) {
-		super( ExtensionHeader.class, hName);
+		super( ExtensionHeaderImpl.class, hName);
 	}
 	
 	public ExtensionHeaderList() {
-		super(ExtensionHeader.class,null);
+		super(ExtensionHeaderImpl.class,null);
 	}
 	
 	
 	public String encode() {
 		StringBuffer retval = new StringBuffer();
-		ListIterator<ExtensionHeader> it = this.listIterator();
+		ListIterator<ExtensionHeaderImpl> it = this.listIterator();
 		while(it.hasNext()) {
 		   ExtensionHeaderImpl eh = (ExtensionHeaderImpl) it.next();
 		   retval.append(eh.encode());

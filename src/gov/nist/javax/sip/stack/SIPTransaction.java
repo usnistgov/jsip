@@ -52,7 +52,7 @@ import javax.sip.message.*;
  * @author M. Ranganathan
  * 
  * 
- * @version 1.2 $Revision: 1.57 $ $Date: 2007-10-22 03:38:27 $
+ * @version 1.2 $Revision: 1.58 $ $Date: 2007-10-26 03:53:17 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
 		javax.sip.Transaction {
@@ -213,7 +213,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 	protected int timeoutTimerTicksLeft;
 
 	// List of event listeners for this transaction
-	private transient Set eventListeners;
+	private transient Set<SIPTransactionEventListener> eventListeners;
 
 	// Hang on to these - we clear out the request URI after
 	// transaction goes to final state. Pointers to these are kept around
@@ -323,7 +323,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 			MessageChannel newEncapsulatedChannel) {
 
 		sipStack = newParentStack;
-		this.semaphore = new Semaphore(1);
+		this.semaphore = new Semaphore(1,true);
 
 		encapsulatedChannel = newEncapsulatedChannel;
 		// Record this to check if the address has changed before sending
@@ -361,7 +361,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 
 		disableRetransmissionTimer();
 		disableTimeoutTimer();
-		eventListeners = Collections.synchronizedSet(new HashSet());
+		eventListeners = Collections.synchronizedSet(new HashSet<SIPTransactionEventListener>());
 
 		// Always add the parent stack as a listener
 		// of this transaction
@@ -797,7 +797,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 		// Error event to send to all listeners
 		SIPTransactionErrorEvent newErrorEvent;
 		// Iterator through the list of listeners
-		Iterator listenerIterator;
+		Iterator<SIPTransactionEventListener> listenerIterator;
 		// Next listener in the list
 		SIPTransactionEventListener nextListener;
 
@@ -1141,8 +1141,9 @@ public abstract class SIPTransaction extends MessageChannel implements
 				sipStack.getLogWriter().logDebug("acquireSem [[[[" + this);
 				sipStack.getLogWriter().logStackTrace();
 			}
-			retval = this.semaphore.tryAcquire(10000, TimeUnit.MILLISECONDS);
-			sipStack.getLogWriter().logDebug(
+			retval = this.semaphore.tryAcquire(1000, TimeUnit.MILLISECONDS);
+			if ( sipStack.isLoggingEnabled())
+				sipStack.getLogWriter().logDebug(
 					"acquireSem() returning : " + retval);
 			return retval;
 		} catch (Exception ex) {

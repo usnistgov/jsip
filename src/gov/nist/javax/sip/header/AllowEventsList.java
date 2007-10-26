@@ -41,7 +41,7 @@ import javax.sip.header.*;
  * @author Olivier Deruelle <br/>
  * 
  *
- * @version 1.2 $Revision: 1.5 $ $Date: 2007-10-23 17:34:51 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2007-10-26 03:53:16 $
  * @since 1.1
  *
  */
@@ -100,8 +100,8 @@ public class AllowEventsList extends SIPHeaderList<AllowEvents>  {
 	 *
 	 *
 	 */
-	public void setMethods(List methods) throws ParseException {
-		ListIterator it = methods.listIterator();
+	public void setMethods(List<String> methods) throws ParseException {
+		ListIterator<String> it = methods.listIterator();
 		while (it.hasNext()) {
 			AllowEvents allowEvents = new AllowEvents();
 			allowEvents.setEventType((String) it.next());
