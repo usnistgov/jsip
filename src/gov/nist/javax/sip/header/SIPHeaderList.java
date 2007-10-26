@@ -44,9 +44,9 @@ import java.util.*;
  * list are of the same class). We use this for building type homogeneous lists
  * of SIPObjects that appear in SIPHeaders
  * 
- * @version 1.2 $Revision: 1.9 $ $Date: 2005/10/09 18:47:53
+ * @version 1.2 $Revision: 1.10 $ $Date: 2005/10/09 18:47:53
  */
-public abstract class SIPHeaderList<HDR extends Header> extends SIPHeader implements java.util.List<HDR>, Header {
+public abstract class SIPHeaderList<HDR extends SIPHeader> extends SIPHeader implements java.util.List<HDR>, Header {
 
 	/**
 	 * hlist field.
@@ -85,7 +85,7 @@ public abstract class SIPHeaderList<HDR extends Header> extends SIPHeader implem
 	 * @param objectToAdd
 	 */
 	public boolean add(HDR objectToAdd) {
-		hlist.add(objectToAdd);
+		hlist.add((HDR)objectToAdd);
 		return true;
 	}
 
@@ -97,7 +97,7 @@ public abstract class SIPHeaderList<HDR extends Header> extends SIPHeader implem
 	 *            Genericobject to set
 	 */
 	public void addFirst(HDR obj) {
-		hlist.add(0, obj);
+		hlist.add(0,(HDR) obj);
 	}
 
 	/**
@@ -164,7 +164,7 @@ public abstract class SIPHeaderList<HDR extends Header> extends SIPHeader implem
 					|| this.getClass().equals( ExtensionHeaderList.class) ) {
 				ListIterator<HDR> li = hlist.listIterator();
 				while (li.hasNext()) {
-					SIPHeader sipheader = (SIPHeader) li.next();
+					HDR sipheader = (HDR) li.next();
 					sipheader.encode(buffer);
 				}
 			} else {
@@ -191,7 +191,7 @@ public abstract class SIPHeaderList<HDR extends Header> extends SIPHeader implem
 
 		ListIterator<HDR> li = hlist.listIterator();
 		while (li.hasNext()) {
-			HDR sipheader = li.next();
+			Header sipheader = li.next();
 			retval.add(sipheader.toString());
 
 		}
@@ -205,7 +205,7 @@ public abstract class SIPHeaderList<HDR extends Header> extends SIPHeader implem
 	 * 
 	 * @return SIPHeader first element of the list.
 	 */
-	public HDR getFirst() {
+	public Header getFirst() {
 		if (hlist == null || hlist.isEmpty())
 			return null;
 		else
@@ -217,7 +217,7 @@ public abstract class SIPHeaderList<HDR extends Header> extends SIPHeader implem
 	 * 
 	 * @return SIPHeader last element of the list.
 	 */
-	public HDR getLast() {
+	public Header getLast() {
 		if (hlist == null || hlist.isEmpty())
 			return null;
 		return  hlist.get(hlist.size() - 1);
@@ -295,7 +295,7 @@ public abstract class SIPHeaderList<HDR extends Header> extends SIPHeader implem
 	 *            SIPHeader to remove
 	 * @return boolean
 	 */
-	public boolean remove(SIPHeader obj) {
+	public boolean remove(HDR obj) {
 		if (hlist.size() == 0)
 			return false;
 		else
@@ -329,8 +329,8 @@ public abstract class SIPHeaderList<HDR extends Header> extends SIPHeader implem
 		sprint(indent + "{");
 
 		for (Iterator<HDR> it = hlist.iterator(); it.hasNext();) {
-			SIPHeader sipHdr = (SIPHeader) it.next();
-			sprint(indent + sipHdr.debugDump());
+			HDR sipHeader = (HDR) it.next();
+			sprint(indent + sipHeader.debugDump());
 		}
 		sprint(indent + "}");
 		return stringRepresentation;
@@ -394,7 +394,7 @@ public abstract class SIPHeaderList<HDR extends Header> extends SIPHeader implem
 			return true;
 
 		if (other instanceof SIPHeaderList) {
-			SIPHeaderList<HDR> that = (SIPHeaderList<HDR>) other;
+			SIPHeaderList<SIPHeader> that = (SIPHeaderList<SIPHeader>) other;
 			if (this.hlist == that.hlist)
 				return true;
 			else if (this.hlist == null)
@@ -413,21 +413,21 @@ public abstract class SIPHeaderList<HDR extends Header> extends SIPHeader implem
 			return true;
 		if (!this.getClass().equals(template.getClass()))
 			return false;
-		SIPHeaderList<HDR> that = (SIPHeaderList<HDR>) template;
+		SIPHeaderList<SIPHeader> that = (SIPHeaderList<SIPHeader>) template;
 		if (this.hlist == that.hlist)
 			return true;
 		else if (this.hlist == null)
 			return false;
 		else {
 
-			for (Iterator<HDR> it = that.hlist.iterator(); it.hasNext();) {
-				SIPHeader sipHdr = (SIPHeader) it.next();
+			for (Iterator<SIPHeader> it = that.hlist.iterator(); it.hasNext();) {
+				SIPHeader sipHeader = (SIPHeader) it.next();
 
 				boolean found = false;
 				for (Iterator<HDR> it1 = this.hlist.iterator(); it1.hasNext()
 						&& !found;) {
-					SIPHeader sipHdr1 = (SIPHeader) it1.next();
-					found = sipHdr1.match(sipHdr);
+					SIPHeader sipHeader1 = (SIPHeader) it1.next();
+					found = sipHeader1.match(sipHeader);
 				}
 				if (!found)
 					return false;
@@ -459,7 +459,7 @@ public abstract class SIPHeaderList<HDR extends Header> extends SIPHeader implem
 	protected final SIPHeaderList<HDR> clonehlist(List<HDR> hlistToClone) {
 		if (hlistToClone != null) {
 			for (Iterator<HDR> it = (Iterator<HDR>) hlistToClone.iterator(); it.hasNext();) {
-				HDR h = it.next();
+				Header h = it.next();
 				this.hlist.add((HDR)h.clone());
 			}
 		}
@@ -496,9 +496,9 @@ public abstract class SIPHeaderList<HDR extends Header> extends SIPHeader implem
 	protected StringBuffer encodeBody(StringBuffer buffer) {
 		ListIterator<HDR> iterator = this.listIterator();
 		while (true) {
-			SIPHeader siphdr = (SIPHeader) iterator.next();
-			if ( siphdr == this ) throw new RuntimeException ("Unexpected circularity in SipHeaderList");
-			siphdr.encodeBody(buffer);
+			SIPHeader sipHeader = (SIPHeader) iterator.next();
+			if ( sipHeader == this ) throw new RuntimeException ("Unexpected circularity in SipHeaderList");
+			sipHeader.encodeBody(buffer);
 			// if (body.equals("")) System.out.println("BODY == ");
 			if (iterator.hasNext()) {
 				if (!this.headerName.equals(PrivacyHeader.NAME))
@@ -646,27 +646,17 @@ public abstract class SIPHeaderList<HDR extends Header> extends SIPHeader implem
 	 * 
 	 * @see List#set(int, java.lang.Object)
 	 */
-	public HDR set(int position, HDR sipHdr) {
+	public HDR set(int position, HDR sipHeader) {
 
-		return hlist.set(position, sipHdr);
+		return hlist.set(position, sipHeader);
 
+	}
+
+
+	@Override
+	public <T> T[] toArray(T[] array) {
+		return this.hlist.toArray(array);
 	}
 	
-	/**
-	 * Convert a list of headers to an array.
-	 * 
-	 * @see List#toArray(java.lang.Object[])
-	 */
-
-	public HDR[] toArray(HDR[] array) {
-
-		return hlist.toArray(array);
-	}
-
 	
-
-	public <T> T[] toArray(T[] a) {
-		return hlist.toArray(a);
-	}
-
 }

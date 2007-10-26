@@ -155,7 +155,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.80 $ $Date: 2007-10-22 03:38:27 $
+ * @version 1.2 $Revision: 1.81 $ $Date: 2007-10-26 03:53:17 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -1154,7 +1154,7 @@ public class SIPClientTransaction extends SIPTransaction implements
 		ackRequest.removeHeader(RouteHeader.NAME);
 		RouteList routeList = new RouteList();
 		// start at the end of the list and walk backwards
-		ListIterator li = recordRouteList.listIterator(recordRouteList.size());
+		ListIterator<RecordRoute> li = recordRouteList.listIterator(recordRouteList.size());
 		while (li.hasPrevious()) {
 			RecordRoute rr = (RecordRoute) li.previous();
 

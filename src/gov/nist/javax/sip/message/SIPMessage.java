@@ -44,12 +44,12 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /*
- * Acknowledgements:
- * Yanick Belanger sent in a patch for the right content length when the content
- * is a String. Bill Mccormick from Nortel Networks sent in a bug fix for
- * setContent.
+ * Acknowledgements: Yanick Belanger sent in a patch for the right content
+ * length when the content is a String. Bill Mccormick from Nortel Networks sent
+ * in a bug fix for setContent.
  * 
  */
 /**
@@ -58,7 +58,7 @@ import java.util.*;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.30 $ $Date: 2007-10-04 19:16:26 $
+ * @version 1.2 $Revision: 1.31 $ $Date: 2007-10-26 03:53:18 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -78,7 +78,7 @@ public abstract class SIPMessage extends MessageObject implements
 	/**
 	 * List of parsed headers (in the order they were added)
 	 */
-	protected LinkedList headers;
+	protected ConcurrentLinkedQueue<SIPHeader> headers;
 
 	/**
 	 * Direct accessors for frequently accessed headers
@@ -106,7 +106,7 @@ public abstract class SIPMessage extends MessageObject implements
 	private Object messageContentObject;
 
 	// Table of headers indexed by name.
-	private Hashtable nameTable;
+	private Hashtable<String,SIPHeader> nameTable;
 
 	/**
 	 * Return true if the header belongs only in a Request.
@@ -152,20 +152,19 @@ public abstract class SIPMessage extends MessageObject implements
 	 * @return a linked list with each element of the list containing a string
 	 *         encoded header in canonical form.
 	 */
-	public LinkedList getMessageAsEncodedStrings() {
-		LinkedList retval = new LinkedList();
-		synchronized (headers) {
-			ListIterator li = headers.listIterator();
-			while (li.hasNext()) {
-				SIPHeader sipHeader = (SIPHeader) li.next();
-				if (sipHeader instanceof SIPHeaderList) {
-					SIPHeaderList shl = (SIPHeaderList) sipHeader;
-					retval.addAll(shl.getHeadersAsEncodedStrings());
-				} else {
-					retval.add(sipHeader.encode());
-				}
+	public LinkedList<String> getMessageAsEncodedStrings() {
+		LinkedList<String> retval = new LinkedList<String>();
+		Iterator<SIPHeader> li = headers.iterator();
+		while (li.hasNext()) {
+			SIPHeader sipHeader = (SIPHeader) li.next();
+			if (sipHeader instanceof SIPHeaderList) {
+				SIPHeaderList<?> shl = (SIPHeaderList<?>) sipHeader;
+				retval.addAll(shl.getHeadersAsEncodedStrings());
+			} else {
+				retval.add(sipHeader.encode());
 			}
 		}
+
 		return retval;
 	}
 
@@ -176,14 +175,12 @@ public abstract class SIPMessage extends MessageObject implements
 	 */
 	protected String encodeSIPHeaders() {
 		StringBuffer encoding = new StringBuffer();
-		synchronized (this.headers) {
-			ListIterator it = this.headers.listIterator();
+		Iterator<SIPHeader> it = this.headers.iterator();
 
-			while (it.hasNext()) {
-				SIPHeader siphdr = (SIPHeader) it.next();
-				if (!(siphdr instanceof ContentLength))
-					siphdr.encode(encoding);
-			}
+		while (it.hasNext()) {
+			SIPHeader siphdr = (SIPHeader) it.next();
+			if (!(siphdr instanceof ContentLength))
+				siphdr.encode(encoding);
 		}
 
 		return contentLengthHeader.encode(encoding).append(NEWLINE).toString();
@@ -218,10 +215,10 @@ public abstract class SIPMessage extends MessageObject implements
 		if (!other.getClass().equals(this.getClass()))
 			return false;
 		SIPMessage matchObj = (SIPMessage) other;
-		ListIterator li = matchObj.getHeaders();
+		Iterator<SIPHeader> li = matchObj.getHeaders();
 		while (li.hasNext()) {
 			SIPHeader hisHeaders = (SIPHeader) li.next();
-			LinkedList myHeaders = this.getHeaderList(hisHeaders
+			List<SIPHeader> myHeaders = this.getHeaderList(hisHeaders
 					.getHeaderName());
 
 			// Could not find a header to match his header.
@@ -229,13 +226,13 @@ public abstract class SIPMessage extends MessageObject implements
 				return false;
 
 			if (hisHeaders instanceof SIPHeaderList) {
-				ListIterator outerIterator = ((SIPHeaderList) hisHeaders)
+				ListIterator<?> outerIterator = ((SIPHeaderList<?>) hisHeaders)
 						.listIterator();
 				while (outerIterator.hasNext()) {
 					SIPHeader hisHeader = (SIPHeader) outerIterator.next();
 					if (hisHeader instanceof ContentLength)
 						continue;
-					ListIterator innerIterator = myHeaders.listIterator();
+					ListIterator<?> innerIterator = myHeaders.listIterator();
 					boolean found = false;
 					while (innerIterator.hasNext()) {
 						SIPHeader myHeader = (SIPHeader) innerIterator.next();
@@ -249,7 +246,7 @@ public abstract class SIPMessage extends MessageObject implements
 				}
 			} else {
 				SIPHeader hisHeader = hisHeaders;
-				ListIterator innerIterator = myHeaders.listIterator();
+				ListIterator<SIPHeader> innerIterator = myHeaders.listIterator();
 				boolean found = false;
 				while (innerIterator.hasNext()) {
 					SIPHeader myHeader = (SIPHeader) innerIterator.next();
@@ -282,11 +279,11 @@ public abstract class SIPMessage extends MessageObject implements
 		for (int i = 0; i < templateHeaders.length; i++) {
 			SIPHeader hdr = (SIPHeader) templateHeaders[i];
 			String hdrName = hdr.getHeaderName();
-			LinkedList myHdrs = this.getHeaderList(hdrName);
+			List<SIPHeader> myHdrs = this.getHeaderList(hdrName);
 			if (myHdrs == null) {
 				this.attachHeader(hdr);
 			} else {
-				ListIterator it = myHdrs.listIterator();
+				ListIterator<SIPHeader> it = myHdrs.listIterator();
 				while (it.hasNext()) {
 					SIPHeader sipHdr = (SIPHeader) it.next();
 					sipHdr.merge(hdr);
@@ -310,14 +307,12 @@ public abstract class SIPMessage extends MessageObject implements
 		// Synchronization added because of
 		// concurrent modification exception
 		// noticed by Lamine Brahimi.
-		synchronized (this.headers) {
-			ListIterator it = this.headers.listIterator();
+		Iterator<SIPHeader> it = this.headers.iterator();
 
-			while (it.hasNext()) {
-				SIPHeader siphdr = (SIPHeader) it.next();
-				if (!(siphdr instanceof ContentLength))
-					encoding.append(siphdr.encode());
-			}
+		while (it.hasNext()) {
+			SIPHeader siphdr = (SIPHeader) it.next();
+			if (!(siphdr instanceof ContentLength))
+				encoding.append(siphdr.encode());
 		}
 
 		encoding.append(contentLengthHeader.encode()).append(NEWLINE);
@@ -355,7 +350,7 @@ public abstract class SIPMessage extends MessageObject implements
 	public byte[] encodeAsBytes() {
 		StringBuffer encoding = new StringBuffer();
 		synchronized (this.headers) {
-			ListIterator it = this.headers.listIterator();
+			Iterator<SIPHeader> it = this.headers.iterator();
 
 			while (it.hasNext()) {
 				SIPHeader siphdr = (SIPHeader) it.next();
@@ -408,7 +403,7 @@ public abstract class SIPMessage extends MessageObject implements
 	 */
 	public Object clone() {
 		SIPMessage retval = (SIPMessage) super.clone();
-		retval.nameTable = new Hashtable();
+		retval.nameTable = new Hashtable<String,SIPHeader>();
 		retval.fromHeader = null;
 		retval.toHeader = null;
 		retval.cSeqHeader = null;
@@ -416,13 +411,12 @@ public abstract class SIPMessage extends MessageObject implements
 		retval.contentLengthHeader = null;
 		retval.maxForwardsHeader = null;
 		if (this.headers != null) {
-			// synchronized (this.headers) {
-			retval.headers = new LinkedList();
-			for (Iterator iter = headers.iterator(); iter.hasNext();) {
+				retval.headers = new ConcurrentLinkedQueue<SIPHeader>();
+			for (Iterator<SIPHeader> iter = headers.iterator(); iter.hasNext();) {
 				SIPHeader hdr = (SIPHeader) iter.next();
 				retval.attachHeader((SIPHeader) hdr.clone());
 			}
-			// }
+			
 		}
 		if (this.messageContentBytes != null)
 			retval.messageContentBytes = (byte[]) this.messageContentBytes
@@ -449,7 +443,7 @@ public abstract class SIPMessage extends MessageObject implements
 			Field[] fields = this.getClass().getDeclaredFields();
 			for (int i = 0; i < fields.length; i++) {
 				Field f = fields[i];
-				Class fieldType = f.getType();
+				Class<?> fieldType = f.getType();
 				String fieldName = f.getName();
 				if (f.get(this) != null
 						&& Class.forName(SIPHEADERS_PACKAGE + ".SIPHeader")
@@ -483,9 +477,9 @@ public abstract class SIPMessage extends MessageObject implements
 	 * class.
 	 */
 	public SIPMessage() {
-		this.unrecognizedHeaders = new LinkedList();
-		this.headers = new LinkedList();
-		nameTable = new Hashtable();
+		this.unrecognizedHeaders = new LinkedList<SIPHeader>();
+		this.headers = new ConcurrentLinkedQueue<SIPHeader>();
+		nameTable = new Hashtable<String,SIPHeader>();
 		try {
 			this.attachHeader(new ContentLength(0), false);
 		} catch (Exception ex) {
@@ -503,7 +497,7 @@ public abstract class SIPMessage extends MessageObject implements
 			throw new IllegalArgumentException("null header!");
 		try {
 			if (h instanceof SIPHeaderList) {
-				SIPHeaderList hl = (SIPHeaderList) h;
+				SIPHeaderList<?> hl = (SIPHeaderList<?>) h;
 				if (hl.isEmpty()) {
 					return;
 				}
@@ -526,7 +520,7 @@ public abstract class SIPMessage extends MessageObject implements
 			throw new IllegalArgumentException("null header!");
 		try {
 			if (header instanceof SIPHeaderList) {
-				SIPHeaderList hl = (SIPHeaderList) header;
+				SIPHeaderList<?> hl = (SIPHeaderList<?>) header;
 				// Ignore empty lists.
 				if (hl.isEmpty())
 					return;
@@ -544,8 +538,8 @@ public abstract class SIPMessage extends MessageObject implements
 	 * @param headers --
 	 *            a list of headers to set.
 	 */
-	public void setHeaders(java.util.List headers) {
-		ListIterator listIterator = headers.listIterator();
+	public void setHeaders(java.util.List<SIPHeader> headers) {
+		ListIterator<SIPHeader> listIterator = headers.listIterator();
 		while (listIterator.hasNext()) {
 			SIPHeader sipHeader = (SIPHeader) listIterator.next();
 			try {
@@ -630,7 +624,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 		// Delete the original header from our list structure.
 		if (originalHeader != null) {
-			ListIterator li = headers.listIterator();
+			Iterator<SIPHeader> li = headers.iterator();
 			while (li.hasNext()) {
 				SIPHeader next = (SIPHeader) li.next();
 				if (next.equals(originalHeader)) {
@@ -644,7 +638,7 @@ public abstract class SIPMessage extends MessageObject implements
 			headers.add(h);
 		} else {
 			if (h instanceof SIPHeaderList) {
-				SIPHeaderList hdrlist = (SIPHeaderList) nameTable
+				SIPHeaderList<?> hdrlist = (SIPHeaderList<?>) nameTable
 						.get(headerNameLowerCase);
 				if (hdrlist != null)
 					hdrlist.concatenate((SIPHeaderList) h, top);
@@ -690,14 +684,14 @@ public abstract class SIPMessage extends MessageObject implements
 		if (toRemove == null)
 			return;
 		if (toRemove instanceof SIPHeaderList) {
-			SIPHeaderList hdrList = (SIPHeaderList) toRemove;
+			SIPHeaderList<?> hdrList = (SIPHeaderList<?>) toRemove;
 			if (top)
 				hdrList.removeFirst();
 			else
 				hdrList.removeLast();
 			// Clean up empty list
 			if (hdrList.isEmpty()) {
-				ListIterator li = this.headers.listIterator();
+				Iterator<SIPHeader> li = this.headers.iterator();
 				while (li.hasNext()) {
 					SIPHeader sipHeader = (SIPHeader) li.next();
 					if (sipHeader.getName().equalsIgnoreCase(
@@ -724,7 +718,7 @@ public abstract class SIPMessage extends MessageObject implements
 			} else if (toRemove instanceof ContentLength) {
 				this.contentLengthHeader = null;
 			}
-			ListIterator li = this.headers.listIterator();
+			Iterator<SIPHeader> li = this.headers.iterator();
 			while (li.hasNext()) {
 				SIPHeader sipHeader = (SIPHeader) li.next();
 				if (sipHeader.getName().equalsIgnoreCase(headerName))
@@ -766,7 +760,7 @@ public abstract class SIPMessage extends MessageObject implements
 			this.contentLengthHeader = null;
 		}
 
-		ListIterator li = this.headers.listIterator();
+		Iterator<SIPHeader> li = this.headers.iterator();
 		while (li.hasNext()) {
 			SIPHeader sipHeader = (SIPHeader) li.next();
 			if (sipHeader.getName().equalsIgnoreCase(headerNameLowerCase))
@@ -867,8 +861,8 @@ public abstract class SIPMessage extends MessageObject implements
 	 * 
 	 * @return an Iterator for the headers of this message.
 	 */
-	public ListIterator getHeaders() {
-		return headers.listIterator();
+	public Iterator<SIPHeader> getHeaders() {
+		return headers.iterator();
 	}
 
 	/**
@@ -1250,7 +1244,6 @@ public abstract class SIPMessage extends MessageObject implements
 			throw new NullPointerException("null content");
 		this.setHeader(contentTypeHeader);
 
-		
 		this.messageContent = null;
 		this.messageContentBytes = null;
 		this.messageContentObject = null;
@@ -1420,8 +1413,8 @@ public abstract class SIPMessage extends MessageObject implements
 		}
 	}
 
-	private SIPHeaderList getSIPHeaderListLowerCase(String lowerCaseHeaderName) {
-		return (SIPHeaderList) nameTable.get(lowerCaseHeaderName);
+	private SIPHeaderList<?> getSIPHeaderListLowerCase(String lowerCaseHeaderName) {
+		return (SIPHeaderList<?>) nameTable.get(lowerCaseHeaderName);
 	}
 
 	/**
@@ -1432,15 +1425,16 @@ public abstract class SIPMessage extends MessageObject implements
 	 *            a header name from which to retrieve the list.
 	 * @return -- a list of headers with that name.
 	 */
-	private LinkedList getHeaderList(String headerName) {
+	@SuppressWarnings("unchecked")
+	private List<SIPHeader> getHeaderList(String headerName) {
 		SIPHeader sipHeader = (SIPHeader) nameTable.get(SIPHeaderNamesCache
 				.toLowerCase(headerName));
 		if (sipHeader == null)
 			return null;
 		else if (sipHeader instanceof SIPHeaderList)
-			return (LinkedList) (((SIPHeaderList) sipHeader).getHeaderList());
+			return  (List<SIPHeader>) (((SIPHeaderList<?>) sipHeader).getHeaderList());
 		else {
-			LinkedList ll = new LinkedList();
+			LinkedList<SIPHeader> ll = new LinkedList<SIPHeader>();
 			ll.add(sipHeader);
 			return ll;
 		}
@@ -1534,8 +1528,8 @@ public abstract class SIPMessage extends MessageObject implements
 		// Content length is never stored. Just computed.
 		SIPHeader sh = (SIPHeader) sipHeader;
 		try {
-			if ((sipHeader instanceof ViaHeader) ||
-				(sipHeader instanceof RecordRouteHeader)) {
+			if ((sipHeader instanceof ViaHeader)
+					|| (sipHeader instanceof RecordRouteHeader)) {
 				attachHeader(sh, false, true);
 			} else {
 				attachHeader(sh, false, false);
@@ -1594,9 +1588,9 @@ public abstract class SIPMessage extends MessageObject implements
 	 * @return a list iterator to a list of header names. These are ordered in
 	 *         the same order as are present in the message.
 	 */
-	public ListIterator getHeaderNames() {
-		ListIterator li = this.headers.listIterator();
-		LinkedList retval = new LinkedList();
+	public ListIterator<String> getHeaderNames() {
+		Iterator<SIPHeader> li = this.headers.iterator();
+		LinkedList<String> retval = new LinkedList<String>();
 		while (li.hasNext()) {
 			SIPHeader sipHeader = (SIPHeader) li.next();
 			String name = sipHeader.getName();
@@ -1616,8 +1610,8 @@ public abstract class SIPMessage extends MessageObject implements
 			return false;
 		}
 		SIPMessage otherMessage = (SIPMessage) other;
-		Collection values = this.nameTable.values();
-		Iterator it = values.iterator();
+		Collection<SIPHeader> values = this.nameTable.values();
+		Iterator<SIPHeader> it = values.iterator();
 		if (nameTable.size() != otherMessage.nameTable.size()) {
 			return false;
 		}

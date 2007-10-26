@@ -151,8 +151,7 @@ public class Shootist implements SipListener {
 				{
 			    	System.out.println(".: Security-Server received: ");
 		    		
-					secVerifyList = new SecurityVerifyList();
-			    	while (secServerReceived.hasNext())
+				 	while (secServerReceived.hasNext())
 			    	{
 			    		SecurityServerHeader security = null;
 			    		try {
@@ -172,7 +171,6 @@ public class Shootist implements SipListener {
 				    			String paramName = (String)parameters.next();
 				    			newSecVerify.setParameter(paramName,security.getParameter(paramName));
 				    		}
-				    		secVerifyList.add(newSecVerify);
 				    		
 				    		System.out.println("   - " + security.toString());
 				    		
@@ -456,17 +454,15 @@ public class Shootist implements SipListener {
 						Request.UPDATE);
 			request.addHeader(allowHeader);
 			*/
-			AllowList allowList = new AllowList();
-			AllowHeader allow1 = 
+				AllowHeader allow1 = 
 				headerFactory.createAllowHeader(Request.INVITE);
-			allowList.add(allow1);
+			request.addHeader(allow1);
 			AllowHeader allow2 = 
 				headerFactory.createAllowHeader(Request.PRACK);
-			allowList.add(allow2);
+			request.addHeader(allow2);
 			AllowHeader allow3 = 
 				headerFactory.createAllowHeader(Request.UPDATE);
-			allowList.add(allow3);
-			request.addHeader(allowList);
+			request.addHeader(allow3);
 			
 			// Supported
 			/*
@@ -475,18 +471,16 @@ public class Shootist implements SipListener {
 						"precondition");
 			request.addHeader(supportedHeader);
 			*/
-			SupportedList suppList = new SupportedList();
 			SupportedHeader supported1 =
 				headerFactory.createSupportedHeader("100rel");
-			suppList.add(supported1);
+			request.addHeader(supported1);
 			SupportedHeader supported2 =
 				headerFactory.createSupportedHeader("preconditions");
-			suppList.add(supported2);
+			request.addHeader(supported2);
 			SupportedHeader supported3 =
 				headerFactory.createSupportedHeader("path");
-			suppList.add(supported3);
-			request.addHeader(suppList);
-			
+			request.addHeader(supported3);
+		
 			
 			
 			// Require
@@ -496,15 +490,13 @@ public class Shootist implements SipListener {
 				"precondition");
 			request.addHeader(requireHeader);
 			*/
-			RequireList requireList = new RequireList();
 			RequireHeader require1 =
 				headerFactory.createRequireHeader("sec-agree");
-			requireList.add(require1);
+			request.addHeader(require1);
 			RequireHeader require2 =
 				headerFactory.createRequireHeader("preconditions");
-			requireList.add(require2);
-			request.addHeader(requireList);
-			
+			request.addHeader(require2);
+				
 			
 			// Security-Client
 			SecurityClientHeader secClient = 
@@ -527,12 +519,10 @@ public class Shootist implements SipListener {
 			request.addHeader(accessInfo);
 
 			// Privacy
-			PrivacyList privList = new PrivacyList();
 			PrivacyHeader privacy = headerFactoryImpl.createPrivacyHeader("header");
-			privList.add(privacy);
+			request.addHeader(privacy);
 			PrivacyHeader privacy2 = headerFactoryImpl.createPrivacyHeader("user");
-			privList.add(privacy2);
-			request.addHeader(privList);
+			request.addHeader(privacy2);
 			
 			// P-Preferred-Identity
 			PPreferredIdentityHeader preferredID =
@@ -554,7 +544,6 @@ public class Shootist implements SipListener {
 			request.addHeader(calledPartyID);
 			
 			// P-Visited-Network-ID
-			PVisitedNetworkIDList visNetList = new PVisitedNetworkIDList();
 			PVisitedNetworkIDHeader visitedNetworkID1 =
 				headerFactoryImpl.createPVisitedNetworkIDHeader();
 			visitedNetworkID1.setVisitedNetworkID(fromSipAddress
@@ -563,36 +552,31 @@ public class Shootist implements SipListener {
 				headerFactoryImpl.createPVisitedNetworkIDHeader();
 			visitedNetworkID2.setVisitedNetworkID(toSipAddress
 					.substring(toSipAddress.indexOf("@")+1));
-			visNetList.add(visitedNetworkID1);
-			visNetList.add(visitedNetworkID2);
-			request.addHeader(visNetList);
+			request.addHeader(visitedNetworkID1);
+			request.addHeader(visitedNetworkID2);
 			
 			
 			// P-Associated-URI
-			PAssociatedURIList associatedList = new PAssociatedURIList();
 			PAssociatedURIHeader associatedURI1 =
 				headerFactoryImpl.createPAssociatedURIHeader(toNameAddress);
 			PAssociatedURIHeader associatedURI2 =
 				headerFactoryImpl.createPAssociatedURIHeader(fromNameAddress);
-			associatedList.add(associatedURI1);
-			associatedList.add(associatedURI2);
-			request.addHeader(associatedList);
+			request.addHeader(associatedURI1);
+			request.addHeader(associatedURI2);
 			
 			
 			// P-Asserted-Identity
-			PAssertedIdentityList assertedIDList = new PAssertedIdentityList();
 			PAssertedIdentityHeader assertedID =
 				headerFactoryImpl.createPAssertedIdentityHeader(
 						addressFactory.createAddress(toAddress));
-			assertedIDList.add(assertedID);
+			request.addHeader(assertedID);
 			
 			TelURL tel = addressFactory.createTelURL("+1-201-555-0123");
 			Address telAddress = addressFactory.createAddress(tel);
 			toNameAddress.setDisplayName(toDisplayName);
 			PAssertedIdentityHeader assertedID2 =
 				headerFactoryImpl.createPAssertedIdentityHeader(telAddress);
-			assertedIDList.add(assertedID2);
-			request.addHeader(assertedIDList);
+			request.addHeader(assertedID2);
 			
 			
 			// P-Charging-Function-Addresses
@@ -611,25 +595,21 @@ public class Shootist implements SipListener {
 			request.addHeader(chargVect);
 			
 			// P-Media-Authorization
-			PMediaAuthorizationList mediaAuthList = new PMediaAuthorizationList();
 			PMediaAuthorizationHeader mediaAuth1 =
 				headerFactoryImpl.createPMediaAuthorizationHeader("13579bdf");
 			PMediaAuthorizationHeader mediaAuth2 =
 				headerFactoryImpl.createPMediaAuthorizationHeader("02468ace");
-			mediaAuthList.add(mediaAuth1);
-			mediaAuthList.add(mediaAuth2);
-			request.addHeader(mediaAuthList);
+			request.addHeader(mediaAuth1);
+			request.addHeader(mediaAuth2);
 			
 
 			// Path header
-			PathList pathList = new PathList();
 			PathHeader path1 = 
 				headerFactoryImpl.createPathHeader(fromNameAddress);
 			PathHeader path2 = 
 				headerFactoryImpl.createPathHeader(toNameAddress);
-			pathList.add(path1);
-			pathList.add(path2);
-			request.addHeader(pathList);
+			request.addHeader(path1);
+			request.addHeader(path2);
 			
 			
 			
