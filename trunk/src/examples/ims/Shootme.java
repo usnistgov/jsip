@@ -555,8 +555,8 @@ public class Shootme implements SipListener {
 				secServer2.setPortServer(4286);
 				secServer2.setPreference(0.5f);
 				
-				secServerList.add(secServer1);
-				secServerList.add(secServer2);
+				request.addHeader(secServer1);
+				request.addHeader(secServer2);
 				
 			}
 			catch (Exception ex)
@@ -567,7 +567,7 @@ public class Shootme implements SipListener {
 		}
 		
 		// check Path header
-		ListIterator pathList = request.getHeaders(PathHeader.NAME);
+		ListIterator<Header> pathList = (ListIterator<Header>)request.getHeaders(PathHeader.NAME);
 		if (pathList != null && pathList.hasNext())
 		{
 			System.out.print(".: Path received : ");

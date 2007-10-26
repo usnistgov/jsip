@@ -3,6 +3,8 @@ package test.load.concurrency;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import javax.sip.ClientTransaction;
 import javax.sip.Dialog;
 import javax.sip.DialogState;
@@ -35,9 +37,8 @@ import javax.sip.message.Request;
 import javax.sip.message.Response;
 import junit.framework.TestCase;
 
-
 /**
- * This class is a UAC template. 
+ * This class is a UAC template.
  * 
  * @author M. Ranganathan
  */
@@ -58,20 +59,20 @@ public class Shootist extends TestCase implements SipListener {
 
 	static String transport;
 
-    // Starts at -2000, a ramp-up period is required for performance testing.
-    int byeCount = -2000;
+	// Starts at -2000, a ramp-up period is required for performance testing.
+	int byeCount = -2000;
 
 	int ackCount;
 
 	long start;
 
-    static int MAXCONCURRENTINVITE = 100;
-    static int NDIALOGS = 1000;
-    static int NBPROVIDERS = 1;
-    
-    int nbConcurrentInvite = 0;
+	static int MAXCONCURRENTINVITE = 100;
+	static int NDIALOGS = 1000;
+	static int NBPROVIDERS = 1;
 
-    // Keeps track of successful dialog completion.
+	AtomicInteger nbConcurrentInvite = new AtomicInteger(0);
+
+	// Keeps track of successful dialog completion.
 	private static Timer timer;
 
 	static {
@@ -174,21 +175,20 @@ public class Shootist extends TestCase implements SipListener {
 
 			Appdata appdata = (Appdata) dialog.getApplicationData();
 			appdata.cancelTimer();
-			synchronized (this) {
-                nbConcurrentInvite--;
-                //System.out.println(nbConcurrentInvite);
-                notifyAll();
-                // Synchronization necessary for Multiprocessor machine
-				// noted by Matt Porter.
-				this.byeCount++;
-				// System.out.println("bye count = " + byeCount);
-				if (byeCount == NDIALOGS) {
-					long current = System.currentTimeMillis();
-					float sec = (float)(current - start) / 1000f;
-					System.out.println("Thrupt = " + (float)(NDIALOGS / sec));
-				}
+			int ndialogs = nbConcurrentInvite.decrementAndGet();
+			// System.out.println(nbConcurrentInvite);
+			if ( ndialogs > MAXCONCURRENTINVITE ) System.out.println("Concurrent invites = " + ndialogs);
+			// Synchronization necessary for Multiprocessor machine
+			// noted by Matt Porter.
+			this.byeCount++;
+			// System.out.println("bye count = " + byeCount);
+			if (byeCount == NDIALOGS) {
+				long current = System.currentTimeMillis();
+				float sec = (float) (current - start) / 1000f;
+				System.out.println("Thrupt = " + (float) (NDIALOGS / sec));
 			}
-			//dialog.delete();
+
+			// dialog.delete();
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -219,7 +219,8 @@ public class Shootist extends TestCase implements SipListener {
 					dialog.sendAck(ackRequest);
 
 					Appdata appData = (Appdata) dialog.getApplicationData();
-					if ( appData != null ) appData.ackCount++;
+					if (appData != null)
+						appData.ackCount++;
 				}
 
 			}
@@ -293,8 +294,8 @@ public class Shootist extends TestCase implements SipListener {
 			// Create ViaHeaders
 
 			ArrayList viaHeaders = new ArrayList();
-            SipProvider sipProvider = getNextProvider();
-            int port = sipProvider.getListeningPoint(transport).getPort();
+			SipProvider sipProvider = getNextProvider();
+			int port = sipProvider.getListeningPoint(transport).getPort();
 			ViaHeader viaHeader = headerFactory.createViaHeader(sipProvider
 					.getListeningPoint(transport).getIPAddress(), port,
 					transport, null);
@@ -321,12 +322,12 @@ public class Shootist extends TestCase implements SipListener {
 			String host = sipProvider.getListeningPoint(transport)
 					.getIPAddress();
 
-            // Create the contact name address.
+			// Create the contact name address.
 			SipURI contactURI = addressFactory.createSipURI(fromName, host);
 			contactURI.setPort(port);
-            contactURI.setTransportParam(transport);
+			contactURI.setTransportParam(transport);
 
-            Address contactAddress = addressFactory.createAddress(contactURI);
+			Address contactAddress = addressFactory.createAddress(contactURI);
 
 			// Add the contact address.
 			contactAddress.setDisplayName(fromName);
@@ -352,7 +353,8 @@ public class Shootist extends TestCase implements SipListener {
 			request.setHeader(routeHeader);
 
 			// Create the client transaction.
-			ClientTransaction inviteTid = sipProvider.getNewClientTransaction(request);
+			ClientTransaction inviteTid = sipProvider
+					.getNewClientTransaction(request);
 
 			Dialog dialog = inviteTid.getDialog();
 
@@ -361,37 +363,38 @@ public class Shootist extends TestCase implements SipListener {
 			dialog.setApplicationData(appdata);
 			// send the request out.
 			inviteTid.sendRequest();
-            synchronized (this) {
-                nbConcurrentInvite++;
-                //System.out.println(nbConcurrentInvite);
-            }
-        } catch (Exception ex) {
+			
+			nbConcurrentInvite.incrementAndGet();
+				// System.out.println(nbConcurrentInvite);
+			
+		} catch (Exception ex) {
 			System.out.println(ex.getMessage());
 			ex.printStackTrace();
 			usage();
 		}
 	}
 
-    int currentProvider = 0;
-    private SipProvider getNextProvider()
-    {
-        synchronized (this) {
-            currentProvider++;
-            if (currentProvider >= NBPROVIDERS) {
-                currentProvider = 0;
-            }
-            return sipProviders[currentProvider];
-        }
-    }
+	int currentProvider = 0;
 
-    public void createProvider(SipListener listener) throws Exception {
-        sipProviders = new SipProvider[NBPROVIDERS];
-        for (int i = 0; i < NBPROVIDERS; i++) {
-            ListeningPoint listeningPoint = sipStack.createListeningPoint("127.0.0.1", 15060 + i, transport);
-            sipProviders[i] = sipStack.createSipProvider(listeningPoint);
-            sipProviders[i].addSipListener(listener);
-        }
-    }
+	private SipProvider getNextProvider() {
+		synchronized (this) {
+			currentProvider++;
+			if (currentProvider >= NBPROVIDERS) {
+				currentProvider = 0;
+			}
+			return sipProviders[currentProvider];
+		}
+	}
+
+	public void createProvider(SipListener listener) throws Exception {
+		sipProviders = new SipProvider[NBPROVIDERS];
+		for (int i = 0; i < NBPROVIDERS; i++) {
+			ListeningPoint listeningPoint = sipStack.createListeningPoint(
+					"127.0.0.1", 15060 + i, transport);
+			sipProviders[i] = sipStack.createSipProvider(listeningPoint);
+			sipProviders[i].addSipListener(listener);
+		}
+	}
 
 	public void processIOException(IOExceptionEvent exceptionEvent) {
 		System.out.println("IOException occured while retransmitting requests:"
@@ -406,7 +409,7 @@ public class Shootist extends TestCase implements SipListener {
 
 	public void processDialogTerminated(
 			DialogTerminatedEvent dialogTerminatedEvent) {
-        // System.out.println("Dialog Terminated event: " +
+		// System.out.println("Dialog Terminated event: " +
 		// dialogTerminatedEvent);
 	}
 
@@ -430,23 +433,25 @@ public class Shootist extends TestCase implements SipListener {
 		Shootist.transport = ProtocolObjects.transport;
 		final Shootist shootist = new Shootist();
 		shootist.createProvider(shootist);
-        
-        shootist.start = System.currentTimeMillis();
-        while (shootist.byeCount < NDIALOGS) {
-            synchronized (shootist) {
-                while (shootist.nbConcurrentInvite >= MAXCONCURRENTINVITE) {
-                    shootist.wait();
-                }
-            }
-            if (shootist.byeCount == 0) {
-                shootist.start = System.currentTimeMillis();
-            }
-            
-            if (transport.equalsIgnoreCase("udp")) {
-                try { Thread.sleep(5); } catch (InterruptedException e) {}
-            }
-            
-            shootist.sendInvite();
-        }
-    }
+
+		shootist.start = System.currentTimeMillis();
+		while (shootist.byeCount < NDIALOGS) {
+				while (shootist.nbConcurrentInvite.intValue() >= MAXCONCURRENTINVITE) {
+					Thread.sleep(100);
+				}
+			
+			if (shootist.byeCount == 0) {
+				shootist.start = System.currentTimeMillis();
+			}
+
+			if (transport.equalsIgnoreCase("udp")) {
+				try {
+					Thread.sleep(5);
+				} catch (InterruptedException e) {
+				}
+			}
+
+			shootist.sendInvite();
+		}
+	}
 }

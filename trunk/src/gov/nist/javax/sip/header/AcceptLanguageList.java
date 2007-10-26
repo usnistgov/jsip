@@ -32,7 +32,7 @@ import javax.sip.header.*;
 /**
  * AcceptLanguageList: Strings together a list of AcceptLanguage SIPHeaders.
  * @author M. Ranganathan  
- * @version 1.2 $Revision: 1.5 $ $Date: 2007-10-23 17:34:50 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2007-10-26 03:53:16 $
  * @since 1.1
  *
  *
@@ -54,7 +54,7 @@ public class AcceptLanguageList extends SIPHeaderList<AcceptLanguage>  {
 	}
 
 	public AcceptLanguage getFirst() {
-		AcceptLanguage retval = super.getFirst();
+		AcceptLanguage retval = (AcceptLanguage) super.getFirst();
 		if (retval != null)
 			return retval;
 		else
@@ -62,7 +62,7 @@ public class AcceptLanguageList extends SIPHeaderList<AcceptLanguage>  {
 	}
 
 	public AcceptLanguage getLast() {
-		AcceptLanguage retval = super.getLast();
+		AcceptLanguage retval = (AcceptLanguage) super.getLast();
 		if (retval != null)
 			return retval;
 		else

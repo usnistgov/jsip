@@ -65,7 +65,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.84 $ $Date: 2007-10-22 03:38:27 $
+ * @version 1.2 $Revision: 1.85 $ $Date: 2007-10-26 03:53:17 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -84,23 +84,23 @@ public abstract class SIPTransactionStack implements
 	/*
 	 * Table of retransmission Alert timers.
 	 */
-	protected ConcurrentHashMap retransmissionAlertTransactions;
+	protected ConcurrentHashMap<String,SIPServerTransaction> retransmissionAlertTransactions;
 
 	// Table of dialogs.
-	protected ConcurrentHashMap dialogTable;
+	protected ConcurrentHashMap<String,SIPDialog> dialogTable;
 
 	// A set of methods that result in dialog creations.
-	protected HashSet dialogCreatingMethods;
+	protected HashSet<String> dialogCreatingMethods;
 
 	// Global timer. Use this for all timer tasks.
 
 	protected Timer timer;
 
 	// List of pending server transactions
-	private ConcurrentHashMap pendingTransactions;
+	private ConcurrentHashMap<String,SIPServerTransaction> pendingTransactions;
 
 	// hashtable for fast lookup
-	private ConcurrentHashMap clientTransactionTable;
+	private ConcurrentHashMap<String,SIPClientTransaction> clientTransactionTable;
 
 	// Set to false if you want hiwat and lowat to be consulted.
 	private boolean unlimitedServerTransactionTableSize = false;
@@ -130,11 +130,11 @@ public abstract class SIPTransactionStack implements
 	private int activeClientTransactionCount;
 
 	// Hashtable for server transactions.
-	private ConcurrentHashMap serverTransactionTable;
+	private ConcurrentHashMap<String,SIPServerTransaction> serverTransactionTable;
 
 	// A table of ongoing transactions indexed by mergeId ( for detecting merged
 	// requests.
-	private ConcurrentHashMap mergeTable;
+	private ConcurrentHashMap<String,SIPServerTransaction> mergeTable;
 
 	/*
 	 * A wrapper around log4j to help log debug.
@@ -245,7 +245,7 @@ public abstract class SIPTransactionStack implements
 	/*
 	 * A collection of message processors.
 	 */
-	private Collection messageProcessors;
+	private Collection<MessageProcessor> messageProcessors;
 
 	/*
 	 * Read timeout on TCP incoming sockets -- defines the time between reads
@@ -274,7 +274,7 @@ public abstract class SIPTransactionStack implements
 
 	// The set of events for which subscriptions can be forked.
 
-	protected HashSet forkedEvents;
+	protected HashSet<String> forkedEvents;
 
 	// Generate a timestamp header for retransmitted requests.
 	protected boolean generateTimeStampHeader;
@@ -342,7 +342,7 @@ public abstract class SIPTransactionStack implements
 	protected SIPTransactionStack() {
 		this.toExit = false;
 
-		this.forkedEvents = new HashSet();
+		this.forkedEvents = new HashSet<String>();
 		// set of events for which subscriptions can be forked.
 		// Set an infinite thread pool size.
 		this.threadPoolSize = -1;
@@ -355,7 +355,7 @@ public abstract class SIPTransactionStack implements
 		// Max number of simultaneous connections.
 		this.maxConnections = -1;
 		// Array of message processors.
-		messageProcessors = new ArrayList();
+		messageProcessors = new ArrayList<MessageProcessor>();
 		// Handle IO for this process.
 		this.ioHandler = new IOHandler(this);
 
@@ -365,7 +365,7 @@ public abstract class SIPTransactionStack implements
 		this.maxListenerResponseTime = -1;
 
 		// a set of methods that result in dialog creation.
-		this.dialogCreatingMethods = new HashSet();
+		this.dialogCreatingMethods = new HashSet<String>();
 		// Standard set of methods that create dialogs.
 		this.dialogCreatingMethods.add(Request.REFER);
 		this.dialogCreatingMethods.add(Request.INVITE);
@@ -379,17 +379,17 @@ public abstract class SIPTransactionStack implements
 		// Create the transaction collections
 
 		// Dialog dable.
-		this.dialogTable = new ConcurrentHashMap();
+		this.dialogTable = new ConcurrentHashMap<String,SIPDialog>();
 
-		clientTransactionTable = new ConcurrentHashMap();
-		serverTransactionTable = new ConcurrentHashMap();
-		mergeTable = new ConcurrentHashMap();
-		retransmissionAlertTransactions = new ConcurrentHashMap();
+		clientTransactionTable = new ConcurrentHashMap<String,SIPClientTransaction>();
+		serverTransactionTable = new ConcurrentHashMap<String,SIPServerTransaction>();
+		mergeTable = new ConcurrentHashMap<String,SIPServerTransaction>();
+		retransmissionAlertTransactions = new ConcurrentHashMap<String,SIPServerTransaction>();
 
 		// Start the timer event thread.
 
 		this.timer = new Timer();
-		this.pendingTransactions = new ConcurrentHashMap();
+		this.pendingTransactions = new ConcurrentHashMap<String,SIPServerTransaction>();
 
 		if (getThreadAuditor().isEnabled()) {
 			// Start monitoring the timer thread
@@ -405,18 +405,18 @@ public abstract class SIPTransactionStack implements
 			logWriter.logDebug("Re-initializing !");
 
 		// Array of message processors.
-		messageProcessors = new ArrayList();
+		messageProcessors = new ArrayList<MessageProcessor>();
 		// Handle IO for this process.
 		this.ioHandler = new IOHandler(this);
 		// clientTransactions = new ConcurrentLinkedQueue();
 		// serverTransactions = new ConcurrentLinkedQueue();
-		pendingTransactions = new ConcurrentHashMap();
-		clientTransactionTable = new ConcurrentHashMap();
-		serverTransactionTable = new ConcurrentHashMap();
-		retransmissionAlertTransactions = new ConcurrentHashMap();
-		mergeTable = new ConcurrentHashMap();
+		pendingTransactions = new ConcurrentHashMap<String,SIPServerTransaction>();
+		clientTransactionTable = new ConcurrentHashMap<String,SIPClientTransaction>();
+		serverTransactionTable = new ConcurrentHashMap<String,SIPServerTransaction>();
+		retransmissionAlertTransactions = new ConcurrentHashMap<String,SIPServerTransaction>();
+		mergeTable = new ConcurrentHashMap<String,SIPServerTransaction>();
 		// Dialog dable.
-		this.dialogTable = new ConcurrentHashMap();
+		this.dialogTable = new ConcurrentHashMap<String,SIPDialog>();
 
 		this.timer = new Timer();
 
@@ -561,7 +561,7 @@ public abstract class SIPTransactionStack implements
 	/**
 	 * This is for debugging.
 	 */
-	public Iterator getDialogs() {
+	public Iterator<SIPDialog> getDialogs() {
 		return dialogTable.values().iterator();
 
 	}
@@ -577,7 +577,7 @@ public abstract class SIPTransactionStack implements
 		String id = dialog.getDialogId();
 	
 		if (id != null) {
-			Object old = this.dialogTable.remove(id);
+		     this.dialogTable.remove(id);
 
 			if (/* old != null
 					&&*/ !dialog.testAndSetIsDialogTerminatedEventDelivered()) {
@@ -738,7 +738,7 @@ public abstract class SIPTransactionStack implements
 			}
 			// Need to scan the table for old style transactions (RFC 2543
 			// style)
-			Iterator it = serverTransactionTable.values().iterator();
+			Iterator<SIPServerTransaction> it = serverTransactionTable.values().iterator();
 			while (it.hasNext()) {
 				SIPServerTransaction sipServerTransaction = (SIPServerTransaction) it
 						.next();
@@ -760,7 +760,7 @@ public abstract class SIPTransactionStack implements
 			// Need to scan the table for old style transactions (RFC 2543
 			// style). This is terribly slow but we need to do this
 			// for backasswords compatibility.
-			Iterator it = clientTransactionTable.values().iterator();
+			Iterator<SIPClientTransaction> it = clientTransactionTable.values().iterator();
 			while (it.hasNext()) {
 				SIPClientTransaction clientTransaction = (SIPClientTransaction) it
 						.next();
@@ -787,7 +787,7 @@ public abstract class SIPTransactionStack implements
 		}
 
 		if (isServer) {
-			Iterator li = this.serverTransactionTable.values().iterator();
+			Iterator<SIPServerTransaction> li = this.serverTransactionTable.values().iterator();
 			while (li.hasNext()) {
 				SIPTransaction transaction = (SIPTransaction) li.next();
 
@@ -798,7 +798,7 @@ public abstract class SIPTransactionStack implements
 			}
 
 		} else {
-			Iterator li = this.clientTransactionTable.values().iterator();
+			Iterator<SIPClientTransaction> li = this.clientTransactionTable.values().iterator();
 			while (li.hasNext()) {
 				SIPTransaction transaction = (SIPTransaction) li.next();
 
@@ -947,7 +947,7 @@ public abstract class SIPTransactionStack implements
 	public ServerRequestInterface newSIPServerRequest(
 			SIPRequest requestReceived, MessageChannel requestMessageChannel) {
 		// Iterator through all server transactions
-		Iterator transactionIterator;
+		Iterator<SIPServerTransaction> transactionIterator;
 		// Next transaction in the set
 		SIPServerTransaction nextTransaction;
 		// Transaction to handle this request
@@ -1046,7 +1046,7 @@ public abstract class SIPTransactionStack implements
 			SIPResponse responseReceived, MessageChannel responseMessageChannel) {
 
 		// Iterator through all client transactions
-		Iterator transactionIterator;
+		Iterator<SIPClientTransaction> transactionIterator;
 		// Next transaction in the set
 		SIPClientTransaction nextTransaction;
 		// Transaction to handle this request
@@ -1347,7 +1347,7 @@ public abstract class SIPTransactionStack implements
 			}
 			this.activeClientTransactionCount++;
 			String key = sipRequest.getTransactionId();
-			clientTransactionTable.put(key, sipTransaction);
+			clientTransactionTable.put(key,(SIPClientTransaction) sipTransaction);
 			if (logWriter.isLoggingEnabled()) {
 				logWriter.logDebug(" putTransactionHash : " + " key = " + key);
 			}
@@ -1357,7 +1357,7 @@ public abstract class SIPTransactionStack implements
 			if (logWriter.isLoggingEnabled()) {
 				logWriter.logDebug(" putTransactionHash : " + " key = " + key);
 			}
-			serverTransactionTable.put(key, sipTransaction);
+			serverTransactionTable.put(key,(SIPServerTransaction) sipTransaction);
 
 		}
 
