@@ -38,11 +38,13 @@ import java.text.ParseException;
  * 1. discard the duplicate  by returning null
  * 2. keep the duplicate by just returning it.
  * 3. Discard the entire message by throwing an exception.
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:02:46 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2007-10-29 02:24:38 $
  * @since 1.1
  * @author M. Ranganathan 
  */
 public class SIPDuplicateHeaderException extends ParseException {
+	
+	private static final long serialVersionUID = 8241107266407879291L;
 	protected SIPHeader sipHeader;
 	protected SIPMessage sipMessage;
 	public SIPDuplicateHeaderException(String msg) {

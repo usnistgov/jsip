@@ -49,7 +49,7 @@ import javax.sip.message.Request;
 /**
  * SIP Response structure.
  *
- * @version 1.2 $Revision: 1.15 $ $Date: 2007-09-17 17:18:16 $
+ * @version 1.2 $Revision: 1.16 $ $Date: 2007-10-29 02:24:37 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
@@ -373,7 +373,7 @@ public final class SIPResponse
 	public String debugDump() {
 		String superstring = super.debugDump();
 		stringRepresentation = "";
-		sprint(MESSAGE_PACKAGE + ".SIPResponse");
+		sprint(SIPResponse.class.getCanonicalName());
 		sprint("{");
 		if (statusLine != null) {
 			sprint(statusLine.debugDump());

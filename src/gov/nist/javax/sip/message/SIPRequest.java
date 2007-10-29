@@ -62,7 +62,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.31 $ $Date: 2007-10-04 18:58:55 $
+ * @version 1.2 $Revision: 1.32 $ $Date: 2007-10-29 02:24:38 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -73,6 +73,9 @@ import gov.nist.javax.sip.header.*;
 
 public final class SIPRequest extends SIPMessage implements
 		javax.sip.message.Request {
+	
+	private static final long serialVersionUID = 3360720013577322927L;
+
 	private static final String DEFAULT_USER = "ip";
 
 	private static final String DEFAULT_TRANSPORT = "udp";
@@ -92,14 +95,14 @@ public final class SIPRequest extends SIPMessage implements
 	 * 
 	 * A target refresh request and its response MUST have a Contact
 	 */
-	private static final Set targetRefreshMethods = new HashSet();
+	private static final Set<String> targetRefreshMethods = new HashSet<String>();
 
 	/*
 	 * A table that maps a name string to its cannonical constant. This is used
 	 * to speed up parsing of messages .equals reduces to == if we use the
 	 * constant value.
 	 */
-	private static final Hashtable nameTable = new Hashtable();
+	private static final Hashtable<String,String> nameTable = new Hashtable<String,String>();
 
 	private static void putName(String name) {
 		nameTable.put(name, name);
@@ -987,7 +990,7 @@ public final class SIPRequest extends SIPMessage implements
 			boolean switchHeaders) {
 		SIPRequest newRequest = new SIPRequest();
 		newRequest.requestLine = requestLine;
-		Iterator headerIterator = this.getHeaders();
+		Iterator<SIPHeader> headerIterator = this.getHeaders();
 		while (headerIterator.hasNext()) {
 			SIPHeader nextHeader = (SIPHeader) headerIterator.next();
 			// For BYE and cancel set the CSeq header to the
