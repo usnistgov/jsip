@@ -36,7 +36,7 @@ import java.lang.reflect.*;
  * are derived. This class is never directly instantiated (and hence it
  * is abstract).
  *
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-07-13 09:02:48 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2007-10-29 02:24:37 $
  * @since 1.1 
  *
  * @author M. Ranganathan   <br/>
@@ -45,13 +45,6 @@ import java.lang.reflect.*;
  */
 public abstract class MessageObject extends GenericObject {
 	public abstract String encode();
-
-	protected static final String MESSAGE_PACKAGE =
-		PackageNames.MESSAGE_PACKAGE;
-	protected static final String SIP_PACKAGE = PackageNames.SIP_PACKAGE;
-	protected static final String PARSER_PACKAGE = PackageNames.PARSER_PACKAGE;
-	protected static final String SIPHEADERS_PACKAGE =
-		PackageNames.SIPHEADERS_PACKAGE;
 
 	public void dbgPrint() {
 		super.dbgPrint();
@@ -65,7 +58,7 @@ public abstract class MessageObject extends GenericObject {
 	 */
 	public String debugDump() {
 		stringRepresentation = "";
-		Class myclass = getClass();
+		Class<?> myclass = getClass();
 		sprint(myclass.getName());
 		sprint("{");
 		Field[] fields = myclass.getDeclaredFields();
@@ -75,7 +68,7 @@ public abstract class MessageObject extends GenericObject {
 			int modifier = f.getModifiers();
 			if (modifier == Modifier.PRIVATE)
 				continue;
-			Class fieldType = f.getType();
+			Class<?> fieldType = f.getType();
 			String fieldName = f.getName();
 			if (fieldName.compareTo("stringRepresentation") == 0) {
 				// avoid nasty recursions...
@@ -114,8 +107,7 @@ public abstract class MessageObject extends GenericObject {
 						sprint(floatField);
 					}
 				} else if (
-					getClassFromName(
-						SIP_PACKAGE + ".GenericObject").isAssignableFrom(
+					GenericObject.class.isAssignableFrom(
 						fieldType)) {
 					if (f.get(this) != null) {
 						sprint(
@@ -125,9 +117,7 @@ public abstract class MessageObject extends GenericObject {
 						sprint("<null>");
 					}
 
-				} else if (
-					getClassFromName(
-						SIP_PACKAGE + ".GenericObjectList").isAssignableFrom(
+				} else if (GenericObjectList.class.isAssignableFrom(
 						fieldType)) {
 					if (f.get(this) != null) {
 						sprint(

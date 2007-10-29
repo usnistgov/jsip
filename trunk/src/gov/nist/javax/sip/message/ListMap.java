@@ -35,7 +35,7 @@ import java.util.Hashtable;
 /**
  * A map of which of the standard headers may appear as a list
  * 
- * @version 1.2 $Revision: 1.12 $ $Date: 2007-10-26 15:54:51 $
+ * @version 1.2 $Revision: 1.13 $ $Date: 2007-10-29 02:24:37 $
  * @since 1.1
  */
 class ListMap {
@@ -139,7 +139,7 @@ class ListMap {
 		if (sipHeader instanceof SIPHeaderList)
 			return false;
 		else {
-			Class headerClass = sipHeader.getClass();
+			Class<?> headerClass = sipHeader.getClass();
 			return headerListTable.get(headerClass) != null;
 		}
 	}
@@ -147,7 +147,7 @@ class ListMap {
 	/**
 	 * Return true if this has an associated list object.
 	 */
-	static protected boolean hasList(Class sipHdrClass) {
+	static protected boolean hasList(Class<?> sipHdrClass) {
 		if (!initialized)
 			initializeListMap();
 		return headerListTable.get(sipHdrClass) != null;
@@ -156,22 +156,23 @@ class ListMap {
 	/**
 	 * Get the associated list class.
 	 */
-	static protected Class getListClass(Class sipHdrClass) {
+	static protected Class<?> getListClass(Class<?> sipHdrClass) {
 		if (!initialized)
 			initializeListMap();
-		return (Class) headerListTable.get(sipHdrClass);
+		return (Class<?>) headerListTable.get(sipHdrClass);
 	}
 
 	/**
 	 * Return a list object for this header if it has an associated list object.
 	 */
-	static protected SIPHeaderList getList(SIPHeader sipHeader) {
+	@SuppressWarnings("unchecked")
+	static protected SIPHeaderList<SIPHeader> getList(SIPHeader sipHeader) {
 		if (!initialized)
 			initializeListMap();
 		try {
-			Class<? extends SIPHeader> headerClass = sipHeader.getClass();
-			Class<? extends SIPHeaderList<?>> listClass = (Class) headerListTable.get(headerClass);
-			SIPHeaderList shl = (SIPHeaderList) listClass.newInstance();
+			Class<?> headerClass = sipHeader.getClass();
+			Class<?> listClass =  headerListTable.get(headerClass);
+			SIPHeaderList<SIPHeader> shl = (SIPHeaderList<SIPHeader>) listClass.newInstance();
 			shl.setHeaderName(sipHeader.getName());
 			return shl;
 		} catch (InstantiationException ex) {

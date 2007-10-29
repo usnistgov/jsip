@@ -32,7 +32,7 @@ import gov.nist.javax.sip.address.*;
 
 /** An abstract class for headers that take an address and parameters. 
  *
- * @version 1.2 $Revision: 1.7 $ $Date: 2007-10-02 22:23:28 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2007-10-29 02:24:38 $
  * 
  * @since 1.1
  *
@@ -42,7 +42,7 @@ import gov.nist.javax.sip.address.*;
  *
  * 
  */
-public abstract class AddressParametersHeader extends ParametersHeader {
+public abstract class AddressParametersHeader extends ParametersHeader implements  Parameters {
 
 	protected AddressImpl address;
 
