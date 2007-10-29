@@ -15,9 +15,16 @@
 
   <licenses>
     <license>
-      <name>PUBLIC DOMAIN</name>
+      <name>JSR 32 Specification License (See JCP page for JSR 32)</name>
       <distribution>repo</distribution>
     </license>
   </licenses>
+
+ <repository>
+   <id>java.net</id>
+   <url>http://download.java.net/maven/1</url>
+   <layout>legacy</layout>
+ </repository>
+
 </project>
 
