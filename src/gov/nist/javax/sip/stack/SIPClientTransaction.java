@@ -155,7 +155,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.81 $ $Date: 2007-10-26 03:53:17 $
+ * @version 1.2 $Revision: 1.82 $ $Date: 2007-10-29 02:24:40 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -300,6 +300,7 @@ public class SIPClientTransaction extends SIPTransaction implements
 			sipStack.logWriter.logDebug("Creating clientTransaction " + this);
 			sipStack.logWriter.logStackTrace();
 		}
+		//this.startTransactionTimer();
 		this.sipDialogs = new ConcurrentHashMap();
 	}
 
@@ -489,6 +490,7 @@ public class SIPClientTransaction extends SIPTransaction implements
 
 			}
 		} finally {
+			 this.isMapped = true;
 			 this.startTransactionTimer();
 
 		}

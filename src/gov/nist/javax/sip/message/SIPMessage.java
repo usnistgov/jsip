@@ -58,7 +58,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.32 $ $Date: 2007-10-26 15:54:52 $
+ * @version 1.2 $Revision: 1.33 $ $Date: 2007-10-29 02:24:37 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -446,7 +446,7 @@ public abstract class SIPMessage extends MessageObject implements
 				Class<?> fieldType = f.getType();
 				String fieldName = f.getName();
 				if (f.get(this) != null
-						&& Class.forName(SIPHEADERS_PACKAGE + ".SIPHeader")
+						&& SIPHeader.class
 								.isAssignableFrom(fieldType)
 						&& fieldName.compareTo("headers") != 0) {
 					sprint(fieldName + "=");

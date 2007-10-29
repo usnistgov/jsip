@@ -66,7 +66,7 @@ public class Shootist extends TestCase implements SipListener {
 
 	long start;
 
-	static int MAXCONCURRENTINVITE = 100;
+	static int MAXCONCURRENTINVITE = 200;
 	static int NDIALOGS = 1000;
 	static int NBPROVIDERS = 1;
 
@@ -437,6 +437,7 @@ public class Shootist extends TestCase implements SipListener {
 		shootist.start = System.currentTimeMillis();
 		while (shootist.byeCount < NDIALOGS) {
 				while (shootist.nbConcurrentInvite.intValue() >= MAXCONCURRENTINVITE) {
+					System.out.println("Waiting for max invite count to go down!");
 					Thread.sleep(100);
 				}
 			

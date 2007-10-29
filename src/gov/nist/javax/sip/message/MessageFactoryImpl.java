@@ -39,13 +39,14 @@ import gov.nist.javax.sip.parser.*;
 /**
  *  Message Factory implementation 
  *
- * @version 1.2 $Revision: 1.8 $ $Date: 2007-02-21 21:47:05 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2007-10-29 02:24:37 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
  * @author Olivier Deruelle <br/>
  * 
  */
+@SuppressWarnings("unchecked")
 public class MessageFactoryImpl implements MessageFactory {
 
 	/**

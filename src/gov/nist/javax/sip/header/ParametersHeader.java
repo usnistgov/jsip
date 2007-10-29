@@ -45,7 +45,7 @@ import gov.nist.javax.sip.address.*;
  *
  * 
  *
- * @version 1.2 $Revision: 1.10 $ $Date: 2007-10-22 03:38:18 $
+ * @version 1.2 $Revision: 1.11 $ $Date: 2007-10-29 02:24:38 $
  *
  */
 public abstract class ParametersHeader
@@ -463,6 +463,7 @@ public abstract class ParametersHeader
 		return retval;
 	}
 	
+	@SuppressWarnings("unchecked")
 	protected final boolean equalParameters( Parameters other ) {
 		if (this==other) return true;
 		
