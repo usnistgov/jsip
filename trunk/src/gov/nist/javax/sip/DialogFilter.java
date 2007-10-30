@@ -44,7 +44,7 @@ import java.io.IOException;
 /*
  * Bug fix Contributions by Lamine Brahimi, Andreas Bystrom, Bill Roome, John
  * Martin, Daniel Machin Vasquez-Illa, Antonis Karydas, Joe Provino, Bruce
- * Evangelder, Jeroen van Bemmel.
+ * Evangelder, Jeroen van Bemmel, Robert S. Rosen.
  */
 /**
  * An adapter class from the JAIN implementation objects to the NIST-SIP stack.
@@ -57,7 +57,7 @@ import java.io.IOException;
  * and event model with the JAIN-SIP stack. This is strictly an implementation
  * class.
  * 
- * @version 1.2 $Revision: 1.14 $ $Date: 2007-10-20 05:43:17 $
+ * @version 1.2 $Revision: 1.15 $ $Date: 2007-10-30 00:44:38 $
  * 
  * @author M. Ranganathan
  */
@@ -376,6 +376,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 						sipStack.addTransaction(transaction);
 						dialog.addTransaction(transaction);
 						dialog.addRoute(sipRequest);
+						transaction.setDialog(dialog, dialogId); 
 					} catch (Exception ex) {
 						InternalErrorHandler.handleException(ex);
 					}
