@@ -619,6 +619,9 @@ public class Torture extends DefaultHandler implements ParseExceptionListener,
 	public void doTests() throws Exception {
 		String fileName ;
 		fileName = "torture.xml";
+		
+		/* The tests do not check for content length */
+		StringMsgParser.setComputeContentLengthFromMessage(true);
 	
 		try {
 			SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();

@@ -32,6 +32,7 @@ import javax.sip.*;
 import javax.sip.address.*;
 import javax.sip.message.*;
 
+import gov.nist.javax.sip.parser.StringMsgParser;
 import gov.nist.javax.sip.stack.*;
 
 import java.lang.reflect.*;
@@ -226,8 +227,16 @@ import gov.nist.core.net.NetworkLayer;
  * the application or environmental conditions into the log stream. The log
  * factory must have a default constructor. </li>
  * 
+ * <li><b>gov.nist.javax.sip.COMPUTE_CONTENT_LENGTH_FROM_MESSAGE_BODY = true|false <br/> 
+ * Default is <it>false</it> If set to false, when you are creating 
+ * a message from a String, the MessageFactory will compute
+ * the content length from the message content and ignore the provided
+ * content length parameter in the Message. Otherwise, it will use the content
+ * length supplied and generate a parse exception if the content is 
+ * truncated. 
  * 
- * @version 1.2 $Revision: 1.67 $ $Date: 2007-11-04 17:37:42 $
+ * 
+ * @version 1.2 $Revision: 1.68 $ $Date: 2007-11-04 23:21:17 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -650,6 +659,10 @@ public class SipStackImpl extends SIPTransactionStack implements
 		} else {
 			this.logRecordFactory = new DefaultMessageLogFactory();
 		}
+		
+		boolean computeContentLength = 
+				configurationProperties.getProperty("gov.nist.javax.sip.COMPUTE_CONTENT_LENGTH_FROM_MESSAGE_BODY","false").equals("true");
+		StringMsgParser.setComputeContentLengthFromMessage(computeContentLength);
 		
 		super.rfc2543Supported =  configurationProperties.getProperty
 				("gov.nist.javax.sip.RFC_2543_SUPPORT_ENABLED","true").equalsIgnoreCase("true");

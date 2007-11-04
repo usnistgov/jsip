@@ -64,7 +64,7 @@ import java.text.ParseException;
  * feld swoop).
  * 
  * 
- * @version 1.2 $Revision: 1.22 $ $Date: 2007-11-04 17:37:43 $
+ * @version 1.2 $Revision: 1.23 $ $Date: 2007-11-04 23:21:16 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -75,6 +75,8 @@ public class StringMsgParser {
 	protected boolean readBody;
 	private ParseExceptionListener parseExceptionListener;
 	private String rawStringMessage;
+	
+	private static boolean computeContentLengthFromMessage = false;
 
 	/**
 	 * @since v0.9
@@ -214,7 +216,7 @@ public class StringMsgParser {
 			
 			byte[] body = new byte[bodyLength];
 			System.arraycopy(msgBuffer, i, body, 0, bodyLength);
-			message.setMessageContent(body ,message.getContentLength().getContentLength() );
+			message.setMessageContent(body,computeContentLengthFromMessage ,message.getContentLength().getContentLength() );
 		}
 		
 		return message;
@@ -322,7 +324,8 @@ public class StringMsgParser {
 		if (readBody && message.getContentLength() != null &&
 				message.getContentLength().getContentLength() != 0) {
 			String body = msgString.substring(i);
-			message.setMessageContent(body,message.getContentLength().getContentLength());
+			message.setMessageContent(body,computeContentLengthFromMessage,message.getContentLength().getContentLength());
+			
 		}
 
 		return message;
@@ -601,6 +604,13 @@ public class StringMsgParser {
 		statusLine += "\n";
 		return new StatusLineParser(statusLine).parse();
 	}
+
+	public static void setComputeContentLengthFromMessage(
+			boolean computeContentLengthFromMessage) {
+		StringMsgParser.computeContentLengthFromMessage = computeContentLengthFromMessage;
+	}
+
+	
 
 	/**
 	 * Test code.
