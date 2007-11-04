@@ -227,7 +227,7 @@ import gov.nist.core.net.NetworkLayer;
  * factory must have a default constructor. </li>
  * 
  * 
- * @version 1.2 $Revision: 1.66 $ $Date: 2007-10-04 18:58:55 $
+ * @version 1.2 $Revision: 1.67 $ $Date: 2007-11-04 17:37:42 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -240,9 +240,9 @@ public class SipStackImpl extends SIPTransactionStack implements
 
 	EventScanner eventScanner;
 
-	private Hashtable listeningPoints;
+	private Hashtable<String,ListeningPointImpl> listeningPoints;
 
-	private LinkedList sipProviders;
+	private LinkedList<SipProviderImpl> sipProviders;
 
 	// Flag to indicate that the listener is re-entrant and hence
 	// Use this flag with caution.
@@ -268,8 +268,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 				this);
 		super.setMessageFactory(msgFactory);
 		this.eventScanner = new EventScanner(this);
-		this.listeningPoints = new Hashtable();
-		this.sipProviders = new LinkedList();
+		this.listeningPoints = new Hashtable<String,ListeningPointImpl>();
+		this.sipProviders = new LinkedList<SipProviderImpl>();
 
 	}
 
@@ -279,8 +279,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 	private void reInitialize() {
 		super.reInit();
 		this.eventScanner = new EventScanner(this);
-		this.listeningPoints = new Hashtable();
-		this.sipProviders = new LinkedList();
+		this.listeningPoints = new Hashtable<String,ListeningPointImpl>();
+		this.sipProviders = new LinkedList<SipProviderImpl>();
 		this.sipListener = null;
 
 	}
@@ -347,11 +347,11 @@ public class SipStackImpl extends SIPTransactionStack implements
 			routerPath = "gov.nist.javax.sip.stack.DefaultRouter";
 
 		try {
-			Class routerClass = Class.forName(routerPath);
-			Class[] constructorArgs = new Class[2];
+			Class<?> routerClass = Class.forName(routerPath);
+			Class<?>[] constructorArgs = new Class[2];
 			constructorArgs[0] = javax.sip.SipStack.class;
 			constructorArgs[1] = String.class;
-			Constructor cons = routerClass.getConstructor(constructorArgs);
+			Constructor<?> cons = routerClass.getConstructor(constructorArgs);
 			Object[] args = new Object[2];
 			args[0] = (SipStack) this;
 			args[1] = outboundProxy;
@@ -462,8 +462,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 			String path = configurationProperties
 					.getProperty(NETWORK_LAYER_KEY);
 			try {
-				Class clazz = Class.forName(path);
-				Constructor c = clazz.getConstructor(new Class[0]);
+				Class<?> clazz = Class.forName(path);
+				Constructor<?> c = clazz.getConstructor(new Class[0]);
 				networkLayer = (NetworkLayer) c.newInstance(new Object[0]);
 			} catch (Exception e) {
 				throw new PeerUnavailableException(
@@ -478,8 +478,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 			String path = configurationProperties
 					.getProperty(ADDRESS_RESOLVER_KEY);
 			try {
-				Class clazz = Class.forName(path);
-				Constructor c = clazz.getConstructor(new Class[0]);
+				Class<?> clazz = Class.forName(path);
+				Constructor<?> c = clazz.getConstructor(new Class[0]);
 				this.addressResolver = (AddressResolver) c
 						.newInstance(new Object[0]);
 			} catch (Exception e) {
@@ -637,8 +637,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 				.getProperty("gov.nist.javax.sip.LOG_FACTORY");
 		if (messageLogFactoryClasspath != null) {
 			try {
-				Class clazz = Class.forName(messageLogFactoryClasspath);
-				Constructor c = clazz.getConstructor(new Class[0]);
+				Class<?> clazz = Class.forName(messageLogFactoryClasspath);
+				Constructor<?> c = clazz.getConstructor(new Class[0]);
 				this.logRecordFactory = (LogRecordFactory) c
 						.newInstance(new Object[0]);
 			} catch (Exception ex) {
@@ -828,7 +828,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 	 * 
 	 * @see javax.sip.SipStack#getSipProviders()
 	 */
-	public java.util.Iterator getSipProviders() {
+	public java.util.Iterator<SipProviderImpl> getSipProviders() {
 		return this.sipProviders.iterator();
 	}
 
@@ -876,8 +876,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 			getLogWriter().logDebug("stopStack -- stoppping the stack");
 		}
 		this.stopStack();
-		this.sipProviders = new LinkedList();
-		this.listeningPoints = new Hashtable();
+		this.sipProviders = new LinkedList<SipProviderImpl>();
+		this.listeningPoints = new Hashtable<String,ListeningPointImpl>();
 		this.eventScanner.forceStop();
 		this.eventScanner = null;
 

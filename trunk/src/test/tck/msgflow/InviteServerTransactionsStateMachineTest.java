@@ -599,8 +599,7 @@ public class InviteServerTransactionsStateMachineTest
 					ex);
 			}
 			try {
-				// send it statelessly
-				tiSipProvider.sendResponse(cancelOK);
+				cancelReceivedEvent.getServerTransaction().sendResponse(cancelOK);
 			} catch (SipException ex) {
 				ex.printStackTrace();
 				fail("The TI failed to send a CANCEL OK response");
@@ -847,7 +846,7 @@ public class InviteServerTransactionsStateMachineTest
 			}
 			try {
 				// send it statelessly
-				tiSipProvider.sendResponse(cancelOK);
+				cancelReceivedEvent.getServerTransaction().sendResponse(cancelOK);
 			} catch (SipException ex) {
 				ex.printStackTrace();
 				fail("The TI failed to send a CANCEL OK response");
@@ -1095,8 +1094,8 @@ public class InviteServerTransactionsStateMachineTest
 					ex);
 			}
 			try {
-				// send it statelessly
-				tiSipProvider.sendResponse(cancelOK);
+		
+				cancelReceivedEvent.getServerTransaction().sendResponse(cancelOK);
 			} catch (SipException ex) {
 				ex.printStackTrace();
 				fail("The TI failed to send a CANCEL OK response");
