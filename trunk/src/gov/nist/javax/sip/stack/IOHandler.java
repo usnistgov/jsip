@@ -36,6 +36,7 @@ import java.util.Hashtable;
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 /*
  * TLS support Added by Daniel J.Martinez Manzano <dani@dif.um.es>
@@ -145,9 +146,12 @@ class IOHandler {
 			// Jayashenkhar ( lucent ).
 
 			try {
-				this.ioSemaphore.acquire();
+				boolean retval = this.ioSemaphore.tryAcquire(1000, TimeUnit.MILLISECONDS);
+				if ( !retval ) {
+					throw new IOException("Could not acquire IO Semaphore after 1 second -- giving up ");
+				}
 			} catch (InterruptedException ex) {
-				throw new IOException("exception in aquiring sem", ex);
+				throw new IOException("exception in aquiring sem");
 			}
 			Socket clientSock = getSocket(key);
 
