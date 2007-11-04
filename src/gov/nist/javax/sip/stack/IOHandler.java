@@ -214,7 +214,8 @@ class IOHandler {
 		} else if (transport.compareToIgnoreCase(TLS) == 0) {
 			String key = makeKey(receiverAddress, contactPort);
 			try {
-				this.ioSemaphore.tryAcquire(10000, TimeUnit.MILLISECONDS);
+				boolean retval = this.ioSemaphore.tryAcquire(10000, TimeUnit.MILLISECONDS);
+				if ( ! retval ) throw new IOException ("Timeout aquiring IO SEM");
 			} catch (InterruptedException ex) {
 				throw new IOException("exception in aquiring sem");
 			}
