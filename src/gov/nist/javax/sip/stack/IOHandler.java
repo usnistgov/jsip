@@ -214,9 +214,9 @@ class IOHandler {
 		} else if (transport.compareToIgnoreCase(TLS) == 0) {
 			String key = makeKey(receiverAddress, contactPort);
 			try {
-				this.ioSemaphore.acquire();
+				this.ioSemaphore.tryAcquire(10000, TimeUnit.MILLISECONDS);
 			} catch (InterruptedException ex) {
-				throw new IOException("exception in aquiring sem", ex);
+				throw new IOException("exception in aquiring sem");
 			}
 			Socket clientSock = getSocket(key);
 			try {
