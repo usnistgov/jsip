@@ -196,6 +196,7 @@ public class Proxy extends TestHarness implements SipListener {
 				logger.info("Got a non-invite response " + response);
 			}
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			fail("unexpected exception");
 		}
 	}

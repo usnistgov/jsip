@@ -58,7 +58,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.33 $ $Date: 2007-10-29 02:24:37 $
+ * @version 1.2 $Revision: 1.34 $ $Date: 2007-11-04 17:37:44 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -1299,10 +1299,14 @@ public abstract class SIPMessage extends MessageObject implements
 	 * @param content
 	 *            Message body as a string.
 	 */
-	public void setMessageContent(String content) {
+	public void setMessageContent(String content, int givenLength)  throws ParseException {
 		// Note that that this could be a double byte character
 		// set - bug report by Masafumi Watanabe
 		computeContentLength(content);
+		if ( this.contentLengthHeader.getContentLength () != givenLength ) {
+			//System.out.println("!!!!!!!!!!! MISMATCH !!!!!!!!!!!");
+			throw new ParseException ("Invalid content length",0 );
+		}
 
 		messageContent = content;
 		messageContentBytes = null;
@@ -1317,12 +1321,27 @@ public abstract class SIPMessage extends MessageObject implements
 	 */
 	public void setMessageContent(byte[] content) {
 		computeContentLength(content);
-
+		
 		messageContentBytes = content;
 		messageContent = null;
 		messageContentObject = null;
 	}
-
+	
+	/**
+	 * Method to set the content - called by the parser
+	 * @param content
+	 * @throws ParseException
+	 */
+	public void setMessageContent(byte[] content, int givenLength) throws ParseException {
+		computeContentLength(content);
+		if ( this.contentLengthHeader.getContentLength () != givenLength ) {
+			//System.out.println("!!!!!!!!!!! MISMATCH !!!!!!!!!!!");
+			throw new ParseException ("Invalid content length",0 );
+		}
+		messageContentBytes = content;
+		messageContent = null;
+		messageContentObject = null;
+	}
 	/**
 	 * Compute and set the Content-length header based on the given content
 	 * object.

@@ -64,7 +64,7 @@ import java.text.ParseException;
  * feld swoop).
  * 
  * 
- * @version 1.2 $Revision: 1.21 $ $Date: 2007-07-12 15:39:53 $
+ * @version 1.2 $Revision: 1.22 $ $Date: 2007-11-04 17:37:43 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -214,7 +214,7 @@ public class StringMsgParser {
 			
 			byte[] body = new byte[bodyLength];
 			System.arraycopy(msgBuffer, i, body, 0, bodyLength);
-			message.setMessageContent(body);
+			message.setMessageContent(body ,message.getContentLength().getContentLength() );
 		}
 		
 		return message;
@@ -318,10 +318,11 @@ public class StringMsgParser {
 
 		message.setSize(i);
 
+		// Check for content legth header
 		if (readBody && message.getContentLength() != null &&
 				message.getContentLength().getContentLength() != 0) {
 			String body = msgString.substring(i);
-			message.setMessageContent(body);
+			message.setMessageContent(body,message.getContentLength().getContentLength());
 		}
 
 		return message;
