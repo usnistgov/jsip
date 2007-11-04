@@ -146,9 +146,9 @@ class IOHandler {
 			// Jayashenkhar ( lucent ).
 
 			try {
-				boolean retval = this.ioSemaphore.tryAcquire(1000, TimeUnit.MILLISECONDS);
+				boolean retval = this.ioSemaphore.tryAcquire(10000, TimeUnit.MILLISECONDS);  // TODO - make this a stack config parameter?
 				if ( !retval ) {
-					throw new IOException("Could not acquire IO Semaphore after 1 second -- giving up ");
+					throw new IOException("Could not acquire IO Semaphore after 10 second -- giving up ");
 				}
 			} catch (InterruptedException ex) {
 				throw new IOException("exception in aquiring sem");
