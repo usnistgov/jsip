@@ -37,16 +37,7 @@
 				<exclude>**/*.java</exclude>
 			</excludes>
 		</resource>
-	</resources>
+	</resources>	
    </build>
-
-
-  <distributionManagement>
-     <repository>
-	    <id>local-repository</id>
-	    <url>${jain-sip-m2-repo.java.net.url}</url>
-     </repository>
-   </distributionManagement>
-
 
 </project>

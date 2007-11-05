@@ -42,15 +42,6 @@
 	</resources>
 
   </build>
-
-
-  <distributionManagement>
-     <repository>
-	    <id>local-repository</id>
-	    <url>${m2-repo.java.net.url}</url>
-     </repository>
-   </distributionManagement>
-
   <dependencies>
     <dependency>
       <groupId>log4j</groupId>
