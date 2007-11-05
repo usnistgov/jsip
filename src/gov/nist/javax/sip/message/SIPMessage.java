@@ -58,7 +58,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.35 $ $Date: 2007-11-04 23:21:17 $
+ * @version 1.2 $Revision: 1.36 $ $Date: 2007-11-05 00:16:35 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -1306,8 +1306,7 @@ public abstract class SIPMessage extends MessageObject implements
 		// set - bug report by Masafumi Watanabe
 		computeContentLength(content);
 		if ( (!computeContentLength) && 
-				this.contentLengthHeader.getContentLength () != givenLength ) {
-			//System.out.println("!!!!!!!!!!! MISMATCH !!!!!!!!!!!");
+				this.contentLengthHeader.getContentLength () < givenLength ) {
 			throw new ParseException ("Invalid content length " + this.contentLengthHeader.getContentLength ()+ " / " + givenLength,0 );
 		}
 
@@ -1337,7 +1336,7 @@ public abstract class SIPMessage extends MessageObject implements
 	 */
 	public void setMessageContent(byte[] content, boolean computeContentLength, int givenLength) throws ParseException {
 		computeContentLength(content);
-		if ( (!computeContentLength) && this.contentLengthHeader.getContentLength () != givenLength ) {
+		if ( (!computeContentLength) && this.contentLengthHeader.getContentLength () < givenLength ) {
 			//System.out.println("!!!!!!!!!!! MISMATCH !!!!!!!!!!!");
 			throw new ParseException ("Invalid content length " +this.contentLengthHeader.getContentLength ()+ " / " + givenLength ,0 );
 		}
