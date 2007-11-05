@@ -1365,8 +1365,6 @@ From "abcdedf"
 Contact: sip:mranga@129.6.55.8
 "abcdefg"
 Subject: foobar
-Content-Length: 12345
-
 ]]>
 </message>
 
@@ -1456,7 +1454,7 @@ User-Agent:3Com ICD 1.0.1.2.7
 f:3 Com SIP Phone <sip:13019768226@sipcso.3com.com>;tag=828f3abc
 t:<sip:foo@129.6.50.27>
 c: application/sdp
-L: 101
+L: 97
 
 v=0
 o=username 0 46727 IN IP4 129.6.50.10
@@ -1974,7 +1972,7 @@ Call-ID: 12345601@here.com
 CSeq: 1 INVITE
 Contact: BigGuy <sip:UserA@here.com>
 Content-Type: application/sdp
-Content-Length: 147
+Content-Length: 141
 
 v=0
 o=UserA 2890844526 2890844526 IN IP4 here.com
@@ -4734,7 +4732,7 @@ Call-ID: 12345600@here.com
 CSeq: 1 INVITE
 Contact: BigGuy <sip:UserA@here.com>
 Content-Type: application/sdp
-Content-Length: 147
+Content-Length: 141
 
 v=0
 o=UserA 2890844526 2890844526 IN IP4 here.com
@@ -8026,7 +8024,7 @@ from   : "J Rosenberg \\\""       <sip:jdrosen@example.com>
   tag = 98asjd8
 MaX-fOrWaRdS: 0068
 Call-ID: 0ha0isndaksdj@192.0.2.1
-Content-Length   : 151
+Content-Length   : 144
 cseq: 0009
   INVITE
 Via  : SIP  /   2.0
@@ -8153,7 +8151,7 @@ Via: SIP/2.0/UDP host5.example.net;branch=z9hG4bKkdjuw
 C: application/sdp
 Contact:
   <sip:cal%6Cer@host5.example.net;%6C%72;n%61me=v%61lue%25%34%31>
-Content-Length: 151
+Content-Length: 144
 
 v=0
 o=mhandley 29739 7272939 IN IP4 192.0.2.1
