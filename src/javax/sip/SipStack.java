@@ -180,7 +180,7 @@ import java.util.*;
  *
  * <tr>
  *	<td align="left" valign="top">
- *		<p class="table">javax.sip.RETRANSMISSON_FILTER</p>
+ *		<p class="table">javax.sip.RETRANSMISSION_FILTER</p>
  *	</td>
  *	<td align="left" valign="top">
  * 		<p class="table"><b>Deprecated v1.2.</b> Applications can request
