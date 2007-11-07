@@ -64,7 +64,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.56 $ $Date: 2007-10-20 05:43:17 $
+ * @version 1.2 $Revision: 1.57 $ $Date: 2007-11-07 19:14:37 $
  * 
  * @author M. Ranganathan
  * 
@@ -2629,13 +2629,18 @@ public class SIPDialog implements javax.sip.Dialog {
 	 * Override for the equals method.
 	 */
 	public boolean equals(Object obj) {
-		if (!obj.getClass().equals(this.getClass())) {
-			return false;
-		}
-
+	  
+	  // JvB: by definition, if this!=obj, the Dialog objects should not be equal. 
+	  // Else there is something very wrong (ie 2 Dialog objects exist for same call-id)
+	  //
+	  // So all this code could be replaced by simply 'return obj==this';
+	  //
 		if (obj == this)
 			return true;
-		else if (obj != null && this.getDialogId() != null
+	  	  
+		if (!obj.getClass().equals(this.getClass())) {
+			return false;
+		} else if (obj != null && this.getDialogId() != null
 				&& !this.getDialogId().equals("")) {
 			return this.getDialogId().equals(((Dialog) obj).getDialogId());
 		} else {
