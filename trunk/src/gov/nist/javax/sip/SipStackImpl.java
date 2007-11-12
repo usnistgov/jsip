@@ -222,21 +222,21 @@ import gov.nist.core.net.NetworkLayer;
  * 
  * <li><b>gov.nist.javax.sip.LOG_FACTORY = classpath </b> <br/> The fully
  * qualified classpath for an implementation of the MessageLogFactory. The stack
- * calls the MessageLogFactory functions to log that are received or sent.
- * Implementing thes function allows you log auxiliary information related to
- * the application or environmental conditions into the log stream. The log
- * factory must have a default constructor. </li>
+ * calls the MessageLogFactory functions to format the log for messages that 
+ * are received or sent. This function allows you to log auxiliary 
+ * information related to the application or environmental conditions 
+ * into the log stream. The log factory must have a default constructor. </li>
  * 
- * <li><b>gov.nist.javax.sip.COMPUTE_CONTENT_LENGTH_FROM_MESSAGE_BODY = true|false <br/> 
- * Default is <it>false</it> If set to false, when you are creating 
- * a message from a String, the MessageFactory will compute
+ * <li><b>gov.nist.javax.sip.COMPUTE_CONTENT_LENGTH_FROM_MESSAGE_BODY = [true|false] <br/> 
+ * Default is <it>false</it> If set to <it>true</it>, when you are creating 
+ * a message from a <it>String</it>, the MessageFactory will compute
  * the content length from the message content and ignore the provided
  * content length parameter in the Message. Otherwise, it will use the content
  * length supplied and generate a parse exception if the content is 
  * truncated. 
  * 
  * 
- * @version 1.2 $Revision: 1.68 $ $Date: 2007-11-04 23:21:17 $
+ * @version 1.2 $Revision: 1.69 $ $Date: 2007-11-12 18:31:26 $
  * 
  * @author M. Ranganathan <br/>
  * 
