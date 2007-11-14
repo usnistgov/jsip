@@ -19,25 +19,5 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-  <dependencies>
-   <dependency>
-     <groupId>log4j</groupId>
-     <artifactId>log4j</artifactId>
-     <version>1.2.8</version>
-   </dependency>
-   <dependency>
-     <groupId>javax.sip</groupId>
-     <artifactId>jain-sip-api</artifactId>
-     <version>1.2</version>
-   </dependency>
- </dependencies>
-
- <repository>
-   <id>java.net</id>
-   <url>http://download.java.net/maven/1</url>
-   <layout>legacy</layout>
- </repository>
-
-
 </project>
 
