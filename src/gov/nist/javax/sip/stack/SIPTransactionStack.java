@@ -65,7 +65,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.85 $ $Date: 2007-10-26 03:53:17 $
+ * @version 1.2 $Revision: 1.86 $ $Date: 2007-11-14 02:57:19 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -575,20 +575,35 @@ public abstract class SIPTransactionStack implements
 	public void removeDialog(SIPDialog dialog) {
 
 		String id = dialog.getDialogId();
+		
+         if (id != null) {
+
+                // FHT: Remove dialog from table only if its associated dialog is the same as the one specified
+
+                Object old = this.dialogTable.get(id);
+
+                if (old == dialog) {
+                      this.dialogTable.remove(id);
+                }
+
+
+                
+                // We now deliver DTE even when the dialog is not originally present in the Dialog Table 
+                // This happens before the dialog state is assigned.
+
+                if ( !dialog.testAndSetIsDialogTerminatedEventDelivered()) {
+                      DialogTerminatedEvent event = new DialogTerminatedEvent(dialog
+                                    .getSipProvider(), dialog);
+
+                      // Provide notification to the listener that the dialog has
+                      // ended.
+                      dialog.getSipProvider().handleEvent(event, null);
+
+                }
+
+         }
 	
-		if (id != null) {
-		     this.dialogTable.remove(id);
-
-			if (/* old != null
-					&&*/ !dialog.testAndSetIsDialogTerminatedEventDelivered()) {
-				DialogTerminatedEvent event = new DialogTerminatedEvent(dialog
-						.getSipProvider(), dialog);
-
-				// Provide notification to the listener that the dialog has
-				// ended.
-				dialog.getSipProvider().handleEvent(event, null);
-			}
-		}
+		
 	}
 
 	/**
