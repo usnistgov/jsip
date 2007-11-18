@@ -32,7 +32,7 @@ import gov.nist.javax.sip.address.*;
 
 /** An abstract class for headers that take an address and parameters. 
  *
- * @version 1.2 $Revision: 1.8 $ $Date: 2007-10-29 02:24:38 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2007-11-18 01:47:56 $
  * 
  * @since 1.1
  *
@@ -46,17 +46,15 @@ public abstract class AddressParametersHeader extends ParametersHeader implement
 
 	protected AddressImpl address;
 
-	/**
-	 * get the Address field
-	 * @return the imbedded  Address
+	/* (non-Javadoc)
+	 * @see gov.nist.javax.sip.header.AddressParameters#getAddress()
 	 */
 	public Address getAddress() {
 		return address;
 	}
 
-	/**
-	 * set the Address field
-	 * @param address Address to set
+	/* (non-Javadoc)
+	 * @see gov.nist.javax.sip.header.AddressParameters#setAddress(javax.sip.address.Address)
 	 */
 	public void setAddress(Address address) {
 		this.address = (AddressImpl) address;
@@ -80,11 +78,8 @@ public abstract class AddressParametersHeader extends ParametersHeader implement
 		super(name,sync);
 	}
 
-	/**
-	 * Overrides the generic clone method
-	 * 
-	 * @see Object#clone()
-	 * 
+	/* (non-Javadoc)
+	 * @see gov.nist.javax.sip.header.AddressParameters#clone()
 	 */
 	public Object clone() {
 		AddressParametersHeader retval = (AddressParametersHeader) super.clone();
@@ -93,14 +88,8 @@ public abstract class AddressParametersHeader extends ParametersHeader implement
 		return retval;
 	}
 	
-	/**
-	 * Compare two AddressParametersHeader headers for equality.
-	 * 
-	 * @param other Object to compare with
-	 * 
-	 * @return true if the two headers are the same.
-	 * 
-	 * @see Object#equals(java.lang.Object)
+	/* (non-Javadoc)
+	 * @see gov.nist.javax.sip.header.AddressParameters#equals(java.lang.Object)
 	 */
 	public boolean equals(Object other) {
 		if (this==other) return true;
