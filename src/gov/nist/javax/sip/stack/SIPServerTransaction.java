@@ -150,7 +150,7 @@ import java.util.TimerTask;
  *                                      
  * </pre>
  * 
- * @version 1.2 $Revision: 1.94 $ $Date: 2007-10-26 14:41:44 $
+ * @version 1.2 $Revision: 1.95 $ $Date: 2007-11-18 01:47:54 $
  * @author M. Ranganathan
  * 
  */
@@ -1736,6 +1736,14 @@ public class SIPServerTransaction extends SIPTransaction implements
 	public void setInviteTransaction(SIPServerTransaction st) {
 		this.inviteTransaction = st;
 
+	}
+	
+	/**
+	 * TODO -- this method has to be added to the api.
+	 * @return
+	 */
+	public SIPServerTransaction getCanceledInviteTransaction() {
+		return this.inviteTransaction;
 	}
 
 }
