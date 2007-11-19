@@ -41,6 +41,7 @@
 package gov.nist.javax.sip.stack;
 import gov.nist.core.HostPort;
 
+import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLServerSocket;
 import java.io.IOException;
 import java.net.*;
@@ -55,7 +56,7 @@ import java.util.Iterator;
  * object that creates new TLS MessageChannels (one for each new
  * accept socket).
  *
- * @version 1.2 $Revision: 1.11 $ $Date: 2007-02-13 21:02:16 $
+ * @version 1.2 $Revision: 1.12 $ $Date: 2007-11-19 16:28:04 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -163,7 +164,13 @@ public class TLSMessageProcessor extends MessageProcessor {
 				// thread is already running
 				new TLSMessageChannel(newsock, sipStack, this);
 			} catch (SocketException ex) {
+				sipStack.logWriter.logError("Fatal - SocketException occured while Accepting connection",ex);
 				this.isRunning = false;
+				break;
+			} catch (SSLException ex ) {
+				this.isRunning = false;
+				sipStack.logWriter.logError("Fatal - SSSLException occured while Accepting connection",ex);
+				break;
 			} catch (IOException ex) {
 				// Problem accepting connection.
 				sipStack.logWriter.logError("Problem Accepting Connection",ex);
