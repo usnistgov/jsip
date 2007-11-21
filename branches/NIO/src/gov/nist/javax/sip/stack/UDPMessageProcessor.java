@@ -1,28 +1,28 @@
 /*
-* Conditions Of Use 
-* 
-* This software was developed by employees of the National Institute of
-* Standards and Technology (NIST), an agency of the Federal Government.
-* Pursuant to title 15 Untied States Code Section 105, works of NIST
-* employees are not subject to copyright protection in the United States
-* and are considered to be in the public domain.  As a result, a formal
-* license is not needed to use the software.
-* 
-* This software is provided by NIST as a service and is expressly
-* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
-* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
-* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
-* AND DATA ACCURACY.  NIST does not warrant or make any representations
-* regarding the use of the software or the results thereof, including but
-* not limited to the correctness, accuracy, reliability or usefulness of
-* the software.
-* 
-* Permission to use this software is contingent upon your acceptance
-* of the terms of this agreement
-*  
-* .
-* 
-*/
+ * Conditions Of Use 
+ * 
+ * This software was developed by employees of the National Institute of
+ * Standards and Technology (NIST), an agency of the Federal Government.
+ * Pursuant to title 15 Untied States Code Section 105, works of NIST
+ * employees are not subject to copyright protection in the United States
+ * and are considered to be in the public domain.  As a result, a formal
+ * license is not needed to use the software.
+ * 
+ * This software is provided by NIST as a service and is expressly
+ * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+ * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+ * AND DATA ACCURACY.  NIST does not warrant or make any representations
+ * regarding the use of the software or the results thereof, including but
+ * not limited to the correctness, accuracy, reliability or usefulness of
+ * the software.
+ * 
+ * Permission to use this software is contingent upon your acceptance
+ * of the terms of this agreement
+ *  
+ * .
+ * 
+ */
 /*******************************************************************************
  *   Product of NIST/ITL Advanced Networking Technologies Division (ANTD).     *
  *******************************************************************************/
@@ -30,7 +30,27 @@ package gov.nist.javax.sip.stack;
 
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.net.*;
+
+import org.apache.mina.common.ByteBuffer;
+import org.apache.mina.common.IdleStatus;
+import org.apache.mina.common.IoAcceptor;
+import org.apache.mina.common.IoHandler;
+import org.apache.mina.common.IoServiceConfig;
+import org.apache.mina.common.IoSession;
+import org.apache.mina.common.ThreadModel;
+import org.apache.mina.transport.socket.nio.DatagramAcceptor;
+import org.apache.mina.transport.socket.nio.DatagramAcceptorConfig;
+import org.apache.mina.transport.socket.nio.DatagramSessionConfig;
 
 import gov.nist.core.*;
 
@@ -39,9 +59,9 @@ import gov.nist.core.*;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size).
  * Each UDP message is processed in its own thread).
  * 
- * @version 1.2 $Revision: 1.29 $ $Date: 2007-01-26 16:50:44 $
+ * @version 1.2 $Revision: 1.29.4.1 $ $Date: 2007-11-21 23:55:33 $
  * 
- * @author M. Ranganathan  <br/>
+ * @author M. Ranganathan <br/>
  * 
  * 
  * 
@@ -55,32 +75,14 @@ import gov.nist.core.*;
  * thread pooling be added to limit the number of threads and improve
  * performance.
  */
-public class UDPMessageProcessor extends MessageProcessor {
-	
-	private static final int HIGHWAT = 100 ; // High water mark for queue size.
-	
-	private static final int LOWAT =   50 ; // Low water mark for queue size
+public class UDPMessageProcessor extends MessageProcessor implements IoHandler {
 
 	/**
 	 * The Mapped port (in case STUN suport is enabled)
 	 */
 	private int port;
 
-	/**
-	 * Incoming messages are queued here.
-	 */
-	protected LinkedList messageQueue;
-
-	/**
-	 * A list of message channels that we have started.
-	 */
-	protected LinkedList messageChannels;
-
-	/**
-	 * Max # of udp message channels
-	 */
-	protected int threadPoolSize;
-
+	
 	/**
 	 * Max datagram size.
 	 */
@@ -90,15 +92,21 @@ public class UDPMessageProcessor extends MessageProcessor {
 	 * Our stack (that created us).
 	 */
 	protected SIPTransactionStack sipStack;
-
 	
-	protected DatagramSocket sock;
+	private BlockingQueue<Runnable> messageQueue;
+
 
 	/**
 	 * A flag that is set to false to exit the message processor (suggestion by
 	 * Jeff Keyser).
 	 */
 	protected boolean isRunning;
+
+	private ThreadPoolExecutor threadPoolExecutor;
+
+	private IoSession session;
+	
+	private long lastBytesRead;
 
 	/**
 	 * Constructor.
@@ -112,37 +120,50 @@ public class UDPMessageProcessor extends MessageProcessor {
 
 		this.sipStack = sipStack;
 
-		this.messageQueue = new LinkedList();
+		int coreThreads = sipStack.threadPoolSize;
+		if ( coreThreads == -1 ) coreThreads = 1;
+		
+		// This does the actual processing of the message
+		this.messageQueue = new LinkedBlockingQueue<Runnable>();
+		this.threadPoolExecutor      = new ThreadPoolExecutor(coreThreads, 2*coreThreads, 5, TimeUnit.SECONDS, messageQueue);
+		this.threadPoolExecutor.prestartAllCoreThreads();
+
+		
+
+		IoAcceptor acceptor = new DatagramAcceptor(Executors.newCachedThreadPool());
+		
+
+		IoServiceConfig acceptorConfig = acceptor.getDefaultConfig();
+		
+
+		acceptorConfig.setThreadModel(ThreadModel.MANUAL);
+
+		// Prepare the service configuration.
+		DatagramAcceptorConfig cfg = new DatagramAcceptorConfig();
+		DatagramSessionConfig dcfg = cfg.getSessionConfig();
+
+		dcfg.setTrafficClass(0x10);
+		/** IPTOS_LOWDELAY */
+		dcfg.setReuseAddress(false);
+
+		// Start the listener
+		InetSocketAddress address = new InetSocketAddress(ipAddress, port);
+
+		acceptor.bind(address, this);
 
 		this.port = port;
-		try {
-			this.sock = sipStack.getNetworkLayer().createDatagramSocket(port,
-					ipAddress);
-			// Create a new datagram socket.
-			sock.setReceiveBufferSize(MAX_DATAGRAM_SIZE);
 
-			/**
-			 * If the thread auditor is enabled, define a socket timeout value in order to
-			 * prevent sock.receive() from blocking forever
-			 */
-			if (sipStack.getThreadAuditor().isEnabled()) {
-				sock.setSoTimeout((int) sipStack.getThreadAuditor().getPingIntervalInMillisecs());
-			}
-			if ( ipAddress.getHostAddress().equals(IN_ADDR_ANY)  ||
-				 ipAddress.getHostAddress().equals(IN6_ADDR_ANY)){
-				// Store the address to which we are actually bound
-				// Note that on WINDOWS this is actually broken. It will
-				// return IN_ADDR_ANY again. On linux it will return the 
-				// address to which the socket was actually bound.
-				super.setIpAddress( sock.getLocalAddress() );
-				
-			}
-		} catch (SocketException ex) {
-			throw new IOException(ex.getMessage());
+		if (ipAddress.getHostAddress().equals(IN_ADDR_ANY)
+				|| ipAddress.getHostAddress().equals(IN6_ADDR_ANY)) {
+			// Store the address to which we are actually bound
+			// Note that on WINDOWS this is actually broken. It will
+			// return IN_ADDR_ANY again. On linux it will return the
+			// address to which the socket was actually bound.
+			super.setIpAddress(new DatagramSocket().getLocalAddress());
+
 		}
-	}
 
-	
+	}
 
 	/**
 	 * Get port on which to listen for incoming stuff.
@@ -157,133 +178,19 @@ public class UDPMessageProcessor extends MessageProcessor {
 	 * Start our processor thread.
 	 */
 	public void start() throws IOException {
-		
-
 		this.isRunning = true;
-		Thread thread = new Thread(this);
-		thread.setDaemon(true);
-		// Issue #32 on java.net
-		thread.setName("UDPMessageProcessorThread");
-		thread.start();
 	}
 
-	/**
-	 * Thread main routine.
-	 */
-	public void run() {
-		// Check for running flag.
-		this.messageChannels = new LinkedList();
-		// start all our messageChannels (unless the thread pool size is
-		// infinity.
-		if (sipStack.threadPoolSize != -1) {
-			for (int i = 0; i < sipStack.threadPoolSize; i++) {
-				UDPMessageChannel channel = new UDPMessageChannel(sipStack,
-						this);
-				this.messageChannels.add(channel);
-
-			}
-		}
-
-		// Ask the auditor to monitor this thread
-		ThreadAuditor.ThreadHandle threadHandle = sipStack.getThreadAuditor().addCurrentThread();
-
-		// Somebody asked us to exit. if isRunnning is set to false.
-		while (this.isRunning) {
-			
-			try {
-				// Let the thread auditor know we're up and running
-				threadHandle.ping();
-
-				int bufsize = sock.getReceiveBufferSize();
-				byte message[] = new byte[bufsize];
-				DatagramPacket packet = new DatagramPacket(message, bufsize);
-				sock.receive(packet);
-
-			 // This is a simplistic congestion control algorithm.
-			 // It accepts packets if queuesize is < LOWAT. It drops
-			 // requests if the queue size exceeds a HIGHWAT and accepts
-			 // requests with probability p proportional to the difference
-			 // between current queue size and LOWAT in the range
-			 // of queue sizes between HIGHWAT and LOWAT.
-			 // TODO -- penalize spammers by looking at the source
-			 // port and IP address.
-			 if ( this.messageQueue.size() >= HIGHWAT) {
-					if (sipStack.logWriter.isLoggingEnabled()) {
-						sipStack.logWriter.logDebug("Dropping message -- queue length exceeded");
-						
-					}
-					//System.out.println("HIGHWAT Drop!");
-					continue;
-				} else if ( this.messageQueue.size() > LOWAT && this .messageQueue.size() < HIGHWAT ) {
-					// Drop the message with a probabilty that is linear in the range 0 to 1 
-					float threshold = ((float)(messageQueue.size() - LOWAT))/ ((float)(HIGHWAT - LOWAT));
-					boolean decision = Math.random() > 1.0 - threshold;
-					if ( decision ) {
-						if (sipStack.logWriter.isLoggingEnabled()) {
-							sipStack.logWriter.logDebug("Dropping message with probability 	" + (1.0 - threshold));
-							
-						}
-						//System.out.println("RED Drop!");
-						continue;
-					}
-					
-				} 
-				// Count of # of packets in process.
-				// this.useCount++;
-				if (sipStack.threadPoolSize != -1) {
-					// Note: the only condition watched for by threads
-					// synchronizing on the messageQueue member is that it is
-					// not empty. As soon as you introduce some other
-					// condition you will have to call notifyAll instead of
-					// notify below.
-
-					synchronized (this.messageQueue) {
-						this.messageQueue.addLast(packet);
-						this.messageQueue.notify();
-					}
-				} else {
-					new UDPMessageChannel(sipStack, this, packet);
-				}
-			} catch (SocketTimeoutException ex) {
-			  // This socket timeout alows us to ping the thread auditor periodically
-			} catch (SocketException ex) {
-				if (sipStack.isLoggingEnabled())
-					getSIPStack().logWriter
-							.logDebug("UDPMessageProcessor: Stopping");
-				isRunning = false;
-				// The notifyAll should be in a synchronized block.
-				// ( bug report by Niklas Uhrberg ).
-				synchronized (this.messageQueue) {
-					this.messageQueue.notifyAll();
-				}
-			} catch (IOException ex) {
-				isRunning = false;
-				ex.printStackTrace();
-				if (sipStack.isLoggingEnabled())
-					getSIPStack().logWriter
-							.logDebug("UDPMessageProcessor: Got an IO Exception");
-			} catch (Exception ex) {
-				if (sipStack.isLoggingEnabled())
-					getSIPStack().logWriter
-							.logDebug("UDPMessageProcessor: Unexpected Exception - quitting");
-				InternalErrorHandler.handleException(ex);
-				return;
-			}
-		}
-	}
+	
 
 	/**
 	 * Shut down the message processor. Close the socket for recieving incoming
 	 * messages.
 	 */
 	public void stop() {
-		synchronized (this.messageQueue) {
-			this.isRunning = false;
-			this.messageQueue.notifyAll();
-			sock.close();
-			
-
-		}
+		this.isRunning = false;
+		this.threadPoolExecutor.shutdown();
+		this.getSession().close();
 	}
 
 	/**
@@ -343,9 +250,91 @@ public class UDPMessageProcessor extends MessageProcessor {
 	 * Return true if there are any messages in use.
 	 */
 	public boolean inUse() {
-		synchronized (messageQueue) {
-			return messageQueue.size() != 0;
+		try {
+			return !this.threadPoolExecutor.awaitTermination(1000,
+					TimeUnit.MILLISECONDS);
+		} catch (Exception ex) {
+			return true;
 		}
+	}
+
+	@Override
+	public void exceptionCaught(IoSession iosession, Throwable throwable)
+			throws Exception {
+		if ( sipStack.isLoggingEnabled()) {
+			sipStack.getLogWriter().logError("Exception caught in UDPMessageProcessor", throwable);
+		}
+
+	}
+
+	@Override
+	public void messageReceived(IoSession iosession, Object obj) throws Exception {
+		ByteBuffer byteBuffer = (ByteBuffer) obj;
+		long bytesReadLength = iosession.getReadBytes();
+		int readLength = (int) (  bytesReadLength - this.lastBytesRead);
+		this.lastBytesRead = bytesReadLength;
+		sipStack.getLogWriter().logDebug("bytesReadLength = " + bytesReadLength);
+		byte[] bytesRead = new byte[readLength];
+		byteBuffer.get(bytesRead); 
+		InetSocketAddress sockAddr = (InetSocketAddress)iosession.getRemoteAddress();
+		InetAddress inetAddress = sockAddr.getAddress();
+		int port = sockAddr.getPort();
+		this.threadPoolExecutor.execute(new UDPMessageChannel(
+				this.sipStack, this,  bytesRead, inetAddress,port));
+
+	}
+
+	@Override
+	public void messageSent(IoSession ioSession, Object object) throws Exception {
+		this.sipStack.getLogWriter().logDebug("UDPMessageProcessor: messageSent");
+
+	}
+
+	@Override
+	public void sessionClosed(IoSession session) throws Exception {
+		if (sipStack.isLoggingEnabled())
+			getSIPStack().logWriter
+					.logDebug("UDPMessageProcessor: Stopping");
+		isRunning = false;
+		this.threadPoolExecutor.shutdown();
+
+	}
+
+	@Override
+	public void sessionCreated(IoSession session) throws Exception {
+		
+		if ( sipStack.isLoggingEnabled())
+			sipStack.logWriter.logDebug("UDPMessageProcessor: mina sessionCreated");
+		this.session = session;
+
+	}
+
+	@Override
+	public void sessionIdle(IoSession arg0, IdleStatus arg1) throws Exception {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void sessionOpened(IoSession session) throws Exception {
+		this.setSession(session);
+
+	}
+
+	
+
+	/**
+	 * @return the session
+	 */
+	public IoSession getSession() {
+		return session;
+	}
+
+	/**
+	 * @param session the session to set
+	 */
+	protected void setSession(IoSession session) {
+		this.session = session;
 	}
 
 }

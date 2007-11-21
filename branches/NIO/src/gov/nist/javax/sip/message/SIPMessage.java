@@ -58,7 +58,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.33 $ $Date: 2007-10-29 02:24:37 $
+ * @version 1.2 $Revision: 1.33.2.1 $ $Date: 2007-11-21 23:55:41 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -68,7 +68,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public abstract class SIPMessage extends MessageObject implements
 		javax.sip.message.Message {
 
+
 	protected static final String DEFAULT_ENCODING = "UTF-8";
+	
 
 	/**
 	 * unparsed headers
@@ -1299,10 +1301,14 @@ public abstract class SIPMessage extends MessageObject implements
 	 * @param content
 	 *            Message body as a string.
 	 */
-	public void setMessageContent(String content) {
+	public void setMessageContent(String content, boolean computeContentLength, int givenLength)  throws ParseException {
 		// Note that that this could be a double byte character
 		// set - bug report by Masafumi Watanabe
 		computeContentLength(content);
+		if ( (!computeContentLength) && 
+				this.contentLengthHeader.getContentLength () < givenLength ) {
+			throw new ParseException ("Invalid content length " + this.contentLengthHeader.getContentLength ()+ " / " + givenLength,0 );
+		}
 
 		messageContent = content;
 		messageContentBytes = null;
@@ -1317,12 +1323,27 @@ public abstract class SIPMessage extends MessageObject implements
 	 */
 	public void setMessageContent(byte[] content) {
 		computeContentLength(content);
-
+		
 		messageContentBytes = content;
 		messageContent = null;
 		messageContentObject = null;
 	}
-
+	
+	/**
+	 * Method to set the content - called by the parser
+	 * @param content
+	 * @throws ParseException
+	 */
+	public void setMessageContent(byte[] content, boolean computeContentLength, int givenLength) throws ParseException {
+		computeContentLength(content);
+		if ( (!computeContentLength) && this.contentLengthHeader.getContentLength () < givenLength ) {
+			//System.out.println("!!!!!!!!!!! MISMATCH !!!!!!!!!!!");
+			throw new ParseException ("Invalid content length " +this.contentLengthHeader.getContentLength ()+ " / " + givenLength ,0 );
+		}
+		messageContentBytes = content;
+		messageContent = null;
+		messageContentObject = null;
+	}
 	/**
 	 * Compute and set the Content-length header based on the given content
 	 * object.
@@ -1813,6 +1834,8 @@ public abstract class SIPMessage extends MessageObject implements
 		this.setHeader(cseqHeader);
 	}
 
+	
+	
 	public abstract void setSIPVersion(String sipVersion) throws ParseException;
 
 	public abstract String getSIPVersion();

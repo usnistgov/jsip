@@ -41,7 +41,7 @@ import java.util.*;
  * object that creates new TCP MessageChannels (one for each new
  * accept socket).  
  *
- * @version 1.2 $Revision: 1.27 $ $Date: 2007-02-13 21:02:16 $
+ * @version 1.2 $Revision: 1.27.4.1 $ $Date: 2007-11-21 23:55:34 $
  *
  * @author M. Ranganathan   <br/>
  * Acknowledgement: Jeff Keyser suggested that a
@@ -52,7 +52,7 @@ import java.util.*;
  *
  * 
  */
-public class TCPMessageProcessor extends MessageProcessor {
+public class TCPMessageProcessor extends MessageProcessor implements Runnable {
 
 	
 	protected int nConnections;

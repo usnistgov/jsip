@@ -1,8 +1,139 @@
 
-Notes for the next version:
+JAIN SIP 2.0 Proposed Change List
+=================================
 
-1. Add support for IMS headers.
+The interfaces of JAIN-SIP will be aligned with JAVA 5.
+This will result in pervasive changes throughout the specification.
 
-2. Add AddressFactory.createAddress() ( no args ).
 
-3. Intoduce AddressParametersHeader interface (SIP Servlets implementation support).
+----------------------------------------------------------------------------
+
+javax.sip package:
+
+ - ServerTransaction.getCanceledInvite
+   A method to retrieve the Canceled INVITE from its corresponding CANCEL 
+   server Transaction. Returns null if there is no corresponding INVITE
+   or if the ServerTransaction is NOT a CANCEL.
+
+-  ServerTransaction Support for Timer C ( helper for Proxy Servers ) 
+
+-  Add missing method ClientTransaction.solicitRetransmissionAlerts to recieve
+   RetransmissionNotifications for ClientTransactions
+
+-  Documentation fix on Dialog. When a Dialog with null transaction is 
+   terminated , a Dialog Terminated Event is delivered to the Listener.
+
+-  Documentation fix for ServerTransaction : Document that ACK pseudo server 
+   transaction delivers a TransactionTerminated event 
+
+-  Add javax.sip.AddressResolver interface.  The behavior of this interface
+   is described below.
+/**
+ * An interface that allows you to customize address lookup.
+ * The user can implement this interface to do DNS lookups or other 
+ * arbitrary lookup schemes and register it with the stack. 
+ * This interface is particularly useful for non-standard mapping
+ * schemes where the actual destination IP and port for the outgoing
+ * message must be bound late and on a site-specific basis.
+ * A compliant implementation of JAIN-SIP must provide a Default implementation
+ * of this package. The stack will consult the registered AddressResolver
+ * to convert from a Hop (returned by the Router) to an IP address and Port.
+ * The default implementation of the address resolver 
+ * does nothing more than just return back 
+ * the Hop that it was passed (fixing up the port if necessary). 
+ * However, this behavior can be overriden. To override
+ * implement this interface and register it with the stack using 
+ * {@link javax.sip.SipStackImpl#setAddressResolver(AddressResolver)}. 
+ * 
+ * 
+ *
+ */
+public interface AddressResolver {
+	
+	/**
+	 * Do a name lookup and resolve the given IP address. 
+	 * The default implementation is just an identity mapping
+	 * (returns the argument). 
+	 * 
+	 * @param hop - an incoming Hop containing a potenitally unresolved address.
+	 * @return a new hop ( if the address is recomputed ) or the original hop
+	 * if this is just an identity mapping ( the default behavior ).
+	 */
+	public Hop resolveAddress( Hop hop);
+	
+	
+
+}
+   
+
+----------------------------------------------------------------------------
+javax.sip.header Package:
+
+Restructure to make it easier to build Sip Servlets on top of JAIN SIP
+
+- Introduce AddressParametersHeader interface which provides an 
+  intermediate interface to align headers such as From, To, Route etc.
+  with the SIP Servlet Parameters interface.
+
+package javax.sip.header;
+
+import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.sip.address.Address;
+import javax.sip.header.Parameters;
+
+public interface AddressParameters extends Parameters {
+
+	/**
+	 * get the Address field
+	 * @return the imbedded  Address
+	 */
+	public abstract Address getAddress();
+
+	/**
+	 * set the Address field
+	 * @param address Address to set
+	 */
+	public abstract void setAddress(Address address);
+	
+	/**
+	 * Get the parameters map.
+	 * 
+	 */
+	public abstract Map<String,Entry<String,String>> getParameters();
+
+
+}
+
+
+ - Introduce SipHeaderList collection interface to deal with Lists of SIP headers.
+
+ - Add support for IMS headers.
+
+ - Diversion header
+ - Privacy header (RFC3323)
+ - SecurityClient, Server and Verify (RFC3329)
+ - ServiceRoute (RFC3608)
+ - Accept & RejectContact (RFC3841)
+ - Replaces (RFC3891)
+
+- Join (RFC3911)
+
+-  Session timer headers (RFC4028) + native support for session timers.
+
+ 
+----------------------------------------------------------------------------
+
+javax.sip.address package:
+
+AddressFactory.createAddress() ( no args ). This creates an unpopulated Address
+		Object.
+
+---------------------------------------------------------------------------
+
+The following is pending approval and agreement by JCP PMO and JSR 141 
+spec lead.
+
+Absorb JSR 141 functionality into JSR 32 (JSR 141 is in a seemingly limbo 
+state for a very long time).

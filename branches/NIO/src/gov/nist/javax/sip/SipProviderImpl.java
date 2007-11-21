@@ -54,7 +54,7 @@ import java.text.ParseException;
 /**
  * Implementation of the JAIN-SIP provider interface.
  * 
- * @version 1.2 $Revision: 1.49 $ $Date: 2007-10-22 03:38:32 $
+ * @version 1.2 $Revision: 1.49.2.1 $ $Date: 2007-11-21 23:55:39 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -163,7 +163,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 		this.eventScanner = sipStack.eventScanner; // for quick access.
 		this.sipStack = sipStack;
 		this.eventScanner.incrementRefcount();
-		this.listeningPoints = new ConcurrentHashMap();
+		this.listeningPoints = new ConcurrentHashMap<String,ListeningPointImpl>();
 		this.automaticDialogSupportEnabled = this.sipStack
 				.isAutomaticDialogSupportEnabled();
 	}
@@ -612,7 +612,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 
 		boolean found = false;
 
-		for (Iterator it = sipStack.getSipProviders(); it.hasNext();) {
+		for (Iterator<SipProviderImpl> it = sipStack.getSipProviders(); it.hasNext();) {
 			SipProviderImpl nextProvider = (SipProviderImpl) it.next();
 			if (nextProvider.sipListener != null)
 				found = true;
@@ -708,6 +708,10 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 		Via via = sipResponse.getTopmostVia();
 		if (via == null)
 			throw new SipException("No via header in response!");
+		SIPServerTransaction st = (SIPServerTransaction) sipStack.findTransaction((SIPMessage)response, true);
+		if ( st != null   && st.getState() != TransactionState.TERMINATED) {
+			throw new SipException("Transaction exists -- cannot send response statelessly");
+		}
 		String transport = via.getTransport();
 
 		// check to see if Via has "received paramaeter". If so

@@ -32,6 +32,7 @@ import javax.sip.*;
 import javax.sip.address.*;
 import javax.sip.message.*;
 
+import gov.nist.javax.sip.parser.StringMsgParser;
 import gov.nist.javax.sip.stack.*;
 
 import java.lang.reflect.*;
@@ -226,8 +227,16 @@ import gov.nist.core.net.NetworkLayer;
  * the application or environmental conditions into the log stream. The log
  * factory must have a default constructor. </li>
  * 
+ * <li><b>gov.nist.javax.sip.COMPUTE_CONTENT_LENGTH_FROM_MESSAGE_BODY = true|false <br/> 
+ * Default is <it>false</it> If set to false, when you are creating 
+ * a message from a String, the MessageFactory will compute
+ * the content length from the message content and ignore the provided
+ * content length parameter in the Message. Otherwise, it will use the content
+ * length supplied and generate a parse exception if the content is 
+ * truncated. 
  * 
- * @version 1.2 $Revision: 1.66 $ $Date: 2007-10-04 18:58:55 $
+ * 
+ * @version 1.2 $Revision: 1.66.4.1 $ $Date: 2007-11-21 23:55:38 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -240,9 +249,9 @@ public class SipStackImpl extends SIPTransactionStack implements
 
 	EventScanner eventScanner;
 
-	private Hashtable listeningPoints;
+	private Hashtable<String,ListeningPointImpl> listeningPoints;
 
-	private LinkedList sipProviders;
+	private LinkedList<SipProviderImpl> sipProviders;
 
 	// Flag to indicate that the listener is re-entrant and hence
 	// Use this flag with caution.
@@ -268,8 +277,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 				this);
 		super.setMessageFactory(msgFactory);
 		this.eventScanner = new EventScanner(this);
-		this.listeningPoints = new Hashtable();
-		this.sipProviders = new LinkedList();
+		this.listeningPoints = new Hashtable<String,ListeningPointImpl>();
+		this.sipProviders = new LinkedList<SipProviderImpl>();
 
 	}
 
@@ -279,8 +288,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 	private void reInitialize() {
 		super.reInit();
 		this.eventScanner = new EventScanner(this);
-		this.listeningPoints = new Hashtable();
-		this.sipProviders = new LinkedList();
+		this.listeningPoints = new Hashtable<String,ListeningPointImpl>();
+		this.sipProviders = new LinkedList<SipProviderImpl>();
 		this.sipListener = null;
 
 	}
@@ -347,11 +356,11 @@ public class SipStackImpl extends SIPTransactionStack implements
 			routerPath = "gov.nist.javax.sip.stack.DefaultRouter";
 
 		try {
-			Class routerClass = Class.forName(routerPath);
-			Class[] constructorArgs = new Class[2];
+			Class<?> routerClass = Class.forName(routerPath);
+			Class<?>[] constructorArgs = new Class[2];
 			constructorArgs[0] = javax.sip.SipStack.class;
 			constructorArgs[1] = String.class;
-			Constructor cons = routerClass.getConstructor(constructorArgs);
+			Constructor<?> cons = routerClass.getConstructor(constructorArgs);
 			Object[] args = new Object[2];
 			args[0] = (SipStack) this;
 			args[1] = outboundProxy;
@@ -462,8 +471,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 			String path = configurationProperties
 					.getProperty(NETWORK_LAYER_KEY);
 			try {
-				Class clazz = Class.forName(path);
-				Constructor c = clazz.getConstructor(new Class[0]);
+				Class<?> clazz = Class.forName(path);
+				Constructor<?> c = clazz.getConstructor(new Class[0]);
 				networkLayer = (NetworkLayer) c.newInstance(new Object[0]);
 			} catch (Exception e) {
 				throw new PeerUnavailableException(
@@ -478,8 +487,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 			String path = configurationProperties
 					.getProperty(ADDRESS_RESOLVER_KEY);
 			try {
-				Class clazz = Class.forName(path);
-				Constructor c = clazz.getConstructor(new Class[0]);
+				Class<?> clazz = Class.forName(path);
+				Constructor<?> c = clazz.getConstructor(new Class[0]);
 				this.addressResolver = (AddressResolver) c
 						.newInstance(new Object[0]);
 			} catch (Exception e) {
@@ -637,8 +646,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 				.getProperty("gov.nist.javax.sip.LOG_FACTORY");
 		if (messageLogFactoryClasspath != null) {
 			try {
-				Class clazz = Class.forName(messageLogFactoryClasspath);
-				Constructor c = clazz.getConstructor(new Class[0]);
+				Class<?> clazz = Class.forName(messageLogFactoryClasspath);
+				Constructor<?> c = clazz.getConstructor(new Class[0]);
 				this.logRecordFactory = (LogRecordFactory) c
 						.newInstance(new Object[0]);
 			} catch (Exception ex) {
@@ -650,6 +659,10 @@ public class SipStackImpl extends SIPTransactionStack implements
 		} else {
 			this.logRecordFactory = new DefaultMessageLogFactory();
 		}
+		
+		boolean computeContentLength = 
+				configurationProperties.getProperty("gov.nist.javax.sip.COMPUTE_CONTENT_LENGTH_FROM_MESSAGE_BODY","false").equals("true");
+		StringMsgParser.setComputeContentLengthFromMessage(computeContentLength);
 		
 		super.rfc2543Supported =  configurationProperties.getProperty
 				("gov.nist.javax.sip.RFC_2543_SUPPORT_ENABLED","true").equalsIgnoreCase("true");
@@ -739,10 +752,13 @@ public class SipStackImpl extends SIPTransactionStack implements
 			throw new ObjectInUseException("Provider already attached!");
 
 		SipProviderImpl provider = new SipProviderImpl(this);
-
+		if ( this.logWriter.isLoggingEnabled()) {
+			logWriter.logDebug("createSipProvider: "  + provider);
+		}
 		provider.setListeningPoint(listeningPointImpl);
 		listeningPointImpl.sipProvider = provider;
 		this.sipProviders.add(provider);
+		
 		return provider;
 	}
 
@@ -828,7 +844,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 	 * 
 	 * @see javax.sip.SipStack#getSipProviders()
 	 */
-	public java.util.Iterator getSipProviders() {
+	public java.util.Iterator<SipProviderImpl> getSipProviders() {
 		return this.sipProviders.iterator();
 	}
 
@@ -876,8 +892,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 			getLogWriter().logDebug("stopStack -- stoppping the stack");
 		}
 		this.stopStack();
-		this.sipProviders = new LinkedList();
-		this.listeningPoints = new Hashtable();
+		this.sipProviders = new LinkedList<SipProviderImpl>();
+		this.listeningPoints = new Hashtable<String,ListeningPointImpl>();
 		this.eventScanner.forceStop();
 		this.eventScanner = null;
 

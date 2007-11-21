@@ -231,7 +231,7 @@ public class Shootist implements SipListener {
 		// Set to 0 (or NONE) in your production code for max speed.
 		// You need 16 (or TRACE) for logging traces. 32 (or DEBUG) for debug + traces.
 		// Your code will limp at 32 but it is best for debugging.
-		properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "TRACE");
+		properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "DEBUG");
 
 		try {
 			// Create SipStack object
@@ -251,7 +251,10 @@ public class Shootist implements SipListener {
 			addressFactory = sipFactory.createAddressFactory();
 			messageFactory = sipFactory.createMessageFactory();
 			udpListeningPoint = sipStack.createListeningPoint("127.0.0.1", 5060, "udp");
+
+			System.out.println("UdpListeningPoint " + udpListeningPoint);
 			sipProvider = sipStack.createSipProvider(udpListeningPoint);
+			System.out.println("sipProvider" + sipProvider);
 			Shootist listener = this;
 			sipProvider.addSipListener(listener);
 
@@ -363,7 +366,10 @@ public class Shootist implements SipListener {
 			request.addHeader(callInfoHeader);
 
 			// Create the client transaction.
+			
+			System.out.println("about to get INviteTID = " + inviteTid);
 			inviteTid = sipProvider.getNewClientTransaction(request);
+			System.out.println("INviteTID = " + inviteTid);
 
 			// send the request out.
 			inviteTid.sendRequest();

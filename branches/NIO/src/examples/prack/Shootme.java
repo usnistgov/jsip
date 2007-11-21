@@ -73,6 +73,8 @@ public class Shootme implements SipListener {
 		try {
 			System.out.println("shootme: got an PRACK! ");
 			System.out.println("Dialog State = " + dialog.getState());
+ 			System.out.println("Dialog from ServerTransaction = " + serverTransactionId.getDialog() + " Dialog = " + dialog);
+			
 			
 			/**
 			 * JvB: First, send 200 OK for PRACK

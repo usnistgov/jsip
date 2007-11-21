@@ -346,7 +346,7 @@ public class LogWriter {
 		return this.needsLogging && logLevel <= traceLevel;
 	}
 
-	public void logError(String message, Exception ex) {
+	public void logError(String message, Throwable ex) {
 		Logger logger = this.getLogger();
 		logger.error(message, ex);
 
