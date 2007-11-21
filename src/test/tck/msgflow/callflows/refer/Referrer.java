@@ -212,6 +212,7 @@ public class Referrer implements SipListener {
 			SipURI requestURI = addressFactory.createSipURI(toUser,
 					toSipAddress);
 			requestURI.setPort( Referee.myPort );	// referee
+			requestURI.setTransportParam(transport);
 
 			// Create ViaHeaders
 
