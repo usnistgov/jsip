@@ -44,7 +44,7 @@ import java.io.IOException;
 /*
  * Bug fix Contributions by Lamine Brahimi, Andreas Bystrom, Bill Roome, John
  * Martin, Daniel Machin Vasquez-Illa, Antonis Karydas, Joe Provino, Bruce
- * Evangelder, Jeroen van Bemmel.
+ * Evangelder, Jeroen van Bemmel, Robert S. Rosen.
  */
 /**
  * An adapter class from the JAIN implementation objects to the NIST-SIP stack.
@@ -57,7 +57,7 @@ import java.io.IOException;
  * and event model with the JAIN-SIP stack. This is strictly an implementation
  * class.
  * 
- * @version 1.2 $Revision: 1.14 $ $Date: 2007-10-20 05:43:17 $
+ * @version 1.2 $Revision: 1.14.4.1 $ $Date: 2007-11-21 23:55:38 $
  * 
  * @author M. Ranganathan
  */
@@ -73,7 +73,39 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 		this.sipStack = sipStack;
 
 	}
+	
+	
+	/**
+	 * Send back an error Response.
+	 * @param sipRequest
+	 * @param transaction
+	 */
 
+	private void send500Response(SIPRequest sipRequest, SIPServerTransaction transaction) {
+		if (sipStack.isLoggingEnabled())
+			sipStack
+					.getLogWriter()
+					.logDebug(
+							"Sending 500 response for out of sequence message");
+		SIPResponse sipResponse = sipRequest
+				.createResponse(Response.SERVER_INTERNAL_ERROR);
+		sipResponse.setReasonPhrase("Request out of order");
+		Server server = sipStack.createServerHeaderForStack();
+		sipResponse.addHeader(server);
+		try {
+			transaction.sendMessage(sipResponse);
+			sipStack.removeTransaction(transaction);
+			transaction.releaseSem();
+		} catch (IOException ex) {
+
+			transaction.raiseIOExceptionEvent();
+			sipStack.removeTransaction(transaction);
+
+		}
+	}
+	
+	
+	
 	/**
 	 * Process a request. Check for various conditions in the dialog that can
 	 * result in the message being dropped. Possibly return errors for these
@@ -376,6 +408,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 						sipStack.addTransaction(transaction);
 						dialog.addTransaction(transaction);
 						dialog.addRoute(sipRequest);
+						transaction.setDialog(dialog, dialogId); 
 					} catch (Exception ex) {
 						InternalErrorHandler.handleException(ex);
 					}
@@ -389,7 +422,15 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 			if (dialog != null && !dialog.isRequestConsumable(sipRequest)) {
 				if (sipStack.isLoggingEnabled())
 					sipStack.getLogWriter().logDebug(
-							"Dropping out of sequence BYE");
+							"Dropping out of sequence BYE " +  dialog.getRemoteSeqNumber() + " " + sipRequest.getCSeq()
+							.getSeqNumber());
+				
+				if (dialog.getRemoteSeqNumber() >= sipRequest.getCSeq()
+						.getSeqNumber() && transaction.getState() == TransactionState.TRYING) {
+
+					this.send500Response(sipRequest,transaction);
+					
+				}
 				// If the stack knows about the tx, then remove it.
 				if (transaction != null)
 					sipStack.removeTransaction(transaction);
@@ -671,29 +712,12 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
 				// send error when stricly higher, ignore when ==
 				// (likely still processing, error would interrupt that)
-				if (dialog.getRemoteSeqNumber() > sipRequest.getCSeq()
-						.getSeqNumber()) {
+				if (dialog.getRemoteSeqNumber() >= sipRequest.getCSeq()
+						.getSeqNumber() && ( transaction.getState() == TransactionState.TRYING ||
+						transaction.getState() == TransactionState.PROCEEDING)) {
 
-					if (sipStack.isLoggingEnabled())
-						sipStack
-								.getLogWriter()
-								.logDebug(
-										"Sending 500 response for out of sequence message");
-					SIPResponse sipResponse = sipRequest
-							.createResponse(Response.SERVER_INTERNAL_ERROR);
-					sipResponse.setReasonPhrase("Request out of order");
-					Server server = sipStack.createServerHeaderForStack();
-					sipResponse.addHeader(server);
-					try {
-						transaction.sendMessage(sipResponse);
-						sipStack.removeTransaction(transaction);
-						transaction.releaseSem();
-					} catch (IOException ex) {
-
-						transaction.raiseIOExceptionEvent();
-						sipStack.removeTransaction(transaction);
-
-					}
+					this.send500Response(sipRequest,transaction);
+					
 				}
 				return;
 			}

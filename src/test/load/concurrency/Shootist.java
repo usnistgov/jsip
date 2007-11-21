@@ -178,6 +178,9 @@ public class Shootist extends TestCase implements SipListener {
 			int ndialogs = nbConcurrentInvite.decrementAndGet();
 			// System.out.println(nbConcurrentInvite);
 			if ( ndialogs > MAXCONCURRENTINVITE ) System.out.println("Concurrent invites = " + ndialogs);
+			synchronized( this) {
+				if ( ndialogs < MAXCONCURRENTINVITE/2 ) this.notify();
+			}
 			// Synchronization necessary for Multiprocessor machine
 			// noted by Matt Porter.
 			this.byeCount++;
@@ -436,9 +439,15 @@ public class Shootist extends TestCase implements SipListener {
 
 		shootist.start = System.currentTimeMillis();
 		while (shootist.byeCount < NDIALOGS) {
+		
 				while (shootist.nbConcurrentInvite.intValue() >= MAXCONCURRENTINVITE) {
 					System.out.println("Waiting for max invite count to go down!");
-					Thread.sleep(100);
+					synchronized(shootist) {
+					 try {
+						shootist.wait();
+					 } catch (Exception ex) {
+					 }
+					}
 				}
 			
 			if (shootist.byeCount == 0) {

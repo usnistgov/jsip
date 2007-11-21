@@ -47,12 +47,12 @@ import javax.sip.InvalidArgumentException;
  * The main job of the message processor is to instantiate message channels for
  * the given transport.
  * 
- * @version 1.2 $Revision: 1.11 $ $Date: 2007-01-26 16:50:44 $
+ * @version 1.2 $Revision: 1.11.4.1 $ $Date: 2007-11-21 23:55:34 $
  * 
  * @author M. Ranganathan <br/>
  * 
  */
-public abstract class MessageProcessor implements Runnable {
+public abstract class MessageProcessor  {
 	/**
 	 * A string containing the 0.0.0.0 IPv4 ANY address.
 	 */
@@ -305,12 +305,6 @@ public abstract class MessageProcessor implements Runnable {
     public abstract boolean inUse();
 
    
-
-    /**
-     * Run method.
-     */
-    public abstract void run();
-
 	
 
 	/**

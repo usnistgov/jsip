@@ -55,12 +55,12 @@ import java.util.Iterator;
  * object that creates new TLS MessageChannels (one for each new
  * accept socket).
  *
- * @version 1.2 $Revision: 1.11 $ $Date: 2007-02-13 21:02:16 $
+ * @version 1.2 $Revision: 1.11.4.1 $ $Date: 2007-11-21 23:55:34 $
  *
  * @author M. Ranganathan   <br/>
  *
  */
-public class TLSMessageProcessor extends MessageProcessor {
+public class TLSMessageProcessor extends MessageProcessor implements Runnable {
 
 
 	protected int nConnections;

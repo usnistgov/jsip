@@ -4,9 +4,15 @@
 	<property name="classes" value="${root}/classes" />
 	<property name="srcroot" value="${root}/src" />
 	<property name="log4j_jar" value="${root}/lib/${log4j}" />
+	<property name="mina_jar" value="${root}/lib/${mina}" />
+	<property name="slf_jar" value="${root}/lib/${slf}" />
+	<property name="slf_log4j_jar" value="${root}/lib/${slf-log4j}" />
 	<property name="junit_jar" value="${root}/lib/${junit}" />
 	<path id="project.class.path">
 		<pathelement location="${classes}" />
+		<pathelement location="${slf_jar}" />
+		<pathelement location="${mina_jar}" />
+		<pathelement location="${slf_log4j_jar}" />
 		<pathelement location="${log4j_jar}" />
 		<pathelement location="${junit_jar}" />
 	</path>

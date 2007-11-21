@@ -43,6 +43,7 @@ import javax.sip.address.*;
 import javax.sip.header.*;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.*;
 import java.io.IOException;
 import java.net.*;
@@ -65,7 +66,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.85 $ $Date: 2007-10-26 03:53:17 $
+ * @version 1.2 $Revision: 1.85.2.1 $ $Date: 2007-11-21 23:55:34 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -171,6 +172,14 @@ public abstract class SIPTransactionStack implements
 	 * Class that handles caching of TCP/TLS connections.
 	 */
 	protected IOHandler ioHandler;
+	
+	
+	/*
+	 * Thread pool executor for UDP messages.
+	 */
+	
+	private ThreadPoolExecutor threadPoolExecutor;
+
 
 	/*
 	 * Flag that indicates that the stack is active.
@@ -387,7 +396,8 @@ public abstract class SIPTransactionStack implements
 		retransmissionAlertTransactions = new ConcurrentHashMap<String,SIPServerTransaction>();
 
 		// Start the timer event thread.
-
+		
+		
 		this.timer = new Timer();
 		this.pendingTransactions = new ConcurrentHashMap<String,SIPServerTransaction>();
 

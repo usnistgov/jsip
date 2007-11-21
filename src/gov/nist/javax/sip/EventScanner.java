@@ -37,7 +37,7 @@ import gov.nist.core.ThreadAuditor;
 /**
  * Event Scanner to deliver events to the Listener.
  * 
- * @version 1.2 $Revision: 1.29 $ $Date: 2006-12-11 03:44:28 $
+ * @version 1.2 $Revision: 1.29.4.1 $ $Date: 2007-11-21 23:55:38 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -438,7 +438,8 @@ class EventScanner implements Runnable {
 	public void run() {
 		try {
 			// Ask the auditor to monitor this thread
-			ThreadAuditor.ThreadHandle threadHandle = sipStack.getThreadAuditor().addCurrentThread();
+			ThreadAuditor.ThreadHandle threadHandle = null;
+			if ( this.sipStack.getThreadAuditor().isEnabled()) sipStack.getThreadAuditor().addCurrentThread();
 
 			while (true) {
 				EventWrapper eventWrapper = null;
@@ -461,10 +462,16 @@ class EventScanner implements Runnable {
 						// rather empty. Wait for some events to come along.
 						try {
 							// Send a heartbeat to the thread auditor
-							threadHandle.ping();
+							if ( threadHandle != null ) {
+								threadHandle.ping();
 
+							}
 							// Wait for events (with a timeout)
-							eventMutex.wait(threadHandle.getPingIntervalInMillisecs());
+							if ( threadHandle != null )
+								eventMutex.wait(threadHandle.getPingIntervalInMillisecs());
+							else 
+								eventMutex.wait();
+					
 						} catch (InterruptedException ex) {
 							// Let the thread die a normal death
 							sipStack.getLogWriter().logDebug("Interrupted!");
