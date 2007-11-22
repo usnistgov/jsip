@@ -227,7 +227,7 @@ import gov.nist.core.net.NetworkLayer;
  * information related to the application or environmental conditions 
  * into the log stream. The log factory must have a default constructor. </li>
  * 
- * <li><b>gov.nist.javax.sip.COMPUTE_CONTENT_LENGTH_FROM_MESSAGE_BODY = [true|false] <br/> 
+ * <li><b>gov.nist.javax.sip.COMPUTE_CONTENT_LENGTH_FROM_MESSAGE_BODY = [true|false] </b> <br/> 
  * Default is <it>false</it> If set to <it>true</it>, when you are creating 
  * a message from a <it>String</it>, the MessageFactory will compute
  * the content length from the message content and ignore the provided
@@ -235,8 +235,19 @@ import gov.nist.core.net.NetworkLayer;
  * length supplied and generate a parse exception if the content is 
  * truncated. 
  * 
+ * <li><b>gov.nist.javax.sip.CANCEL_CLIENT_TRANSACTION_CHECKED = [true|false]  </b> <br/>
+ * Default is <it>true</it>.
+ * This flag is added in support of load balancers or failover managers
+ * where you may want to cancel ongoing transactions from a different stack than the original stack.
+ * If set to <it>false</it> then the CANCEL client transaction is not checked
+ * for the existence of the INVITE or the state of INVITE when you send the CANCEL request.
+ * Hence you can CANCEL an INVITE from a different stack than the INVITE. You can also create a CANCEL client
+ * transaction late and send it out after the INVITE server transaction has been
+ * Terminated. Clearly this will result in protocol errors. 
+ * Setting the flag to true ( default ) enables you to avoid common
+ * protocol errors. 
  * 
- * @version 1.2 $Revision: 1.69 $ $Date: 2007-11-12 18:31:26 $
+ * @version 1.2 $Revision: 1.70 $ $Date: 2007-11-22 21:18:05 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -661,11 +672,15 @@ public class SipStackImpl extends SIPTransactionStack implements
 		}
 		
 		boolean computeContentLength = 
-				configurationProperties.getProperty("gov.nist.javax.sip.COMPUTE_CONTENT_LENGTH_FROM_MESSAGE_BODY","false").equals("true");
+				configurationProperties.getProperty("gov.nist.javax.sip.COMPUTE_CONTENT_LENGTH_FROM_MESSAGE_BODY","false").equalsIgnoreCase("true");
 		StringMsgParser.setComputeContentLengthFromMessage(computeContentLength);
 		
 		super.rfc2543Supported =  configurationProperties.getProperty
 				("gov.nist.javax.sip.RFC_2543_SUPPORT_ENABLED","true").equalsIgnoreCase("true");
+		
+		super.cancelClientTransactionChecked = 
+			configurationProperties.getProperty("gov.nist.javax.sip.CANCEL_CLIENT_TRANSACTION_CHECKED","true").equalsIgnoreCase("true");
+
 	}
 
 	/*

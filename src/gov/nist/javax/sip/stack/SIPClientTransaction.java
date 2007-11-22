@@ -155,7 +155,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.83 $ $Date: 2007-11-22 18:09:52 $
+ * @version 1.2 $Revision: 1.84 $ $Date: 2007-11-22 21:18:04 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -934,25 +934,30 @@ public class SIPClientTransaction extends SIPTransaction implements
 		}
 		try {
 			/*
-			 * This check is removed because it causes problems for
-			 * load balancers ( See issue 136) reported by Raghav Ramesh (
-			 * BT )
+			 * This check is removed because it causes problems for load
+			 * balancers ( See issue 136) reported by Raghav Ramesh ( BT )
 			 * 
-			 * if (this.getOriginalRequest().getMethod().equals(Request.CANCEL)) {
-			 * SIPClientTransaction ct = (SIPClientTransaction) sipStack
-			 * .findCancelTransaction(this.getOriginalRequest(), false); if (ct ==
-			 * null) { // If the original // request has generated a final
-			 * response, the CANCEL SHOULD // NOT be // sent, as it is an
-			 * effective no-op, since CANCEL has no // effect on // requests
-			 * that have already generated a final response. throw new
-			 * SipException( "Could not find original tx to cancel. RFC 3261
-			 * 9.1"); } else if (ct.getState() == null) { throw new
-			 * SipException( "State is null no provisional response yet --
-			 * cannot cancel RFC 3261 9.1"); } else if
-			 * (!ct.getMethod().equals(Request.INVITE)) { throw new
-			 * SipException( "Cannot cancel non-invite requests RFC 3261 9.1");
-			 *  } } else
 			 */
+			if (this.getOriginalRequest().getMethod().equals(Request.CANCEL) && sipStack.isCancelClientTransactionChecked()) {
+				SIPClientTransaction ct = (SIPClientTransaction) sipStack
+						.findCancelTransaction(this.getOriginalRequest(), false);
+				if (ct == null) {
+					/*
+					 * If the original request has generated a final
+					 * response, the CANCEL SHOULD  NOT be  sent, as it is
+					 * an effective no-op, since CANCEL has no effect on 
+					 * requests that have already generated a final response.
+					 */
+					throw new SipException(
+							"Could not find original tx to cancel. RFC 3261 9.1");
+				} else if (ct.getState() == null) {
+					throw new SipException(
+							"State is null no provisional response yet -- cannot cancel RFC 3261 9.1");
+				} else if (!ct.getMethod().equals(Request.INVITE)) {
+					throw new SipException(
+							"Cannot cancel non-invite requests RFC 3261 9.1");
+				}
+			} else
 
 			if (this.getOriginalRequest().getMethod().equals(Request.BYE)
 					|| this.getOriginalRequest().getMethod().equals(
