@@ -155,7 +155,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.82 $ $Date: 2007-10-29 02:24:40 $
+ * @version 1.2 $Revision: 1.83 $ $Date: 2007-11-22 18:09:52 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -300,7 +300,7 @@ public class SIPClientTransaction extends SIPTransaction implements
 			sipStack.logWriter.logDebug("Creating clientTransaction " + this);
 			sipStack.logWriter.logStackTrace();
 		}
-		//this.startTransactionTimer();
+		// this.startTransactionTimer();
 		this.sipDialogs = new ConcurrentHashMap();
 	}
 
@@ -490,8 +490,8 @@ public class SIPClientTransaction extends SIPTransaction implements
 
 			}
 		} finally {
-			 this.isMapped = true;
-			 this.startTransactionTimer();
+			this.isMapped = true;
+			this.startTransactionTimer();
 
 		}
 
@@ -746,35 +746,30 @@ public class SIPClientTransaction extends SIPTransaction implements
 
 		if (TransactionState.TERMINATED == this.getState()) {
 			boolean ackAlreadySent = false;
-			if (dialog != null && dialog.isAckSeen() && dialog.getLastAck() != null)
-			{
-				if (dialog.getLastAck().getCSeq().getSeqNumber() == transactionResponse.getCSeq().getSeqNumber())
-				{
-					//the last ack sent corresponded to this response
+			if (dialog != null && dialog.isAckSeen()
+					&& dialog.getLastAck() != null) {
+				if (dialog.getLastAck().getCSeq().getSeqNumber() == transactionResponse
+						.getCSeq().getSeqNumber()) {
+					// the last ack sent corresponded to this response
 					ackAlreadySent = true;
 				}
 			}
 			// retransmit the ACK for this response.
 			if (ackAlreadySent
 					&& transactionResponse.getCSeq().getMethod().equals(
-							dialog.getMethod()))
-			{
-				try
-				{
+							dialog.getMethod())) {
+				try {
 					// Found the dialog - resend the ACK and
 					// dont pass up the null transaction
 					if (sipStack.isLoggingEnabled())
-						sipStack.getLogWriter().logDebug(
-								"resending ACK");
+						sipStack.getLogWriter().logDebug("resending ACK");
 
 					dialog.resendAck();
-				}
-				catch (SipException ex)
-				{
+				} catch (SipException ex) {
 					// What to do here ?? kill the dialog?
 				}
 			}
-			
+
 			this.semRelease();
 			return;
 		} else if (TransactionState.CALLING == this.getState()) {
@@ -938,28 +933,28 @@ public class SIPClientTransaction extends SIPTransaction implements
 							+ " Notifier will assume implied value on event package");
 		}
 		try {
-			if (this.getOriginalRequest().getMethod().equals(Request.CANCEL)) {
-				SIPClientTransaction ct = (SIPClientTransaction) sipStack
-						.findCancelTransaction(this.getOriginalRequest(), false);
-				if (ct == null) {
-					// If the original
-					// request has generated a final response, the CANCEL SHOULD
-					// NOT be
-					// sent, as it is an effective no-op, since CANCEL has no
-					// effect on
-					// requests that have already generated a final response.
-					throw new SipException(
-							"Could not find original tx to cancel. RFC 3261 9.1");
-				} else if (ct.getState() == null) {
-					throw new SipException(
-							"State is null no provisional response yet -- cannot cancel RFC 3261 9.1");
-				} else if (!ct.getMethod().equals(Request.INVITE)) {
-					throw new SipException(
-							"Cannot cancel non-invite requests RFC 3261 9.1");
+			/*
+			 * This check is removed because it causes problems for
+			 * load balancers ( See issue 136) reported by Raghav Ramesh (
+			 * BT )
+			 * 
+			 * if (this.getOriginalRequest().getMethod().equals(Request.CANCEL)) {
+			 * SIPClientTransaction ct = (SIPClientTransaction) sipStack
+			 * .findCancelTransaction(this.getOriginalRequest(), false); if (ct ==
+			 * null) { // If the original // request has generated a final
+			 * response, the CANCEL SHOULD // NOT be // sent, as it is an
+			 * effective no-op, since CANCEL has no // effect on // requests
+			 * that have already generated a final response. throw new
+			 * SipException( "Could not find original tx to cancel. RFC 3261
+			 * 9.1"); } else if (ct.getState() == null) { throw new
+			 * SipException( "State is null no provisional response yet --
+			 * cannot cancel RFC 3261 9.1"); } else if
+			 * (!ct.getMethod().equals(Request.INVITE)) { throw new
+			 * SipException( "Cannot cancel non-invite requests RFC 3261 9.1");
+			 *  } } else
+			 */
 
-				}
-			} else if (this.getOriginalRequest().getMethod()
-					.equals(Request.BYE)
+			if (this.getOriginalRequest().getMethod().equals(Request.BYE)
 					|| this.getOriginalRequest().getMethod().equals(
 							Request.NOTIFY)) {
 				SIPDialog dialog = sipStack.getDialog(this.getOriginalRequest()
@@ -1156,7 +1151,8 @@ public class SIPClientTransaction extends SIPTransaction implements
 		ackRequest.removeHeader(RouteHeader.NAME);
 		RouteList routeList = new RouteList();
 		// start at the end of the list and walk backwards
-		ListIterator<RecordRoute> li = recordRouteList.listIterator(recordRouteList.size());
+		ListIterator<RecordRoute> li = recordRouteList
+				.listIterator(recordRouteList.size());
 		while (li.hasPrevious()) {
 			RecordRoute rr = (RecordRoute) li.previous();
 
@@ -1305,7 +1301,8 @@ public class SIPClientTransaction extends SIPTransaction implements
 	 * Start the timer task.
 	 */
 	protected synchronized void startTransactionTimer() {
-		if ( this.transactionTimerStarted) return;
+		if (this.transactionTimerStarted)
+			return;
 		TimerTask myTimer = new TransactionTimer();
 		this.transactionTimerStarted = true;
 		sipStack.timer.schedule(myTimer, BASE_TIMER_INTERVAL,
@@ -1361,7 +1358,6 @@ public class SIPClientTransaction extends SIPTransaction implements
 	public void processResponse(SIPResponse sipResponse,
 			MessageChannel incomingChannel) {
 
-	
 		// If a dialog has already been created for this response,
 		// pass it up.
 		SIPDialog dialog = null;
