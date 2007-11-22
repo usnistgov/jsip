@@ -65,7 +65,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.86 $ $Date: 2007-11-14 02:57:19 $
+ * @version 1.2 $Revision: 1.87 $ $Date: 2007-11-22 21:18:04 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -303,6 +303,10 @@ public abstract class SIPTransactionStack implements
 	protected ThreadAuditor threadAuditor = new ThreadAuditor();
 
 	protected LogRecordFactory logRecordFactory;
+
+	// Set to true if the client CANCEL transaction should be checked before sending
+	// it out.
+	protected boolean cancelClientTransactionChecked = true;
 
 	// / Timer to regularly ping the thread auditor (on behalf of the timer
 	// thread)
@@ -2138,5 +2142,9 @@ public abstract class SIPTransactionStack implements
 	public boolean isRfc2543Supported() {
 	
 		return this.rfc2543Supported;
+	}
+
+	public boolean isCancelClientTransactionChecked() {
+		return this.cancelClientTransactionChecked;
 	}
 }
