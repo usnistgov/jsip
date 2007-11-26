@@ -155,7 +155,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.84 $ $Date: 2007-11-22 21:18:04 $
+ * @version 1.2 $Revision: 1.85 $ $Date: 2007-11-26 20:26:43 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -1421,7 +1421,8 @@ public class SIPClientTransaction extends SIPTransaction implements
 								if (dialog == null) {
 									// Nop we dont have one. so go ahead and
 									// allocate a new one.
-									dialog = new SIPDialog(this, sipResponse);
+									dialog = sipStack.createDialog(this,sipResponse);
+									
 								}
 							} else {
 								// Yes we do have a dialog for this id.
