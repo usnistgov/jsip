@@ -136,7 +136,7 @@ public class Shootme implements SipListener {
 		try {
 			System.out.println("shootme: got an Invite sending Trying");
 			// System.out.println("shootme: " + request);
-			Response response = messageFactory.createResponse(Response.TRYING,
+			Response response = messageFactory.createResponse(Response.RINGING,
 					request);
 			ServerTransaction st = requestEvent.getServerTransaction();
 

@@ -1,22 +1,29 @@
 package test.unit.gov.nist.javax.sip.stack;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.sip.ClientTransaction;
 import javax.sip.Dialog;
+import javax.sip.DialogState;
 import javax.sip.DialogTerminatedEvent;
 import javax.sip.IOExceptionEvent;
+import javax.sip.InvalidArgumentException;
 import javax.sip.ListeningPoint;
 import javax.sip.PeerUnavailableException;
 import javax.sip.RequestEvent;
 import javax.sip.ResponseEvent;
 import javax.sip.ServerTransaction;
+import javax.sip.SipException;
 import javax.sip.SipFactory;
 import javax.sip.SipListener;
 import javax.sip.SipProvider;
 import javax.sip.SipStack;
 import javax.sip.Transaction;
+import javax.sip.TransactionState;
 import javax.sip.TransactionTerminatedEvent;
 import javax.sip.address.Address;
 import javax.sip.address.AddressFactory;
@@ -37,28 +44,56 @@ import javax.sip.message.Response;
 
 import junit.framework.TestCase;
 
-public class RejectOutOfSequenceMessageTest extends TestCase {
-	public class Shootme implements SipListener {
+import examples.simplecallsetup.Shootist;
+import examples.simplecallsetup.Shootme;
 
-		private  AddressFactory addressFactory;
 
-		private  MessageFactory messageFactory;
+public class DialogIdentityTest extends TestCase {
+	private static AddressFactory addressFactory;
 
-		private  HeaderFactory headerFactory;
+	private static MessageFactory messageFactory;
 
+	private static HeaderFactory headerFactory;
+	
+	private 
+
+	class Shootme implements SipListener {
+
+		
 		private SipStack sipStack;
 
 		private static final String myAddress = "127.0.0.1";
 
 		private static final int myPort = 5070;
 
-		
-		
+		protected ServerTransaction inviteTid;
+
+		private Response okResponse;
+
+		private Request inviteRequest;
+
 		private Dialog dialog;
 
 		public static final boolean callerSendsBye = true;
 
-		
+		class MyTimerTask extends TimerTask {
+			Shootme shootme;
+
+			public MyTimerTask(Shootme shootme) {
+				this.shootme = shootme;
+
+			}
+
+			public void run() {
+				shootme.sendInviteOK();
+			}
+
+		}
+
+		protected static final String usageString = "java "
+				+ "examples.shootist.Shootist \n"
+				+ ">>>> is your class path set to the root?";
+
 		
 
 		public void processRequest(RequestEvent requestEvent) {
@@ -72,7 +107,32 @@ public class RejectOutOfSequenceMessageTest extends TestCase {
 
 			if (request.getMethod().equals(Request.INVITE)) {
 				processInvite(requestEvent, serverTransactionId);
-			} 
+			} else if (request.getMethod().equals(Request.ACK)) {
+				processAck(requestEvent, serverTransactionId);
+			} else if (request.getMethod().equals(Request.BYE)) {
+				processBye(requestEvent, serverTransactionId);
+			} else if (request.getMethod().equals(Request.CANCEL)) {
+				processCancel(requestEvent, serverTransactionId);
+			} else {
+				try {
+					serverTransactionId.sendResponse( messageFactory.createResponse( 202, request ) );
+					
+					// send one back
+					SipProvider prov = (SipProvider) requestEvent.getSource();
+					Request refer = requestEvent.getDialog().createRequest("REFER");
+					requestEvent.getDialog().sendRequest( prov.getNewClientTransaction(refer) );				
+					
+				} catch (SipException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvalidArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 
 		}
 
@@ -108,33 +168,105 @@ public class RejectOutOfSequenceMessageTest extends TestCase {
 			SipProvider sipProvider = (SipProvider) requestEvent.getSource();
 			Request request = requestEvent.getRequest();
 			try {
-				
-				if ( serverTransaction == null) {
-					serverTransaction = sipProvider.getNewServerTransaction(request);
+				System.out.println("shootme: got an Invite sending Trying");
+				// System.out.println("shootme: " + request);
+				Response response = messageFactory.createResponse(Response.RINGING,
+						request);
+				ServerTransaction st = requestEvent.getServerTransaction();
+
+				if (st == null) {
+					st = sipProvider.getNewServerTransaction(request);
 				}
-				Response okResponse = messageFactory.createResponse(Response.OK,
+				dialog = st.getDialog();
+
+				st.sendResponse(response);
+
+				this.okResponse = messageFactory.createResponse(Response.OK,
 						request);
 				Address address = addressFactory.createAddress("Shootme <sip:"
 						+ myAddress + ":" + myPort + ">");
 				ContactHeader contactHeader = headerFactory
 						.createContactHeader(address);
+				response.addHeader(contactHeader);
 				ToHeader toHeader = (ToHeader) okResponse.getHeader(ToHeader.NAME);
 				toHeader.setTag("4321"); // Application is supposed to set.
 				okResponse.addHeader(contactHeader);
-				serverTransaction.sendResponse(okResponse); // Send it through the transaction layer.
+				this.inviteTid = st;
+				// Defer sending the OK to simulate the phone ringing.
+				// Answered in 1 second ( this guy is fast at taking calls)
+				this.inviteRequest = request;
 
-				
+				new Timer().schedule(new MyTimerTask(this), 1000);
 			} catch (Exception ex) {
 				ex.printStackTrace();
-				fail("Unexpected exception ");
+				System.exit(0);
 			}
 		}
 
-		
+		private void sendInviteOK() {
+			try {
+				if (inviteTid.getState() != TransactionState.COMPLETED) {
+					System.out.println("shootme: Dialog state before 200: "
+							+ inviteTid.getDialog().getState());
+					inviteTid.sendResponse(okResponse);
+					System.out.println("shootme: Dialog state after 200: "
+							+ inviteTid.getDialog().getState());
+				}
+			} catch (SipException ex) {
+				ex.printStackTrace();
+			} catch (InvalidArgumentException ex) {
+				ex.printStackTrace();
+			}
+		}
 
-		
+		/**
+		 * Process the bye request.
+		 */
+		public void processBye(RequestEvent requestEvent,
+				ServerTransaction serverTransactionId) {
+			SipProvider sipProvider = (SipProvider) requestEvent.getSource();
+			Request request = requestEvent.getRequest();
+			Dialog dialog = requestEvent.getDialog();
+			System.out.println("local party = " + dialog.getLocalParty());
+			try {
+				System.out.println("shootme:  got a bye sending OK.");
+				Response response = messageFactory.createResponse(200, request);
+				serverTransactionId.sendResponse(response);
+				System.out.println("Dialog State is "
+						+ serverTransactionId.getDialog().getState());
 
-		
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				System.exit(0);
+
+			}
+		}
+
+		public void processCancel(RequestEvent requestEvent,
+				ServerTransaction serverTransactionId) {
+			SipProvider sipProvider = (SipProvider) requestEvent.getSource();
+			Request request = requestEvent.getRequest();
+			try {
+				System.out.println("shootme:  got a cancel.");
+				if (serverTransactionId == null) {
+					System.out.println("shootme:  null tid.");
+					return;
+				}
+				Response response = messageFactory.createResponse(200, request);
+				serverTransactionId.sendResponse(response);
+				if (dialog.getState() != DialogState.CONFIRMED) {
+					response = messageFactory.createResponse(
+							Response.REQUEST_TERMINATED, inviteRequest);
+					inviteTid.sendResponse(response);
+				}
+
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				System.exit(0);
+
+			}
+		}
+
 		public void processTimeout(javax.sip.TimeoutEvent timeoutEvent) {
 			Transaction transaction;
 			if (timeoutEvent.isServerTransaction()) {
@@ -176,7 +308,7 @@ public class RejectOutOfSequenceMessageTest extends TestCase {
 				System.err.println(e.getMessage());
 				if (e.getCause() != null)
 					e.getCause().printStackTrace();
-				fail("Unexpected exception");
+				System.exit(0);
 			}
 
 			try {
@@ -193,6 +325,7 @@ public class RejectOutOfSequenceMessageTest extends TestCase {
 				sipProvider.addSipListener(listener);
 
 			} catch (Exception ex) {
+				System.out.println(ex.getMessage());
 				ex.printStackTrace();
 				fail("Unexpected exception");
 			}
@@ -202,7 +335,7 @@ public class RejectOutOfSequenceMessageTest extends TestCase {
 		
 
 		public void processIOException(IOExceptionEvent exceptionEvent) {
-			fail("IOException");
+			System.out.println("IOException");
 
 		}
 
@@ -219,26 +352,20 @@ public class RejectOutOfSequenceMessageTest extends TestCase {
 
 		public void processDialogTerminated(
 				DialogTerminatedEvent dialogTerminatedEvent) {
+			System.out.println("Dialog terminated event recieved");
 			Dialog d = dialogTerminatedEvent.getDialog();
 			System.out.println("Local Party = " + d.getLocalParty());
 
 		}
 		
-		public void terminate() {
+		public void stop() {
 			this.sipStack.stop();
 		}
 
 	}
-
-	public class Shootist implements SipListener {
+	class Shootist implements SipListener {
 
 		private  SipProvider sipProvider;
-
-		private AddressFactory addressFactory;
-
-		private MessageFactory messageFactory;
-
-		private  HeaderFactory headerFactory;
 
 		private SipStack sipStack;
 
@@ -246,71 +373,165 @@ public class RejectOutOfSequenceMessageTest extends TestCase {
 
 		private ListeningPoint udpListeningPoint;
 
-		
+		private ClientTransaction inviteTid;
+
 		private Dialog dialog;
 
-		
-		private boolean timeoutRecieved;
+		private boolean byeTaskRunning;
 
-		private boolean saw500;
+		class ByeTask  extends TimerTask {
+			Dialog dialog;
+			public ByeTask(Dialog dialog)  {
+				this.dialog = dialog;
+			}
+			public void run () {
+				try {
+				   Request byeRequest = this.dialog.createRequest(Request.BYE);
+				   ClientTransaction ct = sipProvider.getNewClientTransaction(byeRequest);
+				   dialog.sendRequest(ct);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+					fail("Unexpected exception ");
+				}
 
-		
-
-		
-		
-
-
-		public void processRequest(RequestEvent requestReceivedEvent) {
-			fail("Unexpected request recieved");
+			}
 
 		}
 
-		
 
-	 
-		public void processResponse(ResponseEvent responseReceivedEvent) {
+
+		public void processRequest(RequestEvent requestReceivedEvent) {
+			Request request = requestReceivedEvent.getRequest();
+			ServerTransaction serverTransactionId = requestReceivedEvent
+					.getServerTransaction();
+
+			System.out.println("\n\nRequest " + request.getMethod()
+					+ " received at " + sipStack.getStackName()
+					+ " with server transaction id " + serverTransactionId);
+
+			// We are the UAC so the only request we get is the BYE.
+			if (request.getMethod().equals(Request.BYE))
+				processBye(request, serverTransactionId);
+			else {
+				try {
+					serverTransactionId.sendResponse( messageFactory.createResponse(202,request) );
+				} catch (Exception e) {
+					e.printStackTrace();
+					fail("Unxepcted exception ");
+				}
+			}
+
+		}
+
+		public void processBye(Request request,
+				ServerTransaction serverTransactionId) {
 			try {
-				Response response = responseReceivedEvent.getResponse();
+				System.out.println("shootist:  got a bye .");
+				if (serverTransactionId == null) {
+					System.out.println("shootist:  null TID.");
+					return;
+				}
+				Dialog dialog = serverTransactionId.getDialog();
+				System.out.println("Dialog State = " + dialog.getState());
+				Response response = messageFactory.createResponse(200, request);
+				serverTransactionId.sendResponse(response);
+				System.out.println("shootist:  Sending OK.");
+				System.out.println("Dialog State = " + dialog.getState());
 
-				CSeqHeader cseq = (CSeqHeader) response
-						.getHeader(CSeqHeader.NAME);
+			} catch (Exception ex) {
+				fail("Unexpected exception");
 
-				System.out.println("Response " + response.getStatusCode()
-						+ " CSeq  = " + cseq.getSeqNumber());
+			}
+		}
 
-				if (response.getStatusCode() == Response.OK
-						&& cseq.getMethod().equals(Request.INVITE)) {
-					assertEquals("Should only see OK for seq number of 8", cseq
-							.getSeqNumber(), 8L);
-					Request ackRequest = dialog.createAck(cseq.getSeqNumber());
-					dialog.sendAck(ackRequest);
-					Request badRequest = dialog.createRequest(Request.INVITE);
-					CSeqHeader cseq1 = (CSeqHeader) badRequest
-							.getHeader(CSeqHeader.NAME);
-					cseq1.setSeqNumber(1L);
+	       // Save the created ACK request, to respond to retransmitted 2xx
+	       private Request ackRequest;
 
-					ClientTransaction badCt = sipProvider
-							.getNewClientTransaction(badRequest);
+		public void processResponse(ResponseEvent responseReceivedEvent) {
+			System.out.println("Got a response");
+			Response response = (Response) responseReceivedEvent.getResponse();
+			ClientTransaction tid = responseReceivedEvent.getClientTransaction();
+			CSeqHeader cseq = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
 
-					badCt.sendRequest();
-				} else if ( response.getStatusCode() == Response.SERVER_INTERNAL_ERROR) {
-					this.saw500 = true;
+			System.out.println("Response received : Status Code = "
+					+ response.getStatusCode() + " " + cseq);
+			
+				
+			if (tid == null) {
+				
+				// RFC3261: MUST respond to every 2xx
+				if (ackRequest!=null && dialog!=null) {
+				   System.out.println("re-sending ACK");
+				   try {
+				      dialog.sendAck(ackRequest);
+				   } catch (SipException se) {
+				      se.printStackTrace(); 
+				      fail("Unxpected exception ");
+				   }
+				}			
+				return;
+			}
+			// If the caller is supposed to send the bye
+			if ( examples.simplecallsetup.Shootme.callerSendsBye && !byeTaskRunning) {
+				byeTaskRunning = true;
+				new Timer().schedule(new ByeTask(dialog), 4000) ;
+			}
+			System.out.println("transaction state is " + tid.getState());
+			System.out.println("Dialog = " + tid.getDialog());
+			System.out.println("Dialog State is " + tid.getDialog().getState());
+			
+			assertSame("Checking dialog identity",tid.getDialog(), this.dialog);
+
+			try {
+				if (response.getStatusCode() == Response.OK) {
+					if (cseq.getMethod().equals(Request.INVITE)) {
+						System.out.println("Dialog after 200 OK  " + dialog);
+						System.out.println("Dialog State after 200 OK  " + dialog.getState());
+						ackRequest = dialog.createRequest(Request.ACK);
+						System.out.println("Sending ACK");
+						dialog.sendAck(ackRequest);
+						
+						// JvB: test REFER, reported bug in tag handling
+						dialog.sendRequest(  sipProvider.getNewClientTransaction( dialog.createRequest("REFER") )); 
+						
+					} else if (cseq.getMethod().equals(Request.CANCEL)) {
+						if (dialog.getState() == DialogState.CONFIRMED) {
+							// oops cancel went in too late. Need to hang up the
+							// dialog.
+							System.out
+									.println("Sending BYE -- cancel went in too late !!");
+							Request byeRequest = dialog.createRequest(Request.BYE);
+							ClientTransaction ct = sipProvider
+									.getNewClientTransaction(byeRequest);
+							dialog.sendRequest(ct);
+
+						}
+
+					}
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
-				TestCase.fail("Unexpected exception");
+				System.exit(0);
 			}
 
 		}
 
 		public void processTimeout(javax.sip.TimeoutEvent timeoutEvent) {
-			
-			System.out.println("Got a timeout " + timeoutEvent.getClientTransaction());
 
-			this.timeoutRecieved = true;
+			System.out.println("Transaction Time out");
 		}
 
-		
+		public void sendCancel() {
+			try {
+				System.out.println("Sending cancel");
+				Request cancelRequest = inviteTid.createCancel();
+				ClientTransaction cancelTid = sipProvider
+						.getNewClientTransaction(cancelRequest);
+				cancelTid.sendRequest();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
 
 		public void init() {
 			SipFactory sipFactory = null;
@@ -354,7 +575,7 @@ public class RejectOutOfSequenceMessageTest extends TestCase {
 				// in the classpath
 				e.printStackTrace();
 				System.err.println(e.getMessage());
-				fail("Problem with setup");
+				System.exit(0);
 			}
 
 			try {
@@ -472,13 +693,9 @@ public class RejectOutOfSequenceMessageTest extends TestCase {
 				Header callInfoHeader = headerFactory.createHeader("Call-Info",
 						"<http://www.antd.nist.gov>");
 				request.addHeader(callInfoHeader);
-				
-				
-				CSeqHeader cseqHeader = (CSeqHeader) request.getHeader(CSeqHeader.NAME);
-				cseqHeader.setSeqNumber(8L);
 
 				// Create the client transaction.
-				ClientTransaction inviteTid = sipProvider.getNewClientTransaction(request);
+				inviteTid = sipProvider.getNewClientTransaction(request);
 
 				// send the request out.
 				inviteTid.sendRequest();
@@ -486,7 +703,9 @@ public class RejectOutOfSequenceMessageTest extends TestCase {
 				dialog = inviteTid.getDialog();
 
 			} catch (Exception ex) {
-				fail("cannot create or send initial invite");
+				System.out.println(ex.getMessage());
+				ex.printStackTrace();
+				fail("Unxpected exception ");
 			}
 		}
 
@@ -509,34 +728,27 @@ public class RejectOutOfSequenceMessageTest extends TestCase {
 			System.out.println("dialogTerminatedEvent");
 
 		}
-		public void terminate() {
+		
+		public void stop() {
 			this.sipStack.stop();
 		}
 	}
-
-	private Shootme shootme;
-	private Shootist shootist;
 	
-	public void setUp() {
-		this.shootme = new Shootme();
-		this.shootist = new Shootist();
+	public void testDialogIdentity() throws Exception {
 		
-		
-	}
-	public void tearDown() {
-		shootist.terminate();
-		shootme.terminate();
-	}
-	
-	public void testRejectOutOfSequenceRequest() {
-		this.shootme.init();
-		this.shootist.init();
-		try {
-			Thread.sleep(10000);
-		} catch (Exception ex) {
+		    Shootist shootist = new Shootist();
+		    
+		    Shootme shootme = new Shootme();
+			shootme.init();
 			
-		}
-		assertTrue("Should see 500 for Invite", shootist.saw500);
-		
+			shootist.init();
+			
+			Thread.sleep(10000);
+			
+			shootist.stop();
+			shootme.stop();
+			
+
+			
 	}
 }
