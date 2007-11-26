@@ -65,7 +65,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.87 $ $Date: 2007-11-22 21:18:04 $
+ * @version 1.2 $Revision: 1.88 $ $Date: 2007-11-26 20:26:42 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -86,6 +86,9 @@ public abstract class SIPTransactionStack implements
 	 */
 	protected ConcurrentHashMap<String,SIPServerTransaction> retransmissionAlertTransactions;
 
+	// Table of early dialogs ( to keep identity mapping ) 
+	protected ConcurrentHashMap<String,SIPDialog> earlyDialogTable;
+	
 	// Table of dialogs.
 	protected ConcurrentHashMap<String,SIPDialog> dialogTable;
 
@@ -384,6 +387,7 @@ public abstract class SIPTransactionStack implements
 
 		// Dialog dable.
 		this.dialogTable = new ConcurrentHashMap<String,SIPDialog>();
+		this.earlyDialogTable = new ConcurrentHashMap<String,SIPDialog>();
 
 		clientTransactionTable = new ConcurrentHashMap<String,SIPClientTransaction>();
 		serverTransactionTable = new ConcurrentHashMap<String,SIPServerTransaction>();
@@ -421,6 +425,7 @@ public abstract class SIPTransactionStack implements
 		mergeTable = new ConcurrentHashMap<String,SIPServerTransaction>();
 		// Dialog dable.
 		this.dialogTable = new ConcurrentHashMap<String,SIPDialog>();
+		this.earlyDialogTable = new ConcurrentHashMap<String,SIPDialog>();
 
 		this.timer = new Timer();
 
@@ -537,10 +542,53 @@ public abstract class SIPTransactionStack implements
 	 */
 	public SIPDialog createDialog(SIPTransaction transaction) {
 
-		SIPDialog retval = new SIPDialog(transaction);
+		SIPDialog retval = null;
+		
+		if ( transaction instanceof SIPClientTransaction ) {
+			String dialogId = ((SIPRequest) transaction.getRequest()).getDialogId(false);
+			if ( this.earlyDialogTable.get(dialogId) != null ) {
+				SIPDialog dialog =  this.earlyDialogTable.get(dialogId);
+				if ( dialog.getState() == null || dialog.getState() == DialogState.EARLY ) {
+					retval = dialog;	
+				} else {
+					retval = new SIPDialog(transaction);
+					this.earlyDialogTable.put(dialogId, retval);
+				}
+			} else {
+				retval = new SIPDialog(transaction);
+				this.earlyDialogTable.put(dialogId, retval);
+			}
+		} else {
+			retval = new SIPDialog(transaction);
+		}
 
 		return retval;
 
+	}
+	
+	
+	
+	/**
+	 * Create a Dialog given a client tx and response.
+	 * @param transaction
+	 * @param sipResponse
+	 * @return
+	 */
+	
+	public SIPDialog createDialog (SIPClientTransaction transaction, SIPResponse sipResponse) {
+		String dialogId = ((SIPRequest) transaction.getRequest()).getDialogId(false);
+		SIPDialog retval = null;
+		if ( this.earlyDialogTable.get(dialogId) != null ) {
+			retval = this.earlyDialogTable.get(dialogId);
+			if ( sipResponse.isFinalResponse()) {
+				this.earlyDialogTable.remove(dialogId);
+			}
+			
+		} else {
+			retval = new SIPDialog(transaction,sipResponse);
+		}
+		return retval;
+	
 	}
 
 	/**
@@ -579,6 +627,10 @@ public abstract class SIPTransactionStack implements
 	public void removeDialog(SIPDialog dialog) {
 
 		String id = dialog.getDialogId();
+		
+		String earlyId = dialog.getEarlyDialogId();
+		
+		if (earlyId != null ) this.earlyDialogTable.remove(earlyId);
 		
          if (id != null) {
 

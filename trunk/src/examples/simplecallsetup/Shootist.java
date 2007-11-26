@@ -155,6 +155,8 @@ public class Shootist implements SipListener {
 		try {
 			if (response.getStatusCode() == Response.OK) {
 				if (cseq.getMethod().equals(Request.INVITE)) {
+					System.out.println("Dialog after 200 OK  " + dialog);
+					System.out.println("Dialog State after 200 OK  " + dialog.getState());
 					ackRequest = dialog.createRequest(Request.ACK);
 					System.out.println("Sending ACK");
 					dialog.sendAck(ackRequest);
@@ -231,7 +233,7 @@ public class Shootist implements SipListener {
 		// Set to 0 (or NONE) in your production code for max speed.
 		// You need 16 (or TRACE) for logging traces. 32 (or DEBUG) for debug + traces.
 		// Your code will limp at 32 but it is best for debugging.
-		properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "TRACE");
+		properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "DEBUG");
 
 		try {
 			// Create SipStack object

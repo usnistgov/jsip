@@ -64,7 +64,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.57 $ $Date: 2007-11-07 19:14:37 $
+ * @version 1.2 $Revision: 1.58 $ $Date: 2007-11-26 20:26:43 $
  * 
  * @author M. Ranganathan
  * 
@@ -99,6 +99,8 @@ public class SIPDialog implements javax.sip.Dialog {
 	private SIPTransaction lastTransaction;
 
 	private String dialogId;
+	
+	private String earlyDialogId;
 
 	private long localSequenceNumber;
 
@@ -304,6 +306,8 @@ public class SIPDialog implements javax.sip.Dialog {
 	 */
 	public SIPDialog(SIPTransaction transaction) {
 		this();
+		SIPRequest sipRequest = (SIPRequest) transaction.getRequest();
+		this.earlyDialogId = sipRequest.getDialogId(false);
 		if (transaction == null)
 			throw new NullPointerException("Null tx");
 		this.sipStack = transaction.sipStack;
@@ -2715,6 +2719,14 @@ public class SIPDialog implements javax.sip.Dialog {
 				return false;
 			}
 		}
+	}
+
+	void setEarlyDialogId(String earlyDialogId) {
+		this.earlyDialogId = earlyDialogId;
+	}
+
+	String getEarlyDialogId() {
+		return earlyDialogId;
 	}
 
 }
