@@ -64,7 +64,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.58 $ $Date: 2007-11-26 20:26:43 $
+ * @version 1.2 $Revision: 1.59 $ $Date: 2007-11-30 23:37:51 $
  * 
  * @author M. Ranganathan
  * 
@@ -2018,27 +2018,41 @@ public class SIPDialog implements javax.sip.Dialog {
 			throw new SipException("Dialog was not created with an INVITE");
 		if (cseqno <= 0)
 			throw new InvalidArgumentException("bad cseq <= 0 ");
-		else if (cseqno > (((long) 1) << 32 - 1))
+		else if (cseqno > ((((long) 1) << 32) - 1))
 			throw new InvalidArgumentException("bad cseq > "
-					+ (((long) 1) << 32 - 1));
+					+ ((((long) 1) << 32) - 1));
 
 		if (this.lastResponse == null)
 			throw new SipException("Dialog not yet established -- no response!");
+		else {
+			int status = this.lastResponse.getStatusCode();
+			if (status<200 || status >=300) {
+				throw new SipException("Can only create ACK for 2xx response!");
+			}
+		}
+		
+		if (this.remoteTarget==null)
+			throw new SipException("Cannot create ACK - no remote Target!");
+		
 		try {
-			String transport = this.lastResponse.getTopmostVia().getTransport();
+			
+			// JvB: Transport from first entry in route set, or remote Contact if none
+			// Only used to find correct LP & create correct Via
+			String transport = null;
+			if ( this.routeList != null && !this.routeList.isEmpty() ) {
+				Route r = (Route) this.routeList.getFirst();
+				transport = ((SipURI) r.getAddress().getURI()).getTransportParam();
+			} else {	// should be !=null, checked above
+				transport = ((SipURI) this.remoteTarget.getURI()).getTransportParam();
+			}
+			if (transport==null) transport = ListeningPoint.UDP;
 			ListeningPointImpl lp = (ListeningPointImpl) sipProvider
 					.getListeningPoint(transport);
 			Via via = lp.getViaHeader();
 
-			SipUri requestURI = null;
-			if (this.getRemoteTarget() == null) {
-				requestURI = (SipUri) getRemoteParty().getURI().clone();
-				requestURI.clearUriParms();
-			} else {
-				requestURI = (SipUri) getRemoteTarget().getURI().clone();
-			}
-			if (!transport.equalsIgnoreCase("udp"))
-				requestURI.setTransportParam(transport);
+			SipUri requestURI = (SipUri) getRemoteTarget().getURI().clone();
+			//if (!transport.equalsIgnoreCase("udp"))
+			//	requestURI.setTransportParam(transport);
 			CSeq cseq = new CSeq(cseqno, Request.ACK);
 			SIPRequest sipRequest = this.lastResponse.createRequest(
 					(SipUri) requestURI, via, cseq);
