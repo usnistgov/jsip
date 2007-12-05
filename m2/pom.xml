@@ -12,6 +12,7 @@
   <modules>
 	<module>jain-sip-api</module>
 	<module>jain-sip-ri</module>
+	<module>nist-sdp</module>
   </modules>
   
   <!-- You shall setup following config in your maven 2 settings.xml file -->
