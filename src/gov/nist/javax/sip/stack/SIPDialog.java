@@ -64,7 +64,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.61 $ $Date: 2007-12-16 10:38:24 $
+ * @version 1.2 $Revision: 1.62 $ $Date: 2007-12-16 12:58:47 $
  * 
  * @author M. Ranganathan
  * 
@@ -2655,7 +2655,7 @@ public class SIPDialog implements javax.sip.Dialog {
 	  //
 		if (obj == this) {
 			return true;
-		} else if (!obj instanceof Dialog) {  // also handles null
+		} else if (!(obj instanceof Dialog)) {  // also handles null
 		  return false;
 		} else {
 		  String id1 = this.getDialogId();
