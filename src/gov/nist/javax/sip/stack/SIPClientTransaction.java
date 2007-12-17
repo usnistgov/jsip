@@ -155,7 +155,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.86 $ $Date: 2007-12-17 22:41:17 $
+ * @version 1.2 $Revision: 1.87 $ $Date: 2007-12-17 22:43:57 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -1383,7 +1383,8 @@ public class SIPClientTransaction extends SIPTransaction implements
 		// JvB: Check all conditions required for creating a new Dialog
 		if (dialog == null
 			&& sipResponse.getStatusCode() != 100	// skip 100 (may have a to tag)
-			&& sipResponse.getToTag() != null		// need tag to construct dialog
+			&& (sipResponse.getToTag() != null || 
+			    sipStack.isRfc2543Supported())		// need tag to construct dialog
 			&& sipStack.isDialogCreated(method)) {	// needs to be dialog creating
 
 			// Dialog cannot be found for the response.
