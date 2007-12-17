@@ -155,7 +155,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.87 $ $Date: 2007-12-17 22:43:57 $
+ * @version 1.2 $Revision: 1.88 $ $Date: 2007-12-17 22:56:04 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -531,6 +531,9 @@ public class SIPClientTransaction extends SIPTransaction implements
 
 		this.lastResponse = transactionResponse;
 
+		/*
+		 * JvB: this is now duplicate with code in the other processResponse
+		 * 
 		if (dialog != null
 				&& transactionResponse.getStatusCode() != 100
 				&& (transactionResponse.getTo().getTag() != null || sipStack
@@ -538,7 +541,7 @@ public class SIPClientTransaction extends SIPTransaction implements
 			// add the route before you process the response.
 			dialog.setLastResponse(this, transactionResponse);
 			this.setDialog(dialog, transactionResponse.getDialogId(false));
-		}
+		}*/
 
 		try {
 			if (isInviteTransaction())
@@ -1381,8 +1384,8 @@ public class SIPClientTransaction extends SIPTransaction implements
 		}
 
 		// JvB: Check all conditions required for creating a new Dialog
-		if (dialog == null
-			&& sipResponse.getStatusCode() != 100	// skip 100 (may have a to tag)
+		if (dialog == null) {
+			if (sipResponse.getStatusCode() != 100	// skip 100 (may have a to tag)
 			&& (sipResponse.getToTag() != null || 
 			    sipStack.isRfc2543Supported())		// need tag to construct dialog
 			&& sipStack.isDialogCreated(method)) {	// needs to be dialog creating
@@ -1433,8 +1436,10 @@ public class SIPClientTransaction extends SIPTransaction implements
 					dialog = sipStack.createDialog(this, sipResponse);
 					this.setDialog(dialog, dialog.getDialogId());
 				}
-			}
-
+			} // synchronized
+		  } 
+		} else {
+			dialog.setLastResponse(this, sipResponse);
 		}
 		this.processResponse(sipResponse, incomingChannel, dialog);
 	}
