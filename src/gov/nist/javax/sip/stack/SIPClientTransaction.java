@@ -155,7 +155,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.85 $ $Date: 2007-11-26 20:26:43 $
+ * @version 1.2 $Revision: 1.86 $ $Date: 2007-12-17 22:41:17 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -1366,9 +1366,9 @@ public class SIPClientTransaction extends SIPTransaction implements
 		// If a dialog has already been created for this response,
 		// pass it up.
 		SIPDialog dialog = null;
+		String method = sipResponse.getCSeq().getMethod();
 		String dialogId = sipResponse.getDialogId(false);
-		if (sipResponse.getCSeq().getMethod().equals(Request.CANCEL)
-				&& lastRequest != null) {
+		if (method.equals(Request.CANCEL) && lastRequest != null) {
 			// JvB for CANCEL: use invite CT in CANCEL request to get dialog
 			// (instead of stripping tag)
 			SIPClientTransaction ict = (SIPClientTransaction) lastRequest
@@ -1380,7 +1380,11 @@ public class SIPClientTransaction extends SIPTransaction implements
 			dialog = this.getDialog(dialogId);
 		}
 
-		if (dialog == null) {
+		// JvB: Check all conditions required for creating a new Dialog
+		if (dialog == null
+			&& sipResponse.getStatusCode() != 100	// skip 100 (may have a to tag)
+			&& sipResponse.getToTag() != null		// need tag to construct dialog
+			&& sipStack.isDialogCreated(method)) {	// needs to be dialog creating
 
 			// Dialog cannot be found for the response.
 			// This must be a forked response.
@@ -1392,60 +1396,46 @@ public class SIPClientTransaction extends SIPTransaction implements
 			synchronized (this) {
 				// We need synchronization here because two responses
 				// may compete for the default dialog simultaneously
-				if (defaultDialog != null
-						&& sipStack.isDialogCreated(sipResponse.getCSeq()
-								.getMethod())
-						&& sipResponse.getStatusCode() != 100) {
-					if (sipResponse.getFromTag() != null
-							&& sipResponse.getToTag() != null) {
+				if (defaultDialog != null) {
+					if (sipResponse.getFromTag() != null) {
 						SIPResponse dialogResponse = defaultDialog
 								.getLastResponse();
 						String defaultDialogId = defaultDialog.getDialogId();
 						if (dialogResponse == null
-								|| (sipResponse.getCSeq().getMethod().equals(
-										Request.SUBSCRIBE)
+								|| (method.equals(Request.SUBSCRIBE)
 										&& dialogResponse.getCSeq().getMethod()
-												.equals(Request.NOTIFY) && defaultDialogId
-										.equals(dialogId))) {
+												.equals(Request.NOTIFY) 
+										&& defaultDialogId.equals(dialogId))) {
 							// The default dialog has not been claimed yet.
 							defaultDialog.setLastResponse(this, sipResponse);
 							dialog = defaultDialog;
 						} else {
-							if (this.getDialog(dialogId) == null) {
-								// we dont previously have a dialog for this
-								// response.
-								// check if we have created one previously
-								// (happens in the
-								// case of REINVITE processing.
-								dialog = sipStack.getDialog(dialogId);
-								if (dialog == null) {
-									// Nop we dont have one. so go ahead and
-									// allocate a new one.
-									dialog = sipStack.createDialog(this,sipResponse);
-									
-								}
-							} else {
-								// Yes we do have a dialog for this id.
-								dialog = this.getDialog(dialogId);
-								// go ahead and use the dialog.
-								dialog.setLastResponse(this, sipResponse);
+							// check if we have created one previously
+							// (happens in the
+							// case of REINVITE processing.
+							// JvB: should not happen, this.defaultDialog should 
+							// then get set in Dialog#sendRequest line 1662
+							dialog = sipStack.getDialog(dialogId);
+							if (dialog == null) {
+								// Nop we dont have one. so go ahead and
+								// allocate a new one.
+								dialog = sipStack.createDialog(this, sipResponse);
 							}
-
 						}
-
 						this.setDialog(dialog, dialog.getDialogId());
+					} else {
+						throw new RuntimeException("Response without from-tag");
 					}
-
+				} else {
+					// Need to create a new Dialog, this becomes default
+					// JvB: not sure if this ever gets executed
+					dialog = sipStack.createDialog(this, sipResponse);
+					this.setDialog(dialog, dialog.getDialogId());
 				}
 			}
 
 		}
-		if (dialog == null) {
-			dialog = this.defaultDialog;
-		}
-
 		this.processResponse(sipResponse, incomingChannel, dialog);
-
 	}
 
 	/*
