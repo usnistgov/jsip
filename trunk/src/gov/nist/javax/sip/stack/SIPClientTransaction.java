@@ -155,7 +155,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.88 $ $Date: 2007-12-17 22:56:04 $
+ * @version 1.2 $Revision: 1.89 $ $Date: 2007-12-18 20:21:29 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -1437,7 +1437,9 @@ public class SIPClientTransaction extends SIPTransaction implements
 					this.setDialog(dialog, dialog.getDialogId());
 				}
 			} // synchronized
-		  } 
+		  } else {
+			  dialog = defaultDialog;
+		  }
 		} else {
 			dialog.setLastResponse(this, sipResponse);
 		}
