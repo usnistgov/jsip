@@ -50,7 +50,7 @@ import javax.sip.header.TimeStampHeader;
  * later access via RMI. The trace can be viewed with a trace viewer (see
  * tools.traceviewerapp).
  *
- * @version 1.2 $Revision: 1.27 $ $Date: 2007-10-04 18:58:53 $
+ * @version 1.2 $Revision: 1.28 $ $Date: 2008-01-02 04:20:08 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -137,6 +137,10 @@ public class ServerLog {
 		String logLevel =
 			configurationProperties.getProperty(
 				"gov.nist.javax.sip.TRACE_LEVEL");
+		String logContent = configurationProperties.getProperty("gov.nist.javax.sip.LOG_MESSAGE_CONTENT");
+
+		this.logContent =  (logContent != null && logContent.equals("true"));
+		
 
 		if (logLevel != null) {
 			try {
@@ -190,6 +194,7 @@ public class ServerLog {
 		}
 	}
 	public void checkLogFile() {
+		
 		if (logFileName == null || traceLevel < TRACE_MESSAGES) {
 			// Dont create a log file if tracing is
 			// disabled.
@@ -203,10 +208,7 @@ public class ServerLog {
 			}
 			// Append buffer to the end of the file.
 			if (printWriter == null) {
-				String s = configurationProperties.getProperty
-						("gov.nist.javax.sip.LOG_MESSAGE_CONTENT");
-				this.logContent =  (s != null && s.equals("true"));
-				FileWriter fw = new FileWriter(logFileName, true);
+					FileWriter fw = new FileWriter(logFileName, true);
 				printWriter = new PrintWriter(fw, true);
 				printWriter.println(
 					"<!-- "
@@ -490,12 +492,7 @@ public class ServerLog {
 		}
 	}
 
-	/**
-	 * Set the name to assign for the log.
-	public void setLogName(String name) {
-		logRootName = name;
-	}
-	 */
+	
 
 	/**
 	 * print a line to stdout if the traceLevel is TRACE_DEBUG.
