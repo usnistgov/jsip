@@ -50,7 +50,7 @@ import javax.sip.header.TimeStampHeader;
  * later access via RMI. The trace can be viewed with a trace viewer (see
  * tools.traceviewerapp).
  *
- * @version 1.2 $Revision: 1.28 $ $Date: 2008-01-02 04:20:08 $
+ * @version 1.2 $Revision: 1.29 $ $Date: 2008-01-06 23:55:45 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -193,8 +193,7 @@ public class ServerLog {
 			printWriter = null;
 		}
 	}
-	public void checkLogFile() {
-		
+	public void checkLogFile() { 
 		if (logFileName == null || traceLevel < TRACE_MESSAGES) {
 			// Dont create a log file if tracing is
 			// disabled.
@@ -224,15 +223,16 @@ public class ServerLog {
 						"javax.sip.OUTBOUND_PROXY= " 						+ 
 						configurationProperties.getProperty("javax.sip.OUTBOUND_PROXY") + "\n" 	+
 						 "-->");
-				if (auxInfo != null) {
-					/* printWriter.println(
+				printWriter.println(
 						"<description\n logDescription=\""
 							+ description
 							+ "\"\n name=\""
-							+ stackIpAddress
+							+ configurationProperties.getProperty("javax.sip.STACK_NAME")
 							+ "\"\n auxInfo=\""
 							+ auxInfo
-							+ "\"/>\n "); */
+							+ "\"/>\n ");
+				if (auxInfo != null) {
+					
 					if (sipStack.isLoggingEnabled()) {
 					    	logWriter.logDebug(
 						"Here are the stack configuration properties \n"			+
@@ -265,12 +265,7 @@ public class ServerLog {
 						logWriter.logDebug("<![CDATA[ ");
 					}
 				} else {
-					/* printWriter.println(
-						"<description\n logDescription=\""
-							+ description
-							+ "\"\n name=\""
-							+ stackIpAddress
-							+ "\" />\n"); */
+					
 					if (sipStack.isLoggingEnabled()) {
 					    	logWriter.logDebug(
 						"Here are the stack configuration properties \n" +						 

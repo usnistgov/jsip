@@ -64,7 +64,7 @@ public class LogFileParser extends DefaultHandler {
 			xmlReader.setContentHandler(this);
 
 			xmlReader
-					.setFeature("http://xml.org/sax/features/validation", true);
+					.setFeature("http://xml.org/sax/features/validation", false);
 			// parse the xml specification for the event tags.
 
 		} catch (Exception pce) {
@@ -240,7 +240,7 @@ public class LogFileParser extends DefaultHandler {
 					"<messages>\n").append(new String(cbuf)).append(
 					"</messages>\n");
 
-			// System.out.println(sb.toString());
+			System.out.println(sb.toString());
 
 			InputSource inputSource = new InputSource(new ByteArrayInputStream(
 					sb.toString().getBytes()));
