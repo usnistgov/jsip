@@ -62,7 +62,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.42 $ $Date: 2007-09-21 17:12:58 $
+ * @version 1.2 $Revision: 1.43 $ $Date: 2008-01-07 14:51:29 $
  */
 public class TCPMessageChannel extends MessageChannel implements
 		SIPMessageListener, Runnable {
@@ -265,9 +265,10 @@ public class TCPMessageChannel extends MessageChannel implements
 		// Created a new socket so close the old one and stick the new
 		// one in its place but dont do this if it is a datagram socket.
 		// (could have replied via udp but received via tcp!).
-		if (mySock == null && s != null) {
-			this.uncache();
-		} else if (sock != mySock && sock != null) {
+		// if (mySock == null && s != null) {
+		//	this.uncache();
+		// } else 
+		if (sock != mySock && sock != null) {
 			try {
 				if (mySock != null)
 					mySock.close();
@@ -332,9 +333,10 @@ public class TCPMessageChannel extends MessageChannel implements
 		//
 		// Created a new socket so close the old one and s
 		// Check for null (bug fix sent in by Christophe)
-		if (mySock == null && s != null) {
-			this.uncache();
-		} else if (sock != mySock && sock != null) {
+		//if (mySock == null && s != null) {
+		//	this.uncache();
+		//} else 
+		if (sock != mySock && sock != null) {
 			try {
 				if (mySock != null)
 					mySock.close();
