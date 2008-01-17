@@ -58,7 +58,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.36 $ $Date: 2007-11-05 00:16:35 $
+ * @version 1.2 $Revision: 1.37 $ $Date: 2008-01-17 17:59:05 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -799,7 +799,7 @@ public abstract class SIPMessage extends MessageObject implements
 		// Have specified a branch Identifier so we can use it to identify
 		// the transaction. BranchId is not case sensitive.
 		// Branch Id prefix is not case sensitive.
-		if (topVia.getBranch() != null
+		if (topVia != null && topVia.getBranch() != null
 				&& topVia.getBranch().toUpperCase().startsWith(
 						SIPConstants.BRANCH_MAGIC_COOKIE_UPPER_CASE)) {
 			// Bis 09 compatible branch assignment algorithm.
