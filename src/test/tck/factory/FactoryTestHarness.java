@@ -92,19 +92,19 @@ public class FactoryTestHarness extends TestHarness {
 
 	protected static String multiHeaders[] =
 		{
-			"Allow: INVITE , FooBar\n",
-			"Accept-Encoding: compress;q=0.5,gzip;q=1.0\n",
-			"Accept: application/sdp;level=1,application/x-private,text/html\n",
+			"Allow: INVITE , FooBar\r\n",
+			"Accept-Encoding: compress;q=0.5,gzip;q=1.0\r\n",
+			"Accept: application/sdp;level=1,application/x-private,text/html\r\n",
 			"Contact: Bo Bob Biggs "
                 // BUG submitted by Ben Evans (opencloud): SIP syntax does not 
 				// permit space between < and URI
 				+ "<sip:user@example.com?Route=%3Csip:sip.example.com%3E>,"
-				+ "Joe Bob Briggs <sip:mranga@nist.gov>\n",
-			"Proxy-Require: foo, 1234 \n",
+				+ "Joe Bob Briggs <sip:mranga@nist.gov>\r\n",
+			"Proxy-Require: foo, 1234 \r\n",
 			"Record-Route: <sip:bob@biloxi.com>,"
 				+ "<sip:bob@biloxi.com;maddr=10.1.1.1>,"
 				+ "<sip:+1-650-555-2222@iftgw.there.com;"
-				+ "maddr=ss1.wcom.com>\n" };
+				+ "maddr=ss1.wcom.com>\r\n" };
 
 	protected static String headers[] =
 		{
@@ -130,8 +130,8 @@ public class FactoryTestHarness extends TestHarness {
 			"Alert-Info: <http://www.example.com/sounds/moo.wav>;purpose=icon\n",
 			"Alert-Info: <http://www.example.com/alice/> ;purpose=info\n",
 			"Alert-Info: <http://wwww.example.com/alice/photo1.jpg>\n",
-			"Allow: INVITE \n",
-			"Allow: FooBar\n",
+			"Allow: INVITE \r\n",
+			"Allow: FooBars\r\n",
 			"Allow-Events: pack1.pack2\n",
 			"Allow-Events: pack1\n",
 			
@@ -316,6 +316,8 @@ public class FactoryTestHarness extends TestHarness {
 			
 			"Timestamp: 54 \n",
 			"Timestamp: 52.34 34.5 \n",
+			"Timestamp: 52.34 .5 \n",		// JvB: also valid syntax!
+			
 			"To: <sip:+1-650-555-2222@ss1.wcom.com;user=phone>;tag=5617\n",
 			"To: T. A. Watson <sip:watson@bell-telephone.com>\n",
 			"To: LittleGuy <sip:UserB@there.com>\n",
