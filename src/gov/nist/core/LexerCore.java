@@ -598,6 +598,30 @@ public class LexerCore extends StringTokenizer {
 		}
 		return retval.toString();
 	}
+	
+	/**
+	 * Scan until you see a slash or an EOL.
+	 * 
+	 * @return substring containing no slash.
+	 */
+	public String byteStringNoSlash() {
+		StringBuffer retval = new StringBuffer();
+		try {
+			while (true) {
+				char next = lookAhead(0);
+				// bug fix from Ben Evans.
+				if (next == '\0' || next == '\n' || next == '/'  ) {
+					break;
+				} else {
+					consume(1);
+					retval.append(next);
+				}
+			}
+		} catch (ParseException ex) {
+			return retval.toString();
+		}
+		return retval.toString();
+	}
 
 	/** Return a substring containing no commas
 	*@return a substring containing no commas.
