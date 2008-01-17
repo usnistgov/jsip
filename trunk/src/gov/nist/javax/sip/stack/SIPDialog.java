@@ -64,7 +64,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.62 $ $Date: 2007-12-16 12:58:47 $
+ * @version 1.2 $Revision: 1.63 $ $Date: 2008-01-17 18:29:17 $
  * 
  * @author M. Ranganathan
  * 
@@ -2038,14 +2038,19 @@ public class SIPDialog implements javax.sip.Dialog {
 			
 			// JvB: Transport from first entry in route set, or remote Contact if none
 			// Only used to find correct LP & create correct Via
-			String transport = null;
+			SipURI uri4transport = null;
+			
 			if ( this.routeList != null && !this.routeList.isEmpty() ) {
 				Route r = (Route) this.routeList.getFirst();
-				transport = ((SipURI) r.getAddress().getURI()).getTransportParam();
+				uri4transport = ((SipURI) r.getAddress().getURI());
 			} else {	// should be !=null, checked above
-				transport = ((SipURI) this.remoteTarget.getURI()).getTransportParam();
+				uri4transport = ((SipURI) this.remoteTarget.getURI());
 			}
-			if (transport==null) transport = ListeningPoint.UDP;
+			String transport = uri4transport.getTransportParam();
+			if (transport==null) {
+				// JvB fix: also support TLS
+				transport = uri4transport.isSecure() ? ListeningPoint.TLS : ListeningPoint.UDP;
+			}
 			ListeningPointImpl lp = (ListeningPointImpl) sipProvider
 					.getListeningPoint(transport);
 			Via via = lp.getViaHeader();
