@@ -32,7 +32,7 @@ import java.text.ParseException;
 /**
  * Parser for UserAgent header.
  * 
- * @version 1.2 $Revision: 1.12 $ $Date: 2006-07-13 09:01:55 $
+ * @version 1.2 $Revision: 1.13 $ $Date: 2008-01-17 23:32:29 $
  * 
  * @author Olivier Deruelle  <br/>
  * @author M. Ranganathan  <br/>
@@ -62,7 +62,8 @@ public class UserAgentParser extends HeaderParser {
 	}
 
 	/**
-	 * parse the String message
+	 * parse the message. Note that we have losened up on the parsing quite a bit because 
+	 * user agents tend to be very bad about specifying the user agent according to RFC.
 	 * 
 	 * @return SIPHeader (UserAgent object)
 	 * @throws SIPParseException
@@ -94,14 +95,12 @@ public class UserAgentParser extends HeaderParser {
 					//	The RFC Does NOT allow this space but we are generous in what we accept 
 					
 					this.getLexer().SPorHT();
-					Token product = null;
-					try {
-						product = this.lexer.match(TokenTypes.ID);
-					} catch (ParseException e) {
-						throw createParseException("expected a product");
-					}
-					StringBuffer productSb = new StringBuffer(product
-							.getTokenValue());
+					
+				
+					String product = this.lexer.byteStringNoSlash();
+					if ( product == null ) throw createParseException("Expected product string");
+					
+					StringBuffer productSb = new StringBuffer(product);
 					// do we possibily have the optional product-version?
 					if (this.lexer.peekNextToken().getTokenType() == TokenTypes.SLASH) {
 						// yes
@@ -110,15 +109,13 @@ public class UserAgentParser extends HeaderParser {
 						// The RFC Does NOT allow this space but we are generous in what we accept 
 						this.getLexer().SPorHT();
 						
-						Token productVersion = null;
-						try {
-							productVersion = this.lexer.match(TokenTypes.ID);
-						} catch (ParseException e1) {
-							throw createParseException("expected product-version");
-						}
+						String productVersion = this.lexer.byteStringNoSlash();
+						
+						if ( productVersion == null ) throw createParseException("Expected product version");
+						
 						productSb.append("/");
 
-						productSb.append(productVersion.getTokenValue());
+						productSb.append(productVersion);
 					}
 
 					userAgent.addProductToken(productSb.toString());
@@ -137,7 +134,7 @@ public class UserAgentParser extends HeaderParser {
 	
 	  public static void main(String args[]) throws ParseException { String
 	  userAgent[] = { "User-Agent: Softphone/Beta1.5 \n", "User-Agent:Nist/Beta1 (beta version) \n", "User-Agent: Nist UA (beta version)\n",
-	  "User-Agent: Nist1.0/Beta2 Ubi/vers.1.0 (very cool) \n" };
+	  "User-Agent: Nist1.0/Beta2 Ubi/vers.1.0 (very cool) \n" , "User-Agent: SJphone/1.60.299a/L (SJ Labs)\n"};
 	  
 	  for (int i = 0; i < userAgent.length; i++ ) { UserAgentParser parser =
 	  new UserAgentParser(userAgent[i]); UserAgent ua= (UserAgent)
