@@ -30,6 +30,7 @@ package gov.nist.javax.sip.header;
 
 import gov.nist.core.HostPort;
 import gov.nist.javax.sip.address.AddressImpl;
+import gov.nist.javax.sip.parser.Parser;
 
 import javax.sip.header.ToHeader;
 import java.text.ParseException;
@@ -37,7 +38,7 @@ import java.text.ParseException;
 /**
  * To SIP Header.
  * 
- * @version 1.2 $Revision: 1.9 $ $Date: 2007-02-12 15:19:25 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2008-01-18 11:22:27 $
  * 
  * @author M. Ranganathan <br/>
  * @author Olivier Deruelle <br/>
@@ -164,19 +165,15 @@ public final class To extends AddressParametersHeader implements
 	}
 
 	/**
-	 * Set the tag member. This should be set to null for the initial request in
+	 * Set the tag member. This should remain empty for the initial request in
 	 * a dialog.
 	 * 
-	 * @param t
-	 *            tag String to set.
+	 * @param t - tag String to set.
 	 */
 	public void setTag(String t) throws ParseException {
-			if (t == null)
-				throw new NullPointerException("null tag ");
-			else if (t.trim().equals(""))
-				throw new ParseException("bad tag", 0);
-			this.setParameter(ParameterNames.TAG, t);
-		
+		// JvB: check that it is a valid token
+		Parser.checkToken(t);
+		this.setParameter(ParameterNames.TAG, t);		
 	}
 
 	/**
