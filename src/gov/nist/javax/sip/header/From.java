@@ -30,6 +30,7 @@ package gov.nist.javax.sip.header;
 
 import gov.nist.core.HostPort;
 import gov.nist.javax.sip.address.AddressImpl;
+import gov.nist.javax.sip.parser.Parser;
 
 import javax.sip.header.FromHeader;
 import java.text.ParseException;
@@ -37,7 +38,7 @@ import java.text.ParseException;
 /**
  * From SIP Header.
  *
- * @version 1.2 $Revision: 1.7 $ $Date: 2007-02-12 15:19:22 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2008-01-18 11:22:27 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
@@ -145,10 +146,8 @@ public final class From
 	 * @param t tag to set. From tags are mandatory.
 	 */
 	public void setTag(String t) throws ParseException {
-		if (t == null)
-			throw new NullPointerException("null tag ");
-		else if (t.trim().equals(""))
-			throw new ParseException("bad tag", 0);
+		// JvB: check that it is a valid token
+		Parser.checkToken(t);
 		this.setParameter(ParameterNames.TAG, t);
 	}
 
