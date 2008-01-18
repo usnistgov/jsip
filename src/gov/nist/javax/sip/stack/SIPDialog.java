@@ -64,7 +64,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.64 $ $Date: 2008-01-18 10:44:47 $
+ * @version 1.2 $Revision: 1.65 $ $Date: 2008-01-18 12:37:10 $
  * 
  * @author M. Ranganathan
  * 
@@ -2055,7 +2055,7 @@ public class SIPDialog implements javax.sip.Dialog {
 					.getListeningPoint(transport);
       if ( lp==null ) {
          sipStack.getLogWriter().logError( "No LP found for transport=" + transport );
-         lp = (ListeningPointImpl) sipProvider.getListeningPoint();
+         throw new SipException("Cannot create ACK - no ListeningPoint for transport towards next hop found:" + transport );
       }					
 			Via via = lp.getViaHeader();
 
