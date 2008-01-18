@@ -113,32 +113,14 @@ public class SDPAnnounceParser extends ParserCore {
 
 	}
 
-	public static void main( String [] args )  throws Exception {
-		String sdpData = "\r\n    " +
-		"v=0\r\n"
-		+ "o=4855 13760799956958020 13760799956958020"
-		+ " IN IP4  129.6.55.78\r\n"
-		+ "s=mysession session\r\n"
-	        + "p=+46 8 52018010\r\n"
-		+ "c=IN IP4  129.6.55.78\r\n"
-		+ "t=0 0\r\n"
-		+ "m=audio 6022 RTP/AVP 0 4 18\r\n"
-		+ "a=rtpmap:0 PCMU/8000\r\n"
-		+ "a=rtpmap:4 G723/8000\r\n"
-		+ "a=rtpmap:18 G729A/8000\r\n"
-		+ "a=ptime:20\r\n";
-
-
-		SDPAnnounceParser parser = new SDPAnnounceParser (sdpData);
-		SessionDescriptionImpl sessiondescription = parser.parse();
-		System.out.println("Encoded structure = " +
-			sessiondescription.toString() );
-
-	}
+	
 
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2006/11/22 04:08:57  rborba
+ * Fixed a null pointer exception when an SDP is received with an empty session name ("s=").
+ *
  * Revision 1.7  2006/07/13 09:02:37  mranga
  * Issue number:
  * Obtained from:
