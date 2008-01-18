@@ -285,29 +285,42 @@ public class LexerCore extends StringTokenizer {
 			// Ignore
 		}
 	}
+	
+	/**
+	 * JvB: utility function added to validate tokens
+	 * 
+	 * @see RFC3261 section 25.1:
+	 * token       =  1*(alphanum / "-" / "." / "!" / "%" / "*"
+                     / "_" / "+" / "`" / "'" / "~" )
+     
+     * @param c - character to check
+	 * @return true iff character c is a valid token character as per RFC3261
+	 */
+	public static final boolean isTokenChar( char c ) {
+		if ( isAlphaDigit(c) ) return true;
+		else switch (c)
+		{
+			case '-':
+	        case '.':
+	        case '!':
+	        case '%':
+	        case '*':
+	        case '_':
+	        case '+':
+	        case '`':
+	        case '\'':
+	        case '~':
+	            return true;
+	        default:
+	            return false;
+		}
+	}
+	
+	
 	public boolean startsId() {
 		try {
 			char nextChar = lookAhead(0);
-            if (isAlphaDigit(nextChar)) {
-                return true;
-            }
-            else {
-                switch (nextChar) {
-                    case '_':
-                    case '+':
-                    case '-':
-                    case '!':
-                    case '`':
-                    case '\'':
-                    case '~':
-                    case '%': // bug fix by Bruno Konik
-                    case '.':
-                    case '*':
-                        return true;
-                    default:
-                        return false;
-                }
-            }
+            return isTokenChar(nextChar);
         } catch (ParseException ex) {
 			return false;
 		}
@@ -336,6 +349,7 @@ public class LexerCore extends StringTokenizer {
                     case '^':
                     case '|':
                     case '~':
+                    case '%': // bug fix by Bruno Konik, JvB copied here
                     case '#':
                     case '@':
                     case '$':
@@ -359,30 +373,10 @@ public class LexerCore extends StringTokenizer {
 		try {
 			while (hasMoreChars()) {
 				char nextChar = lookAhead(0);
-                if (isAlphaDigit(nextChar)) {
+                if ( isTokenChar(nextChar) ) {
                     consume(1);
-                }
-                else {
-                    boolean isValidChar = false;
-                    switch (nextChar) {
-                        case '_':
-                        case '+':
-                        case '-':
-                        case '!':
-                        case '`':
-                        case '\'':
-                        case '~':
-                        case '%': // bug fix by Bruno Konik
-                        case '.':
-                        case '*':
-                            isValidChar = true;
-                    }
-                    if (isValidChar) {
-                        consume(1);
-                    }
-                    else {
-                        break;
-                    }
+                } else {
+                	break;
                 }
             }
 			return buffer.substring(startIdx, ptr);
@@ -391,6 +385,7 @@ public class LexerCore extends StringTokenizer {
 		}
 	}
 
+	/* JvB: unreferenced
 	public String ttokenAllowSpace() {
 		int startIdx = ptr;
 		try {
@@ -409,6 +404,7 @@ public class LexerCore extends StringTokenizer {
                         case '`':
                         case '\'':
                         case '~':
+                        case '%': // bug fix by Bruno Konik, JvB copied here
                         case '.':
                         case ' ':
                         case '\t':
@@ -428,7 +424,7 @@ public class LexerCore extends StringTokenizer {
 		} catch (ParseException ex) {
 			return null;
 		}
-	}
+	}*/
 
 	public String ttokenSafe() {
 		int startIdx = ptr;
@@ -456,6 +452,7 @@ public class LexerCore extends StringTokenizer {
                         case '^':
                         case '|':
                         case '~':
+                        case '%': // bug fix by Bruno Konik, JvB copied here
                         case '#':
                         case '@':
                         case '$':
