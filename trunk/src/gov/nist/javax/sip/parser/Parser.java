@@ -25,6 +25,7 @@
 */
 package gov.nist.javax.sip.parser;
 import gov.nist.core.Debug;
+import gov.nist.core.LexerCore;
 import gov.nist.core.ParserCore;
 import gov.nist.core.Token;
 import java.text.ParseException;
@@ -32,7 +33,7 @@ import java.text.ParseException;
 /**
  * Base parser class.
  *
- * @version 1.2 $Revision: 1.8 $ $Date: 2007-02-23 14:56:05 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2008-01-18 11:19:24 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -99,9 +100,34 @@ public abstract class Parser extends ParserCore implements TokenTypes {
 				dbg_leave("method");
 		}
 	}
+	
+	/**
+	 * Verifies that a given string matches the 'token' production in RFC3261
+	 * 
+	 * @param token
+	 * @throws ParseException - if there are invalid characters
+	 * 
+	 * @author JvB
+	 */
+	public static final void checkToken( String token ) throws ParseException {
+		
+		if (token == null || token.length()==0 ) {
+			throw new ParseException("null or empty token", -1 );
+		} else {
+			// JvB: check that it is a valid token
+			for ( int i=0; i<token.length(); ++i ) {
+				if ( !LexerCore.isTokenChar( token.charAt(i) )) {
+					throw new ParseException( "Invalid character(s) in string (not allowed in 'token')", i );
+				}
+			}
+		}
+	}	
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2007/02/23 14:56:05  belangery
+ * Added performance improvement around header name lowercase conversion.
+ *
  * Revision 1.7  2006/09/27 15:02:43  mranga
  * Issue number:
  * Obtained from:
