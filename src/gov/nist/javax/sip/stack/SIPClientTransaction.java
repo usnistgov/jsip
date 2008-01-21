@@ -155,7 +155,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.89 $ $Date: 2007-12-18 20:21:29 $
+ * @version 1.2 $Revision: 1.90 $ $Date: 2008-01-21 22:43:21 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -534,14 +534,12 @@ public class SIPClientTransaction extends SIPTransaction implements
 		/*
 		 * JvB: this is now duplicate with code in the other processResponse
 		 * 
-		if (dialog != null
-				&& transactionResponse.getStatusCode() != 100
-				&& (transactionResponse.getTo().getTag() != null || sipStack
-						.isRfc2543Supported())) {
-			// add the route before you process the response.
-			dialog.setLastResponse(this, transactionResponse);
-			this.setDialog(dialog, transactionResponse.getDialogId(false));
-		}*/
+		 * if (dialog != null && transactionResponse.getStatusCode() != 100 &&
+		 * (transactionResponse.getTo().getTag() != null || sipStack
+		 * .isRfc2543Supported())) { // add the route before you process the
+		 * response. dialog.setLastResponse(this, transactionResponse);
+		 * this.setDialog(dialog, transactionResponse.getDialogId(false)); }
+		 */
 
 		try {
 			if (isInviteTransaction())
@@ -819,13 +817,14 @@ public class SIPClientTransaction extends SIPTransaction implements
 
 				}
 
-				// When in either the "Calling" or "Proceeding" states,
-				// reception of response with status code from 300-699
-				// MUST cause the client transaction to
-				// transition to "Completed".
-				// The client transaction MUST pass the received response up to
-				// the TU, and the client transaction MUST generate an
-				// ACK request.
+				/*
+				 * When in either the "Calling" or "Proceeding" states,
+				 * reception of response with status code from 300-699 MUST
+				 * cause the client transaction to transition to "Completed".
+				 * The client transaction MUST pass the received response up to
+				 * the TU, and the client transaction MUST generate an ACK
+				 * request.
+				 */
 
 				if (respondTo != null) {
 					respondTo
@@ -941,15 +940,16 @@ public class SIPClientTransaction extends SIPTransaction implements
 			 * balancers ( See issue 136) reported by Raghav Ramesh ( BT )
 			 * 
 			 */
-			if (this.getOriginalRequest().getMethod().equals(Request.CANCEL) && sipStack.isCancelClientTransactionChecked()) {
+			if (this.getOriginalRequest().getMethod().equals(Request.CANCEL)
+					&& sipStack.isCancelClientTransactionChecked()) {
 				SIPClientTransaction ct = (SIPClientTransaction) sipStack
 						.findCancelTransaction(this.getOriginalRequest(), false);
 				if (ct == null) {
 					/*
-					 * If the original request has generated a final
-					 * response, the CANCEL SHOULD  NOT be  sent, as it is
-					 * an effective no-op, since CANCEL has no effect on 
-					 * requests that have already generated a final response.
+					 * If the original request has generated a final response,
+					 * the CANCEL SHOULD NOT be sent, as it is an effective
+					 * no-op, since CANCEL has no effect on requests that have
+					 * already generated a final response.
 					 */
 					throw new SipException(
 							"Could not find original tx to cancel. RFC 3261 9.1");
@@ -1078,11 +1078,12 @@ public class SIPClientTransaction extends SIPTransaction implements
 						&& ((inviteTx.getState() == TransactionState.CALLING || inviteTx
 								.getState() == TransactionState.PROCEEDING))
 						&& inviteTx.getDialog() != null) {
-					// A proxy server should have started TIMER C and take care
-					// of the
-					// Termination using transaction.terminate() by itself (i.e.
-					// this is
-					// not the job of the stack at this point.
+					/*
+					 * A proxy server should have started TIMER C and take care
+					 * of the Termination using transaction.terminate() by
+					 * itself (i.e. this is not the job of the stack at this
+					 * point but we do it to be nice.
+					 */
 					inviteTx.setState(TransactionState.TERMINATED);
 
 				}
@@ -1385,61 +1386,79 @@ public class SIPClientTransaction extends SIPTransaction implements
 
 		// JvB: Check all conditions required for creating a new Dialog
 		if (dialog == null) {
-			if (sipResponse.getStatusCode() != 100	// skip 100 (may have a to tag)
-			&& (sipResponse.getToTag() != null || 
-			    sipStack.isRfc2543Supported())		// need tag to construct dialog
-			&& sipStack.isDialogCreated(method)) {	// needs to be dialog creating
+			if (sipResponse.getStatusCode() / 100 != 1
+					/* skip 100 (may have a to tag */
+					&& (sipResponse.getToTag() != null || sipStack
+							.isRfc2543Supported())
+					&& sipStack.isDialogCreated(method)) {
 
-			// Dialog cannot be found for the response.
-			// This must be a forked response.
-			// no dialog assigned to this response but a default dialog has been
-			// assigned. Note that if automatic dialog support is configured
-			// then
-			// a default dialog is always created.
+				/*
+				 * Dialog cannot be found for the response. This must be a
+				 * forked response. no dialog assigned to this response but a
+				 * default dialog has been assigned. Note that if automatic
+				 * dialog support is configured then a default dialog is always
+				 * created.
+				 */
 
-			synchronized (this) {
-				// We need synchronization here because two responses
-				// may compete for the default dialog simultaneously
-				if (defaultDialog != null) {
-					if (sipResponse.getFromTag() != null) {
-						SIPResponse dialogResponse = defaultDialog
-								.getLastResponse();
-						String defaultDialogId = defaultDialog.getDialogId();
-						if (dialogResponse == null
-								|| (method.equals(Request.SUBSCRIBE)
-										&& dialogResponse.getCSeq().getMethod()
-												.equals(Request.NOTIFY) 
-										&& defaultDialogId.equals(dialogId))) {
-							// The default dialog has not been claimed yet.
-							defaultDialog.setLastResponse(this, sipResponse);
-							dialog = defaultDialog;
-						} else {
-							// check if we have created one previously
-							// (happens in the
-							// case of REINVITE processing.
-							// JvB: should not happen, this.defaultDialog should 
-							// then get set in Dialog#sendRequest line 1662
-							dialog = sipStack.getDialog(dialogId);
-							if (dialog == null) {
-								// Nop we dont have one. so go ahead and
-								// allocate a new one.
-								dialog = sipStack.createDialog(this, sipResponse);
+				synchronized (this) {
+					/*
+					 * We need synchronization here because two responses may
+					 * compete for the default dialog simultaneously
+					 */
+					if (defaultDialog != null) {
+						if (sipResponse.getFromTag() != null) {
+							SIPResponse dialogResponse = defaultDialog
+									.getLastResponse();
+							String defaultDialogId = defaultDialog
+									.getDialogId();
+							if (dialogResponse == null
+									|| (method.equals(Request.SUBSCRIBE)
+											&& dialogResponse.getCSeq()
+													.getMethod().equals(
+															Request.NOTIFY) && defaultDialogId
+											.equals(dialogId))) {
+								// The default dialog has not been claimed yet.
+								defaultDialog
+										.setLastResponse(this, sipResponse);
+								dialog = defaultDialog;
+							} else {
+								/*
+								 * check if we have created one previously
+								 * (happens in the case of REINVITE processing.
+								 * JvB: should not happen, this.defaultDialog
+								 * should then get set in Dialog#sendRequest
+								 * line 1662
+								 */
+
+								dialog = sipStack.getDialog(dialogId);
+								if (dialog == null) {
+									if (defaultDialog.isAssigned()) {
+										/*
+										 * Nop we dont have one. so go ahead and
+										 * allocate a new one.
+										 */
+										dialog = sipStack.createDialog(this,
+												sipResponse);
+
+									}
+								}
+
 							}
+							this.setDialog(dialog, dialog.getDialogId());
+						} else {
+							throw new RuntimeException(
+									"Response without from-tag");
 						}
-						this.setDialog(dialog, dialog.getDialogId());
 					} else {
-						throw new RuntimeException("Response without from-tag");
+						// Need to create a new Dialog, this becomes default
+						// JvB: not sure if this ever gets executed
+						dialog = sipStack.createDialog(this, sipResponse);
+						this.setDialog(dialog, dialog.getDialogId());
 					}
-				} else {
-					// Need to create a new Dialog, this becomes default
-					// JvB: not sure if this ever gets executed
-					dialog = sipStack.createDialog(this, sipResponse);
-					this.setDialog(dialog, dialog.getDialogId());
-				}
-			} // synchronized
-		  } else {
-			  dialog = defaultDialog;
-		  }
+				} // synchronized
+			} else {
+				dialog = defaultDialog;
+			}
 		} else {
 			dialog.setLastResponse(this, sipResponse);
 		}
@@ -1553,4 +1572,5 @@ public class SIPClientTransaction extends SIPTransaction implements
 		return notifyOnRetransmit;
 	}
 
+	
 }
