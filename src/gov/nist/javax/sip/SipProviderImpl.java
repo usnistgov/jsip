@@ -54,7 +54,7 @@ import java.text.ParseException;
 /**
  * Implementation of the JAIN-SIP provider interface.
  * 
- * @version 1.2 $Revision: 1.50 $ $Date: 2007-11-04 17:37:42 $
+ * @version 1.2 $Revision: 1.51 $ $Date: 2008-01-21 22:43:22 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -254,6 +254,9 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 		if (sipRequest.getTransaction() != null)
 			throw new TransactionUnavailableException(
 					"Transaction already assigned to request");
+		if ( sipRequest.getMethod().equals(Request.ACK)) {
+			throw new TransactionUnavailableException ("Cannot create client transaction for  " + Request.ACK);
+		}
 		// Be kind and assign a via header for this provider if the user is
 		// sloppy
 		if (sipRequest.getTopmostVia() == null) {
@@ -439,6 +442,11 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 			throw new TransactionUnavailableException(ex.getMessage());
 		}
 
+		if ( request.getMethod().equals(Request.ACK)) {
+			if ( sipStack.isLoggingEnabled())
+				sipStack.getLogWriter().logError("Creating server transaction for ACK -- makes no sense!");
+			throw new TransactionUnavailableException("Cannot create Server transaction for ACK ");
+		}
 		/*
 		 * Got a notify.
 		 */
