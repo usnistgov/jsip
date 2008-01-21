@@ -44,7 +44,7 @@ import java.text.ParseException;
  *
  * @see ViaList
  *
- * @version 1.2 $Revision: 1.13 $ $Date: 2007-02-12 15:19:25 $
+ * @version 1.2 $Revision: 1.14 $ $Date: 2008-01-21 22:43:21 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -168,6 +168,7 @@ public class Via
 	/**
 	 * Accessor for the comment field.
 	 * @return comment field.
+	 * @deprecated RFC 2543 support feature.
 	 */
 	public String getComment() {
 		return comment;
@@ -240,6 +241,7 @@ public class Via
 	/**
 	 * Set the comment member  
 	 * @param c String to set.
+	 * @deprecated This is an RFC 2543 feature.
 	 */
 	public void setComment(String c) {
 		comment = c;
@@ -348,7 +350,7 @@ public class Via
 	*/
        public int getRPort() {
          String strRport = getParameter(ParameterNames.RPORT);
-         if (strRport != null)
+         if (strRport != null && ! strRport.equals(""))
             return new Integer(strRport).intValue();
          else
             return -1;
@@ -535,6 +537,8 @@ public class Via
 			retval.sentProtocol = (Protocol) this.sentProtocol.clone();
 		if (this.sentBy != null)
 			retval.sentBy = (HostPort) this.sentBy.clone();
+		if ( this.getRPort() != -1) 
+			retval.setParameter(RPORT,this.getRPort());
 		return retval;
 	}
 
