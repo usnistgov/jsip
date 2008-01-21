@@ -64,7 +64,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.65 $ $Date: 2008-01-18 12:37:10 $
+ * @version 1.2 $Revision: 1.66 $ $Date: 2008-01-21 17:37:20 $
  * 
  * @author M. Ranganathan
  * 
@@ -84,6 +84,10 @@ public class SIPDialog implements javax.sip.Dialog {
 	// delivery of the event
 
 	private boolean isAssigned;
+	
+	// JvB: flag to track that a 2xx response was received for the most recent INVITE we sent
+	// Used as a check in createAck
+	private boolean lastINVITEOk;
 
 	private boolean reInviteFlag;
 
@@ -91,7 +95,7 @@ public class SIPDialog implements javax.sip.Dialog {
 
 	private SIPRequest originalRequest;
 
-	// Last response.
+	// Last response (JvB: either sent or received).
 	private SIPResponse lastResponse;
 
 	private SIPTransaction firstTransaction;
@@ -1521,12 +1525,12 @@ public class SIPDialog implements javax.sip.Dialog {
 		}
 		Via via = lp.getViaHeader();
 
-		From from = (From) this.lastResponse.getFrom().clone();
+		From from = new From();
 		from.setAddress(this.localParty);
-		To to = (To) this.lastResponse.getTo().clone();
+		To to = new To();
 		to.setAddress(this.remoteParty);
-		SIPRequest sipRequest = sipResponse.createRequest(sipUri, via, cseq,
-				from, to);
+		SIPRequest sipRequest = sipResponse.createRequest(
+				sipUri, via, cseq, from, to);
 
 		// The default contact header is obtained from the provider. The
 		// application
@@ -1551,7 +1555,7 @@ public class SIPDialog implements javax.sip.Dialog {
 			} else {
 				// This is an ACK request. Get the last transaction and
 				// assign a seq number from there.
-
+				// JvB: Caller should have used 'createAck' instead...
 				long seqno = this.lastResponse.getCSeq().getSeqNumber();
 				cseq.setSeqNumber(seqno);
 			}
@@ -2025,10 +2029,12 @@ public class SIPDialog implements javax.sip.Dialog {
 		if (this.lastResponse == null)
 			throw new SipException("Dialog not yet established -- no response!");
 		else {
-			int status = this.lastResponse.getStatusCode();
-			if (status<200 || status >=300) {
-				throw new SipException("Can only create ACK for 2xx response!");
+			// int status = this.lastResponse.getStatusCode();
+			// if ( status<200 || status >=300) {
+			if (!lastINVITEOk) {
+				throw new SipException("Can only create ACK after 2xx response to INVITE!");
 			}
+			this.lastINVITEOk = false;	// reset for next time
 		}
 		
 		if (this.remoteTarget==null)
@@ -2224,9 +2230,14 @@ public class SIPDialog implements javax.sip.Dialog {
 						sipStack.putDialog(this);
 						this.addRoute(sipResponse);
 
-						setState(SIPDialog.CONFIRMED_STATE);
+						setState(SIPDialog.CONFIRMED_STATE);						
 					} else if (SIPRequest.isTargetRefresh(cseqMethod)) {
 						doTargetRefresh(sipResponse);
+					}
+					
+					// JvB: set flag for INVITEs, to check in createAck
+					if ( cseqMethod.equals( Request.INVITE ) ) {
+						this.lastINVITEOk = true;
 					}
 
 				} else if (statusCode >= 300
