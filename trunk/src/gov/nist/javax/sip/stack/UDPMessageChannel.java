@@ -79,7 +79,7 @@ import javax.sip.message.Response;
  *
  *
  *
- * @version 1.2 $Revision: 1.44 $ $Date: 2007-09-21 17:12:58 $
+ * @version 1.2 $Revision: 1.45 $ $Date: 2008-01-22 19:16:56 $
  */
 public class UDPMessageChannel extends MessageChannel implements
 		ParseExceptionListener, Runnable {
@@ -321,7 +321,7 @@ public class UDPMessageChannel extends MessageChannel implements
 					}
 					try {
 						this.sendMessage( badReqRes.getBytes(), peerAddress,
-								peerPort, peerProtocol, false );
+								packet.getPort(), "UDP", false );
 					} catch (IOException e) {
 						this.sipStack.logWriter.logException(e);
 					}
