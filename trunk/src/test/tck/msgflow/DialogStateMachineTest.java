@@ -342,7 +342,7 @@ public class DialogStateMachineTest extends MessageFlowHarness {
 			// JvB: With auto-dialog-support OFF, this returns *null* !
 			Dialog clientDialog = ct.getDialog();
 			assertNotNull( clientDialog );
-			Request ackReq = clientDialog.createRequest(Request.ACK);
+			Request ackReq = clientDialog.createAck( ( (CSeqHeader)okRespEvt.getResponse().getHeader(CSeqHeader.NAME)).getSeqNumber());;
 			clientDialog.sendAck(ackReq);
 			waitForMessage();
 			//The dialog should now be in its CONFIRMED state.

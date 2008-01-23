@@ -61,6 +61,8 @@ public class Forker implements SipListener {
 	private static SipStack sipStack;
 
 	private SipProvider sipProvider;
+	
+	private Hashtable<String,ServerTransaction> serverTransactionTable = new Hashtable<String,ServerTransaction>();
 
 	/**
 	 * Flag to test UAC behavior for non-RFC3261 proxies. In particular, they
@@ -125,7 +127,8 @@ public class Forker implements SipListener {
 				FromHeader from = (FromHeader) newRequest
 						.getHeader(FromHeader.NAME);
 				recordRoute(newRequest, from.getTag());
-
+				if ( st != null )
+					this.serverTransactionTable.put( ((ViaHeader) request.getHeader(ViaHeader.NAME)).getBranch(), st); 
 				doForwardStateless(newRequest, st);
 			} else {
 				Response notImplemented = messageFactory.createResponse(
@@ -288,9 +291,19 @@ public class Forker implements SipListener {
 			// responses
 			response.removeFirst(ViaHeader.NAME);
 			try {
-				sipProvider.sendResponse(response);
+				String branchId = ((ViaHeader) response.getHeader(ViaHeader.NAME)).getBranch();
+				ServerTransaction st = this.serverTransactionTable.get(branchId);
+				if ( st != null) {
+					st.sendResponse(response);
+					this.serverTransactionTable.remove(branchId);
+				} else {
+					sipProvider.sendResponse(response);
+				}
 			} catch (SipException e) {
-				e.printStackTrace();
+				AbstractSubsnotifyTestCase.fail("Unexpected exception seen",e);
+			} catch (InvalidArgumentException ex) {
+				AbstractSubsnotifyTestCase.fail("Unexpected exception seen",ex);
+				
 			}
 		} else {
 			ServerTransaction st = (ServerTransaction) CTtoST.get(ct);

@@ -52,9 +52,9 @@ import java.text.ParseException;
  * Adams, Alex Rootham , Martin Le Clerk, Christophe Anzille, Andreas Bystrom,
  * Lebing Xie, Jeroen van Bemmel. Hagai Sela reported a bug in updating the
  * route set (on RE-INVITE). Jens Tinfors submitted a bug fix and the .equals
- * method.	 Jan Schaumloeffel contributed a buf fix ( memory leak was happening
+ * method. Jan Schaumloeffel contributed a buf fix ( memory leak was happening
  * when 180 contained a To tag.
- *
+ * 
  */
 
 /**
@@ -64,7 +64,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.66 $ $Date: 2008-01-21 17:37:20 $
+ * @version 1.2 $Revision: 1.67 $ $Date: 2008-01-23 21:41:57 $
  * 
  * @author M. Ranganathan
  * 
@@ -84,10 +84,6 @@ public class SIPDialog implements javax.sip.Dialog {
 	// delivery of the event
 
 	private boolean isAssigned;
-	
-	// JvB: flag to track that a 2xx response was received for the most recent INVITE we sent
-	// Used as a check in createAck
-	private boolean lastINVITEOk;
 
 	private boolean reInviteFlag;
 
@@ -103,7 +99,7 @@ public class SIPDialog implements javax.sip.Dialog {
 	private SIPTransaction lastTransaction;
 
 	private String dialogId;
-	
+
 	private String earlyDialogId;
 
 	private long localSequenceNumber;
@@ -174,6 +170,11 @@ public class SIPDialog implements javax.sip.Dialog {
 	private Address remoteTarget;
 
 	private EventHeader eventHeader; // for Subscribe notify
+
+	// Stores the last OK for the INVITE
+	// Used in createAck.
+
+	private SIPResponse lastInviteOKResponse ;
 
 	// //////////////////////////////////////////////////////
 	// Inner classes
@@ -1096,6 +1097,7 @@ public class SIPDialog implements javax.sip.Dialog {
 		if (firstTransaction != null && firstTransaction != transaction
 				&& transaction.getMethod().equals(firstTransaction.getMethod())) {
 			this.reInviteFlag = true;
+			this.lastInviteOKResponse = null;
 		}
 
 		/*
@@ -1454,6 +1456,15 @@ public class SIPDialog implements javax.sip.Dialog {
 	 */
 	public Request createRequest(String method) throws SipException {
 
+		if (method.equals(Request.ACK)) {
+			this.sipStack.getLogWriter().logWarning("use Dialog.createAck() to create ack requests");
+			try {
+				if ( this.lastInviteOKResponse == null ) throw new SipException("OK not seen for the INVITE -- cannot create ACK");
+				return this.createAck(this.lastInviteOKResponse.getCSeq().getSeqNumber());
+			} catch (InvalidArgumentException ex) {
+				throw new SipException("Invalid argument specified for createAck " , ex);
+			}
+		}
 		if (this.lastResponse != null)
 			return this.createRequest(method, this.lastResponse);
 		else
@@ -1470,12 +1481,14 @@ public class SIPDialog implements javax.sip.Dialog {
 	 */
 	private Request createRequest(String method, SIPResponse sipResponse)
 			throws SipException {
-		// Check if the dialog is in the right state (RFC 3261 section 15).
-		// The caller's UA MAY send a BYE for either
-		// CONFIRMED or EARLY dialogs, and the callee's UA MAY send a BYE on
-		// CONFIRMED dialogs, but MUST NOT send a BYE on EARLY dialogs.
-
-		// Throw out cancel request.
+		/*
+		 * Check if the dialog is in the right state (RFC 3261 section 15). The
+		 * caller's UA MAY send a BYE for either CONFIRMED or EARLY dialogs, and
+		 * the callee's UA MAY send a BYE on CONFIRMED dialogs, but MUST NOT
+		 * send a BYE on EARLY dialogs.
+		 * 
+		 * Throw out cancel request.
+		 */
 
 		if (method == null || sipResponse == null)
 			throw new NullPointerException("null argument");
@@ -1483,6 +1496,15 @@ public class SIPDialog implements javax.sip.Dialog {
 		if (method.equals(Request.CANCEL))
 			throw new SipException("Dialog.createRequest(): Invalid request");
 
+		/*
+		 * Throw out ACK request. Bacward compatibilty note. The previous
+		 * generation of API would allow you to use this method to create an
+		 * ACK. However, the processing in crateAck is different.
+		 */
+		if (method.equals(Request.ACK)) {
+			throw new SipException(
+					"Dialog.createRequest(): use createAck() instead");
+		}
 		if (method == null)
 			throw new NullPointerException("null method");
 		else if (this.getState() == null
@@ -1510,8 +1532,10 @@ public class SIPDialog implements javax.sip.Dialog {
 			sipStack.getLogWriter().logError("Unexpected error");
 			InternalErrorHandler.handleException(ex);
 		}
-		// Add a via header for the outbound request based on the
-		// transport of the message processor.
+		/*
+		 * Add a via header for the outbound request based on the transport of
+		 * the message processor.
+		 */
 
 		ListeningPointImpl lp = (ListeningPointImpl) this.sipProvider
 				.getListeningPoint(sipResponse.getTopmostVia().getTransport());
@@ -1529,15 +1553,17 @@ public class SIPDialog implements javax.sip.Dialog {
 		from.setAddress(this.localParty);
 		To to = new To();
 		to.setAddress(this.remoteParty);
-		SIPRequest sipRequest = sipResponse.createRequest(
-				sipUri, via, cseq, from, to);
+		SIPRequest sipRequest = sipResponse.createRequest(sipUri, via, cseq,
+				from, to);
 
-		// The default contact header is obtained from the provider. The
-		// application
-		// can override this.
+		/*
+		 * The default contact header is obtained from the provider. The
+		 * application can override this.
+		 * 
+		 * JvB: Should only do this for target refresh requests, ie not for BYE,
+		 * PRACK, etc
+		 */
 
-		// JvB: Should only do this for target refresh requests,
-		// ie not for BYE, PRACK, etc
 		if (SIPRequest.isTargetRefresh(method)) {
 			ContactHeader contactHeader = this.sipProvider
 					.createContactForProvider(lp.getTransport());
@@ -1547,18 +1573,12 @@ public class SIPDialog implements javax.sip.Dialog {
 		}
 
 		try {
-			// Guess of local sequence number - this is being re-set when
-			// the request is actually dispatched
-			if (!method.equals(Request.ACK)) {
-				cseq = (CSeq) sipRequest.getCSeq();
-				cseq.setSeqNumber(this.localSequenceNumber + 1);
-			} else {
-				// This is an ACK request. Get the last transaction and
-				// assign a seq number from there.
-				// JvB: Caller should have used 'createAck' instead...
-				long seqno = this.lastResponse.getCSeq().getSeqNumber();
-				cseq.setSeqNumber(seqno);
-			}
+			/*
+			 * Guess of local sequence number - this is being re-set when the
+			 * request is actually dispatched
+			 */
+			cseq = (CSeq) sipRequest.getCSeq();
+			cseq.setSeqNumber(this.localSequenceNumber + 1);
 
 		} catch (InvalidArgumentException ex) {
 			InternalErrorHandler.handleException(ex);
@@ -1713,8 +1733,7 @@ public class SIPDialog implements javax.sip.Dialog {
 
 		Hop hop = ((SIPClientTransaction) clientTransactionId).getNextHop();
 
-		// hop = sipStack.getNextHop(dialogRequest);
-
+		
 		try {
 			TCPMessageChannel oldChannel = null;
 			TLSMessageChannel oldTLSChannel = null;
@@ -1764,24 +1783,23 @@ public class SIPDialog implements javax.sip.Dialog {
 			}
 
 			if (messageChannel == null) {
-				// At this point the procedures of 8.1.2
-				// and 12.2.1.1 of RFC3261 have been tried
-				// but the resulting next hop cannot be resolved
-				// (recall that the exception thrown
-				// is caught and ignored in SIPStack.createMessageChannel()
-				// so we end up here with a null messageChannel
-				// instead of the exception handler below).
-				// All else failing, try the outbound proxy in accordance
-				// with 8.1.2, in particular:
-				// This ensures that outbound proxies that do not add
-				// Record-Route header field values will drop out of
-				// the path of subsequent requests. It allows endpoints
-				// that cannot resolve the first Route
-				// URI to delegate that task to an outbound proxy.
-				//
-				// if one considers the 'first Route URI' of a
-				// request constructed according to 12.2.1.1
-				// to be the request URI when the route set is empty.
+				/*
+				 * At this point the procedures of 8.1.2 and 12.2.1.1 of RFC3261
+				 * have been tried but the resulting next hop cannot be resolved
+				 * (recall that the exception thrown is caught and ignored in
+				 * SIPStack.createMessageChannel() so we end up here with a null
+				 * messageChannel instead of the exception handler below). All
+				 * else failing, try the outbound proxy in accordance with
+				 * 8.1.2, in particular: This ensures that outbound proxies that
+				 * do not add Record-Route header field values will drop out of
+				 * the path of subsequent requests. It allows endpoints that
+				 * cannot resolve the first Route URI to delegate that task to
+				 * an outbound proxy.
+				 * 
+				 * if one considers the 'first Route URI' of a request
+				 * constructed according to 12.2.1.1 to be the request URI when
+				 * the route set is empty.
+				 */
 				if (sipStack.isLoggingEnabled())
 					sipStack.logWriter
 							.logDebug("Null message channel using outbound proxy !");
@@ -1835,13 +1853,11 @@ public class SIPDialog implements javax.sip.Dialog {
 		try {
 			((SIPClientTransaction) clientTransactionId)
 					.sendMessage(dialogRequest);
-			// If the method is BYE then mark the dialog completed.
-			// The completed state is just a conveniance. It is not
-			// part of the RFC.
-			// Note that if the BYE is rejected then the
-			// Dialog should bo back to the ESTABLISHED state.
+			/*
+			 * Note that if the BYE is rejected then the Dialog should bo back
+			 * to the ESTABLISHED state.
+			 */
 			if (dialogRequest.getMethod().equals(Request.BYE)) {
-				// this.setState(TERMINATED_STATE);
 				this.byeSent = true;
 			}
 		} catch (IOException ex) {
@@ -1876,8 +1892,7 @@ public class SIPDialog implements javax.sip.Dialog {
 	 */
 	public void resendAck() throws SipException {
 		// Check for null.
-		// Bug report and fix by Antonis Karydas.
-
+		
 		if (this.lastAck != null) {
 			if (lastAck.getHeader(TimeStampHeader.NAME) != null
 					&& sipStack.generateTimeStampHeader) {
@@ -2026,50 +2041,47 @@ public class SIPDialog implements javax.sip.Dialog {
 			throw new InvalidArgumentException("bad cseq > "
 					+ ((((long) 1) << 32) - 1));
 
-		if (this.lastResponse == null)
-			throw new SipException("Dialog not yet established -- no response!");
-		else {
-			// int status = this.lastResponse.getStatusCode();
-			// if ( status<200 || status >=300) {
-			if (!lastINVITEOk) {
-				throw new SipException("Can only create ACK after 2xx response to INVITE!");
-			}
-			this.lastINVITEOk = false;	// reset for next time
+		if (this.lastInviteOKResponse == null) {
+			throw new SipException(
+					"Dialog not yet established -- no OK response!");
 		}
-		
-		if (this.remoteTarget==null)
+
+		if (this.remoteTarget == null)
 			throw new SipException("Cannot create ACK - no remote Target!");
-		
+
 		try {
-			
-			// JvB: Transport from first entry in route set, or remote Contact if none
+
+			// JvB: Transport from first entry in route set, or remote Contact
+			// if none
 			// Only used to find correct LP & create correct Via
 			SipURI uri4transport = null;
-			
-			if ( this.routeList != null && !this.routeList.isEmpty() ) {
+
+			if (this.routeList != null && !this.routeList.isEmpty()) {
 				Route r = (Route) this.routeList.getFirst();
 				uri4transport = ((SipURI) r.getAddress().getURI());
-			} else {	// should be !=null, checked above
+			} else { // should be !=null, checked above
 				uri4transport = ((SipURI) this.remoteTarget.getURI());
 			}
 			String transport = uri4transport.getTransportParam();
-			if (transport==null) {
+			if (transport == null) {
 				// JvB fix: also support TLS
-				transport = uri4transport.isSecure() ? ListeningPoint.TLS : ListeningPoint.UDP;
+				transport = uri4transport.isSecure() ? ListeningPoint.TLS
+						: ListeningPoint.UDP;
 			}
 			ListeningPointImpl lp = (ListeningPointImpl) sipProvider
 					.getListeningPoint(transport);
-      if ( lp==null ) {
-         sipStack.getLogWriter().logError( "No LP found for transport=" + transport );
-         throw new SipException("Cannot create ACK - no ListeningPoint for transport towards next hop found:" + transport );
-      }					
+			if (lp == null) {
+				sipStack.getLogWriter().logError(
+						"No LP found for transport=" + transport);
+				throw new SipException(
+						"Cannot create ACK - no ListeningPoint for transport towards next hop found:"
+								+ transport);
+			}
 			Via via = lp.getViaHeader();
 
 			SipUri requestURI = (SipUri) getRemoteTarget().getURI().clone();
-			//if (!transport.equalsIgnoreCase("udp"))
-			//	requestURI.setTransportParam(transport);
 			CSeq cseq = new CSeq(cseqno, Request.ACK);
-			SIPRequest sipRequest = this.lastResponse.createRequest(
+			SIPRequest sipRequest = this.lastInviteOKResponse.createRequest(
 					(SipUri) requestURI, via, cseq);
 
 			From from = (From) sipRequest.getFrom();
@@ -2230,50 +2242,50 @@ public class SIPDialog implements javax.sip.Dialog {
 						sipStack.putDialog(this);
 						this.addRoute(sipResponse);
 
-						setState(SIPDialog.CONFIRMED_STATE);						
+						setState(SIPDialog.CONFIRMED_STATE);
 					} else if (SIPRequest.isTargetRefresh(cseqMethod)) {
 						doTargetRefresh(sipResponse);
 					}
-					
-					// JvB: set flag for INVITEs, to check in createAck
-					if ( cseqMethod.equals( Request.INVITE ) ) {
-						this.lastINVITEOk = true;
+
+					// Capture the OK response for later use in createAck
+					if (cseqMethod.equals(Request.INVITE)) {
+						this.lastInviteOKResponse = sipResponse;
 					}
 
 				} else if (statusCode >= 300
 						&& statusCode <= 699
 						&& (getState() == null || (cseqMethod
 								.equals(getMethod()) && getState().getValue() == SIPDialog.EARLY_STATE))) {
-					// This case handles 3xx, 4xx, 5xx and 6xx responses.
-					// RFC 3261 Section 12.3 - dialog termination.
-					// Independent of the method, if a request outside of a
-					// dialog generates
-					// a non-2xx final response, any early dialogs created
-					// through
-					// provisional responses to that request are terminated.
+					/*
+					 * This case handles 3xx, 4xx, 5xx and 6xx responses. RFC
+					 * 3261 Section 12.3 - dialog termination. Independent of
+					 * the method, if a request outside of a dialog generates a
+					 * non-2xx final response, any early dialogs created through
+					 * provisional responses to that request are terminated.
+					 */
 					setState(SIPDialog.TERMINATED_STATE);
 				}
 
-				// This code is in support of "proxy" servers
-				// that are constructed as back to back user agents.
-				// This could be a dialog in the middle of the call setup
-				// path somewhere. Hence the incoming invite has
-				// record route headers in it. The response will
-				// have additional record route headers. However,
-				// for this dialog only the downstream record route
-				// headers matter. Ideally proxy servers should
-				// not be constructed as Back to Back User Agents.
-				// Remove all the record routes that are present in
-				// the incoming INVITE so you only have the downstream
-				// Route headers present in the dialog. Note that
-				// for an endpoint - you will have no record route
-				// headers present in the original request so
-				// the loop will not execute.
+				/*
+				 * This code is in support of "proxy" servers that are
+				 * constructed as back to back user agents. This could be a
+				 * dialog in the middle of the call setup path somewhere. Hence
+				 * the incoming invite has record route headers in it. The
+				 * response will have additional record route headers. However,
+				 * for this dialog only the downstream record route headers
+				 * matter. Ideally proxy servers should not be constructed as
+				 * Back to Back User Agents. Remove all the record routes that
+				 * are present in the incoming INVITE so you only have the
+				 * downstream Route headers present in the dialog. Note that for
+				 * an endpoint - you will have no record route headers present
+				 * in the original request so the loop will not execute.
+				 */
 				if (originalRequest != null) {
 					RecordRouteList rrList = originalRequest
 							.getRecordRouteHeaders();
 					if (rrList != null) {
-						ListIterator it = rrList.listIterator(rrList.size());
+						ListIterator<RecordRoute> it = rrList
+								.listIterator(rrList.size());
 						while (it.hasPrevious()) {
 							RecordRoute rr = (RecordRoute) it.previous();
 							Route route = (Route) routeList.getFirst();
@@ -2305,21 +2317,24 @@ public class SIPDialog implements javax.sip.Dialog {
 		} else {
 			// Processing Server Dialog.
 
-			if (cseqMethod.equals(Request.CANCEL) && statusCode / 100 == 2
+			if (cseqMethod.equals(Request.CANCEL)
+					&& statusCode / 100 == 2
 					&& (!this.isReInvite())
-					// && sipStack.isDialogCreated(getMethod()) (JvB:true by
-					// definition)
 					&& (getState() == null || getState().getValue() == SIPDialog.EARLY_STATE)) {
-				// Transaction successfully cancelled but dialog has not yet
-				// been established so delete the dialog.
-				// Note: this does not apply to re-invite
+				/*
+				 * Transaction successfully cancelled but dialog has not yet
+				 * been established so delete the dialog. Note: this does not
+				 * apply to re-invite
+				 * 
+				 */
 				this.setState(SIPDialog.TERMINATED_STATE);
 			} else if (cseqMethod.equals(Request.BYE) && statusCode / 100 == 2
 					&& this.isTerminatedOnBye()) {
-				// Only transition to terminated state when
-				// 200 OK is returned for the BYE. Other
-				// status codes just result in leaving the
-				// state in COMPLETED state.
+				/*
+				 * Only transition to terminated state when 200 OK is returned
+				 * for the BYE. Other status codes just result in leaving the
+				 * state in COMPLETED state.
+				 */
 				this.setState(SIPDialog.TERMINATED_STATE);
 			} else {
 				boolean doPutDialog = false;
@@ -2390,12 +2405,11 @@ public class SIPDialog implements javax.sip.Dialog {
 
 		ContactList contactList = sipMessage.getContactHeaders();
 
-		// INVITE is the target refresh for INVITE
-		// dialogs. SUBSCRIBE is the target refresh for
-		// subscribe
-		// dialogs from the client side.
-		// This modifies the remote target URI
-		// potentially
+		/*
+		 * INVITE is the target refresh for INVITE dialogs. SUBSCRIBE is the
+		 * target refresh for subscribe dialogs from the client side. This
+		 * modifies the remote target URI potentially
+		 */
 		if (contactList != null) {
 			Contact contact = (Contact) contactList.getFirst();
 			this.remoteTarget = contact.getAddress();
@@ -2439,7 +2453,7 @@ public class SIPDialog implements javax.sip.Dialog {
 		if (!request.getMethod().equals(Request.INVITE))
 			throw new SipException("Bad method");
 
-		ListIterator list = request.getHeaders(SupportedHeader.NAME);
+		ListIterator<SIPHeader> list = request.getHeaders(SupportedHeader.NAME);
 		if (list == null || !optionPresent(list, "100rel")) {
 			list = request.getHeaders(RequireHeader.NAME);
 			if (list == null || !optionPresent(list, "100rel")) {
@@ -2600,9 +2614,10 @@ public class SIPDialog implements javax.sip.Dialog {
 
 		SIPServerTransaction serverTransaction = (SIPServerTransaction) this
 				.getFirstTransaction();
-		// put into the dialog table before sending the response so as to avoid
-		// race
-		// condition with PRACK
+		/*
+		 * put into the dialog table before sending the response so as to avoid
+		 * race condition with PRACK
+		 */
 		this.setLastResponse(serverTransaction, sipResponse);
 
 		this.setDialogId(sipResponse.getDialogId(true));
@@ -2667,20 +2682,22 @@ public class SIPDialog implements javax.sip.Dialog {
 	 * Override for the equals method.
 	 */
 	public boolean equals(Object obj) {
-	  
-	  // JvB: by definition, if this!=obj, the Dialog objects should not be equal. 
-	  // Else there is something very wrong (ie 2 Dialog objects exist for same call-id)
-	  //
-	  // So all this code could be replaced by simply 'return obj==this';
-	  //
+
+		// JvB: by definition, if this!=obj, the Dialog objects should not be
+		// equal.
+		// Else there is something very wrong (ie 2 Dialog objects exist for
+		// same call-id)
+		//
+		// So all this code could be replaced by simply 'return obj==this';
+		//
 		if (obj == this) {
 			return true;
-		} else if (!(obj instanceof Dialog)) {  // also handles null
-		  return false;
+		} else if (!(obj instanceof Dialog)) { // also handles null
+			return false;
 		} else {
-		  String id1 = this.getDialogId();
-		  String id2 = ((Dialog) obj).getDialogId();
-		  return id1!=null && id2!=null && id1.equals(id2);
+			String id1 = this.getDialogId();
+			String id2 = ((Dialog) obj).getDialogId();
+			return id1 != null && id2 != null && id1.equals(id2);
 		}
 	}
 
@@ -2716,9 +2733,10 @@ public class SIPDialog implements javax.sip.Dialog {
 
 		} else {
 
-			// This could be a re-invite processing.
-			// check to see if the ack matches with the last
-			// transaction.
+			/*
+			 * This could be a re-invite processing. check to see if the ack
+			 * matches with the last transaction. s
+			 */
 
 			SIPServerTransaction tr = getInviteTransaction();
 
@@ -2733,18 +2751,20 @@ public class SIPDialog implements javax.sip.Dialog {
 							.getCSeq().getSeqNumber()) {
 
 				ackTransaction.setDialog(this, sipResponse.getDialogId(false));
-				// record that we already saw an ACK for
-				// this dialog.
+				/*
+				 * record that we already saw an ACK for this dialog.
+				 */
 				ackReceived(sipRequest);
 				sipStack.getLogWriter().logDebug(
 						"ACK for 2XX response --- sending to TU ");
 				return true;
 
 			} else {
-				// This happens when the ACK is re-transmitted and
-				// arrives
-				// too late
-				// to be processed.
+				/*
+				 * This happens when the ACK is re-transmitted and arrives too
+				 * late to be processed.
+				 */
+
 				if (sipStack.isLoggingEnabled())
 					sipStack.getLogWriter().logDebug(
 							" INVITE transaction not found  -- Discarding ACK");
