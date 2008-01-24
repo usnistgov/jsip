@@ -49,7 +49,7 @@ import javax.sip.message.Request;
 /**
  * SIP Response structure.
  *
- * @version 1.2 $Revision: 1.18 $ $Date: 2008-01-24 21:05:57 $
+ * @version 1.2 $Revision: 1.19 $ $Date: 2008-01-24 22:48:39 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
@@ -650,8 +650,7 @@ public final class SIPResponse
 	 *@param via is the via header to use.
 	 *@param cseq is the cseq header to use in the generated
 	 * request.
-	 */
-
+	 *
 	public SIPRequest createRequest(SipUri requestURI, Via via, CSeq cseq) {
 		SIPRequest newRequest = new SIPRequest();
 		String method = cseq.getMethod();
@@ -695,7 +694,7 @@ public final class SIPResponse
 		  
 		}
 		return newRequest;
-	}
+	}*/
 
 	/**
 	 * Get the encoded first line.
