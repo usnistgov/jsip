@@ -1,5 +1,7 @@
 package test.unit.gov.nist.javax.sip.stack;
 
+import gov.nist.javax.sip.message.MessageFactoryImpl;
+
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -176,6 +178,7 @@ public class DeliverRequestEventWithBadHeaderTest extends TestCase {
 				headerFactory = sipFactory.createHeaderFactory();
 				addressFactory = sipFactory.createAddressFactory();
 				messageFactory = sipFactory.createMessageFactory();
+				((MessageFactoryImpl) messageFactory).setTest(true);
 				ListeningPoint lp = sipStack.createListeningPoint("127.0.0.1",
 						myPort, "udp");
 
