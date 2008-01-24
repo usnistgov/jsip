@@ -41,7 +41,7 @@ import gov.nist.javax.sip.parser.*;
 /**
  * Message Factory implementation
  * 
- * @version 1.2 $Revision: 1.10 $ $Date: 2008-01-24 16:24:25 $
+ * @version 1.2 $Revision: 1.11 $ $Date: 2008-01-24 16:43:47 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -639,7 +639,6 @@ public class MessageFactoryImpl implements MessageFactory {
 		 */
 		ParseExceptionListener parseExceptionListener = new ParseExceptionListener() {
 
-			@Override
 			public void handleException(ParseException ex,
 					SIPMessage sipMessage, Class headerClass,
 					String headerText, String messageText)
