@@ -64,7 +64,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.70 $ $Date: 2008-01-24 22:48:18 $
+ * @version 1.2 $Revision: 1.71 $ $Date: 2008-01-24 22:55:57 $
  * 
  * @author M. Ranganathan
  * 
@@ -2085,6 +2085,7 @@ public class SIPDialog implements javax.sip.Dialog {
 			to.setAddress( this.remoteParty );
 			to.setTag( this.hisTag );
 			sipRequest.setTo( to );
+			sipRequest.setMaxForwards( new MaxForwards(70) );
 
 			// JvB: missing: credentials from original INVITE, if any
 			
