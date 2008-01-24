@@ -311,7 +311,8 @@ public class Shootist implements SipListener {
 	}
 	
 	public void checkState() {
-		TestHarness.assertTrue(this.prackTriggerReceived  && prackConfirmed );
+		TestHarness.assertTrue( this.prackTriggerReceived );
+		TestHarness.assertTrue( prackConfirmed );
 	}
 	
 }

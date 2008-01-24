@@ -190,7 +190,7 @@ public class Shootist implements SipListener {
 		sipFactory.setPathName("gov.nist");
 		Properties properties = new Properties();
 		// If you want to try TCP transport change the following to
-		String transport = "tls";
+		String transport = "tcp";
 		String peerHostPort = "127.0.0.1:5071";
 		properties.setProperty("javax.sip.IP_ADDRESS", "127.0.0.1");
 		properties.setProperty(
@@ -246,7 +246,7 @@ public class Shootist implements SipListener {
 
 
 			tlsListeningPoint = sipStack.createListeningPoint
-								(sipStack.getIPAddress(), 5061, "tls");
+								(sipStack.getIPAddress(), 5060, "tcp");
 			tlsProvider = sipStack.createSipProvider(tlsListeningPoint);
 			tlsProvider.addSipListener(listener);
 
@@ -263,7 +263,7 @@ public class Shootist implements SipListener {
 			// create >From Header
 			SipURI fromAddress =
 				addressFactory.createSipURI(fromName, fromSipAddress);
-			fromAddress.setSecure(true);
+			//fromAddress.setSecure(true);
 
 			Address fromNameAddress = addressFactory.createAddress(fromAddress);
 			fromNameAddress.setDisplayName(fromDisplayName);
@@ -273,7 +273,7 @@ public class Shootist implements SipListener {
 			// create To Header
 			SipURI toAddress =
 				addressFactory.createSipURI(toUser, toSipAddress);
-			toAddress.setSecure(true);
+			//toAddress.setSecure(true);
 			Address toNameAddress = addressFactory.createAddress(toAddress);
 			toNameAddress.setDisplayName(toDisplayName);
 			ToHeader toHeader =
@@ -282,7 +282,7 @@ public class Shootist implements SipListener {
 			// create Request URI
 			SipURI requestURI =
 				addressFactory.createSipURI(toUser, peerHostPort);
-			requestURI.setSecure( true );
+			//requestURI.setSecure( true );
 
 			// Create ViaHeaders
 
@@ -333,10 +333,9 @@ public class Shootist implements SipListener {
 
 			// Create the contact name address.
 			SipURI contactURI = addressFactory.createSipURI(fromName, host);
-			contactURI.setSecure( true );
+			//contactURI.setSecure( true );
 			contactURI.setPort(port);
-			
-			// contactURI.setTransportParam("tls");
+			contactURI.setTransportParam("tcp");
 
 			Address contactAddress = addressFactory.createAddress(contactURI);
 

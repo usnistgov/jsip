@@ -218,7 +218,8 @@ public class Shootist extends TestCase implements SipListener {
 				// ct.sendRequest();
 				Dialog dialog = tid.getDialog();
 				if (dialog.getState() != DialogState.TERMINATED) {
-					Request ackRequest = dialog.createRequest(Request.ACK);
+					CSeqHeader cseq = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
+					Request ackRequest = dialog.createAck(cseq.getSeqNumber());
 					dialog.sendAck(ackRequest);
 
 					Appdata appData = (Appdata) dialog.getApplicationData();

@@ -220,7 +220,8 @@ public class Shootist  implements SipListener {
 				// ClientTransaction ct =
 				// sipProvider.getNewClientTransaction(cancel);
 				Dialog dialog = tid.getDialog();
-				Request ackRequest = dialog.createRequest(Request.ACK);
+				CSeqHeader cseq = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
+				Request ackRequest = dialog.createAck( cseq.getSeqNumber() );
 				logger.info("Ack request to send = " + ackRequest);
 				logger.info("Sending ACK");
 				dialog.sendAck(ackRequest);
@@ -255,6 +256,8 @@ public class Shootist  implements SipListener {
 				this.byeOkRecieved = true;
 			}
 		} catch (Exception ex) {
+			ex.printStackTrace();
+			
 			logger.error(ex);
 			ReInviteTest.fail("unexpceted exception");
 		}

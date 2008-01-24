@@ -225,15 +225,15 @@ public class Shootist  implements SipListener {
 		SipProvider provider = (SipProvider) responseReceivedEvent.getSource();
 
 		try {
+			CSeqHeader cseq = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
 			if (response.getStatusCode() == Response.OK
-					&& ((CSeqHeader) response.getHeader(CSeqHeader.NAME))
-							.getMethod().equals(Request.INVITE)) {
+					&& cseq.getMethod().equals(Request.INVITE)) {
 				
 				// Request cancel = inviteTid.createCancel();
 				// ClientTransaction ct =
 				// sipProvider.getNewClientTransaction(cancel);
 				Dialog dialog = tid.getDialog();
-				Request ackRequest = dialog.createRequest(Request.ACK);
+				Request ackRequest = dialog.createAck(cseq.getSeqNumber());
 				TlsTest.assertTrue( "Secure URI", 
 						((SipURI)ackRequest.getRequestURI()).isSecure() );
 				logger.info("Ack request to send = " + ackRequest);
