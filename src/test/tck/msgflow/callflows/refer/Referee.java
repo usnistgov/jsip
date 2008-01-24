@@ -6,6 +6,7 @@ import java.util.Properties;
 
 import javax.sip.ClientTransaction;
 import javax.sip.Dialog;
+import javax.sip.DialogState;
 import javax.sip.DialogTerminatedEvent;
 import javax.sip.IOExceptionEvent;
 import javax.sip.InvalidArgumentException;
@@ -196,7 +197,9 @@ public class Referee implements SipListener {
 			/*
 			 * The REFER MUST be answered first. 
 			 */
+			TestHarness.assertNull( dialog.getState() );
 			st.sendResponse(response);
+			TestHarness.assertEquals( DialogState.CONFIRMED, dialog.getState() );
 
 			// NOTIFY MUST have "refer" event, possibly with id
 			referEvent = headerFactory.createEventHeader("refer");
