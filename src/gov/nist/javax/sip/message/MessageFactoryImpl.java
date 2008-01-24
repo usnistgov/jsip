@@ -41,7 +41,7 @@ import gov.nist.javax.sip.parser.*;
 /**
  * Message Factory implementation
  * 
- * @version 1.2 $Revision: 1.11 $ $Date: 2008-01-24 16:43:47 $
+ * @version 1.2 $Revision: 1.12 $ $Date: 2008-01-24 21:05:58 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -50,6 +50,15 @@ import gov.nist.javax.sip.parser.*;
  */
 @SuppressWarnings("unchecked")
 public class MessageFactoryImpl implements MessageFactory {
+
+	private boolean testing = false;
+
+	/**
+	 * This is for testing -- allows you to generate invalid requests
+	 */
+	public void setTest(boolean flag) {
+		this.testing = flag;
+	}
 
 	/**
 	 * Creates a new instance of MessageFactoryImpl
@@ -643,24 +652,28 @@ public class MessageFactoryImpl implements MessageFactory {
 					SIPMessage sipMessage, Class headerClass,
 					String headerText, String messageText)
 					throws ParseException {
-				// Rethrow the error for the essential headers. Otherwise bad headers are simply
+				// Rethrow the error for the essential headers. Otherwise bad
+				// headers are simply
 				// recorded in the message.
-				if (headerClass == From.class || headerClass == To.class
-						|| headerClass == CallID.class
-						|| headerClass == MaxForwards.class
-						|| headerClass == Via.class
-						|| headerClass == RequestLine.class
-						|| headerClass == StatusLine.class
-						|| headerClass == CSeq.class)
-					throw ex;
+				if (testing) {
+					if (headerClass == From.class || headerClass == To.class
+							|| headerClass == CallID.class
+							|| headerClass == MaxForwards.class
+							|| headerClass == Via.class
+							|| headerClass == RequestLine.class
+							|| headerClass == StatusLine.class
+							|| headerClass == CSeq.class)
+						throw ex;
 
-				sipMessage.addUnparsed(headerText);
+					sipMessage.addUnparsed(headerText);
+				}
 
 			}
 
 		};
 
-		smp.setParseExceptionListener(parseExceptionListener);
+		if (this.testing)
+			smp.setParseExceptionListener(parseExceptionListener);
 
 		SIPMessage sipMessage = smp.parseSIPMessage(requestString);
 
