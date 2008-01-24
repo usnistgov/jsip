@@ -44,10 +44,6 @@ import javax.sip.message.Response;
 
 import junit.framework.TestCase;
 
-import examples.simplecallsetup.Shootist;
-import examples.simplecallsetup.Shootme;
-
-
 public class DialogIdentityTest extends TestCase {
 	private static AddressFactory addressFactory;
 
@@ -472,7 +468,7 @@ public class DialogIdentityTest extends TestCase {
 				return;
 			}
 			// If the caller is supposed to send the bye
-			if ( examples.simplecallsetup.Shootme.callerSendsBye && !byeTaskRunning) {
+			if ( Shootme.callerSendsBye && !byeTaskRunning) {
 				byeTaskRunning = true;
 				new Timer().schedule(new ByeTask(dialog), 4000) ;
 			}
