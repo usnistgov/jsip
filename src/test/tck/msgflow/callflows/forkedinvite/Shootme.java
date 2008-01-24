@@ -201,6 +201,7 @@ public class Shootme   implements SipListener {
 				inviteTid.sendResponse(okResponse);
 				logger.info("shootme: Dialog state after OK: "
 						+ inviteTid.getDialog().getState());
+				TestHarness.assertEquals( DialogState.CONFIRMED , inviteTid.getDialog().getState() );
 			} else {
 				logger.info("semdInviteOK: inviteTid = " + inviteTid + " state = " + inviteTid.getState());
 			}
@@ -324,7 +325,7 @@ public class Shootme   implements SipListener {
 	public void checkState() {
 		TestHarness.assertTrue("Should see invite", inviteSeen);
 		
-		TestHarness.assertTrue("Should not see both an ACK and a BYE",byeSeen || ackSeen);
+		TestHarness.assertTrue("Should see either an ACK or a BYE, or both",byeSeen || ackSeen);
 		
 	}
 
