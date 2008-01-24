@@ -385,8 +385,10 @@ public interface SipProvider {
      * the ClientTransaction.
      * @return a new unique client transaction.
      * @throws TransactionUnavailableException if a new transaction can not be created, for example
-     * the next hop of the request can not be determined.
+     * the next hop of the request can not be determined or the method is "ACK"
      * @see ClientTransaction
+     * 
+     * @note Do ~not~ call this method for ACK requests
      */
     public ClientTransaction getNewClientTransaction(Request request) 
                                         throws TransactionUnavailableException;        
@@ -406,8 +408,10 @@ public interface SipProvider {
      * gets retransmits of the same request before the initial transaction is 
      * allocated.
      * @throws TransactionUnavailableException if a new transaction can not be created, for example
-     * the next hop of the request can not be determined.
+     * the next hop of the request can not be determined or the method is "ACK"
      * @see ServerTransaction
+     * 
+     * @note Do ~not~ call this method for ACK requests
      */
     public ServerTransaction getNewServerTransaction(Request request) 
                        throws TransactionAlreadyExistsException, 
