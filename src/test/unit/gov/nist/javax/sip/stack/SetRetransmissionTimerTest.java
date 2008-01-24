@@ -162,7 +162,7 @@ public class SetRetransmissionTimerTest extends TestCase {
 				if (response.getStatusCode() == Response.OK) {
 					if (cseq.getMethod().equals(Request.INVITE)) {
 						logger.info("Sending ACK after 15s ...");
-						new Timer().schedule(new AckTimerTask(dialog), 15000);
+						new Timer().schedule(new AckTimerTask(dialog,cseq.getSeqNumber()), 15000);
 					} else if (cseq.getMethod().equals(Request.CANCEL)) {
 						if (dialog.getState() == DialogState.CONFIRMED) {
 							// oops cancel went in too late. Need to hang up the
@@ -189,17 +189,19 @@ public class SetRetransmissionTimerTest extends TestCase {
 
 		class AckTimerTask extends TimerTask {
 			Dialog dialog;
+			private final long cseq;
 
-			public AckTimerTask(Dialog dialog) {
+			public AckTimerTask(Dialog dialog,long cseq) {
 				this.dialog = dialog;
+				this.cseq = cseq;
 			}
 
 			public void run() {
 				logger.info("15s are over: now sending ACK");
 				try {
-					ackRequest = dialog.createRequest(Request.ACK);
+					Request ackRequest = dialog.createAck(cseq);
 					dialog.sendAck(ackRequest);
-				} catch (SipException e) {
+				} catch (Exception e) {
 					logger.error("Unexpected exception", e);
 					fail ("Unexpected exception");
 				}

@@ -171,7 +171,7 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
 						// BEGIN
 						// Frank Reif: delayed-ack after 6s
 						logger.info("Sending ACK after 15s ...");
-						new Timer().schedule(new AckTimerTask(dialog), 15000);
+						new Timer().schedule(new AckTimerTask(dialog,cseq.getSeqNumber()), 15000);
 
 						// JvB: test REFER, reported bug in tag handling
 						// dialog.sendRequest(
@@ -210,17 +210,19 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
 		// Frank Reif: delayed-ack after 10s
 		class AckTimerTask extends TimerTask {
 			Dialog dialog;
-
-			public AckTimerTask(Dialog dialog) {
+			private final long cseq;
+			
+			public AckTimerTask(Dialog dialog,long cseq) {
 				this.dialog = dialog;
+				this.cseq = cseq;
 			}
 
 			public void run() {
 				logger.info("15s are over: now sending ACK");
 				try {
-					ackRequest = dialog.createRequest(Request.ACK);
+					Request ackRequest = dialog.createAck(cseq);
 					dialog.sendAck(ackRequest);
-				} catch (SipException e) {
+				} catch (Exception e) {
 					logger.error("Unexpected exception", e);
 					fail ("Unexpected exception");
 				}

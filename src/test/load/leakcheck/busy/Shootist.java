@@ -4,6 +4,7 @@ import javax.sip.*;
 import javax.sip.address.*;
 import javax.sip.header.*;
 import javax.sip.message.*;
+
 import java.util.*;
 
 /**
@@ -154,7 +155,8 @@ public class Shootist implements SipListener {
                 //	sipProvider.getNewClientTransaction(cancel);
                 // ct.sendRequest();
                 Dialog dialog = tid.getDialog();
-                Request ackRequest = dialog.createRequest(Request.ACK);
+                CSeqHeader cseq = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
+				Request ackRequest = dialog.createAck(cseq.getSeqNumber());
                 System.out.println("Sending ACK");
                 dialog.sendAck(ackRequest);
 

@@ -202,8 +202,9 @@ public class Shootme  implements SipListener {
 					&& ((CSeqHeader) response.getHeader(CSeqHeader.NAME))
 							.getMethod().equals(Request.INVITE)) {
 				Dialog dialog = tid.getDialog();
-				Request request = dialog.createRequest(Request.ACK);
-				dialog.sendAck(request);
+				CSeqHeader cseq = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
+				Request ackRequest = dialog.createAck(cseq.getSeqNumber());
+				dialog.sendAck(ackRequest);
 			}
 			if ( tid != null ) {
 			    Dialog dialog = tid.getDialog();

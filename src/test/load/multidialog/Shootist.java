@@ -120,7 +120,8 @@ public class Shootist implements SipListener {
 					&& ((CSeqHeader) response.getHeader(CSeqHeader.NAME))
 							.getMethod().equals(Request.INVITE)) {
 				Dialog dialog = responseReceivedEvent.getDialog();
-				Request ackRequest = dialog.createRequest(Request.ACK);
+				CSeqHeader cseq = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
+				Request ackRequest = dialog.createAck(cseq.getSeqNumber());
 				//System.out.println("Sending ACK");
 				dialog.sendAck(ackRequest);
 				System.out.println("Dialog Confirmed: Count = " + ++this.confirmationCount+ " dialogID = " + 
