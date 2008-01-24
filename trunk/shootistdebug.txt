@@ -1,0 +1,983 @@
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:270) [Here are the stack configuration properties 
+{javax.sip.OUTBOUND_PROXY=127.0.0.1:5070/udp, gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS=false, gov.nist.javax.sip.TRACE_LEVEL=DEBUG, javax.sip.STACK_NAME=shootist, gov.nist.javax.sip.SERVER_LOG=shootistlog.txt, gov.nist.javax.sip.DEBUG_LOG=shootistdebug.txt}
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:273) [ ]]>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:274) [</debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:275) [<description
+ logDescription="shootist"
+ name="null" />
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:281) [<debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:282) [<![CDATA[ ]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:695) [createListeningPoint : address = 127.0.0.1 port = 5060 transport = udp]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:732) [Created Message Processor: 127.0.0.1 port = 5060 transport = udp]
+DEBUG - gov.nist.javax.sip.stack.MessageProcessor.setListeningPoint(MessageProcessor.java:179) [setListeningPointgov.nist.javax.sip.stack.UDPMessageProcessor@1b60280 listeningPoint = gov.nist.javax.sip.ListeningPointImpl@5e55ab]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createSipProvider(SipStackImpl.java:764) [createSipProvider: gov.nist.javax.sip.ListeningPointImpl@5e55ab]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.addSipListener(SipProviderImpl.java:205) [add SipListener test.unit.gov.nist.javax.sip.stack.DeliverRequestEventWithBadHeaderTest$Shootist@15093f1]
+DEBUG - gov.nist.javax.sip.SipStackImpl.stop(SipStackImpl.java:904) [stopStack -- stoppping the stack]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageProcessor.run(UDPMessageProcessor.java:252) [UDPMessageProcessor: Stopping]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:455) [Stopped event scanner!!]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:270) [Here are the stack configuration properties 
+{javax.sip.OUTBOUND_PROXY=127.0.0.1:5070/udp, gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS=false, gov.nist.javax.sip.TRACE_LEVEL=DEBUG, javax.sip.STACK_NAME=shootist, gov.nist.javax.sip.SERVER_LOG=shootistlog.txt, gov.nist.javax.sip.DEBUG_LOG=shootistdebug.txt}
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:273) [ ]]>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:274) [</debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:275) [<description
+ logDescription="shootist"
+ name="null" />
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:281) [<debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:282) [<![CDATA[ ]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:695) [createListeningPoint : address = 127.0.0.1 port = 5060 transport = udp]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:732) [Created Message Processor: 127.0.0.1 port = 5060 transport = udp]
+DEBUG - gov.nist.javax.sip.stack.MessageProcessor.setListeningPoint(MessageProcessor.java:179) [setListeningPointgov.nist.javax.sip.stack.UDPMessageProcessor@158f9d3 listeningPoint = gov.nist.javax.sip.ListeningPointImpl@79a2e7]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createSipProvider(SipStackImpl.java:764) [createSipProvider: gov.nist.javax.sip.ListeningPointImpl@79a2e7]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.addSipListener(SipProviderImpl.java:205) [add SipListener test.unit.gov.nist.javax.sip.stack.DeliverRequestEventWithBadHeaderTest$Shootist@5e55ab]
+DEBUG - gov.nist.javax.sip.SipStackImpl.stop(SipStackImpl.java:904) [stopStack -- stoppping the stack]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageProcessor.run(UDPMessageProcessor.java:252) [UDPMessageProcessor: Stopping]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:455) [Stopped event scanner!!]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:270) [Here are the stack configuration properties 
+{javax.sip.OUTBOUND_PROXY=127.0.0.1:5070/udp, gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS=false, gov.nist.javax.sip.TRACE_LEVEL=DEBUG, javax.sip.STACK_NAME=shootist, gov.nist.javax.sip.SERVER_LOG=shootistlog.txt, gov.nist.javax.sip.DEBUG_LOG=shootistdebug.txt}
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:273) [ ]]>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:274) [</debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:275) [<description
+ logDescription="shootist"
+ name="null" />
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:281) [<debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:282) [<![CDATA[ ]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:695) [createListeningPoint : address = 127.0.0.1 port = 5060 transport = udp]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:732) [Created Message Processor: 127.0.0.1 port = 5060 transport = udp]
+DEBUG - gov.nist.javax.sip.stack.MessageProcessor.setListeningPoint(MessageProcessor.java:179) [setListeningPointgov.nist.javax.sip.stack.UDPMessageProcessor@158f9d3 listeningPoint = gov.nist.javax.sip.ListeningPointImpl@79a2e7]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createSipProvider(SipStackImpl.java:764) [createSipProvider: gov.nist.javax.sip.ListeningPointImpl@79a2e7]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.addSipListener(SipProviderImpl.java:205) [add SipListener test.unit.gov.nist.javax.sip.stack.DeliverRequestEventWithBadHeaderTest$Shootist@5e55ab]
+DEBUG - gov.nist.javax.sip.SipStackImpl.stop(SipStackImpl.java:904) [stopStack -- stoppping the stack]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageProcessor.run(UDPMessageProcessor.java:252) [UDPMessageProcessor: Stopping]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:455) [Stopped event scanner!!]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:270) [Here are the stack configuration properties 
+{javax.sip.OUTBOUND_PROXY=127.0.0.1:5070/udp, gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS=false, gov.nist.javax.sip.TRACE_LEVEL=DEBUG, javax.sip.STACK_NAME=shootist, gov.nist.javax.sip.SERVER_LOG=shootistlog.txt, gov.nist.javax.sip.DEBUG_LOG=shootistdebug.txt}
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:273) [ ]]>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:274) [</debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:275) [<description
+ logDescription="shootist"
+ name="null" />
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:281) [<debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:282) [<![CDATA[ ]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:695) [createListeningPoint : address = 127.0.0.1 port = 5060 transport = udp]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:732) [Created Message Processor: 127.0.0.1 port = 5060 transport = udp]
+DEBUG - gov.nist.javax.sip.stack.MessageProcessor.setListeningPoint(MessageProcessor.java:179) [setListeningPointgov.nist.javax.sip.stack.UDPMessageProcessor@158f9d3 listeningPoint = gov.nist.javax.sip.ListeningPointImpl@79a2e7]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createSipProvider(SipStackImpl.java:764) [createSipProvider: gov.nist.javax.sip.ListeningPointImpl@79a2e7]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.addSipListener(SipProviderImpl.java:205) [add SipListener test.unit.gov.nist.javax.sip.stack.DeliverRequestEventWithBadHeaderTest$Shootist@5e55ab]
+DEBUG - gov.nist.javax.sip.SipStackImpl.stop(SipStackImpl.java:904) [stopStack -- stoppping the stack]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageProcessor.run(UDPMessageProcessor.java:252) [UDPMessageProcessor: Stopping]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:455) [Stopped event scanner!!]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:270) [Here are the stack configuration properties 
+{javax.sip.OUTBOUND_PROXY=127.0.0.1:5070/udp, gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS=false, gov.nist.javax.sip.TRACE_LEVEL=DEBUG, javax.sip.STACK_NAME=shootist, gov.nist.javax.sip.SERVER_LOG=shootistlog.txt, gov.nist.javax.sip.DEBUG_LOG=shootistdebug.txt}
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:273) [ ]]>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:274) [</debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:275) [<description
+ logDescription="shootist"
+ name="null" />
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:281) [<debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:282) [<![CDATA[ ]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:695) [createListeningPoint : address = 127.0.0.1 port = 5060 transport = udp]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:732) [Created Message Processor: 127.0.0.1 port = 5060 transport = udp]
+DEBUG - gov.nist.javax.sip.stack.MessageProcessor.setListeningPoint(MessageProcessor.java:179) [setListeningPointgov.nist.javax.sip.stack.UDPMessageProcessor@158f9d3 listeningPoint = gov.nist.javax.sip.ListeningPointImpl@79a2e7]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createSipProvider(SipStackImpl.java:764) [createSipProvider: gov.nist.javax.sip.ListeningPointImpl@79a2e7]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.addSipListener(SipProviderImpl.java:205) [add SipListener test.unit.gov.nist.javax.sip.stack.DeliverRequestEventWithBadHeaderTest$Shootist@5e55ab]
+DEBUG - gov.nist.javax.sip.SipStackImpl.stop(SipStackImpl.java:904) [stopStack -- stoppping the stack]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageProcessor.run(UDPMessageProcessor.java:252) [UDPMessageProcessor: Stopping]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:455) [Stopped event scanner!!]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:270) [Here are the stack configuration properties 
+{javax.sip.OUTBOUND_PROXY=127.0.0.1:5070/udp, gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS=false, gov.nist.javax.sip.TRACE_LEVEL=DEBUG, javax.sip.STACK_NAME=shootist, gov.nist.javax.sip.SERVER_LOG=shootistlog.txt, gov.nist.javax.sip.DEBUG_LOG=shootistdebug.txt}
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:273) [ ]]>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:274) [</debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:275) [<description
+ logDescription="shootist"
+ name="null" />
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:281) [<debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:282) [<![CDATA[ ]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:695) [createListeningPoint : address = 127.0.0.1 port = 5060 transport = udp]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:732) [Created Message Processor: 127.0.0.1 port = 5060 transport = udp]
+DEBUG - gov.nist.javax.sip.stack.MessageProcessor.setListeningPoint(MessageProcessor.java:179) [setListeningPointgov.nist.javax.sip.stack.UDPMessageProcessor@158f9d3 listeningPoint = gov.nist.javax.sip.ListeningPointImpl@79a2e7]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createSipProvider(SipStackImpl.java:764) [createSipProvider: gov.nist.javax.sip.ListeningPointImpl@79a2e7]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.addSipListener(SipProviderImpl.java:205) [add SipListener test.unit.gov.nist.javax.sip.stack.DeliverRequestEventWithBadHeaderTest$Shootist@5e55ab]
+DEBUG - gov.nist.javax.sip.SipStackImpl.stop(SipStackImpl.java:904) [stopStack -- stoppping the stack]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageProcessor.run(UDPMessageProcessor.java:252) [UDPMessageProcessor: Stopping]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:455) [Stopped event scanner!!]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:270) [Here are the stack configuration properties 
+{javax.sip.OUTBOUND_PROXY=127.0.0.1:5070/udp, gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS=false, gov.nist.javax.sip.TRACE_LEVEL=DEBUG, javax.sip.STACK_NAME=shootist, gov.nist.javax.sip.SERVER_LOG=shootistlog.txt, gov.nist.javax.sip.DEBUG_LOG=shootistdebug.txt}
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:273) [ ]]>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:274) [</debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:275) [<description
+ logDescription="shootist"
+ name="null" />
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:281) [<debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:282) [<![CDATA[ ]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:695) [createListeningPoint : address = 127.0.0.1 port = 5060 transport = udp]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:732) [Created Message Processor: 127.0.0.1 port = 5060 transport = udp]
+DEBUG - gov.nist.javax.sip.stack.MessageProcessor.setListeningPoint(MessageProcessor.java:179) [setListeningPointgov.nist.javax.sip.stack.UDPMessageProcessor@158f9d3 listeningPoint = gov.nist.javax.sip.ListeningPointImpl@79a2e7]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createSipProvider(SipStackImpl.java:764) [createSipProvider: gov.nist.javax.sip.ListeningPointImpl@79a2e7]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.addSipListener(SipProviderImpl.java:205) [add SipListener test.unit.gov.nist.javax.sip.stack.DeliverRequestEventWithBadHeaderTest$Shootist@5e55ab]
+DEBUG - gov.nist.javax.sip.SipStackImpl.stop(SipStackImpl.java:904) [stopStack -- stoppping the stack]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageProcessor.run(UDPMessageProcessor.java:252) [UDPMessageProcessor: Stopping]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:455) [Stopped event scanner!!]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:270) [Here are the stack configuration properties 
+{javax.sip.OUTBOUND_PROXY=127.0.0.1:5070/udp, gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS=false, gov.nist.javax.sip.TRACE_LEVEL=DEBUG, javax.sip.STACK_NAME=shootist, gov.nist.javax.sip.SERVER_LOG=shootistlog.txt, gov.nist.javax.sip.DEBUG_LOG=shootistdebug.txt}
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:273) [ ]]>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:274) [</debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:275) [<description
+ logDescription="shootist"
+ name="null" />
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:281) [<debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:282) [<![CDATA[ ]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:695) [createListeningPoint : address = 127.0.0.1 port = 5060 transport = udp]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:732) [Created Message Processor: 127.0.0.1 port = 5060 transport = udp]
+DEBUG - gov.nist.javax.sip.stack.MessageProcessor.setListeningPoint(MessageProcessor.java:179) [setListeningPointgov.nist.javax.sip.stack.UDPMessageProcessor@158f9d3 listeningPoint = gov.nist.javax.sip.ListeningPointImpl@79a2e7]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createSipProvider(SipStackImpl.java:764) [createSipProvider: gov.nist.javax.sip.ListeningPointImpl@79a2e7]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.addSipListener(SipProviderImpl.java:205) [add SipListener test.unit.gov.nist.javax.sip.stack.DeliverRequestEventWithBadHeaderTest$Shootist@5e55ab]
+DEBUG - gov.nist.javax.sip.SipStackImpl.stop(SipStackImpl.java:904) [stopStack -- stoppping the stack]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageProcessor.run(UDPMessageProcessor.java:252) [UDPMessageProcessor: Stopping]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:455) [Stopped event scanner!!]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:270) [Here are the stack configuration properties 
+{javax.sip.OUTBOUND_PROXY=127.0.0.1:5070/udp, gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS=false, gov.nist.javax.sip.TRACE_LEVEL=DEBUG, javax.sip.STACK_NAME=shootist, gov.nist.javax.sip.SERVER_LOG=shootistlog.txt, gov.nist.javax.sip.DEBUG_LOG=shootistdebug.txt}
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:273) [ ]]>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:274) [</debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:275) [<description
+ logDescription="shootist"
+ name="null" />
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:281) [<debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:282) [<![CDATA[ ]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:695) [createListeningPoint : address = 127.0.0.1 port = 5060 transport = udp]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:732) [Created Message Processor: 127.0.0.1 port = 5060 transport = udp]
+DEBUG - gov.nist.javax.sip.stack.MessageProcessor.setListeningPoint(MessageProcessor.java:179) [setListeningPointgov.nist.javax.sip.stack.UDPMessageProcessor@158f9d3 listeningPoint = gov.nist.javax.sip.ListeningPointImpl@79a2e7]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createSipProvider(SipStackImpl.java:764) [createSipProvider: gov.nist.javax.sip.ListeningPointImpl@79a2e7]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.addSipListener(SipProviderImpl.java:205) [add SipListener test.unit.gov.nist.javax.sip.stack.DeliverRequestEventWithBadHeaderTest$Shootist@5e55ab]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.getNewClientTransaction(SipProviderImpl.java:333) [could not find existing transaction for INVITE sip:LittleGuy@127.0.0.1:5070 SIP/2.0
+ creating a new one ]
+DEBUG - gov.nist.javax.sip.stack.DefaultRouter.getNextHop(DefaultRouter.java:229) [Using outbound proxy to route the request = 127.0.0.1:5070/udp]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.getDialog(SIPTransactionStack.java:678) [getDialog(7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1:12345) : returning null]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.<init>(UDPMessageChannel.java:198) [Creating message channel 127.0.0.1/5070]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.<init>(SIPClientTransaction.java:300) [Creating clientTransaction gov.nist.javax.sip.stack.SIPClientTransaction@ffffffff]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPClientTransaction.java:301][SIPTransactionStack.java:1259][SIPTransactionStack.java:1237][SipProviderImpl.java:380][DeliverRequestEventWithBadHeaderTest.java:365][DeliverRequestEventWithBadHeaderTest.java:418][null:-2][null:-1][null:-1][null:-1][TestCase.java:154][TestCase.java:127][TestResult.java:106][TestResult.java:124][TestResult.java:109][TestCase.java:118][JUnit3TestReference.java:130][TestExecution.java:38][RemoteTestRunner.java:460][RemoteTestRunner.java:673][RemoteTestRunner.java:386][RemoteTestRunner.java:196]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setOriginalRequest(SIPTransaction.java:412) [Setting Branch id : z9hG4bK8a2ca46a5b20ce96ffe1329bda78d7ee]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.addTransactionHash(SIPTransactionStack.java:1423) [ putTransactionHash :  key = z9hg4bk8a2ca46a5b20ce96ffe1329bda78d7ee]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setOriginalRequest(SIPTransaction.java:412) [Setting Branch id : z9hG4bK8a2ca46a5b20ce96ffe1329bda78d7ee]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:486) [isDialogCreated : INVITE returning true]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setRemoteParty(SIPDialog.java:442) [settingRemoteParty "The Little Blister" <sip:LittleGuy@there.com>]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLocalSequenceNumber(SIPDialog.java:1225) [setLocalSequenceNumber: original 	0 new  = 1]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.addTransaction(SIPDialog.java:1167) [Transaction Added gov.nist.javax.sip.stack.SIPDialog@193c0cf12345/null]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.addTransaction(SIPDialog.java:1169) [TID = z9hg4bk8a2ca46a5b20ce96ffe1329bda78d7ee/false]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPDialog.java:1172][SIPDialog.java:326][SIPTransactionStack.java:558][SipProviderImpl.java:398][DeliverRequestEventWithBadHeaderTest.java:365][DeliverRequestEventWithBadHeaderTest.java:418][null:-2][null:-1][null:-1][null:-1][TestCase.java:154][TestCase.java:127][TestResult.java:106][TestResult.java:124][TestResult.java:109][TestCase.java:118][JUnit3TestReference.java:130][TestExecution.java:38][RemoteTestRunner.java:460][RemoteTestRunner.java:673][RemoteTestRunner.java:386][RemoteTestRunner.java:196]]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.<init>(SIPDialog.java:328) [Creating a dialog : gov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.<init>(SIPDialog.java:329) [provider port = 5060]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPDialog.java:331][SIPTransactionStack.java:558][SipProviderImpl.java:398][DeliverRequestEventWithBadHeaderTest.java:365][DeliverRequestEventWithBadHeaderTest.java:418][null:-2][null:-1][null:-1][null:-1][TestCase.java:154][TestCase.java:127][TestResult.java:106][TestResult.java:124][TestResult.java:109][TestCase.java:118][JUnit3TestReference.java:130][TestExecution.java:38][RemoteTestRunner.java:460][RemoteTestRunner.java:673][RemoteTestRunner.java:386][RemoteTestRunner.java:196]]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.setDialog(SIPClientTransaction.java:1516) [setDialog: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1:12345sipDialog = gov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.sendRequest(SIPClientTransaction.java:916) [sendRequest() INVITE sip:LittleGuy@127.0.0.1:5070 SIP/2.0
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+CSeq: 1 INVITE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK8a2ca46a5b20ce96ffe1329bda78d7ee
+Max-Forwards: 70
+Contact: <127.0.0.1:5060>
+Date: 123 GMT 789
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.sendMessage(SIPClientTransaction.java:423) [Sending Message INVITE sip:LittleGuy@127.0.0.1:5070 SIP/2.0
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+CSeq: 1 INVITE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK8a2ca46a5b20ce96ffe1329bda78d7ee
+Max-Forwards: 70
+Contact: <127.0.0.1:5060>
+Date: 123 GMT 789
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.sendMessage(SIPClientTransaction.java:425) [TransactionState null]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setOriginalRequest(SIPTransaction.java:412) [Setting Branch id : z9hG4bK8a2ca46a5b20ce96ffe1329bda78d7ee]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Calling Transaction gov.nist.javax.sip.stack.SIPClientTransaction@3649f8a6 branchID = z9hG4bK8a2ca46a5b20ce96ffe1329bda78d7ee isClient = true]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPTransaction.java:549][SIPClientTransaction.java:1306][SIPClientTransaction.java:464][SIPClientTransaction.java:981][DeliverRequestEventWithBadHeaderTest.java:368][DeliverRequestEventWithBadHeaderTest.java:418][null:-2][null:-1][null:-1][null:-1][TestCase.java:154][TestCase.java:127][TestResult.java:106][TestResult.java:124][TestResult.java:109][TestCase.java:118][JUnit3TestReference.java:130][TestExecution.java:38][RemoteTestRunner.java:460][RemoteTestRunner.java:673][RemoteTestRunner.java:386][RemoteTestRunner.java:196]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.enableTimeoutTimer(SIPTransaction.java:606) [enableTimeoutTimer gov.nist.javax.sip.stack.SIPClientTransaction@3649f8a6 tickCount 64 currentTickCount = -1]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[UDPMessageChannel.java:604][MessageChannel.java:183][SIPTransaction.java:738][SIPClientTransaction.java:484][SIPClientTransaction.java:981][DeliverRequestEventWithBadHeaderTest.java:368][DeliverRequestEventWithBadHeaderTest.java:418][null:-2][null:-1][null:-1][null:-1][TestCase.java:154][TestCase.java:127][TestResult.java:106][TestResult.java:124][TestResult.java:109][TestCase.java:118][JUnit3TestReference.java:130][TestExecution.java:38][RemoteTestRunner.java:460][RemoteTestRunner.java:673][RemoteTestRunner.java:386][RemoteTestRunner.java:196]]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:613) [gov.nist.javax.sip.stack.UDPMessageChannel:sendMessage 127.0.0.1/5070
+INVITE sip:LittleGuy@127.0.0.1:5070 SIP/2.0
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+CSeq: 1 INVITE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK8a2ca46a5b20ce96ffe1329bda78d7ee
+Max-Forwards: 70
+Contact: <127.0.0.1:5060>
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:616) [*******************
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:333) [ ]]>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:334) [</debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:335) [<message
+from="127.0.0.1:5060" 
+to="127.0.0.1:5070" 
+time="1201147367234"
+isSender="true" 
+transactionId="z9hg4bk8a2ca46a5b20ce96ffe1329bda78d7ee" 
+callId="7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1" 
+firstLine="INVITE sip:LittleGuy@127.0.0.1:5070 SIP/2.0" 
+>
+<![CDATA[INVITE sip:LittleGuy@127.0.0.1:5070 SIP/2.0
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+CSeq: 1 INVITE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK8a2ca46a5b20ce96ffe1329bda78d7ee
+Max-Forwards: 70
+Contact: <127.0.0.1:5060>
+Content-Length: 0
+
+]]>
+</message>
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:336) [<debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:337) [<![CDATA[ ]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.getDialog(SIPClientTransaction.java:1488) [ sipDialogs =  {} default dialog gov.nist.javax.sip.stack.SIPDialog@193c0cf retval gov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:285) [UDPMessageChannel: peerAddress = 127.0.0.1/5070]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:288) [Length = 348]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:290) [SIP/2.0 200 OK
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+CSeq: 1 INVITE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>;tag=4321
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK8a2ca46a5b20ce96ffe1329bda78d7ee
+Contact: "Shootme" <sip:127.0.0.1:5070>
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1141) [acquireSem [[[[gov.nist.javax.sip.stack.SIPClientTransaction@3649f8a6]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPTransaction.java:1142][SIPTransactionStack.java:1177][UDPMessageChannel.java:486][UDPMessageChannel.java:255][null:-1]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1146) [acquireSem() returning : true]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:333) [ ]]>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:334) [</debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:335) [<message
+from="127.0.0.1:5070" 
+to="127.0.0.1:5060" 
+time="1201147367390"
+isSender="false" 
+transactionId="z9hg4bk8a2ca46a5b20ce96ffe1329bda78d7ee" 
+callId="7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1" 
+firstLine="SIP/2.0 200 OK" 
+>
+<![CDATA[SIP/2.0 200 OK
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+CSeq: 1 INVITE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>;tag=4321
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK8a2ca46a5b20ce96ffe1329bda78d7ee
+Contact: "Shootme" <sip:127.0.0.1:5070>
+Content-Length: 0
+
+]]>
+</message>
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:336) [<debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:337) [<![CDATA[ ]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.findTransaction(SIPTransactionStack.java:825) [clientTx: looking for key z9hg4bk8a2ca46a5b20ce96ffe1329bda78d7ee]
+DEBUG - gov.nist.javax.sip.NistSipMessageFactoryImpl.newSIPServerResponse(NistSipMessageFactoryImpl.java:108) [Found Transaction gov.nist.javax.sip.stack.SIPClientTransaction@3649f8a6 for SIP/2.0 200 OK
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+CSeq: 1 INVITE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>;tag=4321
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK8a2ca46a5b20ce96ffe1329bda78d7ee
+Contact: "Shootme" <sip:127.0.0.1:5070>
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.setResponseInterface(SIPClientTransaction.java:315) [Setting response interface for gov.nist.javax.sip.stack.SIPClientTransaction@3649f8a6 to gov.nist.javax.sip.DialogFilter@da6bf4]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:486) [isDialogCreated : INVITE returning true]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2187) [sipDialog: setLastResponse:gov.nist.javax.sip.stack.SIPDialog@193c0cf lastResponse = SIP/2.0 200 OK
+]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPDialog.java:2202][SIPClientTransaction.java:1422][UDPMessageChannel.java:496][UDPMessageChannel.java:255][null:-1]]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2203) [cseqMethod = INVITE]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2205) [dialogState = null]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2206) [method = INVITE]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2207) [statusCode = 200]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2208) [transaction = gov.nist.javax.sip.stack.SIPClientTransaction@3649f8a6]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:486) [isDialogCreated : INVITE returning true]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setRemoteTag(SIPDialog.java:1184) [setRemoteTag(): gov.nist.javax.sip.stack.SIPDialog@193c0cf remoteTag = null new tag = 4321]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.putDialog(SIPTransactionStack.java:526) [putDialog dialogId=7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1:12345:4321 dialog = gov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPTransactionStack.java:531][SIPDialog.java:2242][SIPClientTransaction.java:1422][UDPMessageChannel.java:496][UDPMessageChannel.java:255][null:-1]]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.addRoute(SIPDialog.java:547) [setContact: dialogState: gov.nist.javax.sip.stack.SIPDialog@193c0cfstate = null]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPDialog.java:595][SIPDialog.java:2243][SIPClientTransaction.java:1422][UDPMessageChannel.java:496][UDPMessageChannel.java:255][null:-1]]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setState(SIPDialog.java:869) [Setting dialog state for gov.nist.javax.sip.stack.SIPDialog@193c0cfnewState = 1]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPDialog.java:871][SIPDialog.java:2245][SIPClientTransaction.java:1422][UDPMessageChannel.java:496][UDPMessageChannel.java:255][null:-1]]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setState(SIPDialog.java:874) [gov.nist.javax.sip.stack.SIPDialog@193c0cf  old dialog state is null]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setState(SIPDialog.java:876) [gov.nist.javax.sip.stack.SIPDialog@193c0cf  New dialog state is Confirmed Dialog]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.setDialog(SIPClientTransaction.java:1516) [setDialog: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1:12345:4321sipDialog = gov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.processResponse(SIPClientTransaction.java:526) [processing SIP/2.0 200 OK
+current state = Calling Transaction]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.processResponse(SIPClientTransaction.java:529) [dialog = gov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Terminated Transaction gov.nist.javax.sip.stack.SIPClientTransaction@3649f8a6 branchID = z9hG4bK8a2ca46a5b20ce96ffe1329bda78d7ee isClient = true]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPTransaction.java:549][SIPClientTransaction.java:1306][SIPClientTransaction.java:784][SIPClientTransaction.java:546][SIPClientTransaction.java:1465][UDPMessageChannel.java:496][UDPMessageChannel.java:255][null:-1]]
+DEBUG - gov.nist.javax.sip.DialogFilter.processResponse(DialogFilter.java:980) [PROCESSING INCOMING RESPONSESIP/2.0 200 OK
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+CSeq: 1 INVITE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>;tag=4321
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK8a2ca46a5b20ce96ffe1329bda78d7ee
+Contact: "Shootme" <sip:127.0.0.1:5070>
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.DialogFilter.processResponse(DialogFilter.java:1013) [Transaction = gov.nist.javax.sip.stack.SIPClientTransaction@3649f8a6]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2187) [sipDialog: setLastResponse:gov.nist.javax.sip.stack.SIPDialog@193c0cf lastResponse = SIP/2.0 200 OK
+]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPDialog.java:2202][DialogFilter.java:1091][SIPClientTransaction.java:789][SIPClientTransaction.java:546][SIPClientTransaction.java:1465][UDPMessageChannel.java:496][UDPMessageChannel.java:255][null:-1]]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2203) [cseqMethod = INVITE]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2205) [dialogState = Confirmed Dialog]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2206) [method = INVITE]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2207) [statusCode = 200]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2208) [transaction = gov.nist.javax.sip.stack.SIPClientTransaction@3649f8a6]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:486) [isDialogCreated : INVITE returning true]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.setDialog(SIPClientTransaction.java:1516) [setDialog: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1:12345:4321sipDialog = gov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.handleEvent(SipProviderImpl.java:135) [handleEvent javax.sip.ResponseEvent[source=gov.nist.javax.sip.SipProviderImpl@17494c8]currentTransaction = gov.nist.javax.sip.stack.SIPClientTransaction@3649f8a6this.sipListener = test.unit.gov.nist.javax.sip.stack.DeliverRequestEventWithBadHeaderTest$Shootist@5e55absipEvent.source = gov.nist.javax.sip.SipProviderImpl@17494c8]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.handleEvent(SipProviderImpl.java:145) [Dialog = gov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SipProviderImpl.java:147][DialogFilter.java:1095][SIPClientTransaction.java:789][SIPClientTransaction.java:546][SIPClientTransaction.java:1465][UDPMessageChannel.java:496][UDPMessageChannel.java:255][null:-1]]
+DEBUG - gov.nist.javax.sip.EventScanner.addEvent(EventScanner.java:81) [addEvent gov.nist.javax.sip.EventWrapper@b9e45a]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:487) [Processing gov.nist.javax.sip.EventWrapper@b9e45anevents 1]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:129) [sipEvent = javax.sip.ResponseEvent[source=gov.nist.javax.sip.SipProviderImpl@17494c8]source = gov.nist.javax.sip.SipProviderImpl@17494c8]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:281) [Calling listener for SIP/2.0 200 OK
+]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setPassToListener(SIPTransaction.java:1208) [setPassToListener()]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.semRelease(SIPTransaction.java:1181) [semRelease ]]]]gov.nist.javax.sip.stack.SIPClientTransaction@3649f8a6]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPTransaction.java:1182][SIPTransaction.java:1168][EventScanner.java:362][EventScanner.java:492][null:-1]]
+FATAL - gov.nist.javax.sip.EventScanner.run(EventScanner.java:504) [Event scanner exited abnormally]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.semRelease(SIPTransaction.java:1181) [semRelease ]]]]gov.nist.javax.sip.stack.SIPClientTransaction@3649f8a6]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPTransaction.java:1182][SIPTransaction.java:1168][UDPMessageChannel.java:500][UDPMessageChannel.java:255][null:-1]]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction$TransactionTimer.runTask(SIPClientTransaction.java:200) [removing  = gov.nist.javax.sip.stack.SIPClientTransaction@3649f8a6 isReliable false]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removeTransaction(SIPTransactionStack.java:1325) [Removing Transaction = z9hg4bk8a2ca46a5b20ce96ffe1329bda78d7ee transaction = gov.nist.javax.sip.stack.SIPClientTransaction@3649f8a6]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removeTransaction(SIPTransactionStack.java:1358) [REMOVED client tx gov.nist.javax.sip.stack.SIPClientTransaction@3649f8a6 KEY = z9hg4bk8a2ca46a5b20ce96ffe1329bda78d7ee]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.handleEvent(SipProviderImpl.java:135) [handleEvent javax.sip.TransactionTerminatedEvent[source=gov.nist.javax.sip.SipProviderImpl@17494c8]currentTransaction = gov.nist.javax.sip.stack.SIPClientTransaction@3649f8a6this.sipListener = test.unit.gov.nist.javax.sip.stack.DeliverRequestEventWithBadHeaderTest$Shootist@5e55absipEvent.source = gov.nist.javax.sip.SipProviderImpl@17494c8]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SipProviderImpl.java:147][SIPTransactionStack.java:1370][SIPClientTransaction.java:205][SIPStackTimerTask.java:29][null:-1][null:-1]]
+DEBUG - gov.nist.javax.sip.EventScanner.addEvent(EventScanner.java:81) [addEvent gov.nist.javax.sip.EventWrapper@3ef810]
+DEBUG - gov.nist.javax.sip.SipStackImpl.stop(SipStackImpl.java:904) [stopStack -- stoppping the stack]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageProcessor.run(UDPMessageProcessor.java:252) [UDPMessageProcessor: Stopping]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:270) [Here are the stack configuration properties 
+{javax.sip.OUTBOUND_PROXY=127.0.0.1:5070/udp, gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS=false, gov.nist.javax.sip.TRACE_LEVEL=DEBUG, javax.sip.STACK_NAME=shootist, gov.nist.javax.sip.SERVER_LOG=shootistlog.txt, gov.nist.javax.sip.DEBUG_LOG=shootistdebug.txt}
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:273) [ ]]>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:274) [</debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:275) [<description
+ logDescription="shootist"
+ name="null" />
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:281) [<debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:282) [<![CDATA[ ]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:695) [createListeningPoint : address = 127.0.0.1 port = 5060 transport = udp]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:732) [Created Message Processor: 127.0.0.1 port = 5060 transport = udp]
+DEBUG - gov.nist.javax.sip.stack.MessageProcessor.setListeningPoint(MessageProcessor.java:179) [setListeningPointgov.nist.javax.sip.stack.UDPMessageProcessor@158f9d3 listeningPoint = gov.nist.javax.sip.ListeningPointImpl@79a2e7]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createSipProvider(SipStackImpl.java:764) [createSipProvider: gov.nist.javax.sip.ListeningPointImpl@79a2e7]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.addSipListener(SipProviderImpl.java:205) [add SipListener test.unit.gov.nist.javax.sip.stack.DeliverRequestEventWithBadHeaderTest$Shootist@5e55ab]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.getNewClientTransaction(SipProviderImpl.java:333) [could not find existing transaction for INVITE sip:LittleGuy@127.0.0.1:5070 SIP/2.0
+ creating a new one ]
+DEBUG - gov.nist.javax.sip.stack.DefaultRouter.getNextHop(DefaultRouter.java:229) [Using outbound proxy to route the request = 127.0.0.1:5070/udp]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.getDialog(SIPTransactionStack.java:678) [getDialog(7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1:12345) : returning null]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.<init>(UDPMessageChannel.java:198) [Creating message channel 127.0.0.1/5070]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.<init>(SIPClientTransaction.java:300) [Creating clientTransaction gov.nist.javax.sip.stack.SIPClientTransaction@ffffffff]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPClientTransaction.java:301][SIPTransactionStack.java:1259][SIPTransactionStack.java:1237][SipProviderImpl.java:380][DeliverRequestEventWithBadHeaderTest.java:360][DeliverRequestEventWithBadHeaderTest.java:412][null:-2][null:-1][null:-1][null:-1][TestCase.java:154][TestCase.java:127][TestResult.java:106][TestResult.java:124][TestResult.java:109][TestCase.java:118][JUnit3TestReference.java:130][TestExecution.java:38][RemoteTestRunner.java:460][RemoteTestRunner.java:673][RemoteTestRunner.java:386][RemoteTestRunner.java:196]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setOriginalRequest(SIPTransaction.java:412) [Setting Branch id : z9hG4bKc7d6e87191d5cdde6d16c608967304c0]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.addTransactionHash(SIPTransactionStack.java:1423) [ putTransactionHash :  key = z9hg4bkc7d6e87191d5cdde6d16c608967304c0]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setOriginalRequest(SIPTransaction.java:412) [Setting Branch id : z9hG4bKc7d6e87191d5cdde6d16c608967304c0]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:486) [isDialogCreated : INVITE returning true]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setRemoteParty(SIPDialog.java:442) [settingRemoteParty "The Little Blister" <sip:LittleGuy@there.com>]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLocalSequenceNumber(SIPDialog.java:1225) [setLocalSequenceNumber: original 	0 new  = 1]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.addTransaction(SIPDialog.java:1167) [Transaction Added gov.nist.javax.sip.stack.SIPDialog@193c0cf12345/null]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.addTransaction(SIPDialog.java:1169) [TID = z9hg4bkc7d6e87191d5cdde6d16c608967304c0/false]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPDialog.java:1172][SIPDialog.java:326][SIPTransactionStack.java:558][SipProviderImpl.java:398][DeliverRequestEventWithBadHeaderTest.java:360][DeliverRequestEventWithBadHeaderTest.java:412][null:-2][null:-1][null:-1][null:-1][TestCase.java:154][TestCase.java:127][TestResult.java:106][TestResult.java:124][TestResult.java:109][TestCase.java:118][JUnit3TestReference.java:130][TestExecution.java:38][RemoteTestRunner.java:460][RemoteTestRunner.java:673][RemoteTestRunner.java:386][RemoteTestRunner.java:196]]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.<init>(SIPDialog.java:328) [Creating a dialog : gov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.<init>(SIPDialog.java:329) [provider port = 5060]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPDialog.java:331][SIPTransactionStack.java:558][SipProviderImpl.java:398][DeliverRequestEventWithBadHeaderTest.java:360][DeliverRequestEventWithBadHeaderTest.java:412][null:-2][null:-1][null:-1][null:-1][TestCase.java:154][TestCase.java:127][TestResult.java:106][TestResult.java:124][TestResult.java:109][TestCase.java:118][JUnit3TestReference.java:130][TestExecution.java:38][RemoteTestRunner.java:460][RemoteTestRunner.java:673][RemoteTestRunner.java:386][RemoteTestRunner.java:196]]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.setDialog(SIPClientTransaction.java:1516) [setDialog: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1:12345sipDialog = gov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.sendRequest(SIPClientTransaction.java:916) [sendRequest() INVITE sip:LittleGuy@127.0.0.1:5070 SIP/2.0
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+CSeq: 1 INVITE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKc7d6e87191d5cdde6d16c608967304c0
+Max-Forwards: 70
+Contact: <127.0.0.1:5060>
+Date: 123 GMT 789
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.sendMessage(SIPClientTransaction.java:423) [Sending Message INVITE sip:LittleGuy@127.0.0.1:5070 SIP/2.0
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+CSeq: 1 INVITE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKc7d6e87191d5cdde6d16c608967304c0
+Max-Forwards: 70
+Contact: <127.0.0.1:5060>
+Date: 123 GMT 789
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.sendMessage(SIPClientTransaction.java:425) [TransactionState null]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setOriginalRequest(SIPTransaction.java:412) [Setting Branch id : z9hG4bKc7d6e87191d5cdde6d16c608967304c0]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Calling Transaction gov.nist.javax.sip.stack.SIPClientTransaction@fd86af15 branchID = z9hG4bKc7d6e87191d5cdde6d16c608967304c0 isClient = true]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPTransaction.java:549][SIPClientTransaction.java:1306][SIPClientTransaction.java:464][SIPClientTransaction.java:981][DeliverRequestEventWithBadHeaderTest.java:363][DeliverRequestEventWithBadHeaderTest.java:412][null:-2][null:-1][null:-1][null:-1][TestCase.java:154][TestCase.java:127][TestResult.java:106][TestResult.java:124][TestResult.java:109][TestCase.java:118][JUnit3TestReference.java:130][TestExecution.java:38][RemoteTestRunner.java:460][RemoteTestRunner.java:673][RemoteTestRunner.java:386][RemoteTestRunner.java:196]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.enableTimeoutTimer(SIPTransaction.java:606) [enableTimeoutTimer gov.nist.javax.sip.stack.SIPClientTransaction@fd86af15 tickCount 64 currentTickCount = -1]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[UDPMessageChannel.java:604][MessageChannel.java:183][SIPTransaction.java:738][SIPClientTransaction.java:484][SIPClientTransaction.java:981][DeliverRequestEventWithBadHeaderTest.java:363][DeliverRequestEventWithBadHeaderTest.java:412][null:-2][null:-1][null:-1][null:-1][TestCase.java:154][TestCase.java:127][TestResult.java:106][TestResult.java:124][TestResult.java:109][TestCase.java:118][JUnit3TestReference.java:130][TestExecution.java:38][RemoteTestRunner.java:460][RemoteTestRunner.java:673][RemoteTestRunner.java:386][RemoteTestRunner.java:196]]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:613) [gov.nist.javax.sip.stack.UDPMessageChannel:sendMessage 127.0.0.1/5070
+INVITE sip:LittleGuy@127.0.0.1:5070 SIP/2.0
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+CSeq: 1 INVITE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKc7d6e87191d5cdde6d16c608967304c0
+Max-Forwards: 70
+Contact: <127.0.0.1:5060>
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:616) [*******************
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:333) [ ]]>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:334) [</debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:335) [<message
+from="127.0.0.1:5060" 
+to="127.0.0.1:5070" 
+time="1201148028734"
+isSender="true" 
+transactionId="z9hg4bkc7d6e87191d5cdde6d16c608967304c0" 
+callId="7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1" 
+firstLine="INVITE sip:LittleGuy@127.0.0.1:5070 SIP/2.0" 
+>
+<![CDATA[INVITE sip:LittleGuy@127.0.0.1:5070 SIP/2.0
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+CSeq: 1 INVITE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKc7d6e87191d5cdde6d16c608967304c0
+Max-Forwards: 70
+Contact: <127.0.0.1:5060>
+Content-Length: 0
+
+]]>
+</message>
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:336) [<debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:337) [<![CDATA[ ]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.getDialog(SIPClientTransaction.java:1488) [ sipDialogs =  {} default dialog gov.nist.javax.sip.stack.SIPDialog@193c0cf retval gov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:285) [UDPMessageChannel: peerAddress = 127.0.0.1/5070]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:288) [Length = 348]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:290) [SIP/2.0 200 OK
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+CSeq: 1 INVITE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>;tag=4321
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKc7d6e87191d5cdde6d16c608967304c0
+Contact: "Shootme" <sip:127.0.0.1:5070>
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1141) [acquireSem [[[[gov.nist.javax.sip.stack.SIPClientTransaction@fd86af15]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPTransaction.java:1142][SIPTransactionStack.java:1177][UDPMessageChannel.java:486][UDPMessageChannel.java:255][null:-1]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1146) [acquireSem() returning : true]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:333) [ ]]>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:334) [</debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:335) [<message
+from="127.0.0.1:5070" 
+to="127.0.0.1:5060" 
+time="1201148028765"
+isSender="false" 
+transactionId="z9hg4bkc7d6e87191d5cdde6d16c608967304c0" 
+callId="7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1" 
+firstLine="SIP/2.0 200 OK" 
+>
+<![CDATA[SIP/2.0 200 OK
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+CSeq: 1 INVITE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>;tag=4321
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKc7d6e87191d5cdde6d16c608967304c0
+Contact: "Shootme" <sip:127.0.0.1:5070>
+Content-Length: 0
+
+]]>
+</message>
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:336) [<debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:337) [<![CDATA[ ]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.findTransaction(SIPTransactionStack.java:825) [clientTx: looking for key z9hg4bkc7d6e87191d5cdde6d16c608967304c0]
+DEBUG - gov.nist.javax.sip.NistSipMessageFactoryImpl.newSIPServerResponse(NistSipMessageFactoryImpl.java:108) [Found Transaction gov.nist.javax.sip.stack.SIPClientTransaction@fd86af15 for SIP/2.0 200 OK
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+CSeq: 1 INVITE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>;tag=4321
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKc7d6e87191d5cdde6d16c608967304c0
+Contact: "Shootme" <sip:127.0.0.1:5070>
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.setResponseInterface(SIPClientTransaction.java:315) [Setting response interface for gov.nist.javax.sip.stack.SIPClientTransaction@fd86af15 to gov.nist.javax.sip.DialogFilter@da6bf4]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:486) [isDialogCreated : INVITE returning true]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2187) [sipDialog: setLastResponse:gov.nist.javax.sip.stack.SIPDialog@193c0cf lastResponse = SIP/2.0 200 OK
+]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPDialog.java:2202][SIPClientTransaction.java:1422][UDPMessageChannel.java:496][UDPMessageChannel.java:255][null:-1]]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2203) [cseqMethod = INVITE]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2205) [dialogState = null]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2206) [method = INVITE]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2207) [statusCode = 200]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2208) [transaction = gov.nist.javax.sip.stack.SIPClientTransaction@fd86af15]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:486) [isDialogCreated : INVITE returning true]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setRemoteTag(SIPDialog.java:1184) [setRemoteTag(): gov.nist.javax.sip.stack.SIPDialog@193c0cf remoteTag = null new tag = 4321]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.putDialog(SIPTransactionStack.java:526) [putDialog dialogId=7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1:12345:4321 dialog = gov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPTransactionStack.java:531][SIPDialog.java:2242][SIPClientTransaction.java:1422][UDPMessageChannel.java:496][UDPMessageChannel.java:255][null:-1]]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.addRoute(SIPDialog.java:547) [setContact: dialogState: gov.nist.javax.sip.stack.SIPDialog@193c0cfstate = null]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPDialog.java:595][SIPDialog.java:2243][SIPClientTransaction.java:1422][UDPMessageChannel.java:496][UDPMessageChannel.java:255][null:-1]]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setState(SIPDialog.java:869) [Setting dialog state for gov.nist.javax.sip.stack.SIPDialog@193c0cfnewState = 1]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPDialog.java:871][SIPDialog.java:2245][SIPClientTransaction.java:1422][UDPMessageChannel.java:496][UDPMessageChannel.java:255][null:-1]]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setState(SIPDialog.java:874) [gov.nist.javax.sip.stack.SIPDialog@193c0cf  old dialog state is null]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setState(SIPDialog.java:876) [gov.nist.javax.sip.stack.SIPDialog@193c0cf  New dialog state is Confirmed Dialog]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.setDialog(SIPClientTransaction.java:1516) [setDialog: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1:12345:4321sipDialog = gov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.processResponse(SIPClientTransaction.java:526) [processing SIP/2.0 200 OK
+current state = Calling Transaction]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.processResponse(SIPClientTransaction.java:529) [dialog = gov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Terminated Transaction gov.nist.javax.sip.stack.SIPClientTransaction@fd86af15 branchID = z9hG4bKc7d6e87191d5cdde6d16c608967304c0 isClient = true]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPTransaction.java:549][SIPClientTransaction.java:1306][SIPClientTransaction.java:784][SIPClientTransaction.java:546][SIPClientTransaction.java:1465][UDPMessageChannel.java:496][UDPMessageChannel.java:255][null:-1]]
+DEBUG - gov.nist.javax.sip.DialogFilter.processResponse(DialogFilter.java:980) [PROCESSING INCOMING RESPONSESIP/2.0 200 OK
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+CSeq: 1 INVITE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>;tag=4321
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKc7d6e87191d5cdde6d16c608967304c0
+Contact: "Shootme" <sip:127.0.0.1:5070>
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.DialogFilter.processResponse(DialogFilter.java:1013) [Transaction = gov.nist.javax.sip.stack.SIPClientTransaction@fd86af15]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2187) [sipDialog: setLastResponse:gov.nist.javax.sip.stack.SIPDialog@193c0cf lastResponse = SIP/2.0 200 OK
+]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPDialog.java:2202][DialogFilter.java:1091][SIPClientTransaction.java:789][SIPClientTransaction.java:546][SIPClientTransaction.java:1465][UDPMessageChannel.java:496][UDPMessageChannel.java:255][null:-1]]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2203) [cseqMethod = INVITE]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2205) [dialogState = Confirmed Dialog]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2206) [method = INVITE]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2207) [statusCode = 200]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2208) [transaction = gov.nist.javax.sip.stack.SIPClientTransaction@fd86af15]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:486) [isDialogCreated : INVITE returning true]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.setDialog(SIPClientTransaction.java:1516) [setDialog: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1:12345:4321sipDialog = gov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.handleEvent(SipProviderImpl.java:135) [handleEvent javax.sip.ResponseEvent[source=gov.nist.javax.sip.SipProviderImpl@17494c8]currentTransaction = gov.nist.javax.sip.stack.SIPClientTransaction@fd86af15this.sipListener = test.unit.gov.nist.javax.sip.stack.DeliverRequestEventWithBadHeaderTest$Shootist@5e55absipEvent.source = gov.nist.javax.sip.SipProviderImpl@17494c8]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.handleEvent(SipProviderImpl.java:145) [Dialog = gov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SipProviderImpl.java:147][DialogFilter.java:1095][SIPClientTransaction.java:789][SIPClientTransaction.java:546][SIPClientTransaction.java:1465][UDPMessageChannel.java:496][UDPMessageChannel.java:255][null:-1]]
+DEBUG - gov.nist.javax.sip.EventScanner.addEvent(EventScanner.java:81) [addEvent gov.nist.javax.sip.EventWrapper@b9e45a]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:487) [Processing gov.nist.javax.sip.EventWrapper@b9e45anevents 1]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:129) [sipEvent = javax.sip.ResponseEvent[source=gov.nist.javax.sip.SipProviderImpl@17494c8]source = gov.nist.javax.sip.SipProviderImpl@17494c8]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:281) [Calling listener for SIP/2.0 200 OK
+]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setPassToListener(SIPTransaction.java:1208) [setPassToListener()]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.getRouteList(SIPDialog.java:607) [getRouteList gov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.getRouteList(SIPDialog.java:622) [----- ]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.getRouteList(SIPDialog.java:623) [getRouteList for gov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.getRouteList(SIPDialog.java:625) [RouteList = ]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.getRouteList(SIPDialog.java:627) [myRouteList = ]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.getRouteList(SIPDialog.java:629) [----- ]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.sendAck(SIPDialog.java:647) [sendAckgov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.sendAck(SIPDialog.java:673) [setting from tag For outgoing ACK= 12345]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.sendAck(SIPDialog.java:676) [setting To tag for outgoing ACK = 4321]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.sendAck(SIPDialog.java:678) [ack = ACK sip:127.0.0.1:5070 SIP/2.0
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK1f036020c59d29a43e23930bafd095c3
+CSeq: 1 ACK
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>;tag=4321
+Max-Forwards: 70
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.DefaultRouter.getNextHop(DefaultRouter.java:229) [Using outbound proxy to route the request = 127.0.0.1:5070/udp]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.sendAck(SIPDialog.java:694) [hop = 127.0.0.1:5070/udp]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.<init>(UDPMessageChannel.java:198) [Creating message channel 127.0.0.1/5070]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[UDPMessageChannel.java:576][SIPDialog.java:705][SIPDialog.java:1449][DeliverRequestEventWithBadHeaderTest.java:259][EventScanner.java:290][EventScanner.java:492][null:-1]]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:678) [gov.nist.javax.sip.stack.UDPMessageChannel:sendMessage 127.0.0.1/5070
+ACK sip:127.0.0.1:5070 SIP/2.0
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK1f036020c59d29a43e23930bafd095c3
+CSeq: 1 ACK
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>;tag=4321
+Max-Forwards: 70
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:681) [*******************
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:698) [sendMessage 127.0.0.1/5070
+ACK sip:127.0.0.1:5070 SIP/2.0
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK1f036020c59d29a43e23930bafd095c3
+CSeq: 1 ACK
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>;tag=4321
+Max-Forwards: 70
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:333) [ ]]>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:334) [</debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:335) [<message
+from="127.0.0.1:5060" 
+to="127.0.0.1:5070" 
+time="1201148028796"
+isSender="true" 
+transactionId="z9hg4bk1f036020c59d29a43e23930bafd095c3" 
+callId="7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1" 
+firstLine="ACK sip:127.0.0.1:5070 SIP/2.0" 
+>
+<![CDATA[ACK sip:127.0.0.1:5070 SIP/2.0
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bK1f036020c59d29a43e23930bafd095c3
+CSeq: 1 ACK
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>;tag=4321
+Max-Forwards: 70
+Content-Length: 0
+
+]]>
+</message>
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:336) [<debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:337) [<![CDATA[ ]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.semRelease(SIPTransaction.java:1181) [semRelease ]]]]gov.nist.javax.sip.stack.SIPClientTransaction@fd86af15]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPTransaction.java:1182][SIPTransaction.java:1168][EventScanner.java:362][EventScanner.java:492][null:-1]]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction$TransactionTimer.runTask(SIPClientTransaction.java:200) [removing  = gov.nist.javax.sip.stack.SIPClientTransaction@fd86af15 isReliable false]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removeTransaction(SIPTransactionStack.java:1325) [Removing Transaction = z9hg4bkc7d6e87191d5cdde6d16c608967304c0 transaction = gov.nist.javax.sip.stack.SIPClientTransaction@fd86af15]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removeTransaction(SIPTransactionStack.java:1358) [REMOVED client tx gov.nist.javax.sip.stack.SIPClientTransaction@fd86af15 KEY = z9hg4bkc7d6e87191d5cdde6d16c608967304c0]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.handleEvent(SipProviderImpl.java:135) [handleEvent javax.sip.TransactionTerminatedEvent[source=gov.nist.javax.sip.SipProviderImpl@17494c8]currentTransaction = gov.nist.javax.sip.stack.SIPClientTransaction@fd86af15this.sipListener = test.unit.gov.nist.javax.sip.stack.DeliverRequestEventWithBadHeaderTest$Shootist@5e55absipEvent.source = gov.nist.javax.sip.SipProviderImpl@17494c8]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SipProviderImpl.java:147][SIPTransactionStack.java:1370][SIPClientTransaction.java:205][SIPStackTimerTask.java:29][null:-1][null:-1]]
+DEBUG - gov.nist.javax.sip.EventScanner.addEvent(EventScanner.java:81) [addEvent gov.nist.javax.sip.EventWrapper@67064]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:487) [Processing gov.nist.javax.sip.EventWrapper@67064nevents 1]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:129) [sipEvent = javax.sip.TransactionTerminatedEvent[source=gov.nist.javax.sip.SipProviderImpl@17494c8]source = gov.nist.javax.sip.SipProviderImpl@17494c8]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:389) [About to deliver transactionTerminatedEvent]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:391) [tx = gov.nist.javax.sip.stack.SIPClientTransaction@fd86af15]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:395) [tx = null]
+DEBUG - gov.nist.javax.sip.SipStackImpl.stop(SipStackImpl.java:904) [stopStack -- stoppping the stack]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageProcessor.run(UDPMessageProcessor.java:252) [UDPMessageProcessor: Stopping]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:455) [Stopped event scanner!!]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:270) [Here are the stack configuration properties 
+{javax.sip.OUTBOUND_PROXY=127.0.0.1:5070/udp, gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS=false, gov.nist.javax.sip.TRACE_LEVEL=DEBUG, javax.sip.STACK_NAME=shootist, gov.nist.javax.sip.SERVER_LOG=shootistlog.txt, gov.nist.javax.sip.DEBUG_LOG=shootistdebug.txt}
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:273) [ ]]>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:274) [</debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:275) [<description
+ logDescription="shootist"
+ name="null" />
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:281) [<debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:282) [<![CDATA[ ]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:695) [createListeningPoint : address = 127.0.0.1 port = 5060 transport = udp]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:732) [Created Message Processor: 127.0.0.1 port = 5060 transport = udp]
+DEBUG - gov.nist.javax.sip.stack.MessageProcessor.setListeningPoint(MessageProcessor.java:179) [setListeningPointgov.nist.javax.sip.stack.UDPMessageProcessor@158f9d3 listeningPoint = gov.nist.javax.sip.ListeningPointImpl@79a2e7]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createSipProvider(SipStackImpl.java:764) [createSipProvider: gov.nist.javax.sip.ListeningPointImpl@79a2e7]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.addSipListener(SipProviderImpl.java:205) [add SipListener test.unit.gov.nist.javax.sip.stack.DeliverRequestEventWithBadHeaderTest$Shootist@5e55ab]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.getNewClientTransaction(SipProviderImpl.java:333) [could not find existing transaction for INVITE sip:LittleGuy@127.0.0.1:5070 SIP/2.0
+ creating a new one ]
+DEBUG - gov.nist.javax.sip.stack.DefaultRouter.getNextHop(DefaultRouter.java:229) [Using outbound proxy to route the request = 127.0.0.1:5070/udp]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.getDialog(SIPTransactionStack.java:678) [getDialog(7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1:12345) : returning null]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.<init>(UDPMessageChannel.java:198) [Creating message channel 127.0.0.1/5070]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.<init>(SIPClientTransaction.java:300) [Creating clientTransaction gov.nist.javax.sip.stack.SIPClientTransaction@ffffffff]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPClientTransaction.java:301][SIPTransactionStack.java:1259][SIPTransactionStack.java:1237][SipProviderImpl.java:380][DeliverRequestEventWithBadHeaderTest.java:360][DeliverRequestEventWithBadHeaderTest.java:412][null:-2][null:-1][null:-1][null:-1][TestCase.java:154][TestCase.java:127][TestResult.java:106][TestResult.java:124][TestResult.java:109][TestCase.java:118][JUnit3TestReference.java:130][TestExecution.java:38][RemoteTestRunner.java:460][RemoteTestRunner.java:673][RemoteTestRunner.java:386][RemoteTestRunner.java:196]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setOriginalRequest(SIPTransaction.java:412) [Setting Branch id : z9hG4bKaf0a7977560260c16e144463dd52ba61]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.addTransactionHash(SIPTransactionStack.java:1423) [ putTransactionHash :  key = z9hg4bkaf0a7977560260c16e144463dd52ba61]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setOriginalRequest(SIPTransaction.java:412) [Setting Branch id : z9hG4bKaf0a7977560260c16e144463dd52ba61]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:486) [isDialogCreated : INVITE returning true]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setRemoteParty(SIPDialog.java:442) [settingRemoteParty "The Little Blister" <sip:LittleGuy@there.com>]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLocalSequenceNumber(SIPDialog.java:1225) [setLocalSequenceNumber: original 	0 new  = 1]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.addTransaction(SIPDialog.java:1167) [Transaction Added gov.nist.javax.sip.stack.SIPDialog@193c0cf12345/null]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.addTransaction(SIPDialog.java:1169) [TID = z9hg4bkaf0a7977560260c16e144463dd52ba61/false]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPDialog.java:1172][SIPDialog.java:326][SIPTransactionStack.java:558][SipProviderImpl.java:398][DeliverRequestEventWithBadHeaderTest.java:360][DeliverRequestEventWithBadHeaderTest.java:412][null:-2][null:-1][null:-1][null:-1][TestCase.java:154][TestCase.java:127][TestResult.java:106][TestResult.java:124][TestResult.java:109][TestCase.java:118][JUnit3TestReference.java:130][TestExecution.java:38][RemoteTestRunner.java:460][RemoteTestRunner.java:673][RemoteTestRunner.java:386][RemoteTestRunner.java:196]]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.<init>(SIPDialog.java:328) [Creating a dialog : gov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.<init>(SIPDialog.java:329) [provider port = 5060]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPDialog.java:331][SIPTransactionStack.java:558][SipProviderImpl.java:398][DeliverRequestEventWithBadHeaderTest.java:360][DeliverRequestEventWithBadHeaderTest.java:412][null:-2][null:-1][null:-1][null:-1][TestCase.java:154][TestCase.java:127][TestResult.java:106][TestResult.java:124][TestResult.java:109][TestCase.java:118][JUnit3TestReference.java:130][TestExecution.java:38][RemoteTestRunner.java:460][RemoteTestRunner.java:673][RemoteTestRunner.java:386][RemoteTestRunner.java:196]]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.setDialog(SIPClientTransaction.java:1516) [setDialog: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1:12345sipDialog = gov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.sendRequest(SIPClientTransaction.java:916) [sendRequest() INVITE sip:LittleGuy@127.0.0.1:5070 SIP/2.0
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+CSeq: 1 INVITE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKaf0a7977560260c16e144463dd52ba61
+Max-Forwards: 70
+Contact: <127.0.0.1:5060>
+Date: 123 GMT 789
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.sendMessage(SIPClientTransaction.java:423) [Sending Message INVITE sip:LittleGuy@127.0.0.1:5070 SIP/2.0
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+CSeq: 1 INVITE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKaf0a7977560260c16e144463dd52ba61
+Max-Forwards: 70
+Contact: <127.0.0.1:5060>
+Date: 123 GMT 789
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.sendMessage(SIPClientTransaction.java:425) [TransactionState null]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setOriginalRequest(SIPTransaction.java:412) [Setting Branch id : z9hG4bKaf0a7977560260c16e144463dd52ba61]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Calling Transaction gov.nist.javax.sip.stack.SIPClientTransaction@b19c5588 branchID = z9hG4bKaf0a7977560260c16e144463dd52ba61 isClient = true]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPTransaction.java:549][SIPClientTransaction.java:1306][SIPClientTransaction.java:464][SIPClientTransaction.java:981][DeliverRequestEventWithBadHeaderTest.java:363][DeliverRequestEventWithBadHeaderTest.java:412][null:-2][null:-1][null:-1][null:-1][TestCase.java:154][TestCase.java:127][TestResult.java:106][TestResult.java:124][TestResult.java:109][TestCase.java:118][JUnit3TestReference.java:130][TestExecution.java:38][RemoteTestRunner.java:460][RemoteTestRunner.java:673][RemoteTestRunner.java:386][RemoteTestRunner.java:196]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.enableTimeoutTimer(SIPTransaction.java:606) [enableTimeoutTimer gov.nist.javax.sip.stack.SIPClientTransaction@b19c5588 tickCount 64 currentTickCount = -1]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[UDPMessageChannel.java:604][MessageChannel.java:183][SIPTransaction.java:738][SIPClientTransaction.java:484][SIPClientTransaction.java:981][DeliverRequestEventWithBadHeaderTest.java:363][DeliverRequestEventWithBadHeaderTest.java:412][null:-2][null:-1][null:-1][null:-1][TestCase.java:154][TestCase.java:127][TestResult.java:106][TestResult.java:124][TestResult.java:109][TestCase.java:118][JUnit3TestReference.java:130][TestExecution.java:38][RemoteTestRunner.java:460][RemoteTestRunner.java:673][RemoteTestRunner.java:386][RemoteTestRunner.java:196]]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:613) [gov.nist.javax.sip.stack.UDPMessageChannel:sendMessage 127.0.0.1/5070
+INVITE sip:LittleGuy@127.0.0.1:5070 SIP/2.0
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+CSeq: 1 INVITE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKaf0a7977560260c16e144463dd52ba61
+Max-Forwards: 70
+Contact: <127.0.0.1:5060>
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:616) [*******************
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:333) [ ]]>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:334) [</debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:335) [<message
+from="127.0.0.1:5060" 
+to="127.0.0.1:5070" 
+time="1201148081890"
+isSender="true" 
+transactionId="z9hg4bkaf0a7977560260c16e144463dd52ba61" 
+callId="7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1" 
+firstLine="INVITE sip:LittleGuy@127.0.0.1:5070 SIP/2.0" 
+>
+<![CDATA[INVITE sip:LittleGuy@127.0.0.1:5070 SIP/2.0
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+CSeq: 1 INVITE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKaf0a7977560260c16e144463dd52ba61
+Max-Forwards: 70
+Contact: <127.0.0.1:5060>
+Content-Length: 0
+
+]]>
+</message>
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:336) [<debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:337) [<![CDATA[ ]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.getDialog(SIPClientTransaction.java:1488) [ sipDialogs =  {} default dialog gov.nist.javax.sip.stack.SIPDialog@193c0cf retval gov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:285) [UDPMessageChannel: peerAddress = 127.0.0.1/5070]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:288) [Length = 348]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:290) [SIP/2.0 200 OK
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+CSeq: 1 INVITE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>;tag=4321
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKaf0a7977560260c16e144463dd52ba61
+Contact: "Shootme" <sip:127.0.0.1:5070>
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1141) [acquireSem [[[[gov.nist.javax.sip.stack.SIPClientTransaction@b19c5588]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPTransaction.java:1142][SIPTransactionStack.java:1177][UDPMessageChannel.java:486][UDPMessageChannel.java:255][null:-1]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1146) [acquireSem() returning : true]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:333) [ ]]>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:334) [</debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:335) [<message
+from="127.0.0.1:5070" 
+to="127.0.0.1:5060" 
+time="1201148081906"
+isSender="false" 
+transactionId="z9hg4bkaf0a7977560260c16e144463dd52ba61" 
+callId="7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1" 
+firstLine="SIP/2.0 200 OK" 
+>
+<![CDATA[SIP/2.0 200 OK
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+CSeq: 1 INVITE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>;tag=4321
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKaf0a7977560260c16e144463dd52ba61
+Contact: "Shootme" <sip:127.0.0.1:5070>
+Content-Length: 0
+
+]]>
+</message>
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:336) [<debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:337) [<![CDATA[ ]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.findTransaction(SIPTransactionStack.java:825) [clientTx: looking for key z9hg4bkaf0a7977560260c16e144463dd52ba61]
+DEBUG - gov.nist.javax.sip.NistSipMessageFactoryImpl.newSIPServerResponse(NistSipMessageFactoryImpl.java:108) [Found Transaction gov.nist.javax.sip.stack.SIPClientTransaction@b19c5588 for SIP/2.0 200 OK
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+CSeq: 1 INVITE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>;tag=4321
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKaf0a7977560260c16e144463dd52ba61
+Contact: "Shootme" <sip:127.0.0.1:5070>
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.setResponseInterface(SIPClientTransaction.java:315) [Setting response interface for gov.nist.javax.sip.stack.SIPClientTransaction@b19c5588 to gov.nist.javax.sip.DialogFilter@da6bf4]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:486) [isDialogCreated : INVITE returning true]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2187) [sipDialog: setLastResponse:gov.nist.javax.sip.stack.SIPDialog@193c0cf lastResponse = SIP/2.0 200 OK
+]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPDialog.java:2202][SIPClientTransaction.java:1422][UDPMessageChannel.java:496][UDPMessageChannel.java:255][null:-1]]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2203) [cseqMethod = INVITE]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2205) [dialogState = null]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2206) [method = INVITE]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2207) [statusCode = 200]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2208) [transaction = gov.nist.javax.sip.stack.SIPClientTransaction@b19c5588]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:486) [isDialogCreated : INVITE returning true]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setRemoteTag(SIPDialog.java:1184) [setRemoteTag(): gov.nist.javax.sip.stack.SIPDialog@193c0cf remoteTag = null new tag = 4321]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.putDialog(SIPTransactionStack.java:526) [putDialog dialogId=7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1:12345:4321 dialog = gov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPTransactionStack.java:531][SIPDialog.java:2242][SIPClientTransaction.java:1422][UDPMessageChannel.java:496][UDPMessageChannel.java:255][null:-1]]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.addRoute(SIPDialog.java:547) [setContact: dialogState: gov.nist.javax.sip.stack.SIPDialog@193c0cfstate = null]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPDialog.java:595][SIPDialog.java:2243][SIPClientTransaction.java:1422][UDPMessageChannel.java:496][UDPMessageChannel.java:255][null:-1]]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setState(SIPDialog.java:869) [Setting dialog state for gov.nist.javax.sip.stack.SIPDialog@193c0cfnewState = 1]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPDialog.java:871][SIPDialog.java:2245][SIPClientTransaction.java:1422][UDPMessageChannel.java:496][UDPMessageChannel.java:255][null:-1]]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setState(SIPDialog.java:874) [gov.nist.javax.sip.stack.SIPDialog@193c0cf  old dialog state is null]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setState(SIPDialog.java:876) [gov.nist.javax.sip.stack.SIPDialog@193c0cf  New dialog state is Confirmed Dialog]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.setDialog(SIPClientTransaction.java:1516) [setDialog: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1:12345:4321sipDialog = gov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.processResponse(SIPClientTransaction.java:526) [processing SIP/2.0 200 OK
+current state = Calling Transaction]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.processResponse(SIPClientTransaction.java:529) [dialog = gov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Terminated Transaction gov.nist.javax.sip.stack.SIPClientTransaction@b19c5588 branchID = z9hG4bKaf0a7977560260c16e144463dd52ba61 isClient = true]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPTransaction.java:549][SIPClientTransaction.java:1306][SIPClientTransaction.java:784][SIPClientTransaction.java:546][SIPClientTransaction.java:1465][UDPMessageChannel.java:496][UDPMessageChannel.java:255][null:-1]]
+DEBUG - gov.nist.javax.sip.DialogFilter.processResponse(DialogFilter.java:980) [PROCESSING INCOMING RESPONSESIP/2.0 200 OK
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+CSeq: 1 INVITE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>;tag=4321
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKaf0a7977560260c16e144463dd52ba61
+Contact: "Shootme" <sip:127.0.0.1:5070>
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.DialogFilter.processResponse(DialogFilter.java:1013) [Transaction = gov.nist.javax.sip.stack.SIPClientTransaction@b19c5588]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2187) [sipDialog: setLastResponse:gov.nist.javax.sip.stack.SIPDialog@193c0cf lastResponse = SIP/2.0 200 OK
+]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPDialog.java:2202][DialogFilter.java:1091][SIPClientTransaction.java:789][SIPClientTransaction.java:546][SIPClientTransaction.java:1465][UDPMessageChannel.java:496][UDPMessageChannel.java:255][null:-1]]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2203) [cseqMethod = INVITE]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2205) [dialogState = Confirmed Dialog]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2206) [method = INVITE]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2207) [statusCode = 200]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.setLastResponse(SIPDialog.java:2208) [transaction = gov.nist.javax.sip.stack.SIPClientTransaction@b19c5588]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:486) [isDialogCreated : INVITE returning true]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction.setDialog(SIPClientTransaction.java:1516) [setDialog: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1:12345:4321sipDialog = gov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.handleEvent(SipProviderImpl.java:135) [handleEvent javax.sip.ResponseEvent[source=gov.nist.javax.sip.SipProviderImpl@17494c8]currentTransaction = gov.nist.javax.sip.stack.SIPClientTransaction@b19c5588this.sipListener = test.unit.gov.nist.javax.sip.stack.DeliverRequestEventWithBadHeaderTest$Shootist@5e55absipEvent.source = gov.nist.javax.sip.SipProviderImpl@17494c8]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.handleEvent(SipProviderImpl.java:145) [Dialog = gov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SipProviderImpl.java:147][DialogFilter.java:1095][SIPClientTransaction.java:789][SIPClientTransaction.java:546][SIPClientTransaction.java:1465][UDPMessageChannel.java:496][UDPMessageChannel.java:255][null:-1]]
+DEBUG - gov.nist.javax.sip.EventScanner.addEvent(EventScanner.java:81) [addEvent gov.nist.javax.sip.EventWrapper@b9e45a]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:487) [Processing gov.nist.javax.sip.EventWrapper@b9e45anevents 1]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:129) [sipEvent = javax.sip.ResponseEvent[source=gov.nist.javax.sip.SipProviderImpl@17494c8]source = gov.nist.javax.sip.SipProviderImpl@17494c8]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:281) [Calling listener for SIP/2.0 200 OK
+]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setPassToListener(SIPTransaction.java:1208) [setPassToListener()]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.getRouteList(SIPDialog.java:607) [getRouteList gov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.getRouteList(SIPDialog.java:622) [----- ]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.getRouteList(SIPDialog.java:623) [getRouteList for gov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.getRouteList(SIPDialog.java:625) [RouteList = ]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.getRouteList(SIPDialog.java:627) [myRouteList = ]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.getRouteList(SIPDialog.java:629) [----- ]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.sendAck(SIPDialog.java:647) [sendAckgov.nist.javax.sip.stack.SIPDialog@193c0cf]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.sendAck(SIPDialog.java:673) [setting from tag For outgoing ACK= 12345]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.sendAck(SIPDialog.java:676) [setting To tag for outgoing ACK = 4321]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.sendAck(SIPDialog.java:678) [ack = ACK sip:127.0.0.1:5070 SIP/2.0
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKe1cc4aeac85964575131242625f8a7bf
+CSeq: 1 ACK
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>;tag=4321
+Max-Forwards: 70
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.DefaultRouter.getNextHop(DefaultRouter.java:229) [Using outbound proxy to route the request = 127.0.0.1:5070/udp]
+DEBUG - gov.nist.javax.sip.stack.SIPDialog.sendAck(SIPDialog.java:694) [hop = 127.0.0.1:5070/udp]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.<init>(UDPMessageChannel.java:198) [Creating message channel 127.0.0.1/5070]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[UDPMessageChannel.java:576][SIPDialog.java:705][SIPDialog.java:1449][DeliverRequestEventWithBadHeaderTest.java:259][EventScanner.java:290][EventScanner.java:492][null:-1]]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:678) [gov.nist.javax.sip.stack.UDPMessageChannel:sendMessage 127.0.0.1/5070
+ACK sip:127.0.0.1:5070 SIP/2.0
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKe1cc4aeac85964575131242625f8a7bf
+CSeq: 1 ACK
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>;tag=4321
+Max-Forwards: 70
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:681) [*******************
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:698) [sendMessage 127.0.0.1/5070
+ACK sip:127.0.0.1:5070 SIP/2.0
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKe1cc4aeac85964575131242625f8a7bf
+CSeq: 1 ACK
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>;tag=4321
+Max-Forwards: 70
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:333) [ ]]>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:334) [</debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:335) [<message
+from="127.0.0.1:5060" 
+to="127.0.0.1:5070" 
+time="1201148081937"
+isSender="true" 
+transactionId="z9hg4bke1cc4aeac85964575131242625f8a7bf" 
+callId="7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1" 
+firstLine="ACK sip:127.0.0.1:5070 SIP/2.0" 
+>
+<![CDATA[ACK sip:127.0.0.1:5070 SIP/2.0
+Via: SIP/2.0/UDP 127.0.0.1:5060;branch=z9hG4bKe1cc4aeac85964575131242625f8a7bf
+CSeq: 1 ACK
+Call-ID: 7a3cd620346e3fa199cb397fe6b6fc16@127.0.0.1
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>;tag=4321
+Max-Forwards: 70
+Content-Length: 0
+
+]]>
+</message>
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:336) [<debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.logMessage(ServerLog.java:337) [<![CDATA[ ]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.semRelease(SIPTransaction.java:1181) [semRelease ]]]]gov.nist.javax.sip.stack.SIPClientTransaction@b19c5588]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SIPTransaction.java:1182][SIPTransaction.java:1168][EventScanner.java:362][EventScanner.java:492][null:-1]]
+DEBUG - gov.nist.javax.sip.stack.SIPClientTransaction$TransactionTimer.runTask(SIPClientTransaction.java:200) [removing  = gov.nist.javax.sip.stack.SIPClientTransaction@b19c5588 isReliable false]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removeTransaction(SIPTransactionStack.java:1325) [Removing Transaction = z9hg4bkaf0a7977560260c16e144463dd52ba61 transaction = gov.nist.javax.sip.stack.SIPClientTransaction@b19c5588]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removeTransaction(SIPTransactionStack.java:1358) [REMOVED client tx gov.nist.javax.sip.stack.SIPClientTransaction@b19c5588 KEY = z9hg4bkaf0a7977560260c16e144463dd52ba61]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.handleEvent(SipProviderImpl.java:135) [handleEvent javax.sip.TransactionTerminatedEvent[source=gov.nist.javax.sip.SipProviderImpl@17494c8]currentTransaction = gov.nist.javax.sip.stack.SIPClientTransaction@b19c5588this.sipListener = test.unit.gov.nist.javax.sip.stack.DeliverRequestEventWithBadHeaderTest$Shootist@5e55absipEvent.source = gov.nist.javax.sip.SipProviderImpl@17494c8]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:121) [[SipProviderImpl.java:147][SIPTransactionStack.java:1370][SIPClientTransaction.java:205][SIPStackTimerTask.java:29][null:-1][null:-1]]
+DEBUG - gov.nist.javax.sip.EventScanner.addEvent(EventScanner.java:81) [addEvent gov.nist.javax.sip.EventWrapper@67064]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:487) [Processing gov.nist.javax.sip.EventWrapper@67064nevents 1]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:129) [sipEvent = javax.sip.TransactionTerminatedEvent[source=gov.nist.javax.sip.SipProviderImpl@17494c8]source = gov.nist.javax.sip.SipProviderImpl@17494c8]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:389) [About to deliver transactionTerminatedEvent]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:391) [tx = gov.nist.javax.sip.stack.SIPClientTransaction@b19c5588]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:395) [tx = null]
+DEBUG - gov.nist.javax.sip.SipStackImpl.stop(SipStackImpl.java:904) [stopStack -- stoppping the stack]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageProcessor.run(UDPMessageProcessor.java:252) [UDPMessageProcessor: Stopping]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:455) [Stopped event scanner!!]

@@ -1,35 +1,37 @@
 /*
-* Conditions Of Use 
-* 
-* This software was developed by employees of the National Institute of
-* Standards and Technology (NIST), an agency of the Federal Government.
-* Pursuant to title 15 Untied States Code Section 105, works of NIST
-* employees are not subject to copyright protection in the United States
-* and are considered to be in the public domain.  As a result, a formal
-* license is not needed to use the software.
-* 
-* This software is provided by NIST as a service and is expressly
-* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
-* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
-* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
-* AND DATA ACCURACY.  NIST does not warrant or make any representations
-* regarding the use of the software or the results thereof, including but
-* not limited to the correctness, accuracy, reliability or usefulness of
-* the software.
-* 
-* Permission to use this software is contingent upon your acceptance
-* of the terms of this agreement
-*  
-* .
-* 
-*/
+ * Conditions Of Use 
+ * 
+ * This software was developed by employees of the National Institute of
+ * Standards and Technology (NIST), an agency of the Federal Government.
+ * Pursuant to title 15 Untied States Code Section 105, works of NIST
+ * employees are not subject to copyright protection in the United States
+ * and are considered to be in the public domain.  As a result, a formal
+ * license is not needed to use the software.
+ * 
+ * This software is provided by NIST as a service and is expressly
+ * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+ * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+ * AND DATA ACCURACY.  NIST does not warrant or make any representations
+ * regarding the use of the software or the results thereof, including but
+ * not limited to the correctness, accuracy, reliability or usefulness of
+ * the software.
+ * 
+ * Permission to use this software is contingent upon your acceptance
+ * of the terms of this agreement
+ *  
+ * .
+ * 
+ */
 /*******************************************************************************
-* Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
-*******************************************************************************/
+ * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
+ *******************************************************************************/
 package gov.nist.javax.sip.message;
 
 import java.text.ParseException;
 import javax.sip.header.*;
+
+import java.util.LinkedList;
 import java.util.List;
 import gov.nist.javax.sip.header.*;
 import javax.sip.message.*;
@@ -37,12 +39,12 @@ import javax.sip.address.*;
 import gov.nist.javax.sip.parser.*;
 
 /**
- *  Message Factory implementation 
- *
- * @version 1.2 $Revision: 1.9 $ $Date: 2007-10-29 02:24:37 $
+ * Message Factory implementation
+ * 
+ * @version 1.2 $Revision: 1.10 $ $Date: 2008-01-24 16:24:25 $
  * @since 1.1
- *
- * @author M. Ranganathan   <br/>
+ * 
+ * @author M. Ranganathan <br/>
  * @author Olivier Deruelle <br/>
  * 
  */
@@ -59,42 +61,40 @@ public class MessageFactoryImpl implements MessageFactory {
 	 * Creates a new Request message of type specified by the method paramater,
 	 * containing the URI of the Request, the mandatory headers of the message
 	 * with a body in the form of a Java object and the body content type.
-	 *
-	 * @param requestURI - the new URI object of the requestURI value of this Message.
-	 * @param method - the new string of the method value of this Message.
-	 * @param callId - the new CallIdHeader object of the callId value of this Message.
-	 * @param cSeq - the new CSeqHeader object of the cSeq value of this Message.
-	 * @param from - the new FromHeader object of the from value of this Message.
-	 * @param to - the new ToHeader object of the to value of this Message.
-	 * @param via - the new List object of the ViaHeaders of this Message.
-	 * @param content - the new Object of the body content value of this Message.
-	 * @param contentType - the new ContentTypeHeader object of the content type 
-	 * value of this Message.
-	 * @throws ParseException which signals that an error has been reached
-	 * unexpectedly while parsing the method or the body.
+	 * 
+	 * @param requestURI -
+	 *            the new URI object of the requestURI value of this Message.
+	 * @param method -
+	 *            the new string of the method value of this Message.
+	 * @param callId -
+	 *            the new CallIdHeader object of the callId value of this
+	 *            Message.
+	 * @param cSeq -
+	 *            the new CSeqHeader object of the cSeq value of this Message.
+	 * @param from -
+	 *            the new FromHeader object of the from value of this Message.
+	 * @param to -
+	 *            the new ToHeader object of the to value of this Message.
+	 * @param via -
+	 *            the new List object of the ViaHeaders of this Message.
+	 * @param content -
+	 *            the new Object of the body content value of this Message.
+	 * @param contentType -
+	 *            the new ContentTypeHeader object of the content type value of
+	 *            this Message.
+	 * @throws ParseException
+	 *             which signals that an error has been reached unexpectedly
+	 *             while parsing the method or the body.
 	 */
-	public Request createRequest(
-		javax.sip.address.URI requestURI,
-		String method,
-		CallIdHeader callId,
-		CSeqHeader cSeq,
-		FromHeader from,
-		ToHeader to,
-		List via,
-		MaxForwardsHeader maxForwards,
-		ContentTypeHeader contentType,
-		Object content)
-		throws ParseException {
-		if (requestURI == null
-			|| method == null
-			|| callId == null
-			|| cSeq == null
-			|| from == null
-			|| to == null
-			|| via == null
-			|| maxForwards == null
-			|| content == null
-			|| contentType == null)
+	public Request createRequest(javax.sip.address.URI requestURI,
+			String method, CallIdHeader callId, CSeqHeader cSeq,
+			FromHeader from, ToHeader to, List via,
+			MaxForwardsHeader maxForwards, ContentTypeHeader contentType,
+			Object content) throws ParseException {
+		if (requestURI == null || method == null || callId == null
+				|| cSeq == null || from == null || to == null || via == null
+				|| maxForwards == null || content == null
+				|| contentType == null)
 			throw new NullPointerException("Null parameters");
 
 		SIPRequest sipRequest = new SIPRequest();
@@ -115,47 +115,42 @@ public class MessageFactoryImpl implements MessageFactory {
 	 * Creates a new Request message of type specified by the method paramater,
 	 * containing the URI of the Request, the mandatory headers of the message
 	 * with a body in the form of a byte array and body content type.
-	 *
-	 * @param requestURI - the new URI object of the 
-	 * requestURI value of this Message.
-	 * @param method - the new string of the method value of this Message.
-	 * @param callId - the new CallIdHeader object of the callId value of this Message.
-	 * @param cSeq - the new CSeqHeader object of the cSeq value of this Message.
-	 * @param from - the new FromHeader object of the from value of this Message.
-	 * @param to - the new ToHeader object of the to value of this Message.
-	 * @param via - the new List object of the ViaHeaders of this Message.
-	 * @param content - the new byte array of the body content value of this Message.
-	 * @param contentType - the new ContentTypeHeader object of the content type 
-	 * value of this Message.
-	 * @throws ParseException which signals that an error has been reached
-	 * unexpectedly while parsing the method or the body.
+	 * 
+	 * @param requestURI -
+	 *            the new URI object of the requestURI value of this Message.
+	 * @param method -
+	 *            the new string of the method value of this Message.
+	 * @param callId -
+	 *            the new CallIdHeader object of the callId value of this
+	 *            Message.
+	 * @param cSeq -
+	 *            the new CSeqHeader object of the cSeq value of this Message.
+	 * @param from -
+	 *            the new FromHeader object of the from value of this Message.
+	 * @param to -
+	 *            the new ToHeader object of the to value of this Message.
+	 * @param via -
+	 *            the new List object of the ViaHeaders of this Message.
+	 * @param content -
+	 *            the new byte array of the body content value of this Message.
+	 * @param contentType -
+	 *            the new ContentTypeHeader object of the content type value of
+	 *            this Message.
+	 * @throws ParseException
+	 *             which signals that an error has been reached unexpectedly
+	 *             while parsing the method or the body.
 	 */
-	public Request createRequest(
-		URI requestURI,
-		String method,
-		CallIdHeader callId,
-		CSeqHeader cSeq,
-		FromHeader from,
-		ToHeader to,
-		List via,
-		MaxForwardsHeader maxForwards,
-		byte[] content,
-		ContentTypeHeader contentType)
-		throws ParseException {
-		if (requestURI == null
-			|| method == null
-			|| callId == null
-			|| cSeq == null
-			|| from == null
-			|| to == null
-			|| via == null
-			|| maxForwards == null
-			|| content == null
-			|| contentType == null)
+	public Request createRequest(URI requestURI, String method,
+			CallIdHeader callId, CSeqHeader cSeq, FromHeader from, ToHeader to,
+			List via, MaxForwardsHeader maxForwards, byte[] content,
+			ContentTypeHeader contentType) throws ParseException {
+		if (requestURI == null || method == null || callId == null
+				|| cSeq == null || from == null || to == null || via == null
+				|| maxForwards == null || content == null
+				|| contentType == null)
 			throw new ParseException(
-				"JAIN-SIP Exception, some parameters are missing"
-					+ ", unable to create the request",
-				0);
+					"JAIN-SIP Exception, some parameters are missing"
+							+ ", unable to create the request", 0);
 
 		SIPRequest sipRequest = new SIPRequest();
 		sipRequest.setRequestURI(requestURI);
@@ -175,39 +170,35 @@ public class MessageFactoryImpl implements MessageFactory {
 	 * Creates a new Request message of type specified by the method paramater,
 	 * containing the URI of the Request, the mandatory headers of the message.
 	 * This new Request does not contain a body.
-	 *
-	 * @param requestURI - the new URI object of the requestURI value of this Message.
-	 * @param method - the new string of the method value of this Message.
-	 * @param callId - the new CallIdHeader object of the callId value of this Message.
-	 * @param cSeq - the new CSeqHeader object of the cSeq value of this Message.
-	 * @param from - the new FromHeader object of the from value of this Message.
-	 * @param to - the new ToHeader object of the to value of this Message.
-	 * @param via - the new List object of the ViaHeaders of this Message.
-	 * @throws ParseException which signals that an error has been reached
-	 * unexpectedly while parsing the method.
+	 * 
+	 * @param requestURI -
+	 *            the new URI object of the requestURI value of this Message.
+	 * @param method -
+	 *            the new string of the method value of this Message.
+	 * @param callId -
+	 *            the new CallIdHeader object of the callId value of this
+	 *            Message.
+	 * @param cSeq -
+	 *            the new CSeqHeader object of the cSeq value of this Message.
+	 * @param from -
+	 *            the new FromHeader object of the from value of this Message.
+	 * @param to -
+	 *            the new ToHeader object of the to value of this Message.
+	 * @param via -
+	 *            the new List object of the ViaHeaders of this Message.
+	 * @throws ParseException
+	 *             which signals that an error has been reached unexpectedly
+	 *             while parsing the method.
 	 */
-	public Request createRequest(
-		URI requestURI,
-		String method,
-		CallIdHeader callId,
-		CSeqHeader cSeq,
-		FromHeader from,
-		ToHeader to,
-		List via,
-		MaxForwardsHeader maxForwards)
-		throws ParseException {
-		if (requestURI == null
-			|| method == null
-			|| callId == null
-			|| cSeq == null
-			|| from == null
-			|| to == null
-			|| via == null
-			|| maxForwards == null)
+	public Request createRequest(URI requestURI, String method,
+			CallIdHeader callId, CSeqHeader cSeq, FromHeader from, ToHeader to,
+			List via, MaxForwardsHeader maxForwards) throws ParseException {
+		if (requestURI == null || method == null || callId == null
+				|| cSeq == null || from == null || to == null || via == null
+				|| maxForwards == null)
 			throw new ParseException(
-				"JAIN-SIP Exception, some parameters are missing"
-					+ ", unable to create the request",
-				0);
+					"JAIN-SIP Exception, some parameters are missing"
+							+ ", unable to create the request", 0);
 
 		SIPRequest sipRequest = new SIPRequest();
 		sipRequest.setRequestURI(requestURI);
@@ -225,41 +216,39 @@ public class MessageFactoryImpl implements MessageFactory {
 	// Standard Response Creation methods
 
 	/**
-	 * Creates a new Response message of type specified by the statusCode 
-	 * paramater, containing the mandatory headers of the message with a body 
-	 * in the form of a Java object and the body content type.
-	 *
-	 * @param statusCode - the new integer of the statusCode value of this Message.
-	 * @param callId - the new CallIdHeader object of the callId value of this Message.
-	 * @param cSeq - the new CSeqHeader object of the cSeq value of this Message.
-	 * @param from - the new FromHeader object of the from value of this Message.
-	 * @param to - the new ToHeader object of the to value of this Message.
-	 * @param via - the new List object of the ViaHeaders of this Message.
-	 * @param content - the new Object of the body content value of this Message.
-	 * @param contentType - the new ContentTypeHeader object of the content type 
-	 * value of this Message.
-	 * @throws ParseException which signals that an error has been reached
-	 * unexpectedly while parsing the statusCode or the body.
+	 * Creates a new Response message of type specified by the statusCode
+	 * paramater, containing the mandatory headers of the message with a body in
+	 * the form of a Java object and the body content type.
+	 * 
+	 * @param statusCode -
+	 *            the new integer of the statusCode value of this Message.
+	 * @param callId -
+	 *            the new CallIdHeader object of the callId value of this
+	 *            Message.
+	 * @param cSeq -
+	 *            the new CSeqHeader object of the cSeq value of this Message.
+	 * @param from -
+	 *            the new FromHeader object of the from value of this Message.
+	 * @param to -
+	 *            the new ToHeader object of the to value of this Message.
+	 * @param via -
+	 *            the new List object of the ViaHeaders of this Message.
+	 * @param content -
+	 *            the new Object of the body content value of this Message.
+	 * @param contentType -
+	 *            the new ContentTypeHeader object of the content type value of
+	 *            this Message.
+	 * @throws ParseException
+	 *             which signals that an error has been reached unexpectedly
+	 *             while parsing the statusCode or the body.
 	 */
-	public Response createResponse(
-		int statusCode,
-		CallIdHeader callId,
-		CSeqHeader cSeq,
-		FromHeader from,
-		ToHeader to,
-		List via,
-		MaxForwardsHeader maxForwards,
-		Object content,
-		ContentTypeHeader contentType)
-		throws ParseException {
-		if (callId == null
-			|| cSeq == null
-			|| from == null
-			|| to == null
-			|| via == null
-			|| maxForwards == null
-			|| content == null
-			|| contentType == null)
+	public Response createResponse(int statusCode, CallIdHeader callId,
+			CSeqHeader cSeq, FromHeader from, ToHeader to, List via,
+			MaxForwardsHeader maxForwards, Object content,
+			ContentTypeHeader contentType) throws ParseException {
+		if (callId == null || cSeq == null || from == null || to == null
+				|| via == null || maxForwards == null || content == null
+				|| contentType == null)
 			throw new NullPointerException(" unable to create the response");
 
 		SIPResponse sipResponse = new SIPResponse();
@@ -282,41 +271,39 @@ public class MessageFactoryImpl implements MessageFactory {
 	}
 
 	/**
-	 * Creates a new Response message of type specified by the statusCode 
-	 * paramater, containing the mandatory headers of the message with a body 
-	 * in the form of a byte array and the body content type.
-	 *
-	 * @param statusCode - the new integer of the statusCode value of this Message.
-	 * @param callId - the new CallIdHeader object of the callId value of this Message.
-	 * @param cSeq - the new CSeqHeader object of the cSeq value of this Message.
-	 * @param from - the new FromHeader object of the from value of this Message.
-	 * @param to - the new ToHeader object of the to value of this Message.
-	 * @param via - the new List object of the ViaHeaders of this Message.
-	 * @param content - the new byte array of the body content value of this Message.
-	 * @param contentType - the new ContentTypeHeader object of the content type 
-	 * value of this Message.
-	 * @throws ParseException which signals that an error has been reached
-	 * unexpectedly while parsing the statusCode or the body.
+	 * Creates a new Response message of type specified by the statusCode
+	 * paramater, containing the mandatory headers of the message with a body in
+	 * the form of a byte array and the body content type.
+	 * 
+	 * @param statusCode -
+	 *            the new integer of the statusCode value of this Message.
+	 * @param callId -
+	 *            the new CallIdHeader object of the callId value of this
+	 *            Message.
+	 * @param cSeq -
+	 *            the new CSeqHeader object of the cSeq value of this Message.
+	 * @param from -
+	 *            the new FromHeader object of the from value of this Message.
+	 * @param to -
+	 *            the new ToHeader object of the to value of this Message.
+	 * @param via -
+	 *            the new List object of the ViaHeaders of this Message.
+	 * @param content -
+	 *            the new byte array of the body content value of this Message.
+	 * @param contentType -
+	 *            the new ContentTypeHeader object of the content type value of
+	 *            this Message.
+	 * @throws ParseException
+	 *             which signals that an error has been reached unexpectedly
+	 *             while parsing the statusCode or the body.
 	 */
-	public Response createResponse(
-		int statusCode,
-		CallIdHeader callId,
-		CSeqHeader cSeq,
-		FromHeader from,
-		ToHeader to,
-		List via,
-		MaxForwardsHeader maxForwards,
-		byte[] content,
-		ContentTypeHeader contentType)
-		throws ParseException {
-		if (callId == null
-			|| cSeq == null
-			|| from == null
-			|| to == null
-			|| via == null
-			|| maxForwards == null
-			|| content == null
-			|| contentType == null)
+	public Response createResponse(int statusCode, CallIdHeader callId,
+			CSeqHeader cSeq, FromHeader from, ToHeader to, List via,
+			MaxForwardsHeader maxForwards, byte[] content,
+			ContentTypeHeader contentType) throws ParseException {
+		if (callId == null || cSeq == null || from == null || to == null
+				|| via == null || maxForwards == null || content == null
+				|| contentType == null)
 			throw new NullPointerException("Null params ");
 
 		SIPResponse sipResponse = new SIPResponse();
@@ -334,38 +321,35 @@ public class MessageFactoryImpl implements MessageFactory {
 	}
 
 	/**
-	 * Creates a new Response message of type specified by the statusCode 
-	 * paramater, containing the mandatory headers of the message. This new 
+	 * Creates a new Response message of type specified by the statusCode
+	 * paramater, containing the mandatory headers of the message. This new
 	 * Response does not contain a body.
-	 *
-	 * @param statusCode - the new integer of the statusCode value of this Message.
-	 * @param callId - the new CallIdHeader object of the callId value of this Message.
-	 * @param cSeq - the new CSeqHeader object of the cSeq value of this Message.
-	 * @param from - the new FromHeader object of the from value of this Message.
-	 * @param to - the new ToHeader object of the to value of this Message.
-	 * @param via - the new List object of the ViaHeaders of this Message.
-	 * @throws ParseException which signals that an error has been reached
-	 * unexpectedly while parsing the statusCode.
+	 * 
+	 * @param statusCode -
+	 *            the new integer of the statusCode value of this Message.
+	 * @param callId -
+	 *            the new CallIdHeader object of the callId value of this
+	 *            Message.
+	 * @param cSeq -
+	 *            the new CSeqHeader object of the cSeq value of this Message.
+	 * @param from -
+	 *            the new FromHeader object of the from value of this Message.
+	 * @param to -
+	 *            the new ToHeader object of the to value of this Message.
+	 * @param via -
+	 *            the new List object of the ViaHeaders of this Message.
+	 * @throws ParseException
+	 *             which signals that an error has been reached unexpectedly
+	 *             while parsing the statusCode.
 	 */
-	public Response createResponse(
-		int statusCode,
-		CallIdHeader callId,
-		CSeqHeader cSeq,
-		FromHeader from,
-		ToHeader to,
-		List via,
-		MaxForwardsHeader maxForwards)
-		throws ParseException {
-		if (callId == null
-			|| cSeq == null
-			|| from == null
-			|| to == null
-			|| via == null
-			|| maxForwards == null)
+	public Response createResponse(int statusCode, CallIdHeader callId,
+			CSeqHeader cSeq, FromHeader from, ToHeader to, List via,
+			MaxForwardsHeader maxForwards) throws ParseException {
+		if (callId == null || cSeq == null || from == null || to == null
+				|| via == null || maxForwards == null)
 			throw new ParseException(
-				"JAIN-SIP Exception, some parameters are missing"
-					+ ", unable to create the response",
-				0);
+					"JAIN-SIP Exception, some parameters are missing"
+							+ ", unable to create the response", 0);
 
 		SIPResponse sipResponse = new SIPResponse();
 		sipResponse.setStatusCode(statusCode);
@@ -379,27 +363,29 @@ public class MessageFactoryImpl implements MessageFactory {
 		return sipResponse;
 	}
 
-	// Response Creation methods based on a Request    
+	// Response Creation methods based on a Request
 
 	/**
-	 * Creates a new Response message of type specified by the statusCode 
-	 * paramater, based on a specific Request with a new body in the form of a 
+	 * Creates a new Response message of type specified by the statusCode
+	 * paramater, based on a specific Request with a new body in the form of a
 	 * Java object and the body content type.
-	 *
-	 * @param statusCode - the new integer of the statusCode value of this Message.
-	 * @param request - the received Reqest object upon which to base the Response.
-	 * @param content - the new Object of the body content value of this Message.
-	 * @param contentType - the new ContentTypeHeader object of the content type 
-	 * value of this Message.
-	 * @throws ParseException which signals that an error has been reached
-	 * unexpectedly while parsing the statusCode or the body.
+	 * 
+	 * @param statusCode -
+	 *            the new integer of the statusCode value of this Message.
+	 * @param request -
+	 *            the received Reqest object upon which to base the Response.
+	 * @param content -
+	 *            the new Object of the body content value of this Message.
+	 * @param contentType -
+	 *            the new ContentTypeHeader object of the content type value of
+	 *            this Message.
+	 * @throws ParseException
+	 *             which signals that an error has been reached unexpectedly
+	 *             while parsing the statusCode or the body.
 	 */
-	public Response createResponse(
-		int statusCode,
-		Request request,
-		ContentTypeHeader contentType,
-		Object content)
-		throws ParseException {
+	public Response createResponse(int statusCode, Request request,
+			ContentTypeHeader contentType, Object content)
+			throws ParseException {
 		if (request == null || content == null || contentType == null)
 			throw new NullPointerException("null parameters");
 
@@ -411,24 +397,26 @@ public class MessageFactoryImpl implements MessageFactory {
 	}
 
 	/**
-	 * Creates a new Response message of type specified by the statusCode 
-	 * paramater, based on a specific Request with a new body in the form of a 
+	 * Creates a new Response message of type specified by the statusCode
+	 * paramater, based on a specific Request with a new body in the form of a
 	 * byte array and the body content type.
-	 *
-	 * @param statusCode - the new integer of the statusCode value of this Message.
-	 * @param request - the received Reqest object upon which to base the Response.
-	 * @param content - the new byte array of the body content value of this Message.
-	 * @param contentType - the new ContentTypeHeader object of the content type 
-	 * value of this Message.
-	 * @throws ParseException which signals that an error has been reached
-	 * unexpectedly while parsing the statusCode or the body.
+	 * 
+	 * @param statusCode -
+	 *            the new integer of the statusCode value of this Message.
+	 * @param request -
+	 *            the received Reqest object upon which to base the Response.
+	 * @param content -
+	 *            the new byte array of the body content value of this Message.
+	 * @param contentType -
+	 *            the new ContentTypeHeader object of the content type value of
+	 *            this Message.
+	 * @throws ParseException
+	 *             which signals that an error has been reached unexpectedly
+	 *             while parsing the statusCode or the body.
 	 */
-	public Response createResponse(
-		int statusCode,
-		Request request,
-		ContentTypeHeader contentType,
-		byte[] content)
-		throws ParseException {
+	public Response createResponse(int statusCode, Request request,
+			ContentTypeHeader contentType, byte[] content)
+			throws ParseException {
 		if (request == null || content == null || contentType == null)
 			throw new NullPointerException("null Parameters");
 
@@ -441,22 +429,25 @@ public class MessageFactoryImpl implements MessageFactory {
 	}
 
 	/**
-	 * Creates a new Response message of type specified by the statusCode 
-	 * paramater, based on a specific Request message. This new Response does 
+	 * Creates a new Response message of type specified by the statusCode
+	 * paramater, based on a specific Request message. This new Response does
 	 * not contain a body.
-	 *
-	 * @param statusCode - the new integer of the statusCode value of this Message.
-	 * @param request - the received Reqest object upon which to base the Response.
-	 * @throws ParseException which signals that an error has been reached
-	 * unexpectedly while parsing the statusCode.
+	 * 
+	 * @param statusCode -
+	 *            the new integer of the statusCode value of this Message.
+	 * @param request -
+	 *            the received Reqest object upon which to base the Response.
+	 * @throws ParseException
+	 *             which signals that an error has been reached unexpectedly
+	 *             while parsing the statusCode.
 	 */
 	public Response createResponse(int statusCode, Request request)
-		throws ParseException {
+			throws ParseException {
 		if (request == null)
 			throw new NullPointerException("null parameters");
 
 		// if (LogWriter.needsLogging)
-		//	LogWriter.logMessage("createResponse " + request);
+		// LogWriter.logMessage("createResponse " + request);
 
 		SIPRequest sipRequest = (SIPRequest) request;
 		SIPResponse sipResponse = sipRequest.createResponse(statusCode);
@@ -468,50 +459,44 @@ public class MessageFactoryImpl implements MessageFactory {
 		return sipResponse;
 	}
 
-	/** Creates a new Request message of type specified by the method paramater,
+	/**
+	 * Creates a new Request message of type specified by the method paramater,
 	 * containing the URI of the Request, the mandatory headers of the message
 	 * with a body in the form of a byte array and body content type.
-	 *
-	 * @param requestURI - the new URI object of the requestURI value 
-	 * 		of this Message.
-	 * @param method - the new string of the method value of this Message.
-	 * @param callId - the new CallIdHeader object of the callId value 
-	 * 		of this Message.
-	 * @param cSeq - the new CSeqHeader object of the cSeq value of 
-	 * 		this Message.
-	 * @param from - the new FromHeader object of the from value of 
-	 *		this Message.
-	 * @param to - the new ToHeader object of the to value of this Message.
-	 * @param via - the new List object of the ViaHeaders of this Message.
-	 * @param contentType - the new ContentTypeHeader object of the content type
-	 * value of this Message.
-	 * @param content - the new byte array of the body content 
-	 * value of this Message.
-	 * @throws ParseException which signals that an error has been reached
-	 * unexpectedly while parsing the method or the body.
+	 * 
+	 * @param requestURI -
+	 *            the new URI object of the requestURI value of this Message.
+	 * @param method -
+	 *            the new string of the method value of this Message.
+	 * @param callId -
+	 *            the new CallIdHeader object of the callId value of this
+	 *            Message.
+	 * @param cSeq -
+	 *            the new CSeqHeader object of the cSeq value of this Message.
+	 * @param from -
+	 *            the new FromHeader object of the from value of this Message.
+	 * @param to -
+	 *            the new ToHeader object of the to value of this Message.
+	 * @param via -
+	 *            the new List object of the ViaHeaders of this Message.
+	 * @param contentType -
+	 *            the new ContentTypeHeader object of the content type value of
+	 *            this Message.
+	 * @param content -
+	 *            the new byte array of the body content value of this Message.
+	 * @throws ParseException
+	 *             which signals that an error has been reached unexpectedly
+	 *             while parsing the method or the body.
 	 */
-	public Request createRequest(
-		javax.sip.address.URI requestURI,
-		String method,
-		CallIdHeader callId,
-		CSeqHeader cSeq,
-		FromHeader from,
-		ToHeader to,
-		List via,
-		MaxForwardsHeader maxForwards,
-		ContentTypeHeader contentType,
-		byte[] content)
-		throws ParseException {
-		if (requestURI == null
-			|| method == null
-			|| callId == null
-			|| cSeq == null
-			|| from == null
-			|| to == null
-			|| via == null
-			|| maxForwards == null
-			|| content == null
-			|| contentType == null)
+	public Request createRequest(javax.sip.address.URI requestURI,
+			String method, CallIdHeader callId, CSeqHeader cSeq,
+			FromHeader from, ToHeader to, List via,
+			MaxForwardsHeader maxForwards, ContentTypeHeader contentType,
+			byte[] content) throws ParseException {
+		if (requestURI == null || method == null || callId == null
+				|| cSeq == null || from == null || to == null || via == null
+				|| maxForwards == null || content == null
+				|| contentType == null)
 			throw new NullPointerException("missing parameters");
 
 		SIPRequest sipRequest = new SIPRequest();
@@ -527,43 +512,40 @@ public class MessageFactoryImpl implements MessageFactory {
 		return sipRequest;
 	}
 
-	/** Creates a new Response message of type specified by the statusCode
-	 * paramater, containing the mandatory headers of the message with a body
-	 * in the form of a Java object and the body content type.
-	 *
-	 * @param statusCode the new integer of the 
-	 * 	statusCode value of this Message.
-	 * @param callId the new CallIdHeader object of the 
-	 * 		callId value of this Message.
-	 * @param cSeq the new CSeqHeader object of the cSeq value of this Message.
-	 * @param from the new FromHeader object of the from value of this Message.
-	 * @param to the new ToHeader object of the to value of this Message.
-	 * @param via the new List object of the ViaHeaders of this Message.
-	 * @param contentType the new ContentTypeHeader object of the content type
-	 * value of this Message.
-	 * @param content the new Object of the body content value of this Message.
-	 * @throws ParseException which signals that an error has been reached
-	 * unexpectedly while parsing the statusCode or the body.
+	/**
+	 * Creates a new Response message of type specified by the statusCode
+	 * paramater, containing the mandatory headers of the message with a body in
+	 * the form of a Java object and the body content type.
+	 * 
+	 * @param statusCode
+	 *            the new integer of the statusCode value of this Message.
+	 * @param callId
+	 *            the new CallIdHeader object of the callId value of this
+	 *            Message.
+	 * @param cSeq
+	 *            the new CSeqHeader object of the cSeq value of this Message.
+	 * @param from
+	 *            the new FromHeader object of the from value of this Message.
+	 * @param to
+	 *            the new ToHeader object of the to value of this Message.
+	 * @param via
+	 *            the new List object of the ViaHeaders of this Message.
+	 * @param contentType
+	 *            the new ContentTypeHeader object of the content type value of
+	 *            this Message.
+	 * @param content
+	 *            the new Object of the body content value of this Message.
+	 * @throws ParseException
+	 *             which signals that an error has been reached unexpectedly
+	 *             while parsing the statusCode or the body.
 	 */
-	public Response createResponse(
-		int statusCode,
-		CallIdHeader callId,
-		CSeqHeader cSeq,
-		FromHeader from,
-		ToHeader to,
-		List via,
-		MaxForwardsHeader maxForwards,
-		ContentTypeHeader contentType,
-		Object content)
-		throws ParseException {
-		if (callId == null
-			|| cSeq == null
-			|| from == null
-			|| to == null
-			|| via == null
-			|| maxForwards == null
-			|| content == null
-			|| contentType == null)
+	public Response createResponse(int statusCode, CallIdHeader callId,
+			CSeqHeader cSeq, FromHeader from, ToHeader to, List via,
+			MaxForwardsHeader maxForwards, ContentTypeHeader contentType,
+			Object content) throws ParseException {
+		if (callId == null || cSeq == null || from == null || to == null
+				|| via == null || maxForwards == null || content == null
+				|| contentType == null)
 			throw new NullPointerException("missing parameters");
 		SIPResponse sipResponse = new SIPResponse();
 		StatusLine statusLine = new StatusLine();
@@ -583,41 +565,40 @@ public class MessageFactoryImpl implements MessageFactory {
 
 	}
 
-	/** Creates a new Response message of type specified by the statusCode
-	 * paramater, containing the mandatory headers of the message with a body
-	 * in the form of a byte array and the body content type.
-	 *
-	 * @param statusCode the new integer of the statusCode value of this Message.
-	 * @param callId the new CallIdHeader object of the callId value of this Message.
-	 * @param cSeq the new CSeqHeader object of the cSeq value of this Message.
-	 * @param from the new FromHeader object of the from value of this Message.
-	 * @param to the new ToHeader object of the to value of this Message.
-	 * @param via the new List object of the ViaHeaders of this Message.
-	 * @param contentType the new ContentTypeHeader object of the content type
-	 * value of this Message.
-	 * @param content the new byte array of the body content value of this Message.
-	 * @throws ParseException which signals that an error has been reached
-	 * unexpectedly while parsing the statusCode or the body.
+	/**
+	 * Creates a new Response message of type specified by the statusCode
+	 * paramater, containing the mandatory headers of the message with a body in
+	 * the form of a byte array and the body content type.
+	 * 
+	 * @param statusCode
+	 *            the new integer of the statusCode value of this Message.
+	 * @param callId
+	 *            the new CallIdHeader object of the callId value of this
+	 *            Message.
+	 * @param cSeq
+	 *            the new CSeqHeader object of the cSeq value of this Message.
+	 * @param from
+	 *            the new FromHeader object of the from value of this Message.
+	 * @param to
+	 *            the new ToHeader object of the to value of this Message.
+	 * @param via
+	 *            the new List object of the ViaHeaders of this Message.
+	 * @param contentType
+	 *            the new ContentTypeHeader object of the content type value of
+	 *            this Message.
+	 * @param content
+	 *            the new byte array of the body content value of this Message.
+	 * @throws ParseException
+	 *             which signals that an error has been reached unexpectedly
+	 *             while parsing the statusCode or the body.
 	 */
-	public Response createResponse(
-		int statusCode,
-		CallIdHeader callId,
-		CSeqHeader cSeq,
-		FromHeader from,
-		ToHeader to,
-		List via,
-		MaxForwardsHeader maxForwards,
-		ContentTypeHeader contentType,
-		byte[] content)
-		throws ParseException {
-		if (callId == null
-			|| cSeq == null
-			|| from == null
-			|| to == null
-			|| via == null
-			|| maxForwards == null
-			|| content == null
-			|| contentType == null)
+	public Response createResponse(int statusCode, CallIdHeader callId,
+			CSeqHeader cSeq, FromHeader from, ToHeader to, List via,
+			MaxForwardsHeader maxForwards, ContentTypeHeader contentType,
+			byte[] content) throws ParseException {
+		if (callId == null || cSeq == null || from == null || to == null
+				|| via == null || maxForwards == null || content == null
+				|| contentType == null)
 			throw new NullPointerException("missing parameters");
 		SIPResponse sipResponse = new SIPResponse();
 		StatusLine statusLine = new StatusLine();
@@ -637,20 +618,50 @@ public class MessageFactoryImpl implements MessageFactory {
 	}
 
 	/**
-	 * Create a request from a string. Conveniance method for UACs
-	 * that want to create an outgoing request from a string. Only the
-	 * headers of the request should be included in the String that is
-	 * supplied to this method.
-	 *
-	 * @param requestString -- string from which to create the message
-	 *		null string returns an empty message.
+	 * Create a request from a string. Conveniance method for UACs that want to
+	 * create an outgoing request from a string. Only the headers of the request
+	 * should be included in the String that is supplied to this method.
+	 * 
+	 * @param requestString --
+	 *            string from which to create the message null string returns an
+	 *            empty message.
 	 */
 	public javax.sip.message.Request createRequest(String requestString)
-		throws java.text.ParseException {
-		if ( requestString == null || requestString.equals("") )
+			throws java.text.ParseException {
+		if (requestString == null || requestString.equals(""))
 			return new SIPRequest();
 
 		StringMsgParser smp = new StringMsgParser();
+
+		/*
+		 * This allows you to catch parse exceptions and create invalid messages
+		 * if you want.
+		 */
+		ParseExceptionListener parseExceptionListener = new ParseExceptionListener() {
+
+			@Override
+			public void handleException(ParseException ex,
+					SIPMessage sipMessage, Class headerClass,
+					String headerText, String messageText)
+					throws ParseException {
+				// Rethrow the error for the essential headers. Otherwise bad headers are simply
+				// recorded in the message.
+				if (headerClass == From.class || headerClass == To.class
+						|| headerClass == CallID.class
+						|| headerClass == MaxForwards.class
+						|| headerClass == Via.class
+						|| headerClass == RequestLine.class
+						|| headerClass == StatusLine.class
+						|| headerClass == CSeq.class)
+					throw ex;
+
+				sipMessage.addUnparsed(headerText);
+
+			}
+
+		};
+
+		smp.setParseExceptionListener(parseExceptionListener);
 
 		SIPMessage sipMessage = smp.parseSIPMessage(requestString);
 
@@ -659,16 +670,18 @@ public class MessageFactoryImpl implements MessageFactory {
 
 		return (SIPRequest) sipMessage;
 	}
-	
-	/** Create a response from a string 
+
+	/**
+	 * Create a response from a string
 	 * 
-	 * @param responseString -- string from which to create the message
-	 *		null string returns an empty message. 
-	 *
+	 * @param responseString --
+	 *            string from which to create the message null string returns an
+	 *            empty message.
+	 * 
 	 */
-	public Response createResponse (String responseString ) 
-	throws java.text.ParseException {
-	    if (responseString == null)
+	public Response createResponse(String responseString)
+			throws java.text.ParseException {
+		if (responseString == null)
 			return new SIPResponse();
 
 		StringMsgParser smp = new StringMsgParser();
@@ -681,4 +694,3 @@ public class MessageFactoryImpl implements MessageFactory {
 		return (SIPResponse) sipMessage;
 	}
 }
-
