@@ -58,7 +58,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.37 $ $Date: 2008-01-17 17:59:05 $
+ * @version 1.2 $Revision: 1.38 $ $Date: 2008-01-24 16:24:26 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -306,15 +306,17 @@ public abstract class SIPMessage extends MessageObject implements
 	 */
 	public String encode() {
 		StringBuffer encoding = new StringBuffer();
-		// Synchronization added because of
-		// concurrent modification exception
-		// noticed by Lamine Brahimi.
 		Iterator<SIPHeader> it = this.headers.iterator();
 
 		while (it.hasNext()) {
 			SIPHeader siphdr = (SIPHeader) it.next();
 			if (!(siphdr instanceof ContentLength))
 				encoding.append(siphdr.encode());
+		}
+		// Append the unrecognized headers. Headers that are not
+		// recognized are passed through unchanged.
+		for ( String unrecognized : this.unrecognizedHeaders) {
+			encoding.append(unrecognized).append(NEWLINE);
 		}
 
 		encoding.append(contentLengthHeader.encode()).append(NEWLINE);
@@ -425,6 +427,7 @@ public abstract class SIPMessage extends MessageObject implements
 					.clone();
 		if (this.messageContentObject != null)
 			retval.messageContentObject = makeClone(messageContentObject);
+		retval.unrecognizedHeaders = this.unrecognizedHeaders;
 		return retval;
 	}
 
