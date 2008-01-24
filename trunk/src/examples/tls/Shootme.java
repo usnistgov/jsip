@@ -104,7 +104,7 @@ public class Shootme implements SipListener {
 			ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
 			toHeader.setTag("4321"); // Application is supposed to set.
 			Address address =
-				addressFactory.createAddress("Shootme <sips:" + myAddress+ ":" + myPort + ">"
+				addressFactory.createAddress("Shootme <sip:" + myAddress+ ":" + myPort + ">"
 				/*+ ";transport=tls>"*/ );
 			ContactHeader contactHeader =
 				headerFactory.createContactHeader(address);
@@ -271,7 +271,7 @@ public class Shootme implements SipListener {
 			headerFactory = sipFactory.createHeaderFactory();
 			addressFactory = sipFactory.createAddressFactory();
 			messageFactory = sipFactory.createMessageFactory();
-			ListeningPoint lpTLS = sipStack.createListeningPoint(sipStack.getIPAddress(), myPort, "tls");
+			ListeningPoint lpTLS = sipStack.createListeningPoint(sipStack.getIPAddress(), myPort, "tcp");
 
 			Shootme listener = this;
 
@@ -304,6 +304,9 @@ public class Shootme implements SipListener {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2007/02/12 19:45:45  jbemmel
+ * use sips
+ *
  * Revision 1.5  2006/12/13 15:15:28  mranga
  * Issue number:  90
  * Obtained from:

@@ -245,7 +245,8 @@ public class Shootme  implements SipListener {
 				this.okRecieved  = true;
 				ReInviteTest.assertNotNull( "INVITE 200 response should match a transaction", tid );
 				Dialog dialog = tid.getDialog();
-				Request request = dialog.createRequest(Request.ACK);
+				CSeqHeader cseq = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
+				Request request = dialog.createAck(cseq.getSeqNumber());
 				dialog.sendAck(request);
 			}
 			if ( tid != null ) {

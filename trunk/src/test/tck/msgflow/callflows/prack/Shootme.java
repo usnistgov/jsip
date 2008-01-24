@@ -127,13 +127,18 @@ public class Shootme implements SipListener {
 		try {
 			logger.info("shootme: got an ACK! Sending  a BYE");
 			logger.info("Dialog State = " + dialog.getState());
-			Dialog dialog = serverTransaction.getDialog();
+			
+			// JvB: there should not be a transaction for ACKs; requestEvent
+			// can be used to get it instead
+			// Dialog dialog = serverTransaction.getDialog();
+			Dialog dialog = requestEvent.getDialog();
 
 			SipProvider provider = (SipProvider) requestEvent.getSource();
 			Request byeRequest = dialog.createRequest(Request.BYE);
 			ClientTransaction ct = provider.getNewClientTransaction(byeRequest);
 			dialog.sendRequest(ct);
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			TestHarness.fail(ex.getMessage());
 		}
 
@@ -178,6 +183,7 @@ public class Shootme implements SipListener {
 			okResponse.addHeader(requireHeader);
 			dialog.sendReliableProvisionalResponse(okResponse);
 		} catch (Exception ex) {
+		  ex.printStackTrace();
 			TestHarness.fail(ex.getMessage());
 			
 		}
