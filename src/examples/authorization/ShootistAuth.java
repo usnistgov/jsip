@@ -29,13 +29,11 @@ public class ShootistAuth implements SipListener {
 	private ClientTransaction inviteTid;
 	private Dialog dialog;
 	long invco = 1;
-        String peerHostPort = "127.0.0.1:5070";
-        String transport = "udp";
-        String USER_AUTH = "auth";
-        String PASS_AUTH = "pass";
-        String realm = "nist.gov";
-
-	
+	String peerHostPort = "127.0.0.1:5070";
+	String transport = "udp";
+	String USER_AUTH = "auth";
+	String PASS_AUTH = "pass";
+	String realm = "nist.gov";
 
 	public void processRequest(RequestEvent requestReceivedEvent) {
 		Request request = requestReceivedEvent.getRequest();
@@ -98,22 +96,27 @@ public class ShootistAuth implements SipListener {
 					dialog.sendAck(ackRequest);
 				} else if (cseq.getMethod().equals(Request.CANCEL)) {
 					if (dialog.getState() == DialogState.CONFIRMED) {
-						// oops cancel went in too late. Need to hang up the dialog.
-						System.out.println("Sending BYE -- cancel went in too late !!");
+						// oops cancel went in too late. Need to hang up the
+						// dialog.
+						System.out
+								.println("Sending BYE -- cancel went in too late !!");
 						Request byeRequest = dialog.createRequest(Request.BYE);
-						ClientTransaction ct = sipProvider.getNewClientTransaction(byeRequest);
+						ClientTransaction ct = sipProvider
+								.getNewClientTransaction(byeRequest);
 						dialog.sendRequest(ct);
 					}
 				}
-			}else if ( response.getStatusCode()==Response.PROXY_AUTHENTICATION_REQUIRED || 
-                                   response.getStatusCode()==Response.UNAUTHORIZED) {
-                            URI uriReq = tid.getRequest().getRequestURI();
-                            Request authrequest = this.processResponseAuthorization(response, uriReq);
-                            
-                            inviteTid = sipProvider.getNewClientTransaction(authrequest);
-                            inviteTid.sendRequest();
-                            System.out.println("INVITE AUTHORIZATION sent:\n"+authrequest);
-                            invco++;
+			} else if (response.getStatusCode() == Response.PROXY_AUTHENTICATION_REQUIRED
+					|| response.getStatusCode() == Response.UNAUTHORIZED) {
+				URI uriReq = tid.getRequest().getRequestURI();
+				Request authrequest = this.processResponseAuthorization(
+						response, uriReq);
+
+				inviteTid = sipProvider.getNewClientTransaction(authrequest);
+				inviteTid.sendRequest();
+				System.out
+						.println("INVITE AUTHORIZATION sent:\n" + authrequest);
+				invco++;
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -139,47 +142,53 @@ public class ShootistAuth implements SipListener {
 		}
 	}
 
-        public Request processResponseAuthorization(Response response, URI uriReq){
-            Request requestauth = null;
-            try {
-                System.out.println("processResponseAuthorization()");
-                String schema = ((ProxyAuthenticate)(response.getHeader(SIPHeaderNames.PROXY_AUTHENTICATE))).getScheme();
-                String nonce = ((ProxyAuthenticate)(response.getHeader(SIPHeaderNames.PROXY_AUTHENTICATE))).getNonce();
-                ProxyAuthorizationHeader proxyAuthheader = headerFactory.createProxyAuthorizationHeader(schema);
-                proxyAuthheader.setRealm(realm);
-                proxyAuthheader.setNonce(nonce);
-                proxyAuthheader.setAlgorithm("MD5");
-                proxyAuthheader.setUsername(USER_AUTH);
-                proxyAuthheader.setURI(uriReq);
-                DigestClientAuthenticationMethod digest=new DigestClientAuthenticationMethod();
+	public Request processResponseAuthorization(Response response, URI uriReq) {
+		Request requestauth = null;
+		try {
+			System.out.println("processResponseAuthorization()");
+			String schema = ((ProxyAuthenticate) (response
+					.getHeader(SIPHeaderNames.PROXY_AUTHENTICATE))).getScheme();
+			String nonce = ((ProxyAuthenticate) (response
+					.getHeader(SIPHeaderNames.PROXY_AUTHENTICATE))).getNonce();
+			ProxyAuthorizationHeader proxyAuthheader = headerFactory
+					.createProxyAuthorizationHeader(schema);
+			proxyAuthheader.setRealm(realm);
+			proxyAuthheader.setNonce(nonce);
+			proxyAuthheader.setAlgorithm("MD5");
+			proxyAuthheader.setUsername(USER_AUTH);
+			proxyAuthheader.setURI(uriReq);
+			DigestClientAuthenticationMethod digest = new DigestClientAuthenticationMethod();
 
-                CSeqHeader cseqHeader=(CSeqHeader)response.getHeader(CSeqHeader.NAME);
-                //if (cseqHeader.getMethod().equals(Request.INVITE)){
-                    String callId = ((CallIdHeader) response.getHeader(CallIdHeader.NAME)).getCallId();
-                    requestauth = this.createInvite(callId);
+			String callId = ((CallIdHeader) response
+					.getHeader(CallIdHeader.NAME)).getCallId();
+			requestauth = this.createInvite(callId);
 
-                    digest.initialize(realm,USER_AUTH,uriReq.toString(),nonce,PASS_AUTH,((CSeqHeader) response.getHeader(CSeqHeader.NAME)).getMethod(),null,"MD5");
-                    System.out.println("Proxy Response antes de modificarlo : " + proxyAuthheader.getResponse());
-                    String respuestaM = digest.generateResponse();
-                    proxyAuthheader.setResponse(respuestaM);
+			digest.initialize(realm, USER_AUTH, uriReq.toString(), nonce,
+					PASS_AUTH, ((CSeqHeader) response
+							.getHeader(CSeqHeader.NAME)).getMethod(), null,
+					"MD5");
+			System.out.println("Proxy Response antes de modificarlo : "
+					+ proxyAuthheader.getResponse());
+			String respuestaM = digest.generateResponse();
+			proxyAuthheader.setResponse(respuestaM);
 
-                    requestauth.addHeader(proxyAuthheader);
-                //}
-            }catch (ParseException pa){
-                System.out.println("processResponseAuthorization() ParseException:");
-                System.out.println(pa.getMessage());
-                pa.printStackTrace();
-            }catch (Exception ex){
-                System.out.println("processResponseAuthorization() Exception:");
-                System.out.println(ex.getMessage());
-                ex.printStackTrace();
-            }
-            return requestauth;
-        }
+			requestauth.addHeader(proxyAuthheader);
+		} catch (ParseException pa) {
+			System.out
+					.println("processResponseAuthorization() ParseException:");
+			System.out.println(pa.getMessage());
+			pa.printStackTrace();
+		} catch (Exception ex) {
+			System.out.println("processResponseAuthorization() Exception:");
+			System.out.println(ex.getMessage());
+			ex.printStackTrace();
+		}
+		return requestauth;
+	}
 
-        public Request createInvite(String callId)
-            throws ParseException, InvalidArgumentException{
-                String fromName = "BigGuy";
+	public Request createInvite(String callId) throws ParseException,
+			InvalidArgumentException {
+		String fromName = "BigGuy";
 		String fromSipAddress = "here.com";
 		String fromDisplayName = "The Master Blaster";
 
@@ -188,46 +197,53 @@ public class ShootistAuth implements SipListener {
 		String toDisplayName = "The Little Blister";
 
 		// create >From Header
-		SipURI fromAddress = addressFactory.createSipURI(fromName,fromSipAddress);
+		SipURI fromAddress = addressFactory.createSipURI(fromName,
+				fromSipAddress);
 
 		Address fromNameAddress = addressFactory.createAddress(fromAddress);
 		fromNameAddress.setDisplayName(fromDisplayName);
-		FromHeader fromHeader = headerFactory.createFromHeader(fromNameAddress, "12345");
+		FromHeader fromHeader = headerFactory.createFromHeader(fromNameAddress,
+				"12345");
 
 		// create To Header
 		SipURI toAddress = addressFactory.createSipURI(toUser, toSipAddress);
 		Address toNameAddress = addressFactory.createAddress(toAddress);
 		toNameAddress.setDisplayName(toDisplayName);
-		ToHeader toHeader = headerFactory.createToHeader(toNameAddress,null);
+		ToHeader toHeader = headerFactory.createToHeader(toNameAddress, null);
 
 		// create Request URI
-		SipURI requestURI = addressFactory.createSipURI(toUser,peerHostPort);
+		SipURI requestURI = addressFactory.createSipURI(toUser, peerHostPort);
 
 		// Create ViaHeaders
-		ArrayList viaHeaders = new ArrayList();
-		ViaHeader viaHeader = headerFactory.createViaHeader("127.0.0.1", sipProvider.getListeningPoint(transport).getPort(),transport, null);
+		ArrayList<ViaHeader> viaHeaders = new ArrayList<ViaHeader>();
+		ViaHeader viaHeader = headerFactory.createViaHeader("127.0.0.1",
+				sipProvider.getListeningPoint(transport).getPort(), transport,
+				null);
 		// add via headers
 		viaHeaders.add(viaHeader);
 
 		// Create ContentTypeHeader
-		ContentTypeHeader contentTypeHeader = headerFactory.createContentTypeHeader("application", "sdp");
+		ContentTypeHeader contentTypeHeader = headerFactory
+				.createContentTypeHeader("application", "sdp");
 
 		// Create a new CallId header
-                CallIdHeader callIdHeader;
-                callIdHeader = sipProvider.getNewCallId();
-                if (callId.trim().length()>0)
-                    callIdHeader.setCallId(callId);
+		CallIdHeader callIdHeader;
+		callIdHeader = sipProvider.getNewCallId();
+		if (callId.trim().length() > 0)
+			callIdHeader.setCallId(callId);
 
 		// Create a new Cseq header
-		CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(invco,Request.INVITE);
+		CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(invco,
+				Request.INVITE);
 
 		// Create a new MaxForwardsHeader
-		MaxForwardsHeader maxForwards = headerFactory.createMaxForwardsHeader(70);
+		MaxForwardsHeader maxForwards = headerFactory
+				.createMaxForwardsHeader(70);
 
 		// Create the request.
 		Request request = messageFactory.createRequest(requestURI,
-				Request.INVITE, callIdHeader, cSeqHeader, fromHeader,
-				toHeader, viaHeaders, maxForwards);
+				Request.INVITE, callIdHeader, cSeqHeader, fromHeader, toHeader,
+				viaHeaders, maxForwards);
 		// Create contact headers
 		String host = "127.0.0.1";
 
@@ -257,11 +273,12 @@ public class ShootistAuth implements SipListener {
 
 		request.setContent(contents, contentTypeHeader);
 
-		Header callInfoHeader = headerFactory.createHeader("Call-Info","<http://www.antd.nist.gov>");
+		Header callInfoHeader = headerFactory.createHeader("Call-Info",
+				"<http://www.antd.nist.gov>");
 		request.addHeader(callInfoHeader);
-		
+
 		return request;
-        }
+	}
 
 	public void init() {
 		SipFactory sipFactory = null;
@@ -269,22 +286,28 @@ public class ShootistAuth implements SipListener {
 		sipFactory = SipFactory.getInstance();
 		sipFactory.setPathName("gov.nist");
 
-                Properties properties = new Properties();
-		properties.setProperty("javax.sip.OUTBOUND_PROXY", peerHostPort + "/" + transport);
+		Properties properties = new Properties();
+		properties.setProperty("javax.sip.OUTBOUND_PROXY", peerHostPort + "/"
+				+ transport);
 		properties.setProperty("javax.sip.STACK_NAME", "shootistAuth");
-		properties.setProperty("gov.nist.javax.sip.MAX_MESSAGE_SIZE", "1048576");
-		properties.setProperty("gov.nist.javax.sip.DEBUG_LOG","shootistAuthdebug.txt");
-		properties.setProperty("gov.nist.javax.sip.SERVER_LOG","shootistAuthlog.txt");
+		properties
+				.setProperty("gov.nist.javax.sip.MAX_MESSAGE_SIZE", "1048576");
+		properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
+				"shootistAuthdebug.txt");
+		properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
+				"shootistAuthlog.txt");
 		properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "16");
 		// Drop the client connection after we are done with the transaction.
-		properties.setProperty("gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS","false");
+		properties.setProperty("gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS",
+				"false");
 
 		try {
 			// Create SipStack object
 			sipStack = sipFactory.createSipStack(properties);
 			System.out.println("createSipStack " + sipStack);
 		} catch (PeerUnavailableException e) {
-			// could not find gov.nist.jain.protocol.ip.sip.SipStackImpl in the classpath
+			// could not find gov.nist.jain.protocol.ip.sip.SipStackImpl in the
+			// classpath
 			e.printStackTrace();
 			System.err.println(e.getMessage());
 			System.exit(0);
@@ -293,7 +316,8 @@ public class ShootistAuth implements SipListener {
 			headerFactory = sipFactory.createHeaderFactory();
 			addressFactory = sipFactory.createAddressFactory();
 			messageFactory = sipFactory.createMessageFactory();
-			udpListeningPoint = sipStack.createListeningPoint("127.0.0.1",5060, "udp");
+			udpListeningPoint = sipStack.createListeningPoint("127.0.0.1",
+					5060, "udp");
 			sipProvider = sipStack.createSipProvider(udpListeningPoint);
 			ShootistAuth listener = this;
 			sipProvider.addSipListener(listener);
@@ -307,7 +331,7 @@ public class ShootistAuth implements SipListener {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
 		}
-                        			
+
 		try {
 			System.out.println("ShootistAuth Process ");
 			Request request = this.createInvite("");
@@ -315,7 +339,8 @@ public class ShootistAuth implements SipListener {
 			inviteTid = sipProvider.getNewClientTransaction(request);
 			// send the request out.
 			inviteTid.sendRequest();
-			System.out.println("INVITE with no Authorization sent:\n" + request);
+			System.out
+					.println("INVITE with no Authorization sent:\n" + request);
 			dialog = inviteTid.getDialog();
 
 		} catch (Exception e) {
@@ -331,8 +356,9 @@ public class ShootistAuth implements SipListener {
 	}
 
 	public void processIOException(IOExceptionEvent exceptionEvent) {
-		System.out.println("IOException happened for " + exceptionEvent.getHost() + " port = " 
-					+ exceptionEvent.getPort());
+		System.out.println("IOException happened for "
+				+ exceptionEvent.getHost() + " port = "
+				+ exceptionEvent.getPort());
 
 	}
 
