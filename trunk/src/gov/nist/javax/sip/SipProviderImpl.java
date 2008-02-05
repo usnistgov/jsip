@@ -49,12 +49,12 @@ import java.text.ParseException;
 
 /*
  * Contributions (bug fixes) made by: Daniel J. Martinez Manzano, Hagai Sela.
- * Bug reports by Shanti Kadiyala, Rhys Ulerich Bug,Victor Hugo
+ * Bug reports by Shanti Kadiyala, Rhys Ulerich,Victor Hugo
  */
 /**
  * Implementation of the JAIN-SIP provider interface.
  * 
- * @version 1.2 $Revision: 1.51 $ $Date: 2008-01-21 22:43:22 $
+ * @version 1.2 $Revision: 1.52 $ $Date: 2008-02-05 05:50:26 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -139,10 +139,10 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 							+ sipEvent.getSource());
 			if (sipEvent instanceof RequestEvent) {
 				Dialog dialog = ((RequestEvent) sipEvent).getDialog();
-				sipStack.getLogWriter().logDebug("Dialog = " + dialog);
+				if ( sipStack.isLoggingEnabled())  sipStack.getLogWriter().logDebug("Dialog = " + dialog);
 			} else if (sipEvent instanceof ResponseEvent) {
 				Dialog dialog = ((ResponseEvent) sipEvent).getDialog();
-				sipStack.getLogWriter().logDebug("Dialog = " + dialog);
+				if (sipStack.isLoggingEnabled() ) sipStack.getLogWriter().logDebug("Dialog = " + dialog);
 			}
 			sipStack.getLogWriter().logStackTrace();
 		}
