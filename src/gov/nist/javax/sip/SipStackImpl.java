@@ -247,12 +247,12 @@ import gov.nist.core.net.NetworkLayer;
  * Setting the flag to true ( default ) enables you to avoid common
  * protocol errors. 
  * 
- * <li><b>gov.nist.javax.sip.ALLOW_DIALOG_REMOTE_TAG_REASSIGNMENT = [true| false ] </b> <br/>
+ * <li><b>gov.nist.javax.sip.DIALOG_REMOTE_TAG_REASSIGNMENT_ALLOWED = [true| false ] </b> <br/>
  * Default is <it> false </it> attempt to compensate for buggy endpoints that change To tag mid dialog
  * in provisional responses. This is only tolerated in the EARLY state of the dialog. 
  * 
  * 
- * @version 1.2 $Revision: 1.71 $ $Date: 2008-02-05 05:50:27 $
+ * @version 1.2 $Revision: 1.72 $ $Date: 2008-02-05 05:53:07 $
  * 
  * @author M. Ranganathan <br/>
  * 
