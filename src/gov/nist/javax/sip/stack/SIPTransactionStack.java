@@ -65,7 +65,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.88 $ $Date: 2007-11-26 20:26:42 $
+ * @version 1.2 $Revision: 1.89 $ $Date: 2008-02-05 05:50:25 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -310,6 +310,9 @@ public abstract class SIPTransactionStack implements
 	// Set to true if the client CANCEL transaction should be checked before sending
 	// it out.
 	protected boolean cancelClientTransactionChecked = true;
+	
+	// Is to tag reassignment allowed. 
+	protected boolean remoteTagReassignmentAllowed = false;
 
 	// / Timer to regularly ping the thread auditor (on behalf of the timer
 	// thread)
@@ -591,32 +594,7 @@ public abstract class SIPTransactionStack implements
 	
 	}
 
-	/**
-	 * Create a new dialog for a given transaction. This is used when a forked
-	 * response is receieved. Note that the tx is assigned to multiple dialogs
-	 * at the same time when this hapens.
-	 * 
-	 * @since 1.3
-	 * 
-	 * @param transaction --
-	 *            the transaction for which we want to create the dialog.
-	 * @param sipResponse --
-	 *            the response for which we are creating the dialog.
-	 * @return the newly created SIP Dialog.
-	 * 
-	 * 
-	 * public SIPDialog createDialog(SIPTransaction transaction, SIPResponse
-	 * sipResponse) { SIPDialog retval = new SIPDialog(transaction,
-	 * sipResponse); return retval; }
-	 */
-
-	/**
-	 * This is for debugging.
-	 */
-	public Iterator<SIPDialog> getDialogs() {
-		return dialogTable.values().iterator();
-
-	}
+	
 
 	/**
 	 * Remove the dialog from the dialog table.
@@ -680,6 +658,21 @@ public abstract class SIPTransactionStack implements
 		}
 		return sipDialog;
 
+	}
+	
+	/**
+	 * Remove the dialog given its dialog id. This is used for dialog id re-assignment only.
+	 * 
+	 * @param dialogId is the dialog Id to remove.
+	 */
+	public void  removeDialog(String dialogId) {
+		if ( logWriter.isLoggingEnabled() ) {
+			logWriter.logWarning("Silently removing dialog from table");
+		}
+		if ( dialogTable.containsKey(dialogId)) {
+			dialogTable.remove(dialogId);
+		}
+		
 	}
 
 	/**
@@ -2199,4 +2192,23 @@ public abstract class SIPTransactionStack implements
 	public boolean isCancelClientTransactionChecked() {
 		return this.cancelClientTransactionChecked;
 	}
+	
+	public boolean isRemoteTagReassignmentAllowed() {
+			return this.remoteTagReassignmentAllowed;
+	}
+	
+	/**
+	 * This method is slated for addition to the next spec revision.
+	 * 
+	 * 
+	 * @return -- the collection of dialogs that is being managed by the stack. 
+	 */
+	public Collection<Dialog> getDialogs() {
+		HashSet<Dialog> dialogs = new HashSet<Dialog>();
+		dialogs.addAll(this.dialogTable.values());
+		dialogs.addAll(this.earlyDialogTable.values());
+		return dialogs;
+	}
+
+	
 }
