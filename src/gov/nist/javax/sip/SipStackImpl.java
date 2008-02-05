@@ -247,7 +247,12 @@ import gov.nist.core.net.NetworkLayer;
  * Setting the flag to true ( default ) enables you to avoid common
  * protocol errors. 
  * 
- * @version 1.2 $Revision: 1.70 $ $Date: 2007-11-22 21:18:05 $
+ * <li><b>gov.nist.javax.sip.ALLOW_DIALOG_REMOTE_TAG_REASSIGNMENT = [true| false ] </b> <br/>
+ * Default is <it> false </it> attempt to compensate for buggy endpoints that change To tag mid dialog
+ * in provisional responses. This is only tolerated in the EARLY state of the dialog. 
+ * 
+ * 
+ * @version 1.2 $Revision: 1.71 $ $Date: 2008-02-05 05:50:27 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -256,7 +261,7 @@ import gov.nist.core.net.NetworkLayer;
  * 
  */
 public class SipStackImpl extends SIPTransactionStack implements
-		javax.sip.SipStack {
+		javax.sip.SipStack , SipStackExtensions{
 
 	EventScanner eventScanner;
 
@@ -680,6 +685,9 @@ public class SipStackImpl extends SIPTransactionStack implements
 		
 		super.cancelClientTransactionChecked = 
 			configurationProperties.getProperty("gov.nist.javax.sip.CANCEL_CLIENT_TRANSACTION_CHECKED","true").equalsIgnoreCase("true");
+		
+		super.remoteTagReassignmentAllowed = 
+			configurationProperties.getProperty("gov.nist.javax.sip.DIALOG_REMOTE_TAG_REASSIGNMENT_ALLOWED","false").equalsIgnoreCase("true");
 
 	}
 
