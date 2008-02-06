@@ -52,8 +52,9 @@ import gov.nist.core.net.NetworkLayer;
  * array when you create the JAIN-SIP statck):
  * <ul>
  * 
- * <li><b>gov.nist.javax.sip.TRACE_LEVEL = integer </b><br/> Currently only
- * TRACE (16) and DEBUG is meaningful. If this is set to 16 or above, then
+ * <li><b>gov.nist.javax.sip.TRACE_LEVEL = integer </b><br/> You can use
+ * the standard log4j level names here (i.e. ERROR, INFO, WARNING, OFF, DEBUG)
+ *  If this is set to INFO (or TRACE)  or above, then
  * incoming valid messages are logged in SERVER_LOG. If you set this to 32 and
  * specify a DEBUG_LOG then vast amounts of trace information will be dumped in
  * to the specified DEBUG_LOG. The server log accumulates the signaling trace.
@@ -63,7 +64,7 @@ import gov.nist.core.net.NetworkLayer;
  * strings DEBUG or INFO for level 32 and 16 respectively</li>
  * 
  * <li><b>gov.nist.javax.sip.SERVER_LOG = fileName </b><br/> Log valid
- * incoming messages here. If this is left null AND the TRACE_LEVEL is above 16
+ * incoming messages here. If this is left null AND the TRACE_LEVEL is above INFO (or TRACE)
  * then the messages are printed to stdout. Otherwise messages are logged in a
  * format that can later be viewed using the trace viewer application which is
  * located in the tools/tracesviewer directory. <font color=red> Mail this to us
@@ -252,7 +253,7 @@ import gov.nist.core.net.NetworkLayer;
  * in provisional responses. This is only tolerated in the EARLY state of the dialog. 
  * 
  * 
- * @version 1.2 $Revision: 1.72 $ $Date: 2008-02-05 05:53:07 $
+ * @version 1.2 $Revision: 1.73 $ $Date: 2008-02-06 17:12:20 $
  * 
  * @author M. Ranganathan <br/>
  * 
