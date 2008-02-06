@@ -280,7 +280,7 @@ public class LogWriter {
 					ll = TRACE_MESSAGES;
 				} else if (logLevel.equals("ERROR")) {
 					ll = TRACE_EXCEPTION;
-				} else if (logLevel.equals("NONE")) {
+				} else if (logLevel.equals("NONE") || logLevel.equals("OFF")) {
 					ll = TRACE_NONE;
 				} else {
 					ll = Integer.parseInt(logLevel);
