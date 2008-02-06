@@ -50,7 +50,7 @@ import javax.sip.header.TimeStampHeader;
  * later access via RMI. The trace can be viewed with a trace viewer (see
  * tools.traceviewerapp).
  *
- * @version 1.2 $Revision: 1.29 $ $Date: 2008-01-06 23:55:45 $
+ * @version 1.2 $Revision: 1.30 $ $Date: 2008-02-06 17:12:19 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -147,11 +147,11 @@ public class ServerLog {
 				int ll;
 				if (logLevel.equals("DEBUG")) {
 					ll = TRACE_DEBUG;
-				} else if (logLevel.equals("TRACE")) {
+				} else if (logLevel.equals("TRACE") || logLevel.equals("INFO")) {
 					ll = TRACE_MESSAGES;
 				} else if (logLevel.equals("ERROR")) {
 					ll = TRACE_EXCEPTION;
-				} else if (logLevel.equals("NONE")) {
+				} else if (logLevel.equals("NONE") || logLevel.equals("OFF")) {
 					ll = TRACE_NONE;
 				} else {
 					ll = Integer.parseInt(logLevel);
