@@ -155,7 +155,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.90 $ $Date: 2008-01-21 22:43:21 $
+ * @version 1.2 $Revision: 1.91 $ $Date: 2008-02-09 23:21:28 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -1452,8 +1452,10 @@ public class SIPClientTransaction extends SIPTransaction implements
 					} else {
 						// Need to create a new Dialog, this becomes default
 						// JvB: not sure if this ever gets executed
-						dialog = sipStack.createDialog(this, sipResponse);
-						this.setDialog(dialog, dialog.getDialogId());
+						if ( sipStack.isAutomaticDialogSupportEnabled ) {
+							dialog = sipStack.createDialog(this, sipResponse);
+							this.setDialog(dialog, dialog.getDialogId());
+						}
 					}
 				} // synchronized
 			} else {
