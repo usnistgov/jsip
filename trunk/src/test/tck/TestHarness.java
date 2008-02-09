@@ -77,7 +77,7 @@ public class TestHarness extends TestCase {
 
 	protected TestResult testResult;
 
-	private static Logger logger = Logger.getLogger(TestHarness.class);
+	private static Logger logger = Logger.getLogger("test.tck");
 
 	private static String currentMethodName;
 
