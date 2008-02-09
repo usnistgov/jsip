@@ -35,7 +35,7 @@ public abstract class ScenarioHarness extends TestHarness {
 
 			this.riProtocolObjects = new ProtocolObjects(
 					"ri" + super.getName(), super.getImplementationPath(),
-					transport, true);
+					transport, false);
 			/*
 			 * if (!getImplementationPath().equals("gov.nist"))
 			 * this.riProtocolObjects = new ProtocolObjects( super.getName(),
@@ -48,7 +48,7 @@ public abstract class ScenarioHarness extends TestHarness {
 					"ti" + super.getName(), getImplementationPath(), transport,
 					true);
 			this.riProtocolObjects = new ProtocolObjects(
-					"ri" + super.getName(), "gov.nist", transport, true);
+					"ri" + super.getName(), "gov.nist", transport, false);
 
 			/*
 			 * if (!getImplementationPath().equals("gov.nist"))
