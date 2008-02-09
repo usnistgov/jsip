@@ -54,7 +54,7 @@ import java.text.ParseException;
 /**
  * Implementation of the JAIN-SIP provider interface.
  * 
- * @version 1.2 $Revision: 1.53 $ $Date: 2008-02-07 04:56:57 $
+ * @version 1.2 $Revision: 1.54 $ $Date: 2008-02-09 23:25:52 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -269,7 +269,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 		try {
 			sipRequest.checkHeaders();
 		} catch (ParseException ex) {
-			throw new TransactionUnavailableException(ex.getMessage());
+			throw new TransactionUnavailableException(ex.getMessage(), ex);
 		}
 
 		/*
@@ -437,8 +437,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 		try {
 			sipRequest.checkHeaders();
 		} catch (ParseException ex) {
-			sipStack.getLogWriter().logError("Missing a required Header", ex);
-			throw new TransactionUnavailableException(ex.getMessage());
+			throw new TransactionUnavailableException(ex.getMessage(), ex);
 		}
 
 		if ( request.getMethod().equals(Request.ACK)) {
