@@ -73,7 +73,7 @@ public class AbstractForkedInviteTestCase extends ScenarioHarness implements
 	public void setUp() {
 
 		try {
-			super.setUp();
+			super.setUp(false);
 			shootist = new Shootist(5060, 5070, tiProtocolObjects);
 			SipProvider shootistProvider = shootist.createSipProvider();
 			providerTable.put(shootistProvider, shootist);

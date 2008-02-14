@@ -52,7 +52,7 @@ import javax.sip.header.ContactHeader;
  * Contains additions for support of symmetric NAT contributed
  * by Hagai.
  *
- * @version 1.2 $Revision: 1.18 $ $Date: 2007-09-21 15:57:48 $
+ * @version 1.2 $Revision: 1.19 $ $Date: 2008-02-14 04:26:57 $
  *
  * 
  */
@@ -133,6 +133,8 @@ public abstract class MessageChannel {
 	 * Get the port to assign for the via header of an outgoing message.
 	 */
 	public abstract int getViaPort();
+	
+	
 
 	/**
 	 * Send the message (after it has been formatted), to a specified
@@ -187,7 +189,8 @@ public abstract class MessageChannel {
 			sipMessage instanceof SIPRequest);
 		logMessage(sipMessage, receiverAddress, receiverPort, time);
 	}
-
+	
+	
 	/**
 	 * Convenience function to get the raw IP source address
 	 * of a SIP message as a String.
