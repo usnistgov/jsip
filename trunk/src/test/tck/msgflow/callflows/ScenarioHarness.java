@@ -35,7 +35,7 @@ public abstract class ScenarioHarness extends TestHarness {
 
 			this.riProtocolObjects = new ProtocolObjects(
 					"ri" + super.getName(), super.getImplementationPath(),
-					transport, false);
+					transport, true);
 			/*
 			 * if (!getImplementationPath().equals("gov.nist"))
 			 * this.riProtocolObjects = new ProtocolObjects( super.getName(),
@@ -48,7 +48,7 @@ public abstract class ScenarioHarness extends TestHarness {
 					"ti" + super.getName(), getImplementationPath(), transport,
 					true);
 			this.riProtocolObjects = new ProtocolObjects(
-					"ri" + super.getName(), "gov.nist", transport, false);
+					"ri" + super.getName(), "gov.nist", transport, true);
 
 			/*
 			 * if (!getImplementationPath().equals("gov.nist"))
@@ -59,7 +59,37 @@ public abstract class ScenarioHarness extends TestHarness {
 
 		}
 	}
+	public void setUp(boolean riAutoDialog) throws Exception {
+		if (testedImplFlag) {
+			this.tiProtocolObjects = new ProtocolObjects(
+					"ti" + super.getName(), "gov.nist", transport, true);
 
+			this.riProtocolObjects = new ProtocolObjects(
+					"ri" + super.getName(), super.getImplementationPath(),
+					transport, riAutoDialog);
+			/*
+			 * if (!getImplementationPath().equals("gov.nist"))
+			 * this.riProtocolObjects = new ProtocolObjects( super.getName(),
+			 * super.getImplementationPath(), transport, true); else
+			 * this.riProtocolObjects = tiProtocolObjects;
+			 */
+
+		} else {
+			this.tiProtocolObjects = new ProtocolObjects(
+					"ti" + super.getName(), getImplementationPath(), transport,
+					true);
+			this.riProtocolObjects = new ProtocolObjects(
+					"ri" + super.getName(), "gov.nist", transport, riAutoDialog);
+
+			/*
+			 * if (!getImplementationPath().equals("gov.nist"))
+			 * this.riProtocolObjects = new ProtocolObjects( super.getName(),
+			 * super.getImplementationPath(), transport, true); else
+			 * this.riProtocolObjects = tiProtocolObjects;
+			 */
+
+		}
+	}
 	private SipListener getSipListener(EventObject sipEvent) {
 		SipProvider source = (SipProvider) sipEvent.getSource();
 		SipListener listener = (SipListener) providerTable.get(source);

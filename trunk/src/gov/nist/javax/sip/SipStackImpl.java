@@ -253,7 +253,7 @@ import gov.nist.core.net.NetworkLayer;
  * in provisional responses. This is only tolerated in the EARLY state of the dialog. 
  * 
  * 
- * @version 1.2 $Revision: 1.73 $ $Date: 2008-02-06 17:12:20 $
+ * @version 1.2 $Revision: 1.74 $ $Date: 2008-02-14 04:26:58 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -264,7 +264,7 @@ import gov.nist.core.net.NetworkLayer;
 public class SipStackImpl extends SIPTransactionStack implements
 		javax.sip.SipStack , SipStackExtensions{
 
-	EventScanner eventScanner;
+	private EventScanner eventScanner;
 
 	private Hashtable<String,ListeningPointImpl> listeningPoints;
 
@@ -952,6 +952,12 @@ public class SipStackImpl extends SIPTransactionStack implements
 	 */
 	public LogRecordFactory getLogRecordFactory() {
 		return super.logRecordFactory;
+	}
+
+	
+
+	public EventScanner getEventScanner() {
+		return eventScanner;
 	}
 
 }
