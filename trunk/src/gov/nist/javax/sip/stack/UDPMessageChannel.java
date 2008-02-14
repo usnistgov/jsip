@@ -78,7 +78,7 @@ import javax.sip.message.Response;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.47 $ $Date: 2008-02-14 14:05:20 $
+ * @version 1.2 $Revision: 1.48 $ $Date: 2008-02-14 14:06:24 $
  */
 public class UDPMessageChannel extends MessageChannel implements
 		ParseExceptionListener, Runnable, RawMessageChannel {
@@ -629,6 +629,7 @@ public class UDPMessageChannel extends MessageChannel implements
 		} catch (IOException ex) {
 			throw ex;
 		} catch (Exception ex) {
+			sipStack.logWriter.logError("An exception occured while sending message",ex);
 			throw new IOException(
 					"An exception occured while sending message");
 		} finally {
