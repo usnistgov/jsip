@@ -78,7 +78,7 @@ import javax.sip.message.Response;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.46 $ $Date: 2008-02-14 04:26:57 $
+ * @version 1.2 $Revision: 1.47 $ $Date: 2008-02-14 14:05:20 $
  */
 public class UDPMessageChannel extends MessageChannel implements
 		ParseExceptionListener, Runnable, RawMessageChannel {
@@ -630,7 +630,7 @@ public class UDPMessageChannel extends MessageChannel implements
 			throw ex;
 		} catch (Exception ex) {
 			throw new IOException(
-					"An exception occured while self routing message", ex);
+					"An exception occured while sending message");
 		} finally {
 			if (sipStack.logWriter.isLoggingEnabled(ServerLog.TRACE_MESSAGES))
 				logMessage(sipMessage, peerAddress, peerPort, time);
