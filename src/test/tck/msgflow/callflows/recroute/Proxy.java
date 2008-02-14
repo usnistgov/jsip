@@ -135,7 +135,7 @@ public class Proxy extends TestHarness implements SipListener {
 			} else {
 				// Remove the topmost route header
 				// The route header will make sure it gets to the right place.
-				logger.info("proxy: Got a request\n" + request);
+				logger.debug("proxy: Got a request\n" + request);
 				if (request.getMethod().equals(Request.BYE)) {
 					this.byeSeen = true;
 				}
@@ -161,7 +161,7 @@ public class Proxy extends TestHarness implements SipListener {
 					stx.setApplicationData(ctx);
 					ctx.sendRequest();
 				} else {
-					logger.info("Saw a retransmission? State = "
+					logger.debug("Saw a retransmission? State = "
 							+ requestEvent.getServerTransaction().getState());
 				}
 			}
@@ -178,7 +178,7 @@ public class Proxy extends TestHarness implements SipListener {
 		try {
 			Response response = responseEvent.getResponse();
 			CSeqHeader cseq = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
-			logger.info("ClientTxID = "
+			logger.debug("ClientTxID = "
 					+ responseEvent.getClientTransaction()
 					+ " client tx id "
 					+ ((ViaHeader) response.getHeader(ViaHeader.NAME))
@@ -229,7 +229,7 @@ public class Proxy extends TestHarness implements SipListener {
 	}
 
 	public void processIOException(IOExceptionEvent exceptionEvent) {
-		logger.info("IOException occured");
+		logger.error("IOException occured");
 		fail("unexpected exception io exception");
 	}
 
@@ -252,7 +252,7 @@ public class Proxy extends TestHarness implements SipListener {
 
 	public void processTransactionTerminated(
 			TransactionTerminatedEvent transactionTerminatedEvent) {
-		logger.info("Transaction terminated event occured -- cleaning up");
+		logger.debug("Transaction terminated event occured -- cleaning up");
 	}
 
 	public void processDialogTerminated(

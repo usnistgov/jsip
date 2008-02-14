@@ -47,7 +47,7 @@ import javax.sip.InvalidArgumentException;
  * The main job of the message processor is to instantiate message channels for
  * the given transport.
  * 
- * @version 1.2 $Revision: 1.11 $ $Date: 2007-01-26 16:50:44 $
+ * @version 1.2 $Revision: 1.12 $ $Date: 2008-02-14 04:26:56 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -333,6 +333,7 @@ public abstract class MessageProcessor implements Runnable {
 		return transport.equalsIgnoreCase("TLS")?5061:5060;
 	}
 
+	
 	
 
 	

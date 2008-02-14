@@ -62,10 +62,10 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.43 $ $Date: 2008-01-07 14:51:29 $
+ * @version 1.2 $Revision: 1.44 $ $Date: 2008-02-14 04:26:56 $
  */
 public class TCPMessageChannel extends MessageChannel implements
-		SIPMessageListener, Runnable {
+		SIPMessageListener, Runnable , RawMessageChannel {
 
 	private Socket mySock;
 
