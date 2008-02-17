@@ -32,6 +32,7 @@ package gov.nist.javax.sip.parser.ims;
 import gov.nist.core.NameValue;
 import gov.nist.javax.sip.header.SIPHeader;
 import gov.nist.javax.sip.header.ims.PChargingVector;
+import gov.nist.javax.sip.header.ims.ParameterNamesIms;
 import gov.nist.javax.sip.parser.Lexer;
 import gov.nist.javax.sip.parser.ParametersParser;
 import gov.nist.javax.sip.parser.TokenTypes;
@@ -80,12 +81,15 @@ extends ParametersParser implements TokenTypes {
 					this.lexer.match(';');
 					this.lexer.SPorHT();
 				}
+				
 			} catch (ParseException ex) {
 				throw ex;
 			}
 			
 			
 			super.parse(chargingVector);
+			if ( chargingVector.getParameter(ParameterNamesIms.ICID_VALUE) == null ) 
+				throw new ParseException("Missing a required Parameter : " + ParameterNamesIms.ICID_VALUE, 0);
 			return chargingVector;
 		} finally {
 			if (debug)
