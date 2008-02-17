@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.text.ParseException;
 
+import javax.sip.address.Hop;
 import javax.sip.header.ContactHeader;
 
 /**
@@ -52,7 +53,7 @@ import javax.sip.header.ContactHeader;
  * Contains additions for support of symmetric NAT contributed
  * by Hagai.
  *
- * @version 1.2 $Revision: 1.19 $ $Date: 2008-02-14 04:26:57 $
+ * @version 1.2 $Revision: 1.20 $ $Date: 2008-02-17 21:36:59 $
  *
  * 
  */
@@ -168,7 +169,56 @@ public abstract class MessageChannel {
 		else
 			return -1;
 	}
+	/**
+	 * Send a formatted message to the specified target.
+	 * 
+	 * @param sipMessage
+	 *            Message to send.
+	 * @param hop hop to send it to.
+	 * @throws IOException
+	 *             If there is an error sending the message
+	 */
+	public void sendMessage(SIPMessage sipMessage, Hop hop) throws IOException {
+		long time = System.currentTimeMillis();
+		InetAddress hopAddr = InetAddress.getByName(hop.getHost());
+		
+		try {
+			
+			for (MessageProcessor messageProcessor : getSIPStack()
+					.getMessageProcessors()) {
+				if (messageProcessor.getIpAddress().equals (hopAddr)
+						&& messageProcessor.getPort() == hop.getPort()
+						&& messageProcessor.getTransport().equals(
+							hop.getTransport())) {
+					MessageChannel messageChannel = messageProcessor
+							.createMessageChannel(hopAddr,
+									hop.getPort());
+					if (messageChannel instanceof RawMessageChannel) {
+						((RawMessageChannel) messageChannel)
+								.processMessage(sipMessage);
+						getSIPStack().logWriter.logDebug("Self routing message");
+						return;
+					}
 
+				}
+			}
+			byte[] msg = sipMessage.encodeAsBytes();
+
+		
+
+			this.sendMessage(msg, hopAddr, hop.getPort(), sipMessage instanceof SIPRequest);
+
+		} catch (IOException ioe) {
+			throw ioe;
+		} catch (Exception ex) {
+			throw new IOException("Error self routing message");
+		} finally {
+
+			if (this.getSIPStack().logWriter
+					.isLoggingEnabled(ServerLog.TRACE_MESSAGES))
+				logMessage(sipMessage, hopAddr, hop.getPort(), time);
+		}
+	}
 	/**
 	 * Send a message given SIP message.
 	 * @param sipMessage is the messge to send.

@@ -184,10 +184,10 @@ public class Shootist implements SipListener {
 
 					SipProvider sipProvider = (SipProvider) responseReceivedEvent
 							.getSource();
-
-					Request byeRequest = dialog.createRequest(Request.INFO);
+					
+					Request infoRequest = dialog.createRequest(Request.INFO);
 					ClientTransaction ct = sipProvider
-							.getNewClientTransaction(byeRequest);
+							.getNewClientTransaction(infoRequest);
 					dialog.sendRequest(ct);
 
 				} else {

@@ -54,7 +54,7 @@ import java.text.ParseException;
 /**
  * Implementation of the JAIN-SIP provider interface.
  * 
- * @version 1.2 $Revision: 1.55 $ $Date: 2008-02-14 04:26:58 $
+ * @version 1.2 $Revision: 1.56 $ $Date: 2008-02-17 21:36:58 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -678,7 +678,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 						this.getListeningPoint(hop.getTransport()).getIPAddress(),
 						this.getListeningPoint(hop.getTransport()).getPort(), hop);
 			if (messageChannel != null) {
-				messageChannel.sendMessage((SIPMessage) sipRequest);
+				messageChannel.sendMessage((SIPMessage) sipRequest,hop);
 			} else {
 				throw new SipException(
 						"Could not create a message channel for "
