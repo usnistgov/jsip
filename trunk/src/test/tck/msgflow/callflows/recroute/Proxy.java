@@ -1,5 +1,7 @@
 package test.tck.msgflow.callflows.recroute;
 
+import java.util.Hashtable;
+
 import javax.sip.ClientTransaction;
 import javax.sip.DialogTerminatedEvent;
 import javax.sip.IOExceptionEvent;
@@ -10,6 +12,7 @@ import javax.sip.ServerTransaction;
 import javax.sip.SipListener;
 import javax.sip.SipProvider;
 import javax.sip.TimeoutEvent;
+import javax.sip.TransactionState;
 import javax.sip.TransactionTerminatedEvent;
 import javax.sip.address.Address;
 import javax.sip.address.SipURI;
@@ -55,6 +58,7 @@ public class Proxy extends TestHarness implements SipListener {
 	private boolean byeSeen;
 
 	private int infoCount = 0;
+	
 
 	public void checkState() {
 		TestHarness.assertTrue("INVITE should be seen by proxy", inviteSeen);
@@ -131,6 +135,7 @@ public class Proxy extends TestHarness implements SipListener {
 								null);
 				newRequest.addFirst(viaHeader);
 				this.ackSeen = true;
+				logger.debug("PROXY : sendingAck "  + newRequest);
 				sipProvider.sendRequest(newRequest);
 			} else {
 				// Remove the topmost route header
@@ -199,8 +204,8 @@ public class Proxy extends TestHarness implements SipListener {
 				Response newResponse = (Response) response.clone();
 				newResponse.removeFirst(ViaHeader.NAME);
 				// The server tx goes to the terminated state.
-
-				st.sendResponse(newResponse);
+				if ( st.getState() != TransactionState.TERMINATED)
+				 st.sendResponse(newResponse);
 
 				TestHarness.assertNull(st.getDialog());
 			} else {

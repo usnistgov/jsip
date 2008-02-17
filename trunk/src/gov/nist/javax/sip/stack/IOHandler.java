@@ -186,7 +186,7 @@ class IOHandler {
 							break;
 						} catch (IOException ex) {
 							if (sipStack.isLoggingEnabled())
-								sipStack.logWriter.logException(ex);
+								sipStack.logWriter.logDebug("IOException occured retryCount " + retry_count);
 							// old connection is bad.
 							// remove from our table.
 							removeSocket(key);

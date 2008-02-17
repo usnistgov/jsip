@@ -63,7 +63,7 @@ public class AbstractRecRouteTestCase extends ScenarioHarness implements
 
 			this.proxy = new Proxy(5070, riProtocolObjects);
 			SipProvider provider = proxy.createSipProvider();
-			provider.setAutomaticDialogSupportEnabled(false);
+			//provider.setAutomaticDialogSupportEnabled(false);
 			providerTable.put(provider, proxy);
 			provider.addSipListener(this);
 
@@ -86,7 +86,7 @@ public class AbstractRecRouteTestCase extends ScenarioHarness implements
 			tiProtocolObjects.destroy();
 			if (riProtocolObjects != tiProtocolObjects)
 				riProtocolObjects.destroy();
-			Thread.sleep(2000);
+			Thread.sleep(4000);
 			this.providerTable.clear();
 			
 			super.logTestCompleted();
