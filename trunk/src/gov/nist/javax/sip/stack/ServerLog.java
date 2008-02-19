@@ -43,6 +43,8 @@ import java.util.Properties;
 
 import javax.sip.header.TimeStampHeader;
 
+import org.apache.log4j.Logger;
+
 /**
  * Log file wrapper class.
  * Log messages into the message trace file and also write the log into the
@@ -50,7 +52,7 @@ import javax.sip.header.TimeStampHeader;
  * later access via RMI. The trace can be viewed with a trace viewer (see
  * tools.traceviewerapp).
  *
- * @version 1.2 $Revision: 1.30 $ $Date: 2008-02-06 17:12:19 $
+ * @version 1.2 $Revision: 1.31 $ $Date: 2008-02-19 05:13:42 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -89,26 +91,17 @@ public class ServerLog {
 	/**
 	 * Print writer that is used to write out the log file.
 	 */
-	protected PrintWriter printWriter;
+	private  PrintWriter printWriter;
 
-	/**
-	 * print stream for writing out trace
-	 */
-	protected PrintStream traceWriter = System.out;
-
-	/**
-	 * Name to assign for the log.
-	protected String logRootName;
-	 */
-
+	
 	/**
 	 * Set auxililary information to log with this trace.
 	 */
-	protected String auxInfo;
+	private String auxInfo;
 
-	protected String description;
+	private String description;
 
-	protected String stackIpAddress;
+	private String stackIpAddress;
 
 	private SIPTransactionStack sipStack;
 	
@@ -122,6 +115,8 @@ public class ServerLog {
 		this.sipStack = sipStack;
 		this.setProperties(configurationProperties);
 	}
+	
+	
 	
 	private void setProperties( Properties configurationProperties) {
 		this.configurationProperties = configurationProperties;
@@ -138,6 +133,7 @@ public class ServerLog {
 			configurationProperties.getProperty(
 				"gov.nist.javax.sip.TRACE_LEVEL");
 		String logContent = configurationProperties.getProperty("gov.nist.javax.sip.LOG_MESSAGE_CONTENT");
+		
 
 		this.logContent =  (logContent != null && logContent.equals("true"));
 		
@@ -177,11 +173,7 @@ public class ServerLog {
 	//public static boolean isWebTesterCatchException=false;
 	//public static String webTesterLogFile=null;
 
-	/**
-	 *  Debugging trace stream.
-	 */
-	private PrintStream trace = System.out;
-
+	
 	/**
 	 * default trace level
 	 */
@@ -193,6 +185,7 @@ public class ServerLog {
 			printWriter = null;
 		}
 	}
+	
 	public void checkLogFile() { 
 		if (logFileName == null || traceLevel < TRACE_MESSAGES) {
 			// Dont create a log file if tracing is
@@ -324,17 +317,12 @@ public class ServerLog {
 		// String tname = Thread.currentThread().getName();
 		checkLogFile();
 		String logInfo = message;
-		if (printWriter == null) {
-			System.out.println(logInfo);
-		} else {
+		if (printWriter != null) {
 			printWriter.println(logInfo);
 		}
 		if (sipStack.isLoggingEnabled()) {
-			logWriter.logDebug(" ]]>");
-			logWriter.logDebug("</debug>");
-			logWriter.logDebug(logInfo);
-			logWriter.logDebug("<debug>");
-			logWriter.logDebug("<![CDATA[ ");
+			logWriter.logInfo(logInfo);
+			
 		}
 	}
 
@@ -489,14 +477,7 @@ public class ServerLog {
 
 	
 
-	/**
-	 * print a line to stdout if the traceLevel is TRACE_DEBUG.
-	 * @param s String to print out.
-	 */
-	public void println(String s) {
-		if (traceLevel == TRACE_DEBUG)
-			System.out.println(s);
-	}
+	
 
 	/**
 	 * Set the trace level for the stack.
@@ -541,12 +522,5 @@ public class ServerLog {
 		this.auxInfo = auxInfo;
 	}
 
-	/**
-	 * Set the descriptive String for the log.
-	 *
-	 * @param desc is the descriptive string.
-	public void setDescription(String desc) {
-		description = desc;
-	}
-	 */
+	
 }

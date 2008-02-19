@@ -32,6 +32,8 @@ import javax.sip.*;
 import javax.sip.address.*;
 import javax.sip.message.*;
 
+import org.apache.log4j.Appender;
+
 import gov.nist.javax.sip.parser.StringMsgParser;
 import gov.nist.javax.sip.stack.*;
 
@@ -248,12 +250,9 @@ import gov.nist.core.net.NetworkLayer;
  * Setting the flag to true ( default ) enables you to avoid common
  * protocol errors. 
  * 
- * <li><b>gov.nist.javax.sip.DIALOG_REMOTE_TAG_REASSIGNMENT_ALLOWED = [true| false ] </b> <br/>
- * Default is <it> false </it> attempt to compensate for buggy endpoints that change To tag mid dialog
- * in provisional responses. This is only tolerated in the EARLY state of the dialog. 
  * 
  * 
- * @version 1.2 $Revision: 1.74 $ $Date: 2008-02-14 04:26:58 $
+ * @version 1.2 $Revision: 1.75 $ $Date: 2008-02-19 05:13:44 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -687,8 +686,9 @@ public class SipStackImpl extends SIPTransactionStack implements
 		super.cancelClientTransactionChecked = 
 			configurationProperties.getProperty("gov.nist.javax.sip.CANCEL_CLIENT_TRANSACTION_CHECKED","true").equalsIgnoreCase("true");
 		
-		super.remoteTagReassignmentAllowed = 
-			configurationProperties.getProperty("gov.nist.javax.sip.DIALOG_REMOTE_TAG_REASSIGNMENT_ALLOWED","false").equalsIgnoreCase("true");
+		//super.remoteTagReassignmentAllowed = 
+		//	configurationProperties.getProperty("gov.nist.javax.sip.DIALOG_REMOTE_TAG_REASSIGNMENT_ALLOWED","false").
+		//  equalsIgnoreCase("true");
 
 	}
 
@@ -954,6 +954,16 @@ public class SipStackImpl extends SIPTransactionStack implements
 		return super.logRecordFactory;
 	}
 
+	/**
+	 * Set the log appender ( this is useful if you want to specify a particular log format or log to 
+	 * something other than a file for example). 
+	 * 
+	 * @param Appender - the log4j appender to add.
+	 * 
+	 */
+	public void addLogAppender(Appender appender) {
+		this.getLogWriter().addAppender(appender);
+	}
 	
 
 	public EventScanner getEventScanner() {
