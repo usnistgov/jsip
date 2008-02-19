@@ -285,32 +285,7 @@ c:/jakarta-ant/bin/ant all
 					<copy file="tck.properties" toDir="./classes" />
 				</target>
 
-				<!-- JvB: Runs the Retroweaver tool to convert 1.5 .class files
-       to bytecode that 1.4 JVMs can run -->
-				<target name="retroweaver" depends="compileapi,compileri" description="Executes the Retroweaver tool">
-
-					<!-- Copy .class files to a separate directory -->
-					<copy todir="${retrowoven}">
-						<fileset dir="${classes}" includes="**/*.class" />
-					</copy>
-
-					<java classname="com.rc.retroweaver.Weaver">
-						<arg line="-source ${retrowoven}" />
-						<classpath>
-							<fileset dir="lib">
-								<include name="**/*.jar" />
-							</fileset>
-							<fileset dir="tools">
-								<include name="**/*.jar" />
-							</fileset>
-						</classpath>
-					</java>
-
-					<!-- Generate a 1.4 version of the jars, including Retroweaver runtime classes (in both) -->
-					<unjar src="lib/retroweaver-rt.jar" dest="${retrowoven}" />
-					<jar destfile="${jain_api_jar14}" basedir="${retrowoven}" includes="javax/sip/**/*.class,com/rc/**/*.class" />
-					<jar destfile="${ri_jar14}" basedir="${retrowoven}" includes="gov/nist/**/*.class,com/rc/**/*.class" />
-				</target>
+			
 
 				<!-- this uses the junit task of ant to run the tck in self test mode -->
 

@@ -1,26 +1,26 @@
 /*
-* Conditions Of Use 
-* 
-* This software was developed by employees of the National Institute of
-* Standards and Technology (NIST), an agency of the Federal Government.
-* Pursuant to title 15 Untied States Code Section 105, works of NIST
-* employees are not subject to copyright protection in the United States
-* and are considered to be in the public domain.  As a result, a formal
-* license is not needed to use the software.
-* 
-* This software is provided by NIST as a service and is expressly
-* provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
-* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
-* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
-* AND DATA ACCURACY.  NIST does not warrant or make any representations
-* regarding the use of the software or the results thereof, including but
-* not limited to the correctness, accuracy, reliability or usefulness of
-* the software.
-* 
-* Permission to use this software is contingent upon your acceptance
-* of the terms of this agreement.
-* 
-*/
+ * Conditions Of Use 
+ * 
+ * This software was developed by employees of the National Institute of
+ * Standards and Technology (NIST), an agency of the Federal Government.
+ * Pursuant to title 15 Untied States Code Section 105, works of NIST
+ * employees are not subject to copyright protection in the United States
+ * and are considered to be in the public domain.  As a result, a formal
+ * license is not needed to use the software.
+ * 
+ * This software is provided by NIST as a service and is expressly
+ * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+ * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+ * AND DATA ACCURACY.  NIST does not warrant or make any representations
+ * regarding the use of the software or the results thereof, including but
+ * not limited to the correctness, accuracy, reliability or usefulness of
+ * the software.
+ * 
+ * Permission to use this software is contingent upon your acceptance
+ * of the terms of this agreement.
+ * 
+ */
 /***************************************************************************
  * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).    *
  ***************************************************************************/
@@ -34,14 +34,15 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Properties;
 
+import org.apache.log4j.Appender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 
 /**
- * A wrapper around log4j that is used for logging debug and errors. You can replace this 
- * file if you want to change the way in which messages are logged.
+ * A wrapper around log4j that is used for logging debug and errors. You can
+ * replace this file if you want to change the way in which messages are logged.
  * 
  * @version 1.2
  * 
@@ -53,7 +54,6 @@ import org.apache.log4j.SimpleLayout;
 
 public class LogWriter {
 
-	
 	private Logger logger;
 
 	private String stackName;
@@ -63,7 +63,6 @@ public class LogWriter {
 	 */
 	public static final int TRACE_NONE = 0;
 
-	
 	/**
 	 * Trace message processing
 	 */
@@ -83,9 +82,8 @@ public class LogWriter {
 	 * Name of the log file in which the trace is written out (default is
 	 * /tmp/sipserverlog.txt)
 	 */
-	private String logFileName = "debuglog.txt";
+	private String logFileName = null;
 
-	
 	/**
 	 * Flag to indicate that logging is enabled.
 	 */
@@ -93,13 +91,11 @@ public class LogWriter {
 
 	private int lineCount;
 
-	
-
 	/**
 	 * trace level
 	 */
 
-	protected  int traceLevel = TRACE_NONE;
+	protected int traceLevel = TRACE_NONE;
 
 	/**
 	 * log a stack trace. This helps to look at the stack frame.
@@ -131,6 +127,12 @@ public class LogWriter {
 		return logger;
 	}
 
+	public void addAppender(Appender fileAppender) {
+
+		this.logger.addAppender(fileAppender);
+
+	}
+
 	public void logException(Throwable ex) {
 
 		if (needsLogging) {
@@ -146,16 +148,7 @@ public class LogWriter {
 		}
 	}
 
-	/**
-	 * Set the log file name
-	 * 
-	 * @param name
-	 *            is the name of the log file to set.
-	 */
-	public void setLogFileName(String name) {
-		
-		this.logFileName = name;
-	}
+	
 
 	/**
 	 * Counts the line number so that the debug log can be correlated to the
@@ -258,18 +251,15 @@ public class LogWriter {
 		String logLevel = configurationProperties
 				.getProperty("gov.nist.javax.sip.TRACE_LEVEL");
 
-		
 		this.logFileName = configurationProperties
 				.getProperty("gov.nist.javax.sip.DEBUG_LOG");
-		
+
 		this.stackName = configurationProperties
 				.getProperty("javax.sip.STACK_NAME");
 		String category = this.stackName;
-		//	This is the default log file name
-		
-		if ( this.logFileName == null && logLevel != null ) 
-			this.logFileName = stackName + "debuglog.txt";
-		
+		// This is the default log file name
+
+	
 		logger = Logger.getLogger(category);
 		if (logLevel != null) {
 			try {
@@ -299,28 +289,33 @@ public class LogWriter {
 					this.needsLogging = false;
 				}
 
-				FileAppender fa = null;
-				if (this.needsLogging) {
+				if (this.needsLogging && this.logFileName != null) {
+					FileAppender fa = null;
 					try {
-						fa = new FileAppender(new SimpleLayout(),this.logFileName);
-					} catch (FileNotFoundException fnf) { 
-				
-						// Likely due to some directoy not existing. Create them
-						File logfile = new File( this.logFileName );
+						fa = new FileAppender(new SimpleLayout(),
+								this.logFileName);
+					} catch (FileNotFoundException fnf) {
+
+						// Likely due to some directoy not existing. Create
+						// them
+						File logfile = new File(this.logFileName);
 						logfile.getParentFile().mkdirs();
 						logfile.delete();
-						
+
 						try {
-							fa = new FileAppender(new SimpleLayout(),this.logFileName);						
+							fa = new FileAppender(new SimpleLayout(),
+									this.logFileName);
 						} catch (IOException ioe) {
-							ioe.printStackTrace();	// give up
+							ioe.printStackTrace(); // give up
 						}
 					} catch (IOException ex) {
 						ex.printStackTrace();
 					}
-					if (fa!=null) logger.addAppender(fa);
+
+					if (fa != null)
+						logger.addAppender(fa);
 				}
-				
+
 			} catch (NumberFormatException ex) {
 				ex.printStackTrace();
 				System.out.println("LogWriter: Bad integer " + logLevel);
@@ -341,8 +336,8 @@ public class LogWriter {
 
 		return this.needsLogging;
 	}
-	
-	public boolean isLoggingEnabled( int logLevel ) {
+
+	public boolean isLoggingEnabled(int logLevel) {
 		return this.needsLogging && logLevel <= traceLevel;
 	}
 
@@ -354,16 +349,20 @@ public class LogWriter {
 
 	public void logWarning(String string) {
 		getLogger().warn(string);
-		
+
 	}
-	
+
+	public void logInfo(String string) {
+		getLogger().info(string);
+	}
+
 	public void disableLogging() {
 		this.needsLogging = false;
 	}
 
 	public void enableLogging() {
 		this.needsLogging = true;
-		
+
 	}
 
 }

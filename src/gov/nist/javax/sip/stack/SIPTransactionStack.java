@@ -65,7 +65,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.89 $ $Date: 2008-02-05 05:50:25 $
+ * @version 1.2 $Revision: 1.90 $ $Date: 2008-02-19 05:13:42 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -312,7 +312,7 @@ public abstract class SIPTransactionStack implements
 	protected boolean cancelClientTransactionChecked = true;
 	
 	// Is to tag reassignment allowed. 
-	protected boolean remoteTagReassignmentAllowed = false;
+	protected boolean remoteTagReassignmentAllowed = true;
 
 	// / Timer to regularly ping the thread auditor (on behalf of the timer
 	// thread)
