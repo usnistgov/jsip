@@ -62,7 +62,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.32 $ $Date: 2007-10-29 02:24:38 $
+ * @version 1.2 $Revision: 1.33 $ $Date: 2008-02-22 19:42:50 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -744,70 +744,55 @@ public final class SIPRequest extends SIPMessage implements
 	 * Note that tag assignment and removal of is left to the caller (we use
 	 * whatever tags are present in the original request).
 	 * 
-	 * @return A CANCEL SIPRequest with a copy all the original headers from
-	 *         this request except for Require, ProxyRequire.
+	 * @return A CANCEL SIPRequest constructed according to RFC3261 section 9.1
+	 * 
+	 * @throws SipException 
+	 * @throws ParseException 
 	 */
+	public SIPRequest createCancelRequest() throws SipException {
+		
+		// see RFC3261 9.1
+		
+		// A CANCEL request SHOULD NOT be sent to cancel a request other than INVITE
+		// if ( !this.getMethod().equals(Request.INVITE) ) log.warn( ... )
 
-	public SIPRequest createCancelRequest() {
-		SIPRequest newRequest;
-		Iterator headerIterator;
-		SIPHeader nextHeader;
+		/* The following procedures are used to construct a CANCEL request.  The
+		   Request-URI, Call-ID, To, the numeric part of CSeq, and From header
+		   fields in the CANCEL request MUST be identical to those in the
+		   request being cancelled, including tags.  A CANCEL constructed by a
+		   client MUST have only a single Via header field value matching the
+		   top Via value in the request being cancelled.  Using the same values
+		   for these header fields allows the CANCEL to be matched with the
+		   request it cancels (Section 9.2 indicates how such matching occurs).
+		   However, the method part of the CSeq header field MUST have a value
+		   of CANCEL.  This allows it to be identified and processed as a
+		   transaction in its own right (See Section 17).
+		*/
+		SIPRequest cancel = new SIPRequest();
+		cancel.setRequestLine((RequestLine) this.requestLine.clone());
+		cancel.setMethod(Request.CANCEL);
+		cancel.setHeader((Header) this.callIdHeader.clone());
+		cancel.setHeader((Header) this.toHeader.clone());
+		cancel.setHeader((Header) cSeqHeader.clone());
+		try {
+			cancel.getCSeq().setMethod(Request.CANCEL);
+		} catch (ParseException e) {
+			e.printStackTrace();	// should not happen
+		}	
+		cancel.setHeader((Header) this.fromHeader.clone());
+		
+		cancel.addFirst((Header) this.getTopmostVia().clone());
+		cancel.setHeader((Header) this.maxForwardsHeader.clone());
 
-		newRequest = new SIPRequest();
-		newRequest.setRequestLine((RequestLine) this.requestLine.clone());
-		newRequest.setMethod(Request.CANCEL);
-		headerIterator = getHeaders();
-		while (headerIterator.hasNext()) {
-			nextHeader = (SIPHeader) headerIterator.next();
-			/*
-			 * RFC 3261 9.1 (Client Behavior) The CANCEL request MUST NOT
-			 * contain any Require or Proxy-Require header fields.
-			 */
-			if (nextHeader instanceof RequireList)
-				continue;
-			else if (nextHeader instanceof ProxyRequireList)
-				continue;
-			else if (nextHeader instanceof ContentLength)
-				continue;
-			else if (nextHeader instanceof ContentType)
-				continue;
-			// Contact header shold not be present in ACK or cancel.
-			else if (nextHeader instanceof ContactList)
-				continue;
-      else if (nextHeader instanceof Expires)
-				continue;
-		  // JvB @todo many more headers shouldn't be copied here
-
-
-			// CSeq method for a cancel request must be cancel.
-			if (nextHeader instanceof CSeq) {
-				CSeq cseq = (CSeq) nextHeader.clone();
-				try {
-					cseq.setMethod(Request.CANCEL);
-				} catch (ParseException e) {
-					InternalErrorHandler.handleException(e);
-				}
-				nextHeader = cseq;
-			} else if (nextHeader instanceof ViaList) {
-				/*
-				 * RFC 3261 9.1 ( Client Behavior ) A CANCEL constructed by a
-				 * client MUST have only a single Via header field value
-				 * matching the top Via value in the request being cancelled.
-				 */
-				nextHeader = (SIPHeader) (((ViaList) nextHeader).getFirst()
-						.clone());
-
-			} else {
-				nextHeader = (SIPHeader) nextHeader.clone();
-			}
-			try {
-				newRequest.attachHeader(nextHeader, false);
-			} catch (SIPDuplicateHeaderException e) {
-				e.printStackTrace();
-				InternalErrorHandler.handleException(e);
-			}
+		/*
+		 * If the request being cancelled contains a Route header field, the
+   		 * CANCEL request MUST include that Route header field's values.
+		 */
+		if (this.getRouteHeaders() != null) {
+			cancel.setHeader((SIPHeaderList<?>) this.getRouteHeaders().clone());
 		}
-		return newRequest;
+
+		return cancel;
 	}
 
 	/**
