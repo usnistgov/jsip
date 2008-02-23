@@ -54,8 +54,14 @@ import org.apache.log4j.SimpleLayout;
 
 public class LogWriter {
 
+	/**
+	 * The logger to which we will write our logging output.
+	 */
 	private Logger logger;
 
+	/**
+	 * The stack name.
+	 */
 	private String stackName;
 
 	/**
@@ -119,20 +125,43 @@ public class LogWriter {
 		}
 	}
 
+	/**
+	 * Get the line count in the log stream.
+	 * 
+	 * @return
+	 */
 	public int getLineCount() {
 		return lineCount;
 	}
 
+	/**
+	 * Get the logger.
+	 * 
+	 * @return
+	 */
 	private Logger getLogger() {
 		return logger;
 	}
 
-	public void addAppender(Appender fileAppender) {
+	
+	/**
+	 * This method allows you to add an external appender.
+	 * This is useful for the case when you want to log to 
+	 * a different log stream than a file.
+	 * 
+	 * @param appender
+	 */
+	public void addAppender(Appender appender) {
 
-		this.logger.addAppender(fileAppender);
+		this.logger.addAppender(appender);
 
 	}
 
+	/**
+	 * Log an exception.
+	 * 
+	 * @param ex
+	 */
 	public void logException(Throwable ex) {
 
 		if (needsLogging) {
@@ -141,12 +170,6 @@ public class LogWriter {
 		}
 	}
 
-	public void logThrowable(Throwable throwable) {
-		if (needsLogging) {
-
-			getLogger().error(throwable);
-		}
-	}
 
 	
 
@@ -266,7 +289,7 @@ public class LogWriter {
 				int ll = 0;
 				if (logLevel.equals("DEBUG")) {
 					ll = TRACE_DEBUG;
-				} else if (logLevel.equals("TRACE")) {
+				} else if (logLevel.equals("TRACE") || logLevel.equals("INFO")) {
 					ll = TRACE_MESSAGES;
 				} else if (logLevel.equals("ERROR")) {
 					ll = TRACE_EXCEPTION;
@@ -289,6 +312,10 @@ public class LogWriter {
 					this.needsLogging = false;
 				}
 
+				/*
+				 * If user specifies a logging file as part of the startup
+				 * properties then we try to create the appender.
+				 */
 				if (this.needsLogging && this.logFileName != null) {
 					FileAppender fa = null;
 					try {
@@ -337,29 +364,58 @@ public class LogWriter {
 		return this.needsLogging;
 	}
 
+	/**
+	 * Return true/false if loging is enabled at a given level.
+	 * 
+	 * @param logLevel
+	 */
 	public boolean isLoggingEnabled(int logLevel) {
 		return this.needsLogging && logLevel <= traceLevel;
 	}
 
+	
+	/**
+	 * Log an error message.
+	 * 
+	 * @param message
+	 * @param ex
+	 */
 	public void logError(String message, Exception ex) {
 		Logger logger = this.getLogger();
 		logger.error(message, ex);
 
 	}
 
+	/**
+	 * Log a warning mesasge.
+	 * 
+	 * @param string
+	 */
 	public void logWarning(String string) {
 		getLogger().warn(string);
 
 	}
 
+	/**
+	 * Log an info message.
+	 * 
+	 * @param string
+	 */
 	public void logInfo(String string) {
 		getLogger().info(string);
 	}
 
+	/**
+	 * Disable logging altogether.
+	 * 
+	 */
 	public void disableLogging() {
 		this.needsLogging = false;
 	}
 
+	/**
+	 * Enable logging (globally).
+	 */
 	public void enableLogging() {
 		this.needsLogging = true;
 
