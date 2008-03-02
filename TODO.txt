@@ -6,3 +6,6 @@ Notes for the next version:
 2. Add AddressFactory.createAddress() ( no args ).
 
 3. Intoduce AddressParametersHeader interface (SIP Servlets implementation support).
+
+4. Respose.getStatusLine() returns the status line of the response ( useful
+   for REFER NOTIFICATIONS ).
