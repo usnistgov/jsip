@@ -1423,12 +1423,11 @@ public class InviteServerTransactionsStateMachineTest
 				Response.OK == responseEvent.getResponse().getStatusCode());
 
 			// Send an ACK to the other side.
-			Request ack = (Request) invite.clone();
-			ack.setMethod(Request.ACK);
-			((ToHeader) ack.getHeader(ToHeader.NAME)).setTag(
-				(((ToHeader) ok.getHeader(ToHeader.NAME)).getParameter("tag")));
+	
 			try {
-				riSipProvider.sendRequest(ack);
+				Dialog dialog = responseEvent.getDialog();
+				Request  ack = dialog.createAck(((CSeqHeader)ok.getHeader(CSeqHeader.NAME)).getSeqNumber());
+				dialog.sendAck(ack);
 			} catch (SipException ex) {
 				
 				fail("error sending ack ",ex);
