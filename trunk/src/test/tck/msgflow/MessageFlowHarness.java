@@ -73,7 +73,7 @@ public class MessageFlowHarness extends TestHarness {
 	
 
 	// timeout values depend on pc, mine is not that powerful :)
-	protected static long MESSAGES_ARRIVE_FOR = 2000;
+	protected static long MESSAGES_ARRIVE_FOR = 2500;
 
 	// it is really important to delete as a failure messes up following tests
 	// so let's try real hard - 10 is a good number

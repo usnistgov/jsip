@@ -448,7 +448,7 @@ public class NonInviteServerTransactionsStateMachineTest
 				eventCollector.extractCollectedRequestEvent();
 			if (registerReceivedEvent == null
 				|| registerReceivedEvent.getRequest() == null)
-				throw new TiUnexpectedError("The initial invite request was not received by the TI!");
+				throw new TiUnexpectedError("The initial REGISTER request was not received by the TI!");
 			//Let's create the transaction
 			ServerTransaction tran = null;
 			try {
