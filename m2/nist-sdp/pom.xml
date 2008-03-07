@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>javax.sip</groupId>
-    <version>1.2</version>
+    <version>1.2.1</version>
     <artifactId>jain-sip</artifactId>
   </parent>
   <groupId>javax.sdp</groupId>
@@ -23,9 +23,8 @@
 				<source>1.5</source>
 				<target>1.5</target>
 				<includes>				
-					<include>**/javax/sdp/**</include>
-					<include>**/gov/nist/javax/sdp/**</include>					
-					<include>**/gov/nist/core/**</include>
+					<include>javax/sdp/**</include>
+					<include>gov/nist/javax/sdp/**</include>															
 				</includes>
 			</configuration>
 		</plugin>
@@ -37,12 +36,11 @@
       <artifactId>log4j</artifactId>
       <version>1.2.8</version>
       <scope>provided</scope>
-    </dependency>
+    </dependency>        
     <dependency>
       <groupId>javax.sip</groupId>
-      <artifactId>jain-sip-api</artifactId>
-      <version>1.2</version>
-      <scope>provided</scope>
+      <artifactId>jain-sip-ri</artifactId>
+      <version>1.2.1</version>      
     </dependency>
   </dependencies>  
 </project>
