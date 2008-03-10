@@ -32,7 +32,7 @@ import javax.sip.address.*;
 
 /**
  * Implementation of the JAIN-SIP address factory.
- * @version 1.2 $Revision: 1.6 $ $Date: 2007-10-14 00:42:04 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2008-03-10 19:32:05 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -52,9 +52,10 @@ public class AddressFactoryImpl implements javax.sip.address.AddressFactory {
 
 	
 	/**
-	 *@SPEC_REVISION 
 	 *
 	 *Create an empty address object.
+	 *
+	 *SPEC_REVISION 
 	 */
 	
 	public javax.sip.address.Address createAddress() {

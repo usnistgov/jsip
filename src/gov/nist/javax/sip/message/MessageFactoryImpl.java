@@ -41,7 +41,7 @@ import gov.nist.javax.sip.parser.*;
 /**
  * Message Factory implementation
  * 
- * @version 1.2 $Revision: 1.12 $ $Date: 2008-01-24 21:05:58 $
+ * @version 1.2 $Revision: 1.13 $ $Date: 2008-03-10 19:32:04 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -52,6 +52,13 @@ import gov.nist.javax.sip.parser.*;
 public class MessageFactoryImpl implements MessageFactory {
 
 	private boolean testing = false;
+	
+	/*
+	 * The UserAgent header to include for all requests created from this message factory.
+	 */
+	private UserAgentHeader userAgent;
+	
+	
 
 	/**
 	 * This is for testing -- allows you to generate invalid requests
@@ -116,6 +123,9 @@ public class MessageFactoryImpl implements MessageFactory {
 		sipRequest.setVia(via);
 		sipRequest.setMaxForwards(maxForwards);
 		sipRequest.setContent(content, contentType);
+		if ( userAgent != null ) {
+			sipRequest.setHeader(userAgent);
+		}
 
 		return sipRequest;
 	}
@@ -172,6 +182,9 @@ public class MessageFactoryImpl implements MessageFactory {
 		sipRequest.setMaxForwards(maxForwards);
 		sipRequest.setHeader((ContentType) contentType);
 		sipRequest.setMessageContent(content);
+		if ( userAgent != null ) {
+			sipRequest.setHeader(userAgent);
+		}
 		return sipRequest;
 	}
 
@@ -218,6 +231,9 @@ public class MessageFactoryImpl implements MessageFactory {
 		sipRequest.setTo(to);
 		sipRequest.setVia(via);
 		sipRequest.setMaxForwards(maxForwards);
+		if (userAgent != null) {
+			sipRequest.setHeader(userAgent);
+		}
 
 		return sipRequest;
 	}
@@ -275,7 +291,9 @@ public class MessageFactoryImpl implements MessageFactory {
 		sipResponse.setVia(via);
 		sipResponse.setMaxForwards(maxForwards);
 		sipResponse.setContent(content, contentType);
-
+		if (userAgent != null) {
+			sipResponse.setHeader(userAgent);
+		}
 		return sipResponse;
 	}
 
@@ -325,7 +343,9 @@ public class MessageFactoryImpl implements MessageFactory {
 		sipResponse.setMaxForwards(maxForwards);
 		sipResponse.setHeader((ContentType) contentType);
 		sipResponse.setMessageContent(content);
-
+		if (userAgent != null) {
+			sipResponse.setHeader(userAgent);
+		}
 		return sipResponse;
 	}
 
@@ -368,7 +388,9 @@ public class MessageFactoryImpl implements MessageFactory {
 		sipResponse.setTo(to);
 		sipResponse.setVia(via);
 		sipResponse.setMaxForwards(maxForwards);
-
+		if (userAgent != null) {
+			sipResponse.setHeader(userAgent);
+		}
 		return sipResponse;
 	}
 
@@ -401,7 +423,9 @@ public class MessageFactoryImpl implements MessageFactory {
 		SIPRequest sipRequest = (SIPRequest) request;
 		SIPResponse sipResponse = sipRequest.createResponse(statusCode);
 		sipResponse.setContent(content, contentType);
-
+		if (userAgent != null) {
+			sipResponse.setHeader(userAgent);
+		}
 		return sipResponse;
 	}
 
@@ -433,7 +457,9 @@ public class MessageFactoryImpl implements MessageFactory {
 		SIPResponse sipResponse = sipRequest.createResponse(statusCode);
 		sipResponse.setHeader((ContentType) contentType);
 		sipResponse.setMessageContent(content);
-
+		if (userAgent != null) {
+			sipResponse.setHeader(userAgent);
+		}
 		return sipResponse;
 	}
 
@@ -464,7 +490,9 @@ public class MessageFactoryImpl implements MessageFactory {
 		// Antonis Karydas.
 		sipResponse.removeContent();
 		sipResponse.removeHeader(ContentTypeHeader.NAME);
-
+		if (userAgent != null) {
+			sipResponse.setHeader(userAgent);
+		}
 		return sipResponse;
 	}
 
@@ -518,6 +546,9 @@ public class MessageFactoryImpl implements MessageFactory {
 		sipRequest.setVia(via);
 		sipRequest.setMaxForwards(maxForwards);
 		sipRequest.setContent(content, contentType);
+		if (userAgent != null) {
+			sipRequest.setHeader(userAgent);
+		}
 		return sipRequest;
 	}
 
@@ -570,6 +601,9 @@ public class MessageFactoryImpl implements MessageFactory {
 		sipResponse.setTo(to);
 		sipResponse.setVia(via);
 		sipResponse.setContent(content, contentType);
+		if ( userAgent != null) {
+			sipResponse.setHeader(userAgent);
+		}
 		return sipResponse;
 
 	}
@@ -623,6 +657,9 @@ public class MessageFactoryImpl implements MessageFactory {
 		sipResponse.setTo(to);
 		sipResponse.setVia(via);
 		sipResponse.setContent(content, contentType);
+		if ( userAgent != null) {
+			sipResponse.setHeader(userAgent);
+		}
 		return sipResponse;
 	}
 
@@ -679,7 +716,7 @@ public class MessageFactoryImpl implements MessageFactory {
 
 		if (!(sipMessage instanceof SIPRequest))
 			throw new ParseException(requestString, 0);
-
+		
 		return (SIPRequest) sipMessage;
 	}
 
@@ -704,5 +741,19 @@ public class MessageFactoryImpl implements MessageFactory {
 			throw new ParseException(responseString, 0);
 
 		return (SIPResponse) sipMessage;
+	}
+	
+	/**
+	 * Set the common UserAgent header for all headers created from this message factory.
+	 * This header is applied to all Messages created from this Factory object except those
+	 * that take String for an argument and create Message from the given String.
+	 * 
+	 * @param userAgent -- the user agent header to set.
+	 * 
+	 * SPEC_REVISION
+	 */
+	
+	public void setCommonUserAgentHeader(UserAgentHeader userAgent) {
+		this.userAgent = userAgent;
 	}
 }
