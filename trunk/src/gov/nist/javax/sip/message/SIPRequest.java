@@ -62,7 +62,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.33 $ $Date: 2008-02-22 19:42:50 $
+ * @version 1.2 $Revision: 1.34 $ $Date: 2008-03-10 19:32:03 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -73,7 +73,7 @@ import gov.nist.javax.sip.header.*;
 
 public final class SIPRequest extends SIPMessage implements
 		javax.sip.message.Request {
-	
+
 	private static final long serialVersionUID = 3360720013577322927L;
 
 	private static final String DEFAULT_USER = "ip";
@@ -87,7 +87,7 @@ public final class SIPRequest extends SIPMessage implements
 	private Object messageChannel;
 
 	private Object inviteTransaction; // The original invite request for a
-										// given cancel request
+	// given cancel request
 
 	/**
 	 * Set of target refresh methods, currently: INVITE, UPDATE, SUBSCRIBE,
@@ -102,7 +102,7 @@ public final class SIPRequest extends SIPMessage implements
 	 * to speed up parsing of messages .equals reduces to == if we use the
 	 * constant value.
 	 */
-	private static final Hashtable<String,String> nameTable = new Hashtable<String,String>();
+	private static final Hashtable<String, String> nameTable = new Hashtable<String, String>();
 
 	private static void putName(String name) {
 		nameTable.put(name, name);
@@ -746,28 +746,32 @@ public final class SIPRequest extends SIPMessage implements
 	 * 
 	 * @return A CANCEL SIPRequest constructed according to RFC3261 section 9.1
 	 * 
-	 * @throws SipException 
-	 * @throws ParseException 
+	 * @throws SipException
+	 * @throws ParseException
 	 */
 	public SIPRequest createCancelRequest() throws SipException {
-		
-		// see RFC3261 9.1
-		
-		// A CANCEL request SHOULD NOT be sent to cancel a request other than INVITE
-		// if ( !this.getMethod().equals(Request.INVITE) ) log.warn( ... )
 
-		/* The following procedures are used to construct a CANCEL request.  The
-		   Request-URI, Call-ID, To, the numeric part of CSeq, and From header
-		   fields in the CANCEL request MUST be identical to those in the
-		   request being cancelled, including tags.  A CANCEL constructed by a
-		   client MUST have only a single Via header field value matching the
-		   top Via value in the request being cancelled.  Using the same values
-		   for these header fields allows the CANCEL to be matched with the
-		   request it cancels (Section 9.2 indicates how such matching occurs).
-		   However, the method part of the CSeq header field MUST have a value
-		   of CANCEL.  This allows it to be identified and processed as a
-		   transaction in its own right (See Section 17).
-		*/
+		// see RFC3261 9.1
+
+		// A CANCEL request SHOULD NOT be sent to cancel a request other than
+		// INVITE
+		
+		if ( !this.getMethod().equals(Request.INVITE) ) 
+			throw new SipException("Attempt to create CANCEL for " + this.getMethod());
+
+		/*
+		 * The following procedures are used to construct a CANCEL request. The
+		 * Request-URI, Call-ID, To, the numeric part of CSeq, and From header
+		 * fields in the CANCEL request MUST be identical to those in the
+		 * request being cancelled, including tags. A CANCEL constructed by a
+		 * client MUST have only a single Via header field value matching the
+		 * top Via value in the request being cancelled. Using the same values
+		 * for these header fields allows the CANCEL to be matched with the
+		 * request it cancels (Section 9.2 indicates how such matching occurs).
+		 * However, the method part of the CSeq header field MUST have a value
+		 * of CANCEL. This allows it to be identified and processed as a
+		 * transaction in its own right (See Section 17).
+		 */
 		SIPRequest cancel = new SIPRequest();
 		cancel.setRequestLine((RequestLine) this.requestLine.clone());
 		cancel.setMethod(Request.CANCEL);
@@ -777,16 +781,16 @@ public final class SIPRequest extends SIPMessage implements
 		try {
 			cancel.getCSeq().setMethod(Request.CANCEL);
 		} catch (ParseException e) {
-			e.printStackTrace();	// should not happen
-		}	
+			e.printStackTrace(); // should not happen
+		}
 		cancel.setHeader((Header) this.fromHeader.clone());
-		
+
 		cancel.addFirst((Header) this.getTopmostVia().clone());
 		cancel.setHeader((Header) this.maxForwardsHeader.clone());
 
 		/*
 		 * If the request being cancelled contains a Route header field, the
-   		 * CANCEL request MUST include that Route header field's values.
+		 * CANCEL request MUST include that Route header field's values.
 		 */
 		if (this.getRouteHeaders() != null) {
 			cancel.setHeader((SIPHeaderList<?>) this.getRouteHeaders().clone());
@@ -856,7 +860,8 @@ public final class SIPRequest extends SIPMessage implements
 				} else {
 					nextHeader = (SIPHeader) nextHeader.clone();
 				}
-			} else if (nextHeader instanceof ContactList || nextHeader instanceof Expires) {
+			} else if (nextHeader instanceof ContactList
+					|| nextHeader instanceof Expires) {
 				// CONTACT header does not apply for ACK requests.
 				continue;
 			} else if (nextHeader instanceof ViaList) {
@@ -912,7 +917,9 @@ public final class SIPRequest extends SIPMessage implements
 		newRequest.setRequestLine((RequestLine) this.requestLine.clone());
 		newRequest.setMethod(Request.ACK);
 		newRequest.setHeader((Header) this.callIdHeader.clone());
-		newRequest.setHeader((Header) this.maxForwardsHeader.clone()); //ISSUE 130 fix 
+		newRequest.setHeader((Header) this.maxForwardsHeader.clone()); // ISSUE
+																		// 130
+																		// fix
 		newRequest.setHeader((Header) this.fromHeader.clone());
 		newRequest.setHeader((Header) responseToHeader.clone());
 		newRequest.addFirst((Header) this.getTopmostVia().clone());
