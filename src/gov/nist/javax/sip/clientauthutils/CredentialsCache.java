@@ -43,11 +43,12 @@ class CredentialsCache
     		authHeaders = new Hashtable<String,List<AuthorizationHeader>>();
     		authenticatedCalls.put(proxyDomain, authHeaders);
     	}
-    	List<AuthorizationHeader> alist = authHeaders.get(user);
-    	if (alist == null) {
-    		alist = new LinkedList<AuthorizationHeader>();
-    		authHeaders.put(user, alist);
-    	}
+    	
+    	// BUGBUG -- this is not quite correct. Should differentiate this on a per callId basis but leads
+    	// to lots of garbage collection headaches!
+    	LinkedList<AuthorizationHeader> alist = new LinkedList<AuthorizationHeader>();
+    	authHeaders.put(user, alist);
+    	
     	alist.add(authorization);
     }
 
