@@ -64,7 +64,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.73 $ $Date: 2008-02-07 04:56:58 $
+ * @version 1.2 $Revision: 1.74 $ $Date: 2008-03-10 17:39:19 $
  * 
  * @author M. Ranganathan
  * 
@@ -1738,8 +1738,9 @@ public class SIPDialog implements javax.sip.Dialog {
 		}
 
 		Hop hop = ((SIPClientTransaction) clientTransactionId).getNextHop();
-		if(sipStack.isLoggingEnabled()) {
-			sipStack.logWriter.logDebug("Using hop = " + hop.getHost() + " : " + hop.getPort());
+		if (sipStack.isLoggingEnabled()) {
+			sipStack.logWriter.logDebug("Using hop = " + hop.getHost() + " : "
+					+ hop.getPort());
 		}
 
 		try {
@@ -1829,9 +1830,9 @@ public class SIPDialog implements javax.sip.Dialog {
 				if (sipStack.isLoggingEnabled()) {
 					sipStack.logWriter.logDebug("using message channel "
 							+ messageChannel);
-				
+
 				}
-					
+
 			}
 
 			if (messageChannel != null
@@ -2375,14 +2376,26 @@ public class SIPDialog implements javax.sip.Dialog {
 							sipStack.putDialog(this);
 						}
 					} else {
-						this.setState(SIPDialog.TERMINATED_STATE);
+						/*
+						 * RFC 3265 chapter 3.1.4.1 "Non-200 class final
+						 * responses indicate that no subscription or dialog has
+						 * been created, and no subsequent NOTIFY message will
+						 * be sent. All non-200 class" + responses (with the
+						 * exception of "489", described herein) have the same
+						 * meanings and handling as described in SIP"
+						 */
+						if (statusCode != 489
+								&& (cseqMethod.equals(Request.NOTIFY))
+								|| cseqMethod.equals(Request.SUBSCRIBE))
+							this.setState(SIPDialog.TERMINATED_STATE);
 					}
 
 				} else {
 
-					// JvB: RFC4235 says that when sending 2xx on UAS side,
-					// Dialog
-					// state should move to CONFIRMED
+					/*
+					 * JvB: RFC4235 says that when sending 2xx on UAS side,
+					 * state should move to CONFIRMED
+					 */
 					if (this.dialogState <= SIPDialog.EARLY_STATE
 							&& (cseqMethod.equals(Request.INVITE)
 									|| cseqMethod.equals(Request.SUBSCRIBE) || cseqMethod
