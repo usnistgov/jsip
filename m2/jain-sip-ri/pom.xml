@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>javax.sip</groupId>
-    <version>1.2.1</version>
+    <version>${version.number}</version>
     <artifactId>jain-sip</artifactId>
   </parent>
 
@@ -13,7 +13,7 @@
   <name>jain-sip-ri</name>
   <url>http://jain-sip.dev.java.net</url>
   <build>
-	<sourceDirectory>../../src/gov/nist</sourceDirectory>
+	<sourceDirectory>../../src</sourceDirectory>
 	<plugins>
 		<plugin>
 			<groupId>org.apache.maven.plugins</groupId>
@@ -22,18 +22,22 @@
 				<source>1.5</source>
 				<target>1.5</target>
 				<includes>
-					<include>**/javax/sip/**</include>
-					<include>**/core/**</include>
+					<include>gov/nist/javax/sip/**</include>
+					<include>gov/nist/javax/sdp/**</include>
+					<include>gov/nist/core/**</include>
+					<include>javax/sdp/**</include>
 				</includes>
 			</configuration>
 		</plugin>
 	</plugins>
 	<resources>
 		<resource>
-			<directory>target/gov/</directory>
+			<directory>target</directory>
 			<includes>
-				<include>nist/javax/sip/**</include>
-				<include>nist/core/**</include>
+				<include>gov/nist/javax/sip/**</include>
+				<include>gov/nist/javax/sdp/**</include>
+				<include>gov/nist/core/**</include>
+				<include>javax/sdp/**</include>
 			</includes>
 			<excludes>
 				<exclude>**/*.java</exclude>
@@ -52,7 +56,7 @@
     <dependency>
       <groupId>javax.sip</groupId>
       <artifactId>jain-sip-api</artifactId>
-      <version>1.2</version>
+      <version>${version.number}</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
