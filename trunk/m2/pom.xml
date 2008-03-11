@@ -6,23 +6,13 @@
   <groupId>javax.sip</groupId>
   <artifactId>jain-sip</artifactId>
   <packaging>pom</packaging>
-  <version>1.2.1</version>
+  <version>${version.number}</version>
   <name>jain-sip</name>
   <url>http://jain-sip.dev.java.net</url>
   <modules>
 	<module>jain-sip-api</module>
-	<module>jain-sip-ri</module>
-	<module>nist-sdp</module>
+	<module>jain-sip-ri</module>	
   </modules>
-  
-  <!-- You shall setup following config in your maven 2 settings.xml file -->
-	<!-- 
-	<server>
-      <id>maven2-repository</id>
-      <username>username</username>
-      <password>password</password>
-    </server>
-	 -->
 
   <distributionManagement>
     <repository>
