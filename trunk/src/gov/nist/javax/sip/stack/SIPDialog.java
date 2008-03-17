@@ -64,14 +64,14 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.75 $ $Date: 2008-03-10 18:40:12 $
+ * @version 1.2 $Revision: 1.76 $ $Date: 2008-03-17 16:19:27 $
  * 
  * @author M. Ranganathan
  * 
  * 
  */
 
-public class SIPDialog implements javax.sip.Dialog {
+public class SIPDialog implements javax.sip.Dialog , DialogExt {
 
 	private static final long serialVersionUID = -1429794423085204069L;
 
@@ -2115,12 +2115,16 @@ public class SIPDialog implements javax.sip.Dialog {
 			sipRequest.setFrom(from);
 			To to = new To();
 			to.setAddress(this.remoteParty);
-			to.setTag(this.hisTag);
+			if ( hisTag != null ) to.setTag(this.hisTag);
 			sipRequest.setTo(to);
 			sipRequest.setMaxForwards(new MaxForwards(70));
+			
+			if ( this.originalRequest != null 	) {
+				Authorization authorization = this.originalRequest.getAuthorization();
+				if ( authorization != null) sipRequest.setHeader(authorization);
+			}
 
-			// JvB: missing: credentials from original INVITE, if any
-
+		
 			// ACKs for 2xx responses
 			// use the Route values learned from the Record-Route of the 2xx
 			// responses.
@@ -2135,7 +2139,9 @@ public class SIPDialog implements javax.sip.Dialog {
 	}
 
 	/**
-	 * Get the provider for this transaction.
+	 * Get the provider for this Dialog.
+	 * 
+	 * SPEC_REVISION
 	 * 
 	 * @return -- the SIP Provider associated with this transaction.
 	 */
