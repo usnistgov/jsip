@@ -150,7 +150,7 @@ import java.util.TimerTask;
  *                                      
  * </pre>
  * 
- * @version 1.2 $Revision: 1.95 $ $Date: 2007-11-18 01:47:54 $
+ * @version 1.2 $Revision: 1.96 $ $Date: 2008-03-19 10:01:09 $
  * @author M. Ranganathan
  * 
  */
@@ -1509,7 +1509,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 	/**
 	 * Start the timer task.
 	 */
-	protected synchronized void startTransactionTimer() {
+	 protected synchronized void startTransactionTimer() {
 		if (this.transactionTimerStarted)
 			return;
 		if (sipStack.timer != null) {
@@ -1744,6 +1744,16 @@ public class SIPServerTransaction extends SIPTransaction implements
 	 */
 	public SIPServerTransaction getCanceledInviteTransaction() {
 		return this.inviteTransaction;
+	}
+	
+	public void scheduleAckRemoval() throws IllegalStateException
+	{
+		if(this.getMethod()==null || !this.getMethod().equals(Request.ACK))
+		{
+			throw new IllegalStateException("Method is null["+ (getMethod()==null)+"] or method is not ACK["+this.getMethod()+"]");
+		}
+		
+		this.startTransactionTimer();
 	}
 
 }
