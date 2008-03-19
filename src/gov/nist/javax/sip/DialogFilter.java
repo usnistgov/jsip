@@ -58,7 +58,7 @@ import java.io.IOException;
  * and event model with the JAIN-SIP stack. This is strictly an implementation
  * class.
  * 
- * @version 1.2 $Revision: 1.19 $ $Date: 2008-02-17 17:15:34 $
+ * @version 1.2 $Revision: 1.20 $ $Date: 2008-03-19 10:01:09 $
  * 
  * @author M. Ranganathan
  */
@@ -368,6 +368,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 						if (sipStack.deliverTerminatedEventForAck) {
 							try {
 								sipStack.addTransaction(transaction);
+								transaction.scheduleAckRemoval();
 							} catch (IOException ex) {
 
 							}
