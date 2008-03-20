@@ -30,6 +30,7 @@ import gov.nist.javax.sip.message.*;
 import gov.nist.javax.sip.header.*;
 import gov.nist.javax.sip.ListeningPointImpl;
 import gov.nist.javax.sip.SIPConstants;
+import gov.nist.javax.sip.ServerTransactionExt;
 import gov.nist.javax.sip.SipProviderImpl;
 import gov.nist.javax.sip.Utils;
 
@@ -150,12 +151,12 @@ import java.util.TimerTask;
  *                                      
  * </pre>
  * 
- * @version 1.2 $Revision: 1.96 $ $Date: 2008-03-19 10:01:09 $
+ * @version 1.2 $Revision: 1.97 $ $Date: 2008-03-20 18:48:58 $
  * @author M. Ranganathan
  * 
  */
 public class SIPServerTransaction extends SIPTransaction implements
-		ServerRequestInterface, javax.sip.ServerTransaction {
+		ServerRequestInterface, javax.sip.ServerTransaction , ServerTransactionExt {
 
 	// force the listener to see transaction
 

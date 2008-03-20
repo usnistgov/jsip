@@ -1,4 +1,4 @@
-package gov.nist.javax.sip.stack;
+package gov.nist.javax.sip;
 
 import javax.sip.SipProvider;
 

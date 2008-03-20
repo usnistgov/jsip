@@ -41,7 +41,7 @@ import gov.nist.javax.sip.parser.*;
 /**
  * Message Factory implementation
  * 
- * @version 1.2 $Revision: 1.13 $ $Date: 2008-03-10 19:32:04 $
+ * @version 1.2 $Revision: 1.14 $ $Date: 2008-03-20 18:48:59 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -49,9 +49,12 @@ import gov.nist.javax.sip.parser.*;
  * 
  */
 @SuppressWarnings("unchecked")
-public class MessageFactoryImpl implements MessageFactory {
+public class MessageFactoryImpl implements MessageFactory, MessageFactoryExt {
 
 	private boolean testing = false;
+	
+	private static String defaultContentEncodingCharset = "UTF-8";
+	
 	
 	/*
 	 * The UserAgent header to include for all requests created from this message factory.
@@ -756,4 +759,22 @@ public class MessageFactoryImpl implements MessageFactory {
 	public void setCommonUserAgentHeader(UserAgentHeader userAgent) {
 		this.userAgent = userAgent;
 	}
+
+	
+	/**
+	 * Set default charset used for encoding String content.
+	 * @param charset
+	 */
+	public  void setDefaultContentEncodingCharset(String charset) throws NullPointerException,
+	IllegalArgumentException {
+		if (charset == null ) throw new NullPointerException ("Null argument!");
+		MessageFactoryImpl.defaultContentEncodingCharset = charset;
+		
+	}
+	
+	public static String getDefaultContentEncodingCharset() {
+		return MessageFactoryImpl.defaultContentEncodingCharset;
+	}
+	
+	
 }
