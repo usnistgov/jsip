@@ -43,7 +43,7 @@ import gov.nist.javax.sip.address.*;
 
 /** Implementation of the JAIN SIP  HeaderFactory
 * 
-* @version 1.2 $Revision: 1.12 $ $Date: 2007-10-18 17:48:08 $
+* @version 1.2 $Revision: 1.13 $ $Date: 2008-03-20 18:48:56 $
 * @since 1.1
 *
 *@author M. Ranganathan   <br/>
@@ -51,7 +51,7 @@ import gov.nist.javax.sip.address.*;
 *
 *
 */
-public class HeaderFactoryImpl implements HeaderFactory {
+public class HeaderFactoryImpl implements HeaderFactory , HeaderFactoryExt {
 
 	/**
 	* Creates a new AcceptEncodingHeader based on the newly supplied encoding 
@@ -1213,7 +1213,7 @@ public class HeaderFactoryImpl implements HeaderFactory {
 	 * and add to HeaderFactory. - pmusgrave
 
 	 */
-	public ExtensionHeader createReferredByHeader(Address address) {
+	public ReferredByHeader createReferredByHeader(Address address) {
 		if (address == null)
 			throw new NullPointerException("null address!");
 		ReferredBy referredBy = new ReferredBy();
@@ -1228,7 +1228,7 @@ public class HeaderFactoryImpl implements HeaderFactory {
 	 * and add to HeaderFactory. - pmusgrave
 	 * pmusgrave
 	 */
-    public ExtensionHeader createReplacesHeader(String callId, String toTag, 
+    public ReplacesHeader createReplacesHeader(String callId, String toTag, 
     			String fromTag) throws ParseException
     {
         Replaces replaces = new Replaces();
@@ -1520,11 +1520,8 @@ public class HeaderFactoryImpl implements HeaderFactory {
 	 * than zero.
 	 * @return the newly created SessionExpiresHeader object.
 	 * 
-	 * TODO: Once interfaces are in javax, change the type to MinSEHeader
-	 * and add to HeaderFactory. - pmusgrave
-	 * pmusgrave
 	 */
-	public ExtensionHeader createSessionExpiresHeader(int expires)
+	public SessionExpiresHeader createSessionExpiresHeader(int expires)
 		throws InvalidArgumentException {
 		if (expires < 0)
 			throw new InvalidArgumentException("bad value " + expires);

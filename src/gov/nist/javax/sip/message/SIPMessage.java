@@ -58,7 +58,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.39 $ $Date: 2008-02-05 05:50:27 $
+ * @version 1.2 $Revision: 1.40 $ $Date: 2008-03-20 18:48:59 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -69,7 +69,10 @@ public abstract class SIPMessage extends MessageObject implements
 		javax.sip.message.Message {
 
 
-	protected static final String DEFAULT_ENCODING = "UTF-8";
+	
+	private String contentEncodingCharset = MessageFactoryImpl.getDefaultContentEncodingCharset();
+	
+	
 	
 
 	/**
@@ -333,7 +336,7 @@ public abstract class SIPMessage extends MessageObject implements
 				if (messageContent != null)
 					content = messageContent;
 				else
-					content = new String(messageContentBytes, DEFAULT_ENCODING);
+					content = new String(messageContentBytes, contentEncodingCharset);
 			} catch (UnsupportedEncodingException ex) {
 				content = "";
 			}
@@ -1148,11 +1151,11 @@ public abstract class SIPMessage extends MessageObject implements
 							charset);
 				} else {
 					this.messageContent = new String(messageContentBytes,
-							DEFAULT_ENCODING);
+							contentEncodingCharset);
 				}
 			} else
 				this.messageContent = new String(messageContentBytes,
-						DEFAULT_ENCODING);
+						contentEncodingCharset);
 		}
 		return this.messageContent;
 	}
@@ -1180,11 +1183,11 @@ public abstract class SIPMessage extends MessageObject implements
 						messageContentBytes = messageContent.getBytes(charset);
 					} else {
 						messageContentBytes = messageContent
-								.getBytes(DEFAULT_ENCODING);
+								.getBytes(contentEncodingCharset);
 					}
 				} else
 					messageContentBytes = messageContent
-							.getBytes(DEFAULT_ENCODING);
+							.getBytes(contentEncodingCharset);
 				return messageContentBytes;
 			} else if (this.messageContent != null) {
 				byte[] messageContentBytes;
@@ -1196,11 +1199,11 @@ public abstract class SIPMessage extends MessageObject implements
 								.getBytes(charset);
 					} else {
 						messageContentBytes = this.messageContent
-								.getBytes(DEFAULT_ENCODING);
+								.getBytes(contentEncodingCharset);
 					}
 				} else
 					messageContentBytes = this.messageContent
-							.getBytes(DEFAULT_ENCODING);
+							.getBytes(contentEncodingCharset);
 				return messageContentBytes;
 			} else {
 				return messageContentBytes;
@@ -1364,7 +1367,7 @@ public abstract class SIPMessage extends MessageObject implements
 					charset = contentTypeHeader.getCharset();
 				}
 				if (charset == null) {
-					charset = DEFAULT_ENCODING;
+					charset = contentEncodingCharset;
 				}
 				try {
 					length = ((String) content).getBytes(charset).length;
@@ -1844,5 +1847,7 @@ public abstract class SIPMessage extends MessageObject implements
 	public abstract String getSIPVersion();
 
 	public abstract String toString();
+
+
 
 }
