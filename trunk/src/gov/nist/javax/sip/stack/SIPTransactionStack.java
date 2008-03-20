@@ -32,6 +32,7 @@ import gov.nist.javax.sip.SIPConstants;
 import gov.nist.javax.sip.SipProviderImpl;
 import gov.nist.javax.sip.message.*;
 import gov.nist.javax.sip.header.*;
+import gov.nist.javax.sip.header.extensions.ReplacesHeader;
 import gov.nist.core.*;
 import gov.nist.core.net.AddressResolver;
 import gov.nist.core.net.DefaultNetworkLayer;
@@ -65,7 +66,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.90 $ $Date: 2008-02-19 05:13:42 $
+ * @version 1.2 $Revision: 1.91 $ $Date: 2008-03-20 18:48:58 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -2208,6 +2209,32 @@ public abstract class SIPTransactionStack implements
 		dialogs.addAll(this.dialogTable.values());
 		dialogs.addAll(this.earlyDialogTable.values());
 		return dialogs;
+	}
+	
+	
+	/**
+	 * Get the Replaced Dialog from the stack.
+	 * 
+	 * @param replacesHeader -- the header that references the dialog being replaced.
+	 */
+	public Dialog getReplacesDialog(ReplacesHeader replacesHeader) {
+		String cid = replacesHeader.getCallId();
+		String fromTag = replacesHeader.getFromTag();
+		String toTag = replacesHeader.getToTag();
+
+		StringBuffer retval = new StringBuffer(cid);
+
+		// retval.append(COLON).append(to.getUserAtHostPort());
+		if (toTag != null) {
+			retval.append(":");
+			retval.append(toTag);
+		}
+		// retval.append(COLON).append(from.getUserAtHostPort());
+		if (fromTag != null) {
+			retval.append(":");
+			retval.append(fromTag);
+		}
+		return this.dialogTable.get(retval.toString());
 	}
 
 	

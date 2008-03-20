@@ -30,10 +30,13 @@ import java.util.StringTokenizer;
 
 import javax.sip.*;
 import javax.sip.address.*;
+import javax.sip.header.ReferToHeader;
 import javax.sip.message.*;
 
 import org.apache.log4j.Appender;
 
+import gov.nist.javax.sip.header.CallID;
+import gov.nist.javax.sip.header.extensions.ReplacesHeader;
 import gov.nist.javax.sip.parser.StringMsgParser;
 import gov.nist.javax.sip.stack.*;
 
@@ -54,23 +57,22 @@ import gov.nist.core.net.NetworkLayer;
  * array when you create the JAIN-SIP statck):
  * <ul>
  * 
- * <li><b>gov.nist.javax.sip.TRACE_LEVEL = integer </b><br/> You can use
- * the standard log4j level names here (i.e. ERROR, INFO, WARNING, OFF, DEBUG)
- *  If this is set to INFO (or TRACE)  or above, then
- * incoming valid messages are logged in SERVER_LOG. If you set this to 32 and
- * specify a DEBUG_LOG then vast amounts of trace information will be dumped in
- * to the specified DEBUG_LOG. The server log accumulates the signaling trace.
- * <a href="{@docRoot}/tools/tracesviewer/tracesviewer.html"> This can be
- * viewed using the trace viewer tool .</a> Please send us both the server log
- * and debug log when reporting non-obvious problems. You can also use the
- * strings DEBUG or INFO for level 32 and 16 respectively</li>
+ * <li><b>gov.nist.javax.sip.TRACE_LEVEL = integer </b><br/> You can use the
+ * standard log4j level names here (i.e. ERROR, INFO, WARNING, OFF, DEBUG) If
+ * this is set to INFO (or TRACE) or above, then incoming valid messages are
+ * logged in SERVER_LOG. If you set this to 32 and specify a DEBUG_LOG then vast
+ * amounts of trace information will be dumped in to the specified DEBUG_LOG.
+ * The server log accumulates the signaling trace. <a href="{@docRoot}/tools/tracesviewer/tracesviewer.html">
+ * This can be viewed using the trace viewer tool .</a> Please send us both the
+ * server log and debug log when reporting non-obvious problems. You can also
+ * use the strings DEBUG or INFO for level 32 and 16 respectively</li>
  * 
  * <li><b>gov.nist.javax.sip.SERVER_LOG = fileName </b><br/> Log valid
- * incoming messages here. If this is left null AND the TRACE_LEVEL is above INFO (or TRACE)
- * then the messages are printed to stdout. Otherwise messages are logged in a
- * format that can later be viewed using the trace viewer application which is
- * located in the tools/tracesviewer directory. <font color=red> Mail this to us
- * with bug reports. </font> </li>
+ * incoming messages here. If this is left null AND the TRACE_LEVEL is above
+ * INFO (or TRACE) then the messages are printed to stdout. Otherwise messages
+ * are logged in a format that can later be viewed using the trace viewer
+ * application which is located in the tools/tracesviewer directory. <font
+ * color=red> Mail this to us with bug reports. </font> </li>
  * 
  * <li><b>gov.nist.javax.sip.LOG_MESSAGE_CONTENT = true|false </b><br/> Set
  * true if you want to capture content into the log. Default is false. A bad
@@ -141,12 +143,11 @@ import gov.nist.core.net.NetworkLayer;
  * highwater mark range. Requests are unconditionally accepted if the table is
  * smaller than the low water mark. The default highwater mark is 5000 </li>
  * 
- *  <li><b>gov.nist.javax.sip.MAX_CLIENT_TRANSACTIONS = integer </b> <br/>
- * Max number of active client transactions before the caller blocks and
- * waits for the number to drop below a threshold. Default is unlimited,
- * i.e. the caller never blocks and waits for a client transaction to
- * become available (i.e. it does its own resource management in the
- * application). </li>
+ * <li><b>gov.nist.javax.sip.MAX_CLIENT_TRANSACTIONS = integer </b> <br/> Max
+ * number of active client transactions before the caller blocks and waits for
+ * the number to drop below a threshold. Default is unlimited, i.e. the caller
+ * never blocks and waits for a client transaction to become available (i.e. it
+ * does its own resource management in the application). </li>
  * 
  * <li><b>gov.nist.javax.sip.PASS_INVITE_NON_2XX_ACK_TO_LISTENER = true|false
  * </b> <br/> If true then the listener will see the ACK for non-2xx responses
@@ -225,34 +226,37 @@ import gov.nist.core.net.NetworkLayer;
  * 
  * <li><b>gov.nist.javax.sip.LOG_FACTORY = classpath </b> <br/> The fully
  * qualified classpath for an implementation of the MessageLogFactory. The stack
- * calls the MessageLogFactory functions to format the log for messages that 
- * are received or sent. This function allows you to log auxiliary 
- * information related to the application or environmental conditions 
- * into the log stream. The log factory must have a default constructor. </li>
+ * calls the MessageLogFactory functions to format the log for messages that are
+ * received or sent. This function allows you to log auxiliary information
+ * related to the application or environmental conditions into the log stream.
+ * The log factory must have a default constructor. </li>
  * 
- * <li><b>gov.nist.javax.sip.COMPUTE_CONTENT_LENGTH_FROM_MESSAGE_BODY = [true|false] </b> <br/> 
- * Default is <it>false</it> If set to <it>true</it>, when you are creating 
- * a message from a <it>String</it>, the MessageFactory will compute
- * the content length from the message content and ignore the provided
- * content length parameter in the Message. Otherwise, it will use the content
- * length supplied and generate a parse exception if the content is 
- * truncated. 
+ * <li><b>gov.nist.javax.sip.COMPUTE_CONTENT_LENGTH_FROM_MESSAGE_BODY =
+ * [true|false] </b> <br/> Default is <it>false</it> If set to <it>true</it>,
+ * when you are creating a message from a <it>String</it>, the MessageFactory
+ * will compute the content length from the message content and ignore the
+ * provided content length parameter in the Message. Otherwise, it will use the
+ * content length supplied and generate a parse exception if the content is
+ * truncated.
  * 
- * <li><b>gov.nist.javax.sip.CANCEL_CLIENT_TRANSACTION_CHECKED = [true|false]  </b> <br/>
- * Default is <it>true</it>.
- * This flag is added in support of load balancers or failover managers
- * where you may want to cancel ongoing transactions from a different stack than the original stack.
- * If set to <it>false</it> then the CANCEL client transaction is not checked
- * for the existence of the INVITE or the state of INVITE when you send the CANCEL request.
- * Hence you can CANCEL an INVITE from a different stack than the INVITE. You can also create a CANCEL client
- * transaction late and send it out after the INVITE server transaction has been
- * Terminated. Clearly this will result in protocol errors. 
- * Setting the flag to true ( default ) enables you to avoid common
- * protocol errors. 
+ * <li><b>gov.nist.javax.sip.CANCEL_CLIENT_TRANSACTION_CHECKED = [true|false]
+ * </b> <br/> Default is <it>true</it>. This flag is added in support of load
+ * balancers or failover managers where you may want to cancel ongoing
+ * transactions from a different stack than the original stack. If set to
+ * <it>false</it> then the CANCEL client transaction is not checked for the
+ * existence of the INVITE or the state of INVITE when you send the CANCEL
+ * request. Hence you can CANCEL an INVITE from a different stack than the
+ * INVITE. You can also create a CANCEL client transaction late and send it out
+ * after the INVITE server transaction has been Terminated. Clearly this will
+ * result in protocol errors. Setting the flag to true ( default ) enables you
+ * to avoid common protocol errors.
  * 
  * 
+ * <b> Note that the stack supports the extensions that are defined in
+ * SipStackExt. These will be supported in the next release of JAIN-SIP. </b>
  * 
- * @version 1.2 $Revision: 1.75 $ $Date: 2008-02-19 05:13:44 $
+ * 
+ * @version 1.2 $Revision: 1.76 $ $Date: 2008-03-20 18:49:00 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -261,11 +265,11 @@ import gov.nist.core.net.NetworkLayer;
  * 
  */
 public class SipStackImpl extends SIPTransactionStack implements
-		javax.sip.SipStack , SipStackExtensions{
+		javax.sip.SipStack, SipStackExt {
 
 	private EventScanner eventScanner;
 
-	private Hashtable<String,ListeningPointImpl> listeningPoints;
+	private Hashtable<String, ListeningPointImpl> listeningPoints;
 
 	private LinkedList<SipProviderImpl> sipProviders;
 
@@ -293,7 +297,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 				this);
 		super.setMessageFactory(msgFactory);
 		this.eventScanner = new EventScanner(this);
-		this.listeningPoints = new Hashtable<String,ListeningPointImpl>();
+		this.listeningPoints = new Hashtable<String, ListeningPointImpl>();
 		this.sipProviders = new LinkedList<SipProviderImpl>();
 
 	}
@@ -304,7 +308,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 	private void reInitialize() {
 		super.reInit();
 		this.eventScanner = new EventScanner(this);
-		this.listeningPoints = new Hashtable<String,ListeningPointImpl>();
+		this.listeningPoints = new Hashtable<String, ListeningPointImpl>();
 		this.sipProviders = new LinkedList<SipProviderImpl>();
 		this.sipListener = null;
 
@@ -675,20 +679,25 @@ public class SipStackImpl extends SIPTransactionStack implements
 		} else {
 			this.logRecordFactory = new DefaultMessageLogFactory();
 		}
-		
-		boolean computeContentLength = 
-				configurationProperties.getProperty("gov.nist.javax.sip.COMPUTE_CONTENT_LENGTH_FROM_MESSAGE_BODY","false").equalsIgnoreCase("true");
-		StringMsgParser.setComputeContentLengthFromMessage(computeContentLength);
-		
-		super.rfc2543Supported =  configurationProperties.getProperty
-				("gov.nist.javax.sip.RFC_2543_SUPPORT_ENABLED","true").equalsIgnoreCase("true");
-		
-		super.cancelClientTransactionChecked = 
-			configurationProperties.getProperty("gov.nist.javax.sip.CANCEL_CLIENT_TRANSACTION_CHECKED","true").equalsIgnoreCase("true");
-		
-		//super.remoteTagReassignmentAllowed = 
-		//	configurationProperties.getProperty("gov.nist.javax.sip.DIALOG_REMOTE_TAG_REASSIGNMENT_ALLOWED","false").
-		//  equalsIgnoreCase("true");
+
+		boolean computeContentLength = configurationProperties.getProperty(
+				"gov.nist.javax.sip.COMPUTE_CONTENT_LENGTH_FROM_MESSAGE_BODY",
+				"false").equalsIgnoreCase("true");
+		StringMsgParser
+				.setComputeContentLengthFromMessage(computeContentLength);
+
+		super.rfc2543Supported = configurationProperties.getProperty(
+				"gov.nist.javax.sip.RFC_2543_SUPPORT_ENABLED", "true")
+				.equalsIgnoreCase("true");
+
+		super.cancelClientTransactionChecked = configurationProperties
+				.getProperty(
+						"gov.nist.javax.sip.CANCEL_CLIENT_TRANSACTION_CHECKED",
+						"true").equalsIgnoreCase("true");
+
+		// super.remoteTagReassignmentAllowed =
+		// configurationProperties.getProperty("gov.nist.javax.sip.DIALOG_REMOTE_TAG_REASSIGNMENT_ALLOWED","false").
+		// equalsIgnoreCase("true");
 
 	}
 
@@ -914,7 +923,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 		}
 		this.stopStack();
 		this.sipProviders = new LinkedList<SipProviderImpl>();
-		this.listeningPoints = new Hashtable<String,ListeningPointImpl>();
+		this.listeningPoints = new Hashtable<String, ListeningPointImpl>();
 		this.eventScanner.forceStop();
 		this.eventScanner = null;
 
@@ -955,19 +964,21 @@ public class SipStackImpl extends SIPTransactionStack implements
 	}
 
 	/**
-	 * Set the log appender ( this is useful if you want to specify a particular log format or log to 
-	 * something other than a file for example). 
+	 * Set the log appender ( this is useful if you want to specify a particular
+	 * log format or log to something other than a file for example).
 	 * 
-	 * @param Appender - the log4j appender to add.
+	 * @param Appender -
+	 *            the log4j appender to add.
 	 * 
 	 */
 	public void addLogAppender(Appender appender) {
 		this.getLogWriter().addAppender(appender);
 	}
-	
 
 	public EventScanner getEventScanner() {
 		return eventScanner;
 	}
+
+	
 
 }
