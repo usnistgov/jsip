@@ -66,7 +66,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.91 $ $Date: 2008-03-20 18:48:58 $
+ * @version 1.2 $Revision: 1.92 $ $Date: 2008-03-26 22:13:25 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -2234,7 +2234,7 @@ public abstract class SIPTransactionStack implements
 			retval.append(":");
 			retval.append(fromTag);
 		}
-		return this.dialogTable.get(retval.toString());
+		return this.dialogTable.get(retval.toString().toLowerCase());
 	}
 
 	
