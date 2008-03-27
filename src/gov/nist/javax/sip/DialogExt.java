@@ -12,6 +12,12 @@ import javax.sip.SipProvider;
  */
 public interface DialogExt {
 	
+	/**
+	 * Returns the SipProvider that was used for the first transaction in this Dialog
+	 * @return SipProvider
+	 *
+	 * @since 2.0
+	 */
 	public SipProvider getSipProvider() ;
 
 }
