@@ -32,4 +32,14 @@ public interface SipStackExt {
 	 */
 	public Dialog getReplacesDialog(ReplacesHeader replacesHeader);
 
+  /**
+   * @todo discuss
+   *
+   * Finds a Dialog to join based on the given Join header
+   *
+   * JvB: proposal
+   *
+   * public Dialog getJoinDialog( JoinHeader joinHeader);
+   */
+
 }
