@@ -24,6 +24,11 @@ public interface SipStackExt {
 	
 	/**
 	 * Get the ReferedTo dialog in the Replaces header.
+	 *
+	 * @return Dialog object matching the Replaces header, provided it is in an 
+	 *         appropriate state to be replaced, <code>null</code> otherwise
+	 *
+	 * @since 2.0
 	 */
 	public Dialog getReplacesDialog(ReplacesHeader replacesHeader);
 
