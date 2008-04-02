@@ -151,7 +151,7 @@ import java.util.TimerTask;
  *                                      
  * </pre>
  * 
- * @version 1.2 $Revision: 1.97 $ $Date: 2008-03-20 18:48:58 $
+ * @version 1.2 $Revision: 1.98 $ $Date: 2008-04-02 20:43:05 $
  * @author M. Ranganathan
  * 
  */
@@ -1459,8 +1459,15 @@ public class SIPServerTransaction extends SIPTransaction implements
 			this.sendMessage((SIPResponse) response);
 
 		} catch (IOException ex) {
+			if (sipStack.isLoggingEnabled())
+				sipStack.logWriter.logException(ex);
+			this.setState(TransactionState.TERMINATED);
+			raiseErrorEvent(SIPTransactionErrorEvent.TRANSPORT_ERROR);
 			throw new SipException(ex.getMessage());
 		} catch (java.text.ParseException ex1) {
+			if (sipStack.isLoggingEnabled())
+				sipStack.logWriter.logException(ex1);
+			this.setState(TransactionState.TERMINATED);
 			throw new SipException(ex1.getMessage());
 		}
 	}
