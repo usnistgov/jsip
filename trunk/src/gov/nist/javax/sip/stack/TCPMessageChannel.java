@@ -62,7 +62,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.44 $ $Date: 2008-02-14 04:26:56 $
+ * @version 1.2 $Revision: 1.45 $ $Date: 2008-04-02 20:59:29 $
  */
 public class TCPMessageChannel extends MessageChannel implements
 		SIPMessageListener, Runnable , RawMessageChannel {
@@ -192,8 +192,10 @@ public class TCPMessageChannel extends MessageChannel implements
 	 */
 	public void close() {
 		try {
-			if (mySock != null)
+			if (mySock != null) {
 				mySock.close();
+				mySock = null;
+			}
 			if (sipStack.isLoggingEnabled())
 				sipStack.logWriter.logDebug("Closing message Channel " + this);
 		} catch (IOException ex) {
@@ -299,7 +301,9 @@ public class TCPMessageChannel extends MessageChannel implements
 
 		long time = System.currentTimeMillis();
 
-		this.sendMessage(msg, sipMessage instanceof SIPRequest);
+		// JvB: also retry for responses, if the connection is gone we should
+		// try to reconnect
+		this.sendMessage(msg, /* sipMessage instanceof SIPRequest */ true );
 
 		if (this.sipStack.logWriter.isLoggingEnabled(ServerLog.TRACE_MESSAGES))
 			logMessage(sipMessage, peerAddress, peerPort, time);
