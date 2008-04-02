@@ -155,7 +155,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.93 $ $Date: 2008-03-02 10:25:50 $
+ * @version 1.2 $Revision: 1.94 $ $Date: 2008-04-02 20:42:46 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -549,7 +549,8 @@ public class SIPClientTransaction extends SIPTransaction implements
 				nonInviteClientTransaction(transactionResponse, sourceChannel,
 						dialog);
 		} catch (IOException ex) {
-
+			if (sipStack.isLoggingEnabled())
+				sipStack.logWriter.logException(ex);
 			this.setState(TransactionState.TERMINATED);
 			raiseErrorEvent(SIPTransactionErrorEvent.TRANSPORT_ERROR);
 		}
