@@ -1,10 +1,13 @@
 package gov.nist.javax.sip;
 
+import gov.nist.javax.sip.clientauthutils.AccountManager;
+import gov.nist.javax.sip.clientauthutils.AuthenticationHelper;
 import gov.nist.javax.sip.header.extensions.ReplacesHeader;
 
 import java.util.Collection;
 
 import javax.sip.Dialog;
+import javax.sip.header.HeaderFactory;
 
 /**
  * SIP Stack extensions to be added to the next spec revision. Only these may be 
@@ -41,5 +44,20 @@ public interface SipStackExt {
    *
    * public Dialog getJoinDialog( JoinHeader joinHeader);
    */
+	
+	/**
+	 * Get the authentication helper.
+	 * 
+	 * 
+	 * @param accountManager -- account manager (for fetching credentials).
+	 * @param headerFactory -- header factory.
+	 * 
+	 * @return - the authentication helper which can be used for generating the appropriate headers for
+	 * 		handling authentication challenges for user agents.
+	 * 
+	 * @since 2.0
+	 */
+	public AuthenticationHelper getAuthenticationHelper(AccountManager accountManager,
+			HeaderFactory headerFactory);
 
 }

@@ -28,21 +28,27 @@ package gov.nist.javax.sip;
 import java.text.ParseException;
 
 import javax.sip.*;
+import javax.sip.address.SipURI;
+import javax.sip.header.ContactHeader;
 
+import gov.nist.core.InternalErrorHandler;
+import gov.nist.javax.sip.address.AddressImpl;
+import gov.nist.javax.sip.address.SipUri;
+import gov.nist.javax.sip.header.Contact;
 import gov.nist.javax.sip.header.Via;
 import gov.nist.javax.sip.stack.*;
 
 /**
  * Implementation of the ListeningPoint interface
  *
- * @version 1.2 $Revision: 1.9 $ $Date: 2007-01-26 16:50:43 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2008-04-06 23:02:30 $
  *
  * @author M. Ranganathan   <br/>
  *
  * 
  *
  */
-public class ListeningPointImpl implements javax.sip.ListeningPoint {
+public class ListeningPointImpl implements javax.sip.ListeningPoint, gov.nist.javax.sip.ListeningPointExt {
 
 	
 	protected String transport;
@@ -210,6 +216,24 @@ public class ListeningPointImpl implements javax.sip.ListeningPoint {
     public MessageProcessor getMessageProcessor() {
         return this.messageProcessor;
     }
-
+    
+    public ContactHeader createContactHeader() {
+		try {
+			String ipAddress = this.getIPAddress();
+			int port = this.getPort();
+			SipURI sipURI = new SipUri();
+			sipURI.setHost(ipAddress);
+			sipURI.setPort(port);
+			sipURI.setTransportParam(this.transport);
+			Contact contact = new Contact();
+			AddressImpl address = new AddressImpl();
+			address.setURI(sipURI);
+			contact.setAddress(address);
+			return contact;
+		} catch (Exception ex) {
+			InternalErrorHandler.handleException("Unexpected exception",sipStack.getLogWriter());
+			return null;
+		}
+	}
 	
 }
