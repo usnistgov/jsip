@@ -66,7 +66,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.92 $ $Date: 2008-03-26 22:13:25 $
+ * @version 1.2 $Revision: 1.93 $ $Date: 2008-04-06 23:02:27 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -98,7 +98,7 @@ public abstract class SIPTransactionStack implements
 
 	// Global timer. Use this for all timer tasks.
 
-	protected Timer timer;
+	private Timer timer;
 
 	// List of pending server transactions
 	private ConcurrentHashMap<String,SIPServerTransaction> pendingTransactions;
@@ -328,7 +328,7 @@ public abstract class SIPTransactionStack implements
 
 		protected void runTask() {
 			// Check if we still have a timer (it may be null after shutdown)
-			if (timer != null) {
+			if (getTimer() != null) {
 				// Register the timer task if we haven't done so
 				if (threadHandle == null) {
 					// This happens only once since the thread handle is passed
@@ -340,7 +340,7 @@ public abstract class SIPTransactionStack implements
 				threadHandle.ping();
 
 				// Schedule the next ping
-				timer.schedule(new PingTimer(threadHandle), threadHandle
+				getTimer().schedule(new PingTimer(threadHandle), threadHandle
 						.getPingIntervalInMillisecs());
 			}
 		}
@@ -2235,6 +2235,20 @@ public abstract class SIPTransactionStack implements
 			retval.append(fromTag);
 		}
 		return this.dialogTable.get(retval.toString().toLowerCase());
+	}
+
+	/**
+	 * @param timer the timer to set
+	 */
+	public void setTimer(Timer timer) {
+		this.timer = timer;
+	}
+
+	/**
+	 * @return the timer
+	 */
+	public Timer getTimer() {
+		return timer;
 	}
 
 	

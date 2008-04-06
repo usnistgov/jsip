@@ -64,7 +64,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.76 $ $Date: 2008-03-17 16:19:27 $
+ * @version 1.2 $Revision: 1.77 $ $Date: 2008-04-06 23:02:27 $
  * 
  * @author M. Ranganathan
  * 
@@ -847,11 +847,11 @@ public class SIPDialog implements javax.sip.Dialog , DialogExt {
 	 * 
 	 */
 	public void doDeferredDelete() {
-		if (sipStack.timer == null)
+		if (sipStack.getTimer() == null)
 			this.setState(TERMINATED_STATE);
 		else {
 			// Delete the transaction after the max ack timeout.
-			sipStack.timer.schedule(new DialogDeleteTask(),
+			sipStack.getTimer().schedule(new DialogDeleteTask(),
 					SIPTransaction.TIMER_H
 							* SIPTransactionStack.BASE_TIMER_INTERVAL);
 		}
@@ -882,8 +882,8 @@ public class SIPDialog implements javax.sip.Dialog , DialogExt {
 		this.dialogState = state;
 		// Dialog is in terminated state set it up for GC.
 		if (state == TERMINATED_STATE) {
-			if (sipStack.timer != null) { // may be null after shutdown
-				sipStack.timer.schedule(new LingerTimer(),
+			if (sipStack.getTimer() != null) { // may be null after shutdown
+				sipStack.getTimer().schedule(new LingerTimer(),
 						DIALOG_LINGER_TIME * 1000);
 			}
 			this.stopTimer();
@@ -1571,8 +1571,9 @@ public class SIPDialog implements javax.sip.Dialog , DialogExt {
 		 */
 
 		if (SIPRequest.isTargetRefresh(method)) {
-			ContactHeader contactHeader = this.sipProvider
-					.createContactForProvider(lp.getTransport());
+			ContactHeader contactHeader = 
+				((ListeningPointImpl)this.sipProvider.getListeningPoint(lp.getTransport())).createContactHeader();
+					
 			((SipURI) contactHeader.getAddress().getURI()).setSecure(this
 					.isSecure());
 			sipRequest.setHeader(contactHeader);
@@ -1952,7 +1953,7 @@ public class SIPDialog implements javax.sip.Dialog , DialogExt {
 			this.timerTask.transaction = transaction;
 		} else {
 			this.timerTask = new DialogTimerTask(transaction);
-			sipStack.timer.schedule(timerTask,
+			sipStack.getTimer().schedule(timerTask,
 					SIPTransactionStack.BASE_TIMER_INTERVAL,
 					SIPTransactionStack.BASE_TIMER_INTERVAL);
 

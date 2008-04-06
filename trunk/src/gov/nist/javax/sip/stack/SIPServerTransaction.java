@@ -151,7 +151,7 @@ import java.util.TimerTask;
  *                                      
  * </pre>
  * 
- * @version 1.2 $Revision: 1.98 $ $Date: 2008-04-02 20:43:05 $
+ * @version 1.2 $Revision: 1.99 $ $Date: 2008-04-06 23:02:28 $
  * @author M. Ranganathan
  * 
  */
@@ -359,7 +359,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 				// of new server tx
 				TimerTask myTimer = new LingerTimer();
 
-				sipStack.timer.schedule(myTimer,
+				sipStack.getTimer().schedule(myTimer,
 						SIPTransactionStack.CONNECTION_LINGER_TIME * 1000);
 
 			} else {
@@ -488,7 +488,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 		super(sipStack, newChannelToUse);
 
 		if (sipStack.maxListenerResponseTime != -1) {
-			sipStack.timer.schedule(new ListenerExecutionMaxTimer(),
+			sipStack.getTimer().schedule(new ListenerExecutionMaxTimer(),
 					sipStack.maxListenerResponseTime * 1000);
 		}
 
@@ -677,11 +677,11 @@ public class SIPServerTransaction extends SIPTransaction implements
 			// sent by intermediate proxies. This fixes some TCK tests
 			// null check added as the stack may be stopped.
 			if (isInviteTransaction() && !this.isMapped
-					&& sipStack.timer != null) {
+					&& sipStack.getTimer() != null) {
 				this.isMapped = true;
 				// Schedule a timer to fire in 200 ms if the
 				// TU did not send a trying in that time.
-				sipStack.timer.schedule(new SendTrying(), 200);
+				sipStack.getTimer().schedule(new SendTrying(), 200);
 
 			} else {
 				isMapped = true;
@@ -1448,7 +1448,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 				this.retransmissionAlertTimerTask = new RetransmissionAlertTimerTask(
 						dialogId);
 				sipStack.retransmissionAlertTransactions.put(dialogId, this);
-				sipStack.timer.schedule(this.retransmissionAlertTimerTask, 0,
+				sipStack.getTimer().schedule(this.retransmissionAlertTimerTask, 0,
 						SIPTransactionStack.BASE_TIMER_INTERVAL);
 
 			}
@@ -1520,12 +1520,12 @@ public class SIPServerTransaction extends SIPTransaction implements
 	 protected synchronized void startTransactionTimer() {
 		if (this.transactionTimerStarted)
 			return;
-		if (sipStack.timer != null) {
+		if (sipStack.getTimer() != null) {
 			// The timer is set to null when the Stack is
 			// shutting down.
 			this.transactionTimerStarted = true;
 			TimerTask myTimer = new TransactionTimer();
-			sipStack.timer.schedule(myTimer, BASE_TIMER_INTERVAL,
+			sipStack.getTimer().schedule(myTimer, BASE_TIMER_INTERVAL,
 					BASE_TIMER_INTERVAL);
 		}
 	}
@@ -1624,7 +1624,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 			this.lastResponse = (SIPResponse) relResponse;
 			this.sendMessage((SIPMessage) relResponse);
 			this.provisionalResponseTask = new ProvisionalResponseTask();
-			this.sipStack.timer.schedule(provisionalResponseTask, 0,
+			this.sipStack.getTimer().schedule(provisionalResponseTask, 0,
 					SIPTransactionStack.BASE_TIMER_INTERVAL);
 
 		} catch (Exception ex) {
