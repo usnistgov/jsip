@@ -155,7 +155,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.94 $ $Date: 2008-04-02 20:42:46 $
+ * @version 1.2 $Revision: 1.95 $ $Date: 2008-04-06 23:02:27 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction {
@@ -231,7 +231,7 @@ public class SIPClientTransaction extends SIPTransaction implements
 						// Let the connection linger for a while and then close
 						// it.
 						TimerTask myTimer = new LingerTimer();
-						sipStack.timer
+						sipStack.getTimer()
 								.schedule(
 										myTimer,
 										SIPTransactionStack.CONNECTION_LINGER_TIME * 1000);
@@ -1315,7 +1315,7 @@ public class SIPClientTransaction extends SIPTransaction implements
 			return;
 		TimerTask myTimer = new TransactionTimer();
 		this.transactionTimerStarted = true;
-		sipStack.timer.schedule(myTimer, BASE_TIMER_INTERVAL,
+		sipStack.getTimer().schedule(myTimer, BASE_TIMER_INTERVAL,
 				BASE_TIMER_INTERVAL);
 	}
 

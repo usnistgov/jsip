@@ -54,7 +54,7 @@ import java.text.ParseException;
 /**
  * Implementation of the JAIN-SIP provider interface.
  * 
- * @version 1.2 $Revision: 1.56 $ $Date: 2008-02-17 21:36:58 $
+ * @version 1.2 $Revision: 1.57 $ $Date: 2008-04-06 23:02:29 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -1026,23 +1026,6 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 		return automaticDialogSupportEnabled;
 	}
 
-	public ContactHeader createContactForProvider(String transport) {
-		try {
-			String ipAddress = this.getListeningPoint(transport).getIPAddress();
-			int port = this.getListeningPoint(transport).getPort();
-			SipURI sipURI = new SipUri();
-			sipURI.setHost(ipAddress);
-			sipURI.setPort(port);
-			sipURI.setTransportParam(transport);
-			Contact contact = new Contact();
-			AddressImpl address = new AddressImpl();
-			address.setURI(sipURI);
-			contact.setAddress(address);
-			return contact;
-		} catch (Exception ex) {
-			InternalErrorHandler.handleException(ex);
-			return null;
-		}
-	}
+	
 
 }

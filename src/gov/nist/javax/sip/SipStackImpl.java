@@ -30,12 +30,17 @@ import java.util.StringTokenizer;
 
 import javax.sip.*;
 import javax.sip.address.*;
+import javax.sip.header.HeaderFactory;
 import javax.sip.header.ReferToHeader;
 import javax.sip.message.*;
 
 import org.apache.log4j.Appender;
 
+import gov.nist.javax.sip.clientauthutils.AccountManager;
+import gov.nist.javax.sip.clientauthutils.AuthenticationHelper;
+import gov.nist.javax.sip.clientauthutils.AuthenticationHelperImpl;
 import gov.nist.javax.sip.header.CallID;
+import gov.nist.javax.sip.header.HeaderFactoryImpl;
 import gov.nist.javax.sip.header.extensions.ReplacesHeader;
 import gov.nist.javax.sip.parser.StringMsgParser;
 import gov.nist.javax.sip.stack.*;
@@ -253,10 +258,11 @@ import gov.nist.core.net.NetworkLayer;
  * 
  * 
  * <b> Note that the stack supports the extensions that are defined in
- * SipStackExt. These will be supported in the next release of JAIN-SIP. </b>
+ * SipStackExt. These will be supported in the next release of JAIN-SIP. You should only
+ * use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.76 $ $Date: 2008-03-20 18:49:00 $
+ * @version 1.2 $Revision: 1.77 $ $Date: 2008-04-06 23:02:30 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -286,6 +292,9 @@ public class SipStackImpl extends SIPTransactionStack implements
 	// If set to true then the application want to receive
 	// unsolicited NOTIFYs, ie NOTIFYs that don't match any dialog
 	boolean deliverUnsolicitedNotify = false;
+	
+	// The authentication helper
+	private AuthenticationHelperImpl authenticationHelper;
 
 	/**
 	 * Creates a new instance of SipStackImpl.
@@ -977,6 +986,16 @@ public class SipStackImpl extends SIPTransactionStack implements
 
 	public EventScanner getEventScanner() {
 		return eventScanner;
+	}
+
+	
+	/*
+	 * (non-Javadoc)
+	 * @see gov.nist.javax.sip.SipStackExt#getAuthenticationHelper(gov.nist.javax.sip.clientauthutils.AccountManager, javax.sip.header.HeaderFactory)
+	 */
+	public AuthenticationHelper getAuthenticationHelper(AccountManager accountManager, 
+			HeaderFactory headerFactory) {
+		return new AuthenticationHelperImpl(this,accountManager,headerFactory);	
 	}
 
 	

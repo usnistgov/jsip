@@ -1,20 +1,26 @@
 package gov.nist.javax.sip.clientauthutils;
+
 /*
-*
-* This code has been contributed with permission from:
-*
-* SIP Communicator, the OpenSource Java VoIP and Instant Messaging client but has been significantly changed.
-* It is donated to the JAIN-SIP project as it is common code that many sip clients
-* need to perform class and others will consitute a set of utility functions
-* that will implement common operations that ease the life of the developer.
-* 
-* Acknowledgements:
-* ----------------
-* 
-* Fredrik Wickstrom reported that dialog cseq counters are not incremented
-* when resending requests. He later uncovered additional problems and
-* proposed a way to fix them (his proposition was taken into account).	
-*/
+ *
+ * This code has been contributed with permission from:
+ *
+ * SIP Communicator, the OpenSource Java VoIP and Instant Messaging client but has been significantly changed.
+ * It is donated to the JAIN-SIP project as it is common code that many sip clients
+ * need to perform class and others will consitute a set of utility functions
+ * that will implement common operations that ease the life of the developer.
+ * 
+ * Acknowledgements:
+ * ----------------
+ * 
+ * Fredrik Wickstrom reported that dialog cseq counters are not incremented
+ * when resending requests. He later uncovered additional problems and
+ * proposed a way to fix them (his proposition was taken into account).	
+ */
+
+import gov.nist.core.InternalErrorHandler;
+import gov.nist.javax.sip.SipStackImpl;
+import gov.nist.javax.sip.message.SIPRequest;
+import gov.nist.javax.sip.stack.SIPTransactionStack;
 
 import java.text.*;
 import java.util.*;
@@ -26,88 +32,77 @@ import javax.sip.message.*;
 import org.apache.log4j.Logger;
 
 /**
-* The class handles authentication challenges, caches user credentials and
-* takes care (through the SecurityAuthority interface) about retrieving
-* passwords. 
-* 
-* 
-* @author Emil Ivov
-* @author Jeroen van Bemmel
-* @author M. Ranganathan
-* @version 1.1
-*/
+ * The class handles authentication challenges, caches user credentials and
+ * takes care (through the SecurityAuthority interface) about retrieving
+ * passwords.
+ * 
+ * 
+ * @author Emil Ivov
+ * @author Jeroen van Bemmel
+ * @author M. Ranganathan
+ * 
+ * @since 2.0
+ */
 
-public class SipSecurityManager {
-	private static final Logger logger = Logger
-			.getLogger(SipSecurityManager.class);
+public class AuthenticationHelperImpl implements AuthenticationHelper {
+	
 
 	/**
 	 * Credentials cached so far.
 	 */
-	private CredentialsCache cachedCredentials = new CredentialsCache();
+	private CredentialsCache cachedCredentials;
 
 	/**
 	 * The account manager for the system. Stores user credentials.
 	 */
 	private AccountManager accountManager = null;
-	
+
 	/*
 	 * Header factory for this security manager.
 	 */
 	private HeaderFactory headerFactory;
-	
+
+	private SipStackImpl sipStack;
+
+	Timer timer;
 
 	/**
 	 * Default constructor for the security manager. There is one Account
 	 * manager. There is one SipSecurity manager for every user name,
 	 * 
-	 * @param accountID
-	 *            the id of the account that this security manager is going to
-	 *            serve. We concatenate the user with the domain to get the
-	 *            account id.
+	 * @param sipStack --
+	 *            our stack.
+	 * @param accountManger --
+	 *            an implementation of the AccountManager interface.
+	 * @param headerFactory --
+	 *            header factory.
 	 */
-	public SipSecurityManager(AccountManager accountManager, HeaderFactory headerFactory) {
+	public AuthenticationHelperImpl(SipStackImpl sipStack,
+			AccountManager accountManager, HeaderFactory headerFactory) {
 		this.accountManager = accountManager;
 		this.headerFactory = headerFactory;
+		this.sipStack = sipStack;
 
+		this.cachedCredentials = new CredentialsCache(
+				((SIPTransactionStack) sipStack).getTimer());
 	}
 
-	/**
-	 * Uses securityAuthority to determinie a set of valid user credentials for
-	 * the specified Response (Challenge) and appends it to the challenged
-	 * request so that it could be retransmitted.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * 
-	 * 
-	 * @param challenge
-	 *            the 401/407 challenge response
-	 * @param challengedTransaction
-	 *            the transaction established by the challenged request
-	 * @param transactionCreator
-	 *            the JAIN SipProvider that we should use to create the new
-	 *            transaction.
-	 * 
-	 * @return a transaction containing a reoriginated request with the
-	 *         necessary authorization header.
-	 * @throws SipException
-	 *             if we get an exception white creating the new transaction
-	 * @throws InvalidArgumentException
-	 *             if we fail to create a new header containing user
-	 *             credentials.
-	 * @throws ParseException
-	 *             if we fail to create a new header containing user
-	 *             credentials.
-	 * @throws NullPointerException
-	 *             if an argument or a header is null.
-	 * @throws OperationFailedException
-	 *             if we fail to acquire a password from our security authority.
+	 * @see gov.nist.javax.sip.clientauthutils.AuthenticationHelper#handleChallenge(javax.sip.message.Response,
+	 *      javax.sip.ClientTransaction, javax.sip.SipProvider)
 	 */
 	public ClientTransaction handleChallenge(Response challenge,
 			ClientTransaction challengedTransaction,
-			SipProvider transactionCreator) throws SipException,
-			InvalidArgumentException, ParseException, NullPointerException {
-	
-		Request challengedRequest = challengedTransaction.getRequest();
+			SipProvider transactionCreator, int cacheTime) throws SipException,
+			NullPointerException {
+		
+
+		SIPRequest challengedRequest = ((SIPRequest) challengedTransaction
+				.getRequest());
+
+		String callId = challengedRequest.getCallId().getCallId();
 
 		Request reoriginatedRequest = (Request) challengedRequest.clone();
 
@@ -135,7 +130,6 @@ public class SipSecurityManager {
 					"Could not find WWWAuthenticate or ProxyAuthenticate headers");
 		}
 
-		
 		// Remove all authorization headers from the request (we'll re-add them
 		// from cache)
 		reoriginatedRequest.removeHeader(AuthorizationHeader.NAME);
@@ -147,7 +141,11 @@ public class SipSecurityManager {
 		// Bug report - Fredrik Wickstrom
 		CSeqHeader cSeq = (CSeqHeader) reoriginatedRequest
 				.getHeader((CSeqHeader.NAME));
-		cSeq.setSeqNumber(cSeq.getSeqNumber() + 1l);
+		try {
+			cSeq.setSeqNumber(cSeq.getSeqNumber() + 1l);
+		} catch (InvalidArgumentException ex) {
+			throw new SipException("Invalid CSeq -- could not increment : " + cSeq.getSeqNumber());
+		}
 
 		ClientTransaction retryTran = transactionCreator
 				.getNewClientTransaction(reoriginatedRequest);
@@ -168,19 +166,23 @@ public class SipSecurityManager {
 
 			AuthorizationHeader authorization = this.getAuthorization(
 					reoriginatedRequest.getMethod(), reoriginatedRequest
-							.getRequestURI().toString(), 
-							(reoriginatedRequest.getContent() == null) ? "" : new String(reoriginatedRequest.getRawContent()),
-							authHeader, userCreds);
-			logger.debug("Created authorization header: "
+							.getRequestURI().toString(), (reoriginatedRequest
+							.getContent() == null) ? "" : new String(
+							reoriginatedRequest.getRawContent()), authHeader,
+					userCreds);
+			sipStack.getLogWriter().logDebug("Created authorization header: "
 					+ authorization.toString());
 
-			cachedCredentials.cacheAuthorizationHeader(userCreds
-					.getSipDomain(), authorization);
+			if (cacheTime != 0)
+				cachedCredentials.cacheAuthorizationHeader(userCreds
+						.getSipDomain(), authorization, cacheTime);
 
 			reoriginatedRequest.addHeader(authorization);
 		}
 
-		logger.debug("Returning authorization transaction.");
+		if (sipStack.isLoggingEnabled()) {
+			sipStack.getLogWriter().logDebug("Returning authorization transaction." + retryTran);
+		}
 		return retryTran;
 	}
 
@@ -269,34 +271,48 @@ public class SipSecurityManager {
 	 * @param request
 	 *            the Request whose branchID we'd like to remove.
 	 * 
-	 * @throws ParseException
-	 *             in case the host port or transport in the original request
-	 *             were malformed
-	 * @throws InvalidArgumentException
-	 *             if the port in the original via header was invalid.
 	 */
-	private void removeBranchID(Request request) throws ParseException,
-			InvalidArgumentException {
+	private void removeBranchID(Request request) {
+
 		ViaHeader viaHeader = (ViaHeader) request.getHeader(ViaHeader.NAME);
 
 		viaHeader.removeParameter("branch");
 
-		
 	}
 
-	/**
-	 * Returns an authorization header cached against the specified
-	 * <tt>userCredentials</tt> or <tt>null</tt> if no auth. header has been
-	 * previously cached for this callID.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return the <tt>AuthorizationHeader</tt> cached against the specified
-	 *         call ID or null if no such header has been cached.
+	 * @see gov.nist.javax.sip.clientauthutils.AuthenticationHelper#attachAuthenticationHeaders(javax.sip.message.Request)
 	 */
-	public Collection<AuthorizationHeader> getCachedAuthorizationHeaders(
-			UserCredentials accountInfo, String userName) {
-		return this.cachedCredentials.getCachedAuthorizationHeaders(accountInfo
-				.getSipDomain(), userName);
+	public void setAuthenticationHeaders(Request request) {
+		SIPRequest sipRequest = (SIPRequest) request;
+
+		String callId = sipRequest.getCallId().getCallId();
+
+		request.removeHeader(AuthorizationHeader.NAME);
+		Collection<AuthorizationHeader> authHeaders = this.cachedCredentials
+				.getCachedAuthorizationHeaders(callId);
+		if ( authHeaders == null ) {
+			sipStack.getLogWriter().logDebug("Could not find authentication headers for " + callId);
+			return;
+		}
+
+		for (AuthorizationHeader authHeader : authHeaders) {
+			request.addHeader(authHeader);
+		}
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gov.nist.javax.sip.clientauthutils.AuthenticationHelper#removeCachedAuthenticationHeaders(java.lang.String)
+	 */
+	public void removeCachedAuthenticationHeaders(String callId) {
+		if ( callId == null ) throw new NullPointerException("Null callId argument " );
+		this.cachedCredentials.removeAuthenticationHeader(callId);
+
 	}
 
 }
-
