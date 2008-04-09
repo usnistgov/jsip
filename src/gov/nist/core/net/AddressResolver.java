@@ -32,15 +32,16 @@ import javax.sip.address.Hop;
 
 /**
  * An interface that allows you to customize address lookup.
- * This is a NIST-SIP only feature. We dont support DNS SRV lookup directly in NIST-SIP
- * but we provide a means by which the user can enable it.
  * The user can implement this interface to do DNS lookups or other lookup
  * schemes and register it with the stack.
  * The default implementation of the address resolver does nothing more than just return back 
  * the Hop that it was passed (fixing up the port if necessary). 
  * However, this behavior can be overriden. To override
  * implement this interface and register it with the stack using 
- * {@link gov.nist.javax.sip.SipStackImpl#setAddressResolver(AddressResolver)}. 
+ * {@link gov.nist.javax.sip.SipStackExt#setAddressResolver(AddressResolver)}. 
+ * This interface will be incorporated into version 2.0 of the JAIN-SIP Specification.
+ * 
+ * @since 2.0
  * 
  * 
  * @author M. Ranganathan
