@@ -1,5 +1,6 @@
 package gov.nist.javax.sip;
 
+import gov.nist.core.net.AddressResolver;
 import gov.nist.javax.sip.clientauthutils.AccountManager;
 import gov.nist.javax.sip.clientauthutils.AuthenticationHelper;
 import gov.nist.javax.sip.header.extensions.ReplacesHeader;
@@ -35,15 +36,7 @@ public interface SipStackExt {
 	 */
 	public Dialog getReplacesDialog(ReplacesHeader replacesHeader);
 
-  /**
-   * @todo discuss
-   *
-   * Finds a Dialog to join based on the given Join header
-   *
-   * JvB: proposal
-   *
-   * public Dialog getJoinDialog( JoinHeader joinHeader);
-   */
+  
 	
 	/**
 	 * Get the authentication helper.
@@ -59,5 +52,29 @@ public interface SipStackExt {
 	 */
 	public AuthenticationHelper getAuthenticationHelper(AccountManager accountManager,
 			HeaderFactory headerFactory);
+	
+	/**
+	 * Set the address resolution interface. The address resolver allows you to register
+	 * custom lookup schemes ( for example DNS SRV lookup ) that are not directly supported
+	 * by the JDK.
+	 * 
+	 * @param addressResolver --
+	 *            the address resolver to set.
+	 *            
+	 * @since 2.0 
+	 */
+	public void setAddressResolver(AddressResolver addressResolver);
+	
+	
+	  /**
+	   * @todo discuss
+	   * 
+	   *
+	   * Finds a Dialog to join based on the given Join header
+	   *
+	   * JvB: proposal
+	   *
+	   * public Dialog getJoinDialog( JoinHeader joinHeader);
+	   */
 
 }

@@ -44,12 +44,12 @@ import javax.sip.address.SipURI;
  * 
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.14 $ $Date: 2007-10-23 17:34:56 $
+ * @version 1.2 $Revision: 1.15 $ $Date: 2008-04-09 15:44:20 $
  *
  * 
  *
  */
-public class SipUri extends GenericURI implements javax.sip.address.SipURI {
+public class SipUri extends GenericURI implements javax.sip.address.SipURI , SipURIExt{
 
 	private static final long serialVersionUID = 7749781076218987044L;
 
