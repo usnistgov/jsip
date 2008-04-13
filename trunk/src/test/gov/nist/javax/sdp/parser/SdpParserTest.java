@@ -1,6 +1,10 @@
 package test.gov.nist.javax.sdp.parser;
 
+import javax.sdp.Attribute;
+import javax.sdp.MediaDescription;
+
 import gov.nist.javax.sdp.SessionDescriptionImpl;
+import gov.nist.javax.sdp.fields.AttributeField;
 import gov.nist.javax.sdp.parser.SDPAnnounceParser;
 import junit.framework.TestCase;
 
@@ -23,16 +27,41 @@ public class SdpParserTest extends TestCase {
 					+ "a=rtpmap:97 iLBC/8000\r\n" + "a=rtpmap:0 PCMU/8000\r\n"
 					+ "a=rtpmap:8 PCMA/8000\r\n"
 					+ "a=rtpmap:101 telephone-event/8000\r\n"
-					+ "a=fmtp:101 0-16\r\n" + "a=silenceSupp:off - - - -\r\n" };
+					+ "a=fmtp:101 0-16\r\n" + "a=silenceSupp:off - - - -\r\n",
+
+			"v=0\r\n" + "o=Cisco-SIPUA 10163 1 IN IP4 192.168.0.103\r\n"
+					+ "s=SIP Call\r\n" + "t=0 0\r\n"
+					+ "m=audio 27866 RTP/AVP 0 8 18 101\r\n"
+					+ "c=IN IP4 192.168.0.103\r\n" + "a=rtpmap:0 PCMU/8000\r\n"
+					+ "a=rtpmap:8 PCMA/8000\r\n" 
+					+ "a=rtpmap:18 G729/8000\r\n"
+					+ "a=fmtp:18 annexb=no\r\n"
+					+ "a=rtpmap:101 telephone-event/8000\r\n"
+					+ "a=fmtp:101 0-15\r\n" +
+					"a=sendonly\r\n" };
 
 	public void testSdpParser() throws Exception {
 		for (String sdpdata : sdpData) {
 			SDPAnnounceParser parser = new SDPAnnounceParser(sdpdata);
 			SessionDescriptionImpl sessiondescription = parser.parse();
+			
+		
+			MediaDescription md  = (MediaDescription) sessiondescription.getMediaDescriptions(false).get(0);
+			System.out.println("sd " + md.getAttributes(false));
+			for ( Object o : md.getAttributes(false) ) {
+				Attribute af = ( Attribute) o;
+				System.out.println("attr name " + af.getName() + "af value " + af.getValue());
+				System.out.println("sendonly = " + md.getAttribute(af.getName()));
+				
+				
+			}
+			
 			SessionDescriptionImpl sessiondescription1 = new SDPAnnounceParser(
 					sessiondescription.toString()).parse();
+			
 			// Unfortunately equals is not yet implemented.
-			//assertEquals("Equality check", sessiondescription,sessiondescription1);
+			// assertEquals("Equality check",
+			// sessiondescription,sessiondescription1);
 		}
 
 	}

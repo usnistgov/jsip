@@ -54,7 +54,7 @@ import java.text.ParseException;
 /**
  * Implementation of the JAIN-SIP provider interface.
  * 
- * @version 1.2 $Revision: 1.57 $ $Date: 2008-04-06 23:02:29 $
+ * @version 1.2 $Revision: 1.58 $ $Date: 2008-04-13 03:25:44 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -306,7 +306,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 					sipStack.getLogWriter().logError(
 							"port = " + listeningPoint.getPort());
 			}
-			throw new TransactionUnavailableException(
+			sipStack.getLogWriter().logWarning(
 					"sentBy does not match the sentby setting of the ListeningPoint "
 							+ sipRequest.getTopmostVia().getSentBy().toString());
 		}
