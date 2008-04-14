@@ -262,7 +262,7 @@ import gov.nist.core.net.NetworkLayer;
  * use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.77 $ $Date: 2008-04-06 23:02:30 $
+ * @version 1.2 $Revision: 1.78 $ $Date: 2008-04-14 01:29:12 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -933,7 +933,11 @@ public class SipStackImpl extends SIPTransactionStack implements
 		this.stopStack();
 		this.sipProviders = new LinkedList<SipProviderImpl>();
 		this.listeningPoints = new Hashtable<String, ListeningPointImpl>();
-		this.eventScanner.forceStop();
+		/*
+		 * Check for presence of an event scanner ( may happen if stack is stopped before
+		 * listener is attached ).
+		 */
+		if ( this.eventScanner != null ) this.eventScanner.forceStop();
 		this.eventScanner = null;
 
 	}
