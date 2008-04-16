@@ -25,23 +25,28 @@
 */
 package gov.nist.javax.sip;
 
+import java.io.IOException;
+import java.net.InetAddress;
 import java.text.ParseException;
 
 import javax.sip.*;
 import javax.sip.address.SipURI;
 import javax.sip.header.ContactHeader;
 
+import gov.nist.core.Host;
+import gov.nist.core.HostPort;
 import gov.nist.core.InternalErrorHandler;
 import gov.nist.javax.sip.address.AddressImpl;
 import gov.nist.javax.sip.address.SipUri;
 import gov.nist.javax.sip.header.Contact;
 import gov.nist.javax.sip.header.Via;
+import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.stack.*;
 
 /**
  * Implementation of the ListeningPoint interface
  *
- * @version 1.2 $Revision: 1.10 $ $Date: 2008-04-06 23:02:30 $
+ * @version 1.2 $Revision: 1.11 $ $Date: 2008-04-16 03:12:22 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -234,6 +239,18 @@ public class ListeningPointImpl implements javax.sip.ListeningPoint, gov.nist.ja
 			InternalErrorHandler.handleException("Unexpected exception",sipStack.getLogWriter());
 			return null;
 		}
+	}
+
+	
+	public void sendHeartbeat(String ipAddress, int port) throws IOException {
+		
+		HostPort targetHostPort  = new HostPort();
+		targetHostPort.setHost(new Host( ipAddress));
+		targetHostPort.setPort(port);
+		MessageChannel messageChannel = this.messageProcessor.createMessageChannel(targetHostPort);
+		SIPRequest siprequest = new SIPRequest();
+		messageChannel.sendMessage(siprequest);
+		
 	}
 	
 }
