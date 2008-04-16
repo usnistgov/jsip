@@ -52,7 +52,7 @@ import org.apache.log4j.Logger;
  * later access via RMI. The trace can be viewed with a trace viewer (see
  * tools.traceviewerapp).
  *
- * @version 1.2 $Revision: 1.31 $ $Date: 2008-02-19 05:13:42 $
+ * @version 1.2 $Revision: 1.32 $ $Date: 2008-04-16 03:12:23 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -374,6 +374,7 @@ public class ServerLog {
 		boolean sender,
 		long time) {
 		checkLogFile();
+		if (message.getFirstLine() == null ) return;
 		CallID cid = (CallID) message.getCallId();
 		String callId = null;
 		if (cid != null)
