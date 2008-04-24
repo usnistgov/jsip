@@ -155,10 +155,11 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.95 $ $Date: 2008-04-06 23:02:27 $
+ * @version 1.2 $Revision: 1.96 $ $Date: 2008-04-24 13:21:17 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
-		ServerResponseInterface, javax.sip.ClientTransaction {
+		ServerResponseInterface, javax.sip.ClientTransaction , 
+		gov.nist.javax.sip.ClientTransactionExt{
 
 	// a SIP Client transaction may belong simultaneously to multiple
 	// dialogs in the early state. These dialogs all have
