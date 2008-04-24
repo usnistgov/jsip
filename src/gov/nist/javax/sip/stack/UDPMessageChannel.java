@@ -78,7 +78,7 @@ import javax.sip.message.Response;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.48 $ $Date: 2008-02-14 14:06:24 $
+ * @version 1.2 $Revision: 1.49 $ $Date: 2008-04-24 13:21:17 $
  */
 public class UDPMessageChannel extends MessageChannel implements
 		ParseExceptionListener, Runnable, RawMessageChannel {
@@ -256,7 +256,7 @@ public class UDPMessageChannel extends MessageChannel implements
 			try {
 				processIncomingDataPacket(packet);
 			} catch (Exception e) {
-				e.printStackTrace();
+				
 				sipStack.logWriter.logError(
 						"Error while processing incoming UDP packet", e);
 			}
@@ -390,10 +390,7 @@ public class UDPMessageChannel extends MessageChannel implements
 				// Check to see if the received parameter matches
 				// the peer address and tag it appropriately.
 
-				// JvB: Better not do a DNS lookup here, this is costly
-				// InetAddress sentByAddress =
-				// InetAddress.getByName(hop.getHost());
-
+				
 				boolean hasRPort = v.hasParameter(Via.RPORT);
 				if (hasRPort
 						|| !hop.getHost().equals(
