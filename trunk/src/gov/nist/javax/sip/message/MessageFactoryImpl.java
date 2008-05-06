@@ -41,7 +41,7 @@ import gov.nist.javax.sip.parser.*;
 /**
  * Message Factory implementation
  * 
- * @version 1.2 $Revision: 1.14 $ $Date: 2008-03-20 18:48:59 $
+ * @version 1.2 $Revision: 1.15 $ $Date: 2008-05-06 03:55:53 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -59,7 +59,7 @@ public class MessageFactoryImpl implements MessageFactory, MessageFactoryExt {
 	/*
 	 * The UserAgent header to include for all requests created from this message factory.
 	 */
-	private UserAgentHeader userAgent;
+	private static UserAgentHeader userAgent;
 	
 	
 
@@ -753,12 +753,24 @@ public class MessageFactoryImpl implements MessageFactory, MessageFactoryExt {
 	 * 
 	 * @param userAgent -- the user agent header to set.
 	 * 
-	 * SPEC_REVISION
+	 * @since 2.0
 	 */
 	
 	public void setCommonUserAgentHeader(UserAgentHeader userAgent) {
-		this.userAgent = userAgent;
+		MessageFactoryImpl.userAgent = userAgent;
 	}
+	
+	/**
+	 * Get the default common UserAgentHeader.
+	 * 
+	 * @return the user agent header.
+	 * 
+	 * @since 2.0
+	 */
+	public static UserAgentHeader getUserAgentHeader() {
+		return userAgent;
+	}
+	
 
 	
 	/**
