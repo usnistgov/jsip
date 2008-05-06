@@ -529,10 +529,10 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
 					.elementAt(i);
 			if (af.getAttribute().getName().equalsIgnoreCase("sendrecv") ||
 					af.getAttribute().getName().equalsIgnoreCase("recvonly") ||
-					af.getAttribute().getName().equalsIgnoreCase("sendonly")) {
-				NameValue nv = af.getAttribute();
-				nv.setValueAsObject(null);
-				nv.setName(duplexity);
+					af.getAttribute().getName().equalsIgnoreCase("sendonly") ||
+					af.getAttribute().getName().equalsIgnoreCase("inactive")) {
+				NameValue nv = new NameValue(duplexity, null);
+				af.setAttribute(nv);
 				return;
 			}
 
