@@ -62,7 +62,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.34 $ $Date: 2008-03-10 19:32:03 $
+ * @version 1.2 $Revision: 1.35 $ $Date: 2008-05-06 03:55:52 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -731,6 +731,10 @@ public final class SIPRequest extends SIPMessage implements
 				}
 			}
 		}
+		if (MessageFactoryImpl.getUserAgentHeader() != null ) {
+			newResponse.setHeader(MessageFactoryImpl.getUserAgentHeader());
+			
+		}
 		if (newResponse.getStatusCode() == 100) {
 			// Trying is never supposed to have the tag parameter set.
 			newResponse.getTo().removeParameter("tag");
@@ -795,7 +799,10 @@ public final class SIPRequest extends SIPMessage implements
 		if (this.getRouteHeaders() != null) {
 			cancel.setHeader((SIPHeaderList<?>) this.getRouteHeaders().clone());
 		}
-
+		if (MessageFactoryImpl.getUserAgentHeader() != null ) {
+			cancel.setHeader(MessageFactoryImpl.getUserAgentHeader());
+			
+		}
 		return cancel;
 	}
 
@@ -883,6 +890,10 @@ public final class SIPRequest extends SIPMessage implements
 				e.printStackTrace();
 			}
 		}
+		if (MessageFactoryImpl.getUserAgentHeader() != null ) {
+			newRequest.setHeader(MessageFactoryImpl.getUserAgentHeader());
+			
+		}
 		return newRequest;
 	}
 
@@ -936,7 +947,10 @@ public final class SIPRequest extends SIPMessage implements
 			newRequest
 					.setHeader((SIPHeaderList) this.getRouteHeaders().clone());
 		}
-
+		if (MessageFactoryImpl.getUserAgentHeader() != null ) {
+			newRequest.setHeader(MessageFactoryImpl.getUserAgentHeader());
+			
+		}
 		return newRequest;
 	}
 
@@ -1038,6 +1052,10 @@ public final class SIPRequest extends SIPMessage implements
 			} catch (SIPDuplicateHeaderException e) {
 				e.printStackTrace();
 			}
+		}
+		if (MessageFactoryImpl.getUserAgentHeader() != null ) {
+			newRequest.setHeader(MessageFactoryImpl.getUserAgentHeader());
+			
 		}
 		return newRequest;
 
