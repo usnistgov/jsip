@@ -37,20 +37,28 @@ import gov.nist.core.*;
 import java.util.*;
 import java.text.ParseException;
 
+import javax.sip.PeerUnavailableException;
+import javax.sip.SipFactory;
 import javax.sip.address.SipURI;
+import javax.sip.header.Header;
+import javax.sip.header.HeaderFactory;
+
+import org.apache.log4j.Logger;
 
 /**
  * Implementation of the SipURI interface.
  * 
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.15 $ $Date: 2008-04-09 15:44:20 $
+ * @version 1.2 $Revision: 1.16 $ $Date: 2008-05-15 15:05:17 $
  *
  * 
  *
  */
 public class SipUri extends GenericURI implements javax.sip.address.SipURI , SipURIExt{
 
+	private static Logger logger = Logger.getLogger(SipUri.class);
+	
 	private static final long serialVersionUID = 7749781076218987044L;
 
 	protected String scheme;
@@ -134,7 +142,11 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI , Sip
 	 * JvB: Updated to define equality in terms of API methods, according to the rules
 	 * in RFC3261 section 19.1.4
 	 * 
-	 * TODO: Need to convert %HEX HEX encoding before comparing
+	 * Jean Deruelle: Updated to define equality of API methods, according to the rules
+	 * in RFC3261 section 19.1.4 convert potential ie :
+	 *    %HEX HEX encoding parts of the URI before comparing them
+	 *    transport param added in comparison
+     *    header equality enforced in comparison
 	 * 
 	 */
 	public boolean equals(Object that) {
@@ -154,8 +166,8 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI , Sip
 			if (a.getUser()==null ^ b.getUser()==null) return false;
 			if (a.getUserPassword()==null ^ b.getUserPassword()==null) return false;
 			
-			if (a.getUser()!=null && !a.getUser().equals(b.getUser())) return false;
-			if (a.getUserPassword()!=null && !a.getUserPassword().equals(b.getUserPassword())) return false;
+			if (a.getUser()!=null && !RFC2396UrlDecoder.decode(a.getUser()).equals(RFC2396UrlDecoder.decode(b.getUser()))) return false;
+			if (a.getUserPassword()!=null && !RFC2396UrlDecoder.decode(a.getUserPassword()).equals(RFC2396UrlDecoder.decode(b.getUserPassword()))) return false;
 			if ( a.getHost() == null ^ b.getHost() == null) return false;
 			if (a.getHost() != null && !a.getHost().equalsIgnoreCase(b.getHost())) return false;
 			if (a.getPort() != b.getPort()) return false;
@@ -168,27 +180,47 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI , Sip
 				String p2 = b.getParameter(pname);
 				
 				// those present in both must match (case-insensitive)
-				if (p1!=null && p2!=null && !p1.equalsIgnoreCase(p2)) return false;
+				if (p1!=null && p2!=null && !RFC2396UrlDecoder.decode(p1).equalsIgnoreCase(RFC2396UrlDecoder.decode(p2))) return false;
 			}
 
-			// user, ttl or method must match when present in either
+			// transport, user, ttl or method must match when present in either
+			if (a.getTransportParam()==null ^ b.getTransportParam()==null) return false;
 			if (a.getUserParam()==null ^ b.getUserParam()==null) return false;
 			if (a.getTTLParam()==-1 ^ b.getTTLParam()==-1) return false;
 			if (a.getMethodParam()==null ^ b.getMethodParam()==null) return false;
 			if (a.getMAddrParam()==null ^ b.getMAddrParam()==null) return false;
 			
-			// Headers: must match according to their definition. That's a bit hard to verify,
-			// so here we take a simpler approach that they must be present in both
-			// and match (case-insensitively) at a String level
-			for (Iterator i = a.getHeaderNames(); i.hasNext();) {
-				String hname = (String) i.next();
-				
-				String h1 = a.getHeader(hname);
-				String h2 = b.getHeader(hname);
-				
-				// those present in both must match (case-insensitive)
-				if (h1!=null && h2!=null && !h1.equalsIgnoreCase(h2)) return false;
-			}			
+			// Headers: must match according to their definition. 
+			if(a.getHeaderNames().hasNext() && !b.getHeaderNames().hasNext()) return false;
+			if(!a.getHeaderNames().hasNext() && b.getHeaderNames().hasNext()) return false;
+			
+			if(a.getHeaderNames().hasNext() && b.getHeaderNames().hasNext()) {
+				HeaderFactory headerFactory = null; 
+				try {
+					headerFactory = SipFactory.getInstance().createHeaderFactory();
+				} catch (PeerUnavailableException e) {
+					logger.error("Cannot get the header factory to parse the header of the sip uris to compare", e);
+					return false;
+				}
+				for (Iterator i = a.getHeaderNames(); i.hasNext();) {
+					String hname = (String) i.next();
+					
+					String h1 = a.getHeader(hname);
+					String h2 = b.getHeader(hname);
+					
+					if(h1 == null && h2 != null) return false;
+					if(h2 == null && h1 != null) return false;
+					try {
+						Header header1 = headerFactory.createHeader(hname, h1);
+						Header header2 = headerFactory.createHeader(hname, h2);
+						// those present in both must match according to the equals method of the corresponding header
+						if (!header1.equals(header2)) return false;
+					} catch (ParseException e) {
+						logger.error("Cannot parse one of the header of the sip uris to compare " + a + " " + b, e);
+						return false;
+					}
+				}			
+			}
 			
 			// Finally, we can conclude that they are indeed equal
 			return true;
