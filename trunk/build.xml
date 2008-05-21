@@ -92,7 +92,7 @@ c:/jakarta-ant/bin/ant all
 	<property name='j2se_api' value='http://java.sun.com/j2se/1.5/docs/api' />
 	<property name="junit_jar" value="${root}/lib/${junit}" />
 
-
+	<property environment="sys" />
 	<target name="all" depends="make,compileexamples,compiletools,javadoc,javadoc-jain" />
 
 	<target name="make" depends="clean,compileapi,compileri,compilesdp,sip-sdp-jar" />
@@ -285,7 +285,7 @@ c:/jakarta-ant/bin/ant all
 					<copy file="tck.properties" toDir="./classes" />
 				</target>
 
-			
+
 
 				<!-- this uses the junit task of ant to run the tck in self test mode -->
 
@@ -472,32 +472,90 @@ c:/jakarta-ant/bin/ant all
 
 				<!-- Push the jar to maven -->
 				<target name="push-to-maven-prepare">
-  					<taskdef resource="maven-repository-importer.properties">
-    					<classpath>
-      						<pathelement path="tools/maven-repository-importer-1.2.jar" />
-    					</classpath>
-  					</taskdef>
- 				 	<delete dir="build/maven-repo" /><!-- clean it -->
-  					<maven-repository-importer destdir="build/maven-repo" version = "1.2" >
-    						<artifact jar="jain-sip-api-1.2.jar"  pom="poms/api-pom.xml"  />
-    						<artifact jar="jain-sip-ri-1.2.jar" pom="poms/ri-pom.xml"  />
-  					</maven-repository-importer>
+					<taskdef resource="maven-repository-importer.properties">
+						<classpath>
+							<pathelement path="tools/maven-repository-importer-1.2.jar" />
+						</classpath>
+					</taskdef>
+					<delete dir="build/maven-repo" />
+					<!-- clean it -->
+					<maven-repository-importer destdir="build/maven-repo" version="1.2">
+						<artifact jar="jain-sip-api-1.2.jar" pom="poms/api-pom.xml" />
+						<artifact jar="jain-sip-ri-1.2.jar" pom="poms/ri-pom.xml" />
+					</maven-repository-importer>
 				</target>
 
 				<target name="push-to-maven" depends="push-to-maven-prepare">
- 			        <!-- import to CVS-->
-  				<tstamp />
-  				<echo>importing to CVS...</echo>
-  				<cvs dest="build/maven-repo">
-    					<commandline>
-      						<argument value="-d:pserver:${user.name}@cvs.dev.java.net:/cvs" />
-      						<argument line="-z9 import -ko -W *.jar -kb -m" />
-      						<argument value="deploying new jars to the java.net maven repository" />
-      						<argument value="jain-sip/repo" />
-      						<argument line="deployment-to-maven-repository t${DSTAMP}${TSTAMP}" />
-   			 		</commandline>
-  				</cvs>
+					<!-- import to CVS-->
+					<tstamp />
+					<echo>importing to CVS...</echo>
+					<cvs dest="build/maven-repo">
+						<commandline>
+							<argument value="-d:pserver:${user.name}@cvs.dev.java.net:/cvs" />
+							<argument line="-z9 import -ko -W *.jar -kb -m" />
+							<argument value="deploying new jars to the java.net maven repository" />
+							<argument value="jain-sip/repo" />
+							<argument line="deployment-to-maven-repository t${DSTAMP}${TSTAMP}" />
+						</commandline>
+					</cvs>
 				</target>
-				
+
+
+				<import file="tools/ant-tasks/build.xml" />
+
+				<target name="test">
+					<echo>SHELL ${sys.MAKE_MODE}</echo>
+
+				</target>
+				<target name="init-m2-exec">
+					<echo>To perform m2 release You have to follow insitrction from: https://maven2-repository.dev.java.net/ and have access as m2 submiter.</echo>
+					<sleep seconds="4"/>
+					<condition property="executable" value="mvn.bat">
+						<os family="windows" />
+					</condition>
+
+					<property name="executable" value="mvn" />
+				</target>
+				<target name="exec-m2" depends="init-m2-exec">
+					<exec executable="${executable}">
+						<arg value="-f" />
+						<arg value="${ant.file.NIST-SIP}/../m2/pom.xml" />
+						<arg value="deploy" />
+						<arg value="clean" />
+					</exec>
+				</target>
+				<target name="update-from-cvs">
+					<!-- Here we update version.txt file to what version may reside in cvs: overide local value to repo!! -->
+					<!-- cvs -d :pserver:user:passwrd@cvs.dev.java.net:/cvs update version.txt -C -->
+					<cvs>
+						<commandline>
+							<argument value="-d:pserver:${user.name}@cvs.dev.java.net:/cvs" />
+							<argument line="-z9 update -C version.txt" />
+						</commandline>
+					</cvs>
+				</target>
+				<target name="update-cvs">
+					<!-- Here we update version.txt so local is the same as cvs -->
+					<!-- cvs -d :pserver:user:paswrd@cvs.dev.java.net:/cvs commit -m "Test commit" version.txt -->
+					<cvs package="version.txt">
+						<commandline>
+							<argument value="-d:pserver:${user.name}@cvs.dev.java.net:/cvs" />
+							<argument line="commit -m" />
+							<argument value="Updating version.txt file after release process(ant script - t${DSTAMP}${TSTAMP})." />
+							<argument value="version.txt" />
+						</commandline>
+					</cvs>
+				</target>
+				<target name="perform-m2-release" depends="build-ant-tasks" description="Performs m2 deployment">
+					<antcall target="update-from-cvs" />
+					<versioner cvsversionfile="${ant.file.NIST-SIP}/../version.txt" incrementcvsversion="false" parent="true" pomfile="${ant.file.NIST-SIP}/../m2/jain-sip-api/pom.xml" />
+					<versioner cvsversionfile="${ant.file.NIST-SIP}/../version.txt" incrementcvsversion="false" parent="true" pomfile="${ant.file.NIST-SIP}/../m2/jain-sip-ri/pom.xml" />
+					<versioner cvsversionfile="${ant.file.NIST-SIP}/../version.txt" incrementcvsversion="false" parent="true" pomfile="${ant.file.NIST-SIP}/../m2/nist-sdp/pom.xml" />
+					<versioner cvsversionfile="${ant.file.NIST-SIP}/../version.txt" incrementcvsversion="true" parent="false" pomfile="${ant.file.NIST-SIP}/../m2/pom.xml" />
+
+					<antcall target="exec-m2" />
+					<antcall target="update-cvs" />
+					<antcall target="clean-tasks" />
+				</target>
 
 			</project>

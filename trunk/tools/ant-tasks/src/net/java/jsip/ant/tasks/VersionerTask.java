@@ -220,7 +220,6 @@ public class VersionerTask extends Task {
 				String nextV = "";
 				for (int i = 0; i < currentVersion.length
 						&& i < this.mainVersionParts; i++) {
-					log("["+i+"]");
 					nextV = nextV + currentVersion[i] + ".";
 				}
 				nextV = nextV + ver;
