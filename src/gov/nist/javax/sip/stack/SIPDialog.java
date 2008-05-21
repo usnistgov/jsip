@@ -64,7 +64,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.77 $ $Date: 2008-04-06 23:02:27 $
+ * @version 1.2 $Revision: 1.78 $ $Date: 2008-05-21 19:20:41 $
  * 
  * @author M. Ranganathan
  * 
@@ -2084,6 +2084,7 @@ public class SIPDialog implements javax.sip.Dialog , DialogExt {
 			} else { // should be !=null, checked above
 				uri4transport = ((SipURI) this.remoteTarget.getURI());
 			}
+			
 			String transport = uri4transport.getTransportParam();
 			if (transport == null) {
 				// JvB fix: also support TLS
@@ -2093,6 +2094,8 @@ public class SIPDialog implements javax.sip.Dialog , DialogExt {
 			ListeningPointImpl lp = (ListeningPointImpl) sipProvider
 					.getListeningPoint(transport);
 			if (lp == null) {
+				sipStack.getLogWriter().logError("remoteTargetURI " + this.remoteTarget.getURI());
+				sipStack.getLogWriter().logError("uri4transport = " + uri4transport);
 				sipStack.getLogWriter().logError(
 						"No LP found for transport=" + transport);
 				throw new SipException(
