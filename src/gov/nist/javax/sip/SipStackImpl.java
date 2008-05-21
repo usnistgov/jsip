@@ -51,6 +51,7 @@ import java.net.InetAddress;
 import gov.nist.core.*;
 import gov.nist.core.net.AddressResolver;
 import gov.nist.core.net.NetworkLayer;
+import gov.nist.core.net.SslNetworkLayer;
 
 /**
  * Implementation of SipStack.
@@ -258,11 +259,11 @@ import gov.nist.core.net.NetworkLayer;
  * 
  * 
  * <b> Note that the stack supports the extensions that are defined in
- * SipStackExt. These will be supported in the next release of JAIN-SIP. You should only
- * use the extensions that are defined in this class. </b>
+ * SipStackExt. These will be supported in the next release of JAIN-SIP. You
+ * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.78 $ $Date: 2008-04-14 01:29:12 $
+ * @version 1.2 $Revision: 1.79 $ $Date: 2008-05-21 19:34:56 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -292,7 +293,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 	// If set to true then the application want to receive
 	// unsolicited NOTIFYs, ie NOTIFYs that don't match any dialog
 	boolean deliverUnsolicitedNotify = false;
-	
+
 	// The authentication helper
 	private AuthenticationHelperImpl authenticationHelper;
 
@@ -439,6 +440,26 @@ public class SipStackImpl extends SIPTransactionStack implements
 							+ em);
 				else
 					this.addExtensionMethod(em);
+			}
+		}
+		String keyStoreFile = configurationProperties
+				.getProperty("javax.net.ssl.keyStore");
+		String trustStoreFile = configurationProperties
+				.getProperty("javax.net.ssl.trustStore");
+		if (keyStoreFile != null) {
+			if (trustStoreFile == null) {
+				trustStoreFile = keyStoreFile;
+			}
+			String keyStorePassword = configurationProperties
+					.getProperty("javax.net.ssl.keyStorePassword");
+			try {
+				this.networkLayer = new SslNetworkLayer(trustStoreFile,
+						keyStoreFile, keyStorePassword.toCharArray(),
+						configurationProperties
+								.getProperty("javax.net.ssl.keyStoreType"));
+			} catch (Exception e1) {
+				getLogWriter().logError("could not instantiate SSL networking",
+						e1);
 			}
 		}
 
@@ -934,10 +955,11 @@ public class SipStackImpl extends SIPTransactionStack implements
 		this.sipProviders = new LinkedList<SipProviderImpl>();
 		this.listeningPoints = new Hashtable<String, ListeningPointImpl>();
 		/*
-		 * Check for presence of an event scanner ( may happen if stack is stopped before
-		 * listener is attached ).
+		 * Check for presence of an event scanner ( may happen if stack is
+		 * stopped before listener is attached ).
 		 */
-		if ( this.eventScanner != null ) this.eventScanner.forceStop();
+		if (this.eventScanner != null)
+			this.eventScanner.forceStop();
 		this.eventScanner = null;
 
 	}
@@ -992,16 +1014,15 @@ public class SipStackImpl extends SIPTransactionStack implements
 		return eventScanner;
 	}
 
-	
 	/*
 	 * (non-Javadoc)
-	 * @see gov.nist.javax.sip.SipStackExt#getAuthenticationHelper(gov.nist.javax.sip.clientauthutils.AccountManager, javax.sip.header.HeaderFactory)
+	 * 
+	 * @see gov.nist.javax.sip.SipStackExt#getAuthenticationHelper(gov.nist.javax.sip.clientauthutils.AccountManager,
+	 *      javax.sip.header.HeaderFactory)
 	 */
-	public AuthenticationHelper getAuthenticationHelper(AccountManager accountManager, 
-			HeaderFactory headerFactory) {
-		return new AuthenticationHelperImpl(this,accountManager,headerFactory);	
+	public AuthenticationHelper getAuthenticationHelper(
+			AccountManager accountManager, HeaderFactory headerFactory) {
+		return new AuthenticationHelperImpl(this, accountManager, headerFactory);
 	}
-
-	
 
 }
