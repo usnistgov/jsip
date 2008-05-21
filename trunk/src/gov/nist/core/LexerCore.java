@@ -358,6 +358,7 @@ public class LexerCore extends StringTokenizer {
                     case '?':
                     case '\"':
                     case '*':
+                    case '=': // Issue 155 on java.net
                         return true;
                     default:
                         return false;

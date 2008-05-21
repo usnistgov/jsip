@@ -151,12 +151,13 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
 				.getNewClientTransaction(reoriginatedRequest);
 
 		WWWAuthenticateHeader authHeader = null;
+		SipURI requestUri = (SipURI)challengedTransaction.getRequest().getRequestURI();
 		while (authHeaders.hasNext()) {
 			authHeader = (WWWAuthenticateHeader) authHeaders.next();
 			String realm = authHeader.getRealm();
 
 			UserCredentials userCreds = this.accountManager
-					.getCredentials(realm);
+					.getCredentials(requestUri,realm);
 			if (userCreds == null)
 				throw new SipException(
 						"Cannot find user creds for the given user name and realm");
