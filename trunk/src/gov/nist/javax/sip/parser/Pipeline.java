@@ -25,6 +25,7 @@
  */
 package gov.nist.javax.sip.parser;
 
+import gov.nist.core.InternalErrorHandler;
 import gov.nist.javax.sip.stack.SIPStackTimerTask;
 
 import java.io.*;
@@ -66,10 +67,11 @@ public class Pipeline extends InputStream {
 		protected void runTask() {
 			if (this.isCancelled)
 				return;
-			pipeline.close();
+
 			try {
-				pipeline.pipe.close();
+				pipeline.close();
 			} catch (IOException ex) {
+				InternalErrorHandler.handleException(ex);
 			}
 		}
 
@@ -147,11 +149,14 @@ public class Pipeline extends InputStream {
 		}
 	}
 
-	public void close() {
+	public void close() throws IOException {
 		this.isClosed = true;
 		synchronized (this.buffList) {
 			this.buffList.notifyAll();
 		}
+		
+		// JvB: added
+		this.pipe.close();
 	}
 
 	public int read() throws IOException {
