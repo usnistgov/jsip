@@ -69,6 +69,7 @@ c:/jakarta-ant/bin/ant all
 	<property file="ant-build-config.properties" />
 	<!-- set global properties for this build -->
 	<property name="root" value="." />
+	<property file="ant-version.properties" />
 
 	<property name="href.nist.homepage" value="http://www-x.antd.nist.gov/" />
 	<property name="href.uncopyright" value="../uncopyright.html" />
@@ -81,21 +82,21 @@ c:/jakarta-ant/bin/ant all
 	<property name="retrowoven" value="${root}/retrowoven" />
 	<property name="docdir" value="${root}/javadoc" />
 	<property name="srcroot" value="${root}/src" />
-	<property name="jain_api_jar" value="${root}/jain-sip-api-1.2.jar" />
-	<property name="jain_api_jar14" value="${root}/jain-sip-api-1.2_java14.jar" />
-	<property name="ri_jar" value="${root}/jain-sip-ri-1.2.jar" />
-	<property name="ri_jar14" value="${root}/nist-sip-1.2_java14.jar" />
+	<property name="jain-api-jar" value="${root}/jain-sip-api-1.2.jar" />
 	<property name="sdp_jar" value="${root}/nist-sdp-1.0.jar" />
-	<property name="sip-sdp-jar" value="${root}/jain-sip-sdp-1.2.jar" />
 	<property name="unit_test_jar" value="${root}/nist-unit.jar" />
 	<property name="log4j_jar" value="${root}/lib/${log4j}" />
 	<property name='j2se_api' value='http://java.sun.com/j2se/1.5/docs/api' />
 	<property name="junit_jar" value="${root}/lib/${junit}" />
+	<property name="jdom_jar" value="${root}/ant-tasks/lib/jdom.jar"/>
+	<property name="ant_jar" value="${root}/ant-tasks/lib/ant.jar"/>
+	
 
 	<property environment="sys" />
 	<target name="all" depends="make,compileexamples,compiletools,javadoc,javadoc-jain" />
 
 	<target name="make" depends="clean,compileapi,compileri,compilesdp,sip-sdp-jar" />
+
 
 	<target name="cleanlogs">
 		<delete failonerror="0">
@@ -117,10 +118,8 @@ c:/jakarta-ant/bin/ant all
 	<target name="clean" depends="cleanlogs">
 		<delete dir="${classes}" quiet="true" failonerror="false" />
 		<delete dir="${retrowoven}" quiet="true" failonerror="false" />
-		<delete file="./${jain_api_jar}" failonerror="false" />
-		<delete file="./${jain_api_jar14}" failonerror="false" />
-		<delete file="./${ri_jar}" failonerror="false" />
-		<delete file="./${ri_jar14}" failonerror="false" />
+		<delete file="./${jain-api-jar}" failonerror="false" />
+		<delete file="./${jain-sip-ri-jar}" failonerror="false" />
 		<delete file="./${sdp_jar}" failonerror="false" />
 		<delete file="./${sip-sdp-jar}" failonerror="false" />
 		<delete file="./${tck_jar}" failonerror="false" />
@@ -152,7 +151,7 @@ c:/jakarta-ant/bin/ant all
 		<javadoc packagenames="javax.sip.*,javax.sip.header.*,javax.sip.message.*,javax.sip.address.*,gov.nist.javax.sip.*,gov.nist.javax.sip.address.*,gov.nist.javax.sip.message.*,gov.nist.javax.sip.header.*,gov.nist.javas.sip.header.ims.*,gov.nist.javax.sip.stack.*,gov.nist.core.net.*,gov.nist.javax.sip.parser.*,javax.sdp.*,gov.nist.javax.sdp.*,gov.nist.javax.sdp.fields.*" sourcepath="${srcroot}" overview="${docdir}/overview.html" destdir="javadoc" use="true" splitindex="true" windowtitle="The JAIN-SIP-1.2 RI For the People !" doctitle="NIST-SIP: The Reference Implementation for JAIN-SIP 1.2" public="true" author="true" version="true" defaultexcludes="yes" additionalparam="-breakiterator">
 			<classpath>
 				<pathelement location="${log4j_jar}" />
-				<pathelement location="${jain_api_jar}" />
+				<pathelement location="${jain-api-jar}" />
 			</classpath>
 			<link href="${j2se_api}" />
 			<header>
@@ -181,7 +180,7 @@ c:/jakarta-ant/bin/ant all
 
 			<javadoc packagenames="javax.sip.*,javax.sip.header.*,javax.sip.message.*,javax.sip.address.*,javax.sdp.*" sourcepath="${srcroot}" overview="${docdir}/overview.html" destdir="javadoc-jain" use="true" splitindex="true" windowtitle="JAIN-SIP-1.2 RI For the People !" doctitle="NIST SIP/SDP Parser and Stack (v1.3)" public="true" author="true" version="true" defaultexcludes="yes" additionalparam="-breakiterator">
 				<classpath>
-					<pathelement location="${jain_api_jar}" />
+					<pathelement location="${jain-api-jar}" />
 				</classpath>
 				<link href="${j2se_api}" />
 				<header>
@@ -207,7 +206,7 @@ c:/jakarta-ant/bin/ant all
 				<!-- Compile the stack and libraries -->
 				<target name="compileapi" depends="init">
 					<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" source="${javac.source}" target="${javac.target}" srcdir="${srcroot}" includes="javax/sip/**/*.java" destdir="${classes}" />
-					<jar destfile="${jain_api_jar}" basedir="${classes}" includes="javax/sip/**/*.class" />
+					<jar destfile="${jain-api-jar}" basedir="${classes}" includes="javax/sip/**/*.class" />
 				</target>
 				<!-- Compile but dont build any jars -->
 				<target name="compile" depends="init,compileapi">
@@ -218,6 +217,15 @@ c:/jakarta-ant/bin/ant all
 					</javac>
 
 				</target>
+				<!-- Ant tools -->
+				<target name="ant-tools" depends="init">
+					<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="ant-tasks/src" target="${javac.target}" includes="net/java/jsip/ant/**/*.java" destdir="${classes}">
+						<classpath>
+							<pathelement location="${jdom_jar}" />
+							<pathelement location="${ant_jar}" />
+						</classpath>
+					</javac>
+				</target>
 				<!-- Compile and build jars -->
 				<target name="compileri" depends="clean,init,compileapi">
 					<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="${srcroot}" source="${javac.source}" target="${javac.target}" includes="gov/nist/core/**/*.java, gov/nist/javax/sip/**/*.java" destdir="${classes}">
@@ -225,7 +233,7 @@ c:/jakarta-ant/bin/ant all
 							<pathelement location="${log4j_jar}" />
 						</classpath>
 					</javac>
-					<jar destfile="${ri_jar}" basedir="${classes}" includes="gov/nist/**/*.class" />
+					<jar destfile="${jain-sip-ri-jar}" basedir="${classes}" includes="gov/nist/**/*.class" />
 				</target>
 
 				<target name="compilesdp" depends="init">
@@ -295,8 +303,8 @@ c:/jakarta-ant/bin/ant all
 
 					<junit fork="yes" showoutput="yes" failureproperty="testing.failed">
 						<classpath>
-							<pathelement location="${jain_api_jar}" />
-							<pathelement location="${ri_jar}" />
+							<pathelement location="${jain-api-jar}" />
+							<pathelement location="${jain-sip-ri-jar}" />
 							<pathelement location="${log4j_jar}" />
 							<pathelement location="${tck_jar}" />
 							<pathelement location='${junit_jar}' />
@@ -332,8 +340,8 @@ c:/jakarta-ant/bin/ant all
 
 					<junit fork="yes" showoutput="yes" failureproperty="testing.failed">
 						<classpath>
-							<pathelement location="${jain_api_jar}" />
-							<pathelement location="${ri_jar}" />
+							<pathelement location="${jain-api-jar}" />
+							<pathelement location="${jain-sip-ri-jar}" />
 							<pathelement location="${log4j_jar}" />
 							<pathelement location="${tck_jar}" />
 							<pathelement location='${junit_jar}' />
@@ -374,7 +382,7 @@ c:/jakarta-ant/bin/ant all
 					<junit fork="yes" showoutput="yes" failureproperty="testing.failed">
 						<classpath>
 							<pathelement location="${sip-sdp-jar}" />
-							<pathelement location="${ri_jar}" />
+							<pathelement location="${jain-sip-ri-jar}" />
 							<pathelement location="${log4j_jar}" />
 							<pathelement location='${junit_jar}' />
 							<pathelement location='${log4j_jar}' />
@@ -402,7 +410,7 @@ c:/jakarta-ant/bin/ant all
 					<junit fork="yes" showoutput="yes" failureproperty="testing.failed">
 						<classpath>
 							<pathelement location="${sip-sdp-jar}" />
-							<pathelement location="${ri_jar}" />
+							<pathelement location="${jain-sip-ri-jar}" />
 							<pathelement location="${log4j_jar}" />
 							<pathelement location='${junit_jar}' />
 							<pathelement location='${log4j_jar}' />
@@ -425,17 +433,26 @@ c:/jakarta-ant/bin/ant all
 					<fail if="testing.failed" />
 				</target>
 
-				<!-- This is the build verification test run by cruise control. -->
-				<target name="cc-buildloop" depends="make,runtck,runtckcallflows,parsertest,javadoc">
-					<jar compress="true" destfile="jain-sip-1.2.jar">
-						<fileset dir="../">
-							<include name="jain-sip/**/*/" />
-							<exclude name="jain-sip/classes/**/*/" />
-							<exclude name="jain-sip/*.jar" />
-						</fileset>
-					</jar>
-
+				<!-- Task to generate a vesion number -->
+				<target name="generate-version" depends="ant-tools" >
+        			    <taskdef name="versioner" classname="net.java.jsip.ant.tasks.VersionerTask" classpath="classes"/>
+				    <versioner cvsVersionFile="${ant.file.NIST-SIP}/../version.txt"  incrementCVSVersion="true"/>
 				</target>
+				
+				<!-- Generate a tar file -->
+
+				<target name="tarfile" >
+					<tar compression="gzip" basedir="../" destfile="${jain-sip-src-tar}"
+					includes="jain-sip/**/*/" 
+				        excludes="jain-sip/www,jain-sip/classes/**/*/;jain-sip/*.jar,jain-sip/lib/*.jar,jain-sip/ant-tools/lib/*.jar,jain-sip/*.gz" />
+					<tar compression="gzip" basedir="../" destfile="${jain-sip-all-tar}"
+					includes="jain-sip/**/*/" 
+				        excludes="jain-sip/www,jain-sip/*.gz" />
+				</target>
+
+				<!-- This is the build verification test run by cruise control. -->
+				<target name="cc-buildloop" depends="make,runtck,runtckcallflows,parsertest,javadoc,tarfile"/>
+
 
 				<!-- compile to traces viewer jar -->
 				<target name="viewerjar">
@@ -501,12 +518,14 @@ c:/jakarta-ant/bin/ant all
 				</target>
 
 
-				<import file="tools/ant-tasks/build.xml" />
+				<import file="ant-tasks/build.xml" />
 
 				<target name="test">
 					<echo>SHELL ${sys.MAKE_MODE}</echo>
 
 				</target>
+
+			       
 				<target name="init-m2-exec">
 					<echo>To perform m2 release You have to follow insitrction from: https://maven2-repository.dev.java.net/ and have access as m2 submiter.</echo>
 					<sleep seconds="4"/>
@@ -534,24 +553,18 @@ c:/jakarta-ant/bin/ant all
 						</commandline>
 					</cvs>
 				</target>
-				<target name="update-cvs">
+				<target name="update-cvs" depends="generate-version" >
 					<!-- Here we update version.txt so local is the same as cvs -->
 					<!-- cvs -d :pserver:user:paswrd@cvs.dev.java.net:/cvs commit -m "Test commit" version.txt -->
-					<cvs package="version.txt">
-						<commandline>
-							<argument value="-d:pserver:${user.name}@cvs.dev.java.net:/cvs" />
-							<argument line="commit -m" />
-							<argument value="Updating version.txt file after release process(ant script - t${DSTAMP}${TSTAMP})." />
-							<argument value="version.txt" />
-						</commandline>
-					</cvs>
+					<cvs cvsRoot=":pserver:${user.name}:${password}@cvs.dev.java.net:/cvs" command="commit -m 'versions'  version.txt ant-version.properties" />
 				</target>
-				<target name="perform-m2-release" depends="build-ant-tasks" description="Performs m2 deployment">
+				<target name="perform-m2-release" depends="ant-tools" description="Performs m2 deployment" >
 					<antcall target="update-from-cvs" />
+        			    	<taskdef name="versioner" classname="net.java.jsip.ant.tasks.VersionerTask" classpath="classes"/>
 					<versioner cvsversionfile="${ant.file.NIST-SIP}/../version.txt" incrementcvsversion="false" parent="true" pomfile="${ant.file.NIST-SIP}/../m2/jain-sip-api/pom.xml" />
 					<versioner cvsversionfile="${ant.file.NIST-SIP}/../version.txt" incrementcvsversion="false" parent="true" pomfile="${ant.file.NIST-SIP}/../m2/jain-sip-ri/pom.xml" />
 					<versioner cvsversionfile="${ant.file.NIST-SIP}/../version.txt" incrementcvsversion="false" parent="true" pomfile="${ant.file.NIST-SIP}/../m2/nist-sdp/pom.xml" />
-					<versioner cvsversionfile="${ant.file.NIST-SIP}/../version.txt" incrementcvsversion="true" parent="false" pomfile="${ant.file.NIST-SIP}/../m2/pom.xml" />
+					<versioner cvsversionfile="${ant.file.NIST-SIP}/../version.txt" incrementcvsversion="false" parent="false" pomfile="${ant.file.NIST-SIP}/../m2/pom.xml" />
 
 					<antcall target="exec-m2" />
 					<antcall target="update-cvs" />

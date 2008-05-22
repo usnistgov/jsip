@@ -3,22 +3,23 @@ package net.java.jsip.ant.tasks;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 
+/**
+ * 
+ * @author  baranowb@dev.java.net
+ *
+ */
 public class VersionerTask extends Task {
 
 	protected File cvsVersionFile = null;
@@ -31,6 +32,8 @@ public class VersionerTask extends Task {
 
 	private boolean doPom = false;
 	private boolean doToVersion = false;
+	
+	private String antprops = "ant-version.properties";
 	
 	
 	public void setMainVersionParts(int mainVersionParts) {
@@ -149,6 +152,15 @@ public class VersionerTask extends Task {
 					//oos.writeUTF(""+localVersion + 1);
 					BufferedWriter bw=new BufferedWriter(new FileWriter(cvsVersionFile));
 					bw.write(""+(localVersion + 1));
+					bw.flush();
+					bw.close();
+					File antPropertiesFile = new File( this.antprops);
+					antPropertiesFile.createNewFile();
+					bw=new BufferedWriter(new FileWriter(antPropertiesFile));
+					bw.write("jain-sip-ri-jar=jain-sip-ri-1.2."+(localVersion + 1) + ".jar\n");
+					bw.write("sip-sdp-jar=jain-sip-sdp-1.2."+(localVersion + 1) + ".jar\n");
+					bw.write("jain-sip-src-tar=jain-sip-src-1.2."+(localVersion + 1) + ".tar.gz\n");
+					bw.write("jain-sip-all-tar=jain-sip-1.2." +(localVersion + 1) + ".tar.gz\n");
 					bw.flush();
 					bw.close();
 				} catch (IOException e) {
