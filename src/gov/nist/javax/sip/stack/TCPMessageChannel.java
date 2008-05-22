@@ -62,7 +62,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.46 $ $Date: 2008-04-06 23:02:27 $
+ * @version 1.2 $Revision: 1.47 $ $Date: 2008-05-22 19:38:43 $
  */
 public class TCPMessageChannel extends MessageChannel implements
 		SIPMessageListener, Runnable , RawMessageChannel {
@@ -255,10 +255,12 @@ public class TCPMessageChannel extends MessageChannel implements
 		
 		/* Patch from kircuv@dev.java.net (Issue 119 ) This patch
 		 * avoids the case where two TCPMessageChannels are now pointing to the same 
-		 * socket.getInputStream(). 
+		 * socket.getInputStream().
+		 * 
+		 *  JvB 22/5 removed
 		 */
-		Socket s = this.sipStack.ioHandler.getSocket(IOHandler.makeKey(
-				this.peerAddress, this.peerPort));
+		//Socket s = this.sipStack.ioHandler.getSocket(IOHandler.makeKey(
+		//		this.peerAddress, this.peerPort));
 		Socket sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor
 				.getIpAddress(), this.peerAddress, this.peerPort,
 				this.peerProtocol, msg, retry);
@@ -327,10 +329,14 @@ public class TCPMessageChannel extends MessageChannel implements
 			throw new IllegalArgumentException("Null argument");
 		/* Patch from kircuv@dev.java.net (Issue 119 ) This patch
 		 * avoids the case where two TCPMessageChannels are now pointing to the same 
-		 * socket.getInputStream(). 
+		 * socket.getInputStream().
+		 * 
+		 * JvB 22/5 : removed, I don't see how this fixes anything
+		 *   given that the code below was commented out too 
+		 *  
 		 */
-		Socket s = this.sipStack.ioHandler.getSocket(IOHandler.makeKey(
-				receiverAddress, receiverPort));
+		//Socket s = this.sipStack.ioHandler.getSocket(IOHandler.makeKey(
+		//		receiverAddress, receiverPort));
 		Socket sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor
 				.getIpAddress(), receiverAddress, receiverPort, "TCP", message,
 				retry);
