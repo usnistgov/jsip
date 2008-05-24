@@ -155,7 +155,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.97 $ $Date: 2008-05-24 04:10:01 $
+ * @version 1.2 $Revision: 1.98 $ $Date: 2008-05-24 07:34:09 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction , 
@@ -884,9 +884,10 @@ public class SIPClientTransaction extends SIPTransaction implements
 					this.semRelease();
 				}
 
-				if (!isReliable()) {
-					enableTimeoutTimer(TIMER_D);
-				}
+        // JvB: duplicate with line 874
+				//if (!isReliable()) {
+				//	enableTimeoutTimer(TIMER_D);
+				//}
 			}
 		} else if (TransactionState.COMPLETED == this.getState()) {
 			if (300 <= statusCode && statusCode <= 699) {
