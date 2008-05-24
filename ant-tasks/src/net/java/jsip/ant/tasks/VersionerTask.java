@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Date;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
@@ -32,6 +33,8 @@ public class VersionerTask extends Task {
 
 	private boolean doPom = false;
 	private boolean doToVersion = false;
+	
+	private String timeStampFileName = "TIMESTAMP";
 	
 	private String antprops = "ant-version.properties";
 	
@@ -160,8 +163,18 @@ public class VersionerTask extends Task {
 					bw.write("jain-sip-ri-jar=jain-sip-ri-1.2."+(localVersion + 1) + ".jar\n");
 					bw.write("sip-sdp-jar=jain-sip-sdp-1.2."+(localVersion + 1) + ".jar\n");
 					bw.write("jain-sip-src-tar=jain-sip-src-1.2."+(localVersion + 1) + ".tar.gz\n");
+					bw.write("jain-sip-javadoc-tar=jain-sip-javadoc-1.2."+(localVersion + 1) + ".tar.gz\n");
+					
 					bw.write("jain-sip-all-tar=jain-sip-1.2." +(localVersion + 1) + ".tar.gz\n");
+					bw.write("tck_jar=jain-sip-tck-1.2."+(localVersion + 1) + ".jar\n");
+					bw.write("sdp_jar=jain-sdp-1.0."+(localVersion + 1) + ".jar\n");
+					bw.write("unit_test_jar=jain-sip-unit-test-1.2." + (localVersion+1) + ".jar\n");
+					bw.write("javadoc_tar=jain-sip-javadoc-1.2."+(localVersion + 1) + ".tar.gz\n" );
 					bw.flush();
+					bw.close();
+					bw=new BufferedWriter(new FileWriter(this.timeStampFileName));
+					Date date = new Date ( System.currentTimeMillis());
+					bw.write(date.toString());
 					bw.close();
 				} catch (IOException e) {
 					log("Failed to increment version in file. See stack trace:",e,0);

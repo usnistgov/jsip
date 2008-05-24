@@ -58,7 +58,7 @@ import java.io.IOException;
  * and event model with the JAIN-SIP stack. This is strictly an implementation
  * class.
  * 
- * @version 1.2 $Revision: 1.20 $ $Date: 2008-03-19 10:01:09 $
+ * @version 1.2 $Revision: 1.21 $ $Date: 2008-05-24 04:10:00 $
  * 
  * @author M. Ranganathan
  */
@@ -1129,7 +1129,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 		responseEvent = new javax.sip.ResponseEvent(sipProvider,
 				(ClientTransaction) transaction, dialog, (Response) response);
 		// Set the Dialog for the response.
-		if ( /* response.getToTag() != null && */  dialog != null
+		if (   dialog != null
 				&& response.getStatusCode() != 100) {
 			// set the last response for the dialog.
 			dialog.setLastResponse(transaction, response);
