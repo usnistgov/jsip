@@ -65,7 +65,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan 
  * 
  * 
- * @version 1.2 $Revision: 1.14 $ $Date: 2008-04-06 23:02:27 $ 
+ * @version 1.2 $Revision: 1.15 $ $Date: 2008-05-24 04:10:02 $ 
  */
 public final class TLSMessageChannel extends MessageChannel implements
 		SIPMessageListener, Runnable , RawMessageChannel {
@@ -642,6 +642,7 @@ public final class TLSMessageChannel extends MessageChannel implements
 			this.isRunning = false;
 			this.tlsMessageProcessor.remove(this);
 			this.tlsMessageProcessor.useCount--;
+			this.myParser.close();
 		}
 
 	}

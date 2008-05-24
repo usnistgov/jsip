@@ -155,7 +155,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.96 $ $Date: 2008-04-24 13:21:17 $
+ * @version 1.2 $Revision: 1.97 $ $Date: 2008-05-24 04:10:01 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction , 
@@ -871,6 +871,7 @@ public class SIPClientTransaction extends SIPTransaction implements
 				// JvB: update state before passing to app
 				if (!isReliable()) {
 					this.setState(TransactionState.COMPLETED);
+					this.enableTimeoutTimer(TIMER_D);
 				} else {
 					this.setState(TransactionState.TERMINATED);
 				}

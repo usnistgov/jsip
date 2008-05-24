@@ -53,7 +53,7 @@ import java.io.*;
  * accessed from the SIPMessage using the getContent and getContentBytes methods
  * provided by the SIPMessage class.
  * 
- * @version 1.2 $Revision: 1.20 $ $Date: 2008-05-22 19:38:07 $
+ * @version 1.2 $Revision: 1.21 $ $Date: 2008-05-24 04:10:01 $
  * 
  * @author M. Ranganathan
  * 
@@ -61,16 +61,7 @@ import java.io.*;
  */
 public final class PipelinedMsgParser implements Runnable {
 
-	/**
-	 * A filter to read the input
-	 *
-	 * JvB: removed, this does not actually DO anything
-	 *
-	class MyFilterInputStream extends FilterInputStream {
-		public MyFilterInputStream(InputStream in) {
-			super(in);
-		}
-	}*/
+	
 
 	/**
 	 * The message listener that is registered with this parser. (The message
@@ -359,9 +350,23 @@ public final class PipelinedMsgParser implements Runnable {
 			}
 		}
 	}
+	
+	public void close() {
+		try {
+			this.rawInputStream.close();
+		} catch (IOException ex) {
+			// Ignore.
+		}
+	}
 }
 /*
- * $Log: not supported by cvs2svn $ Revision 1.19 2007/01/28 13:06:21 mranga
+ * $Log: not supported by cvs2svn $
+ * Revision 1.20  2008/05/22 19:38:07  jbemmel
+ * Fix for issue 149: the logic wasn't always closing the internal socket pipe,
+ * causing the pipe reader thread to block indefinitely
+ *
+ * Repeatedly starting/stopping the stack then gives hanging threads
+ * Revision 1.19 2007/01/28 13:06:21 mranga
  * Issue number: 99 Obtained from: Submitted by: Reviewed by: mranga
  * 
  * Fixed PRACK handling null pointer exception (for proxy case) and cleanup of

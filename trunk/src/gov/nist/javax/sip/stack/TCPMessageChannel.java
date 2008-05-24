@@ -62,7 +62,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.47 $ $Date: 2008-05-22 19:38:43 $
+ * @version 1.2 $Revision: 1.48 $ $Date: 2008-05-24 04:10:01 $
  */
 public class TCPMessageChannel extends MessageChannel implements
 		SIPMessageListener, Runnable , RawMessageChannel {
@@ -685,6 +685,7 @@ public class TCPMessageChannel extends MessageChannel implements
 			this.isRunning = false;
 			this.tcpMessageProcessor.remove(this);
 			this.tcpMessageProcessor.useCount--;
+			myParser.close();
 		}
 
 	}
