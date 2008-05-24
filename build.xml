@@ -77,14 +77,11 @@ c:/jakarta-ant/bin/ant all
 	<property name="href.mailto" value="mailto:nist-sip-dev@antd.nist.gov" />
 	<property name="href.distribution" value="http://jain-sip.dev.java.net" />
 
-	<property name='tck_jar' value='tck.jar' />
 	<property name="classes" value="${root}/classes" />
 	<property name="retrowoven" value="${root}/retrowoven" />
 	<property name="docdir" value="${root}/javadoc" />
 	<property name="srcroot" value="${root}/src" />
 	<property name="jain-api-jar" value="${root}/jain-sip-api-1.2.jar" />
-	<property name="sdp_jar" value="${root}/nist-sdp-1.0.jar" />
-	<property name="unit_test_jar" value="${root}/nist-unit.jar" />
 	<property name="log4j_jar" value="${root}/lib/${log4j}" />
 	<property name='j2se_api' value='http://java.sun.com/j2se/1.5/docs/api' />
 	<property name="junit_jar" value="${root}/lib/${junit}" />
@@ -441,17 +438,23 @@ c:/jakarta-ant/bin/ant all
 				
 				<!-- Generate a tar file -->
 
-				<target name="tarfile" >
+				<target name="srctar"  >
 					<tar compression="gzip" basedir="../" destfile="${jain-sip-src-tar}"
 					includes="jain-sip/**/*/" 
-				        excludes="jain-sip/www,jain-sip/classes/**/*/;jain-sip/*.jar,jain-sip/lib/*.jar,jain-sip/ant-tools/lib/*.jar,jain-sip/*.gz" />
+				        excludes="jain-sip/www/**/*,jain-sip/javax/**/*,jain-sip/repo/**/*,jain-sip/ant-tasks/lib/**/*,jain-sip/classes/**/*,jain-sip/javadoc/**/*,jain-sip/*.jar,jain-sip/lib/**/*,jain-sip/*.gz" />
+				</target>
+				<target name="javadoctar"  >
+					<tar compression="gzip" basedir="../" destfile="${jain-sip-javadoc-tar}"
+					includes="jain-sip/javadoc/**/*" />
+				</target>
+				<target name="alltar"  >
 					<tar compression="gzip" basedir="../" destfile="${jain-sip-all-tar}"
 					includes="jain-sip/**/*/" 
-				        excludes="jain-sip/www,jain-sip/*.gz" />
+					excludes="jain-sip/*.tar.gz" />
 				</target>
 
 				<!-- This is the build verification test run by cruise control. -->
-				<target name="cc-buildloop" depends="make,runtck,runtckcallflows,parsertest,javadoc,tarfile"/>
+				<target name="cc-buildloop" depends="make,runtck,runtckcallflows,parsertest,javadoc,javadoctar,alltar,clean,srctar"/>
 
 
 				<!-- compile to traces viewer jar -->
@@ -553,7 +556,7 @@ c:/jakarta-ant/bin/ant all
 						</commandline>
 					</cvs>
 				</target>
-				<target name="update-cvs" depends="generate-version" >
+				<target name="update-cvs" >
 					<!-- Here we update version.txt so local is the same as cvs -->
 					<!-- cvs -d :pserver:user:paswrd@cvs.dev.java.net:/cvs commit -m "Test commit" version.txt -->
 					<cvs cvsRoot=":pserver:${user.name}:${password}@cvs.dev.java.net:/cvs" command="commit -m 'versions'  version.txt ant-version.properties" />
