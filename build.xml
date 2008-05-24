@@ -121,6 +121,8 @@ c:/jakarta-ant/bin/ant all
 		<delete file="./${sip-sdp-jar}" failonerror="false" />
 		<delete file="./${tck_jar}" failonerror="false" />
 		<delete file="./${unit_test_jar}" failonerror="false" />
+		<delete file="./${jain-sip-javadoc-tar}" failonerror="false" />
+		<delete file="./${jain-sip-src-tar}" failonerror="false" />
 		<delete file="./tracesviewer.jar" failonerror="false" />
 		<delete dir='javadoc' quiet="true" failonerror="false" />
 		<delete dir='javadoc-jain' quiet="true" failonerror="false" />
@@ -441,7 +443,7 @@ c:/jakarta-ant/bin/ant all
 				<target name="srctar"  >
 					<tar compression="gzip" basedir="../" destfile="${jain-sip-src-tar}"
 					includes="jain-sip/**/*/" 
-				        excludes="jain-sip/www/**/*,jain-sip/javax/**/*,jain-sip/repo/**/*,jain-sip/ant-tasks/lib/**/*,jain-sip/classes/**/*,jain-sip/javadoc/**/*,jain-sip/*.jar,jain-sip/lib/**/*,jain-sip/*.gz" />
+				        excludes="jain-sip/www/**/*,jain-sip/javax/**/*,jain-sip/repo/**/*,jain-sip/ant-tasks/lib/**/*,jain-sip/test-reports/**/*,jain-sip/classes/**/*,jain-sip/javadoc/**/*,jain-sip/*.jar,jain-sip/lib/**/*,jain-sip/tckoutput.txt,jain-sip/*.gz,jain-sip/poms/**/*" />
 				</target>
 				<target name="javadoctar"  >
 					<tar compression="gzip" basedir="../" destfile="${jain-sip-javadoc-tar}"
@@ -454,7 +456,9 @@ c:/jakarta-ant/bin/ant all
 				</target>
 
 				<!-- This is the build verification test run by cruise control. -->
-				<target name="cc-buildloop" depends="make,runtck,runtckcallflows,parsertest,javadoc,javadoctar,alltar,clean,srctar"/>
+				<target name="cc-buildloop" depends="make,runtck,runtckcallflows,parsertest,javadoc,javadoctar,alltar,srctar">
+					<delete file="./${unit_test_jar}" failonerror="false"/>
+				</target>
 
 
 				<!-- compile to traces viewer jar -->
