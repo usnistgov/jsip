@@ -65,10 +65,12 @@ public class PChargingVector extends gov.nist.javax.sip.header.ParametersHeader
 		 * no need to check for the presence of icid-value. According to the
 		 * spec above this is a mandatory field. if it does not exist, then we
 		 * should throw an exception
-		 */
-		encoding.append(ParameterNamesIms.ICID_VALUE).append(EQUALS).append(
-				getICID());
-
+		 *
+		 * JvB 26/5: fix for issue #159, check for quotes around icid value
+		 */		
+		gov.nist.core.NameValue nv = getNameValue( ParameterNamesIms.ICID_VALUE );
+		nv.encode( encoding );
+		
 		//the remaining parameters are optional.
 		// check for their presence, then add the parameter if it exists.
 		if (parameters.containsKey(ParameterNamesIms.ICID_GENERATED_AT))
