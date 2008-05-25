@@ -155,7 +155,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.98 $ $Date: 2008-05-24 07:34:09 $
+ * @version 1.2 $Revision: 1.99 $ $Date: 2008-05-25 15:21:46 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction , 
@@ -280,6 +280,7 @@ public class SIPClientTransaction extends SIPTransaction implements
 	 *            Transaction stack this transaction belongs to.
 	 * @param newChannelToUse
 	 *            Channel to encapsulate.
+	 * @return the created client transaction.
 	 */
 	protected SIPClientTransaction(SIPTransactionStack newSIPStack,
 			MessageChannel newChannelToUse) {
@@ -340,7 +341,7 @@ public class SIPClientTransaction extends SIPTransaction implements
 	 * @param messageToTest
 	 *            Message to check if it is part of this transaction.
 	 * 
-	 * @return True if the message is part of this transaction, false if not.
+	 * @return  true if the message is part of this transaction, false if not.
 	 */
 	public boolean isMessagePartOfTransaction(SIPMessage messageToTest) {
 
@@ -1338,10 +1339,10 @@ public class SIPClientTransaction extends SIPTransaction implements
 	 * original message. A Response with a tag mismatch should be dropped if a
 	 * Dialog has been created for the original request.
 	 * 
-	 * @param sipResponse
-	 * @return
+	 * @param sipResponse the response to check.
+	 * @return true if the check passes. 
 	 */
-	public boolean checkFromTag(SIPResponse sipResponse) {
+	protected boolean checkFromTag(SIPResponse sipResponse) {
 		String originalFromTag = ((SIPRequest) this.getRequest()).getFromTag();
 		if (this.defaultDialog != null) {
 			if (originalFromTag == null

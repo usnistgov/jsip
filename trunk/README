@@ -9,15 +9,9 @@ BUILD Notes
 -----------
 Platforms:
 ---------
-You need to install J2SDK 1.3 or above. 1.5 is highly recommended. You can
-get J2SDK from http://www.javasoft.com
+You need to install J2SE JDK 1.5 or above. You can
+get the SDK from http://www.javasoft.com
 
-compiles and runs on Ipaq using the Blackdown jvm (1.3
-compatible) running on top of Familiar (Linux embedded operating
-system). 
-
-With a few changes, this distribution can be made to compile and run 
-on Personal Java.
 
 
 Dependencies
@@ -27,7 +21,11 @@ Dependencies
 2. You need to have junit.jar in your classpath.
 3. You need to have log4j.jar in your classpath (included in this distribution).
 
-There are versions of the dependent libraries in the lib directory. 
+There are versions of the dependent libraries in the lib directory.  
+For your build environment, please edit ant-build-config.properties.
+
+YOU DO NOT need jdom.jar and ant.jar. These are strictly for buildng 
+the ant tools.
 
 Building It from Scratch
 -------------------------
