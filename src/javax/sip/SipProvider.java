@@ -1,8 +1,8 @@
 /**
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
- * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- * Copyright © 2005 BEA Systems, Inc. All rights reserved.
+ * Copyright ï¿½ 2003 Sun Microsystems, Inc. All rights reserved.
+ * Copyright ï¿½ 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
@@ -379,7 +379,7 @@ public interface SipProvider {
      * by the application to create the new client transaction befores it sends 
      * the Request on that transaction. This methods returns 
      * a new unique client transaction that can be passed to send Requests 
-     * statefully.
+     * statefully.<b>Do not call this method for ACK requests.</b>
      *
      * @param request the new Request message that is to handled statefully by 
      * the ClientTransaction.
@@ -388,7 +388,6 @@ public interface SipProvider {
      * the next hop of the request can not be determined or the method is "ACK"
      * @see ClientTransaction
      * 
-     * @note Do ~not~ call this method for ACK requests
      */
     public ClientTransaction getNewClientTransaction(Request request) 
                                         throws TransactionUnavailableException;        
@@ -399,7 +398,8 @@ public interface SipProvider {
      * is called by an application that decides to respond to an unmatched
      * Request statefully. This methods return a new unique server transaction
      * that can be used to respond to the request statefully.
-     *
+     * <b> Do ~not~ call this method for ACK requests. </b>
+     * 
      * @param request the Request message that the doesn't match an existing 
      * transaction that the application decides to handle statefully.
      * @return a new unique server transaction.
@@ -411,7 +411,7 @@ public interface SipProvider {
      * the next hop of the request can not be determined or the method is "ACK"
      * @see ServerTransaction
      * 
-     * @note Do ~not~ call this method for ACK requests
+    
      */
     public ServerTransaction getNewServerTransaction(Request request) 
                        throws TransactionAlreadyExistsException, 
