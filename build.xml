@@ -74,25 +74,26 @@ c:/jakarta-ant/bin/ant all
 	<property name="href.nist.homepage" value="http://www-x.antd.nist.gov/" />
 	<property name="href.uncopyright" value="../uncopyright.html" />
 	<property name="href.copyright" value="../copyright.html" />
-	<property name="href.mailto" value="mailto:nist-sip-dev@antd.nist.gov" />
+	<property name="href.mailto" value="mailto:users@jain-sip.dev.java.net" />
 	<property name="href.distribution" value="http://jain-sip.dev.java.net" />
 
 	<property name="classes" value="${root}/classes" />
 	<property name="retrowoven" value="${root}/retrowoven" />
 	<property name="docdir" value="${root}/javadoc" />
 	<property name="srcroot" value="${root}/src" />
-	<property name="jain-api-jar" value="${root}/jain-sip-api-1.2.jar" />
-	<property name="log4j_jar" value="${root}/lib/${log4j}" />
+	<property name="dist" value="dist" />
+	<property name="jain-sip-api-jar" value="${root}/jain-sip-api-1.2.jar" />
 	<property name='j2se_api' value='http://java.sun.com/j2se/1.5/docs/api' />
-	<property name="junit_jar" value="${root}/lib/${junit}" />
-	<property name="jdom_jar" value="${root}/ant-tasks/lib/jdom.jar"/>
-	<property name="ant_jar" value="${root}/ant-tasks/lib/ant.jar"/>
+	<property name="junit_jar" value="${junit}" />
+	<property name="log4j_jar" value="${log4j}" />
+	<property name="jdom_jar" value="${jdom}"/>
+	<property name="ant_jar" value="${ant}"/>
 	
 
 	<property environment="sys" />
 	<target name="all" depends="make,compileexamples,compiletools,javadoc,javadoc-jain" />
 
-	<target name="make" depends="clean,compileapi,compileri,compilesdp,sip-sdp-jar" />
+	<target name="make" depends="clean,compileapi,compileri,compilesdp,jain-sip-sdp-jar" />
 
 
 	<target name="cleanlogs">
@@ -115,11 +116,11 @@ c:/jakarta-ant/bin/ant all
 	<target name="clean" depends="cleanlogs">
 		<delete dir="${classes}" quiet="true" failonerror="false" />
 		<delete dir="${retrowoven}" quiet="true" failonerror="false" />
-		<delete file="./${jain-api-jar}" failonerror="false" />
+		<delete file="./${jain-sip-api-jar}" failonerror="false" />
 		<delete file="./${jain-sip-ri-jar}" failonerror="false" />
 		<delete file="./${sdp_jar}" failonerror="false" />
-		<delete file="./${sip-sdp-jar}" failonerror="false" />
-		<delete file="./${tck_jar}" failonerror="false" />
+		<delete file="./${jain-sip-sdp-jar}" failonerror="false" />
+		<delete file="./${jain-sip-tck-jar}" failonerror="false" />
 		<delete file="./${unit_test_jar}" failonerror="false" />
 		<delete file="./${jain-sip-javadoc-tar}" failonerror="false" />
 		<delete file="./${jain-sip-src-tar}" failonerror="false" />
@@ -150,7 +151,7 @@ c:/jakarta-ant/bin/ant all
 		<javadoc packagenames="javax.sip.*,javax.sip.header.*,javax.sip.message.*,javax.sip.address.*,gov.nist.javax.sip.*,gov.nist.javax.sip.address.*,gov.nist.javax.sip.message.*,gov.nist.javax.sip.header.*,gov.nist.javas.sip.header.ims.*,gov.nist.javax.sip.stack.*,gov.nist.core.net.*,gov.nist.javax.sip.parser.*,javax.sdp.*,gov.nist.javax.sdp.*,gov.nist.javax.sdp.fields.*" sourcepath="${srcroot}" overview="${docdir}/overview.html" destdir="javadoc" use="true" splitindex="true" windowtitle="The JAIN-SIP-1.2 RI For the People !" doctitle="NIST-SIP: The Reference Implementation for JAIN-SIP 1.2" public="true" author="true" version="true" defaultexcludes="yes" additionalparam="-breakiterator">
 			<classpath>
 				<pathelement location="${log4j_jar}" />
-				<pathelement location="${jain-api-jar}" />
+				<pathelement location="${jain-sip-api-jar}" />
 			</classpath>
 			<link href="${j2se_api}" />
 			<header>
@@ -179,7 +180,7 @@ c:/jakarta-ant/bin/ant all
 
 			<javadoc packagenames="javax.sip.*,javax.sip.header.*,javax.sip.message.*,javax.sip.address.*,javax.sdp.*" sourcepath="${srcroot}" overview="${docdir}/overview.html" destdir="javadoc-jain" use="true" splitindex="true" windowtitle="JAIN-SIP-1.2 RI For the People !" doctitle="NIST SIP/SDP Parser and Stack (v1.3)" public="true" author="true" version="true" defaultexcludes="yes" additionalparam="-breakiterator">
 				<classpath>
-					<pathelement location="${jain-api-jar}" />
+					<pathelement location="${jain-sip-api-jar}" />
 				</classpath>
 				<link href="${j2se_api}" />
 				<header>
@@ -205,7 +206,7 @@ c:/jakarta-ant/bin/ant all
 				<!-- Compile the stack and libraries -->
 				<target name="compileapi" depends="init">
 					<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" source="${javac.source}" target="${javac.target}" srcdir="${srcroot}" includes="javax/sip/**/*.java" destdir="${classes}" />
-					<jar destfile="${jain-api-jar}" basedir="${classes}" includes="javax/sip/**/*.class" />
+					<jar destfile="${jain-sip-api-jar}" basedir="${classes}" includes="javax/sip/**/*.class" />
 				</target>
 				<!-- Compile but dont build any jars -->
 				<target name="compile" depends="init,compileapi">
@@ -241,7 +242,7 @@ c:/jakarta-ant/bin/ant all
 					<jar destfile="${sdp_jar}" basedir="${classes}" includes="gov/nist/core/**/*.class,gov/nist/javax/sdp/**/*.class,javax/sdp/**/*.class" />
 				</target>
 
-				<target name="compileunit" depends="clean, init, sip-sdp-jar">
+				<target name="compileunit" depends="clean, init, jain-sip-sdp-jar">
 					<copy file="src/test/torture/torture.xml" toDir="classes/test/torture/" />
 					<copy file="src/test/torture/torture.dtd" toDir="classes/test/torture/" />
 					<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="${srcroot}" includes="test/unit/**/*.java,test/torture/**/*.java" destdir="${classes}">
@@ -253,8 +254,8 @@ c:/jakarta-ant/bin/ant all
 					<jar destfile="${unit_test_jar}" basedir="${classes}" includes="test/unit/**/*.class,test/torture/**/*" />
 				</target>
 
-				<target name="sip-sdp-jar" depends="compilejain">
-					<jar destfile="${sip-sdp-jar}" basedir="${classes}" includes="javax/**/*.class,gov/nist/**/*.class" />
+				<target name="jain-sip-sdp-jar" depends="compilejain">
+					<jar destfile="${jain-sip-sdp-jar}" basedir="${classes}" includes="javax/**/*.class,gov/nist/**/*.class" />
 				</target>
 
 				<target name='compilejain' depends='init,compile,compilesdp' />
@@ -281,7 +282,7 @@ c:/jakarta-ant/bin/ant all
 							<pathelement location='${log4j_jar}' />
 						</classpath>
 					</javac>
-					<jar destfile="${tck_jar}" basedir="${classes}">
+					<jar destfile="${jain-sip-tck-jar}" basedir="${classes}">
 						<include name="test/tck/**/*.class" />
 						<include name="test/rihelper/**/*.class" />
 						<manifest>
@@ -302,10 +303,10 @@ c:/jakarta-ant/bin/ant all
 
 					<junit fork="yes" showoutput="yes" failureproperty="testing.failed">
 						<classpath>
-							<pathelement location="${jain-api-jar}" />
+							<pathelement location="${jain-sip-api-jar}" />
 							<pathelement location="${jain-sip-ri-jar}" />
 							<pathelement location="${log4j_jar}" />
-							<pathelement location="${tck_jar}" />
+							<pathelement location="${jain-sip-tck-jar}" />
 							<pathelement location='${junit_jar}' />
 							<pathelement location='${log4j_jar}' />
 
@@ -339,10 +340,10 @@ c:/jakarta-ant/bin/ant all
 
 					<junit fork="yes" showoutput="yes" failureproperty="testing.failed">
 						<classpath>
-							<pathelement location="${jain-api-jar}" />
+							<pathelement location="${jain-sip-api-jar}" />
 							<pathelement location="${jain-sip-ri-jar}" />
 							<pathelement location="${log4j_jar}" />
-							<pathelement location="${tck_jar}" />
+							<pathelement location="${jain-sip-tck-jar}" />
 							<pathelement location='${junit_jar}' />
 							<pathelement location='${log4j_jar}' />
 
@@ -380,7 +381,7 @@ c:/jakarta-ant/bin/ant all
 
 					<junit fork="yes" showoutput="yes" failureproperty="testing.failed">
 						<classpath>
-							<pathelement location="${sip-sdp-jar}" />
+							<pathelement location="${jain-sip-sdp-jar}" />
 							<pathelement location="${jain-sip-ri-jar}" />
 							<pathelement location="${log4j_jar}" />
 							<pathelement location='${junit_jar}' />
@@ -408,7 +409,7 @@ c:/jakarta-ant/bin/ant all
 
 					<junit fork="yes" showoutput="yes" failureproperty="testing.failed">
 						<classpath>
-							<pathelement location="${sip-sdp-jar}" />
+							<pathelement location="${jain-sip-sdp-jar}" />
 							<pathelement location="${jain-sip-ri-jar}" />
 							<pathelement location="${log4j_jar}" />
 							<pathelement location='${junit_jar}' />
@@ -455,8 +456,29 @@ c:/jakarta-ant/bin/ant all
 					excludes="jain-sip/*.tar.gz" />
 				</target>
 
+				<!-- builds the distribution -->
+				<target name="dist" depends="make,compiletck,javadoc,javadoctar,alltar,srctar">
+					<mkdir dir="${dist}" />
+					<mkdir dir="${dist}/jain-sip-javadoc" />
+					<mkdir dir="${dist}/jain-sip-sdp"/>
+					<mkdir dir="${dist}/jain-sip-api"/>
+					<mkdir dir="${dist}/jain-sip-ri"/>
+					<mkdir dir="${dist}/jain-sip-tck" />
+					<mkdir dir="${dist}/jain-sip-src" />
+					<mkdir dir="${dist}/jain-sip-all" />
+					<copy file="${jain-sip-javadoc-tar}" todir="${dist}/jain-sip-javadoc"  />
+					<copy file="${jain-sip-src-tar}" todir="${dist}/jain-sip-src"  />
+					<copy file="${jain-sip-api-jar}" todir="${dist}/jain-sip-api"/>
+					<copy file="${jain-sip-ri-jar}" todir="${dist}/jain-sip-ri"/>
+					<copy file="${jain-sip-sdp-jar}" todir="${dist}/jain-sip-sdp"/>
+					<copy file="${jain-sip-tck-jar}" todir ="${dist}/jain-sip-tck" />
+					<copy file="${jain-sip-all-tar}"   todir="${dist}/jain-sip-all" />
+
+				</target>
+
 				<!-- This is the build verification test run by cruise control. -->
-				<target name="cc-buildloop" depends="make,runtck,runtckcallflows,parsertest,javadoc,javadoctar,alltar,srctar"/>
+
+				<target name="cc-buildloop" depends="dist,runtck,runtckcallflows,parsertest" />
 
 
 				<!-- compile to traces viewer jar -->
