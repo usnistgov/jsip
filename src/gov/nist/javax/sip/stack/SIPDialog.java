@@ -64,14 +64,14 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.78 $ $Date: 2008-05-21 19:20:41 $
+ * @version 1.2 $Revision: 1.79 $ $Date: 2008-05-26 20:02:39 $
  * 
  * @author M. Ranganathan
  * 
  * 
  */
 
-public class SIPDialog implements javax.sip.Dialog , DialogExt {
+public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
 	private static final long serialVersionUID = -1429794423085204069L;
 
@@ -851,7 +851,8 @@ public class SIPDialog implements javax.sip.Dialog , DialogExt {
 			this.setState(TERMINATED_STATE);
 		else {
 			// Delete the transaction after the max ack timeout.
-			sipStack.getTimer().schedule(new DialogDeleteTask(),
+			sipStack.getTimer().schedule(
+					new DialogDeleteTask(),
 					SIPTransaction.TIMER_H
 							* SIPTransactionStack.BASE_TIMER_INTERVAL);
 		}
@@ -1571,9 +1572,10 @@ public class SIPDialog implements javax.sip.Dialog , DialogExt {
 		 */
 
 		if (SIPRequest.isTargetRefresh(method)) {
-			ContactHeader contactHeader = 
-				((ListeningPointImpl)this.sipProvider.getListeningPoint(lp.getTransport())).createContactHeader();
-					
+			ContactHeader contactHeader = ((ListeningPointImpl) this.sipProvider
+					.getListeningPoint(lp.getTransport()))
+					.createContactHeader();
+
 			((SipURI) contactHeader.getAddress().getURI()).setSecure(this
 					.isSecure());
 			sipRequest.setHeader(contactHeader);
@@ -2084,7 +2086,7 @@ public class SIPDialog implements javax.sip.Dialog , DialogExt {
 			} else { // should be !=null, checked above
 				uri4transport = ((SipURI) this.remoteTarget.getURI());
 			}
-			
+
 			String transport = uri4transport.getTransportParam();
 			if (transport == null) {
 				// JvB fix: also support TLS
@@ -2094,8 +2096,10 @@ public class SIPDialog implements javax.sip.Dialog , DialogExt {
 			ListeningPointImpl lp = (ListeningPointImpl) sipProvider
 					.getListeningPoint(transport);
 			if (lp == null) {
-				sipStack.getLogWriter().logError("remoteTargetURI " + this.remoteTarget.getURI());
-				sipStack.getLogWriter().logError("uri4transport = " + uri4transport);
+				sipStack.getLogWriter().logError(
+						"remoteTargetURI " + this.remoteTarget.getURI());
+				sipStack.getLogWriter().logError(
+						"uri4transport = " + uri4transport);
 				sipStack.getLogWriter().logError(
 						"No LP found for transport=" + transport);
 				throw new SipException(
@@ -2119,16 +2123,18 @@ public class SIPDialog implements javax.sip.Dialog , DialogExt {
 			sipRequest.setFrom(from);
 			To to = new To();
 			to.setAddress(this.remoteParty);
-			if ( hisTag != null ) to.setTag(this.hisTag);
+			if (hisTag != null)
+				to.setTag(this.hisTag);
 			sipRequest.setTo(to);
 			sipRequest.setMaxForwards(new MaxForwards(70));
-			
-			if ( this.originalRequest != null 	) {
-				Authorization authorization = this.originalRequest.getAuthorization();
-				if ( authorization != null) sipRequest.setHeader(authorization);
+
+			if (this.originalRequest != null) {
+				Authorization authorization = this.originalRequest
+						.getAuthorization();
+				if (authorization != null)
+					sipRequest.setHeader(authorization);
 			}
 
-		
 			// ACKs for 2xx responses
 			// use the Route values learned from the Record-Route of the 2xx
 			// responses.
@@ -2395,8 +2401,10 @@ public class SIPDialog implements javax.sip.Dialog , DialogExt {
 						 * meanings and handling as described in SIP"
 						 */
 						if (statusCode != 489
-							&& (cseqMethod.equals(Request.NOTIFY) || cseqMethod.equals(Request.SUBSCRIBE))) {
-							sipStack.logWriter.logDebug("RFC 3265 : Not setting dialog to TERMINATED for 489");
+								&& (cseqMethod.equals(Request.NOTIFY) || cseqMethod
+										.equals(Request.SUBSCRIBE))) {
+							sipStack.logWriter
+									.logDebug("RFC 3265 : Not setting dialog to TERMINATED for 489");
 						} else {
 							this.setState(SIPDialog.TERMINATED_STATE);
 						}
@@ -2534,8 +2542,22 @@ public class SIPDialog implements javax.sip.Dialog , DialogExt {
 		}
 		response.addHeader(require);
 		RSeq rseq = new RSeq();
-		rseq.setSeqNumber(1L); // Note this will change when the response
-		// is sent out.
+		/*
+		 * set an arbitrary sequence number. This is actually set when the
+		 * response is sent out
+		 */
+		rseq.setSeqNumber(1L);
+		/*
+		 * Copy the record route headers from the request to the response (
+		 * Issue 160 ). Note that other 1xx headers do not get their Record
+		 * Route headers copied over but reliable provisional responses do. See
+		 * RFC 3262 Table 2.
+		 */
+		RecordRouteList rrl = request.getRecordRouteHeaders();
+		if (rrl != null) {
+			RecordRouteList rrlclone = (RecordRouteList) rrl.clone();
+			response.setHeader(rrlclone);
+		}
 
 		return response;
 	}
