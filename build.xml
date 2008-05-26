@@ -116,19 +116,11 @@ c:/jakarta-ant/bin/ant all
 	<target name="clean" depends="cleanlogs">
 		<delete dir="${classes}" quiet="true" failonerror="false" />
 		<delete dir="${retrowoven}" quiet="true" failonerror="false" />
-		<delete file="./${jain-sip-api-jar}" failonerror="false" />
-		<delete file="./${jain-sip-ri-jar}" failonerror="false" />
-		<delete file="./${sdp_jar}" failonerror="false" />
-		<delete file="./${jain-sip-sdp-jar}" failonerror="false" />
-		<delete file="./${jain-sip-tck-jar}" failonerror="false" />
-		<delete file="./${unit_test_jar}" failonerror="false" />
-		<delete file="./${jain-sip-javadoc-tar}" failonerror="false" />
-		<delete file="./${jain-sip-src-tar}" failonerror="false" />
 		<delete file="./tracesviewer.jar" failonerror="false" />
 		<delete dir='javadoc' quiet="true" failonerror="false" />
 		<delete dir='javadoc-jain' quiet="true" failonerror="false" />
 		<delete dir="${dist}" quiet="true" failonerror="false" />
-
+		<delete fileset file="*.jar" />
 	</target>
 
 	<!-- Create ${classes} -->
