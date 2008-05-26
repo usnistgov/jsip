@@ -120,7 +120,10 @@ c:/jakarta-ant/bin/ant all
 		<delete dir='javadoc' quiet="true" failonerror="false" />
 		<delete dir='javadoc-jain' quiet="true" failonerror="false" />
 		<delete dir="${dist}" quiet="true" failonerror="false" />
-		<delete fileset file="*.jar" />
+		<delete failonerror="0">
+			<fileset file="*.jar"/>
+			<fileset file="*.tar.gz"/>
+		</delete>
 	</target>
 
 	<!-- Create ${classes} -->
