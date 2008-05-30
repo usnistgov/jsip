@@ -78,7 +78,7 @@ import javax.sip.message.Response;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.49 $ $Date: 2008-04-24 13:21:17 $
+ * @version 1.2 $Revision: 1.50 $ $Date: 2008-05-30 19:01:24 $
  */
 public class UDPMessageChannel extends MessageChannel implements
 		ParseExceptionListener, Runnable, RawMessageChannel {
@@ -618,7 +618,7 @@ public class UDPMessageChannel extends MessageChannel implements
 				}
 			}
 
-			byte[] msg = sipMessage.encodeAsBytes();
+			byte[] msg = sipMessage.encodeAsBytes( this.getTransport() );
 
 			sendMessage(msg, peerAddress, peerPort, peerProtocol,
 					sipMessage instanceof SIPRequest);

@@ -53,7 +53,7 @@ import javax.sip.header.ContactHeader;
  * Contains additions for support of symmetric NAT contributed
  * by Hagai.
  *
- * @version 1.2 $Revision: 1.20 $ $Date: 2008-02-17 21:36:59 $
+ * @version 1.2 $Revision: 1.21 $ $Date: 2008-05-30 19:01:23 $
  *
  * 
  */
@@ -202,9 +202,7 @@ public abstract class MessageChannel {
 
 				}
 			}
-			byte[] msg = sipMessage.encodeAsBytes();
-
-		
+			byte[] msg = sipMessage.encodeAsBytes( this.getTransport() );
 
 			this.sendMessage(msg, hopAddr, hop.getPort(), sipMessage instanceof SIPRequest);
 
@@ -231,7 +229,7 @@ public abstract class MessageChannel {
 		int receiverPort)
 		throws IOException {
 		long time = System.currentTimeMillis();
-		byte[] bytes = sipMessage.encodeAsBytes();
+		byte[] bytes = sipMessage.encodeAsBytes( this.getTransport() );
 		sendMessage(
 			bytes,
 			receiverAddress,
