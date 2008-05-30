@@ -49,7 +49,7 @@ import javax.sip.message.Request;
 /**
  * SIP Response structure.
  *
- * @version 1.2 $Revision: 1.19 $ $Date: 2008-01-24 22:48:39 $
+ * @version 1.2 $Revision: 1.20 $ $Date: 2008-05-30 19:01:10 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
@@ -527,7 +527,7 @@ public final class SIPResponse
 	 *  array.
 	 */
 
-	public byte[] encodeAsBytes() {
+	public byte[] encodeAsBytes( String transport ) {
 		byte[] slbytes = null;
 		if (statusLine != null) {
 			try {
@@ -536,7 +536,7 @@ public final class SIPResponse
 				InternalErrorHandler.handleException(ex);
 			}
 		}
-		byte[] superbytes = super.encodeAsBytes();
+		byte[] superbytes = super.encodeAsBytes( transport );
 		byte[] retval = new byte[slbytes.length + superbytes.length];
 		System.arraycopy(slbytes, 0, retval, 0, slbytes.length);
 		System.arraycopy(superbytes, 0, retval, slbytes.length,

@@ -58,7 +58,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.40 $ $Date: 2008-03-20 18:48:59 $
+ * @version 1.2 $Revision: 1.41 $ $Date: 2008-05-30 19:01:10 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -354,7 +354,17 @@ public abstract class SIPMessage extends MessageObject implements
 	 *         the canonical byte array representation of the SDP payload if it
 	 *         exists all in one contiguous byte array).
 	 */
-	public byte[] encodeAsBytes() {
+	public byte[] encodeAsBytes( String transport ) {
+		
+		// JvB: added to fix case where application provides the wrong transport
+		// in the topmost Via header
+		ViaHeader topVia = (ViaHeader) this.getHeader( ViaHeader.NAME );
+		try {
+			topVia.setTransport( transport );
+		} catch (ParseException e) {
+			InternalErrorHandler.handleException(e);
+		}
+		
 		StringBuffer encoding = new StringBuffer();
 		synchronized (this.headers) {
 			Iterator<SIPHeader> it = this.headers.iterator();
