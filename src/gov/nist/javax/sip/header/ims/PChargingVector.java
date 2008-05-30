@@ -85,7 +85,7 @@ public class PChargingVector extends gov.nist.javax.sip.header.ParametersHeader
 
 		if (parameters.containsKey(ParameterNamesIms.ORIG_IOI))
 
-			encoding.append(SEMICOLON).append(ParameterNamesIms.ICID_VALUE)
+			encoding.append(SEMICOLON).append(ParameterNamesIms.ORIG_IOI)
 					.append(EQUALS).append(getOriginatingIOI());
 
 		return encoding.toString();
