@@ -62,7 +62,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.35 $ $Date: 2008-05-06 03:55:52 $
+ * @version 1.2 $Revision: 1.36 $ $Date: 2008-05-30 19:01:10 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -626,7 +626,7 @@ public final class SIPRequest extends SIPMessage implements
 	 * @return a byte array containing the SIPRequest encoded as a byte array.
 	 */
 
-	public byte[] encodeAsBytes() {
+	public byte[] encodeAsBytes( String transport ) {
 		if (this.requestLine == null) {
 			// Encoding a null message. Return 0 byte array.
 			return new byte[0];
@@ -640,7 +640,7 @@ public final class SIPRequest extends SIPMessage implements
 				InternalErrorHandler.handleException(ex);
 			}
 		}
-		byte[] superbytes = super.encodeAsBytes();
+		byte[] superbytes = super.encodeAsBytes( transport );
 		byte[] retval = new byte[rlbytes.length + superbytes.length];
 		System.arraycopy(rlbytes, 0, retval, 0, rlbytes.length);
 		System.arraycopy(superbytes, 0, retval, rlbytes.length,

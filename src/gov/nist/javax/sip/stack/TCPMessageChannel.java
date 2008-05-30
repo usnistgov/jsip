@@ -62,7 +62,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.48 $ $Date: 2008-05-24 04:10:01 $
+ * @version 1.2 $Revision: 1.49 $ $Date: 2008-05-30 19:01:24 $
  */
 public class TCPMessageChannel extends MessageChannel implements
 		SIPMessageListener, Runnable , RawMessageChannel {
@@ -299,7 +299,7 @@ public class TCPMessageChannel extends MessageChannel implements
 	 *             If there is an error sending the message
 	 */
 	public void sendMessage(SIPMessage sipMessage) throws IOException {
-		byte[] msg = sipMessage.encodeAsBytes();
+		byte[] msg = sipMessage.encodeAsBytes( this.getTransport() );
 
 		long time = System.currentTimeMillis();
 
@@ -501,7 +501,7 @@ public class TCPMessageChannel extends MessageChannel implements
 								.getMaxMessageSize()) {
 					SIPResponse sipResponse = sipRequest
 							.createResponse(SIPResponse.MESSAGE_TOO_LARGE);
-					byte[] resp = sipResponse.encodeAsBytes();
+					byte[] resp = sipResponse.encodeAsBytes( this.getTransport() );
 					this.sendMessage(resp, false);
 					throw new Exception("Message size exceeded");
 				}
