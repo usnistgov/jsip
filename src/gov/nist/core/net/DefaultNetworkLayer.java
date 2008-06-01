@@ -28,6 +28,8 @@ package gov.nist.core.net;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.MulticastSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -80,7 +82,16 @@ public class DefaultNetworkLayer implements NetworkLayer {
 
 	public DatagramSocket createDatagramSocket(int port, InetAddress laddr)
 			throws SocketException {
-		return new DatagramSocket(port, laddr);
+		
+		if ( laddr.isMulticastAddress() ) {
+			try {
+				MulticastSocket ds = new MulticastSocket( port );
+				ds.joinGroup( laddr );
+				return ds;
+			} catch (IOException e) {
+				throw new SocketException( e.getLocalizedMessage() );
+			}
+		} else return new DatagramSocket(port, laddr);
 	}
 
 	/* Added by Daniel J. Martinez Manzano <dani@dif.um.es> */
