@@ -157,7 +157,7 @@ public class Shootist implements SipListener {
 				if (cseq.getMethod().equals(Request.INVITE)) {
 					System.out.println("Dialog after 200 OK  " + dialog);
 					System.out.println("Dialog State after 200 OK  " + dialog.getState());
-					ackRequest = dialog.createRequest(Request.ACK);
+					ackRequest = dialog.createAck( ((CSeqHeader) response.getHeader(CSeqHeader.NAME)).getSeqNumber() );
 					System.out.println("Sending ACK");
 					dialog.sendAck(ackRequest);
 					
@@ -212,6 +212,7 @@ public class Shootist implements SipListener {
 		// If you want to try TCP transport change the following to
 		String transport = "udp";
 		String peerHostPort = "127.0.0.1:5070";
+		// String peerHostPort = "230.0.0.1:5070";
 		properties.setProperty("javax.sip.OUTBOUND_PROXY", peerHostPort + "/"
 				+ transport);
 		// If you want to use UDP then uncomment this.
