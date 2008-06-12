@@ -155,7 +155,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.99 $ $Date: 2008-05-25 15:21:46 $
+ * @version 1.2 $Revision: 1.100 $ $Date: 2008-06-12 12:50:25 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction , 
@@ -174,7 +174,7 @@ public class SIPClientTransaction extends SIPTransaction implements
 	private String viaHost;
 
 	// Real ResponseInterface to pass messages to
-	private ServerResponseInterface respondTo;
+	private transient ServerResponseInterface respondTo;
 
 	private SIPDialog defaultDialog;
 
