@@ -62,7 +62,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.36 $ $Date: 2008-05-30 19:01:10 $
+ * @version 1.2 $Revision: 1.37 $ $Date: 2008-06-12 12:50:26 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -80,11 +80,11 @@ public final class SIPRequest extends SIPMessage implements
 
 	private static final String DEFAULT_TRANSPORT = "udp";
 
-	private Object transactionPointer;
+	private transient Object transactionPointer;
 
 	private RequestLine requestLine;
 
-	private Object messageChannel;
+	private transient Object messageChannel;
 
 	private Object inviteTransaction; // The original invite request for a
 	// given cancel request

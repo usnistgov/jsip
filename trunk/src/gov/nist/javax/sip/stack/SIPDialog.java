@@ -64,7 +64,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.79 $ $Date: 2008-05-26 20:02:39 $
+ * @version 1.2 $Revision: 1.80 $ $Date: 2008-06-12 12:50:24 $
  * 
  * @author M. Ranganathan
  * 
@@ -112,7 +112,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
 	private RouteList routeList;
 
-	private SIPTransactionStack sipStack;
+	private transient SIPTransactionStack sipStack;
 
 	private int dialogState;
 
@@ -161,7 +161,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
 	private boolean serverTransactionFlag;
 
-	private SipProviderImpl sipProvider;
+	private transient SipProviderImpl sipProvider;
 
 	private boolean terminateOnBye;
 
@@ -2160,6 +2160,13 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 	}
 
 	/**
+	 * @param sipProvider the sipProvider to set
+	 */
+	public void setSipProvider(SipProviderImpl sipProvider) {
+		this.sipProvider = sipProvider;
+	}
+
+	/**
 	 * Check the tags of the response against the tags of the Dialog. Return
 	 * true if the respnse matches the tags of the dialog. We do this check wehn
 	 * sending out a response.
@@ -2400,7 +2407,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 						 * exception of "489", described herein) have the same
 						 * meanings and handling as described in SIP"
 						 */
-						if (statusCode != 489
+						//Bug Fix by Jens tinfors
+						// see https://jain-sip.dev.java.net/servlets/ReadMsg?list=users&msgNo=797
+						if (statusCode == 489
 								&& (cseqMethod.equals(Request.NOTIFY) || cseqMethod
 										.equals(Request.SUBSCRIBE))) {
 							sipStack.logWriter
