@@ -66,7 +66,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.93 $ $Date: 2008-04-06 23:02:27 $
+ * @version 1.2 $Revision: 1.94 $ $Date: 2008-06-12 12:50:24 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -2211,6 +2211,24 @@ public abstract class SIPTransactionStack implements
 		return dialogs;
 	}
 	
+	/**
+	 * 
+	 * @return -- the collection of dialogs matching the state that is being managed by the stack. 
+	 */
+	public Collection<Dialog> getDialogs(DialogState state) {
+		HashSet<Dialog> matchingDialogs = new HashSet<Dialog>();
+		if(DialogState.EARLY.equals(state)) {
+			matchingDialogs.addAll(this.earlyDialogTable.values());
+		} else {
+			Collection<SIPDialog> dialogs = dialogTable.values();
+			for (SIPDialog dialog : dialogs) {
+				if(dialog.getState() != null && dialog.getState().equals(state)) {
+					matchingDialogs.add(dialog);
+				}
+			}
+		}
+		return matchingDialogs;
+	}
 	
 	/**
 	 * Get the Replaced Dialog from the stack.

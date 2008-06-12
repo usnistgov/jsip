@@ -151,7 +151,7 @@ import java.util.TimerTask;
  *                                      
  * </pre>
  * 
- * @version 1.2 $Revision: 1.99 $ $Date: 2008-04-06 23:02:28 $
+ * @version 1.2 $Revision: 1.100 $ $Date: 2008-06-12 12:50:24 $
  * @author M. Ranganathan
  * 
  */
@@ -165,7 +165,7 @@ public class SIPServerTransaction extends SIPTransaction implements
 	// private LinkedList pendingRequests;
 
 	// Real RequestInterface to pass messages to
-	private ServerRequestInterface requestOf;
+	private transient ServerRequestInterface requestOf;
 
 	private SIPDialog dialog;
 
