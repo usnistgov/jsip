@@ -186,6 +186,10 @@ public class DialogTest extends MessageFlowHarness {
 	 */
 	public void testCreateRequest() {
 		try {
+		  
+		  // JvB: First abort the INVITE, this should trigger a TransactionTerminatedEvent
+		  cliTran.terminate();
+		  
 			Request bye = null;
 			try {
 				bye = dialog.createRequest(Request.BYE);
@@ -227,15 +231,18 @@ public class DialogTest extends MessageFlowHarness {
 				dialog.getRemoteTag(),
 				byeTo.getTag());
 			ClientTransaction ct = super.tiSipProvider.getNewClientTransaction(bye);
-			dialog.sendRequest(ct);
-			assertEquals("Dialog mismatch ", ct.getDialog(),dialog );
-			waitForMessage();
-						
+
+      // JvB: set the SipListener before sending the BYE			
 			try {
 				eventCollector.collectDialogTermiatedEvent(tiSipProvider);
 			} catch( TooManyListenersException ex) {
 				throw new TckInternalError("failed to regiser a listener iwth the TI", ex);
 			}
+			
+			dialog.sendRequest(ct);
+			assertEquals("Dialog mismatch ", ct.getDialog(),dialog );
+			waitForMessage();
+						
 			waitForTimeout();
 			DialogTerminatedEvent dte = eventCollector.extractCollectedDialogTerminatedEvent();
 			// Should see a DTE here also for early Dialog
