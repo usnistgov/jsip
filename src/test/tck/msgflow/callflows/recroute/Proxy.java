@@ -92,6 +92,7 @@ public class Proxy extends TestHarness implements SipListener {
 						"UA1", "127.0.0.1");
 				sipUri.setPort(5080);
 				sipUri.setLrParam();
+				sipUri.setTransportParam( protocolObjects.transport );
 				Address address = protocolObjects.addressFactory.createAddress(
 						"client1", sipUri);
 				RouteHeader rheader = protocolObjects.headerFactory
