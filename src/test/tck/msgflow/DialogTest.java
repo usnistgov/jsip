@@ -238,8 +238,8 @@ public class DialogTest extends MessageFlowHarness {
 			}
 			waitForTimeout();
 			DialogTerminatedEvent dte = eventCollector.extractCollectedDialogTerminatedEvent();
-			// Should not see a DTE here because the Dialog is not established.
-			assertNull("DTE is not null", dte);
+			// Should see a DTE here also for early Dialog
+			assertNotNull("No DTE received for early Dialog terminated via BYE", dte);
 			
 		} catch (Throwable exc) {
 			exc.printStackTrace();
