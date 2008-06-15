@@ -181,7 +181,7 @@ public class NameValue extends GenericObject implements Entry<String,String> {
 					buffer.append(name).append(separator).append(quotes).append(quotes);
 					return buffer;
 				} else { 
-					buffer.append(name);
+					buffer.append(name).append(separator);	// JvB: fix, case: "sip:host?subject="
 					return buffer;
 				}
 			} else { 
