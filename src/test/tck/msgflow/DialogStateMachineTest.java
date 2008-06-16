@@ -305,8 +305,12 @@ public class DialogStateMachineTest extends MessageFlowHarness {
 				dialog.getState());
 			//We will now send an OK response and see that the Dialog enters a CONFIRMED state
 			//start listening for the response
+			SipEventCollector tteCollector = new SipEventCollector();
 			try {
 				eventCollector.collectResponseEvent(riSipProvider);
+				
+				// JvB: Also receive TransactionTerminated event
+				tteCollector.collectTransactionTermiatedEvent(tiSipProvider);
 			} catch (TooManyListenersException e) {
 				throw new TckInternalError(
 					"Failed to register a SipListener with the RI.",
@@ -350,6 +354,14 @@ public class DialogStateMachineTest extends MessageFlowHarness {
 				"The Dialog did not pass into the CONFIRMED state upon reception of an OK response",
 				DialogState.CONFIRMED,
 				dialog.getState());
+			
+			// After sending 2xx, there should be a ServerTransactionTerminated event at UAS side
+			waitForTimeout();	// May take up to 64*T1 seconds
+			TransactionTerminatedEvent tte = tteCollector.extractCollectedTransactionTerminatedEvent();
+			assertNotNull( tte );
+			assertTrue( tte.isServerTransaction() );
+			assertEquals( tran, tte.getServerTransaction() );
+			
 			//Say bye from the RI and see that TI goes COMPLETED
 			//it is the ri that should say bye here as we are testing dialog navigation
 			//by server transactions
