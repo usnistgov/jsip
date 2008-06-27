@@ -64,7 +64,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.81 $ $Date: 2008-06-27 14:49:34 $
+ * @version 1.2 $Revision: 1.82 $ $Date: 2008-06-27 15:37:23 $
  * 
  * @author M. Ranganathan
  * 
@@ -1554,10 +1554,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 			throw new SipException("Cannot find listening point for transport "
 					+ sipResponse.getTopmostVia().getTransport());
 		}
-		//Via via = lp.getViaHeader();
-		Via via = (Via)this.lastResponse.getTopmostVia().clone();
-		via.removeParameter("branch");
-
+		Via via = lp.getViaHeader();
+		
 		From from = new From();
 		from.setAddress(this.localParty);
 		To to = new To();
