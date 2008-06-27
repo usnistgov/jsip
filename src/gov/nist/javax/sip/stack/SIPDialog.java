@@ -64,7 +64,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.80 $ $Date: 2008-06-12 12:50:24 $
+ * @version 1.2 $Revision: 1.81 $ $Date: 2008-06-27 14:49:34 $
  * 
  * @author M. Ranganathan
  * 
@@ -1554,7 +1554,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 			throw new SipException("Cannot find listening point for transport "
 					+ sipResponse.getTopmostVia().getTransport());
 		}
-		Via via = lp.getViaHeader();
+		//Via via = lp.getViaHeader();
+		Via via = (Via)this.lastResponse.getTopmostVia().clone();
+		via.removeParameter("branch");
 
 		From from = new From();
 		from.setAddress(this.localParty);
@@ -2113,7 +2115,11 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 			sipRequest.setCallId(this.callIdHeader);
 			sipRequest.setCSeq(new CSeq(cseqno, Request.ACK));
 			List<Via> vias = new ArrayList<Via>();
-			Via via = lp.getViaHeader();
+			//Via via = lp.getViaHeader();
+			// The user may have touched the sentby for the response.
+			// so use the via header extracted from the response for the ACK.
+			SIPResponse response = this.getLastResponse();
+			Via via = (Via) response.getTopmostVia().clone();
 			via.setBranch(Utils.generateBranchId()); // new branch
 			vias.add(via);
 			sipRequest.setVia(vias);
