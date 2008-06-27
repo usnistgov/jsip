@@ -6,7 +6,7 @@
 	<groupId>javax.sip</groupId>
 	<artifactId>jain-sip</artifactId>
 	<packaging>pom</packaging>
-	<version>1.2.1.3</version>
+	<version>1.2.73</version>
 	<name>jain-sip</name>
 	<url>http://jain-sip.dev.java.net</url>
 
@@ -22,13 +22,7 @@
 				<groupId>javax.sip</groupId>
 				<artifactId>jain-sip-ri</artifactId>
 				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>javax.sdp</groupId>
-				<artifactId>nist-sdp</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-
+			</dependency>			
 		</dependencies>
 	</dependencyManagement>
 
