@@ -150,7 +150,7 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
                 authHeader = (WWWAuthenticateHeader) authHeaders.next();
                 String realm = authHeader.getRealm();
 
-                UserCredentials userCreds = this.accountManager.getCredentials(requestUri, realm);
+                UserCredentials userCreds = this.accountManager.getCredentials(challengedTransaction, realm);
                 if (userCreds == null)
                     throw new SipException(
                             "Cannot find user creds for the given user name and realm");
