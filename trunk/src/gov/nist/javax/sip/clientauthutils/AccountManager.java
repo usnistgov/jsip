@@ -1,6 +1,6 @@
 package gov.nist.javax.sip.clientauthutils;
 
-import javax.sip.address.SipURI;
+import javax.sip.ClientTransaction;
 
 public interface AccountManager {
 	
@@ -9,12 +9,12 @@ public interface AccountManager {
 	 * You can implement any desired method (such as popping up a dialog for example ) 
 	 * to retrieve the credentials.
 	 * 
-	 * @param requestUri -- the request uri of the request being challenged.
-	 * @param domain -- the authentication domain.
-	 * 
+	 * @param challengedTransaction - the transaction that is being challenged.
+	 * @param realm - the realm that is being challenged for which a credential should be
+	 *         returned.
 	 * @return -- the user credentials associated with the domain. 
 	 */
 
-	UserCredentials getCredentials(SipURI requestUri, String domain);
+	UserCredentials getCredentials(ClientTransaction challengedTransaction, String realm);
 
 }
