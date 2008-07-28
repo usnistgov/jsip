@@ -68,8 +68,9 @@ public class SslNetworkLayer implements NetworkLayer {
     {
 	    SSLContext sslContext;
         sslContext = SSLContext.getInstance("TLS");
-        TrustManagerFactory tmFactory = TrustManagerFactory.getInstance("SunX509");
-        KeyManagerFactory kmFactory = KeyManagerFactory.getInstance("SunX509");
+        String algorithm = KeyManagerFactory.getDefaultAlgorithm();
+        TrustManagerFactory tmFactory = TrustManagerFactory.getInstance(algorithm);
+        KeyManagerFactory kmFactory = KeyManagerFactory.getInstance(algorithm);
         SecureRandom secureRandom   = new SecureRandom();
         secureRandom.nextInt();
         KeyStore keyStore = KeyStore.getInstance(keyStoreType);
