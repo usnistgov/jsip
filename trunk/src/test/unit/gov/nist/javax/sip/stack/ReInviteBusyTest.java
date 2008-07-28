@@ -332,6 +332,7 @@ public class ReInviteBusyTest extends TestCase {
         }
 
         public void checkState() {
+            assertEquals("should see a re-INVITE", 1, this.reInviteCount);
           
         }
 
@@ -402,6 +403,7 @@ public class ReInviteBusyTest extends TestCase {
 
         }
 
+       
         public void processRequest(RequestEvent requestReceivedEvent) {
             Request request = requestReceivedEvent.getRequest();
             ServerTransaction serverTransactionId = requestReceivedEvent.getServerTransaction();
@@ -421,7 +423,7 @@ public class ReInviteBusyTest extends TestCase {
             try {
                 this.reInviteReceivedCount++;
                 Dialog dialog = st.getDialog();
-                Response response = protocolObjects.messageFactory.createResponse(Response.OK,
+                Response response = protocolObjects.messageFactory.createResponse(Response.BUSY_HERE,
                         request);
                 ((ToHeader) response.getHeader(ToHeader.NAME)).setTag(((ToHeader) request
                         .getHeader(ToHeader.NAME)).getTag());
@@ -432,6 +434,7 @@ public class ReInviteBusyTest extends TestCase {
                         .createContactHeader(address);
                 response.addHeader(contactHeader);
                 st.sendResponse(response);
+                assertEquals("Dialog state must be confirmed",DialogState.CONFIRMED,dialog.getState());
                 ReInviteBusyTest.assertEquals("Dialog for reinvite must match original dialog",
                         dialog, this.dialog);
 
@@ -675,7 +678,6 @@ public class ReInviteBusyTest extends TestCase {
 
         public void checkState() {
             ReInviteBusyTest.assertTrue("Expect to send a re-invite", reInviteCount == 1);
-
             ReInviteBusyTest.assertTrue("Expecting a BUSY here", this.busyHereReceived);
 
         }
