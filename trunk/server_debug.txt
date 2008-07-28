@@ -1,0 +1,1697 @@
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:263) [Here are the stack configuration properties 
+{gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false, gov.nist.javax.sip.TRACE_LEVEL=DEBUG, javax.sip.STACK_NAME=server, javax.sip.AUTOMATIC_DIALOG_SUPPORT=off, gov.nist.javax.sip.SERVER_LOG=server_log.txt, gov.nist.javax.sip.DEBUG_LOG=server_debug.txt, gov.nist.javax.sip.READ_TIMEOUT=1000}
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:266) [ ]]>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:267) [</debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:268) [<description
+ logDescription="server"
+ name="null" />
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:274) [<debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:275) [<![CDATA[ ]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:743) [createListeningPoint : address = 192.168.5.240 port = 5600 transport = udp]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:780) [Created Message Processor: 192.168.5.240 port = 5600 transport = udp]
+DEBUG - gov.nist.javax.sip.stack.MessageProcessor.setListeningPoint(MessageProcessor.java:179) [setListeningPointgov.nist.javax.sip.stack.UDPMessageProcessor@adb1d4 listeningPoint = gov.nist.javax.sip.ListeningPointImpl@175d6ab]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createSipProvider(SipStackImpl.java:811) [createSipProvider: gov.nist.javax.sip.ListeningPointImpl@175d6ab]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.addSipListener(SipProviderImpl.java:205) [add SipListener test.unit.gov.nist.javax.sip.stack.noautodialog.NoAutoDialogTest$Server@1484a05]
+DEBUG - gov.nist.javax.sip.SipStackImpl.stop(SipStackImpl.java:952) [stopStack -- stoppping the stack]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageProcessor.run(UDPMessageProcessor.java:251) [UDPMessageProcessor: Stopping]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:455) [Stopped event scanner!!]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:263) [Here are the stack configuration properties 
+{gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false, gov.nist.javax.sip.TRACE_LEVEL=DEBUG, javax.sip.STACK_NAME=server, javax.sip.AUTOMATIC_DIALOG_SUPPORT=off, gov.nist.javax.sip.SERVER_LOG=server_log.txt, gov.nist.javax.sip.DEBUG_LOG=server_debug.txt, gov.nist.javax.sip.READ_TIMEOUT=1000}
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:266) [ ]]>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:267) [</debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:268) [<description
+ logDescription="server"
+ name="null" />
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:274) [<debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:275) [<![CDATA[ ]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:743) [createListeningPoint : address = 192.168.5.240 port = 5600 transport = udp]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:780) [Created Message Processor: 192.168.5.240 port = 5600 transport = udp]
+DEBUG - gov.nist.javax.sip.stack.MessageProcessor.setListeningPoint(MessageProcessor.java:179) [setListeningPointgov.nist.javax.sip.stack.UDPMessageProcessor@110003 listeningPoint = gov.nist.javax.sip.ListeningPointImpl@17e4ca]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createSipProvider(SipStackImpl.java:811) [createSipProvider: gov.nist.javax.sip.ListeningPointImpl@17e4ca]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.addSipListener(SipProviderImpl.java:205) [add SipListener test.unit.gov.nist.javax.sip.stack.noautodialog.NoAutoDialogTest$Server@175d6ab]
+DEBUG - gov.nist.javax.sip.SipStackImpl.stop(SipStackImpl.java:952) [stopStack -- stoppping the stack]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageProcessor.run(UDPMessageProcessor.java:251) [UDPMessageProcessor: Stopping]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:455) [Stopped event scanner!!]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:263) [Here are the stack configuration properties 
+{gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false, gov.nist.javax.sip.TRACE_LEVEL=DEBUG, javax.sip.STACK_NAME=server, javax.sip.AUTOMATIC_DIALOG_SUPPORT=off, gov.nist.javax.sip.SERVER_LOG=server_log.txt, gov.nist.javax.sip.DEBUG_LOG=server_debug.txt, gov.nist.javax.sip.READ_TIMEOUT=1000}
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:266) [ ]]>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:267) [</debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:268) [<description
+ logDescription="server"
+ name="null" />
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:274) [<debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:275) [<![CDATA[ ]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:743) [createListeningPoint : address = 192.168.5.240 port = 5600 transport = udp]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:780) [Created Message Processor: 192.168.5.240 port = 5600 transport = udp]
+DEBUG - gov.nist.javax.sip.stack.MessageProcessor.setListeningPoint(MessageProcessor.java:179) [setListeningPointgov.nist.javax.sip.stack.UDPMessageProcessor@110003 listeningPoint = gov.nist.javax.sip.ListeningPointImpl@17e4ca]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createSipProvider(SipStackImpl.java:811) [createSipProvider: gov.nist.javax.sip.ListeningPointImpl@17e4ca]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.addSipListener(SipProviderImpl.java:205) [add SipListener test.unit.gov.nist.javax.sip.stack.noautodialog.NoAutoDialogTest$Server@175d6ab]
+DEBUG - gov.nist.javax.sip.SipStackImpl.stop(SipStackImpl.java:952) [stopStack -- stoppping the stack]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageProcessor.run(UDPMessageProcessor.java:251) [UDPMessageProcessor: Stopping]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:455) [Stopped event scanner!!]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:263) [Here are the stack configuration properties 
+{gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false, gov.nist.javax.sip.TRACE_LEVEL=DEBUG, javax.sip.STACK_NAME=server, javax.sip.AUTOMATIC_DIALOG_SUPPORT=off, gov.nist.javax.sip.SERVER_LOG=server_log.txt, gov.nist.javax.sip.DEBUG_LOG=server_debug.txt, gov.nist.javax.sip.READ_TIMEOUT=1000}
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:266) [ ]]>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:267) [</debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:268) [<description
+ logDescription="server"
+ name="null" />
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:274) [<debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:275) [<![CDATA[ ]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:743) [createListeningPoint : address = 192.168.5.240 port = 5600 transport = udp]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:780) [Created Message Processor: 192.168.5.240 port = 5600 transport = udp]
+DEBUG - gov.nist.javax.sip.stack.MessageProcessor.setListeningPoint(MessageProcessor.java:179) [setListeningPointgov.nist.javax.sip.stack.UDPMessageProcessor@110003 listeningPoint = gov.nist.javax.sip.ListeningPointImpl@17e4ca]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createSipProvider(SipStackImpl.java:811) [createSipProvider: gov.nist.javax.sip.ListeningPointImpl@17e4ca]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.addSipListener(SipProviderImpl.java:205) [add SipListener test.unit.gov.nist.javax.sip.stack.noautodialog.NoAutoDialogTest$Server@175d6ab]
+DEBUG - gov.nist.javax.sip.SipStackImpl.stop(SipStackImpl.java:952) [stopStack -- stoppping the stack]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageProcessor.run(UDPMessageProcessor.java:251) [UDPMessageProcessor: Stopping]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:455) [Stopped event scanner!!]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:263) [Here are the stack configuration properties 
+{gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false, gov.nist.javax.sip.TRACE_LEVEL=DEBUG, javax.sip.STACK_NAME=server, javax.sip.AUTOMATIC_DIALOG_SUPPORT=off, gov.nist.javax.sip.SERVER_LOG=server_log.txt, gov.nist.javax.sip.DEBUG_LOG=server_debug.txt, gov.nist.javax.sip.READ_TIMEOUT=1000}
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:266) [ ]]>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:267) [</debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:268) [<description
+ logDescription="server"
+ name="null" />
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:274) [<debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:275) [<![CDATA[ ]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:743) [createListeningPoint : address = 192.168.5.240 port = 5600 transport = udp]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:780) [Created Message Processor: 192.168.5.240 port = 5600 transport = udp]
+DEBUG - gov.nist.javax.sip.stack.MessageProcessor.setListeningPoint(MessageProcessor.java:179) [setListeningPointgov.nist.javax.sip.stack.UDPMessageProcessor@110003 listeningPoint = gov.nist.javax.sip.ListeningPointImpl@17e4ca]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createSipProvider(SipStackImpl.java:811) [createSipProvider: gov.nist.javax.sip.ListeningPointImpl@17e4ca]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.addSipListener(SipProviderImpl.java:205) [add SipListener test.unit.gov.nist.javax.sip.stack.noautodialog.NoAutoDialogTest$Server@175d6ab]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:287) [UDPMessageChannel: peerAddress = 192.168.5.240/6500]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:291) [Length = 327]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:293) [INVITE sip:192.168.5.240:5600 SIP/2.0
+Call-ID: 7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=1441295335
+To: <sip:there.com>
+Contact: <sip:192.168.5.240:6500>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bKe653704f51bcf1441d8ad7d07d5bf363
+Max-Forwards: 5
+Content-Length: 0
+
+]
+INFO - <message
+from="192.168.5.240:6500" 
+to="192.168.5.240:5600" 
+time="1215402815120"
+isSender="false" 
+transactionId="z9hg4bke653704f51bcf1441d8ad7d07d5bf363" 
+callId="7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240" 
+firstLine="INVITE sip:192.168.5.240:5600 SIP/2.0" 
+>
+<![CDATA[INVITE sip:192.168.5.240:5600 SIP/2.0
+Call-ID: 7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=1441295335
+To: <sip:there.com>
+Contact: <sip:192.168.5.240:6500>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bKe653704f51bcf1441d8ad7d07d5bf363
+Max-Forwards: 5
+Content-Length: 0
+
+]]>
+</message>
+
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.findPendingTransaction(SIPTransactionStack.java:907) [looking for pending tx for :z9hg4bke653704f51bcf1441d8ad7d07d5bf363]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.<init>(SIPServerTransaction.java:499) [Creating Server Transactionnull]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPServerTransaction.java:501][SIPTransactionStack.java:1270][SIPTransactionStack.java:1068][UDPMessageChannel.java:444][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setOriginalRequest(SIPTransaction.java:412) [Setting Branch id : z9hG4bKe653704f51bcf1441d8ad7d07d5bf363]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.newSIPServerRequest(SIPTransactionStack.java:1083) [newSIPServerRequest( INVITE:z9hG4bKe653704f51bcf1441d8ad7d07d5bf363):gov.nist.javax.sip.stack.SIPServerTransaction@7db07600]
+DEBUG - gov.nist.javax.sip.NistSipMessageFactoryImpl.newSIPServerRequest(NistSipMessageFactoryImpl.java:84) [Returning request interface for INVITE sip:192.168.5.240:5600 SIP/2.0
+ gov.nist.javax.sip.DialogFilter@c5495e messageChannel = gov.nist.javax.sip.stack.SIPServerTransaction@7db07600]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1141) [acquireSem [[[[gov.nist.javax.sip.stack.SIPServerTransaction@7db07600]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:1142][SIPTransactionStack.java:1093][UDPMessageChannel.java:444][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1146) [acquireSem() returning : true]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processMessage(UDPMessageChannel.java:473) [About to process INVITE sip:192.168.5.240:5600 SIP/2.0
+/gov.nist.javax.sip.stack.SIPServerTransaction@7db07600]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.processRequest(SIPServerTransaction.java:720) [processRequest: INVITE sip:192.168.5.240:5600 SIP/2.0
+]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.processRequest(SIPServerTransaction.java:722) [tx state = null]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setOriginalRequest(SIPTransaction.java:412) [Setting Branch id : z9hG4bKe653704f51bcf1441d8ad7d07d5bf363]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Trying Transaction gov.nist.javax.sip.stack.SIPServerTransaction@7db07600 branchID = z9hG4bKe653704f51bcf1441d8ad7d07d5bf363 isClient = false]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:549][SIPServerTransaction.java:1513][SIPServerTransaction.java:732][UDPMessageChannel.java:476][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setPassToListener(SIPTransaction.java:1208) [setPassToListener()]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:111) [PROCESSING INCOMING REQUEST INVITE sip:192.168.5.240:5600 SIP/2.0
+Call-ID: 7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=1441295335
+To: <sip:there.com>
+Contact: <sip:192.168.5.240:6500>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bKe653704f51bcf1441d8ad7d07d5bf363
+Max-Forwards: 5
+Content-Length: 0
+
+ transactionChannel = gov.nist.javax.sip.stack.SIPServerTransaction@7db07600 listening point = 192.168.5.240:5600]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:139) [transaction state = Proceeding Transaction]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.getDialog(SIPTransactionStack.java:657) [getDialog(7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240:1441295335) : returning null]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:209) [dialogId = 7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240:1441295335]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:210) [dialog = null]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:665) [CHECK FOR OUT OF SEQ MESSAGE null transaction gov.nist.javax.sip.stack.SIPServerTransaction@7db07600]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:722) [INVITE transaction.isMapped = false]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.handleEvent(SipProviderImpl.java:135) [handleEvent javax.sip.RequestEvent[source=gov.nist.javax.sip.SipProviderImpl@1326484]currentTransaction = gov.nist.javax.sip.stack.SIPServerTransaction@7db07600this.sipListener = test.unit.gov.nist.javax.sip.stack.noautodialog.NoAutoDialogTest$Server@175d6absipEvent.source = gov.nist.javax.sip.SipProviderImpl@1326484]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.handleEvent(SipProviderImpl.java:142) [Dialog = null]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SipProviderImpl.java:147][DialogFilter.java:917][SIPServerTransaction.java:830][UDPMessageChannel.java:476][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.EventScanner.addEvent(EventScanner.java:81) [addEvent gov.nist.javax.sip.EventWrapper@1428ea]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:487) [Processing gov.nist.javax.sip.EventWrapper@1428eanevents 1]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:129) [sipEvent = javax.sip.RequestEvent[source=gov.nist.javax.sip.SipProviderImpl@1326484]source = gov.nist.javax.sip.SipProviderImpl@1326484]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:148) [deliverEvent : INVITE sip:192.168.5.240:5600 SIP/2.0
+ transaction gov.nist.javax.sip.stack.SIPServerTransaction@7db07600 sipEvent.serverTx = null]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.findTransaction(SIPTransactionStack.java:797) [serverTx: looking for key z9hg4bke653704f51bcf1441d8ad7d07d5bf363 existing={}]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.findPendingTransaction(SIPTransactionStack.java:907) [looking for pending tx for :z9hg4bke653704f51bcf1441d8ad7d07d5bf363]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.putPendingTransaction(SIPTransactionStack.java:1551) [putPendingTransaction: gov.nist.javax.sip.stack.SIPServerTransaction@7db07600]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:215) [Calling listener INVITE sip:192.168.5.240:5600 SIP/2.0
+]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:219) [Calling listener gov.nist.javax.sip.stack.SIPServerTransaction@7db07600]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:490) [isDialogCreated : INVITE returning true]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.findTransaction(SIPTransactionStack.java:797) [serverTx: looking for key z9hg4bke653704f51bcf1441d8ad7d07d5bf363 existing={}]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.addTransaction(SIPTransactionStack.java:1381) [added transaction gov.nist.javax.sip.stack.SIPServerTransaction@7db07600]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction$SendTrying.<init>(SIPServerTransaction.java:300) [scheduled timer for gov.nist.javax.sip.stack.SIPServerTransaction@7db07600]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removePendingTransaction(SIPTransactionStack.java:946) [removePendingTx: z9hg4bke653704f51bcf1441d8ad7d07d5bf363]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.addTransactionHash(SIPTransactionStack.java:1423) [ putTransactionHash :  key = z9hg4bke653704f51bcf1441d8ad7d07d5bf363]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processMessage(UDPMessageChannel.java:486) [Done processing INVITE sip:192.168.5.240:5600 SIP/2.0
+/gov.nist.javax.sip.stack.SIPServerTransaction@7db07600]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Proceeding Transaction gov.nist.javax.sip.stack.SIPServerTransaction@7db07600 branchID = z9hG4bKe653704f51bcf1441d8ad7d07d5bf363 isClient = false]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:549][SIPServerTransaction.java:1513][SIPServerTransaction.java:935][SIPServerTransaction.java:1459][NoAutoDialogTest.java:210][EventScanner.java:223][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.sendMessage(SIPServerTransaction.java:1113) [sendMessage : tx = gov.nist.javax.sip.stack.SIPServerTransaction@7db07600 getState = Proceeding Transaction]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.<init>(UDPMessageChannel.java:196) [Creating message channel 192.168.5.240/6500]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[UDPMessageChannel.java:595][SIPServerTransaction.java:466][SIPServerTransaction.java:1118][SIPServerTransaction.java:1459][NoAutoDialogTest.java:210][EventScanner.java:223][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:728) [gov.nist.javax.sip.stack.UDPMessageChannel:sendMessage 192.168.5.240/6500
+SIP/2.0 100 Trying
+Call-ID: 7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=1441295335
+To: <sip:there.com>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bKe653704f51bcf1441d8ad7d07d5bf363
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:731) [*******************
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:748) [sendMessage 192.168.5.240/6500
+SIP/2.0 100 Trying
+Call-ID: 7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=1441295335
+To: <sip:there.com>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bKe653704f51bcf1441d8ad7d07d5bf363
+Content-Length: 0
+
+]
+INFO - <message
+from="192.168.5.240:5600" 
+to="192.168.5.240:6500" 
+time="1215402815256"
+isSender="true" 
+transactionId="z9hg4bke653704f51bcf1441d8ad7d07d5bf363" 
+callId="7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240" 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+Call-ID: 7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=1441295335
+To: <sip:there.com>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bKe653704f51bcf1441d8ad7d07d5bf363
+Content-Length: 0
+
+]]>
+</message>
+
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction$TransactionTimer.<init>(SIPServerTransaction.java:335) [TransactionTimer() : z9hg4bke653704f51bcf1441d8ad7d07d5bf363]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.sendMessage(SIPServerTransaction.java:1113) [sendMessage : tx = gov.nist.javax.sip.stack.SIPServerTransaction@7db07600 getState = Proceeding Transaction]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.<init>(UDPMessageChannel.java:196) [Creating message channel 192.168.5.240/6500]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[UDPMessageChannel.java:595][SIPServerTransaction.java:466][SIPServerTransaction.java:1118][SIPServerTransaction.java:1459][NoAutoDialogTest.java:215][EventScanner.java:223][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:728) [gov.nist.javax.sip.stack.UDPMessageChannel:sendMessage 192.168.5.240/6500
+SIP/2.0 180 Ringing
+Call-ID: 7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=1441295335
+To: <sip:there.com>;tag=asdgaeyvewacyta0.8057308604536979
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bKe653704f51bcf1441d8ad7d07d5bf363
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:731) [*******************
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:748) [sendMessage 192.168.5.240/6500
+SIP/2.0 180 Ringing
+Call-ID: 7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=1441295335
+To: <sip:there.com>;tag=asdgaeyvewacyta0.8057308604536979
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bKe653704f51bcf1441d8ad7d07d5bf363
+Content-Length: 0
+
+]
+INFO - <message
+from="192.168.5.240:5600" 
+to="192.168.5.240:6500" 
+time="1215402815263"
+isSender="true" 
+transactionId="z9hg4bke653704f51bcf1441d8ad7d07d5bf363" 
+callId="7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240" 
+firstLine="SIP/2.0 180 Ringing" 
+>
+<![CDATA[SIP/2.0 180 Ringing
+Call-ID: 7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=1441295335
+To: <sip:there.com>;tag=asdgaeyvewacyta0.8057308604536979
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bKe653704f51bcf1441d8ad7d07d5bf363
+Content-Length: 0
+
+]]>
+</message>
+
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:226) [Done processing Message INVITE sip:192.168.5.240:5600 SIP/2.0
+]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:246) [Done processing Message INVITE sip:192.168.5.240:5600 SIP/2.0
+]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.semRelease(SIPTransaction.java:1181) [semRelease ]]]]gov.nist.javax.sip.stack.SIPServerTransaction@7db07600]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:1182][SIPTransaction.java:1168][SIPServerTransaction.java:1733][EventScanner.java:254][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removePendingTransaction(SIPTransactionStack.java:946) [removePendingTx: z9hg4bke653704f51bcf1441d8ad7d07d5bf363]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:287) [UDPMessageChannel: peerAddress = 192.168.5.240/6500]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:291) [Length = 292]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:293) [CANCEL sip:192.168.5.240:5600 SIP/2.0
+Call-ID: 7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240
+To: <sip:there.com>
+CSeq: 1 CANCEL
+From: <sip:here.com>;tag=1441295335
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bKe653704f51bcf1441d8ad7d07d5bf363
+Max-Forwards: 5
+Content-Length: 0
+
+]
+INFO - <message
+from="192.168.5.240:6500" 
+to="192.168.5.240:5600" 
+time="1215402815281"
+isSender="false" 
+transactionId="z9hg4bke653704f51bcf1441d8ad7d07d5bf363:cancel" 
+callId="7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240" 
+firstLine="CANCEL sip:192.168.5.240:5600 SIP/2.0" 
+>
+<![CDATA[CANCEL sip:192.168.5.240:5600 SIP/2.0
+Call-ID: 7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240
+To: <sip:there.com>
+CSeq: 1 CANCEL
+From: <sip:here.com>;tag=1441295335
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bKe653704f51bcf1441d8ad7d07d5bf363
+Max-Forwards: 5
+Content-Length: 0
+
+]]>
+</message>
+
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.findPendingTransaction(SIPTransactionStack.java:907) [looking for pending tx for :z9hg4bke653704f51bcf1441d8ad7d07d5bf363:cancel]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.<init>(SIPServerTransaction.java:499) [Creating Server Transactionnull]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPServerTransaction.java:501][SIPTransactionStack.java:1270][SIPTransactionStack.java:1068][UDPMessageChannel.java:444][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setOriginalRequest(SIPTransaction.java:412) [Setting Branch id : z9hG4bKe653704f51bcf1441d8ad7d07d5bf363]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.newSIPServerRequest(SIPTransactionStack.java:1083) [newSIPServerRequest( CANCEL:z9hG4bKe653704f51bcf1441d8ad7d07d5bf363):gov.nist.javax.sip.stack.SIPServerTransaction@31a26534]
+DEBUG - gov.nist.javax.sip.NistSipMessageFactoryImpl.newSIPServerRequest(NistSipMessageFactoryImpl.java:84) [Returning request interface for CANCEL sip:192.168.5.240:5600 SIP/2.0
+ gov.nist.javax.sip.DialogFilter@c837cd messageChannel = gov.nist.javax.sip.stack.SIPServerTransaction@31a26534]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1141) [acquireSem [[[[gov.nist.javax.sip.stack.SIPServerTransaction@31a26534]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:1142][SIPTransactionStack.java:1093][UDPMessageChannel.java:444][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1146) [acquireSem() returning : true]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processMessage(UDPMessageChannel.java:473) [About to process CANCEL sip:192.168.5.240:5600 SIP/2.0
+/gov.nist.javax.sip.stack.SIPServerTransaction@31a26534]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.processRequest(SIPServerTransaction.java:720) [processRequest: CANCEL sip:192.168.5.240:5600 SIP/2.0
+]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.processRequest(SIPServerTransaction.java:722) [tx state = null]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setOriginalRequest(SIPTransaction.java:412) [Setting Branch id : z9hG4bKe653704f51bcf1441d8ad7d07d5bf363]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Trying Transaction gov.nist.javax.sip.stack.SIPServerTransaction@31a26534 branchID = z9hG4bKe653704f51bcf1441d8ad7d07d5bf363 isClient = false]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:549][SIPServerTransaction.java:1513][SIPServerTransaction.java:732][UDPMessageChannel.java:476][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setPassToListener(SIPTransaction.java:1208) [setPassToListener()]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:111) [PROCESSING INCOMING REQUEST CANCEL sip:192.168.5.240:5600 SIP/2.0
+Call-ID: 7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240
+To: <sip:there.com>
+CSeq: 1 CANCEL
+From: <sip:here.com>;tag=1441295335
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bKe653704f51bcf1441d8ad7d07d5bf363
+Max-Forwards: 5
+Content-Length: 0
+
+ transactionChannel = gov.nist.javax.sip.stack.SIPServerTransaction@31a26534 listening point = 192.168.5.240:5600]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:139) [transaction state = Trying Transaction]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.getDialog(SIPTransactionStack.java:657) [getDialog(7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240:1441295335) : returning null]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:209) [dialogId = 7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240:1441295335]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:210) [dialog = null]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.findCancelTransaction(SIPTransactionStack.java:849) [findCancelTransaction request= 
+CANCEL sip:192.168.5.240:5600 SIP/2.0
+Call-ID: 7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240
+To: <sip:there.com>
+CSeq: 1 CANCEL
+From: <sip:here.com>;tag=1441295335
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bKe653704f51bcf1441d8ad7d07d5bf363
+Max-Forwards: 5
+Content-Length: 0
+
+
+findCancelRequest isServer=true]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.doesCancelMatchTransaction(SIPTransaction.java:981) [returning  true]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setPassToListener(SIPTransaction.java:1208) [setPassToListener()]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:498) [Got a CANCEL, InviteServerTx = gov.nist.javax.sip.stack.SIPServerTransaction@7db07600 cancel Server Tx ID = gov.nist.javax.sip.stack.SIPServerTransaction@31a26534 isMapped = false]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:528) [Cancel transaction = gov.nist.javax.sip.stack.SIPServerTransaction@7db07600]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.addTransaction(SIPTransactionStack.java:1381) [added transaction gov.nist.javax.sip.stack.SIPServerTransaction@31a26534]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removePendingTransaction(SIPTransactionStack.java:946) [removePendingTx: z9hg4bke653704f51bcf1441d8ad7d07d5bf363:cancel]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.addTransactionHash(SIPTransactionStack.java:1423) [ putTransactionHash :  key = z9hg4bke653704f51bcf1441d8ad7d07d5bf363:cancel]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setPassToListener(SIPTransaction.java:1208) [setPassToListener()]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1141) [acquireSem [[[[gov.nist.javax.sip.stack.SIPServerTransaction@7db07600]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:1142][DialogFilter.java:574][SIPServerTransaction.java:830][UDPMessageChannel.java:476][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1146) [acquireSem() returning : true]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:665) [CHECK FOR OUT OF SEQ MESSAGE null transaction gov.nist.javax.sip.stack.SIPServerTransaction@31a26534]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:722) [CANCEL transaction.isMapped = true]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.handleEvent(SipProviderImpl.java:135) [handleEvent javax.sip.RequestEvent[source=gov.nist.javax.sip.SipProviderImpl@1326484]currentTransaction = gov.nist.javax.sip.stack.SIPServerTransaction@31a26534this.sipListener = test.unit.gov.nist.javax.sip.stack.noautodialog.NoAutoDialogTest$Server@175d6absipEvent.source = gov.nist.javax.sip.SipProviderImpl@1326484]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.handleEvent(SipProviderImpl.java:142) [Dialog = null]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SipProviderImpl.java:147][DialogFilter.java:917][SIPServerTransaction.java:830][UDPMessageChannel.java:476][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.EventScanner.addEvent(EventScanner.java:81) [addEvent gov.nist.javax.sip.EventWrapper@c79809]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processMessage(UDPMessageChannel.java:486) [Done processing CANCEL sip:192.168.5.240:5600 SIP/2.0
+/gov.nist.javax.sip.stack.SIPServerTransaction@31a26534]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:487) [Processing gov.nist.javax.sip.EventWrapper@c79809nevents 1]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:129) [sipEvent = javax.sip.RequestEvent[source=gov.nist.javax.sip.SipProviderImpl@1326484]source = gov.nist.javax.sip.SipProviderImpl@1326484]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:148) [deliverEvent : CANCEL sip:192.168.5.240:5600 SIP/2.0
+ transaction gov.nist.javax.sip.stack.SIPServerTransaction@31a26534 sipEvent.serverTx = gov.nist.javax.sip.stack.SIPServerTransaction@31a26534]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.findTransaction(SIPTransactionStack.java:797) [serverTx: looking for key z9hg4bke653704f51bcf1441d8ad7d07d5bf363:cancel existing={z9hg4bke653704f51bcf1441d8ad7d07d5bf363=gov.nist.javax.sip.stack.SIPServerTransaction@7db07600, z9hg4bke653704f51bcf1441d8ad7d07d5bf363:cancel=gov.nist.javax.sip.stack.SIPServerTransaction@31a26534}]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.findPendingTransaction(SIPTransactionStack.java:907) [looking for pending tx for :z9hg4bke653704f51bcf1441d8ad7d07d5bf363:cancel]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.putPendingTransaction(SIPTransactionStack.java:1551) [putPendingTransaction: gov.nist.javax.sip.stack.SIPServerTransaction@31a26534]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:215) [Calling listener CANCEL sip:192.168.5.240:5600 SIP/2.0
+]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:219) [Calling listener gov.nist.javax.sip.stack.SIPServerTransaction@31a26534]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Completed Transaction gov.nist.javax.sip.stack.SIPServerTransaction@31a26534 branchID = z9hG4bKe653704f51bcf1441d8ad7d07d5bf363 isClient = false]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:549][SIPServerTransaction.java:1513][SIPServerTransaction.java:948][SIPServerTransaction.java:1459][NoAutoDialogTest.java:230][EventScanner.java:223][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.enableTimeoutTimer(SIPTransaction.java:606) [enableTimeoutTimer gov.nist.javax.sip.stack.SIPServerTransaction@31a26534 tickCount 64 currentTickCount = -1]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.sendMessage(SIPServerTransaction.java:1113) [sendMessage : tx = gov.nist.javax.sip.stack.SIPServerTransaction@31a26534 getState = Completed Transaction]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.<init>(UDPMessageChannel.java:196) [Creating message channel 192.168.5.240/6500]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[UDPMessageChannel.java:595][SIPServerTransaction.java:466][SIPServerTransaction.java:1118][SIPServerTransaction.java:1459][NoAutoDialogTest.java:230][EventScanner.java:223][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:728) [gov.nist.javax.sip.stack.UDPMessageChannel:sendMessage 192.168.5.240/6500
+SIP/2.0 200 OK
+Call-ID: 7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240
+To: <sip:there.com>
+CSeq: 1 CANCEL
+From: <sip:here.com>;tag=1441295335
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bKe653704f51bcf1441d8ad7d07d5bf363
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:731) [*******************
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:748) [sendMessage 192.168.5.240/6500
+SIP/2.0 200 OK
+Call-ID: 7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240
+To: <sip:there.com>
+CSeq: 1 CANCEL
+From: <sip:here.com>;tag=1441295335
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bKe653704f51bcf1441d8ad7d07d5bf363
+Content-Length: 0
+
+]
+INFO - <message
+from="192.168.5.240:5600" 
+to="192.168.5.240:6500" 
+time="1215402815288"
+isSender="true" 
+transactionId="z9hg4bke653704f51bcf1441d8ad7d07d5bf363:cancel" 
+callId="7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240" 
+firstLine="SIP/2.0 200 OK" 
+>
+<![CDATA[SIP/2.0 200 OK
+Call-ID: 7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240
+To: <sip:there.com>
+CSeq: 1 CANCEL
+From: <sip:here.com>;tag=1441295335
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bKe653704f51bcf1441d8ad7d07d5bf363
+Content-Length: 0
+
+]]>
+</message>
+
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction$TransactionTimer.<init>(SIPServerTransaction.java:335) [TransactionTimer() : z9hg4bke653704f51bcf1441d8ad7d07d5bf363:cancel]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Completed Transaction gov.nist.javax.sip.stack.SIPServerTransaction@7db07600 branchID = z9hG4bKe653704f51bcf1441d8ad7d07d5bf363 isClient = false]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:549][SIPServerTransaction.java:1513][SIPServerTransaction.java:1062][SIPServerTransaction.java:1459][NoAutoDialogTest.java:235][EventScanner.java:223][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.enableTimeoutTimer(SIPTransaction.java:606) [enableTimeoutTimer gov.nist.javax.sip.stack.SIPServerTransaction@7db07600 tickCount 64 currentTickCount = -1]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.sendMessage(SIPServerTransaction.java:1113) [sendMessage : tx = gov.nist.javax.sip.stack.SIPServerTransaction@7db07600 getState = Completed Transaction]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.<init>(UDPMessageChannel.java:196) [Creating message channel 192.168.5.240/6500]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[UDPMessageChannel.java:595][SIPServerTransaction.java:466][SIPServerTransaction.java:1118][SIPServerTransaction.java:1459][NoAutoDialogTest.java:235][EventScanner.java:223][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:728) [gov.nist.javax.sip.stack.UDPMessageChannel:sendMessage 192.168.5.240/6500
+SIP/2.0 487 Request Terminated
+Call-ID: 7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=1441295335
+To: <sip:there.com>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bKe653704f51bcf1441d8ad7d07d5bf363
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:731) [*******************
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:748) [sendMessage 192.168.5.240/6500
+SIP/2.0 487 Request Terminated
+Call-ID: 7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=1441295335
+To: <sip:there.com>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bKe653704f51bcf1441d8ad7d07d5bf363
+Content-Length: 0
+
+]
+INFO - <message
+from="192.168.5.240:5600" 
+to="192.168.5.240:6500" 
+time="1215402815290"
+isSender="true" 
+transactionId="z9hg4bke653704f51bcf1441d8ad7d07d5bf363" 
+callId="7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240" 
+firstLine="SIP/2.0 487 Request Terminated" 
+>
+<![CDATA[SIP/2.0 487 Request Terminated
+Call-ID: 7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=1441295335
+To: <sip:there.com>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bKe653704f51bcf1441d8ad7d07d5bf363
+Content-Length: 0
+
+]]>
+</message>
+
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:226) [Done processing Message CANCEL sip:192.168.5.240:5600 SIP/2.0
+]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:246) [Done processing Message CANCEL sip:192.168.5.240:5600 SIP/2.0
+]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.semRelease(SIPTransaction.java:1181) [semRelease ]]]]gov.nist.javax.sip.stack.SIPServerTransaction@7db07600]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:1182][SIPTransaction.java:1168][SIPServerTransaction.java:1733][SIPServerTransaction.java:1731][EventScanner.java:254][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.semRelease(SIPTransaction.java:1181) [semRelease ]]]]gov.nist.javax.sip.stack.SIPServerTransaction@31a26534]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:1182][SIPTransaction.java:1168][SIPServerTransaction.java:1733][EventScanner.java:254][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removePendingTransaction(SIPTransactionStack.java:946) [removePendingTx: z9hg4bke653704f51bcf1441d8ad7d07d5bf363:cancel]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:287) [UDPMessageChannel: peerAddress = 192.168.5.240/6500]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:291) [Length = 286]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:293) [ACK sip:192.168.5.240:5600 SIP/2.0
+Call-ID: 7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240
+Max-Forwards: 5
+From: <sip:here.com>;tag=1441295335
+To: <sip:there.com>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bKe653704f51bcf1441d8ad7d07d5bf363
+CSeq: 1 ACK
+Content-Length: 0
+
+]
+INFO - <message
+from="192.168.5.240:6500" 
+to="192.168.5.240:5600" 
+time="1215402815434"
+isSender="false" 
+transactionId="z9hg4bke653704f51bcf1441d8ad7d07d5bf363" 
+callId="7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240" 
+firstLine="ACK sip:192.168.5.240:5600 SIP/2.0" 
+>
+<![CDATA[ACK sip:192.168.5.240:5600 SIP/2.0
+Call-ID: 7fff1db3934a07a6ab99b6c27514a8ac@192.168.5.240
+Max-Forwards: 5
+From: <sip:here.com>;tag=1441295335
+To: <sip:there.com>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bKe653704f51bcf1441d8ad7d07d5bf363
+CSeq: 1 ACK
+Content-Length: 0
+
+]]>
+</message>
+
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.newSIPServerRequest(SIPTransactionStack.java:1083) [newSIPServerRequest( ACK:z9hG4bKe653704f51bcf1441d8ad7d07d5bf363):gov.nist.javax.sip.stack.SIPServerTransaction@7db07600]
+DEBUG - gov.nist.javax.sip.NistSipMessageFactoryImpl.newSIPServerRequest(NistSipMessageFactoryImpl.java:84) [Returning request interface for ACK sip:192.168.5.240:5600 SIP/2.0
+ gov.nist.javax.sip.DialogFilter@194d372 messageChannel = gov.nist.javax.sip.stack.SIPServerTransaction@7db07600]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1141) [acquireSem [[[[gov.nist.javax.sip.stack.SIPServerTransaction@7db07600]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:1142][SIPTransactionStack.java:1093][UDPMessageChannel.java:444][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1146) [acquireSem() returning : true]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processMessage(UDPMessageChannel.java:473) [About to process ACK sip:192.168.5.240:5600 SIP/2.0
+/gov.nist.javax.sip.stack.SIPServerTransaction@7db07600]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.processRequest(SIPServerTransaction.java:720) [processRequest: ACK sip:192.168.5.240:5600 SIP/2.0
+]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.processRequest(SIPServerTransaction.java:722) [tx state = Completed Transaction]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Confirmed Transaction gov.nist.javax.sip.stack.SIPServerTransaction@7db07600 branchID = z9hG4bKe653704f51bcf1441d8ad7d07d5bf363 isClient = false]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:549][SIPServerTransaction.java:1513][SIPServerTransaction.java:755][UDPMessageChannel.java:476][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.enableTimeoutTimer(SIPTransaction.java:606) [enableTimeoutTimer gov.nist.javax.sip.stack.SIPServerTransaction@7db07600 tickCount 10 currentTickCount = 64]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.processRequest(SIPServerTransaction.java:776) [ACK received for server Tx z9hg4bke653704f51bcf1441d8ad7d07d5bf363 not delivering to application!]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.semRelease(SIPTransaction.java:1181) [semRelease ]]]]gov.nist.javax.sip.stack.SIPServerTransaction@7db07600]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:1182][SIPServerTransaction.java:783][UDPMessageChannel.java:476][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.semRelease(SIPTransaction.java:1181) [semRelease ]]]]gov.nist.javax.sip.stack.SIPServerTransaction@7db07600]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:1182][SIPTransaction.java:1168][SIPServerTransaction.java:1733][UDPMessageChannel.java:481][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processMessage(UDPMessageChannel.java:486) [Done processing ACK sip:192.168.5.240:5600 SIP/2.0
+/gov.nist.javax.sip.stack.SIPServerTransaction@7db07600]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.fireTimeoutTimer(SIPServerTransaction.java:1202) [SIPServerTransaction.fireTimeoutTimer this = gov.nist.javax.sip.stack.SIPServerTransaction@7db07600 current state = Confirmed Transaction method = INVITE]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:490) [isDialogCreated : INVITE returning true]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Terminated Transaction gov.nist.javax.sip.stack.SIPServerTransaction@7db07600 branchID = z9hG4bKe653704f51bcf1441d8ad7d07d5bf363 isClient = false]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:549][SIPServerTransaction.java:1513][SIPServerTransaction.java:1236][SIPTransaction.java:631][SIPServerTransaction.java:369][SIPStackTimerTask.java:29][Timer.java:544][Timer.java:494]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removeTransaction(SIPTransactionStack.java:1319) [Removing Transaction = z9hg4bke653704f51bcf1441d8ad7d07d5bf363 transaction = gov.nist.javax.sip.stack.SIPServerTransaction@7db07600]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransactionStack.java:1325][SIPServerTransaction.java:1237][SIPTransaction.java:631][SIPServerTransaction.java:369][SIPStackTimerTask.java:29][Timer.java:544][Timer.java:494]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removePendingTransaction(SIPTransactionStack.java:946) [removePendingTx: z9hg4bke653704f51bcf1441d8ad7d07d5bf363]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:490) [isDialogCreated : INVITE returning true]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removeFromMergeTable(SIPTransactionStack.java:962) [Removing tx from merge table ]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.handleEvent(SipProviderImpl.java:135) [handleEvent javax.sip.TransactionTerminatedEvent[source=gov.nist.javax.sip.SipProviderImpl@1326484]currentTransaction = gov.nist.javax.sip.stack.SIPServerTransaction@7db07600this.sipListener = test.unit.gov.nist.javax.sip.stack.noautodialog.NoAutoDialogTest$Server@175d6absipEvent.source = gov.nist.javax.sip.SipProviderImpl@1326484]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SipProviderImpl.java:147][SIPTransactionStack.java:1343][SIPServerTransaction.java:1237][SIPTransaction.java:631][SIPServerTransaction.java:369][SIPStackTimerTask.java:29][Timer.java:544][Timer.java:494]]
+DEBUG - gov.nist.javax.sip.EventScanner.addEvent(EventScanner.java:81) [addEvent gov.nist.javax.sip.EventWrapper@12884e0]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:487) [Processing gov.nist.javax.sip.EventWrapper@12884e0nevents 1]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:129) [sipEvent = javax.sip.TransactionTerminatedEvent[source=gov.nist.javax.sip.SipProviderImpl@1326484]source = gov.nist.javax.sip.SipProviderImpl@1326484]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:389) [About to deliver transactionTerminatedEvent]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:391) [tx = null]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:395) [tx = gov.nist.javax.sip.stack.SIPServerTransaction@7db07600]
+ERROR - null
+java.lang.NullPointerException
+	at test.unit.gov.nist.javax.sip.stack.noautodialog.NoAutoDialogTest$Server.processTransactionTerminated(NoAutoDialogTest.java:256)
+	at gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:402)
+	at gov.nist.javax.sip.EventScanner.run(EventScanner.java:492)
+	at java.lang.Thread.run(Thread.java:675)
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction$LingerTimer.<init>(SIPTransaction.java:260) [LingerTimer : z9hg4bke653704f51bcf1441d8ad7d07d5bf363]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction$LingerTimer.runTask(SIPTransaction.java:272) [LingerTimer: run() : z9hg4bke653704f51bcf1441d8ad7d07d5bf363]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction$LingerTimer.runTask(SIPTransaction.java:283) [removinggov.nist.javax.sip.stack.SIPServerTransaction@7db07600]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removeTransaction(SIPTransactionStack.java:1319) [Removing Transaction = z9hg4bke653704f51bcf1441d8ad7d07d5bf363 transaction = gov.nist.javax.sip.stack.SIPServerTransaction@7db07600]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransactionStack.java:1325][SIPTransaction.java:284][SIPStackTimerTask.java:29][Timer.java:544][Timer.java:494]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removePendingTransaction(SIPTransactionStack.java:946) [removePendingTx: z9hg4bke653704f51bcf1441d8ad7d07d5bf363]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:490) [isDialogCreated : INVITE returning true]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removeFromMergeTable(SIPTransactionStack.java:962) [Removing tx from merge table ]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.fireTimeoutTimer(SIPServerTransaction.java:1202) [SIPServerTransaction.fireTimeoutTimer this = gov.nist.javax.sip.stack.SIPServerTransaction@31a26534 current state = Completed Transaction method = CANCEL]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:490) [isDialogCreated : CANCEL returning false]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Terminated Transaction gov.nist.javax.sip.stack.SIPServerTransaction@31a26534 branchID = z9hG4bKe653704f51bcf1441d8ad7d07d5bf363 isClient = false]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:549][SIPServerTransaction.java:1513][SIPServerTransaction.java:1227][SIPTransaction.java:631][SIPServerTransaction.java:369][SIPStackTimerTask.java:29][Timer.java:544][Timer.java:494]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removeTransaction(SIPTransactionStack.java:1319) [Removing Transaction = z9hg4bke653704f51bcf1441d8ad7d07d5bf363:cancel transaction = gov.nist.javax.sip.stack.SIPServerTransaction@31a26534]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransactionStack.java:1325][SIPServerTransaction.java:1228][SIPTransaction.java:631][SIPServerTransaction.java:369][SIPStackTimerTask.java:29][Timer.java:544][Timer.java:494]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removePendingTransaction(SIPTransactionStack.java:946) [removePendingTx: z9hg4bke653704f51bcf1441d8ad7d07d5bf363:cancel]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:490) [isDialogCreated : CANCEL returning false]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.handleEvent(SipProviderImpl.java:135) [handleEvent javax.sip.TransactionTerminatedEvent[source=gov.nist.javax.sip.SipProviderImpl@1326484]currentTransaction = gov.nist.javax.sip.stack.SIPServerTransaction@31a26534this.sipListener = test.unit.gov.nist.javax.sip.stack.noautodialog.NoAutoDialogTest$Server@175d6absipEvent.source = gov.nist.javax.sip.SipProviderImpl@1326484]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SipProviderImpl.java:147][SIPTransactionStack.java:1343][SIPServerTransaction.java:1228][SIPTransaction.java:631][SIPServerTransaction.java:369][SIPStackTimerTask.java:29][Timer.java:544][Timer.java:494]]
+DEBUG - gov.nist.javax.sip.EventScanner.addEvent(EventScanner.java:81) [addEvent gov.nist.javax.sip.EventWrapper@491c4c]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:487) [Processing gov.nist.javax.sip.EventWrapper@491c4cnevents 1]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:129) [sipEvent = javax.sip.TransactionTerminatedEvent[source=gov.nist.javax.sip.SipProviderImpl@1326484]source = gov.nist.javax.sip.SipProviderImpl@1326484]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:389) [About to deliver transactionTerminatedEvent]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:391) [tx = null]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:395) [tx = gov.nist.javax.sip.stack.SIPServerTransaction@31a26534]
+ERROR - null
+java.lang.NullPointerException
+	at test.unit.gov.nist.javax.sip.stack.noautodialog.NoAutoDialogTest$Server.processTransactionTerminated(NoAutoDialogTest.java:256)
+	at gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:402)
+	at gov.nist.javax.sip.EventScanner.run(EventScanner.java:492)
+	at java.lang.Thread.run(Thread.java:675)
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction$LingerTimer.<init>(SIPTransaction.java:260) [LingerTimer : z9hg4bke653704f51bcf1441d8ad7d07d5bf363:cancel]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction$LingerTimer.runTask(SIPTransaction.java:272) [LingerTimer: run() : z9hg4bke653704f51bcf1441d8ad7d07d5bf363:cancel]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction$LingerTimer.runTask(SIPTransaction.java:283) [removinggov.nist.javax.sip.stack.SIPServerTransaction@31a26534]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removeTransaction(SIPTransactionStack.java:1319) [Removing Transaction = z9hg4bke653704f51bcf1441d8ad7d07d5bf363:cancel transaction = gov.nist.javax.sip.stack.SIPServerTransaction@31a26534]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransactionStack.java:1325][SIPTransaction.java:284][SIPStackTimerTask.java:29][Timer.java:544][Timer.java:494]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removePendingTransaction(SIPTransactionStack.java:946) [removePendingTx: z9hg4bke653704f51bcf1441d8ad7d07d5bf363:cancel]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:490) [isDialogCreated : CANCEL returning false]
+DEBUG - gov.nist.javax.sip.SipStackImpl.stop(SipStackImpl.java:952) [stopStack -- stoppping the stack]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageProcessor.run(UDPMessageProcessor.java:251) [UDPMessageProcessor: Stopping]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:455) [Stopped event scanner!!]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:263) [Here are the stack configuration properties 
+{gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false, gov.nist.javax.sip.TRACE_LEVEL=DEBUG, javax.sip.STACK_NAME=server, javax.sip.AUTOMATIC_DIALOG_SUPPORT=off, gov.nist.javax.sip.SERVER_LOG=server_log.txt, gov.nist.javax.sip.DEBUG_LOG=server_debug.txt, gov.nist.javax.sip.READ_TIMEOUT=1000}
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:266) [ ]]>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:267) [</debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:268) [<description
+ logDescription="server"
+ name="null" />
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:274) [<debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:275) [<![CDATA[ ]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:743) [createListeningPoint : address = 192.168.5.240 port = 5600 transport = udp]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:780) [Created Message Processor: 192.168.5.240 port = 5600 transport = udp]
+DEBUG - gov.nist.javax.sip.stack.MessageProcessor.setListeningPoint(MessageProcessor.java:179) [setListeningPointgov.nist.javax.sip.stack.UDPMessageProcessor@adb1d4 listeningPoint = gov.nist.javax.sip.ListeningPointImpl@175d6ab]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createSipProvider(SipStackImpl.java:811) [createSipProvider: gov.nist.javax.sip.ListeningPointImpl@175d6ab]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.addSipListener(SipProviderImpl.java:205) [add SipListener test.unit.gov.nist.javax.sip.stack.noautodialog.NoAutoDialogTest$Server@1484a05]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:287) [UDPMessageChannel: peerAddress = 192.168.5.240/6500]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:291) [Length = 327]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:293) [INVITE sip:192.168.5.240:5600 SIP/2.0
+Call-ID: e510df6faac295e5b3ad0ba0890ba558@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=1380380631
+To: <sip:there.com>
+Contact: <sip:192.168.5.240:6500>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d
+Max-Forwards: 5
+Content-Length: 0
+
+]
+INFO - <message
+from="192.168.5.240:6500" 
+to="192.168.5.240:5600" 
+time="1215402955333"
+isSender="false" 
+transactionId="z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d" 
+callId="e510df6faac295e5b3ad0ba0890ba558@192.168.5.240" 
+firstLine="INVITE sip:192.168.5.240:5600 SIP/2.0" 
+>
+<![CDATA[INVITE sip:192.168.5.240:5600 SIP/2.0
+Call-ID: e510df6faac295e5b3ad0ba0890ba558@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=1380380631
+To: <sip:there.com>
+Contact: <sip:192.168.5.240:6500>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d
+Max-Forwards: 5
+Content-Length: 0
+
+]]>
+</message>
+
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.findPendingTransaction(SIPTransactionStack.java:907) [looking for pending tx for :z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.<init>(SIPServerTransaction.java:499) [Creating Server Transactionnull]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPServerTransaction.java:501][SIPTransactionStack.java:1270][SIPTransactionStack.java:1068][UDPMessageChannel.java:444][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setOriginalRequest(SIPTransaction.java:412) [Setting Branch id : z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.newSIPServerRequest(SIPTransactionStack.java:1083) [newSIPServerRequest( INVITE:z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d):gov.nist.javax.sip.stack.SIPServerTransaction@787c16af]
+DEBUG - gov.nist.javax.sip.NistSipMessageFactoryImpl.newSIPServerRequest(NistSipMessageFactoryImpl.java:84) [Returning request interface for INVITE sip:192.168.5.240:5600 SIP/2.0
+ gov.nist.javax.sip.DialogFilter@19a32e0 messageChannel = gov.nist.javax.sip.stack.SIPServerTransaction@787c16af]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1141) [acquireSem [[[[gov.nist.javax.sip.stack.SIPServerTransaction@787c16af]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:1142][SIPTransactionStack.java:1093][UDPMessageChannel.java:444][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1146) [acquireSem() returning : true]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processMessage(UDPMessageChannel.java:473) [About to process INVITE sip:192.168.5.240:5600 SIP/2.0
+/gov.nist.javax.sip.stack.SIPServerTransaction@787c16af]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.processRequest(SIPServerTransaction.java:720) [processRequest: INVITE sip:192.168.5.240:5600 SIP/2.0
+]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.processRequest(SIPServerTransaction.java:722) [tx state = null]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setOriginalRequest(SIPTransaction.java:412) [Setting Branch id : z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Trying Transaction gov.nist.javax.sip.stack.SIPServerTransaction@787c16af branchID = z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d isClient = false]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:549][SIPServerTransaction.java:1513][SIPServerTransaction.java:732][UDPMessageChannel.java:476][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setPassToListener(SIPTransaction.java:1208) [setPassToListener()]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:111) [PROCESSING INCOMING REQUEST INVITE sip:192.168.5.240:5600 SIP/2.0
+Call-ID: e510df6faac295e5b3ad0ba0890ba558@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=1380380631
+To: <sip:there.com>
+Contact: <sip:192.168.5.240:6500>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d
+Max-Forwards: 5
+Content-Length: 0
+
+ transactionChannel = gov.nist.javax.sip.stack.SIPServerTransaction@787c16af listening point = 192.168.5.240:5600]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:139) [transaction state = Proceeding Transaction]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.getDialog(SIPTransactionStack.java:657) [getDialog(e510df6faac295e5b3ad0ba0890ba558@192.168.5.240:1380380631) : returning null]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:209) [dialogId = e510df6faac295e5b3ad0ba0890ba558@192.168.5.240:1380380631]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:210) [dialog = null]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:665) [CHECK FOR OUT OF SEQ MESSAGE null transaction gov.nist.javax.sip.stack.SIPServerTransaction@787c16af]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:722) [INVITE transaction.isMapped = false]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.handleEvent(SipProviderImpl.java:135) [handleEvent javax.sip.RequestEvent[source=gov.nist.javax.sip.SipProviderImpl@1428ea]currentTransaction = gov.nist.javax.sip.stack.SIPServerTransaction@787c16afthis.sipListener = test.unit.gov.nist.javax.sip.stack.noautodialog.NoAutoDialogTest$Server@1484a05sipEvent.source = gov.nist.javax.sip.SipProviderImpl@1428ea]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.handleEvent(SipProviderImpl.java:142) [Dialog = null]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SipProviderImpl.java:147][DialogFilter.java:917][SIPServerTransaction.java:830][UDPMessageChannel.java:476][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.EventScanner.addEvent(EventScanner.java:81) [addEvent gov.nist.javax.sip.EventWrapper@1f82982]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:487) [Processing gov.nist.javax.sip.EventWrapper@1f82982nevents 1]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:129) [sipEvent = javax.sip.RequestEvent[source=gov.nist.javax.sip.SipProviderImpl@1428ea]source = gov.nist.javax.sip.SipProviderImpl@1428ea]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:148) [deliverEvent : INVITE sip:192.168.5.240:5600 SIP/2.0
+ transaction gov.nist.javax.sip.stack.SIPServerTransaction@787c16af sipEvent.serverTx = null]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.findTransaction(SIPTransactionStack.java:797) [serverTx: looking for key z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d existing={}]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.findPendingTransaction(SIPTransactionStack.java:907) [looking for pending tx for :z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.putPendingTransaction(SIPTransactionStack.java:1551) [putPendingTransaction: gov.nist.javax.sip.stack.SIPServerTransaction@787c16af]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:215) [Calling listener INVITE sip:192.168.5.240:5600 SIP/2.0
+]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:219) [Calling listener gov.nist.javax.sip.stack.SIPServerTransaction@787c16af]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:490) [isDialogCreated : INVITE returning true]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.findTransaction(SIPTransactionStack.java:797) [serverTx: looking for key z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d existing={}]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.addTransaction(SIPTransactionStack.java:1381) [added transaction gov.nist.javax.sip.stack.SIPServerTransaction@787c16af]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction$SendTrying.<init>(SIPServerTransaction.java:300) [scheduled timer for gov.nist.javax.sip.stack.SIPServerTransaction@787c16af]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removePendingTransaction(SIPTransactionStack.java:946) [removePendingTx: z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.addTransactionHash(SIPTransactionStack.java:1423) [ putTransactionHash :  key = z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Proceeding Transaction gov.nist.javax.sip.stack.SIPServerTransaction@787c16af branchID = z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d isClient = false]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:549][SIPServerTransaction.java:1513][SIPServerTransaction.java:935][SIPServerTransaction.java:1459][NoAutoDialogTest.java:211][EventScanner.java:223][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.sendMessage(SIPServerTransaction.java:1113) [sendMessage : tx = gov.nist.javax.sip.stack.SIPServerTransaction@787c16af getState = Proceeding Transaction]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.<init>(UDPMessageChannel.java:196) [Creating message channel 192.168.5.240/6500]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[UDPMessageChannel.java:595][SIPServerTransaction.java:466][SIPServerTransaction.java:1118][SIPServerTransaction.java:1459][NoAutoDialogTest.java:211][EventScanner.java:223][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:728) [gov.nist.javax.sip.stack.UDPMessageChannel:sendMessage 192.168.5.240/6500
+SIP/2.0 100 Trying
+Call-ID: e510df6faac295e5b3ad0ba0890ba558@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=1380380631
+To: <sip:there.com>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:731) [*******************
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:748) [sendMessage 192.168.5.240/6500
+SIP/2.0 100 Trying
+Call-ID: e510df6faac295e5b3ad0ba0890ba558@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=1380380631
+To: <sip:there.com>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d
+Content-Length: 0
+
+]
+INFO - <message
+from="192.168.5.240:5600" 
+to="192.168.5.240:6500" 
+time="1215402955405"
+isSender="true" 
+transactionId="z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d" 
+callId="e510df6faac295e5b3ad0ba0890ba558@192.168.5.240" 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+Call-ID: e510df6faac295e5b3ad0ba0890ba558@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=1380380631
+To: <sip:there.com>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d
+Content-Length: 0
+
+]]>
+</message>
+
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction$TransactionTimer.<init>(SIPServerTransaction.java:335) [TransactionTimer() : z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.sendMessage(SIPServerTransaction.java:1113) [sendMessage : tx = gov.nist.javax.sip.stack.SIPServerTransaction@787c16af getState = Proceeding Transaction]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.<init>(UDPMessageChannel.java:196) [Creating message channel 192.168.5.240/6500]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[UDPMessageChannel.java:595][SIPServerTransaction.java:466][SIPServerTransaction.java:1118][SIPServerTransaction.java:1459][NoAutoDialogTest.java:216][EventScanner.java:223][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:728) [gov.nist.javax.sip.stack.UDPMessageChannel:sendMessage 192.168.5.240/6500
+SIP/2.0 180 Ringing
+Call-ID: e510df6faac295e5b3ad0ba0890ba558@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=1380380631
+To: <sip:there.com>;tag=asdgaeyvewacyta0.3246813754540413
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:731) [*******************
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:748) [sendMessage 192.168.5.240/6500
+SIP/2.0 180 Ringing
+Call-ID: e510df6faac295e5b3ad0ba0890ba558@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=1380380631
+To: <sip:there.com>;tag=asdgaeyvewacyta0.3246813754540413
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d
+Content-Length: 0
+
+]
+INFO - <message
+from="192.168.5.240:5600" 
+to="192.168.5.240:6500" 
+time="1215402955413"
+isSender="true" 
+transactionId="z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d" 
+callId="e510df6faac295e5b3ad0ba0890ba558@192.168.5.240" 
+firstLine="SIP/2.0 180 Ringing" 
+>
+<![CDATA[SIP/2.0 180 Ringing
+Call-ID: e510df6faac295e5b3ad0ba0890ba558@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=1380380631
+To: <sip:there.com>;tag=asdgaeyvewacyta0.3246813754540413
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d
+Content-Length: 0
+
+]]>
+</message>
+
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:226) [Done processing Message INVITE sip:192.168.5.240:5600 SIP/2.0
+]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:246) [Done processing Message INVITE sip:192.168.5.240:5600 SIP/2.0
+]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.semRelease(SIPTransaction.java:1181) [semRelease ]]]]gov.nist.javax.sip.stack.SIPServerTransaction@787c16af]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:1182][SIPTransaction.java:1168][SIPServerTransaction.java:1733][EventScanner.java:254][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removePendingTransaction(SIPTransactionStack.java:946) [removePendingTx: z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:287) [UDPMessageChannel: peerAddress = 192.168.5.240/6500]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:291) [Length = 292]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:293) [CANCEL sip:192.168.5.240:5600 SIP/2.0
+Call-ID: e510df6faac295e5b3ad0ba0890ba558@192.168.5.240
+To: <sip:there.com>
+CSeq: 1 CANCEL
+From: <sip:here.com>;tag=1380380631
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d
+Max-Forwards: 5
+Content-Length: 0
+
+]
+INFO - <message
+from="192.168.5.240:6500" 
+to="192.168.5.240:5600" 
+time="1215402955442"
+isSender="false" 
+transactionId="z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d:cancel" 
+callId="e510df6faac295e5b3ad0ba0890ba558@192.168.5.240" 
+firstLine="CANCEL sip:192.168.5.240:5600 SIP/2.0" 
+>
+<![CDATA[CANCEL sip:192.168.5.240:5600 SIP/2.0
+Call-ID: e510df6faac295e5b3ad0ba0890ba558@192.168.5.240
+To: <sip:there.com>
+CSeq: 1 CANCEL
+From: <sip:here.com>;tag=1380380631
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d
+Max-Forwards: 5
+Content-Length: 0
+
+]]>
+</message>
+
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.findPendingTransaction(SIPTransactionStack.java:907) [looking for pending tx for :z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d:cancel]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.<init>(SIPServerTransaction.java:499) [Creating Server Transactionnull]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPServerTransaction.java:501][SIPTransactionStack.java:1270][SIPTransactionStack.java:1068][UDPMessageChannel.java:444][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setOriginalRequest(SIPTransaction.java:412) [Setting Branch id : z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.newSIPServerRequest(SIPTransactionStack.java:1083) [newSIPServerRequest( CANCEL:z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d):gov.nist.javax.sip.stack.SIPServerTransaction@4b7071a5]
+DEBUG - gov.nist.javax.sip.NistSipMessageFactoryImpl.newSIPServerRequest(NistSipMessageFactoryImpl.java:84) [Returning request interface for CANCEL sip:192.168.5.240:5600 SIP/2.0
+ gov.nist.javax.sip.DialogFilter@1ce784b messageChannel = gov.nist.javax.sip.stack.SIPServerTransaction@4b7071a5]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1141) [acquireSem [[[[gov.nist.javax.sip.stack.SIPServerTransaction@4b7071a5]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:1142][SIPTransactionStack.java:1093][UDPMessageChannel.java:444][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1146) [acquireSem() returning : true]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processMessage(UDPMessageChannel.java:473) [About to process CANCEL sip:192.168.5.240:5600 SIP/2.0
+/gov.nist.javax.sip.stack.SIPServerTransaction@4b7071a5]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.processRequest(SIPServerTransaction.java:720) [processRequest: CANCEL sip:192.168.5.240:5600 SIP/2.0
+]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.processRequest(SIPServerTransaction.java:722) [tx state = null]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setOriginalRequest(SIPTransaction.java:412) [Setting Branch id : z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Trying Transaction gov.nist.javax.sip.stack.SIPServerTransaction@4b7071a5 branchID = z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d isClient = false]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:549][SIPServerTransaction.java:1513][SIPServerTransaction.java:732][UDPMessageChannel.java:476][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setPassToListener(SIPTransaction.java:1208) [setPassToListener()]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:111) [PROCESSING INCOMING REQUEST CANCEL sip:192.168.5.240:5600 SIP/2.0
+Call-ID: e510df6faac295e5b3ad0ba0890ba558@192.168.5.240
+To: <sip:there.com>
+CSeq: 1 CANCEL
+From: <sip:here.com>;tag=1380380631
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d
+Max-Forwards: 5
+Content-Length: 0
+
+ transactionChannel = gov.nist.javax.sip.stack.SIPServerTransaction@4b7071a5 listening point = 192.168.5.240:5600]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:139) [transaction state = Trying Transaction]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.getDialog(SIPTransactionStack.java:657) [getDialog(e510df6faac295e5b3ad0ba0890ba558@192.168.5.240:1380380631) : returning null]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:209) [dialogId = e510df6faac295e5b3ad0ba0890ba558@192.168.5.240:1380380631]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:210) [dialog = null]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.findCancelTransaction(SIPTransactionStack.java:849) [findCancelTransaction request= 
+CANCEL sip:192.168.5.240:5600 SIP/2.0
+Call-ID: e510df6faac295e5b3ad0ba0890ba558@192.168.5.240
+To: <sip:there.com>
+CSeq: 1 CANCEL
+From: <sip:here.com>;tag=1380380631
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d
+Max-Forwards: 5
+Content-Length: 0
+
+
+findCancelRequest isServer=true]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.doesCancelMatchTransaction(SIPTransaction.java:981) [returning  true]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setPassToListener(SIPTransaction.java:1208) [setPassToListener()]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:498) [Got a CANCEL, InviteServerTx = gov.nist.javax.sip.stack.SIPServerTransaction@787c16af cancel Server Tx ID = gov.nist.javax.sip.stack.SIPServerTransaction@4b7071a5 isMapped = false]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:528) [Cancel transaction = gov.nist.javax.sip.stack.SIPServerTransaction@787c16af]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.addTransaction(SIPTransactionStack.java:1381) [added transaction gov.nist.javax.sip.stack.SIPServerTransaction@4b7071a5]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removePendingTransaction(SIPTransactionStack.java:946) [removePendingTx: z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d:cancel]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.addTransactionHash(SIPTransactionStack.java:1423) [ putTransactionHash :  key = z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d:cancel]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setPassToListener(SIPTransaction.java:1208) [setPassToListener()]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1141) [acquireSem [[[[gov.nist.javax.sip.stack.SIPServerTransaction@787c16af]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:1142][DialogFilter.java:574][SIPServerTransaction.java:830][UDPMessageChannel.java:476][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1146) [acquireSem() returning : true]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:665) [CHECK FOR OUT OF SEQ MESSAGE null transaction gov.nist.javax.sip.stack.SIPServerTransaction@4b7071a5]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:722) [CANCEL transaction.isMapped = true]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.handleEvent(SipProviderImpl.java:135) [handleEvent javax.sip.RequestEvent[source=gov.nist.javax.sip.SipProviderImpl@1428ea]currentTransaction = gov.nist.javax.sip.stack.SIPServerTransaction@4b7071a5this.sipListener = test.unit.gov.nist.javax.sip.stack.noautodialog.NoAutoDialogTest$Server@1484a05sipEvent.source = gov.nist.javax.sip.SipProviderImpl@1428ea]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.handleEvent(SipProviderImpl.java:142) [Dialog = null]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SipProviderImpl.java:147][DialogFilter.java:917][SIPServerTransaction.java:830][UDPMessageChannel.java:476][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.EventScanner.addEvent(EventScanner.java:81) [addEvent gov.nist.javax.sip.EventWrapper@3bc473]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processMessage(UDPMessageChannel.java:486) [Done processing CANCEL sip:192.168.5.240:5600 SIP/2.0
+/gov.nist.javax.sip.stack.SIPServerTransaction@4b7071a5]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:487) [Processing gov.nist.javax.sip.EventWrapper@3bc473nevents 1]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:129) [sipEvent = javax.sip.RequestEvent[source=gov.nist.javax.sip.SipProviderImpl@1428ea]source = gov.nist.javax.sip.SipProviderImpl@1428ea]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:148) [deliverEvent : CANCEL sip:192.168.5.240:5600 SIP/2.0
+ transaction gov.nist.javax.sip.stack.SIPServerTransaction@4b7071a5 sipEvent.serverTx = gov.nist.javax.sip.stack.SIPServerTransaction@4b7071a5]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.findTransaction(SIPTransactionStack.java:797) [serverTx: looking for key z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d:cancel existing={z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d:cancel=gov.nist.javax.sip.stack.SIPServerTransaction@4b7071a5, z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d=gov.nist.javax.sip.stack.SIPServerTransaction@787c16af}]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.findPendingTransaction(SIPTransactionStack.java:907) [looking for pending tx for :z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d:cancel]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.putPendingTransaction(SIPTransactionStack.java:1551) [putPendingTransaction: gov.nist.javax.sip.stack.SIPServerTransaction@4b7071a5]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:215) [Calling listener CANCEL sip:192.168.5.240:5600 SIP/2.0
+]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:219) [Calling listener gov.nist.javax.sip.stack.SIPServerTransaction@4b7071a5]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Completed Transaction gov.nist.javax.sip.stack.SIPServerTransaction@4b7071a5 branchID = z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d isClient = false]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:549][SIPServerTransaction.java:1513][SIPServerTransaction.java:948][SIPServerTransaction.java:1459][NoAutoDialogTest.java:231][EventScanner.java:223][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.enableTimeoutTimer(SIPTransaction.java:606) [enableTimeoutTimer gov.nist.javax.sip.stack.SIPServerTransaction@4b7071a5 tickCount 64 currentTickCount = -1]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.sendMessage(SIPServerTransaction.java:1113) [sendMessage : tx = gov.nist.javax.sip.stack.SIPServerTransaction@4b7071a5 getState = Completed Transaction]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.<init>(UDPMessageChannel.java:196) [Creating message channel 192.168.5.240/6500]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[UDPMessageChannel.java:595][SIPServerTransaction.java:466][SIPServerTransaction.java:1118][SIPServerTransaction.java:1459][NoAutoDialogTest.java:231][EventScanner.java:223][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:728) [gov.nist.javax.sip.stack.UDPMessageChannel:sendMessage 192.168.5.240/6500
+SIP/2.0 200 OK
+Call-ID: e510df6faac295e5b3ad0ba0890ba558@192.168.5.240
+To: <sip:there.com>
+CSeq: 1 CANCEL
+From: <sip:here.com>;tag=1380380631
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:731) [*******************
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:748) [sendMessage 192.168.5.240/6500
+SIP/2.0 200 OK
+Call-ID: e510df6faac295e5b3ad0ba0890ba558@192.168.5.240
+To: <sip:there.com>
+CSeq: 1 CANCEL
+From: <sip:here.com>;tag=1380380631
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d
+Content-Length: 0
+
+]
+INFO - <message
+from="192.168.5.240:5600" 
+to="192.168.5.240:6500" 
+time="1215402955449"
+isSender="true" 
+transactionId="z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d:cancel" 
+callId="e510df6faac295e5b3ad0ba0890ba558@192.168.5.240" 
+firstLine="SIP/2.0 200 OK" 
+>
+<![CDATA[SIP/2.0 200 OK
+Call-ID: e510df6faac295e5b3ad0ba0890ba558@192.168.5.240
+To: <sip:there.com>
+CSeq: 1 CANCEL
+From: <sip:here.com>;tag=1380380631
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d
+Content-Length: 0
+
+]]>
+</message>
+
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction$TransactionTimer.<init>(SIPServerTransaction.java:335) [TransactionTimer() : z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d:cancel]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Completed Transaction gov.nist.javax.sip.stack.SIPServerTransaction@787c16af branchID = z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d isClient = false]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:549][SIPServerTransaction.java:1513][SIPServerTransaction.java:1062][SIPServerTransaction.java:1459][NoAutoDialogTest.java:236][EventScanner.java:223][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.enableTimeoutTimer(SIPTransaction.java:606) [enableTimeoutTimer gov.nist.javax.sip.stack.SIPServerTransaction@787c16af tickCount 64 currentTickCount = -1]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.sendMessage(SIPServerTransaction.java:1113) [sendMessage : tx = gov.nist.javax.sip.stack.SIPServerTransaction@787c16af getState = Completed Transaction]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.<init>(UDPMessageChannel.java:196) [Creating message channel 192.168.5.240/6500]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[UDPMessageChannel.java:595][SIPServerTransaction.java:466][SIPServerTransaction.java:1118][SIPServerTransaction.java:1459][NoAutoDialogTest.java:236][EventScanner.java:223][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:728) [gov.nist.javax.sip.stack.UDPMessageChannel:sendMessage 192.168.5.240/6500
+SIP/2.0 487 Request Terminated
+Call-ID: e510df6faac295e5b3ad0ba0890ba558@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=1380380631
+To: <sip:there.com>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:731) [*******************
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:748) [sendMessage 192.168.5.240/6500
+SIP/2.0 487 Request Terminated
+Call-ID: e510df6faac295e5b3ad0ba0890ba558@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=1380380631
+To: <sip:there.com>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d
+Content-Length: 0
+
+]
+INFO - <message
+from="192.168.5.240:5600" 
+to="192.168.5.240:6500" 
+time="1215402955451"
+isSender="true" 
+transactionId="z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d" 
+callId="e510df6faac295e5b3ad0ba0890ba558@192.168.5.240" 
+firstLine="SIP/2.0 487 Request Terminated" 
+>
+<![CDATA[SIP/2.0 487 Request Terminated
+Call-ID: e510df6faac295e5b3ad0ba0890ba558@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=1380380631
+To: <sip:there.com>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d
+Content-Length: 0
+
+]]>
+</message>
+
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:226) [Done processing Message CANCEL sip:192.168.5.240:5600 SIP/2.0
+]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:246) [Done processing Message CANCEL sip:192.168.5.240:5600 SIP/2.0
+]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.semRelease(SIPTransaction.java:1181) [semRelease ]]]]gov.nist.javax.sip.stack.SIPServerTransaction@787c16af]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:1182][SIPTransaction.java:1168][SIPServerTransaction.java:1733][SIPServerTransaction.java:1731][EventScanner.java:254][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.semRelease(SIPTransaction.java:1181) [semRelease ]]]]gov.nist.javax.sip.stack.SIPServerTransaction@4b7071a5]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:1182][SIPTransaction.java:1168][SIPServerTransaction.java:1733][EventScanner.java:254][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removePendingTransaction(SIPTransactionStack.java:946) [removePendingTx: z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d:cancel]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.semRelease(SIPTransaction.java:1181) [semRelease ]]]]gov.nist.javax.sip.stack.SIPServerTransaction@787c16af]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:1182][SIPTransaction.java:1168][SIPServerTransaction.java:1733][UDPMessageChannel.java:481][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processMessage(UDPMessageChannel.java:486) [Done processing INVITE sip:192.168.5.240:5600 SIP/2.0
+/gov.nist.javax.sip.stack.SIPServerTransaction@787c16af]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:287) [UDPMessageChannel: peerAddress = 192.168.5.240/6500]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:291) [Length = 286]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:293) [ACK sip:192.168.5.240:5600 SIP/2.0
+Call-ID: e510df6faac295e5b3ad0ba0890ba558@192.168.5.240
+Max-Forwards: 5
+From: <sip:here.com>;tag=1380380631
+To: <sip:there.com>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d
+CSeq: 1 ACK
+Content-Length: 0
+
+]
+INFO - <message
+from="192.168.5.240:6500" 
+to="192.168.5.240:5600" 
+time="1215402955468"
+isSender="false" 
+transactionId="z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d" 
+callId="e510df6faac295e5b3ad0ba0890ba558@192.168.5.240" 
+firstLine="ACK sip:192.168.5.240:5600 SIP/2.0" 
+>
+<![CDATA[ACK sip:192.168.5.240:5600 SIP/2.0
+Call-ID: e510df6faac295e5b3ad0ba0890ba558@192.168.5.240
+Max-Forwards: 5
+From: <sip:here.com>;tag=1380380631
+To: <sip:there.com>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d
+CSeq: 1 ACK
+Content-Length: 0
+
+]]>
+</message>
+
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.newSIPServerRequest(SIPTransactionStack.java:1083) [newSIPServerRequest( ACK:z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d):gov.nist.javax.sip.stack.SIPServerTransaction@787c16af]
+DEBUG - gov.nist.javax.sip.NistSipMessageFactoryImpl.newSIPServerRequest(NistSipMessageFactoryImpl.java:84) [Returning request interface for ACK sip:192.168.5.240:5600 SIP/2.0
+ gov.nist.javax.sip.DialogFilter@16c163f messageChannel = gov.nist.javax.sip.stack.SIPServerTransaction@787c16af]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1141) [acquireSem [[[[gov.nist.javax.sip.stack.SIPServerTransaction@787c16af]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:1142][SIPTransactionStack.java:1093][UDPMessageChannel.java:444][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1146) [acquireSem() returning : true]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processMessage(UDPMessageChannel.java:473) [About to process ACK sip:192.168.5.240:5600 SIP/2.0
+/gov.nist.javax.sip.stack.SIPServerTransaction@787c16af]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.processRequest(SIPServerTransaction.java:720) [processRequest: ACK sip:192.168.5.240:5600 SIP/2.0
+]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.processRequest(SIPServerTransaction.java:722) [tx state = Completed Transaction]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Confirmed Transaction gov.nist.javax.sip.stack.SIPServerTransaction@787c16af branchID = z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d isClient = false]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:549][SIPServerTransaction.java:1513][SIPServerTransaction.java:755][UDPMessageChannel.java:476][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.enableTimeoutTimer(SIPTransaction.java:606) [enableTimeoutTimer gov.nist.javax.sip.stack.SIPServerTransaction@787c16af tickCount 10 currentTickCount = 64]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.processRequest(SIPServerTransaction.java:776) [ACK received for server Tx z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d not delivering to application!]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.semRelease(SIPTransaction.java:1181) [semRelease ]]]]gov.nist.javax.sip.stack.SIPServerTransaction@787c16af]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:1182][SIPServerTransaction.java:783][UDPMessageChannel.java:476][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.semRelease(SIPTransaction.java:1181) [semRelease ]]]]gov.nist.javax.sip.stack.SIPServerTransaction@787c16af]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:1182][SIPTransaction.java:1168][SIPServerTransaction.java:1733][UDPMessageChannel.java:481][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processMessage(UDPMessageChannel.java:486) [Done processing ACK sip:192.168.5.240:5600 SIP/2.0
+/gov.nist.javax.sip.stack.SIPServerTransaction@787c16af]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.fireTimeoutTimer(SIPServerTransaction.java:1202) [SIPServerTransaction.fireTimeoutTimer this = gov.nist.javax.sip.stack.SIPServerTransaction@787c16af current state = Confirmed Transaction method = INVITE]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:490) [isDialogCreated : INVITE returning true]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Terminated Transaction gov.nist.javax.sip.stack.SIPServerTransaction@787c16af branchID = z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d isClient = false]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:549][SIPServerTransaction.java:1513][SIPServerTransaction.java:1236][SIPTransaction.java:631][SIPServerTransaction.java:369][SIPStackTimerTask.java:29][Timer.java:544][Timer.java:494]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removeTransaction(SIPTransactionStack.java:1319) [Removing Transaction = z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d transaction = gov.nist.javax.sip.stack.SIPServerTransaction@787c16af]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransactionStack.java:1325][SIPServerTransaction.java:1237][SIPTransaction.java:631][SIPServerTransaction.java:369][SIPStackTimerTask.java:29][Timer.java:544][Timer.java:494]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removePendingTransaction(SIPTransactionStack.java:946) [removePendingTx: z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:490) [isDialogCreated : INVITE returning true]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removeFromMergeTable(SIPTransactionStack.java:962) [Removing tx from merge table ]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.handleEvent(SipProviderImpl.java:135) [handleEvent javax.sip.TransactionTerminatedEvent[source=gov.nist.javax.sip.SipProviderImpl@1428ea]currentTransaction = gov.nist.javax.sip.stack.SIPServerTransaction@787c16afthis.sipListener = test.unit.gov.nist.javax.sip.stack.noautodialog.NoAutoDialogTest$Server@1484a05sipEvent.source = gov.nist.javax.sip.SipProviderImpl@1428ea]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SipProviderImpl.java:147][SIPTransactionStack.java:1343][SIPServerTransaction.java:1237][SIPTransaction.java:631][SIPServerTransaction.java:369][SIPStackTimerTask.java:29][Timer.java:544][Timer.java:494]]
+DEBUG - gov.nist.javax.sip.EventScanner.addEvent(EventScanner.java:81) [addEvent gov.nist.javax.sip.EventWrapper@b307f0]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:487) [Processing gov.nist.javax.sip.EventWrapper@b307f0nevents 1]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:129) [sipEvent = javax.sip.TransactionTerminatedEvent[source=gov.nist.javax.sip.SipProviderImpl@1428ea]source = gov.nist.javax.sip.SipProviderImpl@1428ea]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:389) [About to deliver transactionTerminatedEvent]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:391) [tx = null]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:395) [tx = gov.nist.javax.sip.stack.SIPServerTransaction@787c16af]
+ERROR - null
+java.lang.NullPointerException
+	at test.unit.gov.nist.javax.sip.stack.noautodialog.NoAutoDialogTest$Server.processTransactionTerminated(NoAutoDialogTest.java:257)
+	at gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:402)
+	at gov.nist.javax.sip.EventScanner.run(EventScanner.java:492)
+	at java.lang.Thread.run(Thread.java:675)
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction$LingerTimer.<init>(SIPTransaction.java:260) [LingerTimer : z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction$LingerTimer.runTask(SIPTransaction.java:272) [LingerTimer: run() : z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction$LingerTimer.runTask(SIPTransaction.java:283) [removinggov.nist.javax.sip.stack.SIPServerTransaction@787c16af]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removeTransaction(SIPTransactionStack.java:1319) [Removing Transaction = z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d transaction = gov.nist.javax.sip.stack.SIPServerTransaction@787c16af]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransactionStack.java:1325][SIPTransaction.java:284][SIPStackTimerTask.java:29][Timer.java:544][Timer.java:494]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removePendingTransaction(SIPTransactionStack.java:946) [removePendingTx: z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:490) [isDialogCreated : INVITE returning true]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removeFromMergeTable(SIPTransactionStack.java:962) [Removing tx from merge table ]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.fireTimeoutTimer(SIPServerTransaction.java:1202) [SIPServerTransaction.fireTimeoutTimer this = gov.nist.javax.sip.stack.SIPServerTransaction@4b7071a5 current state = Completed Transaction method = CANCEL]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:490) [isDialogCreated : CANCEL returning false]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Terminated Transaction gov.nist.javax.sip.stack.SIPServerTransaction@4b7071a5 branchID = z9hG4bK8bc45ed3c28af4f62329bdf3b36aea3d isClient = false]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:549][SIPServerTransaction.java:1513][SIPServerTransaction.java:1227][SIPTransaction.java:631][SIPServerTransaction.java:369][SIPStackTimerTask.java:29][Timer.java:544][Timer.java:494]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removeTransaction(SIPTransactionStack.java:1319) [Removing Transaction = z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d:cancel transaction = gov.nist.javax.sip.stack.SIPServerTransaction@4b7071a5]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransactionStack.java:1325][SIPServerTransaction.java:1228][SIPTransaction.java:631][SIPServerTransaction.java:369][SIPStackTimerTask.java:29][Timer.java:544][Timer.java:494]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removePendingTransaction(SIPTransactionStack.java:946) [removePendingTx: z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d:cancel]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:490) [isDialogCreated : CANCEL returning false]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.handleEvent(SipProviderImpl.java:135) [handleEvent javax.sip.TransactionTerminatedEvent[source=gov.nist.javax.sip.SipProviderImpl@1428ea]currentTransaction = gov.nist.javax.sip.stack.SIPServerTransaction@4b7071a5this.sipListener = test.unit.gov.nist.javax.sip.stack.noautodialog.NoAutoDialogTest$Server@1484a05sipEvent.source = gov.nist.javax.sip.SipProviderImpl@1428ea]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SipProviderImpl.java:147][SIPTransactionStack.java:1343][SIPServerTransaction.java:1228][SIPTransaction.java:631][SIPServerTransaction.java:369][SIPStackTimerTask.java:29][Timer.java:544][Timer.java:494]]
+DEBUG - gov.nist.javax.sip.EventScanner.addEvent(EventScanner.java:81) [addEvent gov.nist.javax.sip.EventWrapper@16f25a7]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:487) [Processing gov.nist.javax.sip.EventWrapper@16f25a7nevents 1]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:129) [sipEvent = javax.sip.TransactionTerminatedEvent[source=gov.nist.javax.sip.SipProviderImpl@1428ea]source = gov.nist.javax.sip.SipProviderImpl@1428ea]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:389) [About to deliver transactionTerminatedEvent]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:391) [tx = null]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:395) [tx = gov.nist.javax.sip.stack.SIPServerTransaction@4b7071a5]
+ERROR - null
+java.lang.NullPointerException
+	at test.unit.gov.nist.javax.sip.stack.noautodialog.NoAutoDialogTest$Server.processTransactionTerminated(NoAutoDialogTest.java:257)
+	at gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:402)
+	at gov.nist.javax.sip.EventScanner.run(EventScanner.java:492)
+	at java.lang.Thread.run(Thread.java:675)
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction$LingerTimer.<init>(SIPTransaction.java:260) [LingerTimer : z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d:cancel]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction$LingerTimer.runTask(SIPTransaction.java:272) [LingerTimer: run() : z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d:cancel]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction$LingerTimer.runTask(SIPTransaction.java:283) [removinggov.nist.javax.sip.stack.SIPServerTransaction@4b7071a5]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removeTransaction(SIPTransactionStack.java:1319) [Removing Transaction = z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d:cancel transaction = gov.nist.javax.sip.stack.SIPServerTransaction@4b7071a5]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransactionStack.java:1325][SIPTransaction.java:284][SIPStackTimerTask.java:29][Timer.java:544][Timer.java:494]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removePendingTransaction(SIPTransactionStack.java:946) [removePendingTx: z9hg4bk8bc45ed3c28af4f62329bdf3b36aea3d:cancel]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:490) [isDialogCreated : CANCEL returning false]
+DEBUG - gov.nist.javax.sip.SipStackImpl.stop(SipStackImpl.java:952) [stopStack -- stoppping the stack]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageProcessor.run(UDPMessageProcessor.java:251) [UDPMessageProcessor: Stopping]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:455) [Stopped event scanner!!]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:263) [Here are the stack configuration properties 
+{gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS=false, gov.nist.javax.sip.TRACE_LEVEL=DEBUG, javax.sip.STACK_NAME=server, javax.sip.AUTOMATIC_DIALOG_SUPPORT=off, gov.nist.javax.sip.SERVER_LOG=server_log.txt, gov.nist.javax.sip.DEBUG_LOG=server_debug.txt, gov.nist.javax.sip.READ_TIMEOUT=1000}
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:266) [ ]]>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:267) [</debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:268) [<description
+ logDescription="server"
+ name="null" />
+]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:274) [<debug>]
+DEBUG - gov.nist.javax.sip.stack.ServerLog.checkLogFile(ServerLog.java:275) [<![CDATA[ ]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:743) [createListeningPoint : address = 192.168.5.240 port = 5600 transport = udp]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createListeningPoint(SipStackImpl.java:780) [Created Message Processor: 192.168.5.240 port = 5600 transport = udp]
+DEBUG - gov.nist.javax.sip.stack.MessageProcessor.setListeningPoint(MessageProcessor.java:179) [setListeningPointgov.nist.javax.sip.stack.UDPMessageProcessor@adb1d4 listeningPoint = gov.nist.javax.sip.ListeningPointImpl@175d6ab]
+DEBUG - gov.nist.javax.sip.SipStackImpl.createSipProvider(SipStackImpl.java:811) [createSipProvider: gov.nist.javax.sip.ListeningPointImpl@175d6ab]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.addSipListener(SipProviderImpl.java:205) [add SipListener test.unit.gov.nist.javax.sip.stack.NoAutoDialogTest$Server@1484a05]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:287) [UDPMessageChannel: peerAddress = 192.168.5.240/6500]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:291) [Length = 326]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:293) [INVITE sip:192.168.5.240:5600 SIP/2.0
+Call-ID: 9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=269876607
+To: <sip:there.com>
+Contact: <sip:192.168.5.240:6500>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK46e570e2efa243fee40f808941c64312
+Max-Forwards: 5
+Content-Length: 0
+
+]
+INFO - <message
+from="192.168.5.240:6500" 
+to="192.168.5.240:5600" 
+time="1215403066484"
+isSender="false" 
+transactionId="z9hg4bk46e570e2efa243fee40f808941c64312" 
+callId="9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240" 
+firstLine="INVITE sip:192.168.5.240:5600 SIP/2.0" 
+>
+<![CDATA[INVITE sip:192.168.5.240:5600 SIP/2.0
+Call-ID: 9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=269876607
+To: <sip:there.com>
+Contact: <sip:192.168.5.240:6500>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK46e570e2efa243fee40f808941c64312
+Max-Forwards: 5
+Content-Length: 0
+
+]]>
+</message>
+
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.findPendingTransaction(SIPTransactionStack.java:907) [looking for pending tx for :z9hg4bk46e570e2efa243fee40f808941c64312]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.<init>(SIPServerTransaction.java:499) [Creating Server Transactionnull]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPServerTransaction.java:501][SIPTransactionStack.java:1270][SIPTransactionStack.java:1068][UDPMessageChannel.java:444][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setOriginalRequest(SIPTransaction.java:412) [Setting Branch id : z9hG4bK46e570e2efa243fee40f808941c64312]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.newSIPServerRequest(SIPTransactionStack.java:1083) [newSIPServerRequest( INVITE:z9hG4bK46e570e2efa243fee40f808941c64312):gov.nist.javax.sip.stack.SIPServerTransaction@3152c275]
+DEBUG - gov.nist.javax.sip.NistSipMessageFactoryImpl.newSIPServerRequest(NistSipMessageFactoryImpl.java:84) [Returning request interface for INVITE sip:192.168.5.240:5600 SIP/2.0
+ gov.nist.javax.sip.DialogFilter@19a32e0 messageChannel = gov.nist.javax.sip.stack.SIPServerTransaction@3152c275]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1141) [acquireSem [[[[gov.nist.javax.sip.stack.SIPServerTransaction@3152c275]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:1142][SIPTransactionStack.java:1093][UDPMessageChannel.java:444][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1146) [acquireSem() returning : true]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processMessage(UDPMessageChannel.java:473) [About to process INVITE sip:192.168.5.240:5600 SIP/2.0
+/gov.nist.javax.sip.stack.SIPServerTransaction@3152c275]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.processRequest(SIPServerTransaction.java:720) [processRequest: INVITE sip:192.168.5.240:5600 SIP/2.0
+]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.processRequest(SIPServerTransaction.java:722) [tx state = null]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setOriginalRequest(SIPTransaction.java:412) [Setting Branch id : z9hG4bK46e570e2efa243fee40f808941c64312]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Trying Transaction gov.nist.javax.sip.stack.SIPServerTransaction@3152c275 branchID = z9hG4bK46e570e2efa243fee40f808941c64312 isClient = false]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:549][SIPServerTransaction.java:1513][SIPServerTransaction.java:732][UDPMessageChannel.java:476][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setPassToListener(SIPTransaction.java:1208) [setPassToListener()]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:111) [PROCESSING INCOMING REQUEST INVITE sip:192.168.5.240:5600 SIP/2.0
+Call-ID: 9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=269876607
+To: <sip:there.com>
+Contact: <sip:192.168.5.240:6500>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK46e570e2efa243fee40f808941c64312
+Max-Forwards: 5
+Content-Length: 0
+
+ transactionChannel = gov.nist.javax.sip.stack.SIPServerTransaction@3152c275 listening point = 192.168.5.240:5600]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:139) [transaction state = Proceeding Transaction]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.getDialog(SIPTransactionStack.java:657) [getDialog(9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240:269876607) : returning null]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:209) [dialogId = 9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240:269876607]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:210) [dialog = null]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:665) [CHECK FOR OUT OF SEQ MESSAGE null transaction gov.nist.javax.sip.stack.SIPServerTransaction@3152c275]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:722) [INVITE transaction.isMapped = false]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.handleEvent(SipProviderImpl.java:135) [handleEvent javax.sip.RequestEvent[source=gov.nist.javax.sip.SipProviderImpl@1428ea]currentTransaction = gov.nist.javax.sip.stack.SIPServerTransaction@3152c275this.sipListener = test.unit.gov.nist.javax.sip.stack.NoAutoDialogTest$Server@1484a05sipEvent.source = gov.nist.javax.sip.SipProviderImpl@1428ea]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.handleEvent(SipProviderImpl.java:142) [Dialog = null]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SipProviderImpl.java:147][DialogFilter.java:917][SIPServerTransaction.java:830][UDPMessageChannel.java:476][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.EventScanner.addEvent(EventScanner.java:81) [addEvent gov.nist.javax.sip.EventWrapper@1f82982]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:487) [Processing gov.nist.javax.sip.EventWrapper@1f82982nevents 1]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:129) [sipEvent = javax.sip.RequestEvent[source=gov.nist.javax.sip.SipProviderImpl@1428ea]source = gov.nist.javax.sip.SipProviderImpl@1428ea]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:148) [deliverEvent : INVITE sip:192.168.5.240:5600 SIP/2.0
+ transaction gov.nist.javax.sip.stack.SIPServerTransaction@3152c275 sipEvent.serverTx = null]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.findTransaction(SIPTransactionStack.java:797) [serverTx: looking for key z9hg4bk46e570e2efa243fee40f808941c64312 existing={}]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.findPendingTransaction(SIPTransactionStack.java:907) [looking for pending tx for :z9hg4bk46e570e2efa243fee40f808941c64312]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.putPendingTransaction(SIPTransactionStack.java:1551) [putPendingTransaction: gov.nist.javax.sip.stack.SIPServerTransaction@3152c275]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:215) [Calling listener INVITE sip:192.168.5.240:5600 SIP/2.0
+]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:219) [Calling listener gov.nist.javax.sip.stack.SIPServerTransaction@3152c275]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:490) [isDialogCreated : INVITE returning true]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.findTransaction(SIPTransactionStack.java:797) [serverTx: looking for key z9hg4bk46e570e2efa243fee40f808941c64312 existing={}]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.addTransaction(SIPTransactionStack.java:1381) [added transaction gov.nist.javax.sip.stack.SIPServerTransaction@3152c275]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction$SendTrying.<init>(SIPServerTransaction.java:300) [scheduled timer for gov.nist.javax.sip.stack.SIPServerTransaction@3152c275]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removePendingTransaction(SIPTransactionStack.java:946) [removePendingTx: z9hg4bk46e570e2efa243fee40f808941c64312]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.addTransactionHash(SIPTransactionStack.java:1423) [ putTransactionHash :  key = z9hg4bk46e570e2efa243fee40f808941c64312]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Proceeding Transaction gov.nist.javax.sip.stack.SIPServerTransaction@3152c275 branchID = z9hG4bK46e570e2efa243fee40f808941c64312 isClient = false]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:549][SIPServerTransaction.java:1513][SIPServerTransaction.java:935][SIPServerTransaction.java:1459][NoAutoDialogTest.java:211][EventScanner.java:223][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.sendMessage(SIPServerTransaction.java:1113) [sendMessage : tx = gov.nist.javax.sip.stack.SIPServerTransaction@3152c275 getState = Proceeding Transaction]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.<init>(UDPMessageChannel.java:196) [Creating message channel 192.168.5.240/6500]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[UDPMessageChannel.java:595][SIPServerTransaction.java:466][SIPServerTransaction.java:1118][SIPServerTransaction.java:1459][NoAutoDialogTest.java:211][EventScanner.java:223][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:728) [gov.nist.javax.sip.stack.UDPMessageChannel:sendMessage 192.168.5.240/6500
+SIP/2.0 100 Trying
+Call-ID: 9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=269876607
+To: <sip:there.com>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK46e570e2efa243fee40f808941c64312
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:731) [*******************
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:748) [sendMessage 192.168.5.240/6500
+SIP/2.0 100 Trying
+Call-ID: 9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=269876607
+To: <sip:there.com>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK46e570e2efa243fee40f808941c64312
+Content-Length: 0
+
+]
+INFO - <message
+from="192.168.5.240:5600" 
+to="192.168.5.240:6500" 
+time="1215403066555"
+isSender="true" 
+transactionId="z9hg4bk46e570e2efa243fee40f808941c64312" 
+callId="9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240" 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+Call-ID: 9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=269876607
+To: <sip:there.com>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK46e570e2efa243fee40f808941c64312
+Content-Length: 0
+
+]]>
+</message>
+
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction$TransactionTimer.<init>(SIPServerTransaction.java:335) [TransactionTimer() : z9hg4bk46e570e2efa243fee40f808941c64312]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.sendMessage(SIPServerTransaction.java:1113) [sendMessage : tx = gov.nist.javax.sip.stack.SIPServerTransaction@3152c275 getState = Proceeding Transaction]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.<init>(UDPMessageChannel.java:196) [Creating message channel 192.168.5.240/6500]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[UDPMessageChannel.java:595][SIPServerTransaction.java:466][SIPServerTransaction.java:1118][SIPServerTransaction.java:1459][NoAutoDialogTest.java:216][EventScanner.java:223][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:728) [gov.nist.javax.sip.stack.UDPMessageChannel:sendMessage 192.168.5.240/6500
+SIP/2.0 180 Ringing
+Call-ID: 9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=269876607
+To: <sip:there.com>;tag=asdgaeyvewacyta0.08132266514334341
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK46e570e2efa243fee40f808941c64312
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:731) [*******************
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:748) [sendMessage 192.168.5.240/6500
+SIP/2.0 180 Ringing
+Call-ID: 9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=269876607
+To: <sip:there.com>;tag=asdgaeyvewacyta0.08132266514334341
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK46e570e2efa243fee40f808941c64312
+Content-Length: 0
+
+]
+INFO - <message
+from="192.168.5.240:5600" 
+to="192.168.5.240:6500" 
+time="1215403066562"
+isSender="true" 
+transactionId="z9hg4bk46e570e2efa243fee40f808941c64312" 
+callId="9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240" 
+firstLine="SIP/2.0 180 Ringing" 
+>
+<![CDATA[SIP/2.0 180 Ringing
+Call-ID: 9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=269876607
+To: <sip:there.com>;tag=asdgaeyvewacyta0.08132266514334341
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK46e570e2efa243fee40f808941c64312
+Content-Length: 0
+
+]]>
+</message>
+
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:226) [Done processing Message INVITE sip:192.168.5.240:5600 SIP/2.0
+]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:246) [Done processing Message INVITE sip:192.168.5.240:5600 SIP/2.0
+]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.semRelease(SIPTransaction.java:1181) [semRelease ]]]]gov.nist.javax.sip.stack.SIPServerTransaction@3152c275]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:1182][SIPTransaction.java:1168][SIPServerTransaction.java:1733][EventScanner.java:254][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removePendingTransaction(SIPTransactionStack.java:946) [removePendingTx: z9hg4bk46e570e2efa243fee40f808941c64312]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.semRelease(SIPTransaction.java:1181) [semRelease ]]]]gov.nist.javax.sip.stack.SIPServerTransaction@3152c275]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:287) [UDPMessageChannel: peerAddress = 192.168.5.240/6500]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:291) [Length = 291]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:293) [CANCEL sip:192.168.5.240:5600 SIP/2.0
+Call-ID: 9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240
+To: <sip:there.com>
+CSeq: 1 CANCEL
+From: <sip:here.com>;tag=269876607
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK46e570e2efa243fee40f808941c64312
+Max-Forwards: 5
+Content-Length: 0
+
+]
+INFO - <message
+from="192.168.5.240:6500" 
+to="192.168.5.240:5600" 
+time="1215403066594"
+isSender="false" 
+transactionId="z9hg4bk46e570e2efa243fee40f808941c64312:cancel" 
+callId="9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240" 
+firstLine="CANCEL sip:192.168.5.240:5600 SIP/2.0" 
+>
+<![CDATA[CANCEL sip:192.168.5.240:5600 SIP/2.0
+Call-ID: 9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240
+To: <sip:there.com>
+CSeq: 1 CANCEL
+From: <sip:here.com>;tag=269876607
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK46e570e2efa243fee40f808941c64312
+Max-Forwards: 5
+Content-Length: 0
+
+]]>
+</message>
+
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.findPendingTransaction(SIPTransactionStack.java:907) [looking for pending tx for :z9hg4bk46e570e2efa243fee40f808941c64312:cancel]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.<init>(SIPServerTransaction.java:499) [Creating Server Transactionnull]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPServerTransaction.java:501][SIPTransactionStack.java:1270][SIPTransactionStack.java:1068][UDPMessageChannel.java:444][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setOriginalRequest(SIPTransaction.java:412) [Setting Branch id : z9hG4bK46e570e2efa243fee40f808941c64312]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.newSIPServerRequest(SIPTransactionStack.java:1083) [newSIPServerRequest( CANCEL:z9hG4bK46e570e2efa243fee40f808941c64312):gov.nist.javax.sip.stack.SIPServerTransaction@d6fc1b1f]
+DEBUG - gov.nist.javax.sip.NistSipMessageFactoryImpl.newSIPServerRequest(NistSipMessageFactoryImpl.java:84) [Returning request interface for CANCEL sip:192.168.5.240:5600 SIP/2.0
+ gov.nist.javax.sip.DialogFilter@1ce784b messageChannel = gov.nist.javax.sip.stack.SIPServerTransaction@d6fc1b1f]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1141) [acquireSem [[[[gov.nist.javax.sip.stack.SIPServerTransaction@d6fc1b1f]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:1142][SIPTransactionStack.java:1093][UDPMessageChannel.java:444][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1146) [acquireSem() returning : true]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processMessage(UDPMessageChannel.java:473) [About to process CANCEL sip:192.168.5.240:5600 SIP/2.0
+/gov.nist.javax.sip.stack.SIPServerTransaction@d6fc1b1f]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.processRequest(SIPServerTransaction.java:720) [processRequest: CANCEL sip:192.168.5.240:5600 SIP/2.0
+]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.processRequest(SIPServerTransaction.java:722) [tx state = null]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setOriginalRequest(SIPTransaction.java:412) [Setting Branch id : z9hG4bK46e570e2efa243fee40f808941c64312]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Trying Transaction gov.nist.javax.sip.stack.SIPServerTransaction@d6fc1b1f branchID = z9hG4bK46e570e2efa243fee40f808941c64312 isClient = false]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:549][SIPServerTransaction.java:1513][SIPServerTransaction.java:732][UDPMessageChannel.java:476][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setPassToListener(SIPTransaction.java:1208) [setPassToListener()]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:111) [PROCESSING INCOMING REQUEST CANCEL sip:192.168.5.240:5600 SIP/2.0
+Call-ID: 9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240
+To: <sip:there.com>
+CSeq: 1 CANCEL
+From: <sip:here.com>;tag=269876607
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK46e570e2efa243fee40f808941c64312
+Max-Forwards: 5
+Content-Length: 0
+
+ transactionChannel = gov.nist.javax.sip.stack.SIPServerTransaction@d6fc1b1f listening point = 192.168.5.240:5600]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:139) [transaction state = Trying Transaction]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.getDialog(SIPTransactionStack.java:657) [getDialog(9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240:269876607) : returning null]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:209) [dialogId = 9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240:269876607]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:210) [dialog = null]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.findCancelTransaction(SIPTransactionStack.java:849) [findCancelTransaction request= 
+CANCEL sip:192.168.5.240:5600 SIP/2.0
+Call-ID: 9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240
+To: <sip:there.com>
+CSeq: 1 CANCEL
+From: <sip:here.com>;tag=269876607
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK46e570e2efa243fee40f808941c64312
+Max-Forwards: 5
+Content-Length: 0
+
+
+findCancelRequest isServer=true]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.doesCancelMatchTransaction(SIPTransaction.java:981) [returning  true]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setPassToListener(SIPTransaction.java:1208) [setPassToListener()]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:498) [Got a CANCEL, InviteServerTx = gov.nist.javax.sip.stack.SIPServerTransaction@3152c275 cancel Server Tx ID = gov.nist.javax.sip.stack.SIPServerTransaction@d6fc1b1f isMapped = false]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:528) [Cancel transaction = gov.nist.javax.sip.stack.SIPServerTransaction@3152c275]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.addTransaction(SIPTransactionStack.java:1381) [added transaction gov.nist.javax.sip.stack.SIPServerTransaction@d6fc1b1f]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removePendingTransaction(SIPTransactionStack.java:946) [removePendingTx: z9hg4bk46e570e2efa243fee40f808941c64312:cancel]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.addTransactionHash(SIPTransactionStack.java:1423) [ putTransactionHash :  key = z9hg4bk46e570e2efa243fee40f808941c64312:cancel]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setPassToListener(SIPTransaction.java:1208) [setPassToListener()]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1141) [acquireSem [[[[gov.nist.javax.sip.stack.SIPServerTransaction@3152c275]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:1142][DialogFilter.java:574][SIPServerTransaction.java:830][UDPMessageChannel.java:476][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1146) [acquireSem() returning : true]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:665) [CHECK FOR OUT OF SEQ MESSAGE null transaction gov.nist.javax.sip.stack.SIPServerTransaction@d6fc1b1f]
+DEBUG - gov.nist.javax.sip.DialogFilter.processRequest(DialogFilter.java:722) [CANCEL transaction.isMapped = true]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.handleEvent(SipProviderImpl.java:135) [handleEvent javax.sip.RequestEvent[source=gov.nist.javax.sip.SipProviderImpl@1428ea]currentTransaction = gov.nist.javax.sip.stack.SIPServerTransaction@d6fc1b1fthis.sipListener = test.unit.gov.nist.javax.sip.stack.NoAutoDialogTest$Server@1484a05sipEvent.source = gov.nist.javax.sip.SipProviderImpl@1428ea]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.handleEvent(SipProviderImpl.java:142) [Dialog = null]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SipProviderImpl.java:147][DialogFilter.java:917][SIPServerTransaction.java:830][UDPMessageChannel.java:476][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.EventScanner.addEvent(EventScanner.java:81) [addEvent gov.nist.javax.sip.EventWrapper@3bc473]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processMessage(UDPMessageChannel.java:486) [Done processing CANCEL sip:192.168.5.240:5600 SIP/2.0
+/gov.nist.javax.sip.stack.SIPServerTransaction@d6fc1b1f]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:487) [Processing gov.nist.javax.sip.EventWrapper@3bc473nevents 1]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:129) [sipEvent = javax.sip.RequestEvent[source=gov.nist.javax.sip.SipProviderImpl@1428ea]source = gov.nist.javax.sip.SipProviderImpl@1428ea]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:148) [deliverEvent : CANCEL sip:192.168.5.240:5600 SIP/2.0
+ transaction gov.nist.javax.sip.stack.SIPServerTransaction@d6fc1b1f sipEvent.serverTx = gov.nist.javax.sip.stack.SIPServerTransaction@d6fc1b1f]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.findTransaction(SIPTransactionStack.java:797) [serverTx: looking for key z9hg4bk46e570e2efa243fee40f808941c64312:cancel existing={z9hg4bk46e570e2efa243fee40f808941c64312=gov.nist.javax.sip.stack.SIPServerTransaction@3152c275, z9hg4bk46e570e2efa243fee40f808941c64312:cancel=gov.nist.javax.sip.stack.SIPServerTransaction@d6fc1b1f}]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.findPendingTransaction(SIPTransactionStack.java:907) [looking for pending tx for :z9hg4bk46e570e2efa243fee40f808941c64312:cancel]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.putPendingTransaction(SIPTransactionStack.java:1551) [putPendingTransaction: gov.nist.javax.sip.stack.SIPServerTransaction@d6fc1b1f]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:215) [Calling listener CANCEL sip:192.168.5.240:5600 SIP/2.0
+]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:219) [Calling listener gov.nist.javax.sip.stack.SIPServerTransaction@d6fc1b1f]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Completed Transaction gov.nist.javax.sip.stack.SIPServerTransaction@d6fc1b1f branchID = z9hG4bK46e570e2efa243fee40f808941c64312 isClient = false]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:549][SIPServerTransaction.java:1513][SIPServerTransaction.java:948][SIPServerTransaction.java:1459][NoAutoDialogTest.java:231][EventScanner.java:223][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.enableTimeoutTimer(SIPTransaction.java:606) [enableTimeoutTimer gov.nist.javax.sip.stack.SIPServerTransaction@d6fc1b1f tickCount 64 currentTickCount = -1]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.sendMessage(SIPServerTransaction.java:1113) [sendMessage : tx = gov.nist.javax.sip.stack.SIPServerTransaction@d6fc1b1f getState = Completed Transaction]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.<init>(UDPMessageChannel.java:196) [Creating message channel 192.168.5.240/6500]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[UDPMessageChannel.java:595][SIPServerTransaction.java:466][SIPServerTransaction.java:1118][SIPServerTransaction.java:1459][NoAutoDialogTest.java:231][EventScanner.java:223][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:728) [gov.nist.javax.sip.stack.UDPMessageChannel:sendMessage 192.168.5.240/6500
+SIP/2.0 200 OK
+Call-ID: 9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240
+To: <sip:there.com>
+CSeq: 1 CANCEL
+From: <sip:here.com>;tag=269876607
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK46e570e2efa243fee40f808941c64312
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:731) [*******************
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:748) [sendMessage 192.168.5.240/6500
+SIP/2.0 200 OK
+Call-ID: 9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240
+To: <sip:there.com>
+CSeq: 1 CANCEL
+From: <sip:here.com>;tag=269876607
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK46e570e2efa243fee40f808941c64312
+Content-Length: 0
+
+]
+INFO - <message
+from="192.168.5.240:5600" 
+to="192.168.5.240:6500" 
+time="1215403066602"
+isSender="true" 
+transactionId="z9hg4bk46e570e2efa243fee40f808941c64312:cancel" 
+callId="9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240" 
+firstLine="SIP/2.0 200 OK" 
+>
+<![CDATA[SIP/2.0 200 OK
+Call-ID: 9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240
+To: <sip:there.com>
+CSeq: 1 CANCEL
+From: <sip:here.com>;tag=269876607
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK46e570e2efa243fee40f808941c64312
+Content-Length: 0
+
+]]>
+</message>
+
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction$TransactionTimer.<init>(SIPServerTransaction.java:335) [TransactionTimer() : z9hg4bk46e570e2efa243fee40f808941c64312:cancel]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Completed Transaction gov.nist.javax.sip.stack.SIPServerTransaction@3152c275 branchID = z9hG4bK46e570e2efa243fee40f808941c64312 isClient = false]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:549][SIPServerTransaction.java:1513][SIPServerTransaction.java:1062][SIPServerTransaction.java:1459][NoAutoDialogTest.java:236][EventScanner.java:223][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.enableTimeoutTimer(SIPTransaction.java:606) [enableTimeoutTimer gov.nist.javax.sip.stack.SIPServerTransaction@3152c275 tickCount 64 currentTickCount = -1]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.sendMessage(SIPServerTransaction.java:1113) [sendMessage : tx = gov.nist.javax.sip.stack.SIPServerTransaction@3152c275 getState = Completed Transaction]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.<init>(UDPMessageChannel.java:196) [Creating message channel 192.168.5.240/6500]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[UDPMessageChannel.java:595][SIPServerTransaction.java:466][SIPServerTransaction.java:1118][SIPServerTransaction.java:1459][NoAutoDialogTest.java:236][EventScanner.java:223][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:728) [gov.nist.javax.sip.stack.UDPMessageChannel:sendMessage 192.168.5.240/6500
+SIP/2.0 487 Request Terminated
+Call-ID: 9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=269876607
+To: <sip:there.com>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK46e570e2efa243fee40f808941c64312
+Content-Length: 0
+
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:731) [*******************
+]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.sendMessage(UDPMessageChannel.java:748) [sendMessage 192.168.5.240/6500
+SIP/2.0 487 Request Terminated
+Call-ID: 9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=269876607
+To: <sip:there.com>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK46e570e2efa243fee40f808941c64312
+Content-Length: 0
+
+]
+INFO - <message
+from="192.168.5.240:5600" 
+to="192.168.5.240:6500" 
+time="1215403066604"
+isSender="true" 
+transactionId="z9hg4bk46e570e2efa243fee40f808941c64312" 
+callId="9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240" 
+firstLine="SIP/2.0 487 Request Terminated" 
+>
+<![CDATA[SIP/2.0 487 Request Terminated
+Call-ID: 9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=269876607
+To: <sip:there.com>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK46e570e2efa243fee40f808941c64312
+Content-Length: 0
+
+]]>
+</message>
+
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:226) [Done processing Message CANCEL sip:192.168.5.240:5600 SIP/2.0
+]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:246) [Done processing Message CANCEL sip:192.168.5.240:5600 SIP/2.0
+]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.semRelease(SIPTransaction.java:1181) [semRelease ]]]]gov.nist.javax.sip.stack.SIPServerTransaction@3152c275]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:1182][SIPTransaction.java:1168][SIPServerTransaction.java:1733][SIPServerTransaction.java:1731][EventScanner.java:254][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.semRelease(SIPTransaction.java:1181) [semRelease ]]]]gov.nist.javax.sip.stack.SIPServerTransaction@d6fc1b1f]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:1182][SIPTransaction.java:1168][SIPServerTransaction.java:1733][EventScanner.java:254][EventScanner.java:492][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removePendingTransaction(SIPTransactionStack.java:946) [removePendingTx: z9hg4bk46e570e2efa243fee40f808941c64312:cancel]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:1182][SIPTransaction.java:1168][SIPServerTransaction.java:1733][UDPMessageChannel.java:481][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processMessage(UDPMessageChannel.java:486) [Done processing INVITE sip:192.168.5.240:5600 SIP/2.0
+/gov.nist.javax.sip.stack.SIPServerTransaction@3152c275]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:287) [UDPMessageChannel: peerAddress = 192.168.5.240/6500]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:291) [Length = 285]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processIncomingDataPacket(UDPMessageChannel.java:293) [ACK sip:192.168.5.240:5600 SIP/2.0
+Call-ID: 9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240
+Max-Forwards: 5
+From: <sip:here.com>;tag=269876607
+To: <sip:there.com>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK46e570e2efa243fee40f808941c64312
+CSeq: 1 ACK
+Content-Length: 0
+
+]
+INFO - <message
+from="192.168.5.240:6500" 
+to="192.168.5.240:5600" 
+time="1215403066621"
+isSender="false" 
+transactionId="z9hg4bk46e570e2efa243fee40f808941c64312" 
+callId="9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240" 
+firstLine="ACK sip:192.168.5.240:5600 SIP/2.0" 
+>
+<![CDATA[ACK sip:192.168.5.240:5600 SIP/2.0
+Call-ID: 9698cf0ed16642ef6c85b2ae9dc558f7@192.168.5.240
+Max-Forwards: 5
+From: <sip:here.com>;tag=269876607
+To: <sip:there.com>
+Via: SIP/2.0/UDP 192.168.5.240:6500;branch=z9hG4bK46e570e2efa243fee40f808941c64312
+CSeq: 1 ACK
+Content-Length: 0
+
+]]>
+</message>
+
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.newSIPServerRequest(SIPTransactionStack.java:1083) [newSIPServerRequest( ACK:z9hG4bK46e570e2efa243fee40f808941c64312):gov.nist.javax.sip.stack.SIPServerTransaction@3152c275]
+DEBUG - gov.nist.javax.sip.NistSipMessageFactoryImpl.newSIPServerRequest(NistSipMessageFactoryImpl.java:84) [Returning request interface for ACK sip:192.168.5.240:5600 SIP/2.0
+ gov.nist.javax.sip.DialogFilter@16c163f messageChannel = gov.nist.javax.sip.stack.SIPServerTransaction@3152c275]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1141) [acquireSem [[[[gov.nist.javax.sip.stack.SIPServerTransaction@3152c275]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:1142][SIPTransactionStack.java:1093][UDPMessageChannel.java:444][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.acquireSem(SIPTransaction.java:1146) [acquireSem() returning : true]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processMessage(UDPMessageChannel.java:473) [About to process ACK sip:192.168.5.240:5600 SIP/2.0
+/gov.nist.javax.sip.stack.SIPServerTransaction@3152c275]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.processRequest(SIPServerTransaction.java:720) [processRequest: ACK sip:192.168.5.240:5600 SIP/2.0
+]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.processRequest(SIPServerTransaction.java:722) [tx state = Completed Transaction]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Confirmed Transaction gov.nist.javax.sip.stack.SIPServerTransaction@3152c275 branchID = z9hG4bK46e570e2efa243fee40f808941c64312 isClient = false]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:549][SIPServerTransaction.java:1513][SIPServerTransaction.java:755][UDPMessageChannel.java:476][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.enableTimeoutTimer(SIPTransaction.java:606) [enableTimeoutTimer gov.nist.javax.sip.stack.SIPServerTransaction@3152c275 tickCount 10 currentTickCount = 64]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.processRequest(SIPServerTransaction.java:776) [ACK received for server Tx z9hg4bk46e570e2efa243fee40f808941c64312 not delivering to application!]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.semRelease(SIPTransaction.java:1181) [semRelease ]]]]gov.nist.javax.sip.stack.SIPServerTransaction@3152c275]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:1182][SIPServerTransaction.java:783][UDPMessageChannel.java:476][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.semRelease(SIPTransaction.java:1181) [semRelease ]]]]gov.nist.javax.sip.stack.SIPServerTransaction@3152c275]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:1182][SIPTransaction.java:1168][SIPServerTransaction.java:1733][UDPMessageChannel.java:481][UDPMessageChannel.java:419][UDPMessageChannel.java:257][Thread.java:675]]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageChannel.processMessage(UDPMessageChannel.java:486) [Done processing ACK sip:192.168.5.240:5600 SIP/2.0
+/gov.nist.javax.sip.stack.SIPServerTransaction@3152c275]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.fireTimeoutTimer(SIPServerTransaction.java:1202) [SIPServerTransaction.fireTimeoutTimer this = gov.nist.javax.sip.stack.SIPServerTransaction@3152c275 current state = Confirmed Transaction method = INVITE]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:490) [isDialogCreated : INVITE returning true]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Terminated Transaction gov.nist.javax.sip.stack.SIPServerTransaction@3152c275 branchID = z9hG4bK46e570e2efa243fee40f808941c64312 isClient = false]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:549][SIPServerTransaction.java:1513][SIPServerTransaction.java:1236][SIPTransaction.java:631][SIPServerTransaction.java:369][SIPStackTimerTask.java:29][Timer.java:544][Timer.java:494]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removeTransaction(SIPTransactionStack.java:1319) [Removing Transaction = z9hg4bk46e570e2efa243fee40f808941c64312 transaction = gov.nist.javax.sip.stack.SIPServerTransaction@3152c275]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransactionStack.java:1325][SIPServerTransaction.java:1237][SIPTransaction.java:631][SIPServerTransaction.java:369][SIPStackTimerTask.java:29][Timer.java:544][Timer.java:494]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removePendingTransaction(SIPTransactionStack.java:946) [removePendingTx: z9hg4bk46e570e2efa243fee40f808941c64312]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:490) [isDialogCreated : INVITE returning true]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removeFromMergeTable(SIPTransactionStack.java:962) [Removing tx from merge table ]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.handleEvent(SipProviderImpl.java:135) [handleEvent javax.sip.TransactionTerminatedEvent[source=gov.nist.javax.sip.SipProviderImpl@1428ea]currentTransaction = gov.nist.javax.sip.stack.SIPServerTransaction@3152c275this.sipListener = test.unit.gov.nist.javax.sip.stack.NoAutoDialogTest$Server@1484a05sipEvent.source = gov.nist.javax.sip.SipProviderImpl@1428ea]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SipProviderImpl.java:147][SIPTransactionStack.java:1343][SIPServerTransaction.java:1237][SIPTransaction.java:631][SIPServerTransaction.java:369][SIPStackTimerTask.java:29][Timer.java:544][Timer.java:494]]
+DEBUG - gov.nist.javax.sip.EventScanner.addEvent(EventScanner.java:81) [addEvent gov.nist.javax.sip.EventWrapper@b307f0]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:487) [Processing gov.nist.javax.sip.EventWrapper@b307f0nevents 1]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:129) [sipEvent = javax.sip.TransactionTerminatedEvent[source=gov.nist.javax.sip.SipProviderImpl@1428ea]source = gov.nist.javax.sip.SipProviderImpl@1428ea]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:389) [About to deliver transactionTerminatedEvent]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:391) [tx = null]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:395) [tx = gov.nist.javax.sip.stack.SIPServerTransaction@3152c275]
+ERROR - null
+java.lang.NullPointerException
+	at test.unit.gov.nist.javax.sip.stack.NoAutoDialogTest$Server.processTransactionTerminated(NoAutoDialogTest.java:257)
+	at gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:402)
+	at gov.nist.javax.sip.EventScanner.run(EventScanner.java:492)
+	at java.lang.Thread.run(Thread.java:675)
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction$LingerTimer.<init>(SIPTransaction.java:260) [LingerTimer : z9hg4bk46e570e2efa243fee40f808941c64312]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction$LingerTimer.runTask(SIPTransaction.java:272) [LingerTimer: run() : z9hg4bk46e570e2efa243fee40f808941c64312]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction$LingerTimer.runTask(SIPTransaction.java:283) [removinggov.nist.javax.sip.stack.SIPServerTransaction@3152c275]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removeTransaction(SIPTransactionStack.java:1319) [Removing Transaction = z9hg4bk46e570e2efa243fee40f808941c64312 transaction = gov.nist.javax.sip.stack.SIPServerTransaction@3152c275]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransactionStack.java:1325][SIPTransaction.java:284][SIPStackTimerTask.java:29][Timer.java:544][Timer.java:494]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removePendingTransaction(SIPTransactionStack.java:946) [removePendingTx: z9hg4bk46e570e2efa243fee40f808941c64312]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:490) [isDialogCreated : INVITE returning true]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removeFromMergeTable(SIPTransactionStack.java:962) [Removing tx from merge table ]
+DEBUG - gov.nist.javax.sip.stack.SIPServerTransaction.fireTimeoutTimer(SIPServerTransaction.java:1202) [SIPServerTransaction.fireTimeoutTimer this = gov.nist.javax.sip.stack.SIPServerTransaction@d6fc1b1f current state = Completed Transaction method = CANCEL]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:490) [isDialogCreated : CANCEL returning false]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction.setState(SIPTransaction.java:546) [Transaction:setState Terminated Transaction gov.nist.javax.sip.stack.SIPServerTransaction@d6fc1b1f branchID = z9hG4bK46e570e2efa243fee40f808941c64312 isClient = false]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransaction.java:549][SIPServerTransaction.java:1513][SIPServerTransaction.java:1227][SIPTransaction.java:631][SIPServerTransaction.java:369][SIPStackTimerTask.java:29][Timer.java:544][Timer.java:494]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removeTransaction(SIPTransactionStack.java:1319) [Removing Transaction = z9hg4bk46e570e2efa243fee40f808941c64312:cancel transaction = gov.nist.javax.sip.stack.SIPServerTransaction@d6fc1b1f]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransactionStack.java:1325][SIPServerTransaction.java:1228][SIPTransaction.java:631][SIPServerTransaction.java:369][SIPStackTimerTask.java:29][Timer.java:544][Timer.java:494]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removePendingTransaction(SIPTransactionStack.java:946) [removePendingTx: z9hg4bk46e570e2efa243fee40f808941c64312:cancel]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:490) [isDialogCreated : CANCEL returning false]
+DEBUG - gov.nist.javax.sip.SipProviderImpl.handleEvent(SipProviderImpl.java:135) [handleEvent javax.sip.TransactionTerminatedEvent[source=gov.nist.javax.sip.SipProviderImpl@1428ea]currentTransaction = gov.nist.javax.sip.stack.SIPServerTransaction@d6fc1b1fthis.sipListener = test.unit.gov.nist.javax.sip.stack.NoAutoDialogTest$Server@1484a05sipEvent.source = gov.nist.javax.sip.SipProviderImpl@1428ea]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SipProviderImpl.java:147][SIPTransactionStack.java:1343][SIPServerTransaction.java:1228][SIPTransaction.java:631][SIPServerTransaction.java:369][SIPStackTimerTask.java:29][Timer.java:544][Timer.java:494]]
+DEBUG - gov.nist.javax.sip.EventScanner.addEvent(EventScanner.java:81) [addEvent gov.nist.javax.sip.EventWrapper@16f25a7]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:487) [Processing gov.nist.javax.sip.EventWrapper@16f25a7nevents 1]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:129) [sipEvent = javax.sip.TransactionTerminatedEvent[source=gov.nist.javax.sip.SipProviderImpl@1428ea]source = gov.nist.javax.sip.SipProviderImpl@1428ea]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:389) [About to deliver transactionTerminatedEvent]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:391) [tx = null]
+DEBUG - gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:395) [tx = gov.nist.javax.sip.stack.SIPServerTransaction@d6fc1b1f]
+ERROR - null
+java.lang.NullPointerException
+	at test.unit.gov.nist.javax.sip.stack.NoAutoDialogTest$Server.processTransactionTerminated(NoAutoDialogTest.java:257)
+	at gov.nist.javax.sip.EventScanner.deliverEvent(EventScanner.java:402)
+	at gov.nist.javax.sip.EventScanner.run(EventScanner.java:492)
+	at java.lang.Thread.run(Thread.java:675)
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction$LingerTimer.<init>(SIPTransaction.java:260) [LingerTimer : z9hg4bk46e570e2efa243fee40f808941c64312:cancel]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction$LingerTimer.runTask(SIPTransaction.java:272) [LingerTimer: run() : z9hg4bk46e570e2efa243fee40f808941c64312:cancel]
+DEBUG - gov.nist.javax.sip.stack.SIPTransaction$LingerTimer.runTask(SIPTransaction.java:283) [removinggov.nist.javax.sip.stack.SIPServerTransaction@d6fc1b1f]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removeTransaction(SIPTransactionStack.java:1319) [Removing Transaction = z9hg4bk46e570e2efa243fee40f808941c64312:cancel transaction = gov.nist.javax.sip.stack.SIPServerTransaction@d6fc1b1f]
+DEBUG - gov.nist.core.LogWriter.logStackTrace(LogWriter.java:123) [[SIPTransactionStack.java:1325][SIPTransaction.java:284][SIPStackTimerTask.java:29][Timer.java:544][Timer.java:494]]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.removePendingTransaction(SIPTransactionStack.java:946) [removePendingTx: z9hg4bk46e570e2efa243fee40f808941c64312:cancel]
+DEBUG - gov.nist.javax.sip.stack.SIPTransactionStack.isDialogCreated(SIPTransactionStack.java:490) [isDialogCreated : CANCEL returning false]
+DEBUG - gov.nist.javax.sip.SipStackImpl.stop(SipStackImpl.java:952) [stopStack -- stoppping the stack]
+DEBUG - gov.nist.javax.sip.stack.UDPMessageProcessor.run(UDPMessageProcessor.java:251) [UDPMessageProcessor: Stopping]
+DEBUG - gov.nist.javax.sip.EventScanner.run(EventScanner.java:455) [Stopped event scanner!!]
