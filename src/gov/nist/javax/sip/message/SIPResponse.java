@@ -28,28 +28,36 @@
  *******************************************************************************/
 package gov.nist.javax.sip.message;
 
-import gov.nist.javax.sip.SIPConstants;
+import gov.nist.core.InternalErrorHandler;
 import gov.nist.javax.sip.Utils;
-import gov.nist.javax.sip.address.*;
+import gov.nist.javax.sip.address.SipUri;
+import gov.nist.javax.sip.header.CSeq;
+import gov.nist.javax.sip.header.CallID;
+import gov.nist.javax.sip.header.ContactList;
+import gov.nist.javax.sip.header.ContentLength;
+import gov.nist.javax.sip.header.ContentType;
+import gov.nist.javax.sip.header.From;
+import gov.nist.javax.sip.header.MaxForwards;
+import gov.nist.javax.sip.header.RecordRouteList;
+import gov.nist.javax.sip.header.RequireList;
+import gov.nist.javax.sip.header.SIPHeader;
+import gov.nist.javax.sip.header.StatusLine;
+import gov.nist.javax.sip.header.To;
+import gov.nist.javax.sip.header.Via;
+import gov.nist.javax.sip.header.ViaList;
 
-import java.util.LinkedList;
-import java.util.Iterator;
 import java.io.UnsupportedEncodingException;
-import gov.nist.core.*;
-
-import gov.nist.javax.sip.header.*;
-
 import java.text.ParseException;
+import java.util.Iterator;
+import java.util.LinkedList;
 
-import javax.sip.SipException;
-import javax.sip.Transaction;
 import javax.sip.message.Request;
 
 
 /**
  * SIP Response structure.
  *
- * @version 1.2 $Revision: 1.20 $ $Date: 2008-05-30 19:01:10 $
+ * @version 1.2 $Revision: 1.21 $ $Date: 2008-07-29 13:28:20 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
@@ -213,8 +221,9 @@ public final class SIPResponse
 				retval = "Request Terminated";
 				break;
 
-			case NOT_ACCEPTABLE_HERE :
-				retval = "Not Accpetable here";
+			//Issue 168, Typo fix reported by fre on the retval
+			case NOT_ACCEPTABLE_HERE :				
+				retval = "Not Acceptable here";
 				break;
 
 			case BAD_EVENT :
