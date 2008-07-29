@@ -42,6 +42,7 @@ import javax.sip.address.*;
 import javax.sip.message.*;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.text.ParseException;
 
@@ -64,7 +65,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.82 $ $Date: 2008-06-27 15:37:23 $
+ * @version 1.2 $Revision: 1.83 $ $Date: 2008-07-29 13:29:44 $
  * 
  * @author M. Ranganathan
  * 
@@ -193,7 +194,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
 	}
 
-	class DialogTimerTask extends SIPStackTimerTask {
+	class DialogTimerTask extends SIPStackTimerTask implements Serializable {
 		int nRetransmissions;
 
 		SIPServerTransaction transaction;
