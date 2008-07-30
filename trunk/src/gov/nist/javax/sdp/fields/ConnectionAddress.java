@@ -71,23 +71,44 @@ public class ConnectionAddress extends SDPObject {
 	public void setPort(int p) {
 		port = p;
 	}
-
 	/**
-	*  Get the string encoded version of this object
-	* @since v1.0
-	*/
-	public String encode() {
-		String encoded_string = "";
+     *  Get the string encoded version of this object
+     * @since v1.0
+     */
+    public String encode() {
+        String encoded_string = "";
 
-		if (address != null)
-			encoded_string = address.encode();
-		if (ttl != 0 && port != 0) {
-			encoded_string += Separators.SLASH + ttl + Separators.SLASH + port;
-		} else if (ttl != 0) {
-			encoded_string += Separators.SLASH + ttl;
-		}
-		return encoded_string;
-	}
+        if (address != null){
+            encoded_string = address.encode();
+            
+            //it appears that SDP does not allow square brackets
+            //in the connection address (see RFC4566) so make sure
+            //we lose them
+            if(isIPv6Reference(encoded_string))
+            {
+                //the isIPv6Reference == true means we have a minimum
+                //of 2 symbols, so substring bravely
+                encoded_string = encoded_string
+                    .substring(1, encoded_string.length()-1);
+            }
+        }
+        if (ttl != 0 && port != 0) {
+            encoded_string += Separators.SLASH + ttl + Separators.SLASH + port;
+        } else if (ttl != 0) {
+            encoded_string += Separators.SLASH + ttl;
+        }
+        return encoded_string;
+    }
+
+    /**
+     * Verifies whether the ipv6reference, i.e. whether it enclosed in
+     * square brackets
+     */
+    private boolean isIPv6Reference(String address) {
+        return address.charAt(0) == '['
+            && address.charAt(address.length() - 1) == ']';
+    }
+	
 	public Object clone() {
 		ConnectionAddress retval = (ConnectionAddress) super.clone();
 		if (this.address != null)
