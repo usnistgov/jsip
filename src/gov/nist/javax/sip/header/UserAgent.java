@@ -36,7 +36,7 @@ import javax.sip.header.*;
  * the UserAgent SIPObject. 
  *
  * @author Olivier Deruelle <br/>
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-10-12 11:57:55 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2008-07-30 14:36:06 $
  *
  * 
  *
@@ -62,10 +62,7 @@ public class UserAgent extends SIPHeader implements UserAgentHeader {
 
 		while (it.hasNext()) {
 			tokens.append((String) it.next());
-			if (it.hasNext())
-				tokens.append(' ');
-			else
-				break;
+			
 		}
 		return tokens.toString();
 	}
@@ -130,6 +127,11 @@ public class UserAgent extends SIPHeader implements UserAgentHeader {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2006/10/12 11:57:55  pmusgrave
+ * Issue number:  79, 80
+ * Submitted by:  pmusgrave@newheights.com
+ * Reviewed by:   mranga
+ *
  * Revision 1.5  2006/07/13 09:01:48  mranga
  * Issue number:
  * Obtained from:
