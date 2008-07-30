@@ -32,7 +32,7 @@ import java.text.ParseException;
 /**
  * Parser for UserAgent header.
  * 
- * @version 1.2 $Revision: 1.13 $ $Date: 2008-01-17 23:32:29 $
+ * @version 1.2 $Revision: 1.14 $ $Date: 2008-07-30 14:36:07 $
  * 
  * @author Olivier Deruelle  <br/>
  * @author M. Ranganathan  <br/>
@@ -134,7 +134,9 @@ public class UserAgentParser extends HeaderParser {
 	
 	  public static void main(String args[]) throws ParseException { String
 	  userAgent[] = { "User-Agent: Softphone/Beta1.5 \n", "User-Agent:Nist/Beta1 (beta version) \n", "User-Agent: Nist UA (beta version)\n",
-	  "User-Agent: Nist1.0/Beta2 Ubi/vers.1.0 (very cool) \n" , "User-Agent: SJphone/1.60.299a/L (SJ Labs)\n"};
+	  "User-Agent: Nist1.0/Beta2 Ubi/vers.1.0 (very cool) \n" , 
+	  "User-Agent: SJphone/1.60.299a/L (SJ Labs)\n",
+	  "User-Agent: sipXecs/3.5.11 sipXecs/sipxbridge (Linux)\n"};
 	  
 	  for (int i = 0; i < userAgent.length; i++ ) { UserAgentParser parser =
 	  new UserAgentParser(userAgent[i]); UserAgent ua= (UserAgent)
