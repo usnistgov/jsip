@@ -153,6 +153,15 @@ public class Referee implements SipListener {
 				sipProvider.sendResponse( bad );
 				TestHarness.fail("Bad REFER request. Missing Refer-To.");
 			}			
+
+			// New test: first time, only send 100 Trying, to test that retransmission
+			// continues for non-INVITE requests (using UDP)
+			// before(!) creating a ServerTransaction! Else retransmissions are filtered
+			if (!tryingSent && "udp".equalsIgnoreCase(transport)) {
+				tryingSent = true;
+				sipProvider.sendResponse( messageFactory.createResponse(100, refer) );
+				return;
+			}
 						
 			// Always create a ServerTransaction, best as early as possible in the code
 			Response response = null;
@@ -160,15 +169,7 @@ public class Referee implements SipListener {
 			if (st == null) {
 				st = sipProvider.getNewServerTransaction(refer);
 			}
-			
-			// New test: first time, only send 100 Trying, to test that retransmission
-			// continues for non-INVITE requests (using UDP)
-			if (!tryingSent && "udp".equalsIgnoreCase(transport)) {
-				tryingSent = true;
-				st.sendResponse( messageFactory.createResponse(100, refer) );
-				return;
-			}
-			
+						
 			// Check if it is an initial SUBSCRIBE or a refresh / unsubscribe
 			String toTag = Integer.toHexString( (int) (Math.random() * Integer.MAX_VALUE) );
 			response = messageFactory.createResponse(202, refer);

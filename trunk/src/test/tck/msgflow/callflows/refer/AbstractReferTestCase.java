@@ -84,7 +84,7 @@ public abstract class AbstractReferTestCase extends ScenarioHarness implements
 
 	public void tearDown() throws Exception {
 		try {
-			Thread.sleep(2000);
+			Thread.sleep(4000);
 			tiProtocolObjects.destroy();
 			if (riProtocolObjects != tiProtocolObjects)
 				riProtocolObjects.destroy();
