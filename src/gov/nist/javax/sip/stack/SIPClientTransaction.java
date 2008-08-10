@@ -155,7 +155,7 @@ import java.io.IOException;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.100 $ $Date: 2008-06-12 12:50:25 $
+ * @version 1.2 $Revision: 1.101 $ $Date: 2008-08-10 17:43:16 $
  */
 public class SIPClientTransaction extends SIPTransaction implements
 		ServerResponseInterface, javax.sip.ClientTransaction , 
@@ -1003,8 +1003,14 @@ public class SIPClientTransaction extends SIPTransaction implements
 			// Resend the last request sent
 			if (this.getState() == null || !this.isMapped)
 				return;
-			if (TransactionState.CALLING == this.getState()
-					|| TransactionState.TRYING == this.getState()) {
+			
+			boolean inv = isInviteTransaction();
+			TransactionState s = this.getState();
+			
+			// JvB: INVITE CTs only retransmit in CALLING, non-INVITE in both TRYING and PROCEEDING
+			// Bug-fix for non-INVITE transactions not retransmitted when 1xx response received
+			if ( (inv && TransactionState.CALLING == s)
+				 || (!inv && (TransactionState.TRYING == s || TransactionState.PROCEEDING == s))) {
 				// If the retransmission filter is disabled then
 				// retransmission of the INVITE is the application
 				// responsibility.
