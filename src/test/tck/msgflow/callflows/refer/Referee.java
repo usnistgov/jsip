@@ -84,7 +84,7 @@ public class Referee implements SipListener {
 
 	private static Logger logger = Logger.getLogger(Referee.class) ;
 	
-	
+	private boolean tryingSent;
 
 	private EventHeader referEvent;
 
@@ -125,7 +125,7 @@ public class Referee implements SipListener {
 				logger.info("Referee failed processing REFER, because of " + e.getMessage(), e);
 				TestHarness.fail("Referee failed processing REFER, because of " + e.getMessage());
 			}
-		}
+		} else TestHarness.fail( "Not a REFER request but:" + request.getMethod() );
 
 	}
 
@@ -159,6 +159,14 @@ public class Referee implements SipListener {
 			ServerTransaction st = requestEvent.getServerTransaction();			
 			if (st == null) {
 				st = sipProvider.getNewServerTransaction(refer);
+			}
+			
+			// New test: first time, only send 100 Trying, to test that retransmission
+			// continues for non-INVITE requests (using UDP)
+			if (!tryingSent && "udp".equalsIgnoreCase(transport)) {
+				tryingSent = true;
+				st.sendResponse( messageFactory.createResponse(100, refer) );
+				return;
 			}
 			
 			// Check if it is an initial SUBSCRIBE or a refresh / unsubscribe
@@ -208,7 +216,8 @@ public class Referee implements SipListener {
 			long id = ((CSeqHeader) refer.getHeader("CSeq")).getSeqNumber();
 			referEvent.setEventId( Long.toString(id) );			
 			
-			sendNotify( Response.TRYING, "Trying" );
+			// JvB: do this after receiving 100 response
+			// sendNotify( Response.TRYING, "Trying" );
 			
 			// Then call the refer-to
 			sendInvite( refTo );
@@ -314,6 +323,8 @@ public class Referee implements SipListener {
 		logger.info("dialogState = "
 				+ transaction.getDialog().getState());
 		logger.info("Transaction Time out");
+		
+		TestHarness.fail( "Transaction timeout" );
 	}
 	
 	public void sendInvite( ReferToHeader to ) {

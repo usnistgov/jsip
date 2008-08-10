@@ -91,6 +91,8 @@ public abstract class AbstractReferTestCase extends ScenarioHarness implements
 			Thread.sleep(1000);
 			this.providerTable.clear();
 			
+			assertEquals( 3, referrer.count );	// Should have 3 NOTIFYs
+			
 			logTestCompleted();
 		} catch (Exception ex) {
 			logger.error("unexpected exception", ex);
