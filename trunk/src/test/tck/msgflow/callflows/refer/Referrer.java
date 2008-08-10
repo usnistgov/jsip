@@ -32,7 +32,6 @@ import javax.sip.message.MessageFactory;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 
-import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -69,7 +68,7 @@ public class Referrer implements SipListener {
 	
 	public static final int myPort = 5080;
 
-	private int count;
+	public int count;	//< Number of NOTIFYs
 
 	private static Logger logger = Logger.getLogger(Referrer.class);
 
@@ -106,17 +105,26 @@ public class Referrer implements SipListener {
 				+ serverTransactionId + 
 				" branch ID = " + viaBranch);
 		//logger.info( request );
-		if (request.getMethod().equals(Request.NOTIFY))
+		if (request.getMethod().equals(Request.NOTIFY)) {
 			processNotify(requestReceivedEvent, serverTransactionId);
+		} else if ( request.getMethod().equals(Request.INVITE)) { 
+			processInvite( requestReceivedEvent );
+		} else if ( request.getMethod().equals(Request.ACK)) { 
+			processAck( requestReceivedEvent );
+		} else if ( request.getMethod().equals(Request.BYE)) { 
+			processBye( requestReceivedEvent );
+		} else {
+			TestHarness.fail( "Unexpected request type:" + request.getMethod() );
+		}
 
 	}
 
-	public void processNotify(RequestEvent requestEvent,
+	private void processNotify(RequestEvent requestEvent,
 			ServerTransaction serverTransactionId) {
 		SipProvider provider = (SipProvider) requestEvent.getSource();
 		Request notify = requestEvent.getRequest();
-		try {
-			logger.info("referer:  got a notify count  " + this.count++ );
+		if ( notify.getMethod().equals("NOTIFY") ) try {
+			logger.info("referer:  got a NOTIFY count  " + ++this.count + ":\n" + notify );
 			if (serverTransactionId == null) {
 				logger.info("referer:  null TID.");
 				serverTransactionId = provider.getNewServerTransaction(notify);
@@ -145,20 +153,62 @@ public class Referrer implements SipListener {
 			} else {
 				logger.info("Referer: state now " + state);
 			}
-
 		} catch (Exception ex) {
 			TestHarness.fail("Failed processing notify, because of " + ex);
 			
+		} else {
+			TestHarness.fail( "Unexpected request type" );
 		}
 	}
 
+	private void processInvite( RequestEvent re ) 
+	{
+		SipProvider provider = (SipProvider) re.getSource();
+		ServerTransaction st = re.getServerTransaction();
+		try {
+			if (st==null) st = provider.getNewServerTransaction( re.getRequest() );
+			Response r = messageFactory.createResponse( 100 , re.getRequest());			
+			st.sendResponse( r );
+			r = messageFactory.createResponse( 180 , re.getRequest());
+			r.addHeader( (ContactHeader) contactHeader.clone() );
+			((ToHeader) r.getHeader("To")).setTag( "inv_res" );
+			st.sendResponse( r );
+			Thread.sleep( 500 );
+			r = messageFactory.createResponse( 200, re.getRequest() );
+			r.addHeader( (ContactHeader) contactHeader.clone() );
+			((ToHeader) r.getHeader("To")).setTag( "inv_res" );
+			st.sendResponse( r );
+		} catch (Throwable t) {
+			t.printStackTrace();
+			TestHarness.fail( "Throwable:" + t.getLocalizedMessage() );
+		}		
+	}
+	
+	private void processAck( RequestEvent re ) 
+	{
+		// ignore it, Referee sends BYE right after
+	}
+	
+	private void processBye( RequestEvent re ) 
+	{
+		try {
+			re.getServerTransaction().sendResponse( 
+					messageFactory.createResponse(200, re.getRequest()));
+		} catch (Throwable t) {
+			t.printStackTrace();
+			TestHarness.fail( "Throwable:" + t.getLocalizedMessage() );
+		}
+	}
+	
 	public void processResponse(ResponseEvent responseReceivedEvent) {
-		logger.info("Got a response");
 		Response response = (Response) responseReceivedEvent.getResponse();
 		Transaction tid = responseReceivedEvent.getClientTransaction();
 
+		logger.info("Got a response:" + response.getStatusCode() 
+				+ ':' + response.getHeader( CSeqHeader.NAME ) );
+
 		logger.info("Response received with client transaction id " + tid
-				+ ":\n" + response.getStatusCode()  );
+				+ ": " + response.getStatusCode()  );
 		if (tid == null) {
 			logger.info("Stray response -- dropping ");
 			return;
@@ -270,8 +320,9 @@ public class Referrer implements SipListener {
 			// eventHeader.setEventId("foo");
 			// request.addHeader(eventHeader);
 
+			// Make the INVITE come back to this listener!
 			ReferToHeader referTo = headerFactory.createReferToHeader( 
-					addressFactory.createAddress( "<sip:127.0.0.1:" + 5070 + ">" )
+					addressFactory.createAddress( "<sip:127.0.0.1:" + myPort + ">" )
 			);
 			request.addHeader( referTo );
 			
@@ -285,7 +336,7 @@ public class Referrer implements SipListener {
 	}
 
 	public void processIOException(IOExceptionEvent exceptionEvent) {
-		logger.info("io exception event recieved");
+		logger.info("io exception event received");
 		TestHarness.fail("IOException unexpected");
 	}
 
@@ -297,7 +348,7 @@ public class Referrer implements SipListener {
 
 	public void processDialogTerminated(
 			DialogTerminatedEvent dialogTerminatedEvent) {
-		logger.info("dialog terminated event	recieved");
+		logger.info("dialog terminated event received");
 	}
 
 	public void processTimeout(javax.sip.TimeoutEvent timeoutEvent) {
