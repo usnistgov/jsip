@@ -322,7 +322,7 @@ public class Referrer implements SipListener {
 
 			// Make the INVITE come back to this listener!
 			ReferToHeader referTo = headerFactory.createReferToHeader( 
-					addressFactory.createAddress( "<sip:127.0.0.1:" + myPort + ">" )
+					addressFactory.createAddress( "<sip:127.0.0.1:" + myPort + ";transport=" + transport + ">" )
 			);
 			request.addHeader( referTo );
 			
