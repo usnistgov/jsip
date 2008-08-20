@@ -41,7 +41,7 @@ import gov.nist.javax.sip.parser.*;
 /**
  * Message Factory implementation
  * 
- * @version 1.2 $Revision: 1.15 $ $Date: 2008-05-06 03:55:53 $
+ * @version 1.2 $Revision: 1.16 $ $Date: 2008-08-20 12:06:19 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -283,8 +283,8 @@ public class MessageFactoryImpl implements MessageFactory, MessageFactoryExt {
 		StatusLine statusLine = new StatusLine();
 		statusLine.setStatusCode(statusCode);
 		String reasonPhrase = SIPResponse.getReasonPhrase(statusCode);
-		if (reasonPhrase == null)
-			throw new ParseException(statusCode + " Unkown  ", 0);
+		//if (reasonPhrase == null)
+		//	throw new ParseException(statusCode + " Unkown  ", 0);
 		statusLine.setReasonPhrase(reasonPhrase);
 		sipResponse.setStatusLine(statusLine);
 		sipResponse.setCallId(callId);
