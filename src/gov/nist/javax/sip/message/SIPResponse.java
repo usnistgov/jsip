@@ -57,7 +57,7 @@ import javax.sip.message.Request;
 /**
  * SIP Response structure.
  *
- * @version 1.2 $Revision: 1.21 $ $Date: 2008-07-29 13:28:20 $
+ * @version 1.2 $Revision: 1.22 $ $Date: 2008-08-20 12:06:42 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
@@ -287,7 +287,7 @@ public final class SIPResponse
 				break;
 				
 			default :
-				retval = "Unkown Reason";
+				retval = "Unknown Status";
 
 		}
 		return retval;
@@ -299,7 +299,10 @@ public final class SIPResponse
 	 *@throws IlegalArgumentException if invalid status code.
 	 */
 	public void setStatusCode(int statusCode) throws ParseException {
-		if (statusCode < 100 || statusCode > 800)
+	  
+	  // RFC3261 defines statuscode as 3DIGIT, 606 is the highest officially
+	  // defined code but extensions may add others (up to 999)
+		if (statusCode < 100 || statusCode > 999)
 			throw new ParseException("bad status code", 0);
 		if (this.statusLine == null)
 			this.statusLine = new StatusLine();
