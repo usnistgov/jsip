@@ -57,7 +57,7 @@ import javax.sip.message.Request;
 /**
  * SIP Response structure.
  *
- * @version 1.2 $Revision: 1.22 $ $Date: 2008-08-20 12:06:42 $
+ * @version 1.2 $Revision: 1.23 $ $Date: 2008-08-20 12:11:19 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
@@ -301,8 +301,9 @@ public final class SIPResponse
 	public void setStatusCode(int statusCode) throws ParseException {
 	  
 	  // RFC3261 defines statuscode as 3DIGIT, 606 is the highest officially
-	  // defined code but extensions may add others (up to 999)
-		if (statusCode < 100 || statusCode > 999)
+	  // defined code but extensions may add others (in theory up to 999,
+	  // but in practice up to 699 since the 6xx range is defined as 'final error')
+		if (statusCode < 100 || statusCode > 699)
 			throw new ParseException("bad status code", 0);
 		if (this.statusLine == null)
 			this.statusLine = new StatusLine();
