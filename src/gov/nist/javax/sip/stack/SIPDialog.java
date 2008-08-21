@@ -65,7 +65,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.85 $ $Date: 2008-08-21 02:07:09 $
+ * @version 1.2 $Revision: 1.86 $ $Date: 2008-08-21 12:19:37 $
  * 
  * @author M. Ranganathan
  * 
@@ -2065,7 +2065,10 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 		if (this.remoteTarget == null) {
 			throw new SipException("Cannot create ACK - no remote Target!");
 		}
-		this.sipStack.logWriter.logDebug("createAck " +  this);
+
+                if ( logger.isDebugEnabled() )  {
+		    this.sipStack.logWriter.logDebug("createAck " +  this);
+                }
 
 		if (!lastInviteOkReceived) {
 			throw new SipException(
@@ -2073,7 +2076,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 		} else {
 			// Reset it, it will be set again by the next 2xx response to
 			// reINVITE (if any)
-		    
 			lastInviteOkReceived = false;
 		}
 
