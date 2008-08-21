@@ -34,6 +34,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -64,7 +65,7 @@ public class NameValueList implements Serializable, Map<String,NameValue> {
 	 */
 	public NameValueList() {
 		this.separator = ";";
-		this.hmap = new HashMap<String,NameValue>();
+		this.hmap = new LinkedHashMap<String,NameValue>();
 	}
 
 	public NameValueList(boolean sync) {
@@ -72,7 +73,7 @@ public class NameValueList implements Serializable, Map<String,NameValue> {
 		if (sync)
 			this.hmap = new ConcurrentHashMap<String,NameValue>();
 		else
-			this.hmap = new HashMap<String,NameValue>();
+			this.hmap = new LinkedHashMap<String,NameValue>();
 	}
 
 	public void setSeparator(String separator) {
