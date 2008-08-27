@@ -52,10 +52,10 @@ import javax.sip.message.*;
  * @author M. Ranganathan
  * 
  * 
- * @version 1.2 $Revision: 1.58 $ $Date: 2007-10-26 03:53:17 $
+ * @version 1.2 $Revision: 1.59 $ $Date: 2008-08-27 14:43:48 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
-		javax.sip.Transaction {
+		javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
 
 	protected boolean toListener; // Flag to indicate that the listener gets
 
