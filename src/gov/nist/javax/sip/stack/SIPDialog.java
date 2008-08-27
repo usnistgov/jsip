@@ -65,7 +65,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.87 $ $Date: 2008-08-21 12:38:58 $
+ * @version 1.2 $Revision: 1.88 $ $Date: 2008-08-27 18:25:22 $
  * 
  * @author M. Ranganathan
  * 
@@ -2369,17 +2369,20 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 		} else {
 			// Processing Server Dialog.
 
-			if (cseqMethod.equals(Request.CANCEL)
-					&& statusCode / 100 == 2
-					&& (!this.isReInvite())
-					&& (getState() == null || getState().getValue() == SIPDialog.EARLY_STATE)) {
+			if (cseqMethod.equals(Request.CANCEL)) {
+					// && statusCode / 100 == 2
+					// && (!this.isReInvite())
+					// && (getState() == null || getState().getValue() == SIPDialog.EARLY_STATE)) {
 				/*
 				 * Transaction successfully cancelled but dialog has not yet
 				 * been established so delete the dialog. Note: this does not
 				 * apply to re-invite
 				 * 
+				 * JvB: this is wrong, CANCEL is an independent transaction 
+				 * that does not affect the Dialog state. The Dialog is
+				 * terminated when the UAS application sends 487
 				 */
-				this.setState(SIPDialog.TERMINATED_STATE);
+				// this.setState(SIPDialog.TERMINATED_STATE);
 			} else if (cseqMethod.equals(Request.BYE) && statusCode / 100 == 2
 					&& this.isTerminatedOnBye()) {
 				/*
