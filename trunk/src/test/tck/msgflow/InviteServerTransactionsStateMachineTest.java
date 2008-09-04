@@ -574,8 +574,8 @@ public class InviteServerTransactionsStateMachineTest
 				|| cancelReceivedEvent.getRequest() == null)
 				throw new TiUnexpectedError("The CANCEL request was not received by the TI!");
 
-			// Check that a ST was matched, and that it is equal to the INVITE ST
-			assertEquals( tran, cancelReceivedEvent.getServerTransaction() );
+			// Check that a ST was matched, and that it is equal to the INVITE ST branch.
+			assertEquals( tran.getBranchId(), cancelReceivedEvent.getServerTransaction().getBranchId() );
 			
 			// Send an OK to the CANCEL
 			Response cancelOK;
