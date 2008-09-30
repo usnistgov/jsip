@@ -56,7 +56,7 @@ import java.io.IOException;
  * interface). This is part of the glue that ties together the NIST-SIP stack and event model with
  * the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.22 $ $Date: 2008-06-27 21:18:37 $
+ * @version 1.2 $Revision: 1.23 $ $Date: 2008-09-30 01:54:31 $
  * 
  * @author M. Ranganathan
  */
@@ -1187,8 +1187,10 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             sipDialog.setLastResponse(transaction, sipResponse);
         }
 
-        ResponseEvent responseEvent = new javax.sip.ResponseEvent(sipProvider,
+      
+        ResponseEvent responseEvent  = new javax.sip.ResponseEvent(sipProvider,
                 (ClientTransaction) transaction, sipDialog, (Response) sipResponse);
+
         sipProvider.handleEvent(responseEvent, transaction);
 
     }

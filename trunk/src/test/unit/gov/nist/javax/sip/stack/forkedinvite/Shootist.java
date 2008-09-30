@@ -1,5 +1,7 @@
 package test.unit.gov.nist.javax.sip.stack.forkedinvite;
 
+import gov.nist.javax.sip.SipStackImpl;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Properties;
@@ -82,7 +84,11 @@ public class Shootist implements SipListener {
 	
 	private SipStack sipStack;
 
-    private Dialog canceledDialog;
+    private HashSet<Dialog> canceledDialog = new HashSet<Dialog>();
+
+    private boolean byeResponseSeen;
+
+    private int counter;
 	
 	private static HeaderFactory headerFactory;
 	
@@ -105,28 +111,27 @@ public class Shootist implements SipListener {
         // and are not necessarily part of any other jain-sip
         // implementation.
         String logFileDirectory = "logs/";
-        properties.setProperty("gov.nist.javax.sip.DEBUG_LOG", logFileDirectory 
-                + stackname + "debuglog.txt");
-        properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
-                logFileDirectory + stackname + "log.txt");
-
+        
         properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT",
                 "on");
         
-         
-       
-   
+        properties.setProperty("gov.nist.javax.sip.REENTRANT_LISTENER", "true");
+        properties.setProperty("gov.nist.javax.sip.THREAD_POOL_SIZE", "4");
+        
         
 
         // Set to 0 in your production code for max speed.
         // You need 16 for logging traces. 32 for debug + traces.
         // Your code will limp at 32 but it is best for debugging.
         properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
+        String logFile = "logs/" + stackname + ".txt";
+        
+        properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",logFile  );
 
         try {
             // Create SipStack object
             sipStack = sipFactory.createSipStack(properties);
-            
+        
             System.out.println("createSipStack " + sipStack);
         } catch (Exception e) {
             // could not find
@@ -239,11 +244,14 @@ public class Shootist implements SipListener {
 						TestCase.assertTrue(
 								"Dialog state should be CONFIRMED", dialog
 										.getState() == DialogState.CONFIRMED);
+						
+						TestCase.assertTrue(this.ackedDialog == null || 
+						        this.ackedDialog == dialog);
 						this.ackedDialog = dialog;
 						
 						
 					} else {
-					    this.canceledDialog = dialog;
+					    this.canceledDialog.add(dialog);
 						
 						// Kill the second dialog by sending a bye.
 						SipProvider sipProvider = (SipProvider) responseReceivedEvent
@@ -255,6 +263,10 @@ public class Shootist implements SipListener {
 					}
 					
 					
+				} else if ( cseq.getMethod().equals(Request.BYE)) {
+				    TestCase.assertTrue("got a BYE ok for wrong dialog", 
+				            this.canceledDialog.contains(dialog));
+				    this.byeResponseSeen = true;
 				} else {
 					logger.info("Response method = " + cseq.getMethod());
 				}
@@ -288,13 +300,13 @@ public class Shootist implements SipListener {
 
 	public void checkState() {
 		TestCase.assertEquals("Should see two distinct dialogs",
-				2,this.forkedDialogs.size());
+				counter,this.forkedDialogs.size());
 		TestCase.assertTrue(
 				"Should see the original (default) dialog in the forked set",
 				this.forkedDialogs.contains(this.originalDialog));
 		
 		TestCase.assertTrue ( this.ackedDialog.getState() == DialogState.CONFIRMED);
-		TestCase.assertTrue(this.canceledDialog.getState() == DialogState.TERMINATED);
+		TestCase.assertTrue(this.byeResponseSeen);
 		
 		// cleanup
 		forkedDialogs.clear();
@@ -305,8 +317,10 @@ public class Shootist implements SipListener {
 		logger.info("Transaction Time out");
 	}
 
-	public void sendInvite() {
+	public void sendInvite(int forkCount) {
 		try {
+		    
+		    this.counter = forkCount;
 
 			String fromName = "BigGuy";
 			String fromSipAddress = "here.com";
@@ -465,7 +479,8 @@ public class Shootist implements SipListener {
 
 	public void processDialogTerminated(
 			DialogTerminatedEvent dialogTerminatedEvent) {
-		logger.info("dialogTerminatedEvent");
+		TestCase.assertTrue("DTE dialog must be one of those we canceled",
+		        this.canceledDialog.contains((Dialog)dialogTerminatedEvent.getDialog() ));
 
 	}
 

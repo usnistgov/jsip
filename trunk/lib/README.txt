@@ -12,3 +12,7 @@ log4j - used under the Apache Software license (included). The logging
 
 junit - is used under the common public license.
 	 http://www.opensource.org/licenses/cpl.php
+
+sipxcommons.jar - this is used for generation of nice log files that are
+viewable using the sipx trace viewer tool.
+

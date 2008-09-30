@@ -263,6 +263,7 @@ c:/jakarta-ant/bin/ant all
 						<classpath>
 							<pathelement location="${log4j_jar}" />
 							<pathelement location="${junit_jar}" />
+							<pathelement location='lib/sipxcommons.jar' />
 						</classpath>
 					</jain-javac>
 					<jar destfile="${unit_test_jar}" basedir="${classes}" includes="test/unit/**/*.class,test/torture/**/*" />
@@ -385,6 +386,9 @@ c:/jakarta-ant/bin/ant all
 
 				<target name='testfork'  depends="compileunit" description="Runs unit tests not included in tck.">
 					<mkdir dir="test-reports" />
+					<delete failonerror="0">
+						<fileset file="logs/*" />
+					</delete>
 					<mkdir dir="logs" />
 					<copy file="src/test/tck/msgflow/callflows/tls/testkeys" toDir="classes/test/tck/msgflow/callflows/tls" />
 
