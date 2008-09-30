@@ -1,5 +1,7 @@
 package test.unit.gov.nist.javax.sip.stack.forkedinvite;
 
+import gov.nist.javax.sip.SipStackImpl;
+
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Properties;
@@ -71,6 +73,33 @@ public class Proxy implements SipListener {
 
     private SipStack sipStack;
 
+    private int ntargets;
+    
+    
+    private void sendTo(ServerTransaction st, Request request, int targetPort) throws Exception {
+        Request newRequest = (Request) request.clone();
+        
+        SipURI sipUri = addressFactory.createSipURI("UA1", "127.0.0.1");
+        sipUri.setPort(targetPort);
+        sipUri.setLrParam();
+        Address address = addressFactory.createAddress("client1", sipUri);
+        RouteHeader rheader = headerFactory.createRouteHeader(address);
+
+        newRequest.addFirst(rheader);
+        ViaHeader viaHeader = headerFactory.createViaHeader(host, this.port, transport, null);
+        newRequest.addFirst(viaHeader);
+        ClientTransaction ct1 = sipProvider.getNewClientTransaction(newRequest);
+        sipUri = addressFactory.createSipURI("proxy", "127.0.0.1");
+        address = addressFactory.createAddress("proxy", sipUri);
+        sipUri.setPort(5070);
+        sipUri.setLrParam();
+        RecordRouteHeader recordRoute = headerFactory.createRecordRouteHeader(address);
+        newRequest.addHeader(recordRoute);
+        ct1.setApplicationData(st);
+        this.clientTxTable.put(new Integer(targetPort), ct1);
+        ct1.sendRequest();
+    }
+
     public void processRequest(RequestEvent requestEvent) {
         try {
             Request request = requestEvent.getRequest();
@@ -87,53 +116,13 @@ public class Proxy implements SipListener {
                     st = sipProvider.getNewServerTransaction(request);
 
                 }
-                Request newRequest = (Request) request.clone();
-                SipURI sipUri = addressFactory.createSipURI("UA1", "127.0.0.1");
-                sipUri.setPort(5080);
-                sipUri.setLrParam();
-                Address address = addressFactory.createAddress("client1", sipUri);
-                RouteHeader rheader = headerFactory.createRouteHeader(address);
+                
+                for ( int i = 0; i < ntargets; i++ ) {
+                    this.sendTo(st,request,5080 + i);
+                }
 
-                newRequest.addFirst(rheader);
-                ViaHeader viaHeader = headerFactory.createViaHeader(host, port, transport, null);
-                newRequest.addFirst(viaHeader);
-                ClientTransaction ct1 = sipProvider.getNewClientTransaction(newRequest);
-                sipUri = addressFactory.createSipURI("proxy", "127.0.0.1");
-                address = addressFactory.createAddress("proxy", sipUri);
-                sipUri.setPort(5070);
-                sipUri.setLrParam();
-                RecordRouteHeader recordRoute = headerFactory.createRecordRouteHeader(address);
-                newRequest.addHeader(recordRoute);
-                ct1.setApplicationData(st);
-                this.clientTxTable.put(new Integer(5080), ct1);
-
-                newRequest = (Request) request.clone();
-                sipUri = addressFactory.createSipURI("UA2", "127.0.0.1");
-                sipUri.setLrParam();
-                sipUri.setPort(5090);
-                address = addressFactory.createAddress("client2", sipUri);
-                rheader = headerFactory.createRouteHeader(address);
-                newRequest.addFirst(rheader);
-                viaHeader = headerFactory.createViaHeader(host, port, transport, null);
-                newRequest.addFirst(viaHeader);
-                sipUri = addressFactory.createSipURI("proxy", "127.0.0.1");
-                sipUri.setPort(5070);
-                sipUri.setLrParam();
-                sipUri.setTransportParam(transport);
-                address = addressFactory.createAddress("proxy", sipUri);
-
-                recordRoute = headerFactory.createRecordRouteHeader(address);
-
-                newRequest.addHeader(recordRoute);
-                ClientTransaction ct2 = sipProvider.getNewClientTransaction(newRequest);
-                ct2.setApplicationData(st);
-                this.clientTxTable.put(new Integer(5090), ct2);
-
-                // Send the requests out to the two listening points of the
-                // client.
-
-                ct2.sendRequest();
-                ct1.sendRequest();
+             
+               
 
             } else {
                 // Remove the topmost route header
@@ -238,8 +227,9 @@ public class Proxy implements SipListener {
         TestCase.fail("unexpected event");
     }
 
-    public Proxy(int myPort) {
+    public Proxy(int myPort, int ntargets) {
         this.port = myPort;
+        this.ntargets = ntargets;
         SipFactory sipFactory = SipFactory.getInstance();
         sipFactory.resetFactory();
         sipFactory.setPathName("gov.nist");
@@ -251,22 +241,21 @@ public class Proxy implements SipListener {
         // and are not necessarily part of any other jain-sip
         // implementation.
         String logFileDirectory = "logs/";
-        properties.setProperty("gov.nist.javax.sip.DEBUG_LOG", logFileDirectory + stackname
-                + "debuglog.txt");
-        properties.setProperty("gov.nist.javax.sip.SERVER_LOG", logFileDirectory + stackname
-                + "log.txt");
-
         properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
 
         // Set to 0 in your production code for max speed.
         // You need 16 for logging traces. 32 for debug + traces.
         // Your code will limp at 32 but it is best for debugging.
+        
         properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
+        String logFile = "logs/" + stackname + ".txt";
+        
+        properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",logFile  );
 
+      
         try {
             // Create SipStack object
             sipStack = sipFactory.createSipStack(properties);
-
             System.out.println("createSipStack " + sipStack);
         } catch (Exception e) {
             // could not find

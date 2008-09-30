@@ -3,6 +3,8 @@
  */
 package test.unit.gov.nist.javax.sip.stack.forkedinvite;
 
+import java.util.HashSet;
+
 import javax.sip.SipProvider;
 
 import junit.framework.TestCase;
@@ -25,16 +27,13 @@ public class InviteTest extends TestCase {
 
     protected static final Appender console = new ConsoleAppender(new SimpleLayout());
 
-    static {
+    private static final int forkCount = 40;
+    
+   
 
-        if (!logger.isAttached(console))
-            logger.addAppender(console);
-        new PropertyConfigurator().configure("log4j.properties");
-    }
+    protected HashSet<Shootme> shootme = new HashSet<Shootme>();
 
-    protected Shootme shootme;
-
-    private Shootme shootme2;
+  
 
     private Proxy proxy;
 
@@ -54,16 +53,16 @@ public class InviteTest extends TestCase {
             SipProvider shootistProvider = shootist.createSipProvider();
             shootistProvider.addSipListener(shootist);
             
-            this.shootme = new Shootme(5080,500);
-            SipProvider shootmeProvider1 = shootme.createProvider();
-            shootmeProvider1.addSipListener(shootme);
+            for  (int i = 0 ; i <  forkCount ; i ++ ) {
+                Shootme shootme = new Shootme(5080 + i,500);
+                SipProvider shootmeProvider = shootme.createProvider();
+                shootmeProvider.addSipListener(shootme);
+                this.shootme.add(shootme);
+            }
 
-            this.shootme2 = new Shootme(5090,550);
-            SipProvider shootmeProvider2 = shootme2.createProvider();
+           
 
-            shootmeProvider2.addSipListener(shootme2);
-
-            this.proxy = new Proxy(5070);
+            this.proxy = new Proxy(5070,forkCount);
             SipProvider provider = proxy.createSipProvider();
             provider.addSipListener(proxy);
             logger.debug("setup completed");
@@ -75,15 +74,25 @@ public class InviteTest extends TestCase {
 
     public void tearDown() {
         try {
-            Thread.sleep(4000);
+            Thread.sleep(12000);
+           
+            
             this.shootist.checkState();
-            this.shootme.checkState();
-            this.shootme2.checkState();
-            this.shootme2.checkBye();
-            this.shootme.checkNoBye();
+            
+            for ( Shootme shootme: this.shootme) {
+                 shootme.checkState();
+                 shootme.checkBye();
+            }
+           
+           
             this.shootist.stop();
-            this.shootme.stop();
-            this.shootme2.stop();
+            
+            for ( Shootme shootme: this.shootme) {
+              
+                shootme.stop();
+           }
+
+        
             this.proxy.stop();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -93,7 +102,7 @@ public class InviteTest extends TestCase {
     }
 
     public void testInvite() throws Exception {
-        this.shootist.sendInvite();
+        this.shootist.sendInvite(forkCount);
 
     }
 
