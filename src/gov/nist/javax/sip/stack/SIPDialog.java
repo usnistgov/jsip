@@ -65,7 +65,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.88 $ $Date: 2008-08-27 18:25:22 $
+ * @version 1.2 $Revision: 1.89 $ $Date: 2008-09-30 01:54:31 $
  * 
  * @author M. Ranganathan
  * 
@@ -1124,8 +1124,12 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 			this.setLocalParty(sipRequest);
 			this.setRemoteParty(sipRequest);
 			this.setCallId(sipRequest);
-			this.originalRequest = sipRequest;
-			this.method = sipRequest.getMethod();
+			if ( this.originalRequest == null ) {
+			    this.originalRequest = sipRequest;
+			}
+			if ( this.method == null ) {
+			    this.method = sipRequest.getMethod();
+			}
 
 			if (transaction instanceof SIPServerTransaction) {
 				this.hisTag = sipRequest.getFrom().getTag();
@@ -2054,7 +2058,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 		// SUBSCRIBE,
 		// then send INVITE+ACK later on
 		if (!method.equals(Request.INVITE))
-			throw new SipException("Dialog was not created with an INVITE");
+			throw new SipException("Dialog was not created with an INVITE" + method);
 
 		if (cseqno <= 0)
 			throw new InvalidArgumentException("bad cseq <= 0 ");

@@ -1,5 +1,7 @@
 package test.unit.gov.nist.javax.sip.stack.forkedinvite;
 
+import gov.nist.javax.sip.SipStackImpl;
+
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Random;
@@ -214,6 +216,10 @@ public class Shootme   implements SipListener {
 					ListeningPoint lp = sipProvider.getListeningPoint(transport);
 				int myPort = lp.getPort();
 				
+				String toTag = new Integer(new Random().nextInt()).toString();
+				((ToHeader)okResponse.getHeader(ToHeader.NAME)).setTag(toTag);
+				
+				
 				Address address = addressFactory.createAddress("Shootme <sip:"
 						+ myAddress + ":" + myPort + ">");
 				ContactHeader contactHeader = headerFactory
@@ -333,26 +339,35 @@ public class Shootme   implements SipListener {
         // The following properties are specific to nist-sip
         // and are not necessarily part of any other jain-sip
         // implementation.
-        String logFileDirectory = "logs/";
-        properties.setProperty("gov.nist.javax.sip.DEBUG_LOG", logFileDirectory 
-                + stackname + "debuglog.txt");
-        properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
-                logFileDirectory + stackname + "log.txt");
-
+       
         properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT",
                 "on");
         
-         
+        
+        
+        //properties.setProperty("gov.nist.javax.sip.LOG_FACTORY",
+        //        SipFoundryLogRecordFactory.class.getName());
+       
 
         // Set to 0 in your production code for max speed.
         // You need 16 for logging traces. 32 for debug + traces.
         // Your code will limp at 32 but it is best for debugging.
+        
+        
         properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
+        String logFile = "logs/" + stackname + ".txt";
+        
+        properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",logFile  );
 
         try {
             // Create SipStack object
             sipStack = sipFactory.createSipStack(properties);
             
+            
+            //SipFoundryAppender sfa = new SipFoundryAppender(new SipFoundryLayout(),logFileDirectory 
+            //        + "sip" + stackname + ".log");
+             
+            // ((SipStackImpl) sipStack).addLogAppender(sfa);
             System.out.println("createSipStack " + sipStack);
         } catch (Exception e) {
             // could not find
@@ -400,19 +415,18 @@ public class Shootme   implements SipListener {
 	}
 	
 	public void checkBye() {
-	    if ( ! this.byeSeen ) {
-	        TestCase.fail("Should have seen a BYE");
-	    }
+	   if ( this.ackSeen && this.byeSeen ) {
+	       TestCase.fail("Both ACK and BYE were seen!!");
+	   }
+	   if ( !this.ackSeen && !this.byeSeen) {
+	       TestCase.fail("neither ACK nor BYE were seen!!");
+	   }
 	}
 
     public void stop() {
         this.sipStack.stop();
     }
 
-    public void checkNoBye() {
-       if (this.byeSeen) {
-           TestCase.fail("Should not see a bye on this branch");
-       }
-    }
+    
 
 }
