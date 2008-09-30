@@ -65,7 +65,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.89 $ $Date: 2008-09-30 01:54:31 $
+ * @version 1.2 $Revision: 1.90 $ $Date: 2008-09-30 03:18:01 $
  * 
  * @author M. Ranganathan
  * 
@@ -2432,7 +2432,10 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 							sipStack.logWriter
 									.logDebug("RFC 3265 : Not setting dialog to TERMINATED for 489");
 						} else {
-						    if ( ! this.isReInvite()) {
+							//baranowb: simplest fix to https://jain-sip.dev.java.net/issues/show_bug.cgi?id=175
+							//application is responsible for terminating in this case
+							//see rfc 5057 for better explanation 
+						    if ( ! this.isReInvite() && getState()!=DialogState.CONFIRMED ) {
 						        this.setState(SIPDialog.TERMINATED_STATE);
 						    }
 						}

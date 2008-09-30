@@ -156,7 +156,7 @@ public class NoAutoDialogTest extends TestCase {
         public Server() {
             try {
                 final Properties defaultProperties = new Properties();
-                host = InetAddress.getLocalHost().getHostAddress();
+                host = "127.0.0.1";
                 defaultProperties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
                 defaultProperties.setProperty("javax.sip.STACK_NAME", "server");
                 defaultProperties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "DEBUG");
@@ -274,7 +274,7 @@ public class NoAutoDialogTest extends TestCase {
         public Client() {
             try {
                 final Properties defaultProperties = new Properties();
-                host = InetAddress.getLocalHost().getHostAddress();
+                host = "127.0.0.1";
                 defaultProperties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
                 defaultProperties.setProperty("javax.sip.STACK_NAME", "client");
                 defaultProperties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "DEBUG");
