@@ -394,7 +394,7 @@ public class SessionDescriptionImpl implements SessionDescription {
 				if (currentMediaDescription != null) {
 					AttributeField af = (AttributeField) sdpField;
 					String s = af.getName();
-					// Bug report from Andreas Byström
+					// Bug report from Andreas Bystrom
 					currentMediaDescription
 							.addAttribute((AttributeField) sdpField);
 				} else {
@@ -404,7 +404,7 @@ public class SessionDescriptionImpl implements SessionDescription {
 			} else if (sdpField instanceof MediaField) {
 				currentMediaDescription = new MediaDescriptionImpl();
 				getMediaDescriptions(true).add(currentMediaDescription);
-				// Bug report from Andreas Byström
+				// Bug report from Andreas Bystrom
 				currentMediaDescription.setMediaField((MediaField) sdpField);
 			}
 		} catch (SdpException ex) {

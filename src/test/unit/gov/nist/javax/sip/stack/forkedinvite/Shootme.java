@@ -75,6 +75,10 @@ public class Shootme   implements SipListener {
 	private SipStack sipStack;
 
     private int delay;
+
+    private int ringingDelay;
+
+    private boolean sendRinging;
 	
 	private static AddressFactory addressFactory;
 	
@@ -191,8 +195,10 @@ public class Shootme   implements SipListener {
 			ToHeader toHeader = (ToHeader) ringingResponse.getHeader(ToHeader.NAME);
 			String toTag =  new Integer(new Random().nextInt()).toString();
 			toHeader.setTag(toTag);
-			ringingResponse.addHeader(contactHeader);
-			st.sendResponse(ringingResponse);
+			if ( sendRinging ) {
+			    ringingResponse.addHeader(contactHeader);
+			    st.sendResponse(ringingResponse);
+			}
 			Dialog dialog =  st.getDialog();
 			dialog.setApplicationData(st);
 			
@@ -328,67 +334,16 @@ public class Shootme   implements SipListener {
 
 	}
 	
-	public Shootme( int myPort, int delay ) {
+	public Shootme( int myPort, boolean sendRinging, int delay ) {
 		this.myPort = myPort;
 		this.delay = delay;
+		this.sendRinging = sendRinging;
 		
-		SipFactory sipFactory = SipFactory.getInstance();
-        sipFactory.resetFactory();
-        sipFactory.setPathName("gov.nist");
-        Properties properties = new Properties();
-        String stackname = "shootme" +  myPort;
-        properties.setProperty("javax.sip.STACK_NAME", stackname);
-
-        // The following properties are specific to nist-sip
-        // and are not necessarily part of any other jain-sip
-        // implementation.
-       
-        properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT",
-                "on");
-        
-        
-        
-        //properties.setProperty("gov.nist.javax.sip.LOG_FACTORY",
-        //        SipFoundryLogRecordFactory.class.getName());
-       
-
-        // Set to 0 in your production code for max speed.
-        // You need 16 for logging traces. 32 for debug + traces.
-        // Your code will limp at 32 but it is best for debugging.
-        
-        
-        properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
-        String logFile = "logs/" + stackname + ".txt";
-        
-        properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",logFile  );
-
-        try {
-            // Create SipStack object
-            sipStack = sipFactory.createSipStack(properties);
-            
-            
-            //SipFoundryAppender sfa = new SipFoundryAppender(new SipFoundryLayout(),logFileDirectory 
-            //        + "sip" + stackname + ".log");
-             
-            // ((SipStackImpl) sipStack).addLogAppender(sfa);
-            System.out.println("createSipStack " + sipStack);
-        } catch (Exception e) {
-            // could not find
-            // gov.nist.jain.protocol.ip.sip.SipStackImpl
-            // in the classpath
-            e.printStackTrace();
-            System.err.println(e.getMessage());
-            throw new RuntimeException("Stack failed to initialize");
-        }
-
-        try {
-            headerFactory = sipFactory.createHeaderFactory();
-            addressFactory = sipFactory.createAddressFactory();
-            messageFactory = sipFactory.createMessageFactory();
-        } catch (SipException ex) {
-            ex.printStackTrace();
-            throw new RuntimeException(ex);
-        }
+		SipObjects sipObjects = new SipObjects(myPort, "shootme","on");
+		addressFactory = sipObjects.addressFactory;
+		messageFactory = sipObjects.messageFactory;
+		headerFactory = sipObjects.headerFactory;
+		this.sipStack = sipObjects.sipStack;
 	}
 
 	
