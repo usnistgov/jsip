@@ -62,7 +62,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.37 $ $Date: 2008-06-12 12:50:26 $
+ * @version 1.2 $Revision: 1.38 $ $Date: 2008-10-02 21:14:22 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -716,8 +716,8 @@ public final class SIPRequest extends SIPMessage implements
 					|| nextHeader instanceof To
 					|| nextHeader instanceof ViaList
 					|| nextHeader instanceof CallID
-					|| (statusCode / 100 <= 2 && statusCode / 100 > 1 && nextHeader instanceof RecordRouteList)
-					// No record routing for error and 100
+					|| (statusCode / 100 <= 2 && statusCode != 100 && nextHeader instanceof RecordRouteList)
+					// No record routing for error and 100 (only applies to 100 not all 1xx)
 					|| nextHeader instanceof CSeq
 					// We just copy TimeStamp for all headers (not just 100).
 					|| nextHeader instanceof TimeStamp) {

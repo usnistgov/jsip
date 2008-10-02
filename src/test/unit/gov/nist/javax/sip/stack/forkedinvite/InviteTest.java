@@ -27,7 +27,7 @@ public class InviteTest extends TestCase {
 
     protected static final Appender console = new ConsoleAppender(new SimpleLayout());
 
-    private static final int forkCount = 10;
+    private static final int forkCount = 2;
     
    
 
@@ -52,9 +52,11 @@ public class InviteTest extends TestCase {
             shootist = new Shootist(5060, 5070);
             SipProvider shootistProvider = shootist.createSipProvider();
             shootistProvider.addSipListener(shootist);
-            
+            boolean sendRinging = true;
             for  (int i = 0 ; i <  forkCount ; i ++ ) {
-                Shootme shootme = new Shootme(5080 + i,500);
+                
+                Shootme shootme = new Shootme(5080 + i,sendRinging,400*forkCount - 200*i);
+                sendRinging = false;
                 SipProvider shootmeProvider = shootme.createProvider();
                 shootmeProvider.addSipListener(shootme);
                 this.shootme.add(shootme);
@@ -90,7 +92,7 @@ public class InviteTest extends TestCase {
                  }
             }
            
-           assertEquals("ACK count must be exactly 1", 1,ackCount);
+           assertEquals("ACK count must be exactly 2", 2,ackCount);
             
             this.shootist.stop();
             

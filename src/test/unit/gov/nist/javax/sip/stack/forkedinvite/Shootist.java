@@ -133,63 +133,18 @@ public class Shootist implements SipListener {
 	}
 	
 
-	private Shootist() {
-	    SipFactory sipFactory = SipFactory.getInstance();
-        sipFactory.resetFactory();
-        sipFactory.setPathName("gov.nist");
-        Properties properties = new Properties();
-        String stackname = "shootist";
-        properties.setProperty("javax.sip.STACK_NAME", stackname);
-
-        // The following properties are specific to nist-sip
-        // and are not necessarily part of any other jain-sip
-        // implementation.
-        String logFileDirectory = "logs/";
-        
-        properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT",
-                "on");
-        
-        properties.setProperty("gov.nist.javax.sip.REENTRANT_LISTENER", "true");
-        properties.setProperty("gov.nist.javax.sip.THREAD_POOL_SIZE", "4");
-        
-        
-
-        // Set to 0 in your production code for max speed.
-        // You need 16 for logging traces. 32 for debug + traces.
-        // Your code will limp at 32 but it is best for debugging.
-        properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
-        String logFile = "logs/" + stackname + ".txt";
-        
-        properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",logFile  );
-
-        try {
-            // Create SipStack object
-            sipStack = sipFactory.createSipStack(properties);
-        
-            System.out.println("createSipStack " + sipStack);
-        } catch (Exception e) {
-            // could not find
-            // gov.nist.jain.protocol.ip.sip.SipStackImpl
-            // in the classpath
-            e.printStackTrace();
-            System.err.println(e.getMessage());
-            throw new RuntimeException("Stack failed to initialize");
-        }
-
-        try {
-            headerFactory = sipFactory.createHeaderFactory();
-            addressFactory = sipFactory.createAddressFactory();
-            messageFactory = sipFactory.createMessageFactory();
-        } catch (SipException ex) {
-            ex.printStackTrace();
-            throw new RuntimeException(ex);
-        }
-	}
-
+	
 	public Shootist(int myPort, int proxyPort) {
-		this();
+		
 		
 		this.port = myPort;
+		
+		SipObjects sipObjects = new SipObjects(myPort, "shootist","on");
+        addressFactory = sipObjects.addressFactory;
+        messageFactory = sipObjects.messageFactory;
+        headerFactory = sipObjects.headerFactory;
+        this.sipStack = sipObjects.sipStack;
+        
 		this.peerPort = proxyPort;
 		
 		
@@ -290,10 +245,12 @@ public class Shootist implements SipListener {
 						
 					} else {
 					    this.canceledDialog.add(dialog);
-						
+					    // Send ACK to quench re-transmission
+					    sipProvider.sendRequest(ackRequest);
 						// Kill the second dialog by sending a bye.
 						SipProvider sipProvider = (SipProvider) responseReceivedEvent
 								.getSource();
+						
 						Request byeRequest = dialog.createRequest(Request.BYE);
 						ClientTransaction ct = sipProvider
 								.getNewClientTransaction(byeRequest);

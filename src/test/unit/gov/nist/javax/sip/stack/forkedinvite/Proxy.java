@@ -230,51 +230,12 @@ public class Proxy implements SipListener {
     public Proxy(int myPort, int ntargets) {
         this.port = myPort;
         this.ntargets = ntargets;
-        SipFactory sipFactory = SipFactory.getInstance();
-        sipFactory.resetFactory();
-        sipFactory.setPathName("gov.nist");
-        Properties properties = new Properties();
-        String stackname = "proxy";
-        properties.setProperty("javax.sip.STACK_NAME", stackname);
-
-        // The following properties are specific to nist-sip
-        // and are not necessarily part of any other jain-sip
-        // implementation.
-        String logFileDirectory = "logs/";
-        properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
-
-        // Set to 0 in your production code for max speed.
-        // You need 16 for logging traces. 32 for debug + traces.
-        // Your code will limp at 32 but it is best for debugging.
-        
-        properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
-        String logFile = "logs/" + stackname + ".txt";
-        
-        properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",logFile  );
-
-      
-        try {
-            // Create SipStack object
-            sipStack = sipFactory.createSipStack(properties);
-            System.out.println("createSipStack " + sipStack);
-        } catch (Exception e) {
-            // could not find
-            // gov.nist.jain.protocol.ip.sip.SipStackImpl
-            // in the classpath
-            e.printStackTrace();
-            System.err.println(e.getMessage());
-            throw new RuntimeException("Stack failed to initialize");
-        }
-
-        try {
-            headerFactory = sipFactory.createHeaderFactory();
-            addressFactory = sipFactory.createAddressFactory();
-            messageFactory = sipFactory.createMessageFactory();
-        } catch (SipException ex) {
-            ex.printStackTrace();
-            throw new RuntimeException(ex);
-        }
-
+        SipObjects sipObjects = new SipObjects(myPort, "proxy","off");
+        addressFactory = sipObjects.addressFactory;
+        messageFactory = sipObjects.messageFactory;
+        headerFactory = sipObjects.headerFactory;
+        this.sipStack = sipObjects.sipStack;
+  
     }
 
     public void stop() {

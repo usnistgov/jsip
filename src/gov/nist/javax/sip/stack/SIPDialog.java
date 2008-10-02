@@ -65,7 +65,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.90 $ $Date: 2008-09-30 03:18:01 $
+ * @version 1.2 $Revision: 1.91 $ $Date: 2008-10-02 21:14:23 $
  * 
  * @author M. Ranganathan
  * 
@@ -532,7 +532,12 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 	 */
 
 	private void setRemoteTarget(ContactHeader contact) {
-		this.remoteTarget = contact.getAddress();
+	    this.remoteTarget = contact.getAddress();
+	    if ( sipStack.isLoggingEnabled()) {
+	        sipStack.getLogWriter().logDebug("Dialog.setRemoteTarget: " + this.remoteTarget );
+	        sipStack.getLogWriter().logStackTrace();
+	    }
+		
 	}
 
 	/**
@@ -972,6 +977,11 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 		if (sipStack.isLoggingEnabled()) {
 			sipStack.logWriter.logDebug("setContact: dialogState: " + this
 					+ "state = " + this.getState());
+		}
+		
+		if ( this.dialogState == CONFIRMED_STATE && 
+		        SIPRequest.isTargetRefresh(sipRequest.getMethod())) {
+		    this.doTargetRefresh(sipRequest);
 		}
 		if (this.dialogState == CONFIRMED_STATE
 				|| this.dialogState == TERMINATED_STATE) {
@@ -2299,9 +2309,12 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 						this.addRoute(sipResponse);
 
 						setState(SIPDialog.CONFIRMED_STATE);
-					} else if (SIPRequest.isTargetRefresh(cseqMethod)) {
-						doTargetRefresh(sipResponse);
-					}
+					} 
+					/* else if (SIPRequest.isTargetRefresh(cseqMethod) ) {
+					     // Target refresh does not happen on response.
+						 doTargetRefresh(sipResponse);
+					} 
+					*/
 
 					// Capture the OK response for later use in createAck
 					if (cseqMethod.equals(Request.INVITE)) {
@@ -2502,8 +2515,10 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 		 * modifies the remote target URI potentially
 		 */
 		if (contactList != null) {
+		   
 			Contact contact = (Contact) contactList.getFirst();
-			this.remoteTarget = contact.getAddress();
+			this.setRemoteTarget(contact);
+			
 		}
 
 	}
