@@ -84,22 +84,24 @@ public class Shootme   implements SipListener {
 	
 	private static final String transport = "udp";
 	
+	private static Timer timer = new Timer();
+	
 	
 	class MyTimerTask extends TimerTask {
 		RequestEvent  requestEvent;
-		// String toTag;
+		String toTag;
 		ServerTransaction serverTx;
 
-		public MyTimerTask(RequestEvent requestEvent,ServerTransaction tx) {
+		public MyTimerTask(RequestEvent requestEvent,  ServerTransaction tx, String toTag) {
 			logger.info("MyTimerTask ");
 			this.requestEvent = requestEvent;
-			// this.toTag = toTag;
+			this.toTag = toTag;
 			this.serverTx = tx;
 
 		}
 
 		public void run() {
-			sendInviteOK(requestEvent,serverTx);
+			sendInviteOK(requestEvent,serverTx,toTag);
 		}
 
 	}
@@ -188,6 +190,7 @@ public class Shootme   implements SipListener {
 			response.addHeader(contactHeader);
 			ToHeader toHeader = (ToHeader) ringingResponse.getHeader(ToHeader.NAME);
 			String toTag =  new Integer(new Random().nextInt()).toString();
+			toHeader.setTag(toTag);
 			ringingResponse.addHeader(contactHeader);
 			st.sendResponse(ringingResponse);
 			Dialog dialog =  st.getDialog();
@@ -195,14 +198,14 @@ public class Shootme   implements SipListener {
 			
 			this.inviteSeen = true;
 
-			new Timer().schedule(new MyTimerTask(requestEvent,st/*,toTag*/), this.delay);
+			timer.schedule(new MyTimerTask(requestEvent,st,toTag), this.delay);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.exit(0);
 		}
 	}
 
-	private void sendInviteOK(RequestEvent requestEvent, ServerTransaction inviteTid) {
+	private void sendInviteOK(RequestEvent requestEvent, ServerTransaction inviteTid, String toTag) {
 		try {
 			logger.info("sendInviteOK: " + inviteTid);
 			if (inviteTid.getState() != TransactionState.COMPLETED) {
@@ -216,7 +219,7 @@ public class Shootme   implements SipListener {
 					ListeningPoint lp = sipProvider.getListeningPoint(transport);
 				int myPort = lp.getPort();
 				
-				String toTag = new Integer(new Random().nextInt()).toString();
+				
 				((ToHeader)okResponse.getHeader(ToHeader.NAME)).setTag(toTag);
 				
 				
@@ -410,21 +413,26 @@ public class Shootme   implements SipListener {
 	public void checkState() {
 		TestCase.assertTrue("Should see invite", inviteSeen);
 		
-		TestCase.assertTrue("Should see either an ACK or a BYE, or both",byeSeen || ackSeen);
+		TestCase.assertTrue("Should see BYE",byeSeen );
 		
 	}
 	
-	public void checkBye() {
-	   if ( this.ackSeen && this.byeSeen ) {
-	       TestCase.fail("Both ACK and BYE were seen!!");
-	   }
-	   if ( !this.ackSeen && !this.byeSeen) {
-	       TestCase.fail("neither ACK nor BYE were seen!!");
-	   }
+	public boolean checkBye() {
+	    return this.byeSeen;
 	}
 
     public void stop() {
         this.sipStack.stop();
+    }
+
+
+    /**
+     * @return the ackSeen
+     * 
+     * Exactly one Dialog must get an ACK.
+     */
+    public boolean isAckSeen() {
+        return ackSeen;
     }
 
     

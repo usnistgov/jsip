@@ -27,7 +27,7 @@ public class InviteTest extends TestCase {
 
     protected static final Appender console = new ConsoleAppender(new SimpleLayout());
 
-    private static final int forkCount = 40;
+    private static final int forkCount = 10;
     
    
 
@@ -79,12 +79,19 @@ public class InviteTest extends TestCase {
             
             this.shootist.checkState();
             
+            int ackCount = 0;
+           
             for ( Shootme shootme: this.shootme) {
                  shootme.checkState();
-                 shootme.checkBye();
+                
+                 
+                 if ( shootme.isAckSeen()) {
+                     ackCount ++;
+                 }
             }
            
-           
+           assertEquals("ACK count must be exactly 1", 1,ackCount);
+            
             this.shootist.stop();
             
             for ( Shootme shootme: this.shootme) {
