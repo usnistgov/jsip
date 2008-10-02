@@ -5,6 +5,8 @@ import gov.nist.javax.sip.SipStackImpl;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Properties;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.sip.ClientTransaction;
 import javax.sip.Dialog;
@@ -97,6 +99,38 @@ public class Shootist implements SipListener {
 	private static AddressFactory addressFactory;
 	
 	private static final String transport = "udp";
+	
+	static boolean callerSendsBye  = true;
+	
+	private boolean byeSent;
+	
+	private Timer timer = new Timer();
+	
+	
+	class SendBye extends TimerTask {
+
+	    private Dialog dialog;
+        public SendBye(Dialog dialog ) {
+	        this.dialog = dialog;
+	    }
+        @Override
+        public void run() {
+           try {
+               TestCase.assertEquals ("Dialog state must be confirmed",
+                        DialogState.CONFIRMED,dialog.getState());
+               
+             
+
+               Request byeRequest = dialog.createRequest(Request.BYE);
+               ClientTransaction ctx = sipProvider.getNewClientTransaction(byeRequest);
+               dialog.sendRequest(ctx);
+           } catch (Exception ex) {
+               TestCase.fail("Unexpected exception");
+           }
+           
+        }
+	    
+	}
 	
 
 	private Shootist() {
@@ -249,6 +283,10 @@ public class Shootist implements SipListener {
 						        this.ackedDialog == dialog);
 						this.ackedDialog = dialog;
 						
+						if ( callerSendsBye ) {
+						    timer.schedule( new SendBye(ackedDialog), 4000  );
+						}
+						
 						
 					} else {
 					    this.canceledDialog.add(dialog);
@@ -264,9 +302,10 @@ public class Shootist implements SipListener {
 					
 					
 				} else if ( cseq.getMethod().equals(Request.BYE)) {
-				    TestCase.assertTrue("got a BYE ok for wrong dialog", 
-				            this.canceledDialog.contains(dialog));
-				    this.byeResponseSeen = true;
+				   
+				    if ( dialog == this.ackedDialog) {
+				        this.byeResponseSeen = true;
+				    }
 				} else {
 					logger.info("Response method = " + cseq.getMethod());
 				}
@@ -299,14 +338,13 @@ public class Shootist implements SipListener {
 	}
 
 	public void checkState() {
-		TestCase.assertEquals("Should see two distinct dialogs",
+		TestCase.assertEquals("Should see " + this.counter + " distinct dialogs",
 				counter,this.forkedDialogs.size());
 		TestCase.assertTrue(
 				"Should see the original (default) dialog in the forked set",
 				this.forkedDialogs.contains(this.originalDialog));
 		
-		TestCase.assertTrue ( this.ackedDialog.getState() == DialogState.CONFIRMED);
-		TestCase.assertTrue(this.byeResponseSeen);
+		TestCase.assertTrue("Should see BYE response for ACKED Dialog",this.byeResponseSeen);
 		
 		// cleanup
 		forkedDialogs.clear();
