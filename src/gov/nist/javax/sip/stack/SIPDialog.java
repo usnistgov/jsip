@@ -65,7 +65,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.91 $ $Date: 2008-10-02 21:14:23 $
+ * @version 1.2 $Revision: 1.92 $ $Date: 2008-10-09 17:51:21 $
  * 
  * @author M. Ranganathan
  * 
@@ -2283,8 +2283,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 				// Make a final tag assignment.
 				if (getState() == null && (statusCode / 100 == 1)) {
 					// Guard aginst slipping back into early state from
-					// confirmed
-					// state
+					// confirmed  state
+				    // Was (sipResponse.getToTag() != null || sipStack.rfc2543Supported)
 					setState(SIPDialog.EARLY_STATE);
 					if ((sipResponse.getToTag() != null || sipStack.rfc2543Supported)
 							&& this.getRemoteTag() == null) {
@@ -2310,11 +2310,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
 						setState(SIPDialog.CONFIRMED_STATE);
 					} 
-					/* else if (SIPRequest.isTargetRefresh(cseqMethod) ) {
-					     // Target refresh does not happen on response.
-						 doTargetRefresh(sipResponse);
-					} 
-					*/
+					
 
 					// Capture the OK response for later use in createAck
 					if (cseqMethod.equals(Request.INVITE)) {
