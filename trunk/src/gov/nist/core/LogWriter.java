@@ -139,7 +139,7 @@ public class LogWriter {
 	 * 
 	 * @return
 	 */
-	private Logger getLogger() {
+	public Logger getLogger() {
 		return logger;
 	}
 
@@ -420,5 +420,6 @@ public class LogWriter {
 		this.needsLogging = true;
 
 	}
-
+	
+	
 }
