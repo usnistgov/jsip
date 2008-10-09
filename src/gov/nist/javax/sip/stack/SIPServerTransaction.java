@@ -151,7 +151,7 @@ import java.util.TimerTask;
  *                                      
  * </pre>
  * 
- * @version 1.2 $Revision: 1.100 $ $Date: 2008-06-12 12:50:24 $
+ * @version 1.2 $Revision: 1.101 $ $Date: 2008-10-09 18:02:31 $
  * @author M. Ranganathan
  * 
  */
@@ -239,6 +239,11 @@ public class SIPServerTransaction extends SIPTransaction implements
 			 * an internal list of unacknowledged reliable provisional
 			 * responses. The transaction layer will forward each retransmission
 			 * passed from the UAS core.
+			 * 
+			 * This differs from retransmissions of 2xx responses, whose
+      		 * intervals cap at T2 seconds.  This is because retransmissions of
+             * ACK are triggered on receipt of a 2xx, but retransmissions of
+             * PRACK take place independently of reception of 1xx.
 			 */
 			// If the transaction has terminated,
 			if (serverTransaction.isTerminated()) {
@@ -250,6 +255,14 @@ public class SIPServerTransaction extends SIPTransaction implements
 				if (ticksLeft == -1) {
 					serverTransaction.fireReliableResponseRetransmissionTimer();
 					this.ticksLeft = 2 * ticks;
+					this.ticks = this.ticksLeft;
+					// timer H MUST be set to fire in 64*T1 seconds for all transports.  Timer H determines when the server
+					// transaction abandons retransmitting the response
+					if(this.ticksLeft >= SIPTransaction.TIMER_H) {
+						this.cancel();
+						setState(TERMINATED_STATE);
+						fireTimeoutTimer();						
+					}
 				}
 
 			}
