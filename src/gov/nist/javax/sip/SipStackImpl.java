@@ -25,33 +25,44 @@
  */
 package gov.nist.javax.sip;
 
-import java.util.*;
-import java.util.StringTokenizer;
-
-import javax.sip.*;
-import javax.sip.address.*;
-import javax.sip.header.HeaderFactory;
-import javax.sip.header.ReferToHeader;
-import javax.sip.message.*;
-
-import org.apache.log4j.Appender;
-
-import gov.nist.javax.sip.clientauthutils.AccountManager;
-import gov.nist.javax.sip.clientauthutils.AuthenticationHelper;
-import gov.nist.javax.sip.clientauthutils.AuthenticationHelperImpl;
-import gov.nist.javax.sip.header.CallID;
-import gov.nist.javax.sip.header.HeaderFactoryImpl;
-import gov.nist.javax.sip.header.extensions.ReplacesHeader;
-import gov.nist.javax.sip.parser.StringMsgParser;
-import gov.nist.javax.sip.stack.*;
-
-import java.lang.reflect.*;
-import java.net.InetAddress;
-
-import gov.nist.core.*;
+import gov.nist.core.LogWriter;
 import gov.nist.core.net.AddressResolver;
 import gov.nist.core.net.NetworkLayer;
 import gov.nist.core.net.SslNetworkLayer;
+import gov.nist.javax.sip.clientauthutils.AccountManager;
+import gov.nist.javax.sip.clientauthutils.AuthenticationHelper;
+import gov.nist.javax.sip.clientauthutils.AuthenticationHelperImpl;
+import gov.nist.javax.sip.parser.StringMsgParser;
+import gov.nist.javax.sip.stack.DefaultMessageLogFactory;
+import gov.nist.javax.sip.stack.DefaultRouter;
+import gov.nist.javax.sip.stack.MessageProcessor;
+import gov.nist.javax.sip.stack.SIPTransactionStack;
+import gov.nist.javax.sip.stack.ServerLog;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.net.InetAddress;
+import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.Properties;
+import java.util.StringTokenizer;
+
+import javax.sip.InvalidArgumentException;
+import javax.sip.ListeningPoint;
+import javax.sip.ObjectInUseException;
+import javax.sip.PeerUnavailableException;
+import javax.sip.ProviderDoesNotExistException;
+import javax.sip.SipException;
+import javax.sip.SipListener;
+import javax.sip.SipProvider;
+import javax.sip.SipStack;
+import javax.sip.TransportNotSupportedException;
+import javax.sip.address.Router;
+import javax.sip.header.HeaderFactory;
+import javax.sip.message.Request;
+
+import org.apache.log4j.Appender;
+import org.apache.log4j.Logger;
 
 /**
  * Implementation of SipStack.
@@ -263,7 +274,7 @@ import gov.nist.core.net.SslNetworkLayer;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.79 $ $Date: 2008-05-21 19:34:56 $
+ * @version 1.2 $Revision: 1.80 $ $Date: 2008-10-09 19:48:16 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -1008,6 +1019,15 @@ public class SipStackImpl extends SIPTransactionStack implements
 	 */
 	public void addLogAppender(Appender appender) {
 		this.getLogWriter().addAppender(appender);
+	}
+	
+	/**
+	 * Get the log4j logger ( for log stream integration ).
+	 * 
+	 * @return
+	 */
+	public Logger getLogger() {
+	    return this.getLogWriter().getLogger();
 	}
 
 	public EventScanner getEventScanner() {
