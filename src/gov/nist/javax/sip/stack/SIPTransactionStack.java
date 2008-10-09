@@ -66,7 +66,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.94 $ $Date: 2008-06-12 12:50:24 $
+ * @version 1.2 $Revision: 1.95 $ $Date: 2008-10-09 17:41:45 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -609,7 +609,10 @@ public abstract class SIPTransactionStack implements
 		
 		String earlyId = dialog.getEarlyDialogId();
 		
-		if (earlyId != null ) this.earlyDialogTable.remove(earlyId);
+		if (earlyId != null ) {
+		    this.earlyDialogTable.remove(earlyId);
+		    this.dialogTable.remove(earlyId);
+		}
 		
          if (id != null) {
 
