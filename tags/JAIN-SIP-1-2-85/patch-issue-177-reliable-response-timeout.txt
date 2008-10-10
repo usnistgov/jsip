@@ -1,0 +1,34 @@
+Index: src/gov/nist/javax/sip/stack/SIPServerTransaction.java
+===================================================================
+RCS file: /cvs/jain-sip/src/gov/nist/javax/sip/stack/SIPServerTransaction.java,v
+retrieving revision 1.100
+diff -u -r1.100 SIPServerTransaction.java
+--- src/gov/nist/javax/sip/stack/SIPServerTransaction.java	12 Jun 2008 12:50:24 -0000	1.100
++++ src/gov/nist/javax/sip/stack/SIPServerTransaction.java	8 Oct 2008 09:43:28 -0000
+@@ -239,6 +239,11 @@
+ 			 * an internal list of unacknowledged reliable provisional
+ 			 * responses. The transaction layer will forward each retransmission
+ 			 * passed from the UAS core.
++			 * 
++			 * This differs from retransmissions of 2xx responses, whose
++      		 * intervals cap at T2 seconds.  This is because retransmissions of
++             * ACK are triggered on receipt of a 2xx, but retransmissions of
++             * PRACK take place independently of reception of 1xx.
+ 			 */
+ 			// If the transaction has terminated,
+ 			if (serverTransaction.isTerminated()) {
+@@ -250,6 +255,14 @@
+ 				if (ticksLeft == -1) {
+ 					serverTransaction.fireReliableResponseRetransmissionTimer();
+ 					this.ticksLeft = 2 * ticks;
++					this.ticks = this.ticksLeft;
++					// timer H MUST be set to fire in 64*T1 seconds for all transports.  Timer H determines when the server
++					// transaction abandons retransmitting the response
++					if(this.ticksLeft >= SIPTransaction.TIMER_H) {
++						this.cancel();
++						setState(TERMINATED_STATE);
++						fireTimeoutTimer();						
++					}
+ 				}
+ 
+ 			}
