@@ -75,16 +75,12 @@ public class HostNameParser extends ParserCore {
 
     protected String ipv6Reference() throws ParseException {
 		StringBuffer retval = new StringBuffer();
-        
 		if (debug)
 			dbg_enter("ipv6Reference");
 		try {
 			while (lexer.hasMoreChars()) {
 				char la = lexer.lookAhead(0);
-                //'%' is ipv6 address scope zone
-                //see detail at http://java.sun.com/j2se/1.5.0/docs/api/java/net/Inet6Address.html
-				if (LexerCore.isHexDigit(la) || la == '.' || la == ':' || 
-                        la == '[' || la == '%') {
+				if (LexerCore.isHexDigit(la) || la == '.' || la == ':' || la == '[') {
 					lexer.consume(1);
 					retval.append(la);
 				} else if (la == ']') {
@@ -173,7 +169,6 @@ public class HostNameParser extends ParserCore {
 				case '\t':
 				case '\r':
 				case '\n':
-                case '%': //OK,allow IPv6 address scope zone
 				case '/':	// e.g. http://[::1]/xyz.html
 					break;
 
