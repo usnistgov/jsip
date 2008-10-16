@@ -43,7 +43,7 @@ import gov.nist.javax.sip.address.*;
 
 /** Implementation of the JAIN SIP  HeaderFactory
 * 
-* @version 1.2 $Revision: 1.13 $ $Date: 2008-03-20 18:48:56 $
+* @version 1.2 $Revision: 1.14 $ $Date: 2008-10-16 18:13:35 $
 * @since 1.1
 *
 *@author M. Ranganathan   <br/>
@@ -52,6 +52,16 @@ import gov.nist.javax.sip.address.*;
 *
 */
 public class HeaderFactoryImpl implements HeaderFactory , HeaderFactoryExt {
+    
+    /**
+     * Set pretty encoding on / off.
+     * This splits up via headers into multiple lines for readability ( better for
+     * debugging ).
+     * 
+     */
+    public void setPrettyEncoding(boolean flag) {
+        SIPHeaderList.setPrettyEncode(flag);
+    }
 
 	/**
 	* Creates a new AcceptEncodingHeader based on the newly supplied encoding 
