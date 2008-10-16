@@ -44,7 +44,7 @@ import java.util.*;
  * list are of the same class). We use this for building type homogeneous lists
  * of SIPObjects that appear in SIPHeaders
  * 
- * @version 1.2 $Revision: 1.11 $ $Date: 2005/10/09 18:47:53
+ * @version 1.2 $Revision: 1.12 $ $Date: 2005/10/09 18:47:53
  */
 public abstract class SIPHeaderList<HDR extends SIPHeader> extends SIPHeader implements java.util.List<HDR>, Header {
 
@@ -161,6 +161,7 @@ public abstract class SIPHeaderList<HDR extends SIPHeader> extends SIPHeader imp
 					|| this.headerName.equals(SIPHeaderNames.PROXY_AUTHENTICATE)
 					|| this.headerName.equals(SIPHeaderNames.AUTHORIZATION)
 					|| this.headerName.equals(SIPHeaderNames.PROXY_AUTHORIZATION)
+					|| this.headerName.equals(SIPHeaderNames.VIA) // Less confusing to read
 					|| this.getClass().equals( ExtensionHeaderList.class) ) {
 				ListIterator<HDR> li = hlist.listIterator();
 				while (li.hasNext()) {
