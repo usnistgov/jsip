@@ -15,7 +15,7 @@ public class HostNameParserTest extends TestCase {
 
     private final static String validHostNames[] = { "foo.bar.com:1234",
             "proxima.chaplin.bt.co.uk", "129.6.55.181:2345",
-            "foo.bar.com:         1234", "foo.bar.com     :      1234   "
+            "foo.bar.com:         1234", "foo.bar.com     :      1234   ",
             // "[3ffe:33:0:0:202:2dff:fe32:c31c%4]",
             // "[3ffe:33:0:0:202:2dff:fe32:c31c%4:1234]" 
     };
