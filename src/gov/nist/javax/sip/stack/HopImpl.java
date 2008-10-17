@@ -28,6 +28,7 @@
  *******************************************************************************/
 package gov.nist.javax.sip.stack;
 
+import java.io.Serializable;
 import java.util.StringTokenizer;
 /*
  * IPv6 Support added by Emil Ivov (emil_ivov@yahoo.com)<br/>
@@ -40,7 +41,7 @@ import java.util.StringTokenizer;
  * Routing algorithms return a list of hops to which the request is
  * routed.
  *
- * @version 1.2 $Revision: 1.8 $ $Date: 2007-04-24 18:16:31 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2008-10-17 06:27:42 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -49,7 +50,7 @@ import java.util.StringTokenizer;
  
  *
  */
-public final class HopImpl extends Object implements javax.sip.address.Hop {
+public final class HopImpl extends Object implements javax.sip.address.Hop, Serializable {
 	protected String host;
 	protected int port;
 	protected String transport;
