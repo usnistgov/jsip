@@ -67,7 +67,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.97 $ $Date: 2008-10-20 17:19:07 $
+ * @version 1.2 $Revision: 1.98 $ $Date: 2008-10-20 17:21:01 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -433,6 +433,8 @@ public abstract class SIPTransactionStack implements
 		this.earlyDialogTable = new ConcurrentHashMap<String,SIPDialog>();
 
 		this.timer = new Timer();
+		
+		this.activeClientTransactionCount = new AtomicInteger(0);
 
 	}
 
