@@ -67,7 +67,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.96 $ $Date: 2008-10-20 16:46:14 $
+ * @version 1.2 $Revision: 1.97 $ $Date: 2008-10-20 17:19:07 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -132,7 +132,7 @@ public abstract class SIPTransactionStack implements
 
 	protected int clientTransactionTableLowaterMark = 800;
 
-	private AtomicInteger activeClientTransactionCount;
+	private AtomicInteger activeClientTransactionCount = new AtomicInteger(0);
 
 	// Hashtable for server transactions.
 	private ConcurrentHashMap<String,SIPServerTransaction> serverTransactionTable;
