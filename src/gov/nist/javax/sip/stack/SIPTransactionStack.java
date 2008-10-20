@@ -44,6 +44,7 @@ import javax.sip.address.*;
 import javax.sip.header.*;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.*;
 import java.io.IOException;
 import java.net.*;
@@ -66,7 +67,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.95 $ $Date: 2008-10-09 17:41:45 $
+ * @version 1.2 $Revision: 1.96 $ $Date: 2008-10-20 16:46:14 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -131,7 +132,7 @@ public abstract class SIPTransactionStack implements
 
 	protected int clientTransactionTableLowaterMark = 800;
 
-	private int activeClientTransactionCount;
+	private AtomicInteger activeClientTransactionCount;
 
 	// Hashtable for server transactions.
 	private ConcurrentHashMap<String,SIPServerTransaction> serverTransactionTable;
@@ -1395,9 +1396,9 @@ public abstract class SIPTransactionStack implements
 	private void addTransactionHash(SIPTransaction sipTransaction) {
 		SIPRequest sipRequest = sipTransaction.getOriginalRequest();
 		if (sipTransaction instanceof SIPClientTransaction) {
+			int activeClientTransactionCountInt = this.activeClientTransactionCount.get(); 
 			if (!this.unlimitedClientTransactionTableSize) {
-				if (this.activeClientTransactionCount > clientTransactionTableHiwaterMark) {
-
+				if (activeClientTransactionCountInt > clientTransactionTableHiwaterMark) {
 					try {
 						synchronized (this.clientTransactionTable) {
 							this.clientTransactionTable.wait();
@@ -1413,7 +1414,7 @@ public abstract class SIPTransactionStack implements
 					}
 				}
 			}
-			this.activeClientTransactionCount++;
+			this.activeClientTransactionCount.compareAndSet(activeClientTransactionCountInt, activeClientTransactionCountInt+1);
 			String key = sipRequest.getTransactionId();
 			clientTransactionTable.put(key,(SIPClientTransaction) sipTransaction);
 			if (logWriter.isLoggingEnabled()) {
@@ -1437,8 +1438,8 @@ public abstract class SIPTransactionStack implements
 	 * 
 	 */
 	protected void decrementActiveClientTransactionCount() {
-		this.activeClientTransactionCount--;
-		if (this.activeClientTransactionCount <= this.clientTransactionTableLowaterMark
+		
+		if (this.activeClientTransactionCount.decrementAndGet() <= this.clientTransactionTableLowaterMark
 				&& !this.unlimitedClientTransactionTableSize) {
 			synchronized (this.clientTransactionTable) {
 
@@ -2185,7 +2186,7 @@ public abstract class SIPTransactionStack implements
 	 * @return the activeClientTransactionCount
 	 */
 	public int getActiveClientTransactionCount() {
-		return activeClientTransactionCount;
+		return activeClientTransactionCount.get();
 	}
 
 	public boolean isRfc2543Supported() {
