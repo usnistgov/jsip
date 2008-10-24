@@ -44,6 +44,7 @@ import java.util.Properties;
 import javax.sip.header.TimeStampHeader;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.Level;
 
 /**
  * Log file wrapper class.
@@ -52,7 +53,7 @@ import org.apache.log4j.Logger;
  * later access via RMI. The trace can be viewed with a trace viewer (see
  * tools.traceviewerapp).
  *
- * @version 1.2 $Revision: 1.32 $ $Date: 2008-04-16 03:12:23 $
+ * @version 1.2 $Revision: 1.33 $ $Date: 2008-10-24 13:52:06 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -139,6 +140,28 @@ public class ServerLog {
 		
 
 		if (logLevel != null) {
+		    if (logLevel.equals("LOG4J")) {
+			//if TRACE_LEVEL property is specified as
+			//"LOG4J" then, set the traceLevel based on
+			//the log4j effective log level.
+
+			//check whether a Log4j logger name has been
+			//specified. if not, use the stack name as the default
+			//logger name.
+			Logger logger = Logger.getLogger(configurationProperties
+							 .getProperty("gov.nist.javax.sip.LOG4J_LOGGER_NAME", this.description));
+			Level level = logger.getEffectiveLevel();
+			if (level == Level.OFF) 
+			    this.setTraceLevel(0);
+			else if (level.isGreaterOrEqual(Level.DEBUG)) {
+			    this.setTraceLevel(TRACE_DEBUG);
+			} else if (level.isGreaterOrEqual(Level.INFO)) {
+			    this.setTraceLevel(TRACE_MESSAGES);
+			} else if (level.isGreaterOrEqual(Level.WARN)) {
+			    this.setTraceLevel(TRACE_EXCEPTION);
+			}
+		    }
+		    else {
 			try {
 				int ll;
 				if (logLevel.equals("DEBUG")) {
@@ -159,6 +182,7 @@ public class ServerLog {
 				System.out.println("logging dislabled ");
 				this.setTraceLevel(0);
 			}
+		    }
 		}
 		checkLogFile();
 		

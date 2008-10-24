@@ -82,7 +82,17 @@ import org.apache.log4j.Logger;
  * The server log accumulates the signaling trace. <a href="{@docRoot}/tools/tracesviewer/tracesviewer.html">
  * This can be viewed using the trace viewer tool .</a> Please send us both the
  * server log and debug log when reporting non-obvious problems. You can also
- * use the strings DEBUG or INFO for level 32 and 16 respectively</li>
+ * use the strings DEBUG or INFO for level 32 and 16 respectively. If the value of 
+ * this property is set to LOG4J, then the effective log levels are determined 
+ * from the log4j settings file (e.g. log4j.properties). The logger name for the 
+ * stack is specified using the gov.nist.javax.sip.LOG4J_LOGGER_NAME property. By
+ * default log4j logger name for the stack is the same as the stack name. For example, 
+ * <code>
+ *	properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "LOG4J");
+ *	properties.setProperty("gov.nist.javax.sip.LOG4J_LOGGER_NAME", "SIPStackLogger");
+ * </code>
+ * allows you to now control logging in the stack entirely using log4j facilities.
+ * </li>
  * 
  * <li><b>gov.nist.javax.sip.SERVER_LOG = fileName </b><br/> Log valid
  * incoming messages here. If this is left null AND the TRACE_LEVEL is above
@@ -274,7 +284,7 @@ import org.apache.log4j.Logger;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.80 $ $Date: 2008-10-09 19:48:16 $
+ * @version 1.2 $Revision: 1.81 $ $Date: 2008-10-24 13:52:05 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -736,9 +746,6 @@ public class SipStackImpl extends SIPTransactionStack implements
 						"gov.nist.javax.sip.CANCEL_CLIENT_TRANSACTION_CHECKED",
 						"true").equalsIgnoreCase("true");
 
-		// super.remoteTagReassignmentAllowed =
-		// configurationProperties.getProperty("gov.nist.javax.sip.DIALOG_REMOTE_TAG_REASSIGNMENT_ALLOWED","false").
-		// equalsIgnoreCase("true");
 
 	}
 

@@ -279,12 +279,34 @@ public class LogWriter {
 
 		this.stackName = configurationProperties
 				.getProperty("javax.sip.STACK_NAME");
-		String category = this.stackName;
-		// This is the default log file name
+
+		//check whether a Log4j logger name has been
+		//specified. if not, use the stack name as the default
+		//logger name.
+		String category = configurationProperties
+                                   .getProperty("gov.nist.javax.sip.LOG4J_LOGGER_NAME", this.stackName);
 
 	
 		logger = Logger.getLogger(category);
 		if (logLevel != null) {
+		    if (logLevel.equals("LOG4J")) {
+			//if TRACE_LEVEL property is specified as
+			//"LOG4J" then, set the traceLevel based on
+			//the log4j effective log level.
+			Level level = logger.getEffectiveLevel();
+			this.needsLogging = true;
+			if (level == Level.OFF)
+			    this.needsLogging = false;
+			this.traceLevel = TRACE_NONE;
+			if (level.isGreaterOrEqual(Level.DEBUG)) {
+			    this.traceLevel = TRACE_DEBUG;
+			} else if (level.isGreaterOrEqual(Level.INFO)) {
+			    this.traceLevel = TRACE_MESSAGES;
+			} else if (level.isGreaterOrEqual(Level.WARN)) {
+			    this.traceLevel = TRACE_EXCEPTION;
+			}
+		    }
+		    else {
 			try {
 				int ll = 0;
 				if (logLevel.equals("DEBUG")) {
@@ -349,6 +371,7 @@ public class LogWriter {
 				System.out.println("logging dislabled ");
 				needsLogging = false;
 			}
+		    }
 		} else {
 			this.needsLogging = false;
 
