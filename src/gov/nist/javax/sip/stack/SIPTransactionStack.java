@@ -67,7 +67,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.98 $ $Date: 2008-10-20 17:21:01 $
+ * @version 1.2 $Revision: 1.99 $ $Date: 2008-10-24 14:49:45 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener {
@@ -1397,13 +1397,13 @@ public abstract class SIPTransactionStack implements
 	 */
 	private void addTransactionHash(SIPTransaction sipTransaction) {
 		SIPRequest sipRequest = sipTransaction.getOriginalRequest();
-		if (sipTransaction instanceof SIPClientTransaction) {
-			int activeClientTransactionCountInt = this.activeClientTransactionCount.get(); 
+		if (sipTransaction instanceof SIPClientTransaction) {			 
 			if (!this.unlimitedClientTransactionTableSize) {
-				if (activeClientTransactionCountInt > clientTransactionTableHiwaterMark) {
+				if (this.activeClientTransactionCount.get() > clientTransactionTableHiwaterMark) {
 					try {
 						synchronized (this.clientTransactionTable) {
 							this.clientTransactionTable.wait();
+							this.activeClientTransactionCount.incrementAndGet();
 						}
 
 					} catch (Exception ex) {
@@ -1416,7 +1416,9 @@ public abstract class SIPTransactionStack implements
 					}
 				}
 			}
-			this.activeClientTransactionCount.compareAndSet(activeClientTransactionCountInt, activeClientTransactionCountInt+1);
+			else {
+				this.activeClientTransactionCount.incrementAndGet();
+			}
 			String key = sipRequest.getTransactionId();
 			clientTransactionTable.put(key,(SIPClientTransaction) sipTransaction);
 			if (logWriter.isLoggingEnabled()) {
