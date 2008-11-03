@@ -91,7 +91,7 @@ import javax.sip.address.*;
  * Subsequently, the request URI will be used as next hop target
  * 
  * 
- * @version 1.2 $Revision: 1.12 $ $Date: 2007-10-20 05:56:56 $
+ * @version 1.2 $Revision: 1.13 $ $Date: 2008-11-03 14:12:08 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -221,6 +221,9 @@ public class DefaultRouter implements Router {
 				sipStack.logWriter
 						.logDebug("Using request URI maddr to route the request = "
 								+ hop.toString());
+			((SipURI) requestURI).removeParameter("maddr");
+            
+            
 			return hop;
 
 		} else if (defaultRoute != null) {
@@ -290,7 +293,9 @@ public class DefaultRouter implements Router {
 			//@see issue 131
 			ViaHeader via = (ViaHeader) request.getHeader(ViaHeader.NAME);
 			transport = via.getTransport();
-		}
+		} 
+		
+		// sipUri.removeParameter("transport");
 
 		int port;
 		if (sipUri.getPort() != -1) {

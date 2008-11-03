@@ -31,6 +31,7 @@ package gov.nist.javax.sip;
 import java.util.*;
 
 import gov.nist.javax.sip.address.AddressImpl;
+import gov.nist.javax.sip.address.RouterExt;
 import gov.nist.javax.sip.address.SipUri;
 import gov.nist.javax.sip.header.*;
 import gov.nist.javax.sip.stack.*;
@@ -54,7 +55,7 @@ import java.text.ParseException;
 /**
  * Implementation of the JAIN-SIP provider interface.
  * 
- * @version 1.2 $Revision: 1.58 $ $Date: 2008-04-13 03:25:44 $
+ * @version 1.2 $Revision: 1.59 $ $Date: 2008-11-03 14:12:07 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -284,32 +285,8 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 					"Transaction already exists!");
 		}
 
-		String transport = sipRequest.getTopmostVia().getTransport();
-		ListeningPointImpl listeningPoint = (ListeningPointImpl) this
-				.getListeningPoint(transport);
-		// Check to see if the sentby of the topmost via header matches the
-		// sentby of our listening point.
-		// Check whether the sentby of the topmost via header matches the sentby
-		// of our listening point. Mismatch is only ok if we're bound on 0.0.0.0
-		if (listeningPoint == null
-				|| (!listeningPoint.getMessageProcessor().getSavedIpAddress()
-						.equals(IN_ADDR_ANY)
-						&& !listeningPoint.getMessageProcessor()
-								.getSavedIpAddress().equals(IN6_ADDR_ANY) && !listeningPoint
-						.getSentBy().equalsIgnoreCase(
-								sipRequest.getTopmostVia().getSentBy()
-										.toString()))) {
-			if (sipStack.isLoggingEnabled()) {
-				sipStack.getLogWriter().logError(
-						"listeningPoint " + listeningPoint);
-				if (listeningPoint != null)
-					sipStack.getLogWriter().logError(
-							"port = " + listeningPoint.getPort());
-			}
-			sipStack.getLogWriter().logWarning(
-					"sentBy does not match the sentby setting of the ListeningPoint "
-							+ sipRequest.getTopmostVia().getSentBy().toString());
-		}
+		
+		
 
 		if (request.getMethod().equalsIgnoreCase(Request.CANCEL)) {
 			SIPClientTransaction ct = (SIPClientTransaction) sipStack
@@ -347,6 +324,10 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 			throw new TransactionUnavailableException(
 					"Cannot resolve next hop -- transaction unavailable", ex);
 		}
+		String transport = hop.getTransport();
+        ListeningPointImpl listeningPoint = (ListeningPointImpl) this
+                .getListeningPoint(transport);
+        
 		String dialogId = sipRequest.getDialogId(false);
 		SIPDialog dialog = sipStack.getDialog(dialogId);
 		if (dialog != null && dialog.getState() == DialogState.TERMINATED) {
@@ -374,6 +355,9 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 
 				sipRequest.getTopmostVia().setBranch(branchId);
 			}
+			Via topmostVia = sipRequest.getTopmostVia();
+	        topmostVia.setTransport(transport);
+	        topmostVia.setPort(listeningPoint.getPort());
 			branchId = sipRequest.getTopmostVia().getBranch();
 			
 			SIPClientTransaction ct = (SIPClientTransaction) sipStack
@@ -417,6 +401,10 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 			InternalErrorHandler.handleException(ex);
 			throw new TransactionUnavailableException(
 					"Unexpected Exception FIXME! ", ex);
+		} catch (InvalidArgumentException ex) {
+		    InternalErrorHandler.handleException(ex);
+            throw new TransactionUnavailableException(
+                    "Unexpected Exception FIXME! ", ex);
 		}
 
 	}
@@ -886,6 +874,11 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 				ev = new TimeoutEvent(this, (ServerTransaction) errorObject,
 						timeout);
 			} else {
+			    SIPClientTransaction clientTx = (SIPClientTransaction) errorObject;
+			    Hop hop = clientTx.getNextHop();
+			    if ( sipStack.getRouter() instanceof RouterExt ) {
+			        ((RouterExt) sipStack.getRouter()).transactionTimeout(hop);
+			    }
 				ev = new TimeoutEvent(this, (ClientTransaction) errorObject,
 						timeout);
 			}
@@ -901,6 +894,12 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 				ev = new TimeoutEvent(this, (ServerTransaction) errorObject,
 						timeout);
 			} else {
+			    SIPClientTransaction clientTx = (SIPClientTransaction) errorObject;
+                Hop hop = clientTx.getNextHop();
+                if ( sipStack.getRouter() instanceof RouterExt ) {
+                    ((RouterExt) sipStack.getRouter()).transactionTimeout(hop);
+                }
+            
 				ev = new TimeoutEvent(this, (ClientTransaction) errorObject,
 						timeout);
 			}
