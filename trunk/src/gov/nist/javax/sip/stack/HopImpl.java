@@ -41,7 +41,7 @@ import java.util.StringTokenizer;
  * Routing algorithms return a list of hops to which the request is
  * routed.
  *
- * @version 1.2 $Revision: 1.9 $ $Date: 2008-10-17 06:27:42 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2008-11-03 14:12:08 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -140,9 +140,9 @@ public final class HopImpl extends Object implements javax.sip.address.Hop, Seri
 		}
 				
 		if (transport.compareToIgnoreCase("UDP") != 0
-			&& transport.compareToIgnoreCase("TLS") != 0 // Added by Daniel J. Martinez Manzano <dani@dif.um.es>
+			&& transport.compareToIgnoreCase("TLS") != 0 
 			&& transport.compareToIgnoreCase("TCP") != 0) {
-			System.out.println("Bad transport string " + transport);
+			System.err.println("Bad transport string " + transport);
 			throw new IllegalArgumentException(hop);
 		}
 	}

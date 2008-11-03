@@ -213,7 +213,7 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
                 userCredentials.getUserName(), authHeader.getRealm(), userCredentials
                         .getPassword(), authHeader.getNonce(), nc_value, // JvB added
                 cnonce, // JvB added
-                method, uri, requestBody, qop);// jvb changed
+                method, uri, requestBody, qop,sipStack.getLogWriter());// jvb changed
 
         AuthorizationHeader authorization = null;
         try {
