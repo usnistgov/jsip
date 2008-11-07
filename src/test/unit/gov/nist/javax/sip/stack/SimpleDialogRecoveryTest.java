@@ -59,7 +59,7 @@ import javax.sip.message.Response;
 import junit.framework.TestCase;
 /**
  * This test aims to test jain sip failover recovery.
- * Shootist on port 5060 shoots at a stateless proxy on prt 5055 (scaled down version of a balancer)
+ * Shootist on port 5060 shoots at a stateless proxy on prt 5050 (scaled down version of a balancer)
  * Stateless proxy redirect to Shootme on port 5070
  * on ACK, the Shootme stop itself and start the other shootme node on port 5080 and pass to him its current dialogs
  * on BYE or other in-dialog requests, the stateless proxy forwards to recovery shootme on port 5080
@@ -198,12 +198,14 @@ public class SimpleDialogRecoveryTest extends TestCase {
                 } 
                 else if (!Request.ACK.equals(request.getMethod())) {
                 	//Adding Route Header 
-	        		SipURI routeSipUri = addressFactory
-	                	.createSipURI(null, "127.0.0.1");
-	        		routeSipUri.setPort(5080);
-	        		routeSipUri.setLrParam();
-	        		RouteHeader route = headerFactory.createRouteHeader(addressFactory.createAddress(routeSipUri));
-	        		request.addFirst(route);
+                	if(((SipURI)request.getRequestURI()).getPort() == 5070) {
+		        		SipURI routeSipUri = addressFactory
+		                	.createSipURI(null, "127.0.0.1");
+		        		routeSipUri.setPort(5080);
+		        		routeSipUri.setLrParam();
+		        		RouteHeader route = headerFactory.createRouteHeader(addressFactory.createAddress(routeSipUri));
+		        		request.addFirst(route);
+                	}
                 }
                 //sending request
                 sipProvider.sendRequest(request);
@@ -249,7 +251,7 @@ public class SimpleDialogRecoveryTest extends TestCase {
 		
 		private String stackName;
 
-		private int myPort = 5070;
+		public int myPort = 5070;
 
 		protected ServerTransaction inviteTid;
 
@@ -259,11 +261,35 @@ public class SimpleDialogRecoveryTest extends TestCase {
 
 		private Dialog dialog;
 
-		public static final boolean callerSendsBye = true;
+		public boolean callerSendsBye = true;
+		
+		private  SipProvider sipProvider;
 
-		public Shootme(String stackName, int myPort) {
+		private boolean byeTaskRunning;
+
+		public Shootme(String stackName, int myPort, boolean callerSendsBye) {
 			this.stackName = stackName;
 			this.myPort = myPort;
+			this.callerSendsBye = callerSendsBye;
+		}
+		
+		class ByeTask  extends TimerTask {
+			Dialog dialog;
+			public ByeTask(Dialog dialog)  {
+				this.dialog = dialog;
+			}
+			public void run () {
+				try {
+				   Request byeRequest = this.dialog.createRequest(Request.BYE);
+				   ClientTransaction ct = sipProvider.getNewClientTransaction(byeRequest);
+				   dialog.sendRequest(ct);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+					fail("Unexpected exception ");
+				}
+
+			}
+
 		}
 		
 		class MyTimerTask extends TimerTask {
@@ -343,12 +369,10 @@ public class SimpleDialogRecoveryTest extends TestCase {
 				stop();				
 				shootmeRecoveryNode.init(dialogs);
 				
-				if (!callerSendsBye) {
-					Request byeRequest = dialog.createRequest(Request.BYE);
-					ClientTransaction ct = provider
-							.getNewClientTransaction(byeRequest);
-					dialog.sendRequest(ct);
-				}
+//				if (!callerSendsBye && !byeTaskRunning) {
+//					byeTaskRunning = true;
+//					new Timer().schedule(new ByeTask(dialog), 4000) ;
+//				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -483,8 +507,8 @@ public class SimpleDialogRecoveryTest extends TestCase {
 			sipFactory.setPathName("gov.nist");
 			Properties properties = new Properties();
 			properties.setProperty("javax.sip.STACK_NAME", stackName);
-			properties.setProperty("javax.sip.OUTBOUND_PROXY", Integer
-	                .toString(BALANCER_PORT));
+//			properties.setProperty("javax.sip.OUTBOUND_PROXY", Integer
+//	                .toString(BALANCER_PORT));
 			// You need 16 for logging traces. 32 for debug + traces.
 			// Your code will limp at 32 but it is best for debugging.
 			properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
@@ -517,7 +541,7 @@ public class SimpleDialogRecoveryTest extends TestCase {
 
 				Shootme listener = this;
 
-				SipProvider sipProvider = sipStack.createSipProvider(lp);
+				sipProvider = sipStack.createSipProvider(lp);
 				System.out.println("udp provider " + sipProvider);
 				sipProvider.addSipListener(listener);
 				if(dialogs != null) {
@@ -525,6 +549,18 @@ public class SimpleDialogRecoveryTest extends TestCase {
 					for (Dialog dialog : serializedDialogs) {
 						((SIPDialog)dialog).setSipProvider((SipProviderImpl)sipProvider);
 						((SipStackImpl)sipStack).putDialog((SIPDialog)dialog);
+					}
+					this.dialog = (SIPDialog)serializedDialogs.iterator().next();
+				}
+				if(!callerSendsBye && this.dialog != null) {					
+					try {
+					   Request byeRequest = this.dialog.createRequest(Request.BYE);
+					   ClientTransaction ct = sipProvider.getNewClientTransaction(byeRequest);
+					   System.out.println("sending BYE " + byeRequest);
+					   dialog.sendRequest(ct);
+					} catch (Exception ex) {
+						ex.printStackTrace();
+						fail("Unexpected exception ");
 					}
 				}
 			} catch (Exception ex) {
@@ -605,6 +641,8 @@ public class SimpleDialogRecoveryTest extends TestCase {
 
 		private boolean byeTaskRunning;
 
+		public boolean callerSendsBye = true;
+		
 		class ByeTask  extends TimerTask {
 			Dialog dialog;
 			public ByeTask(Dialog dialog)  {
@@ -624,7 +662,9 @@ public class SimpleDialogRecoveryTest extends TestCase {
 
 		}
 
-
+		public Shootist(boolean callerSendsBye) {
+			this.callerSendsBye = callerSendsBye;
+		}
 
 		public void processRequest(RequestEvent requestReceivedEvent) {
 			Request request = requestReceivedEvent.getRequest();
@@ -698,7 +738,7 @@ public class SimpleDialogRecoveryTest extends TestCase {
 				return;
 			}
 			// If the caller is supposed to send the bye
-			if ( Shootme.callerSendsBye && !byeTaskRunning) {
+			if ( callerSendsBye && !byeTaskRunning) {
 				byeTaskRunning = true;
 				new Timer().schedule(new ByeTask(dialog), 4000) ;
 			}
@@ -718,12 +758,12 @@ public class SimpleDialogRecoveryTest extends TestCase {
 						dialog.sendAck(ackRequest);
 						
 						// JvB: test REFER, reported bug in tag handling
-						Request referRequest = dialog.createRequest("REFER");
-						//simulating a balancer that will forward the request to the recovery node
-						SipURI referRequestURI = addressFactory.createSipURI(null, "127.0.0.1:5080");
-						referRequest.setRequestURI(referRequestURI);
-						dialog.sendRequest(  sipProvider.getNewClientTransaction(referRequest)); 
-						
+//						Request referRequest = dialog.createRequest("REFER");
+//						//simulating a balancer that will forward the request to the recovery node
+//						SipURI referRequestURI = addressFactory.createSipURI(null, "127.0.0.1:5080");
+//						referRequest.setRequestURI(referRequestURI);
+//						dialog.sendRequest(  sipProvider.getNewClientTransaction(referRequest)); 
+//						
 					} else if (cseq.getMethod().equals(Request.CANCEL)) {
 						if (dialog.getState() == DialogState.CONFIRMED) {
 							// oops cancel went in too late. Need to hang up the
@@ -993,11 +1033,37 @@ public class SimpleDialogRecoveryTest extends TestCase {
 		
 		balancer.start();
 		
-	    shootist = new Shootist();
+	    shootist = new Shootist(true);
 	    
-	    shootme = new Shootme("shootme", 5070);
+	    shootme = new Shootme("shootme", 5070, true);
 	    
-	    shootmeRecoveryNode = new Shootme("shootme_recovery", 5080);
+	    shootmeRecoveryNode = new Shootme("shootme_recovery", 5080, true);
+	    
+		shootme.init(null);
+			
+		shootist.init();
+			
+		Thread.sleep(10000);
+			
+		shootist.stop();
+		shootmeRecoveryNode.stop();
+//		shootme.stop();
+		stopSipStack(balancer.sipStack, balancer);	
+
+			
+	}
+	
+	public void testDialogIdentityCalleeSendsBye() throws Exception {
+
+		balancer = new Balancer("127.0.0.1", BALANCER_PORT);
+		
+		balancer.start();
+		
+	    shootist = new Shootist(false);
+	    
+	    shootme = new Shootme("shootme", 5070, false);
+	    
+	    shootmeRecoveryNode = new Shootme("shootme_recovery", 5080, false);
 	    
 		shootme.init(null);
 			

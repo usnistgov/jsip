@@ -65,7 +65,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.92 $ $Date: 2008-10-09 17:51:21 $
+ * @version 1.2 $Revision: 1.93 $ $Date: 2008-11-07 14:01:50 $
  * 
  * @author M. Ranganathan
  * 
@@ -95,7 +95,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 	// Last response (JvB: either sent or received).
 	private SIPResponse lastResponse;
 
-	private SIPTransaction firstTransaction;
+	// Should be transient, in case the dialog is serialized it will be null
+	// so when a subsequent request will be sent it will be set and a new message channel can be created
+	private transient SIPTransaction firstTransaction;
 
 	private SIPTransaction lastTransaction;
 
