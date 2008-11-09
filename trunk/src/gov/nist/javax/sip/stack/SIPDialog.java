@@ -65,7 +65,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.93 $ $Date: 2008-11-07 14:01:50 $
+ * @version 1.2 $Revision: 1.94 $ $Date: 2008-11-09 23:23:18 $
  * 
  * @author M. Ranganathan
  * 
@@ -1879,7 +1879,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 			localSequenceNumber++;
 			dialogRequest.getCSeq().setSeqNumber(getLocalSeqNumber());
 		} catch (InvalidArgumentException ex) {
-			ex.printStackTrace();
+			sipStack.getLogWriter().logFatalError(ex.getMessage());
 		}
 
 		try {
@@ -1887,10 +1887,15 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 					.sendMessage(dialogRequest);
 			/*
 			 * Note that if the BYE is rejected then the Dialog should bo back
-			 * to the ESTABLISHED state.
+			 * to the ESTABLISHED state so we only set state after successful send.
 			 */
 			if (dialogRequest.getMethod().equals(Request.BYE)) {
 				this.byeSent = true;
+				/*
+				 * Dialog goes into TERMINATED state as soon as BYE is sent.
+				 * ISSUE 182.
+				 */
+				this.setState(DialogState._TERMINATED);
 			}
 		} catch (IOException ex) {
 			throw new SipException("error sending message", ex);
@@ -2012,6 +2017,10 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 				|| this.getState().equals(DialogState.TERMINATED))
 			throw new DialogDoesNotExistException(
 					"Dialog not initialized or terminated");
+		
+		if (  (RSeq) relResponse.getHeader(RSeqHeader.NAME) == null ) {
+		    throw new SipException("Missing RSeq Header");
+		}
 
 		try {
 			SIPResponse sipResponse = (SIPResponse) relResponse;

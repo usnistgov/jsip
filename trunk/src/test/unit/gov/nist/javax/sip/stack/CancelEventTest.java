@@ -37,16 +37,11 @@ import javax.sip.message.MessageFactory;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 
-import org.apache.log4j.ConsoleAppender;
+import junit.framework.TestCase;
+
 import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
 
 import test.tck.msgflow.callflows.ScenarioHarness;
-
-import examples.cancel.ProtocolObjects;
-import examples.cancel.Shootist;
-
-import junit.framework.TestCase;
 
 public class CancelEventTest extends  ScenarioHarness {
 	
