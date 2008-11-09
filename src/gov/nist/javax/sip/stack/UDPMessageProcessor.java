@@ -39,7 +39,7 @@ import gov.nist.core.*;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size).
  * Each UDP message is processed in its own thread).
  * 
- * @version 1.2 $Revision: 1.29 $ $Date: 2007-01-26 16:50:44 $
+ * @version 1.2 $Revision: 1.30 $ $Date: 2008-11-09 23:23:18 $
  * 
  * @author M. Ranganathan  <br/>
  * 
@@ -164,6 +164,8 @@ public class UDPMessageProcessor extends MessageProcessor {
 		thread.setDaemon(true);
 		// Issue #32 on java.net
 		thread.setName("UDPMessageProcessorThread");
+		// Issue #184
+		thread.setPriority(Thread.MAX_PRIORITY);
 		thread.start();
 	}
 

@@ -244,7 +244,8 @@ c:/jakarta-ant/bin/ant all
 							<pathelement location="${log4j_jar}" />
 						</classpath>
 					</jain-javac>
-					<jar destfile="${jain-sip-ri-jar}" basedir="${classes}" includes="gov/nist/**/*.class" />
+					<copy file="TIMESTAMP" toDir="classes/" />
+					<jar destfile="${jain-sip-ri-jar}" basedir="${classes}" includes="TIMESTAMP,gov/nist/**/*.class" />
 				</target>
 
 				<target name="compilesdp" depends="init">
@@ -270,7 +271,8 @@ c:/jakarta-ant/bin/ant all
 				</target>
 
 				<target name="jain-sip-sdp-jar" depends="compilejain">
-					<jar destfile="${jain-sip-sdp-jar}" basedir="${classes}" includes="javax/**/*.class,gov/nist/**/*.class" />
+					<copy file="TIMESTAMP" toDir="classes/" />
+					<jar destfile="${jain-sip-sdp-jar}" basedir="${classes}" includes="TIMESTAMP,javax/**/*.class,gov/nist/**/*.class" />
 				</target>
 
 				<target name='compilejain' depends='init,compile,compilesdp' />

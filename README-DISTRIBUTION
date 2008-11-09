@@ -8,3 +8,8 @@ jain-sip-javadoc  : contains only the javadoc
 jain-sip-ri       : contains the JSR 32 Reference Implementation.
 jain-sip-sdp      : contains the sip with SDP implementation. This includes the JSR 32 RI.
 jain-sip-tck      : contains the TCK 
+
+Since CVS does not assign a version number to the repository,
+new version numbers are assigned manually by the project owner when
+significant changes are made in the source code (for example new features
+or bug fixes).
