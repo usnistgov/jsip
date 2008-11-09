@@ -56,7 +56,7 @@ import java.util.Iterator;
  * connection. This is the active object that creates new TLS MessageChannels (one for each new
  * accept socket).
  * 
- * @version 1.2 $Revision: 1.13 $ $Date: 2008-06-09 18:11:43 $
+ * @version 1.2 $Revision: 1.14 $ $Date: 2008-11-09 23:23:18 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -109,6 +109,8 @@ public class TLSMessageProcessor extends MessageProcessor {
     public void start() throws IOException {
         Thread thread = new Thread(this);
         thread.setName("TLSMessageProcessorThread");
+        // ISSUE 184
+        thread.setPriority(Thread.MAX_PRIORITY);
         thread.setDaemon(true);
         if (!sipStack.useTlsAccelerator) {
             this.sock = sipStack.getNetworkLayer().createSSLServerSocket(this.getPort(), 0,

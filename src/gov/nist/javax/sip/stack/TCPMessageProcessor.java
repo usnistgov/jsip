@@ -49,7 +49,7 @@ import java.util.*;
  * connection. This is the active object that creates new TCP MessageChannels (one for each new
  * accept socket).
  * 
- * @version 1.2 $Revision: 1.28 $ $Date: 2008-06-09 18:11:43 $
+ * @version 1.2 $Revision: 1.29 $ $Date: 2008-11-09 23:23:18 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -95,6 +95,7 @@ public class TCPMessageProcessor extends MessageProcessor {
     public void start() throws IOException {
         Thread thread = new Thread(this);
         thread.setName("TCPMessageProcessorThread");
+        thread.setPriority(Thread.MAX_PRIORITY);
         thread.setDaemon(true);
         this.sock = sipStack.getNetworkLayer().createServerSocket(getPort(), 0, getIpAddress());
         if (getIpAddress().getHostAddress().equals(IN_ADDR_ANY)

@@ -103,6 +103,10 @@ public class LogWriter {
 
 	protected int traceLevel = TRACE_NONE;
 
+    private String buildTimeStamp;
+
+    private Properties configurationProperties;
+
 	/**
 	 * log a stack trace. This helps to look at the stack frame.
 	 */
@@ -218,6 +222,10 @@ public class LogWriter {
 	public void logDebug(String message) {
 		if (needsLogging) {
 			String newMessage = this.enhanceMessage(message);
+			if ( this.lineCount == 0) {
+			    getLogger().debug("BUILD TIMESTAMP = " + this.buildTimeStamp);
+			    getLogger().debug("Config Propeties = " + this.configurationProperties);
+			}
 			countLines(newMessage);
 			getLogger().debug(newMessage);
 		}
@@ -271,6 +279,9 @@ public class LogWriter {
 	 * @param configurationProperties
 	 */
 	public LogWriter(Properties configurationProperties) {
+	    
+	    this.configurationProperties = configurationProperties;
+	    
 		String logLevel = configurationProperties
 				.getProperty("gov.nist.javax.sip.TRACE_LEVEL");
 
@@ -367,8 +378,8 @@ public class LogWriter {
 
 			} catch (NumberFormatException ex) {
 				ex.printStackTrace();
-				System.out.println("LogWriter: Bad integer " + logLevel);
-				System.out.println("logging dislabled ");
+				System.err.println("LogWriter: Bad integer " + logLevel);
+				System.err.println("logging dislabled ");
 				needsLogging = false;
 			}
 		    }
@@ -443,6 +454,11 @@ public class LogWriter {
 		this.needsLogging = true;
 
 	}
+
+    public void setBuildTimeStamp(String buildTimeStamp) {
+        this.buildTimeStamp = buildTimeStamp;
+        
+    }
 	
 	
 }
