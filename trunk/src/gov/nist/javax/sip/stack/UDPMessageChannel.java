@@ -78,7 +78,7 @@ import javax.sip.message.Response;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.50 $ $Date: 2008-05-30 19:01:24 $
+ * @version 1.2 $Revision: 1.51 $ $Date: 2008-11-14 02:37:11 $
  */
 public class UDPMessageChannel extends MessageChannel implements
 		ParseExceptionListener, Runnable, RawMessageChannel {
@@ -450,23 +450,7 @@ public class UDPMessageChannel extends MessageChannel implements
 							.logWarning("Null request interface returned -- dropping request");
 				}
 
-				if (!sipRequest.getMethod().equals(Request.ACK)) {
-					SIPResponse response = sipRequest
-							.createResponse(Response.SERVICE_UNAVAILABLE);
-					response.addHeader(sipStack.createServerHeaderForStack());
-					RetryAfter retryAfter = new RetryAfter();
-
-					// Be a good citizen and send a decent response code back.
-					try {
-						retryAfter.setRetryAfter((int) (10 * (Math.random())));
-						response.setHeader(retryAfter);
-						this.sendMessage(response);
-					} catch (Exception e) {
-						this.sipStack.logWriter.logError(
-								"Exception while sending service_unavailable",
-								e);
-					}
-				}
+				
 				return;
 			}
 			if (sipStack.isLoggingEnabled())
