@@ -50,7 +50,7 @@ import org.apache.log4j.Logger;
  * 
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.16 $ $Date: 2008-05-15 15:05:17 $
+ * @version 1.2 $Revision: 1.17 $ $Date: 2008-11-18 12:01:12 $
  *
  * 
  *
@@ -211,8 +211,8 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI , Sip
 					if(h1 == null && h2 != null) return false;
 					if(h2 == null && h1 != null) return false;
 					try {
-						Header header1 = headerFactory.createHeader(hname, h1);
-						Header header2 = headerFactory.createHeader(hname, h2);
+						Header header1 = headerFactory.createHeader(hname, RFC2396UrlDecoder.decode(h1));
+						Header header2 = headerFactory.createHeader(hname, RFC2396UrlDecoder.decode(h2));
 						// those present in both must match according to the equals method of the corresponding header
 						if (!header1.equals(header2)) return false;
 					} catch (ParseException e) {

@@ -15,7 +15,8 @@ public class JainSipUriTest extends junit.framework.TestCase {
 			{"sip:carol@chicago.com;security=on", "sip:carol@chicago.com;newparam=5"},
 			{"sip:alice@atlanta.com?subject=project%20x&priority=urgent", "sip:alice@atlanta.com?priority=urgent&subject=project%20x"},
 			{"sip:carol@chicago.com", "sip:carol@chicago.com;security=on"},
-			{"sip:carol@chicago.com;security=on", "sip:carol@chicago.com"}
+			{"sip:carol@chicago.com;security=on", "sip:carol@chicago.com"},
+			{"sip:biloxi.com;transport=tcp;method=REGISTER?to=sip:bob%40biloxi.com","sip:biloxi.com;method=REGISTER;transport=tcp?to=sip:bob%40biloxi.com"}
 	}; 
 	
 	static String[][] different = {
@@ -43,8 +44,8 @@ public class JainSipUriTest extends junit.framework.TestCase {
 		for (int i = 0; i < equal.length; i++) {
 			SipURI uri1 = sipUri(equal[i][0]);
 			SipURI uri2 = sipUri(equal[i][1]);
-			assertTrue(uri1.equals(uri2));
-			assertTrue(uri2.equals(uri1));
+			assertTrue(uri1 + " is different than " + uri2, uri1.equals(uri2));
+			assertTrue(uri2 + " is different than " + uri1, uri2.equals(uri1));
 		}
 	}
 	
