@@ -37,7 +37,7 @@ import java.util.HashSet;
  * and odds and ends.
  * 
  * @author mranga
- * @version 1.2 $Revision: 1.15 $ $Date: 2006-07-25 09:28:40 $
+ * @version 1.2 $Revision: 1.16 $ $Date: 2008-11-19 10:56:49 $
  */
 public class Utils {
 
@@ -82,13 +82,14 @@ public class Utils {
 
 	/**
 	 * Put quotes around a string and return it.
+	 * Any " characters appearing in str are escaped
 	 * 
 	 * @return a quoted string
 	 * @param str
 	 *            string to be quoted
 	 */
 	public static String getQuotedString(String str) {
-		return '"' + str + '"';
+		return '"' + str.replace( "\"", "\\\"" ) + '"';
 	}
 
 	/**
