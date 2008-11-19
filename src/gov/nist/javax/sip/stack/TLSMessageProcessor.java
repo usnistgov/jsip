@@ -56,7 +56,7 @@ import java.util.Iterator;
  * connection. This is the active object that creates new TLS MessageChannels (one for each new
  * accept socket).
  * 
- * @version 1.2 $Revision: 1.14 $ $Date: 2008-11-09 23:23:18 $
+ * @version 1.2 $Revision: 1.15 $ $Date: 2008-11-19 09:36:34 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -98,9 +98,13 @@ public class TLSMessageProcessor extends MessageProcessor {
     // RFC3261: TLS_RSA_WITH_AES_128_CBC_SHA MUST be supported
     // RFC3261: TLS_RSA_WITH_3DES_EDE_CBC_SHA SHOULD be supported for backwards compat
     private static final String[] CIPHERSUITES = {
-        "TLS_RSA_WITH_AES_128_CBC_SHA", // AES difficult to get with c++/Windows
+        "TLS_RSA_WITH_AES_128_CBC_SHA",     // AES difficult to get with c++/Windows
         // "TLS_RSA_WITH_3DES_EDE_CBC_SHA", // Unsupported by Sun impl,
-        "SSL_RSA_WITH_3DES_EDE_CBC_SHA", // For backwards comp., C++
+        "SSL_RSA_WITH_3DES_EDE_CBC_SHA",    // For backwards comp., C++
+
+        // JvB: patch from Sebastien Mazy, issue with mismatching ciphersuites
+        "TLS_DH_anon_WITH_AES_128_CBC_SHA", 
+        "SSL_DH_anon_WITH_3DES_EDE_CBC_SHA",
     };
 
     /**
@@ -163,10 +167,12 @@ public class TLSMessageProcessor extends MessageProcessor {
 
                 incomingTlsMessageChannels.add(new TLSMessageChannel(newsock, sipStack, this));
             } catch (SocketException ex) {
-                sipStack.logWriter.logError(
-                        "Fatal - SocketException occured while Accepting connection", ex);
-                this.isRunning = false;
-                break;
+                if ( this.isRunning ) {
+                  sipStack.logWriter.logError(
+                    "Fatal - SocketException occured while Accepting connection", ex);
+                  this.isRunning = false;
+                  break;
+                }
             } catch (SSLException ex) {
                 this.isRunning = false;
                 sipStack.logWriter.logError(
