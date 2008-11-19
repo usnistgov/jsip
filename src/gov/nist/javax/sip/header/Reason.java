@@ -40,11 +40,12 @@ package gov.nist.javax.sip.header;
 
 import java.text.ParseException;
 import gov.nist.core.*;
+import gov.nist.javax.sip.Utils;
 
 /** 
  * Definition of the Reason SIP Header.
  *
- * @version 1.2 $Revision: 1.5 $ $Date: 2006-11-01 02:22:56 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2008-11-19 10:56:27 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -101,6 +102,10 @@ public class Reason
 	 *@param text -- string text to set.
 	 */
 	public void setText(String text) throws ParseException {
+		// JvB: MUST be quoted
+		if ( text.charAt(0) != '"' ) {
+			text = Utils.getQuotedString(text);
+		}
 		this.parameters.set("text", text);
 	}
 
@@ -145,6 +150,28 @@ public class Reason
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2006/11/01 02:22:56  mranga
+ * Issue number:  83
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:   mranga
+ * fix thread safety issue in NameValueList and clean up some mess.
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.4  2006/07/13 09:01:19  mranga
  * Issue number:
  * Obtained from:
