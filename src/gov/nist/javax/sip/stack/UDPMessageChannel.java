@@ -78,7 +78,7 @@ import javax.sip.message.Response;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.51 $ $Date: 2008-11-14 02:37:11 $
+ * @version 1.2 $Revision: 1.52 $ $Date: 2008-11-24 23:59:04 $
  */
 public class UDPMessageChannel extends MessageChannel implements
 		ParseExceptionListener, Runnable, RawMessageChannel {
@@ -285,12 +285,10 @@ public class UDPMessageChannel extends MessageChannel implements
 		// Do debug logging.
 		if (sipStack.isLoggingEnabled()) {
 			this.sipStack.logWriter
-					.logDebug("UDPMessageChannel: peerAddress = "
+					.logDebug("UDPMessageChannel: processIncomingDataPacket : peerAddress = "
 							+ peerAddress.getHostAddress() + "/"
-							+ packet.getPort());
-			this.sipStack.logWriter.logDebug("Length = " + packetLength);
-			String msgString = new String(msgBytes, 0, packetLength);
-			this.sipStack.logWriter.logDebug(msgString);
+							+ packet.getPort() + " Length = " + packetLength);
+			
 		}
 
 		SIPMessage sipMessage = null;
@@ -307,9 +305,7 @@ public class UDPMessageChannel extends MessageChannel implements
 						+ ex.getMessage());
 				this.sipStack.logWriter.logException(ex);
 			}
-			if (sipStack.isLoggingEnabled()) {
-				sipStack.getLogWriter().logDebug(new String(msgBytes));
-			}
+			
 
 			// JvB: send a 400 response for requests (except ACK)
 			// Currently only UDP, @todo also other transports
@@ -347,9 +343,7 @@ public class UDPMessageChannel extends MessageChannel implements
 
 		if (sipMessage == null) {
 			if (sipStack.isLoggingEnabled()) {
-				this.sipStack.logWriter.logDebug("Rejecting message !  "
-						+ new String(msgBytes));
-				this.sipStack.logWriter.logDebug("Null message parsed.");
+				this.sipStack.logWriter.logDebug("Rejecting message !  + Null message parsed.");
 			}
 			return;
 		}
@@ -371,7 +365,7 @@ public class UDPMessageChannel extends MessageChannel implements
 			}
 
 			sipStack.logWriter.logError("BAD MESSAGE!");
-			sipStack.logWriter.logError(badmsg);
+			
 			return;
 		}
 		// For a request first via header tells where the message
