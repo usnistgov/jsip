@@ -219,7 +219,7 @@ public class MediaField extends SDPField implements Media {
 		String encoded_string;
 		encoded_string = MEDIA_FIELD;
 		if (media != null)
-			encoded_string += media + Separators.SP + port;
+			encoded_string += media.toLowerCase() + Separators.SP + port;
 		// Workaround for Microsoft Messenger contributed by Emil Ivov
 		// Leave out the nports parameter as this confuses the messenger.
 		if (nports > 1)
