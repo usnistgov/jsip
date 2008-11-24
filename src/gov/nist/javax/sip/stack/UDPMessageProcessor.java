@@ -39,7 +39,7 @@ import gov.nist.core.*;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size).
  * Each UDP message is processed in its own thread).
  * 
- * @version 1.2 $Revision: 1.30 $ $Date: 2008-11-09 23:23:18 $
+ * @version 1.2 $Revision: 1.31 $ $Date: 2008-11-24 23:59:04 $
  * 
  * @author M. Ranganathan  <br/>
  * 
@@ -240,7 +240,8 @@ public class UDPMessageProcessor extends MessageProcessor {
 					// notify below.
 
 					synchronized (this.messageQueue) {
-						this.messageQueue.addLast(packet);
+					    // was addLast
+						this.messageQueue.add(packet);
 						this.messageQueue.notify();
 					}
 				} else {
