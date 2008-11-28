@@ -65,7 +65,7 @@ import java.text.ParseException;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.94 $ $Date: 2008-11-09 23:23:18 $
+ * @version 1.2 $Revision: 1.95 $ $Date: 2008-11-28 10:13:02 $
  * 
  * @author M. Ranganathan
  * 
@@ -1890,12 +1890,14 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 			 * to the ESTABLISHED state so we only set state after successful send.
 			 */
 			if (dialogRequest.getMethod().equals(Request.BYE)) {
-				this.byeSent = true;
+				this.byeSent = true;				
 				/*
 				 * Dialog goes into TERMINATED state as soon as BYE is sent.
 				 * ISSUE 182.
 				 */
-				this.setState(DialogState._TERMINATED);
+				if(isTerminatedOnBye()) {
+					this.setState(DialogState._TERMINATED);
+				}
 			}
 		} catch (IOException ex) {
 			throw new SipException("error sending message", ex);
