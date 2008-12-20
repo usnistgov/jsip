@@ -59,7 +59,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.50 $ $Date: 2008-11-14 02:37:11 $
+ * @version 1.2 $Revision: 1.51 $ $Date: 2008-12-20 05:11:07 $
  */
 public class TCPMessageChannel extends MessageChannel implements SIPMessageListener, Runnable,
         RawMessageChannel {
@@ -463,6 +463,17 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
 
 				// Check for reasonable size - reject message
 				// if it is too long.
+				if (this.sipStack.logWriter
+                        .isLoggingEnabled(ServerLog.TRACE_MESSAGES)) {
+                    sipStack.serverLog.logMessage(sipMessage, this
+                            .getPeerHostPort().toString(), this
+                            .getMessageProcessor().getIpAddress()
+                            .getHostAddress()
+                            + ":" + this.getMessageProcessor().getPort(),
+                            false, receptionTime);
+
+                }
+				
 				if (sipStack.getMaxMessageSize() > 0
 						&& sipRequest.getSize()
 								+ (sipRequest.getContentLength() == null ? 0
@@ -478,11 +489,8 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
 
 				ServerRequestInterface sipServerRequest = sipStack
 						.newSIPServerRequest(sipRequest, this);
-				if (sipStack.isLoggingEnabled()) {
-					sipStack.logWriter.logDebug("---- sipServerRequest = "
-							+ sipServerRequest);
-				}
-
+				
+				
 				if (sipServerRequest != null) {
 					try {
 						sipServerRequest.processRequest(sipRequest, this);
@@ -498,17 +506,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
 					this.sipStack.logWriter
 							.logWarning("Dropping request -- could not acquire semaphore in 10 sec");					
 				}
-				if (this.sipStack.logWriter
-						.isLoggingEnabled(ServerLog.TRACE_MESSAGES)) {
-
-					sipStack.serverLog.logMessage(sipMessage, this
-							.getPeerHostPort().toString(), this
-							.getMessageProcessor().getIpAddress()
-							.getHostAddress()
-							+ ":" + this.getMessageProcessor().getPort(),
-							false, receptionTime);
-
-				}
+				
 			} else {
 				SIPResponse sipResponse = (SIPResponse) sipMessage;
 				// JvB: dont do this
