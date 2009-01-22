@@ -39,7 +39,7 @@ import gov.nist.javax.sip.parser.extensions.*;
  * A factory class that does a name lookup on a registered parser and
  * returns a header parser for the given name.
  *
- * @version 1.2 $Revision: 1.14 $ $Date: 2007-03-07 14:29:46 $
+ * @version 1.2 $Revision: 1.15 $ $Date: 2009-01-22 19:33:48 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -270,6 +270,9 @@ public class ParserFactory {
 		
 		// Per RFC3891 (pmusgrave)
 		parserTable.put(Replaces.NAME.toLowerCase(), ReplacesParser.class);
+		
+		// Per RFC3911 (jean deruelle)
+		parserTable.put(Join.NAME.toLowerCase(), JoinParser.class);
 	}
 
 	/**
@@ -309,6 +312,9 @@ public class ParserFactory {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.14  2007/03/07 14:29:46  belangery
+ * Yet another bunch of improvements in the parsing code.
+ *
  * Revision 1.13  2007/02/23 14:56:06  belangery
  * Added performance improvement around header name lowercase conversion.
  *

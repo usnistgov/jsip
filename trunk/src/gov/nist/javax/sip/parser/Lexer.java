@@ -243,6 +243,9 @@ public class Lexer extends LexerCore {
 					// pmusgrave RFC3891
 					addKeyword(ReplacesHeader.NAME.toUpperCase(),
 							TokenTypes.REPLACES_TO);
+					//jean deruelle RFC3911
+					addKeyword(JoinHeader.NAME.toUpperCase(),
+							TokenTypes.JOIN_TO);
 
 					// IMS Headers
 					addKeyword(PathHeader.NAME.toUpperCase(), TokenTypes.PATH);
