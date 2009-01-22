@@ -25,29 +25,57 @@
  */
 package gov.nist.javax.sip.stack;
 
+import gov.nist.core.Host;
+import gov.nist.core.HostPort;
+import gov.nist.core.LogWriter;
+import gov.nist.core.ThreadAuditor;
+import gov.nist.core.net.AddressResolver;
+import gov.nist.core.net.DefaultNetworkLayer;
+import gov.nist.core.net.NetworkLayer;
 import gov.nist.javax.sip.DefaultAddressResolver;
 import gov.nist.javax.sip.ListeningPointImpl;
 import gov.nist.javax.sip.LogRecordFactory;
 import gov.nist.javax.sip.SIPConstants;
 import gov.nist.javax.sip.SipProviderImpl;
-import gov.nist.javax.sip.message.*;
-import gov.nist.javax.sip.header.*;
+import gov.nist.javax.sip.header.Contact;
+import gov.nist.javax.sip.header.Event;
+import gov.nist.javax.sip.header.Server;
+import gov.nist.javax.sip.header.Via;
+import gov.nist.javax.sip.header.extensions.JoinHeader;
 import gov.nist.javax.sip.header.extensions.ReplacesHeader;
-import gov.nist.core.*;
-import gov.nist.core.net.AddressResolver;
-import gov.nist.core.net.DefaultNetworkLayer;
-import gov.nist.core.net.NetworkLayer;
+import gov.nist.javax.sip.message.SIPMessage;
+import gov.nist.javax.sip.message.SIPRequest;
+import gov.nist.javax.sip.message.SIPResponse;
 
-import javax.sip.*;
-import javax.sip.message.*;
-import javax.sip.address.*;
-import javax.sip.header.*;
-
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Set;
+import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.*;
-import java.io.IOException;
-import java.net.*;
+
+import javax.sip.ClientTransaction;
+import javax.sip.Dialog;
+import javax.sip.DialogState;
+import javax.sip.DialogTerminatedEvent;
+import javax.sip.ServerTransaction;
+import javax.sip.SipException;
+import javax.sip.TransactionState;
+import javax.sip.TransactionTerminatedEvent;
+import javax.sip.address.Address;
+import javax.sip.address.Hop;
+import javax.sip.address.Router;
+import javax.sip.address.SipURI;
+import javax.sip.header.CallIdHeader;
+import javax.sip.header.EventHeader;
+import javax.sip.message.Request;
+import javax.sip.message.Response;
 
 /*
  * Jeff Keyser : architectural suggestions and contributions. Pierre De Rop and Thomas Froment :
@@ -65,7 +93,7 @@ import java.net.*;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.100 $ $Date: 2008-11-14 02:37:11 $
+ * @version 1.2 $Revision: 1.101 $ $Date: 2009-01-22 19:33:49 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener {
 
@@ -2116,6 +2144,31 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
         String cid = replacesHeader.getCallId();
         String fromTag = replacesHeader.getFromTag();
         String toTag = replacesHeader.getToTag();
+
+        StringBuffer retval = new StringBuffer(cid);
+
+        // retval.append(COLON).append(to.getUserAtHostPort());
+        if (toTag != null) {
+            retval.append(":");
+            retval.append(toTag);
+        }
+        // retval.append(COLON).append(from.getUserAtHostPort());
+        if (fromTag != null) {
+            retval.append(":");
+            retval.append(fromTag);
+        }
+        return this.dialogTable.get(retval.toString().toLowerCase());
+    }
+    
+    /**
+     * Get the Join Dialog from the stack.
+     * 
+     * @param joinHeader -- the header that references the dialog being joined.
+     */
+    public Dialog getJoinDialog(JoinHeader joinHeader) {
+        String cid = joinHeader.getCallId();
+        String fromTag = joinHeader.getFromTag();
+        String toTag = joinHeader.getToTag();
 
         StringBuffer retval = new StringBuffer(cid);
 

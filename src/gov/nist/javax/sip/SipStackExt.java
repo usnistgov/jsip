@@ -3,6 +3,7 @@ package gov.nist.javax.sip;
 import gov.nist.core.net.AddressResolver;
 import gov.nist.javax.sip.clientauthutils.AccountManager;
 import gov.nist.javax.sip.clientauthutils.AuthenticationHelper;
+import gov.nist.javax.sip.header.extensions.JoinHeader;
 import gov.nist.javax.sip.header.extensions.ReplacesHeader;
 
 import java.util.Collection;
@@ -66,15 +67,15 @@ public interface SipStackExt {
 	public void setAddressResolver(AddressResolver addressResolver);
 	
 	
-	  /**
-	   * @todo discuss
-	   * 
-	   *
-	   * Finds a Dialog to join based on the given Join header
-	   *
-	   * JvB: proposal
-	   *
-	   * public Dialog getJoinDialog( JoinHeader joinHeader);
-	   */
+	/**
+	 * Get the dialog in the Join header.
+	 *
+	 * @return Dialog object matching the Join header, provided it is in an 
+	 *         appropriate state to be replaced, <code>null</code> otherwise
+	 *
+	 * @since 2.0
+	 */
+	 public Dialog getJoinDialog(JoinHeader joinHeader);
+	 
 
 }
