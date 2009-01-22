@@ -2,6 +2,7 @@ package gov.nist.javax.sip.header;
 
 import java.text.ParseException;
 
+import gov.nist.javax.sip.header.extensions.JoinHeader;
 import gov.nist.javax.sip.header.extensions.ReferredByHeader;
 import gov.nist.javax.sip.header.extensions.ReplacesHeader;
 import gov.nist.javax.sip.header.extensions.SessionExpiresHeader;
@@ -197,4 +198,18 @@ public interface HeaderFactoryExt {
 	 */
 	public SessionExpiresHeader createSessionExpiresHeader(int expires) throws InvalidArgumentException ;
 
+	/**
+	 * 
+	 * Create a Join header with a call Id, to and from tag.
+	 * 
+	 * @param callId -
+	 *            the call id to use.
+	 * @param toTag -
+	 *            the to tag to use.
+	 * @param fromTag -
+	 *            the fromTag to use.
+	 * 
+	 */
+	public JoinHeader createJoinHeader(String callId, String toTag,
+			String fromTag) throws ParseException;
 }

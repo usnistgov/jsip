@@ -43,7 +43,7 @@ import gov.nist.javax.sip.address.*;
 
 /** Implementation of the JAIN SIP  HeaderFactory
 * 
-* @version 1.2 $Revision: 1.14 $ $Date: 2008-10-16 18:13:35 $
+* @version 1.2 $Revision: 1.15 $ $Date: 2009-01-22 19:33:49 $
 * @since 1.1
 *
 *@author M. Ranganathan   <br/>
@@ -1247,6 +1247,21 @@ public class HeaderFactoryImpl implements HeaderFactory , HeaderFactoryExt {
         replaces.setToTag(toTag);
         
         return replaces;  	
+    }
+    
+    /**
+	 * Create a Join header with a call Id, to and from tag.
+	 * 
+	 */
+    public JoinHeader createJoinHeader(String callId, String toTag, 
+    			String fromTag) throws ParseException
+    {
+    	Join join = new Join();
+        join.setCallId(callId);
+        join.setFromTag(fromTag);
+        join.setToTag(toTag);
+        
+        return join;  	
     }
 			   
 	
