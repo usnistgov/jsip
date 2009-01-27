@@ -1,13 +1,13 @@
 /*
- * Conditions Of Use 
- * 
+ * Conditions Of Use
+ *
  * This software was developed by employees of the National Institute of
  * Standards and Technology (NIST), an agency of the Federal Government.
  * Pursuant to title 15 Untied States Code Section 105, works of NIST
  * employees are not subject to copyright protection in the United States
  * and are considered to be in the public domain.  As a result, a formal
  * license is not needed to use the software.
- * 
+ *
  * This software is provided by NIST as a service and is expressly
  * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
  * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
@@ -16,12 +16,12 @@
  * regarding the use of the software or the results thereof, including but
  * not limited to the correctness, accuracy, reliability or usefulness of
  * the software.
- * 
+ *
  * Permission to use this software is contingent upon your acceptance
  * of the terms of this agreement
- *  
+ *
  * .
- * 
+ *
  */
 /*******************************************************************************
  * Product of NIST/ITL Advanced Networking Technologies Division (ANTD)        *
@@ -50,30 +50,30 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * Acknowledgements: Yanick Belanger sent in a patch for the right content
  * length when the content is a String. Bill Mccormick from Nortel Networks sent
  * in a bug fix for setContent.
- * 
+ *
  */
 /**
  * This is the main SIP Message structure.
- * 
+ *
  * @see StringMsgParser
  * @see PipelinedMsgParser
- * 
- * @version 1.2 $Revision: 1.41 $ $Date: 2008-05-30 19:01:10 $
+ *
+ * @version 1.2 $Revision: 1.42 $ $Date: 2009-01-27 23:11:17 $
  * @since 1.1
- * 
+ *
  * @author M. Ranganathan <br/>
- * 
- * 
+ *
+ *
  */
 public abstract class SIPMessage extends MessageObject implements
 		javax.sip.message.Message {
 
 
-	
+
 	private String contentEncodingCharset = MessageFactoryImpl.getDefaultContentEncodingCharset();
-	
-	
-	
+
+
+
 
 	/**
 	 * unparsed headers
@@ -114,8 +114,15 @@ public abstract class SIPMessage extends MessageObject implements
 	private Hashtable<String,SIPHeader> nameTable;
 
 	/**
+	 * The application data pointer. This is un-interpreted by the stack.
+	 * This is provided as a convenient way of keeping book-keeping data for
+	 * applications.
+	 */
+	protected Object applicationData;
+
+	/**
 	 * Return true if the header belongs only in a Request.
-	 * 
+	 *
 	 * @param sipHeader
 	 *            is the header to test.
 	 */
@@ -135,7 +142,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Return true if the header belongs only in a response.
-	 * 
+	 *
 	 * @param sipHeader
 	 *            is the header to test.
 	 */
@@ -153,7 +160,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Get the headers as a linked list of encoded Strings
-	 * 
+	 *
 	 * @return a linked list with each element of the list containing a string
 	 *         encoded header in canonical form.
 	 */
@@ -175,7 +182,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Encode only the message and exclude the contents (for debugging);
-	 * 
+	 *
 	 * @return a string with all the headers encoded.
 	 */
 	protected String encodeSIPHeaders() {
@@ -199,7 +206,7 @@ public abstract class SIPMessage extends MessageObject implements
 	/**
 	 * Get A dialog identifier constructed from this messsage. This is an id
 	 * that can be used to identify dialogs.
-	 * 
+	 *
 	 * @param isServerTransaction
 	 *            is a flag that indicates whether this is a server transaction.
 	 */
@@ -209,7 +216,7 @@ public abstract class SIPMessage extends MessageObject implements
 	 * Template match for SIP messages. The matchObj is a SIPMessage template to
 	 * match against. This method allows you to do pattern matching with
 	 * incoming SIP messages. Null matches wild card.
-	 * 
+	 *
 	 * @param other
 	 *            is the match template to match against.
 	 * @return true if a match occured and false otherwise.
@@ -270,10 +277,10 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Merge a request with a template
-	 * 
+	 *
 	 * @param template --
 	 *            template to merge with.
-	 * 
+	 *
 	 */
 	public void merge(Object template) {
 		if (!template.getClass().equals(this.getClass()))
@@ -303,7 +310,7 @@ public abstract class SIPMessage extends MessageObject implements
 	 * is a string (rather than a binary array of bytes). If the payload cannot
 	 * be encoded as a UTF-8 string then it is simply ignored (will not appear
 	 * in the encoded message).
-	 * 
+	 *
 	 * @return The Canonical String representation of the message (including the
 	 *         canonical string representation of the SDP payload if it exists).
 	 */
@@ -349,13 +356,13 @@ public abstract class SIPMessage extends MessageObject implements
 	/**
 	 * Encode the message as a byte array. Use this when the message payload is
 	 * a binary byte array.
-	 * 
+	 *
 	 * @return The Canonical byte array representation of the message (including
 	 *         the canonical byte array representation of the SDP payload if it
 	 *         exists all in one contiguous byte array).
 	 */
 	public byte[] encodeAsBytes( String transport ) {
-		
+
 		// JvB: added to fix case where application provides the wrong transport
 		// in the topmost Via header
 		ViaHeader topVia = (ViaHeader) this.getHeader( ViaHeader.NAME );
@@ -364,7 +371,7 @@ public abstract class SIPMessage extends MessageObject implements
 		} catch (ParseException e) {
 			InternalErrorHandler.handleException(e);
 		}
-		
+
 		StringBuffer encoding = new StringBuffer();
 		synchronized (this.headers) {
 			Iterator<SIPHeader> it = this.headers.iterator();
@@ -415,7 +422,7 @@ public abstract class SIPMessage extends MessageObject implements
 	 * If the content is an Object that supports the clone method, then the
 	 * clone method is invoked and the cloned content is the new content.
 	 * Otherwise, the content of the new message is set equal to the old one.
-	 * 
+	 *
 	 * @return A cloned copy of this object.
 	 */
 	public Object clone() {
@@ -433,7 +440,7 @@ public abstract class SIPMessage extends MessageObject implements
 				SIPHeader hdr = (SIPHeader) iter.next();
 				retval.attachHeader((SIPHeader) hdr.clone());
 			}
-			
+
 		}
 		if (this.messageContentBytes != null)
 			retval.messageContentBytes = (byte[]) this.messageContentBytes
@@ -447,7 +454,7 @@ public abstract class SIPMessage extends MessageObject implements
 	/**
 	 * Get the string representation of this header (for pretty printing the
 	 * generated structure).
-	 * 
+	 *
 	 * @return Formatted string representation of the object. Note that this is
 	 *         NOT the same as encode(). This is used mainly for debugging
 	 *         purposes.
@@ -506,7 +513,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Attach a header and die if you get a duplicate header exception.
-	 * 
+	 *
 	 * @param h
 	 *            SIPHeader to attach.
 	 */
@@ -528,7 +535,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Attach a header (replacing the original header).
-	 * 
+	 *
 	 * @param sipHeader
 	 *            SIPHeader that replaces a header of the same type.
 	 */
@@ -552,7 +559,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Set a header from a linked list of headers.
-	 * 
+	 *
 	 * @param headers --
 	 *            a list of headers to set.
 	 */
@@ -572,7 +579,7 @@ public abstract class SIPMessage extends MessageObject implements
 	 * structure. This is equivalent to the
 	 * attachHeader(SIPHeader,replaceflag,false); which is the normal way in
 	 * which headers are attached. This was added in support of JAIN-SIP.
-	 * 
+	 *
 	 * @param h
 	 *            header to attach.
 	 * @param replaceflag
@@ -589,7 +596,7 @@ public abstract class SIPMessage extends MessageObject implements
 	/**
 	 * Attach the header to the SIP Message structure at a specified position in
 	 * its list of headers.
-	 * 
+	 *
 	 * @param header
 	 *            Header to attach.
 	 * @param replaceFlag
@@ -687,7 +694,7 @@ public abstract class SIPMessage extends MessageObject implements
 	/**
 	 * Remove a header given its name. If multiple headers of a given name are
 	 * present then the top flag determines which end to remove headers from.
-	 * 
+	 *
 	 * @param headerName
 	 *            is the name of the header to remove.
 	 * @param top --
@@ -748,7 +755,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Remove all headers given its name.
-	 * 
+	 *
 	 * @param headerName
 	 *            is the name of the header to remove.
 	 */
@@ -789,7 +796,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Generate (compute) a transaction ID for this SIP message.
-	 * 
+	 *
 	 * @return A string containing the concatenation of various portions of the
 	 *         From,To,Via and RequestURI portions of this message as specified
 	 *         in RFC 2543: All responses to a request contain the same values
@@ -801,7 +808,7 @@ public abstract class SIPMessage extends MessageObject implements
 	 *         Incorporates a bug fix for a bug report sent in by Chris Mills of
 	 *         Nortel Networks (converts to lower case when returning the
 	 *         transaction identifier).
-	 * 
+	 *
 	 * @return a string that can be used as a transaction identifier for this
 	 *         message. This can be used for matching responses and requests
 	 *         (i.e. an outgoing request and its matching response have the same
@@ -876,7 +883,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Return an iterator for the list of headers in this message.
-	 * 
+	 *
 	 * @return an Iterator for the headers of this message.
 	 */
 	public Iterator<SIPHeader> getHeaders() {
@@ -885,7 +892,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Get the first header of the given name.
-	 * 
+	 *
 	 * @return header -- the first header of the given name.
 	 */
 	public Header getHeader(String headerName) {
@@ -904,7 +911,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Get the contentType header (null if one does not exist).
-	 * 
+	 *
 	 * @return contentType header
 	 */
 	public ContentType getContentTypeHeader() {
@@ -916,7 +923,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Get the from header.
-	 * 
+	 *
 	 * @return -- the from header.
 	 */
 	public FromHeader getFrom() {
@@ -925,7 +932,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Get the ErrorInfo list of headers (null if one does not exist).
-	 * 
+	 *
 	 * @return List containing ErrorInfo headers.
 	 */
 	public ErrorInfoList getErrorInfoHeaders() {
@@ -937,7 +944,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Get the Contact list of headers (null if one does not exist).
-	 * 
+	 *
 	 * @return List containing Contact headers.
 	 */
 	public ContactList getContactHeaders() {
@@ -950,7 +957,7 @@ public abstract class SIPMessage extends MessageObject implements
 	/**
 	 * Get the contact header ( the first contact header) which is all we need
 	 * for the most part.
-	 * 
+	 *
 	 */
 	public Contact getContactHeader() {
 		ContactList clist = this.getContactHeaders();
@@ -964,7 +971,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Get the Via list of headers (null if one does not exist).
-	 * 
+	 *
 	 * @return List containing Via headers.
 	 */
 	public ViaList getViaHeaders() {
@@ -976,7 +983,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Set A list of via headers.
-	 * 
+	 *
 	 * @param viaList
 	 *            a list of via headers to add.
 	 */
@@ -992,7 +999,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Set the header given a list of headers.
-	 * 
+	 *
 	 * @param sipHeaderList
 	 *            a headerList to set
 	 */
@@ -1003,7 +1010,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Get the topmost via header.
-	 * 
+	 *
 	 * @return the top most via header if one exists or null if none exists.
 	 */
 	public Via getTopmostVia() {
@@ -1015,7 +1022,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Get the CSeq list of header (null if one does not exist).
-	 * 
+	 *
 	 * @return CSeq header
 	 */
 	public CSeqHeader getCSeq() {
@@ -1024,7 +1031,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Get the Authorization header (null if one does not exist).
-	 * 
+	 *
 	 * @return Authorization header.
 	 */
 	public Authorization getAuthorization() {
@@ -1036,7 +1043,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Get the MaxForwards header (null if one does not exist).
-	 * 
+	 *
 	 * @return Max-Forwards header
 	 */
 
@@ -1046,7 +1053,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Set the max forwards header.
-	 * 
+	 *
 	 * @param maxForwards
 	 *            is the MaxForwardsHeader to set.
 	 */
@@ -1056,7 +1063,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Get the Route List of headers (null if one does not exist).
-	 * 
+	 *
 	 * @return List containing Route headers
 	 */
 	public RouteList getRouteHeaders() {
@@ -1068,7 +1075,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Get the CallID header (null if one does not exist)
-	 * 
+	 *
 	 * @return Call-ID header .
 	 */
 	public CallIdHeader getCallId() {
@@ -1077,7 +1084,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Set the call id header.
-	 * 
+	 *
 	 * @param callId
 	 *            call idHeader (what else could it be?)
 	 */
@@ -1087,7 +1094,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Get the CallID header (null if one does not exist)
-	 * 
+	 *
 	 * @param callId --
 	 *            the call identifier to be assigned to the call id header
 	 */
@@ -1100,7 +1107,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Get the RecordRoute header list (null if one does not exist).
-	 * 
+	 *
 	 * @return Record-Route header
 	 */
 	public RecordRouteList getRecordRouteHeaders() {
@@ -1113,7 +1120,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Get the To header (null if one does not exist).
-	 * 
+	 *
 	 * @return To header
 	 */
 	public ToHeader getTo() {
@@ -1131,7 +1138,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Get the ContentLength header (null if one does not exist).
-	 * 
+	 *
 	 * @return content-length header.
 	 */
 	public ContentLengthHeader getContentLength() {
@@ -1142,12 +1149,12 @@ public abstract class SIPMessage extends MessageObject implements
 	 * Get the message body as a string. If the message contains a content type
 	 * header with a specified charset, and if the payload has been read as a
 	 * byte array, then it is returned encoded into this charset.
-	 * 
+	 *
 	 * @return Message body (as a string)
 	 * @throws UnsupportedEncodingException
 	 *             if the platform does not support the charset specified in the
 	 *             content type header.
-	 * 
+	 *
 	 */
 	public String getMessageContent() throws UnsupportedEncodingException {
 		if (this.messageContent == null && this.messageContentBytes == null)
@@ -1175,7 +1182,7 @@ public abstract class SIPMessage extends MessageObject implements
 	 * read as a String then it is decoded using the charset specified in the
 	 * content type header if it exists. Otherwise, it is encoded using the
 	 * default encoding which is UTF-8.
-	 * 
+	 *
 	 * @return an array of bytes that is the message payload.
 	 */
 	public byte[] getRawContent() {
@@ -1226,7 +1233,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Set the message content given type and subtype.
-	 * 
+	 *
 	 * @param type
 	 *            is the message type (eg. application)
 	 * @param subType
@@ -1250,7 +1257,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Set the message content after converting the given object to a String.
-	 * 
+	 *
 	 * @param content --
 	 *            content to set.
 	 * @param contentTypeHeader --
@@ -1278,7 +1285,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Get the content of the header.
-	 * 
+	 *
 	 * @return the content of the sip message.
 	 */
 	public Object getContent() {
@@ -1294,7 +1301,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Set the message content for a given type and subtype.
-	 * 
+	 *
 	 * @param type
 	 *            is the messge type.
 	 * @param subType
@@ -1313,7 +1320,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Set the message content for this message.
-	 * 
+	 *
 	 * @param content
 	 *            Message body as a string.
 	 */
@@ -1321,7 +1328,7 @@ public abstract class SIPMessage extends MessageObject implements
 		// Note that that this could be a double byte character
 		// set - bug report by Masafumi Watanabe
 		computeContentLength(content);
-		if ( (!computeContentLength) && 
+		if ( (!computeContentLength) &&
 				this.contentLengthHeader.getContentLength () < givenLength ) {
 			throw new ParseException ("Invalid content length " + this.contentLengthHeader.getContentLength ()+ " / " + givenLength,0 );
 		}
@@ -1333,18 +1340,18 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Set the message content as an array of bytes.
-	 * 
+	 *
 	 * @param content
 	 *            is the content of the message as an array of bytes.
 	 */
 	public void setMessageContent(byte[] content) {
 		computeContentLength(content);
-		
+
 		messageContentBytes = content;
 		messageContent = null;
 		messageContentObject = null;
 	}
-	
+
 	/**
 	 * Method to set the content - called by the parser
 	 * @param content
@@ -1363,7 +1370,7 @@ public abstract class SIPMessage extends MessageObject implements
 	/**
 	 * Compute and set the Content-length header based on the given content
 	 * object.
-	 * 
+	 *
 	 * @param content
 	 *            is the content, as String, array of bytes, or other object.
 	 */
@@ -1413,7 +1420,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Get a SIP header or Header list given its name.
-	 * 
+	 *
 	 * @param headerName
 	 *            is the name of the header to get.
 	 * @return a header or header list that contians the retrieved header.
@@ -1438,7 +1445,7 @@ public abstract class SIPMessage extends MessageObject implements
 	 * Get a header of the given name as a string. This concatenates the headers
 	 * of a given type as a comma separted list. This is useful for formatting
 	 * and printing headers.
-	 * 
+	 *
 	 * @param name
 	 * @return the header as a formatted string
 	 */
@@ -1458,7 +1465,7 @@ public abstract class SIPMessage extends MessageObject implements
 	/**
 	 * Get a list of headers of the given name ( or null if no such header
 	 * exists ).
-	 * 
+	 *
 	 * @param headerName --
 	 *            a header name from which to retrieve the list.
 	 * @return -- a list of headers with that name.
@@ -1480,7 +1487,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Return true if the SIPMessage has a header of the given name.
-	 * 
+	 *
 	 * @param headerName
 	 *            is the header name for which we are testing.
 	 * @return true if the header is present in the message
@@ -1492,7 +1499,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Return true if the message has a From header tag.
-	 * 
+	 *
 	 * @return true if the message has a from header and that header has a tag.
 	 */
 	public boolean hasFromTag() {
@@ -1501,7 +1508,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Return true if the message has a To header tag.
-	 * 
+	 *
 	 * @return true if the message has a to header and that header has a tag.
 	 */
 	public boolean hasToTag() {
@@ -1510,9 +1517,9 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Return the from tag.
-	 * 
+	 *
 	 * @return the tag from the from header.
-	 * 
+	 *
 	 */
 	public String getFromTag() {
 		return fromHeader == null ? null : fromHeader.getTag();
@@ -1520,7 +1527,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Set the From Tag.
-	 * 
+	 *
 	 * @param tag --
 	 *            tag to set in the from header.
 	 */
@@ -1533,7 +1540,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Set the to tag.
-	 * 
+	 *
 	 * @param tag --
 	 *            tag to set.
 	 */
@@ -1558,7 +1565,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Add a SIP header.
-	 * 
+	 *
 	 * @param sipHeader --
 	 *            sip header to add.
 	 */
@@ -1585,7 +1592,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Add a header to the unparsed list of headers.
-	 * 
+	 *
 	 * @param unparsed --
 	 *            unparsed header to add to the list.
 	 */
@@ -1595,7 +1602,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Add a SIP header.
-	 * 
+	 *
 	 * @param sipHeader --
 	 *            string version of SIP header to add.
 	 */
@@ -1613,7 +1620,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Get a list containing the unrecognized headers.
-	 * 
+	 *
 	 * @return a linked list containing unrecongnized headers.
 	 */
 	public ListIterator<String> getUnrecognizedHeaders() {
@@ -1622,7 +1629,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Get the header names.
-	 * 
+	 *
 	 * @return a list iterator to a list of header names. These are ordered in
 	 *         the same order as are present in the message.
 	 */
@@ -1639,7 +1646,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Compare for equality.
-	 * 
+	 *
 	 * @param other --
 	 *            the other object to compare with.
 	 */
@@ -1669,7 +1676,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * get content disposition header or null if no such header exists.
-	 * 
+	 *
 	 * @return the contentDisposition header
 	 */
 	public javax.sip.header.ContentDispositionHeader getContentDisposition() {
@@ -1681,7 +1688,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * get the content encoding header.
-	 * 
+	 *
 	 * @return the contentEncoding header.
 	 */
 	public javax.sip.header.ContentEncodingHeader getContentEncoding() {
@@ -1693,7 +1700,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Get the contentLanguage header.
-	 * 
+	 *
 	 * @return the content language header.
 	 */
 	public javax.sip.header.ContentLanguageHeader getContentLanguage() {
@@ -1705,7 +1712,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Get the exipres header.
-	 * 
+	 *
 	 * @return the expires header or null if one does not exist.
 	 */
 	public javax.sip.header.ExpiresHeader getExpires() {
@@ -1717,7 +1724,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Set the expiresHeader
-	 * 
+	 *
 	 * @param expiresHeader --
 	 *            the expires header to set.
 	 */
@@ -1728,7 +1735,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Set the content disposition header.
-	 * 
+	 *
 	 * @param contentDispositionHeader --
 	 *            content disposition header.
 	 */
@@ -1750,7 +1757,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Set the content length header.
-	 * 
+	 *
 	 * @param contentLength --
 	 *            content length header.
 	 */
@@ -1766,7 +1773,7 @@ public abstract class SIPMessage extends MessageObject implements
 	/**
 	 * Set the size of all the headers. This is for book keeping. Called by the
 	 * parser.
-	 * 
+	 *
 	 * @param size --
 	 *            size of the headers.
 	 */
@@ -1780,7 +1787,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.sip.message.Message#addLast(javax.sip.header.Header)
 	 */
 	public void addLast(Header header) throws SipException,
@@ -1798,7 +1805,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.sip.message.Message#addFirst(javax.sip.header.Header)
 	 */
 	public void addFirst(Header header) throws SipException,
@@ -1817,7 +1824,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.sip.message.Message#removeFirst(java.lang.String)
 	 */
 	public void removeFirst(String headerName) throws NullPointerException {
@@ -1829,7 +1836,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see javax.sip.message.Message#removeLast(java.lang.String)
 	 */
 	public void removeLast(String headerName) {
@@ -1841,7 +1848,7 @@ public abstract class SIPMessage extends MessageObject implements
 
 	/**
 	 * Set the CSeq header.
-	 * 
+	 *
 	 * @param cseqHeader --
 	 *            CSeq Header.
 	 */
@@ -1850,8 +1857,30 @@ public abstract class SIPMessage extends MessageObject implements
 		this.setHeader(cseqHeader);
 	}
 
-	
-	
+	/**
+	 * Set the application data pointer. This method is not used the stack.
+	 * It is provided as a convenient way of storing book-keeping data for
+	 * applications. Note that null clears the application data pointer
+	 * (releases it).
+	 *
+	 * @param applicationData --
+	 *            application data pointer to set. null clears the application
+	 *            data pointer.
+	 */
+	public void setApplicationData(Object applicationData) {
+		this.applicationData = applicationData;
+	}
+
+	/**
+	 * Get the application data associated with this message.
+	 *
+	 * @return stored application data.
+	 */
+	public Object getApplicationData() {
+		return this.applicationData;
+	}
+
+
 	public abstract void setSIPVersion(String sipVersion) throws ParseException;
 
 	public abstract String getSIPVersion();
