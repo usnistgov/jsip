@@ -249,13 +249,32 @@ import org.apache.log4j.Logger;
  * result in protocol errors. Setting the flag to true ( default ) enables you to avoid common
  * protocol errors.
  * 
+ * <li><b>gov.nist.javax.sip.DELIVER_UNSOLICITED_NOTIFY = [true|false] </b> <br/> Default
+ * is <it>false</it>. This flag is added to allow Sip Listeners to receive all NOTIFY requests
+ * including those that are not part of a valid dialog.
  * 
+ * <li><b>javax.net.ssl.keyStore = fileName </b> <br/> Default
+ * is <it>NULL</it>.  If left undefined the keyStore and trustStore will be left to the java
+ * runtime defaults.  If defined, any TLS sockets created (client and server) will use the 
+ * key store provided in the fileName.  The trust store will default to the same store file.
+ * A password must be provided to access the keyStore using the following property:
+ * <br><code>
+ *	properties.setProperty("javax.net.ssl.keyStorePassword", "&lt;password&gt;");
+ * </code>
+ * <br>The trust store can be changed, to a separate file with the following setting:
+ * <br><code>
+ *	properties.setProperty("javax.net.ssl.trustStore", "&lt;trustStoreFileName location&gt;");
+ * </code>
+ * <br>If the trust store property is provided the password on the trust store must be the same
+ * as the key store. 
+ * <br>
+ * <br>
  * <b> Note that the stack supports the extensions that are defined in SipStackExt. These will be
  * supported in the next release of JAIN-SIP. You should only use the extensions that are defined
  * in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.82 $ $Date: 2008-11-09 23:23:20 $
+ * @version 1.2 $Revision: 1.83 $ $Date: 2009-02-06 21:39:48 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -285,7 +304,18 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
     // unsolicited NOTIFYs, ie NOTIFYs that don't match any dialog
     boolean deliverUnsolicitedNotify = false;
 
-   
+    
+    // RFC3261: TLS_RSA_WITH_AES_128_CBC_SHA MUST be supported
+    // RFC3261: TLS_RSA_WITH_3DES_EDE_CBC_SHA SHOULD be supported for backwards compat
+    private String[] cipherSuites = {
+        "TLS_RSA_WITH_AES_128_CBC_SHA",     // AES difficult to get with c++/Windows
+        // "TLS_RSA_WITH_3DES_EDE_CBC_SHA", // Unsupported by Sun impl,
+        "SSL_RSA_WITH_3DES_EDE_CBC_SHA",    // For backwards comp., C++
+
+        // JvB: patch from Sebastien Mazy, issue with mismatching ciphersuites
+        "TLS_DH_anon_WITH_AES_128_CBC_SHA", 
+        "SSL_DH_anon_WITH_3DES_EDE_CBC_SHA",
+    };
    
 
     /**
@@ -976,6 +1006,34 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
         return new AuthenticationHelperImpl(this, accountManager, headerFactory);
     }
     
-    
+    /**
+     * Set the list of cipher suites supported by the stack.  A stack can have only one set of suites.
+     * These are not validated against the supported cipher suites of the java runtime, so specifying
+     * a cipher here does not guarantee that it will work.<br> 
+     * The stack has a default cipher suite of:
+     * <ul>
+     * <li> TLS_RSA_WITH_AES_128_CBC_SHA </li>
+     * <li> SSL_RSA_WITH_3DES_EDE_CBC_SHA </li>
+     * <li> TLS_DH_anon_WITH_AES_128_CBC_SHA </li>
+     * <li> SSL_DH_anon_WITH_3DES_EDE_CBC_SHA </li>
+     * </ul>
+     * 
+     * <b>NOTE: This function must be called before adding a TLS listener</b>
+     * 
+     * @param String[] The new set of ciphers to support.
+     * @return
+     * 
+     */
+    public void setEnabledCipherSuites(String []newCipherSuites) {
+    	cipherSuites = newCipherSuites;
+    }
 
+    /**
+     * Return the currently enabled cipher suites of the Stack.
+     * 
+     * @return The currently enabled cipher suites.
+     */
+    public String []getEnabledCipherSuites() {
+    	return cipherSuites;
+    }
 }
