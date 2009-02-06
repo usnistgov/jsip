@@ -47,6 +47,7 @@ public class Shootme  extends TestCase implements SipListener {
 		try {
 		logger.addAppender(new FileAppender(new SimpleLayout(),
 					ProtocolObjects.logFileDirectory + "shootmeconsolelog.txt"));
+		//logger.addAppender( new ConsoleAppender(new SimpleLayout()));
 		} catch (Exception ex) {
 			throw new RuntimeException ("could not open log file");
 		}
@@ -99,6 +100,8 @@ public class Shootme  extends TestCase implements SipListener {
 	}
 
 	public void processResponse(ResponseEvent responseEvent) {
+	    logger.info("processResponse " + responseEvent.getClientTransaction() + 
+	            "\nresponse = " + responseEvent.getResponse());
 	}
 
 	/**

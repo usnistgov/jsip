@@ -56,6 +56,7 @@ public class Shootist extends TestCase implements SipListener {
 		try {
 			logger.addAppender(new FileAppender(new SimpleLayout(),
 					ProtocolObjects.logFileDirectory + "shootistconsolelog.txt"));
+			logger.addAppender( new ConsoleAppender(new SimpleLayout()));
 		} catch (Exception ex) {
 			throw new RuntimeException("could not open shootistconsolelog.txt");
 		}
@@ -105,6 +106,7 @@ public class Shootist extends TestCase implements SipListener {
 
 	public synchronized void processResponse(ResponseEvent responseReceivedEvent) {
 		logger.info("Got a response");
+		
 		Response response = (Response) responseReceivedEvent.getResponse();
 		ClientTransaction tid = responseReceivedEvent.getClientTransaction();
 		CSeqHeader cseq = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
@@ -119,7 +121,7 @@ public class Shootist extends TestCase implements SipListener {
 		else 
 			logger.info("transaction = " + tid);
 
-		logger.info("Dialog = " + dialog);
+		logger.info("Dialog = " + dialog  + " count " + count);
 
 		if (dialog != null) {
 			logger.info("Dialog state is " + dialog.getState());
