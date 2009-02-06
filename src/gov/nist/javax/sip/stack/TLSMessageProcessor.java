@@ -41,6 +41,7 @@
 package gov.nist.javax.sip.stack;
 
 import gov.nist.core.HostPort;
+import gov.nist.javax.sip.SipStackImpl;
 
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLServerSocket;
@@ -56,7 +57,7 @@ import java.util.Iterator;
  * connection. This is the active object that creates new TLS MessageChannels (one for each new
  * accept socket).
  * 
- * @version 1.2 $Revision: 1.15 $ $Date: 2008-11-19 09:36:34 $
+ * @version 1.2 $Revision: 1.16 $ $Date: 2009-02-06 21:39:48 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -95,18 +96,6 @@ public class TLSMessageProcessor extends MessageProcessor {
 
     }
 
-    // RFC3261: TLS_RSA_WITH_AES_128_CBC_SHA MUST be supported
-    // RFC3261: TLS_RSA_WITH_3DES_EDE_CBC_SHA SHOULD be supported for backwards compat
-    private static final String[] CIPHERSUITES = {
-        "TLS_RSA_WITH_AES_128_CBC_SHA",     // AES difficult to get with c++/Windows
-        // "TLS_RSA_WITH_3DES_EDE_CBC_SHA", // Unsupported by Sun impl,
-        "SSL_RSA_WITH_3DES_EDE_CBC_SHA",    // For backwards comp., C++
-
-        // JvB: patch from Sebastien Mazy, issue with mismatching ciphersuites
-        "TLS_DH_anon_WITH_AES_128_CBC_SHA", 
-        "SSL_DH_anon_WITH_3DES_EDE_CBC_SHA",
-    };
-
     /**
      * Start the processor.
      */
@@ -122,7 +111,8 @@ public class TLSMessageProcessor extends MessageProcessor {
             ((SSLServerSocket) this.sock).setNeedClientAuth(false);
             ((SSLServerSocket) this.sock).setUseClientMode(false);
             ((SSLServerSocket) this.sock).setWantClientAuth(true);
-            ((SSLServerSocket) this.sock).setEnabledCipherSuites(CIPHERSUITES);
+            String []enabledCiphers = ((SipStackImpl)sipStack).getEnabledCipherSuites();
+            ((SSLServerSocket) this.sock).setEnabledCipherSuites(enabledCiphers);
         } else {
             this.sock = sipStack.getNetworkLayer().createServerSocket(this.getPort(), 0,
                     getIpAddress());
