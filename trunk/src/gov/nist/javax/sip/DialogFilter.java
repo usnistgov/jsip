@@ -28,19 +28,40 @@
  ******************************************************************************/
 package gov.nist.javax.sip;
 
-import javax.sip.*;
-import javax.sip.address.SipURI;
-import javax.sip.header.EventHeader;
-import javax.sip.header.ReferToHeader;
-import javax.sip.message.*;
-
 import gov.nist.core.InternalErrorHandler;
-import gov.nist.javax.sip.stack.*;
-import gov.nist.javax.sip.message.*;
-import gov.nist.javax.sip.header.*;
-import gov.nist.javax.sip.address.*;
+import gov.nist.javax.sip.address.SipUri;
+import gov.nist.javax.sip.header.Contact;
+import gov.nist.javax.sip.header.Event;
+import gov.nist.javax.sip.header.ReferTo;
+import gov.nist.javax.sip.header.RetryAfter;
+import gov.nist.javax.sip.header.Route;
+import gov.nist.javax.sip.header.RouteList;
+import gov.nist.javax.sip.header.Server;
+import gov.nist.javax.sip.message.SIPRequest;
+import gov.nist.javax.sip.message.SIPResponse;
+import gov.nist.javax.sip.stack.MessageChannel;
+import gov.nist.javax.sip.stack.SIPClientTransaction;
+import gov.nist.javax.sip.stack.SIPDialog;
+import gov.nist.javax.sip.stack.SIPServerTransaction;
+import gov.nist.javax.sip.stack.SIPTransaction;
+import gov.nist.javax.sip.stack.ServerRequestInterface;
+import gov.nist.javax.sip.stack.ServerResponseInterface;
 
 import java.io.IOException;
+
+import javax.sip.ClientTransaction;
+import javax.sip.DialogState;
+import javax.sip.InvalidArgumentException;
+import javax.sip.RequestEvent;
+import javax.sip.ResponseEvent;
+import javax.sip.ServerTransaction;
+import javax.sip.SipException;
+import javax.sip.SipProvider;
+import javax.sip.TransactionState;
+import javax.sip.header.EventHeader;
+import javax.sip.header.ReferToHeader;
+import javax.sip.message.Request;
+import javax.sip.message.Response;
 
 /*
  * Bug fix Contributions by Lamine Brahimi, Andreas Bystrom, Bill Roome, John Martin, Daniel
@@ -56,7 +77,7 @@ import java.io.IOException;
  * interface). This is part of the glue that ties together the NIST-SIP stack and event model with
  * the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.23 $ $Date: 2008-09-30 01:54:31 $
+ * @version 1.2 $Revision: 1.24 $ $Date: 2009-02-23 00:37:22 $
  * 
  * @author M. Ranganathan
  */
@@ -773,13 +794,10 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     sipProvider.sendResponse(errorResponse);
                     return;
 
-                } catch (Exception ex) {
-                    if (ex.getCause() != null && ex.getCause() instanceof IOException) {
-                        sipStack.getLogWriter().logDebug(
-                                "Exception while sending error response statelessly");
-                    } else {
-                        InternalErrorHandler.handleException(ex);
-                    }
+                } catch (Exception ex) {                   
+                   sipStack.getLogWriter().logError(
+                                "Exception while sending error response statelessly",ex);
+                   return;
                 }
 
             }

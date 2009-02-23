@@ -78,7 +78,7 @@ import javax.sip.message.Response;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.52 $ $Date: 2008-11-24 23:59:04 $
+ * @version 1.2 $Revision: 1.53 $ $Date: 2009-02-23 00:37:24 $
  */
 public class UDPMessageChannel extends MessageChannel implements
 		ParseExceptionListener, Runnable, RawMessageChannel {
@@ -470,9 +470,6 @@ public class UDPMessageChannel extends MessageChannel implements
 		} else {
 			// Handle a SIP Reply message.
 			SIPResponse sipResponse = (SIPResponse) sipMessage;
-			// JvB: dont do this
-			// if (sipResponse.getStatusCode() == 100)
-			// sipResponse.getTo().removeParameter("tag");
 			try {
 				sipResponse.checkHeaders();
 			} catch (ParseException ex) {

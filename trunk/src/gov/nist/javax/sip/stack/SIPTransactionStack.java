@@ -93,7 +93,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.101 $ $Date: 2009-01-22 19:33:49 $
+ * @version 1.2 $Revision: 1.102 $ $Date: 2009-02-23 00:37:23 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener {
 
@@ -723,21 +723,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
                 SIPClientTransaction ct = (SIPClientTransaction) it.next();
                 if (!ct.getMethod().equals(Request.SUBSCRIBE))
                     continue;
-                SIPRequest sipRequest = ct.getOriginalRequest();
-                Contact contact = sipRequest.getContactHeader();
-                Address address = contact.getAddress();
-                SipURI uri = (SipURI) address.getURI();
-                String host = uri.getHost();
-                int port = uri.getPort();
-                String transport = uri.getTransportParam();
-                if (transport == null)
-                    transport = "udp";
-                if (port == -1) {
-                    if (transport.equals("udp") || transport.equals("tcp"))
-                        port = 5060;
-                    else
-                        port = 5061;
-                }
+               
                 // if ( sipProvider.getListeningPoint(transport) == null)
                 String fromTag = ct.from.getTag();
                 Event hisEvent = ct.event;
@@ -752,16 +738,11 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
                     logWriter.logDebug("eventHdr " + eventHdr);
 
                 }
-
-                // Check that the NOTIFY is directed at the contact address
-                // specified by the SUBSCRIBE ( this is to prevent spurious
-                // NOTOFY's
-                if (listeningPoint.getPort() == port
-                        && listeningPoint.getIPAddress().equals(host)
-                        && fromTag.equalsIgnoreCase(thisToTag)
-                        && hisEvent != null
-                        && eventHdr.match(hisEvent)
-                        && notifyMessage.getCallId().getCallId().equalsIgnoreCase(
+              
+                if (  fromTag.equalsIgnoreCase(thisToTag)
+                      && hisEvent != null
+                      && eventHdr.match(hisEvent)
+                      && notifyMessage.getCallId().getCallId().equalsIgnoreCase(
                                 ct.callId.getCallId())) {
                     if (ct.acquireSem())
                         retval = ct;
