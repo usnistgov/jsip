@@ -35,6 +35,7 @@ import gov.nist.core.*;
 import java.net.*;
 import java.io.*;
 import java.text.ParseException;
+import java.util.TimerTask;
 
 import javax.sip.address.Hop;
 import javax.sip.message.Response;
@@ -59,7 +60,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.51 $ $Date: 2008-12-20 05:11:07 $
+ * @version 1.2 $Revision: 1.52 $ $Date: 2009-02-23 20:57:45 $
  */
 public class TCPMessageChannel extends MessageChannel implements SIPMessageListener, Runnable,
         RawMessageChannel {
@@ -325,12 +326,33 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
         // this.uncache();
         // } else
         if (sock != mySock && sock != null) {
-            try {
-                if (mySock != null)
-                    mySock.close();
-            } catch (IOException ex) {
-                /* ignore */
+            if (mySock != null) {
+                /*
+                 * Delay the close of the socket for some time in case it is being used.
+                 */
+                sipStack.getTimer().schedule(new TimerTask() {
+                    @Override
+                    public boolean cancel() {
+                        try {
+                            mySock.close();
+                            super.cancel();
+                        } catch (IOException ex) {
+
+                        }
+                        return true;
+                    }
+
+                    @Override
+                    public void run() {
+                        try {
+                            mySock.close();
+                        } catch (IOException ex) {
+
+                        }
+                    }
+                }, 8000);
             }
+
             mySock = sock;
             this.myClientInputStream = mySock.getInputStream();
             this.myClientOutputStream = mySock.getOutputStream();
@@ -366,6 +388,32 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
                 this.getSIPStack().getLogWriter().logDebug(
                         "Encountered Bad Message \n" + sipMessage.toString());
             }
+
+            // JvB: send a 400 response for requests (except ACK)
+            // Currently only UDP, @todo also other transports
+            String msgString = sipMessage.toString();
+            if (!msgString.startsWith("SIP/") && !msgString.startsWith("ACK ")) {
+
+                String badReqRes = createBadReqRes(msgString, ex);
+                if (badReqRes != null) {
+                    if (sipStack.isLoggingEnabled()) {
+                        sipStack.getLogWriter().logDebug("Sending automatic 400 Bad Request:");
+                        sipStack.getLogWriter().logDebug(badReqRes);
+                    }
+                    try {
+                        this.sendMessage(badReqRes.getBytes(), this.getPeerInetAddress(), this
+                                .getPeerPort(), false);
+                    } catch (IOException e) {
+                        this.sipStack.logWriter.logException(e);
+                    }
+                } else {
+                    if (sipStack.isLoggingEnabled()) {
+                        sipStack.getLogWriter().logDebug(
+                                "Could not formulate automatic 400 Bad Request");
+                    }
+                }
+            }
+
             throw ex;
         } else {
             sipMessage.addUnparsed(header);
@@ -380,193 +428,176 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
      *        message).
      */
     public void processMessage(SIPMessage sipMessage) throws Exception {
-		try {
-			if (sipMessage.getFrom() == null
-					|| // sipMessage.getFrom().getTag()
-					// == null ||
-					sipMessage.getTo() == null
-					|| sipMessage.getCallId() == null
-					|| sipMessage.getCSeq() == null
-					|| sipMessage.getViaHeaders() == null) {
-				String badmsg = sipMessage.encode();
-				if (sipStack.isLoggingEnabled()) {
-					sipStack.logWriter.logDebug(">>> Dropped Bad Msg");
-					sipStack.logWriter.logDebug(badmsg);
-				}
+        try {
+            if (sipMessage.getFrom() == null
+                    || // sipMessage.getFrom().getTag()
+                    // == null ||
+                    sipMessage.getTo() == null || sipMessage.getCallId() == null
+                    || sipMessage.getCSeq() == null || sipMessage.getViaHeaders() == null) {
+                String badmsg = sipMessage.encode();
+                if (sipStack.isLoggingEnabled()) {
+                    sipStack.logWriter.logDebug(">>> Dropped Bad Msg");
+                    sipStack.logWriter.logDebug(badmsg);
+                }
 
-				return;
-			}
+                return;
+            }
 
-			ViaList viaList = sipMessage.getViaHeaders();
-			// For a request
-			// first via header tells where the message is coming from.
-			// For response, this has already been recorded in the outgoing
-			// message.
-			if (sipMessage instanceof SIPRequest) {
-				Via v = (Via) viaList.getFirst();
-				Hop hop = sipStack.addressResolver.resolveAddress(v.getHop());
-				this.peerPort = hop.getPort();
-				this.peerProtocol = v.getTransport();
-				try {
-					this.peerAddress = mySock.getInetAddress();
-					// Check to see if the received parameter matches
-					// the peer address and tag it appropriately.
+            ViaList viaList = sipMessage.getViaHeaders();
+            // For a request
+            // first via header tells where the message is coming from.
+            // For response, this has already been recorded in the outgoing
+            // message.
+            if (sipMessage instanceof SIPRequest) {
+                Via v = (Via) viaList.getFirst();
+                Hop hop = sipStack.addressResolver.resolveAddress(v.getHop());
+                this.peerPort = hop.getPort();
+                this.peerProtocol = v.getTransport();
+                try {
+                    this.peerAddress = mySock.getInetAddress();
+                    // Check to see if the received parameter matches
+                    // the peer address and tag it appropriately.
 
-					// JvB: dont do this. It is both costly and incorrect
-					// Must set received also when it is a FQDN, regardless
-					// whether
-					// it resolves to the correct IP address
-					// InetAddress sentByAddress =
-					// InetAddress.getByName(hop.getHost());
-					// JvB: if sender added 'rport', must always set received
-					if (v.hasParameter(Via.RPORT)
-							|| !hop.getHost().equals(
-									this.peerAddress.getHostAddress())) {
-						v.setParameter(Via.RECEIVED, this.peerAddress
-								.getHostAddress());
-					}
-					// @@@ hagai
-					// JvB: technically, may only do this when Via already
-					// contains
-					// rport
-					v.setParameter(Via.RPORT, Integer.toString(this.peerPort));
-				} catch (java.text.ParseException ex) {
-					InternalErrorHandler
-							.handleException(ex, sipStack.logWriter);
-				}
-				// Use this for outgoing messages as well.
-				if (!this.isCached) {
-					((TCPMessageProcessor) this.messageProcessor)
-							.cacheMessageChannel(this);
-					this.isCached = true;
-					String key = IOHandler.makeKey(mySock.getInetAddress(),
-							this.peerPort);
-					sipStack.ioHandler.putSocket(key, mySock);
-				}
-			}
+                    // JvB: dont do this. It is both costly and incorrect
+                    // Must set received also when it is a FQDN, regardless
+                    // whether
+                    // it resolves to the correct IP address
+                    // InetAddress sentByAddress =
+                    // InetAddress.getByName(hop.getHost());
+                    // JvB: if sender added 'rport', must always set received
+                    if (v.hasParameter(Via.RPORT)
+                            || !hop.getHost().equals(this.peerAddress.getHostAddress())) {
+                        v.setParameter(Via.RECEIVED, this.peerAddress.getHostAddress());
+                    }
+                    // @@@ hagai
+                    // JvB: technically, may only do this when Via already
+                    // contains
+                    // rport
+                    v.setParameter(Via.RPORT, Integer.toString(this.peerPort));
+                } catch (java.text.ParseException ex) {
+                    InternalErrorHandler.handleException(ex, sipStack.logWriter);
+                }
+                // Use this for outgoing messages as well.
+                if (!this.isCached) {
+                    ((TCPMessageProcessor) this.messageProcessor).cacheMessageChannel(this);
+                    this.isCached = true;
+                    String key = IOHandler.makeKey(mySock.getInetAddress(), this.peerPort);
+                    sipStack.ioHandler.putSocket(key, mySock);
+                }
+            }
 
-			// System.out.println("receiver address = " + receiverAddress);
+            // System.out.println("receiver address = " + receiverAddress);
 
-			// Foreach part of the request header, fetch it and process it
+            // Foreach part of the request header, fetch it and process it
 
-			long receptionTime = System.currentTimeMillis();
+            long receptionTime = System.currentTimeMillis();
 
-			if (sipMessage instanceof SIPRequest) {
-				// This is a request - process the request.
-				SIPRequest sipRequest = (SIPRequest) sipMessage;
-				// Create a new sever side request processor for this
-				// message and let it handle the rest.
+            if (sipMessage instanceof SIPRequest) {
+                // This is a request - process the request.
+                SIPRequest sipRequest = (SIPRequest) sipMessage;
+                // Create a new sever side request processor for this
+                // message and let it handle the rest.
 
-				if (sipStack.isLoggingEnabled()) {
-					sipStack.logWriter.logDebug("----Processing Message---");
-				}
+                if (sipStack.isLoggingEnabled()) {
+                    sipStack.logWriter.logDebug("----Processing Message---");
+                }
 
-				// Check for reasonable size - reject message
-				// if it is too long.
-				if (this.sipStack.logWriter
-                        .isLoggingEnabled(ServerLog.TRACE_MESSAGES)) {
-                    sipStack.serverLog.logMessage(sipMessage, this
-                            .getPeerHostPort().toString(), this
-                            .getMessageProcessor().getIpAddress()
-                            .getHostAddress()
-                            + ":" + this.getMessageProcessor().getPort(),
-                            false, receptionTime);
+                // Check for reasonable size - reject message
+                // if it is too long.
+                if (this.sipStack.logWriter.isLoggingEnabled(ServerLog.TRACE_MESSAGES)) {
+                    sipStack.serverLog.logMessage(sipMessage, this.getPeerHostPort().toString(),
+                            this.getMessageProcessor().getIpAddress().getHostAddress() + ":"
+                                    + this.getMessageProcessor().getPort(), false, receptionTime);
 
                 }
-				
-				if (sipStack.getMaxMessageSize() > 0
-						&& sipRequest.getSize()
-								+ (sipRequest.getContentLength() == null ? 0
-										: sipRequest.getContentLength()
-												.getContentLength()) > sipStack
-								.getMaxMessageSize()) {
-					SIPResponse sipResponse = sipRequest
-							.createResponse(SIPResponse.MESSAGE_TOO_LARGE);
-					byte[] resp = sipResponse.encodeAsBytes( this.getTransport() );
-					this.sendMessage(resp, false);
-					throw new Exception("Message size exceeded");
-				}
 
-				ServerRequestInterface sipServerRequest = sipStack
-						.newSIPServerRequest(sipRequest, this);
-				
-				
-				if (sipServerRequest != null) {
-					try {
-						sipServerRequest.processRequest(sipRequest, this);
-					} finally {
-						if (sipServerRequest instanceof SIPTransaction) {
-							SIPServerTransaction sipServerTx = (SIPServerTransaction) sipServerRequest;
-							if (!sipServerTx.passToListener())
-								((SIPTransaction) sipServerRequest)
-										.releaseSem();
-						}
-					}
-				} else {
-					this.sipStack.logWriter
-							.logWarning("Dropping request -- could not acquire semaphore in 10 sec");					
-				}
-				
-			} else {
-				SIPResponse sipResponse = (SIPResponse) sipMessage;
-				// JvB: dont do this
-				// if (sipResponse.getStatusCode() == 100)
-				// sipResponse.getTo().removeParameter("tag");
-				try {
-					sipResponse.checkHeaders();
-				} catch (ParseException ex) {
-					if (sipStack.isLoggingEnabled())
-						sipStack.logWriter
-								.logError("Dropping Badly formatted response message >>> "
-										+ sipResponse);
-					return;
-				}
-				// This is a response message - process it.
-				// Check the size of the response.
-				// If it is too large dump it silently.
-				if (sipStack.getMaxMessageSize() > 0
-						&& sipResponse.getSize()
-								+ (sipResponse.getContentLength() == null ? 0
-										: sipResponse.getContentLength()
-												.getContentLength()) > sipStack
-								.getMaxMessageSize()) {
-					if (sipStack.isLoggingEnabled())
-						this.sipStack.logWriter
-								.logDebug("Message size exceeded");
-					return;
+                if (sipStack.getMaxMessageSize() > 0
+                        && sipRequest.getSize()
+                                + (sipRequest.getContentLength() == null ? 0 : sipRequest
+                                        .getContentLength().getContentLength()) > sipStack
+                                .getMaxMessageSize()) {
+                    SIPResponse sipResponse = sipRequest
+                            .createResponse(SIPResponse.MESSAGE_TOO_LARGE);
+                    byte[] resp = sipResponse.encodeAsBytes(this.getTransport());
+                    this.sendMessage(resp, false);
+                    throw new Exception("Message size exceeded");
+                }
 
-				}
-				ServerResponseInterface sipServerResponse = sipStack
-						.newSIPServerResponse(sipResponse, this);
-				if (sipServerResponse != null) {
-					try {
-						if (sipServerResponse instanceof SIPClientTransaction
-								&& !((SIPClientTransaction) sipServerResponse)
-										.checkFromTag(sipResponse)) {
-							if (sipStack.isLoggingEnabled())
-								sipStack.logWriter
-										.logError("Dropping response message with invalid tag >>> "
-												+ sipResponse);
-							return;
-						}
+                ServerRequestInterface sipServerRequest = sipStack.newSIPServerRequest(
+                        sipRequest, this);
 
-						sipServerResponse.processResponse(sipResponse, this);
-					} finally {
-						if (sipServerResponse instanceof SIPTransaction
-								&& !((SIPTransaction) sipServerResponse)
-										.passToListener())
-							((SIPTransaction) sipServerResponse).releaseSem();
-					}
-				} else {
-					sipStack
-							.getLogWriter()
-							.logWarning(
-									"Application is blocked -- could not acquire semaphore -- dropping response");
-				}
-			}
-		} finally {
-		}
-	}
+                if (sipServerRequest != null) {
+                    try {
+                        sipServerRequest.processRequest(sipRequest, this);
+                    } finally {
+                        if (sipServerRequest instanceof SIPTransaction) {
+                            SIPServerTransaction sipServerTx = (SIPServerTransaction) sipServerRequest;
+                            if (!sipServerTx.passToListener())
+                                ((SIPTransaction) sipServerRequest).releaseSem();
+                        }
+                    }
+                } else {
+                    this.sipStack.logWriter
+                            .logWarning("Dropping request -- could not acquire semaphore in 10 sec");
+                }
+
+            } else {
+                SIPResponse sipResponse = (SIPResponse) sipMessage;
+                // JvB: dont do this
+                // if (sipResponse.getStatusCode() == 100)
+                // sipResponse.getTo().removeParameter("tag");
+                try {
+                    sipResponse.checkHeaders();
+                } catch (ParseException ex) {
+                    if (sipStack.isLoggingEnabled())
+                        sipStack.logWriter
+                                .logError("Dropping Badly formatted response message >>> "
+                                        + sipResponse);
+                    return;
+                }
+                // This is a response message - process it.
+                // Check the size of the response.
+                // If it is too large dump it silently.
+                if (sipStack.getMaxMessageSize() > 0
+                        && sipResponse.getSize()
+                                + (sipResponse.getContentLength() == null ? 0 : sipResponse
+                                        .getContentLength().getContentLength()) > sipStack
+                                .getMaxMessageSize()) {
+                    if (sipStack.isLoggingEnabled())
+                        this.sipStack.logWriter.logDebug("Message size exceeded");
+                    return;
+
+                }
+                ServerResponseInterface sipServerResponse = sipStack.newSIPServerResponse(
+                        sipResponse, this);
+                if (sipServerResponse != null) {
+                    try {
+                        if (sipServerResponse instanceof SIPClientTransaction
+                                && !((SIPClientTransaction) sipServerResponse)
+                                        .checkFromTag(sipResponse)) {
+                            if (sipStack.isLoggingEnabled())
+                                sipStack.logWriter
+                                        .logError("Dropping response message with invalid tag >>> "
+                                                + sipResponse);
+                            return;
+                        }
+
+                        sipServerResponse.processResponse(sipResponse, this);
+                    } finally {
+                        if (sipServerResponse instanceof SIPTransaction
+                                && !((SIPTransaction) sipServerResponse).passToListener())
+                            ((SIPTransaction) sipServerResponse).releaseSem();
+                    }
+                } else {
+                    sipStack
+                            .getLogWriter()
+                            .logWarning(
+                                    "Application is blocked -- could not acquire semaphore -- dropping response");
+                }
+            }
+        } finally {
+        }
+    }
 
     /**
      * This gets invoked when thread.start is called from the constructor. Implements a message
