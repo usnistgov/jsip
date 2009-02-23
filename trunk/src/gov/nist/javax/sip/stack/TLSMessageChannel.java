@@ -65,7 +65,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan 
  * 
  * 
- * @version 1.2 $Revision: 1.16 $ $Date: 2008-05-30 19:01:24 $ 
+ * @version 1.2 $Revision: 1.17 $ $Date: 2009-02-23 20:57:46 $ 
  */
 public final class TLSMessageChannel extends MessageChannel implements
 		SIPMessageListener, Runnable , RawMessageChannel {
@@ -359,6 +359,32 @@ public final class TLSMessageChannel extends MessageChannel implements
 						.equals(StatusLine.class))) {
 			sipStack.getLogWriter().logDebug(
 					"Encountered bad message \n" + message);
+		    // JvB: send a 400 response for requests (except ACK)
+            String msgString = sipMessage.toString();
+            if (!msgString.startsWith("SIP/") && !msgString.startsWith("ACK ")) {
+
+                String badReqRes = createBadReqRes(msgString, ex);
+                if (badReqRes != null) {
+                    if (sipStack.isLoggingEnabled()) {
+                        sipStack.getLogWriter().logDebug(
+                                "Sending automatic 400 Bad Request:");
+                        sipStack.getLogWriter().logDebug(badReqRes);
+                    }
+                    try {
+                        this.sendMessage(badReqRes.getBytes(), this.getPeerInetAddress(),
+                                this.getPeerPort(),  false);
+                    } catch (IOException e) {
+                        this.sipStack.logWriter.logException(e);
+                    }
+                } else {
+                    if (sipStack.isLoggingEnabled()) {
+                        sipStack
+                                .getLogWriter()
+                                .logDebug(
+                                        "Could not formulate automatic 400 Bad Request");
+                    }
+                }
+            }       
 			throw ex;
 		} else {
 			sipMessage.addUnparsed(header);
