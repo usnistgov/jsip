@@ -1,5 +1,6 @@
 package gov.nist.javax.sip.message;
 
+import javax.sip.header.ServerHeader;
 import javax.sip.header.UserAgentHeader;
 
 /**
@@ -10,7 +11,7 @@ import javax.sip.header.UserAgentHeader;
  */
 public interface MessageFactoryExt {
 	/**
-	 * Set the common UserAgent header for all Messages created from this message factory.
+	 * Set the common UserAgent header for all Requests created from this message factory.
 	 * This header is applied to all Messages created from this Factory object except those
 	 * that take String for an argument and create Message from the given String.
 	 * 
@@ -18,8 +19,19 @@ public interface MessageFactoryExt {
 	 * 
 	 */
 	
-	public void setCommonUserAgentHeader(UserAgentHeader userAgent);
-
+	public void setDefaultUserAgentHeader(UserAgentHeader userAgent);
+	
+	
+	/**
+     * Set the common Server header for all Responses created from this message factory.
+     * This header is applied to all Messages created from this Factory object except those
+     * that take String for an argument and create Message from the given String.
+     * 
+     * @param userAgent -- the user agent header to set.
+     * 
+     */
+    
+    public void setDefaultServerHeader(ServerHeader userAgent);
 	
 	/**
 	 * Set default charset used for encoding String content. Note that this

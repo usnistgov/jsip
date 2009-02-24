@@ -93,7 +93,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.102 $ $Date: 2009-02-23 00:37:23 $
+ * @version 1.2 $Revision: 1.103 $ $Date: 2009-02-24 03:39:45 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener {
 
@@ -1603,20 +1603,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
         this.stackName = stackName;
     }
 
-    /**
-     * Create a standard Server header for the stack (i.e. one that takes the stack name as a
-     * product token) and return it.
-     * 
-     * @return Server header for the stack. The server header is used in automatically generated
-     *         responses.
-     * 
-     */
-    public Server createServerHeaderForStack() {
-
-        Server retval = new Server();
-        retval.addProductToken(this.stackName);
-        return retval;
-    }
+  
 
     /**
      * Set my address.
