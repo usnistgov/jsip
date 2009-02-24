@@ -37,6 +37,7 @@ import gov.nist.javax.sip.header.RetryAfter;
 import gov.nist.javax.sip.header.Route;
 import gov.nist.javax.sip.header.RouteList;
 import gov.nist.javax.sip.header.Server;
+import gov.nist.javax.sip.message.MessageFactoryImpl;
 import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.message.SIPResponse;
 import gov.nist.javax.sip.stack.MessageChannel;
@@ -60,6 +61,7 @@ import javax.sip.SipProvider;
 import javax.sip.TransactionState;
 import javax.sip.header.EventHeader;
 import javax.sip.header.ReferToHeader;
+import javax.sip.header.ServerHeader;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 
@@ -77,7 +79,7 @@ import javax.sip.message.Response;
  * interface). This is part of the glue that ties together the NIST-SIP stack and event model with
  * the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.24 $ $Date: 2009-02-23 00:37:22 $
+ * @version 1.2 $Revision: 1.25 $ $Date: 2009-02-24 03:39:44 $
  * 
  * @author M. Ranganathan
  */
@@ -106,8 +108,8 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             sipStack.getLogWriter().logDebug("Sending 500 response for out of sequence message");
         SIPResponse sipResponse = sipRequest.createResponse(Response.SERVER_INTERNAL_ERROR);
         sipResponse.setReasonPhrase("Request out of order");
-        Server server = sipStack.createServerHeaderForStack();
-        sipResponse.addHeader(server);
+        
+       
         try {
             transaction.sendMessage(sipResponse);
             sipStack.removeTransaction(transaction);
@@ -213,7 +215,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             if (sipServerTransaction != null
                     && !sipServerTransaction.isMessagePartOfTransaction(sipRequest)) {
                 SIPResponse response = sipRequest.createResponse(Response.LOOP_DETECTED);
-                response.setHeader(sipStack.createServerHeaderForStack());
+                
                 if (sipStack.getLogWriter().isLoggingEnabled())
                     sipStack.getLogWriter().logError("Loop detected while processing request");
                 try {
@@ -273,8 +275,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             if (sipHeader == null && dialog != null) {
                 SIPResponse badRequest = sipRequest.createResponse(Response.BAD_REQUEST);
                 badRequest.setReasonPhrase("Refer-To header missing");
-                Server server = sipStack.createServerHeaderForStack();
-                badRequest.addHeader(server);
+                
                 try {
                     sipProvider.sendResponse(badRequest);
                 } catch (SipException e) {
@@ -296,8 +297,6 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             if (sipProvider.isAutomaticDialogSupportEnabled() && dialog == null) {
                 Response notExist = sipRequest
                         .createResponse(Response.CALL_OR_TRANSACTION_DOES_NOT_EXIST);
-                Server server = sipStack.createServerHeaderForStack();
-                notExist.addHeader(server);
                 try {
                     sipProvider.sendResponse(notExist);
                 } catch (SipException e) {
@@ -402,8 +401,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                 }
                 SIPResponse notExist = sipRequest
                         .createResponse(Response.CALL_OR_TRANSACTION_DOES_NOT_EXIST);
-                Server server = sipStack.createServerHeaderForStack();
-                notExist.addHeader(server);
+               
                 try {
                     sipProvider.sendResponse(notExist);
                 } catch (SipException e) {
@@ -469,8 +467,8 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
                 SIPResponse response = sipRequest
                         .createResponse(Response.CALL_OR_TRANSACTION_DOES_NOT_EXIST);
-                Server server = sipStack.createServerHeaderForStack();
-                response.addHeader(server);
+                response.setReasonPhrase("Dialog Not Found");
+               
                 sipStack.getLogWriter().logDebug(
                         "dropping request -- automatic dialog "
                                 + "support enabled and dialog does not exist!");
@@ -563,12 +561,11 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
                 SIPResponse response = sipRequest
                         .createResponse(Response.CALL_OR_TRANSACTION_DOES_NOT_EXIST);
-                Server server = sipStack.createServerHeaderForStack();
-                response.addHeader(server);
-                if (sipStack.isLoggingEnabled())
+                if (sipStack.isLoggingEnabled()) {
                     sipStack.getLogWriter().logDebug(
                             "dropping request -- automatic dialog support "
                                     + "enabled and INVITE ST does not exist!");
+                }
                 try {
                     sipProvider.sendResponse(response);
                 } catch (SipException ex) {
@@ -625,8 +622,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                             "Sending 500 response for out of sequence message");
                 SIPResponse sipResponse = sipRequest
                         .createResponse(Response.SERVER_INTERNAL_ERROR);
-                Server server = sipStack.createServerHeaderForStack();
-                sipResponse.addHeader(server);
+              
                 RetryAfter retryAfter = new RetryAfter();
                 try {
                     retryAfter.setRetryAfter((int) (10 * Math.random()));
@@ -662,8 +658,6 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                         sipStack.getLogWriter().logDebug(
                                 "Sending 491 response for out of sequence message");
                     SIPResponse sipResponse = sipRequest.createResponse(Response.REQUEST_PENDING);
-                    Server server = sipStack.createServerHeaderForStack();
-                    sipResponse.addHeader(server);
                     try {
                         transaction.sendMessage(sipResponse);
                     } catch (IOException ex) {
@@ -789,15 +783,13 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     Response errorResponse = sipRequest
                             .createResponse(Response.CALL_OR_TRANSACTION_DOES_NOT_EXIST);
                     errorResponse.setReasonPhrase("Subscription does not exist");
-                    Server server = sipStack.createServerHeaderForStack();
-                    errorResponse.addHeader(server);
                     sipProvider.sendResponse(errorResponse);
                     return;
 
-                } catch (Exception ex) {                   
-                   sipStack.getLogWriter().logError(
-                                "Exception while sending error response statelessly",ex);
-                   return;
+                } catch (Exception ex) {
+                    sipStack.getLogWriter().logError(
+                            "Exception while sending error response statelessly", ex);
+                    return;
                 }
 
             }
@@ -1205,8 +1197,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             sipDialog.setLastResponse(transaction, sipResponse);
         }
 
-      
-        ResponseEvent responseEvent  = new javax.sip.ResponseEvent(sipProvider,
+        ResponseEvent responseEvent = new javax.sip.ResponseEvent(sipProvider,
                 (ClientTransaction) transaction, sipDialog, (Response) sipResponse);
 
         sipProvider.handleEvent(responseEvent, transaction);

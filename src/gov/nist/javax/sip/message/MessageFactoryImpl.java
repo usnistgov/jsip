@@ -34,6 +34,7 @@ import javax.sip.header.*;
 import java.util.LinkedList;
 import java.util.List;
 import gov.nist.javax.sip.header.*;
+
 import javax.sip.message.*;
 import javax.sip.address.*;
 import gov.nist.javax.sip.parser.*;
@@ -41,7 +42,7 @@ import gov.nist.javax.sip.parser.*;
 /**
  * Message Factory implementation
  * 
- * @version 1.2 $Revision: 1.16 $ $Date: 2008-08-20 12:06:19 $
+ * @version 1.2 $Revision: 1.17 $ $Date: 2009-02-24 03:39:44 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -60,6 +61,11 @@ public class MessageFactoryImpl implements MessageFactory, MessageFactoryExt {
 	 * The UserAgent header to include for all requests created from this message factory.
 	 */
 	private static UserAgentHeader userAgent;
+	
+	/*
+	 * The Server header to include
+	 */
+	private static ServerHeader server;
 	
 	
 
@@ -426,8 +432,8 @@ public class MessageFactoryImpl implements MessageFactory, MessageFactoryExt {
 		SIPRequest sipRequest = (SIPRequest) request;
 		SIPResponse sipResponse = sipRequest.createResponse(statusCode);
 		sipResponse.setContent(content, contentType);
-		if (userAgent != null) {
-			sipResponse.setHeader(userAgent);
+		if (server != null) {
+			sipResponse.setHeader(server);
 		}
 		return sipResponse;
 	}
@@ -460,8 +466,8 @@ public class MessageFactoryImpl implements MessageFactory, MessageFactoryExt {
 		SIPResponse sipResponse = sipRequest.createResponse(statusCode);
 		sipResponse.setHeader((ContentType) contentType);
 		sipResponse.setMessageContent(content);
-		if (userAgent != null) {
-			sipResponse.setHeader(userAgent);
+		if (server != null) {
+			sipResponse.setHeader(server);
 		}
 		return sipResponse;
 	}
@@ -493,8 +499,8 @@ public class MessageFactoryImpl implements MessageFactory, MessageFactoryExt {
 		// Antonis Karydas.
 		sipResponse.removeContent();
 		sipResponse.removeHeader(ContentTypeHeader.NAME);
-		if (userAgent != null) {
-			sipResponse.setHeader(userAgent);
+		if (server != null) {
+			sipResponse.setHeader(server);
 		}
 		return sipResponse;
 	}
@@ -747,7 +753,7 @@ public class MessageFactoryImpl implements MessageFactory, MessageFactoryExt {
 	}
 	
 	/**
-	 * Set the common UserAgent header for all headers created from this message factory.
+	 * Set the common UserAgent header for all requests created from this message factory.
 	 * This header is applied to all Messages created from this Factory object except those
 	 * that take String for an argument and create Message from the given String.
 	 * 
@@ -756,10 +762,23 @@ public class MessageFactoryImpl implements MessageFactory, MessageFactoryExt {
 	 * @since 2.0
 	 */
 	
-	public void setCommonUserAgentHeader(UserAgentHeader userAgent) {
+	public void setDefaultUserAgentHeader(UserAgentHeader userAgent) {
 		MessageFactoryImpl.userAgent = userAgent;
 	}
 	
+	/**
+     * Set the common Server header for all responses created from this message factory.
+     * This header is applied to all Messages created from this Factory object except those
+     * that take String for an argument and create Message from the given String.
+     * 
+     * @param userAgent -- the user agent header to set.
+     * 
+     * @since 2.0
+     */
+    
+    public void setDefaultServerHeader(ServerHeader server) {
+        MessageFactoryImpl.server = server;
+    }
 	/**
 	 * Get the default common UserAgentHeader.
 	 * 
@@ -771,6 +790,15 @@ public class MessageFactoryImpl implements MessageFactory, MessageFactoryExt {
 		return userAgent;
 	}
 	
+	
+	/**
+	 * Get the default common server header.
+	 * 
+	 * @return the server header.
+	 */
+	public static ServerHeader getDefaultServerHeader() {
+	    return server;
+	}
 
 	
 	/**
@@ -787,6 +815,8 @@ public class MessageFactoryImpl implements MessageFactory, MessageFactoryExt {
 	public static String getDefaultContentEncodingCharset() {
 		return MessageFactoryImpl.defaultContentEncodingCharset;
 	}
+
+    
 	
 	
 }
