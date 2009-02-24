@@ -51,13 +51,14 @@ import java.text.ParseException;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import javax.sip.header.ServerHeader;
 import javax.sip.message.Request;
 
 
 /**
  * SIP Response structure.
  *
- * @version 1.2 $Revision: 1.23 $ $Date: 2008-08-20 12:11:19 $
+ * @version 1.2 $Revision: 1.24 $ $Date: 2009-02-24 04:16:48 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
@@ -418,23 +419,9 @@ public final class SIPResponse
 		}
 		
 		
-		// JvB: no need to check this, should not fail if this is the case
-		//
-		// Contact contact = this.getContactHeader();
-		// if (contact != null && contact.isWildCard()) {
-		//	throw new ParseException("Bad contact header -- should not be wild card!",0);
-		// }
-		if (getStatusCode() > 699)
+		if (getStatusCode() > 699) {
 			throw new ParseException("Unknown error code!" + getStatusCode(), 0);
-
-    // JvB: need to silently ignore this
-    //
-    // Check for badly formatted message.
-		// if (getStatusCode() == 100
-		//		&& getToTag() != null) {
-		//	throw new ParseException(
-		//			"Trying response should not have a To header tag parameter",0);
-		// }
+		}
 
 	}
 
@@ -652,63 +639,7 @@ public final class SIPResponse
 		}
 	}
 	
-	/**
-	 * Create a new SIPRequest from the given response. Note that the
-	 * RecordRoute Via and CSeq headers are not copied from the response.
-	 * These have to be added by the caller.
-	 * This method is useful for generating ACK messages from final
-	 * responses.
-	 *
-	 *@param requestURI is the request URI to use.
-	 *@param via is the via header to use.
-	 *@param cseq is the cseq header to use in the generated
-	 * request.
-	 *
-	public SIPRequest createRequest(SipUri requestURI, Via via, CSeq cseq) {
-		SIPRequest newRequest = new SIPRequest();
-		String method = cseq.getMethod();
-		
-		newRequest.setMethod(method);
-		newRequest.setRequestURI(requestURI);		
-		this.setBranch( via, method );
-		newRequest.setHeader(via);
-		newRequest.setHeader(cseq);
-		Iterator headerIterator = getHeaders();
-		while (headerIterator.hasNext()) {
-			SIPHeader nextHeader = (SIPHeader) headerIterator.next();
-			// Some headers do not belong in a Request ....
-			if (SIPMessage.isResponseHeader(nextHeader)
-				|| nextHeader instanceof ViaList
-				|| nextHeader instanceof CSeq
-				|| nextHeader instanceof ContentType
-				|| nextHeader instanceof ContentLength
-				|| nextHeader instanceof RequireList	// JvB: added, duplicate code below
-				|| nextHeader instanceof ContactList	// JvB: dont copy Contact from response either
-				|| nextHeader instanceof RecordRouteList) {
-				continue;
-			}
-			// ACK does not have an expires header (issue 126).
-			if ( method.equals(Request.ACK) && nextHeader instanceof Expires) continue;
-			if (nextHeader instanceof To)
-				nextHeader = (SIPHeader) nextHeader.clone();
-			else if (nextHeader instanceof From)
-				nextHeader = (SIPHeader) nextHeader.clone();
-			try {
-				newRequest.attachHeader(nextHeader, false);
-			} catch (SIPDuplicateHeaderException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		try {
-		  // JvB: all requests need a Max-Forwards
-		  newRequest.attachHeader( new MaxForwards(70), false);
-		} catch (Exception d) {
-		  
-		}
-		return newRequest;
-	}*/
-
+	
 	/**
 	 * Get the encoded first line.
 	 *
@@ -766,7 +697,8 @@ public final class SIPResponse
 				|| nextHeader instanceof RecordRouteList
 				|| nextHeader instanceof RequireList
 				|| nextHeader instanceof ContactList	// JvB: added
-				|| nextHeader instanceof ContentLength ) {
+				|| nextHeader instanceof ContentLength 
+				|| nextHeader instanceof ServerHeader) {
 				continue;
 			}
 			if (nextHeader instanceof To)
@@ -788,6 +720,9 @@ public final class SIPResponse
 		  
 		}
 		
+		if (MessageFactoryImpl.getDefaultUserAgentHeader() != null ) {
+		    newRequest.setHeader(MessageFactoryImpl.getDefaultUserAgentHeader());  
+		}
 		return newRequest;
         
     }

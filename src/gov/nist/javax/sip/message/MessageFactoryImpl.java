@@ -42,7 +42,7 @@ import gov.nist.javax.sip.parser.*;
 /**
  * Message Factory implementation
  * 
- * @version 1.2 $Revision: 1.17 $ $Date: 2009-02-24 03:39:44 $
+ * @version 1.2 $Revision: 1.18 $ $Date: 2009-02-24 04:16:47 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -786,7 +786,7 @@ public class MessageFactoryImpl implements MessageFactory, MessageFactoryExt {
 	 * 
 	 * @since 2.0
 	 */
-	public static UserAgentHeader getUserAgentHeader() {
+	public static UserAgentHeader getDefaultUserAgentHeader() {
 		return userAgent;
 	}
 	
