@@ -39,6 +39,7 @@ import gov.nist.javax.sip.header.ContentLength;
 import gov.nist.javax.sip.header.ContentType;
 import gov.nist.javax.sip.header.Server;
 import gov.nist.javax.sip.header.Via;
+import gov.nist.javax.sip.message.MessageFactoryImpl;
 import gov.nist.javax.sip.message.SIPMessage;
 import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.message.SIPResponse;
@@ -54,6 +55,7 @@ import javax.sip.header.ContactHeader;
 import javax.sip.header.ContentLengthHeader;
 import javax.sip.header.ContentTypeHeader;
 import javax.sip.header.FromHeader;
+import javax.sip.header.ServerHeader;
 import javax.sip.header.ToHeader;
 import javax.sip.header.ViaHeader;
 
@@ -63,7 +65,7 @@ import javax.sip.header.ViaHeader;
  * @author M. Ranganathan <br/> Contains additions for support of symmetric NAT contributed by
  *         Hagai.
  * 
- * @version 1.2 $Revision: 1.22 $ $Date: 2009-02-23 20:57:44 $
+ * @version 1.2 $Revision: 1.23 $ $Date: 2009-02-24 03:39:45 $
  * 
  * 
  */
@@ -387,14 +389,16 @@ public abstract class MessageChannel {
         }
 
         // Let's add a Server header too..
-        Server s = messageProcessor.getSIPStack().createServerHeaderForStack();
-
-        buf.append("\r\n" + s.toString());
-
+        ServerHeader s = MessageFactoryImpl.getDefaultServerHeader();
+        if ( s != null ) {
+            buf.append("\r\n" + s.toString());
+        }
         int clength = badReq.length();
-        if (clength + buf.length() + ContentTypeHeader.NAME.length()
+        if (! (this instanceof UDPMessageChannel) ||
+                clength + buf.length() + ContentTypeHeader.NAME.length()
                 + ": message/sipfrag\r\n".length() +
-                ContentLengthHeader.NAME.length() < 1500) { 
+                ContentLengthHeader.NAME.length()  < 1300) { 
+            
             /*
              * Check to see we are within one UDP packet.
              */
@@ -403,6 +407,9 @@ public abstract class MessageChannel {
             ContentLength clengthHeader = new ContentLength(clength);
             buf.append("\r\n" + clengthHeader.toString());
             buf.append("\r\n\r\n" + badReq);
+        } else {
+            ContentLength clengthHeader = new ContentLength(0);
+            buf.append("\r\n" + clengthHeader.toString());
         }
         
         return buf.toString();
