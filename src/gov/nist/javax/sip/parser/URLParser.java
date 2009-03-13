@@ -1,13 +1,13 @@
 /*
-* Conditions Of Use 
-* 
+* Conditions Of Use
+*
 * This software was developed by employees of the National Institute of
 * Standards and Technology (NIST), an agency of the Federal Government.
 * Pursuant to title 15 Untied States Code Section 105, works of NIST
 * employees are not subject to copyright protection in the United States
 * and are considered to be in the public domain.  As a result, a formal
 * license is not needed to use the software.
-* 
+*
 * This software is provided by NIST as a service and is expressly
 * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
 * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
@@ -16,12 +16,12 @@
 * regarding the use of the software or the results thereof, including but
 * not limited to the correctness, accuracy, reliability or usefulness of
 * the software.
-* 
+*
 * Permission to use this software is contingent upon your acceptance
 * of the terms of this agreement
-*  
+*
 * .
-* 
+*
 */
 package gov.nist.javax.sip.parser;
 import gov.nist.core.HostNameParser;
@@ -36,13 +36,13 @@ import gov.nist.javax.sip.address.TelephoneNumber;
 import java.text.ParseException;
 
 /**
- * Parser For SIP and Tel URLs. Other kinds of URL's are handled by the 
+ * Parser For SIP and Tel URLs. Other kinds of URL's are handled by the
  * J2SE 1.4 URL class.
- * @version 1.2 $Revision: 1.24 $ $Date: 2007-03-12 18:33:19 $
+ * @version 1.2 $Revision: 1.25 $ $Date: 2009-03-13 23:03:29 $
  *
  * @author M. Ranganathan   <br/>
  *
- * 
+ *
  */
 public class URLParser extends Parser {
 
@@ -57,7 +57,7 @@ public class URLParser extends Parser {
 	}
 	protected static boolean isMark(char next) {
 		switch (next) {
-            case '-':
+			case '-':
 			case '_':
 			case '.':
 			case '!':
@@ -66,11 +66,11 @@ public class URLParser extends Parser {
 			case '\'':
 			case '(':
 			case ')':
-                return true;
-            default:
-                return false;
-        }
-    }
+				return true;
+			default:
+				return false;
+		}
+	}
 
 	protected static boolean isUnreserved(char next) {
 		return Lexer.isAlphaDigit(next) || isMark(next);
@@ -78,7 +78,7 @@ public class URLParser extends Parser {
 
 	protected static boolean isReservedNoSlash(char next) {
 		switch (next) {
-            case ';':
+			case ';':
 			case '?':
 			case ':':
 			case '@':
@@ -86,18 +86,18 @@ public class URLParser extends Parser {
 			case '+':
 			case '$':
 			case ',':
-                return true;
-            default:
-                return false;
-        }
+				return true;
+			default:
+				return false;
+		}
 	}
 
-	// Missing '=' bug in character set - discovered by interop testing 
+	// Missing '=' bug in character set - discovered by interop testing
 	// at SIPIT 13 by Bob Johnson and Scott Holben.
 	// change . to ; by Bruno Konik
 	protected static boolean isUserUnreserved(char la) {
 		switch (la) {
-            case '&':
+			case '&':
 			case '?':
 			case '+':
 			case '$':
@@ -106,11 +106,11 @@ public class URLParser extends Parser {
 			case ',':
 			case ';':
 			case '=':
-                return true;
-            default:
-                return false;
-        }
-    }
+				return true;
+			default:
+				return false;
+		}
+	}
 
 	protected String unreserved() throws ParseException {
 		char next = lexer.lookAhead(0);
@@ -128,18 +128,18 @@ public class URLParser extends Parser {
 		int startIdx = lexer.getPtr();
 		while (lexer.hasMoreChars()) {
 			char next = lexer.lookAhead(0);
-            boolean isValidChar = false;
-            switch (next) {
-                case '[':
+			boolean isValidChar = false;
+			switch (next) {
+				case '[':
 				case ']':	// JvB: fixed this one
 				case '/':
 				case ':':
 				case '&':
 				case '+':
 				case '$':
-                    isValidChar = true;
-            }
-            if (isValidChar || isUnreserved(next)) {
+					isValidChar = true;
+			}
+			if (isValidChar || isUnreserved(next)) {
 				lexer.consume(1);
 			} else if (isEscaped()) {
 				lexer.consume(3);
@@ -163,9 +163,9 @@ public class URLParser extends Parser {
 				isFlagParam = false;
 			}
 			if (pname.length() == 0 &&
-			    ( pvalue == null || 
-			    pvalue.length() == 0))
-			    return null;
+				( pvalue == null ||
+				pvalue.length() == 0))
+				return null;
 			else return new NameValue(pname, pvalue, isFlagParam);
 		} finally {
 			if (debug)
@@ -175,7 +175,7 @@ public class URLParser extends Parser {
 
 	protected static boolean isReserved(char next) {
 		switch (next) {
-            case ';':
+			case ';':
 			case '/':
 			case '?':
 			case ':':
@@ -185,11 +185,11 @@ public class URLParser extends Parser {
 			case '+':
 			case '$':
 			case ',':
-                return true;
-            default:
-                return false;
-        }
-    }
+				return true;
+			default:
+				return false;
+		}
+	}
 
 	protected String reserved() throws ParseException {
 		char next = lexer.lookAhead(0);
@@ -202,9 +202,9 @@ public class URLParser extends Parser {
 
 	protected boolean isEscaped() {
 		try {
-            return lexer.lookAhead(0) == '%' &&
-                Lexer.isHexDigit(lexer.lookAhead(1)) &&
-                Lexer.isHexDigit(lexer.lookAhead(2));
+			return lexer.lookAhead(0) == '%' &&
+				Lexer.isHexDigit(lexer.lookAhead(1)) &&
+				Lexer.isHexDigit(lexer.lookAhead(2));
 		} catch (Exception ex) {
 			return false;
 		}
@@ -341,7 +341,7 @@ public class URLParser extends Parser {
 		Token t2 = (Token) tokens[1];
 		try {
 
-			if (t1.getTokenType() == TokenTypes.SIP || 
+			if (t1.getTokenType() == TokenTypes.SIP ||
 					t1.getTokenType() == TokenTypes.SIPS	) {
 				if (t2.getTokenType() == ':')
 					retval = sipURL();
@@ -418,7 +418,7 @@ public class URLParser extends Parser {
 					|| la == '('
 					|| la == ')'
 						// JvB: allow 'A'..'F', should be uppercase
-					|| Lexer.isHexDigit(la)) {	
+					|| Lexer.isHexDigit(la)) {
 					lexer.consume(1);
 					s.append(la);
 					lc++;
@@ -452,9 +452,9 @@ public class URLParser extends Parser {
 				tn = global_phone_number();
 			else if (
 				Lexer.isHexDigit(c)	// see RFC3966
-					|| c == '#'	
+					|| c == '#'
 					|| c == '*'
-					|| c == '-'						
+					|| c == '-'
 					|| c == '.'
 					|| c == '('
 					|| c == ')' ) {
@@ -529,13 +529,13 @@ public class URLParser extends Parser {
 
 	private NameValueList tel_parameters() throws ParseException {
 		NameValueList nvList = new NameValueList();
-		
+
 		// JvB: Need to handle 'phone-context' specially
 		// 'isub' (or 'ext') MUST appear first, but we accept any order here
 		NameValue nv;
 		while ( true ) {
 			String pname = paramNameOrValue();
-			
+
 			// Handle 'phone-context' specially, it may start with '+'
 			if ( pname.equalsIgnoreCase("phone-context")) {
 				nv = phone_context();
@@ -549,14 +549,14 @@ public class URLParser extends Parser {
 				}
 			}
 			nvList.set( nv );
-			
+
 			if ( lexer.lookAhead(0) == ';' ) {
 				lexer.consume(1);
 			} else {
 				return nvList;
 			}
 		}
-		
+
 	}
 
 	/**
@@ -565,12 +565,12 @@ public class URLParser extends Parser {
 	 */
 	private NameValue phone_context() throws ParseException {
 		lexer.match('=');
-	
+
 		char la = lexer.lookAhead(0);
 		Object value;
 		if (la=='+') {	// global-number-digits
 			lexer.consume(1);	// skip '+'
-			value = "+" + base_phone_number();			
+			value = "+" + base_phone_number();
 		} else if ( Lexer.isAlphaDigit(la) ) {
 			Token t = lexer.match( Lexer.ID );	// more broad than allowed
 			value = t.getTokenValue();
@@ -579,7 +579,7 @@ public class URLParser extends Parser {
 		}
 		return new NameValue( "phone-context", value, false );
 	}
-	
+
 	/**
 	 * Parse and return a structure for a Tel URL.
 	 * @return a parsed tel url structure.
@@ -617,10 +617,10 @@ public class URLParser extends Parser {
 			lexer.match(sipOrSips);
 			lexer.match(':');
 			retval.setScheme(scheme);
-			int startOfUser = lexer.markInputPosition(); 
+			int startOfUser = lexer.markInputPosition();
 			String userOrHost = user();	// Note: user may contain ';', host may not...
 			String passOrPort = null;
-			
+
 			// name:password or host:port
 			if ( lexer.lookAhead() == ':' ) {
 				lexer.consume(1);
@@ -639,8 +639,8 @@ public class URLParser extends Parser {
 
 			HostNameParser hnp = new HostNameParser(this.getLexer());
 			HostPort hp = hnp.hostPort( false );
-			retval.setHostPort(hp);			
-							
+			retval.setHostPort(hp);
+
 			lexer.selectLexer("charLexer");
 			while (lexer.hasMoreChars()) {
 				if (lexer.lookAhead(0) != ';')
@@ -693,9 +693,9 @@ public class URLParser extends Parser {
 		while (lexer.hasMoreChars()) {
 			char la = lexer.lookAhead(0);
 			// Look for a character that can terminate a URL.
-            boolean isValidChar = false;
-            switch (la) {
-                case '+':
+			boolean isValidChar = false;
+			switch (la) {
+				case '+':
 				case '?':
 				case ':':
 				case '[':
@@ -711,9 +711,9 @@ public class URLParser extends Parser {
 				case '.':
 				case '(':
 				case ')':
-                    isValidChar = true;
-            }
-            if (isValidChar || Lexer.isAlphaDigit(la)) {
+					isValidChar = true;
+			}
+			if (isValidChar || Lexer.isAlphaDigit(la)) {
 				lexer.consume(1);
 				retval.append(la);
 			} else if (la == '%') {
@@ -724,7 +724,7 @@ public class URLParser extends Parser {
 		return retval.toString();
 	}
 
-	/** 
+	/**
 	 * Scan forward until you hit a terminating character for a URL.
 	 * We do not handle non sip urls in this implementation.
 	 * @return the string that takes us to the end of this URL (i.e. to
@@ -756,7 +756,7 @@ public class URLParser extends Parser {
 			int startIdx = lexer.getPtr();
 			while (lexer.hasMoreChars()) {
 				char la = lexer.lookAhead(0);
-                if (isUnreserved(la) || isUserUnreserved(la)) {
+				if (isUnreserved(la) || isUserUnreserved(la)) {
 					lexer.consume(1);
 				} else if (isEscaped()) {
 					lexer.consume(3);
@@ -775,20 +775,20 @@ public class URLParser extends Parser {
 		int startIdx = lexer.getPtr();
 		while (true) {
 			char la = lexer.lookAhead(0);
-            boolean isValidChar = false;
-            switch (la) {
-                case '&':
+			boolean isValidChar = false;
+			switch (la) {
+				case '&':
 				case '=':
 				case '+':
 				case '$':
 				case ',':
-                    isValidChar = true;
-            }
-            if (isValidChar || isUnreserved(la)) {
+					isValidChar = true;
+			}
+			if (isValidChar || isUnreserved(la)) {
 				lexer.consume(1);
 			} else if (isEscaped()) {
-                lexer.consume(3); // bug reported by
-                                  // Jeff Haynie
+				lexer.consume(3); // bug reported by
+								// Jeff Haynie
 			} else
 				break;
 
@@ -808,9 +808,9 @@ public class URLParser extends Parser {
 	{
 		// quick test for sips parsing
 		String[] test = { "sip:alice@example.com",
-				     "sips:alice@examples.com" ,
-				     "sip:3Zqkv5dajqaaas0tCjCxT0xH2ZEuEMsFl0xoasip%3A%2B3519116786244%40siplab.domain.com@213.0.115.163:7070"};
-		
+					"sips:alice@examples.com" ,
+					"sip:3Zqkv5dajqaaas0tCjCxT0xH2ZEuEMsFl0xoasip%3A%2B3519116786244%40siplab.domain.com@213.0.115.163:7070"};
+
 		for ( int i = 0; i < test.length; i++)
 		{
 			URLParser p  = new URLParser(test[i]);
@@ -818,12 +818,12 @@ public class URLParser extends Parser {
 				GenericURI uri = p.parse();
 				System.out.println("uri type returned " + uri.getClass().getName());
 				System.out.println(test[i] + " is SipUri? " + uri.isSipURI()
-						 + ">" + uri.encode());
+						+ ">" + uri.encode());
 		}
 	}
-	
+
 	/**
-	
+
 	**/
 }
 

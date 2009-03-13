@@ -1,27 +1,27 @@
 <?xml version="1.0"?>
-<!-- 
- 
+<!--
+
 
 authors of build.xml: Initial: Olivier Deruelle deruelle@nist.gov
 Revisions and fixes by:
 
-        M. Ranganathan 		 <mranga@nist.gov>
+				M. Ranganathan 		 <mranga@nist.gov>
 
-        Gordon Ledgard 		 <gledgard@iperiea.com>
+				Gordon Ledgard 		 <gledgard@iperiea.com>
 
-        Steven Lass    		 <slass@wcomnet.com>
+				Steven Lass    		 <slass@wcomnet.com>
 
-        Sverker Abrahamsson	 <sverker@abrahamsson.com>
+				Sverker Abrahamsson	 <sverker@abrahamsson.com>
 
-        Majdi Abuelbassal 	 <majdi.abuelbassal@bbumail.com>
+				Majdi Abuelbassal 	 <majdi.abuelbassal@bbumail.com>
 
-        Jean Deruelle		 <jeand@nist.gov>
+				Jean Deruelle		 <jeand@nist.gov>
 
-        Dan Muresan		 <muresan@gmail.com>
-        
-        Jeroen van Bemmel <jbemmel@lucent.com>
+				Dan Muresan		 <muresan@gmail.com>
 
-        Ivelin Ivanov <ivelin@mobicents.org>
+				Jeroen van Bemmel <jbemmel@lucent.com>
+
+				Ivelin Ivanov <ivelin@mobicents.org>
 
 For using ANT:
 
@@ -32,35 +32,35 @@ Get the tool from www.apache.org and install. Set your path to the ant shell
 >From the command prompt, execute the following command:
 ant target
 
- 
+
 
 
 
 Where avaliable targets are:
 
-    - ship -> Compiles all and wraps up this whole project into a tar file.
+		- ship -> Compiles all and wraps up this whole project into a tar file.
 
-    - all -> Builds everything: stack, tools, examples and docs.
+		- all -> Builds everything: stack, tools, examples and docs.
 
-    - javadoc -> Builds java documentation.
+		- javadoc -> Builds java documentation.
 
-    - compiletools -> Compiles the tools directory.
+		- compiletools -> Compiles the tools directory.
 
-    - compileexamples -> Compiles the examples directory.
+		- compileexamples -> Compiles the examples directory.
 
-    - compileri -> Compiles the reference implementation after cleaning and builds jars.
-    
-    - compile -> complies the reference implementation but does clean or build jars.
+		- compileri -> Compiles the reference implementation after cleaning and builds jars.
 
-    - compilesdp -> Compiles the sdp
+		- compile -> complies the reference implementation but does clean or build jars.
 
-    - compileapi -> Compiles the jainapi
+		- compilesdp -> Compiles the sdp
 
-    - clean   -> cleans everything: All the built stuff and temp files.
+		- compileapi -> Compiles the jainapi
 
-    - init	-> create the classes directory
+		- clean   -> cleans everything: All the built stuff and temp files.
 
-    - runtck -> Cleans, compile and run the tck.
+		- init	-> create the classes directory
+
+		- runtck -> Cleans, compile and run the tck.
 
 On my machine I run this as follows:
 c:/jakarta-ant/bin/ant all
@@ -90,7 +90,7 @@ c:/jakarta-ant/bin/ant all
 	<property name="log4j_jar" value="${log4j}" />
 	<property name="jdom_jar" value="${jdom}"/>
 	<property name="ant_jar" value="${ant}"/>
-	
+
 
 	<property environment="sys" />
 
@@ -217,7 +217,12 @@ c:/jakarta-ant/bin/ant all
 				<!-- Compile the stack and libraries -->
 				<target name="compileapi" depends="init">
 					<jain-javac includes="javax/sip/**/*.java" />
-					<jar destfile="${jain-sip-api-jar}" basedir="${classes}" includes="javax/sip/**/*.class" />
+					<jar destfile="${jain-sip-api-jar}" basedir="${classes}" includes="javax/sip/**/*.class" >
+						<manifest>
+							<attribute	name="Original-Jar-Name"
+										value="${jain-sip-api-jar}"/>
+						</manifest>
+					</jar>
 				</target>
 				<!-- Compile but dont build any jars -->
 				<target name="compile" depends="init,compileapi">
@@ -245,7 +250,12 @@ c:/jakarta-ant/bin/ant all
 						</classpath>
 					</jain-javac>
 					<copy file="TIMESTAMP" toDir="classes/" />
-					<jar destfile="${jain-sip-ri-jar}" basedir="${classes}" includes="TIMESTAMP,gov/nist/**/*.class" />
+					<jar destfile="${jain-sip-ri-jar}" basedir="${classes}" includes="TIMESTAMP,gov/nist/**/*.class" >
+						<manifest>
+							<attribute	name="Original-Jar-Name"
+										value="${jain-sip-ri-jar}"/>
+						</manifest>
+					</jar>
 				</target>
 
 				<target name="compilesdp" depends="init">
@@ -254,7 +264,12 @@ c:/jakarta-ant/bin/ant all
 							<pathelement location="${log4j_jar}" />
 						</classpath>
 					</jain-javac>
-					<jar destfile="${sdp_jar}" basedir="${classes}" includes="gov/nist/core/**/*.class,gov/nist/javax/sdp/**/*.class,javax/sdp/**/*.class" />
+					<jar destfile="${sdp_jar}" basedir="${classes}" includes="gov/nist/core/**/*.class,gov/nist/javax/sdp/**/*.class,javax/sdp/**/*.class" >
+						<manifest>
+							<attribute	name="Original-Jar-Name"
+										value="${sdp_jar}"/>
+						</manifest>
+					</jar>
 				</target>
 
 				<target name="compileunit" depends="init">
@@ -272,7 +287,12 @@ c:/jakarta-ant/bin/ant all
 
 				<target name="jain-sip-sdp-jar" depends="compilejain">
 					<copy file="TIMESTAMP" toDir="classes/" />
-					<jar destfile="${jain-sip-sdp-jar}" basedir="${classes}" includes="TIMESTAMP,javax/**/*.class,gov/nist/**/*.class" />
+					<jar destfile="${jain-sip-sdp-jar}" basedir="${classes}" includes="TIMESTAMP,javax/**/*.class,gov/nist/**/*.class" >
+						<manifest>
+							<attribute	name="Original-Jar-Name"
+										value="${jain-sip-sdp-jar}"/>
+						</manifest>
+					</jar>
 				</target>
 
 				<target name='compilejain' depends='init,compile,compilesdp' />
@@ -488,16 +508,16 @@ c:/jakarta-ant/bin/ant all
 
 				<!-- Task to generate a vesion number -->
 				<target name="generate-version" depends="ant-tools" >
-        			    <taskdef name="versioner" classname="net.java.jsip.ant.tasks.VersionerTask" classpath="classes"/>
-				    <versioner cvsVersionFile="${ant.file.NIST-SIP}/../version.txt"  incrementCVSVersion="true"/>
+									<taskdef name="versioner" classname="net.java.jsip.ant.tasks.VersionerTask" classpath="classes"/>
+						<versioner cvsVersionFile="${ant.file.NIST-SIP}/../version.txt"  incrementCVSVersion="true"/>
 				</target>
-				
+
 				<!-- Generate a tar file -->
 
 				<target name="srctar"  >
 					<tar compression="gzip" basedir="../" destfile="${jain-sip-src-tar}"
-					includes="jain-sip/**/*/" 
-				        excludes="jain-sip/www/**/*,jain-sip/javax/**/*,jain-sip/repo/**/*,jain-sip/ant-tasks/lib/**/*,jain-sip/test-reports/**/*,jain-sip/classes/**/*,jain-sip/javadoc/**/*,jain-sip/*.jar,jain-sip/lib/**/*,jain-sip/tckoutput.txt,jain-sip/*.gz,jain-sip/poms/**/*" />
+					includes="jain-sip/**/*/"
+								excludes="jain-sip/www/**/*,jain-sip/javax/**/*,jain-sip/repo/**/*,jain-sip/ant-tasks/lib/**/*,jain-sip/test-reports/**/*,jain-sip/classes/**/*,jain-sip/javadoc/**/*,jain-sip/*.jar,jain-sip/lib/**/*,jain-sip/tckoutput.txt,jain-sip/*.gz,jain-sip/poms/**/*" />
 				</target>
 				<target name="javadoctar"  >
 					<tar compression="gzip" basedir="../" destfile="${jain-sip-javadoc-tar}"
@@ -505,7 +525,7 @@ c:/jakarta-ant/bin/ant all
 				</target>
 				<target name="alltar"  >
 					<tar compression="gzip" basedir="../" destfile="${jain-sip-all-tar}"
-					includes="jain-sip/**/*/" 
+					includes="jain-sip/**/*/"
 					excludes="jain-sip/*.tar.gz" />
 				</target>
 
@@ -606,7 +626,7 @@ c:/jakarta-ant/bin/ant all
 
 				</target>
 
-			       
+
 				<target name="init-m2-exec">
 					<echo>To perform m2 release You have to follow insitrction from: https://maven2-repository.dev.java.net/ and have access as m2 submiter.</echo>
 					<sleep seconds="4"/>
@@ -641,7 +661,7 @@ c:/jakarta-ant/bin/ant all
 				</target>
 				<target name="perform-m2-release" depends="ant-tools" description="Performs m2 deployment" >
 					<antcall target="update-from-cvs" />
-        			    	<taskdef name="versioner" classname="net.java.jsip.ant.tasks.VersionerTask" classpath="classes"/>
+										<taskdef name="versioner" classname="net.java.jsip.ant.tasks.VersionerTask" classpath="classes"/>
 					<versioner cvsversionfile="${ant.file.NIST-SIP}/../version.txt" incrementcvsversion="false" parent="true" pomfile="${ant.file.NIST-SIP}/../m2/jain-sip-api/pom.xml" />
 					<versioner cvsversionfile="${ant.file.NIST-SIP}/../version.txt" incrementcvsversion="false" parent="true" pomfile="${ant.file.NIST-SIP}/../m2/jain-sip-ri/pom.xml" />
 					<versioner cvsversionfile="${ant.file.NIST-SIP}/../version.txt" incrementcvsversion="false" parent="true" pomfile="${ant.file.NIST-SIP}/../m2/nist-sdp/pom.xml" />
