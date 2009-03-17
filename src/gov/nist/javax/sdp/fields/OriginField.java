@@ -1,13 +1,13 @@
 /*
-* Conditions Of Use 
-* 
+* Conditions Of Use
+*
 * This software was developed by employees of the National Institute of
 * Standards and Technology (NIST), an agency of the Federal Government.
 * Pursuant to title 15 Untied States Code Section 105, works of NIST
 * employees are not subject to copyright protection in the United States
 * and are considered to be in the public domain.  As a result, a formal
 * license is not needed to use the software.
-* 
+*
 * This software is provided by NIST as a service and is expressly
 * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
 * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
@@ -16,12 +16,12 @@
 * regarding the use of the software or the results thereof, including but
 * not limited to the correctness, accuracy, reliability or usefulness of
 * the software.
-* 
+*
 * Permission to use this software is contingent upon your acceptance
 * of the terms of this agreement
-*  
+*
 * .
-* 
+*
 */
 /*******************************************************************************
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
@@ -65,10 +65,10 @@ public class OriginField extends SDPField implements javax.sdp.Origin {
 	* Get the sessionID member.
 	*/
 	public long getSessId() {
-	
+
 		return new Long(this.sessIdString).longValue();
 	}
-	
+
 	public String getSessIdAsString() {
 		return this.sessIdString;
 	}
@@ -76,10 +76,10 @@ public class OriginField extends SDPField implements javax.sdp.Origin {
 	* Get the sessionVersion member.
 	*/
 	public long getSessVersion() {
-		
+
 		return new Long(sessVersionString).longValue();
 	}
-	
+
 	public String getSessVersionAsString() {
 		return this.sessVersionString;
 	}
@@ -102,12 +102,12 @@ public class OriginField extends SDPField implements javax.sdp.Origin {
 		return address;
 	}
 	/**
-	* Set the sessId member  
+	* Set the sessId member
 	*/
 	public void setSessId(long s) {
 		this.sessIdString = new Long(s).toString();
 	}
-	
+
 	/**
 	 * This is a work around for some implementations that do not set a long
 	 * session id.
@@ -116,12 +116,12 @@ public class OriginField extends SDPField implements javax.sdp.Origin {
 		this.sessIdString = sessId;
 	}
 	/**
-	* Set the sessVersion member  
+	* Set the sessVersion member
 	*/
 	public void setSessVersion(long s) {
 		sessVersionString = new Long(s).toString();
 	}
-	
+
 	/**
 	 * Set the session version as a string.
 	 */
@@ -129,19 +129,19 @@ public class OriginField extends SDPField implements javax.sdp.Origin {
 		this.sessVersionString = s;
 	}
 	/**
-	* Set the nettype member  
+	* Set the nettype member
 	*/
 	public void setNettype(String n) {
 		nettype = n;
 	}
 	/**
-	* Set the addrtype member  
+	* Set the addrtype member
 	*/
 	public void setAddrtype(String a) {
 		addrtype = a;
 	}
 	/**
-	* Set the address member  
+	* Set the address member
 	*/
 	public void setAddress(Host a) {
 		address = a;
@@ -268,8 +268,24 @@ public class OriginField extends SDPField implements javax.sdp.Origin {
 	 * @since v1.0
 	 */
 	public String encode() {
-			
-			return ORIGIN_FIELD
+		String addressStr = null;
+
+		if (address != null){
+			addressStr = address.encode();
+
+			//it appears that SDP does not allow square brackets
+			//in the connection address (see RFC4566) so make sure
+			//we lose them
+			if(Host.isIPv6Reference(addressStr))
+			{
+				//the isIPv6Reference == true means we have a minimum
+				//of 2 symbols, so substring bravely
+				addressStr = addressStr
+					.substring(1, addressStr.length()-1);
+			}
+		}
+
+		return ORIGIN_FIELD
 			+ username
 			+ Separators.SP
 			+ sessIdString
@@ -280,7 +296,7 @@ public class OriginField extends SDPField implements javax.sdp.Origin {
 			+ Separators.SP
 			+ addrtype
 			+ Separators.SP
-			+ address.encode()
+			+ addressStr
 			+ Separators.NEWLINE;
 	}
 
