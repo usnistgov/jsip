@@ -33,6 +33,8 @@
  */
 package gov.nist.core;
 
+import gov.nist.javax.sdp.parser.Lexer;
+
 import java.text.ParseException;
 
 /**
@@ -171,6 +173,17 @@ public class HostNameParser extends ParserCore {
 			if (lexer.lookAhead(0) == '[') {
 				hostname = ipv6Reference();
 			}
+			//IPv6 address (i.e. missing square brackets)
+			else if( isIPv6Address(lexer.getRest()))
+			{
+				int startPtr = lexer.getPtr();
+				lexer.consumeValidChars(
+						new char[] {LexerCore.ALPHADIGIT_VALID_CHARS, ':'});
+				hostname
+					= 	new StringBuffer("[").append(
+						lexer.getBuffer().substring(startPtr, lexer.getPtr()))
+						.append("]").toString();
+			}
 			//IPv4 address or hostname
 			else {
 				int startPtr = lexer.getPtr();
@@ -190,6 +203,39 @@ public class HostNameParser extends ParserCore {
 		}
 	}
 
+	/**
+	 * Tries to determine whether the address in <tt>uriHeader</tt> could be
+	 * an IPv6 address by counting the number of colons that appear in it.
+	 *
+	 * @param uriHeader the string (supposedly the value of a URI header) that
+	 * we have received for parsing.
+	 *
+	 * @return true if the host part of <tt>uriHeader</tt> could be an IPv6
+	 * address (i.e. contains at least two colons) and false otherwise.
+	 */
+	private boolean isIPv6Address(String uriHeader)
+	{
+		// approximately detect the end the host part.
+		int hostEnd = uriHeader.indexOf(Lexer.SEMICOLON);
+
+		if ( hostEnd == -1 )
+			hostEnd = uriHeader.length();
+
+		//hostPart
+		String host = uriHeader.substring(0, hostEnd);
+
+		int firstColonIndex = host.indexOf(Lexer.COLON);
+
+		if(firstColonIndex == -1)
+			return false;
+
+		int secondColonIndex = host.indexOf(Lexer.COLON, firstColonIndex + 1);
+
+		if(secondColonIndex == -1)
+			return false;
+
+		return true;
+	}
 	/**
 	 * Parses a host:port string
 	 *
