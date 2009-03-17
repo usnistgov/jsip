@@ -84,6 +84,9 @@ public class Host extends GenericObject {
 	 */
 	public Host() {
 		addressType = HOSTNAME;
+
+		stripAddressScopeZones
+			= Boolean.getBoolean("gov.nist.core.STRIP_ADDR_SCOPES");
 	}
 
 	/** Constructor given host name or IP address.
@@ -283,7 +286,7 @@ public class Host extends GenericObject {
 	 * Verifies whether the ipv6reference, i.e. whether it enclosed in
 	 * square brackets
 	 */
-	private boolean isIPv6Reference(String address) {
+	public static boolean isIPv6Reference(String address) {
 		return address.charAt(0) == '['
 			&& address.charAt(address.length() - 1) == ']';
 	}
