@@ -116,14 +116,14 @@ import org.apache.log4j.Logger;
  * 
  * 
  * <li><b>gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS = [true|false] </b> <br/> Default value is
- * true. Setting this to true makes the Stack close the server socket after a Server Transaction
+ * true. Setting this to false makes the Stack close the server socket after a Server Transaction
  * goes to the TERMINATED state. This allows a server to protectect against TCP based Denial of
- * Service attacks launched by clients (ie. initiate hundreds of client gransactions). If false
+ * Service attacks launched by clients (ie. initiate hundreds of client transactions). If true
  * (default action), the stack will keep the socket open so as to maximize performance at the
  * expense of Thread and memory resources - leaving itself open to DOS attacks. </li>
  * 
  * <li><b>gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS = [true|false] </b> <br/> Default value is
- * true. Setting this to true makes the Stack close the server socket aftera Client Transaction
+ * true. Setting this to false makes the Stack close the server socket after a Client Transaction
  * goes to the TERMINATED state. This allows a client release any buffers threads and socket
  * connections associated with a client transaction after the transaction has terminated at the
  * expense of performance. </li>
@@ -274,7 +274,7 @@ import org.apache.log4j.Logger;
  * in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.83 $ $Date: 2009-02-06 21:39:48 $
+ * @version 1.2 $Revision: 1.84 $ $Date: 2009-03-17 15:20:00 $
  * 
  * @author M. Ranganathan <br/>
  * 
