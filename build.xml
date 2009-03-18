@@ -22,6 +22,8 @@ Revisions and fixes by:
 				Jeroen van Bemmel <jbemmel@lucent.com>
 
 				Ivelin Ivanov <ivelin@mobicents.org>
+                    
+                Emil Ivov <emcho@sip-communicator.org>
 
 For using ANT:
 
@@ -532,6 +534,7 @@ c:/jakarta-ant/bin/ant all
 				<!-- builds the distribution -->
 				<target name="dist" depends="make,compiletck,javadoc,javadoctar,alltar,srctar">
 					<mkdir dir="${dist}" />
+					<mkdir dir="${dist}/jain-sdp" />
 					<mkdir dir="${dist}/jain-sip-javadoc" />
 					<mkdir dir="${dist}/jain-sip-sdp"/>
 					<mkdir dir="${dist}/jain-sip-api"/>
@@ -544,6 +547,7 @@ c:/jakarta-ant/bin/ant all
 					<copy file="${jain-sip-api-jar}" todir="${dist}/jain-sip-api"/>
 					<copy file="${jain-sip-ri-jar}" todir="${dist}/jain-sip-ri"/>
 					<copy file="${jain-sip-sdp-jar}" todir="${dist}/jain-sip-sdp"/>
+					<copy file="${sdp_jar}" todir="${dist}/jain-sdp"/>
 					<copy file="${jain-sip-tck-jar}" todir ="${dist}/jain-sip-tck" />
 					<copy file="${jain-sip-all-tar}"   todir="${dist}/jain-sip-all" />
 					<copy file="README-DISTRIBUTION"  todir="${dist}"/>
