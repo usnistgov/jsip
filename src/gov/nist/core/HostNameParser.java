@@ -174,7 +174,7 @@ public class HostNameParser extends ParserCore {
 				hostname = ipv6Reference();
 			}
 			//IPv6 address (i.e. missing square brackets)
-			else if( isIPv6Address(lexer.getRest()))
+			else if( isIPv6Address(lexer.getRest()) )
 			{
 				int startPtr = lexer.getPtr();
 				lexer.consumeValidChars(
@@ -216,12 +216,22 @@ public class HostNameParser extends ParserCore {
 	private boolean isIPv6Address(String uriHeader)
 	{
 		// approximately detect the end the host part.
-		int hostEnd = uriHeader.indexOf(Lexer.SEMICOLON);
+		//first check if we have an uri param
+		int hostEnd = uriHeader.indexOf(Lexer.QUESTION);
 
+		//if not or if it appears after a semi-colon then the end of the
+		//address would be a header param.
+		int semiColonIndex = uriHeader.indexOf(Lexer.SEMICOLON);
+		if ( hostEnd == -1
+			|| (semiColonIndex!= -1 && hostEnd > semiColonIndex) )
+			hostEnd = semiColonIndex;
+
+		//if there was no header param either the address
+		//continues until the end of the string
 		if ( hostEnd == -1 )
 			hostEnd = uriHeader.length();
 
-		//hostPart
+		//extract the address
 		String host = uriHeader.substring(0, hostEnd);
 
 		int firstColonIndex = host.indexOf(Lexer.COLON);
