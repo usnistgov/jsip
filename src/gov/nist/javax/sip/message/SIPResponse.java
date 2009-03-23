@@ -38,6 +38,7 @@ import gov.nist.javax.sip.header.ContentLength;
 import gov.nist.javax.sip.header.ContentType;
 import gov.nist.javax.sip.header.From;
 import gov.nist.javax.sip.header.MaxForwards;
+import gov.nist.javax.sip.header.ReasonList;
 import gov.nist.javax.sip.header.RecordRouteList;
 import gov.nist.javax.sip.header.RequireList;
 import gov.nist.javax.sip.header.SIPHeader;
@@ -51,6 +52,7 @@ import java.text.ParseException;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import javax.sip.header.ReasonHeader;
 import javax.sip.header.ServerHeader;
 import javax.sip.message.Request;
 
@@ -58,7 +60,7 @@ import javax.sip.message.Request;
 /**
  * SIP Response structure.
  *
- * @version 1.2 $Revision: 1.24 $ $Date: 2009-02-24 04:16:48 $
+ * @version 1.2 $Revision: 1.25 $ $Date: 2009-03-23 22:06:20 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
@@ -698,7 +700,9 @@ public final class SIPResponse
 				|| nextHeader instanceof RequireList
 				|| nextHeader instanceof ContactList	// JvB: added
 				|| nextHeader instanceof ContentLength 
-				|| nextHeader instanceof ServerHeader) {
+				|| nextHeader instanceof ServerHeader
+				|| nextHeader instanceof ReasonHeader 
+				|| nextHeader instanceof ReasonList) {
 				continue;
 			}
 			if (nextHeader instanceof To)
