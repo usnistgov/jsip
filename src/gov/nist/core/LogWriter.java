@@ -34,6 +34,7 @@ import org.apache.log4j.Appender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 import org.apache.log4j.SimpleLayout;
 
 /**
@@ -107,22 +108,30 @@ public class LogWriter {
 	 * log a stack trace. This helps to look at the stack frame.
 	 */
 	public void logStackTrace() {
-		if (needsLogging) {
-			StringWriter sw = new StringWriter();
-			PrintWriter pw = new PrintWriter(sw);
-			StackTraceElement[] ste = new Exception().getStackTrace();
-			// Skip the log writer frame and log all the other stack frames.
-			for (int i = 1; i < ste.length; i++) {
-				String callFrame = "[" + ste[i].getFileName() + ":"
-						+ ste[i].getLineNumber() + "]";
-				pw.print(callFrame);
-			}
-			pw.close();
-			String stackTrace = sw.getBuffer().toString();
-
-			this.logDebug(stackTrace);
-
-		}
+	    this.logStackTrace(TRACE_DEBUG);
+		
+	}
+	
+	public void logStackTrace(int traceLevel) {
+	    if (needsLogging) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            StackTraceElement[] ste = new Exception().getStackTrace();
+            // Skip the log writer frame and log all the other stack frames.
+            for (int i = 1; i < ste.length; i++) {
+                String callFrame = "[" + ste[i].getFileName() + ":"
+                        + ste[i].getLineNumber() + "]";
+                pw.print(callFrame);
+            }
+            pw.close();
+            String stackTrace = sw.getBuffer().toString();
+            Level level = this.getLevel(traceLevel);
+            Priority priority = this.getLogPriority();
+            if ( level.isGreaterOrEqual(priority)) {
+                logger.log(level,stackTrace);
+            }        
+            
+        } 
 	}
 
 	/**
@@ -460,6 +469,25 @@ public class LogWriter {
 		this.buildTimeStamp = buildTimeStamp;
 
 	}
-
+	
+	public Priority getLogPriority() {
+	     if ( this.traceLevel == TRACE_MESSAGES ) {
+	        return Priority.INFO;
+	    } else if ( this.traceLevel == TRACE_EXCEPTION ) {
+	        return Priority.ERROR;
+	    } else if ( this.traceLevel == TRACE_DEBUG) {
+	        return Priority.DEBUG;
+	    } else return null;
+	}
+	
+	public Level getLevel(int traceLevel) {
+        if ( traceLevel == TRACE_MESSAGES ) {
+           return Level.INFO;
+       } else if ( traceLevel == TRACE_EXCEPTION ) {
+           return Level.ERROR;
+       } else if ( traceLevel == TRACE_DEBUG) {
+           return Level.DEBUG;
+       } else return Level.OFF;
+   }
 
 }

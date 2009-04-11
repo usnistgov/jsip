@@ -93,7 +93,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.103 $ $Date: 2009-02-24 03:39:45 $
+ * @version 1.2 $Revision: 1.104 $ $Date: 2009-04-11 02:43:32 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener {
 
@@ -339,6 +339,8 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     // Is to tag reassignment allowed.
     protected boolean remoteTagReassignmentAllowed = true;
+
+    public boolean logStackTraceOnMessageSend = true;
 
     // / Timer to regularly ping the thread auditor (on behalf of the timer
     // thread)
