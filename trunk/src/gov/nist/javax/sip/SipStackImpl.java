@@ -276,7 +276,7 @@ import org.apache.log4j.Logger;
  * in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.85 $ $Date: 2009-04-11 02:43:33 $
+ * @version 1.2 $Revision: 1.86 $ $Date: 2009-04-11 14:28:09 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -702,7 +702,7 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
                 "gov.nist.javax.sip.CANCEL_CLIENT_TRANSACTION_CHECKED", "true").equalsIgnoreCase(
                 "true");
         super.logStackTraceOnMessageSend = configurationProperties.getProperty(
-                "gov.nist.javax.sip.LOG_STACK_TRACE_ON_MESSAGE_SEND", "true").equalsIgnoreCase("true");
+                "gov.nist.javax.sip.LOG_STACK_TRACE_ON_MESSAGE_SEND", "false").equalsIgnoreCase("true");
         logWriter.logDebug("created Sip stack. Properties = " + configurationProperties);
         InputStream in = getClass().getResourceAsStream("/TIMESTAMP");
         if (in != null) {
