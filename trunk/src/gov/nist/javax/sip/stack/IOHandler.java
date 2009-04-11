@@ -28,6 +28,7 @@
  *******************************************************************************/
 package gov.nist.javax.sip.stack;
 
+import gov.nist.core.LogWriter;
 import gov.nist.javax.sip.SipStackImpl;
 
 import java.io.*;
@@ -139,6 +140,9 @@ class IOHandler {
 			sipStack.logWriter.logDebug("sendBytes " + transport + " inAddr "
 					+ receiverAddress.getHostAddress() + " port = "
 					+ contactPort + " length = " + length);
+		}
+		if ( sipStack.isLoggingEnabled() && sipStack.logStackTraceOnMessageSend ) {
+		    sipStack.logWriter.logStackTrace(LogWriter.TRACE_MESSAGES);
 		}
 		if (transport.compareToIgnoreCase(TCP) == 0) {
 			String key = makeKey(receiverAddress, contactPort);

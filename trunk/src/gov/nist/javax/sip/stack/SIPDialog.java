@@ -63,7 +63,7 @@ import java.text.ParseException;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.98 $ $Date: 2009-02-24 04:16:48 $
+ * @version 1.2 $Revision: 1.99 $ $Date: 2009-04-11 02:43:32 $
  * 
  * @author M. Ranganathan
  * 
@@ -1057,14 +1057,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             this.reInviteFlag = true;
         }
 
-        /*
-         * JvB: removed this
-         * 
-         * Set state to Completed if we are processing a // BYE transaction for the dialog. //
-         * Server transaction terminates after the response to the bye. if (transaction instanceof
-         * SIPClientTransaction && sipRequest.getMethod().equals(Request.BYE) &&
-         * this.terminateOnBye) { this.setState(TERMINATED_STATE); }
-         */
+       
 
         if (firstTransaction == null) {
             // Record the local and remote sequenc
@@ -1588,13 +1581,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         if (dialogRequest.getMethod().equals(Request.ACK)
                 || dialogRequest.getMethod().equals(Request.CANCEL))
             throw new SipException("Bad Request Method. " + dialogRequest.getMethod());
-        // Cannot send bye until the dialog has been established.
-        /*
-         * if (this.getState() == null && !(this.getMethod().equals(Request.SUBSCRIBE) &&
-         * dialogRequest .getMethod().equals(Request.NOTIFY))) { if (sipStack.isLoggingEnabled())
-         * sipStack.logWriter.logError("null dialog state for " + this); throw new
-         * SipException("Bad dialog state " + this.getState()); }
-         */
 
         // JvB: added, allow re-sending of BYE after challenge
         if (byeSent && isTerminatedOnBye() && !dialogRequest.getMethod().equals(Request.BYE)) {
@@ -2243,19 +2229,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         } else {
             // Processing Server Dialog.
 
-            if (cseqMethod.equals(Request.CANCEL)) {
-                // && statusCode / 100 == 2
-                // && (!this.isReInvite())
-                // && (getState() == null || getState().getValue() == SIPDialog.EARLY_STATE)) {
-                /*
-                 * Transaction successfully cancelled but dialog has not yet been established so
-                 * delete the dialog. Note: this does not apply to re-invite
-                 * 
-                 * JvB: this is wrong, CANCEL is an independent transaction that does not affect
-                 * the Dialog state. The Dialog is terminated when the UAS application sends 487
-                 */
-                // this.setState(SIPDialog.TERMINATED_STATE);
-            } else if (cseqMethod.equals(Request.BYE) && statusCode / 100 == 2
+            if (cseqMethod.equals(Request.BYE) && statusCode / 100 == 2
                     && this.isTerminatedOnBye()) {
                 /*
                  * Only transition to terminated state when 200 OK is returned for the BYE. Other

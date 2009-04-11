@@ -104,7 +104,9 @@ import org.apache.log4j.Logger;
  * capture content into the log. Default is false. A bad idea to log content if you are using SIP
  * to push a lot of bytes through TCP. </li>
  * 
- * 
+ * <li><b>gov.nist.javax.sip.LOG_STACK_TRACE_ON_MESSAGE_SEND = true|false </b><br/> Set true if you want to
+ * to log a stack trace at INFO level for each message send. This is really handy 
+ * for debugging.</li>
  * 
  * <li><b>gov.nist.javax.sip.DEBUG_LOG = fileName </b><br/> Where the debug log goes. <font
  * color=red> Mail this to us with bug reports. </font> </li>
@@ -274,7 +276,7 @@ import org.apache.log4j.Logger;
  * in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.84 $ $Date: 2009-03-17 15:20:00 $
+ * @version 1.2 $Revision: 1.85 $ $Date: 2009-04-11 02:43:33 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -699,7 +701,8 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
         super.cancelClientTransactionChecked = configurationProperties.getProperty(
                 "gov.nist.javax.sip.CANCEL_CLIENT_TRANSACTION_CHECKED", "true").equalsIgnoreCase(
                 "true");
-
+        super.logStackTraceOnMessageSend = configurationProperties.getProperty(
+                "gov.nist.javax.sip.LOG_STACK_TRACE_ON_MESSAGE_SEND", "true").equalsIgnoreCase("true");
         logWriter.logDebug("created Sip stack. Properties = " + configurationProperties);
         InputStream in = getClass().getResourceAsStream("/TIMESTAMP");
         if (in != null) {
