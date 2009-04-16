@@ -63,7 +63,7 @@ import java.text.ParseException;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.99 $ $Date: 2009-04-11 02:43:32 $
+ * @version 1.2 $Revision: 1.100 $ $Date: 2009-04-16 23:16:10 $
  * 
  * @author M. Ranganathan
  * 
@@ -1138,8 +1138,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                         "Dialog is already established -- ignoring remote tag re-assignment");
                 return;
             } else if (sipStack.isRemoteTagReassignmentAllowed()) {
-                sipStack.getLogWriter().logWarning(
-                        "UNSAFE OPERATION ! Unexpected tag re-assignment " + this.hisTag
+                sipStack.getLogWriter().logDebug(
+                        "UNSAFE OPERATION !  tag re-assignment " + this.hisTag
                                 + " trying to set to " + hisTag
                                 + " can cause unexpected effects ");
                 boolean removed = false;
@@ -2138,12 +2138,26 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             if (sipStack.isDialogCreated(cseqMethod)) {
                 // Make a final tag assignment.
                 if (getState() == null && (statusCode / 100 == 1)) {
-                    // Guard aginst slipping back into early state from
-                    // confirmed state
+                    /* Guard aginst slipping back into early state from
+                     * confirmed state.
+                     */
                     // Was (sipResponse.getToTag() != null || sipStack.rfc2543Supported)
                     setState(SIPDialog.EARLY_STATE);
                     if ((sipResponse.getToTag() != null || sipStack.rfc2543Supported)
-                            && this.getRemoteTag() == null) {
+                           && this.getRemoteTag() == null  ) {
+                        setRemoteTag(sipResponse.getToTag());
+                        this.setDialogId(sipResponse.getDialogId(false));
+                        sipStack.putDialog(this);
+                        this.addRoute(sipResponse);
+                    } 
+                } else if (getState().equals(DialogState.EARLY) &&  statusCode / 100 == 1 ) {
+                    /*
+                     * This case occurs for forked dialog responses. The To tag can 
+                     * change as a result of the forking. The remote target can also 
+                     * change as a result of the forking.
+                     */
+                    if ( cseqMethod.equals(getMethod())
+                            && (sipResponse.getToTag() != null || sipStack.rfc2543Supported) ) {
                         setRemoteTag(sipResponse.getToTag());
                         this.setDialogId(sipResponse.getDialogId(false));
                         sipStack.putDialog(this);
