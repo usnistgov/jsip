@@ -63,7 +63,7 @@ import java.text.ParseException;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.101 $ $Date: 2009-04-17 01:57:12 $
+ * @version 1.2 $Revision: 1.102 $ $Date: 2009-04-17 03:20:21 $
  * 
  * @author M. Ranganathan
  * 
@@ -2156,7 +2156,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                      * change as a result of the forking. The remote target can also 
                      * change as a result of the forking.
                      */
-                    if ( cseqMethod.equals(getMethod())
+                    if ( cseqMethod.equals(getMethod()) && transaction != null
                             && (sipResponse.getToTag() != null || sipStack.rfc2543Supported) ) {
                         setRemoteTag(sipResponse.getToTag());
                         this.setDialogId(sipResponse.getDialogId(false));
