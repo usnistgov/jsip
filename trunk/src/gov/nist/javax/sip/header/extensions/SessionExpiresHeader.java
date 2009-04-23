@@ -1,5 +1,6 @@
 package gov.nist.javax.sip.header.extensions;
 
+import javax.sip.InvalidArgumentException;
 import javax.sip.header.*;
 
 /*
@@ -15,7 +16,7 @@ public interface SessionExpiresHeader extends Parameters, Header, ExtensionHeade
 	
 	public int getExpires();
 
-	public void setExpires(int expires);
+	public void setExpires(int expires) throws InvalidArgumentException;
 	
 	public String getRefresher() ;
 	
