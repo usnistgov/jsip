@@ -9,8 +9,18 @@ import javax.sip.header.*;
  */
 
 
-public interface SessionExpiresHeader extends Parameters, Header {
+public interface SessionExpiresHeader extends Parameters, Header, ExtensionHeader{
    
 	public final static String NAME = "Session-Expires";
+	
+	public int getExpires();
+
+	public void setExpires(int expires);
+	
+	public String getRefresher() ;
+	
+	public void setRefresher(String refresher);
+	
+	
 	
 }

@@ -19,7 +19,7 @@ import gov.nist.javax.sip.address.*;
 /**  
  * ReferredBy SIP Header.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.2 $ $Date: 2006-10-27 20:58:31 $
+ * @version JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2009-04-23 02:55:14 $
  *
  * @author Peter Musgrave. 
  *
@@ -35,6 +35,7 @@ public final class SessionExpires
 
 	public int expires;
 	
+	public static final String REFRESHER = "refresher";
 	/** default Constructor.
 	 */
 	public SessionExpires() {
@@ -93,6 +94,14 @@ public final class SessionExpires
 		}
 		return retval;
 	}
+
+    public String getRefresher() {
+       return parameters.getParameter(REFRESHER);
+    }
+    
+    public void setRefresher(String refresher) {
+        this.parameters.set(REFRESHER,refresher);
+    }
 }
 
 
