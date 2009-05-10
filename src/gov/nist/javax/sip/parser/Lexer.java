@@ -281,7 +281,29 @@ public class Lexer extends LexerCore {
 							TokenTypes.SECURITY_VERIFY);
 					addKeyword(SecurityClientHeader.NAME.toUpperCase(), 
 							TokenTypes.SECURITY_CLIENT);
+					
+					// added by aayush@rancore
+					addKeyword(PUserDatabaseHeader.NAME.toUpperCase(), 
+							TokenTypes.P_USER_DATABASE);
+		
+					// added by aayush@rancore
+					addKeyword(PProfileKeyHeader.NAME.toUpperCase(), 
+							TokenTypes.P_PROFILE_KEY);
+					
+					// added by aayush@rancore
+					addKeyword(PServedUserHeader.NAME.toUpperCase(),
+							TokenTypes.P_SERVED_USER);
+					
+					// added by aayush@rancore
+					addKeyword(PPreferredServiceHeader.NAME.toUpperCase(),
+							TokenTypes.P_PREFERRED_SERVICE);
+					
+					// added by aayush@rancore
+					addKeyword(PAssertedServiceHeader.NAME.toUpperCase(),
+							TokenTypes.P_ASSERTED_SERVICE);
+					
 					// end //
+					
 
 				} else if (lexerName.equals("status_lineLexer")) {
 					addKeyword(TokenNames.SIP.toUpperCase(), TokenTypes.SIP);

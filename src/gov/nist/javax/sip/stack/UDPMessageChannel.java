@@ -79,7 +79,7 @@ import javax.sip.message.Response;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.55 $ $Date: 2009-04-11 02:43:31 $
+ * @version 1.2 $Revision: 1.56 $ $Date: 2009-05-10 00:29:54 $
  */
 public class UDPMessageChannel extends MessageChannel implements
 		ParseExceptionListener, Runnable, RawMessageChannel {
@@ -568,7 +568,15 @@ public class UDPMessageChannel extends MessageChannel implements
 	 */
 	public void sendMessage(SIPMessage sipMessage) throws IOException {
 		if (sipStack.isLoggingEnabled() && this.sipStack.logStackTraceOnMessageSend) {
-			this.sipStack.logWriter.logStackTrace(LogWriter.TRACE_MESSAGES);
+			if ( sipMessage instanceof SIPRequest && 
+			        ((SIPRequest)sipMessage).getRequestLine() != null) {
+			    /*
+			     * We dont want to log empty trace messages.
+			     */
+			    this.sipStack.logWriter.logStackTrace(LogWriter.TRACE_MESSAGES);
+			} else {
+			    this.sipStack.logWriter.logStackTrace(LogWriter.TRACE_MESSAGES);
+			}
 		}
 
 		// Test and see where we are going to send the messsage. If the message

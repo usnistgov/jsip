@@ -56,5 +56,17 @@ public interface SIPHeaderNamesIms
 	public static final String SECURITY_CLIENT = SecurityClientHeader.NAME;
 	public static final String SECURITY_VERIFY = SecurityVerifyHeader.NAME;
 	
+	//added by aayush
+	public static final String P_USER_DATABASE = PUserDatabaseHeader.NAME;
+	//added by aayush
+	public static final String P_PROFILE_KEY = PProfileKeyHeader.NAME; 
+	//added by aayush
+	public static final String P_SERVED_USER = PServedUserHeader.NAME;
+	//added by aayush
+	public static final String P_PREFERRED_SERVICE = PPreferredServiceHeader.NAME;
+	//added by aayush
+	public static final String P_ASSERTED_SERVICE = PAssertedServiceHeader.NAME;
+	
+	
 }
 

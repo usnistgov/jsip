@@ -8,12 +8,17 @@ import gov.nist.javax.sip.header.extensions.ReplacesHeader;
 import gov.nist.javax.sip.header.extensions.SessionExpiresHeader;
 import gov.nist.javax.sip.header.ims.PAccessNetworkInfoHeader;
 import gov.nist.javax.sip.header.ims.PAssertedIdentityHeader;
+import gov.nist.javax.sip.header.ims.PAssertedServiceHeader;
 import gov.nist.javax.sip.header.ims.PAssociatedURIHeader;
 import gov.nist.javax.sip.header.ims.PCalledPartyIDHeader;
 import gov.nist.javax.sip.header.ims.PChargingFunctionAddressesHeader;
 import gov.nist.javax.sip.header.ims.PChargingVectorHeader;
 import gov.nist.javax.sip.header.ims.PMediaAuthorizationHeader;
 import gov.nist.javax.sip.header.ims.PPreferredIdentityHeader;
+import gov.nist.javax.sip.header.ims.PPreferredServiceHeader;
+import gov.nist.javax.sip.header.ims.PProfileKeyHeader;
+import gov.nist.javax.sip.header.ims.PServedUserHeader;
+import gov.nist.javax.sip.header.ims.PUserDatabaseHeader;
 import gov.nist.javax.sip.header.ims.PVisitedNetworkIDHeader;
 import gov.nist.javax.sip.header.ims.PathHeader;
 import gov.nist.javax.sip.header.ims.PrivacyHeader;
@@ -212,4 +217,38 @@ public interface HeaderFactoryExt {
 	 */
 	public JoinHeader createJoinHeader(String callId, String toTag,
 			String fromTag) throws ParseException;
+	
+	/**
+	 * 
+	 * @return the newly created P-User-Database header
+	 * @param the database name, that may be an IP:port or a domain name.
+	 */
+	public PUserDatabaseHeader createPUserDatabaseHeader(String databaseName);
+	
+	
+	/**
+	 * 
+	 * @param address
+	 * @return The newly created P-Profile-Key header
+	 */
+	public PProfileKeyHeader createPProfileKeyHeader(Address address);
+	
+	/**
+	 * @param address of the served user.
+	 * @return The newly created P-Served-User Header.
+	 */
+	public PServedUserHeader createPServedUserHeader(Address address);
+	
+	/**
+	 * 
+	 * @return The newly created P-Preferred-Service Header.
+	 */
+	public PPreferredServiceHeader createPPreferredServiceHeader();
+	
+	/**
+	 * 
+	 * @return The newly created P-Asserted-Service Header.
+	 */
+	public PAssertedServiceHeader createPAssertedServiceHeader();
+	
 }
