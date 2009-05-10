@@ -43,7 +43,7 @@ import gov.nist.javax.sip.address.*;
 
 /** Implementation of the JAIN SIP  HeaderFactory
 *
-* @version 1.2 $Revision: 1.16 $ $Date: 2009-03-13 23:03:28 $
+* @version 1.2 $Revision: 1.17 $ $Date: 2009-05-10 00:29:18 $
 * @since 1.1
 *
 *@author M. Ranganathan   <br/>
@@ -1552,9 +1552,70 @@ public class HeaderFactoryImpl implements HeaderFactory , HeaderFactoryExt {
 		return secVerify;
 	}
 
-
-
-
+	/**
+	 * added by aayush here:
+	 * @return the newly create P-User-Database header.
+     * Please note that this is not a SIP/TEL uri. It is a 
+     * DIAMETER AAA URI.
+	 */
+	public PUserDatabaseHeader createPUserDatabaseHeader(String databaseName)
+	{
+		if((databaseName ==null)||(databaseName.equals(" ")))
+			throw new NullPointerException("Database name is null");
+		
+		PUserDatabase pUserDatabase = new PUserDatabase();
+		pUserDatabase.setDatabaseName(databaseName);
+		
+		return pUserDatabase;
+	}
+    
+	
+	/**
+	 * added by aayush here:
+	 * @return The newly created P-Profile-Key header.
+	 * 
+	 */
+	public PProfileKeyHeader createPProfileKeyHeader(Address address) 
+	{ 
+		if (address ==null) 
+			throw new NullPointerException("Address is null");
+		PProfileKey pProfileKey = new PProfileKey();
+		pProfileKey.setAddress(address);
+		
+		return pProfileKey; 
+	}
+	
+	/**
+	 * added by aayush here:
+	 * @return The newly created P-Served-User header.
+	 */
+	public PServedUserHeader createPServedUserHeader(Address address)
+	{
+		if(address==null)
+			throw new NullPointerException("Address is null");
+		PServedUser psu = new PServedUser();
+		psu.setAddress(address);
+		
+		return psu;
+	}
+	/**
+	 * @return The newly created P-Preferred-Service header.
+	 */
+	public PPreferredServiceHeader createPPreferredServiceHeader()
+	{
+		PPreferredService pps = new PPreferredService();
+		return pps;
+	}
+	
+	/**
+	 * 
+	 * @return The newly created P-Asserted-Service header.
+	 */
+	public PAssertedServiceHeader createPAssertedServiceHeader()
+	{
+		PAssertedService pas = new PAssertedService();
+		return pas;
+	}
 
 	/**
 	 * Creates a new SessionExpiresHeader based on the newly supplied expires value.

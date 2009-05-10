@@ -28,7 +28,7 @@ package gov.nist.javax.sip.parser;
 import gov.nist.core.*;
 
 /**
- * @version 1.2 $Revision: 1.10 $ $Date: 2009-01-22 19:33:47 $
+ * @version 1.2 $Revision: 1.11 $ $Date: 2009-05-10 00:29:53 $
  */
 public interface TokenTypes {
 
@@ -154,6 +154,17 @@ public interface TokenTypes {
 	// jean deruelle RFC3911
 	public static final int JOIN_TO = START + 92;
 	
+	// aayush.bhatnagar: RFC 4457 support.
+	public static final int P_USER_DATABASE = START + 93;
+	//aayush.bhatnagar: RFC 5002 support.
+	public static final int P_PROFILE_KEY = START + 94; 
+	//aayush.bhatnagar: RFC 5502 support.
+	public static final int P_SERVED_USER = START + 95;
+	//aayush.bhatnaagr: P-Preferred-Service Header:
+	public static final int P_PREFERRED_SERVICE = START + 96;
+	//aayush.bhatnagar: P-Asserted-Service Header:
+	public static final int P_ASSERTED_SERVICE = START + 97;
+	
 	public static final int ALPHA = LexerCore.ALPHA;
 	public static final int DIGIT = LexerCore.DIGIT;
 	public static final int ID = LexerCore.ID;
@@ -196,6 +207,13 @@ public interface TokenTypes {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2009/01/22 19:33:47  deruelle_jean
+ * Add support for JOIN (RFC 3911)
+ * Issue number:  186
+ * Obtained from:
+ * Submitted by:  Jean Deruelle
+ * Reviewed by:   Ranga, The high priest and grand poobah of Jain-SIP
+ *
  * Revision 1.9  2007/01/08 19:24:22  mranga
  * Issue number:
  * Obtained from:
