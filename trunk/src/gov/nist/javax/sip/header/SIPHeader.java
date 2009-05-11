@@ -32,13 +32,13 @@ package gov.nist.javax.sip.header;
  * Root class from which all SIPHeader objects are subclassed.
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.5 $ $Date: 2007-02-12 15:19:24 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2009-05-11 18:52:38 $
  *
  * 
  */
 public abstract class SIPHeader
 	extends SIPObject
-	implements SIPHeaderNames, javax.sip.header.Header {
+	implements SIPHeaderNames, javax.sip.header.Header, HeaderExt {
 
 	/** name of this header
 	 */
