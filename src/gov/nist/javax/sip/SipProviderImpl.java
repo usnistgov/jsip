@@ -28,25 +28,51 @@
  ******************************************************************************/
 package gov.nist.javax.sip;
 
-import java.util.*;
-
-import gov.nist.javax.sip.address.AddressImpl;
+import gov.nist.core.InternalErrorHandler;
 import gov.nist.javax.sip.address.RouterExt;
-import gov.nist.javax.sip.address.SipUri;
-import gov.nist.javax.sip.header.*;
-import gov.nist.javax.sip.stack.*;
-import gov.nist.javax.sip.message.*;
-import javax.sip.message.*;
-import javax.sip.header.*;
-import javax.sip.address.*;
-import javax.sip.*;
+import gov.nist.javax.sip.header.CallID;
+import gov.nist.javax.sip.header.Via;
+import gov.nist.javax.sip.message.SIPMessage;
+import gov.nist.javax.sip.message.SIPRequest;
+import gov.nist.javax.sip.message.SIPResponse;
+import gov.nist.javax.sip.stack.HopImpl;
+import gov.nist.javax.sip.stack.MessageChannel;
+import gov.nist.javax.sip.stack.SIPClientTransaction;
+import gov.nist.javax.sip.stack.SIPDialog;
+import gov.nist.javax.sip.stack.SIPServerTransaction;
+import gov.nist.javax.sip.stack.SIPTransaction;
+import gov.nist.javax.sip.stack.SIPTransactionErrorEvent;
+import gov.nist.javax.sip.stack.SIPTransactionEventListener;
 
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.EventObject;
+import java.util.Iterator;
+import java.util.TooManyListenersException;
 import java.util.concurrent.ConcurrentHashMap;
 
-import gov.nist.core.*;
-import java.io.*;
-import java.net.UnknownHostException;
-import java.text.ParseException;
+import javax.sip.ClientTransaction;
+import javax.sip.Dialog;
+import javax.sip.DialogState;
+import javax.sip.InvalidArgumentException;
+import javax.sip.ListeningPoint;
+import javax.sip.ObjectInUseException;
+import javax.sip.RequestEvent;
+import javax.sip.ResponseEvent;
+import javax.sip.ServerTransaction;
+import javax.sip.SipException;
+import javax.sip.SipListener;
+import javax.sip.SipStack;
+import javax.sip.Timeout;
+import javax.sip.TimeoutEvent;
+import javax.sip.Transaction;
+import javax.sip.TransactionAlreadyExistsException;
+import javax.sip.TransactionState;
+import javax.sip.TransactionUnavailableException;
+import javax.sip.address.Hop;
+import javax.sip.header.CallIdHeader;
+import javax.sip.message.Request;
+import javax.sip.message.Response;
 
 /*
  * Contributions (bug fixes) made by: Daniel J. Martinez Manzano, Hagai Sela.
@@ -55,7 +81,7 @@ import java.text.ParseException;
 /**
  * Implementation of the JAIN-SIP provider interface.
  * 
- * @version 1.2 $Revision: 1.59 $ $Date: 2008-11-03 14:12:07 $
+ * @version 1.2 $Revision: 1.60 $ $Date: 2009-05-11 18:52:36 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -91,8 +117,8 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 	/**
 	 * A string containing the ::0 IPv6 ANY address.
 	 */
-	private String IN6_ADDR_ANY = "::0";
-
+	private String IN6_ADDR_ANY = "::0";	
+	
 	/**
 	 * Stop processing messages for this provider. Post an empty message to our
 	 * message processing queue that signals us to quit.
@@ -228,7 +254,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 	 * @see javax.sip.SipProvider#getNewCallId()
 	 */
 	public CallIdHeader getNewCallId() {
-		String callId = Utils.generateCallIdentifier(this.getListeningPoint()
+		String callId = Utils.getInstance().generateCallIdentifier(this.getListeningPoint()
 				.getIPAddress());
 		CallID callid = new CallID();
 		try {
@@ -351,7 +377,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 			if (sipRequest.getTopmostVia().getBranch() == null
 					|| !sipRequest.getTopmostVia().getBranch().startsWith(
 							SIPConstants.BRANCH_MAGIC_COOKIE)) {
-				branchId = Utils.generateBranchId();
+				branchId = Utils.getInstance().generateBranchId();
 
 				sipRequest.getTopmostVia().setBranch(branchId);
 			}

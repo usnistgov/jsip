@@ -30,21 +30,79 @@ package gov.nist.javax.sip.message;
 
 import gov.nist.core.InternalErrorHandler;
 import gov.nist.javax.sip.SIPConstants;
-import gov.nist.javax.sip.header.*;
+import gov.nist.javax.sip.header.AlertInfo;
+import gov.nist.javax.sip.header.Authorization;
+import gov.nist.javax.sip.header.CSeq;
+import gov.nist.javax.sip.header.CallID;
+import gov.nist.javax.sip.header.Contact;
+import gov.nist.javax.sip.header.ContactList;
+import gov.nist.javax.sip.header.ContentLength;
+import gov.nist.javax.sip.header.ContentType;
+import gov.nist.javax.sip.header.ErrorInfo;
+import gov.nist.javax.sip.header.ErrorInfoList;
+import gov.nist.javax.sip.header.From;
+import gov.nist.javax.sip.header.InReplyTo;
+import gov.nist.javax.sip.header.MaxForwards;
+import gov.nist.javax.sip.header.Priority;
+import gov.nist.javax.sip.header.ProxyAuthenticate;
+import gov.nist.javax.sip.header.ProxyAuthorization;
+import gov.nist.javax.sip.header.ProxyRequire;
+import gov.nist.javax.sip.header.ProxyRequireList;
+import gov.nist.javax.sip.header.RSeq;
+import gov.nist.javax.sip.header.RecordRouteList;
+import gov.nist.javax.sip.header.RetryAfter;
+import gov.nist.javax.sip.header.Route;
+import gov.nist.javax.sip.header.RouteList;
+import gov.nist.javax.sip.header.SIPETag;
+import gov.nist.javax.sip.header.SIPHeader;
+import gov.nist.javax.sip.header.SIPHeaderList;
+import gov.nist.javax.sip.header.SIPHeaderNamesCache;
+import gov.nist.javax.sip.header.SIPIfMatch;
+import gov.nist.javax.sip.header.Server;
+import gov.nist.javax.sip.header.Subject;
+import gov.nist.javax.sip.header.To;
+import gov.nist.javax.sip.header.Unsupported;
+import gov.nist.javax.sip.header.UserAgent;
+import gov.nist.javax.sip.header.Via;
+import gov.nist.javax.sip.header.ViaList;
+import gov.nist.javax.sip.header.WWWAuthenticate;
+import gov.nist.javax.sip.header.Warning;
 import gov.nist.javax.sip.parser.HeaderParser;
 import gov.nist.javax.sip.parser.ParserFactory;
 import gov.nist.javax.sip.parser.PipelinedMsgParser;
 import gov.nist.javax.sip.parser.StringMsgParser;
 
-import javax.sip.InvalidArgumentException;
-import javax.sip.SipException;
-import javax.sip.header.*;
-import javax.sip.message.Request;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.text.ParseException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import javax.sip.InvalidArgumentException;
+import javax.sip.SipException;
+import javax.sip.header.AuthorizationHeader;
+import javax.sip.header.CSeqHeader;
+import javax.sip.header.CallIdHeader;
+import javax.sip.header.ContactHeader;
+import javax.sip.header.ContentDispositionHeader;
+import javax.sip.header.ContentEncodingHeader;
+import javax.sip.header.ContentLanguageHeader;
+import javax.sip.header.ContentLengthHeader;
+import javax.sip.header.ContentTypeHeader;
+import javax.sip.header.ExpiresHeader;
+import javax.sip.header.FromHeader;
+import javax.sip.header.Header;
+import javax.sip.header.MaxForwardsHeader;
+import javax.sip.header.RecordRouteHeader;
+import javax.sip.header.RouteHeader;
+import javax.sip.header.ToHeader;
+import javax.sip.header.ViaHeader;
+import javax.sip.message.Request;
 
 /*
  * Acknowledgements: Yanick Belanger sent in a patch for the right content
@@ -58,7 +116,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  *
- * @version 1.2 $Revision: 1.42 $ $Date: 2009-01-27 23:11:17 $
+ * @version 1.2 $Revision: 1.43 $ $Date: 2009-05-11 18:52:41 $
  * @since 1.1
  *
  * @author M. Ranganathan <br/>
@@ -66,7 +124,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  *
  */
 public abstract class SIPMessage extends MessageObject implements
-		javax.sip.message.Message {
+		javax.sip.message.Message, MessageExt {
 
 
 

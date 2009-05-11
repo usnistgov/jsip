@@ -37,9 +37,9 @@ import java.util.HashSet;
  * and odds and ends.
  * 
  * @author mranga
- * @version 1.2 $Revision: 1.16 $ $Date: 2008-11-19 10:56:49 $
+ * @version 1.2 $Revision: 1.17 $ $Date: 2009-05-11 18:52:36 $
  */
-public class Utils {
+public class Utils implements UtilsExt {
 
 	private static MessageDigest digester;
 	static {
@@ -55,7 +55,13 @@ public class Utils {
 	private static long counter = 0;
 
 	private static int callIDCounter;
+	
+	private static Utils instance = new Utils(); 
 
+	public static Utils getInstance() {
+		return instance;		
+	}
+	
 	/**
 	 * to hex converter
 	 */
@@ -116,7 +122,7 @@ public class Utils {
 	 * Generate a call identifier. This is useful when we want to generate a
 	 * call identifier in advance of generating a message.
 	 */
-	public static synchronized String generateCallIdentifier(String address) {
+	public synchronized String generateCallIdentifier(String address) {
 		
 			String date = new Long(System.currentTimeMillis() + callIDCounter++
 					+ rand.nextLong()).toString();
@@ -137,7 +143,7 @@ public class Utils {
 	 * synchronized: needed for access to 'rand', else risk to generate same tag
 	 * twice
 	 */
-	public static synchronized String generateTag() {
+	public synchronized String generateTag() {
 		
 			return Integer.toHexString(rand.nextInt());
 	
@@ -150,7 +156,7 @@ public class Utils {
 	 * @return a cryptographically random gloablly unique string that can be
 	 *         used as a branch identifier.
 	 */
-	public static synchronized String generateBranchId() {
+	public synchronized String generateBranchId() {
 		// 
 	
 		
@@ -163,11 +169,10 @@ public class Utils {
 
 	}
 
-	public static void main(String[] args) {
-
+	public static void main(String[] args) {		
 		HashSet branchIds = new HashSet();
 		for (int b = 0; b < 100000; b++) {
-			String bid = generateBranchId();
+			String bid = Utils.getInstance().generateBranchId();
 			if (branchIds.contains(bid)) {
 				throw new RuntimeException("Duplicate Branch ID");
 			} else {

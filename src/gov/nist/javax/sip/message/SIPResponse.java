@@ -60,7 +60,7 @@ import javax.sip.message.Request;
 /**
  * SIP Response structure.
  *
- * @version 1.2 $Revision: 1.25 $ $Date: 2009-03-23 22:06:20 $
+ * @version 1.2 $Revision: 1.26 $ $Date: 2009-05-11 18:52:41 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
@@ -71,7 +71,7 @@ public final class SIPResponse
 	extends SIPMessage
 	implements javax.sip.message.Response {
 	protected StatusLine statusLine;
-
+	
 	public static String getReasonPhrase(int rc) {
 		String retval = null;
 		switch (rc) {
@@ -628,7 +628,7 @@ public final class SIPResponse
 			if (statusLine.getStatusCode() >= 300 ) {
 				branch = getTopmostVia().getBranch();	// non-2xx ACK uses same branch
 			} else {
-				branch = Utils.generateBranchId();	// 2xx ACK gets new branch
+				branch = Utils.getInstance().generateBranchId();	// 2xx ACK gets new branch
 			}
 		} else if (method.equals( Request.CANCEL )) {
 			branch = getTopmostVia().getBranch();	// CANCEL uses same branch
