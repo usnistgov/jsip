@@ -52,7 +52,7 @@ public class PProfileKeyParser extends AddressParametersParser implements TokenT
 		if (debug)
 			dbg_enter("PProfileKey.parse");
 		try {
-			this.lexer.SPorHT();
+		
 			this.lexer.match(TokenTypes.P_PROFILE_KEY);
 			this.lexer.SPorHT();
 			this.lexer.match(':');

@@ -95,7 +95,7 @@ public class PPreferredServiceParser extends HeaderParser implements TokenTypes{
 			dbg_enter("PPreferredServiceParser.parse");
 		try
 		{
-		this.lexer.SPorHT();
+		
 		this.lexer.match(TokenTypes.P_PREFERRED_SERVICE);
 		this.lexer.SPorHT();
 		this.lexer.match(':');
