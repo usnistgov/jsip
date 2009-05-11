@@ -44,7 +44,7 @@ import java.text.ParseException;
  *
  * @see ViaList
  *
- * @version 1.2 $Revision: 1.14 $ $Date: 2008-01-21 22:43:21 $
+ * @version 1.2 $Revision: 1.15 $ $Date: 2009-05-11 18:52:38 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -53,7 +53,7 @@ import java.text.ParseException;
  */
 public class Via
 	extends ParametersHeader
-	implements javax.sip.header.ViaHeader {
+	implements javax.sip.header.ViaHeader, ViaHeaderExt {
 
 	/**
 	 * Comment for <code>serialVersionUID</code>
@@ -542,6 +542,23 @@ public class Via
 		return retval;
 	}
 
-    
+	/*
+	 * (non-Javadoc)
+	 * @see gov.nist.javax.sip.header.ViaHeaderExt#getSentByField()
+	 */
+	public String getSentByField() {
+		if(sentBy != null)
+			return sentBy.encode();
+		return null;
+	}
+	/*
+	 * (non-Javadoc)
+	 * @see gov.nist.javax.sip.header.ViaHeaderExt#getSentProtocolField()
+	 */
+	public String getSentProtocolField() {
+		if(sentProtocol != null)
+			return sentProtocol.encode();
+		return null;
+	}
    
 }

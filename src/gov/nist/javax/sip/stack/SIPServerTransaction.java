@@ -25,24 +25,38 @@
  */
 package gov.nist.javax.sip.stack;
 
-import gov.nist.core.*;
-import gov.nist.javax.sip.message.*;
-import gov.nist.javax.sip.header.*;
-import gov.nist.javax.sip.ListeningPointImpl;
+import gov.nist.core.InternalErrorHandler;
 import gov.nist.javax.sip.SIPConstants;
 import gov.nist.javax.sip.ServerTransactionExt;
 import gov.nist.javax.sip.SipProviderImpl;
 import gov.nist.javax.sip.Utils;
+import gov.nist.javax.sip.header.Expires;
+import gov.nist.javax.sip.header.ParameterNames;
+import gov.nist.javax.sip.header.RSeq;
+import gov.nist.javax.sip.header.Via;
+import gov.nist.javax.sip.header.ViaList;
+import gov.nist.javax.sip.message.SIPMessage;
+import gov.nist.javax.sip.message.SIPRequest;
+import gov.nist.javax.sip.message.SIPResponse;
 
-import javax.sip.address.Hop;
-import javax.sip.header.*;
-import javax.sip.message.*;
-import javax.sip.*;
-
-import java.text.ParseException;
 import java.io.IOException;
-
+import java.text.ParseException;
 import java.util.TimerTask;
+
+import javax.sip.Dialog;
+import javax.sip.DialogState;
+import javax.sip.DialogTerminatedEvent;
+import javax.sip.ObjectInUseException;
+import javax.sip.SipException;
+import javax.sip.Timeout;
+import javax.sip.TimeoutEvent;
+import javax.sip.TransactionState;
+import javax.sip.address.Hop;
+import javax.sip.header.ContactHeader;
+import javax.sip.header.ExpiresHeader;
+import javax.sip.header.RSeqHeader;
+import javax.sip.message.Request;
+import javax.sip.message.Response;
 
 /*
  * Bug fixes / enhancements:Emil Ivov, Antonis Karydas, Daniel J. Martinez Manzano, Daniel, Hagai
@@ -151,7 +165,7 @@ import java.util.TimerTask;
  *                                      
  * </pre>
  * 
- * @version 1.2 $Revision: 1.102 $ $Date: 2009-04-11 02:43:32 $
+ * @version 1.2 $Revision: 1.103 $ $Date: 2009-05-11 18:52:39 $
  * @author M. Ranganathan
  * 
  */
@@ -1294,7 +1308,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                         // to
                         // tag on the response -- be nice and assign the tag for
                         // the user.
-                        sipResponse.getTo().setTag(Utils.generateTag());
+                        sipResponse.getTo().setTag(Utils.getInstance().generateTag());
                     } else if (dialog.getLocalTag() != null && sipResponse.getToTag() == null) {
                         sipResponse.setToTag(dialog.getLocalTag());
                     } else if (dialog.getLocalTag() != null && sipResponse.getToTag() != null

@@ -25,18 +25,34 @@
  */
 package gov.nist.javax.sip.stack;
 
-import gov.nist.javax.sip.header.*;
-import gov.nist.javax.sip.message.*;
-import gov.nist.javax.sip.*;
-import gov.nist.core.*;
+import gov.nist.core.InternalErrorHandler;
+import gov.nist.javax.sip.SIPConstants;
+import gov.nist.javax.sip.SipProviderImpl;
+import gov.nist.javax.sip.header.CallID;
+import gov.nist.javax.sip.header.Event;
+import gov.nist.javax.sip.header.From;
+import gov.nist.javax.sip.header.To;
+import gov.nist.javax.sip.header.Via;
+import gov.nist.javax.sip.header.ViaList;
+import gov.nist.javax.sip.message.SIPMessage;
+import gov.nist.javax.sip.message.SIPRequest;
+import gov.nist.javax.sip.message.SIPResponse;
 
 import java.io.IOException;
-import java.util.*;
 import java.net.InetAddress;
-import java.util.concurrent.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
-import javax.sip.*;
-import javax.sip.message.*;
+import javax.sip.Dialog;
+import javax.sip.IOExceptionEvent;
+import javax.sip.ServerTransaction;
+import javax.sip.TransactionState;
+import javax.sip.message.Request;
+import javax.sip.message.Response;
 
 /*
  * Modifications for TLS Support added by Daniel J. Martinez Manzano
@@ -52,7 +68,7 @@ import javax.sip.message.*;
  * @author M. Ranganathan
  * 
  * 
- * @version 1.2 $Revision: 1.59 $ $Date: 2008-08-27 14:43:48 $
+ * @version 1.2 $Revision: 1.60 $ $Date: 2009-05-11 18:52:39 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
 		javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
