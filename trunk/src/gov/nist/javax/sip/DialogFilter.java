@@ -79,7 +79,7 @@ import javax.sip.message.Response;
  * interface). This is part of the glue that ties together the NIST-SIP stack and event model with
  * the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.25 $ $Date: 2009-02-24 03:39:44 $
+ * @version 1.2 $Revision: 1.26 $ $Date: 2009-05-19 20:08:03 $
  * 
  * @author M. Ranganathan
  */
@@ -108,8 +108,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             sipStack.getLogWriter().logDebug("Sending 500 response for out of sequence message");
         SIPResponse sipResponse = sipRequest.createResponse(Response.SERVER_INTERNAL_ERROR);
         sipResponse.setReasonPhrase("Request out of order");
-        
-       
+
         try {
             transaction.sendMessage(sipResponse);
             sipStack.removeTransaction(transaction);
@@ -207,15 +206,19 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
          * and CSeq exactly match those associated with an ongoing transaction, but the request
          * does not match that transaction (based on the matching rules in Section 17.2.3), the
          * UAS core SHOULD generate a 482 (Loop Detected) response and pass it to the server
-         * transaction.
+         * transaction. This support is only enabled when the stack has been instructed to
+         * function with Automatic Dialog Support. Otherwise the application is in charge of
+         * sending the response. TODO -- spec documentation explaining this behavior.
          */
-        if (dialog != null && sipRequest.getToTag() == null) {
+        if ((sipStack.isAutomaticDialogSupportEnabled() || sipProvider
+                .isAutomaticDialogSupportEnabled())
+                && sipRequest.getToTag() == null) {
             SIPServerTransaction sipServerTransaction = sipStack
                     .findMergedTransaction(sipRequest);
             if (sipServerTransaction != null
                     && !sipServerTransaction.isMessagePartOfTransaction(sipRequest)) {
                 SIPResponse response = sipRequest.createResponse(Response.LOOP_DETECTED);
-                
+
                 if (sipStack.getLogWriter().isLoggingEnabled())
                     sipStack.getLogWriter().logError("Loop detected while processing request");
                 try {
@@ -275,7 +278,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             if (sipHeader == null && dialog != null) {
                 SIPResponse badRequest = sipRequest.createResponse(Response.BAD_REQUEST);
                 badRequest.setReasonPhrase("Refer-To header missing");
-                
+
                 try {
                     sipProvider.sendResponse(badRequest);
                 } catch (SipException e) {
@@ -401,7 +404,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                 }
                 SIPResponse notExist = sipRequest
                         .createResponse(Response.CALL_OR_TRANSACTION_DOES_NOT_EXIST);
-               
+
                 try {
                     sipProvider.sendResponse(notExist);
                 } catch (SipException e) {
@@ -468,7 +471,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                 SIPResponse response = sipRequest
                         .createResponse(Response.CALL_OR_TRANSACTION_DOES_NOT_EXIST);
                 response.setReasonPhrase("Dialog Not Found");
-               
+
                 sipStack.getLogWriter().logDebug(
                         "dropping request -- automatic dialog "
                                 + "support enabled and dialog does not exist!");
@@ -622,7 +625,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                             "Sending 500 response for out of sequence message");
                 SIPResponse sipResponse = sipRequest
                         .createResponse(Response.SERVER_INTERNAL_ERROR);
-              
+
                 RetryAfter retryAfter = new RetryAfter();
                 try {
                     retryAfter.setRetryAfter((int) (10 * Math.random()));
