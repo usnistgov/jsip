@@ -1,5 +1,6 @@
-package test.tck.msgflow.callflows.forkedinvite;
+package test.unit.gov.nist.javax.sip.stack.forkedinvite482;
 
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 
@@ -13,6 +14,7 @@ import javax.sip.ServerTransaction;
 import javax.sip.SipListener;
 import javax.sip.SipProvider;
 import javax.sip.TimeoutEvent;
+import javax.sip.Transaction;
 import javax.sip.TransactionTerminatedEvent;
 import javax.sip.address.Address;
 import javax.sip.address.SipURI;
@@ -40,7 +42,7 @@ public class Proxy extends TestHarness implements SipListener {
 
 	private SipProvider inviteServerTxProvider;
 
-	private Hashtable clientTxTable = new Hashtable();
+	private HashSet clientTxTable = new HashSet<ClientTransaction>();
 
 	private static String host = "127.0.0.1";
 
@@ -53,6 +55,8 @@ public class Proxy extends TestHarness implements SipListener {
 	private static Logger logger = Logger.getLogger(Proxy.class);
 
 	private ProtocolObjects protocolObjects;
+
+    private boolean loopDetectedSeen;
 
 	public void processRequest(RequestEvent requestEvent) {
 		try {
@@ -92,19 +96,19 @@ public class Proxy extends TestHarness implements SipListener {
 						"127.0.0.1");
 				address = protocolObjects.addressFactory.createAddress("proxy",
 						sipUri);
-				sipUri.setPort(5070);
+				sipUri.setPort(5080);
 				sipUri.setLrParam();
 				RecordRouteHeader recordRoute = protocolObjects.headerFactory
 						.createRecordRouteHeader(address);
 				newRequest.addHeader(recordRoute);
 				ct1.setApplicationData(st);
-				this.clientTxTable.put(new Integer(5080), ct1);
+				this.clientTxTable.add(ct1);
 
 				newRequest = (Request) request.clone();
 				sipUri = protocolObjects.addressFactory.createSipURI("UA2",
 						"127.0.0.1");
 				sipUri.setLrParam();
-				sipUri.setPort(5090);
+				sipUri.setPort(5080);
 				address = protocolObjects.addressFactory.createAddress(
 						"client2", sipUri);
 				rheader = protocolObjects.headerFactory
@@ -115,7 +119,7 @@ public class Proxy extends TestHarness implements SipListener {
 				newRequest.addFirst(viaHeader);
 				sipUri = protocolObjects.addressFactory.createSipURI("proxy",
 						"127.0.0.1");
-				sipUri.setPort(5070);
+				sipUri.setPort(5080);
 				sipUri.setLrParam();
 				sipUri.setTransportParam(protocolObjects.transport);
 				address = protocolObjects.addressFactory.createAddress("proxy",
@@ -128,7 +132,7 @@ public class Proxy extends TestHarness implements SipListener {
 				ClientTransaction ct2 = sipProvider
 						.getNewClientTransaction(newRequest);
 				ct2.setApplicationData(st);
-				this.clientTxTable.put(new Integer(5090), ct2);
+				this.clientTxTable.add(ct2);
 
 				// Send the requests out to the two listening points of the
 				// client.
@@ -151,8 +155,12 @@ public class Proxy extends TestHarness implements SipListener {
 		}
 
 	}
+	
+	public void checkState() {
+	    assertTrue("Should see LOOP DETECTED", loopDetectedSeen);
+	}
 
-	public void processResponse(ResponseEvent responseEvent) {
+	public synchronized void processResponse(ResponseEvent responseEvent) {
 		try {
 			Response response = responseEvent.getResponse();
 			CSeqHeader cseq = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
@@ -168,6 +176,9 @@ public class Proxy extends TestHarness implements SipListener {
 			if (response.getStatusCode() == 100)
 				return;
 
+			if ( response.getStatusCode() == Response.LOOP_DETECTED ) {
+			    this.loopDetectedSeen  = true;
+			}
 			if (cseq.getMethod().equals(Request.INVITE)) {
 				ClientTransaction ct = responseEvent.getClientTransaction();
 				if (ct != null) {
@@ -180,16 +191,9 @@ public class Proxy extends TestHarness implements SipListener {
 					// The server tx goes to the terminated state.
 
 					st.sendResponse(newResponse);
+				
 				} else {
-					// Client tx has already terminated but the UA is
-					// retransmitting
-					// just forward the response statelessly.
-					// Strip the topmost via header
-
-					Response newResponse = (Response) response.clone();
-					newResponse.removeFirst(ViaHeader.NAME);
-					// Send the retransmission statelessly
-					this.inviteServerTxProvider.sendResponse(newResponse);
+				   logger.debug("Discarding response - no transaction found!");
 				}
 			} else {
 				// this is the OK for the cancel.
@@ -234,7 +238,7 @@ public class Proxy extends TestHarness implements SipListener {
 		if (!transactionTerminatedEvent.isServerTransaction()) {
 			ClientTransaction ct = transactionTerminatedEvent
 					.getClientTransaction();
-			for (Iterator it = this.clientTxTable.values().iterator(); it
+			for (Iterator it = this.clientTxTable.iterator(); it
 					.hasNext();) {
 				if (it.next().equals(ct)) {
 					it.remove();
