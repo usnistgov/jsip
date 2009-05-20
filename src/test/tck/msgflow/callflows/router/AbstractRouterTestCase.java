@@ -89,9 +89,7 @@ public abstract class AbstractRouterTestCase extends ScenarioHarness implements
 			this.shootme.checkState();
 			assertTrue("Router was not consulted", NonSipUriRouter.routerWasConsulted);
 			NonSipUriRouter.routerWasConsulted = false;
-			getTiProtocolObjects().destroy();
-			if (getRiProtocolObjects() != getTiProtocolObjects())
-				getRiProtocolObjects().destroy();
+			super.tearDown();
 			Thread.sleep(1000);
 			this.providerTable.clear();
 			
