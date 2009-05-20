@@ -189,7 +189,11 @@ public class Proxy extends TestHarness implements SipListener {
 					Response newResponse = (Response) response.clone();
 					newResponse.removeFirst(ViaHeader.NAME);
 					// Send the retransmission statelessly
+					try {
 					this.inviteServerTxProvider.sendResponse(newResponse);
+					} catch (Exception ex) {
+					    
+					}
 				}
 			} else {
 				// this is the OK for the cancel.
