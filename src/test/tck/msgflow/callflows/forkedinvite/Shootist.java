@@ -146,27 +146,26 @@ public class Shootist implements SipListener {
 
 		logger.info("Dialog = " + dialog);
 
-		logger.info("Dialog state is " + dialog.getState());
+		logger.info("SHOOTIST: Dialog state is " + dialog.getState());
 
 		try {
 			if (response.getStatusCode() == Response.OK) {
 				if (cseq.getMethod().equals(Request.INVITE)) {
 					TestHarness.assertEquals( DialogState.CONFIRMED, dialog.getState() );
+									
+					
 					Request ackRequest = dialog.createAck(cseq
-							.getSeqNumber());
-					
-					TestHarness.assertNotNull( ackRequest.getHeader( MaxForwardsHeader.NAME ) );
-					
-					if ( dialog == this.ackedDialog ) {
-						dialog.sendAck(ackRequest);
-						return;
-					}
+                            .getSeqNumber());
+                    
+                    TestHarness.assertNotNull( ackRequest.getHeader( MaxForwardsHeader.NAME ) );
+    
 					// Proxy will fork. I will accept the second dialog
 					// but not the first.
 					this.forkedDialogs.add(dialog);
+					dialog.sendAck(ackRequest);
 					if ( forkedDialogs.size() == 2 ) {
 						logger.info("Sending ACK");
-						dialog.sendAck(ackRequest);
+						
 						TestHarness.assertTrue(
 								"Dialog state should be CONFIRMED", dialog
 										.getState() == DialogState.CONFIRMED);
@@ -175,7 +174,7 @@ public class Shootist implements SipListener {
 						// TestHarness.assertNotNull( "JvB: Need CT to find original dialog", tid );
 
 					} else {
-						
+					  
 						// Kill the first dialog by sending a bye.
 						SipProvider sipProvider = (SipProvider) responseReceivedEvent
 								.getSource();

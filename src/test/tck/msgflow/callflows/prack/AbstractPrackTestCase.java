@@ -43,20 +43,20 @@ public abstract class AbstractPrackTestCase extends ScenarioHarness implements
 			super.setUp();
 
 			logger.info("PrackTest: setup()");
-			shootist = new Shootist(tiProtocolObjects);
+			shootist = new Shootist(getTiProtocolObjects());
 			SipProvider shootistProvider = shootist.createProvider();
 			providerTable.put(shootistProvider, shootist);
 
-			shootme = new Shootme(riProtocolObjects);
+			shootme = new Shootme(getRiProtocolObjects());
 			SipProvider shootmeProvider = shootme.createProvider();
 			providerTable.put(shootmeProvider, shootme);
 
 			shootistProvider.addSipListener(this);
 			shootmeProvider.addSipListener(this);
 
-			if (tiProtocolObjects != riProtocolObjects)
-				tiProtocolObjects.start();
-			riProtocolObjects.start();
+			if (getTiProtocolObjects() != getRiProtocolObjects())
+				getTiProtocolObjects().start();
+			getRiProtocolObjects().start();
 		} catch (Exception ex) {
 			logger.error("unexpected excecption ", ex);
 			fail("unexpected exception");
@@ -68,9 +68,9 @@ public abstract class AbstractPrackTestCase extends ScenarioHarness implements
 			Thread.sleep(2000);
 			this.shootist.checkState();
 			this.shootme.checkState();
-			tiProtocolObjects.destroy();
-			if (riProtocolObjects != tiProtocolObjects)
-				riProtocolObjects.destroy();
+			getTiProtocolObjects().destroy();
+			if (getRiProtocolObjects() != getTiProtocolObjects())
+				getRiProtocolObjects().destroy();
 			Thread.sleep(1000);
 			this.providerTable.clear();
 			
