@@ -102,7 +102,6 @@ public abstract class AbstractSubsnotifyTestCase extends ScenarioHarness impleme
 		try {
 			Thread.sleep(5000);
 			super.tearDown();
-			getRiProtocolObjects().destroy();
 			this.providerTable.clear();
 			Thread.sleep(100);
 			subscriber.checkState();
