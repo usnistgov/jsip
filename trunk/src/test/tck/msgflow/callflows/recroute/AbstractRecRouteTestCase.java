@@ -83,9 +83,7 @@ public class AbstractRecRouteTestCase extends ScenarioHarness implements
 			this.shootist.checkState();
 			this.shootme.checkState();
 			this.proxy.checkState();
-			getTiProtocolObjects().destroy();
-			if (getRiProtocolObjects() != getTiProtocolObjects())
-				getRiProtocolObjects().destroy();
+			super.tearDown();
 			Thread.sleep(4000);
 			this.providerTable.clear();
 			

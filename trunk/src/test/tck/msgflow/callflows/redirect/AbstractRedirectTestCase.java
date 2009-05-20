@@ -70,9 +70,7 @@ public abstract class AbstractRedirectTestCase extends ScenarioHarness implement
 			Thread.sleep(4000);
 			this.shootist.checkState();
 			this.shootme.checkState();
-			getTiProtocolObjects().destroy();
-			if (getRiProtocolObjects() != getTiProtocolObjects())
-				getRiProtocolObjects().destroy();
+			super.tearDown();
 			Thread.sleep(1000);
 			this.providerTable.clear();
 			
