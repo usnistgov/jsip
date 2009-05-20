@@ -78,19 +78,19 @@ public class TlsTest extends ScenarioHarness implements SipListener {
 			this.transport = "tls";
 			
 			super.setUp();
-			shootist = new Shootist(riProtocolObjects);
+			shootist = new Shootist(getRiProtocolObjects());
 			SipProvider shootistProvider = shootist.createSipProvider();
 			providerTable.put(shootistProvider, shootist);
 
-			shootme = new Shootme(tiProtocolObjects);
+			shootme = new Shootme(getTiProtocolObjects());
 			SipProvider shootmeProvider = shootme.createSipProvider();
 			providerTable.put(shootmeProvider, shootme);
 			shootistProvider.addSipListener(this);
 			shootmeProvider.addSipListener(this);
 
-			riProtocolObjects.start();
-			if (tiProtocolObjects != riProtocolObjects)
-				tiProtocolObjects.start();
+			getRiProtocolObjects().start();
+			if (getTiProtocolObjects() != getRiProtocolObjects())
+				getTiProtocolObjects().start();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			fail("unexpected exception ");
@@ -106,9 +106,9 @@ public class TlsTest extends ScenarioHarness implements SipListener {
 			Thread.sleep(2000);
 			this.shootist.checkState();
 			this.shootme.checkState();
-			tiProtocolObjects.destroy();
-			if (tiProtocolObjects != riProtocolObjects)
-				riProtocolObjects.destroy();
+			getTiProtocolObjects().destroy();
+			if (getTiProtocolObjects() != getRiProtocolObjects())
+				getRiProtocolObjects().destroy();
 			Thread.sleep(1000);
 			this.providerTable.clear();
 			

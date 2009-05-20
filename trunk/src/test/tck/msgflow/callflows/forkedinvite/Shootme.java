@@ -113,7 +113,10 @@ public class Shootme   implements SipListener {
 			ServerTransaction serverTransaction) {
 		logger.info("shootme: got an ACK! ");
 		logger.info("Dialog = " + requestEvent.getDialog());
-		logger.info("Dialog State = " + requestEvent.getDialog().getState());
+		if ( requestEvent.getDialog() != null ) {
+		    /* Could be late arriving ACK */
+		    logger.info("Dialog State = " + requestEvent.getDialog().getState());
+		}
 		
 		this.ackSeen = true;
 	}

@@ -50,21 +50,21 @@ public class DialogTerminationOn50XTest extends ScenarioHarness implements SipLi
 			this.transport = "udp";
 
 			super.setUp();
-			shootist = new Shootist(riProtocolObjects);
+			shootist = new Shootist(getRiProtocolObjects());
 			SipProvider shootistProvider = shootist.createSipProvider();
 			shootist.init();
 			providerTable.put(shootistProvider, shootist);
 
-			shootme = new Shootme(tiProtocolObjects);
+			shootme = new Shootme(getTiProtocolObjects());
 			SipProvider shootmeProvider = shootme.createSipProvider();
 			shootme.init();
 			providerTable.put(shootmeProvider, shootme);
 			shootistProvider.addSipListener(this);
 			shootmeProvider.addSipListener(this);
 
-			riProtocolObjects.start();
-			if (tiProtocolObjects != riProtocolObjects)
-				tiProtocolObjects.start();
+			getRiProtocolObjects().start();
+			if (getTiProtocolObjects() != getRiProtocolObjects())
+				getTiProtocolObjects().start();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			fail("unexpected exception ");
@@ -109,9 +109,9 @@ public class DialogTerminationOn50XTest extends ScenarioHarness implements SipLi
 			Thread.sleep(2000);
 			// this.shootist.checkState();
 			// this.shootme.checkState();
-			tiProtocolObjects.destroy();
-			if (tiProtocolObjects != riProtocolObjects)
-				riProtocolObjects.destroy();
+			getTiProtocolObjects().destroy();
+			if (getTiProtocolObjects() != getRiProtocolObjects())
+				getRiProtocolObjects().destroy();
 			Thread.sleep(1000);
 			this.providerTable.clear();
 			if (definetly)
