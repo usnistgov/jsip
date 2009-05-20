@@ -68,9 +68,7 @@ public abstract class AbstractPrackTestCase extends ScenarioHarness implements
 			Thread.sleep(2000);
 			this.shootist.checkState();
 			this.shootme.checkState();
-			getTiProtocolObjects().destroy();
-			if (getRiProtocolObjects() != getTiProtocolObjects())
-				getRiProtocolObjects().destroy();
+			super.tearDown();
 			Thread.sleep(1000);
 			this.providerTable.clear();
 			
