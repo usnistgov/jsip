@@ -75,26 +75,26 @@ public class AbstractForkedInviteTestCase extends ScenarioHarness implements
 
 		try {
 			super.setUp(false);
-			shootist = new Shootist(5060, 5070, tiProtocolObjects);
+			shootist = new Shootist(5060, 5070, getTiProtocolObjects());
 			SipProvider shootistProvider = shootist.createSipProvider();
 			providerTable.put(shootistProvider, shootist);
 
-			this.shootme = new Shootme(5080, tiProtocolObjects);
+			this.shootme = new Shootme(5080, getTiProtocolObjects());
 			SipProvider shootmeProvider = shootme.createProvider();
 			providerTable.put(shootmeProvider, shootme);
 			shootistProvider.addSipListener(this);
 			shootmeProvider.addSipListener(this);
 
 		
-			this.proxy = new Proxy(5070, riProtocolObjects);
+			this.proxy = new Proxy(5070, getRiProtocolObjects());
 			SipProvider provider = proxy.createSipProvider();
 			provider.setAutomaticDialogSupportEnabled(false);
 			providerTable.put(provider, proxy);
 			provider.addSipListener(this);
 
-			tiProtocolObjects.start();
-			if (tiProtocolObjects != riProtocolObjects)
-				riProtocolObjects.start();
+			getTiProtocolObjects().start();
+			if (getTiProtocolObjects() != getRiProtocolObjects())
+				getRiProtocolObjects().start();
 		} catch (Exception ex) {
 			fail("unexpected exception ");
 		}
@@ -107,9 +107,9 @@ public class AbstractForkedInviteTestCase extends ScenarioHarness implements
 			this.shootist.checkState();
 			this.shootme.checkState();
 			this.proxy.checkState();
-			tiProtocolObjects.destroy();
-			if (riProtocolObjects != tiProtocolObjects)
-				riProtocolObjects.destroy();
+			getTiProtocolObjects().destroy();
+			if (getRiProtocolObjects() != getTiProtocolObjects())
+				getRiProtocolObjects().destroy();
 			Thread.sleep(2000);
 			this.providerTable.clear();
 			

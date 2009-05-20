@@ -5,6 +5,7 @@ package test.tck.msgflow.callflows.forkedinvite;
 
 import gov.nist.javax.sip.SipProviderImpl;
 
+import java.io.IOException;
 import java.util.EventObject;
 import java.util.Hashtable;
 import java.util.Timer;
@@ -50,10 +51,7 @@ public class AbstractForkedInviteTestCase extends ScenarioHarness implements
 	private Shootme shootme2;
 
     
-	static {
-		if ( !logger.isAttached(console))
-			logger.addAppender(console);
-	}
+	
 
 	// private Appender appender;
 
@@ -73,47 +71,48 @@ public class AbstractForkedInviteTestCase extends ScenarioHarness implements
 	public void setUp() {
 
 		try {
-			super.setUp(false);
-			shootist = new Shootist(5060, 5070, tiProtocolObjects);
+			super.setUp(false,1,3);
+			shootist = new Shootist(5060, 5070, super.getTiProtocolObjects(0));
 			SipProvider shootistProvider = shootist.createSipProvider();
 			providerTable.put(shootistProvider, shootist);
 
-			this.shootme = new Shootme(5080, tiProtocolObjects);
+			this.shootme = new Shootme(5080, getTiProtocolObjects(1));
 			SipProvider shootmeProvider = shootme.createProvider();
 			providerTable.put(shootmeProvider, shootme);
 			shootistProvider.addSipListener(this);
 			shootmeProvider.addSipListener(this);
+			
+			
 
-			this.shootme2 = new Shootme(5090, tiProtocolObjects);
+			this.shootme2 = new Shootme(5090, getTiProtocolObjects(2));
 			shootmeProvider = shootme2.createProvider();
 			providerTable.put(shootmeProvider, shootme2);
 			shootistProvider.addSipListener(this);
 			shootmeProvider.addSipListener(this);
 
-			Proxy proxy = new Proxy(5070, riProtocolObjects);
+			Proxy proxy = new Proxy(5070, getRiProtocolObjects(0));
 			SipProvider provider = proxy.createSipProvider();
 			provider.setAutomaticDialogSupportEnabled(false);
 			providerTable.put(provider, proxy);
 			provider.addSipListener(this);
 
-			tiProtocolObjects.start();
-			if (tiProtocolObjects != riProtocolObjects)
-				riProtocolObjects.start();
+			super.start();
 		} catch (Exception ex) {
+		    System.out.println(ex.toString());
 			fail("unexpected exception ");
 		}
 	}
 
 	
-	public void tearDown() {
+	
+
+    public void tearDown() {
 		try {
-			Thread.sleep(4000);
+			Thread.sleep(8000);
 			this.shootist.checkState();
 			this.shootme.checkState();
 			this.shootme2.checkState();
-			tiProtocolObjects.destroy();
-			if (riProtocolObjects != tiProtocolObjects)
-				riProtocolObjects.destroy();
+			super.tearDown();
 			Thread.sleep(2000);
 			this.providerTable.clear();
 			

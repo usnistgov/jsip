@@ -54,7 +54,7 @@ public class Proxy extends TestHarness implements SipListener {
 
 	private ProtocolObjects protocolObjects;
 
-	public void processRequest(RequestEvent requestEvent) {
+	public synchronized void processRequest(RequestEvent requestEvent) {
 		try {
 			Request request = requestEvent.getRequest();
 			SipProvider sipProvider = (SipProvider) requestEvent.getSource();
@@ -71,6 +71,7 @@ public class Proxy extends TestHarness implements SipListener {
                     st = sipProvider.getNewServerTransaction(request);
 
                     Request newRequest = (Request) request.clone();
+                    ((SipURI)newRequest.getRequestURI()).removePort();
                     SipURI sipUri = protocolObjects.addressFactory.createSipURI("UA1",
                             "127.0.0.1");
                     sipUri.setPort(5080);
@@ -80,7 +81,7 @@ public class Proxy extends TestHarness implements SipListener {
                     RouteHeader rheader = protocolObjects.headerFactory
                             .createRouteHeader(address);
 
-                    newRequest.addFirst(rheader);
+                    newRequest.setHeader(rheader);
                     ViaHeader viaHeader = protocolObjects.headerFactory.createViaHeader(host,
                             port, protocolObjects.transport, null);
                     newRequest.addFirst(viaHeader);
@@ -96,12 +97,13 @@ public class Proxy extends TestHarness implements SipListener {
                     this.clientTxTable.put(new Integer(5080), ct1);
 
                     newRequest = (Request) request.clone();
+                    ((SipURI)newRequest.getRequestURI()).removePort();
                     sipUri = protocolObjects.addressFactory.createSipURI("UA2", "127.0.0.1");
                     sipUri.setLrParam();
                     sipUri.setPort(5090);
                     address = protocolObjects.addressFactory.createAddress("client2", sipUri);
                     rheader = protocolObjects.headerFactory.createRouteHeader(address);
-                    newRequest.addFirst(rheader);
+                    newRequest.setHeader(rheader);
                     viaHeader = protocolObjects.headerFactory.createViaHeader(host, port,
                             protocolObjects.transport, null);
                     newRequest.addFirst(viaHeader);
@@ -128,7 +130,7 @@ public class Proxy extends TestHarness implements SipListener {
 			} else {
 				// Remove the topmost route header
 				// The route header will make sure it gets to the right place.
-				logger.info("proxy: Got a request " + request.getMethod());
+				logger.info("proxy: Got a request " + request);
 				Request newRequest = (Request) request.clone();
 				newRequest.removeFirst(RouteHeader.NAME);
 				sipProvider.sendRequest(newRequest);
@@ -178,11 +180,9 @@ public class Proxy extends TestHarness implements SipListener {
 					Response newResponse = (Response) response.clone();
 					newResponse.removeFirst(ViaHeader.NAME);
 					// Send the retransmission statelessly
-					try {
+					
 					this.inviteServerTxProvider.sendResponse(newResponse);
-					} catch (Exception ex) {
-					    
-					}
+					
 				}
 			} else {
 				// this is the OK for the cancel.
@@ -211,7 +211,7 @@ public class Proxy extends TestHarness implements SipListener {
 
 			sipProvider = protocolObjects.sipStack
 					.createSipProvider(listeningPoint);
-			sipProvider.setAutomaticDialogSupportEnabled(false);
+		//	sipProvider.setAutomaticDialogSupportEnabled(false);
 			return sipProvider;
 		} catch (Exception ex) {
 			logger.error(unexpectedException, ex);

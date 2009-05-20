@@ -81,7 +81,7 @@ import javax.sip.message.Response;
 /**
  * Implementation of the JAIN-SIP provider interface.
  * 
- * @version 1.2 $Revision: 1.60 $ $Date: 2009-05-11 18:52:36 $
+ * @version 1.2 $Revision: 1.61 $ $Date: 2009-05-20 06:10:01 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -729,7 +729,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 		if (via == null)
 			throw new SipException("No via header in response!");
 		SIPServerTransaction st = (SIPServerTransaction) sipStack.findTransaction((SIPMessage)response, true);
-		if ( st != null   && st.getState() != TransactionState.TERMINATED) {
+		if ( st != null   && st.getState() != TransactionState.TERMINATED && this.isAutomaticDialogSupportEnabled()) {
 			throw new SipException("Transaction exists -- cannot send response statelessly");
 		}
 		String transport = via.getTransport();

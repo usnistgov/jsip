@@ -62,20 +62,20 @@ public abstract class AbstractReferTestCase extends ScenarioHarness implements
 			super.setUp();
 
 			logger.info("ReferTest: setup()");
-			referee = new Referee(tiProtocolObjects);
+			referee = new Referee(getTiProtocolObjects());
 			SipProvider refereeProvider = referee.createProvider();
 			providerTable.put(refereeProvider, referee);
 
-			referrer = new Referrer(riProtocolObjects);
+			referrer = new Referrer(getRiProtocolObjects());
 			SipProvider referrerProvider = referrer.createProvider();
 			providerTable.put(referrerProvider, referrer);
 
 			refereeProvider.addSipListener(this);
 			referrerProvider.addSipListener(this);
 
-			if (tiProtocolObjects != riProtocolObjects)
-				tiProtocolObjects.start();
-			riProtocolObjects.start();
+			if (getTiProtocolObjects() != getRiProtocolObjects())
+				getTiProtocolObjects().start();
+			getRiProtocolObjects().start();
 		} catch (Exception ex) {
 			logger.error("unexpected excecption ", ex);
 			fail("unexpected exception");
@@ -85,9 +85,9 @@ public abstract class AbstractReferTestCase extends ScenarioHarness implements
 	public void tearDown() throws Exception {
 		try {
 			Thread.sleep(4000);
-			tiProtocolObjects.destroy();
-			if (riProtocolObjects != tiProtocolObjects)
-				riProtocolObjects.destroy();
+			getTiProtocolObjects().destroy();
+			if (getRiProtocolObjects() != getTiProtocolObjects())
+				getRiProtocolObjects().destroy();
 			Thread.sleep(1000);
 			this.providerTable.clear();
 			

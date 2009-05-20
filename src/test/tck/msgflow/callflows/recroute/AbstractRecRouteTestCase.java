@@ -51,25 +51,25 @@ public class AbstractRecRouteTestCase extends ScenarioHarness implements
 
 		try {
 			super.setUp(false);
-			shootist = new Shootist(5060, 5070, tiProtocolObjects);
+			shootist = new Shootist(5060, 5070, getTiProtocolObjects());
 			SipProvider shootistProvider = shootist.createSipProvider();
 			providerTable.put(shootistProvider, shootist);
 			shootistProvider.addSipListener(this);
 		
-			this.shootme = new Shootme(5080, tiProtocolObjects);
+			this.shootme = new Shootme(5080, getTiProtocolObjects());
 			SipProvider shootmeProvider = shootme.createProvider();
 			providerTable.put(shootmeProvider, shootme);
 			shootmeProvider.addSipListener(this);
 
-			this.proxy = new Proxy(5070, riProtocolObjects);
+			this.proxy = new Proxy(5070, getRiProtocolObjects());
 			SipProvider provider = proxy.createSipProvider();
 			//provider.setAutomaticDialogSupportEnabled(false);
 			providerTable.put(provider, proxy);
 			provider.addSipListener(this);
 
-			tiProtocolObjects.start();
-			if (tiProtocolObjects != riProtocolObjects)
-				riProtocolObjects.start();
+			getTiProtocolObjects().start();
+			if (getTiProtocolObjects() != getRiProtocolObjects())
+				getRiProtocolObjects().start();
 		} catch (Exception ex) {
 			logger.error("Unexpected exception",ex);
 			fail("unexpected exception ");
@@ -83,9 +83,9 @@ public class AbstractRecRouteTestCase extends ScenarioHarness implements
 			this.shootist.checkState();
 			this.shootme.checkState();
 			this.proxy.checkState();
-			tiProtocolObjects.destroy();
-			if (riProtocolObjects != tiProtocolObjects)
-				riProtocolObjects.destroy();
+			getTiProtocolObjects().destroy();
+			if (getRiProtocolObjects() != getTiProtocolObjects())
+				getRiProtocolObjects().destroy();
 			Thread.sleep(4000);
 			this.providerTable.clear();
 			
