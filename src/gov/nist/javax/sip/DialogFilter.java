@@ -79,7 +79,7 @@ import javax.sip.message.Response;
  * interface). This is part of the glue that ties together the NIST-SIP stack and event model with
  * the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.26 $ $Date: 2009-05-19 20:08:03 $
+ * @version 1.2 $Revision: 1.27 $ $Date: 2009-05-20 00:42:35 $
  * 
  * @author M. Ranganathan
  */
@@ -208,11 +208,9 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
          * UAS core SHOULD generate a 482 (Loop Detected) response and pass it to the server
          * transaction. This support is only enabled when the stack has been instructed to
          * function with Automatic Dialog Support. Otherwise the application is in charge of
-         * sending the response. TODO -- spec documentation explaining this behavior.
+         * sending the response. TODO -- JAVADOC documentation explaining this behavior.
          */
-        if ((sipStack.isAutomaticDialogSupportEnabled() || sipProvider
-                .isAutomaticDialogSupportEnabled())
-                && sipRequest.getToTag() == null) {
+        if (sipProvider.isAutomaticDialogSupportEnabled() && sipRequest.getToTag() == null) {
             SIPServerTransaction sipServerTransaction = sipStack
                     .findMergedTransaction(sipRequest);
             if (sipServerTransaction != null
