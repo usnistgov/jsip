@@ -68,73 +68,62 @@ public class Proxy extends TestHarness implements SipListener {
 
 				ServerTransaction st = null;
 				if (requestEvent.getServerTransaction() == null) {
-					st = sipProvider.getNewServerTransaction(request);
+                    st = sipProvider.getNewServerTransaction(request);
 
-				}
-				Request newRequest = (Request) request.clone();
-				SipURI sipUri = protocolObjects.addressFactory.createSipURI(
-						"UA1", "127.0.0.1");
-				sipUri.setPort(5080);
-				sipUri.setLrParam();
-				Address address = protocolObjects.addressFactory.createAddress(
-						"client1", sipUri);
-				RouteHeader rheader = protocolObjects.headerFactory
-						.createRouteHeader(address);
+                    Request newRequest = (Request) request.clone();
+                    SipURI sipUri = protocolObjects.addressFactory.createSipURI("UA1",
+                            "127.0.0.1");
+                    sipUri.setPort(5080);
+                    sipUri.setLrParam();
+                    Address address = protocolObjects.addressFactory.createAddress("client1",
+                            sipUri);
+                    RouteHeader rheader = protocolObjects.headerFactory
+                            .createRouteHeader(address);
 
-				newRequest.addFirst(rheader);
-				ViaHeader viaHeader = protocolObjects.headerFactory
-						.createViaHeader(host, port, protocolObjects.transport,
-								null);
-				newRequest.addFirst(viaHeader);
-				ClientTransaction ct1 = sipProvider
-						.getNewClientTransaction(newRequest);
-				sipUri = protocolObjects.addressFactory.createSipURI("proxy",
-						"127.0.0.1");
-				address = protocolObjects.addressFactory.createAddress("proxy",
-						sipUri);
-				sipUri.setPort(5070);
-				sipUri.setLrParam();
-				RecordRouteHeader recordRoute = protocolObjects.headerFactory
-						.createRecordRouteHeader(address);
-				newRequest.addHeader(recordRoute);
-				ct1.setApplicationData(st);
-				this.clientTxTable.put(new Integer(5080), ct1);
+                    newRequest.addFirst(rheader);
+                    ViaHeader viaHeader = protocolObjects.headerFactory.createViaHeader(host,
+                            port, protocolObjects.transport, null);
+                    newRequest.addFirst(viaHeader);
+                    ClientTransaction ct1 = sipProvider.getNewClientTransaction(newRequest);
+                    sipUri = protocolObjects.addressFactory.createSipURI("proxy", "127.0.0.1");
+                    address = protocolObjects.addressFactory.createAddress("proxy", sipUri);
+                    sipUri.setPort(5070);
+                    sipUri.setLrParam();
+                    RecordRouteHeader recordRoute = protocolObjects.headerFactory
+                            .createRecordRouteHeader(address);
+                    newRequest.addHeader(recordRoute);
+                    ct1.setApplicationData(st);
+                    this.clientTxTable.put(new Integer(5080), ct1);
 
-				newRequest = (Request) request.clone();
-				sipUri = protocolObjects.addressFactory.createSipURI("UA2",
-						"127.0.0.1");
-				sipUri.setLrParam();
-				sipUri.setPort(5090);
-				address = protocolObjects.addressFactory.createAddress(
-						"client2", sipUri);
-				rheader = protocolObjects.headerFactory
-						.createRouteHeader(address);
-				newRequest.addFirst(rheader);
-				viaHeader = protocolObjects.headerFactory.createViaHeader(host,
-						port, protocolObjects.transport, null);
-				newRequest.addFirst(viaHeader);
-				sipUri = protocolObjects.addressFactory.createSipURI("proxy",
-						"127.0.0.1");
-				sipUri.setPort(5070);
-				sipUri.setLrParam();
-				sipUri.setTransportParam(protocolObjects.transport);
-				address = protocolObjects.addressFactory.createAddress("proxy",
-						sipUri);
+                    newRequest = (Request) request.clone();
+                    sipUri = protocolObjects.addressFactory.createSipURI("UA2", "127.0.0.1");
+                    sipUri.setLrParam();
+                    sipUri.setPort(5090);
+                    address = protocolObjects.addressFactory.createAddress("client2", sipUri);
+                    rheader = protocolObjects.headerFactory.createRouteHeader(address);
+                    newRequest.addFirst(rheader);
+                    viaHeader = protocolObjects.headerFactory.createViaHeader(host, port,
+                            protocolObjects.transport, null);
+                    newRequest.addFirst(viaHeader);
+                    sipUri = protocolObjects.addressFactory.createSipURI("proxy", "127.0.0.1");
+                    sipUri.setPort(5070);
+                    sipUri.setLrParam();
+                    sipUri.setTransportParam(protocolObjects.transport);
+                    address = protocolObjects.addressFactory.createAddress("proxy", sipUri);
 
-				recordRoute = protocolObjects.headerFactory
-						.createRecordRouteHeader(address);
+                    recordRoute = protocolObjects.headerFactory.createRecordRouteHeader(address);
 
-				newRequest.addHeader(recordRoute);
-				ClientTransaction ct2 = sipProvider
-						.getNewClientTransaction(newRequest);
-				ct2.setApplicationData(st);
-				this.clientTxTable.put(new Integer(5090), ct2);
+                    newRequest.addHeader(recordRoute);
+                    ClientTransaction ct2 = sipProvider.getNewClientTransaction(newRequest);
+                    ct2.setApplicationData(st);
+                    this.clientTxTable.put(new Integer(5090), ct2);
 
-				// Send the requests out to the two listening points of the
-				// client.
+                    // Send the requests out to the two listening points of the
+                    // client.
 
-				ct2.sendRequest();
-				ct1.sendRequest();
+                    ct2.sendRequest();
+                    ct1.sendRequest();
+                }
 
 			} else {
 				// Remove the topmost route header
