@@ -115,9 +115,7 @@ public class ReInviteTest extends ScenarioHarness implements SipListener {
 			Thread.sleep(2000);
 			this.shootist.checkState();
 			this.shootme.checkState();
-			getTiProtocolObjects().destroy();
-			if (getTiProtocolObjects() != getRiProtocolObjects())
-				getRiProtocolObjects().destroy();
+			super.tearDown();
 			Thread.sleep(1000);
 			this.providerTable.clear();
 			logTestCompleted();
