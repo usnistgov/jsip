@@ -60,7 +60,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.40 $ $Date: 2009-02-24 04:16:48 $
+ * @version 1.2 $Revision: 1.41 $ $Date: 2009-05-21 14:38:38 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -1145,9 +1145,10 @@ public final class SIPRequest extends SIPMessage implements javax.sip.message.Re
         String fromTag = this.getFromTag();
         String cseq = this.cSeqHeader.toString();
         String callId = this.callIdHeader.getCallId();
+        String requestUri = this.getRequestURI().toString();
 
         if (fromTag != null) {
-            return new StringBuffer().append(fromTag).append(":").append(cseq).append(":")
+            return new StringBuffer().append(requestUri).append(":").append(fromTag).append(":").append(cseq).append(":")
                     .append(callId).toString();
         } else
             return null;
