@@ -60,7 +60,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.41 $ $Date: 2009-05-21 14:38:38 $
+ * @version 1.2 $Revision: 1.42 $ $Date: 2009-05-21 16:05:07 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -1145,6 +1145,9 @@ public final class SIPRequest extends SIPMessage implements javax.sip.message.Re
         String fromTag = this.getFromTag();
         String cseq = this.cSeqHeader.toString();
         String callId = this.callIdHeader.getCallId();
+        /* NOTE : The RFC does NOT specify you need to include a Request URI 
+         * This is added here for the case of Back to Back User Agents.
+         */
         String requestUri = this.getRequestURI().toString();
 
         if (fromTag != null) {
