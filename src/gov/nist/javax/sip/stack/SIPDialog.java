@@ -63,7 +63,7 @@ import java.text.ParseException;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.103 $ $Date: 2009-05-11 18:52:39 $
+ * @version 1.2 $Revision: 1.104 $ $Date: 2009-05-26 01:56:19 $
  * 
  * @author M. Ranganathan
  * 
@@ -1132,7 +1132,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                     "setRemoteTag(): " + this + " remoteTag = " + this.hisTag + " new tag = "
                             + hisTag);
         }
-        if (this.hisTag != null && !hisTag.equals(this.hisTag)) {
+        if (this.hisTag != null && hisTag != null && !hisTag.equals(this.hisTag)) {
             if (this.getState() != DialogState.EARLY) {
                 sipStack.getLogWriter().logDebug(
                         "Dialog is already established -- ignoring remote tag re-assignment");
@@ -1157,7 +1157,11 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 }
             }
         } else {
-            this.hisTag = hisTag;
+            if ( hisTag != null ) {
+                this.hisTag = hisTag;
+            } else {
+                sipStack.logWriter.logWarning("setRemoteTag : called with null argument ");
+            }
         }
     }
 
@@ -2067,27 +2071,17 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * @param sipResponse -- the response to check.
      * 
      */
-    public boolean checkResponseTags(SIPResponse sipResponse) {
-        if (this.isServer()) {
-
-            if (sipResponse.getToTag() != null
-                    && this.getLocalTag() != null
-                    && !this.getLocalTag().equals(sipResponse.getToTag())
-                    || (sipResponse.getFromTag() != null && this.getRemoteTag() != null && !this
-                            .getRemoteTag().equals(sipResponse.getFromTag()))) {
-                if (sipStack.getLogWriter().isLoggingEnabled()) {
-                    sipStack.getLogWriter().logError(
-                            "sipResponse.getToTag() = " + sipResponse.getToTag());
-                    sipStack.getLogWriter().logError("this.localTag()  = " + this.getLocalTag());
-                    sipStack.getLogWriter().logError(
-                            "sipResponse.getFromTag() = " + sipResponse.getFromTag());
-                    sipStack.getLogWriter().logError("this.remoteTag = " + this.getRemoteTag());
-                }
-                return false;
-            } else
-                return true;
-        } else
-            return true;
+    public void setResponseTags(SIPResponse sipResponse) {
+        if ( this.getLocalTag() != null || this.getRemoteTag() != null ) {
+            return;
+        }
+        String responseFromTag = sipResponse.getFromTag();
+        if ( responseFromTag.equals(this.getLocalTag())) {
+            sipResponse.setToTag( this.getRemoteTag() );
+        } else if ( responseFromTag.equals(this.getRemoteTag())) {
+            sipResponse.setToTag(this.getLocalTag());
+        }
+       
     }
 
     /**
