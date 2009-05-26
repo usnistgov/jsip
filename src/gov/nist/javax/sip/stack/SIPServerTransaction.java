@@ -165,7 +165,7 @@ import javax.sip.message.Response;
  *                                      
  * </pre>
  * 
- * @version 1.2 $Revision: 1.103 $ $Date: 2009-05-11 18:52:39 $
+ * @version 1.2 $Revision: 1.104 $ $Date: 2009-05-26 01:56:18 $
  * @author M. Ranganathan
  * 
  */
@@ -1324,14 +1324,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                 }
             }
 
-            // If sending the response within an established dialog, then
-            // set up the tags appropriately. Should probably throw exception
-            // here if tags do not match instead of setting the tags??
-            // lets be nice and set the tag if the user forgot to do it.
-
-            if (dialog != null && dialog.getLocalTag() != null
-                    && sipResponse.getTo().getTag() == null && sipResponse.getStatusCode() != 100)
-                sipResponse.getTo().setTag(dialog.getLocalTag());
+          
 
             // Backward compatibility slippery slope....
             // Only set the from tag in the response when the
@@ -1339,20 +1332,20 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
             String fromTag = ((SIPRequest) this.getRequest()).getFrom().getTag();
             if (fromTag != null && sipResponse.getFromTag() != null
                     && !sipResponse.getFromTag().equals(fromTag)) {
-                throw new SipException("From tag of response does not match sipResponse from tag");
+                throw new SipException("From tag of request does not match response from tag");
             } else if (fromTag != null) {
                 sipResponse.getFrom().setTag(fromTag);
             } else {
                 if (sipStack.isLoggingEnabled())
                     sipStack.logWriter.logDebug("WARNING -- Null From tag in request!!");
             }
+            
+            
 
             // See if the dialog needs to be inserted into the dialog table
             // or if the state of the dialog needs to be changed.
             if (dialog != null && response.getStatusCode() != 100) {
-                if (!dialog.checkResponseTags(sipResponse))
-                    throw new SipException("Response tags dont match with Dialog tags");
-
+                dialog.setResponseTags(sipResponse);
                 DialogState oldState = dialog.getState();
                 dialog.setLastResponse(this, (SIPResponse) response);
                 if (oldState == null && dialog.getState() == DialogState.TERMINATED) {
