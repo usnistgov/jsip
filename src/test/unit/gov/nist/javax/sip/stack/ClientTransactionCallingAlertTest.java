@@ -1,7 +1,6 @@
 package test.unit.gov.nist.javax.sip.stack;
 
 import gov.nist.javax.sip.ClientTransactionExt;
-import gov.nist.javax.sip.TimeoutEventExt;
 
 import java.util.ArrayList;
 import java.util.Properties;
@@ -23,6 +22,7 @@ import javax.sip.SipFactory;
 import javax.sip.SipListener;
 import javax.sip.SipProvider;
 import javax.sip.SipStack;
+import javax.sip.Timeout;
 import javax.sip.Transaction;
 import javax.sip.TransactionState;
 import javax.sip.TransactionTerminatedEvent;
@@ -171,9 +171,10 @@ public class ClientTransactionCallingAlertTest extends TestCase {
         public void processTimeout(javax.sip.TimeoutEvent timeoutEvent) {
 
             logger.info("Transaction Time out");
-            if ( timeoutEvent instanceof TimeoutEventExt ) {
+            if ( timeoutEvent.getTimeout() == Timeout.RETRANSMIT ) {
                 this.timeoutSeen = true;
             }
+            
             assertEquals ("ClientTxState must be Calling ", timeoutEvent.getClientTransaction().getState(), TransactionState.CALLING);
         }
 

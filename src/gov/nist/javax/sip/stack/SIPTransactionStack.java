@@ -93,7 +93,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.106 $ $Date: 2009-04-16 23:16:10 $
+ * @version 1.2 $Revision: 1.107 $ $Date: 2009-05-28 18:22:32 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener {
 
@@ -2115,19 +2115,37 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
         String fromTag = replacesHeader.getFromTag();
         String toTag = replacesHeader.getToTag();
 
-        StringBuffer retval = new StringBuffer(cid);
+        StringBuffer dialogId = new StringBuffer(cid);
 
         // retval.append(COLON).append(to.getUserAtHostPort());
         if (toTag != null) {
-            retval.append(":");
-            retval.append(toTag);
+            dialogId.append(":");
+            dialogId.append(toTag);
         }
         // retval.append(COLON).append(from.getUserAtHostPort());
         if (fromTag != null) {
-            retval.append(":");
-            retval.append(fromTag);
+            dialogId.append(":");
+            dialogId.append(fromTag);
         }
-        return this.dialogTable.get(retval.toString().toLowerCase());
+        String did = dialogId.toString().toLowerCase();
+        getLogWriter().logDebug("Looking for dialog " + did);
+        /*
+         * Check if we can find this dialog in our dialog table.
+         */
+        Dialog replacesDialog =  this.dialogTable.get(did);
+        /*
+         * This could be a forked dialog. Search for it.
+         */
+        if ( replacesDialog == null ) {
+           for ( SIPClientTransaction ctx : this.clientTransactionTable.values()) {
+               if ( ctx.getDialog(did) != null ) {
+                   replacesDialog = ctx.getDialog(did);
+                   break;
+               }
+           }
+        }
+        
+        return replacesDialog;
     }
     
     /**
