@@ -28,7 +28,6 @@ package gov.nist.javax.sip.stack;
 import gov.nist.core.InternalErrorHandler;
 import gov.nist.core.NameValueList;
 import gov.nist.javax.sip.SIPConstants;
-import gov.nist.javax.sip.TimeoutEventExt;
 import gov.nist.javax.sip.Utils;
 import gov.nist.javax.sip.address.AddressImpl;
 import gov.nist.javax.sip.header.Contact;
@@ -176,7 +175,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.103 $ $Date: 2009-05-27 22:03:42 $
+ * @version 1.2 $Revision: 1.104 $ $Date: 2009-05-28 18:22:32 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -1007,8 +1006,8 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                             && this.getState() == TransactionState.CALLING) {
                         this.callingStateTimeoutCount--;
                         if (callingStateTimeoutCount == 0) {
-                            TimeoutEventExt timeoutEvent = new TimeoutEventExt(this
-                                    .getSipProvider(), this, Timeout.TRANSACTION, true);
+                            TimeoutEvent timeoutEvent = new TimeoutEvent(this
+                                    .getSipProvider(), this, Timeout.RETRANSMIT);
                             this.getSipProvider().handleEvent(timeoutEvent, this);
                             this.timeoutIfStillInCallingState = false;
                         }
