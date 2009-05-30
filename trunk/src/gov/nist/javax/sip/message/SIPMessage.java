@@ -116,7 +116,7 @@ import javax.sip.message.Request;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  *
- * @version 1.2 $Revision: 1.43 $ $Date: 2009-05-11 18:52:41 $
+ * @version 1.2 $Revision: 1.44 $ $Date: 2009-05-30 04:22:00 $
  * @since 1.1
  *
  * @author M. Ranganathan <br/>
@@ -420,7 +420,9 @@ public abstract class SIPMessage extends MessageObject implements
 	 *         exists all in one contiguous byte array).
 	 */
 	public byte[] encodeAsBytes( String transport ) {
-
+         if ( this instanceof SIPRequest && ((SIPRequest) this).isNullRequest() ) {
+               return "\r\n\r\n".getBytes();
+	    }
 		// JvB: added to fix case where application provides the wrong transport
 		// in the topmost Via header
 		ViaHeader topVia = (ViaHeader) this.getHeader( ViaHeader.NAME );

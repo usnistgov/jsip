@@ -46,7 +46,7 @@ import gov.nist.javax.sip.stack.*;
 /**
  * Implementation of the ListeningPoint interface
  *
- * @version 1.2 $Revision: 1.11 $ $Date: 2008-04-16 03:12:22 $
+ * @version 1.2 $Revision: 1.12 $ $Date: 2009-05-30 04:21:59 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -249,6 +249,7 @@ public class ListeningPointImpl implements javax.sip.ListeningPoint, gov.nist.ja
 		targetHostPort.setPort(port);
 		MessageChannel messageChannel = this.messageProcessor.createMessageChannel(targetHostPort);
 		SIPRequest siprequest = new SIPRequest();
+		siprequest.setNullRequest();
 		messageChannel.sendMessage(siprequest);
 		
 	}
