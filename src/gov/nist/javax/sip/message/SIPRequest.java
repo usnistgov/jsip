@@ -60,7 +60,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.42 $ $Date: 2009-05-21 16:05:07 $
+ * @version 1.2 $Revision: 1.43 $ $Date: 2009-05-30 04:22:00 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -82,6 +82,9 @@ public final class SIPRequest extends SIPMessage implements javax.sip.message.Re
     private RequestLine requestLine;
 
     private transient Object messageChannel;
+    
+    private boolean nullRequest;
+    
 
     private Object inviteTransaction; // The original invite request for a
     // given cancel request
@@ -421,8 +424,11 @@ public final class SIPRequest extends SIPMessage implements javax.sip.message.Re
         if (requestLine != null) {
             this.setRequestLineDefaults();
             retval = requestLine.encode() + super.encode();
-        } else
+        } else if (this.isNullRequest()) {
+            retval = "\r\n\r\n";
+        } else {       
             retval = super.encode();
+        }
         return retval;
     }
 
@@ -434,6 +440,8 @@ public final class SIPRequest extends SIPMessage implements javax.sip.message.Re
         if (requestLine != null) {
             this.setRequestLineDefaults();
             retval = requestLine.encode() + super.encodeSIPHeaders();
+        } else if (this.isNullRequest()) {
+            retval = "\r\n\r\n";
         } else
             retval = super.encodeSIPHeaders();
         return retval;
@@ -597,8 +605,10 @@ public final class SIPRequest extends SIPMessage implements javax.sip.message.Re
      */
 
     public byte[] encodeAsBytes(String transport) {
-        if (this.requestLine == null) {
-            // Encoding a null message. Return 0 byte array.
+        if (this.isNullRequest()) {
+            // Encoding a null message for keepalive.
+            return "\r\n\r\n".getBytes();
+        } else if ( this.requestLine == null ) {
             return new byte[0];
         }
 
@@ -1178,7 +1188,15 @@ public final class SIPRequest extends SIPMessage implements javax.sip.message.Re
      * @return true if null request.
      */
     public boolean isNullRequest() {
-        return this.requestLine == null;
+        return  this.nullRequest;
+    }
+    
+    /**
+     * Set a flag to indiate this is a special message ( encoded with CRLFCRLF ).
+     * 
+     */
+    public void setNullRequest() {
+        this.nullRequest = true;
     }
 
 }

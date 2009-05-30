@@ -79,7 +79,7 @@ import javax.sip.message.Response;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.56 $ $Date: 2009-05-10 00:29:54 $
+ * @version 1.2 $Revision: 1.57 $ $Date: 2009-05-30 04:22:00 $
  */
 public class UDPMessageChannel extends MessageChannel implements
 		ParseExceptionListener, Runnable, RawMessageChannel {
@@ -646,9 +646,8 @@ public class UDPMessageChannel extends MessageChannel implements
 			throw new IOException("Receiver port not set ");
 		} else {
 			if (sipStack.isLoggingEnabled()) {
-				this.sipStack.logWriter.logDebug(getClass().getName()
-						+ ":sendMessage " + peerAddress.getHostAddress() + "/"
-						+ peerPort + "\n" + new String(msg));
+				this.sipStack.logWriter.logDebug("sendMessage " + peerAddress.getHostAddress() + "/"
+						+ peerPort + "\n" + "messageSize =  "  + msg.length + " message = " + new String(msg)) ;
 				this.sipStack.logWriter.logDebug("*******************\n");
 			}
 
@@ -711,9 +710,9 @@ public class UDPMessageChannel extends MessageChannel implements
 			throw new IOException("Receiver port not set ");
 		} else {
 			if (sipStack.isLoggingEnabled()) {
-				this.sipStack.logWriter.logDebug(getClass().getName()
-						+ ":sendMessage " + peerAddress.getHostAddress() + "/"
-						+ peerPort + "\n" + new String(msg));
+				this.sipStack.logWriter.logDebug( ":sendMessage " + peerAddress.getHostAddress() + "/"
+						+ peerPort + "\n" + " messageSize = " + msg.length
+						+ "\n message = "+ new String(msg));
 				this.sipStack.logWriter.logDebug("*******************\n");
 			}
 		}
