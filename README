@@ -48,6 +48,12 @@ ant runtck
 
 Look in test-reports  to see the results of your run.
 
+Extensions
+----------
+
+IMS Headers, headers in gov.nist.javax.sip.extension and all the classes that are
+suffixed with Ext in their name can be used without concern as they will be included
+in the next generation of the API.
 
 ----------------------------------------------------------------------------
 Running the examples
