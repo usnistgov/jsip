@@ -19,12 +19,19 @@ package gov.nist.javax.sip.clientauthutils;
 
 import gov.nist.core.InternalErrorHandler;
 import gov.nist.javax.sip.SipStackImpl;
+import gov.nist.javax.sip.address.AddressImpl;
+import gov.nist.javax.sip.address.SipUri;
+import gov.nist.javax.sip.header.Route;
+import gov.nist.javax.sip.header.RouteList;
 import gov.nist.javax.sip.message.SIPRequest;
+import gov.nist.javax.sip.stack.SIPClientTransaction;
 import gov.nist.javax.sip.stack.SIPTransactionStack;
 
 import java.text.*;
 import java.util.*;
 import javax.sip.*;
+import javax.sip.address.Address;
+import javax.sip.address.Hop;
 import javax.sip.address.SipURI;
 import javax.sip.header.*;
 import javax.sip.message.*;
@@ -140,10 +147,20 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
                 throw new SipException("Invalid CSeq -- could not increment : "
                         + cSeq.getSeqNumber());
             }
-
+            
+        
+            /* Resolve this to the next hop based on the previous lookup. If we are not using
+             * lose routing (RFC2543) then just attach hop as a maddr param.
+             */
+            if ( challengedRequest.getRouteHeaders() == null ) { 
+                Hop hop   = ((SIPClientTransaction) challengedTransaction).getNextHop();
+                SipURI sipUri = (SipURI) reoriginatedRequest.getRequestURI();
+                sipUri.setMAddrParam(hop.getHost());
+                if ( hop.getPort() != -1 ) sipUri.setPort(hop.getPort());
+            }
             ClientTransaction retryTran = transactionCreator
-                    .getNewClientTransaction(reoriginatedRequest);
-
+            .getNewClientTransaction(reoriginatedRequest);
+            
             WWWAuthenticateHeader authHeader = null;
             SipURI requestUri = (SipURI) challengedTransaction.getRequest().getRequestURI();
             while (authHeaders.hasNext()) {
