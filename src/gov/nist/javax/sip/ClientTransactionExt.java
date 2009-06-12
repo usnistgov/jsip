@@ -1,6 +1,7 @@
 package gov.nist.javax.sip;
 
 import javax.sip.Timeout;
+import javax.sip.address.Hop;
 
 public interface ClientTransactionExt {
 
@@ -27,5 +28,13 @@ public interface ClientTransactionExt {
      * @since 2.0
      */
     public void alertIfStillInCallingStateBy(int count);
+    
+    /**
+     * Get the next hop that was computed by the routing layer.
+     * when it sent out the request. This allows you to route requests
+     * to the SAME destination if required ( for example if you get
+     * an authentication challenge ).
+     */
+    public Hop getNextHop();
 
 }
