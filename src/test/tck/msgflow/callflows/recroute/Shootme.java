@@ -180,7 +180,8 @@ public class Shootme   implements SipListener {
 			new Timer().schedule(new MyTimerTask(requestEvent,st/*,toTag*/), 1000);
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			System.exit(0);
+			logger.error("Unexpected exception",ex);
+			TestCase.fail("Unexpected exception occured");
 		}
 	}
 
@@ -211,7 +212,9 @@ public class Shootme   implements SipListener {
 				logger.info("semdInviteOK: inviteTid = " + inviteTid + " state = " + inviteTid.getState());
 			}
 		} catch (Exception ex) {
+		    logger.error("unexpected exception",ex);
 			ex.printStackTrace();
+			TestCase.fail("Unexpected exception occured");
 		} 
 	}
 
@@ -224,19 +227,25 @@ public class Shootme   implements SipListener {
 		try {
 			logger.info("shootme:  got a bye sending OK.");
 			logger.info("shootme:  dialog = " + requestEvent.getDialog());
-			logger.info("shootme:  dialogState = " + requestEvent.getDialog().getState());
-			Response response = protocolObjects.messageFactory.createResponse(200, request);
-			if ( serverTransactionId != null) {
-				serverTransactionId.sendResponse(response);
-			} 
-			logger.info("shootme:  dialogState = " + requestEvent.getDialog().getState());
-			
-			this.byeSeen = true;
+			if ( requestEvent.getDialog() != null ) {
+			    logger.info("shootme:  dialogState = " + requestEvent.getDialog().getState());
+			    Response response = protocolObjects.messageFactory.createResponse(200, request);
+			    if ( serverTransactionId != null) {
+			        serverTransactionId.sendResponse(response);
+			    } 
+			    logger.info("shootme:  dialogState = " + requestEvent.getDialog().getState());
+
+			    this.byeSeen = true;
+			} else {
+			    logger.info("Dropping stray request " + request );
+			}
 			
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			System.exit(0);
+			logger.error("Unexpected exception",ex);
+			TestCase.fail("Unexpected exception");
+			
 
 		}
 	}
@@ -250,24 +259,29 @@ public class Shootme   implements SipListener {
 		try {
 			logger.info("shootme:  got a INFO sending OK.");
 			logger.info("shootme:  dialog = " + requestEvent.getDialog());
-			logger.info("shootme:  dialogState = " + requestEvent.getDialog().getState());
-			Response response = protocolObjects.messageFactory.createResponse(200, request);
-			if ( serverTransactionId != null) {
-				serverTransactionId.sendResponse(response);
-			} 
-			logger.info("shootme:  dialogState = " + requestEvent.getDialog().getState());
-			
-			this.infoSeen = true;
-			Dialog dialog = requestEvent.getDialog();
-			Request infoRequest = dialog.createRequest(Request.INFO);
-			SipProvider provider = (SipProvider) requestEvent.getSource();
-			ClientTransaction ct = provider.getNewClientTransaction(infoRequest);
-			
-			dialog.sendRequest(ct);
+			if ( requestEvent.getDialog() != null ) {
+			    logger.info("shootme:  dialogState = " + requestEvent.getDialog().getState());
+			    Response response = protocolObjects.messageFactory.createResponse(200, request);
+			    if ( serverTransactionId != null) {
+			        serverTransactionId.sendResponse(response);
+			    } 
+			    logger.info("shootme:  dialogState = " + requestEvent.getDialog().getState());
+
+			    this.infoSeen = true;
+			    Dialog dialog = requestEvent.getDialog();
+			    Request infoRequest = dialog.createRequest(Request.INFO);
+			    SipProvider provider = (SipProvider) requestEvent.getSource();
+			    ClientTransaction ct = provider.getNewClientTransaction(infoRequest);
+
+			    dialog.sendRequest(ct);
+			} else {
+			    logger.info("Saw out of dialog message -- discarding " + request);
+			}
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			System.exit(0);
+			logger.error("Unexpected exception",ex);
+			TestCase.fail("Unexpected exception occured");
 
 		}
 	}
@@ -295,9 +309,8 @@ public class Shootme   implements SipListener {
 			} 
 
 		} catch (Exception ex) {
-			ex.printStackTrace();
-			System.exit(0);
-
+		    logger.error("Unexpected exception",ex);
+            TestCase.fail("Unexpected exception occured");
 		}
 	}
 
