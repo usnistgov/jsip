@@ -197,7 +197,7 @@ public class Shootme extends TestHarness implements SipListener {
 				// Defer sending the OK to simulate the phone ringing.
 				this.inviteRequest = request;
 
-				new Timer().schedule(new MyTimerTask(this), 1000);
+				new Timer().schedule(new MyTimerTask(this), 500);
 
 			}
 		} catch (Exception ex) {
