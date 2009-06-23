@@ -251,6 +251,18 @@ import org.apache.log4j.Logger;
  * result in protocol errors. Setting the flag to true ( default ) enables you to avoid common
  * protocol errors.
  * 
+ * <li><b>gov.nist.javax.sip.LOOSE_DIALOG_VALIDATION = [true|false] </b> <br/> Default
+ * is <it>false</it>. This flag turns off some dialog validation features when the stack is used
+ * in dialog-stateful mode. This means the validation is delegated to the application and the stack
+ * will not attempt to block requests from reaching the application. In particular, the validation
+ * of CSeq and the ACK retransmission recognition are delegated to the application. The stack will
+ * no longer return an error when a CSeq number is out of order and it will no longer ignore incoming
+ * ACK requests for the same dialog. Your application will be responsible for these cases.
+ * <br/>This mode is needed for cases where multiple applications are using the same SipStack
+ * but are unaware of each other, like Sip Servlets containers. In particular PROXY-B2BUA application
+ * composion would cause an error when subsequent requests re-enter the container to reach the B2BUA
+ * application. On the other hand if the ACK has to re-enter it would be rejected as a retransmission.
+ * 
  * <li><b>gov.nist.javax.sip.DELIVER_UNSOLICITED_NOTIFY = [true|false] </b> <br/> Default
  * is <it>false</it>. This flag is added to allow Sip Listeners to receive all NOTIFY requests
  * including those that are not part of a valid dialog.
@@ -276,7 +288,7 @@ import org.apache.log4j.Logger;
  * in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.86 $ $Date: 2009-04-11 14:28:09 $
+ * @version 1.2 $Revision: 1.87 $ $Date: 2009-06-23 11:02:17 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -469,6 +481,9 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
         // Set the auto dialog support flag.
         super.isAutomaticDialogSupportEnabled = configurationProperties.getProperty(
                 "javax.sip.AUTOMATIC_DIALOG_SUPPORT", "on").equalsIgnoreCase("on");
+        
+        super.looseDialogValidation = configurationProperties.getProperty(
+                "gov.nist.javax.sip.LOOSE_DIALOG_VALIDATION", "false").equalsIgnoreCase("true");
 
         if (configurationProperties.getProperty("gov.nist.javax.sip.MAX_LISTENER_RESPONSE_TIME") != null) {
             super.maxListenerResponseTime = Integer.parseInt(configurationProperties

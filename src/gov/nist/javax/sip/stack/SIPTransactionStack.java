@@ -93,7 +93,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.107 $ $Date: 2009-05-28 18:22:32 $
+ * @version 1.2 $Revision: 1.108 $ $Date: 2009-06-23 11:02:16 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener {
 
@@ -341,6 +341,9 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     protected boolean remoteTagReassignmentAllowed = true;
 
     public boolean logStackTraceOnMessageSend = true;
+    
+    // Set to true to delegate some dialog validation to the application.
+    protected boolean looseDialogValidation = false;
 
     // / Timer to regularly ping the thread auditor (on behalf of the timer
     // thread)
@@ -2186,5 +2189,23 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     public Timer getTimer() {
         return timer;
     }
+    
+    /**
+     * Delegate some dialog validation to the application.
+     * 
+     * @return
+     */
+	public boolean isLooseDialogValidation() {
+		return looseDialogValidation;
+	}
+
+	/**
+	 * Set to true if you want to delegate some dialog validation to the application.
+	 * 
+	 * @param looseDialogValidation
+	 */
+	public void setLooseDialogValidation(boolean looseDialogValidation) {
+		this.looseDialogValidation = looseDialogValidation;
+	}
 
 }
