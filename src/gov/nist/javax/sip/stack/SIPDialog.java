@@ -63,7 +63,7 @@ import java.text.ParseException;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.104 $ $Date: 2009-05-26 01:56:19 $
+ * @version 1.2 $Revision: 1.105 $ $Date: 2009-06-23 11:02:16 $
  * 
  * @author M. Ranganathan
  * 
@@ -801,6 +801,11 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         if (dialogRequest.getMethod().equals(Request.ACK))
             throw new RuntimeException("Illegal method");
 
+        // For loose validation this function is delegated to the application
+        if(sipStack.isLooseDialogValidation()) {
+        	return true;
+        }
+        
         // JvB: Acceptable iff remoteCSeq < cseq. remoteCSeq==-1
         // when not defined yet, so that works too
         return remoteSequenceNumber < dialogRequest.getCSeq().getSeqNumber();
