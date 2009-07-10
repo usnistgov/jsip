@@ -63,7 +63,7 @@ import java.text.ParseException;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.105 $ $Date: 2009-06-23 11:02:16 $
+ * @version 1.2 $Revision: 1.106 $ $Date: 2009-07-10 03:54:29 $
  * 
  * @author M. Ranganathan
  * 
@@ -178,6 +178,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     // Stores the last OK for the INVITE
     // Used in createAck.
     private boolean lastInviteOkReceived;
+
+    private DialogDeleteTask dialogDeleteTask;
     
     // //////////////////////////////////////////////////////
     // Inner classes
@@ -277,11 +279,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     class DialogDeleteTask extends SIPStackTimerTask {
 
         protected void runTask() {
-            if (isAckSeen())
-                this.cancel();
-            else
-                delete();
-
+            delete();
         }
 
     }
@@ -688,6 +686,10 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 sipStack.logWriter.logException(ex);
             throw new SipException("Could not create message channel", ex);
         }
+        if (this.dialogDeleteTask != null ) {
+            this.dialogDeleteTask.cancel();
+            this.dialogDeleteTask = null;
+        }
         this.ackSeen = true;
 
     }
@@ -732,6 +734,10 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                     this.timerTask = null;
                 }
                 this.ackSeen = true;
+                if ( this.dialogDeleteTask != null ) {
+                    this.dialogDeleteTask.cancel();
+                    this.dialogDeleteTask = null;
+                }
                 this.lastAck = sipRequest;
                 if (sipStack.isLoggingEnabled()) {
                     sipStack.logWriter.logDebug("ackReceived for "
@@ -821,8 +827,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         if (sipStack.getTimer() == null)
             this.setState(TERMINATED_STATE);
         else {
+            this.dialogDeleteTask = new DialogDeleteTask();
             // Delete the transaction after the max ack timeout.
-            sipStack.getTimer().schedule(new DialogDeleteTask(),
+            sipStack.getTimer().schedule(this.dialogDeleteTask,
                     SIPTransaction.TIMER_H * SIPTransactionStack.BASE_TIMER_INTERVAL);
         }
 
