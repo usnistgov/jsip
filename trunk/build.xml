@@ -362,6 +362,7 @@ c:/jakarta-ant/bin/ant all
 								<include name="test/tck/**/*Test.java" />
 								<!-- TCP Tests excluded - its enough to test one transport for TCK compliance  -->
 								<exclude name="**/Tcp*Test.java" />
+								<exclude name="**/TCP*Test.java" />
 								<!-- Tls Tests excluded for tck compliance  -->
 								<exclude name="test/tck/msgflow/callflows/tls/*Test.java" />
 							</fileset>
