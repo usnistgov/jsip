@@ -60,7 +60,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.52 $ $Date: 2009-02-23 20:57:45 $
+ * @version 1.2 $Revision: 1.53 $ $Date: 2009-07-12 03:50:01 $
  */
 public class TCPMessageChannel extends MessageChannel implements SIPMessageListener, Runnable,
         RawMessageChannel {
@@ -481,7 +481,8 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
                 if (!this.isCached) {
                     ((TCPMessageProcessor) this.messageProcessor).cacheMessageChannel(this);
                     this.isCached = true;
-                    String key = IOHandler.makeKey(mySock.getInetAddress(), this.peerPort);
+                    int remotePort = ((java.net.InetSocketAddress) mySock.getRemoteSocketAddress()).getPort();
+                    String key = IOHandler.makeKey(mySock.getInetAddress(), remotePort);
                     sipStack.ioHandler.putSocket(key, mySock);
                 }
             }
