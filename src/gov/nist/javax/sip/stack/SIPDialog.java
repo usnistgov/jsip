@@ -63,7 +63,7 @@ import java.text.ParseException;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.106 $ $Date: 2009-07-10 03:54:29 $
+ * @version 1.2 $Revision: 1.107 $ $Date: 2009-07-15 15:02:59 $
  * 
  * @author M. Ranganathan
  * 
@@ -225,7 +225,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
             if (nRetransmissions > 64 * SIPTransaction.T1) {
                 dialog.setState(SIPDialog.TERMINATED_STATE);
-                if (transaction != null)
+//                if (transaction != null)
+                if (transaction != null && transaction.getState() != javax.sip.TransactionState.TERMINATED)
                     transaction.raiseErrorEvent(SIPTransactionErrorEvent.TIMEOUT_ERROR);
             } else if ((!dialog.ackSeen) && (transaction != null)) {
                 // Retransmit to 200 until ack receivedialog.
