@@ -1,15 +1,11 @@
 package test.unit.gov.nist.javax.sip.stack;
 
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.util.Properties;
 import java.util.Random;
-import java.util.TooManyListenersException;
 
 import javax.sip.ClientTransaction;
-import javax.sip.Dialog;
 import javax.sip.DialogTerminatedEvent;
 import javax.sip.IOExceptionEvent;
 import javax.sip.InvalidArgumentException;
@@ -29,12 +25,12 @@ import javax.sip.address.AddressFactory;
 import javax.sip.address.SipURI;
 import javax.sip.header.Header;
 import javax.sip.header.HeaderFactory;
-import javax.sip.header.RouteHeader;
 import javax.sip.header.ToHeader;
 import javax.sip.header.ViaHeader;
 import javax.sip.message.MessageFactory;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
+
 import junit.framework.TestCase;
 
 public class NoAutoDialogTest extends TestCase {
@@ -87,13 +83,15 @@ public class NoAutoDialogTest extends TestCase {
         return new Integer(Math.abs(new Random().nextInt())).toString();
     }
 
-    protected void setUp() throws Exception {
+    @Override
+	protected void setUp() throws Exception {
 
         this.client = new Client();
         this.server = new Server();
     }
 
-    protected void tearDown() throws Exception {
+    @Override
+	protected void tearDown() throws Exception {
        
        this.client.stop();
        this.server.stop();
@@ -160,8 +158,8 @@ public class NoAutoDialogTest extends TestCase {
                 defaultProperties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
                 defaultProperties.setProperty("javax.sip.STACK_NAME", "server");
                 defaultProperties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "DEBUG");
-                defaultProperties.setProperty("gov.nist.javax.sip.DEBUG_LOG", "server_debug.txt");
-                defaultProperties.setProperty("gov.nist.javax.sip.SERVER_LOG", "server_log.txt");
+                defaultProperties.setProperty("gov.nist.javax.sip.DEBUG_LOG", "server_debug_NoAutoDialogTest.txt");
+                defaultProperties.setProperty("gov.nist.javax.sip.SERVER_LOG", "server_log_NoAutoDialogTest.txt");
                 defaultProperties.setProperty("gov.nist.javax.sip.READ_TIMEOUT", "1000");
                 defaultProperties.setProperty("gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS",
                         "false");
@@ -197,7 +195,7 @@ public class NoAutoDialogTest extends TestCase {
         }
 
         public void processRequest(RequestEvent requestEvent) {
-
+        	System.err.println("PROCESS REQUEST ON SERVER");
             Request request = requestEvent.getRequest();
             SipProvider provider = (SipProvider) requestEvent.getSource();
             if (request.getMethod().equals(Request.INVITE)) {
@@ -278,8 +276,8 @@ public class NoAutoDialogTest extends TestCase {
                 defaultProperties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
                 defaultProperties.setProperty("javax.sip.STACK_NAME", "client");
                 defaultProperties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "DEBUG");
-                defaultProperties.setProperty("gov.nist.javax.sip.DEBUG_LOG", "client_debug.txt");
-                defaultProperties.setProperty("gov.nist.javax.sip.SERVER_LOG", "client_log.txt");
+                defaultProperties.setProperty("gov.nist.javax.sip.DEBUG_LOG", "client_debug_NoAutoDialogTest.txt");
+                defaultProperties.setProperty("gov.nist.javax.sip.SERVER_LOG", "client_log_NoAutoDialogTest.txt");
                 defaultProperties.setProperty("gov.nist.javax.sip.READ_TIMEOUT", "1000");
                 defaultProperties.setProperty("gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS",
                         "false");
