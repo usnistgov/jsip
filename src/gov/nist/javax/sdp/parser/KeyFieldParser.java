@@ -1,13 +1,13 @@
 /*
-* Conditions Of Use 
-* 
+* Conditions Of Use
+*
 * This software was developed by employees of the National Institute of
 * Standards and Technology (NIST), an agency of the Federal Government.
 * Pursuant to title 15 Untied States Code Section 105, works of NIST
 * employees are not subject to copyright protection in the United States
 * and are considered to be in the public domain.  As a result, a formal
 * license is not needed to use the software.
-* 
+*
 * This software is provided by NIST as a service and is expressly
 * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
 * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
@@ -16,12 +16,12 @@
 * regarding the use of the software or the results thereof, including but
 * not limited to the correctness, accuracy, reliability or usefulness of
 * the software.
-* 
+*
 * Permission to use this software is contingent upon your acceptance
 * of the terms of this agreement
-*  
+*
 * .
-* 
+*
 */
 package gov.nist.javax.sdp.parser;
 
@@ -33,77 +33,85 @@ import java.text.*;
  * Parser for key field. Ack: bug fix contributed by espen@java.net
  *
  * @author  deruelle
- * @version JAIN-SDP-PUBLIC-RELEASE $Revision: 1.6 $ $Date: 2007-10-22 03:38:26 $
+ * @version JAIN-SDP-PUBLIC-RELEASE $Revision: 1.7 $ $Date: 2009-07-17 18:57:16 $
  */
 public class KeyFieldParser extends SDPParser {
 
-	/** Creates new KeyFieldParser */
-	public KeyFieldParser(String keyField) {
-		this.lexer = new Lexer("charLexer", keyField);
-	}
+    /** Creates new KeyFieldParser */
+    public KeyFieldParser(String keyField) {
+        this.lexer = new Lexer("charLexer", keyField);
+    }
 
-	public KeyField keyField() throws ParseException {
-		try {
-			this.lexer.match('k');
-			this.lexer.SPorHT();
-			this.lexer.match('=');
-			this.lexer.SPorHT();
+    public KeyField keyField() throws ParseException {
+        try {
+            this.lexer.match('k');
+            this.lexer.SPorHT();
+            this.lexer.match('=');
+            this.lexer.SPorHT();
 
-			KeyField keyField = new KeyField();
-			//Espen: Stealing the approach from AttributeFieldParser from from here...
-			NameValue nameValue = new NameValue();
+            KeyField keyField = new KeyField();
+            //Espen: Stealing the approach from AttributeFieldParser from from here...
+            NameValue nameValue = new NameValue();
 
-			int ptr = this.lexer.markInputPosition();
-			try {
-				String name = lexer.getNextToken(':');
-				this.lexer.consume(1);
-				String value = lexer.getRest();
-				nameValue = new NameValue(name.trim(), value.trim());
-			} catch (ParseException ex) {
-				this.lexer.rewindInputPosition(ptr);
-				String rest = this.lexer.getRest();
-				if (rest == null)
-					throw new ParseException(
-						this.lexer.getBuffer(),
-						this.lexer.getPtr());
-				nameValue = new NameValue(rest.trim(), null);
-			}
-			keyField.setType(nameValue.getName());
-			keyField.setKeyData((String) nameValue.getValueAsObject());
-			this.lexer.SPorHT();
+            int ptr = this.lexer.markInputPosition();
+            try {
+                String name = lexer.getNextToken(':');
+                this.lexer.consume(1);
+                String value = lexer.getRest();
+                nameValue = new NameValue(name.trim(), value.trim());
+            } catch (ParseException ex) {
+                this.lexer.rewindInputPosition(ptr);
+                String rest = this.lexer.getRest();
+                if (rest == null)
+                    throw new ParseException(
+                        this.lexer.getBuffer(),
+                        this.lexer.getPtr());
+                nameValue = new NameValue(rest.trim(), null);
+            }
+            keyField.setType(nameValue.getName());
+            keyField.setKeyData((String) nameValue.getValueAsObject());
+            this.lexer.SPorHT();
 
-			return keyField;
-		} catch (Exception e) {
-			throw new ParseException(lexer.getBuffer(), lexer.getPtr());
-		}
-	}
+            return keyField;
+        } catch (Exception e) {
+            throw new ParseException(lexer.getBuffer(), lexer.getPtr());
+        }
+    }
 
-	public SDPField parse() throws ParseException {
-		return this.keyField();
-	}
+    public SDPField parse() throws ParseException {
+        return this.keyField();
+    }
 
-	/**
-	    public static void main(String[] args) throws ParseException {
-		    String key[] = {
-				"k=clear:1234124\n",
-	                        "k=base64:12\n",
-	                        "k=http://www.cs.ucl.ac.uk/staff/M.Handley/sdp.03.ps\n",
-	                        "k=prompt\n"
-	                };
-	
-		    for (int i = 0; i < key.length; i++) {
-		       KeyFieldParser keyFieldParser=new KeyFieldParser(
-	                key[i] );
-			KeyField keyField=keyFieldParser.keyField();
-			System.out.println("toParse: " +key[i]);
-			System.out.println("encoded: " +keyField.encode());
-		    }
-	
-		}
-	**/
+    /**
+        public static void main(String[] args) throws ParseException {
+            String key[] = {
+                "k=clear:1234124\n",
+                            "k=base64:12\n",
+                            "k=http://www.cs.ucl.ac.uk/staff/M.Handley/sdp.03.ps\n",
+                            "k=prompt\n"
+                    };
+
+            for (int i = 0; i < key.length; i++) {
+               KeyFieldParser keyFieldParser=new KeyFieldParser(
+                    key[i] );
+            KeyField keyField=keyFieldParser.keyField();
+            System.out.println("toParse: " +key[i]);
+            System.out.println("encoded: " +keyField.encode());
+            }
+
+        }
+    **/
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2007/10/22 03:38:26  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  mranga
+ * Reviewed by:   mranga
+ *
+ * Java 5 porting.
+ *
  * Revision 1.5  2006/07/13 09:02:42  mranga
  * Issue number:
  * Obtained from:

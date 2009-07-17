@@ -1,13 +1,13 @@
 /*
-* Conditions Of Use 
-* 
+* Conditions Of Use
+*
 * This software was developed by employees of the National Institute of
 * Standards and Technology (NIST), an agency of the Federal Government.
 * Pursuant to title 15 Untied States Code Section 105, works of NIST
 * employees are not subject to copyright protection in the United States
 * and are considered to be in the public domain.  As a result, a formal
 * license is not needed to use the software.
-* 
+*
 * This software is provided by NIST as a service and is expressly
 * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
 * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
@@ -16,12 +16,12 @@
 * regarding the use of the software or the results thereof, including but
 * not limited to the correctness, accuracy, reliability or usefulness of
 * the software.
-* 
+*
 * Permission to use this software is contingent upon your acceptance
 * of the terms of this agreement
-*  
+*
 * .
-* 
+*
 */
 package gov.nist.javax.sdp.parser;
 import java.util.*;
@@ -29,95 +29,102 @@ import gov.nist.core.*;
 import gov.nist.javax.sdp.fields.*;
 import gov.nist.javax.sdp.*;
 import java.text.ParseException;
-// Acknowledgement: this includes a bug fix submitted by 
+// Acknowledgement: this includes a bug fix submitted by
 // Rafael Barriuso rbarriuso@dit.upm.es
 
 /** Parser for SDP Announce messages.
  */
 public class SDPAnnounceParser extends ParserCore {
 
-	protected Lexer lexer;
-	protected Vector sdpMessage;
+    protected Lexer lexer;
+    protected Vector sdpMessage;
 
-	/** Creates new SDPAnnounceParser 
-	 * @param sdpMessage Vector of messages to parse.
-	 */
-	public SDPAnnounceParser(Vector sdpMessage) {
-		this.sdpMessage = sdpMessage;
-	}
+    /** Creates new SDPAnnounceParser
+     * @param sdpMessage Vector of messages to parse.
+     */
+    public SDPAnnounceParser(Vector sdpMessage) {
+        this.sdpMessage = sdpMessage;
+    }
 
-	/** Create a new SDPAnnounceParser.
-	*@param message  string containing the sdp announce message.
-	*
-	*/
-	public SDPAnnounceParser(String message) {
-		int start = 0;
-		String line = null;
-		// Return trivially if there is no sdp announce message
-		// to be parsed. Bruno Konik noticed this bug.
-		if (message == null) return;
-		sdpMessage = new Vector();
-		// Strip off leading and trailing junk.
-		String sdpAnnounce = message.trim() + "\r\n";
-		// Bug fix by Andreas Bystrom.
-		while (start < sdpAnnounce.length()) {
-			// Major re-write by Ricardo Borba.
-			int lfPos = sdpAnnounce.indexOf("\n", start);
-			int crPos = sdpAnnounce.indexOf("\r", start);
+    /** Create a new SDPAnnounceParser.
+    *@param message  string containing the sdp announce message.
+    *
+    */
+    public SDPAnnounceParser(String message) {
+        int start = 0;
+        String line = null;
+        // Return trivially if there is no sdp announce message
+        // to be parsed. Bruno Konik noticed this bug.
+        if (message == null) return;
+        sdpMessage = new Vector();
+        // Strip off leading and trailing junk.
+        String sdpAnnounce = message.trim() + "\r\n";
+        // Bug fix by Andreas Bystrom.
+        while (start < sdpAnnounce.length()) {
+            // Major re-write by Ricardo Borba.
+            int lfPos = sdpAnnounce.indexOf("\n", start);
+            int crPos = sdpAnnounce.indexOf("\r", start);
 
-			if (lfPos > 0 && crPos < 0) {
-				// there are only "\n" separators
-				line = sdpAnnounce.substring(start, lfPos);
-				start = lfPos + 1;
-			} else if (lfPos < 0 && crPos > 0) {
-				//bug fix: there are only "\r" separators
-				line = sdpAnnounce.substring(start, crPos);
-				start = crPos + 1;
-			} else if (lfPos > 0 && crPos > 0) {
-				// there are "\r\n" or "\n\r" (if exists) separators
-				if (lfPos > crPos) {
-					// assume "\r\n" for now
-					line = sdpAnnounce.substring(start, crPos);
-					// Check if the "\r" and "\n" are close together
-					if (lfPos == crPos + 1) {
-						start = lfPos + 1; // "\r\n"
-					} else {
-						start = crPos + 1; // "\r" followed by the next record and a "\n" further away
-					}
-				} else {
-					// assume "\n\r" for now
-					line = sdpAnnounce.substring(start, lfPos);
-					// Check if the "\n" and "\r" are close together
-					if (crPos == lfPos + 1) {
-						start = crPos + 1; // "\n\r"
-					} else {
-						start = lfPos + 1; // "\n" followed by the next record and a "\r" further away
-					}
-				}
-			} else if (lfPos < 0 && crPos < 0) { // end
-				break;
-			}
-			sdpMessage.addElement(line);
-		}
-	}
+            if (lfPos > 0 && crPos < 0) {
+                // there are only "\n" separators
+                line = sdpAnnounce.substring(start, lfPos);
+                start = lfPos + 1;
+            } else if (lfPos < 0 && crPos > 0) {
+                //bug fix: there are only "\r" separators
+                line = sdpAnnounce.substring(start, crPos);
+                start = crPos + 1;
+            } else if (lfPos > 0 && crPos > 0) {
+                // there are "\r\n" or "\n\r" (if exists) separators
+                if (lfPos > crPos) {
+                    // assume "\r\n" for now
+                    line = sdpAnnounce.substring(start, crPos);
+                    // Check if the "\r" and "\n" are close together
+                    if (lfPos == crPos + 1) {
+                        start = lfPos + 1; // "\r\n"
+                    } else {
+                        start = crPos + 1; // "\r" followed by the next record and a "\n" further away
+                    }
+                } else {
+                    // assume "\n\r" for now
+                    line = sdpAnnounce.substring(start, lfPos);
+                    // Check if the "\n" and "\r" are close together
+                    if (crPos == lfPos + 1) {
+                        start = crPos + 1; // "\n\r"
+                    } else {
+                        start = lfPos + 1; // "\n" followed by the next record and a "\r" further away
+                    }
+                }
+            } else if (lfPos < 0 && crPos < 0) { // end
+                break;
+            }
+            sdpMessage.addElement(line);
+        }
+    }
 
-	public SessionDescriptionImpl parse() throws ParseException {
-		SessionDescriptionImpl retval = new SessionDescriptionImpl();
-		for (int i = 0; i < sdpMessage.size(); i++) {
-			String field = (String) sdpMessage.elementAt(i);
-			SDPParser sdpParser = ParserFactory.createParser(field);
-			SDPField sdpField = sdpParser.parse();
-			retval.addField(sdpField);
-		}
-		return retval;
+    public SessionDescriptionImpl parse() throws ParseException {
+        SessionDescriptionImpl retval = new SessionDescriptionImpl();
+        for (int i = 0; i < sdpMessage.size(); i++) {
+            String field = (String) sdpMessage.elementAt(i);
+            SDPParser sdpParser = ParserFactory.createParser(field);
+            SDPField sdpField = sdpParser.parse();
+            retval.addField(sdpField);
+        }
+        return retval;
 
-	}
+    }
 
-	
+
 
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2008/01/18 02:18:24  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:   mranga
+ * Moved out some test code.
+ *
  * Revision 1.8  2006/11/22 04:08:57  rborba
  * Fixed a null pointer exception when an SDP is received with an empty session name ("s=").
  *

@@ -14,7 +14,7 @@ import java.security.*;
  * @author  olivier deruelle
  */
 public class DigestClientAuthenticationMethod implements ClientAuthenticationMethod{
-    
+
     private String realm;
     private String userName;
     private String uri;
@@ -23,21 +23,21 @@ public class DigestClientAuthenticationMethod implements ClientAuthenticationMet
     private String method;
     private String cnonce;
     private MessageDigest messageDigest;
-    
-    
+
+
      /**
      * to hex converter
      */
     private static final char[] toHex = { '0', '1', '2', '3', '4', '5', '6',
     '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-    
+
     /**
      * convert an array of bytes to an hexadecimal string
      * @return a string
      * @param b bytes array to convert to a hexadecimal
      * string
      */
-    
+
     public static String toHexString(byte b[]) {
         int pos = 0;
         char[] c = new char[b.length*2];
@@ -47,7 +47,7 @@ public class DigestClientAuthenticationMethod implements ClientAuthenticationMet
         }
         return new String(c);
     }
-    
+
     public void initialize(String realm, String userName, String uri, String nonce,
     String password, String method, String cnonce,String algorithm) throws Exception {
         if (realm==null) throw new Exception("The realm parameter is null");
@@ -68,58 +68,58 @@ public class DigestClientAuthenticationMethod implements ClientAuthenticationMet
             messageDigest = MessageDigest.getInstance(algorithm);
         }
         catch ( NoSuchAlgorithmException ex ) {
-	    System.out.println("DEBUG, DigestClientAuthenticationMethod, initialize(): "+
+        System.out.println("DEBUG, DigestClientAuthenticationMethod, initialize(): "+
             "ERROR: Digest algorithm does not exist.");
             throw new Exception("ERROR: Digest algorithm does not exist.");
-	}
     }
-    
-     /** 
+    }
+
+     /**
       * generate the response
       */
     public String generateResponse() {
-	 if (userName == null) {
+     if (userName == null) {
             System.out.println("DEBUG, DigestClientAuthenticationMethod, generateResponse(): "+
             "ERROR: no userName parameter");
             return null;
          }
-	 if (realm == null) {
+     if (realm == null) {
             System.out.println("DEBUG, DigestClientAuthenticationMethod, generateResponse(): "+
             "ERROR: no realm parameter");
-            return  null; 
+            return  null;
          }
-               
+
          System.out.println("DEBUG, DigestClientAuthenticationMethod, generateResponse(): "+
          "Trying to generate a response for the user: "+userName+" , with "+
          "the realm: "+ realm);
-                
-	 if (password == null)  {
+
+     if (password == null)  {
             System.out.println("DEBUG, DigestClientAuthenticationMethod, generateResponse(): "+
             "ERROR: no password parameter");
-		return null;
+        return null;
          }
          if (method == null)  {
             System.out.println("DEBUG, DigestClientAuthenticationMethod, generateResponse(): "+
             "ERROR: no method parameter");
-		return null;
-         }     
+        return null;
+         }
          if (uri== null)  {
             System.out.println("DEBUG, DigestClientAuthenticationMethod, generateResponse(): "+
             "ERROR: no uri parameter");
-		return null;
-         }     
+        return null;
+         }
          if (nonce== null)  {
             System.out.println("DEBUG, DigestClientAuthenticationMethod, generateResponse(): "+
             "ERROR: no nonce parameter");
-		return null;
-         }    
+        return null;
+         }
          if (messageDigest== null)  {
             System.out.println("DEBUG, DigestClientAuthenticationMethod, generateResponse(): "+
             "ERROR: the algorithm is not set");
-		return null;
-         }   
-	
-         
+        return null;
+         }
+
+
          /*******    GENERATE RESPONSE      ************************************/
          System.out.println("DEBUG, DigestClientAuthenticationMethod, generateResponse(), userName:"+userName+"!");
          System.out.println("DEBUG, DigestClientAuthenticationMethod, generateResponse(), realm:"+realm+"!");
@@ -145,12 +145,12 @@ public class DigestClientAuthenticationMethod implements ClientAuthenticationMet
          KD += ":" + HA2;
          mdbytes = messageDigest.digest(KD.getBytes());
          String response = toHexString(mdbytes);
-        
+
          System.out.println("DEBUG, DigestClientAlgorithm, generateResponse():"+
          " response generated: "+response);
-         
+
          return response;
     }
-    
-    
+
+
 }

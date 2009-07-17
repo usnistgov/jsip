@@ -3,8 +3,8 @@
 * This is useful for situations when say you want to match with certain
 * response classes or request URIs or whatever.
 * You construct a match template that can consist of portions that are exact
-* matches and portions that use regular expressions for matching. 
-* This example uses plain strings for patters but you can do wildcard 
+* matches and portions that use regular expressions for matching.
+* This example uses plain strings for patters but you can do wildcard
 * matching.
 */
 
@@ -38,37 +38,37 @@ static final String message1 = "INVITE sip:joe@company.com SIP/2.0\r\n"+
 
 
 
-	public static void main( String[] args  ) throws Exception {
-		SipFactory sipFactory = null;
-		sipFactory = SipFactory.getInstance();
-		sipFactory.setPathName("gov.nist");
-		MessageFactory messageFactory = sipFactory.createMessageFactory();
-		Message message = messageFactory.createRequest(message1);
+    public static void main( String[] args  ) throws Exception {
+        SipFactory sipFactory = null;
+        sipFactory = SipFactory.getInstance();
+        sipFactory.setPathName("gov.nist");
+        MessageFactory messageFactory = sipFactory.createMessageFactory();
+        Message message = messageFactory.createRequest(message1);
 
-		// Create an empty request.
-		Message matchTemplate = messageFactory.createRequest(null);
+        // Create an empty request.
+        Message matchTemplate = messageFactory.createRequest(null);
 
-		HeaderFactory headerFactory = sipFactory.createHeaderFactory();
+        HeaderFactory headerFactory = sipFactory.createHeaderFactory();
 
-		CSeqHeader cseqHeader = 
-			headerFactory.createCSeqHeader(1L,Request.INVITE);
-		gov.nist.javax.sip.header.CSeq cseq = (CSeq)cseqHeader;
-	
-		
-		matchTemplate.setHeader(cseqHeader);
-		
-		boolean retval = 
-		((SIPRequest) message).match((SIPRequest)matchTemplate);
-		
-		System.out.println("match returned = " + retval);
+        CSeqHeader cseqHeader =
+            headerFactory.createCSeqHeader(1L,Request.INVITE);
+        gov.nist.javax.sip.header.CSeq cseq = (CSeq)cseqHeader;
 
-		cseq.setMethod(Request.SUBSCRIBE);
 
-		retval = ((SIPRequest) message).match((SIPRequest)matchTemplate);
-		System.out.println("match returned = " + retval);
+        matchTemplate.setHeader(cseqHeader);
 
-	
-	}
+        boolean retval =
+        ((SIPRequest) message).match((SIPRequest)matchTemplate);
+
+        System.out.println("match returned = " + retval);
+
+        cseq.setMethod(Request.SUBSCRIBE);
+
+        retval = ((SIPRequest) message).match((SIPRequest)matchTemplate);
+        System.out.println("match returned = " + retval);
+
+
+    }
 
 
 }

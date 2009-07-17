@@ -41,271 +41,271 @@ import javax.sdp.*;
 *
 */
 public class OriginField extends SDPField implements javax.sdp.Origin {
-	protected String username;
-	//protected long sessId;
-	//protected long sessVersion;
-	protected String nettype; // IN
-	protected String addrtype; // IPV4/6
-	protected Host address;
-	private String sessIdString;
-	private String sessVersionString;
+    protected String username;
+    //protected long sessId;
+    //protected long sessVersion;
+    protected String nettype; // IN
+    protected String addrtype; // IPV4/6
+    protected Host address;
+    private String sessIdString;
+    private String sessVersionString;
 
-	public OriginField() {
-		super(ORIGIN_FIELD);
-	}
+    public OriginField() {
+        super(ORIGIN_FIELD);
+    }
 
-	/** Returns the name of the session originator.
-	* @throws SdpParseException
-	* @return the string username.
-	*/
-	public String getUsername() throws SdpParseException {
-		return username;
-	}
-	/**
-	* Get the sessionID member.
-	*/
-	public long getSessId() {
+    /** Returns the name of the session originator.
+    * @throws SdpParseException
+    * @return the string username.
+    */
+    public String getUsername() throws SdpParseException {
+        return username;
+    }
+    /**
+    * Get the sessionID member.
+    */
+    public long getSessId() {
 
-		return new Long(this.sessIdString).longValue();
-	}
+        return new Long(this.sessIdString).longValue();
+    }
 
-	public String getSessIdAsString() {
-		return this.sessIdString;
-	}
-	/**
-	* Get the sessionVersion member.
-	*/
-	public long getSessVersion() {
+    public String getSessIdAsString() {
+        return this.sessIdString;
+    }
+    /**
+    * Get the sessionVersion member.
+    */
+    public long getSessVersion() {
 
-		return new Long(sessVersionString).longValue();
-	}
+        return new Long(sessVersionString).longValue();
+    }
 
-	public String getSessVersionAsString() {
-		return this.sessVersionString;
-	}
-	/**
-	* Get the netType member.
-	*/
-	public String getNettype() {
-		return nettype;
-	}
-	/**
-	* Get the address type member.
-	*/
-	public String getAddrtype() {
-		return addrtype;
-	}
-	/**
-	* Get the host member.
-	*/
-	public Host getHost() {
-		return address;
-	}
-	/**
-	* Set the sessId member
-	*/
-	public void setSessId(long s) {
-		this.sessIdString = new Long(s).toString();
-	}
+    public String getSessVersionAsString() {
+        return this.sessVersionString;
+    }
+    /**
+    * Get the netType member.
+    */
+    public String getNettype() {
+        return nettype;
+    }
+    /**
+    * Get the address type member.
+    */
+    public String getAddrtype() {
+        return addrtype;
+    }
+    /**
+    * Get the host member.
+    */
+    public Host getHost() {
+        return address;
+    }
+    /**
+    * Set the sessId member
+    */
+    public void setSessId(long s) {
+        this.sessIdString = new Long(s).toString();
+    }
 
-	/**
-	 * This is a work around for some implementations that do not set a long
-	 * session id.
-	 */
-	public void setSessionId(String sessId) {
-		this.sessIdString = sessId;
-	}
-	/**
-	* Set the sessVersion member
-	*/
-	public void setSessVersion(long s) {
-		sessVersionString = new Long(s).toString();
-	}
+    /**
+     * This is a work around for some implementations that do not set a long
+     * session id.
+     */
+    public void setSessionId(String sessId) {
+        this.sessIdString = sessId;
+    }
+    /**
+    * Set the sessVersion member
+    */
+    public void setSessVersion(long s) {
+        sessVersionString = new Long(s).toString();
+    }
 
-	/**
-	 * Set the session version as a string.
-	 */
-	public void setSessVersion(String s) {
-		this.sessVersionString = s;
-	}
-	/**
-	* Set the nettype member
-	*/
-	public void setNettype(String n) {
-		nettype = n;
-	}
-	/**
-	* Set the addrtype member
-	*/
-	public void setAddrtype(String a) {
-		addrtype = a;
-	}
-	/**
-	* Set the address member
-	*/
-	public void setAddress(Host a) {
-		address = a;
-	}
+    /**
+     * Set the session version as a string.
+     */
+    public void setSessVersion(String s) {
+        this.sessVersionString = s;
+    }
+    /**
+    * Set the nettype member
+    */
+    public void setNettype(String n) {
+        nettype = n;
+    }
+    /**
+    * Set the addrtype member
+    */
+    public void setAddrtype(String a) {
+        addrtype = a;
+    }
+    /**
+    * Set the address member
+    */
+    public void setAddress(Host a) {
+        address = a;
+    }
 
-	/** Sets the name of the session originator.
-	 * @param user the string username.
-	 * @throws SdpException if the parameter is null
-	 */
-	public void setUsername(String user) throws SdpException {
-		if (user == null)
-			throw new SdpException("The user parameter is null");
-		else {
-			this.username = user;
-		}
-	}
+    /** Sets the name of the session originator.
+     * @param user the string username.
+     * @throws SdpException if the parameter is null
+     */
+    public void setUsername(String user) throws SdpException {
+        if (user == null)
+            throw new SdpException("The user parameter is null");
+        else {
+            this.username = user;
+        }
+    }
 
-	/** Returns the unique identity of the session.
-	 * @throws SdpParseException
-	 * @return the session id.
-	 */
-	public long getSessionId() throws SdpParseException {
-		return getSessId();
-	}
+    /** Returns the unique identity of the session.
+     * @throws SdpParseException
+     * @return the session id.
+     */
+    public long getSessionId() throws SdpParseException {
+        return getSessId();
+    }
 
-	/** Sets the unique identity of the session.
-	 * @param id  the session id.
-	 * @throws SdpException if the id is <0
-	 */
-	public void setSessionId(long id) throws SdpException {
-		if (id < 0)
-			throw new SdpException("The is parameter is <0");
-		else
-			setSessId(id);
-	}
+    /** Sets the unique identity of the session.
+     * @param id  the session id.
+     * @throws SdpException if the id is <0
+     */
+    public void setSessionId(long id) throws SdpException {
+        if (id < 0)
+            throw new SdpException("The is parameter is <0");
+        else
+            setSessId(id);
+    }
 
-	/** Returns the unique version of the session.
-	 * @throws SdpException
-	 * @return the session version.
-	 */
-	public long getSessionVersion() throws SdpParseException {
-		return getSessVersion();
-	}
+    /** Returns the unique version of the session.
+     * @throws SdpException
+     * @return the session version.
+     */
+    public long getSessionVersion() throws SdpParseException {
+        return getSessVersion();
+    }
 
-	/** Sets the unique version of the session.
-	 * @param version  the session version.
-	 * @throws SdpException if the version is <0
-	 */
-	public void setSessionVersion(long version) throws SdpException {
-		if (version < 0)
-			throw new SdpException("The version parameter is <0");
-		else
-			setSessVersion(version);
-	}
+    /** Sets the unique version of the session.
+     * @param version  the session version.
+     * @throws SdpException if the version is <0
+     */
+    public void setSessionVersion(long version) throws SdpException {
+        if (version < 0)
+            throw new SdpException("The version parameter is <0");
+        else
+            setSessVersion(version);
+    }
 
-	/** Returns the type of the network for this Connection.
-	 * @throws SdpParseException
-	 * @return the string network type.
-	 */
-	public String getAddress() throws SdpParseException {
-		Host addr = getHost();
-		if (addr == null)
-			return null;
-		else
-			return addr.getAddress();
-	}
+    /** Returns the type of the network for this Connection.
+     * @throws SdpParseException
+     * @return the string network type.
+     */
+    public String getAddress() throws SdpParseException {
+        Host addr = getHost();
+        if (addr == null)
+            return null;
+        else
+            return addr.getAddress();
+    }
 
-	/** Returns the type of the address for this Connection.
-	 * @throws SdpParseException
-	 * @return the string address type.
-	 */
-	public String getAddressType() throws SdpParseException {
-		return getAddrtype();
-	}
+    /** Returns the type of the address for this Connection.
+     * @throws SdpParseException
+     * @return the string address type.
+     */
+    public String getAddressType() throws SdpParseException {
+        return getAddrtype();
+    }
 
-	/** Returns the type of the network for this Connection
-	* @throws SdpParseException
-	* @return the string network type.
-	*/
-	public String getNetworkType() throws SdpParseException {
-		return getNettype();
-	}
+    /** Returns the type of the network for this Connection
+    * @throws SdpParseException
+    * @return the string network type.
+    */
+    public String getNetworkType() throws SdpParseException {
+        return getNettype();
+    }
 
-	/** Sets the type of the address for this Connection.
-	 * @param addr  string address type.
-	 * @throws SdpException if the addr is null
-	 */
-	public void setAddress(String addr) throws SdpException {
-		if (addr == null)
-			throw new SdpException("The addr parameter is null");
-		else {
-			Host host = getHost();
-			if (host == null)
-				host = new Host();
-			host.setAddress(addr);
-			setAddress(host);
-		}
-	}
+    /** Sets the type of the address for this Connection.
+     * @param addr  string address type.
+     * @throws SdpException if the addr is null
+     */
+    public void setAddress(String addr) throws SdpException {
+        if (addr == null)
+            throw new SdpException("The addr parameter is null");
+        else {
+            Host host = getHost();
+            if (host == null)
+                host = new Host();
+            host.setAddress(addr);
+            setAddress(host);
+        }
+    }
 
-	/** Returns the type of the network for this Connection.
-	 * @param type the string network type.
-	 * @throws SdpException if the type is null
-	 */
-	public void setAddressType(String type) throws SdpException {
-		if (type == null)
-			throw new SdpException("The type parameter is <0");
-		else
-			setAddrtype(type);
-	}
+    /** Returns the type of the network for this Connection.
+     * @param type the string network type.
+     * @throws SdpException if the type is null
+     */
+    public void setAddressType(String type) throws SdpException {
+        if (type == null)
+            throw new SdpException("The type parameter is <0");
+        else
+            setAddrtype(type);
+    }
 
-	/** Sets the type of the network for this Connection.
-	 * @param type  the string network type.
-	 * @throws SdpException if the type is null
-	 */
-	public void setNetworkType(String type) throws SdpException {
-		if (type == null)
-			throw new SdpException("The type parameter is <0");
-		else
-			setNettype(type);
-	}
+    /** Sets the type of the network for this Connection.
+     * @param type  the string network type.
+     * @throws SdpException if the type is null
+     */
+    public void setNetworkType(String type) throws SdpException {
+        if (type == null)
+            throw new SdpException("The type parameter is <0");
+        else
+            setNettype(type);
+    }
 
-	/**
-	 *  Get the string encoded version of this object
-	 * @since v1.0
-	 */
-	public String encode() {
-		String addressStr = null;
+    /**
+     *  Get the string encoded version of this object
+     * @since v1.0
+     */
+    public String encode() {
+        String addressStr = null;
 
-		if (address != null){
-			addressStr = address.encode();
+        if (address != null){
+            addressStr = address.encode();
 
-			//it appears that SDP does not allow square brackets
-			//in the connection address (see RFC4566) so make sure
-			//we lose them
-			if(Host.isIPv6Reference(addressStr))
-			{
-				//the isIPv6Reference == true means we have a minimum
-				//of 2 symbols, so substring bravely
-				addressStr = addressStr
-					.substring(1, addressStr.length()-1);
-			}
-		}
+            //it appears that SDP does not allow square brackets
+            //in the connection address (see RFC4566) so make sure
+            //we lose them
+            if(Host.isIPv6Reference(addressStr))
+            {
+                //the isIPv6Reference == true means we have a minimum
+                //of 2 symbols, so substring bravely
+                addressStr = addressStr
+                    .substring(1, addressStr.length()-1);
+            }
+        }
 
-		return ORIGIN_FIELD
-			+ username
-			+ Separators.SP
-			+ sessIdString
-			+ Separators.SP
-			+ sessVersionString
-			+ Separators.SP
-			+ nettype
-			+ Separators.SP
-			+ addrtype
-			+ Separators.SP
-			+ addressStr
-			+ Separators.NEWLINE;
-	}
+        return ORIGIN_FIELD
+            + username
+            + Separators.SP
+            + sessIdString
+            + Separators.SP
+            + sessVersionString
+            + Separators.SP
+            + nettype
+            + Separators.SP
+            + addrtype
+            + Separators.SP
+            + addressStr
+            + Separators.NEWLINE;
+    }
 
-	public Object clone() {
-		OriginField retval = (OriginField) super.clone();
-		if (this.address != null)
-			retval.address = (Host) this.address.clone();
-		return retval;
-	}
+    public Object clone() {
+        OriginField retval = (OriginField) super.clone();
+        if (this.address != null)
+            retval.address = (Host) this.address.clone();
+        return retval;
+    }
 
 }
 

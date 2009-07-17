@@ -9,7 +9,7 @@ import java.util.*;
 /**
  * This class is a UAC template. Shootist is the guy that shoots and shootme is
  * the guy that gets shot.
- * 
+ *
  * @author M. Ranganathan
  */
 
@@ -27,14 +27,14 @@ public class Shootist implements SipListener {
 
     private static SipStack sipStack;
 
-    
+
     private ContactHeader contactHeader;
 
     private ListeningPoint tcpListeningPoint;
 
     private ListeningPoint udpListeningPoint;
 
-    
+
     private static String PEER_ADDRESS = Shootme.myAddress;
 
     // To run on two machines change these to suit.
@@ -193,7 +193,7 @@ public class Shootist implements SipListener {
                             .getMethod().equals(Request.INVITE)) {
                 // Request cancel = inviteTid.createCancel();
                 // ClientTransaction ct =
-                //	sipProvider.getNewClientTransaction(cancel);
+                //  sipProvider.getNewClientTransaction(cancel);
                 Dialog dialog = tid.getDialog();
                 Request ackRequest = dialog.createRequest(Request.ACK);
                 System.out.println("Sending ACK");
@@ -231,7 +231,7 @@ public class Shootist implements SipListener {
         // If you want to try TCP transport change the following to
         String transport = "udp";
         String peerHostPort = PEER_ADDRESS + ":5070";
-       
+
         // Turn off automatic dialog support.
         properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
         properties.setProperty("javax.sip.STACK_NAME", "shootist");
@@ -386,7 +386,7 @@ public class Shootist implements SipListener {
             listener.inviteTid = sipProvider.getNewClientTransaction(request);
             // Need to create a dialog if you need one.
             Dialog d = sipProvider.getNewDialog(inviteTid);
-            
+
             System.out.println("Created a dialog " + d);
 
             // send the request out.
@@ -395,7 +395,7 @@ public class Shootist implements SipListener {
             d = inviteTid.getDialog();
             System.out.println("dialog = " + d);
 
-           
+
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             ex.printStackTrace();
@@ -410,7 +410,7 @@ public class Shootist implements SipListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.sip.SipListener#processIOException(javax.sip.IOExceptionEvent)
      */
     public void processIOException(IOExceptionEvent exceptionEvent) {
@@ -420,7 +420,7 @@ public class Shootist implements SipListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.sip.SipListener#processTransactionTerminated(javax.sip.TransactionTerminatedEvent)
      */
     public void processTransactionTerminated(
@@ -431,7 +431,7 @@ public class Shootist implements SipListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.sip.SipListener#processDialogTerminated(javax.sip.DialogTerminatedEvent)
      */
     public void processDialogTerminated(

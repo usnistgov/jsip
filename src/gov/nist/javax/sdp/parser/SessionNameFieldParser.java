@@ -1,13 +1,13 @@
 /*
-* Conditions Of Use 
-* 
+* Conditions Of Use
+*
 * This software was developed by employees of the National Institute of
 * Standards and Technology (NIST), an agency of the Federal Government.
 * Pursuant to title 15 Untied States Code Section 105, works of NIST
 * employees are not subject to copyright protection in the United States
 * and are considered to be in the public domain.  As a result, a formal
 * license is not needed to use the software.
-* 
+*
 * This software is provided by NIST as a service and is expressly
 * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
 * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
@@ -16,12 +16,12 @@
 * regarding the use of the software or the results thereof, including but
 * not limited to the correctness, accuracy, reliability or usefulness of
 * the software.
-* 
+*
 * Permission to use this software is contingent upon your acceptance
 * of the terms of this agreement
-*  
+*
 * .
-* 
+*
 */
 /*
  * SessionNameFieldParser.java
@@ -35,55 +35,58 @@ import java.text.*;
 
 /**
  * @author  deruelle
- * @version JAIN-SDP-PUBLIC-RELEASE $Revision: 1.5 $ $Date: 2006-11-22 04:22:01 $
+ * @version JAIN-SDP-PUBLIC-RELEASE $Revision: 1.6 $ $Date: 2009-07-17 18:57:17 $
  */
 public class SessionNameFieldParser extends SDPParser {
 
-	/** Creates new SessionNameFieldParser */
-	public SessionNameFieldParser(String sessionNameField) {
-		this.lexer = new Lexer("charLexer", sessionNameField);
-	}
+    /** Creates new SessionNameFieldParser */
+    public SessionNameFieldParser(String sessionNameField) {
+        this.lexer = new Lexer("charLexer", sessionNameField);
+    }
 
-	/** Get the SessionNameField
-	 * @return SessionNameField
-	 */
-	public SessionNameField sessionNameField() throws ParseException {
-		try {
-			this.lexer.match('s');
-			this.lexer.SPorHT();
-			this.lexer.match('=');
-			this.lexer.SPorHT();
+    /** Get the SessionNameField
+     * @return SessionNameField
+     */
+    public SessionNameField sessionNameField() throws ParseException {
+        try {
+            this.lexer.match('s');
+            this.lexer.SPorHT();
+            this.lexer.match('=');
+            this.lexer.SPorHT();
 
-			SessionNameField sessionNameField = new SessionNameField();
-			String rest = lexer.getRest();
-			// Some endpoints may send us a blank session name ("s=") -- [rborba] 
-			sessionNameField.setSessionName(rest == null ? "" : rest.trim());
+            SessionNameField sessionNameField = new SessionNameField();
+            String rest = lexer.getRest();
+            // Some endpoints may send us a blank session name ("s=") -- [rborba]
+            sessionNameField.setSessionName(rest == null ? "" : rest.trim());
 
-			return sessionNameField;
-		} catch (Exception e) {
-			throw lexer.createParseException();
-		}
+            return sessionNameField;
+        } catch (Exception e) {
+            throw lexer.createParseException();
+        }
 
-	}
+    }
 
-	public SDPField parse() throws ParseException {
-		return this.sessionNameField();
-	}
+    public SDPField parse() throws ParseException {
+        return this.sessionNameField();
+    }
 
-	public static void main(String[] args) throws ParseException {
-		String session[] = { "s=SDP Seminar \n", "s= Session SDP\n" };
+    public static void main(String[] args) throws ParseException {
+        String session[] = { "s=SDP Seminar \n", "s= Session SDP\n" };
 
-		for (int i = 0; i < session.length; i++) {
-			SessionNameFieldParser sessionNameFieldParser =
-				new SessionNameFieldParser(session[i]);
-			SessionNameField sessionNameField =
-				sessionNameFieldParser.sessionNameField();
-			System.out.println("encoded: " + sessionNameField.encode());
-		}
-	}
+        for (int i = 0; i < session.length; i++) {
+            SessionNameFieldParser sessionNameFieldParser =
+                new SessionNameFieldParser(session[i]);
+            SessionNameField sessionNameField =
+                sessionNameFieldParser.sessionNameField();
+            System.out.println("encoded: " + sessionNameField.encode());
+        }
+    }
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2006/11/22 04:22:01  rborba
+ * Made the SDPAnnounceParser constructor a little more robust in order to handle SDPs with mixed CR, LF, CR/LF anf LF/CR lines.
+ *
  * Revision 1.4  2006/07/13 09:02:38  mranga
  * Issue number:
  * Obtained from:
