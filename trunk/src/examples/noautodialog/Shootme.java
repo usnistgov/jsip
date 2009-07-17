@@ -10,7 +10,7 @@ import java.util.*;
  * This class is a UAC template. Shootist is the guy that shoots and shootme is
  * the guy that gets shot. This illustrates how to go about when you want
  * explicit control over creation of dialogs.
- * 
+ *
  * @author M. Ranganathan
  */
 
@@ -64,7 +64,7 @@ public class Shootme implements SipListener {
     }
 
     /**
-     * Process the ACK request. 
+     * Process the ACK request.
      */
     public void processAck(RequestEvent requestEvent,
             ServerTransaction serverTransaction) {
@@ -72,7 +72,7 @@ public class Shootme implements SipListener {
         try {
             System.out.println("shootme: got an ACK "
                     + requestEvent.getRequest());
-           
+
         } catch (Exception ex) {
             ex.printStackTrace();
             System.exit(0);
@@ -105,9 +105,9 @@ public class Shootme implements SipListener {
                 System.out.println("Server transaction created!" + request);
 
                 System.out.println("Dialog = " + st.getDialog());
-                
-               
-            } 
+
+
+            }
             // Thread.sleep(5000);
             System.out.println("got a server tranasaction " + st);
             byte[] content = request.getRawContent();
@@ -119,18 +119,18 @@ public class Shootme implements SipListener {
                 response.setContent(content, contentTypeHeader);
             }
             Dialog dialog = st.getDialog();
-          
+
             System.out.println("Dialog " + dialog);
-            
-	    dialog = sipProvider.getNewDialog(st);
+
+        dialog = sipProvider.getNewDialog(st);
 
             System.out.println("Dialog " + st.getDialog());
-		
-	    if ( dialog != st.getDialog() ) {
-		throw new RuntimeException("Dialog mismatch ");
 
-	    }
-	
+        if ( dialog != st.getDialog() ) {
+        throw new RuntimeException("Dialog mismatch ");
+
+        }
+
             response = messageFactory.createResponse(200, request);
             toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
             toHeader.setTag("4321");
@@ -144,7 +144,7 @@ public class Shootme implements SipListener {
         }
     }
 
- 
+
 
     /**
      * Process the bye request.
@@ -156,15 +156,15 @@ public class Shootme implements SipListener {
         try {
             System.out.println("shootme:  got a bye sending OK.");
             Response response = messageFactory.createResponse(200, request);
-            if ( serverTransactionId == null	 ) {
+            if ( serverTransactionId == null     ) {
                 System.out.println("Note that we can create a new tx here!");
                 serverTransactionId = sipProvider.getNewServerTransaction(request);
                 System.out.println("Creating new server transaction for bye "
-				+ serverTransactionId);
+                + serverTransactionId);
             }
             // Fire and forget.
             serverTransactionId.sendResponse(response);
-	    System.out.println("We are not creating a dialog for this.");
+        System.out.println("We are not creating a dialog for this.");
             System.out.println("Dialog is "
                     + serverTransactionId.getDialog());
 
@@ -220,7 +220,7 @@ public class Shootme implements SipListener {
         sipFactory.setPathName("gov.nist");
         Properties properties = new Properties();
         properties.setProperty("javax.sip.STACK_NAME", "shootme");
-        // Note that this turns off automatic dialog creation. This 
+        // Note that this turns off automatic dialog creation. This
         // mode of operaton is good for proxy servers.
         properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
         // You need 16 for logging traces. 32 for debug + traces.
@@ -282,7 +282,7 @@ public class Shootme implements SipListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.sip.SipListener#processIOException(javax.sip.IOExceptionEvent)
      */
     public void processIOException(IOExceptionEvent exceptionEvent) {
@@ -293,7 +293,7 @@ public class Shootme implements SipListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.sip.SipListener#processTransactionTerminated(javax.sip.TransactionTerminatedEvent)
      */
     public void processTransactionTerminated(
@@ -304,7 +304,7 @@ public class Shootme implements SipListener {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.sip.SipListener#processDialogTerminated(javax.sip.DialogTerminatedEvent)
      */
     public void processDialogTerminated(

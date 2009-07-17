@@ -19,10 +19,10 @@ public class HopImpl implements Hop {
     public int getPort() { return this.port; }
 
     public String getTransport() { return this.transport; }
-    
+
     public HopImpl(String hop) throws IllegalArgumentException {
         if (hop == null) throw new IllegalArgumentException("Null arg!");
-	System.out.println("hop = " + hop);
+        System.out.println("hop = " + hop);
         StringTokenizer stringTokenizer = new StringTokenizer(hop + "/");
         String hostPort = stringTokenizer.nextToken("/");
         transport = stringTokenizer.nextToken().trim();
@@ -35,7 +35,7 @@ public class HopImpl implements Hop {
             System.out.println("Bad transport string " + transport);
             throw new IllegalArgumentException(hop);
         }
-        
+
         stringTokenizer = new StringTokenizer(hostPort+":");
         host = stringTokenizer.nextToken(":");
         if (host == null || host.equals( "") )

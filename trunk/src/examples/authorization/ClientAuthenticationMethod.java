@@ -11,7 +11,7 @@ package examples.authorization;
  * @author  olivier deruelle
  */
 public interface ClientAuthenticationMethod {
-    
+
     /**
      * Initialize the Client authentication method. This has to be
      * done outside the constructor.
@@ -19,13 +19,13 @@ public interface ClientAuthenticationMethod {
      */
     public void initialize(String realm,String userName,String uri,String nonce
     ,String password,String method,String cnonce,String algorithm) throws Exception;
-    
-    
+
+
     /**
      * generate the response
      * @returns null if the parameters given in the initialization are not
      * correct.
      */
     public String generateResponse();
-    
+
 }
