@@ -20,55 +20,55 @@ import junit.framework.TestCase;
  */
 public class NonSipUriRouter implements Router {
 
-	int myPort = 5070;
-	
-	public static boolean routerWasConsulted = false;
-	
-	class HopImpl implements Hop {
+    int myPort = 5070;
 
-		public String getHost() {
-			
-			return "127.0.0.1";
-		}
+    public static boolean routerWasConsulted = false;
 
-		public int getPort() {
-			
-			return myPort;
-		}
+    class HopImpl implements Hop {
 
-		public String getTransport() {
-			
-			return "udp";
-		}
-		
-	}
-	public NonSipUriRouter( SipStack sipStack, String outboundProxy) {
-		
-		
-	}
-	
-	public void setMyPort ( int myPort ) {
-		this.myPort = myPort;
-	}
-	
-	public Hop getOutboundProxy() {
-		
-		return new HopImpl();
-	}
+        public String getHost() {
 
-	public ListIterator getNextHops(Request request) {
-		URI uri = request.getRequestURI();
-		ScenarioHarness.assertTrue("Expected to be consulted only for tel uri",uri.getScheme().equals("tel"));
-		LinkedList llist = new LinkedList();
-		llist.add(new HopImpl());
-		return llist.listIterator();
-	}
+            return "127.0.0.1";
+        }
 
-	public Hop getNextHop(Request request) throws SipException {
-		routerWasConsulted = true;
-		URI uri = request.getRequestURI();
-		ScenarioHarness.assertTrue("expected to be consulted only for tel uri",uri.getScheme().equals("tel"));
-		return new HopImpl();
-	}
+        public int getPort() {
+
+            return myPort;
+        }
+
+        public String getTransport() {
+
+            return "udp";
+        }
+
+    }
+    public NonSipUriRouter( SipStack sipStack, String outboundProxy) {
+
+
+    }
+
+    public void setMyPort ( int myPort ) {
+        this.myPort = myPort;
+    }
+
+    public Hop getOutboundProxy() {
+
+        return new HopImpl();
+    }
+
+    public ListIterator getNextHops(Request request) {
+        URI uri = request.getRequestURI();
+        ScenarioHarness.assertTrue("Expected to be consulted only for tel uri",uri.getScheme().equals("tel"));
+        LinkedList llist = new LinkedList();
+        llist.add(new HopImpl());
+        return llist.listIterator();
+    }
+
+    public Hop getNextHop(Request request) throws SipException {
+        routerWasConsulted = true;
+        URI uri = request.getRequestURI();
+        ScenarioHarness.assertTrue("expected to be consulted only for tel uri",uri.getScheme().equals("tel"));
+        return new HopImpl();
+    }
 
 }

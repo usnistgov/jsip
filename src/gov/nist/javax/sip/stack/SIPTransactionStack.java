@@ -1,13 +1,13 @@
 /*
- * Conditions Of Use 
- * 
+ * Conditions Of Use
+ *
  * This software was developed by employees of the National Institute of
  * Standards and Technology (NIST), an agency of the Federal Government.
  * Pursuant to title 15 Untied States Code Section 105, works of NIST
  * employees are not subject to copyright protection in the United States
  * and are considered to be in the public domain.  As a result, a formal
  * license is not needed to use the software.
- * 
+ *
  * This software is provided by NIST as a service and is expressly
  * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
  * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
@@ -16,12 +16,12 @@
  * regarding the use of the software or the results thereof, including but
  * not limited to the correctness, accuracy, reliability or usefulness of
  * the software.
- * 
+ *
  * Permission to use this software is contingent upon your acceptance
  * of the terms of this agreement
- *  
+ *
  * .
- * 
+ *
  */
 package gov.nist.javax.sip.stack;
 
@@ -80,20 +80,20 @@ import javax.sip.message.Response;
 /*
  * Jeff Keyser : architectural suggestions and contributions. Pierre De Rop and Thomas Froment :
  * Bug reports. Jeyashankher < jai@lucent.com > : bug reports. Jeroen van Bemmel : Bug fixes.
- * 
- * 
+ *
+ *
  */
 
 /**
- * 
+ *
  * This is the sip stack. It is essentially a management interface. It manages the resources for
  * the JAIN-SIP implementation. This is the structure that is wrapped by the SipStackImpl.
- * 
+ *
  * @see gov.nist.javax.sip.SipStackImpl
- * 
+ *
  * @author M. Ranganathan <br/>
- * 
- * @version 1.2 $Revision: 1.108 $ $Date: 2009-06-23 11:02:16 $
+ *
+ * @version 1.2 $Revision: 1.109 $ $Date: 2009-07-17 18:58:15 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener {
 
@@ -183,7 +183,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /*
      * Internal router. Use this for all sip: request routing.
-     * 
+     *
      */
     protected DefaultRouter defaultRouter;
 
@@ -214,14 +214,14 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /*
      * IP address of stack -- this can be re-written by stun.
-     * 
+     *
      * @deprecated
      */
     protected String stackAddress;
 
     /*
      * INET address of stack (cached to avoid repeated lookup)
-     * 
+     *
      * @deprecated
      */
     protected InetAddress stackInetAddress;
@@ -341,7 +341,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     protected boolean remoteTagReassignmentAllowed = true;
 
     public boolean logStackTraceOnMessageSend = true;
-    
+
     // Set to true to delegate some dialog validation to the application.
     protected boolean looseDialogValidation = false;
 
@@ -469,8 +469,8 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * For debugging -- allows you to disable logging or enable logging selectively.
-     * 
-     * 
+     *
+     *
      */
     public void disableLogging() {
         this.getLogWriter().disableLogging();
@@ -478,7 +478,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Globally enable message logging ( for debugging)
-     * 
+     *
      */
     public void enableLogging() {
         this.getLogWriter().enableLogging();
@@ -486,7 +486,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Print the dialog table.
-     * 
+     *
      */
     public void printDialogTable() {
         if (this.getLogWriter().isLoggingEnabled()) {
@@ -497,7 +497,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Retrieve a transaction from our table of transactions with pending retransmission alerts.
-     * 
+     *
      * @param dialogId
      * @return -- the RetransmissionAlert enabled transaction corresponding to the given dialog
      *         ID.
@@ -508,7 +508,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Return true if extension is supported.
-     * 
+     *
      * @return true if extension is supported and false otherwise.
      */
     public boolean isDialogCreated(String method) {
@@ -522,7 +522,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Add an extension method.
-     * 
+     *
      * @param extensionMethod -- extension method to support for dialog creation
      */
     public void addExtensionMethod(String extensionMethod) {
@@ -536,9 +536,9 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Put a dialog into the dialog table.
-     * 
+     *
      * @param dialog -- dialog to put into the dialog table.
-     * 
+     *
      */
     public void putDialog(SIPDialog dialog) {
         String dialogId = dialog.getDialogId();
@@ -561,7 +561,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Create a dialog and add this transaction to it.
-     * 
+     *
      * @param transaction -- tx to add to the dialog.
      * @return the newly created Dialog.
      */
@@ -593,7 +593,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Create a Dialog given a client tx and response.
-     * 
+     *
      * @param transaction
      * @param sipResponse
      * @return
@@ -617,7 +617,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Remove the dialog from the dialog table.
-     * 
+     *
      * @param dialog -- dialog to remove.
      */
     public void removeDialog(SIPDialog dialog) {
@@ -664,7 +664,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
      * Return the dialog for a given dialog ID. If compatibility is enabled then we do not assume
      * the presence of tags and hence need to add a flag to indicate whether this is a server or
      * client transaction.
-     * 
+     *
      * @param dialogId is the dialog id to check.
      */
 
@@ -680,7 +680,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Remove the dialog given its dialog id. This is used for dialog id re-assignment only.
-     * 
+     *
      * @param dialogId is the dialog Id to remove.
      */
     public void removeDialog(String dialogId) {
@@ -701,7 +701,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
      * If a matching NOTIFY request contains a "Subscription-State" of "active" or "pending", it
      * creates a new subscription and a new dialog (unless they have already been created by a
      * matching response, as described above).
-     * 
+     *
      * @param notifyMessage
      * @return -- the matching ClientTransaction with semaphore aquired or null if no such client
      *         transaction can be found.
@@ -728,7 +728,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
                 SIPClientTransaction ct = (SIPClientTransaction) it.next();
                 if (!ct.getMethod().equals(Request.SUBSCRIBE))
                     continue;
-               
+
                 // if ( sipProvider.getListeningPoint(transport) == null)
                 String fromTag = ct.from.getTag();
                 Event hisEvent = ct.event;
@@ -743,7 +743,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
                     logWriter.logDebug("eventHdr " + eventHdr);
 
                 }
-              
+
                 if (  fromTag.equalsIgnoreCase(thisToTag)
                       && hisEvent != null
                       && eventHdr.match(hisEvent)
@@ -766,11 +766,11 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Find the transaction corresponding to a given request.
-     * 
+     *
      * @param sipMessage request for which to retrieve the transaction.
-     * 
+     *
      * @param isServer search the server transaction table if true.
-     * 
+     *
      * @return the transaction object corresponding to the request or null if no such mapping
      *         exists.
      */
@@ -866,7 +866,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Construcor for the stack. Registers the request and response factories for the stack.
-     * 
+     *
      * @param messageFactory User-implemented factory for processing messages.
      */
     protected SIPTransactionStack(StackMessageFactory messageFactory) {
@@ -878,7 +878,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
      * Finds a pending server transaction. Since each request may be handled either statefully or
      * statelessly, we keep a map of pending transactions so that a duplicate transaction is not
      * created if a second request is recieved while the first one is being processed.
-     * 
+     *
      * @param requestReceived
      * @return -- the pending transaction or null if no such transaction exists.
      */
@@ -914,7 +914,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     /**
      * Remove a pending Server transaction from the stack. This is called after the user code has
      * completed execution in the listener.
-     * 
+     *
      * @param tr -- pending transaction to remove.
      */
     public void removePendingTransaction(SIPServerTransaction tr) {
@@ -927,9 +927,9 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Remove a transaction from the merge table.
-     * 
+     *
      * @param tr -- the server transaction to remove from the merge table.
-     * 
+     *
      */
     public void removeFromMergeTable(SIPServerTransaction tr) {
         if (logWriter.isLoggingEnabled()) {
@@ -943,9 +943,9 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Put this into the merge request table.
-     * 
+     *
      * @param sipTransaction -- transaction to put into the merge table.
-     * 
+     *
      */
     public void putInMergeTable(SIPServerTransaction sipTransaction, SIPRequest sipRequest) {
         String mergeKey = sipRequest.getMergeId();
@@ -957,7 +957,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     /**
      * Map a Server transaction (possibly sending out a 100 if the server tx is an INVITE). This
      * actually places it in the hash table and makes it known to the stack.
-     * 
+     *
      * @param transaction -- the server transaction to map.
      */
     public void mapTransaction(SIPServerTransaction transaction) {
@@ -971,10 +971,10 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     /**
      * Handles a new SIP request. It finds a server transaction to handle this message. If none
      * exists, it creates a new transaction.
-     * 
+     *
      * @param requestReceived Request to handle.
      * @param requestMessageChannel Channel that received message.
-     * 
+     *
      * @return A server transaction.
      */
     public ServerRequestInterface newSIPServerRequest(SIPRequest requestReceived,
@@ -1075,10 +1075,10 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     /**
      * Handles a new SIP response. It finds a client transaction to handle this message. If none
      * exists, it sends the message directly to the superclass.
-     * 
+     *
      * @param responseReceived Response to handle.
      * @param responseMessageChannel Channel that received message.
-     * 
+     *
      * @return A client transaction.
      */
     protected ServerResponseInterface newSIPServerResponse(SIPResponse responseReceived,
@@ -1170,7 +1170,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     /**
      * Creates a client transaction to handle a new request. Gets the real message channel from
      * the superclass, and then creates a new client transaction wrapped around this channel.
-     * 
+     *
      * @param nextHop Hop to create a channel to contact.
      */
     public MessageChannel createMessageChannel(SIPRequest request, MessageProcessor mp,
@@ -1209,7 +1209,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     /**
      * Creates a client transaction that encapsulates a MessageChannel. Useful for implementations
      * that want to subclass the standard
-     * 
+     *
      * @param encapsulatedMessageChannel Message channel of the transport layer.
      */
     public SIPClientTransaction createClientTransaction(SIPRequest sipRequest,
@@ -1222,7 +1222,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     /**
      * Creates a server transaction that encapsulates a MessageChannel. Useful for implementations
      * that want to subclass the standard
-     * 
+     *
      * @param encapsulatedMessageChannel Message channel of the transport layer.
      */
     public SIPServerTransaction createServerTransaction(MessageChannel encapsulatedMessageChannel) {
@@ -1248,7 +1248,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Get the size of the client transaction table.
-     * 
+     *
      * @return -- size of the ct table.
      */
     public int getClientTransactionTableSize() {
@@ -1258,7 +1258,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     /**
      * Add a new client transaction to the set of existing transactions. Add it to the top of the
      * list so an incoming response has less work to do in order to find the transaction.
-     * 
+     *
      * @param clientTransaction -- client transaction to add to the set.
      */
     public void addTransaction(SIPClientTransaction clientTransaction) {
@@ -1320,7 +1320,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     /**
      * Add a new server transaction to the set of existing transactions. Add it to the top of the
      * list so an incoming ack has less work to do in order to find the transaction.
-     * 
+     *
      * @param serverTransaction -- server transaction to add to the set.
      */
     public void addTransaction(SIPServerTransaction serverTransaction) throws IOException {
@@ -1375,7 +1375,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * This method is called when a client tx transitions to the Completed or Terminated state.
-     * 
+     *
      */
     protected void decrementActiveClientTransactionCount() {
 
@@ -1415,7 +1415,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Invoked when an error has ocurred with a transaction.
-     * 
+     *
      * @param transactionErrorEvent Error event.
      */
     public synchronized void transactionErrorEvent(SIPTransactionErrorEvent transactionErrorEvent) {
@@ -1497,7 +1497,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     /**
      * Return the network layer (i.e. the interface for socket creation or the socket factory for
      * the stack).
-     * 
+     *
      * @return -- the registered Network Layer.
      */
     public NetworkLayer getNetworkLayer() {
@@ -1510,7 +1510,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Return true if logging is enabled for this stack.
-     * 
+     *
      * @return true if logging is enabled for this stack instance.
      */
     public boolean isLoggingEnabled() {
@@ -1519,7 +1519,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Get the logger.
-     * 
+     *
      * @return --the logger for the sip stack. Each stack has its own logger instance.
      */
     public LogWriter getLogWriter() {
@@ -1528,7 +1528,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Server log is the place where we log messages for the signaling trace viewer.
-     * 
+     *
      * @return -- the log file where messages are logged for viewing by the trace viewer.
      */
     public ServerLog getServerLog() {
@@ -1538,7 +1538,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     /**
      * Maximum size of a single TCP message. Limiting the size of a single TCP message prevents
      * flooding attacks.
-     * 
+     *
      * @return the size of a single TCP message.
      */
     public int getMaxMessageSize() {
@@ -1557,9 +1557,9 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     /**
      * Set the thread pool size for processing incoming UDP messages. Limit the total number of
      * threads for processing udp messages.
-     * 
+     *
      * @param size -- the thread pool size.
-     * 
+     *
      */
     public void setThreadPoolSize(int size) {
         this.threadPoolSize = size;
@@ -1567,7 +1567,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Set the max # of simultaneously handled TCP connections.
-     * 
+     *
      * @param nconnections -- the number of connections to handle.
      */
     public void setMaxConnections(int nconnections) {
@@ -1576,7 +1576,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Get the default route string.
-     * 
+     *
      * @param sipRequest is the request for which we want to compute the next hop.
      * @throws SipException
      */
@@ -1601,18 +1601,18 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Set the descriptive name of the stack.
-     * 
+     *
      * @param stackName -- descriptive name of the stack.
      */
     public void setStackName(String stackName) {
         this.stackName = stackName;
     }
 
-  
+
 
     /**
      * Set my address.
-     * 
+     *
      * @param stackAddress -- A string containing the stack address.
      */
     protected void setHostAddress(String stackAddress) throws UnknownHostException {
@@ -1626,7 +1626,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Get my address.
-     * 
+     *
      * @return hostAddress - my host address or null if no host address is defined.
      * @deprecated
      */
@@ -1639,7 +1639,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     /**
      * Set the router algorithm. This is meant for routing messages out of dialog or for non-sip
      * uri's.
-     * 
+     *
      * @param router A class that implements the Router interface.
      */
     protected void setRouter(Router router) {
@@ -1648,7 +1648,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Get the router algorithm.
-     * 
+     *
      * @return Router router
      */
     public Router getRouter(SIPRequest request) {
@@ -1671,7 +1671,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.sip.SipStack#getRouter()
      */
     public Router getRouter() {
@@ -1680,7 +1680,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * return the status of the toExit flag.
-     * 
+     *
      * @return true if the stack object is alive and false otherwise.
      */
     public boolean isAlive() {
@@ -1708,7 +1708,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Removes a MessageProcessor from this SIPStack.
-     * 
+     *
      * @param oldMessageProcessor
      */
     protected void removeMessageProcessor(MessageProcessor oldMessageProcessor) {
@@ -1723,7 +1723,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
      * Gets an array of running MessageProcessors on this SIPStack. Acknowledgement: Jeff Keyser
      * suggested that applications should have access to the running message processors and
      * contributed this code.
-     * 
+     *
      * @return an array of running message processors.
      */
     protected MessageProcessor[] getMessageProcessors() {
@@ -1734,7 +1734,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Creates the equivalent of a JAIN listening point and attaches to the stack.
-     * 
+     *
      * @param ipAddress -- ip address for the listening point.
      * @param port -- port for the listening point.
      * @param transport -- transport for the listening point.
@@ -1767,7 +1767,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Set the message factory.
-     * 
+     *
      * @param messageFactory -- messageFactory to set.
      */
     protected void setMessageFactory(StackMessageFactory messageFactory) {
@@ -1776,16 +1776,16 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Creates a new MessageChannel for a given Hop.
-     * 
+     *
      * @param sourceIpAddress - Ip address of the source of this message.
-     * 
+     *
      * @param sourcePort - source port of the message channel to be created.
-     * 
+     *
      * @param nextHop Hop to create a MessageChannel to.
-     * 
+     *
      * @return A MessageChannel to the specified Hop, or null if no MessageProcessors support
      *         contacting that Hop.
-     * 
+     *
      * @throws UnknownHostException If the host in the Hop doesn't exist.
      */
     public MessageChannel createRawMessageChannel(String sourceIpAddress, int sourcePort,
@@ -1836,9 +1836,9 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     /**
      * Return true if a given event can result in a forked subscription. The stack is configured
      * with a set of event names that can result in forked subscriptions.
-     * 
+     *
      * @param ename -- event name to check.
-     * 
+     *
      */
     public boolean isEventForked(String ename) {
         if (logWriter.isLoggingEnabled()) {
@@ -1850,7 +1850,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * get the address resolver interface.
-     * 
+     *
      * @return -- the registered address resolver.
      */
     public AddressResolver getAddressResolver() {
@@ -1859,7 +1859,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Set the address resolution interface
-     * 
+     *
      * @param addressResolver -- the address resolver to set.
      */
     public void setAddressResolver(AddressResolver addressResolver) {
@@ -1868,7 +1868,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Set the logger factory.
-     * 
+     *
      * @param logRecordFactory -- the log record factory to set.
      */
     public void setLogRecordFactory(LogRecordFactory logRecordFactory) {
@@ -1877,7 +1877,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * get the thread auditor object
-     * 
+     *
      * @return -- the thread auditor of the stack
      */
     public ThreadAuditor getThreadAuditor() {
@@ -1890,7 +1890,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Audits the SIP Stack for leaks
-     * 
+     *
      * @return Audit report, null if no leaks were found
      */
     public String auditStack(Set activeCallIDs, long leakedDialogTimer,
@@ -1914,7 +1914,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
      * Audits SIP dialogs for leaks - Compares the dialogs in the dialogTable with a list of Call
      * IDs passed by the application. - Dialogs that are not known by the application are leak
      * suspects. - Kill the dialogs that are still around after the timer specified.
-     * 
+     *
      * @return Audit report, null if no dialog leaks were found
      */
     private String auditDialogs(Set activeCallIDs, long leakedDialogTimer) {
@@ -1984,7 +1984,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Audits SIP transactions for leaks
-     * 
+     *
      * @return Audit report, null if no transaction leaks were found
      */
     private String auditTransactions(ConcurrentHashMap transactionsMap,
@@ -2056,7 +2056,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Get the count of client transactions that is not in the completed or terminated state.
-     * 
+     *
      * @return the activeClientTransactionCount
      */
     public int getActiveClientTransactionCount() {
@@ -2078,8 +2078,8 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * This method is slated for addition to the next spec revision.
-     * 
-     * 
+     *
+     *
      * @return -- the collection of dialogs that is being managed by the stack.
      */
     public Collection<Dialog> getDialogs() {
@@ -2090,7 +2090,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     }
 
     /**
-     * 
+     *
      * @return -- the collection of dialogs matching the state that is being managed by the stack.
      */
     public Collection<Dialog> getDialogs(DialogState state) {
@@ -2110,7 +2110,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     /**
      * Get the Replaced Dialog from the stack.
-     * 
+     *
      * @param replacesHeader -- the header that references the dialog being replaced.
      */
     public Dialog getReplacesDialog(ReplacesHeader replacesHeader) {
@@ -2147,13 +2147,13 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
                }
            }
         }
-        
+
         return replacesDialog;
     }
-    
+
     /**
      * Get the Join Dialog from the stack.
-     * 
+     *
      * @param joinHeader -- the header that references the dialog being joined.
      */
     public Dialog getJoinDialog(JoinHeader joinHeader) {
@@ -2189,23 +2189,23 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     public Timer getTimer() {
         return timer;
     }
-    
+
     /**
      * Delegate some dialog validation to the application.
-     * 
+     *
      * @return
      */
-	public boolean isLooseDialogValidation() {
-		return looseDialogValidation;
-	}
+    public boolean isLooseDialogValidation() {
+        return looseDialogValidation;
+    }
 
-	/**
-	 * Set to true if you want to delegate some dialog validation to the application.
-	 * 
-	 * @param looseDialogValidation
-	 */
-	public void setLooseDialogValidation(boolean looseDialogValidation) {
-		this.looseDialogValidation = looseDialogValidation;
-	}
+    /**
+     * Set to true if you want to delegate some dialog validation to the application.
+     *
+     * @param looseDialogValidation
+     */
+    public void setLooseDialogValidation(boolean looseDialogValidation) {
+        this.looseDialogValidation = looseDialogValidation;
+    }
 
 }

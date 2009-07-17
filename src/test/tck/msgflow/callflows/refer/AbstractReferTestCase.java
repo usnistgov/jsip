@@ -28,78 +28,78 @@ import test.tck.msgflow.callflows.ScenarioHarness;
 import junit.framework.TestCase;
 
 /**
- * 
- * Implements common setup and tearDown sequence for Refer tests 
- * 
+ *
+ * Implements common setup and tearDown sequence for Refer tests
+ *
  * @author M. Ranganathan
  * @author Ivelin Ivanov
- * 
+ *
  */
 public abstract class AbstractReferTestCase extends ScenarioHarness implements
-		SipListener {
+        SipListener {
 
-	
-	protected Referee referee;
 
-	protected Referrer referrer;
+    protected Referee referee;
 
-	private static Logger logger = Logger.getLogger("test.tck");
+    protected Referrer referrer;
 
-	static {
-		if (!logger.isAttached(console)) {
+    private static Logger logger = Logger.getLogger("test.tck");
 
-			logger.addAppender(console);
+    static {
+        if (!logger.isAttached(console)) {
 
-		}
-	}
+            logger.addAppender(console);
 
-	public AbstractReferTestCase() {
-		super("refer", true);
-	}
+        }
+    }
 
-	public void setUp() throws Exception {
-		try {
-			super.setUp();
+    public AbstractReferTestCase() {
+        super("refer", true);
+    }
 
-			logger.info("ReferTest: setup()");
-			referee = new Referee(getTiProtocolObjects());
-			SipProvider refereeProvider = referee.createProvider();
-			providerTable.put(refereeProvider, referee);
+    public void setUp() throws Exception {
+        try {
+            super.setUp();
 
-			referrer = new Referrer(getRiProtocolObjects());
-			SipProvider referrerProvider = referrer.createProvider();
-			providerTable.put(referrerProvider, referrer);
+            logger.info("ReferTest: setup()");
+            referee = new Referee(getTiProtocolObjects());
+            SipProvider refereeProvider = referee.createProvider();
+            providerTable.put(refereeProvider, referee);
 
-			refereeProvider.addSipListener(this);
-			referrerProvider.addSipListener(this);
+            referrer = new Referrer(getRiProtocolObjects());
+            SipProvider referrerProvider = referrer.createProvider();
+            providerTable.put(referrerProvider, referrer);
 
-			if (getTiProtocolObjects() != getRiProtocolObjects())
-				getTiProtocolObjects().start();
-			getRiProtocolObjects().start();
-		} catch (Exception ex) {
-			logger.error("unexpected excecption ", ex);
-			fail("unexpected exception");
-		}
-	}
+            refereeProvider.addSipListener(this);
+            referrerProvider.addSipListener(this);
 
-	public void tearDown() throws Exception {
-		try {
-			Thread.sleep(4000);
-			super.tearDown();
-			Thread.sleep(1000);
-			this.providerTable.clear();
-			
-			assertEquals( 3, referrer.count );	// Should have 3 NOTIFYs
-			
-			logTestCompleted();
-		} catch (Exception ex) {
-			logger.error("unexpected exception", ex);
-			fail("unexpected exception ");
-		}
-		super.tearDown();
-	}
-	
-	
+            if (getTiProtocolObjects() != getRiProtocolObjects())
+                getTiProtocolObjects().start();
+            getRiProtocolObjects().start();
+        } catch (Exception ex) {
+            logger.error("unexpected excecption ", ex);
+            fail("unexpected exception");
+        }
+    }
 
-	
+    public void tearDown() throws Exception {
+        try {
+            Thread.sleep(4000);
+            super.tearDown();
+            Thread.sleep(1000);
+            this.providerTable.clear();
+
+            assertEquals( 3, referrer.count );  // Should have 3 NOTIFYs
+
+            logTestCompleted();
+        } catch (Exception ex) {
+            logger.error("unexpected exception", ex);
+            fail("unexpected exception ");
+        }
+        super.tearDown();
+    }
+
+
+
+
 }

@@ -6,7 +6,7 @@ package test.tck;
  *
  * @author Emil Ivov
  *         Network Research Team, Louis Pasteur University, Strasbourg, France
- *	This code is in the public domain.
+ *  This code is in the public domain.
  * @version 1.0
  */
 
@@ -16,18 +16,18 @@ public class TckInternalError extends Error
     public TckInternalError(String message)
     {
         super(message);
-	TestHarness.abortOnFail = true;
+    TestHarness.abortOnFail = true;
     }
 
     public TckInternalError(String message, Throwable cause)
     {
         super(message, cause);
-	TestHarness.abortOnFail = true;
+    TestHarness.abortOnFail = true;
     }
 
     public TckInternalError(Throwable cause)
     {
         super(cause);
-	TestHarness.abortOnFail = true;
+    TestHarness.abortOnFail = true;
     }
 }

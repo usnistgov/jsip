@@ -1,12 +1,12 @@
 /*
-* Conditions Of Use 
-* 
+* Conditions Of Use
+*
 * This software was developed by employees of the National Institute of
-* Standards and Technology (NIST), and others. 
-* This software is has been contributed to the public domain. 
+* Standards and Technology (NIST), and others.
+* This software is has been contributed to the public domain.
 * As a result, a formal license is not needed to use the software.
-* 
-* This software is provided "AS IS."  
+*
+* This software is provided "AS IS."
 * NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
 * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
 * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
@@ -14,11 +14,11 @@
 * regarding the use of the software or the results thereof, including but
 * not limited to the correctness, accuracy, reliability or usefulness of
 * the software.
-* 
-* 
+*
+*
 */
 /**
- * 
+ *
  */
 package test.unit.gov.nist.javax.sip.stack.challenge;
 
@@ -39,110 +39,110 @@ import test.tck.msgflow.callflows.ScenarioHarness;
 
 /**
  * @author Jeroen van Bemmel (jbemmel@zonnet.nl)
- * 
+ *
  */
 public class ChallengeTest extends ScenarioHarness implements SipListener {
 
-	
-	protected Shootist shootist;
 
-	private Shootme shootme;
+    protected Shootist shootist;
 
-	private static Logger logger = Logger.getLogger("test.tck");
+    private Shootme shootme;
 
-	static {
-		if (!logger.isAttached(console))
-			logger.addAppender(console);
-	}
+    private static Logger logger = Logger.getLogger("test.tck");
 
-	private SipListener getSipListener(EventObject sipEvent) {
-		SipProvider source = (SipProvider) sipEvent.getSource();
-		SipListener listener = (SipListener) providerTable.get(source);
-		assertTrue(listener != null);
-		return listener;
-	}
+    static {
+        if (!logger.isAttached(console))
+            logger.addAppender(console);
+    }
 
-	public ChallengeTest() {
-		super("challengetest", true);
-	}
+    private SipListener getSipListener(EventObject sipEvent) {
+        SipProvider source = (SipProvider) sipEvent.getSource();
+        SipListener listener = (SipListener) providerTable.get(source);
+        assertTrue(listener != null);
+        return listener;
+    }
 
-	public void setUp() {
+    public ChallengeTest() {
+        super("challengetest", true);
+    }
 
-		try {
-			this.transport = "udp";
-			// testedImplFlag = true;	// reverse RI/TI
-			super.setUp();
-			shootist = new Shootist(getRiProtocolObjects());
-			SipProvider shootistProvider = shootist.createSipProvider();
-			providerTable.put(shootistProvider, shootist);
+    public void setUp() {
 
-			shootme = new Shootme(getTiProtocolObjects());
-			SipProvider shootmeProvider = shootme.createSipProvider();
-			providerTable.put(shootmeProvider, shootme);
-			shootistProvider.addSipListener(this);
-			shootmeProvider.addSipListener(this);
+        try {
+            this.transport = "udp";
+            // testedImplFlag = true;// reverse RI/TI
+            super.setUp();
+            shootist = new Shootist(getRiProtocolObjects());
+            SipProvider shootistProvider = shootist.createSipProvider();
+            providerTable.put(shootistProvider, shootist);
 
-			getRiProtocolObjects().start();
-			if (getTiProtocolObjects() != getRiProtocolObjects())
-				getTiProtocolObjects().start();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			fail("unexpected exception ");
-		}
-	}
+            shootme = new Shootme(getTiProtocolObjects());
+            SipProvider shootmeProvider = shootme.createSipProvider();
+            providerTable.put(shootmeProvider, shootme);
+            shootistProvider.addSipListener(this);
+            shootmeProvider.addSipListener(this);
 
-	public void testSendInvite() {
-		this.shootist.sendInvite();
-	}
+            getRiProtocolObjects().start();
+            if (getTiProtocolObjects() != getRiProtocolObjects())
+                getTiProtocolObjects().start();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            fail("unexpected exception ");
+        }
+    }
 
-	public void tearDown() {
-		try {
-			Thread.sleep(10000);	// wait for events to fire
-			this.shootist.checkState();
-			this.shootme.checkState();
-			getTiProtocolObjects().destroy();
-			if (getTiProtocolObjects() != getRiProtocolObjects())
-				getRiProtocolObjects().destroy();
-			Thread.sleep(1000);
-			this.providerTable.clear();
-			logTestCompleted();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+    public void testSendInvite() {
+        this.shootist.sendInvite();
+    }
 
-	}
+    public void tearDown() {
+        try {
+            Thread.sleep(10000);// wait for events to fire
+            this.shootist.checkState();
+            this.shootme.checkState();
+            getTiProtocolObjects().destroy();
+            if (getTiProtocolObjects() != getRiProtocolObjects())
+                getRiProtocolObjects().destroy();
+            Thread.sleep(1000);
+            this.providerTable.clear();
+            logTestCompleted();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
-	public void processRequest(RequestEvent requestEvent) {
-		getSipListener(requestEvent).processRequest(requestEvent);
+    }
 
-	}
+    public void processRequest(RequestEvent requestEvent) {
+        getSipListener(requestEvent).processRequest(requestEvent);
 
-	public void processResponse(ResponseEvent responseEvent) {
-		getSipListener(responseEvent).processResponse(responseEvent);
+    }
 
-	}
+    public void processResponse(ResponseEvent responseEvent) {
+        getSipListener(responseEvent).processResponse(responseEvent);
 
-	public void processTimeout(TimeoutEvent timeoutEvent) {
-		getSipListener(timeoutEvent).processTimeout(timeoutEvent);
-	}
+    }
 
-	public void processIOException(IOExceptionEvent exceptionEvent) {
-		fail("unexpected exception");
+    public void processTimeout(TimeoutEvent timeoutEvent) {
+        getSipListener(timeoutEvent).processTimeout(timeoutEvent);
+    }
 
-	}
+    public void processIOException(IOExceptionEvent exceptionEvent) {
+        fail("unexpected exception");
 
-	public void processTransactionTerminated(
-			TransactionTerminatedEvent transactionTerminatedEvent) {
-		getSipListener(transactionTerminatedEvent)
-				.processTransactionTerminated(transactionTerminatedEvent);
+    }
 
-	}
+    public void processTransactionTerminated(
+            TransactionTerminatedEvent transactionTerminatedEvent) {
+        getSipListener(transactionTerminatedEvent)
+                .processTransactionTerminated(transactionTerminatedEvent);
 
-	public void processDialogTerminated(
-			DialogTerminatedEvent dialogTerminatedEvent) {
-		getSipListener(dialogTerminatedEvent).processDialogTerminated(
-				dialogTerminatedEvent);
+    }
 
-	}
+    public void processDialogTerminated(
+            DialogTerminatedEvent dialogTerminatedEvent) {
+        getSipListener(dialogTerminatedEvent).processDialogTerminated(
+                dialogTerminatedEvent);
+
+    }
 
 }

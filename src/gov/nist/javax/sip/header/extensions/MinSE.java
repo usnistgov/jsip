@@ -14,85 +14,85 @@ import javax.sip.header.ExtensionHeader;
 
 /**
  * MinSE SIP Header.
- * 
+ *
  * (Created by modifying Expires.java)
  *
- * @version JAIN-SIP-1.1 $Revision: 1.2 $ $Date: 2006-10-27 20:58:31 $
+ * @version JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2009-07-17 18:57:42 $
  *
  * @author P. Musgrave <pmusgrave@newheights.com>  <br/>
  *
  */
 public class MinSE
-	extends ParametersHeader implements ExtensionHeader, MinSEHeader {
-	
-	// TODO: When the MinSEHeader is added to javax - move this there...pmusgrave
-	public static final String NAME = "Min-SE";
+    extends ParametersHeader implements ExtensionHeader, MinSEHeader {
 
-	/**
-	 * Comment for <code>serialVersionUID</code>
-	 */
-	private static final long serialVersionUID = 3134344915465784267L;
-	
-	/** expires field
-	 */
-	public int expires;
+    // TODO: When the MinSEHeader is added to javax - move this there...pmusgrave
+    public static final String NAME = "Min-SE";
 
-	/** default constructor
-	 */
-	public MinSE() {
-		super(NAME);
-	}
+    /**
+     * Comment for <code>serialVersionUID</code>
+     */
+    private static final long serialVersionUID = 3134344915465784267L;
 
-	/**
-	 * Return canonical form.
-	 * @return String
-	 */
-	public String encodeBody() {
-		String retval = new Integer(expires).toString(); // seems overkill - but Expires did this.
+    /** expires field
+     */
+    public int expires;
 
-		if (!parameters.isEmpty()) {
-			retval += SEMICOLON + parameters.encode();
-		}
-		return retval;
-	}
-	
-	public void setValue(String value) throws ParseException {
-		// not implemented.
-		throw new ParseException(value,0);
-		
-	}
+    /** default constructor
+     */
+    public MinSE() {
+        super(NAME);
+    }
 
-	/**
-	 * Gets the expires value of the ExpiresHeader. This expires value is
-	 *
-	 * relative time.
-	 *
-	 *
-	 *
-	 * @return the expires value of the ExpiresHeader.
-	 *
-	 * @since JAIN SIP v1.1
-	 *
-	 */
-	public int getExpires() {
-		return expires;
-	}
+    /**
+     * Return canonical form.
+     * @return String
+     */
+    public String encodeBody() {
+        String retval = new Integer(expires).toString(); // seems overkill - but Expires did this.
 
-	/**
-	 * Sets the relative expires value of the ExpiresHeader. 
-	 * The expires value MUST be greater than zero and MUST be 
-	 * less than 2**31.
-	 *
-	 * @param expires - the new expires value of this ExpiresHeader
-	 *
-	 * @throws InvalidArgumentException if supplied value is less than zero.
-	 *
-	 * @since JAIN SIP v1.2
-	 *
-	 */
-	public void setExpires(int expires) throws InvalidArgumentException {
-		if (expires < 0)
-			throw new InvalidArgumentException("bad argument " + expires);
-		this.expires = expires;
-	}
+        if (!parameters.isEmpty()) {
+            retval += SEMICOLON + parameters.encode();
+        }
+        return retval;
+    }
+
+    public void setValue(String value) throws ParseException {
+        // not implemented.
+        throw new ParseException(value,0);
+
+    }
+
+    /**
+     * Gets the expires value of the ExpiresHeader. This expires value is
+     *
+     * relative time.
+     *
+     *
+     *
+     * @return the expires value of the ExpiresHeader.
+     *
+     * @since JAIN SIP v1.1
+     *
+     */
+    public int getExpires() {
+        return expires;
+    }
+
+    /**
+     * Sets the relative expires value of the ExpiresHeader.
+     * The expires value MUST be greater than zero and MUST be
+     * less than 2**31.
+     *
+     * @param expires - the new expires value of this ExpiresHeader
+     *
+     * @throws InvalidArgumentException if supplied value is less than zero.
+     *
+     * @since JAIN SIP v1.2
+     *
+     */
+    public void setExpires(int expires) throws InvalidArgumentException {
+        if (expires < 0)
+            throw new InvalidArgumentException("bad argument " + expires);
+        this.expires = expires;
+    }
 }

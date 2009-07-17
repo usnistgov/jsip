@@ -1,13 +1,13 @@
 /*
- * Conditions Of Use 
- * 
+ * Conditions Of Use
+ *
  * This software was developed by employees of the National Institute of
  * Standards and Technology (NIST), an agency of the Federal Government.
  * Pursuant to title 15 Untied States Code Section 105, works of NIST
  * employees are not subject to copyright protection in the United States
  * and are considered to be in the public domain.  As a result, a formal
  * license is not needed to use the software.
- * 
+ *
  * This software is provided by NIST as a service and is expressly
  * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
  * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
@@ -16,15 +16,15 @@
  * regarding the use of the software or the results thereof, including but
  * not limited to the correctness, accuracy, reliability or usefulness of
  * the software.
- * 
+ *
  * Permission to use this software is contingent upon your acceptance
  * of the terms of this agreement
- *  
+ *
  * .
- * 
+ *
  */
-/* This class is entirely derived from TCPMessageChannel, 
- * by making some minor changes. Daniel J. Martinez Manzano <dani@dif.um.es> 
+/* This class is entirely derived from TCPMessageChannel,
+ * by making some minor changes. Daniel J. Martinez Manzano <dani@dif.um.es>
  * made these changes. Ahmet Uyar
  * <auyar@csit.fsu.edu>sent in a bug report for TCP operation of the
  * JAIN sipStack. Niklas Uhrberg suggested that a mechanism be added to
@@ -32,7 +32,7 @@
  * Adaptations were contributed by Daniel Martinez. Hagai Sela
  * contributed a bug fix for symmetric nat. Jeroen van Bemmel
  * added compensation for buggy clients ( Microsoft RTC clients ).
- * Bug fixes by viswashanti.kadiyala@antepo.com, Joost Yervante Damand	
+ * Bug fixes by viswashanti.kadiyala@antepo.com, Joost Yervante Damand
  */
 
 /******************************************************************************
@@ -57,14 +57,14 @@ import javax.sip.message.Response;
  * starts a message parser in its own thread and talks to the message parser via a pipe. The
  * message parser calls back via the parseError or processMessage functions that are defined as
  * part of the SIPMessageListener interface.
- * 
+ *
  * @see gov.nist.javax.sip.parser.PipelinedMsgParser
- * 
- * 
+ *
+ *
  * @author M. Ranganathan
- * 
- * 
- * @version 1.2 $Revision: 1.18 $ $Date: 2009-02-24 03:39:45 $
+ *
+ *
+ * @version 1.2 $Revision: 1.19 $ $Date: 2009-07-17 18:58:16 $
  */
 public final class TLSMessageChannel extends MessageChannel implements SIPMessageListener,
         Runnable, RawMessageChannel {
@@ -107,12 +107,12 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
      * All the processing of the message is done here with the sipStack being freed up to handle
      * new connections. The sock input is the socket that is returned from the accept. Global data
      * that is shared by all threads is accessible in the Server structure.
-     * 
+     *
      * @param sock Socket from which to read and write messages. The socket is already connected
      *        (was created as a result of an accept).
-     * 
+     *
      * @param sipStack Ptr to SIP Stack
-     * 
+     *
      * @param msgProcessor -- the message processor that created us.
      */
 
@@ -144,7 +144,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
     /**
      * Constructor - connects to the given inet address. Acknowledgement -- Lamine Brahimi (IBM
      * Zurich) sent in a bug fix for this method. A thread was being uncessarily created.
-     * 
+     *
      * @param inetAddr inet address to connect to.
      * @param sipStack is the sip sipStack from which we are created.
      * @param messageProcessor -- the message processor that created us.
@@ -192,7 +192,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
 
     /**
      * Get my SIP Stack.
-     * 
+     *
      * @return The SIP Stack for this message channel.
      */
     public SIPTransactionStack getSIPStack() {
@@ -201,7 +201,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
 
     /**
      * get the transport string.
-     * 
+     *
      * @return "tcp" in this case.
      */
     public String getTransport() {
@@ -210,7 +210,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
 
     /**
      * get the address of the client that sent the data to us.
-     * 
+     *
      * @return Address of the client that sent us data that resulted in this channel being
      *         created.
      */
@@ -231,7 +231,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
 
     /**
      * Send message to whoever is connected to us. Uses the topmost via address to send to.
-     * 
+     *
      * @param msg is the message to send.
      * @param retry
      */
@@ -262,7 +262,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
     /**
      * Return a formatted message to the client. We try to re-connect with the peer on the other
      * end if possible.
-     * 
+     *
      * @param sipMessage Message to send.
      * @throws IOException If there is an error sending the message
      */
@@ -279,7 +279,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
 
     /**
      * Send a message to a specified address.
-     * 
+     *
      * @param message Pre-formatted message to send.
      * @param receiverAddress Address to send it to.
      * @param receiverPort Receiver port.
@@ -316,7 +316,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
     /**
      * Exception processor for exceptions detected from the parser. (This is invoked by the parser
      * when an error is detected).
-     * 
+     *
      * @param sipMessage -- the message that incurred the error.
      * @param ex -- parse exception detected by the parser.
      * @param header -- header that caused the error.
@@ -365,10 +365,10 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
     /**
      * Gets invoked by the parser as a callback on successful message parsing (i.e. no parser
      * errors).
-     * 
+     *
      * @param sipMessage Mesage to process (this calls the application for processing the
      *        message).
-     * 
+     *
      * Jvb: note that this code is identical to TCPMessageChannel, refactor some day
      */
     public void processMessage(SIPMessage sipMessage) throws Exception {
@@ -476,7 +476,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
                 } else {
                     SIPResponse response = sipRequest
                             .createResponse(Response.SERVICE_UNAVAILABLE);
-                   
+
                     RetryAfter retryAfter = new RetryAfter();
 
                     // Be a good citizen and send a decent response code back.
@@ -636,7 +636,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
 
     /**
      * Equals predicate.
-     * 
+     *
      * @param other is the other object to compare ourselves to for equals
      */
 
@@ -668,7 +668,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
 
     /**
      * Get the host to assign to outgoing messages.
-     * 
+     *
      * @return the host to assign to the via header.
      */
     public String getViaHost() {
@@ -677,7 +677,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
 
     /**
      * Get the port for outgoing messages sent from the channel.
-     * 
+     *
      * @return the port to assign to the via header.
      */
     public int getViaPort() {
@@ -686,7 +686,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
 
     /**
      * Get the port of the peer to whom we are sending messages.
-     * 
+     *
      * @return the peer port.
      */
     public int getPeerPort() {

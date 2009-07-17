@@ -1,13 +1,13 @@
 /*
-* Conditions Of Use 
-* 
+* Conditions Of Use
+*
 * This software was developed by employees of the National Institute of
 * Standards and Technology (NIST), an agency of the Federal Government.
 * Pursuant to title 15 Untied States Code Section 105, works of NIST
 * employees are not subject to copyright protection in the United States
 * and are considered to be in the public domain.  As a result, a formal
 * license is not needed to use the software.
-* 
+*
 * This software is provided by NIST as a service and is expressly
 * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
 * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
@@ -16,12 +16,12 @@
 * regarding the use of the software or the results thereof, including but
 * not limited to the correctness, accuracy, reliability or usefulness of
 * the software.
-* 
+*
 * Permission to use this software is contingent upon your acceptance
 * of the terms of this agreement
-*  
+*
 * .
-* 
+*
 */
 /*******************************************************************************
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
@@ -74,62 +74,62 @@ import java.text.ParseException;
  *
  * @author M. Ranganathan   <br/>
  * @author Olivier Deruelle <br/>
- * @version 1.2 $Revision: 1.4 $ $Date: 2006-07-13 09:01:46 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2009-07-17 18:57:29 $
  * @since 1.1
  */
 public class ContentEncoding
-	extends SIPHeader
-	implements javax.sip.header.ContentEncodingHeader {
+    extends SIPHeader
+    implements javax.sip.header.ContentEncodingHeader {
 
-	/**
-	 * Comment for <code>serialVersionUID</code>
-	 */
-	private static final long serialVersionUID = 2034230276579558857L;
-	/**
-	 * ContentEncoding field.
-	 */
-	protected String contentEncoding;
+    /**
+     * Comment for <code>serialVersionUID</code>
+     */
+    private static final long serialVersionUID = 2034230276579558857L;
+    /**
+     * ContentEncoding field.
+     */
+    protected String contentEncoding;
 
-	/**
-	 * Default constructor.
-	 */
-	public ContentEncoding() {
-		super(CONTENT_ENCODING);
-	}
+    /**
+     * Default constructor.
+     */
+    public ContentEncoding() {
+        super(CONTENT_ENCODING);
+    }
 
-	/** 
-	 * Constructor.
-	 * @param enc String to set.
-	 */
-	public ContentEncoding(String enc) {
-		super(CONTENT_ENCODING);
-		contentEncoding = enc;
-	}
+    /**
+     * Constructor.
+     * @param enc String to set.
+     */
+    public ContentEncoding(String enc) {
+        super(CONTENT_ENCODING);
+        contentEncoding = enc;
+    }
 
-	/**
-	 * Canonical encoding of body of the header.
-	 * @return  encoded body of the header.
-	 */
-	public String encodeBody() {
-		return contentEncoding;
-	}
+    /**
+     * Canonical encoding of body of the header.
+     * @return  encoded body of the header.
+     */
+    public String encodeBody() {
+        return contentEncoding;
+    }
 
-	/**
-	 * Get the ContentEncoding field.
-	 * @return String
-	 */
-	public String getEncoding() {
-		return contentEncoding;
-	}
+    /**
+     * Get the ContentEncoding field.
+     * @return String
+     */
+    public String getEncoding() {
+        return contentEncoding;
+    }
 
-	/**
-	 * Set the ConentEncoding field.
-	 * @param encoding String to set
-	 */
-	public void setEncoding(String encoding) throws ParseException {
-		if (encoding == null)
-			throw new NullPointerException(
-				"JAIN-SIP Exception, " + " encoding is null");
-		contentEncoding = encoding;
-	}
+    /**
+     * Set the ConentEncoding field.
+     * @param encoding String to set
+     */
+    public void setEncoding(String encoding) throws ParseException {
+        if (encoding == null)
+            throw new NullPointerException(
+                "JAIN-SIP Exception, " + " encoding is null");
+        contentEncoding = encoding;
+    }
 }

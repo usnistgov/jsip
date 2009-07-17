@@ -6,7 +6,7 @@
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. 
+ * This distribution may include materials developed by third parties.
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
@@ -16,10 +16,10 @@
  *
  *  HISTORY
  *  Version   Date      Author              Comments
- *  1.1     08/10/2002  Phelim O'Doherty 
- *  1.2     20/12/2005    Jereon Van Bemmel Added create methods for PUBLISH 
+ *  1.1     08/10/2002  Phelim O'Doherty
+ *  1.2     20/12/2005    Jereon Van Bemmel Added create methods for PUBLISH
  *                                          headers
- *  1.2     20/12/2006    Phelim O'Doherty  Added new createCseqHeader with long 
+ *  1.2     20/12/2006    Phelim O'Doherty  Added new createCseqHeader with long
  *                                          sequence number
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
@@ -31,9 +31,9 @@ import javax.sip.InvalidArgumentException;
 import java.util.*;
 
 /**
- * This interface provides factory methods that allow an application to create 
- * Header object from a particular implementation of JAIN SIP. This class is a 
- * singleton and can be retrieved from the 
+ * This interface provides factory methods that allow an application to create
+ * Header object from a particular implementation of JAIN SIP. This class is a
+ * singleton and can be retrieved from the
  * {@link javax.sip.SipFactory#createHeaderFactory()}.
  *
  * @author BEA Systems, NIST
@@ -42,7 +42,7 @@ import java.util.*;
 public interface HeaderFactory {
 
     /**
-     * Creates a new AcceptEncodingHeader based on the newly supplied encoding 
+     * Creates a new AcceptEncodingHeader based on the newly supplied encoding
      * value.
      *
      * @param encoding the new string containing the encoding value.
@@ -51,10 +51,10 @@ public interface HeaderFactory {
      * @return the newly created AcceptEncodingHeader object.
      */
     public AcceptEncodingHeader createAcceptEncodingHeader(String encoding)
-                         throws ParseException;    
+                         throws ParseException;
 
     /**
-     * Creates a new AcceptHeader based on the newly supplied contentType and 
+     * Creates a new AcceptHeader based on the newly supplied contentType and
      * contentSubType values.
      *
      * @param contentType the new string content type value.
@@ -64,11 +64,11 @@ public interface HeaderFactory {
      * @return the newly created AcceptHeader object.
      */
     public AcceptHeader createAcceptHeader(String contentType, String contentSubType)
-                                    throws ParseException; 
+                                    throws ParseException;
 
 
     /**
-     * Creates a new AcceptLanguageHeader based on the newly supplied 
+     * Creates a new AcceptLanguageHeader based on the newly supplied
      * language value.
      *
      * @param language the new Locale value of the language
@@ -82,9 +82,9 @@ public interface HeaderFactory {
      * @param alertInfo the new URI value of the alertInfo
      * @return the newly created AlertInfoHeader object.
      */
-    public AlertInfoHeader createAlertInfoHeader(URI alertInfo);    
+    public AlertInfoHeader createAlertInfoHeader(URI alertInfo);
 
-    
+
     /**
      * Creates a new AllowEventsHeader based on the newly supplied event type
      * value.
@@ -96,7 +96,7 @@ public interface HeaderFactory {
      */
     public AllowEventsHeader createAllowEventsHeader(String eventType)
                                     throws ParseException;
-    
+
     /**
      * Creates a new AllowHeader based on the newly supplied method value.
      *
@@ -110,7 +110,7 @@ public interface HeaderFactory {
 
 
     /**
-     * Creates a new AuthenticationInfoHeader based on the newly supplied 
+     * Creates a new AuthenticationInfoHeader based on the newly supplied
      * response value.
      *
      * @param response the new string value of the response.
@@ -118,13 +118,13 @@ public interface HeaderFactory {
      * unexpectedly while parsing the response value.
      * @return the newly created AuthenticationInfoHeader object.
      */
-    public AuthenticationInfoHeader createAuthenticationInfoHeader(String response) 
-                                    throws ParseException; 
+    public AuthenticationInfoHeader createAuthenticationInfoHeader(String response)
+                                    throws ParseException;
 
-    
+
 
     /**
-     * Creates a new AuthorizationHeader based on the newly supplied 
+     * Creates a new AuthorizationHeader based on the newly supplied
      * scheme value.
      *
      * @param scheme the new string value of the scheme.
@@ -133,15 +133,15 @@ public interface HeaderFactory {
      * @return the newly created AuthorizationHeader object.
      */
     public AuthorizationHeader createAuthorizationHeader(String scheme)
-                                    throws ParseException;    
+                                    throws ParseException;
 
     /**
-     * Creates a new CSeqHeader based on the newly supplied sequence number and 
+     * Creates a new CSeqHeader based on the newly supplied sequence number and
      * method values.
      *
      * @param sequenceNumber the new integer value of the sequence number.
      * @param method the new string value of the method.
-     * @throws InvalidArgumentException if supplied sequence number is less 
+     * @throws InvalidArgumentException if supplied sequence number is less
      * than zero.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the method value.
@@ -168,18 +168,18 @@ public interface HeaderFactory {
      * @since v1.2
      */
     public CSeqHeader createCSeqHeader(long sequenceNumber, String method)
-                             throws ParseException, InvalidArgumentException;    
-    
-    
+                             throws ParseException, InvalidArgumentException;
+
+
     /**
-     * Creates a new CallIdHeader based on the newly supplied callId value. 
-     * 
+     * Creates a new CallIdHeader based on the newly supplied callId value.
+     *
      * @param callId the new string value of the call-id.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the callId value.
      * @return the newly created CallIdHeader object.
      */
-    public CallIdHeader createCallIdHeader(String callId) throws ParseException;  
+    public CallIdHeader createCallIdHeader(String callId) throws ParseException;
 
 
     /**
@@ -188,7 +188,7 @@ public interface HeaderFactory {
      * @param callInfo the new URI value of the callInfo.
      * @return the newly created CallInfoHeader object.
      */
-    public CallInfoHeader createCallInfoHeader(URI callInfo);      
+    public CallInfoHeader createCallInfoHeader(URI callInfo);
 
 
     /**
@@ -197,12 +197,12 @@ public interface HeaderFactory {
      * @param address the new Address value of the address.
      * @return the newly created ContactHeader object.
      */
-    public ContactHeader createContactHeader(Address address);    
+    public ContactHeader createContactHeader(Address address);
 
     /**
      * Creates a new wildcard ContactHeader. This is used in Register requests
      * to indicate to the server that it should remove all locations the
-     * at which the user is currently available. This implies that the 
+     * at which the user is currently available. This implies that the
      * following conditions are met:
      * <ul>
      * <li><code>ContactHeader.getAddress.getUserInfo() == *;</code>
@@ -212,11 +212,11 @@ public interface HeaderFactory {
      *
      * @return the newly created wildcard ContactHeader.
      */
-    public ContactHeader createContactHeader();    
+    public ContactHeader createContactHeader();
 
 
     /**
-     * Creates a new ContentDispositionHeader based on the newly supplied 
+     * Creates a new ContentDispositionHeader based on the newly supplied
      * contentDisposition value.
      *
      * @param contentDispositionType the new string value of the contentDisposition.
@@ -228,7 +228,7 @@ public interface HeaderFactory {
                                   throws ParseException;
 
     /**
-     * Creates a new ContentEncodingHeader based on the newly supplied encoding 
+     * Creates a new ContentEncodingHeader based on the newly supplied encoding
      * value.
      *
      * @param encoding the new string containing the encoding value.
@@ -237,30 +237,30 @@ public interface HeaderFactory {
      * @return the newly created ContentEncodingHeader object.
      */
     public ContentEncodingHeader createContentEncodingHeader(String encoding)
-                                  throws ParseException;    
+                                  throws ParseException;
 
     /**
-     * Creates a new ContentLanguageHeader based on the newly supplied 
+     * Creates a new ContentLanguageHeader based on the newly supplied
      * contentLanguage value.
      *
      * @param contentLanguage the new Locale value of the contentLanguage.
      * @return the newly created ContentLanguageHeader object.
      */
-    public ContentLanguageHeader createContentLanguageHeader(Locale contentLanguage);   
+    public ContentLanguageHeader createContentLanguageHeader(Locale contentLanguage);
 
     /**
      * Creates a new ContentLengthHeader based on the newly supplied contentLength value.
      *
      * @param contentLength the new integer value of the contentLength.
-     * @throws InvalidArgumentException if supplied contentLength is less 
+     * @throws InvalidArgumentException if supplied contentLength is less
      * than zero.
      * @return the newly created ContentLengthHeader object.
      */
     public ContentLengthHeader createContentLengthHeader(int contentLength)
-                                throws InvalidArgumentException;    
+                                throws InvalidArgumentException;
 
     /**
-     * Creates a new ContentTypeHeader based on the newly supplied contentType and 
+     * Creates a new ContentTypeHeader based on the newly supplied contentType and
      * contentSubType values.
      *
      * @param contentType the new string content type value.
@@ -276,10 +276,10 @@ public interface HeaderFactory {
      * Creates a new DateHeader based on the newly supplied date value.
      *
      * @param date the new Calender value of the date.
-     * @return the newly created DateHeader object. 
+     * @return the newly created DateHeader object.
      */
-    public DateHeader createDateHeader(Calendar date);      
- 
+    public DateHeader createDateHeader(Calendar date);
+
 
     /**
      * Creates a new ErrorInfoHeader based on the newly supplied errorInfo value.
@@ -287,8 +287,8 @@ public interface HeaderFactory {
      * @param errorInfo the new URI value of the errorInfo.
      * @return the newly created ErrorInfoHeader object.
      */
-    public ErrorInfoHeader createErrorInfoHeader(URI errorInfo);  
-    
+    public ErrorInfoHeader createErrorInfoHeader(URI errorInfo);
+
     /**
      * Creates a new EventHeader based on the newly supplied eventType value.
      *
@@ -297,21 +297,21 @@ public interface HeaderFactory {
      * unexpectedly while parsing the eventType value.
      * @return the newly created EventHeader object.
      */
-    public EventHeader createEventHeader(String eventType) throws ParseException;          
+    public EventHeader createEventHeader(String eventType) throws ParseException;
 
     /**
      * Creates a new ExpiresHeader based on the newly supplied expires value.
      *
      * @param expires the new integer value of the expires.
-     * @throws InvalidArgumentException if supplied expires is less 
+     * @throws InvalidArgumentException if supplied expires is less
      * than zero.
      * @return the newly created ExpiresHeader object.
      */
-    public ExpiresHeader createExpiresHeader(int expires) 
+    public ExpiresHeader createExpiresHeader(int expires)
                                     throws InvalidArgumentException;
 
     /**
-     * Creates a new Header based on the newly supplied name and value values. 
+     * Creates a new Header based on the newly supplied name and value values.
      * This method can be used to create ExtensionHeaders.
      *
      * @param name the new string name of the Header value.
@@ -324,13 +324,13 @@ public interface HeaderFactory {
     public Header createHeader(String name, String value) throws ParseException;
 
     /**
-     * Creates a new List of Headers based on a supplied comma seperated 
+     * Creates a new List of Headers based on a supplied comma seperated
      * list of Header values for a single header name.
      * This method can be used only for SIP headers whose grammar is of the form
      * header = header-name HCOLON header-value *(COMMA header-value) that
-     * allows for combining header fields of the same name into a 
-     * comma-separated list.  Note that the Contact header field allows a 
-     * comma-separated list  unless the header field 
+     * allows for combining header fields of the same name into a
+     * comma-separated list.  Note that the Contact header field allows a
+     * comma-separated list  unless the header field
      * value is "*"
      * @param headers the new string comma seperated list of Header values.
      * @throws ParseException which signals that an error has been reached
@@ -339,24 +339,24 @@ public interface HeaderFactory {
      * @return the newly created List of Header objects.
      */
     public List createHeaders(String headers) throws ParseException;
-    
-    
+
+
     /**
-     * Creates a new FromHeader based on the newly supplied address and 
+     * Creates a new FromHeader based on the newly supplied address and
      * tag values.
      *
      * @param address the new Address object of the address.
      * @param tag the new string value of the tag.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the tag value.
-     * @return the newly created FromHeader object.  
+     * @return the newly created FromHeader object.
      */
     public FromHeader createFromHeader(Address address, String tag)
-                       throws ParseException;    
+                       throws ParseException;
 
 
     /**
-     * Creates a new InReplyToHeader based on the newly supplied callId 
+     * Creates a new InReplyToHeader based on the newly supplied callId
      * value.
      *
      * @param callId the new string containing the callId value.
@@ -365,45 +365,45 @@ public interface HeaderFactory {
      * @return the newly created InReplyToHeader object.
      */
     public InReplyToHeader createInReplyToHeader(String callId)
-                                  throws ParseException;   
+                                  throws ParseException;
      /**
      * Creates a new MaxForwardsHeader based on the newly supplied maxForwards value.
      *
      * @param maxForwards the new integer value of the maxForwards.
-     * @throws InvalidArgumentException if supplied maxForwards is less 
+     * @throws InvalidArgumentException if supplied maxForwards is less
      * than zero or greater than 255.
      * @return the newly created MaxForwardsHeader object.
      */
     public MaxForwardsHeader createMaxForwardsHeader(int maxForwards)
                               throws InvalidArgumentException;
-  
+
     /**
-     * Creates a new MimeVersionHeader based on the newly supplied mimeVersion 
+     * Creates a new MimeVersionHeader based on the newly supplied mimeVersion
      * values.
      *
      * @param majorVersion the new integer value of the majorVersion.
      * @param minorVersion the new integer value of the minorVersion.
-     * @throws InvalidArgumentException if supplied majorVersion or minorVersion 
+     * @throws InvalidArgumentException if supplied majorVersion or minorVersion
      * is less than zero.
      * @return the newly created MimeVersionHeader object.
      */
     public MimeVersionHeader createMimeVersionHeader(int majorVersion, int minorVersion)
-                              throws InvalidArgumentException; 
+                              throws InvalidArgumentException;
 
     /**
      * Creates a new MinExpiresHeader based on the newly supplied minExpires value.
      *
      * @param minExpires the new integer value of the minExpires.
-     * @throws InvalidArgumentException if supplied minExpires is less 
+     * @throws InvalidArgumentException if supplied minExpires is less
      * than zero.
      * @return the newly created MinExpiresHeader object.
      */
     public MinExpiresHeader createMinExpiresHeader(int minExpires)
-                              throws InvalidArgumentException;    
-    
-    
+                              throws InvalidArgumentException;
+
+
     /**
-     * Creates a new OrganizationHeader based on the newly supplied 
+     * Creates a new OrganizationHeader based on the newly supplied
      * organization value.
      *
      * @param organization the new string value of the organization.
@@ -412,8 +412,8 @@ public interface HeaderFactory {
      * @return the newly created OrganizationHeader object.
      */
     public OrganizationHeader createOrganizationHeader(String organization)
-                               throws ParseException;     
-    
+                               throws ParseException;
+
     /**
      * Creates a new PriorityHeader based on the newly supplied priority value.
      *
@@ -423,10 +423,10 @@ public interface HeaderFactory {
      * @return the newly created PriorityHeader object.
      */
     public PriorityHeader createPriorityHeader(String priority)
-                           throws ParseException;    
+                           throws ParseException;
 
     /**
-     * Creates a new ProxyAuthenticateHeader based on the newly supplied 
+     * Creates a new ProxyAuthenticateHeader based on the newly supplied
      * scheme value.
      *
      * @param scheme the new string value of the scheme.
@@ -434,11 +434,11 @@ public interface HeaderFactory {
      * unexpectedly while parsing the scheme value.
      * @return the newly created ProxyAuthenticateHeader object.
      */
-    public ProxyAuthenticateHeader createProxyAuthenticateHeader(String scheme) 
+    public ProxyAuthenticateHeader createProxyAuthenticateHeader(String scheme)
                                     throws ParseException;
-    
+
     /**
-     * Creates a new ProxyAuthorizationHeader based on the newly supplied 
+     * Creates a new ProxyAuthorizationHeader based on the newly supplied
      * scheme value.
      *
      * @param scheme the new string value of the scheme.
@@ -447,10 +447,10 @@ public interface HeaderFactory {
      * @return the newly created ProxyAuthorizationHeader object.
      */
     public ProxyAuthorizationHeader createProxyAuthorizationHeader(String scheme)
-                                    throws ParseException; 
+                                    throws ParseException;
 
     /**
-     * Creates a new ProxyRequireHeader based on the newly supplied optionTag 
+     * Creates a new ProxyRequireHeader based on the newly supplied optionTag
      * value.
      *
      * @param optionTag the new string OptionTag value.
@@ -458,18 +458,18 @@ public interface HeaderFactory {
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the optionTag value.
      */
-    public ProxyRequireHeader createProxyRequireHeader(String optionTag) 
+    public ProxyRequireHeader createProxyRequireHeader(String optionTag)
                                     throws ParseException;
 
- 
+
     /**
-     * Creates a new RAckHeader based on the newly supplied rSeqNumber, 
+     * Creates a new RAckHeader based on the newly supplied rSeqNumber,
      * cSeqNumber and method values.
      *
      * @param rSeqNumber the new integer value of the rSeqNumber.
      * @param cSeqNumber the new integer value of the cSeqNumber.
      * @param method the new string value of the method.
-     * @throws InvalidArgumentException if supplied rSeqNumber or cSeqNumber is 
+     * @throws InvalidArgumentException if supplied rSeqNumber or cSeqNumber is
      * less than zero or greater than than 2**31-1.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the method value.
@@ -482,13 +482,13 @@ public interface HeaderFactory {
      * Creates a new RSeqHeader based on the newly supplied sequenceNumber value.
      *
      * @param sequenceNumber the new integer value of the sequenceNumber.
-     * @throws InvalidArgumentException if supplied sequenceNumber is 
+     * @throws InvalidArgumentException if supplied sequenceNumber is
      * less than zero or greater than than 2**31-1.
      * @return the newly created RSeqHeader object.
      */
     public RSeqHeader createRSeqHeader(int sequenceNumber)
                              throws InvalidArgumentException;
-        
+
     /**
      * Creates a new ReasonHeader based on the newly supplied reason value.
      *
@@ -497,18 +497,18 @@ public interface HeaderFactory {
      * @param text the new string value of the text.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the protocol or text value.
-     * @throws InvalidArgumentException if supplied cause is 
+     * @throws InvalidArgumentException if supplied cause is
      * less than zero.
      * @return the newly created ReasonHeader object.
      */
-    public ReasonHeader createReasonHeader(String protocol, int cause, String text) 
+    public ReasonHeader createReasonHeader(String protocol, int cause, String text)
                                     throws InvalidArgumentException, ParseException;
-       
+
      /**
      * Creates a new RecordRouteHeader based on the newly supplied address value.
      *
      * @param address the new Address object of the address.
-     * @return the newly created RecordRouteHeader object.  
+     * @return the newly created RecordRouteHeader object.
      */
     public RecordRouteHeader createRecordRouteHeader(Address address);
 
@@ -516,7 +516,7 @@ public interface HeaderFactory {
      * Creates a new ReplyToHeader based on the newly supplied address value.
      *
      * @param address the new Address object of the address.
-     * @return the newly created ReplyToHeader object.  
+     * @return the newly created ReplyToHeader object.
      */
     public ReplyToHeader createReplyToHeader(Address address);
 
@@ -524,12 +524,12 @@ public interface HeaderFactory {
      * Creates a new ReferToHeader based on the newly supplied address value.
      *
      * @param address the new Address object of the address.
-     * @return the newly created ReferToHeader object.  
+     * @return the newly created ReferToHeader object.
      */
-    public ReferToHeader createReferToHeader(Address address);    
-    
+    public ReferToHeader createReferToHeader(Address address);
+
     /**
-     * Creates a new RequireHeader based on the newly supplied optionTag 
+     * Creates a new RequireHeader based on the newly supplied optionTag
      * value.
      *
      * @param optionTag the new string value containing the optionTag value.
@@ -539,30 +539,30 @@ public interface HeaderFactory {
      */
     public RequireHeader createRequireHeader(String optionTag)
                                     throws ParseException;
-    
+
     /**
-     * Creates a new RetryAfterHeader based on the newly supplied retryAfter 
+     * Creates a new RetryAfterHeader based on the newly supplied retryAfter
      * value.
      *
      * @param retryAfter the new integer value of the retryAfter.
-     * @throws InvalidArgumentException if supplied retryAfter is less 
+     * @throws InvalidArgumentException if supplied retryAfter is less
      * than zero.
      * @return the newly created RetryAfterHeader object.
      */
     public RetryAfterHeader createRetryAfterHeader(int retryAfter)
                              throws InvalidArgumentException;
 
-    
+
     /**
      * Creates a new RouteHeader based on the newly supplied address value.
      *
      * @param address the new Address object of the address.
-     * @return the newly created RouteHeader object.  
+     * @return the newly created RouteHeader object.
      */
     public RouteHeader createRouteHeader(Address address);
 
     /**
-     * Creates a new ServerHeader based on the newly supplied List of product 
+     * Creates a new ServerHeader based on the newly supplied List of product
      * values.
      *
      * @param product the new List of values of the product.
@@ -585,7 +585,7 @@ public interface HeaderFactory {
                                 throws ParseException;
 
     /**
-     * Creates a new SubscriptionStateHeader based on the newly supplied 
+     * Creates a new SubscriptionStateHeader based on the newly supplied
      * subscriptionState value.
      *
      * @param subscriptionState the new string value of the subscriptionState.
@@ -593,12 +593,12 @@ public interface HeaderFactory {
      * unexpectedly while parsing the subscriptionState value.
      * @return the newly created SubscriptionStateHeader object.
      */
-    public SubscriptionStateHeader createSubscriptionStateHeader(String subscriptionState) 
+    public SubscriptionStateHeader createSubscriptionStateHeader(String subscriptionState)
                                         throws ParseException;
-    
+
 
     /**
-     * Creates a new SupportedHeader based on the newly supplied optionTag 
+     * Creates a new SupportedHeader based on the newly supplied optionTag
      * value.
      *
      * @param optionTag the new string containing the optionTag value.
@@ -608,32 +608,32 @@ public interface HeaderFactory {
      */
     public SupportedHeader createSupportedHeader(String optionTag)
                                     throws ParseException;
-      
+
     /**
      * Creates a new TimeStampHeader based on the newly supplied timeStamp value.
      *
      * @param timeStamp the new float value of the timeStamp.
-     * @throws InvalidArgumentException if supplied timeStamp is less 
+     * @throws InvalidArgumentException if supplied timeStamp is less
      * than zero.
      * @return the newly created TimeStampHeader object.
      */
     public TimeStampHeader createTimeStampHeader(float timeStamp)
-                            throws InvalidArgumentException;          
+                            throws InvalidArgumentException;
 
     /**
-     * Creates a new ToHeader based on the newly supplied address and 
+     * Creates a new ToHeader based on the newly supplied address and
      * tag values.
      *
      * @param address the new Address object of the address.
      * @param tag the new string value of the tag, this value may be null.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the tag value.
-     * @return the newly created ToHeader object.  
+     * @return the newly created ToHeader object.
      */
     public ToHeader createToHeader(Address address, String tag) throws ParseException;
 
     /**
-     * Creates a new UnsupportedHeader based on the newly supplied optionTag 
+     * Creates a new UnsupportedHeader based on the newly supplied optionTag
      * value.
      *
      * @param optionTag the new string containing the optionTag value.
@@ -642,10 +642,10 @@ public interface HeaderFactory {
      * @return the newly created UnsupportedHeader object.
      */
     public UnsupportedHeader createUnsupportedHeader(String optionTag)
-                              throws ParseException;       
+                              throws ParseException;
 
     /**
-     * Creates a new UserAgentHeader based on the newly supplied List of product 
+     * Creates a new UserAgentHeader based on the newly supplied List of product
      * values.
      *
      * @param product the new List of values of the product.
@@ -672,7 +672,7 @@ public interface HeaderFactory {
                  String branch) throws ParseException, InvalidArgumentException;
 
     /**
-     * Creates a new WWWAuthenticateHeader based on the newly supplied 
+     * Creates a new WWWAuthenticateHeader based on the newly supplied
      * scheme value.
      *
      * @param scheme the new string value of the scheme.
@@ -680,11 +680,11 @@ public interface HeaderFactory {
      * unexpectedly while parsing the scheme values.
      * @return the newly created WWWAuthenticateHeader object.
      */
-    public WWWAuthenticateHeader createWWWAuthenticateHeader(String scheme) 
+    public WWWAuthenticateHeader createWWWAuthenticateHeader(String scheme)
                                 throws ParseException;
-    
+
     /**
-     * Creates a new WarningHeader based on the newly supplied 
+     * Creates a new WarningHeader based on the newly supplied
      * agent, code and comment values.
      *
      * @param agent the new string value of the agent.
@@ -698,28 +698,28 @@ public interface HeaderFactory {
      */
     public WarningHeader createWarningHeader(String agent, int code, String comment)
                           throws InvalidArgumentException, ParseException;
-	
-	
-	/**
-	 * Creates a new SIP-ETag header with the supplied tag value
-	 * 
-	 * @param etag the new tag token
-	 * @return the newly created SIP-ETag header
-	 * @throws ParseException when an error occurs during parsing of the etag parameter
-	 * 
-	 * @since 1.2
-	 */
-	public SIPETagHeader createSIPETagHeader( String etag ) throws ParseException;
-	
-	/**
-	 * Creates a new SIP-If-Match header with the supplied tag value
-	 * 
-	 * @param etag the new tag token
-	 * @return the newly created SIP-If-Match header
-	 * @throws ParseException when an error occurs during parsing of the etag parameter
-	 * 
-	 * @since 1.2
-	 */
-	public SIPIfMatchHeader createSIPIfMatchHeader( String etag ) throws ParseException;    
+
+
+    /**
+     * Creates a new SIP-ETag header with the supplied tag value
+     *
+     * @param etag the new tag token
+     * @return the newly created SIP-ETag header
+     * @throws ParseException when an error occurs during parsing of the etag parameter
+     *
+     * @since 1.2
+     */
+    public SIPETagHeader createSIPETagHeader( String etag ) throws ParseException;
+
+    /**
+     * Creates a new SIP-If-Match header with the supplied tag value
+     *
+     * @param etag the new tag token
+     * @return the newly created SIP-If-Match header
+     * @throws ParseException when an error occurs during parsing of the etag parameter
+     *
+     * @since 1.2
+     */
+    public SIPIfMatchHeader createSIPIfMatchHeader( String etag ) throws ParseException;
 }
 

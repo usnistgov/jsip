@@ -27,16 +27,16 @@ package gov.nist.javax.sip.header;
  *
  */
 public interface ViaHeaderExt {
-	/**
-	 * Returns hostname:port as a string equivalent to the "sent-by" field 
-	 * @return "sent-by" field
-	 * @since 2.0
-	 */
-	public String getSentByField();
-	/**
-	 * Returns transport to the "sent-protocol" field 
-	 * @return "sent-protocol" field
-	 * @since 2.0
-	 */
-	public String getSentProtocolField();
+    /**
+     * Returns hostname:port as a string equivalent to the "sent-by" field
+     * @return "sent-by" field
+     * @since 2.0
+     */
+    public String getSentByField();
+    /**
+     * Returns transport to the "sent-protocol" field
+     * @return "sent-protocol" field
+     * @since 2.0
+     */
+    public String getSentProtocolField();
 }

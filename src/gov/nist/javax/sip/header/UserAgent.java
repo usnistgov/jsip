@@ -1,13 +1,13 @@
 /*
-* Conditions Of Use 
-* 
+* Conditions Of Use
+*
 * This software was developed by employees of the National Institute of
 * Standards and Technology (NIST), an agency of the Federal Government.
 * Pursuant to title 15 Untied States Code Section 105, works of NIST
 * employees are not subject to copyright protection in the United States
 * and are considered to be in the public domain.  As a result, a formal
 * license is not needed to use the software.
-* 
+*
 * This software is provided by NIST as a service and is expressly
 * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
 * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
@@ -16,12 +16,12 @@
 * regarding the use of the software or the results thereof, including but
 * not limited to the correctness, accuracy, reliability or usefulness of
 * the software.
-* 
+*
 * Permission to use this software is contingent upon your acceptance
 * of the terms of this agreement
-*  
+*
 * .
-* 
+*
 */
 /*******************************************************************************
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
@@ -33,100 +33,107 @@ import java.text.ParseException;
 import javax.sip.header.*;
 
 /**
- * the UserAgent SIPObject. 
+ * the UserAgent SIPObject.
  *
  * @author Olivier Deruelle <br/>
- * @version 1.2 $Revision: 1.7 $ $Date: 2008-07-30 14:36:06 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2009-07-17 18:57:40 $
  *
- * 
+ *
  *
  */
 public class UserAgent extends SIPHeader implements UserAgentHeader {
 
-	/**
-	 * Comment for <code>serialVersionUID</code>
-	 */
-	private static final long serialVersionUID = 4561239179796364295L;
-	/** Product tokens.
-	*/
-	protected List productTokens;
+    /**
+     * Comment for <code>serialVersionUID</code>
+     */
+    private static final long serialVersionUID = 4561239179796364295L;
+    /** Product tokens.
+    */
+    protected List productTokens;
 
-	/**
-	 * Return canonical form.
-	 * pmusgrave - put a space between products (preserves format of header)
-	 * @return String
-	 */
-	private String encodeProduct() {
-		StringBuffer tokens = new StringBuffer();
-		ListIterator it = productTokens.listIterator();
+    /**
+     * Return canonical form.
+     * pmusgrave - put a space between products (preserves format of header)
+     * @return String
+     */
+    private String encodeProduct() {
+        StringBuffer tokens = new StringBuffer();
+        ListIterator it = productTokens.listIterator();
 
-		while (it.hasNext()) {
-			tokens.append((String) it.next());
-			
-		}
-		return tokens.toString();
-	}
+        while (it.hasNext()) {
+            tokens.append((String) it.next());
 
-	/** set the productToken field
-	 * @param pt String to set
-	 */
-	public void addProductToken(String pt) {
-		productTokens.add(pt);
-	}
+        }
+        return tokens.toString();
+    }
 
-	/**
-	 * Constructor.
-	 */
-	public UserAgent() {
-		super(NAME);
-		productTokens = new LinkedList();
-	}
+    /** set the productToken field
+     * @param pt String to set
+     */
+    public void addProductToken(String pt) {
+        productTokens.add(pt);
+    }
 
-	/** Encode only the body of this header.
-	*@return encoded value of the header.
-	*/
-	public String encodeBody() {
-		return encodeProduct();
-	}
+    /**
+     * Constructor.
+     */
+    public UserAgent() {
+        super(NAME);
+        productTokens = new LinkedList();
+    }
 
-	/**
-	* Returns the list value of the product parameter.
-	*
-	* @return the software of this UserAgentHeader
-	*/
-	public ListIterator getProduct() {
-		if (productTokens == null || productTokens.isEmpty())
-			return null;
-		else
-			return productTokens.listIterator();
-	}
+    /** Encode only the body of this header.
+    *@return encoded value of the header.
+    */
+    public String encodeBody() {
+        return encodeProduct();
+    }
 
-	/**
-	 * Sets the product value of the UserAgentHeader.
-	 *
-	 * @param product - a List specifying the product value
-	 * @throws ParseException which signals that an error has been reached
-	 * unexpectedly while parsing the product value.
-	 */
-	public void setProduct(List product) throws ParseException {
-		if (product == null)
-			throw new NullPointerException(
-				"JAIN-SIP Exception, UserAgent, "
-					+ "setProduct(), the "
-					+ " product parameter is null");
-		productTokens = product;
-	}
+    /**
+    * Returns the list value of the product parameter.
+    *
+    * @return the software of this UserAgentHeader
+    */
+    public ListIterator getProduct() {
+        if (productTokens == null || productTokens.isEmpty())
+            return null;
+        else
+            return productTokens.listIterator();
+    }
 
-	public Object clone() {
-		UserAgent retval = (UserAgent) super.clone();
-		if (productTokens != null)
-			retval.productTokens = new LinkedList (productTokens);
-		return retval;
-	}
+    /**
+     * Sets the product value of the UserAgentHeader.
+     *
+     * @param product - a List specifying the product value
+     * @throws ParseException which signals that an error has been reached
+     * unexpectedly while parsing the product value.
+     */
+    public void setProduct(List product) throws ParseException {
+        if (product == null)
+            throw new NullPointerException(
+                "JAIN-SIP Exception, UserAgent, "
+                    + "setProduct(), the "
+                    + " product parameter is null");
+        productTokens = product;
+    }
+
+    public Object clone() {
+        UserAgent retval = (UserAgent) super.clone();
+        if (productTokens != null)
+            retval.productTokens = new LinkedList (productTokens);
+        return retval;
+    }
 
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2008/07/30 14:36:06  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  mranga
+ * Reviewed by:   mranga
+ * Fix minor issue in encoding of user-agent header.
+ *
  * Revision 1.6  2006/10/12 11:57:55  pmusgrave
  * Issue number:  79, 80
  * Submitted by:  pmusgrave@newheights.com

@@ -1,13 +1,13 @@
 /*
-* Conditions Of Use 
-* 
+* Conditions Of Use
+*
 * This software was developed by employees of the National Institute of
 * Standards and Technology (NIST), an agency of the Federal Government.
 * Pursuant to title 15 Untied States Code Section 105, works of NIST
 * employees are not subject to copyright protection in the United States
 * and are considered to be in the public domain.  As a result, a formal
 * license is not needed to use the software.
-* 
+*
 * This software is provided by NIST as a service and is expressly
 * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
 * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
@@ -16,12 +16,12 @@
 * regarding the use of the software or the results thereof, including but
 * not limited to the correctness, accuracy, reliability or usefulness of
 * the software.
-* 
+*
 * Permission to use this software is contingent upon your acceptance
 * of the terms of this agreement
-*  
+*
 * .
-* 
+*
 */
 /*******************************************************************************
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
@@ -33,91 +33,91 @@ import java.text.ParseException;
 /**
  * CallInfo SIPHeader.
  *
- * 
+ *
  * @author "M. Ranganathan"  <br/>
- * @version 1.2 $Revision: 1.6 $ $Date: 2007-02-12 15:19:21 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2009-07-17 18:57:28 $
  * @since 1.1
  */
 public final class CallInfo
-	extends ParametersHeader
-	implements javax.sip.header.CallInfoHeader {
+    extends ParametersHeader
+    implements javax.sip.header.CallInfoHeader {
 
-	/**
-	 * Comment for <code>serialVersionUID</code>
-	 */
-	private static final long serialVersionUID = -8179246487696752928L;
-	
-	protected GenericURI info;
+    /**
+     * Comment for <code>serialVersionUID</code>
+     */
+    private static final long serialVersionUID = -8179246487696752928L;
 
-	/**
-	 * Default constructor
-	 */
-	public CallInfo() {
-		super(CALL_INFO);
-	}
+    protected GenericURI info;
 
-	/**
-	 * Return canonical representation.
-	 * @return String 
-	 */
-	public String encodeBody() {
-		return encodeBody(new StringBuffer()).toString();
-	}
+    /**
+     * Default constructor
+     */
+    public CallInfo() {
+        super(CALL_INFO);
+    }
 
-	protected StringBuffer encodeBody(StringBuffer buffer) {
-		buffer.append(LESS_THAN);
-		info.encode(buffer);
-		buffer.append(GREATER_THAN);
+    /**
+     * Return canonical representation.
+     * @return String
+     */
+    public String encodeBody() {
+        return encodeBody(new StringBuffer()).toString();
+    }
 
-		if (parameters != null && !parameters.isEmpty()) {
-			buffer.append(SEMICOLON);
-			parameters.encode(buffer);
-		}
+    protected StringBuffer encodeBody(StringBuffer buffer) {
+        buffer.append(LESS_THAN);
+        info.encode(buffer);
+        buffer.append(GREATER_THAN);
 
-		return buffer;
-	}
+        if (parameters != null && !parameters.isEmpty()) {
+            buffer.append(SEMICOLON);
+            parameters.encode(buffer);
+        }
 
-	/**
-	 * get the purpose field
-	 * @return String
-	 */
-	public String getPurpose() {
-		return this.getParameter("purpose");
-	}
+        return buffer;
+    }
 
-	/**
-	 * get the URI field
-	 * @return URI
-	 */
-	public javax.sip.address.URI getInfo() {
-		return info;
-	}
+    /**
+     * get the purpose field
+     * @return String
+     */
+    public String getPurpose() {
+        return this.getParameter("purpose");
+    }
 
-	/**
-	 * set the purpose field
-	 * @param purpose is the purpose field.
-	 */
-	public void setPurpose(String purpose) {
-		if (purpose == null)
-			throw new NullPointerException("null arg");
-		try {
-			this.setParameter("purpose", purpose);
-		} catch (ParseException ex) {
-		}
-	}
+    /**
+     * get the URI field
+     * @return URI
+     */
+    public javax.sip.address.URI getInfo() {
+        return info;
+    }
 
-	/**
-	 * set the URI field
-	 * @param info is the URI to set.
-	 */
-	public void setInfo(javax.sip.address.URI info) {
-		this.info = (GenericURI) info;
-	}
+    /**
+     * set the purpose field
+     * @param purpose is the purpose field.
+     */
+    public void setPurpose(String purpose) {
+        if (purpose == null)
+            throw new NullPointerException("null arg");
+        try {
+            this.setParameter("purpose", purpose);
+        } catch (ParseException ex) {
+        }
+    }
 
-	public Object clone() {
-		CallInfo retval = (CallInfo) super.clone();
-		if (this.info != null)
-			retval.info = (GenericURI) this.info.clone();
-		return retval;
-	}
+    /**
+     * set the URI field
+     * @param info is the URI to set.
+     */
+    public void setInfo(javax.sip.address.URI info) {
+        this.info = (GenericURI) info;
+    }
+
+    public Object clone() {
+        CallInfo retval = (CallInfo) super.clone();
+        if (this.info != null)
+            retval.info = (GenericURI) this.info.clone();
+        return retval;
+    }
 }

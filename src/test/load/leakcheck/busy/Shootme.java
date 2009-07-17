@@ -9,7 +9,7 @@ import java.util.*;
 /**
  * This class is a UAC template. Shootist is the guy that shoots and shootme is
  * the guy that gets shot.
- * 
+ *
  * @author M. Ranganathan
  */
 
@@ -39,7 +39,7 @@ public class Shootme implements SipListener {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see java.util.TimerTask#run()
          */
         public void run() {
@@ -273,16 +273,16 @@ public class Shootme implements SipListener {
     }
 
 
-	public void processIOException(IOExceptionEvent exceptionEvent) {
-		System.out.println("IOException occured while retransmitting requests:" + exceptionEvent);
-	}
-	public void processTransactionTerminated(TransactionTerminatedEvent transactionTerminatedEvent) {
-		System.out.println("Transaction Terminated event: " + transactionTerminatedEvent );
-	}
-	public void processDialogTerminated(DialogTerminatedEvent dialogTerminatedEvent) {
-		System.out.println("Dialog Terminated event: " + dialogTerminatedEvent);
-	}
-        
+    public void processIOException(IOExceptionEvent exceptionEvent) {
+        System.out.println("IOException occured while retransmitting requests:" + exceptionEvent);
+    }
+    public void processTransactionTerminated(TransactionTerminatedEvent transactionTerminatedEvent) {
+        System.out.println("Transaction Terminated event: " + transactionTerminatedEvent );
+    }
+    public void processDialogTerminated(DialogTerminatedEvent dialogTerminatedEvent) {
+        System.out.println("Dialog Terminated event: " + dialogTerminatedEvent);
+    }
+
     public static void main(String args[]) {
         new Shootme().init();
     }

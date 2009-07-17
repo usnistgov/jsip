@@ -39,233 +39,233 @@ import javax.sip.message.Response;
 import junit.framework.TestCase;
 
 public class DeliverUnsolicitedNotifyTest extends TestCase implements
-		SipListener {
+        SipListener {
 
-	
 
-	private boolean notifySeen = false;
 
-	private boolean notifyResponseSeen = false;
+    private boolean notifySeen = false;
 
-	private MessageFactory messageFactory;
+    private boolean notifyResponseSeen = false;
 
-	private SipProvider sipProvider;
+    private MessageFactory messageFactory;
 
-	private AddressFactory addressFactory;
+    private SipProvider sipProvider;
 
-	private HeaderFactory headerFactory;
+    private AddressFactory addressFactory;
 
-	private ListeningPoint listeningPoint;
+    private HeaderFactory headerFactory;
 
-	private int port;
+    private ListeningPoint listeningPoint;
 
-	private String transport;
+    private int port;
 
-	private SipStack sipStack;
+    private String transport;
 
-	private static Timer timer = new Timer();
+    private SipStack sipStack;
 
-	public void processDialogTerminated(
-			DialogTerminatedEvent dialogTerminatedEvent) {
-		// TODO Auto-generated method stub
+    private static Timer timer = new Timer();
 
-	}
+    public void processDialogTerminated(
+            DialogTerminatedEvent dialogTerminatedEvent) {
+        // TODO Auto-generated method stub
 
-	public void processIOException(IOExceptionEvent exceptionEvent) {
-		// TODO Auto-generated method stub
+    }
 
-	}
+    public void processIOException(IOExceptionEvent exceptionEvent) {
+        // TODO Auto-generated method stub
 
-	public void processRequest(RequestEvent requestEvent) {
-		try {
-			if (requestEvent.getRequest().getMethod().equals(Request.NOTIFY)) {
-				this.notifySeen = true;
-			}
-			Response response = this.messageFactory.createResponse(Response.OK,
-					requestEvent.getRequest());
-			ServerTransaction st = requestEvent.getServerTransaction();
-			if (st == null) {
-				st = sipProvider.getNewServerTransaction(requestEvent
-						.getRequest());
-			}
-			st.sendResponse(response);
+    }
 
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			fail("Unexpected exception ");
-		}
-	}
+    public void processRequest(RequestEvent requestEvent) {
+        try {
+            if (requestEvent.getRequest().getMethod().equals(Request.NOTIFY)) {
+                this.notifySeen = true;
+            }
+            Response response = this.messageFactory.createResponse(Response.OK,
+                    requestEvent.getRequest());
+            ServerTransaction st = requestEvent.getServerTransaction();
+            if (st == null) {
+                st = sipProvider.getNewServerTransaction(requestEvent
+                        .getRequest());
+            }
+            st.sendResponse(response);
 
-	public void processResponse(ResponseEvent responseEvent) {
-		this.notifyResponseSeen = true;
-		
-	}
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            fail("Unexpected exception ");
+        }
+    }
 
-	public void processTimeout(TimeoutEvent timeoutEvent) {
-		// TODO Auto-generated method stub
+    public void processResponse(ResponseEvent responseEvent) {
+        this.notifyResponseSeen = true;
 
-	}
+    }
 
-	public void processTransactionTerminated(
-			TransactionTerminatedEvent transactionTerminatedEvent) {
-		// TODO Auto-generated method stub
+    public void processTimeout(TimeoutEvent timeoutEvent) {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
-	public void setUp() {
-		SipFactory sipFactory = SipFactory.getInstance();
-		sipFactory.resetFactory();
-		sipFactory.setPathName("gov.nist");
-		Properties properties = new Properties();
-		properties.setProperty("javax.sip.STACK_NAME", "mystack");
+    public void processTransactionTerminated(
+            TransactionTerminatedEvent transactionTerminatedEvent) {
+        // TODO Auto-generated method stub
 
-		// The following properties are specific to nist-sip
-		// and are not necessarily part of any other jain-sip
-		// implementation.
+    }
 
-		properties.setProperty("gov.nist.javax.sip.THREAD_POOL_SIZE", "1");
+    public void setUp() {
+        SipFactory sipFactory = SipFactory.getInstance();
+        sipFactory.resetFactory();
+        sipFactory.setPathName("gov.nist");
+        Properties properties = new Properties();
+        properties.setProperty("javax.sip.STACK_NAME", "mystack");
 
-		properties.setProperty("gov.nist.javax.sip.DELIVER_UNSOLICITED_NOTIFY",
-				"true");
-		
-		try {
-			this.port = 6050;
-			this.transport = "udp";
-			this.sipStack = sipFactory.createSipStack(properties);
-			this.listeningPoint = sipStack.createListeningPoint("127.0.0.1",
-					port, transport);
-			sipProvider = sipStack.createSipProvider(listeningPoint);
-			this.addressFactory = sipFactory.createAddressFactory();
-			this.headerFactory = sipFactory.createHeaderFactory();
-			// Create the request.
-			this.messageFactory = sipFactory.createMessageFactory();
-			sipProvider.addSipListener(this);
+        // The following properties are specific to nist-sip
+        // and are not necessarily part of any other jain-sip
+        // implementation.
 
-			timer.schedule(new TimerTask() {
+        properties.setProperty("gov.nist.javax.sip.THREAD_POOL_SIZE", "1");
 
-				public void run() {
-					if (!notifySeen || !notifyResponseSeen) {
-						fail("Did not see expected event");
-					}
-					sipStack.stop();
+        properties.setProperty("gov.nist.javax.sip.DELIVER_UNSOLICITED_NOTIFY",
+                "true");
 
-				}
+        try {
+            this.port = 6050;
+            this.transport = "udp";
+            this.sipStack = sipFactory.createSipStack(properties);
+            this.listeningPoint = sipStack.createListeningPoint("127.0.0.1",
+                    port, transport);
+            sipProvider = sipStack.createSipProvider(listeningPoint);
+            this.addressFactory = sipFactory.createAddressFactory();
+            this.headerFactory = sipFactory.createHeaderFactory();
+            // Create the request.
+            this.messageFactory = sipFactory.createMessageFactory();
+            sipProvider.addSipListener(this);
 
-			}, 4000);
+            timer.schedule(new TimerTask() {
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail("Could not create sip stack");
-		}
+                public void run() {
+                    if (!notifySeen || !notifyResponseSeen) {
+                        fail("Did not see expected event");
+                    }
+                    sipStack.stop();
 
-	}
+                }
 
-	public void testSendRequest() {
-		try {
-			String fromName = "BigGuy";
-			String fromSipAddress = "here.com";
-			String fromDisplayName = "The Master Blaster";
+            }, 4000);
 
-			String toSipAddress = "there.com";
-			String toUser = "LittleGuy";
-			String toDisplayName = "The Little Blister";
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Could not create sip stack");
+        }
 
-			// create >From Header
-			SipURI fromAddress = addressFactory.createSipURI(fromName,
-					fromSipAddress);
+    }
 
-			Address fromNameAddress = addressFactory.createAddress(fromAddress);
-			fromNameAddress.setDisplayName(fromDisplayName);
-			FromHeader fromHeader = headerFactory.createFromHeader(
-					fromNameAddress, "12345");
+    public void testSendRequest() {
+        try {
+            String fromName = "BigGuy";
+            String fromSipAddress = "here.com";
+            String fromDisplayName = "The Master Blaster";
 
-			// create To Header
-			SipURI toAddress = addressFactory
-					.createSipURI(toUser, toSipAddress);
-			Address toNameAddress = addressFactory.createAddress(toAddress);
-			toNameAddress.setDisplayName(toDisplayName);
-			ToHeader toHeader = headerFactory.createToHeader(toNameAddress,
-					null);
+            String toSipAddress = "there.com";
+            String toUser = "LittleGuy";
+            String toDisplayName = "The Little Blister";
 
-			// create Request URI
-			SipURI requestURI = addressFactory.createSipURI(toUser,
-					toSipAddress);
+            // create >From Header
+            SipURI fromAddress = addressFactory.createSipURI(fromName,
+                    fromSipAddress);
 
-			// Create ViaHeaders
+            Address fromNameAddress = addressFactory.createAddress(fromAddress);
+            fromNameAddress.setDisplayName(fromDisplayName);
+            FromHeader fromHeader = headerFactory.createFromHeader(
+                    fromNameAddress, "12345");
 
-			ArrayList viaHeaders = new ArrayList();
+            // create To Header
+            SipURI toAddress = addressFactory
+                    .createSipURI(toUser, toSipAddress);
+            Address toNameAddress = addressFactory.createAddress(toAddress);
+            toNameAddress.setDisplayName(toDisplayName);
+            ToHeader toHeader = headerFactory.createToHeader(toNameAddress,
+                    null);
 
-			ViaHeader viaHeader = headerFactory.createViaHeader("127.0.0.1",
-					port, transport, null);
+            // create Request URI
+            SipURI requestURI = addressFactory.createSipURI(toUser,
+                    toSipAddress);
 
-			// add via headers
-			viaHeaders.add(viaHeader);
+            // Create ViaHeaders
 
-			// Create a new CallId header
-			CallIdHeader callIdHeader = sipProvider.getNewCallId();
-			// JvB: Make sure that the implementation matches the messagefactory
-			callIdHeader = headerFactory.createCallIdHeader(callIdHeader
-					.getCallId());
+            ArrayList viaHeaders = new ArrayList();
 
-			// Create a new Cseq header
-			CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(1L,
-					Request.NOTIFY);
+            ViaHeader viaHeader = headerFactory.createViaHeader("127.0.0.1",
+                    port, transport, null);
 
-			// Create a new MaxForwardsHeader
-			MaxForwardsHeader maxForwards = headerFactory
-					.createMaxForwardsHeader(70);
+            // add via headers
+            viaHeaders.add(viaHeader);
 
-			Request request = messageFactory.createRequest(requestURI,
-					Request.NOTIFY, callIdHeader, cSeqHeader, fromHeader,
-					toHeader, viaHeaders, maxForwards);
-			// Create contact headers
-			String host = listeningPoint.getIPAddress();
+            // Create a new CallId header
+            CallIdHeader callIdHeader = sipProvider.getNewCallId();
+            // JvB: Make sure that the implementation matches the messagefactory
+            callIdHeader = headerFactory.createCallIdHeader(callIdHeader
+                    .getCallId());
 
-			SipURI contactUrl = addressFactory.createSipURI(fromName, host);
-			contactUrl.setPort(listeningPoint.getPort());
+            // Create a new Cseq header
+            CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(1L,
+                    Request.NOTIFY);
 
-			// Create the contact name address.
-			SipURI contactURI = addressFactory.createSipURI(fromName, host);
-			contactURI.setTransportParam(transport);
-			contactURI.setPort(sipProvider.getListeningPoint(transport)
-					.getPort());
+            // Create a new MaxForwardsHeader
+            MaxForwardsHeader maxForwards = headerFactory
+                    .createMaxForwardsHeader(70);
 
-			Address contactAddress = addressFactory.createAddress(contactURI);
+            Request request = messageFactory.createRequest(requestURI,
+                    Request.NOTIFY, callIdHeader, cSeqHeader, fromHeader,
+                    toHeader, viaHeaders, maxForwards);
+            // Create contact headers
+            String host = listeningPoint.getIPAddress();
 
-			// Add the contact address.
-			contactAddress.setDisplayName(fromName);
+            SipURI contactUrl = addressFactory.createSipURI(fromName, host);
+            contactUrl.setPort(listeningPoint.getPort());
 
-			ContactHeader contactHeader = headerFactory
-					.createContactHeader(contactAddress);
-			request.addHeader(contactHeader);
+            // Create the contact name address.
+            SipURI contactURI = addressFactory.createSipURI(fromName, host);
+            contactURI.setTransportParam(transport);
+            contactURI.setPort(sipProvider.getListeningPoint(transport)
+                    .getPort());
 
-			// JvB: To test forked SUBSCRIBEs, send it via the Forker
-			// Note: BIG Gotcha: Need to do this before creating the
-			// ClientTransaction!
+            Address contactAddress = addressFactory.createAddress(contactURI);
 
-			RouteHeader route = headerFactory.createRouteHeader(addressFactory
-					.createAddress("<sip:127.0.0.1:" + port + ";transport="
-							+ transport + ";lr>"));
-			request.addHeader(route);
-			// JvB end added
+            // Add the contact address.
+            contactAddress.setDisplayName(fromName);
 
-			// Create an event header for the subscription.
-			EventHeader eventHeader = headerFactory.createEventHeader("foo");
-			eventHeader.setEventId("foo");
-			request.addHeader(eventHeader);
+            ContactHeader contactHeader = headerFactory
+                    .createContactHeader(contactAddress);
+            request.addHeader(contactHeader);
 
-			SubscriptionStateHeader ssh = headerFactory
-					.createSubscriptionStateHeader(SubscriptionStateHeader.ACTIVE);
-			// Create the client transaction.
-			request.addHeader(ssh);
-			ClientTransaction ct = sipProvider.getNewClientTransaction(request);
+            // JvB: To test forked SUBSCRIBEs, send it via the Forker
+            // Note: BIG Gotcha: Need to do this before creating the
+            // ClientTransaction!
 
-			ct.sendRequest();
-			Thread.sleep(10000);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			fail("Unexpected exception sending request");
-		}
-	}
+            RouteHeader route = headerFactory.createRouteHeader(addressFactory
+                    .createAddress("<sip:127.0.0.1:" + port + ";transport="
+                            + transport + ";lr>"));
+            request.addHeader(route);
+            // JvB end added
+
+            // Create an event header for the subscription.
+            EventHeader eventHeader = headerFactory.createEventHeader("foo");
+            eventHeader.setEventId("foo");
+            request.addHeader(eventHeader);
+
+            SubscriptionStateHeader ssh = headerFactory
+                    .createSubscriptionStateHeader(SubscriptionStateHeader.ACTIVE);
+            // Create the client transaction.
+            request.addHeader(ssh);
+            ClientTransaction ct = sipProvider.getNewClientTransaction(request);
+
+            ct.sendRequest();
+            Thread.sleep(10000);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            fail("Unexpected exception sending request");
+        }
+    }
 
 }

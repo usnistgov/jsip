@@ -6,7 +6,7 @@
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. 
+ * This distribution may include materials developed by third parties.
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
@@ -16,7 +16,7 @@
  *
  *  HISTORY
  *  Version   Date      Author              Comments
- *  1.1     08/10/2002  Phelim O'Doherty    
+ *  1.1     08/10/2002  Phelim O'Doherty
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 
@@ -26,7 +26,7 @@ package javax.sip;
  * This exception class is thrown by an implementation when given an invalid
  * argument such as a invalid numerical value.
  *
- * @author BEA Systems, NIST 
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 public class InvalidArgumentException extends Exception {
@@ -59,16 +59,16 @@ public class InvalidArgumentException extends Exception {
     }
 
     /**
-     * Returns the cause of this throwable or null if the cause is 
-     * nonexistent or unknown. (The cause is the throwable that caused this 
-     * throwable to get thrown.) This implementation returns the cause that 
+     * Returns the cause of this throwable or null if the cause is
+     * nonexistent or unknown. (The cause is the throwable that caused this
+     * throwable to get thrown.) This implementation returns the cause that
      * was supplied via the constructor requiring a Throwable.
      *
-     * @return the cause of this throwable or null if the cause is 
+     * @return the cause of this throwable or null if the cause is
      * nonexistent or unknown.
      */
     public Throwable getCause() {
-   		return(m_Cause);
+           return(m_Cause);
     }
 
     /**
@@ -76,6 +76,6 @@ public class InvalidArgumentException extends Exception {
      * informs an application of the underlying implementation problem that
      * triggered this Exception.
      */
-    protected Throwable m_Cause = null;    
-    
+    protected Throwable m_Cause = null;
+
 }

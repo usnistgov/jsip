@@ -1,12 +1,12 @@
 /*
-* Conditions Of Use 
-* 
+* Conditions Of Use
+*
 * This software was developed by employees of the National Institute of
-* Standards and Technology (NIST), and others. 
-* This software is has been contributed to the public domain. 
+* Standards and Technology (NIST), and others.
+* This software is has been contributed to the public domain.
 * As a result, a formal license is not needed to use the software.
-* 
-* This software is provided "AS IS."  
+*
+* This software is provided "AS IS."
 * NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
 * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
 * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
@@ -14,11 +14,11 @@
 * regarding the use of the software or the results thereof, including but
 * not limited to the correctness, accuracy, reliability or usefulness of
 * the software.
-* 
-* 
+*
+*
 */
 /**
- * 
+ *
  */
 package test.tck.msgflow.callflows.tls;
 
@@ -39,122 +39,122 @@ import test.tck.msgflow.callflows.ScenarioHarness;
 
 /**
  * @author M. Ranganathan
- * 
+ *
  */
 public class TlsTest extends ScenarioHarness implements SipListener {
 
-	
-	protected Shootist shootist;
 
-	private Shootme shootme;
+    protected Shootist shootist;
 
-	private static Logger logger = Logger.getLogger("test.tck");
+    private Shootme shootme;
 
-	static {
-		if (!logger.isAttached(console))
-			logger.addAppender(console);
-	}
+    private static Logger logger = Logger.getLogger("test.tck");
 
-	private SipListener getSipListener(EventObject sipEvent) {
-		SipProvider source = (SipProvider) sipEvent.getSource();
-		SipListener listener = (SipListener) providerTable.get(source);
-		assertTrue(listener != null);
-		return listener;
-	}
+    static {
+        if (!logger.isAttached(console))
+            logger.addAppender(console);
+    }
 
-	public TlsTest() {
-		super("tlstest", true);
-	}
+    private SipListener getSipListener(EventObject sipEvent) {
+        SipProvider source = (SipProvider) sipEvent.getSource();
+        SipListener listener = (SipListener) providerTable.get(source);
+        assertTrue(listener != null);
+        return listener;
+    }
 
-	public void setUp() {
+    public TlsTest() {
+        super("tlstest", true);
+    }
 
-		try {
-			// setup TLS properties
-			System.setProperty( "javax.net.ssl.keyStore",  TlsTest.class.getResource("testkeys").getPath() ); 
-			System.setProperty( "javax.net.ssl.trustStore", TlsTest.class.getResource("testkeys").getPath() ); 
-			System.setProperty( "javax.net.ssl.keyStorePassword", "passphrase" );			
-			System.setProperty( "javax.net.ssl.keyStoreType", "jks" );
-			
-			this.transport = "tls";
-			
-			super.setUp();
-			shootist = new Shootist(getRiProtocolObjects());
-			SipProvider shootistProvider = shootist.createSipProvider();
-			providerTable.put(shootistProvider, shootist);
+    public void setUp() {
 
-			shootme = new Shootme(getTiProtocolObjects());
-			SipProvider shootmeProvider = shootme.createSipProvider();
-			providerTable.put(shootmeProvider, shootme);
-			shootistProvider.addSipListener(this);
-			shootmeProvider.addSipListener(this);
+        try {
+            // setup TLS properties
+            System.setProperty( "javax.net.ssl.keyStore",  TlsTest.class.getResource("testkeys").getPath() );
+            System.setProperty( "javax.net.ssl.trustStore", TlsTest.class.getResource("testkeys").getPath() );
+            System.setProperty( "javax.net.ssl.keyStorePassword", "passphrase" );
+            System.setProperty( "javax.net.ssl.keyStoreType", "jks" );
 
-			getRiProtocolObjects().start();
-			if (getTiProtocolObjects() != getRiProtocolObjects())
-				getTiProtocolObjects().start();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			fail("unexpected exception ");
-		}
-	}
+            this.transport = "tls";
 
-	public void testSendInvite() {
-		this.shootist.sendInvite();
-	}
+            super.setUp();
+            shootist = new Shootist(getRiProtocolObjects());
+            SipProvider shootistProvider = shootist.createSipProvider();
+            providerTable.put(shootistProvider, shootist);
 
-	public void tearDown() {
-		try {
-			Thread.sleep(2000);
-			this.shootist.checkState();
-			this.shootme.checkState();
-			getTiProtocolObjects().destroy();
-			if (getTiProtocolObjects() != getRiProtocolObjects())
-				getRiProtocolObjects().destroy();
-			Thread.sleep(1000);
-			this.providerTable.clear();
-			
-			System.clearProperty( "javax.net.ssl.keyStore" );
-			System.clearProperty( "javax.net.ssl.trustStore" );
-			System.clearProperty( "javax.net.ssl.keyStorePassword" );
-			System.clearProperty( "javax.net.ssl.keyStoreType" );
-			
-			logTestCompleted();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+            shootme = new Shootme(getTiProtocolObjects());
+            SipProvider shootmeProvider = shootme.createSipProvider();
+            providerTable.put(shootmeProvider, shootme);
+            shootistProvider.addSipListener(this);
+            shootmeProvider.addSipListener(this);
 
-	}
+            getRiProtocolObjects().start();
+            if (getTiProtocolObjects() != getRiProtocolObjects())
+                getTiProtocolObjects().start();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            fail("unexpected exception ");
+        }
+    }
 
-	public void processRequest(RequestEvent requestEvent) {
-		getSipListener(requestEvent).processRequest(requestEvent);
+    public void testSendInvite() {
+        this.shootist.sendInvite();
+    }
 
-	}
+    public void tearDown() {
+        try {
+            Thread.sleep(2000);
+            this.shootist.checkState();
+            this.shootme.checkState();
+            getTiProtocolObjects().destroy();
+            if (getTiProtocolObjects() != getRiProtocolObjects())
+                getRiProtocolObjects().destroy();
+            Thread.sleep(1000);
+            this.providerTable.clear();
 
-	public void processResponse(ResponseEvent responseEvent) {
-		getSipListener(responseEvent).processResponse(responseEvent);
+            System.clearProperty( "javax.net.ssl.keyStore" );
+            System.clearProperty( "javax.net.ssl.trustStore" );
+            System.clearProperty( "javax.net.ssl.keyStorePassword" );
+            System.clearProperty( "javax.net.ssl.keyStoreType" );
 
-	}
+            logTestCompleted();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
-	public void processTimeout(TimeoutEvent timeoutEvent) {
-		getSipListener(timeoutEvent).processTimeout(timeoutEvent);
-	}
+    }
 
-	public void processIOException(IOExceptionEvent exceptionEvent) {
-		fail("unexpected exception");
+    public void processRequest(RequestEvent requestEvent) {
+        getSipListener(requestEvent).processRequest(requestEvent);
 
-	}
+    }
 
-	public void processTransactionTerminated(
-			TransactionTerminatedEvent transactionTerminatedEvent) {
-		getSipListener(transactionTerminatedEvent)
-				.processTransactionTerminated(transactionTerminatedEvent);
+    public void processResponse(ResponseEvent responseEvent) {
+        getSipListener(responseEvent).processResponse(responseEvent);
 
-	}
+    }
 
-	public void processDialogTerminated(
-			DialogTerminatedEvent dialogTerminatedEvent) {
-		getSipListener(dialogTerminatedEvent).processDialogTerminated(
-				dialogTerminatedEvent);
+    public void processTimeout(TimeoutEvent timeoutEvent) {
+        getSipListener(timeoutEvent).processTimeout(timeoutEvent);
+    }
 
-	}
+    public void processIOException(IOExceptionEvent exceptionEvent) {
+        fail("unexpected exception");
+
+    }
+
+    public void processTransactionTerminated(
+            TransactionTerminatedEvent transactionTerminatedEvent) {
+        getSipListener(transactionTerminatedEvent)
+                .processTransactionTerminated(transactionTerminatedEvent);
+
+    }
+
+    public void processDialogTerminated(
+            DialogTerminatedEvent dialogTerminatedEvent) {
+        getSipListener(dialogTerminatedEvent).processDialogTerminated(
+                dialogTerminatedEvent);
+
+    }
 
 }

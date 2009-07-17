@@ -6,7 +6,7 @@
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. 
+ * This distribution may include materials developed by third parties.
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
@@ -17,7 +17,7 @@
  *  HISTORY
  *  Version   Date      Author              Comments
  *  1.1     08/10/2002  Phelim O'Doherty    Initial version
- *  1.2     12/15/2004  M. Ranganathan		Added getDialog method
+ *  1.2     12/15/2004  M. Ranganathan      Added getDialog method
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 package javax.sip;
@@ -27,13 +27,13 @@ import javax.sip.message.Response;
 
 /**
  * This class represents a Response event that is passed from a SipProvider to
- * its SipListener. This specification handles the passing of Response messages 
- * to the application with the event model. An application (SipListener) 
- * registers with the SIP protocol stack (SipProvider) and listens for Response 
+ * its SipListener. This specification handles the passing of Response messages
+ * to the application with the event model. An application (SipListener)
+ * registers with the SIP protocol stack (SipProvider) and listens for Response
  * events from the SipProvider.
  * <p>
- * This specification defines a single Response event object to handle all 
- * Response messages. The Response event encapsulates the Response message 
+ * This specification defines a single Response event object to handle all
+ * Response messages. The Response event encapsulates the Response message
  * that can be retrieved from {@link javax.sip.ResponseEvent#getResponse()}.
  * Therefore the event type of a Response event can be determined as follows:
  * <p>
@@ -47,13 +47,13 @@ import javax.sip.message.Response;
  * <ul>
  * <li>source - the source of the event i.e. the SipProvider sending the
  * ResponseEvent.
- * <li>clientTransaction - the client transaction this ResponseEvent is 
+ * <li>clientTransaction - the client transaction this ResponseEvent is
  * associated with.
  * <li>Response - the Response message received on the SipProvider
  * that needs passed to the application encapsulated in a ResponseEvent.
  * </ul>
  *
- * @author BEA Systems, NIST 
+ * @author BEA Systems, NIST
  * @version 1.2
  */
 public class ResponseEvent extends EventObject {
@@ -95,20 +95,20 @@ public class ResponseEvent extends EventObject {
     }
 
     /**
-     * Gets the Dialog associated with the event or null if no dialog exists. 
-     * This method separates transaction support from dialog support. This 
-     * enables application developers to access the dialog associated to this 
-     * event without having to query the transaction associated to the event. 
-     * For example the transaction associated with the event may return 'null' 
-     * because the final response for the transaction has already been received 
-     * and the stack has no more record of the transaction. This situation can 
-     * occur when a UAC sends requests out through a forking proxy. Responses 
-     * that all refer to the same transaction may be sent by the targets of the 
-     * fork but each response may be stamped with a different To tag, thus 
-     * referring to different Dialogs on the UAC. The first final response 
-     * terminates the transaction but the UAC may want to create a Dialog on 
+     * Gets the Dialog associated with the event or null if no dialog exists.
+     * This method separates transaction support from dialog support. This
+     * enables application developers to access the dialog associated to this
+     * event without having to query the transaction associated to the event.
+     * For example the transaction associated with the event may return 'null'
+     * because the final response for the transaction has already been received
+     * and the stack has no more record of the transaction. This situation can
+     * occur when a UAC sends requests out through a forking proxy. Responses
+     * that all refer to the same transaction may be sent by the targets of the
+     * fork but each response may be stamped with a different To tag, thus
+     * referring to different Dialogs on the UAC. The first final response
+     * terminates the transaction but the UAC may want to create a Dialog on
      * a subsequent response.
-     * 
+     *
      * @return the dialog associated with the response event or null if there is no dialog.
      * @since v1.2
      */

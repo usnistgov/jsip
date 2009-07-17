@@ -1,13 +1,13 @@
 /*
-* Conditions Of Use 
-* 
+* Conditions Of Use
+*
 * This software was developed by employees of the National Institute of
 * Standards and Technology (NIST), an agency of the Federal Government.
 * Pursuant to title 15 Untied States Code Section 105, works of NIST
 * employees are not subject to copyright protection in the United States
 * and are considered to be in the public domain.  As a result, a formal
 * license is not needed to use the software.
-* 
+*
 * This software is provided by NIST as a service and is expressly
 * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
 * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
@@ -16,12 +16,12 @@
 * regarding the use of the software or the results thereof, including but
 * not limited to the correctness, accuracy, reliability or usefulness of
 * the software.
-* 
+*
 * Permission to use this software is contingent upon your acceptance
 * of the terms of this agreement
-*  
+*
 * .
-* 
+*
 */
 package gov.nist.javax.sip.parser;
 
@@ -30,109 +30,112 @@ import java.text.ParseException;
 
 /** Parser for addresses.
  *
- * @version 1.2 $Revision: 1.9 $ $Date: 2007-02-12 15:19:26 $
- * @author M. Ranganathan   
- * 
+ * @version 1.2 $Revision: 1.10 $ $Date: 2009-07-17 18:57:57 $
+ * @author M. Ranganathan
+ *
  *
  */
 public class AddressParser extends Parser {
 
-	public AddressParser(Lexer lexer) {
-		this.lexer = lexer;
-		this.lexer.selectLexer("charLexer");
-	}
+    public AddressParser(Lexer lexer) {
+        this.lexer = lexer;
+        this.lexer.selectLexer("charLexer");
+    }
 
-	public AddressParser(String address) {
-		this.lexer = new Lexer("charLexer", address);
-	}
+    public AddressParser(String address) {
+        this.lexer = new Lexer("charLexer", address);
+    }
 
-	protected AddressImpl nameAddr() throws ParseException {
-		if (debug)
-			dbg_enter("nameAddr");
-		try {
-			if (this.lexer.lookAhead(0) == '<') {
-				this.lexer.consume(1);
-				this.lexer.selectLexer("sip_urlLexer");
-				this.lexer.SPorHT();
-				URLParser uriParser = new URLParser((Lexer) lexer);
-				GenericURI uri = uriParser.uriReference();
-				AddressImpl retval = new AddressImpl();
-				retval.setAddressType(AddressImpl.NAME_ADDR);
-				retval.setURI(uri);
-				this.lexer.SPorHT();
-				this.lexer.match('>');
-				return retval;
-			} else {
-				AddressImpl addr = new AddressImpl();
-				addr.setAddressType(AddressImpl.NAME_ADDR);
-				String name = null;
-				if (this.lexer.lookAhead(0) == '\"') {
-					name = this.lexer.quotedString();
-					this.lexer.SPorHT();
-				} else
-					name = this.lexer.getNextToken('<');
-				addr.setDisplayName(name.trim());
-				this.lexer.match('<');
-				this.lexer.SPorHT();
-				URLParser uriParser = new URLParser((Lexer) lexer);
-				GenericURI uri = uriParser.uriReference();
-				AddressImpl retval = new AddressImpl();
-				addr.setAddressType(AddressImpl.NAME_ADDR);
-				addr.setURI(uri);
-				this.lexer.SPorHT();
-				this.lexer.match('>');
-				return addr;
-			}
-		} finally {
-			if (debug)
-				dbg_leave("nameAddr");
-		}
-	}
+    protected AddressImpl nameAddr() throws ParseException {
+        if (debug)
+            dbg_enter("nameAddr");
+        try {
+            if (this.lexer.lookAhead(0) == '<') {
+                this.lexer.consume(1);
+                this.lexer.selectLexer("sip_urlLexer");
+                this.lexer.SPorHT();
+                URLParser uriParser = new URLParser((Lexer) lexer);
+                GenericURI uri = uriParser.uriReference();
+                AddressImpl retval = new AddressImpl();
+                retval.setAddressType(AddressImpl.NAME_ADDR);
+                retval.setURI(uri);
+                this.lexer.SPorHT();
+                this.lexer.match('>');
+                return retval;
+            } else {
+                AddressImpl addr = new AddressImpl();
+                addr.setAddressType(AddressImpl.NAME_ADDR);
+                String name = null;
+                if (this.lexer.lookAhead(0) == '\"') {
+                    name = this.lexer.quotedString();
+                    this.lexer.SPorHT();
+                } else
+                    name = this.lexer.getNextToken('<');
+                addr.setDisplayName(name.trim());
+                this.lexer.match('<');
+                this.lexer.SPorHT();
+                URLParser uriParser = new URLParser((Lexer) lexer);
+                GenericURI uri = uriParser.uriReference();
+                AddressImpl retval = new AddressImpl();
+                addr.setAddressType(AddressImpl.NAME_ADDR);
+                addr.setURI(uri);
+                this.lexer.SPorHT();
+                this.lexer.match('>');
+                return addr;
+            }
+        } finally {
+            if (debug)
+                dbg_leave("nameAddr");
+        }
+    }
 
-	public AddressImpl address() throws ParseException {
-		if (debug)
-			dbg_enter("address");
-		AddressImpl retval = null;
-		try {
-			int k = 0;
-			while (lexer.hasMoreChars()) {
-				char la = lexer.lookAhead(k);
-				if (la == '<'
-					|| la == '\"'
-					|| la == ':'
-					|| la == '/')
-					break;
-				else if (la == '\0')
-					throw createParseException("unexpected EOL");
-				else
-					k++;
-			}
-			char la = lexer.lookAhead(k);
-			if (la == '<' || la == '\"') {
-				retval = nameAddr();
-			} else if (la == ':' || la == '/') {
-				retval = new AddressImpl();
-				URLParser uriParser = new URLParser((Lexer) lexer);
-				GenericURI uri = uriParser.uriReference();
-				retval.setAddressType(AddressImpl.ADDRESS_SPEC);
-				retval.setURI(uri);
-			} else {
-				throw createParseException("Bad address spec");
-			}
-			return retval;
-		} finally {
-			if (debug)
-				dbg_leave("address");
-		}
+    public AddressImpl address() throws ParseException {
+        if (debug)
+            dbg_enter("address");
+        AddressImpl retval = null;
+        try {
+            int k = 0;
+            while (lexer.hasMoreChars()) {
+                char la = lexer.lookAhead(k);
+                if (la == '<'
+                    || la == '\"'
+                    || la == ':'
+                    || la == '/')
+                    break;
+                else if (la == '\0')
+                    throw createParseException("unexpected EOL");
+                else
+                    k++;
+            }
+            char la = lexer.lookAhead(k);
+            if (la == '<' || la == '\"') {
+                retval = nameAddr();
+            } else if (la == ':' || la == '/') {
+                retval = new AddressImpl();
+                URLParser uriParser = new URLParser((Lexer) lexer);
+                GenericURI uri = uriParser.uriReference();
+                retval.setAddressType(AddressImpl.ADDRESS_SPEC);
+                retval.setURI(uri);
+            } else {
+                throw createParseException("Bad address spec");
+            }
+            return retval;
+        } finally {
+            if (debug)
+                dbg_leave("address");
+        }
 
-	}
+    }
 
-	/*
-		
-	*/
+    /*
+
+    */
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2007/02/12 15:19:26  belangery
+ * Changed the encode() and encodeBody() methods of SIP headers and basic classes to make them use the same StringBuffer instance during the encoding phase.
+ *
  * Revision 1.8  2007/02/06 16:40:02  belangery
  * Introduced simple code optimizations.
  *

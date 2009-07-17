@@ -40,10 +40,10 @@ public interface AuthenticationHelper {
      *            the JAIN SipProvider that we should use to create the new
      *            transaction.
      * @param cacheTimeout The amount of time (seconds ) for which the authentication helper
-     * 		will keep a reference to the generated credentials in a cache.
-     * 		If you specify -1, then the authentication credentials are cached
-     * 		until you remove them from the cache. If you choose this option, make sure
-     * 		you remove the cached headers or you will have a memory leak.
+     *      will keep a reference to the generated credentials in a cache.
+     *      If you specify -1, then the authentication credentials are cached
+     *      until you remove them from the cache. If you choose this option, make sure
+     *      you remove the cached headers or you will have a memory leak.
      *
      * @return a transaction containing a reoriginated request with the
      *         necessary authorization header.

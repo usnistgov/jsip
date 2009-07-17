@@ -1,13 +1,13 @@
 /*
-* Conditions Of Use 
-* 
+* Conditions Of Use
+*
 * This software was developed by employees of the National Institute of
 * Standards and Technology (NIST), an agency of the Federal Government.
 * Pursuant to title 15 Untied States Code Section 105, works of NIST
 * employees are not subject to copyright protection in the United States
 * and are considered to be in the public domain.  As a result, a formal
 * license is not needed to use the software.
-* 
+*
 * This software is provided by NIST as a service and is expressly
 * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
 * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
@@ -16,12 +16,12 @@
 * regarding the use of the software or the results thereof, including but
 * not limited to the correctness, accuracy, reliability or usefulness of
 * the software.
-* 
+*
 * Permission to use this software is contingent upon your acceptance
 * of the terms of this agreement
-*  
+*
 * .
-* 
+*
 */
 /*
  * Reason.java
@@ -42,114 +42,117 @@ import java.text.ParseException;
 import gov.nist.core.*;
 import gov.nist.javax.sip.Utils;
 
-/** 
+/**
  * Definition of the Reason SIP Header.
  *
- * @version 1.2 $Revision: 1.6 $ $Date: 2008-11-19 10:56:27 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2009-07-17 18:57:35 $
  *
  * @author M. Ranganathan   <br/>
  *
- * 
+ *
  */
 public class Reason
-	extends ParametersHeader
-	implements javax.sip.header.ReasonHeader {
+    extends ParametersHeader
+    implements javax.sip.header.ReasonHeader {
 
-	/**
-	 * Comment for <code>serialVersionUID</code>
-	 */
-	private static final long serialVersionUID = -8903376965568297388L;
-	public final String TEXT = ParameterNames.TEXT;
-	public final String CAUSE = ParameterNames.CAUSE;
+    /**
+     * Comment for <code>serialVersionUID</code>
+     */
+    private static final long serialVersionUID = -8903376965568297388L;
+    public final String TEXT = ParameterNames.TEXT;
+    public final String CAUSE = ParameterNames.CAUSE;
 
-	protected String protocol;
+    protected String protocol;
 
-	/** Get the cause token.
-	 *@return the cause code.
-	 */
-	public int getCause() {
-		return getParameterAsInt(CAUSE);
-	}
+    /** Get the cause token.
+     *@return the cause code.
+     */
+    public int getCause() {
+        return getParameterAsInt(CAUSE);
+    }
 
-	/**
-	 * Set the cause.
-	 *
-	 *@param cause - cause to set.
-	 */
-	public void setCause(int cause) throws javax.sip.InvalidArgumentException {
-		this.parameters.set("cause", new Integer(cause));
-	}
+    /**
+     * Set the cause.
+     *
+     *@param cause - cause to set.
+     */
+    public void setCause(int cause) throws javax.sip.InvalidArgumentException {
+        this.parameters.set("cause", new Integer(cause));
+    }
 
-	/** Set the protocol
-	 *
-	 *@param protocol - protocol to set.
-	 */
+    /** Set the protocol
+     *
+     *@param protocol - protocol to set.
+     */
 
-	public void setProtocol(String protocol) throws ParseException {
-		this.protocol = protocol;
-	}
+    public void setProtocol(String protocol) throws ParseException {
+        this.protocol = protocol;
+    }
 
-	/** Return the protocol.
-	 *
-	 *@return the protocol.
-	 */
-	public String getProtocol() {
-		return this.protocol;
-	}
+    /** Return the protocol.
+     *
+     *@return the protocol.
+     */
+    public String getProtocol() {
+        return this.protocol;
+    }
 
-	/** Set the text.
-	 *
-	 *@param text -- string text to set.
-	 */
-	public void setText(String text) throws ParseException {
-		// JvB: MUST be quoted
-		if ( text.charAt(0) != '"' ) {
-			text = Utils.getQuotedString(text);
-		}
-		this.parameters.set("text", text);
-	}
+    /** Set the text.
+     *
+     *@param text -- string text to set.
+     */
+    public void setText(String text) throws ParseException {
+        // JvB: MUST be quoted
+        if ( text.charAt(0) != '"' ) {
+            text = Utils.getQuotedString(text);
+        }
+        this.parameters.set("text", text);
+    }
 
-	/** Get the text.
-	 *
-	 *@return text parameter.
-	 *
-	 */
-	public String getText() {
-		return this.parameters.getParameter("text");
-	}
+    /** Get the text.
+     *
+     *@return text parameter.
+     *
+     */
+    public String getText() {
+        return this.parameters.getParameter("text");
+    }
 
-	/** Set the cause.
-	
-	/** Creates a new instance of Reason */
-	public Reason() {
-		super(NAME);
-	}
+    /** Set the cause.
 
-	/** Gets the unique string name of this Header. A name constant is defined in
-	 * each individual Header identifying each Header.
-	 *
-	 * @return the name of this specific Header
-	 */
-	public String getName() {
-		return NAME;
+    /** Creates a new instance of Reason */
+    public Reason() {
+        super(NAME);
+    }
 
-	}
+    /** Gets the unique string name of this Header. A name constant is defined in
+     * each individual Header identifying each Header.
+     *
+     * @return the name of this specific Header
+     */
+    public String getName() {
+        return NAME;
 
-	/**
-	 * Encode the body of this header (the stuff that follows headerName).
-	 * A.K.A headerValue.
-	 */
-	protected String encodeBody() {
-		StringBuffer s = new StringBuffer();
-		s.append(protocol);
-		if (parameters != null && !parameters.isEmpty())
-			s.append(SEMICOLON).append(parameters.encode());
-		return s.toString();
-	}
+    }
+
+    /**
+     * Encode the body of this header (the stuff that follows headerName).
+     * A.K.A headerValue.
+     */
+    protected String encodeBody() {
+        StringBuffer s = new StringBuffer();
+        s.append(protocol);
+        if (parameters != null && !parameters.isEmpty())
+            s.append(SEMICOLON).append(parameters.encode());
+        return s.toString();
+    }
 
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2008/11/19 10:56:27  jbemmel
+ * Ensure that reason text is quoted
+ *
  * Revision 1.5  2006/11/01 02:22:56  mranga
  * Issue number:  83
  * Obtained from:

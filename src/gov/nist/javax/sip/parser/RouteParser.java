@@ -1,13 +1,13 @@
 /*
-* Conditions Of Use 
-* 
+* Conditions Of Use
+*
 * This software was developed by employees of the National Institute of
 * Standards and Technology (NIST), an agency of the Federal Government.
 * Pursuant to title 15 Untied States Code Section 105, works of NIST
 * employees are not subject to copyright protection in the United States
 * and are considered to be in the public domain.  As a result, a formal
 * license is not needed to use the software.
-* 
+*
 * This software is provided by NIST as a service and is expressly
 * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
 * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
@@ -16,12 +16,12 @@
 * regarding the use of the software or the results thereof, including but
 * not limited to the correctness, accuracy, reliability or usefulness of
 * the software.
-* 
+*
 * Permission to use this software is contingent upon your acceptance
 * of the terms of this agreement
-*  
+*
 * .
-* 
+*
 */
 package gov.nist.javax.sip.parser;
 import java.text.ParseException;
@@ -34,81 +34,84 @@ import gov.nist.javax.sip.header.*;
  *
  * @author Olivier Deruelle   <br/>
  * @author M. Ranganathan   <br/>
- * 
+ *
  *
  *@version 1.0
  */
 public class RouteParser extends AddressParametersParser {
 
-	/**
-	 * Constructor
-	 * @param route message to parse to set
-	 */
-	public RouteParser(String route) {
-		super(route);
-	}
+    /**
+     * Constructor
+     * @param route message to parse to set
+     */
+    public RouteParser(String route) {
+        super(route);
+    }
 
-	protected RouteParser(Lexer lexer) {
-		super(lexer);
-	}
+    protected RouteParser(Lexer lexer) {
+        super(lexer);
+    }
 
-	/** parse the String message and generate the Route List Object
-	 * @return SIPHeader the Route List object
-	 * @throws SIPParseException if errors occur during the parsing
-	 */
-	public SIPHeader parse() throws ParseException {
-		RouteList routeList = new RouteList();
-		if (debug)
-			dbg_enter("parse");
+    /** parse the String message and generate the Route List Object
+     * @return SIPHeader the Route List object
+     * @throws SIPParseException if errors occur during the parsing
+     */
+    public SIPHeader parse() throws ParseException {
+        RouteList routeList = new RouteList();
+        if (debug)
+            dbg_enter("parse");
 
-		try {
-			this.lexer.match(TokenTypes.ROUTE);
-			this.lexer.SPorHT();
-			this.lexer.match(':');
-			this.lexer.SPorHT();
-			while (true) {
-				Route route = new Route();
-				super.parse(route);
-				routeList.add(route);
-				this.lexer.SPorHT();
-				char la = lexer.lookAhead(0);
-				if (la == ',') {
-					this.lexer.match(',');
-					this.lexer.SPorHT();
-				} else if (la == '\n')
-					break;
-				else
-					throw createParseException("unexpected char");
-			}
-			return routeList;
-		} finally {
-			if (debug)
-				dbg_leave("parse");
-		}
+        try {
+            this.lexer.match(TokenTypes.ROUTE);
+            this.lexer.SPorHT();
+            this.lexer.match(':');
+            this.lexer.SPorHT();
+            while (true) {
+                Route route = new Route();
+                super.parse(route);
+                routeList.add(route);
+                this.lexer.SPorHT();
+                char la = lexer.lookAhead(0);
+                if (la == ',') {
+                    this.lexer.match(',');
+                    this.lexer.SPorHT();
+                } else if (la == '\n')
+                    break;
+                else
+                    throw createParseException("unexpected char");
+            }
+            return routeList;
+        } finally {
+            if (debug)
+                dbg_leave("parse");
+        }
 
-	}
+    }
 
-	/**
-	        public static void main(String args[]) throws ParseException {
-		String rou[] = {
-	     "Route: <sip:alice@atlanta.com>\n",
-	     "Route: sip:bob@biloxi.com \n",
-	     "Route: sip:alice@atlanta.com, sip:bob@biloxi.com, sip:carol@chicago.com\n"
-	         };
-				
-			for (int i = 0; i < rou.length; i++ ) {
-			    RouteParser rp = 
-				  new RouteParser(rou[i]);
-			    RouteList routeList = (RouteList) rp.parse();
-			    System.out.println("encoded = " +routeList.encode());
-			}
-				
-		}
-		
-	*/
+    /**
+            public static void main(String args[]) throws ParseException {
+        String rou[] = {
+         "Route: <sip:alice@atlanta.com>\n",
+         "Route: sip:bob@biloxi.com \n",
+         "Route: sip:alice@atlanta.com, sip:bob@biloxi.com, sip:carol@chicago.com\n"
+             };
+
+            for (int i = 0; i < rou.length; i++ ) {
+                RouteParser rp =
+                  new RouteParser(rou[i]);
+                RouteList routeList = (RouteList) rp.parse();
+                System.out.println("encoded = " +routeList.encode());
+            }
+
+        }
+
+    */
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2007/02/06 16:40:03  belangery
+ * Introduced simple code optimizations.
+ *
  * Revision 1.6  2006/07/13 09:02:07  mranga
  * Issue number:
  * Obtained from:
