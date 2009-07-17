@@ -1,13 +1,13 @@
 /*
-* Conditions Of Use 
-* 
+* Conditions Of Use
+*
 * This software was developed by employees of the National Institute of
 * Standards and Technology (NIST), an agency of the Federal Government.
 * Pursuant to title 15 Untied States Code Section 105, works of NIST
 * employees are not subject to copyright protection in the United States
 * and are considered to be in the public domain.  As a result, a formal
 * license is not needed to use the software.
-* 
+*
 * This software is provided by NIST as a service and is expressly
 * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
 * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
@@ -16,12 +16,12 @@
 * regarding the use of the software or the results thereof, including but
 * not limited to the correctness, accuracy, reliability or usefulness of
 * the software.
-* 
+*
 * Permission to use this software is contingent upon your acceptance
 * of the terms of this agreement
-*  
+*
 * .
-* 
+*
 */
 package gov.nist.javax.sip.stack;
 
@@ -46,33 +46,33 @@ import javax.sip.InvalidArgumentException;
  * MessageFactory interface to create a ServerRequest or ServerResponse object.
  * The main job of the message processor is to instantiate message channels for
  * the given transport.
- * 
- * @version 1.2 $Revision: 1.13 $ $Date: 2008-04-16 03:12:22 $
- * 
+ *
+ * @version 1.2 $Revision: 1.14 $ $Date: 2009-07-17 18:58:14 $
+ *
  * @author M. Ranganathan <br/>
- * 
+ *
  */
 public abstract class MessageProcessor implements Runnable {
-	/**
-	 * A string containing the 0.0.0.0 IPv4 ANY address.
-	 */
-	protected static final String IN_ADDR_ANY = "0.0.0.0";
+    /**
+     * A string containing the 0.0.0.0 IPv4 ANY address.
+     */
+    protected static final String IN_ADDR_ANY = "0.0.0.0";
 
-	/**
-	 * A string containing the ::0 IPv6 ANY address.
-	 */
-	protected static final String IN6_ADDR_ANY = "::0";
+    /**
+     * A string containing the ::0 IPv6 ANY address.
+     */
+    protected static final String IN6_ADDR_ANY = "::0";
     /**
      * My Sent by string ( which I use to set the outgoing via header)
      */
     private  String sentBy;
 
     private HostPort sentByHostPort;
-    
+
     /*
      * The IP Address that was originally assigned ( Can be ANY )
      */
-    
+
     private String savedIpAddress;
 
     /**
@@ -95,19 +95,19 @@ public abstract class MessageProcessor implements Runnable {
      */
     private ListeningPointImpl listeningPoint;
 
-	private boolean sentBySet;
+    private boolean sentBySet;
 
-   
+
     /**
      * Constructor
-     * 
+     *
      * @param ipAddress -- ip address where I am listening for incoming requests.
      * @param port -- port where i am listening for incoming requests.
      * @param transport -- transport to use for the message processor (UDP/TCP/TLS).
      */
     public MessageProcessor(InetAddress ipAddress, int port, String transport) {
 
-    	this.savedIpAddress = ipAddress.getHostAddress();
+        this.savedIpAddress = ipAddress.getHostAddress();
         this.ipAddress = ipAddress;
         this.port = port;
         this.transport = transport;
@@ -118,7 +118,7 @@ public abstract class MessageProcessor implements Runnable {
 
     /**
      * Get the transport string.
-     * 
+     *
      * @return A string that indicates the transport. (i.e. "tcp" or "udp")
      */
     public String getTransport() {
@@ -127,7 +127,7 @@ public abstract class MessageProcessor implements Runnable {
 
     /**
      * Get the port identifier.
-     * 
+     *
      * @return the port for this message processor. This is where you receive
      *         messages.
      */
@@ -137,8 +137,8 @@ public abstract class MessageProcessor implements Runnable {
 
     /**
      * Get the Via header to assign for this message processor. The topmost via
-     * header of the outoging messages use this. 
-     * 
+     * header of the outoging messages use this.
+     *
      * @return the ViaHeader to be used by the messages sent via this message processor.
      */
     public Via getViaHeader() {
@@ -164,57 +164,57 @@ public abstract class MessageProcessor implements Runnable {
         }
     }
     public ListeningPointImpl getListeningPoint() {
-    	if ( listeningPoint == null )  {
-    		if ( this.getSIPStack().isLoggingEnabled()) {
-        		this.getSIPStack().getLogWriter().logError("getListeningPoint" + this + 
-        				" returning null listeningpoint");
-        		
-        	}
-    	}
+        if ( listeningPoint == null )  {
+            if ( this.getSIPStack().isLoggingEnabled()) {
+                this.getSIPStack().getLogWriter().logError("getListeningPoint" + this +
+                        " returning null listeningpoint");
+
+            }
+        }
         return listeningPoint;
     }
 
     public void setListeningPoint(ListeningPointImpl lp) {
-    	if ( this.getSIPStack().isLoggingEnabled()) {
-    		this.getSIPStack().getLogWriter().logDebug("setListeningPoint" + this + 
-    				" listeningPoint = " + lp);
-    		
-    	}
-    	if ( lp.getPort() != this.getPort())
-			InternalErrorHandler.handleException
-			("lp mismatch with provider",getSIPStack().logWriter);
+        if ( this.getSIPStack().isLoggingEnabled()) {
+            this.getSIPStack().getLogWriter().logDebug("setListeningPoint" + this +
+                    " listeningPoint = " + lp);
+
+        }
+        if ( lp.getPort() != this.getPort())
+            InternalErrorHandler.handleException
+            ("lp mismatch with provider",getSIPStack().logWriter);
         this.listeningPoint = lp;
-      
+
     }
 
     /**
      * Get the saved IP Address.
      */
     public String getSavedIpAddress() {
-    	return this.savedIpAddress;
+        return this.savedIpAddress;
     }
     /**
      * @return the ip address for this message processor.
      */
     public InetAddress getIpAddress() {
-    	  return this.ipAddress;
+          return this.ipAddress;
     }
     /**
-	 * @param ipAddress the ipAddress to set
-	 */
-	protected void setIpAddress(InetAddress ipAddress) {
-		this.sentByHostPort.setHost( new Host(ipAddress.getHostAddress()));
-		this.ipAddress = ipAddress;
-	}
+     * @param ipAddress the ipAddress to set
+     */
+    protected void setIpAddress(InetAddress ipAddress) {
+        this.sentByHostPort.setHost( new Host(ipAddress.getHostAddress()));
+        this.ipAddress = ipAddress;
+    }
 
     /**
      * Set the sentby string. This is used for stamping outgoing messages sent
      * from this listening point.
-     * 
+     *
      * @param sentBy
      */
     public void setSentBy(String sentBy) throws ParseException {
-        
+
         int ind = sentBy.indexOf(":");
         if (ind == -1) {
             this.sentByHostPort = new HostPort();
@@ -234,15 +234,15 @@ public abstract class MessageProcessor implements Runnable {
         this.sentBy = sentBy;
 
     }
-    
+
     /**
-     * Get the sentby string. 
+     * Get the sentby string.
      *
      */
     public String getSentBy() {
-    	if ( this.sentBy == null && this.sentByHostPort != null) {
-    		this.sentBy = this.sentByHostPort.toString();
-    	}
+        if ( this.sentBy == null && this.sentByHostPort != null) {
+            this.sentBy = this.sentByHostPort.toString();
+        }
         return this.sentBy;
     }
 
@@ -251,14 +251,14 @@ public abstract class MessageProcessor implements Runnable {
     ///////////////////////////////////////////////////////////////////////////////////////
     /**
      * Get the SIP Stack.
-     * 
+     *
      * @return the sip stack.
      */
     public abstract SIPTransactionStack getSIPStack();
 
     /**
      * Create a message channel for the specified host/port.
-     * 
+     *
      * @return New MessageChannel for this processor.
      */
     public abstract MessageChannel createMessageChannel(HostPort targetHostPort)
@@ -266,13 +266,13 @@ public abstract class MessageProcessor implements Runnable {
 
     /**
      * Create a message channel for the specified host/port.
-     * 
+     *
      * @return New MessageChannel for this processor.
      */
     public abstract MessageChannel createMessageChannel(InetAddress targetHost,
             int port) throws IOException;
 
-    
+
     /**
      * Start our thread.
      */
@@ -304,41 +304,41 @@ public abstract class MessageProcessor implements Runnable {
      */
     public abstract boolean inUse();
 
-   
+
 
     /**
      * Run method.
      */
     public abstract void run();
-    
- 
 
-	
 
-	/**
-	 * @return Returns the sentBySet.
-	 */
-	public boolean isSentBySet() {
-		return sentBySet;
-	}
-	
-	
-	/**
-	 * Get the defalt port for the message processor.
-	 * 
-	 * @param transport
-	 * @return -- the default port for the message processor.
-	 */
 
-	public static int getDefaultPort(String transport) {
-		
-		return transport.equalsIgnoreCase("TLS")?5061:5060;
-	}
 
-	
-	
 
-	
-	
-  
+    /**
+     * @return Returns the sentBySet.
+     */
+    public boolean isSentBySet() {
+        return sentBySet;
+    }
+
+
+    /**
+     * Get the defalt port for the message processor.
+     *
+     * @param transport
+     * @return -- the default port for the message processor.
+     */
+
+    public static int getDefaultPort(String transport) {
+
+        return transport.equalsIgnoreCase("TLS")?5061:5060;
+    }
+
+
+
+
+
+
+
 }

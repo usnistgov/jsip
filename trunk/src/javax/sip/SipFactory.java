@@ -6,7 +6,7 @@
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. 
+ * This distribution may include materials developed by third parties.
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
@@ -16,9 +16,9 @@
  *
  *  HISTORY
  *  Version   Date      Author              Comments
- *  1.1     08/10/2002  Phelim O'Doherty    
- *  1.2     20/12/2005  Phelim O'Doherty    Modified to enable single stack 
- *                                          instance if no IP Address config 
+ *  1.1     08/10/2002  Phelim O'Doherty
+ *  1.2     20/12/2005  Phelim O'Doherty    Modified to enable single stack
+ *                                          instance if no IP Address config
  *                                          property.
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
@@ -63,7 +63,7 @@ import java.lang.reflect.Constructor;
  * <code>javax.sip.SipStack</code> interface <B>must</B> be
  * <code>javax.sip.SipStackImpl</code>.
  * </ul>
- * 
+ *
  * Using this naming convention the SipFactory can locate a vendor's
  * implementation of this specification without requiring an application to
  * supply a user defined string to each create method in the SipFactory. Instead
@@ -95,265 +95,265 @@ import java.lang.reflect.Constructor;
  * of a new instance of the factory in order to use a different vendors SIP
  * stack from that of the Reference Implementation. An application can not mix
  * different vendor's peer implementation objects.
- * 
+ *
  * @author BEA Systems, NIST
  * @version 1.2
  */
 
 public class SipFactory {
 
-	/**
-	 * Returns an instance of a SipFactory. This is a singleton class so this
-	 * method is the global access point for the SipFactory.
-	 * 
-	 * @return the single instance of this singleton SipFactory
-	 */
-	public synchronized static SipFactory getInstance() {
-		if (myFactory == null) {
-			myFactory = new SipFactory();
-		}
-		return myFactory;
-	}
+    /**
+     * Returns an instance of a SipFactory. This is a singleton class so this
+     * method is the global access point for the SipFactory.
+     *
+     * @return the single instance of this singleton SipFactory
+     */
+    public synchronized static SipFactory getInstance() {
+        if (myFactory == null) {
+            myFactory = new SipFactory();
+        }
+        return myFactory;
+    }
 
       /**
        * Creates an instance of a SipStack implementation based on the
-       * configuration properties object passed to this method. The 
+       * configuration properties object passed to this method. The
        * recommended behaviour is to not specify an
-       * "javax.sip.IP_ADDRESS" property in the Properties argument, in this 
-       * case the "javax.sip.STACK_NAME" uniquely identifies the stack. 
-       * A new stack instance will be returned for each different stack name 
-       * associated with a specific vendor implementation. The 
-       * ListeningPoint is used to configure the IP Address argument. 
-       * For backwards compatability, if a "javax.sip.IP_ADDRESS" is supplied, 
-       * this method ensures that only one instance of a SipStack is returned 
-       * to the application for that IP Address, independent of the number of 
-       * times this method is called. Different SipStack instances are 
+       * "javax.sip.IP_ADDRESS" property in the Properties argument, in this
+       * case the "javax.sip.STACK_NAME" uniquely identifies the stack.
+       * A new stack instance will be returned for each different stack name
+       * associated with a specific vendor implementation. The
+       * ListeningPoint is used to configure the IP Address argument.
+       * For backwards compatability, if a "javax.sip.IP_ADDRESS" is supplied,
+       * this method ensures that only one instance of a SipStack is returned
+       * to the application for that IP Address, independent of the number of
+       * times this method is called. Different SipStack instances are
        * returned for each different IP address.
-       * <p> 
-       * See {@link SipStack} for the expected format of the 
-       * <code>properties</code> argument. 
-       * 
+       * <p>
+       * See {@link SipStack} for the expected format of the
+       * <code>properties</code> argument.
+       *
        * @throws PeerUnavailableException
        *             if the peer class could not be found
        */
-	public synchronized SipStack createSipStack(Properties properties)
-			throws PeerUnavailableException {
+    public synchronized SipStack createSipStack(Properties properties)
+            throws PeerUnavailableException {
 
-		String ipAddress = properties.getProperty("javax.sip.IP_ADDRESS");
-		String name = properties.getProperty("javax.sip.STACK_NAME");
-		if (name == null ) throw new PeerUnavailableException("Missing javax.sip.STACK_NAME property");
-		// IP address was not specified in the properties.
-		// This means that the architecture supports a single sip stack 
-		// instance per stack name
-		// and each listening point is assinged its own IP address.
-		if ( ipAddress == null) {
-			SipStack mySipStack = (SipStack) this.sipStackByName.get(name);
-			if (mySipStack == null) {
-				mySipStack = createStack(properties);
-			}
-			return mySipStack;
-		} else {
-			// Check to see if a stack with that IP Address is already
-			// created, if so select it to be returned. In this case the
-			// the name is not used.
-			int i = 0;
-			for (i = 0; i < sipStackList.size(); i++) {
-				if (((SipStack) sipStackList.get(i)).getIPAddress().equals( ipAddress )) {						
-					return (SipStack) sipStackList.get(i);
-				}
-			}
-			return createStack(properties);
-		}
+        String ipAddress = properties.getProperty("javax.sip.IP_ADDRESS");
+        String name = properties.getProperty("javax.sip.STACK_NAME");
+        if (name == null ) throw new PeerUnavailableException("Missing javax.sip.STACK_NAME property");
+        // IP address was not specified in the properties.
+        // This means that the architecture supports a single sip stack
+        // instance per stack name
+        // and each listening point is assinged its own IP address.
+        if ( ipAddress == null) {
+            SipStack mySipStack = (SipStack) this.sipStackByName.get(name);
+            if (mySipStack == null) {
+                mySipStack = createStack(properties);
+            }
+            return mySipStack;
+        } else {
+            // Check to see if a stack with that IP Address is already
+            // created, if so select it to be returned. In this case the
+            // the name is not used.
+            int i = 0;
+            for (i = 0; i < sipStackList.size(); i++) {
+                if (((SipStack) sipStackList.get(i)).getIPAddress().equals( ipAddress )) {
+                    return (SipStack) sipStackList.get(i);
+                }
+            }
+            return createStack(properties);
+        }
 
-	}
+    }
 
-	/**
-	 * Creates an instance of the MessageFactory implementation. This method
-	 * ensures that only one instance of a MessageFactory is returned to the
-	 * application, no matter how often this method is called.
-	 * 
-	 * @throws PeerUnavailableException
-	 *             if peer class could not be found
-	 */
+    /**
+     * Creates an instance of the MessageFactory implementation. This method
+     * ensures that only one instance of a MessageFactory is returned to the
+     * application, no matter how often this method is called.
+     *
+     * @throws PeerUnavailableException
+     *             if peer class could not be found
+     */
 
-	public MessageFactory createMessageFactory()
-			throws PeerUnavailableException {
-		if (messageFactory == null) {
-			messageFactory = (MessageFactory) createSipFactory("javax.sip.message.MessageFactoryImpl");
-		}
-		return messageFactory;
-	}
+    public MessageFactory createMessageFactory()
+            throws PeerUnavailableException {
+        if (messageFactory == null) {
+            messageFactory = (MessageFactory) createSipFactory("javax.sip.message.MessageFactoryImpl");
+        }
+        return messageFactory;
+    }
 
-	/**
-	 * Creates an instance of the HeaderFactory implementation. This method
-	 * ensures that only one instance of a HeaderFactory is returned to the
-	 * application, no matter how often this method is called.
-	 * 
-	 * @throws PeerUnavailableException
-	 *             if peer class could not be found
-	 */
-	public HeaderFactory createHeaderFactory() throws PeerUnavailableException {
-		if (headerFactory == null) {
-			headerFactory = (HeaderFactory) createSipFactory("javax.sip.header.HeaderFactoryImpl");
-		}
-		return headerFactory;
-	}
+    /**
+     * Creates an instance of the HeaderFactory implementation. This method
+     * ensures that only one instance of a HeaderFactory is returned to the
+     * application, no matter how often this method is called.
+     *
+     * @throws PeerUnavailableException
+     *             if peer class could not be found
+     */
+    public HeaderFactory createHeaderFactory() throws PeerUnavailableException {
+        if (headerFactory == null) {
+            headerFactory = (HeaderFactory) createSipFactory("javax.sip.header.HeaderFactoryImpl");
+        }
+        return headerFactory;
+    }
 
-	/**
-	 * Creates an instance of the AddressFactory implementation. This method
-	 * ensures that only one instance of an AddressFactory is returned to the
-	 * application, no matter how often this method is called.
-	 * 
-	 * @throws PeerUnavailableException
-	 *             if peer class could not be found
-	 */
-	public AddressFactory createAddressFactory()
-			throws PeerUnavailableException {
-		if (addressFactory == null) {
-			addressFactory = (AddressFactory) createSipFactory("javax.sip.address.AddressFactoryImpl");
-		}
-		return addressFactory;
-	}
+    /**
+     * Creates an instance of the AddressFactory implementation. This method
+     * ensures that only one instance of an AddressFactory is returned to the
+     * application, no matter how often this method is called.
+     *
+     * @throws PeerUnavailableException
+     *             if peer class could not be found
+     */
+    public AddressFactory createAddressFactory()
+            throws PeerUnavailableException {
+        if (addressFactory == null) {
+            addressFactory = (AddressFactory) createSipFactory("javax.sip.address.AddressFactoryImpl");
+        }
+        return addressFactory;
+    }
 
-	/**
-	 * Sets the <var>pathname</var> that identifies the location of a
-	 * particular vendor's implementation of this specification. The
-	 * <var>pathname</var> must be the reverse domain name assigned to the
-	 * vendor providing the implementation. An application must call
-	 * {@link SipFactory#resetFactory()} before changing between different
-	 * implementations of this specification.
-	 * 
-	 * @param pathName -
-	 *            the reverse domain name of the vendor, e.g. Sun Microsystem's
-	 *            would be 'com.sun'
-	 */
-	public void setPathName(String pathName) {
-		this.pathName = pathName;
-	}
+    /**
+     * Sets the <var>pathname</var> that identifies the location of a
+     * particular vendor's implementation of this specification. The
+     * <var>pathname</var> must be the reverse domain name assigned to the
+     * vendor providing the implementation. An application must call
+     * {@link SipFactory#resetFactory()} before changing between different
+     * implementations of this specification.
+     *
+     * @param pathName -
+     *            the reverse domain name of the vendor, e.g. Sun Microsystem's
+     *            would be 'com.sun'
+     */
+    public void setPathName(String pathName) {
+        this.pathName = pathName;
+    }
 
-	/**
-	 * Returns the current <var>pathname</var> of the SipFactory. The
-	 * <var>pathname</var> identifies the location of a particular vendor's
-	 * implementation of this specification as defined the naming convention.
-	 * The pathname must be the reverse domain name assigned to the vendor
-	 * providing this implementation. This value is defaulted to
-	 * <code>gov.nist</code> the location of the Reference Implementation.
-	 * 
-	 * @return the string identifying the current vendor implementation.
-	 */
-	public String getPathName() {
-		return pathName;
-	}
+    /**
+     * Returns the current <var>pathname</var> of the SipFactory. The
+     * <var>pathname</var> identifies the location of a particular vendor's
+     * implementation of this specification as defined the naming convention.
+     * The pathname must be the reverse domain name assigned to the vendor
+     * providing this implementation. This value is defaulted to
+     * <code>gov.nist</code> the location of the Reference Implementation.
+     *
+     * @return the string identifying the current vendor implementation.
+     */
+    public String getPathName() {
+        return pathName;
+    }
 
-	/**
-	 * This method reset's the SipFactory's references to the object's it has
-	 * created. It allows these objects to be garbage collected assuming the
-	 * application no longer holds references to them. This method must be
-	 * called to reset the factories references to a specific vendors
-	 * implementation of this specification before it creates another vendors
-	 * implementation of this specification by changing the <var>pathname</var>
-	 * of the SipFactory.
-	 */
-	public void resetFactory() {
-		sipStackList.clear();
-		messageFactory = null;
-		headerFactory = null;
-		addressFactory = null;
-		sipStackByName = new Hashtable();
-		pathName = "gov.nist";	
-	}
+    /**
+     * This method reset's the SipFactory's references to the object's it has
+     * created. It allows these objects to be garbage collected assuming the
+     * application no longer holds references to them. This method must be
+     * called to reset the factories references to a specific vendors
+     * implementation of this specification before it creates another vendors
+     * implementation of this specification by changing the <var>pathname</var>
+     * of the SipFactory.
+     */
+    public void resetFactory() {
+        sipStackList.clear();
+        messageFactory = null;
+        headerFactory = null;
+        addressFactory = null;
+        sipStackByName = new Hashtable();
+        pathName = "gov.nist";
+    }
 
-	/**
-	 * Private Utility method used by all create methods to return an instance
-	 * of the supplied object.
-	 */
-	private Object createSipFactory(String objectClassName)
-			throws PeerUnavailableException {
+    /**
+     * Private Utility method used by all create methods to return an instance
+     * of the supplied object.
+     */
+    private Object createSipFactory(String objectClassName)
+            throws PeerUnavailableException {
 
-		// If the stackClassName is null, then throw an exception
-		if (objectClassName == null) {
-			throw new NullPointerException();
-		}
-		try {
-			Class peerObjectClass = Class.forName(getPathName() + "."
-					+ objectClassName);
+        // If the stackClassName is null, then throw an exception
+        if (objectClassName == null) {
+            throw new NullPointerException();
+        }
+        try {
+            Class peerObjectClass = Class.forName(getPathName() + "."
+                    + objectClassName);
 
-			// Creates a new instance of the class represented by this Class
-			// object.
-			Object newPeerObject = peerObjectClass.newInstance();
-			return (newPeerObject);
-		} catch (Exception e) {
-			String errmsg = "The Peer Factory: "
-					+ getPathName()
-					+ "."
-					+ objectClassName
-					+ " could not be instantiated. Ensure the Path Name has been set.";
-			throw new PeerUnavailableException(errmsg, e);
-		}
-	}
+            // Creates a new instance of the class represented by this Class
+            // object.
+            Object newPeerObject = peerObjectClass.newInstance();
+            return (newPeerObject);
+        } catch (Exception e) {
+            String errmsg = "The Peer Factory: "
+                    + getPathName()
+                    + "."
+                    + objectClassName
+                    + " could not be instantiated. Ensure the Path Name has been set.";
+            throw new PeerUnavailableException(errmsg, e);
+        }
+    }
 
-	/**
-	 * Private Utility method used to create a new SIP Stack instance.
-	 */
-	private SipStack createStack(Properties properties)
-			throws PeerUnavailableException {
-		try {
-			// create parameters argument to identify constructor
-			Class[] paramTypes = new Class[1];
-			paramTypes[0] = Class.forName("java.util.Properties");
-			// get constructor of SipStack in order to instantiate
-			Constructor sipStackConstructor = Class.forName(
-					getPathName() + ".javax.sip.SipStackImpl").getConstructor(
-					paramTypes);
-			// Wrap properties object in order to pass to constructor of
-			// SipSatck
-			Object[] conArgs = new Object[1];
-			conArgs[0] = properties;
-			// Creates a new instance of SipStack Class with the supplied
-			// properties.
-			SipStack  sipStack = (SipStack) sipStackConstructor.newInstance(conArgs);			
-			sipStackList.add(sipStack);
-			String name = properties.getProperty("javax.sip.STACK_NAME");
-			this.sipStackByName.put(name, sipStack);
-                        return sipStack;    
-		} catch (Exception e) {
-			String errmsg = "The Peer SIP Stack: "
-					+ getPathName()
-					+ ".javax.sip.SipStackImpl"
-					+ " could not be instantiated. Ensure the Path Name has been set.";
-			throw new PeerUnavailableException(errmsg, e);
-		}
-	}
+    /**
+     * Private Utility method used to create a new SIP Stack instance.
+     */
+    private SipStack createStack(Properties properties)
+            throws PeerUnavailableException {
+        try {
+            // create parameters argument to identify constructor
+            Class[] paramTypes = new Class[1];
+            paramTypes[0] = Class.forName("java.util.Properties");
+            // get constructor of SipStack in order to instantiate
+            Constructor sipStackConstructor = Class.forName(
+                    getPathName() + ".javax.sip.SipStackImpl").getConstructor(
+                    paramTypes);
+            // Wrap properties object in order to pass to constructor of
+            // SipSatck
+            Object[] conArgs = new Object[1];
+            conArgs[0] = properties;
+            // Creates a new instance of SipStack Class with the supplied
+            // properties.
+            SipStack  sipStack = (SipStack) sipStackConstructor.newInstance(conArgs);
+            sipStackList.add(sipStack);
+            String name = properties.getProperty("javax.sip.STACK_NAME");
+            this.sipStackByName.put(name, sipStack);
+                        return sipStack;
+        } catch (Exception e) {
+            String errmsg = "The Peer SIP Stack: "
+                    + getPathName()
+                    + ".javax.sip.SipStackImpl"
+                    + " could not be instantiated. Ensure the Path Name has been set.";
+            throw new PeerUnavailableException(errmsg, e);
+        }
+    }
 
-	/**
-	 * Constructor for SipFactory class. This is private because applications
-	 * are not permitted to create an instance of the SipFactory using "new".
-	 */
-	private SipFactory() {
-		this.sipStackByName = new Hashtable();
-	}
+    /**
+     * Constructor for SipFactory class. This is private because applications
+     * are not permitted to create an instance of the SipFactory using "new".
+     */
+    private SipFactory() {
+        this.sipStackByName = new Hashtable();
+    }
 
-	// default domain to locate Reference Implementation
-	private String pathName = "gov.nist";
+    // default domain to locate Reference Implementation
+    private String pathName = "gov.nist";
 
-	// My sip stack. The implementation will allow only a single
-	// sip stack in future versions of this specification.
+    // My sip stack. The implementation will allow only a single
+    // sip stack in future versions of this specification.
 
-	private Hashtable sipStackByName;
+    private Hashtable sipStackByName;
 
-	// intrenal variable to ensure SipFactory only returns a single instance
-	// of the other Factories and SipStack
-	private MessageFactory messageFactory = null;
+    // intrenal variable to ensure SipFactory only returns a single instance
+    // of the other Factories and SipStack
+    private MessageFactory messageFactory = null;
 
-	private HeaderFactory headerFactory = null;
+    private HeaderFactory headerFactory = null;
 
-	private AddressFactory addressFactory = null;
+    private AddressFactory addressFactory = null;
 
-	private static SipFactory myFactory = null;
+    private static SipFactory myFactory = null;
 
-	// This is for backwards compatibility with
-	// version 1.1
+    // This is for backwards compatibility with
+    // version 1.1
 
-	private final LinkedList sipStackList = new LinkedList();
+    private final LinkedList sipStackList = new LinkedList();
 
 }

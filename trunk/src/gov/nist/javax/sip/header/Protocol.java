@@ -1,13 +1,13 @@
 /*
-* Conditions Of Use 
-* 
+* Conditions Of Use
+*
 * This software was developed by employees of the National Institute of
 * Standards and Technology (NIST), an agency of the Federal Government.
 * Pursuant to title 15 Untied States Code Section 105, works of NIST
 * employees are not subject to copyright protection in the United States
 * and are considered to be in the public domain.  As a result, a formal
 * license is not needed to use the software.
-* 
+*
 * This software is provided by NIST as a service and is expressly
 * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
 * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
@@ -16,12 +16,12 @@
 * regarding the use of the software or the results thereof, including but
 * not limited to the correctness, accuracy, reliability or usefulness of
 * the software.
-* 
+*
 * Permission to use this software is contingent upon your acceptance
 * of the terms of this agreement
-*  
+*
 * .
-* 
+*
 */
 /*******************************************************************************
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
@@ -33,7 +33,7 @@ import java.text.ParseException;
 /**
  *  Protocol name and version.
  *
- * @version 1.2 $Revision: 1.7 $ $Date: 2007-02-12 15:19:23 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2009-07-17 18:57:33 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -42,115 +42,118 @@ import java.text.ParseException;
  */
 public class Protocol extends SIPObject {
 
-	/**
-	 * Comment for <code>serialVersionUID</code>
-	 */
-	private static final long serialVersionUID = 2216758055974073280L;
+    /**
+     * Comment for <code>serialVersionUID</code>
+     */
+    private static final long serialVersionUID = 2216758055974073280L;
 
-	/** protocolName field
-	 */
-	protected String protocolName;
+    /** protocolName field
+     */
+    protected String protocolName;
 
-	/** protocolVersion field
-	 */
-	protected String protocolVersion;
+    /** protocolVersion field
+     */
+    protected String protocolVersion;
 
-	/** transport field
-	 */
-	protected String transport;
+    /** transport field
+     */
+    protected String transport;
 
-	/**
-	 * Return canonical form.
-	 * @return String
-	 */
-	public String encode() {
-		return encode(new StringBuffer()).toString();
-	}
+    /**
+     * Return canonical form.
+     * @return String
+     */
+    public String encode() {
+        return encode(new StringBuffer()).toString();
+    }
 
-	public StringBuffer encode(StringBuffer buffer) {
-		buffer.append(protocolName.toUpperCase())
-				.append(SLASH)
-				.append(protocolVersion)
-				.append(SLASH)
-				.append(transport.toUpperCase());
-		
-		return buffer;
-	}
+    public StringBuffer encode(StringBuffer buffer) {
+        buffer.append(protocolName.toUpperCase())
+                .append(SLASH)
+                .append(protocolVersion)
+                .append(SLASH)
+                .append(transport.toUpperCase());
 
-	/** get the protocol name
-	 * @return String
-	 */
-	public String getProtocolName() {
-		return protocolName;
-	}
+        return buffer;
+    }
 
-	/** get the protocol version
-	 * @return String
-	 */
-	public String getProtocolVersion() {
-		return protocolVersion;
-	}
-	
-	/**
-	 * Get the protocol name + version
-	 * JvB: This is what is returned in the ViaHeader interface for 'getProtocol()'
-	 * 
-	 * @return String : protocolname + '/' + version
-	 */
-	public String getProtocol() {
-		return protocolName + '/' + protocolVersion;
-	}
-	
-	public void setProtocol( String name_and_version ) throws ParseException {
-		int slash = name_and_version.indexOf('/');
-		if (slash>0) {
-			this.protocolName = name_and_version.substring(0,slash);
-			this.protocolVersion = name_and_version.substring( slash+1 );
-		} else throw new ParseException( "Missing '/' in protocol", 0 );		
-	}
+    /** get the protocol name
+     * @return String
+     */
+    public String getProtocolName() {
+        return protocolName;
+    }
 
-	/** get the transport
-	 * @return String
-	 */
-	public String getTransport() {
-		return transport;
-	}
+    /** get the protocol version
+     * @return String
+     */
+    public String getProtocolVersion() {
+        return protocolVersion;
+    }
 
-	/**
-	     * Set the protocolName member
-	     * @param p String to set
-	     */
-	public void setProtocolName(String p) {
-		protocolName = p;
-	}
+    /**
+     * Get the protocol name + version
+     * JvB: This is what is returned in the ViaHeader interface for 'getProtocol()'
+     *
+     * @return String : protocolname + '/' + version
+     */
+    public String getProtocol() {
+        return protocolName + '/' + protocolVersion;
+    }
 
-	/**
-	     * Set the protocolVersion member
-	     * @param p String to set
-	     */
-	public void setProtocolVersion(String p) {
-		protocolVersion = p;
-	}
+    public void setProtocol( String name_and_version ) throws ParseException {
+        int slash = name_and_version.indexOf('/');
+        if (slash>0) {
+            this.protocolName = name_and_version.substring(0,slash);
+            this.protocolVersion = name_and_version.substring( slash+1 );
+        } else throw new ParseException( "Missing '/' in protocol", 0 );
+    }
 
-	/**
-	     * Set the transport member
-	     * @param t String to set
-	     */
-	public void setTransport(String t) {
-		transport = t;
-	}
+    /** get the transport
+     * @return String
+     */
+    public String getTransport() {
+        return transport;
+    }
 
-	/** 
-	* Default constructor.
-	*/
-	public Protocol() {
-		protocolName = "SIP";
-		protocolVersion = "2.0";
-		transport = "UDP";
-	}
+    /**
+         * Set the protocolName member
+         * @param p String to set
+         */
+    public void setProtocolName(String p) {
+        protocolName = p;
+    }
+
+    /**
+         * Set the protocolVersion member
+         * @param p String to set
+         */
+    public void setProtocolVersion(String p) {
+        protocolVersion = p;
+    }
+
+    /**
+         * Set the transport member
+         * @param t String to set
+         */
+    public void setTransport(String t) {
+        transport = t;
+    }
+
+    /**
+    * Default constructor.
+    */
+    public Protocol() {
+        protocolName = "SIP";
+        protocolVersion = "2.0";
+        transport = "UDP";
+    }
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2007/02/12 15:19:23  belangery
+ * Changed the encode() and encodeBody() methods of SIP headers and basic classes to make them use the same StringBuffer instance during the encoding phase.
+ *
  * Revision 1.6  2006/07/13 09:01:24  mranga
  * Issue number:
  * Obtained from:

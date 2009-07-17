@@ -1,13 +1,13 @@
 /*
-* Conditions Of Use 
-* 
+* Conditions Of Use
+*
 * This software was developed by employees of the National Institute of
 * Standards and Technology (NIST), an agency of the Federal Government.
 * Pursuant to title 15 Untied States Code Section 105, works of NIST
 * employees are not subject to copyright protection in the United States
 * and are considered to be in the public domain.  As a result, a formal
 * license is not needed to use the software.
-* 
+*
 * This software is provided by NIST as a service and is expressly
 * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
 * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
@@ -16,12 +16,12 @@
 * regarding the use of the software or the results thereof, including but
 * not limited to the correctness, accuracy, reliability or usefulness of
 * the software.
-* 
+*
 * Permission to use this software is contingent upon your acceptance
 * of the terms of this agreement
-*  
+*
 * .
-* 
+*
 */
 /*******************************************************************************
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
@@ -32,125 +32,148 @@ import java.text.ParseException;
 import javax.sip.InvalidArgumentException;
 
 /**
- * the WarningValue SIPObject. 
+ * the WarningValue SIPObject.
  *
  * @author M. Ranganathan   <br/>
  * @author Olivier Deruelle <br/>
- * @version 1.2 $Revision: 1.6 $ $Date: 2006-07-13 09:01:44 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2009-07-17 18:57:41 $
  *
- * 
+ *
  *
  * @see WarningList SIPHeader which strings these together.
  */
 public class Warning extends SIPHeader implements WarningHeader {
 
-	/**
-	 * Comment for <code>serialVersionUID</code>
-	 */
-	private static final long serialVersionUID = -3433328864230783899L;
+    /**
+     * Comment for <code>serialVersionUID</code>
+     */
+    private static final long serialVersionUID = -3433328864230783899L;
 
-	/** warn code field, the warn code consists of three digits.
-	 */
-	protected int code;
+    /** warn code field, the warn code consists of three digits.
+     */
+    protected int code;
 
-	/** the name or pseudonym of the server adding
-	 * the Warning header, for use in debugging
-	 */
-	protected String agent;
+    /** the name or pseudonym of the server adding
+     * the Warning header, for use in debugging
+     */
+    protected String agent;
 
-	/** warn-text field
-	 */
-	protected String text;
+    /** warn-text field
+     */
+    protected String text;
 
-	/**
-	 * constructor.
-	 */
-	public Warning() {
-		super(WARNING);
-	}
+    /**
+     * constructor.
+     */
+    public Warning() {
+        super(WARNING);
+    }
 
-	/** Encode the body of the header (return the stuff following name:).
-	 *@return the string encoding of the header value.
-	 */
-	public String encodeBody() {
-		return text != null
-			? new Integer(code).toString()
-				+ SP
-				+ agent
-				+ SP
-				+ DOUBLE_QUOTE
-				+ text
-				+ DOUBLE_QUOTE
-			: new Integer(code).toString() + SP + agent;
-	}
+    /** Encode the body of the header (return the stuff following name:).
+     *@return the string encoding of the header value.
+     */
+    public String encodeBody() {
+        return text != null
+            ? new Integer(code).toString()
+                + SP
+                + agent
+                + SP
+                + DOUBLE_QUOTE
+                + text
+                + DOUBLE_QUOTE
+            : new Integer(code).toString() + SP + agent;
+    }
 
-	/**
-	* Gets code of WarningHeader
-	* @return code of WarningHeader
-	*/
-	public int getCode() {
-		return code;
-	}
+    /**
+    * Gets code of WarningHeader
+    * @return code of WarningHeader
+    */
+    public int getCode() {
+        return code;
+    }
 
-	/**
-	* Gets agent host of WarningHeader
-	* @return agent host of WarningHeader
-	*/
-	public String getAgent() {
-		return agent;
-	}
+    /**
+    * Gets agent host of WarningHeader
+    * @return agent host of WarningHeader
+    */
+    public String getAgent() {
+        return agent;
+    }
 
-	/**
-	* Gets text of WarningHeader
-	* @return text of WarningHeader
-	*/
-	public String getText() {
-		return text;
-	}
+    /**
+    * Gets text of WarningHeader
+    * @return text of WarningHeader
+    */
+    public String getText() {
+        return text;
+    }
 
-	/**
-	 * Sets code of WarningHeader
-	 * @param code int to set
-	 * @throws SipParseException if code is not accepted by implementation
-	 */
-	public void setCode(int code) throws InvalidArgumentException {
-		if (code >99  && code < 1000) { // check this is a 3DIGIT code
-			this.code = code;
-		} else
-			throw new InvalidArgumentException(
-				"Code parameter in the Warning header is invalid: code="
-					+ code);
-	}
+    /**
+     * Sets code of WarningHeader
+     * @param code int to set
+     * @throws SipParseException if code is not accepted by implementation
+     */
+    public void setCode(int code) throws InvalidArgumentException {
+        if (code >99  && code < 1000) { // check this is a 3DIGIT code
+            this.code = code;
+        } else
+            throw new InvalidArgumentException(
+                "Code parameter in the Warning header is invalid: code="
+                    + code);
+    }
 
-	/**
-	 * Sets host of WarningHeader
-	 * @param host String to set
-	 * @throws ParseException if host is not accepted by implementation
-	 */
-	public void setAgent(String host) throws ParseException {
-		if (host == null)
-			throw new NullPointerException("the host parameter in the Warning header is null");
-		else {
-			this.agent = host;
-		}
-	}
+    /**
+     * Sets host of WarningHeader
+     * @param host String to set
+     * @throws ParseException if host is not accepted by implementation
+     */
+    public void setAgent(String host) throws ParseException {
+        if (host == null)
+            throw new NullPointerException("the host parameter in the Warning header is null");
+        else {
+            this.agent = host;
+        }
+    }
 
-	/**
-	 * Sets text of WarningHeader
-	 * @param text String to set
-	 * @throws ParseException if text is not accepted by implementation
-	 */
-	public void setText(String text) throws ParseException {
-		if (text == null) {
-			throw new ParseException(
-				"The text parameter in the Warning header is null",
-				0);
-		} else
-			this.text = text;
-	}
+    /**
+     * Sets text of WarningHeader
+     * @param text String to set
+     * @throws ParseException if text is not accepted by implementation
+     */
+    public void setText(String text) throws ParseException {
+        if (text == null) {
+            throw new ParseException(
+                "The text parameter in the Warning header is null",
+                0);
+        } else
+            this.text = text;
+    }
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2006/07/13 09:01:44  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  jeroen van bemmel
+ * Reviewed by:   mranga
+ * Moved some changes from jain-sip-1.2 to java.net
+ *
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.3  2006/06/19 06:47:27  mranga
  * javadoc fixups
  *

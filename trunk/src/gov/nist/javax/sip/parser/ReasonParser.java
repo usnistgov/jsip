@@ -1,13 +1,13 @@
 /*
-* Conditions Of Use 
-* 
+* Conditions Of Use
+*
 * This software was developed by employees of the National Institute of
 * Standards and Technology (NIST), an agency of the Federal Government.
 * Pursuant to title 15 Untied States Code Section 105, works of NIST
 * employees are not subject to copyright protection in the United States
 * and are considered to be in the public domain.  As a result, a formal
 * license is not needed to use the software.
-* 
+*
 * This software is provided by NIST as a service and is expressly
 * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
 * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
@@ -16,12 +16,12 @@
 * regarding the use of the software or the results thereof, including but
 * not limited to the correctness, accuracy, reliability or usefulness of
 * the software.
-* 
+*
 * Permission to use this software is contingent upon your acceptance
 * of the terms of this agreement
-*  
+*
 * .
-* 
+*
 */
 package gov.nist.javax.sip.parser;
 
@@ -37,85 +37,88 @@ import java.text.ParseException;
  * @author Olivier Deruelle   <br/>
  * @author M. Ranganathan   <br/>
  *
- * 
+ *
  */
 public class ReasonParser extends ParametersParser {
 
-	/**
-	 * Creates a new instance of ReasonParser 
-	 * @param reason the header to parse
-	 */
-	public ReasonParser(String reason) {
-		super(reason);
-	}
+    /**
+     * Creates a new instance of ReasonParser
+     * @param reason the header to parse
+     */
+    public ReasonParser(String reason) {
+        super(reason);
+    }
 
-	/**
-	 * Constructor
-	 * @param lexer the lexer to use to parse the header
-	 */
-	protected ReasonParser(Lexer lexer) {
-		super(lexer);
-	}
+    /**
+     * Constructor
+     * @param lexer the lexer to use to parse the header
+     */
+    protected ReasonParser(Lexer lexer) {
+        super(lexer);
+    }
 
-	/**
-	 * parse the String message
-	 * @return SIPHeader (ReasonParserList object)
-	 * @throws SIPParseException if the message does not respect the spec.
-	 */
-	public SIPHeader parse() throws ParseException {
-		ReasonList reasonList = new ReasonList();
-		if (debug)
-			dbg_enter("ReasonParser.parse");
+    /**
+     * parse the String message
+     * @return SIPHeader (ReasonParserList object)
+     * @throws SIPParseException if the message does not respect the spec.
+     */
+    public SIPHeader parse() throws ParseException {
+        ReasonList reasonList = new ReasonList();
+        if (debug)
+            dbg_enter("ReasonParser.parse");
 
-		try {
-			headerName(TokenTypes.REASON);
-			this.lexer.SPorHT();
-			while (lexer.lookAhead(0) != '\n') {
-				Reason reason = new Reason();
-				this.lexer.match(TokenTypes.ID);
-				Token token = lexer.getNextToken();
-				String value = token.getTokenValue();
+        try {
+            headerName(TokenTypes.REASON);
+            this.lexer.SPorHT();
+            while (lexer.lookAhead(0) != '\n') {
+                Reason reason = new Reason();
+                this.lexer.match(TokenTypes.ID);
+                Token token = lexer.getNextToken();
+                String value = token.getTokenValue();
 
-				reason.setProtocol(value);
-				super.parse(reason);
-				reasonList.add(reason);
-				if (lexer.lookAhead(0) == ',') {
-					this.lexer.match(',');
-					this.lexer.SPorHT();
-				} else
-					this.lexer.SPorHT();
+                reason.setProtocol(value);
+                super.parse(reason);
+                reasonList.add(reason);
+                if (lexer.lookAhead(0) == ',') {
+                    this.lexer.match(',');
+                    this.lexer.SPorHT();
+                } else
+                    this.lexer.SPorHT();
 
-			}
-		} finally {
-			if (debug)
-				dbg_leave("ReasonParser.parse");
-		}
+            }
+        } finally {
+            if (debug)
+                dbg_leave("ReasonParser.parse");
+        }
 
-		return reasonList;
-	}
+        return reasonList;
+    }
 
-	/** Test program
-	public static void main(String args[]) throws ParseException {
-	    String r[] = {
-	        "Reason: SIP ;cause=200 ;text=\"Call completed elsewhere\"\n",
-	        "Reason: Q.850 ;cause=16 ;text=\"Terminated\"\n",
-	        "Reason: SIP ;cause=600 ;text=\"Busy Everywhere\"\n",
-	        "Reason: SIP ;cause=580 ;text=\"Precondition Failure\","+
-	        "SIP ;cause=530 ;text=\"Pre Failure\"\n",
-	        "Reason: SIP \n"
-	    };
-	    
-	    for (int i = 0; i < r.length; i++ ) {
-	        ReasonParser parser =
-	        new ReasonParser(r[i]);
-	        ReasonList rl= (ReasonList) parser.parse();
-	        System.out.println("encoded = " + rl.encode());
-	    }    
-	}
-	 */
+    /** Test program
+    public static void main(String args[]) throws ParseException {
+        String r[] = {
+            "Reason: SIP ;cause=200 ;text=\"Call completed elsewhere\"\n",
+            "Reason: Q.850 ;cause=16 ;text=\"Terminated\"\n",
+            "Reason: SIP ;cause=600 ;text=\"Busy Everywhere\"\n",
+            "Reason: SIP ;cause=580 ;text=\"Precondition Failure\","+
+            "SIP ;cause=530 ;text=\"Pre Failure\"\n",
+            "Reason: SIP \n"
+        };
+
+        for (int i = 0; i < r.length; i++ ) {
+            ReasonParser parser =
+            new ReasonParser(r[i]);
+            ReasonList rl= (ReasonList) parser.parse();
+            System.out.println("encoded = " + rl.encode());
+        }
+    }
+     */
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2008/11/19 10:10:50  jbemmel
+ * Don't catch ParseException but throw it
+ *
  * Revision 1.6  2006/07/13 09:02:12  mranga
  * Issue number:
  * Obtained from:

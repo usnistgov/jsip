@@ -1,13 +1,13 @@
 /*
-* Conditions Of Use 
-* 
+* Conditions Of Use
+*
 * This software was developed by employees of the National Institute of
 * Standards and Technology (NIST), an agency of the Federal Government.
 * Pursuant to title 15 Untied States Code Section 105, works of NIST
 * employees are not subject to copyright protection in the United States
 * and are considered to be in the public domain.  As a result, a formal
 * license is not needed to use the software.
-* 
+*
 * This software is provided by NIST as a service and is expressly
 * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
 * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
@@ -16,12 +16,12 @@
 * regarding the use of the software or the results thereof, including but
 * not limited to the correctness, accuracy, reliability or usefulness of
 * the software.
-* 
+*
 * Permission to use this software is contingent upon your acceptance
 * of the terms of this agreement
-*  
+*
 * .
-* 
+*
 */
 package gov.nist.javax.sip.parser;
 
@@ -33,100 +33,107 @@ import java.text.ParseException;
 /**
  * Parser for AlertInfo header.
  *
- * @version 1.2 $Revision: 1.7 $ $Date: 2007-10-18 17:48:09 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2009-07-17 18:57:57 $
  *
- * @author Olivier Deruelle   
- * @author M. Ranganathan   
- * 
+ * @author Olivier Deruelle
+ * @author M. Ranganathan
+ *
  */
 public class AlertInfoParser extends ParametersParser {
 
-	/**
-	 * Creates a new instance of AlertInfo Parser
-	 * @param alertInfo  the header to parse 
-	 */
-	public AlertInfoParser(String alertInfo) {
-		super(alertInfo);
-	}
+    /**
+     * Creates a new instance of AlertInfo Parser
+     * @param alertInfo  the header to parse
+     */
+    public AlertInfoParser(String alertInfo) {
+        super(alertInfo);
+    }
 
-	/**
-	 * Constructor
-	 * @param lexer the lexer to use to parse the header
-	 */
-	protected AlertInfoParser(Lexer lexer) {
-		super(lexer);
-	}
+    /**
+     * Constructor
+     * @param lexer the lexer to use to parse the header
+     */
+    protected AlertInfoParser(Lexer lexer) {
+        super(lexer);
+    }
 
-	/**
-	 * parse the AlertInfo  String header
-	 * @return SIPHeader (AlertInfoList  object)
-	 * @throws SIPParseException if the message does not respect the spec.
-	 */
-	public SIPHeader parse() throws ParseException {
+    /**
+     * parse the AlertInfo  String header
+     * @return SIPHeader (AlertInfoList  object)
+     * @throws SIPParseException if the message does not respect the spec.
+     */
+    public SIPHeader parse() throws ParseException {
 
-		if (debug)
-			dbg_enter("AlertInfoParser.parse");
-		AlertInfoList list = new AlertInfoList();
+        if (debug)
+            dbg_enter("AlertInfoParser.parse");
+        AlertInfoList list = new AlertInfoList();
 
-		try {
-			headerName(TokenTypes.ALERT_INFO);
+        try {
+            headerName(TokenTypes.ALERT_INFO);
 
-			while (lexer.lookAhead(0) != '\n') {
-				AlertInfo alertInfo = new AlertInfo();
-				alertInfo.setHeaderName(SIPHeaderNames.ALERT_INFO);
-				URLParser urlParser;
-				GenericURI uri;
+            while (lexer.lookAhead(0) != '\n') {
+                AlertInfo alertInfo = new AlertInfo();
+                alertInfo.setHeaderName(SIPHeaderNames.ALERT_INFO);
+                URLParser urlParser;
+                GenericURI uri;
 
-				this.lexer.SPorHT();
-				if (this.lexer.lookAhead(0) == '<') {
-					this.lexer.match('<');
-					urlParser = new URLParser((Lexer) this.lexer);
-					uri = urlParser.uriReference();
-					alertInfo.setAlertInfo(uri);
-					this.lexer.match('>');
-				} else {
-					this.lexer.match(TokenTypes.ID);
-					Token token = lexer.getNextToken();
-					alertInfo.setAlertInfo(token.getTokenValue());
-				}
-				this.lexer.SPorHT();
+                this.lexer.SPorHT();
+                if (this.lexer.lookAhead(0) == '<') {
+                    this.lexer.match('<');
+                    urlParser = new URLParser((Lexer) this.lexer);
+                    uri = urlParser.uriReference();
+                    alertInfo.setAlertInfo(uri);
+                    this.lexer.match('>');
+                } else {
+                    this.lexer.match(TokenTypes.ID);
+                    Token token = lexer.getNextToken();
+                    alertInfo.setAlertInfo(token.getTokenValue());
+                }
+                this.lexer.SPorHT();
 
-				super.parse(alertInfo);
-				list.add(alertInfo);
+                super.parse(alertInfo);
+                list.add(alertInfo);
 
-				while (lexer.lookAhead(0) == ',') {
-					this.lexer.match(',');
-					this.lexer.SPorHT();
+                while (lexer.lookAhead(0) == ',') {
+                    this.lexer.match(',');
+                    this.lexer.SPorHT();
 
-					alertInfo = new AlertInfo();
+                    alertInfo = new AlertInfo();
 
-					this.lexer.SPorHT();
-					if (this.lexer.lookAhead(0) == '<') {
-						this.lexer.match('<');
-						urlParser = new URLParser((Lexer) this.lexer);
-						uri = urlParser.uriReference();
-						alertInfo.setAlertInfo(uri);
-						this.lexer.match('>');
-					} else {
-						this.lexer.match(TokenTypes.ID);
-						Token token = lexer.getNextToken();
-						alertInfo.setAlertInfo(token.getTokenValue());
-					}
-					this.lexer.SPorHT();
+                    this.lexer.SPorHT();
+                    if (this.lexer.lookAhead(0) == '<') {
+                        this.lexer.match('<');
+                        urlParser = new URLParser((Lexer) this.lexer);
+                        uri = urlParser.uriReference();
+                        alertInfo.setAlertInfo(uri);
+                        this.lexer.match('>');
+                    } else {
+                        this.lexer.match(TokenTypes.ID);
+                        Token token = lexer.getNextToken();
+                        alertInfo.setAlertInfo(token.getTokenValue());
+                    }
+                    this.lexer.SPorHT();
 
-					super.parse(alertInfo);
-					list.add(alertInfo);
-				}
-			}
-			return list;
-		} finally {
-			if (debug)
-				dbg_leave("AlertInfoParser.parse");
-		}
-	}
+                    super.parse(alertInfo);
+                    list.add(alertInfo);
+                }
+            }
+            return list;
+        } finally {
+            if (debug)
+                dbg_leave("AlertInfoParser.parse");
+        }
+    }
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2007/10/18 17:48:09  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  mardy
+ * Reviewed by:   mranga
+ * Alert info patch to accept non standard alert info headers.
+ *
  * Revision 1.6  2006/07/13 09:02:19  mranga
  * Issue number:
  * Obtained from:

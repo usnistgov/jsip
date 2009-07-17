@@ -14,15 +14,15 @@ import junit.framework.*;
 public class FactoryTestSuite extends TestSuite {
 
 
-	public FactoryTestSuite(String name) {
-		super(name);
-		addTestSuite(AddressFactoryTest.class);
-		addTestSuite(HeaderFactoryTest.class);
-		addTestSuite(MessageFactoryTest.class);
-	}
+    public FactoryTestSuite(String name) {
+        super(name);
+        addTestSuite(AddressFactoryTest.class);
+        addTestSuite(HeaderFactoryTest.class);
+        addTestSuite(MessageFactoryTest.class);
+    }
 
-	public static Test suite() {
-		return new FactoryTestSuite("FactoryTestSuite");
-	}
+    public static Test suite() {
+        return new FactoryTestSuite("FactoryTestSuite");
+    }
 
 }

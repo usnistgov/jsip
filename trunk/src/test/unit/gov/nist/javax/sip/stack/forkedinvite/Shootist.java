@@ -49,77 +49,77 @@ import org.apache.log4j.Logger;
 /**
  * This class is a UAC template. Shootist is the guy that shoots and shootme is
  * the guy that gets shot.
- * 
+ *
  * @author M. Ranganathan
  */
 
 public class Shootist implements SipListener {
 
-	private ContactHeader contactHeader;
+    private ContactHeader contactHeader;
 
-	private ClientTransaction inviteTid;
+    private ClientTransaction inviteTid;
 
-	
-	private SipProvider sipProvider;
 
-	private String host = "127.0.0.1";
+    private SipProvider sipProvider;
 
-	private int port;
+    private String host = "127.0.0.1";
 
-	private String peerHost = "127.0.0.1";
+    private int port;
 
-	private int peerPort;
+    private String peerHost = "127.0.0.1";
 
-	private ListeningPoint listeningPoint;
+    private int peerPort;
 
-	private static String unexpectedException = "Unexpected exception ";
+    private ListeningPoint listeningPoint;
 
-	private static Logger logger = Logger.getLogger(Shootist.class);
+    private static String unexpectedException = "Unexpected exception ";
 
-	
+    private static Logger logger = Logger.getLogger(Shootist.class);
 
-	private Dialog originalDialog;
 
-	private HashSet<Dialog> forkedDialogs = new HashSet<Dialog>();
 
-	private Dialog ackedDialog;
-	
-	private SipStack sipStack;
+    private Dialog originalDialog;
+
+    private HashSet<Dialog> forkedDialogs = new HashSet<Dialog>();
+
+    private Dialog ackedDialog;
+
+    private SipStack sipStack;
 
     private HashSet<Dialog> canceledDialog = new HashSet<Dialog>();
 
     private boolean byeResponseSeen;
 
     private int counter;
-	
-	private static HeaderFactory headerFactory;
-	
-	private static MessageFactory messageFactory;
-	
-	private static AddressFactory addressFactory;
-	
-	private static final String transport = "udp";
-	
-	static boolean callerSendsBye  = true;
-	
-	private boolean byeSent;
-	
-	private Timer timer = new Timer();
-	
-	
-	class SendBye extends TimerTask {
 
-	    private Dialog dialog;
+    private static HeaderFactory headerFactory;
+
+    private static MessageFactory messageFactory;
+
+    private static AddressFactory addressFactory;
+
+    private static final String transport = "udp";
+
+    static boolean callerSendsBye  = true;
+
+    private boolean byeSent;
+
+    private Timer timer = new Timer();
+
+
+    class SendBye extends TimerTask {
+
+        private Dialog dialog;
         public SendBye(Dialog dialog ) {
-	        this.dialog = dialog;
-	    }
+            this.dialog = dialog;
+        }
         @Override
         public void run() {
            try {
                TestCase.assertEquals ("Dialog state must be confirmed",
                         DialogState.CONFIRMED,dialog.getState());
-               
-             
+
+
 
                Request byeRequest = dialog.createRequest(Request.BYE);
                ClientTransaction ctx = sipProvider.getNewClientTransaction(byeRequest);
@@ -127,357 +127,357 @@ public class Shootist implements SipListener {
            } catch (Exception ex) {
                TestCase.fail("Unexpected exception");
            }
-           
-        }
-	    
-	}
-	
 
-	
-	public Shootist(int myPort, int proxyPort) {
-		
-		
-		this.port = myPort;
-		
-		SipObjects sipObjects = new SipObjects(myPort, "shootist","on");
+        }
+
+    }
+
+
+
+    public Shootist(int myPort, int proxyPort) {
+
+
+        this.port = myPort;
+
+        SipObjects sipObjects = new SipObjects(myPort, "shootist","on");
         addressFactory = sipObjects.addressFactory;
         messageFactory = sipObjects.messageFactory;
         headerFactory = sipObjects.headerFactory;
         this.sipStack = sipObjects.sipStack;
-        
-		this.peerPort = proxyPort;
-		
-		
-	}
 
-	public void processRequest(RequestEvent requestReceivedEvent) {
-		Request request = requestReceivedEvent.getRequest();
-		ServerTransaction serverTransactionId = requestReceivedEvent
-				.getServerTransaction();
+        this.peerPort = proxyPort;
 
-		logger.info("\n\nRequest " + request.getMethod() + " received at "
-				+  sipStack.getStackName()
-				+ " with server transaction id " + serverTransactionId);
 
-		// We are the UAC so the only request we get is the BYE.
-		if (request.getMethod().equals(Request.BYE))
-			processBye(request, serverTransactionId);
-		else
-			TestCase.fail("Unexpected request ! : " + request);
+    }
 
-	}
+    public void processRequest(RequestEvent requestReceivedEvent) {
+        Request request = requestReceivedEvent.getRequest();
+        ServerTransaction serverTransactionId = requestReceivedEvent
+                .getServerTransaction();
 
-	public void processBye(Request request,
-			ServerTransaction serverTransactionId) {
-		try {
-			logger.info("shootist:  got a bye .");
-			if (serverTransactionId == null) {
-				logger.info("shootist:  null TID.");
-				return;
-			}
-			Dialog dialog = serverTransactionId.getDialog();
-			logger.info("Dialog State = " + dialog.getState());
-			Response response = messageFactory.createResponse(
-					200, request);
-			serverTransactionId.sendResponse(response);
-			logger.info("shootist:  Sending OK.");
-			logger.info("Dialog State = " + dialog.getState());
+        logger.info("\n\nRequest " + request.getMethod() + " received at "
+                +  sipStack.getStackName()
+                + " with server transaction id " + serverTransactionId);
 
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			System.exit(0);
+        // We are the UAC so the only request we get is the BYE.
+        if (request.getMethod().equals(Request.BYE))
+            processBye(request, serverTransactionId);
+        else
+            TestCase.fail("Unexpected request ! : " + request);
 
-		}
-	}
+    }
 
-	public synchronized void processResponse(ResponseEvent responseReceivedEvent) {
-		logger.info("Got a response");
-		Response response = (Response) responseReceivedEvent.getResponse();
-		ClientTransaction tid = responseReceivedEvent.getClientTransaction();
-		CSeqHeader cseq = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
+    public void processBye(Request request,
+            ServerTransaction serverTransactionId) {
+        try {
+            logger.info("shootist:  got a bye .");
+            if (serverTransactionId == null) {
+                logger.info("shootist:  null TID.");
+                return;
+            }
+            Dialog dialog = serverTransactionId.getDialog();
+            logger.info("Dialog State = " + dialog.getState());
+            Response response = messageFactory.createResponse(
+                    200, request);
+            serverTransactionId.sendResponse(response);
+            logger.info("shootist:  Sending OK.");
+            logger.info("Dialog State = " + dialog.getState());
 
-		logger.info("Response received : Status Code = "
-				+ response.getStatusCode() + " " + cseq);
-		logger.info("Response = " + response + " class=" + response.getClass() );
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.exit(0);
 
-		Dialog dialog = responseReceivedEvent.getDialog();
-		TestCase.assertNotNull( dialog );	
-		
-		if (tid != null)
-			logger.info("transaction state is " + tid.getState());
-		else
-			logger.info("transaction = " + tid);
+        }
+    }
 
-		logger.info("Dialog = " + dialog);
+    public synchronized void processResponse(ResponseEvent responseReceivedEvent) {
+        logger.info("Got a response");
+        Response response = (Response) responseReceivedEvent.getResponse();
+        ClientTransaction tid = responseReceivedEvent.getClientTransaction();
+        CSeqHeader cseq = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
 
-		logger.info("Dialog state is " + dialog.getState());
+        logger.info("Response received : Status Code = "
+                + response.getStatusCode() + " " + cseq);
+        logger.info("Response = " + response + " class=" + response.getClass() );
 
-		try {
-			if (response.getStatusCode() == Response.OK) {
-				if (cseq.getMethod().equals(Request.INVITE)) {
-					TestCase.assertEquals( DialogState.CONFIRMED, dialog.getState() );
-					Request ackRequest = dialog.createAck(cseq
-							.getSeqNumber());
-					
-					TestCase.assertNotNull( ackRequest.getHeader( MaxForwardsHeader.NAME ) );
-					
-					if ( dialog == this.ackedDialog ) {
-						dialog.sendAck(ackRequest);
-						return;
-					}
-					// Proxy will fork. I will accept the first dialog.
-					this.forkedDialogs.add(dialog);
-					if ( responseReceivedEvent.getClientTransaction() != null ) {
-						logger.info("Sending ACK");
-						dialog.sendAck(ackRequest);
-						TestCase.assertTrue(
-								"Dialog state should be CONFIRMED", dialog
-										.getState() == DialogState.CONFIRMED);
-						
-						TestCase.assertTrue(this.ackedDialog == null || 
-						        this.ackedDialog == dialog);
-						this.ackedDialog = dialog;
-						
-						if ( callerSendsBye ) {
-						    timer.schedule( new SendBye(ackedDialog), 4000  );
-						}
-						
-						
-					} else {
-					    this.canceledDialog.add(dialog);
-					    // Send ACK to quench re-transmission
-					    sipProvider.sendRequest(ackRequest);
-						// Kill the second dialog by sending a bye.
-						SipProvider sipProvider = (SipProvider) responseReceivedEvent
-								.getSource();
-						
-						Request byeRequest = dialog.createRequest(Request.BYE);
-						ClientTransaction ct = sipProvider
-								.getNewClientTransaction(byeRequest);
-						dialog.sendRequest(ct);					
-					}
-					
-					
-				} else if ( cseq.getMethod().equals(Request.BYE)) {
-				   
-				    if ( dialog == this.ackedDialog) {
-				        this.byeResponseSeen = true;
-				    }
-				} else {
-					logger.info("Response method = " + cseq.getMethod());
-				}
-			} else if ( response.getStatusCode() == Response.RINGING ) {
-				//TestHarness.assertEquals( DialogState.EARLY, dialog.getState() );
-			}
-		} catch (Throwable ex) {
-			ex.printStackTrace();
-			// System.exit(0);
-		}
+        Dialog dialog = responseReceivedEvent.getDialog();
+        TestCase.assertNotNull( dialog );
 
-	}
+        if (tid != null)
+            logger.info("transaction state is " + tid.getState());
+        else
+            logger.info("transaction = " + tid);
 
-	public SipProvider createSipProvider() {
-		try {
-			listeningPoint = sipStack.createListeningPoint(
-					host, port, "udp");
+        logger.info("Dialog = " + dialog);
 
-			logger.info("listening point = " + host + " port = " + port);
-			logger.info("listening point = " + listeningPoint);
-			sipProvider = sipStack
-					.createSipProvider(listeningPoint);
-			return sipProvider;
-		} catch (Exception ex) {
-			logger.error(unexpectedException, ex);
-			TestCase.fail(unexpectedException);
-			return null;
-		}
+        logger.info("Dialog state is " + dialog.getState());
 
-	}
+        try {
+            if (response.getStatusCode() == Response.OK) {
+                if (cseq.getMethod().equals(Request.INVITE)) {
+                    TestCase.assertEquals( DialogState.CONFIRMED, dialog.getState() );
+                    Request ackRequest = dialog.createAck(cseq
+                            .getSeqNumber());
 
-	public void checkState() {
-		TestCase.assertEquals("Should see " + this.counter + " distinct dialogs",
-				counter,this.forkedDialogs.size());
-		TestCase.assertTrue(
-				"Should see the original (default) dialog in the forked set",
-				this.forkedDialogs.contains(this.originalDialog));
-		
-		TestCase.assertTrue("Should see BYE response for ACKED Dialog",this.byeResponseSeen);
-		
-		// cleanup
-		forkedDialogs.clear();
-	}
+                    TestCase.assertNotNull( ackRequest.getHeader( MaxForwardsHeader.NAME ) );
 
-	public void processTimeout(javax.sip.TimeoutEvent timeoutEvent) {
+                    if ( dialog == this.ackedDialog ) {
+                        dialog.sendAck(ackRequest);
+                        return;
+                    }
+                    // Proxy will fork. I will accept the first dialog.
+                    this.forkedDialogs.add(dialog);
+                    if ( responseReceivedEvent.getClientTransaction() != null ) {
+                        logger.info("Sending ACK");
+                        dialog.sendAck(ackRequest);
+                        TestCase.assertTrue(
+                                "Dialog state should be CONFIRMED", dialog
+                                        .getState() == DialogState.CONFIRMED);
 
-		logger.info("Transaction Time out");
-	}
+                        TestCase.assertTrue(this.ackedDialog == null ||
+                                this.ackedDialog == dialog);
+                        this.ackedDialog = dialog;
 
-	public void sendInvite(int forkCount) {
-		try {
-		    
-		    this.counter = forkCount;
+                        if ( callerSendsBye ) {
+                            timer.schedule( new SendBye(ackedDialog), 4000  );
+                        }
 
-			String fromName = "BigGuy";
-			String fromSipAddress = "here.com";
-			String fromDisplayName = "The Master Blaster";
 
-			String toSipAddress = "there.com";
-			String toUser = "LittleGuy";
-			String toDisplayName = "The Little Blister";
+                    } else {
+                        this.canceledDialog.add(dialog);
+                        // Send ACK to quench re-transmission
+                        sipProvider.sendRequest(ackRequest);
+                        // Kill the second dialog by sending a bye.
+                        SipProvider sipProvider = (SipProvider) responseReceivedEvent
+                                .getSource();
 
-			// create >From Header
-			SipURI fromAddress = addressFactory.createSipURI(
-					fromName, fromSipAddress);
+                        Request byeRequest = dialog.createRequest(Request.BYE);
+                        ClientTransaction ct = sipProvider
+                                .getNewClientTransaction(byeRequest);
+                        dialog.sendRequest(ct);
+                    }
 
-			Address fromNameAddress = addressFactory
-					.createAddress(fromAddress);
-			fromNameAddress.setDisplayName(fromDisplayName);
-			FromHeader fromHeader = headerFactory
-					.createFromHeader(fromNameAddress, "12345");
 
-			// create To Header
-			SipURI toAddress = addressFactory.createSipURI(
-					toUser, toSipAddress);
-			Address toNameAddress = addressFactory
-					.createAddress(toAddress);
-			toNameAddress.setDisplayName(toDisplayName);
-			ToHeader toHeader = headerFactory.createToHeader(
-					toNameAddress, null);
+                } else if ( cseq.getMethod().equals(Request.BYE)) {
 
-			// create Request URI
-			String peerHostPort = peerHost + ":" + peerPort;
-			SipURI requestURI = addressFactory.createSipURI(
-					toUser, peerHostPort);
+                    if ( dialog == this.ackedDialog) {
+                        this.byeResponseSeen = true;
+                    }
+                } else {
+                    logger.info("Response method = " + cseq.getMethod());
+                }
+            } else if ( response.getStatusCode() == Response.RINGING ) {
+                //TestHarness.assertEquals( DialogState.EARLY, dialog.getState() );
+            }
+        } catch (Throwable ex) {
+            ex.printStackTrace();
+            // System.exit(0);
+        }
 
-			// Create ViaHeaders
+    }
 
-			ArrayList viaHeaders = new ArrayList();
-			ViaHeader viaHeader = headerFactory
-					.createViaHeader(host, sipProvider.getListeningPoint(
-							transport).getPort(),
-							transport, null);
+    public SipProvider createSipProvider() {
+        try {
+            listeningPoint = sipStack.createListeningPoint(
+                    host, port, "udp");
 
-			// add via headers
-			viaHeaders.add(viaHeader);
+            logger.info("listening point = " + host + " port = " + port);
+            logger.info("listening point = " + listeningPoint);
+            sipProvider = sipStack
+                    .createSipProvider(listeningPoint);
+            return sipProvider;
+        } catch (Exception ex) {
+            logger.error(unexpectedException, ex);
+            TestCase.fail(unexpectedException);
+            return null;
+        }
 
-			SipURI sipuri = addressFactory.createSipURI(null,
-					host);
-			sipuri.setPort(peerPort);
-			sipuri.setLrParam();
+    }
 
-			RouteHeader routeHeader = headerFactory
-					.createRouteHeader(addressFactory
-							.createAddress(sipuri));
+    public void checkState() {
+        TestCase.assertEquals("Should see " + this.counter + " distinct dialogs",
+                counter,this.forkedDialogs.size());
+        TestCase.assertTrue(
+                "Should see the original (default) dialog in the forked set",
+                this.forkedDialogs.contains(this.originalDialog));
 
-			// Create ContentTypeHeader
-			ContentTypeHeader contentTypeHeader = headerFactory
-					.createContentTypeHeader("application", "sdp");
+        TestCase.assertTrue("Should see BYE response for ACKED Dialog",this.byeResponseSeen);
 
-			// Create a new CallId header
-			CallIdHeader callIdHeader = sipProvider.getNewCallId();
-			// JvB: Make sure that the implementation matches the messagefactory
-			callIdHeader = headerFactory
-					.createCallIdHeader(callIdHeader.getCallId());
+        // cleanup
+        forkedDialogs.clear();
+    }
 
-			// Create a new Cseq header
-			CSeqHeader cSeqHeader = headerFactory
-					.createCSeqHeader(1L, Request.INVITE);
+    public void processTimeout(javax.sip.TimeoutEvent timeoutEvent) {
 
-			// Create a new MaxForwardsHeader
-			MaxForwardsHeader maxForwards = headerFactory
-					.createMaxForwardsHeader(70);
+        logger.info("Transaction Time out");
+    }
 
-			// Create the request.
-			Request request = messageFactory.createRequest(
-					requestURI, Request.INVITE, callIdHeader, cSeqHeader,
-					fromHeader, toHeader, viaHeaders, maxForwards);
-			// Create contact headers
+    public void sendInvite(int forkCount) {
+        try {
 
-			SipURI contactUrl = addressFactory.createSipURI(
-					fromName, host);
-			contactUrl.setPort(listeningPoint.getPort());
+            this.counter = forkCount;
 
-			// Create the contact name address.
-			SipURI contactURI = addressFactory.createSipURI(
-					fromName, host);
-			contactURI.setPort(sipProvider.getListeningPoint(
-					transport).getPort());
-			contactURI.setTransportParam(transport);
+            String fromName = "BigGuy";
+            String fromSipAddress = "here.com";
+            String fromDisplayName = "The Master Blaster";
 
-			Address contactAddress = addressFactory
-					.createAddress(contactURI);
+            String toSipAddress = "there.com";
+            String toUser = "LittleGuy";
+            String toDisplayName = "The Little Blister";
 
-			// Add the contact address.
-			contactAddress.setDisplayName(fromName);
+            // create >From Header
+            SipURI fromAddress = addressFactory.createSipURI(
+                    fromName, fromSipAddress);
 
-			contactHeader = headerFactory
-					.createContactHeader(contactAddress);
-			request.addHeader(contactHeader);
+            Address fromNameAddress = addressFactory
+                    .createAddress(fromAddress);
+            fromNameAddress.setDisplayName(fromDisplayName);
+            FromHeader fromHeader = headerFactory
+                    .createFromHeader(fromNameAddress, "12345");
 
-			// Dont use the Outbound Proxy. Use Lr instead.
-			request.setHeader(routeHeader);
+            // create To Header
+            SipURI toAddress = addressFactory.createSipURI(
+                    toUser, toSipAddress);
+            Address toNameAddress = addressFactory
+                    .createAddress(toAddress);
+            toNameAddress.setDisplayName(toDisplayName);
+            ToHeader toHeader = headerFactory.createToHeader(
+                    toNameAddress, null);
 
-			// Add the extension header.
-			Header extensionHeader = headerFactory
-					.createHeader("My-Header", "my header value");
-			request.addHeader(extensionHeader);
+            // create Request URI
+            String peerHostPort = peerHost + ":" + peerPort;
+            SipURI requestURI = addressFactory.createSipURI(
+                    toUser, peerHostPort);
 
-			String sdpData = "v=0\r\n"
-					+ "o=4855 13760799956958020 13760799956958020"
-					+ " IN IP4  129.6.55.78\r\n" + "s=mysession session\r\n"
-					+ "p=+46 8 52018010\r\n" + "c=IN IP4  129.6.55.78\r\n"
-					+ "t=0 0\r\n" + "m=audio 6022 RTP/AVP 0 4 18\r\n"
-					+ "a=rtpmap:0 PCMU/8000\r\n" + "a=rtpmap:4 G723/8000\r\n"
-					+ "a=rtpmap:18 G729A/8000\r\n" + "a=ptime:20\r\n";
-			byte[] contents = sdpData.getBytes();
+            // Create ViaHeaders
 
-			request.setContent(contents, contentTypeHeader);
+            ArrayList viaHeaders = new ArrayList();
+            ViaHeader viaHeader = headerFactory
+                    .createViaHeader(host, sipProvider.getListeningPoint(
+                            transport).getPort(),
+                            transport, null);
 
-			extensionHeader = headerFactory.createHeader(
-					"My-Other-Header", "my new header value ");
-			request.addHeader(extensionHeader);
+            // add via headers
+            viaHeaders.add(viaHeader);
 
-			Header callInfoHeader = headerFactory.createHeader(
-					"Call-Info", "<http://www.antd.nist.gov>");
-			request.addHeader(callInfoHeader);
+            SipURI sipuri = addressFactory.createSipURI(null,
+                    host);
+            sipuri.setPort(peerPort);
+            sipuri.setLrParam();
 
-			// Create the client transaction.
-			inviteTid = sipProvider.getNewClientTransaction(request);
-			Dialog dialog = inviteTid.getDialog();
+            RouteHeader routeHeader = headerFactory
+                    .createRouteHeader(addressFactory
+                            .createAddress(sipuri));
 
-			TestCase.assertTrue("Initial dialog state should be null",
-					dialog.getState() == null);
+            // Create ContentTypeHeader
+            ContentTypeHeader contentTypeHeader = headerFactory
+                    .createContentTypeHeader("application", "sdp");
 
-			// send the request out.
-			inviteTid.sendRequest();
+            // Create a new CallId header
+            CallIdHeader callIdHeader = sipProvider.getNewCallId();
+            // JvB: Make sure that the implementation matches the messagefactory
+            callIdHeader = headerFactory
+                    .createCallIdHeader(callIdHeader.getCallId());
 
-			this.originalDialog = dialog;
-			
-		} catch (Exception ex) {
-			logger.error(unexpectedException, ex);
-			TestCase.fail(unexpectedException);
+            // Create a new Cseq header
+            CSeqHeader cSeqHeader = headerFactory
+                    .createCSeqHeader(1L, Request.INVITE);
 
-		}
-	}
+            // Create a new MaxForwardsHeader
+            MaxForwardsHeader maxForwards = headerFactory
+                    .createMaxForwardsHeader(70);
 
-	public void processIOException(IOExceptionEvent exceptionEvent) {
-		logger.error("IOException happened for " + exceptionEvent.getHost()
-				+ " port = " + exceptionEvent.getPort());
-		TestCase.fail("Unexpected exception");
+            // Create the request.
+            Request request = messageFactory.createRequest(
+                    requestURI, Request.INVITE, callIdHeader, cSeqHeader,
+                    fromHeader, toHeader, viaHeaders, maxForwards);
+            // Create contact headers
 
-	}
+            SipURI contactUrl = addressFactory.createSipURI(
+                    fromName, host);
+            contactUrl.setPort(listeningPoint.getPort());
 
-	public void processTransactionTerminated(
-			TransactionTerminatedEvent transactionTerminatedEvent) {
-		logger.info("Transaction terminated event recieved");
-	}
+            // Create the contact name address.
+            SipURI contactURI = addressFactory.createSipURI(
+                    fromName, host);
+            contactURI.setPort(sipProvider.getListeningPoint(
+                    transport).getPort());
+            contactURI.setTransportParam(transport);
 
-	public void processDialogTerminated(
-			DialogTerminatedEvent dialogTerminatedEvent) {
-		TestCase.assertTrue("DTE dialog must be one of those we canceled",
-		        this.canceledDialog.contains((Dialog)dialogTerminatedEvent.getDialog() ));
+            Address contactAddress = addressFactory
+                    .createAddress(contactURI);
 
-	}
+            // Add the contact address.
+            contactAddress.setDisplayName(fromName);
+
+            contactHeader = headerFactory
+                    .createContactHeader(contactAddress);
+            request.addHeader(contactHeader);
+
+            // Dont use the Outbound Proxy. Use Lr instead.
+            request.setHeader(routeHeader);
+
+            // Add the extension header.
+            Header extensionHeader = headerFactory
+                    .createHeader("My-Header", "my header value");
+            request.addHeader(extensionHeader);
+
+            String sdpData = "v=0\r\n"
+                    + "o=4855 13760799956958020 13760799956958020"
+                    + " IN IP4  129.6.55.78\r\n" + "s=mysession session\r\n"
+                    + "p=+46 8 52018010\r\n" + "c=IN IP4  129.6.55.78\r\n"
+                    + "t=0 0\r\n" + "m=audio 6022 RTP/AVP 0 4 18\r\n"
+                    + "a=rtpmap:0 PCMU/8000\r\n" + "a=rtpmap:4 G723/8000\r\n"
+                    + "a=rtpmap:18 G729A/8000\r\n" + "a=ptime:20\r\n";
+            byte[] contents = sdpData.getBytes();
+
+            request.setContent(contents, contentTypeHeader);
+
+            extensionHeader = headerFactory.createHeader(
+                    "My-Other-Header", "my new header value ");
+            request.addHeader(extensionHeader);
+
+            Header callInfoHeader = headerFactory.createHeader(
+                    "Call-Info", "<http://www.antd.nist.gov>");
+            request.addHeader(callInfoHeader);
+
+            // Create the client transaction.
+            inviteTid = sipProvider.getNewClientTransaction(request);
+            Dialog dialog = inviteTid.getDialog();
+
+            TestCase.assertTrue("Initial dialog state should be null",
+                    dialog.getState() == null);
+
+            // send the request out.
+            inviteTid.sendRequest();
+
+            this.originalDialog = dialog;
+
+        } catch (Exception ex) {
+            logger.error(unexpectedException, ex);
+            TestCase.fail(unexpectedException);
+
+        }
+    }
+
+    public void processIOException(IOExceptionEvent exceptionEvent) {
+        logger.error("IOException happened for " + exceptionEvent.getHost()
+                + " port = " + exceptionEvent.getPort());
+        TestCase.fail("Unexpected exception");
+
+    }
+
+    public void processTransactionTerminated(
+            TransactionTerminatedEvent transactionTerminatedEvent) {
+        logger.info("Transaction terminated event recieved");
+    }
+
+    public void processDialogTerminated(
+            DialogTerminatedEvent dialogTerminatedEvent) {
+        TestCase.assertTrue("DTE dialog must be one of those we canceled",
+                this.canceledDialog.contains((Dialog)dialogTerminatedEvent.getDialog() ));
+
+    }
 
     public void stop() {
       this.sipStack.stop();

@@ -14,36 +14,36 @@ import java.io.*;
  */
 public class TracesSocket extends Thread {
 
-	private String fileName;
-	private String port;
-	private InputStream is;
-	private FileWriter fw;
+    private String fileName;
+    private String port;
+    private InputStream is;
+    private FileWriter fw;
 
-	/** Creates a new instance of TracesSocket */
-	public TracesSocket(String fileName, String port) throws Exception {
-		this.fileName = fileName;
+    /** Creates a new instance of TracesSocket */
+    public TracesSocket(String fileName, String port) throws Exception {
+        this.fileName = fileName;
 
-		this.port = port;
+        this.port = port;
 
-		System.out.println("Waiting for a connection on port: " + port);
-		ServerSocket serverSocket =
-			new ServerSocket(Integer.valueOf(port).intValue());
-		Socket newsock = serverSocket.accept();
-		is = newsock.getInputStream();
-		fw = new FileWriter(fileName);
+        System.out.println("Waiting for a connection on port: " + port);
+        ServerSocket serverSocket =
+            new ServerSocket(Integer.valueOf(port).intValue());
+        Socket newsock = serverSocket.accept();
+        is = newsock.getInputStream();
+        fw = new FileWriter(fileName);
 
-	}
+    }
 
-	public void run() {
-		try {
-			while (true) {
-				int i = is.read();
-				fw.write(i);
-				//System.out.print(i);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    public void run() {
+        try {
+            while (true) {
+                int i = is.read();
+                fw.write(i);
+                //System.out.print(i);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }

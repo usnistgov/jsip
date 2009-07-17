@@ -6,7 +6,7 @@
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. 
+ * This distribution may include materials developed by third parties.
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
@@ -18,8 +18,8 @@
  *  Version   Date      Author              Comments
  *  1.1     08/10/2002  Phelim O'Doherty    Reworked
  *  1.2     19/05/2005  Phelim O'Doherty    Added new new config parameters
- *                                          Added new createListeningPoint 
- *                                          method with IP address  
+ *                                          Added new createListeningPoint
+ *                                          method with IP address
  *                                          Added start and stop stack methods
  *                      M. Ranganathan      Fixed documentation.
  *
@@ -49,8 +49,8 @@ import java.util.*;
  * messages.
  * </ul>
  * <b>Architecture: </b> <br>
- * This specification mandates a one-to-many relationship between a SipStack 
- * and a SipProvider. There is a one-to-many relationship between a SipStack 
+ * This specification mandates a one-to-many relationship between a SipStack
+ * and a SipProvider. There is a one-to-many relationship between a SipStack
  * and a ListeningPoint.
  * <p>
  * <b>SipStack Creation </b> <br>
@@ -85,7 +85,7 @@ import java.util.*;
  * </p>
  * </th>
  * </tr>
- * 
+ *
  * <tr>
  * <td align="left" valign="top">
  * <p class="table">
@@ -94,15 +94,15 @@ import java.util.*;
  * </td>
  * <td align="left" valign="top">
  * <p class="table">
- * <b>Deprecated v1.2.</b> It is recommended in this specification that the IP 
- * Address should be set using the enhanced ListeningPoint architecture, 
- * therefore this property is no longer mandatory. When this parameter is 
- * specified as null, a singleton stack instance will be created and returned 
- * by the SipFactory and the IP Address attributes can be managed via the 
- * {@link SipStack#createListeningPoint(String, int, String)} method. For 
+ * <b>Deprecated v1.2.</b> It is recommended in this specification that the IP
+ * Address should be set using the enhanced ListeningPoint architecture,
+ * therefore this property is no longer mandatory. When this parameter is
+ * specified as null, a singleton stack instance will be created and returned
+ * by the SipFactory and the IP Address attributes can be managed via the
+ * {@link SipStack#createListeningPoint(String, int, String)} method. For
  * backwards compatability if this flag is set the SipFactory will return a new
- * SipStack instance each time a SipStack is created with a new IP Address. 
- * This configuration parameter will become the default IP address of the 
+ * SipStack instance each time a SipStack is created with a new IP Address.
+ * This configuration parameter will become the default IP address of the
  * SipStack. The SIP Factory will return any any existing instance of SipStack
  * that already exist for this IP Address.
  * </td>
@@ -130,7 +130,7 @@ import java.util.*;
  * </td>
  * <td align="left" valign="top">
  * <p class="table">
- * Sets the outbound proxy of the SIP Stack.  The  fromat 
+ * Sets the outbound proxy of the SIP Stack.  The  fromat
  * for this string is "ipaddress:port/transport" i.e.
  * 129.1.22.333:5060/UDP. This property is optional.
  * </p>
@@ -148,11 +148,11 @@ import java.util.*;
  * Sets the fully qualified classpath to the application supplied Router object
  * that determines how to route messages when the stack cannot make a routing
  * decision ( ie. non-sip URIs). In version 1.2 of this specification,
- * out of Dialog SIP URIs are routed by the Routing algorithm defined in RFC 3261 
- * which is implemented internally by the stack provided that 
+ * out of Dialog SIP URIs are routed by the Routing algorithm defined in RFC 3261
+ * which is implemented internally by the stack provided that
  * javax.sip.USE_ROUTER_FOR_ALL_URIS is set to false.  In this case,
  * the installed Router object is consulted for routing decisions pertaining to
- * non-SIP URIs. An application defined Router object must implement the javax.sip.Router interface. 
+ * non-SIP URIs. An application defined Router object must implement the javax.sip.Router interface.
  * This property is optional.
  * </td>
  * </tr>
@@ -179,40 +179,40 @@ import java.util.*;
  * </tr>
  *
  * <tr>
- *	<td align="left" valign="top">
- *		<p class="table">javax.sip.RETRANSMISSION_FILTER</p>
- *	</td>
- *	<td align="left" valign="top">
- * 		<p class="table"><b>Deprecated v1.2.</b> Applications can request
- *              retransmission alerts from the 
+ *  <td align="left" valign="top">
+ *      <p class="table">javax.sip.RETRANSMISSION_FILTER</p>
+ *  </td>
+ *  <td align="left" valign="top">
+ *      <p class="table"><b>Deprecated v1.2.</b> Applications can request
+ *              retransmission alerts from the
  *              {@link ServerTransaction#enableRetransmissionAlerts()}.
  *              <p>
- *              The default retransmission behaviour of this 
- *              specification is dependent on the application core and is defined 
+ *              The default retransmission behaviour of this
+ *              specification is dependent on the application core and is defined
  *              as follows:
  *              <ul>
  *              <li>User Agent Client: Retransmissions of ACK Requests are the
- *              responsibility of the application. All other retansmissions are 
+ *              responsibility of the application. All other retansmissions are
  *              handled by the SipProvider.
  *              <li>User Agent Server: Retransmissions of 1xx, 2xx Responses are the
- *              responsibility of the application. All other retansmissions are 
+ *              responsibility of the application. All other retansmissions are
  *              handled by the SipProvider.
- *              <li>Stateful Proxy: As stateful proxies have no Invite 
+ *              <li>Stateful Proxy: As stateful proxies have no Invite
  *              transactions all retransmissions are handled by the SipProvider.
- *              <li>Stateless Proxy: As stateless proxies are not transactional 
- *              all retransmissions are the responsibility of the application 
+ *              <li>Stateless Proxy: As stateless proxies are not transactional
+ *              all retransmissions are the responsibility of the application
  *              and will not be handled the SipProvider.
  *              </ul>
- *              This filter can be viewed as a helper function for User Agents 
- *              that can be set by an application to prevent the application 
- *              from handling retransmission of ACK Requests, 1xx and 2xx 
- *              Responses for INVITE transactions, i.e. the SipProvider will 
- *              handle the retransmissions. This utility is useful for hiding 
- *              protocol retransmission semantics from higher level 
- *              programming environments. The acceptable values are ON/OFF. This 
- *              property is optional, therefore if not supplied the default is 
+ *              This filter can be viewed as a helper function for User Agents
+ *              that can be set by an application to prevent the application
+ *              from handling retransmission of ACK Requests, 1xx and 2xx
+ *              Responses for INVITE transactions, i.e. the SipProvider will
+ *              handle the retransmissions. This utility is useful for hiding
+ *              protocol retransmission semantics from higher level
+ *              programming environments. The acceptable values are ON/OFF. This
+ *              property is optional, therefore if not supplied the default is
  *              OFF.
- *	</td>
+ *  </td>
  * </tr>
  *
  * <tr>
@@ -255,12 +255,12 @@ import java.util.*;
  * </td>
  * <td align="left" valign="top">
  * <p class="table">
- *  Comma separated list of events for which the implementation should expect forked 
+ *  Comma separated list of events for which the implementation should expect forked
  *  SUBSCRIBE dialogs. Each element of this list must have the syntax packagename.eventname
- *  
+ *
  *  This configuration parameter is provided in order to support the following behavior ( defined
  *  in RFC 3265):
- *  
+ *
  *  Successful SUBSCRIBE requests will normally receive only
  *  one 200-class response; however, due to forking, the subscription may
  *  have been accepted by multiple nodes.  The subscriber MUST therefore
@@ -270,11 +270,11 @@ import java.util.*;
  *  If multiple NOTIFY messages are received in different dialogs in
  *  response to a single SUBSCRIBE message, each dialog represents a
  *  different destination to which the SUBSCRIBE request was forked.
- *  
+ *
  *  Each event package MUST specify whether forked SUBSCRIBE requests are
- *  allowed to install multiple subscriptions.If such behavior is not allowed, 
- *  the first potential dialog-establishing message will create a dialog.  
- * All subsequent NOTIFY messages which correspond to the SUBSCRIBE message 
+ *  allowed to install multiple subscriptions.If such behavior is not allowed,
+ *  the first potential dialog-establishing message will create a dialog.
+ * All subsequent NOTIFY messages which correspond to the SUBSCRIBE message
  * (i.e., match "To","From", "From" header "tag" parameter, "Call-ID", "CSeq", "Event",
  * and "Event" header "id" parameter) but which do not match the dialog
  * would be rejected with a 481 response. This property is optional.
@@ -294,25 +294,25 @@ import java.util.*;
  * <p class="table">
  * If set to <it>true</it> then the application installed
  * Router is consulted for ALL routing decisions (ie. both out of dialog SIP and non-SIP request
- * URI's -- identitcal to the behavior supported in v1.1 of this specification). If set to  
+ * URI's -- identitcal to the behavior supported in v1.1 of this specification). If set to
  * <it>false</it> the user installed router will only be consulted for routing of Non-SIP URIs.
  * Implementations may thus provide support for sophisticated operations such as DNS lookup
  * for SIP URI's  using the proceedures defined in RFC 3263
- * (support for RFC 3263 is not mandatory for this specification). This property is optional. 
- * The default value for this parameter is <it>true</it>. 
+ * (support for RFC 3263 is not mandatory for this specification). This property is optional.
+ * The default value for this parameter is <it>true</it>.
  * <p>
  * <b>Since v1.2.</b>
  * </td>
  * </tr>
  *
  * </table> </center>
- * 
+ *
  * @see SipFactory
  * @see SipProvider
- * 
+ *
  * @author BEA Systems, NIST
  * @version 1.2
- *  
+ *
  */
 
 public interface SipStack {
@@ -324,38 +324,38 @@ public interface SipStack {
      * SipListener upon execution of this method, by adding the SipProvider to
      * the list of SipProviders of this SipStack once it has been successfully
      * created.
-     * 
+     *
      * @param listeningPoint listening point for this SipProvider.
-     * @throws ObjectInUseException if another SipProvider is already associated 
-     * with this ListeningPoint. 
-     * @return the newly created SipProvider been started. 
+     * @throws ObjectInUseException if another SipProvider is already associated
+     * with this ListeningPoint.
+     * @return the newly created SipProvider been started.
      */
     public SipProvider createSipProvider(ListeningPoint listeningPoint)
             throws ObjectInUseException;
 
-    
+
     /**
      * Deletes the specified peer SipProvider attached to this SipStack. The
      * specified SipProvider is implicitly detached from this SipStack upon
      * execution of this method, by removing the SipProvider from the
-     * SipProviders list of this SipStack. Deletion of a SipProvider does not 
+     * SipProviders list of this SipStack. Deletion of a SipProvider does not
      * automatically delete the SipProvider's ListeningPoint from the SipStack.
      *
-     * @param sipProvider the peer SipProvider to be deleted from this 
+     * @param sipProvider the peer SipProvider to be deleted from this
      * SipStack.
-     * @throws ObjectInUseException if the specified SipProvider cannot be 
+     * @throws ObjectInUseException if the specified SipProvider cannot be
      * deleted because the SipProvider is currently in use.
      *
      */
     public void deleteSipProvider(SipProvider sipProvider)
-                                            throws ObjectInUseException;    
-    
+                                            throws ObjectInUseException;
+
     /**
      * Returns an Iterator of existing SipProviders that have been created by
      * this SipStack. All of the SipProviders of this SipStack will belong to
      * the same stack vendor.
      *
-     * @return the list of Providers attached to this Sipstack.  
+     * @return the list of Providers attached to this Sipstack.
      */
     public Iterator getSipProviders();
 
@@ -368,7 +368,7 @@ public interface SipStack {
      * is implicitly attached to this SipStack upon execution of this method, by
      * adding the ListeningPoint to the List of ListeningPoints of this SipStack
      * once it has been successfully created.
-     * 
+     *
      * @return the ListeningPoint attached to this SipStack.
      * @param port
      *            the port of the new ListeningPoint.
@@ -379,8 +379,8 @@ public interface SipStack {
      * @throws InvalidArgumentException
      *             if the specified port is invalid.
      *
-     * @deprecated Since v1.2. This has been replaced by 
-     *  {@link SipStack#createListeningPoint(String, int, String)  } 
+     * @deprecated Since v1.2. This has been replaced by
+     *  {@link SipStack#createListeningPoint(String, int, String)  }
      * For backwards compatibility with v1.1 implementations should support this method.
      * Implementations should throw <it>TransportNotSupportedException</it>
      * if the Properties specified during stack creation do not include an IP Address.
@@ -394,13 +394,13 @@ public interface SipStack {
      * point is created with the given parameters. This support is useful for
      * multi-homed hosts which may have to listen at multiple IP addresses and
      * have different dialogs for each IP address.
-     * 
+     *
      * @return ListeningPoint that uses the IP address port and transport.
-     * @throws SipException if the Listening point cannot be created for any reason or if the 
-     * stack has specified a default IP address that differs from the IP address specified 
-     * for this method. 
+     * @throws SipException if the Listening point cannot be created for any reason or if the
+     * stack has specified a default IP address that differs from the IP address specified
+     * for this method.
      * @throws InvalidArgumentException
-     * @since 1.2 
+     * @since 1.2
      */
     public ListeningPoint createListeningPoint(String ipAddress, int port,
             String transport) throws TransportNotSupportedException, InvalidArgumentException;
@@ -410,7 +410,7 @@ public interface SipStack {
      * specified ListeningPoint is implicitly detached from this SipStack upon
      * execution of this method, by removing the ListeningPoint from the
      * ListeningPoints list of this SipStack.
-     * 
+     *
      * @param listeningPoint
      *            the SipProvider to be deleted from this SipStack.
      * @throws ObjectInUseException
@@ -424,7 +424,7 @@ public interface SipStack {
      * Returns an Iterator of existing ListeningPoints created by this SipStack.
      * All of the ListeningPoints of this SipStack belong to the same stack
      * vendor.
-     * 
+     *
      * @return an Iterator containing all existing ListeningPoints created by
      *         this SipStack. Returns an empty Iterator if no ListeningPoints
      *         exist.
@@ -438,22 +438,22 @@ public interface SipStack {
      * value is set using the Properties object passed to the
      * {@link SipFactory#createSipStack(Properties)}method upon creation of the
      * SipStack object.
-     * 
+     *
      * @return a string identifing the stack instance
      */
     public String getStackName();
 
     /**
      * Gets the IP Address that identifies this SipStack instance. Every
-     * SipStack object may have an IP Address. This specification recommends 
-     * associating the IP address with the {@link ListeningPoint}. 
-     * For backwards compatability if an IP address is specified in the 
-     * Properties object passed to the 
-     * {@link SipFactory#createSipStack(Properties)} method upon creation of 
-     * the SipStack object then this becomes the default IP address of the 
+     * SipStack object may have an IP Address. This specification recommends
+     * associating the IP address with the {@link ListeningPoint}.
+     * For backwards compatability if an IP address is specified in the
+     * Properties object passed to the
+     * {@link SipFactory#createSipStack(Properties)} method upon creation of
+     * the SipStack object then this becomes the default IP address of the
      * SipStack object, ListeningPoints can then be created on this IP Address.
-     * 
-     * @return a string identifing the IP Address. Null if there is no default 
+     *
+     * @return a string identifing the IP Address. Null if there is no default
      * IP address associated with the stack instance.
      */
     public String getIPAddress();
@@ -463,35 +463,35 @@ public interface SipStack {
      * this SipStack. This value is set using the Properties object passed to
      * the {@link SipFactory#createSipStack(Properties)}method upon creation of
      * the SipStack object.
-     * 
+     *
      * @return the Router object identifying the Router information.
      */
     public Router getRouter();
 
     /**
-     * This methods initiates the shutdown of the stack. The stack will 
+     * This methods initiates the shutdown of the stack. The stack will
      * terminate all ongoing transactions, without providing
      * notificatin to the listener, close all listening points and release all
      * resources associated with this stack. Note that this is a hard stop and
-     * should be used with care. The application may build graceful stop 
+     * should be used with care. The application may build graceful stop
      * measures if needed, however the implementation is expected to
      * immediately release any resources such as threads sockets and buffers
      * that are allocated to this stack.
-     * 
+     *
      * @since 1.2
      */
     public void stop();
 
     /**
-     * This method initiates the active processing of the stack. This method is 
-     * used to start the stack after the necessary SipProviders have been 
+     * This method initiates the active processing of the stack. This method is
+     * used to start the stack after the necessary SipProviders have been
      * created.   After calling this method, the stack can handle incoming
-     * requests and responses on the ListeningPoints associated to the 
+     * requests and responses on the ListeningPoints associated to the
      * SipProviders.
-     * 
-     * @throws SipException if the stack cannot be started due to some system 
+     *
+     * @throws SipException if the stack cannot be started due to some system
      * level failure.
-     *  
+     *
      * @since 1.2
      */
     public void start() throws SipException;
@@ -512,10 +512,10 @@ public interface SipStack {
      * notified if the underlying transaction expires with a
      * {@link Timeout#TRANSACTION}notification encapsulated in a TimeoutEvent.
      *
-     * @deprecated Since v1.2. This retransmission filter property has been deprecated 
-     * as a SIP Stack property. Applications can enable retransmission alerts by using the 
-     * {@link ServerTransaction#enableRetransmissionAlerts()} method. 
-     * 
+     * @deprecated Since v1.2. This retransmission filter property has been deprecated
+     * as a SIP Stack property. Applications can enable retransmission alerts by using the
+     * {@link ServerTransaction#enableRetransmissionAlerts()} method.
+     *
      * @return the value of the retransmission filter, <code>true</code> if
      *         the filter is set, <code>false</code> otherwise.
      */

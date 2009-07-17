@@ -6,7 +6,7 @@
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. 
+ * This distribution may include materials developed by third parties.
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
@@ -16,7 +16,7 @@
  *
  *  HISTORY
  *  Version   Date      Author              Comments
- *  1.1     08/10/2002  Phelim O'Doherty    
+ *  1.1     08/10/2002  Phelim O'Doherty
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 package javax.sip.header;
@@ -128,12 +128,12 @@ public interface ContactHeader extends HeaderAddress, Parameters, Header {
 
 
     /**
-     * Returns the value of the <code>expires</code> parameter or -1 if no 
-     * expires parameter was specified or if the parameter value cannot be 
+     * Returns the value of the <code>expires</code> parameter or -1 if no
+     * expires parameter was specified or if the parameter value cannot be
      * parsed as an int.
      *
      * @return value of the <code>expires</code> parameter measured in
-     * delta-seconds, O implies removal of Registration specified in Contact 
+     * delta-seconds, O implies removal of Registration specified in Contact
      * Header.
      */
 
@@ -194,20 +194,20 @@ public interface ContactHeader extends HeaderAddress, Parameters, Header {
 
 
       /**
-       * Sets a wildcard on this contact address that is "*" is assigned to the 
+       * Sets a wildcard on this contact address that is "*" is assigned to the
        * contact header so that the header will have the format of Contact: *.
        *
-       * @since v1.2 
+       * @since v1.2
        */
-	public void setWildCard();
-	
+    public void setWildCard();
+
        /**
-        * Returns a boolean value that indicates if the contact header 
-        * has the format of Contact: *. 
+        * Returns a boolean value that indicates if the contact header
+        * has the format of Contact: *.
         * @return true if this is a wildcard address, false otherwise.
-        * @since v1.2 
+        * @since v1.2
         */
-	public boolean isWildCard();
+    public boolean isWildCard();
 
     /**
      * Name of ContactHeader

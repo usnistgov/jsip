@@ -6,7 +6,7 @@
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. 
+ * This distribution may include materials developed by third parties.
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
@@ -16,10 +16,10 @@
  *
  *  HISTORY
  *  Version   Date      Author              Comments
- *  1.1     08/10/2002  Phelim O'Doherty    
- *  1.2     02/15/2005  M. Ranganathan 	Added method for IO Exception 
- *  1.2     02/15/2005  M. Ranganathan 	Added method for TransactionTerminated
- * 					propagation.
+ *  1.1     08/10/2002  Phelim O'Doherty
+ *  1.2     02/15/2005  M. Ranganathan  Added method for IO Exception
+ *  1.2     02/15/2005  M. Ranganathan  Added method for TransactionTerminated
+ *                      propagation.
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 package javax.sip;
@@ -48,23 +48,23 @@ import java.util.EventListener;
  * underlying SipProvider transaction state machine. These timeout's events
  * notify the application that a retranmission is required or a transaction has
  * timed out.
- * <li>{@link IOExceptionEvent}- these are IO Exception notifications emitted as 
+ * <li>{@link IOExceptionEvent}- these are IO Exception notifications emitted as
  * events by the SipProvider. IOException events represent failure in the
- * underlying SipProvider IO Layer. These IO Exception events notify the 
+ * underlying SipProvider IO Layer. These IO Exception events notify the
  * application that a failure has occured while accessing a socket.
- * <li>{@link TransactionTerminatedEvent}- these are Transaction Terminated 
- * notifications emitted as events by the SipProvider. TransactionTerminated 
- * events represent a transaction termination and notify the 
+ * <li>{@link TransactionTerminatedEvent}- these are Transaction Terminated
+ * notifications emitted as events by the SipProvider. TransactionTerminated
+ * events represent a transaction termination and notify the
  * application of the termination.
- * <li>{@link DialogTerminatedEvent}- these are Dialog Terminated 
- * notifications emitted as events by the SipProvider. DialogTerminated 
- * events represent a Dialog termination and notify the 
+ * <li>{@link DialogTerminatedEvent}- these are Dialog Terminated
+ * notifications emitted as events by the SipProvider. DialogTerminated
+ * events represent a Dialog termination and notify the
  * application of the termination.
  * </ul>
  * <p>
- * An application will only receive Request, Response, Timeout, 
- * TransactionTerminated, DialogTerminated and IOException 
- * events once it has registered as an EventListener of a SipProvider. The 
+ * An application will only receive Request, Response, Timeout,
+ * TransactionTerminated, DialogTerminated and IOException
+ * events once it has registered as an EventListener of a SipProvider. The
  * application registers with the SipProvider by invoking the
  * {@link SipProvider#addSipListener(SipListener)}passing itself as an
  * argument.
@@ -72,8 +72,8 @@ import java.util.EventListener;
  * <b>Architecture: </b> <br>
  * This specification mandates a single SipListener per SipStack,
  * and a unicast event model i.e. a SipProvider can only have one SipListener
- * registered with it. This specification allows multiple SipProviders per 
- * SipStack and as such a SipListener can register with multiple SipProviders 
+ * registered with it. This specification allows multiple SipProviders per
+ * SipStack and as such a SipListener can register with multiple SipProviders
  * i.e there is a one-to-many relationship between a SipListener and a SipProvider.
  * <p>
  * Note: An application that implements the SipListener interface, may act as a
@@ -99,14 +99,14 @@ import java.util.EventListener;
  * </ul>
  * Although this specification provides the capabilities to send messages both
  * statelessly and statefully it is mandated that an application will not send
- * the same message both statefully and statelessly. 
+ * the same message both statefully and statelessly.
  * The messages sent by the application are not Event's as the event model is
  * uni-directional from the SipProvider to the SipListener, i.e. the SipListener
  * listens for Events from the SipProvider, but the SipProvider does not listen
  * for Events on the SipListener. The rationale is the application knows when to
  * initiate requests and responses i.e setup a call or respond to a network
  * event, however an application doesn't know when it will receive a network
- * event, hence the application must listen for these network events. 
+ * event, hence the application must listen for these network events.
  * <p>
  * <b>Session Negotiation </b> <br>
  * There are special rules for message bodies of Request and Responses that
@@ -123,7 +123,7 @@ import java.util.EventListener;
  * "http://www.ietf.org/rfc/rfc3261.txt">RFC3261 </a>. The SDP protocol is
  * described in Java by <a href = "http://www.jcp.org/en/jsr/detail?id=141">JSR
  * 141 </a>
- * 
+ *
  * @see SipProvider
  * @see RequestEvent
  * @see ResponseEvent
@@ -131,7 +131,7 @@ import java.util.EventListener;
  * @see IOExceptionEvent
  * @see TransactionTerminatedEvent
  * @see DialogTerminatedEvent
- * 
+ *
  * @author BEA Systems, NIST
  * @version 1.2
  */
@@ -267,7 +267,7 @@ public interface SipListener extends EventListener {
      * {@link SipProvider#sendRequest(Request)}method.
      * <li>NOT perform special processing for CANCEL requests.
      * </ul>
-     * 
+     *
      * @param requestEvent -
      *            requestEvent fired from the SipProvider to the SipListener
      *            representing a Request received from the network.
@@ -360,7 +360,7 @@ public interface SipListener extends EventListener {
      * <li>Forward the resulting response to the location indicated in the next
      * Via header using the {@link SipProvider#sendResponse(Response)}method.
      * </ul>
-     * 
+     *
      * @param responseEvent -
      *            the responseEvent fired from the SipProvider to the
      *            SipListener representing a Response received from the network.
@@ -376,7 +376,7 @@ public interface SipListener extends EventListener {
      * server upon which the timeout occured. The type of Timeout can by
      * determined by:
      * <code>timeoutType = timeoutEvent.getTimeout().getValue();</code>
-     * 
+     *
      * @param timeoutEvent -
      *            the timeoutEvent received indicating either the message
      *            retransmit or transaction timed out.
@@ -389,43 +389,43 @@ public interface SipListener extends EventListener {
      * requests. The transaction state machine requires to report IO Exceptions
      * to the application immediately (according to RFC 3261). This method
      * enables an implementation to propagate the asynchronous handling of IO
-     * Exceptions to the application. 
-     * 
+     * Exceptions to the application.
+     *
      * @since v1.2
      * @param exceptionEvent --
-     * 			The Exception event that is reported to the application.
+     *          The Exception event that is reported to the application.
      */
     public void processIOException(IOExceptionEvent exceptionEvent);
-    
-    
+
+
     /**
      * Process an asynchronously reported TransactionTerminatedEvent.
      * When a transaction transitions to the Terminated state, the stack
-     * keeps no further records of the transaction. This notification can be used by 
+     * keeps no further records of the transaction. This notification can be used by
      * applications to clean up any auxiliary data that is being maintained
      * for the given transaction.
-     * 
+     *
      * @param transactionTerminatedEvent -- an event that indicates that the
-     *       transaction has transitioned into the terminated state. 
+     *       transaction has transitioned into the terminated state.
      * @since v1.2
      */
-    public void processTransactionTerminated(TransactionTerminatedEvent 
+    public void processTransactionTerminated(TransactionTerminatedEvent
             transactionTerminatedEvent);
-    
-    
+
+
     /**
      * Process an asynchronously reported DialogTerminatedEvent.
      * When a dialog transitions to the Terminated state, the stack
-     * keeps no further records of the dialog. This notification can be used by 
+     * keeps no further records of the dialog. This notification can be used by
      * applications to clean up any auxiliary data that is being maintained
      * for the given dialog.
-     * 
+     *
      * @param dialogTerminatedEvent -- an event that indicates that the
      *       dialog has transitioned into the terminated state.
      * @since v1.2
      */
-	public void processDialogTerminated(DialogTerminatedEvent 
-                                        dialogTerminatedEvent);    
+    public void processDialogTerminated(DialogTerminatedEvent
+                                        dialogTerminatedEvent);
 
 }
 

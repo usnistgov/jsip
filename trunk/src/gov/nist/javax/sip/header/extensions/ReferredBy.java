@@ -15,60 +15,82 @@ import gov.nist.javax.sip.address.*;
 * This code has been contributed by the author to the public domain.
 */
 
-/**  
+/**
  * ReferredBy SIP Header. RFC 3892
  *
- * @version JAIN-SIP-1.2 
+ * @version JAIN-SIP-1.2
  *
- * @author Peter Musgrave. 
+ * @author Peter Musgrave.
  *
  *
  */
 public final class ReferredBy
-	extends AddressParametersHeader implements ExtensionHeader, ReferredByHeader {
+    extends AddressParametersHeader implements ExtensionHeader, ReferredByHeader {
 
-	// TODO: Need a unique UID
-	private static final long serialVersionUID = 3134344915465784267L;
+    // TODO: Need a unique UID
+    private static final long serialVersionUID = 3134344915465784267L;
 
-	// TODO: When the MinSEHeader is added to javax - move this there...pmusgrave
-	public static final String NAME = "Referred-By";
+    // TODO: When the MinSEHeader is added to javax - move this there...pmusgrave
+    public static final String NAME = "Referred-By";
 
-	/** default Constructor.
-	 */
-	public ReferredBy() {
-		super(NAME);
-	}
+    /** default Constructor.
+     */
+    public ReferredBy() {
+        super(NAME);
+    }
 
-	public void setValue(String value) throws ParseException {
-		// not implemented.
-		throw new ParseException(value,0);
-		
-	}
-	
-	/**
-	 * Encode the header content into a String.
-	 * @return String
-	 */
-	protected String encodeBody() {
-		if (address == null)
-			return null;
-		String retval = "";
-		if (address.getAddressType() == AddressImpl.ADDRESS_SPEC) {
-			retval += LESS_THAN;
-		}
-		retval += address.encode();
-		if (address.getAddressType() == AddressImpl.ADDRESS_SPEC) {
-			retval += GREATER_THAN;
-		}
+    public void setValue(String value) throws ParseException {
+        // not implemented.
+        throw new ParseException(value,0);
 
-		if (!parameters.isEmpty()) {
-			retval += SEMICOLON + parameters.encode();
-		}
-		return retval;
-	}
+    }
+
+    /**
+     * Encode the header content into a String.
+     * @return String
+     */
+    protected String encodeBody() {
+        if (address == null)
+            return null;
+        String retval = "";
+        if (address.getAddressType() == AddressImpl.ADDRESS_SPEC) {
+            retval += LESS_THAN;
+        }
+        retval += address.encode();
+        if (address.getAddressType() == AddressImpl.ADDRESS_SPEC) {
+            retval += GREATER_THAN;
+        }
+
+        if (!parameters.isEmpty()) {
+            retval += SEMICOLON + parameters.encode();
+        }
+        return retval;
+    }
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2006/10/27 20:58:31  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:   mranga
+ * doc fixups
+ * CVS: ----------------------------------------------------------------------
+ * CVS: Issue number:
+ * CVS:   If this change addresses one or more issues,
+ * CVS:   then enter the issue number(s) here.
+ * CVS: Obtained from:
+ * CVS:   If this change has been taken from another system,
+ * CVS:   then name the system in this line, otherwise delete it.
+ * CVS: Submitted by:
+ * CVS:   If this code has been contributed to the project by someone else; i.e.,
+ * CVS:   they sent us a patch or a set of diffs, then include their name/email
+ * CVS:   address here. If this is your work then delete this line.
+ * CVS: Reviewed by:
+ * CVS:   If we are doing pre-commit code reviews and someone else has
+ * CVS:   reviewed your changes, include their name(s) here.
+ * CVS:   If you have not had it reviewed then delete this line.
+ *
  * Revision 1.1  2006/10/12 11:57:52  pmusgrave
  * Issue number:  79, 80
  * Submitted by:  pmusgrave@newheights.com

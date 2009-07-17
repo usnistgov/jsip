@@ -8,13 +8,13 @@ package gov.nist.javax.sip.clientauthutils;
  * It is donated to the JAIN-SIP project as it is common code that many sip clients
  * need to perform class and others will consitute a set of utility functions
  * that will implement common operations that ease the life of the developer.
- * 
+ *
  * Acknowledgements:
  * ----------------
- * 
+ *
  * Fredrik Wickstrom reported that dialog cseq counters are not incremented
  * when resending requests. He later uncovered additional problems and
- * proposed a way to fix them (his proposition was taken into account).	
+ * proposed a way to fix them (his proposition was taken into account).
  */
 
 import gov.nist.core.InternalErrorHandler;
@@ -42,12 +42,12 @@ import org.apache.log4j.Logger;
 /**
  * The class handles authentication challenges, caches user credentials and takes care (through
  * the SecurityAuthority interface) about retrieving passwords.
- * 
- * 
+ *
+ *
  * @author Emil Ivov
  * @author Jeroen van Bemmel
  * @author M. Ranganathan
- * 
+ *
  * @since 2.0
  */
 
@@ -75,7 +75,7 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
     /**
      * Default constructor for the security manager. There is one Account manager. There is one
      * SipSecurity manager for every user name,
-     * 
+     *
      * @param sipStack -- our stack.
      * @param accountManger -- an implementation of the AccountManager interface.
      * @param headerFactory -- header factory.
@@ -91,7 +91,7 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.nist.javax.sip.clientauthutils.AuthenticationHelper#handleChallenge(javax.sip.message.Response,
      *      javax.sip.ClientTransaction, javax.sip.SipProvider)
      */
@@ -107,16 +107,16 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
 
             Request reoriginatedRequest = null;
             /*
-             * If the challenged request is part of a Dialog and the 
+             * If the challenged request is part of a Dialog and the
              * Dialog is confirmed the re-originated request should be
              * generated as an in-Dialog request.
              */
-            if (  challengedRequest.getToTag() != null  || 
+            if (  challengedRequest.getToTag() != null  ||
                     challengedTransaction.getDialog() == null ||
                     challengedTransaction.getDialog().getState() != DialogState.CONFIRMED)  {
                 reoriginatedRequest = (Request) challengedRequest.clone();
-            } else {              
-                reoriginatedRequest = 
+            } else {
+                reoriginatedRequest =
                     challengedTransaction.getDialog().createRequest(challengedRequest.getMethod());
                 Iterator<String> headerNames = challengedRequest.getHeaderNames();
                 while (headerNames.hasNext()) {
@@ -129,8 +129,8 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
                     }
                 }
             }
-             
-            
+
+
 
             // remove the branch id so that we could use the request in a new
             // transaction
@@ -171,12 +171,12 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
                 throw new SipException("Invalid CSeq -- could not increment : "
                         + cSeq.getSeqNumber());
             }
-            
-        
+
+
             /* Resolve this to the next hop based on the previous lookup. If we are not using
              * lose routing (RFC2543) then just attach hop as a maddr param.
              */
-            if ( challengedRequest.getRouteHeaders() == null ) { 
+            if ( challengedRequest.getRouteHeaders() == null ) {
                 Hop hop   = ((SIPClientTransaction) challengedTransaction).getNextHop();
                 SipURI sipUri = (SipURI) reoriginatedRequest.getRequestURI();
                 sipUri.setMAddrParam(hop.getHost());
@@ -184,7 +184,7 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
             }
             ClientTransaction retryTran = transactionCreator
             .getNewClientTransaction(reoriginatedRequest);
-            
+
             WWWAuthenticateHeader authHeader = null;
             SipURI requestUri = (SipURI) challengedTransaction.getRequest().getRequestURI();
             while (authHeaders.hasNext()) {
@@ -228,15 +228,15 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
 
     /**
      * Generates an authorisation header in response to wwwAuthHeader.
-     * 
+     *
      * @param method method of the request being authenticated
      * @param uri digest-uri
      * @param requestBody the body of the request.
      * @param authHeader the challenge that we should respond to
      * @param userCredentials username and pass
-     * 
+     *
      * @return an authorisation header in response to authHeader.
-     * 
+     *
      * @throws OperationFailedException if auth header was malformated.
      */
     private AuthorizationHeader getAuthorization(String method, String uri, String requestBody,
@@ -297,9 +297,9 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
     /**
      * Removes all via headers from <tt>request</tt> and replaces them with a new one, equal to
      * the one that was top most.
-     * 
+     *
      * @param request the Request whose branchID we'd like to remove.
-     * 
+     *
      */
     private void removeBranchID(Request request) {
 
@@ -311,7 +311,7 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.nist.javax.sip.clientauthutils.AuthenticationHelper#attachAuthenticationHeaders(javax.sip.message.Request)
      */
     public void setAuthenticationHeaders(Request request) {
@@ -336,7 +336,7 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.nist.javax.sip.clientauthutils.AuthenticationHelper#removeCachedAuthenticationHeaders(java.lang.String)
      */
     public void removeCachedAuthenticationHeaders(String callId) {

@@ -30,44 +30,44 @@ import test.tck.msgflow.callflows.ProtocolObjects;
 
 /**
  * A very simple forking proxy server.
- * 
+ *
  * @author M. Ranganathan
- * 
+ *
  */
 public class Proxy extends TestHarness implements SipListener {
 
-	// private ServerTransaction st;
+    // private ServerTransaction st;
 
-	private SipProvider inviteServerTxProvider;
+    private SipProvider inviteServerTxProvider;
 
-	private Hashtable clientTxTable = new Hashtable();
+    private Hashtable clientTxTable = new Hashtable();
 
-	private static String host = "127.0.0.1";
+    private static String host = "127.0.0.1";
 
-	private int port = 5070;
+    private int port = 5070;
 
-	private SipProvider sipProvider;
+    private SipProvider sipProvider;
 
-	private static String unexpectedException = "Unexpected exception";
+    private static String unexpectedException = "Unexpected exception";
 
-	private static Logger logger = Logger.getLogger(Proxy.class);
+    private static Logger logger = Logger.getLogger(Proxy.class);
 
-	private ProtocolObjects protocolObjects;
+    private ProtocolObjects protocolObjects;
 
-	public synchronized void processRequest(RequestEvent requestEvent) {
-		try {
-			Request request = requestEvent.getRequest();
-			SipProvider sipProvider = (SipProvider) requestEvent.getSource();
-			this.inviteServerTxProvider = sipProvider;
-			if (request.getMethod().equals(Request.INVITE)) {
+    public synchronized void processRequest(RequestEvent requestEvent) {
+        try {
+            Request request = requestEvent.getRequest();
+            SipProvider sipProvider = (SipProvider) requestEvent.getSource();
+            this.inviteServerTxProvider = sipProvider;
+            if (request.getMethod().equals(Request.INVITE)) {
 
-				ListeningPoint lp = sipProvider
-						.getListeningPoint(protocolObjects.transport);
-				String host = lp.getIPAddress();
-				int port = lp.getPort();
+                ListeningPoint lp = sipProvider
+                        .getListeningPoint(protocolObjects.transport);
+                String host = lp.getIPAddress();
+                int port = lp.getPort();
 
-				ServerTransaction st = null;
-				if (requestEvent.getServerTransaction() == null) {
+                ServerTransaction st = null;
+                if (requestEvent.getServerTransaction() == null) {
                     st = sipProvider.getNewServerTransaction(request);
 
                     Request newRequest = (Request) request.clone();
@@ -127,125 +127,125 @@ public class Proxy extends TestHarness implements SipListener {
                     ct1.sendRequest();
                 }
 
-			} else {
-				// Remove the topmost route header
-				// The route header will make sure it gets to the right place.
-				logger.info("proxy: Got a request " + request);
-				Request newRequest = (Request) request.clone();
-				newRequest.removeFirst(RouteHeader.NAME);
-				sipProvider.sendRequest(newRequest);
-			}
+            } else {
+                // Remove the topmost route header
+                // The route header will make sure it gets to the right place.
+                logger.info("proxy: Got a request " + request);
+                Request newRequest = (Request) request.clone();
+                newRequest.removeFirst(RouteHeader.NAME);
+                sipProvider.sendRequest(newRequest);
+            }
 
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			System.exit(0);
-		}
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.exit(0);
+        }
 
-	}
+    }
 
-	public void processResponse(ResponseEvent responseEvent) {
-		try {
-			Response response = responseEvent.getResponse();
-			CSeqHeader cseq = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
-			logger.info("ClientTxID = "
-					+ responseEvent.getClientTransaction()
-					+ " client tx id "
-					+ ((ViaHeader) response.getHeader(ViaHeader.NAME))
-							.getBranch() + " CSeq header = "
-					+ response.getHeader(CSeqHeader.NAME) + " status code = "
-					+ response.getStatusCode());
+    public void processResponse(ResponseEvent responseEvent) {
+        try {
+            Response response = responseEvent.getResponse();
+            CSeqHeader cseq = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
+            logger.info("ClientTxID = "
+                    + responseEvent.getClientTransaction()
+                    + " client tx id "
+                    + ((ViaHeader) response.getHeader(ViaHeader.NAME))
+                            .getBranch() + " CSeq header = "
+                    + response.getHeader(CSeqHeader.NAME) + " status code = "
+                    + response.getStatusCode());
 
-			// JvB: stateful proxy MUST NOT forward 100 Trying
-			if (response.getStatusCode() == 100)
-				return;
+            // JvB: stateful proxy MUST NOT forward 100 Trying
+            if (response.getStatusCode() == 100)
+                return;
 
-			if (cseq.getMethod().equals(Request.INVITE)) {
-				ClientTransaction ct = responseEvent.getClientTransaction();
-				if (ct != null) {
-					ServerTransaction st = (ServerTransaction) ct
-							.getApplicationData();
+            if (cseq.getMethod().equals(Request.INVITE)) {
+                ClientTransaction ct = responseEvent.getClientTransaction();
+                if (ct != null) {
+                    ServerTransaction st = (ServerTransaction) ct
+                            .getApplicationData();
 
-					// Strip the topmost via header
-					Response newResponse = (Response) response.clone();
-					newResponse.removeFirst(ViaHeader.NAME);
-					// The server tx goes to the terminated state.
+                    // Strip the topmost via header
+                    Response newResponse = (Response) response.clone();
+                    newResponse.removeFirst(ViaHeader.NAME);
+                    // The server tx goes to the terminated state.
 
-					st.sendResponse(newResponse);
-				} else {
-					// Client tx has already terminated but the UA is
-					// retransmitting
-					// just forward the response statelessly.
-					// Strip the topmost via header
+                    st.sendResponse(newResponse);
+                } else {
+                    // Client tx has already terminated but the UA is
+                    // retransmitting
+                    // just forward the response statelessly.
+                    // Strip the topmost via header
 
-					Response newResponse = (Response) response.clone();
-					newResponse.removeFirst(ViaHeader.NAME);
-					// Send the retransmission statelessly
-					
-					this.inviteServerTxProvider.sendResponse(newResponse);
-					
-				}
-			} else {
-				// this is the OK for the cancel.
-				logger.info("Got a non-invite response " + response);
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			fail("unexpected exception");
-		}
-	}
+                    Response newResponse = (Response) response.clone();
+                    newResponse.removeFirst(ViaHeader.NAME);
+                    // Send the retransmission statelessly
 
-	public void processTimeout(TimeoutEvent timeoutEvent) {
-		logger.error("Timeout occured");
-		fail("unexpected event");
-	}
+                    this.inviteServerTxProvider.sendResponse(newResponse);
 
-	public void processIOException(IOExceptionEvent exceptionEvent) {
-		logger.info("IOException occured");
-		fail("unexpected exception io exception");
-	}
+                }
+            } else {
+                // this is the OK for the cancel.
+                logger.info("Got a non-invite response " + response);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            fail("unexpected exception");
+        }
+    }
 
-	public SipProvider createSipProvider() {
-		try {
-			ListeningPoint listeningPoint = protocolObjects.sipStack
-					.createListeningPoint(host, port, protocolObjects.transport);
+    public void processTimeout(TimeoutEvent timeoutEvent) {
+        logger.error("Timeout occured");
+        fail("unexpected event");
+    }
 
-			sipProvider = protocolObjects.sipStack
-					.createSipProvider(listeningPoint);
-		//	sipProvider.setAutomaticDialogSupportEnabled(false);
-			return sipProvider;
-		} catch (Exception ex) {
-			logger.error(unexpectedException, ex);
-			fail(unexpectedException);
-			return null;
-		}
+    public void processIOException(IOExceptionEvent exceptionEvent) {
+        logger.info("IOException occured");
+        fail("unexpected exception io exception");
+    }
 
-	}
+    public SipProvider createSipProvider() {
+        try {
+            ListeningPoint listeningPoint = protocolObjects.sipStack
+                    .createListeningPoint(host, port, protocolObjects.transport);
 
-	public void processTransactionTerminated(
-			TransactionTerminatedEvent transactionTerminatedEvent) {
-		logger.info("Transaction terminated event occured -- cleaning up");
-		if (!transactionTerminatedEvent.isServerTransaction()) {
-			ClientTransaction ct = transactionTerminatedEvent
-					.getClientTransaction();
-			for (Iterator it = this.clientTxTable.values().iterator(); it
-					.hasNext();) {
-				if (it.next().equals(ct)) {
-					it.remove();
-				}
-			}
-		} else {
-			logger.info("Server tx terminated! ");
-		}
-	}
+            sipProvider = protocolObjects.sipStack
+                    .createSipProvider(listeningPoint);
+        //  sipProvider.setAutomaticDialogSupportEnabled(false);
+            return sipProvider;
+        } catch (Exception ex) {
+            logger.error(unexpectedException, ex);
+            fail(unexpectedException);
+            return null;
+        }
 
-	public void processDialogTerminated(
-			DialogTerminatedEvent dialogTerminatedEvent) {
-		fail("unexpected event");
-	}
+    }
 
-	public Proxy(int myPort, ProtocolObjects protocolObjects) {
-		this.port = myPort;
-		this.protocolObjects = protocolObjects;
-	}
+    public void processTransactionTerminated(
+            TransactionTerminatedEvent transactionTerminatedEvent) {
+        logger.info("Transaction terminated event occured -- cleaning up");
+        if (!transactionTerminatedEvent.isServerTransaction()) {
+            ClientTransaction ct = transactionTerminatedEvent
+                    .getClientTransaction();
+            for (Iterator it = this.clientTxTable.values().iterator(); it
+                    .hasNext();) {
+                if (it.next().equals(ct)) {
+                    it.remove();
+                }
+            }
+        } else {
+            logger.info("Server tx terminated! ");
+        }
+    }
+
+    public void processDialogTerminated(
+            DialogTerminatedEvent dialogTerminatedEvent) {
+        fail("unexpected event");
+    }
+
+    public Proxy(int myPort, ProtocolObjects protocolObjects) {
+        this.port = myPort;
+        this.protocolObjects = protocolObjects;
+    }
 
 }

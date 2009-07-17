@@ -11,76 +11,76 @@ import org.apache.log4j.SimpleLayout;
 import test.tck.msgflow.callflows.ScenarioHarness;
 
 /**
- * 
- * Implements common setup and tearDown sequence for PRACK tests 
- * 
+ *
+ * Implements common setup and tearDown sequence for PRACK tests
+ *
  * @author M. Ranganathan
  * @author Ivelin Ivanov
- * 
+ *
  */
 public abstract class AbstractPrackTestCase extends ScenarioHarness implements
-		SipListener {
+        SipListener {
 
-	
-	protected Shootist shootist;
 
-	protected Shootme shootme;
+    protected Shootist shootist;
 
-	private static Logger logger = Logger.getLogger("test.tck");
+    protected Shootme shootme;
 
-	static {
-		if (!logger.isAttached(console)) {
-			logger.addAppender(console);
-		}
-	}
+    private static Logger logger = Logger.getLogger("test.tck");
 
-	public AbstractPrackTestCase() {
-		super("prack", true);
-	}
+    static {
+        if (!logger.isAttached(console)) {
+            logger.addAppender(console);
+        }
+    }
 
-	public void setUp() throws Exception {
-		try {
-			super.setUp();
+    public AbstractPrackTestCase() {
+        super("prack", true);
+    }
 
-			logger.info("PrackTest: setup()");
-			shootist = new Shootist(getTiProtocolObjects());
-			SipProvider shootistProvider = shootist.createProvider();
-			providerTable.put(shootistProvider, shootist);
+    public void setUp() throws Exception {
+        try {
+            super.setUp();
 
-			shootme = new Shootme(getRiProtocolObjects());
-			SipProvider shootmeProvider = shootme.createProvider();
-			providerTable.put(shootmeProvider, shootme);
+            logger.info("PrackTest: setup()");
+            shootist = new Shootist(getTiProtocolObjects());
+            SipProvider shootistProvider = shootist.createProvider();
+            providerTable.put(shootistProvider, shootist);
 
-			shootistProvider.addSipListener(this);
-			shootmeProvider.addSipListener(this);
+            shootme = new Shootme(getRiProtocolObjects());
+            SipProvider shootmeProvider = shootme.createProvider();
+            providerTable.put(shootmeProvider, shootme);
 
-			if (getTiProtocolObjects() != getRiProtocolObjects())
-				getTiProtocolObjects().start();
-			getRiProtocolObjects().start();
-		} catch (Exception ex) {
-			logger.error("unexpected excecption ", ex);
-			fail("unexpected exception");
-		}
-	}
+            shootistProvider.addSipListener(this);
+            shootmeProvider.addSipListener(this);
 
-	public void tearDown() throws Exception {
-		try {
-			Thread.sleep(2000);
-			this.shootist.checkState();
-			this.shootme.checkState();
-			super.tearDown();
-			Thread.sleep(1000);
-			this.providerTable.clear();
-			
-			logTestCompleted();
-		} catch (Exception ex) {
-			logger.error("unexpected exception", ex);
-			fail("unexpected exception ");
-		}
-		super.tearDown();
-	}
-	
-	
+            if (getTiProtocolObjects() != getRiProtocolObjects())
+                getTiProtocolObjects().start();
+            getRiProtocolObjects().start();
+        } catch (Exception ex) {
+            logger.error("unexpected excecption ", ex);
+            fail("unexpected exception");
+        }
+    }
 
-	
+    public void tearDown() throws Exception {
+        try {
+            Thread.sleep(2000);
+            this.shootist.checkState();
+            this.shootme.checkState();
+            super.tearDown();
+            Thread.sleep(1000);
+            this.providerTable.clear();
+
+            logTestCompleted();
+        } catch (Exception ex) {
+            logger.error("unexpected exception", ex);
+            fail("unexpected exception ");
+        }
+        super.tearDown();
+    }
+
+
+
+
 }
