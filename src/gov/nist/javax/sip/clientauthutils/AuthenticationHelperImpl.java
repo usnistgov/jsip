@@ -29,6 +29,7 @@ import gov.nist.javax.sip.stack.SIPTransactionStack;
 
 import java.text.*;
 import java.util.*;
+
 import javax.sip.*;
 import javax.sip.address.Address;
 import javax.sip.address.Hop;
@@ -104,9 +105,32 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
 
             SIPRequest challengedRequest = ((SIPRequest) challengedTransaction.getRequest());
 
-            String callId = challengedRequest.getCallId().getCallId();
-
-            Request reoriginatedRequest = (Request) challengedRequest.clone();
+            Request reoriginatedRequest = null;
+            /*
+             * If the challenged request is part of a Dialog and the 
+             * Dialog is confirmed the re-originated request should be
+             * generated as an in-Dialog request.
+             */
+            if (  challengedRequest.getToTag() != null  || 
+                    challengedTransaction.getDialog() == null ||
+                    challengedTransaction.getDialog().getState() != DialogState.CONFIRMED)  {
+                reoriginatedRequest = (Request) challengedRequest.clone();
+            } else {              
+                reoriginatedRequest = 
+                    challengedTransaction.getDialog().createRequest(challengedRequest.getMethod());
+                Iterator<String> headerNames = challengedRequest.getHeaderNames();
+                while (headerNames.hasNext()) {
+                    String headerName = headerNames.next();
+                    if ( reoriginatedRequest.getHeader(headerName) != null) {
+                        ListIterator<Header> iterator = reoriginatedRequest.getHeaders(headerName);
+                        while (iterator.hasNext()) {
+                            reoriginatedRequest.addHeader(iterator.next());
+                        }
+                    }
+                }
+            }
+             
+            
 
             // remove the branch id so that we could use the request in a new
             // transaction
