@@ -1,13 +1,13 @@
 /*
-* Conditions Of Use 
-* 
+* Conditions Of Use
+*
 * This software was developed by employees of the National Institute of
 * Standards and Technology (NIST), an agency of the Federal Government.
 * Pursuant to title 15 Untied States Code Section 105, works of NIST
 * employees are not subject to copyright protection in the United States
 * and are considered to be in the public domain.  As a result, a formal
 * license is not needed to use the software.
-* 
+*
 * This software is provided by NIST as a service and is expressly
 * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
 * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
@@ -16,12 +16,12 @@
 * regarding the use of the software or the results thereof, including but
 * not limited to the correctness, accuracy, reliability or usefulness of
 * the software.
-* 
+*
 * Permission to use this software is contingent upon your acceptance
 * of the terms of this agreement
-*  
+*
 * .
-* 
+*
 */
 package gov.nist.javax.sip.parser;
 import gov.nist.javax.sip.address.*;
@@ -31,54 +31,62 @@ import gov.nist.core.*;
 
 /** From header parser.
  *
- * @version 1.2 $Revision: 1.10 $ $Date: 2007-10-23 17:34:55 $
+ * @version 1.2 $Revision: 1.11 $ $Date: 2009-07-17 18:58:00 $
  *
  * @author M. Ranganathan   <br/>
  *
- * 
+ *
  *
  */
 public class FromParser extends AddressParametersParser {
 
-	public FromParser(String from) {
-		super(from);
-	}
+    public FromParser(String from) {
+        super(from);
+    }
 
-	protected FromParser(Lexer lexer) {
-		super(lexer);
-	}
+    protected FromParser(Lexer lexer) {
+        super(lexer);
+    }
 
-	public SIPHeader parse() throws ParseException {
+    public SIPHeader parse() throws ParseException {
 
-		From from = new From();
+        From from = new From();
 
-		this.lexer.match(TokenTypes.FROM);
-		this.lexer.SPorHT();
-		this.lexer.match(':');
-		this.lexer.SPorHT();
-		super.parse(from);
-		this.lexer.match('\n');
-		if (((AddressImpl) from.getAddress()).getAddressType()
-			== AddressImpl.ADDRESS_SPEC) {
-			// the parameters are header parameters.
-			if (from.getAddress().getURI() instanceof SipUri) {
-				SipUri sipUri = (SipUri) from.getAddress().getURI();
-				NameValueList parms = sipUri.getParameters();
-				if (parms != null && !parms.isEmpty()) {
-					from.setParameters(parms);
-				}
-				sipUri.removeParameters();
-			}
-		}
+        this.lexer.match(TokenTypes.FROM);
+        this.lexer.SPorHT();
+        this.lexer.match(':');
+        this.lexer.SPorHT();
+        super.parse(from);
+        this.lexer.match('\n');
+        if (((AddressImpl) from.getAddress()).getAddressType()
+            == AddressImpl.ADDRESS_SPEC) {
+            // the parameters are header parameters.
+            if (from.getAddress().getURI() instanceof SipUri) {
+                SipUri sipUri = (SipUri) from.getAddress().getURI();
+                NameValueList parms = sipUri.getParameters();
+                if (parms != null && !parms.isEmpty()) {
+                    from.setParameters(parms);
+                }
+                sipUri.removeParameters();
+            }
+        }
 
-		return from;
+        return from;
 
-	}
+    }
 
-	
+
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2007/10/23 17:34:55  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  mranga
+ * Reviewed by:   mranga
+ *
+ * Refactored header collections.
+ *
  * Revision 1.9  2006/07/13 09:02:16  mranga
  * Issue number:
  * Obtained from:

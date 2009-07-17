@@ -1,13 +1,13 @@
 /*
-* Conditions Of Use 
-* 
+* Conditions Of Use
+*
 * This software was developed by employees of the National Institute of
 * Standards and Technology (NIST), an agency of the Federal Government.
 * Pursuant to title 15 Untied States Code Section 105, works of NIST
 * employees are not subject to copyright protection in the United States
 * and are considered to be in the public domain.  As a result, a formal
 * license is not needed to use the software.
-* 
+*
 * This software is provided by NIST as a service and is expressly
 * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
 * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
@@ -16,12 +16,12 @@
 * regarding the use of the software or the results thereof, including but
 * not limited to the correctness, accuracy, reliability or usefulness of
 * the software.
-* 
+*
 * Permission to use this software is contingent upon your acceptance
 * of the terms of this agreement
-*  
+*
 * .
-* 
+*
 */
 package gov.nist.javax.sip.parser;
 import java.text.ParseException;
@@ -32,74 +32,82 @@ import gov.nist.core.*;
 /**
  * To Header parser.
  *
- * @version 1.2 $Revision: 1.9 $ $Date: 2007-10-23 17:34:55 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2009-07-17 18:58:06 $
  *
  * @author Olivier Deruelle   <br/>
  *
- * 
+ *
  */
 public class ToParser extends AddressParametersParser {
 
-	/**
-	 * Creates new ToParser
-	 * @param to String to set
-	 */
-	public ToParser(String to) {
-		super(to);
-	}
+    /**
+     * Creates new ToParser
+     * @param to String to set
+     */
+    public ToParser(String to) {
+        super(to);
+    }
 
-	protected ToParser(Lexer lexer) {
-		super(lexer);
-	}
+    protected ToParser(Lexer lexer) {
+        super(lexer);
+    }
 
-	public SIPHeader parse() throws ParseException {
+    public SIPHeader parse() throws ParseException {
 
-		headerName(TokenTypes.TO);
-		To to = new To();
-		super.parse(to);
-		this.lexer.match('\n');
-		if (((AddressImpl) to.getAddress()).getAddressType()
-			== AddressImpl.ADDRESS_SPEC) {
-			// the parameters are header parameters.
-			if (to.getAddress().getURI() instanceof SipUri) {
-				SipUri sipUri = (SipUri) to.getAddress().getURI();
-				NameValueList parms = sipUri.getParameters();
-				if (parms != null && !parms.isEmpty()) {
-					to.setParameters(parms);
-				}
-				sipUri.removeParameters();
-			}
-		}
-		return to;
-	}
+        headerName(TokenTypes.TO);
+        To to = new To();
+        super.parse(to);
+        this.lexer.match('\n');
+        if (((AddressImpl) to.getAddress()).getAddressType()
+            == AddressImpl.ADDRESS_SPEC) {
+            // the parameters are header parameters.
+            if (to.getAddress().getURI() instanceof SipUri) {
+                SipUri sipUri = (SipUri) to.getAddress().getURI();
+                NameValueList parms = sipUri.getParameters();
+                if (parms != null && !parms.isEmpty()) {
+                    to.setParameters(parms);
+                }
+                sipUri.removeParameters();
+            }
+        }
+        return to;
+    }
 
-	/**
+    /**
 
-	    public static void main(String args[]) throws ParseException {
-	        String to[] = {
-	           "To: <sip:+1-650-555-2222@ss1.wcom.com;user=phone>;tag=5617\n",
-	           "To: T. A. Watson <sip:watson@bell-telephone.com;param=something>\n",
-	           "To: LittleGuy <sip:UserB@there.com;tag=foo>;tag=bar\n",
-	           "To: sip:mranga@120.6.55.9\n",
-	           "To: sip:mranga@129.6.55.9;tag=696928473514.129.6.55.9\n",
-	           "To: sip:mranga@129.6.55.9; tag=696928473514.129.6.55.9\n",
-	           "To: sip:mranga@129.6.55.9 ;tag=696928473514.129.6.55.9\n",
-	           "To: sip:mranga@129.6.55.9 ; tag=696928473514.129.6.55.9\n"
-	        };
-	        
-	        for (int i = 0; i < to.length; i++ ) {
-		    System.out.println("toParse = " + to[i]);
-	            ToParser tp =
-	            new ToParser(to[i]);
-	            To t = (To) tp.parse();
-	            System.out.println("encoded = " + t.encode());
-	        }
-	        
-	    }
-	**/
+        public static void main(String args[]) throws ParseException {
+            String to[] = {
+               "To: <sip:+1-650-555-2222@ss1.wcom.com;user=phone>;tag=5617\n",
+               "To: T. A. Watson <sip:watson@bell-telephone.com;param=something>\n",
+               "To: LittleGuy <sip:UserB@there.com;tag=foo>;tag=bar\n",
+               "To: sip:mranga@120.6.55.9\n",
+               "To: sip:mranga@129.6.55.9;tag=696928473514.129.6.55.9\n",
+               "To: sip:mranga@129.6.55.9; tag=696928473514.129.6.55.9\n",
+               "To: sip:mranga@129.6.55.9 ;tag=696928473514.129.6.55.9\n",
+               "To: sip:mranga@129.6.55.9 ; tag=696928473514.129.6.55.9\n"
+            };
+
+            for (int i = 0; i < to.length; i++ ) {
+            System.out.println("toParse = " + to[i]);
+                ToParser tp =
+                new ToParser(to[i]);
+                To t = (To) tp.parse();
+                System.out.println("encoded = " + t.encode());
+            }
+
+        }
+    **/
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2007/10/23 17:34:55  mranga
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  mranga
+ * Reviewed by:   mranga
+ *
+ * Refactored header collections.
+ *
  * Revision 1.8  2006/07/13 09:02:00  mranga
  * Issue number:
  * Obtained from:

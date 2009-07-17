@@ -1,6 +1,6 @@
 /*
-* Conditions Of Use 
-* 
+* Conditions Of Use
+*
 * This software was developed by employees of the National Institute of
 * Standards and Technology (NIST), an agency of the Federal Government,
 * and others.
@@ -8,7 +8,7 @@
 * employees are not subject to copyright protection in the United States
 * and are considered to be in the public domain.  As a result, a formal
 * license is not needed to use the software.
-* 
+*
 * This software is provided by NIST as a service and is expressly
 * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
 * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
@@ -17,12 +17,12 @@
 * regarding the use of the software or the results thereof, including but
 * not limited to the correctness, accuracy, reliability or usefulness of
 * the software.
-* 
+*
 * Permission to use this software is contingent upon your acceptance
 * of the terms of this agreement
-*  
+*
 * .
-* 
+*
 */
 
 /************************************************************************************************
@@ -39,9 +39,9 @@ import gov.nist.javax.sip.header.ims.SecurityServer;
 
 /**
  * List of Security-Server headers.
- * 
+ *
  * <p></p>
- * 
+ *
  * @author Miguel Freitas (IT) PT-Inovacao
  */
 
@@ -49,19 +49,19 @@ import gov.nist.javax.sip.header.ims.SecurityServer;
 public class SecurityServerList extends SIPHeaderList<SecurityServer>
 {
 
-	
-	private static final long serialVersionUID = -1392066520803180238L;
 
-	public SecurityServerList()
-	{	
-		super(SecurityServer.class, SecurityServerHeader.NAME);
-	}
+    private static final long serialVersionUID = -1392066520803180238L;
 
-	public Object clone() {
-		SecurityServerList retval = new SecurityServerList();		
-		return retval.clonehlist(this.hlist);
-	}
-	
+    public SecurityServerList()
+    {
+        super(SecurityServer.class, SecurityServerHeader.NAME);
+    }
+
+    public Object clone() {
+        SecurityServerList retval = new SecurityServerList();
+        return retval.clonehlist(this.hlist);
+    }
+
 }
 
 

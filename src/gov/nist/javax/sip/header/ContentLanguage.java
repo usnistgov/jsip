@@ -1,13 +1,13 @@
 /*
-* Conditions Of Use 
-* 
+* Conditions Of Use
+*
 * This software was developed by employees of the National Institute of
 * Standards and Technology (NIST), an agency of the Federal Government.
 * Pursuant to title 15 Untied States Code Section 105, works of NIST
 * employees are not subject to copyright protection in the United States
 * and are considered to be in the public domain.  As a result, a formal
 * license is not needed to use the software.
-* 
+*
 * This software is provided by NIST as a service and is expressly
 * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
 * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
@@ -16,12 +16,12 @@
 * regarding the use of the software or the results thereof, including but
 * not limited to the correctness, accuracy, reliability or usefulness of
 * the software.
-* 
+*
 * Permission to use this software is contingent upon your acceptance
 * of the terms of this agreement
-*  
+*
 * .
-* 
+*
 */
 /*******************************************************************************
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
@@ -76,95 +76,95 @@ import java.util.Locale;
 *   limited to textual documents.
 *</pre>
 * @author M. Ranganathan
-* @version 1.2 $Revision: 1.7 $ $Date: 2006-07-13 09:01:47 $
+* @version 1.2 $Revision: 1.8 $ $Date: 2009-07-17 18:57:29 $
 * @since 1.1
 */
 public class ContentLanguage
-	extends SIPHeader
-	implements javax.sip.header.ContentLanguageHeader {
+    extends SIPHeader
+    implements javax.sip.header.ContentLanguageHeader {
 
-	/**
-	 * Comment for <code>serialVersionUID</code>
-	 */
-	private static final long serialVersionUID = -5195728427134181070L;
-	/** languageTag field.
-	 */
-	protected Locale locale;
+    /**
+     * Comment for <code>serialVersionUID</code>
+     */
+    private static final long serialVersionUID = -5195728427134181070L;
+    /** languageTag field.
+     */
+    protected Locale locale;
 
-	public ContentLanguage() {
-		super(CONTENT_LANGUAGE);
-	}
+    public ContentLanguage() {
+        super(CONTENT_LANGUAGE);
+    }
 
-	/** 
-	 * Default constructor.
-	 * @param languageTag String to set
-	 */
-	public ContentLanguage(String languageTag) {
-		super(CONTENT_LANGUAGE);
-		this.setLanguageTag( languageTag );
-	}
+    /**
+     * Default constructor.
+     * @param languageTag String to set
+     */
+    public ContentLanguage(String languageTag) {
+        super(CONTENT_LANGUAGE);
+        this.setLanguageTag( languageTag );
+    }
 
-	/**
-	 * Canonical encoding of the  value of the header.
-	 * @return encoded body of header.
-	 */
-	public String encodeBody() {
-		return this.getLanguageTag();
-	}
+    /**
+     * Canonical encoding of the  value of the header.
+     * @return encoded body of header.
+     */
+    public String encodeBody() {
+        return this.getLanguageTag();
+    }
 
-	/** get the languageTag field.
-	 * @return String
-	 */
-	public String getLanguageTag() {
-		// JvB: Need to take sub-tags into account
-		if ( "".equals(locale.getCountry())) {
-			return locale.getLanguage();
-		} else {
-			return locale.getLanguage() + '-' + locale.getCountry();
-		}
-	}
+    /** get the languageTag field.
+     * @return String
+     */
+    public String getLanguageTag() {
+        // JvB: Need to take sub-tags into account
+        if ( "".equals(locale.getCountry())) {
+            return locale.getLanguage();
+        } else {
+            return locale.getLanguage() + '-' + locale.getCountry();
+        }
+    }
 
-	/** set the languageTag field
-	 * @param languageTag -- language tag to set.
-	 */
-	public void setLanguageTag(String languageTag) {
-		
-		final int slash = languageTag.indexOf('-');
-		if (slash>=0) {		
-			this.locale = new Locale(languageTag.substring(0,slash), languageTag.substring(slash+1) );
-		} else {
-			this.locale = new Locale(languageTag);
-		}
-	}
+    /** set the languageTag field
+     * @param languageTag -- language tag to set.
+     */
+    public void setLanguageTag(String languageTag) {
 
-	/**
-	 * Gets the language value of the ContentLanguageHeader.
-	 *
-	 *
-	 *
-	 * @return the Locale value of this ContentLanguageHeader
-	 *
-	 */
-	public Locale getContentLanguage() {
-		return locale;
-	}
+        final int slash = languageTag.indexOf('-');
+        if (slash>=0) {
+            this.locale = new Locale(languageTag.substring(0,slash), languageTag.substring(slash+1) );
+        } else {
+            this.locale = new Locale(languageTag);
+        }
+    }
 
-	/**
-	 * Sets the language parameter of this ContentLanguageHeader.
-	 *
-	 * @param language - the new Locale value of the language of
-	 *
-	 * ContentLanguageHeader
-	 *
-	 */
-	public void setContentLanguage(Locale language) {
-		this.locale = language;
-	}
+    /**
+     * Gets the language value of the ContentLanguageHeader.
+     *
+     *
+     *
+     * @return the Locale value of this ContentLanguageHeader
+     *
+     */
+    public Locale getContentLanguage() {
+        return locale;
+    }
 
-	public Object clone() {
-		ContentLanguage retval = (ContentLanguage) super.clone();
-		if (this.locale != null)
-			retval.locale = (Locale) this.locale.clone();
-		return retval;
-	}
+    /**
+     * Sets the language parameter of this ContentLanguageHeader.
+     *
+     * @param language - the new Locale value of the language of
+     *
+     * ContentLanguageHeader
+     *
+     */
+    public void setContentLanguage(Locale language) {
+        this.locale = language;
+    }
+
+    public Object clone() {
+        ContentLanguage retval = (ContentLanguage) super.clone();
+        if (this.locale != null)
+            retval.locale = (Locale) this.locale.clone();
+        return retval;
+    }
 }

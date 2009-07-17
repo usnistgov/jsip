@@ -1,6 +1,6 @@
 /*
-* Conditions Of Use 
-* 
+* Conditions Of Use
+*
 * This software was developed by employees of the National Institute of
 * Standards and Technology (NIST), an agency of the Federal Government,
 * and others.
@@ -8,7 +8,7 @@
 * employees are not subject to copyright protection in the United States
 * and are considered to be in the public domain.  As a result, a formal
 * license is not needed to use the software.
-* 
+*
 * This software is provided by NIST as a service and is expressly
 * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
 * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
@@ -17,10 +17,10 @@
 * regarding the use of the software or the results thereof, including but
 * not limited to the correctness, accuracy, reliability or usefulness of
 * the software.
-* 
+*
 * Permission to use this software is contingent upon your acceptance
 * of the terms of this agreement.
-* 
+*
 */
 /*******************************************
  * PRODUCT OF PT INOVACAO - EST DEPARTMENT   *
@@ -34,7 +34,7 @@ import gov.nist.javax.sip.header.SIPHeaderList;
 
 /**
  * List of P-Asserted-Identity headers
- * 
+ *
  * @author Miguel Freitas (IT) PT-Inovacao
  */
 
@@ -46,21 +46,21 @@ import gov.nist.javax.sip.header.SIPHeaderList;
 
 
 public class PAssertedIdentityList extends SIPHeaderList<PAssertedIdentity> {
-	
-	private static final long serialVersionUID = -6465152445570308974L;
+
+    private static final long serialVersionUID = -6465152445570308974L;
 
 
-	/**
-	 * constructor.
-	 */
-	public PAssertedIdentityList()
-	{
-		super(PAssertedIdentity.class, PAssertedIdentityHeader.NAME);
-	}
-	
+    /**
+     * constructor.
+     */
+    public PAssertedIdentityList()
+    {
+        super(PAssertedIdentity.class, PAssertedIdentityHeader.NAME);
+    }
 
-	public Object clone() {
-		PAssertedIdentityList retval = new PAssertedIdentityList();		
-		return retval.clonehlist(this.hlist);
-	}
+
+    public Object clone() {
+        PAssertedIdentityList retval = new PAssertedIdentityList();
+        return retval.clonehlist(this.hlist);
+    }
 }

@@ -1,5 +1,5 @@
 package test.load.leakcheck.busy;
- 
+
 import javax.sip.*;
 import javax.sip.address.*;
 import javax.sip.header.*;
@@ -8,7 +8,7 @@ import javax.sip.message.*;
 import java.util.*;
 
 /**
- * This class is a UAC template. 
+ * This class is a UAC template.
  * @author M. Ranganathan
  */
 
@@ -152,11 +152,11 @@ public class Shootist implements SipListener {
                             .getMethod().equals(Request.INVITE)) {
                 // Request cancel = inviteTid.createCancel();
                 // ClientTransaction ct =
-                //	sipProvider.getNewClientTransaction(cancel);
+                //  sipProvider.getNewClientTransaction(cancel);
                 // ct.sendRequest();
                 Dialog dialog = tid.getDialog();
                 CSeqHeader cseq = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
-				Request ackRequest = dialog.createAck(cseq.getSeqNumber());
+                Request ackRequest = dialog.createAck(cseq.getSeqNumber());
                 System.out.println("Sending ACK");
                 dialog.sendAck(ackRequest);
 
@@ -379,16 +379,16 @@ public class Shootist implements SipListener {
         }
     }
 
-	public void processIOException(IOExceptionEvent exceptionEvent) {
-		System.out.println("IOException occured while retransmitting requests:" + exceptionEvent);
-	}
-	public void processTransactionTerminated(TransactionTerminatedEvent transactionTerminatedEvent) {
-		System.out.println("Transaction Terminated event: " + transactionTerminatedEvent );
-	}
-	public void processDialogTerminated(DialogTerminatedEvent dialogTerminatedEvent) {
-		System.out.println("Dialog Terminated event: " + dialogTerminatedEvent);
-	}
-    
+    public void processIOException(IOExceptionEvent exceptionEvent) {
+        System.out.println("IOException occured while retransmitting requests:" + exceptionEvent);
+    }
+    public void processTransactionTerminated(TransactionTerminatedEvent transactionTerminatedEvent) {
+        System.out.println("Transaction Terminated event: " + transactionTerminatedEvent );
+    }
+    public void processDialogTerminated(DialogTerminatedEvent dialogTerminatedEvent) {
+        System.out.println("Dialog Terminated event: " + dialogTerminatedEvent);
+    }
+
     public static void main(String args[]) {
         new Shootist().init();
 

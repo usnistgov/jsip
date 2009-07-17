@@ -4,9 +4,9 @@ import java.io.*;
 import java.util.*;
 import tools.tracesviewer.*;
 
-/** 
+/**
 * Code to convert Ethereal frames to the XML format that the trace viewer
-* application likes. 
+* application likes.
 * @author Tim Bardzil <bardzil@colorado.edu>.
 *
 * Acknowledgement:
@@ -18,58 +18,58 @@ import tools.tracesviewer.*;
 *
 */
 public class SniffFileParser {
-	SniffSessionList sniffSessionList;
+    SniffSessionList sniffSessionList;
 
-	public SniffFileParser(String messageFile) {
-		String buffer = new String();
-		ArrayList sniffMsgList;
-		sniffSessionList = new SniffSessionList();
+    public SniffFileParser(String messageFile) {
+        String buffer = new String();
+        ArrayList sniffMsgList;
+        sniffSessionList = new SniffSessionList();
 
-		try {
-			BufferedReader in = new BufferedReader(new FileReader(messageFile));
-			buffer = in.readLine();
-			while (buffer != null) { //read until EOF
-				sniffMsgList = new ArrayList();
-				while (buffer != null
-					&& buffer.length() > 0) { //read one frame
-					sniffMsgList.add(buffer.trim());
-					buffer = in.readLine();
-				}
-				SniffMessage sniffMsg = new SniffMessage(sniffMsgList);
-				sniffSessionList.add(sniffMsg);
-				buffer = in.readLine();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(messageFile));
+            buffer = in.readLine();
+            while (buffer != null) { //read until EOF
+                sniffMsgList = new ArrayList();
+                while (buffer != null
+                    && buffer.length() > 0) { //read one frame
+                    sniffMsgList.add(buffer.trim());
+                    buffer = in.readLine();
+                }
+                SniffMessage sniffMsg = new SniffMessage(sniffMsgList);
+                sniffSessionList.add(sniffMsg);
+                buffer = in.readLine();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	public SniffSessionList getSniffSessionList() {
-		return sniffSessionList;
-	}
+    public SniffSessionList getSniffSessionList() {
+        return sniffSessionList;
+    }
 
-	/**
-	 * The main entry point.
-	 *
-	 *@param args is the argument file. args[0] is the Ethereral packet
-	 * sniffer output to convert to the format that the trace viewer
-	 * likes.
-	 */
-	public static void main(String args[]) {
-		String fileName = args[0];
-		SniffMessageList.fileName = fileName;
-		if (args[0] == null) {
-			System.out.println("Please specify sniffer file");
-			System.out.println("Bailing Out!");
-			System.exit(0);
-		}
-		SniffFileParser sfp = new SniffFileParser(args[0]);
-		SniffSessionList sniffSessions = sfp.getSniffSessionList();
-		//String[] sessionNames = sniffSessions.getCallIds();
-		LogFileParser parser = new LogFileParser();
-		Hashtable traces = parser.parseLogsFromString(sniffSessions.toXML());
-		new TracesViewer(traces, fileName, "Ethereal Sniffer Trace", null)
-			.show();
+    /**
+     * The main entry point.
+     *
+     *@param args is the argument file. args[0] is the Ethereral packet
+     * sniffer output to convert to the format that the trace viewer
+     * likes.
+     */
+    public static void main(String args[]) {
+        String fileName = args[0];
+        SniffMessageList.fileName = fileName;
+        if (args[0] == null) {
+            System.out.println("Please specify sniffer file");
+            System.out.println("Bailing Out!");
+            System.exit(0);
+        }
+        SniffFileParser sfp = new SniffFileParser(args[0]);
+        SniffSessionList sniffSessions = sfp.getSniffSessionList();
+        //String[] sessionNames = sniffSessions.getCallIds();
+        LogFileParser parser = new LogFileParser();
+        Hashtable traces = parser.parseLogsFromString(sniffSessions.toXML());
+        new TracesViewer(traces, fileName, "Ethereal Sniffer Trace", null)
+            .show();
 
-	}
+    }
 }

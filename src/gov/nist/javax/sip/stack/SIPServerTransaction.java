@@ -1,13 +1,13 @@
 /*
- * Conditions Of Use 
- * 
+ * Conditions Of Use
+ *
  * This software was developed by employees of the National Institute of
  * Standards and Technology (NIST), an agency of the Federal Government.
  * Pursuant to title 15 Untied States Code Section 105, works of NIST
  * employees are not subject to copyright protection in the United States
  * and are considered to be in the public domain.  As a result, a formal
  * license is not needed to use the software.
- * 
+ *
  * This software is provided by NIST as a service and is expressly
  * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
  * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
@@ -16,12 +16,12 @@
  * regarding the use of the software or the results thereof, including but
  * not limited to the correctness, accuracy, reliability or usefulness of
  * the software.
- * 
+ *
  * Permission to use this software is contingent upon your acceptance
  * of the terms of this agreement
- *  
+ *
  * .
- * 
+ *
  */
 package gov.nist.javax.sip.stack;
 
@@ -62,16 +62,16 @@ import javax.sip.message.Response;
  * Bug fixes / enhancements:Emil Ivov, Antonis Karydas, Daniel J. Martinez Manzano, Daniel, Hagai
  * Sela, Vazques-Illa, Bill Roome, Thomas Froment and Pierre De Rop, Christophe Anzille and Jeroen
  * van Bemmel, Frank Reif.
- * 
+ *
  */
 
 /**
  * Represents a server transaction. Implements the following state machines.
- * 
+ *
  * <pre>
- *                                     
- *                                      
- *                                       
+ *
+ *
+ *
  *                                                                      |INVITE
  *                                                                      |pass INV to TU
  *                                                   INVITE             V send 100 if TU won't in 200ms
@@ -113,13 +113,11 @@ import javax.sip.message.Response;
  *                                                                | Terminated|&lt;---------------+
  *                                                                |           |
  *                                                                +-----------+
- *                                       
+ *
  *                                                     Figure 7: INVITE server transaction
- *                                       
- *                                       
- *                                          		Request received
+ *                                                         Request received
  *                                                                         |pass to TU
- *                                       
+ *
  *                                                                         V
  *                                                                   +-----------+
  *                                                                   |           |
@@ -158,16 +156,16 @@ import javax.sip.message.Response;
  *                                                   +--------------&gt;| Terminated|
  *                                                                   |           |
  *                                                                   +-----------+
- *                                       
- *                                       
- *                                       
- *                                       
- *                                      
+ *
+ *
+ *
+ *
+ *
  * </pre>
- * 
- * @version 1.2 $Revision: 1.104 $ $Date: 2009-05-26 01:56:18 $
+ *
+ * @version 1.2 $Revision: 1.105 $ $Date: 2009-07-17 18:58:14 $
  * @author M. Ranganathan
- * 
+ *
  */
 public class SIPServerTransaction extends SIPTransaction implements ServerRequestInterface,
         javax.sip.ServerTransaction, ServerTransactionExt {
@@ -202,8 +200,8 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
     /**
      * This timer task is used for alerting the application to send retransmission alerts.
-     * 
-     * 
+     *
+     *
      */
     class RetransmissionAlertTimerTask extends SIPStackTimerTask {
 
@@ -250,7 +248,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
              * is defined in Section 17 of RFC 3261). Once passed to the server transaction, it is
              * added to an internal list of unacknowledged reliable provisional responses. The
              * transaction layer will forward each retransmission passed from the UAS core.
-             * 
+             *
              * This differs from retransmissions of 2xx responses, whose intervals cap at T2
              * seconds. This is because retransmissions of ACK are triggered on receipt of a 2xx,
              * but retransmissions of PRACK take place independently of reception of 1xx.
@@ -287,7 +285,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
      * pre-determined time period. This helps prevent buggy listeners (who fail to respond) from
      * causing memory leaks. This allows a container to protect itself from buggy code ( that
      * fails to respond to a server transaction).
-     * 
+     *
      */
     class ListenerExecutionMaxTimer extends SIPStackTimerTask {
         SIPServerTransaction serverTransaction = SIPServerTransaction.this;
@@ -313,7 +311,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
     /**
      * This timer task is for INVITE server transactions. It will send a trying in 200 ms. if the
      * TU does not do so.
-     * 
+     *
      */
     class SendTrying extends SIPStackTimerTask {
 
@@ -393,9 +391,9 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
     /**
      * Send a response.
-     * 
+     *
      * @param transactionResponse -- the response to send
-     * 
+     *
      */
 
     private void sendResponse(SIPResponse transactionResponse) throws IOException {
@@ -490,7 +488,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
     /**
      * Creates a new server transaction.
-     * 
+     *
      * @param sipStack Transaction stack this transaction belongs to.
      * @param newChannelToUse Channel to encapsulate.
      */
@@ -515,7 +513,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
     /**
      * Sets the real RequestInterface this transaction encapsulates.
-     * 
+     *
      * @param newRequestOf RequestInterface to send messages to.
      */
     public void setRequestInterface(ServerRequestInterface newRequestOf) {
@@ -535,9 +533,9 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
     /**
      * Deterines if the message is a part of this transaction.
-     * 
+     *
      * @param messageToTest Message to check if it is part of this transaction.
-     * 
+     *
      * @return True if the message is part of this transaction, false if not.
      */
     public boolean isMessagePartOfTransaction(SIPMessage messageToTest) {
@@ -696,7 +694,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
     /**
      * Process a new request message through this transaction. If necessary, this message will
      * also be passed onto the TU.
-     * 
+     *
      * @param transactionRequest Request to process.
      * @param sourceChannel Channel that received this message.
      */
@@ -860,7 +858,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
     /**
      * Send a response message through this transactionand onto the client. The response drives
      * the state machine.
-     * 
+     *
      * @param messageToSend Response to process and send.
      */
     public void sendMessage(SIPMessage messageToSend) throws IOException {
@@ -922,7 +920,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                             // transports -- see Issue 75.
                             /*
                              * From RFC 3261 Section 17.2.2 (non-invite server transaction)
-                             * 
+                             *
                              * When the server transaction enters the "Completed" state, it MUST
                              * set Timer J to fire in 64*T1 seconds for unreliable transports, and
                              * zero seconds for reliable transports. While in the "Completed"
@@ -980,7 +978,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                             if (!isReliable()) {
                                 /*
                                  * RFC 3261
-                                 * 
+                                 *
                                  * While in the "Proceeding" state, if the TU passes a response
                                  * with status code from 300 to 699 to the server transaction, the
                                  * response MUST be passed to the transport layer for
@@ -1216,7 +1214,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.sip.ServerTransaction#sendResponse(javax.sip.message.Response)
      */
     public void sendResponse(Response response) throws SipException {
@@ -1324,7 +1322,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                 }
             }
 
-          
+
 
             // Backward compatibility slippery slope....
             // Only set the from tag in the response when the
@@ -1339,8 +1337,8 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                 if (sipStack.isLoggingEnabled())
                     sipStack.logWriter.logDebug("WARNING -- Null From tag in request!!");
             }
-            
-            
+
+
 
             // See if the dialog needs to be inserted into the dialog table
             // or if the state of the dialog needs to be changed.
@@ -1401,7 +1399,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
      * Return the current transaction state according to the RFC 3261 transaction state machine.
      * Invite transactions do not have a trying state. We just use this as a pseudo state for
      * processing requests.
-     * 
+     *
      * @return the state of the transaction.
      */
     public TransactionState getState() {
@@ -1456,7 +1454,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.nist.javax.sip.stack.SIPTransaction#getDialog()
      */
     public Dialog getDialog() {
@@ -1466,7 +1464,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.nist.javax.sip.stack.SIPTransaction#setDialog(gov.nist.javax.sip.stack.SIPDialog,
      *      gov.nist.javax.sip.message.SIPMessage)
      */
@@ -1491,7 +1489,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.sip.Transaction#terminate()
      */
     public void terminate() throws ObjectInUseException {
@@ -1555,9 +1553,9 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
     /**
      * Cancel the retransmit timer for the provisional response task.
-     * 
+     *
      * @return true if the tx has seen the prack for the first time and false otherwise.
-     * 
+     *
      */
     public boolean prackRecieved() {
 
@@ -1570,7 +1568,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.sip.ServerTransaction#enableRetransmissionAlerts()
      */
 
@@ -1591,7 +1589,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
     /**
      * Disable retransmission Alerts and cancel associated timers.
-     * 
+     *
      */
     public void disableRetransmissionAlerts() {
         if (this.retransmissionAlertTimerTask != null && this.retransmissionAlertEnabled) {
@@ -1649,7 +1647,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
     /**
      * The INVITE Server Transaction corresponding to a CANCEL Server Transaction.
-     * 
+     *
      * @param st -- the invite server tx corresponding to the cancel server transaction.
      */
     public void setInviteTransaction(SIPServerTransaction st) {
@@ -1659,7 +1657,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
     /**
      * TODO -- this method has to be added to the api.
-     * 
+     *
      * @return
      */
     public SIPServerTransaction getCanceledInviteTransaction() {

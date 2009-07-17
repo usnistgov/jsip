@@ -6,7 +6,7 @@
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. 
+ * This distribution may include materials developed by third parties.
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
@@ -16,7 +16,7 @@
  *
  *  HISTORY
  *  Version   Date      Author              Comments
- *  1.1     08/10/2002  Phelim O'Doherty    
+ *  1.1     08/10/2002  Phelim O'Doherty
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 package javax.sip;
@@ -45,15 +45,15 @@ public interface ListeningPoint extends Cloneable, Serializable {
      * Gets the port of the ListeningPoint. The default port of a ListeningPoint
      * is dependent on the scheme and transport.  For example:
      * <ul>
-     * <li>The default port is 5060, if the transport UDP and the scheme is 
+     * <li>The default port is 5060, if the transport UDP and the scheme is
      * <i>sip:</i>.
-     * <li>The default port is 5060, if the transport is TCP and the scheme 
+     * <li>The default port is 5060, if the transport is TCP and the scheme
      * is <i>sip:</i>.
-     * <li>The default port is 5060, if the transport is SCTP and the scheme 
+     * <li>The default port is 5060, if the transport is SCTP and the scheme
      * is <i>sip:</i>.
-     * <li>The default port is 5061, if the transport is TLS over TCP and the 
+     * <li>The default port is 5061, if the transport is TLS over TCP and the
      * scheme is <i>sip:</i>.
-     * <li>The default port is 5061, if the transport is TCP and the scheme 
+     * <li>The default port is 5061, if the transport is TCP and the scheme
      * is <i>sips:</i>.
      * </ul>
      *
@@ -75,14 +75,14 @@ public interface ListeningPoint extends Cloneable, Serializable {
      * @return the string value of the IP address.
      */
     public String getIPAddress();
-	
+
     /**
-     * Sets the sentBy string for this ListeningPoint. The sentBy String is 
-     * placed in the top most Via header of outgoing requests. This parameter 
-     * is optional and if it is not set, the top most Via header will use the 
+     * Sets the sentBy string for this ListeningPoint. The sentBy String is
+     * placed in the top most Via header of outgoing requests. This parameter
+     * is optional and if it is not set, the top most Via header will use the
      * IP address and port assigned to the listening point for the sentBy field.
      *
-     * @param sentBy the sentBy string to be set in requests top most Via 
+     * @param sentBy the sentBy string to be set in requests top most Via
      * headers.
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the sentBy value.
@@ -96,12 +96,12 @@ public interface ListeningPoint extends Cloneable, Serializable {
      * @return the string value of the sentBy attribute.
      * @since v1.2
      */
-    public String getSentBy();    
-    
+    public String getSentBy();
+
     /**
-     * This method indicates whether the specified object is equal to this 
-     * Listening Point. The specified object is equal to this ListeningPoint 
-     * if the specified object is a ListeningPoint and the transport and port 
+     * This method indicates whether the specified object is equal to this
+     * Listening Point. The specified object is equal to this ListeningPoint
+     * if the specified object is a ListeningPoint and the transport and port
      * in the specified Listening Point is the same as this Listening Point.
      *
      * @param obj the object with which to compare this ListeningPoint.
@@ -112,7 +112,7 @@ public interface ListeningPoint extends Cloneable, Serializable {
 
 
 //Constants
-    
+
     /**
      * Transport constant: TCP
      */
@@ -130,7 +130,7 @@ public interface ListeningPoint extends Cloneable, Serializable {
     public static final String SCTP = "SCTP";
 
     /**
-     * Transport constant: TLS over TCP 
+     * Transport constant: TLS over TCP
      */
     public static final String TLS = "TLS";
 
@@ -142,7 +142,7 @@ public interface ListeningPoint extends Cloneable, Serializable {
 
     /**
      * Port Constant: Default port 5061. This constant should only be used
-     * when the transport of the Listening Point is set to TLS over TCP or TCP 
+     * when the transport of the Listening Point is set to TLS over TCP or TCP
      * assuming the scheme is "sips".
      */
     public static final int PORT_5061 = 5061;

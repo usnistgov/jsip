@@ -18,47 +18,47 @@ import javax.swing.*;
 */
 public class AlertFrame extends JOptionPane {
 
-	public String finalInputValue;
+    public String finalInputValue;
 
-	/** Creates new AlertFrame */
-	public AlertFrame(String text, int messageType) {
-		super("Alert");
-		if (messageType == JOptionPane.ERROR_MESSAGE)
-			showMessageDialog(this, text, "Error", messageType);
-		else if (messageType == JOptionPane.WARNING_MESSAGE)
-			showMessageDialog(this, text, "Warning", messageType);
-		else
-			showMessageDialog(this, "Unknown alert message");
+    /** Creates new AlertFrame */
+    public AlertFrame(String text, int messageType) {
+        super("Alert");
+        if (messageType == JOptionPane.ERROR_MESSAGE)
+            showMessageDialog(this, text, "Error", messageType);
+        else if (messageType == JOptionPane.WARNING_MESSAGE)
+            showMessageDialog(this, text, "Warning", messageType);
+        else
+            showMessageDialog(this, "Unknown alert message");
 
-	}
+    }
 
-	/** Creates new AlertFrame */
-	public AlertFrame(String text, int messageType, String initialInputValue) {
-		super("Alert");
-		finalInputValue = null;
-		if (messageType == JOptionPane.ERROR_MESSAGE)
-			showMessageDialog(this, text, "Error", messageType);
-		else if (messageType == JOptionPane.WARNING_MESSAGE)
-			showMessageDialog(this, text, "Warning", messageType);
-		else if (messageType == JOptionPane.INFORMATION_MESSAGE) {
-			finalInputValue =
-				(String) showInputDialog(this,
-					text,
-					"Information",
-					messageType,
-					null,
-					null,
-					initialInputValue);
-		} else
-			showMessageDialog(this, "Unknown alert message");
+    /** Creates new AlertFrame */
+    public AlertFrame(String text, int messageType, String initialInputValue) {
+        super("Alert");
+        finalInputValue = null;
+        if (messageType == JOptionPane.ERROR_MESSAGE)
+            showMessageDialog(this, text, "Error", messageType);
+        else if (messageType == JOptionPane.WARNING_MESSAGE)
+            showMessageDialog(this, text, "Warning", messageType);
+        else if (messageType == JOptionPane.INFORMATION_MESSAGE) {
+            finalInputValue =
+                (String) showInputDialog(this,
+                    text,
+                    "Information",
+                    messageType,
+                    null,
+                    null,
+                    initialInputValue);
+        } else
+            showMessageDialog(this, "Unknown alert message");
 
-	}
+    }
 
-	/** Creates new AlertFrame */
-	public AlertFrame(String text) {
-		super("Alert");
-		// information message by default
-		showMessageDialog(this, text);
-	}
+    /** Creates new AlertFrame */
+    public AlertFrame(String text) {
+        super("Alert");
+        // information message by default
+        showMessageDialog(this, text);
+    }
 
 }

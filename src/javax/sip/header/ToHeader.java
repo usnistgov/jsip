@@ -6,7 +6,7 @@
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. 
+ * This distribution may include materials developed by third parties.
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
@@ -16,8 +16,8 @@
  *
  *  HISTORY
  *  Version   Date      Author              Comments
- *  1.1     08/10/2002  Phelim O'Doherty    
- * 			12/15/2004  M. Ranganathan 		Added clarification for To header setTag()
+ *  1.1     08/10/2002  Phelim O'Doherty
+ *          12/15/2004  M. Ranganathan      Added clarification for To header setTag()
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 package javax.sip.header;
@@ -30,7 +30,7 @@ import java.text.ParseException;
  * recipient of the request, or the address-of-record of the user or resource
  * that is the target of this request.  This may or may not be the ultimate
  * recipient of the request. Requests and Responses must contain a ToHeader,
- * indicating the desired recipient of the Request. The UAS or redirect server 
+ * indicating the desired recipient of the Request. The UAS or redirect server
  * copies the ToHeader into its Response.
  * <p>
  * The To header field MAY contain a SIP or SIPS URI, but it may also make use
@@ -103,13 +103,13 @@ public interface ToHeader extends HeaderAddress, Parameters, Header {
      * request identifies the peer of the dialog. If no dialog is established,
      * no tag is present.
      * <p>
-     * The To Header MUST contain a new "tag" parameter. When acting as a UAC 
-     * the To "tag" is maintained by the SipProvider from the dialog layer, 
+     * The To Header MUST contain a new "tag" parameter. When acting as a UAC
+     * the To "tag" is maintained by the SipProvider from the dialog layer,
      * however whan acting as a UAS the To "tag" is assigned by the application.
-     * That is the tag assignment for outbound responses for messages in a 
-     * dialog is only the responsibility of the application for the first 
+     * That is the tag assignment for outbound responses for messages in a
+     * dialog is only the responsibility of the application for the first
      * outbound response. If AUTOMATIC_DIALOG_SUPPORT is set to <it>on</it>
-     * (default behavior) then, after dialog establishment, the stack will take care 
+     * (default behavior) then, after dialog establishment, the stack will take care
      * of the tag assignment. Null is acceptable as a tag value. Supplying null
      * for the tag results in a header without a tag.
      *
@@ -128,21 +128,21 @@ public interface ToHeader extends HeaderAddress, Parameters, Header {
      */
     public String getTag();
 
-    
+
 
     /**
-     * Compare this ToHeader for equality with another. This method 
-     * overrides the equals method in javax.sip.Header. This method specifies 
-     * object equality as outlined by  
-     * <a href = "http://www.ietf.org/rfc/rfc3261.txt">RFC3261</a>. 
-     * Two To header fields are equivalent if their URIs match, and their 
-     * parameters match. Extension parameters in one header field, not present 
-     * in the other are ignored for the purposes of comparison. This means that 
-     * the display name and presence or absence of angle brackets do not affect 
-     * matching. When comparing header fields, field names are always 
-     * case-insensitive. Unless otherwise stated in the definition of a 
-     * particular header field, field values, parameter names, and parameter 
-     * values are case-insensitive. Tokens are always case-insensitive. Unless 
+     * Compare this ToHeader for equality with another. This method
+     * overrides the equals method in javax.sip.Header. This method specifies
+     * object equality as outlined by
+     * <a href = "http://www.ietf.org/rfc/rfc3261.txt">RFC3261</a>.
+     * Two To header fields are equivalent if their URIs match, and their
+     * parameters match. Extension parameters in one header field, not present
+     * in the other are ignored for the purposes of comparison. This means that
+     * the display name and presence or absence of angle brackets do not affect
+     * matching. When comparing header fields, field names are always
+     * case-insensitive. Unless otherwise stated in the definition of a
+     * particular header field, field values, parameter names, and parameter
+     * values are case-insensitive. Tokens are always case-insensitive. Unless
      * specified otherwise, values expressed as quoted strings are case-sensitive.
      *
      * @param obj the object to compare this ToHeader with.
@@ -150,9 +150,9 @@ public interface ToHeader extends HeaderAddress, Parameters, Header {
      * representing the same ToHeader as this, <code>false</code> otherwise.
      * @since v1.2
      */
-    public boolean equals(Object obj);      
-    
-    
+    public boolean equals(Object obj);
+
+
     /**
      * Name of the ToHeader
      */

@@ -2,7 +2,7 @@ package tools.sniffer;
 
 import java.util.*;
 
-/** 
+/**
  *A list of Sniff messages. Each one corresponds to a call Id.
  * Acknowledgement:
  * This code was contributed by Tim Bardzil <bardzil@colorado.edu>.
@@ -14,21 +14,21 @@ import java.util.*;
  *@author Tim Bardzil <bardzil@colorado.edu>
  */
 public class SniffMessageList extends ArrayList {
-	protected static String fileName;
+    protected static String fileName;
 
-	public String getCallID() {
-		SniffMessage temp = (SniffMessage) super.get(0);
-		return temp.getCallID();
-	}
+    public String getCallID() {
+        SniffMessage temp = (SniffMessage) super.get(0);
+        return temp.getCallID();
+    }
 
-	public String toXML() {
+    public String toXML() {
 
-		String xmlMessages = new String();
-		ListIterator i = super.listIterator();
-		while (i.hasNext()) {
-			xmlMessages += ((SniffMessage) i.next()).toXML();
-		}
+        String xmlMessages = new String();
+        ListIterator i = super.listIterator();
+        while (i.hasNext()) {
+            xmlMessages += ((SniffMessage) i.next()).toXML();
+        }
 
-		return xmlMessages;
-	}
+        return xmlMessages;
+    }
 }

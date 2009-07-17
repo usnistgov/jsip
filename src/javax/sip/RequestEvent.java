@@ -6,7 +6,7 @@
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties. 
+ * This distribution may include materials developed by third parties.
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
@@ -17,8 +17,8 @@
  *  HISTORY
  *  Version   Date      Author              Comments
  *  1.1     08/10/2002  Phelim O'Doherty    Initial version
- * 	1.2 	02/15/2005	M. Ranganathan		getDialog get the current
- * 											dialog.
+ *  1.2     02/15/2005  M. Ranganathan      getDialog get the current
+ *                                          dialog.
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 package javax.sip;
@@ -34,8 +34,8 @@ import javax.sip.message.Request;
  * from the SipProvider.
  * <p>
  * This specification defines a single Request event object to handle all Request
- * messages. The Request event encapsulates the Request message that can be 
- * retrieved from {@link RequestEvent#getRequest()}. Therefore the event type 
+ * messages. The Request event encapsulates the Request message that can be
+ * retrieved from {@link RequestEvent#getRequest()}. Therefore the event type
  * of a Request event can be determined as follows:
  * <p>
  * <i>eventType == RequestEvent.getRequest().getMethod();</i>
@@ -47,7 +47,7 @@ import javax.sip.message.Request;
  * <ul>
  * <li>source - the source of the event i.e. the SipProvider sending the
  * RequestEvent
- * <li>serverTransaction - the server transaction this RequestEvent is 
+ * <li>serverTransaction - the server transaction this RequestEvent is
  * associated with.
  * <li>Request - the Request message received on the SipProvider
  * that needs passed to the application encapsulated in a RequestEvent.
@@ -93,21 +93,21 @@ public class RequestEvent extends EventObject {
     public Request getRequest() {
         return m_request;
     }
-    
+
     /**
      * Gets the dialog with which this Event is associated.
-     * This method separates transaction support from dialog support. This 
-     * enables application developers to access the dialog associated to this event 
-     * without having to query the transaction associated to the event.  
-     * 
-     * @return the dialog with which the RequestEvent is associated or null if 
+     * This method separates transaction support from dialog support. This
+     * enables application developers to access the dialog associated to this event
+     * without having to query the transaction associated to the event.
+     *
+     * @return the dialog with which the RequestEvent is associated or null if
      * no dialog exists.
      * @since v1.2
      */
     public Dialog getDialog() {
         return m_dialog;
     }
-    
+
 
     // internal variables
     private Request m_request;

@@ -27,10 +27,10 @@ package gov.nist.javax.sip.header;
  */
 public interface HeaderExt {
 
-	/** 
-	 * Gets the header value (i.e. what follows the name:) as a string
-	 * @return the header value (i.e. what follows the name:) 
-	 * @since 2.0
-	 */
-	public String getValue();
+    /**
+     * Gets the header value (i.e. what follows the name:) as a string
+     * @return the header value (i.e. what follows the name:)
+     * @since 2.0
+     */
+    public String getValue();
 }

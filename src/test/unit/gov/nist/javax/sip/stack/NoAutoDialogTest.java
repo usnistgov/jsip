@@ -36,13 +36,13 @@ import junit.framework.TestCase;
 public class NoAutoDialogTest extends TestCase {
 
     protected boolean testFail = false;
-    
+
     protected StringBuffer errorBuffer = new StringBuffer();
-    
+
     protected int myPort;
 
     protected int remotePort = 5060;
-    
+
     protected String testProtocol = "udp";
 
     protected Address remoteAddress;
@@ -56,15 +56,15 @@ public class NoAutoDialogTest extends TestCase {
     protected AddressFactory addressFactory = null;
 
     protected static String host = null;
-    
+
     protected Client client;
-    
+
     protected Server server;
-    
+
     public final int SERVER_PORT = 5600;
-    
+
     public final int CLIENT_PORT = 6500;
-   
+
     public NoAutoDialogTest() {
 
     }
@@ -84,15 +84,15 @@ public class NoAutoDialogTest extends TestCase {
     }
 
     @Override
-	protected void setUp() throws Exception {
+    protected void setUp() throws Exception {
 
         this.client = new Client();
         this.server = new Server();
     }
 
     @Override
-	protected void tearDown() throws Exception {
-       
+    protected void tearDown() throws Exception {
+
        this.client.stop();
        this.server.stop();
 
@@ -106,7 +106,7 @@ public class NoAutoDialogTest extends TestCase {
 
     }
 
-   
+
     public String doMessage(Throwable t) {
         StringBuffer sb = new StringBuffer();
         int tick = 0;
@@ -150,7 +150,7 @@ public class NoAutoDialogTest extends TestCase {
 
         private boolean i_inviteTxTerm;
 
-       
+
         public Server() {
             try {
                 final Properties defaultProperties = new Properties();
@@ -180,8 +180,8 @@ public class NoAutoDialogTest extends TestCase {
 
         }
 
-       
-       
+
+
         public void stop() {
             this.sipStack.stop();
         }
@@ -195,7 +195,7 @@ public class NoAutoDialogTest extends TestCase {
         }
 
         public void processRequest(RequestEvent requestEvent) {
-        	System.err.println("PROCESS REQUEST ON SERVER");
+            System.err.println("PROCESS REQUEST ON SERVER");
             Request request = requestEvent.getRequest();
             SipProvider provider = (SipProvider) requestEvent.getSource();
             if (request.getMethod().equals(Request.INVITE)) {
@@ -228,11 +228,11 @@ public class NoAutoDialogTest extends TestCase {
                             .getRequest());
                     requestEvent.getServerTransaction().sendResponse(response);
                     i_sent200Cancel = true;
-                    
-                    Response inviteResponse = 
+
+                    Response inviteResponse =
                         messageFactory.createResponse(Response.REQUEST_TERMINATED,inviteRequest);
                     inviteStx.sendResponse(inviteResponse);
-                    
+
                 } catch (Exception e) {
                     e.printStackTrace();
                     fail("Unexpected exception ");
@@ -297,7 +297,7 @@ public class NoAutoDialogTest extends TestCase {
             }
 
         }
-        
+
         public void checkState() {
             if (!o_sentInvite || !o_received180 || !o_sentCancel || !o_receiver200Cancel
                     || !o_inviteTxTerm || !o_dialogTerinated) {
@@ -305,11 +305,11 @@ public class NoAutoDialogTest extends TestCase {
                         + "] o_sentCancel[" + o_sentCancel + "] o_receiver200Cancel["
                         + o_receiver200Cancel + "] o_inviteTxTerm[" + o_inviteTxTerm
                         + "] o_dialogTerinated[" + o_dialogTerinated + "]  ");
-               
+
             }
         }
 
-      
+
         public void stop() {
             this.sipStack.stop();
         }
@@ -367,7 +367,7 @@ public class NoAutoDialogTest extends TestCase {
 
         }
 
-       
+
 
         protected void sendLocalInvite() throws Exception {
 
@@ -377,17 +377,17 @@ public class NoAutoDialogTest extends TestCase {
             requestUri.setPort(SERVER_PORT);
             inviteRequest.setMethod(Request.INVITE);
             inviteRequest.setRequestURI(requestUri);
-            
+
             SipURI _remoteUri = addressFactory.createSipURI(null, "there.com");
             Address _remoteAddress = addressFactory.createAddress(_remoteUri);
-           
-            
+
+
             inviteRequest.addHeader(provider.getNewCallId());
             inviteRequest.addHeader(headerFactory.createCSeqHeader((long) 1, Request.INVITE));
-            
+
             SipURI _localUri = addressFactory.createSipURI(null, "here.com");
             Address localAddress = addressFactory.createAddress(_localUri);
-            
+
             inviteRequest.addHeader(headerFactory.createFromHeader(localAddress,
                     generateFromTag()));
 
@@ -401,7 +401,7 @@ public class NoAutoDialogTest extends TestCase {
 
             // create and add the Route Header
             Header h = headerFactory.createRouteHeader(_remoteAddress);
-            
+
             inviteRequest.setMethod(Request.INVITE);
             inviteRequest.addHeader(headerFactory.createMaxForwardsHeader(5));
             ClientTransaction inviteTransaction = this.provider
@@ -415,7 +415,7 @@ public class NoAutoDialogTest extends TestCase {
         }
 
     }
-    
+
     public void testSendInvite() {
         try {
             this.client.sendLocalInvite();
@@ -425,7 +425,7 @@ public class NoAutoDialogTest extends TestCase {
             fail("Unexpected exception ");
         }
         this.client.checkState();
-        
+
     }
 
 }
