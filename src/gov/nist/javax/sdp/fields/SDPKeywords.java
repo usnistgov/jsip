@@ -1,13 +1,13 @@
 /*
-* Conditions Of Use 
-* 
+* Conditions Of Use
+*
 * This software was developed by employees of the National Institute of
 * Standards and Technology (NIST), an agency of the Federal Government.
 * Pursuant to title 15 Untied States Code Section 105, works of NIST
 * employees are not subject to copyright protection in the United States
 * and are considered to be in the public domain.  As a result, a formal
 * license is not needed to use the software.
-* 
+*
 * This software is provided by NIST as a service and is expressly
 * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
 * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
@@ -16,12 +16,12 @@
 * regarding the use of the software or the results thereof, including but
 * not limited to the correctness, accuracy, reliability or usefulness of
 * the software.
-* 
+*
 * Permission to use this software is contingent upon your acceptance
 * of the terms of this agreement
-*  
+*
 * .
-* 
+*
 */
 /*******************************************************************************
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
@@ -32,11 +32,11 @@ package gov.nist.javax.sdp.fields;
 * A context sensitive list of keyowrds for SDP Headers.
 */
 public interface SDPKeywords {
-	public static final String BASE64="base64";
-	public static final String PROMPT="prompt";
-	public static final String CLEAR = "clear";
-	public static final String URI="URI";
-	public static final String IPV4="IP4";
-	public static final String IPV6="IP6";
-	public static final String IN="IN";
+    public static final String BASE64="base64";
+    public static final String PROMPT="prompt";
+    public static final String CLEAR = "clear";
+    public static final String URI="URI";
+    public static final String IPV4="IP4";
+    public static final String IPV6="IP6";
+    public static final String IN="IN";
 }

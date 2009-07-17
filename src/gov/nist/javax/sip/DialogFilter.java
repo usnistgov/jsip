@@ -1,13 +1,13 @@
 /*
- * Conditions Of Use 
- * 
+ * Conditions Of Use
+ *
  * This software was developed by employees of the National Institute of
  * Standards and Technology (NIST), an agency of the Federal Government.
  * Pursuant to title 15 Untied States Code Section 105, works of NIST
  * employees are not subject to copyright protection in the United States
  * and are considered to be in the public domain.  As a result, a formal
  * license is not needed to use the software.
- * 
+ *
  * This software is provided by NIST as a service and is expressly
  * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
  * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
@@ -16,12 +16,12 @@
  * regarding the use of the software or the results thereof, including but
  * not limited to the correctness, accuracy, reliability or usefulness of
  * the software.
- * 
+ *
  * Permission to use this software is contingent upon your acceptance
  * of the terms of this agreement
- *  
+ *
  * .
- * 
+ *
  */
 /******************************************************************************
  * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).      *
@@ -78,9 +78,9 @@ import javax.sip.message.Response;
  * etc. Note that this is not part of the JAIN-SIP spec (it does not implement a JAIN-SIP
  * interface). This is part of the glue that ties together the NIST-SIP stack and event model with
  * the JAIN-SIP stack. This is strictly an implementation class.
- * 
- * @version 1.2 $Revision: 1.29 $ $Date: 2009-06-23 11:02:17 $
- * 
+ *
+ * @version 1.2 $Revision: 1.30 $ $Date: 2009-07-17 18:57:19 $
+ *
  * @author M. Ranganathan
  */
 class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
@@ -98,7 +98,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
     /**
      * Send back an error Response.
-     * 
+     *
      * @param sipRequest
      * @param transaction
      */
@@ -124,7 +124,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
     /**
      * Process a request. Check for various conditions in the dialog that can result in the
      * message being dropped. Possibly return errors for these conditions.
-     * 
+     *
      * @exception SIPServerException is thrown when there is an error processing the request.
      */
     public void processRequest(SIPRequest sipRequest, MessageChannel incomingMessageChannel) {
@@ -294,7 +294,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             /*
              * Got an UPDATE method and the user dialog does not exist and the user wants to be a
              * User agent.
-             * 
+             *
              */
             if (sipProvider.isAutomaticDialogSupportEnabled() && dialog == null) {
                 Response notExist = sipRequest
@@ -338,12 +338,12 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     /*
                      * JvB: must never drop ACKs that dont match a transaction! One cannot be sure
                      * if it isn't an ACK for a 2xx response
-                     * 
+                     *
                      */
 
                 } else {
                     if (!dialog.handleAck(transaction)) {
-                    	if(sipStack.isLooseDialogValidation()) {
+                        if(sipStack.isLooseDialogValidation()) {
                             if (sipStack.isLoggingEnabled()) {
                                 sipStack.getLogWriter().logDebug(
                                         "Dialog exists with loose dialog validation " + sipRequest.getFirstLine()
@@ -356,9 +356,9 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                                 st.disableRetransmissionAlerts();
 
                             }
-                    	} else {
-                    		return;
-                    	}
+                        } else {
+                            return;
+                        }
                     } else {
                         transaction.passToListener();
                         dialog.addTransaction(transaction);
@@ -947,7 +947,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
     /**
      * Process the response.
-     * 
+     *
      * @exception SIPServerException is thrown when there is an error processing the response
      * @param incomingMessageChannel -- message channel on which the response is received.
      */
@@ -1035,7 +1035,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
             if (sipStack.isLoggingEnabled()) {
                 sipStack.getLogWriter().logDebug(
-                        "could not find tx, handling statelessly Dialog = 	" + dialog);
+                        "could not find tx, handling statelessly Dialog =  " + dialog);
             }
             // Pass the response up to the application layer to handle
             // statelessly.
@@ -1066,7 +1066,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
     /**
      * Just a placeholder. This is called from the stack for message logging. Auxiliary processing
      * information can be passed back to be written into the log file.
-     * 
+     *
      * @return auxiliary information that we may have generated during the message processing
      *         which is retrieved by the message logger.
      */
@@ -1076,7 +1076,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see gov.nist.javax.sip.stack.ServerResponseInterface#processResponse(gov.nist.javax.sip.message.SIPResponse,
      *      gov.nist.javax.sip.stack.MessageChannel)
      */

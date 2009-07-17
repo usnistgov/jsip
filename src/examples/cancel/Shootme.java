@@ -16,264 +16,264 @@ import junit.framework.TestCase;
 /**
  * This class is a UAC template. Shootist is the guy that shoots and shootme is
  * the guy that gets shot.
- * 
+ *
  * @author M. Ranganathan
  */
 
 public class Shootme extends TestCase implements SipListener {
 
-	
-	
-	private static final String myAddress = "127.0.0.1";
 
-	private static final String transport = "udp";
 
-	private static final int myPort = 5070;
+    private static final String myAddress = "127.0.0.1";
 
-	private ServerTransaction inviteTid;
+    private static final String transport = "udp";
 
-	private Response okResponse;
+    private static final int myPort = 5070;
 
-	private Request inviteRequest;
+    private ServerTransaction inviteTid;
 
-	private SipProvider sipProvider;
+    private Response okResponse;
 
-	private Dialog dialog;
+    private Request inviteRequest;
 
-	private static Logger logger = Logger.getLogger(Shootme.class);
-	
-	private static final String unexpectedException = "Unexpected Exception "	;
-	
-	class MyTimerTask extends TimerTask {
-		Shootme shootme;
+    private SipProvider sipProvider;
 
-		public MyTimerTask(Shootme shootme) {
-			this.shootme = shootme;
+    private Dialog dialog;
 
-		}
+    private static Logger logger = Logger.getLogger(Shootme.class);
 
-		public void run() {
-			shootme.sendInviteOK();
-		}
+    private static final String unexpectedException = "Unexpected Exception ";
 
-	}
+    class MyTimerTask extends TimerTask {
+        Shootme shootme;
 
-	protected static final String usageString = "java "
-			+ "examples.shootist.Shootist \n"
-			+ ">>>> is your class path set to the root?";
+        public MyTimerTask(Shootme shootme) {
+            this.shootme = shootme;
 
-	
+        }
 
-	public void processRequest(RequestEvent requestEvent) {
-		Request request = requestEvent.getRequest();
-		ServerTransaction serverTransactionId = requestEvent
-				.getServerTransaction();
+        public void run() {
+            shootme.sendInviteOK();
+        }
 
-		logger.info("\n\nRequest " + request.getMethod()
-				+ " received at " + ProtocolObjects.sipStack.getStackName()
-				+ " with server transaction id " + serverTransactionId);
+    }
 
-		if (request.getMethod().equals(Request.INVITE)) {
-			processInvite(requestEvent, serverTransactionId);
-		} else if (request.getMethod().equals(Request.ACK)) {
-			processAck(requestEvent, serverTransactionId);
-		} else if (request.getMethod().equals(Request.BYE)) {
-			processBye(requestEvent, serverTransactionId);
-		} else if (request.getMethod().equals(Request.CANCEL)) {
-			processCancel(requestEvent, serverTransactionId);
-		}
+    protected static final String usageString = "java "
+            + "examples.shootist.Shootist \n"
+            + ">>>> is your class path set to the root?";
 
-	}
 
-	public void processResponse(ResponseEvent responseEvent) {
-	}
 
-	/**
-	 * Process the ACK request. Send the bye and complete the call flow.
-	 */
-	public void processAck(RequestEvent requestEvent,
-			ServerTransaction serverTransaction) {
-		SipProvider sipProvider = (SipProvider) requestEvent.getSource();
-		try {
-			if (dialog.getState() == DialogState.CONFIRMED) {
-				Request byeRequest = dialog.createRequest(Request.BYE);
-				ClientTransaction tr = sipProvider
-						.getNewClientTransaction(byeRequest);
-				logger.info("shootme: got an ACK -- sending bye! ");
-				dialog.sendRequest(tr);
-				logger.info("Dialog State = " + dialog.getState());
-			}
-		} catch (Exception ex) {
-			logger.error(ex);
-			fail(unexpectedException);
-		}
-	}
+    public void processRequest(RequestEvent requestEvent) {
+        Request request = requestEvent.getRequest();
+        ServerTransaction serverTransactionId = requestEvent
+                .getServerTransaction();
 
-	/**
-	 * Process the invite request.
-	 */
-	public void processInvite(RequestEvent requestEvent,
-			ServerTransaction serverTransaction) {
-		SipProvider sipProvider = (SipProvider) requestEvent.getSource();
-		Request request = requestEvent.getRequest();
-		try {
-			logger.info("shootme: got an Invite sending RINGING");
-			// logger.info("shootme: " + request);
-			Response response = ProtocolObjects.messageFactory.createResponse(180, request);
-			ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
-			toHeader.setTag("4321"); // Application is supposed to set.
-			Address address = ProtocolObjects.addressFactory.createAddress("Shootme <sip:"
-					+ myAddress + ":" + myPort + ">");
-			ContactHeader contactHeader = ProtocolObjects.headerFactory
-					.createContactHeader(address);
-			response.addHeader(contactHeader);
-			ServerTransaction st = requestEvent.getServerTransaction();
+        logger.info("\n\nRequest " + request.getMethod()
+                + " received at " + ProtocolObjects.sipStack.getStackName()
+                + " with server transaction id " + serverTransactionId);
 
-			if (st == null) {
-				st = sipProvider.getNewServerTransaction(request);
-				logger.info("Created a new server transaction for "
-						+ request.getMethod() + " serverTransaction = " + st);
-			}
-			dialog = st.getDialog();
+        if (request.getMethod().equals(Request.INVITE)) {
+            processInvite(requestEvent, serverTransactionId);
+        } else if (request.getMethod().equals(Request.ACK)) {
+            processAck(requestEvent, serverTransactionId);
+        } else if (request.getMethod().equals(Request.BYE)) {
+            processBye(requestEvent, serverTransactionId);
+        } else if (request.getMethod().equals(Request.CANCEL)) {
+            processCancel(requestEvent, serverTransactionId);
+        }
 
-			st.sendResponse(response);
-			this.okResponse = ProtocolObjects.messageFactory.createResponse(200, request);
-			toHeader = (ToHeader) okResponse.getHeader(ToHeader.NAME);
-			toHeader.setTag("4321"); // Application is supposed to set.
-			okResponse.addHeader(contactHeader);
-			this.inviteTid = st;
-			// Defer sending the OK to simulate the phone ringing.
-			this.inviteRequest = request;
+    }
 
-			new Timer().schedule(new MyTimerTask(this), 300);
-		} catch (Exception ex) {
-			logger.error(ex);
-			fail(unexpectedException);
-		}
-	}
+    public void processResponse(ResponseEvent responseEvent) {
+    }
 
-	private void sendInviteOK() {
-		try {
-			if (inviteTid.getState() != TransactionState.COMPLETED) {
-				logger.info("shootme: got an Invite sending OK");
-				inviteTid.sendResponse(okResponse);
-			}
-		} catch (Exception ex) {
-			logger.error(ex);
-		}
-	}
+    /**
+     * Process the ACK request. Send the bye and complete the call flow.
+     */
+    public void processAck(RequestEvent requestEvent,
+            ServerTransaction serverTransaction) {
+        SipProvider sipProvider = (SipProvider) requestEvent.getSource();
+        try {
+            if (dialog.getState() == DialogState.CONFIRMED) {
+                Request byeRequest = dialog.createRequest(Request.BYE);
+                ClientTransaction tr = sipProvider
+                        .getNewClientTransaction(byeRequest);
+                logger.info("shootme: got an ACK -- sending bye! ");
+                dialog.sendRequest(tr);
+                logger.info("Dialog State = " + dialog.getState());
+            }
+        } catch (Exception ex) {
+            logger.error(ex);
+            fail(unexpectedException);
+        }
+    }
 
-	/**
-	 * Process the bye request.
-	 */
-	public void processBye(RequestEvent requestEvent,
-			ServerTransaction serverTransactionId) {
+    /**
+     * Process the invite request.
+     */
+    public void processInvite(RequestEvent requestEvent,
+            ServerTransaction serverTransaction) {
+        SipProvider sipProvider = (SipProvider) requestEvent.getSource();
+        Request request = requestEvent.getRequest();
+        try {
+            logger.info("shootme: got an Invite sending RINGING");
+            // logger.info("shootme: " + request);
+            Response response = ProtocolObjects.messageFactory.createResponse(180, request);
+            ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
+            toHeader.setTag("4321"); // Application is supposed to set.
+            Address address = ProtocolObjects.addressFactory.createAddress("Shootme <sip:"
+                    + myAddress + ":" + myPort + ">");
+            ContactHeader contactHeader = ProtocolObjects.headerFactory
+                    .createContactHeader(address);
+            response.addHeader(contactHeader);
+            ServerTransaction st = requestEvent.getServerTransaction();
 
-		Request request = requestEvent.getRequest();
-		try {
-			logger.info("shootme:  got a bye sending OK.");
-			Response response = ProtocolObjects.messageFactory.createResponse(200, request);
-			serverTransactionId.sendResponse(response);
-			logger.info("Dialog State is "
-					+ serverTransactionId.getDialog().getState());
+            if (st == null) {
+                st = sipProvider.getNewServerTransaction(request);
+                logger.info("Created a new server transaction for "
+                        + request.getMethod() + " serverTransaction = " + st);
+            }
+            dialog = st.getDialog();
 
-		} catch (Exception ex) {
-			logger.error(ex);
-			fail(unexpectedException);
+            st.sendResponse(response);
+            this.okResponse = ProtocolObjects.messageFactory.createResponse(200, request);
+            toHeader = (ToHeader) okResponse.getHeader(ToHeader.NAME);
+            toHeader.setTag("4321"); // Application is supposed to set.
+            okResponse.addHeader(contactHeader);
+            this.inviteTid = st;
+            // Defer sending the OK to simulate the phone ringing.
+            this.inviteRequest = request;
 
-		}
-	}
+            new Timer().schedule(new MyTimerTask(this), 300);
+        } catch (Exception ex) {
+            logger.error(ex);
+            fail(unexpectedException);
+        }
+    }
 
-	public void processCancel(RequestEvent requestEvent,
-			ServerTransaction serverTransactionId) {
+    private void sendInviteOK() {
+        try {
+            if (inviteTid.getState() != TransactionState.COMPLETED) {
+                logger.info("shootme: got an Invite sending OK");
+                inviteTid.sendResponse(okResponse);
+            }
+        } catch (Exception ex) {
+            logger.error(ex);
+        }
+    }
 
-		Request request = requestEvent.getRequest();
-		try {
-			logger.info("shootme:  got a cancel.");
-			if (serverTransactionId == null) {
-				logger.info("shootme:  null tid.");
-				return;
-			}
-			TestCase.assertTrue(inviteTid != serverTransactionId);
-			Response response = ProtocolObjects.messageFactory.createResponse(200, request);
-			serverTransactionId.sendResponse(response);
-			if (dialog.getState() != DialogState.CONFIRMED) {
-				response = ProtocolObjects.messageFactory.createResponse(
-						Response.REQUEST_TERMINATED, inviteRequest);
-				inviteTid.sendResponse(response);
-			}
+    /**
+     * Process the bye request.
+     */
+    public void processBye(RequestEvent requestEvent,
+            ServerTransaction serverTransactionId) {
 
-		} catch (Exception ex) {
-			logger.error(ex);
-			fail(unexpectedException);
+        Request request = requestEvent.getRequest();
+        try {
+            logger.info("shootme:  got a bye sending OK.");
+            Response response = ProtocolObjects.messageFactory.createResponse(200, request);
+            serverTransactionId.sendResponse(response);
+            logger.info("Dialog State is "
+                    + serverTransactionId.getDialog().getState());
 
-		}
-	}
+        } catch (Exception ex) {
+            logger.error(ex);
+            fail(unexpectedException);
 
-	public void processTimeout(javax.sip.TimeoutEvent timeoutEvent) {
-		Transaction transaction;
-		if (timeoutEvent.isServerTransaction()) {
-			transaction = timeoutEvent.getServerTransaction();
-		} else {
-			transaction = timeoutEvent.getClientTransaction();
-		}
-		logger.info("state = " + transaction.getState());
-		logger.info("dialog = " + transaction.getDialog());
-		logger.info("dialogState = "
-				+ transaction.getDialog().getState());
-		logger.info("Transaction Time out");
-	}
+        }
+    }
 
-	public SipProvider createProvider() {
-		try {
-		
-			ListeningPoint lp = ProtocolObjects.sipStack.createListeningPoint(myAddress,
-					myPort, transport);
+    public void processCancel(RequestEvent requestEvent,
+            ServerTransaction serverTransactionId) {
 
-			sipProvider = ProtocolObjects.sipStack.createSipProvider(lp);
-			logger.info("udp provider " + sipProvider);
-			return sipProvider;
-		} catch (Exception ex) {
-			logger.error(ex);
-			fail(unexpectedException);
-			return null;
+        Request request = requestEvent.getRequest();
+        try {
+            logger.info("shootme:  got a cancel.");
+            if (serverTransactionId == null) {
+                logger.info("shootme:  null tid.");
+                return;
+            }
+            TestCase.assertTrue(inviteTid != serverTransactionId);
+            Response response = ProtocolObjects.messageFactory.createResponse(200, request);
+            serverTransactionId.sendResponse(response);
+            if (dialog.getState() != DialogState.CONFIRMED) {
+                response = ProtocolObjects.messageFactory.createResponse(
+                        Response.REQUEST_TERMINATED, inviteRequest);
+                inviteTid.sendResponse(response);
+            }
 
-		}
+        } catch (Exception ex) {
+            logger.error(ex);
+            fail(unexpectedException);
 
-	}
-	
-	
-	
+        }
+    }
 
-	public static void main(String args[])throws Exception  {
-		logger.addAppender(new ConsoleAppender(new SimpleLayout()));
-		ProtocolObjects.init("shootme");
-		Shootme shootme = new Shootme();
-		shootme.createProvider();
-		shootme.sipProvider.addSipListener(shootme);
-	}
+    public void processTimeout(javax.sip.TimeoutEvent timeoutEvent) {
+        Transaction transaction;
+        if (timeoutEvent.isServerTransaction()) {
+            transaction = timeoutEvent.getServerTransaction();
+        } else {
+            transaction = timeoutEvent.getClientTransaction();
+        }
+        logger.info("state = " + transaction.getState());
+        logger.info("dialog = " + transaction.getDialog());
+        logger.info("dialogState = "
+                + transaction.getDialog().getState());
+        logger.info("Transaction Time out");
+    }
 
-	public void processIOException(IOExceptionEvent exceptionEvent) {
-		// TODO Auto-generated method stub
+    public SipProvider createProvider() {
+        try {
 
-	}
+            ListeningPoint lp = ProtocolObjects.sipStack.createListeningPoint(myAddress,
+                    myPort, transport);
 
-	public void processTransactionTerminated(
-			TransactionTerminatedEvent transactionTerminatedEvent) {
-		if (transactionTerminatedEvent.isServerTransaction()) {
-			ServerTransaction serverTx = transactionTerminatedEvent
-					.getServerTransaction();
+            sipProvider = ProtocolObjects.sipStack.createSipProvider(lp);
+            logger.info("udp provider " + sipProvider);
+            return sipProvider;
+        } catch (Exception ex) {
+            logger.error(ex);
+            fail(unexpectedException);
+            return null;
 
-			String method = serverTx.getRequest().getMethod();
+        }
 
-			logger.info("Server Tx : " + method + " terminated ");
-		}
-	}
+    }
 
-	public void processDialogTerminated(
-			DialogTerminatedEvent dialogTerminatedEvent) {
-		// TODO Auto-generated method stub
 
-	}
+
+
+    public static void main(String args[])throws Exception  {
+        logger.addAppender(new ConsoleAppender(new SimpleLayout()));
+        ProtocolObjects.init("shootme");
+        Shootme shootme = new Shootme();
+        shootme.createProvider();
+        shootme.sipProvider.addSipListener(shootme);
+    }
+
+    public void processIOException(IOExceptionEvent exceptionEvent) {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void processTransactionTerminated(
+            TransactionTerminatedEvent transactionTerminatedEvent) {
+        if (transactionTerminatedEvent.isServerTransaction()) {
+            ServerTransaction serverTx = transactionTerminatedEvent
+                    .getServerTransaction();
+
+            String method = serverTx.getRequest().getMethod();
+
+            logger.info("Server Tx : " + method + " terminated ");
+        }
+    }
+
+    public void processDialogTerminated(
+            DialogTerminatedEvent dialogTerminatedEvent) {
+        // TODO Auto-generated method stub
+
+    }
 
 }

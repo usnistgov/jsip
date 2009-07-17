@@ -40,72 +40,72 @@ import gov.nist.core.*;
 *
 */
 public class ConnectionAddress extends SDPObject {
-	protected Host address;
-	protected int ttl;
-	protected int port;
+    protected Host address;
+    protected int ttl;
+    protected int port;
 
-	public Host getAddress() {
-		return address;
-	}
-	public int getTtl() {
-		return ttl;
-	}
-	public int getPort() {
-		return port;
-	}
-	/**
-	* Set the address member
-	*/
-	public void setAddress(Host a) {
-		address = a;
-	}
-	/**
-	* Set the ttl member
-	*/
-	public void setTtl(int ttl) {
-		this.ttl = ttl;
-	}
-	/**
-	* Set the port member
-	*/
-	public void setPort(int p) {
-		port = p;
-	}
-	/**
-	 *  Get the string encoded version of this object
-	 * @since v1.0
-	 */
-	public String encode() {
-		String encoded_string = "";
+    public Host getAddress() {
+        return address;
+    }
+    public int getTtl() {
+        return ttl;
+    }
+    public int getPort() {
+        return port;
+    }
+    /**
+    * Set the address member
+    */
+    public void setAddress(Host a) {
+        address = a;
+    }
+    /**
+    * Set the ttl member
+    */
+    public void setTtl(int ttl) {
+        this.ttl = ttl;
+    }
+    /**
+    * Set the port member
+    */
+    public void setPort(int p) {
+        port = p;
+    }
+    /**
+     *  Get the string encoded version of this object
+     * @since v1.0
+     */
+    public String encode() {
+        String encoded_string = "";
 
-		if (address != null){
-			encoded_string = address.encode();
+        if (address != null){
+            encoded_string = address.encode();
 
-			//it appears that SDP does not allow square brackets
-			//in the connection address (see RFC4566) so make sure
-			//we lose them
-			if(Host.isIPv6Reference(encoded_string))
-			{
-				//the isIPv6Reference == true means we have a minimum
-				//of 2 symbols, so substring bravely
-				encoded_string = encoded_string
-					.substring(1, encoded_string.length()-1);
-			}
-		}
-		if (ttl != 0 && port != 0) {
-			encoded_string += Separators.SLASH + ttl + Separators.SLASH + port;
-		} else if (ttl != 0) {
-			encoded_string += Separators.SLASH + ttl;
-		}
-		return encoded_string;
-	}
+            //it appears that SDP does not allow square brackets
+            //in the connection address (see RFC4566) so make sure
+            //we lose them
+            if(Host.isIPv6Reference(encoded_string))
+            {
+                //the isIPv6Reference == true means we have a minimum
+                //of 2 symbols, so substring bravely
+                encoded_string = encoded_string
+                    .substring(1, encoded_string.length()-1);
+            }
+        }
+        if (ttl != 0 && port != 0) {
+            encoded_string += Separators.SLASH + ttl + Separators.SLASH + port;
+        } else if (ttl != 0) {
+            encoded_string += Separators.SLASH + ttl;
+        }
+        return encoded_string;
+    }
 
-	public Object clone() {
-		ConnectionAddress retval = (ConnectionAddress) super.clone();
-		if (this.address != null)
-			retval.address = (Host) this.address.clone();
-		return retval;
-	}
+    public Object clone() {
+        ConnectionAddress retval = (ConnectionAddress) super.clone();
+        if (this.address != null)
+            retval.address = (Host) this.address.clone();
+        return retval;
+    }
 
 }
 

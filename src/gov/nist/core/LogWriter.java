@@ -51,69 +51,69 @@ import org.apache.log4j.SimpleLayout;
 
 public class LogWriter {
 
-	/**
-	 * The logger to which we will write our logging output.
-	 */
-	private Logger logger;
+    /**
+     * The logger to which we will write our logging output.
+     */
+    private Logger logger;
 
-	/**
-	 * The stack name.
-	 */
-	private String stackName;
+    /**
+     * The stack name.
+     */
+    private String stackName;
 
-	/**
-	 * Dont trace
-	 */
-	public static final int TRACE_NONE = 0;
+    /**
+     * Dont trace
+     */
+    public static final int TRACE_NONE = 0;
 
-	/**
-	 * Trace message processing
-	 */
-	public static final int TRACE_MESSAGES = 16;
+    /**
+     * Trace message processing
+     */
+    public static final int TRACE_MESSAGES = 16;
 
-	/**
-	 * Trace exception processing
-	 */
-	public static final int TRACE_EXCEPTION = 17;
+    /**
+     * Trace exception processing
+     */
+    public static final int TRACE_EXCEPTION = 17;
 
-	/**
-	 * Debug trace level (all tracing enabled).
-	 */
-	public static final int TRACE_DEBUG = 32;
+    /**
+     * Debug trace level (all tracing enabled).
+     */
+    public static final int TRACE_DEBUG = 32;
 
-	/**
-	 * Name of the log file in which the trace is written out (default is
-	 * /tmp/sipserverlog.txt)
-	 */
-	private String logFileName = null;
+    /**
+     * Name of the log file in which the trace is written out (default is
+     * /tmp/sipserverlog.txt)
+     */
+    private String logFileName = null;
 
-	/**
-	 * Flag to indicate that logging is enabled.
-	 */
-	private volatile boolean needsLogging = false;
+    /**
+     * Flag to indicate that logging is enabled.
+     */
+    private volatile boolean needsLogging = false;
 
-	private int lineCount;
+    private int lineCount;
 
-	/**
-	 * trace level
-	 */
+    /**
+     * trace level
+     */
 
-	protected int traceLevel = TRACE_NONE;
+    protected int traceLevel = TRACE_NONE;
 
-	private String buildTimeStamp;
+    private String buildTimeStamp;
 
-	private Properties configurationProperties;
+    private Properties configurationProperties;
 
-	/**
-	 * log a stack trace. This helps to look at the stack frame.
-	 */
-	public void logStackTrace() {
-	    this.logStackTrace(TRACE_DEBUG);
-		
-	}
-	
-	public void logStackTrace(int traceLevel) {
-	    if (needsLogging) {
+    /**
+     * log a stack trace. This helps to look at the stack frame.
+     */
+    public void logStackTrace() {
+        this.logStackTrace(TRACE_DEBUG);
+
+    }
+
+    public void logStackTrace(int traceLevel) {
+        if (needsLogging) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             StackTraceElement[] ste = new Exception().getStackTrace();
@@ -129,358 +129,358 @@ public class LogWriter {
             Priority priority = this.getLogPriority();
             if ( level.isGreaterOrEqual(priority)) {
                 logger.log(level,stackTrace);
-            }        
-            
-        } 
-	}
+            }
 
-	/**
-	 * Get the line count in the log stream.
-	 *
-	 * @return
-	 */
-	public int getLineCount() {
-		return lineCount;
-	}
+        }
+    }
 
-	/**
-	 * Get the logger.
-	 *
-	 * @return
-	 */
-	public Logger getLogger() {
-		return logger;
-	}
+    /**
+     * Get the line count in the log stream.
+     *
+     * @return
+     */
+    public int getLineCount() {
+        return lineCount;
+    }
 
-
-	/**
-	 * This method allows you to add an external appender.
-	 * This is useful for the case when you want to log to
-	 * a different log stream than a file.
-	 *
-	 * @param appender
-	 */
-	public void addAppender(Appender appender) {
-
-		this.logger.addAppender(appender);
-
-	}
-
-	/**
-	 * Log an exception.
-	 *
-	 * @param ex
-	 */
-	public void logException(Throwable ex) {
-
-		if (needsLogging) {
-
-			this.getLogger().error(ex.getMessage(), ex);
-		}
-	}
+    /**
+     * Get the logger.
+     *
+     * @return
+     */
+    public Logger getLogger() {
+        return logger;
+    }
 
 
+    /**
+     * This method allows you to add an external appender.
+     * This is useful for the case when you want to log to
+     * a different log stream than a file.
+     *
+     * @param appender
+     */
+    public void addAppender(Appender appender) {
+
+        this.logger.addAppender(appender);
+
+    }
+
+    /**
+     * Log an exception.
+     *
+     * @param ex
+     */
+    public void logException(Throwable ex) {
+
+        if (needsLogging) {
+
+            this.getLogger().error(ex.getMessage(), ex);
+        }
+    }
 
 
-	/**
-	 * Counts the line number so that the debug log can be correlated to the
-	 * message trace.
-	 *
-	 * @param message --
-	 *            message to count the lines for.
-	 */
-	private void countLines(String message) {
-		char[] chars = message.toCharArray();
-		for (int i = 0; i < chars.length; i++) {
-			if (chars[i] == '\n')
-				lineCount++;
-		}
-
-	}
-
-	/**
-	 * Prepend the line and file where this message originated from
-	 *
-	 * @param message
-	 * @return re-written message.
-	 */
-	private String enhanceMessage(String message) {
-
-		StackTraceElement[] stackTrace = new Exception().getStackTrace();
-		StackTraceElement elem = stackTrace[2];
-		String className = elem.getClassName();
-		String methodName = elem.getMethodName();
-		String fileName = elem.getFileName();
-		int lineNumber = elem.getLineNumber();
-		String newMessage = className + "." + methodName + "(" + fileName + ":"
-				+ lineNumber + ") [" + message + "]";
-		return newMessage;
-
-	}
-
-	/**
-	 * Log a message into the log file.
-	 *
-	 * @param message
-	 *            message to log into the log file.
-	 */
-	public void logDebug(String message) {
-		if (needsLogging) {
-			String newMessage = this.enhanceMessage(message);
-			if ( this.lineCount == 0) {
-				getLogger().debug("BUILD TIMESTAMP = " + this.buildTimeStamp);
-				getLogger().debug("Config Propeties = " + this.configurationProperties);
-			}
-			countLines(newMessage);
-			getLogger().debug(newMessage);
-		}
-
-	}
-
-	/**
-	 * Set the trace level for the stack.
-	 */
-	private void setTraceLevel(int level) {
-		traceLevel = level;
-	}
-
-	/**
-	 * Get the trace level for the stack.
-	 */
-	public int getTraceLevel() {
-		return traceLevel;
-	}
-
-	/**
-	 * Log an error message.
-	 *
-	 * @param message --
-	 *            error message to log.
-	 */
-	public void logFatalError(String message) {
-		Logger logger = this.getLogger();
-		String newMsg = this.enhanceMessage(message);
-		countLines(newMsg);
-		logger.fatal(newMsg);
-
-	}
-
-	/**
-	 * Log an error message.
-	 *
-	 * @param message --
-	 *            error message to log.
-	 *
-	 */
-	public void logError(String message) {
-		Logger logger = this.getLogger();
-		String newMsg = this.enhanceMessage(message);
-		countLines(newMsg);
-		logger.error(newMsg);
-
-	}
-
-	/**
-	 * @param configurationProperties
-	 */
-	public LogWriter(Properties configurationProperties) {
-
-		this.configurationProperties = configurationProperties;
-
-		String logLevel = configurationProperties
-				.getProperty("gov.nist.javax.sip.TRACE_LEVEL");
-
-		this.logFileName = configurationProperties
-				.getProperty("gov.nist.javax.sip.DEBUG_LOG");
-
-		this.stackName = configurationProperties
-				.getProperty("javax.sip.STACK_NAME");
-
-		//check whether a Log4j logger name has been
-		//specified. if not, use the stack name as the default
-		//logger name.
-		String category = configurationProperties
-								.getProperty("gov.nist.javax.sip.LOG4J_LOGGER_NAME", this.stackName);
 
 
-		logger = Logger.getLogger(category);
-		if (logLevel != null) {
-			if (logLevel.equals("LOG4J")) {
-			//if TRACE_LEVEL property is specified as
-			//"LOG4J" then, set the traceLevel based on
-			//the log4j effective log level.
-			Level level = logger.getEffectiveLevel();
-			this.needsLogging = true;
-			if (level == Level.OFF)
-				this.needsLogging = false;
-			this.traceLevel = TRACE_NONE;
-			if (level.isGreaterOrEqual(Level.DEBUG)) {
-				this.traceLevel = TRACE_DEBUG;
-			} else if (level.isGreaterOrEqual(Level.INFO)) {
-				this.traceLevel = TRACE_MESSAGES;
-			} else if (level.isGreaterOrEqual(Level.WARN)) {
-				this.traceLevel = TRACE_EXCEPTION;
-			}
-			}
-			else {
-			try {
-				int ll = 0;
-				if (logLevel.equals("DEBUG")) {
-					ll = TRACE_DEBUG;
-				} else if (logLevel.equals("TRACE") || logLevel.equals("INFO")) {
-					ll = TRACE_MESSAGES;
-				} else if (logLevel.equals("ERROR")) {
-					ll = TRACE_EXCEPTION;
-				} else if (logLevel.equals("NONE") || logLevel.equals("OFF")) {
-					ll = TRACE_NONE;
-				} else {
-					ll = Integer.parseInt(logLevel);
-				}
+    /**
+     * Counts the line number so that the debug log can be correlated to the
+     * message trace.
+     *
+     * @param message --
+     *            message to count the lines for.
+     */
+    private void countLines(String message) {
+        char[] chars = message.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            if (chars[i] == '\n')
+                lineCount++;
+        }
 
-				this.setTraceLevel(ll);
-				this.needsLogging = true;
-				if (traceLevel == TRACE_DEBUG) {
-					logger.setLevel(Level.DEBUG);
-				} else if (traceLevel == TRACE_MESSAGES) {
-					logger.setLevel(Level.INFO);
-				} else if (traceLevel == TRACE_EXCEPTION) {
-					logger.setLevel(Level.ERROR);
-				} else if (traceLevel == TRACE_NONE) {
-					logger.setLevel(Level.OFF);
-					this.needsLogging = false;
-				}
+    }
 
-				/*
-				 * If user specifies a logging file as part of the startup
-				 * properties then we try to create the appender.
-				 */
-				if (this.needsLogging && this.logFileName != null) {
+    /**
+     * Prepend the line and file where this message originated from
+     *
+     * @param message
+     * @return re-written message.
+     */
+    private String enhanceMessage(String message) {
 
-					boolean overwrite = Boolean.valueOf(
-						configurationProperties.getProperty(
-								"gov.nist.javax.sip.DEBUG_LOG_OVERWRITE"));
+        StackTraceElement[] stackTrace = new Exception().getStackTrace();
+        StackTraceElement elem = stackTrace[2];
+        String className = elem.getClassName();
+        String methodName = elem.getMethodName();
+        String fileName = elem.getFileName();
+        int lineNumber = elem.getLineNumber();
+        String newMessage = className + "." + methodName + "(" + fileName + ":"
+                + lineNumber + ") [" + message + "]";
+        return newMessage;
 
-					FileAppender fa = null;
-					try {
-						fa = new FileAppender(new SimpleLayout(),
-								this.logFileName, !overwrite);
-					} catch (FileNotFoundException fnf) {
+    }
 
-						// Likely due to some directoy not existing. Create
-						// them
-						File logfile = new File(this.logFileName);
-						logfile.getParentFile().mkdirs();
-						logfile.delete();
+    /**
+     * Log a message into the log file.
+     *
+     * @param message
+     *            message to log into the log file.
+     */
+    public void logDebug(String message) {
+        if (needsLogging) {
+            String newMessage = this.enhanceMessage(message);
+            if ( this.lineCount == 0) {
+                getLogger().debug("BUILD TIMESTAMP = " + this.buildTimeStamp);
+                getLogger().debug("Config Propeties = " + this.configurationProperties);
+            }
+            countLines(newMessage);
+            getLogger().debug(newMessage);
+        }
 
-						try {
-							fa = new FileAppender(new SimpleLayout(),
-									this.logFileName);
-						} catch (IOException ioe) {
-							ioe.printStackTrace(); // give up
-						}
-					} catch (IOException ex) {
-						ex.printStackTrace();
-					}
+    }
 
-					if (fa != null)
-						logger.addAppender(fa);
-				}
+    /**
+     * Set the trace level for the stack.
+     */
+    private void setTraceLevel(int level) {
+        traceLevel = level;
+    }
 
-			} catch (NumberFormatException ex) {
-				ex.printStackTrace();
-				System.err.println("LogWriter: Bad integer " + logLevel);
-				System.err.println("logging dislabled ");
-				needsLogging = false;
-			}
-			}
-		} else {
-			this.needsLogging = false;
+    /**
+     * Get the trace level for the stack.
+     */
+    public int getTraceLevel() {
+        return traceLevel;
+    }
 
-		}
+    /**
+     * Log an error message.
+     *
+     * @param message --
+     *            error message to log.
+     */
+    public void logFatalError(String message) {
+        Logger logger = this.getLogger();
+        String newMsg = this.enhanceMessage(message);
+        countLines(newMsg);
+        logger.fatal(newMsg);
 
-	}
+    }
 
-	/**
-	 * @return flag to indicate if logging is enabled.
-	 */
-	public boolean isLoggingEnabled() {
+    /**
+     * Log an error message.
+     *
+     * @param message --
+     *            error message to log.
+     *
+     */
+    public void logError(String message) {
+        Logger logger = this.getLogger();
+        String newMsg = this.enhanceMessage(message);
+        countLines(newMsg);
+        logger.error(newMsg);
 
-		return this.needsLogging;
-	}
+    }
 
-	/**
-	 * Return true/false if loging is enabled at a given level.
-	 *
-	 * @param logLevel
-	 */
-	public boolean isLoggingEnabled(int logLevel) {
-		return this.needsLogging && logLevel <= traceLevel;
-	}
+    /**
+     * @param configurationProperties
+     */
+    public LogWriter(Properties configurationProperties) {
+
+        this.configurationProperties = configurationProperties;
+
+        String logLevel = configurationProperties
+                .getProperty("gov.nist.javax.sip.TRACE_LEVEL");
+
+        this.logFileName = configurationProperties
+                .getProperty("gov.nist.javax.sip.DEBUG_LOG");
+
+        this.stackName = configurationProperties
+                .getProperty("javax.sip.STACK_NAME");
+
+        //check whether a Log4j logger name has been
+        //specified. if not, use the stack name as the default
+        //logger name.
+        String category = configurationProperties
+                                .getProperty("gov.nist.javax.sip.LOG4J_LOGGER_NAME", this.stackName);
 
 
-	/**
-	 * Log an error message.
-	 *
-	 * @param message
-	 * @param ex
-	 */
-	public void logError(String message, Exception ex) {
-		Logger logger = this.getLogger();
-		logger.error(message, ex);
+        logger = Logger.getLogger(category);
+        if (logLevel != null) {
+            if (logLevel.equals("LOG4J")) {
+            //if TRACE_LEVEL property is specified as
+            //"LOG4J" then, set the traceLevel based on
+            //the log4j effective log level.
+            Level level = logger.getEffectiveLevel();
+            this.needsLogging = true;
+            if (level == Level.OFF)
+                this.needsLogging = false;
+            this.traceLevel = TRACE_NONE;
+            if (level.isGreaterOrEqual(Level.DEBUG)) {
+                this.traceLevel = TRACE_DEBUG;
+            } else if (level.isGreaterOrEqual(Level.INFO)) {
+                this.traceLevel = TRACE_MESSAGES;
+            } else if (level.isGreaterOrEqual(Level.WARN)) {
+                this.traceLevel = TRACE_EXCEPTION;
+            }
+            }
+            else {
+            try {
+                int ll = 0;
+                if (logLevel.equals("DEBUG")) {
+                    ll = TRACE_DEBUG;
+                } else if (logLevel.equals("TRACE") || logLevel.equals("INFO")) {
+                    ll = TRACE_MESSAGES;
+                } else if (logLevel.equals("ERROR")) {
+                    ll = TRACE_EXCEPTION;
+                } else if (logLevel.equals("NONE") || logLevel.equals("OFF")) {
+                    ll = TRACE_NONE;
+                } else {
+                    ll = Integer.parseInt(logLevel);
+                }
 
-	}
+                this.setTraceLevel(ll);
+                this.needsLogging = true;
+                if (traceLevel == TRACE_DEBUG) {
+                    logger.setLevel(Level.DEBUG);
+                } else if (traceLevel == TRACE_MESSAGES) {
+                    logger.setLevel(Level.INFO);
+                } else if (traceLevel == TRACE_EXCEPTION) {
+                    logger.setLevel(Level.ERROR);
+                } else if (traceLevel == TRACE_NONE) {
+                    logger.setLevel(Level.OFF);
+                    this.needsLogging = false;
+                }
 
-	/**
-	 * Log a warning mesasge.
-	 *
-	 * @param string
-	 */
-	public void logWarning(String string) {
-		getLogger().warn(string);
+                /*
+                 * If user specifies a logging file as part of the startup
+                 * properties then we try to create the appender.
+                 */
+                if (this.needsLogging && this.logFileName != null) {
 
-	}
+                    boolean overwrite = Boolean.valueOf(
+                        configurationProperties.getProperty(
+                                "gov.nist.javax.sip.DEBUG_LOG_OVERWRITE"));
 
-	/**
-	 * Log an info message.
-	 *
-	 * @param string
-	 */
-	public void logInfo(String string) {
-		getLogger().info(string);
-	}
+                    FileAppender fa = null;
+                    try {
+                        fa = new FileAppender(new SimpleLayout(),
+                                this.logFileName, !overwrite);
+                    } catch (FileNotFoundException fnf) {
 
-	/**
-	 * Disable logging altogether.
-	 *
-	 */
-	public void disableLogging() {
-		this.needsLogging = false;
-	}
+                        // Likely due to some directoy not existing. Create
+                        // them
+                        File logfile = new File(this.logFileName);
+                        logfile.getParentFile().mkdirs();
+                        logfile.delete();
 
-	/**
-	 * Enable logging (globally).
-	 */
-	public void enableLogging() {
-		this.needsLogging = true;
+                        try {
+                            fa = new FileAppender(new SimpleLayout(),
+                                    this.logFileName);
+                        } catch (IOException ioe) {
+                            ioe.printStackTrace(); // give up
+                        }
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
 
-	}
+                    if (fa != null)
+                        logger.addAppender(fa);
+                }
 
-	public void setBuildTimeStamp(String buildTimeStamp) {
-		this.buildTimeStamp = buildTimeStamp;
+            } catch (NumberFormatException ex) {
+                ex.printStackTrace();
+                System.err.println("LogWriter: Bad integer " + logLevel);
+                System.err.println("logging dislabled ");
+                needsLogging = false;
+            }
+            }
+        } else {
+            this.needsLogging = false;
 
-	}
-	
-	public Priority getLogPriority() {
-	     if ( this.traceLevel == TRACE_MESSAGES ) {
-	        return Priority.INFO;
-	    } else if ( this.traceLevel == TRACE_EXCEPTION ) {
-	        return Priority.ERROR;
-	    } else if ( this.traceLevel == TRACE_DEBUG) {
-	        return Priority.DEBUG;
-	    } else return null;
-	}
-	
-	public Level getLevel(int traceLevel) {
+        }
+
+    }
+
+    /**
+     * @return flag to indicate if logging is enabled.
+     */
+    public boolean isLoggingEnabled() {
+
+        return this.needsLogging;
+    }
+
+    /**
+     * Return true/false if loging is enabled at a given level.
+     *
+     * @param logLevel
+     */
+    public boolean isLoggingEnabled(int logLevel) {
+        return this.needsLogging && logLevel <= traceLevel;
+    }
+
+
+    /**
+     * Log an error message.
+     *
+     * @param message
+     * @param ex
+     */
+    public void logError(String message, Exception ex) {
+        Logger logger = this.getLogger();
+        logger.error(message, ex);
+
+    }
+
+    /**
+     * Log a warning mesasge.
+     *
+     * @param string
+     */
+    public void logWarning(String string) {
+        getLogger().warn(string);
+
+    }
+
+    /**
+     * Log an info message.
+     *
+     * @param string
+     */
+    public void logInfo(String string) {
+        getLogger().info(string);
+    }
+
+    /**
+     * Disable logging altogether.
+     *
+     */
+    public void disableLogging() {
+        this.needsLogging = false;
+    }
+
+    /**
+     * Enable logging (globally).
+     */
+    public void enableLogging() {
+        this.needsLogging = true;
+
+    }
+
+    public void setBuildTimeStamp(String buildTimeStamp) {
+        this.buildTimeStamp = buildTimeStamp;
+
+    }
+
+    public Priority getLogPriority() {
+         if ( this.traceLevel == TRACE_MESSAGES ) {
+            return Priority.INFO;
+        } else if ( this.traceLevel == TRACE_EXCEPTION ) {
+            return Priority.ERROR;
+        } else if ( this.traceLevel == TRACE_DEBUG) {
+            return Priority.DEBUG;
+        } else return null;
+    }
+
+    public Level getLevel(int traceLevel) {
         if ( traceLevel == TRACE_MESSAGES ) {
            return Level.INFO;
        } else if ( traceLevel == TRACE_EXCEPTION ) {

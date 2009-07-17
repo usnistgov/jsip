@@ -1,13 +1,13 @@
 /*
-* Conditions Of Use 
-* 
+* Conditions Of Use
+*
 * This software was developed by employees of the National Institute of
 * Standards and Technology (NIST), an agency of the Federal Government.
 * Pursuant to title 15 Untied States Code Section 105, works of NIST
 * employees are not subject to copyright protection in the United States
 * and are considered to be in the public domain.  As a result, a formal
 * license is not needed to use the software.
-* 
+*
 * This software is provided by NIST as a service and is expressly
 * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
 * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
@@ -16,12 +16,12 @@
 * regarding the use of the software or the results thereof, including but
 * not limited to the correctness, accuracy, reliability or usefulness of
 * the software.
-* 
+*
 * Permission to use this software is contingent upon your acceptance
 * of the terms of this agreement
-*  
+*
 * .
-* 
+*
 */
 package gov.nist.javax.sip.address;
 
@@ -33,192 +33,192 @@ import java.util.Iterator;
 /**
  * Implementation of the TelURL interface.
  *
- * @version 1.2 $Revision: 1.8 $ $Date: 2007-10-23 17:34:56 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2009-07-17 18:57:23 $
  *
- * @author M. Ranganathan  
- * 
+ * @author M. Ranganathan
+ *
  */
 public class TelURLImpl
-	extends GenericURI
-	implements javax.sip.address.TelURL {
+    extends GenericURI
+    implements javax.sip.address.TelURL {
 
-	
-	private static final long serialVersionUID = 5873527320305915954L;
 
-	protected String scheme;
+    private static final long serialVersionUID = 5873527320305915954L;
 
-	protected TelephoneNumber telephoneNumber;
+    protected String scheme;
 
-	/** Creates a new instance of TelURLImpl */
-	public TelURLImpl() {
-		this.scheme = "tel";
-	}
+    protected TelephoneNumber telephoneNumber;
 
-	/** Set the telephone number.
-	 *@param telephoneNumber -- telephone number to set.
-	 */
+    /** Creates a new instance of TelURLImpl */
+    public TelURLImpl() {
+        this.scheme = "tel";
+    }
 
-	public void setTelephoneNumber(TelephoneNumber telephoneNumber) {
-		this.telephoneNumber = telephoneNumber;
-	}
+    /** Set the telephone number.
+     *@param telephoneNumber -- telephone number to set.
+     */
 
-	/** Returns the value of the <code>isdnSubAddress</code> parameter, or null
-	 * if it is not set.
-	 *
-	 * @return  the value of the <code>isdnSubAddress</code> parameter
-	 */
-	public String getIsdnSubAddress() {
-		return telephoneNumber.getIsdnSubaddress();
-	}
+    public void setTelephoneNumber(TelephoneNumber telephoneNumber) {
+        this.telephoneNumber = telephoneNumber;
+    }
 
-	/** Returns the value of the <code>postDial</code> parameter, or null if it
-	 * is not set.
-	 *
-	 * @return  the value of the <code>postDial</code> parameter
-	 */
-	public String getPostDial() {
-		return telephoneNumber.getPostDial();
-	}
+    /** Returns the value of the <code>isdnSubAddress</code> parameter, or null
+     * if it is not set.
+     *
+     * @return  the value of the <code>isdnSubAddress</code> parameter
+     */
+    public String getIsdnSubAddress() {
+        return telephoneNumber.getIsdnSubaddress();
+    }
 
-	/** Returns the value of the "scheme" of this URI, for example "sip", "sips"
-	 * or "tel".
-	 *
-	 * @return the scheme paramter of the URI
-	 */
-	public String getScheme() {
-		return this.scheme;
-	}
+    /** Returns the value of the <code>postDial</code> parameter, or null if it
+     * is not set.
+     *
+     * @return  the value of the <code>postDial</code> parameter
+     */
+    public String getPostDial() {
+        return telephoneNumber.getPostDial();
+    }
 
-	/** Returns <code>true</code> if this TelURL is global i.e. if the TelURI
-	 * has a global phone user.
-	 *
-	 * @return <code>true</code> if this TelURL represents a global phone user,
-	 * and <code>false</code> otherwise.
-	 */
-	public boolean isGlobal() {
-		return telephoneNumber.isGlobal();
-	}
+    /** Returns the value of the "scheme" of this URI, for example "sip", "sips"
+     * or "tel".
+     *
+     * @return the scheme paramter of the URI
+     */
+    public String getScheme() {
+        return this.scheme;
+    }
 
-	/** This method determines if this is a URI with a scheme of "sip" or "sips".
-	 *
-	 * @return true if the scheme is "sip" or "sips", false otherwise.
-	 */
-	public boolean isSipURI() {
-		return false;
-	}
+    /** Returns <code>true</code> if this TelURL is global i.e. if the TelURI
+     * has a global phone user.
+     *
+     * @return <code>true</code> if this TelURL represents a global phone user,
+     * and <code>false</code> otherwise.
+     */
+    public boolean isGlobal() {
+        return telephoneNumber.isGlobal();
+    }
 
-	/** Sets phone user of this TelURL to be either global or local. The default
-	 * value is false, hence the TelURL is defaulted to local.
-	 *
-	 * @param global - the boolean value indicating if the TelURL has a global
-	 * phone user.
-	 */
-	public void setGlobal(boolean global) {
-		this.telephoneNumber.setGlobal(global);
-	}
+    /** This method determines if this is a URI with a scheme of "sip" or "sips".
+     *
+     * @return true if the scheme is "sip" or "sips", false otherwise.
+     */
+    public boolean isSipURI() {
+        return false;
+    }
 
-	/** Sets ISDN subaddress of this TelURL. If a subaddress is present, it is
-	 * appended to the phone number after ";isub=".
-	 *
-	 * @param isdnSubAddress - new value of the <code>isdnSubAddress</code>
-	 * parameter
-	 */
-	public void setIsdnSubAddress(String isdnSubAddress) {
-		this.telephoneNumber.setIsdnSubaddress(isdnSubAddress);
-	}
+    /** Sets phone user of this TelURL to be either global or local. The default
+     * value is false, hence the TelURL is defaulted to local.
+     *
+     * @param global - the boolean value indicating if the TelURL has a global
+     * phone user.
+     */
+    public void setGlobal(boolean global) {
+        this.telephoneNumber.setGlobal(global);
+    }
 
-	/** Sets post dial of this TelURL. The post-dial sequence describes what and
-	 * when the local entity should send to the phone line.
-	 *
-	 * @param postDial - new value of the <code>postDial</code> parameter
-	 */
-	public void setPostDial(String postDial) {
-		this.telephoneNumber.setPostDial(postDial);
-	}
+    /** Sets ISDN subaddress of this TelURL. If a subaddress is present, it is
+     * appended to the phone number after ";isub=".
+     *
+     * @param isdnSubAddress - new value of the <code>isdnSubAddress</code>
+     * parameter
+     */
+    public void setIsdnSubAddress(String isdnSubAddress) {
+        this.telephoneNumber.setIsdnSubaddress(isdnSubAddress);
+    }
 
-	/** 
-	 * Set the telephone number.
-	 * @param telephoneNumber long phone number to set.
-	 */
-	public void setPhoneNumber(String telephoneNumber) {
-		this.telephoneNumber.setPhoneNumber(telephoneNumber);
-	}
+    /** Sets post dial of this TelURL. The post-dial sequence describes what and
+     * when the local entity should send to the phone line.
+     *
+     * @param postDial - new value of the <code>postDial</code> parameter
+     */
+    public void setPostDial(String postDial) {
+        this.telephoneNumber.setPostDial(postDial);
+    }
 
-	/** Get the telephone number. 
-	 *
-	 *@return -- the telephone number.
-	 */
-	public String getPhoneNumber() {
-		return this.telephoneNumber.getPhoneNumber();
-	}
+    /**
+     * Set the telephone number.
+     * @param telephoneNumber long phone number to set.
+     */
+    public void setPhoneNumber(String telephoneNumber) {
+        this.telephoneNumber.setPhoneNumber(telephoneNumber);
+    }
 
-	/** Return the string encoding.
-	 *
-	 *@return -- the string encoding.
-	 */
-	public String toString() {
-		return this.scheme + ":" + telephoneNumber.encode();
-	}
+    /** Get the telephone number.
+     *
+     *@return -- the telephone number.
+     */
+    public String getPhoneNumber() {
+        return this.telephoneNumber.getPhoneNumber();
+    }
 
-	public String encode() {
-		return encode(new StringBuffer()).toString();
-	}
+    /** Return the string encoding.
+     *
+     *@return -- the string encoding.
+     */
+    public String toString() {
+        return this.scheme + ":" + telephoneNumber.encode();
+    }
 
-	public StringBuffer encode(StringBuffer buffer) {
-		buffer.append(this.scheme).append(':');
-		telephoneNumber.encode(buffer);
-		return buffer;
-	}
+    public String encode() {
+        return encode(new StringBuffer()).toString();
+    }
 
-	/** Deep copy clone operation.
-	*
-	*@return -- a cloned version of this telephone number.
-	*/
-	public Object clone() {
-		TelURLImpl retval = (TelURLImpl) super.clone();
-		if (this.telephoneNumber != null)
-			retval.telephoneNumber = (TelephoneNumber) this.telephoneNumber.clone();
-		return retval;
-	}
+    public StringBuffer encode(StringBuffer buffer) {
+        buffer.append(this.scheme).append(':');
+        telephoneNumber.encode(buffer);
+        return buffer;
+    }
 
-	public String getParameter(String parameterName) {
-		return telephoneNumber.getParameter(parameterName);
-	}
+    /** Deep copy clone operation.
+    *
+    *@return -- a cloned version of this telephone number.
+    */
+    public Object clone() {
+        TelURLImpl retval = (TelURLImpl) super.clone();
+        if (this.telephoneNumber != null)
+            retval.telephoneNumber = (TelephoneNumber) this.telephoneNumber.clone();
+        return retval;
+    }
 
-	public void setParameter(String name, String value) {
-		telephoneNumber.setParameter(name, value);
-	}
+    public String getParameter(String parameterName) {
+        return telephoneNumber.getParameter(parameterName);
+    }
 
-	public Iterator<String> getParameterNames() {
-		return telephoneNumber.getParameterNames();
-	}
-	
-	public NameValueList getParameters() {
-		return telephoneNumber.getParameters();
-	}
+    public void setParameter(String name, String value) {
+        telephoneNumber.setParameter(name, value);
+    }
 
-	public void removeParameter(String name) {
-		telephoneNumber.removeParameter(name);
-	}
+    public Iterator<String> getParameterNames() {
+        return telephoneNumber.getParameterNames();
+    }
+
+    public NameValueList getParameters() {
+        return telephoneNumber.getParameters();
+    }
+
+    public void removeParameter(String name) {
+        telephoneNumber.removeParameter(name);
+    }
 
     /* (non-Javadoc)
      * @see javax.sip.address.TelURL#setPhoneContext(java.lang.String)
      */
     public void setPhoneContext(String phoneContext) throws ParseException {
 
-    	// JvB: set (null) should be interpreted as 'remove'
-    	if (phoneContext==null) {
-    		this.removeParameter("phone-context");
-    	} else {
-    		this.setParameter("phone-context",phoneContext);
-    	}        
+        // JvB: set (null) should be interpreted as 'remove'
+        if (phoneContext==null) {
+            this.removeParameter("phone-context");
+        } else {
+            this.setParameter("phone-context",phoneContext);
+        }
     }
 
     /* (non-Javadoc)
      * @see javax.sip.address.TelURL#getPhoneContext()
      */
     public String getPhoneContext() {
-        
+
         return this.getParameter("phone-context");
     }
 }

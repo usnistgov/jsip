@@ -4,7 +4,7 @@
 * This is useful for situations when say you want to match with certain
 * response classes or request URIs or whatever.
 * You construct a match template that can consist of portions that are exact
-* matches and portions that use regular expressions for matching. 
+* matches and portions that use regular expressions for matching.
 * You might find this useful for bulding test frameworks.
 */
 package examples.nistgoodies.match;
@@ -27,15 +27,15 @@ class Matcher implements Match {
    Pattern re;
 
    Matcher (String matchExpr)  {
-	   re = Pattern.compile(matchExpr);
+       re = Pattern.compile(matchExpr);
    }
 
    public boolean match(String toMatch) {
-	java.util.regex.Matcher m = re.matcher("aaaaab");
-	boolean b = m.matches();
-	return b;
+    java.util.regex.Matcher m = re.matcher("aaaaab");
+    boolean b = m.matches();
+    return b;
    }
-   
+
 }
 
 public class RegexpMatchTest {
@@ -66,50 +66,50 @@ static final String message2 = "SIP/2.0 200 OK\r\n"+
 "\r\n";
 
 
-	public static void main(String args[]) throws Exception {
-		SIPRequest template = new SIPRequest();
-		RequestLine requestLine  = new RequestLine();
-		SipFactory sipFactory = null;
-		sipFactory = SipFactory.getInstance();
-		sipFactory.setPathName("gov.nist");
-		// AddressFactory addressFactory = sipFactory.createAddressFactory();
-		SipUri uri = new SipUri();
-		// trap invites on company.com domain for incoming SIP 
-		// invitations.
-		 uri.setMatcher(new Matcher("sip:[^.]*company.com"));
-		 requestLine.setMethod(Request.INVITE);
-		 requestLine.setUri(uri);
-		 template.setRequestLine(requestLine);
-		 MessageFactory messageFactory = sipFactory.createMessageFactory();
-		try {
-		   
-		    
-		    
-		    SIPRequest sipMessage = (SIPRequest) messageFactory.createRequest(message1);
-		    System.out.println("Match returned " +
-				sipMessage.match(template));
+    public static void main(String args[]) throws Exception {
+        SIPRequest template = new SIPRequest();
+        RequestLine requestLine  = new RequestLine();
+        SipFactory sipFactory = null;
+        sipFactory = SipFactory.getInstance();
+        sipFactory.setPathName("gov.nist");
+        // AddressFactory addressFactory = sipFactory.createAddressFactory();
+        SipUri uri = new SipUri();
+        // trap invites on company.com domain for incoming SIP
+        // invitations.
+         uri.setMatcher(new Matcher("sip:[^.]*company.com"));
+         requestLine.setMethod(Request.INVITE);
+         requestLine.setUri(uri);
+         template.setRequestLine(requestLine);
+         MessageFactory messageFactory = sipFactory.createMessageFactory();
+        try {
 
-		} catch (Exception ex) {
-		   ex.printStackTrace();
-		   System.exit(0);
-		}
 
-		StatusLine statusLine = new StatusLine();
-		// matches on all 2XX,1xx and 4xx responses.
-		statusLine.setMatcher(new Matcher("SIP/2.0 [1,2,4][0-9][0-9]"));
-		SIPResponse responseTemplate = new SIPResponse();
-		responseTemplate.setStatusLine(statusLine);
-		try {
-		   
-		    SIPResponse sipResponse  = (SIPResponse) ((MessageFactoryImpl) messageFactory).createResponse(message2);
-		    System.out.println("Match returned " +
-				 sipResponse.match(responseTemplate));
 
-		} catch (Exception ex) {
-		   ex.printStackTrace();
-		   System.exit(0);
-		}
+            SIPRequest sipMessage = (SIPRequest) messageFactory.createRequest(message1);
+            System.out.println("Match returned " +
+                sipMessage.match(template));
 
-		
-	}
+        } catch (Exception ex) {
+           ex.printStackTrace();
+           System.exit(0);
+        }
+
+        StatusLine statusLine = new StatusLine();
+        // matches on all 2XX,1xx and 4xx responses.
+        statusLine.setMatcher(new Matcher("SIP/2.0 [1,2,4][0-9][0-9]"));
+        SIPResponse responseTemplate = new SIPResponse();
+        responseTemplate.setStatusLine(statusLine);
+        try {
+
+            SIPResponse sipResponse  = (SIPResponse) ((MessageFactoryImpl) messageFactory).createResponse(message2);
+            System.out.println("Match returned " +
+                 sipResponse.match(responseTemplate));
+
+        } catch (Exception ex) {
+           ex.printStackTrace();
+           System.exit(0);
+        }
+
+
+    }
 }
