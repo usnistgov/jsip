@@ -17,27 +17,34 @@ package gov.nist.javax.sip.clientauthutils;
  * proposed a way to fix them (his proposition was taken into account).
  */
 
-import gov.nist.core.InternalErrorHandler;
 import gov.nist.javax.sip.SipStackImpl;
-import gov.nist.javax.sip.address.AddressImpl;
-import gov.nist.javax.sip.address.SipUri;
-import gov.nist.javax.sip.header.Route;
-import gov.nist.javax.sip.header.RouteList;
 import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.stack.SIPClientTransaction;
 import gov.nist.javax.sip.stack.SIPTransactionStack;
 
-import java.text.*;
-import java.util.*;
+import java.text.ParseException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.ListIterator;
+import java.util.Timer;
 
-import javax.sip.*;
-import javax.sip.address.Address;
+import javax.sip.ClientTransaction;
+import javax.sip.DialogState;
+import javax.sip.InvalidArgumentException;
+import javax.sip.SipException;
+import javax.sip.SipProvider;
 import javax.sip.address.Hop;
 import javax.sip.address.SipURI;
-import javax.sip.header.*;
-import javax.sip.message.*;
-
-import org.apache.log4j.Logger;
+import javax.sip.header.AuthorizationHeader;
+import javax.sip.header.CSeqHeader;
+import javax.sip.header.Header;
+import javax.sip.header.HeaderFactory;
+import javax.sip.header.ProxyAuthenticateHeader;
+import javax.sip.header.ProxyAuthorizationHeader;
+import javax.sip.header.ViaHeader;
+import javax.sip.header.WWWAuthenticateHeader;
+import javax.sip.message.Request;
+import javax.sip.message.Response;
 
 /**
  * The class handles authentication challenges, caches user credentials and takes care (through
@@ -105,8 +112,38 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
 
             SIPRequest challengedRequest = ((SIPRequest) challengedTransaction.getRequest());
 
-            Request reoriginatedRequest = (Request) challengedRequest.clone();
-  
+            Request reoriginatedRequest = null;
+            /*
+             * If the challenged request is part of a Dialog and the
+             * Dialog is confirmed the re-originated request should be
+             * generated as an in-Dialog request.
+             */
+            if (  challengedRequest.getToTag() != null  ||
+                    challengedTransaction.getDialog() == null ||
+                    challengedTransaction.getDialog().getState() != DialogState.CONFIRMED)  {
+                reoriginatedRequest = (Request) challengedRequest.clone();
+            } else {
+                /*
+                 * Re-originate the request by consulting the dialog. In particular
+                 * the route set could change between the original request and the 
+                 * in-dialog challenge.
+                 */
+                reoriginatedRequest =
+                    challengedTransaction.getDialog().createRequest(challengedRequest.getMethod());
+                Iterator<String> headerNames = challengedRequest.getHeaderNames();
+                while (headerNames.hasNext()) {
+                    String headerName = headerNames.next();
+                    if ( reoriginatedRequest.getHeader(headerName) != null) {
+                        ListIterator<Header> iterator = reoriginatedRequest.getHeaders(headerName);
+                        while (iterator.hasNext()) {
+                            reoriginatedRequest.addHeader(iterator.next());
+                        }
+                    }
+                }
+            }
+
+
+
             // remove the branch id so that we could use the request in a new
             // transaction
             removeBranchID(reoriginatedRequest);
