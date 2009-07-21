@@ -17,6 +17,14 @@ You may contribute examples (i.e. packages prefixed with  "examples") using
 a standard open source license (for example Apache, GPL, LGPL, BSD etc.) 
 or place your code in the public domain.
 
+Please use the code template file codefmt.xml for any code submissions. This
+works with eclipse. If you are using some other IDE, make sure you follow
+these coding guidelines:
+
+1. No tabs.
+2. Braces follow the pattern of the existing code.
+3. Use bean naming convention.
+
 Please dont use Java 6 specific features. 
 
 Please contribute! Your contributions will be recognized.
