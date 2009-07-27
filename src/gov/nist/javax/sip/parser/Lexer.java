@@ -225,7 +225,8 @@ public class Lexer extends LexerCore {
                                                                                 // by
                                                                                 // Mario
                                                                                 // Mantak
-
+                    addKeyword(TokenNames.X.toUpperCase(), TokenTypes.SESSIONEXPIRES_TO); // Bug fix by Jozef Saniga
+                    
                     // JvB: added to support RFC3903
                     addKeyword(SIPETagHeader.NAME.toUpperCase(),
                             TokenTypes.SIP_ETAG);

@@ -31,7 +31,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * A grab bag of SIP Token names.
  *
- * @version 1.2 $Revision: 1.9 $ $Date: 2009-07-17 18:58:06 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2009-07-27 20:35:02 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -88,9 +88,13 @@ public interface TokenNames
     public static final String V = "V";
     public static final String R = "R";
     public static final String O = "O";
+    public static final String X = "X"; //Jozef Saniga added
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2009/07/17 18:58:06  emcho
+ * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
+ *
  * Revision 1.8  2006/07/13 09:02:13  mranga
  * Issue number:
  * Obtained from:
