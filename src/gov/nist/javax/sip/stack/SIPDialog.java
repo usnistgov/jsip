@@ -63,7 +63,7 @@ import java.text.ParseException;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  *
- * @version 1.2 $Revision: 1.108 $ $Date: 2009-07-17 18:58:14 $
+ * @version 1.2 $Revision: 1.109 $ $Date: 2009-07-28 10:11:10 $
  *
  * @author M. Ranganathan
  *
@@ -2023,10 +2023,19 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             List<Via> vias = new ArrayList<Via>();
             // Via via = lp.getViaHeader();
             // The user may have touched the sentby for the response.
-            // so use the via header extracted from the response for the ACK.
-            SIPResponse response = this.getLastResponse();
-            Via via = (Via) response.getTopmostVia().clone();
+            // so use the via header extracted from the response for the ACK => 
+            // https://jain-sip.dev.java.net/issues/show_bug.cgi?id=205 
+            // strip the params from the via of the response and use the params from the 
+            // original request
+            Via via = this.lastResponse.getTopmostVia();
             via.setBranch(Utils.getInstance().generateBranchId()); // new branch
+            via.removeParameters();
+            if(originalRequest != null && originalRequest.getTopmostVia() != null) {
+	            NameValueList originalRequestParameters = originalRequest.getTopmostVia().getParameters();
+	            if(originalRequestParameters != null && originalRequestParameters.size() > 0) {
+	            	via.setParameters((NameValueList)originalRequestParameters.clone());
+	            }
+            }
             vias.add(via);
             sipRequest.setVia(vias);
             From from = new From();
