@@ -1,4 +1,3 @@
-
 package examples.forked.invite;
 
 import java.util.Properties;

@@ -26,6 +26,8 @@
 package gov.nist.javax.sip;
 
 import gov.nist.core.LogWriter;
+import gov.nist.core.ServerLogger;
+import gov.nist.core.StackLogger;
 import gov.nist.core.net.AddressResolver;
 import gov.nist.core.net.NetworkLayer;
 import gov.nist.core.net.SslNetworkLayer;
@@ -40,7 +42,6 @@ import gov.nist.javax.sip.stack.SIPTransactionStack;
 import gov.nist.javax.sip.stack.ServerLog;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -110,6 +111,16 @@ import org.apache.log4j.Logger;
  *
  * <li><b>gov.nist.javax.sip.DEBUG_LOG = fileName </b><br/> Where the debug log goes. <font
  * color=red> Mail this to us with bug reports. </font> </li>
+ * 
+ * <li><b>gov.nist.javax.sip.STACK_LOGGER = full path name to the class implementing gov.nist.core.StackLogger interface</b><br/> 
+ * If this property is defined the sip stack will try to instantiate it through a no arg constructor.
+ * This allows to use different logging implementations than the ones provided by default to log what happens within the stack while processing SIP messages. 
+ * If this property is not defined, the default sip stack LogWriter will be used for logging</li>
+ * 
+ * <li><b>gov.nist.javax.sip.SERVER_LOGGER = full path name to the class implementing gov.nist.core.ServerLogger interface</b><br/> 
+ * If this property is defined the sip stack will try to instantiate it through a no arg constructor.
+ * This allows to use different logging implementations than the ones provided by default to log sent/received messages by the sip stack. 
+ * If this property is not defined, the default sip stack ServerLog will be used for logging</li>
  *
  * <li><b>gov.nist.javax.sip.MAX_MESSAGE_SIZE = integer</b> <br/> Maximum size of content that a
  * TCP connection can read. Must be at least 4K. Default is "infinity" -- ie. no limit. This is to
@@ -288,7 +299,7 @@ import org.apache.log4j.Logger;
  * in this class. </b>
  *
  *
- * @version 1.2 $Revision: 1.88 $ $Date: 2009-07-17 18:57:20 $
+ * @version 1.2 $Revision: 1.89 $ $Date: 2009-07-29 20:38:17 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -395,11 +406,50 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
         if (name == null)
             throw new PeerUnavailableException("stack name is missing");
         super.setStackName(name);
+        String stackLoggerClassName = configurationProperties.getProperty("gov.nist.javax.sip.STACK_LOGGER");
         // To log debug messages.
-        this.logWriter = new LogWriter(configurationProperties);
+        if(stackLoggerClassName != null) {	        
+	        try {
+	            Class< ? > stackLoggerClass = Class.forName(stackLoggerClassName);
+	            Class< ? >[] constructorArgs = new Class[0];	                       
+	            Constructor< ? > cons = stackLoggerClass.getConstructor(constructorArgs);
+	            Object[] args = new Object[0];
+	            StackLogger stackLogger = (StackLogger)cons.newInstance(args);
+	            stackLogger.setStackProperties(configurationProperties);
+	            super.setStackLogger(stackLogger);
+	        } catch (InvocationTargetException ex1) {
+	            throw new IllegalArgumentException(
+	                    "Cound not instantiate stack logger " + stackLoggerClassName + "- check that it is present on the classpath and that there is a constructor defined taking a java.util.Properties argument", ex1);
+	        } catch (Exception ex) {
+	        	throw new IllegalArgumentException(
+	                    "Cound not instantiate stack logger " + stackLoggerClassName + "- check that it is present on the classpath and that there is a constructor defined taking a java.util.Properties argument", ex);
+	        }
+        } else {
+        	this.setStackLogger(new LogWriter(configurationProperties));
+        }
 
-        // Server log file.
-        this.serverLog = new ServerLog(this, configurationProperties);
+        String serverLoggerClassName = configurationProperties.getProperty("gov.nist.javax.sip.SERVER_LOGGER");
+        // To log debug messages.
+        if(serverLoggerClassName != null) {	        
+	        try {
+	            Class< ? > serverLoggerClass = Class.forName(serverLoggerClassName);
+	            Class< ? >[] constructorArgs = new Class[0];
+	            Constructor< ? > cons = serverLoggerClass.getConstructor(constructorArgs);
+	            Object[] args = new Object[0];
+	            this.serverLogger = (ServerLogger)cons.newInstance(args);
+	            serverLogger.setSipStack(this);
+	            serverLogger.setStackProperties(configurationProperties);
+	        } catch (InvocationTargetException ex1) {
+	            throw new IllegalArgumentException(
+	                    "Cound not instantiate server logger " + stackLoggerClassName + "- check that it is present on the classpath and that there is a constructor defined taking a java.util.Properties argument", ex1);
+	        } catch (Exception ex) {
+	        	throw new IllegalArgumentException(
+	                    "Cound not instantiate server logger " + stackLoggerClassName + "- check that it is present on the classpath and that there is a constructor defined taking a java.util.Properties argument", ex);
+	        }
+        } else {
+            this.serverLogger = new ServerLog(this, configurationProperties);
+        }
+
 
         // Default router -- use this for routing SIP URIs.
         // Our router does not do DNS lookups.
@@ -424,12 +474,12 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
             Router router = (Router) cons.newInstance(args);
             super.setRouter(router);
         } catch (InvocationTargetException ex1) {
-            getLogWriter().logError("could not instantiate router -- invocation target problem",
+            getStackLogger().logError("could not instantiate router -- invocation target problem",
                     (Exception) ex1.getCause());
             throw new PeerUnavailableException(
                     "Cound not instantiate router - check constructor", ex1);
         } catch (Exception ex) {
-            getLogWriter().logError("could not instantiate router", (Exception) ex.getCause());
+            getStackLogger().logError("could not instantiate router", (Exception) ex.getCause());
             throw new PeerUnavailableException("Could not instantiate router", ex);
         }
 
@@ -474,7 +524,7 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
                         keyStorePassword.toCharArray(), configurationProperties
                                 .getProperty("javax.net.ssl.keyStoreType"));
             } catch (Exception e1) {
-                getLogWriter().logError("could not instantiate SSL networking", e1);
+                getStackLogger().logError("could not instantiate SSL networking", e1);
             }
         }
 
@@ -562,7 +612,7 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
             try {
                 this.maxConnections = new Integer(maxConnections).intValue();
             } catch (NumberFormatException ex) {
-                getLogWriter().logError("max connections - bad value " + ex.getMessage());
+                getStackLogger().logError("max connections - bad value " + ex.getMessage());
             }
         }
 
@@ -572,7 +622,7 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
             try {
                 this.threadPoolSize = new Integer(threadPoolSize).intValue();
             } catch (NumberFormatException ex) {
-                this.logWriter.logError("thread pool size - bad value " + ex.getMessage());
+                this.getStackLogger().logError("thread pool size - bad value " + ex.getMessage());
             }
         }
 
@@ -585,7 +635,7 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
                 this.serverTransactionTableLowaterMark = this.serverTransactionTableHighwaterMark * 80 / 100;
                 // Lowater is 80% of highwater
             } catch (NumberFormatException ex) {
-                this.logWriter.logError("transaction table size - bad value " + ex.getMessage());
+                this.getStackLogger().logError("transaction table size - bad value " + ex.getMessage());
             }
         }
 
@@ -598,7 +648,7 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
                 this.clientTransactionTableLowaterMark = this.clientTransactionTableLowaterMark * 80 / 100;
                 // Lowater is 80% of highwater
             } catch (NumberFormatException ex) {
-                this.logWriter.logError("transaction table size - bad value " + ex.getMessage());
+                this.getStackLogger().logError("transaction table size - bad value " + ex.getMessage());
             }
         } else {
             this.unlimitedClientTransactionTableSize = true;
@@ -633,7 +683,7 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
                 }
             } catch (NumberFormatException nfe) {
                 // Ignore.
-                getLogWriter().logError("Bad read timeout " + readTimeout);
+                getStackLogger().logError("Bad read timeout " + readTimeout);
             }
         }
 
@@ -642,7 +692,7 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
         String stunAddr = configurationProperties.getProperty("gov.nist.javax.sip.STUN_SERVER");
 
         if (stunAddr != null)
-            this.logWriter.logWarning("Ignoring obsolete property "
+            this.getStackLogger().logWarning("Ignoring obsolete property "
                     + "gov.nist.javax.sip.STUN_SERVER");
 
         String maxMsgSize = configurationProperties
@@ -658,7 +708,7 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
                 super.maxMessageSize = 0;
             }
         } catch (NumberFormatException ex) {
-            getLogWriter().logError("maxMessageSize - bad value " + ex.getMessage());
+            getStackLogger().logError("maxMessageSize - bad value " + ex.getMessage());
         }
 
         String rel = configurationProperties.getProperty("gov.nist.javax.sip.REENTRANT_LISTENER");
@@ -674,7 +724,7 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
                 getThreadAuditor().setPingIntervalInMillisecs(
                         Long.valueOf(interval).longValue() / 2);
             } catch (NumberFormatException ex) {
-                getLogWriter().logError("THREAD_AUDIT_INTERVAL_IN_MILLISECS - bad value [" + interval
+                getStackLogger().logError("THREAD_AUDIT_INTERVAL_IN_MILLISECS - bad value [" + interval
                         + "] " + ex.getMessage());
             }
         }
@@ -697,7 +747,7 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
                 Constructor< ? > c = clazz.getConstructor(new Class[0]);
                 this.logRecordFactory = (LogRecordFactory) c.newInstance(new Object[0]);
             } catch (Exception ex) {
-                getLogWriter().logError("Bad configuration value for LOG_FACTORY -- using default logger");
+                getStackLogger().logError("Bad configuration value for LOG_FACTORY -- using default logger");
                 this.logRecordFactory = new DefaultMessageLogFactory();
             }
 
@@ -718,7 +768,7 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
                 "true");
         super.logStackTraceOnMessageSend = configurationProperties.getProperty(
                 "gov.nist.javax.sip.LOG_STACK_TRACE_ON_MESSAGE_SEND", "false").equalsIgnoreCase("true");
-        logWriter.logDebug("created Sip stack. Properties = " + configurationProperties);
+        getStackLogger().logDebug("created Sip stack. Properties = " + configurationProperties);
         InputStream in = getClass().getResourceAsStream("/TIMESTAMP");
         if (in != null) {
             BufferedReader streamReader = new BufferedReader(new InputStreamReader(in));
@@ -728,9 +778,9 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
                 if (in != null) {
                     in.close();
                 }
-                getLogWriter().setBuildTimeStamp(buildTimeStamp);
+                getStackLogger().setBuildTimeStamp(buildTimeStamp);
             } catch (IOException ex) {
-                getLogWriter().logError("Could not open build timestamp.");
+                getStackLogger().logError("Could not open build timestamp.");
             }
         }
 
@@ -743,7 +793,7 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
      */
     public synchronized ListeningPoint createListeningPoint(String address, int port,
             String transport) throws TransportNotSupportedException, InvalidArgumentException {
-        getLogWriter().logDebug(
+        getStackLogger().logDebug(
                 "createListeningPoint : address = " + address + " port = " + port
                         + " transport = " + transport);
 
@@ -775,7 +825,7 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
                 MessageProcessor messageProcessor = this.createMessageProcessor(inetAddr, port,
                         transport);
                 if (this.isLoggingEnabled()) {
-                    this.getLogWriter().logDebug(
+                    this.getStackLogger().logDebug(
                             "Created Message Processor: " + address + " port = " + port
                                     + " transport = " + transport);
                 }
@@ -787,7 +837,7 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
                 messageProcessor.start();
                 return (ListeningPoint) lip;
             } catch (java.io.IOException ex) {
-                getLogWriter().logError(
+                getStackLogger().logError(
                         "Invalid argument address = " + address + " port = " + port
                                 + " transport = " + transport);
                 throw new InvalidArgumentException(ex.getMessage(), ex);
@@ -804,8 +854,8 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
             throws ObjectInUseException {
         if (listeningPoint == null)
             throw new NullPointerException("null listeningPoint");
-        if (this.getLogWriter().isLoggingEnabled())
-            this.getLogWriter().logDebug("createSipProvider: " + listeningPoint);
+        if (this.getStackLogger().isLoggingEnabled())
+            this.getStackLogger().logDebug("createSipProvider: " + listeningPoint);
         ListeningPointImpl listeningPointImpl = (ListeningPointImpl) listeningPoint;
         if (listeningPointImpl.sipProvider != null)
             throw new ObjectInUseException("Provider already attached!");
@@ -939,8 +989,8 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
      * @see javax.sip.SipStack#stop()
      */
     public void stop() {
-        if (getLogWriter().isLoggingEnabled()) {
-            getLogWriter().logDebug("stopStack -- stoppping the stack");
+        if (getStackLogger().isLoggingEnabled()) {
+            getStackLogger().logDebug("stopStack -- stoppping the stack");
         }
         this.stopStack();
         this.sipProviders = new LinkedList<SipProviderImpl>();
@@ -994,19 +1044,25 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
      * to something other than a file for example).
      *
      * @param Appender - the log4j appender to add.
-     *
+     * @deprecated
      */
     public void addLogAppender(Appender appender) {
-        this.getLogWriter().addAppender(appender);
+    	if(this.getStackLogger() instanceof LogWriter) {
+    		((LogWriter)this.getStackLogger()).addAppender(appender);
+    	}
     }
 
     /**
      * Get the log4j logger ( for log stream integration ).
      *
      * @return
+     * @deprecated
      */
     public Logger getLogger() {
-        return this.getLogWriter().getLogger();
+    	if(this.getStackLogger() instanceof LogWriter) {
+    		return ((LogWriter)this.getStackLogger()).getLogger();
+    	}
+    	return null;
     }
 
     public EventScanner getEventScanner() {

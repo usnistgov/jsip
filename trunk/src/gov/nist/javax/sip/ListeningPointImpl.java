@@ -46,7 +46,7 @@ import gov.nist.javax.sip.stack.*;
 /**
  * Implementation of the ListeningPoint interface
  *
- * @version 1.2 $Revision: 1.13 $ $Date: 2009-07-17 18:57:19 $
+ * @version 1.2 $Revision: 1.14 $ $Date: 2009-07-29 20:38:17 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -236,7 +236,7 @@ public class ListeningPointImpl implements javax.sip.ListeningPoint, gov.nist.ja
             contact.setAddress(address);
             return contact;
         } catch (Exception ex) {
-            InternalErrorHandler.handleException("Unexpected exception",sipStack.getLogWriter());
+            InternalErrorHandler.handleException("Unexpected exception",sipStack.getStackLogger());
             return null;
         }
     }
