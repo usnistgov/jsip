@@ -49,7 +49,7 @@ import java.util.*;
  * connection. This is the active object that creates new TCP MessageChannels (one for each new
  * accept socket).
  * 
- * @version 1.2 $Revision: 1.29 $ $Date: 2008-11-09 23:23:18 $
+ * @version 1.2 $Revision: 1.30 $ $Date: 2009-07-29 20:38:13 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -137,7 +137,7 @@ public class TCPMessageProcessor extends MessageProcessor {
 
                 Socket newsock = sock.accept();
                 if (sipStack.isLoggingEnabled()) {
-                    getSIPStack().logWriter.logDebug("Accepting new connection!");
+                    getSIPStack().getStackLogger().logDebug("Accepting new connection!");
                 }
                 // Note that for an incoming message channel, the
                 // thread is already running
@@ -148,7 +148,7 @@ public class TCPMessageProcessor extends MessageProcessor {
             } catch (IOException ex) {
                 // Problem accepting connection.
                 if (sipStack.isLoggingEnabled())
-                    getSIPStack().logWriter.logException(ex);
+                    getSIPStack().getStackLogger().logException(ex);
                 continue;
             } catch (Exception ex) {
                 InternalErrorHandler.handleException(ex);
@@ -205,7 +205,7 @@ public class TCPMessageProcessor extends MessageProcessor {
 
         String key = tcpMessageChannel.getKey();
         if (sipStack.isLoggingEnabled()) {
-            sipStack.logWriter.logDebug(Thread.currentThread() + " removing " + key);
+            sipStack.getStackLogger().logDebug(Thread.currentThread() + " removing " + key);
         }
 
         /** May have been removed already */
@@ -227,8 +227,8 @@ public class TCPMessageProcessor extends MessageProcessor {
             this.tcpMessageChannels.put(key, retval);
             retval.isCached = true;
             if (sipStack.isLoggingEnabled()) {
-                sipStack.logWriter.logDebug("key " + key);
-                sipStack.logWriter.logDebug("Creating " + retval);
+                sipStack.getStackLogger().logDebug("key " + key);
+                sipStack.getStackLogger().logDebug("Creating " + retval);
             }
             return retval;
         }
@@ -239,11 +239,11 @@ public class TCPMessageProcessor extends MessageProcessor {
         TCPMessageChannel currentChannel = (TCPMessageChannel) tcpMessageChannels.get(key);
         if (currentChannel != null) {
             if (sipStack.isLoggingEnabled())
-                sipStack.logWriter.logDebug("Closing " + key);
+                sipStack.getStackLogger().logDebug("Closing " + key);
             currentChannel.close();
         }
         if (sipStack.isLoggingEnabled())
-            sipStack.logWriter.logDebug("Caching " + key);
+            sipStack.getStackLogger().logDebug("Caching " + key);
         this.tcpMessageChannels.put(key, messageChannel);
 
     }
@@ -259,8 +259,8 @@ public class TCPMessageProcessor extends MessageProcessor {
                 this.tcpMessageChannels.put(key, retval);
                 retval.isCached = true;
                 if (sipStack.isLoggingEnabled()) {
-                    sipStack.getLogWriter().logDebug("key " + key);
-                    sipStack.getLogWriter().logDebug("Creating " + retval);
+                    sipStack.getStackLogger().logDebug("key " + key);
+                    sipStack.getStackLogger().logDebug("Creating " + retval);
                 }
                 return retval;
             }

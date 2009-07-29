@@ -81,7 +81,7 @@ import javax.sip.message.Response;
 /**
  * Implementation of the JAIN-SIP provider interface.
  *
- * @version 1.2 $Revision: 1.62 $ $Date: 2009-07-17 18:57:20 $
+ * @version 1.2 $Revision: 1.63 $ $Date: 2009-07-29 20:38:17 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -126,7 +126,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
     protected void stop() {
         // Put an empty event in the queue and post ourselves a message.
         if (sipStack.isLoggingEnabled())
-            sipStack.getLogWriter().logDebug("Exiting provider");
+            sipStack.getStackLogger().logDebug("Exiting provider");
         for (Iterator it = listeningPoints.values().iterator(); it.hasNext();) {
             ListeningPointImpl listeningPoint = (ListeningPointImpl) it.next();
             listeningPoint.removeSipProvider();
@@ -159,19 +159,19 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 
     public void handleEvent(EventObject sipEvent, SIPTransaction transaction) {
         if (sipStack.isLoggingEnabled()) {
-            sipStack.getLogWriter().logDebug(
+            sipStack.getStackLogger().logDebug(
                     "handleEvent " + sipEvent + "currentTransaction = "
                             + transaction + "this.sipListener = "
                             + this.sipListener + "sipEvent.source = "
                             + sipEvent.getSource());
             if (sipEvent instanceof RequestEvent) {
                 Dialog dialog = ((RequestEvent) sipEvent).getDialog();
-                if ( sipStack.isLoggingEnabled())  sipStack.getLogWriter().logDebug("Dialog = " + dialog);
+                if ( sipStack.isLoggingEnabled())  sipStack.getStackLogger().logDebug("Dialog = " + dialog);
             } else if (sipEvent instanceof ResponseEvent) {
                 Dialog dialog = ((ResponseEvent) sipEvent).getDialog();
-                if (sipStack.isLoggingEnabled() ) sipStack.getLogWriter().logDebug("Dialog = " + dialog);
+                if (sipStack.isLoggingEnabled() ) sipStack.getStackLogger().logDebug("Dialog = " + dialog);
             }
-            sipStack.getLogWriter().logStackTrace();
+            sipStack.getStackLogger().logStackTrace();
         }
 
         EventWrapper eventWrapper = new EventWrapper(sipEvent, transaction);
@@ -229,7 +229,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
         }
 
         if (sipStack.isLoggingEnabled())
-            sipStack.getLogWriter().logDebug("add SipListener " + sipListener);
+            sipStack.getStackLogger().logDebug("add SipListener " + sipListener);
         this.sipListener = sipListener;
 
     }
@@ -333,7 +333,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 
         }
         if (sipStack.isLoggingEnabled())
-            sipStack.getLogWriter().logDebug(
+            sipStack.getStackLogger().logDebug(
                     "could not find existing transaction for "
                             + ((SIPRequest) request).getFirstLine()
                             + " creating a new one ");
@@ -456,7 +456,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 
         if ( request.getMethod().equals(Request.ACK)) {
             if ( sipStack.isLoggingEnabled())
-                sipStack.getLogWriter().logError("Creating server transaction for ACK -- makes no sense!");
+                sipStack.getStackLogger().logError("Creating server transaction for ACK -- makes no sense!");
             throw new TransactionUnavailableException("Cannot create Server transaction for ACK ");
         }
         /*
@@ -658,7 +658,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
             Dialog dialog = sipStack.getDialog(((SIPRequest) request)
                     .getDialogId(false));
             if (dialog != null && dialog.getState() != null) {
-                sipStack.getLogWriter().logWarning(
+                sipStack.getStackLogger().logWarning(
                         "Dialog exists -- you may want to use Dialog.sendAck() "
                                 + dialog.getState());
             }
@@ -700,7 +700,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
             }
         } catch (IOException ex) {
             if (sipStack.isLoggingEnabled()) {
-                sipStack.getLogWriter().logException(ex);
+                sipStack.getStackLogger().logException(ex);
             }
 
             throw new SipException(
@@ -710,7 +710,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
             InternalErrorHandler.handleException(ex1);
         } finally {
             if (sipStack.isLoggingEnabled())
-                sipStack.getLogWriter().logDebug(
+                sipStack.getStackLogger().logDebug(
                         "done sending " + request.getMethod() + " to hop "
                                 + hop);
         }
@@ -888,7 +888,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
         if (transactionErrorEvent.getErrorID() == SIPTransactionErrorEvent.TRANSPORT_ERROR) {
             // There must be a way to inform the TU here!!
             if (sipStack.isLoggingEnabled()) {
-                sipStack.getLogWriter().logDebug(
+                sipStack.getStackLogger().logDebug(
                         "TransportError occured on " + transaction);
             }
             // Treat this like a timeout event. (Suggestion from Christophe).
@@ -941,7 +941,7 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
 
             if (tx.getDialog() != null)
                 InternalErrorHandler.handleException("Unexpected event !",
-                        this.sipStack.getLogWriter());
+                        this.sipStack.getStackLogger());
 
             Timeout timeout = Timeout.RETRANSMIT;
             TimeoutEvent ev = null;

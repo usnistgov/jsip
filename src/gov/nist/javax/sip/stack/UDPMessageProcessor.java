@@ -39,7 +39,7 @@ import gov.nist.core.*;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size).
  * Each UDP message is processed in its own thread).
  *
- * @version 1.2 $Revision: 1.32 $ $Date: 2009-07-17 18:58:16 $
+ * @version 1.2 $Revision: 1.33 $ $Date: 2009-07-29 20:38:13 $
  *
  * @author M. Ranganathan  <br/>
  *
@@ -210,8 +210,8 @@ public class UDPMessageProcessor extends MessageProcessor {
              // TODO -- penalize spammers by looking at the source
              // port and IP address.
              if ( this.messageQueue.size() >= HIGHWAT) {
-                    if (sipStack.logWriter.isLoggingEnabled()) {
-                        sipStack.logWriter.logDebug("Dropping message -- queue length exceeded");
+                    if (sipStack.getStackLogger().isLoggingEnabled()) {
+                        sipStack.getStackLogger().logDebug("Dropping message -- queue length exceeded");
 
                     }
                     //System.out.println("HIGHWAT Drop!");
@@ -221,8 +221,8 @@ public class UDPMessageProcessor extends MessageProcessor {
                     float threshold = ((float)(messageQueue.size() - LOWAT))/ ((float)(HIGHWAT - LOWAT));
                     boolean decision = Math.random() > 1.0 - threshold;
                     if ( decision ) {
-                        if (sipStack.logWriter.isLoggingEnabled()) {
-                            sipStack.logWriter.logDebug("Dropping message with probability  " + (1.0 - threshold));
+                        if (sipStack.getStackLogger().isLoggingEnabled()) {
+                            sipStack.getStackLogger().logDebug("Dropping message with probability  " + (1.0 - threshold));
 
                         }
                         //System.out.println("RED Drop!");
@@ -251,7 +251,7 @@ public class UDPMessageProcessor extends MessageProcessor {
               // This socket timeout alows us to ping the thread auditor periodically
             } catch (SocketException ex) {
                 if (sipStack.isLoggingEnabled())
-                    getSIPStack().logWriter
+                    getSIPStack().getStackLogger()
                             .logDebug("UDPMessageProcessor: Stopping");
                 isRunning = false;
                 // The notifyAll should be in a synchronized block.
@@ -263,11 +263,11 @@ public class UDPMessageProcessor extends MessageProcessor {
                 isRunning = false;
                 ex.printStackTrace();
                 if (sipStack.isLoggingEnabled())
-                    getSIPStack().logWriter
+                    getSIPStack().getStackLogger()
                             .logDebug("UDPMessageProcessor: Got an IO Exception");
             } catch (Exception ex) {
                 if (sipStack.isLoggingEnabled())
-                    getSIPStack().logWriter
+                    getSIPStack().getStackLogger()
                             .logDebug("UDPMessageProcessor: Unexpected Exception - quitting");
                 InternalErrorHandler.handleException(ex);
                 return;

@@ -1,4 +1,3 @@
-
 package examples.reinvite;
 
 import java.util.Properties;

@@ -29,62 +29,40 @@
 
 package gov.nist.javax.sip.stack;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.FileWriter;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-
+import gov.nist.core.ServerLogger;
+import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.LogRecord;
-import gov.nist.javax.sip.message.*;
-import gov.nist.javax.sip.header.*;
-import gov.nist.core.*;
+import gov.nist.javax.sip.header.CallID;
+import gov.nist.javax.sip.message.SIPMessage;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Properties;
 
+import javax.sip.SipStack;
 import javax.sip.header.TimeStampHeader;
 
-import org.apache.log4j.Logger;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 /**
  * Log file wrapper class. Log messages into the message trace file and also write the log into
  * the debug file if needed. This class keeps an XML formatted trace around for later access via
  * RMI. The trace can be viewed with a trace viewer (see tools.traceviewerapp).
  *
- * @version 1.2 $Revision: 1.36 $ $Date: 2009-07-17 18:58:15 $
+ * @version 1.2 $Revision: 1.37 $ $Date: 2009-07-29 20:38:13 $
  *
  * @author M. Ranganathan <br/>
  *
  *
  */
-public class ServerLog {
+public class ServerLog implements ServerLogger {
 
     private boolean logContent;
 
-    protected LogWriter logWriter;
-
-    /**
-     * Dont trace
-     */
-    public static final int TRACE_NONE = 0;
-
-    public static final int TRACE_MESSAGES = LogWriter.TRACE_MESSAGES;
-
-    /**
-     * Trace exception processing
-     */
-    public static final int TRACE_EXCEPTION = 17;
-
-    /**
-     * Debug trace level (all tracing enabled).
-     */
-    public static final int TRACE_DEBUG = 32;
-
-    /**
-     * TRACE trace level. ( stack traces included )
-     */
-    public static final int TRACE_TRACE = 64;
+    protected StackLogger stackLogger;
 
     /**
      * Name of the log file in which the trace is written out (default is null)
@@ -111,7 +89,7 @@ public class ServerLog {
 
     public ServerLog(SIPTransactionStack sipStack, Properties configurationProperties) {
         // Debug log file. Whatever gets logged by us also makes its way into debug log.
-        this.logWriter = sipStack.logWriter;
+        this.stackLogger = sipStack.getStackLogger();
         this.sipStack = sipStack;
         this.setProperties(configurationProperties);
     }
@@ -238,7 +216,7 @@ public class ServerLog {
                 if (auxInfo != null) {
 
                     if (sipStack.isLoggingEnabled()) {
-                        logWriter
+                        stackLogger
                                 .logDebug("Here are the stack configuration properties \n"
                                         + "javax.sip.IP_ADDRESS= "
                                         + configurationProperties
@@ -267,25 +245,25 @@ public class ServerLog {
                                         + configurationProperties
                                                 .getProperty("gov.nist.javax.sip.THREAD_POOL_SIZE")
                                         + "\n");
-                        logWriter.logDebug(" ]]> ");
-                        logWriter.logDebug("</debug>");
-                        logWriter.logDebug("<description\n logDescription=\"" + description
+                        stackLogger.logDebug(" ]]> ");
+                        stackLogger.logDebug("</debug>");
+                        stackLogger.logDebug("<description\n logDescription=\"" + description
                                 + "\"\n name=\"" + stackIpAddress + "\"\n auxInfo=\"" + auxInfo
                                 + "\"/>\n ");
-                        logWriter.logDebug("<debug>");
-                        logWriter.logDebug("<![CDATA[ ");
+                        stackLogger.logDebug("<debug>");
+                        stackLogger.logDebug("<![CDATA[ ");
                     }
                 } else {
 
                     if (sipStack.isLoggingEnabled()) {
-                        logWriter.logDebug("Here are the stack configuration properties \n"
+                        stackLogger.logDebug("Here are the stack configuration properties \n"
                                 + configurationProperties + "\n");
-                        logWriter.logDebug(" ]]>");
-                        logWriter.logDebug("</debug>");
-                        logWriter.logDebug("<description\n logDescription=\"" + description
+                        stackLogger.logDebug(" ]]>");
+                        stackLogger.logDebug("</debug>");
+                        stackLogger.logDebug("<description\n logDescription=\"" + description
                                 + "\"\n name=\"" + stackIpAddress + "\" />\n");
-                        logWriter.logDebug("<debug>");
-                        logWriter.logDebug("<![CDATA[ ");
+                        stackLogger.logDebug("<debug>");
+                        stackLogger.logDebug("<![CDATA[ ");
                     }
                 }
             }
@@ -333,7 +311,7 @@ public class ServerLog {
             printWriter.println(logInfo);
         }
         if (sipStack.isLoggingEnabled()) {
-            logWriter.logInfo(logInfo);
+            stackLogger.logInfo(logInfo);
 
         }
     }
@@ -464,5 +442,15 @@ public class ServerLog {
     public void setAuxInfo(String auxInfo) {
         this.auxInfo = auxInfo;
     }
+
+	public void setSipStack(SipStack sipStack) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setStackProperties(Properties stackProperties) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

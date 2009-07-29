@@ -175,7 +175,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.104 $ $Date: 2009-05-28 18:22:32 $
+ * @version 1.2 $Revision: 1.105 $ $Date: 2009-07-29 20:38:15 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -221,7 +221,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
             if (clientTransaction.isTerminated()) {
 
                 if (sipStack.isLoggingEnabled()) {
-                    sipStack.logWriter.logDebug("removing  = " + clientTransaction
+                    sipStack.getStackLogger().logDebug("removing  = " + clientTransaction
                             + " isReliable " + clientTransaction.isReliable());
                 }
 
@@ -271,7 +271,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                             useCount = ((TLSMessageChannel) clientTransaction.getMessageChannel()).useCount;
 
                         if (sipStack.isLoggingEnabled()) {
-                            sipStack.logWriter.logDebug("Client Use Count = " + useCount);
+                            sipStack.getStackLogger().logDebug("Client Use Count = " + useCount);
                         }
                     }
                 }
@@ -312,8 +312,8 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
         // once with an outstanding request.
 
         if (sipStack.isLoggingEnabled()) {
-            sipStack.logWriter.logDebug("Creating clientTransaction " + this);
-            sipStack.logWriter.logStackTrace();
+            sipStack.getStackLogger().logDebug("Creating clientTransaction " + this);
+            sipStack.getStackLogger().logStackTrace();
         }
         // this.startTransactionTimer();
         this.sipDialogs = new ConcurrentHashMap();
@@ -326,11 +326,11 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
      */
     public void setResponseInterface(ServerResponseInterface newRespondTo) {
         if (sipStack.isLoggingEnabled()) {
-            sipStack.logWriter.logDebug("Setting response interface for " + this + " to "
+            sipStack.getStackLogger().logDebug("Setting response interface for " + this + " to "
                     + newRespondTo);
             if (newRespondTo == null) {
-                sipStack.logWriter.logStackTrace();
-                sipStack.logWriter.logDebug("WARNING -- setting to null!");
+                sipStack.getStackLogger().logStackTrace();
+                sipStack.getStackLogger().logDebug("WARNING -- setting to null!");
             }
         }
 
@@ -426,9 +426,9 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
             } catch (java.text.ParseException ex) {
             }
 
-            if (sipStack.getLogWriter().isLoggingEnabled()) {
-                sipStack.getLogWriter().logDebug("Sending Message " + messageToSend);
-                sipStack.getLogWriter().logDebug("TransactionState " + this.getState());
+            if (sipStack.getStackLogger().isLoggingEnabled()) {
+                sipStack.getStackLogger().logDebug("Sending Message " + messageToSend);
+                sipStack.getStackLogger().logDebug("TransactionState " + this.getState());
             }
             // If this is the first request for this transaction,
             if (TransactionState.PROCEEDING == getState()
@@ -525,9 +525,9 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
         }
 
         if (sipStack.isLoggingEnabled()) {
-            sipStack.logWriter.logDebug("processing " + transactionResponse.getFirstLine()
+            sipStack.getStackLogger().logDebug("processing " + transactionResponse.getFirstLine()
                     + "current state = " + getState());
-            sipStack.logWriter.logDebug("dialog = " + dialog);
+            sipStack.getStackLogger().logDebug("dialog = " + dialog);
         }
 
         this.lastResponse = transactionResponse;
@@ -548,7 +548,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                 nonInviteClientTransaction(transactionResponse, sourceChannel, dialog);
         } catch (IOException ex) {
             if (sipStack.isLoggingEnabled())
-                sipStack.logWriter.logException(ex);
+                sipStack.getStackLogger().logException(ex);
             this.setState(TransactionState.TERMINATED);
             raiseErrorEvent(SIPTransactionErrorEvent.TRANSPORT_ERROR);
         }
@@ -667,7 +667,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
             }
         } else {
             if (sipStack.isLoggingEnabled()) {
-                getSIPStack().logWriter.logDebug(" Not sending response to TU! " + getState());
+                getSIPStack().getStackLogger().logDebug(" Not sending response to TU! " + getState());
             }
             this.semRelease();
         }
@@ -750,7 +750,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                     // Found the dialog - resend the ACK and
                     // dont pass up the null transaction
                     if (sipStack.isLoggingEnabled())
-                        sipStack.getLogWriter().logDebug("resending ACK");
+                        sipStack.getStackLogger().logDebug("resending ACK");
 
                     dialog.resendAck();
                 } catch (SipException ex) {
@@ -795,7 +795,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                     sendMessage((SIPRequest) createErrorAck());
 
                 } catch (Exception ex) {
-                    sipStack.logWriter.logError(
+                    sipStack.getStackLogger().logError(
                             "Unexpected Exception sending ACK -- sending error AcK ", ex);
 
                 }
@@ -891,14 +891,14 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
         if (this.getState() != null)
             throw new SipException("Request already sent");
 
-        if (sipStack.getLogWriter().isLoggingEnabled()) {
-            sipStack.logWriter.logDebug("sendRequest() " + sipRequest);
+        if (sipStack.getStackLogger().isLoggingEnabled()) {
+            sipStack.getStackLogger().logDebug("sendRequest() " + sipRequest);
         }
 
         try {
             sipRequest.checkHeaders();
         } catch (ParseException ex) {
-            sipStack.logWriter.logError("missing required header");
+            sipStack.getStackLogger().logError("missing required header");
             throw new SipException(ex.getMessage());
         }
 
@@ -909,7 +909,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
              * defined by the event package being used.
              * 
              */
-            sipStack.logWriter.logWarning("Expires header missing in outgoing subscribe --"
+            sipStack.getStackLogger().logWarning("Expires header missing in outgoing subscribe --"
                     + " Notifier will assume implied value on event package");
         }
         try {
@@ -1029,7 +1029,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
     protected void fireTimeoutTimer() {
 
         if (sipStack.isLoggingEnabled())
-            sipStack.logWriter.logDebug("fireTimeoutTimer " + this);
+            sipStack.getStackLogger().logDebug("fireTimeoutTimer " + this);
 
         SIPDialog dialog = (SIPDialog) this.getDialog();
         if (TransactionState.CALLING == this.getState()
@@ -1119,7 +1119,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
             throw new SipException("bad Transaction state");
         } else if (lastResponse.getStatusCode() < 200) {
             if (sipStack.isLoggingEnabled()) {
-                sipStack.logWriter.logDebug("lastResponse = " + lastResponse);
+                sipStack.getStackLogger().logDebug("lastResponse = " + lastResponse);
             }
             throw new SipException("Cannot ACK a provisional response!");
         }
@@ -1207,7 +1207,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
             throw new SipException("bad Transaction state");
         } else if (lastResponse.getStatusCode() < 200) {
             if (sipStack.isLoggingEnabled()) {
-                sipStack.logWriter.logDebug("lastResponse = " + lastResponse);
+                sipStack.getStackLogger().logDebug("lastResponse = " + lastResponse);
             }
             throw new SipException("Cannot ACK a provisional response!");
         }
@@ -1320,12 +1320,12 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
         String originalFromTag = ((SIPRequest) this.getRequest()).getFromTag();
         if (this.defaultDialog != null) {
             if (originalFromTag == null ^ sipResponse.getFrom().getTag() == null) {
-                sipStack.getLogWriter().logDebug("From tag mismatch -- dropping response");
+                sipStack.getStackLogger().logDebug("From tag mismatch -- dropping response");
                 return false;
             }
             if (originalFromTag != null
                     && !originalFromTag.equalsIgnoreCase(sipResponse.getFrom().getTag())) {
-                sipStack.getLogWriter().logDebug("From tag mismatch -- dropping response");
+                sipStack.getStackLogger().logDebug("From tag mismatch -- dropping response");
                 return false;
             }
         }
@@ -1451,7 +1451,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
 
         }
         if (sipStack.isLoggingEnabled()) {
-            sipStack.logWriter.logDebug(" sipDialogs =  " + sipDialogs + " default dialog "
+            sipStack.getStackLogger().logDebug(" sipDialogs =  " + sipDialogs + " default dialog "
                     + this.defaultDialog + " retval " + retval);
         }
         return retval;
@@ -1478,11 +1478,11 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
      */
     public synchronized void setDialog(SIPDialog sipDialog, String dialogId) {
         if (sipStack.isLoggingEnabled())
-            sipStack.getLogWriter().logDebug(
+            sipStack.getStackLogger().logDebug(
                     "setDialog: " + dialogId + "sipDialog = " + sipDialog);
 
         if (sipDialog == null) {
-            sipStack.logWriter.logError("NULL DIALOG!!");
+            sipStack.getStackLogger().logError("NULL DIALOG!!");
             throw new NullPointerException("bad dialog null");
         }
         if (this.defaultDialog == null)

@@ -48,11 +48,11 @@ public class InternalErrorHandler {
     /**
     * Handle an unexpected exception.
     */
-    public static void handleException(Exception ex, LogWriter logWriter) {
+    public static void handleException(Exception ex, StackLogger stackLogger) {
         System.err.println ("Unexpected internal error FIXME!! "  + ex.getMessage());
-        logWriter.logError("UNEXPECTED INTERNAL ERROR FIXME " +  ex.getMessage());
+        stackLogger.logError("UNEXPECTED INTERNAL ERROR FIXME " +  ex.getMessage());
         ex.printStackTrace();
-        logWriter.logException(ex);
+        stackLogger.logException(ex);
         throw new RuntimeException("Unexpected internal error FIXME!! "  + ex.getMessage(), ex);
 
     }
@@ -68,10 +68,10 @@ public class InternalErrorHandler {
 
     }
 
-    public static void handleException(String emsg, LogWriter logWriter) {
-        logWriter.logStackTrace();
-        logWriter.logError("Unexepcted INTERNAL ERROR FIXME!!");
-        logWriter.logFatalError(emsg);
+    public static void handleException(String emsg, StackLogger stackLogger) {
+        stackLogger.logStackTrace();
+        stackLogger.logError("Unexepcted INTERNAL ERROR FIXME!!");
+        stackLogger.logFatalError(emsg);
         throw new RuntimeException(emsg);
 
     }

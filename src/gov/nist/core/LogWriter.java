@@ -46,10 +46,11 @@ import org.apache.log4j.SimpleLayout;
  * @author M. Ranganathan <br/>
  * @author M.Andrews
  * @author Jeroen van Bemmel
+ * @author Jean Deruelle
  *
  */
 
-public class LogWriter {
+public class LogWriter implements StackLogger {
 
     /**
      * The logger to which we will write our logging output.
@@ -60,26 +61,6 @@ public class LogWriter {
      * The stack name.
      */
     private String stackName;
-
-    /**
-     * Dont trace
-     */
-    public static final int TRACE_NONE = 0;
-
-    /**
-     * Trace message processing
-     */
-    public static final int TRACE_MESSAGES = 16;
-
-    /**
-     * Trace exception processing
-     */
-    public static final int TRACE_EXCEPTION = 17;
-
-    /**
-     * Debug trace level (all tracing enabled).
-     */
-    public static final int TRACE_DEBUG = 32;
 
     /**
      * Name of the log file in which the trace is written out (default is
@@ -489,5 +470,10 @@ public class LogWriter {
            return Level.DEBUG;
        } else return Level.OFF;
    }
+
+	public void setStackProperties(Properties stackProperties) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }
