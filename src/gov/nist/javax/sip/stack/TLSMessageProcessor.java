@@ -57,7 +57,7 @@ import java.util.Iterator;
  * connection. This is the active object that creates new TLS MessageChannels (one for each new
  * accept socket).
  * 
- * @version 1.2 $Revision: 1.16 $ $Date: 2009-02-06 21:39:48 $
+ * @version 1.2 $Revision: 1.17 $ $Date: 2009-07-29 20:38:13 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -149,8 +149,8 @@ public class TLSMessageProcessor extends MessageProcessor {
                 }
 
                 Socket newsock = sock.accept();
-                if (sipStack.logWriter.isLoggingEnabled())
-                    sipStack.logWriter.logDebug("Accepting new connection!");
+                if (sipStack.getStackLogger().isLoggingEnabled())
+                    sipStack.getStackLogger().logDebug("Accepting new connection!");
 
                 // Note that for an incoming message channel, the
                 // thread is already running
@@ -158,22 +158,22 @@ public class TLSMessageProcessor extends MessageProcessor {
                 incomingTlsMessageChannels.add(new TLSMessageChannel(newsock, sipStack, this));
             } catch (SocketException ex) {
                 if ( this.isRunning ) {
-                  sipStack.logWriter.logError(
+                  sipStack.getStackLogger().logError(
                     "Fatal - SocketException occured while Accepting connection", ex);
                   this.isRunning = false;
                   break;
                 }
             } catch (SSLException ex) {
                 this.isRunning = false;
-                sipStack.logWriter.logError(
+                sipStack.getStackLogger().logError(
                         "Fatal - SSSLException occured while Accepting connection", ex);
                 break;
             } catch (IOException ex) {
                 // Problem accepting connection.
-                sipStack.logWriter.logError("Problem Accepting Connection", ex);
+                sipStack.getStackLogger().logError("Problem Accepting Connection", ex);
                 continue;
             } catch (Exception ex) {
-                sipStack.logWriter.logError("Unexpected Exception!", ex);
+                sipStack.getStackLogger().logError("Unexpected Exception!", ex);
             }
         }
     }
@@ -219,7 +219,7 @@ public class TLSMessageProcessor extends MessageProcessor {
 
         String key = tlsMessageChannel.getKey();
         if (sipStack.isLoggingEnabled()) {
-            sipStack.logWriter.logDebug(Thread.currentThread() + " removing " + key);
+            sipStack.getStackLogger().logDebug(Thread.currentThread() + " removing " + key);
         }
 
         /** May have been removed already */
@@ -240,8 +240,8 @@ public class TLSMessageProcessor extends MessageProcessor {
             this.tlsMessageChannels.put(key, retval);
             retval.isCached = true;
             if (sipStack.isLoggingEnabled()) {
-                sipStack.logWriter.logDebug("key " + key);
-                sipStack.logWriter.logDebug("Creating " + retval);
+                sipStack.getStackLogger().logDebug("key " + key);
+                sipStack.getStackLogger().logDebug("Creating " + retval);
             }
             return retval;
         }
@@ -252,11 +252,11 @@ public class TLSMessageProcessor extends MessageProcessor {
         TLSMessageChannel currentChannel = (TLSMessageChannel) tlsMessageChannels.get(key);
         if (currentChannel != null) {
             if (sipStack.isLoggingEnabled())
-                sipStack.logWriter.logDebug("Closing " + key);
+                sipStack.getStackLogger().logDebug("Closing " + key);
             currentChannel.close();
         }
         if (sipStack.isLoggingEnabled())
-            sipStack.logWriter.logDebug("Caching " + key);
+            sipStack.getStackLogger().logDebug("Caching " + key);
         this.tlsMessageChannels.put(key, messageChannel);
 
     }
@@ -272,8 +272,8 @@ public class TLSMessageProcessor extends MessageProcessor {
                 this.tlsMessageChannels.put(key, retval);
                 retval.isCached = true;
                 if (sipStack.isLoggingEnabled()) {
-                    sipStack.getLogWriter().logDebug("key " + key);
-                    sipStack.getLogWriter().logDebug("Creating " + retval);
+                    sipStack.getStackLogger().logDebug("key " + key);
+                    sipStack.getStackLogger().logDebug("Creating " + retval);
                 }
                 return retval;
             }

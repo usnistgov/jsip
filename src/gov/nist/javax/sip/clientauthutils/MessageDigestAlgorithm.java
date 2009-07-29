@@ -1,10 +1,9 @@
 package gov.nist.javax.sip.clientauthutils;
 
-import gov.nist.core.LogWriter;
+import gov.nist.core.StackLogger;
 
-import java.security.*;
-
-import org.apache.log4j.Logger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * The class takes standard Http Authentication details and returns a response according to the
@@ -42,9 +41,9 @@ public class MessageDigestAlgorithm {
     static String calculateResponse(String algorithm, String username_value, String realm_value,
             String passwd, String nonce_value, String nc_value, String cnonce_value,
             String method, String digest_uri_value, String entity_body, String qop_value,
-            LogWriter logWriter) {
-        if (logWriter.isLoggingEnabled()) {
-            logWriter.logDebug("trying to authenticate using : " + algorithm + ", "
+            StackLogger stackLogger) {
+        if (stackLogger.isLoggingEnabled()) {
+            stackLogger.logDebug("trying to authenticate using : " + algorithm + ", "
                     + username_value + ", " + realm_value + ", "
                     + (passwd != null && passwd.trim().length() > 0) + ", " + nonce_value + ", "
                     + nc_value + ", " + cnonce_value + ", " + method + ", " + digest_uri_value

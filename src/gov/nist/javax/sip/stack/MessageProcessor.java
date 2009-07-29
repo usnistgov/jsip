@@ -47,7 +47,7 @@ import javax.sip.InvalidArgumentException;
  * The main job of the message processor is to instantiate message channels for
  * the given transport.
  *
- * @version 1.2 $Revision: 1.14 $ $Date: 2009-07-17 18:58:14 $
+ * @version 1.2 $Revision: 1.15 $ $Date: 2009-07-29 20:38:14 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -166,7 +166,7 @@ public abstract class MessageProcessor implements Runnable {
     public ListeningPointImpl getListeningPoint() {
         if ( listeningPoint == null )  {
             if ( this.getSIPStack().isLoggingEnabled()) {
-                this.getSIPStack().getLogWriter().logError("getListeningPoint" + this +
+                this.getSIPStack().getStackLogger().logError("getListeningPoint" + this +
                         " returning null listeningpoint");
 
             }
@@ -176,13 +176,13 @@ public abstract class MessageProcessor implements Runnable {
 
     public void setListeningPoint(ListeningPointImpl lp) {
         if ( this.getSIPStack().isLoggingEnabled()) {
-            this.getSIPStack().getLogWriter().logDebug("setListeningPoint" + this +
+            this.getSIPStack().getStackLogger().logDebug("setListeningPoint" + this +
                     " listeningPoint = " + lp);
 
         }
         if ( lp.getPort() != this.getPort())
             InternalErrorHandler.handleException
-            ("lp mismatch with provider",getSIPStack().logWriter);
+            ("lp mismatch with provider",getSIPStack().getStackLogger());
         this.listeningPoint = lp;
 
     }

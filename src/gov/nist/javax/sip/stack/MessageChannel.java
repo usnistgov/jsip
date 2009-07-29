@@ -32,6 +32,7 @@ package gov.nist.javax.sip.stack;
 import gov.nist.core.Host;
 import gov.nist.core.HostPort;
 import gov.nist.core.InternalErrorHandler;
+import gov.nist.core.ServerLogger;
 import gov.nist.javax.sip.address.AddressImpl;
 import gov.nist.javax.sip.header.CSeq;
 import gov.nist.javax.sip.header.CallID;
@@ -65,7 +66,7 @@ import javax.sip.header.ViaHeader;
  * @author M. Ranganathan <br/> Contains additions for support of symmetric NAT contributed by
  *         Hagai.
  * 
- * @version 1.2 $Revision: 1.23 $ $Date: 2009-02-24 03:39:45 $
+ * @version 1.2 $Revision: 1.24 $ $Date: 2009-07-29 20:38:14 $
  * 
  * 
  */
@@ -202,7 +203,7 @@ public abstract class MessageChannel {
                             hopAddr, hop.getPort());
                     if (messageChannel instanceof RawMessageChannel) {
                         ((RawMessageChannel) messageChannel).processMessage(sipMessage);
-                        getSIPStack().logWriter.logDebug("Self routing message");
+                        getSIPStack().getStackLogger().logDebug("Self routing message");
                         return;
                     }
 
@@ -218,7 +219,7 @@ public abstract class MessageChannel {
             throw new IOException("Error self routing message");
         } finally {
 
-            if (this.getSIPStack().logWriter.isLoggingEnabled(ServerLog.TRACE_MESSAGES))
+            if (this.getSIPStack().getStackLogger().isLoggingEnabled(ServerLogger.TRACE_MESSAGES))
                 logMessage(sipMessage, hopAddr, hop.getPort(), time);
         }
     }
@@ -328,13 +329,13 @@ public abstract class MessageChannel {
      * @param port is the port to which the message is directed.
      */
     protected void logMessage(SIPMessage sipMessage, InetAddress address, int port, long time) {
-        if (!getSIPStack().logWriter.isLoggingEnabled(ServerLog.TRACE_MESSAGES))
+        if (!getSIPStack().getStackLogger().isLoggingEnabled(ServerLogger.TRACE_MESSAGES))
             return;
 
         // Default port.
         if (port == -1)
             port = 5060;
-        getSIPStack().serverLog.logMessage(sipMessage, this.getHost() + ":" + this.getPort(),
+        getSIPStack().serverLogger.logMessage(sipMessage, this.getHost() + ":" + this.getPort(),
                 address.getHostAddress().toString() + ":" + port, true, time);
     }
 
@@ -355,7 +356,7 @@ public abstract class MessageChannel {
         }
         String from = getPeerAddress().toString() + ":" + peerport;
         String to = this.getHost() + ":" + getPort();
-        this.getSIPStack().serverLog.logMessage(sipResponse, from, to, status, false,
+        this.getSIPStack().serverLogger.logMessage(sipResponse, from, to, status, false,
                 receptionTime);
     }
 

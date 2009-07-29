@@ -42,7 +42,7 @@ import javax.sip.*;
  * messageChannel, the NIST-SIP stack calls the SIPStackMessageFactory
  * implementation that has been registered with it to process the request.)
  * 
- * @version 1.2 $Revision: 1.13 $ $Date: 2006-08-15 21:45:00 $
+ * @version 1.2 $Revision: 1.14 $ $Date: 2009-07-29 20:38:17 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -81,7 +81,7 @@ class NistSipMessageFactoryImpl implements StackMessageFactory {
         if (retval.listeningPoint == null)
             return null;
         if (sipStack.isLoggingEnabled())
-            sipStack.getLogWriter().logDebug(
+            sipStack.getStackLogger().logDebug(
                     "Returning request interface for "
                             + sipRequest.getFirstLine() + " " + retval
                             + " messageChannel = " + messageChannel);
@@ -105,7 +105,7 @@ class NistSipMessageFactoryImpl implements StackMessageFactory {
         SIPTransaction tr = (SIPTransaction) ((SIPTransactionStack) theStack)
                 .findTransaction(sipResponse, false);
         if (sipStack.isLoggingEnabled())
-            sipStack.getLogWriter().logDebug(
+            sipStack.getStackLogger().logDebug(
                     "Found Transaction " + tr + " for " + sipResponse);
 
         if (tr != null) {
@@ -115,14 +115,14 @@ class NistSipMessageFactoryImpl implements StackMessageFactory {
             // layer for efficiency.
             if (tr.getState() == null) {
                 if (sipStack.isLoggingEnabled())
-                    sipStack.getLogWriter().logDebug(
+                    sipStack.getStackLogger().logDebug(
                             "Dropping response - null transaction state");
                 return null;
                 // Ignore 1xx
             } else if (TransactionState.COMPLETED == tr.getState()
                     && sipResponse.getStatusCode() / 100 == 1) {
                 if (sipStack.isLoggingEnabled())
-                    sipStack.getLogWriter().logDebug(
+                    sipStack.getStackLogger().logDebug(
                             "Dropping response - late arriving "
                                     + sipResponse.getStatusCode());
                 return null;
