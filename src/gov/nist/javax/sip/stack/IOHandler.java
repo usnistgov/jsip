@@ -34,7 +34,6 @@ import gov.nist.javax.sip.SipStackImpl;
 
 import java.io.*;
 import java.net.*;
-import java.util.Hashtable;
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
@@ -113,6 +112,43 @@ class IOHandler {
             }
         }
         outputStream.flush();
+    }
+
+    /**
+     * Creates and binds, if necessary, a socket connected to the specified
+     * destination address and port and then returns its local address.
+     *
+     * @param dst the destination address that the socket would need to connect
+     *            to.
+     * @param dstPort the port number that the connection would be established
+     * with.
+     * @param localAddress the address that we would like to bind on
+     * (null for the "any" address).
+     * @param localPort the port that we'd like our socket to bind to (0 for a
+     * random port).
+     *
+     * @return the SocketAddress that this handler would use when connecting to
+     * the specified destination address and port.
+     *
+     * @throws IOException
+     */
+    public SocketAddress obtainLocalAddress(InetAddress dst, int dstPort,
+                    InetAddress localAddress, int localPort)
+        throws IOException
+    {
+        String key = makeKey(dst, dstPort);
+
+        Socket clientSock = getSocket(key);
+
+        if(clientSock == null)
+        {
+            clientSock = sipStack.getNetworkLayer().createSocket(
+                            dst, dstPort, localAddress, localPort);
+            putSocket(key, clientSock);
+        }
+
+        return clientSock.getLocalSocketAddress();
+
     }
 
     /**

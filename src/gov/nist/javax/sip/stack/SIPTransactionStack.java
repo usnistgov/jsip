@@ -49,6 +49,8 @@ import gov.nist.javax.sip.message.SIPResponse;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.Socket;
+import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -91,7 +93,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.110 $ $Date: 2009-07-29 20:38:15 $
+ * @version 1.2 $Revision: 1.111 $ $Date: 2009-07-30 17:07:09 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener {
 
@@ -462,6 +464,33 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
         this.timer = new Timer();
 
         this.activeClientTransactionCount = new AtomicInteger(0);
+
+    }
+
+    /**
+     * Creates and binds, if necessary, a socket connected to the specified
+     * destination address and port and then returns its local address.
+     *
+     * @param dst the destination address that the socket would need to connect
+     *            to.
+     * @param dstPort the port number that the connection would be established
+     * with.
+     * @param localAddress the address that we would like to bind on
+     * (null for the "any" address).
+     * @param localPort the port that we'd like our socket to bind to (0 for a
+     * random port).
+     *
+     * @return the SocketAddress that this handler would use when connecting to
+     * the specified destination address and port.
+     *
+     * @throws IOException
+     */
+    public SocketAddress obtainLocalAddress(InetAddress dst, int dstPort,
+                    InetAddress localAddress, int localPort)
+        throws IOException
+    {
+        return this.ioHandler.obtainLocalAddress(
+                        dst, dstPort, localAddress, localPort);
 
     }
 
