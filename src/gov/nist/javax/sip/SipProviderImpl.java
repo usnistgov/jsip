@@ -81,7 +81,7 @@ import javax.sip.message.Response;
 /**
  * Implementation of the JAIN-SIP provider interface.
  *
- * @version 1.2 $Revision: 1.63 $ $Date: 2009-07-29 20:38:17 $
+ * @version 1.2 $Revision: 1.64 $ $Date: 2009-07-30 17:07:08 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -382,8 +382,13 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
                 sipRequest.getTopmostVia().setBranch(branchId);
             }
             Via topmostVia = sipRequest.getTopmostVia();
-            topmostVia.setTransport(transport);
-            topmostVia.setPort(listeningPoint.getPort());
+
+            //set port and transport if user hasn't already done this.
+            if(topmostVia.getTransport() == null)
+                topmostVia.setTransport(transport);
+
+            if(topmostVia.getPort() == -1)
+                topmostVia.setPort(listeningPoint.getPort());
             branchId = sipRequest.getTopmostVia().getBranch();
 
             SIPClientTransaction ct = (SIPClientTransaction) sipStack

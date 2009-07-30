@@ -122,4 +122,38 @@ public class DefaultNetworkLayer implements NetworkLayer {
             return new Socket(address, port);
     }
 
+    /**
+     * Creates a new Socket, binds it to myAddress:myPort and connects it to
+     * address:port.
+     *
+     * @param address the InetAddress that we'd like to connect to.
+     * @param port the port that we'd like to connect to
+     * @param myAddress the address that we are supposed to bind on or null
+     *        for the "any" address.
+     * @param myPort the port that we are supposed to bind on or 0 for a random
+     * one.
+     *
+     * @return a new Socket, bound on myAddress:myPort and connected to
+     * address:port.
+     * @throws IOException if binding or connecting the socket fail for a reason
+     * (exception relayed from the correspoonding Socket methods)
+     */
+    public Socket createSocket(InetAddress address, int port,
+                    InetAddress myAddress, int myPort)
+        throws IOException
+    {
+        if (myAddress != null)
+            return new Socket(address, port, myAddress, myPort);
+        else if (port != 0)
+        {
+            //myAddress is null (i.e. any)  but we have a port number
+            Socket sock = new Socket();
+            sock.bind(new InetSocketAddress(port));
+            sock.connect(new InetSocketAddress(address, port));
+            return sock;
+        }
+        else
+            return new Socket(address, port);
+    }
+
 }
