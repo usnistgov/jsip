@@ -39,7 +39,7 @@ import gov.nist.core.*;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size).
  * Each UDP message is processed in its own thread).
  *
- * @version 1.2 $Revision: 1.33 $ $Date: 2009-07-29 20:38:13 $
+ * @version 1.2 $Revision: 1.34 $ $Date: 2009-07-30 22:57:14 $
  *
  * @author M. Ranganathan  <br/>
  *
@@ -56,11 +56,6 @@ import gov.nist.core.*;
  * performance.
  */
 public class UDPMessageProcessor extends MessageProcessor {
-
-    private static final int HIGHWAT = 100 ; // High water mark for queue size.
-
-    private static final int LOWAT =   50 ; // Low water mark for queue size
-
     /**
      * The Mapped port (in case STUN suport is enabled)
      */
@@ -80,11 +75,6 @@ public class UDPMessageProcessor extends MessageProcessor {
      * Max # of udp message channels
      */
     protected int threadPoolSize;
-
-    /**
-     * Max datagram size.
-     */
-    protected static final int MAX_DATAGRAM_SIZE = 8 * 1024;
 
     /**
      * Our stack (that created us).
@@ -119,7 +109,8 @@ public class UDPMessageProcessor extends MessageProcessor {
             this.sock = sipStack.getNetworkLayer().createDatagramSocket(port,
                     ipAddress);
             // Create a new datagram socket.
-            sock.setReceiveBufferSize(MAX_DATAGRAM_SIZE);
+            sock.setReceiveBufferSize(sipStack.getReceiveUdpBufferSize());
+            sock.setSendBufferSize(sipStack.getSendUdpBufferSize());
 
             /**
              * If the thread auditor is enabled, define a socket timeout value in order to
@@ -201,6 +192,11 @@ public class UDPMessageProcessor extends MessageProcessor {
                 DatagramPacket packet = new DatagramPacket(message, bufsize);
                 sock.receive(packet);
 
+             /*
+             NOTE from Vladimir: This section is removed, because servers need maximum throughput.
+             Congestion control should be left to the applications. This mechanismis only limiting
+             server applications.
+             
              // This is a simplistic congestion control algorithm.
              // It accepts packets if queuesize is < LOWAT. It drops
              // requests if the queue size exceeds a HIGHWAT and accepts
@@ -230,6 +226,9 @@ public class UDPMessageProcessor extends MessageProcessor {
                     }
 
                 }
+                */
+                
+                
                 // Count of # of packets in process.
                 // this.useCount++;
                 if (sipStack.threadPoolSize != -1) {
@@ -339,7 +338,7 @@ public class UDPMessageProcessor extends MessageProcessor {
      * UDP can handle a message as large as the MAX_DATAGRAM_SIZE.
      */
     public int getMaximumMessageSize() {
-        return MAX_DATAGRAM_SIZE;
+        return 8*1024;
     }
 
     /**

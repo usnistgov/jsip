@@ -93,7 +93,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.111 $ $Date: 2009-07-30 17:07:09 $
+ * @version 1.2 $Revision: 1.112 $ $Date: 2009-07-30 22:57:14 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener {
 
@@ -344,6 +344,12 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     // Set to true to delegate some dialog validation to the application.
     protected boolean looseDialogValidation = false;
+    
+    // Receive UDP buffer size
+    protected int receiveUdpBufferSize;
+    
+    // Send UDP buffer size
+    protected int sendUdpBufferSize;
 
     // / Timer to regularly ping the thread auditor (on behalf of the timer
     // thread)
@@ -2234,6 +2240,46 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     public void setLooseDialogValidation(boolean looseDialogValidation) {
         this.looseDialogValidation = looseDialogValidation;
     }
+
+    /**
+     * Size of the receive UDP buffer. This property affects performance under load. Bigger buffer
+     * is better under load.
+     * 
+     * @return
+     */
+	public int getReceiveUdpBufferSize() {
+		return receiveUdpBufferSize;
+	}
+
+    /**
+     * Size of the receive UDP buffer. This property affects performance under load. Bigger buffer
+     * is better under load.
+     * 
+     * @return
+     */
+	public void setReceiveUdpBufferSize(int receiveUdpBufferSize) {
+		this.receiveUdpBufferSize = receiveUdpBufferSize;
+	}
+
+    /**
+     * Size of the send UDP buffer. This property affects performance under load. Bigger buffer
+     * is better under load.
+     * 
+     * @return
+     */
+	public int getSendUdpBufferSize() {
+		return sendUdpBufferSize;
+	}
+
+    /**
+     * Size of the send UDP buffer. This property affects performance under load. Bigger buffer
+     * is better under load.
+     * 
+     * @return
+     */
+	public void setSendUdpBufferSize(int sendUdpBufferSize) {
+		this.sendUdpBufferSize = sendUdpBufferSize;
+	}
 
 	/**
 	 * @param stackLogger the stackLogger to set
