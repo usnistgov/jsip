@@ -93,7 +93,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.112 $ $Date: 2009-07-30 22:57:14 $
+ * @version 1.2 $Revision: 1.113 $ $Date: 2009-07-31 00:43:37 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener {
 
@@ -350,6 +350,8 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     
     // Send UDP buffer size
     protected int sendUdpBufferSize;
+
+    protected boolean stackDoesCongestionControl = true;
 
     // / Timer to regularly ping the thread auditor (on behalf of the timer
     // thread)

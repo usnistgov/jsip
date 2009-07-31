@@ -126,8 +126,6 @@ import org.apache.log4j.Logger;
  * TCP connection can read. Must be at least 4K. Default is "infinity" -- ie. no limit. This is to
  * prevent DOS attacks launched by writing to a TCP connection until the server chokes. </li>
  *
- *
- *
  * <li><b>gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS = [true|false] </b> <br/> Default value is
  * true. Setting this to false makes the Stack close the server socket after a Server Transaction
  * goes to the TERMINATED state. This allows a server to protectect against TCP based Denial of
@@ -285,6 +283,10 @@ import org.apache.log4j.Logger;
  * if the buffer capacity is overflown the messages are dropped causing retransmissions, further increasing
  * the load and causing even more retransmissions. Good values to this property for servers is a big number
  * in the order of 8*8*1024 or higher.
+ * 
+ * <li><b>gov.nist.javax.sip.CONGESTION_CONTROL_ENABLED = boolean </b> Defailt is true.
+ * If set to true stack will enforce queue length limitation for UDP. The Max queue size is
+ * 5000 messages. The minimum queue size is 2500 messages. </li>
  *
  * <li><b>gov.nist.javax.sip.DELIVER_UNSOLICITED_NOTIFY = [true|false] </b> <br/> Default
  * is <it>false</it>. This flag is added to allow Sip Listeners to receive all NOTIFY requests
@@ -311,7 +313,7 @@ import org.apache.log4j.Logger;
  * in this class. </b>
  *
  *
- * @version 1.2 $Revision: 1.90 $ $Date: 2009-07-30 22:57:15 $
+ * @version 1.2 $Revision: 1.91 $ $Date: 2009-07-31 00:43:38 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -810,6 +812,11 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
                 "gov.nist.javax.sip.SEND_UDP_BUFFER_SIZE", MAX_DATAGRAM_SIZE.toString());
         bufferSizeInteger = new Integer(bufferSize).intValue();
         super.setSendUdpBufferSize(bufferSizeInteger);
+        
+        boolean congetstionControlEnabled = 
+             Boolean.parseBoolean(configurationProperties.getProperty(
+             "gov.nist.javax.sip.CONGESTION_CONTROL_ENABLED",Boolean.TRUE.toString()));
+        super.stackDoesCongestionControl = congetstionControlEnabled;
     }
 
     /*
