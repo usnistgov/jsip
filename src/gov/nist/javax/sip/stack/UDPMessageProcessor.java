@@ -39,7 +39,7 @@ import gov.nist.core.*;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size).
  * Each UDP message is processed in its own thread).
  *
- * @version 1.2 $Revision: 1.34 $ $Date: 2009-07-30 22:57:14 $
+ * @version 1.2 $Revision: 1.35 $ $Date: 2009-07-31 00:43:37 $
  *
  * @author M. Ranganathan  <br/>
  *
@@ -89,6 +89,10 @@ public class UDPMessageProcessor extends MessageProcessor {
      * Jeff Keyser).
      */
     protected boolean isRunning;
+    
+    private static final int HIGHWAT=5000;
+    
+    private static final int LOWAT=2500;
 
     /**
      * Constructor.
@@ -192,10 +196,7 @@ public class UDPMessageProcessor extends MessageProcessor {
                 DatagramPacket packet = new DatagramPacket(message, bufsize);
                 sock.receive(packet);
 
-             /*
-             NOTE from Vladimir: This section is removed, because servers need maximum throughput.
-             Congestion control should be left to the applications. This mechanismis only limiting
-             server applications.
+           
              
              // This is a simplistic congestion control algorithm.
              // It accepts packets if queuesize is < LOWAT. It drops
@@ -205,6 +206,7 @@ public class UDPMessageProcessor extends MessageProcessor {
              // of queue sizes between HIGHWAT and LOWAT.
              // TODO -- penalize spammers by looking at the source
              // port and IP address.
+             if ( sipStack.stackDoesCongestionControl ) {  
              if ( this.messageQueue.size() >= HIGHWAT) {
                     if (sipStack.getStackLogger().isLoggingEnabled()) {
                         sipStack.getStackLogger().logDebug("Dropping message -- queue length exceeded");
@@ -226,7 +228,8 @@ public class UDPMessageProcessor extends MessageProcessor {
                     }
 
                 }
-                */
+             }
+                
                 
                 
                 // Count of # of packets in process.
