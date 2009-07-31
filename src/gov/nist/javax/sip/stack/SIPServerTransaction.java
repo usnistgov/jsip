@@ -163,7 +163,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.106 $ $Date: 2009-07-29 20:38:14 $
+ * @version 1.2 $Revision: 1.107 $ $Date: 2009-07-31 22:18:00 $
  * @author M. Ranganathan
  *
  */
@@ -849,6 +849,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
             }
 
         } catch (IOException e) {
+            sipStack.getStackLogger().logError("IOException " ,e);
             this.semRelease();
             this.raiseIOExceptionEvent();
         }
