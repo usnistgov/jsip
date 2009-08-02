@@ -275,6 +275,7 @@ public class DialogTest extends MessageFlowHarness {
 
     private void doTestSendAck( boolean sameBranch ) {
         try {
+           
             //We will now send an OK response
             //start listening for the response
             try {
@@ -308,6 +309,10 @@ public class DialogTest extends MessageFlowHarness {
                 eventCollector.extractCollectedResponseEvent();
             if (okRespEvt == null || okRespEvt.getResponse() == null)
                 throw new TiUnexpectedError("The TI did not dispatch an OK response.");
+            
+            String okBranch = 
+                ((ViaHeader) okRespEvt.getResponse().getHeader(ViaHeader.NAME)).getBranch();
+            
 
             // After 2xx, dialog should be in CONFIRMED state. Needed to send ACK
             assertEquals( DialogState.CONFIRMED, dialog.getState() );
@@ -332,7 +337,7 @@ public class DialogTest extends MessageFlowHarness {
                 if (sameBranch) {
                     ViaHeader via = (ViaHeader) ack.getHeader("Via");
                     via.setBranch( ((ViaHeader)riInvite.getHeader("Via")).getBranch() );
-                }
+                } 
 
             } catch (SipException ex) {
                 throw new TiUnexpectedError(
@@ -346,6 +351,8 @@ public class DialogTest extends MessageFlowHarness {
                 fail("SipException; Failed to send an ACK request using Dialog.sendAck()");
             }
             waitForMessage();
+            
+           
 
             // Did the RI get the ACK? If the dialog is not found, the ACK is filtered!
             RequestEvent ackEvt = eventCollector.extractCollectedRequestEvent();
@@ -355,6 +362,11 @@ public class DialogTest extends MessageFlowHarness {
             assertNotNull(
                 "The request sent by Dialog.sendAck() was not received by the RI",
                 ackEvt.getRequest());
+            if ( !sameBranch ) {
+                String ackBranchId = ((ViaHeader) ackEvt.getRequest().getHeader(ViaHeader.NAME)).getBranch();
+                super.assertNotSame("ACK branch ID must differ from INVITE OK branch ID", ackBranchId,
+                        okBranch);
+            }
         } catch (Throwable exc) {
             exc.printStackTrace();
             fail(exc.getClass().getName() + ": " + exc.getMessage());
