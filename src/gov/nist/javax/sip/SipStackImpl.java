@@ -313,7 +313,7 @@ import org.apache.log4j.Logger;
  * in this class. </b>
  *
  *
- * @version 1.2 $Revision: 1.91 $ $Date: 2009-07-31 00:43:38 $
+ * @version 1.2 $Revision: 1.92 $ $Date: 2009-08-03 07:32:49 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -438,10 +438,10 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
 	            super.setStackLogger(stackLogger);
 	        } catch (InvocationTargetException ex1) {
 	            throw new IllegalArgumentException(
-	                    "Cound not instantiate stack logger " + stackLoggerClassName + "- check that it is present on the classpath and that there is a constructor defined taking a java.util.Properties argument", ex1);
+	                    "Cound not instantiate stack logger " + stackLoggerClassName + "- check that it is present on the classpath and that there is a no-args constructor defined", ex1);
 	        } catch (Exception ex) {
 	        	throw new IllegalArgumentException(
-	                    "Cound not instantiate stack logger " + stackLoggerClassName + "- check that it is present on the classpath and that there is a constructor defined taking a java.util.Properties argument", ex);
+	                    "Cound not instantiate stack logger " + stackLoggerClassName + "- check that it is present on the classpath and that there is a no-args constructor defined", ex);
 	        }
         } else {
         	this.setStackLogger(new LogWriter(configurationProperties));
@@ -460,10 +460,10 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
 	            serverLogger.setStackProperties(configurationProperties);
 	        } catch (InvocationTargetException ex1) {
 	            throw new IllegalArgumentException(
-	                    "Cound not instantiate server logger " + stackLoggerClassName + "- check that it is present on the classpath and that there is a constructor defined taking a java.util.Properties argument", ex1);
+	                    "Cound not instantiate server logger " + stackLoggerClassName + "- check that it is present on the classpath and that there is a no-args constructor defined", ex1);
 	        } catch (Exception ex) {
 	        	throw new IllegalArgumentException(
-	                    "Cound not instantiate server logger " + stackLoggerClassName + "- check that it is present on the classpath and that there is a constructor defined taking a java.util.Properties argument", ex);
+	                    "Cound not instantiate server logger " + stackLoggerClassName + "- check that it is present on the classpath and that there is a no-args constructor defined", ex);
 	        }
         } else {
             this.serverLogger = new ServerLog(this, configurationProperties);
