@@ -175,7 +175,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.105 $ $Date: 2009-07-29 20:38:15 $
+ * @version 1.2 $Revision: 1.106 $ $Date: 2009-08-04 20:59:21 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -790,9 +790,9 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
 
             } else if (300 <= statusCode && statusCode <= 699) {
                 // Send back an ACK request
-
+               
                 try {
-                    sendMessage((SIPRequest) createErrorAck());
+                    sendMessage((SIPRequest) createErrorAck());          
 
                 } catch (Exception ex) {
                     sipStack.getStackLogger().logError(
@@ -812,6 +812,8 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                 } else {
                     this.semRelease();
                 }
+                
+                ((SIPDialog)this.getDialog()).releaseAckSem();
 
                 if (!isReliable()) {
                     this.setState(TransactionState.COMPLETED);
