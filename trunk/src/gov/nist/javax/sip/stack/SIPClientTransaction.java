@@ -175,7 +175,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.106 $ $Date: 2009-08-04 20:59:21 $
+ * @version 1.2 $Revision: 1.107 $ $Date: 2009-08-04 22:07:07 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -813,7 +813,9 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                     this.semRelease();
                 }
                 
-                ((SIPDialog)this.getDialog()).releaseAckSem();
+                if ( this.getDialog() != null ) {
+                    ((SIPDialog)this.getDialog()).releaseAckSem();
+                }
 
                 if (!isReliable()) {
                     this.setState(TransactionState.COMPLETED);
@@ -845,7 +847,10 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                 } catch (Exception ex) {
                     InternalErrorHandler.handleException(ex);
                 }
-
+                
+                if ( this.getDialog() != null ) {
+                    ((SIPDialog)this.getDialog()).releaseAckSem();
+                }
                 // JvB: update state before passing to app
                 if (!isReliable()) {
                     this.setState(TransactionState.COMPLETED);
