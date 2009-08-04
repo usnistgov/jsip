@@ -29,6 +29,9 @@
 package gov.nist.javax.sip.stack;
 
 import java.util.*;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import gov.nist.javax.sip.*;
 import gov.nist.javax.sip.header.*;
@@ -40,6 +43,7 @@ import javax.sip.header.*;
 import javax.sip.*;
 import javax.sip.address.*;
 import javax.sip.message.*;
+
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -63,7 +67,7 @@ import java.text.ParseException;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  *
- * @version 1.2 $Revision: 1.111 $ $Date: 2009-07-31 22:18:00 $
+ * @version 1.2 $Revision: 1.112 $ $Date: 2009-08-04 20:59:21 $
  *
  * @author M. Ranganathan
  *
@@ -178,12 +182,101 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     // Stores the last OK for the INVITE
     // Used in createAck.
     private boolean lastInviteOkReceived;
+    
+    private AtomicBoolean waitingToSendReInvite = new AtomicBoolean();
+    
+    private Semaphore ackSem = new Semaphore(0);
+    
+    private int reInviteWaitTime = 100;
 
     private DialogDeleteTask dialogDeleteTask;
+    
+    private boolean allowReInviteInterleaving = false;
+    
+    private SIPClientTransaction reInviteTransaction = null;
 
     // //////////////////////////////////////////////////////
     // Inner classes
     // //////////////////////////////////////////////////////
+    
+    /**
+     * This task waits till a pending ACK has been recorded and then sends out a re-INVITE. This
+     * is to prevent interleaving INVITEs ( which will result in a 493 from the UA that receives
+     * the out of order INVITE).
+     */
+    public class ReInviteSender implements Runnable {
+      
+        ClientTransaction ctx;
+
+
+        public void terminate() {
+            try {
+                ctx.terminate();
+                Thread.currentThread().interrupt();
+            } catch (ObjectInUseException e) {
+               sipStack.getStackLogger().logError("unexpected error",e);
+            }
+        }
+
+
+        public ReInviteSender( ClientTransaction ctx) {
+            this.ctx = ctx;
+            waitingToSendReInvite.set(true);
+        }
+
+        public void run() {
+            try {
+                int i = 0;
+                long timeToWait = 0;
+
+                if  (getState() != DialogState.TERMINATED && reInviteTransaction != null) {
+                     /*
+                      * prevent interleaving by waiting for 8 seconds until the previous ACK gets
+                      * sent. Certain ITSPs do not deal well with interleaved INVITE transactions
+                      * (return bad error code).
+                      */
+                     long startTime = System.currentTimeMillis();
+                     if ( ! ackSem.tryAcquire(8,TimeUnit.SECONDS) ) {
+                         /*
+                          * Could not send re-INVITE fire a timeout on the INVITE.
+                          */
+                         sipStack.getStackLogger().logError("Could not send re-INVITE -- killing call");
+                         ((SIPClientTransaction )ctx).fireTimeoutTimer();
+                         return;
+                     } else {
+                         timeToWait = System.currentTimeMillis() - startTime;
+                     }
+                }
+
+                /*
+                 * If we had to wait for ACK then
+                 * wait for the ACK to actually get to the other side. Wait for any ACK
+                 * retransmissions to finish. Then send out the request. This is a
+                 * hack in support of some UA that want re-INVITEs to be spaced
+                 * out in time ( else they return a 400 error code ).
+                 */
+                try {
+                    if ( timeToWait != 0 ) {
+                        Thread.sleep(SIPDialog.this.reInviteWaitTime);
+                    }
+                } catch ( InterruptedException ex) {
+                    sipStack.getStackLogger().logDebug("Interrupted sleep");
+                    return;
+                }
+                if (SIPDialog.this.getState() != DialogState.TERMINATED) {   
+                    SIPDialog.this.reInviteTransaction = (SIPClientTransaction)ctx;
+                    SIPDialog.this.sendRequest(ctx,true);
+                }
+                sipStack.getStackLogger().logDebug("re-INVITE successfully sent");
+            } catch (Exception ex) {
+                sipStack.getStackLogger().logError("Error sending INVITE", ex);
+            } finally {
+                waitingToSendReInvite.set(false);
+                
+                this.ctx = null;
+            }
+        }
+    }
     class LingerTimer extends SIPStackTimerTask {
 
         public LingerTimer() {
@@ -612,10 +705,15 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     /**
      * Sends ACK Request to the remote party of this Dialogue.
      *
+     * 
      * @param request the new ACK Request message to send.
+     * @param throwIOExceptionAsSipException - throws SipException if IOEx encountered. Otherwise,
+     *  no exception is propagated.
+     * @param releaseAckSem - release ack semaphore.
      * @throws SipException if implementation cannot send the ACK Request for any other reason
+     * 
      */
-    private void sendAck(Request request, boolean throwIOExceptionAsSipException)
+    private void sendAck(Request request, boolean throwIOExceptionAsSipException, boolean releaseAckSem)
             throws SipException {
         SIPRequest ackRequest = (SIPRequest) request;
         if (sipStack.isLoggingEnabled())
@@ -673,7 +771,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                     inetAddress, hop.getPort());
             this.lastAck = ackRequest;
             messageChannel.sendMessage(ackRequest);
-
+            if ( releaseAckSem && ! this.allowReInviteInterleaving )  {
+                this.ackSem.release();
+            }
         } catch (IOException ex) {
             if (throwIOExceptionAsSipException)
                 throw new SipException("Could not send ack", ex);
@@ -1356,6 +1456,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         return this.localParty;
     }
 
+   
+    
     private void setLocalParty(SIPMessage sipMessage) {
         if (!isServer()) {
             this.localParty = sipMessage.getFrom().getAddress();
@@ -1421,7 +1523,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * @see javax.sip.Dialog#sendAck(javax.sip.message.Request)
      */
     public void sendAck(Request request) throws SipException {
-        this.sendAck(request, true);
+        this.sendAck(request, true, true);
     }
 
     /*
@@ -1582,9 +1684,21 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      *
      * @see javax.sip.Dialog#sendRequest(javax.sip.ClientTransaction)
      */
-    public void sendRequest(ClientTransaction clientTransactionId)
+    
+    public void sendRequest(ClientTransaction clientTransactionId)  
+    throws TransactionDoesNotExistException, SipException  {
+        this.sendRequest(clientTransactionId, this.allowReInviteInterleaving);
+    }
+    
+    public void sendRequest(ClientTransaction clientTransactionId, boolean allowInterleaving)
             throws TransactionDoesNotExistException, SipException {
 
+        if ( !allowInterleaving && 
+                clientTransactionId.getRequest().getMethod().equals(Request.INVITE)) {
+            new Thread((new ReInviteSender(clientTransactionId))).start();
+            return;
+        }
+        
         SIPRequest dialogRequest = ((SIPClientTransaction) clientTransactionId)
                 .getOriginalRequest();
 
@@ -1834,7 +1948,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
                 }
             }
-            this.sendAck(lastAck, false);
+            this.sendAck(lastAck, false, false);
         }
 
     }
@@ -2728,5 +2842,24 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     String getEarlyDialogId() {
         return earlyDialogId;
     }
+
+    /**
+     * @param asynchronous the asynchronous to set
+     */
+    public void setAllowReInviteInterleaving(boolean interleavingAllowed) {
+        this.allowReInviteInterleaving   = interleavingAllowed;
+    }
+
+    /**
+     * Release the semaphore for ACK processing so the next re-INVITE 
+     * may proceed.
+     */
+    void releaseAckSem() {
+        if (! this.allowReInviteInterleaving) {
+            this.ackSem.release();
+        }
+        
+    }
+
 
 }
