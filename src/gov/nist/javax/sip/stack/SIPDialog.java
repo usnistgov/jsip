@@ -67,7 +67,7 @@ import java.text.ParseException;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  *
- * @version 1.2 $Revision: 1.112 $ $Date: 2009-08-04 20:59:21 $
+ * @version 1.2 $Revision: 1.113 $ $Date: 2009-08-05 02:17:16 $
  *
  * @author M. Ranganathan
  *
@@ -265,6 +265,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 }
                 if (SIPDialog.this.getState() != DialogState.TERMINATED) {   
                     SIPDialog.this.reInviteTransaction = (SIPClientTransaction)ctx;
+                    Thread.sleep(500);
                     SIPDialog.this.sendRequest(ctx,true);
                 }
                 sipStack.getStackLogger().logDebug("re-INVITE successfully sent");
@@ -2843,19 +2844,13 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         return earlyDialogId;
     }
 
-    /**
-     * @param asynchronous the asynchronous to set
-     */
-    public void setAllowReInviteInterleaving(boolean interleavingAllowed) {
-        this.allowReInviteInterleaving   = interleavingAllowed;
-    }
 
     /**
      * Release the semaphore for ACK processing so the next re-INVITE 
      * may proceed.
      */
     void releaseAckSem() {
-        if (! this.allowReInviteInterleaving) {
+        if (! sipStack.allowReinviteInterleaving) {
             this.ackSem.release();
         }
         
