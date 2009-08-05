@@ -23,6 +23,7 @@
 package test.unit.gov.nist.javax.sip.stack.reInvite;
 
 import gov.nist.javax.sip.SipProviderImpl;
+import gov.nist.javax.sip.SipStackImpl;
 
 import java.util.EventObject;
 import java.util.Hashtable;
@@ -87,7 +88,9 @@ public class ReInviteTest extends ScenarioHarness implements SipListener {
             this.transport = "udp";
 
             super.setUp();
+            
             shootist = new Shootist(getRiProtocolObjects());
+            
             SipProvider shootistProvider = shootist.createSipProvider();
             providerTable.put(shootistProvider, shootist);
 
@@ -96,6 +99,8 @@ public class ReInviteTest extends ScenarioHarness implements SipListener {
             providerTable.put(shootmeProvider, shootme);
             shootistProvider.addSipListener(this);
             shootmeProvider.addSipListener(this);
+            ((SipStackImpl)getTiProtocolObjects().sipStack).setAllowReInviteInterleaving(false);
+            ((SipStackImpl)getRiProtocolObjects().sipStack).setAllowReInviteInterleaving(false);
 
             getRiProtocolObjects().start();
             if (getTiProtocolObjects() != getRiProtocolObjects())

@@ -258,7 +258,18 @@ import org.apache.log4j.Logger;
  * INVITE from a different stack than the INVITE. You can also create a CANCEL client transaction
  * late and send it out after the INVITE server transaction has been Terminated. Clearly this will
  * result in protocol errors. Setting the flag to true ( default ) enables you to avoid common
- * protocol errors.
+ * protocol errors. </li>
+ * 
+ * <li><b>gov.nist.javax.sip.ALLOW_RE_INVITE_INTERLEAVING = [true|false] </b> <br/> Default is <it>true</it>
+ * This flag controls whether re-INVITES are allowed to interleave. Setting this to false imposes
+ * serialization on re-INVITE so that the remote party will not return Request Pending ( 491 ).
+ * If this flag is set then all the re-INVITEs that use the dialog will 
+ * wait till an ACK has been sent on the previous re-INVITE before sending the
+ * new re-INVITE. This prevents the UA recieving the re-INVITE from receiving an
+ * out of order INVITE - which would result in it sending a 491 with a timeout
+ * to indicate that the request should be re-transmitted. If this flag is set
+ * the dialog.sendRequest works asynchronously. An error is reported on timeout
+ *if the ACK is not sent within 8 seconds. </li>
  *
  * <li><b>gov.nist.javax.sip.LOOSE_DIALOG_VALIDATION = int </b> <br/> Default
  * is <it>false</it>. This flag turns off some dialog validation features when the stack is used
@@ -276,13 +287,13 @@ import org.apache.log4j.Logger;
  * is <it>8*1024</it>. This property control the size of the UDP buffer used for SIP messages. Under load,
  * if the buffer capacity is overflown the messages are dropped causing retransmissions, further increasing
  * the load and causing even more retransmissions. Good values to this property for servers is a big number
- * in the order of 8*8*1024.
+ * in the order of 8*8*1024. </li>
  * 
  * <li><b>gov.nist.javax.sip.SEND_UDP_BUFFER_SIZE = int </b> <br/> Default
  * is <it>8*1024</it>. This property control the size of the UDP buffer used for SIP messages. Under load,
  * if the buffer capacity is overflown the messages are dropped causing retransmissions, further increasing
  * the load and causing even more retransmissions. Good values to this property for servers is a big number
- * in the order of 8*8*1024 or higher.
+ * in the order of 8*8*1024 or higher. </li>
  * 
  * <li><b>gov.nist.javax.sip.CONGESTION_CONTROL_ENABLED = boolean </b> Defailt is true.
  * If set to true stack will enforce queue length limitation for UDP. The Max queue size is
@@ -290,7 +301,7 @@ import org.apache.log4j.Logger;
  *
  * <li><b>gov.nist.javax.sip.DELIVER_UNSOLICITED_NOTIFY = [true|false] </b> <br/> Default
  * is <it>false</it>. This flag is added to allow Sip Listeners to receive all NOTIFY requests
- * including those that are not part of a valid dialog.
+ * including those that are not part of a valid dialog. </li>
  *
  * <li><b>javax.net.ssl.keyStore = fileName </b> <br/> Default
  * is <it>NULL</it>.  If left undefined the keyStore and trustStore will be left to the java
@@ -313,7 +324,7 @@ import org.apache.log4j.Logger;
  * in this class. </b>
  *
  *
- * @version 1.2 $Revision: 1.92 $ $Date: 2009-08-03 07:32:49 $
+ * @version 1.2 $Revision: 1.93 $ $Date: 2009-08-05 02:17:15 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -817,6 +828,10 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
              Boolean.parseBoolean(configurationProperties.getProperty(
              "gov.nist.javax.sip.CONGESTION_CONTROL_ENABLED",Boolean.TRUE.toString()));
         super.stackDoesCongestionControl = congetstionControlEnabled;
+        
+        super.allowReinviteInterleaving = 
+            Boolean.parseBoolean(configurationProperties.getProperty(
+                    "gov.nist.javax.sip.ALLOW_RE_INVITE_INTERLEAVING",Boolean.TRUE.toString()));
     }
 
     /*
@@ -1142,5 +1157,15 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
      */
     public String []getEnabledCipherSuites() {
         return cipherSuites;
+    }
+    
+    /**
+     * Set the "allow-reinvite-interleaving" flag.
+     * 
+     * @param flag - boolean flag to set.
+     * 
+     */
+    public void setAllowReInviteInterleaving(boolean flag) {
+        super.allowReinviteInterleaving = flag;
     }
 }
