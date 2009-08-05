@@ -232,21 +232,23 @@ public class Shootist  implements SipListener {
                 // Use whatever transport was used to create
                 // the dialog.
                 if (reInviteCount == 0) {
-                    Request inviteRequest = dialog
-                            .createRequest(Request.INVITE);
-                    ((SipURI) inviteRequest.getRequestURI())
-                            .removeParameter("transport");
-                    ((ViaHeader) inviteRequest.getHeader(ViaHeader.NAME))
-                            .setTransport("udp");
-                    inviteRequest.addHeader(contactHeader);
-                    MaxForwardsHeader mf = protocolObjects.headerFactory
-                            .createMaxForwardsHeader(10);
-                    inviteRequest.addHeader(mf);
-                    Thread.sleep(100);
-                    ClientTransaction ct = provider
-                            .getNewClientTransaction(inviteRequest);
-                    dialog.sendRequest(ct);
-                    reInviteCount++;
+                    for ( int i = 0 ; i < 2 ; i ++ ) {
+                        Request inviteRequest = dialog
+                        .createRequest(Request.INVITE);
+                        ((SipURI) inviteRequest.getRequestURI())
+                        .removeParameter("transport");
+                        ((ViaHeader) inviteRequest.getHeader(ViaHeader.NAME))
+                        .setTransport("udp");
+                        inviteRequest.addHeader(contactHeader);
+                        MaxForwardsHeader mf = protocolObjects.headerFactory
+                        .createMaxForwardsHeader(10);
+                        inviteRequest.addHeader(mf);
+                        Thread.sleep(100);
+                        ClientTransaction ct = provider
+                        .getNewClientTransaction(inviteRequest);
+                        dialog.sendRequest(ct);
+                        reInviteCount++;
+                    }
                 } else {
                     this.okReceived = true;
                 }
@@ -419,7 +421,6 @@ public class Shootist  implements SipListener {
             // Create the client transaction.
             this.inviteTid = provider.getNewClientTransaction(request);
             this.dialog = this.inviteTid.getDialog();
-            ((DialogExt)this.dialog).setAllowReInviteInterleaving(false);
             // Note that the response may have arrived right away so
             // we cannot check after the message is sent.
             ReInviteTest.assertTrue(this.dialog.getState() == null);
@@ -437,9 +438,9 @@ public class Shootist  implements SipListener {
 
 
     public void checkState() {
-        ReInviteTest.assertTrue("Expect to send a re-invite" , reInviteCount == 1 && this.okReceived);
+        ReInviteTest.assertTrue("Expect to send a re-invite" , reInviteCount == 2 && this.okReceived);
         ReInviteTest.assertTrue("Expect to send a bye and get OK for the bye", this.byeSent && this.byeOkRecieved);
-        ReInviteTest.assertEquals("Expecting a re-invite",this.reInviteReceivedCount, 1);
+        ReInviteTest.assertTrue("Expecting a re-invite",this.reInviteReceivedCount == 1);
 
     }
 

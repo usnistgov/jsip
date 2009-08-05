@@ -168,7 +168,6 @@ public class Shootme  implements SipListener {
             }
             dialog = st.getDialog();
             
-            ((DialogExt) dialog).setAllowReInviteInterleaving(false);
             if (dialog != null) {
                 logger.info("Dialog " + dialog);
                 logger.info("Dialog state " + dialog.getState());
