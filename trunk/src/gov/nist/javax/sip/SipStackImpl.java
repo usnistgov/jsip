@@ -267,9 +267,9 @@ import org.apache.log4j.Logger;
  * wait till an ACK has been sent on the previous re-INVITE before sending the
  * new re-INVITE. This prevents the UA recieving the re-INVITE from receiving an
  * out of order INVITE - which would result in it sending a 491 with a timeout
- * to indicate that the request should be re-transmitted. If this flag is set
+ * to indicate that the request should be re-transmitted. If this flag is set to <it>false</it>
  * the dialog.sendRequest works asynchronously. An error is reported on timeout
- *if the ACK is not sent within 8 seconds. </li>
+ * if the ACK is not sent within 8 seconds. </li>
  *
  * <li><b>gov.nist.javax.sip.LOOSE_DIALOG_VALIDATION = int </b> <br/> Default
  * is <it>false</it>. This flag turns off some dialog validation features when the stack is used
@@ -324,7 +324,7 @@ import org.apache.log4j.Logger;
  * in this class. </b>
  *
  *
- * @version 1.2 $Revision: 1.93 $ $Date: 2009-08-05 02:17:15 $
+ * @version 1.2 $Revision: 1.94 $ $Date: 2009-08-05 02:33:53 $
  *
  * @author M. Ranganathan <br/>
  *
