@@ -31,29 +31,8 @@ import gov.nist.javax.sip.message.SIPMessage;
  * @author jean.deruelle@gmail.com
  *
  */
-public interface ServerLogger {
-	/**
-     * Dont trace
-     */
-    public static final int TRACE_NONE = 0;
-
-    public static final int TRACE_MESSAGES = StackLogger.TRACE_MESSAGES;
-
-    /**
-     * Trace exception processing
-     */
-    public static final int TRACE_EXCEPTION = 17;
-
-    /**
-     * Debug trace level (all tracing enabled).
-     */
-    public static final int TRACE_DEBUG = 32;
-
-    /**
-     * TRACE trace level. ( stack traces included )
-     */
-    public static final int TRACE_TRACE = 64;
-
+public interface ServerLogger extends LogLevels {
+	
    
 	 void closeLogFile();
 	 

@@ -2,38 +2,25 @@ package gov.nist.core;
 
 import java.util.Properties;
 
+
 /**
  * interface that loggers should implement so that the stack can log to various
  * loggers impl such as log4j, commons logging, sl4j, ...
  * @author jean.deruelle@gmail.com
  *
  */
-public interface StackLogger {
-	 /**
-     * Dont trace
-     */
-    public static final int TRACE_NONE = 0;
+public interface StackLogger extends LogLevels {
 
     /**
-     * Trace message processing
-     */
-    public static final int TRACE_MESSAGES = 16;
-
-    /**
-     * Trace exception processing
-     */
-    public static final int TRACE_EXCEPTION = 17;
-
-    /**
-     * Debug trace level (all tracing enabled).
-     */
-    public static final int TRACE_DEBUG = 32;
-
-	/**
      * log a stack trace. This helps to look at the stack frame.
      */
 	public void logStackTrace();
 	
+	/**
+	 * Log a stack trace if the current logging level exceeds 
+	 * given trace level.
+	 * @param traceLevel
+	 */
 	public void logStackTrace(int traceLevel);
 	
 	/**
@@ -100,6 +87,8 @@ public interface StackLogger {
      * @param string
      */
     public void logInfo(String string);
+    
+   
     /**
      * Disable logging altogether.
      *
@@ -111,7 +100,23 @@ public interface StackLogger {
      */
     public void enableLogging();
     
+    /**
+     * Set the build time stamp. This is logged into the logging stream.
+     */
     public void setBuildTimeStamp(String buildTimeStamp);
     
+    /**
+     * Stack creation properties.
+     * @param stackProperties
+     */
+    
     public void setStackProperties(Properties stackProperties);
+    
+    /**
+     * The category for the logger.
+     * @return
+     */
+    public String getLoggerName();
+
+   
 }

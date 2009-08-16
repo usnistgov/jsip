@@ -3,6 +3,7 @@ package gov.nist.javax.sip;
 import gov.nist.core.net.AddressResolver;
 import gov.nist.javax.sip.clientauthutils.AccountManager;
 import gov.nist.javax.sip.clientauthutils.AuthenticationHelper;
+import gov.nist.javax.sip.clientauthutils.SecureAccountManager;
 import gov.nist.javax.sip.header.extensions.JoinHeader;
 import gov.nist.javax.sip.header.extensions.ReplacesHeader;
 
@@ -53,6 +54,21 @@ public interface SipStackExt {
      * @since 2.0
      */
     public AuthenticationHelper getAuthenticationHelper(AccountManager accountManager,
+            HeaderFactory headerFactory);
+    
+    /**
+     * Get the authentication helper.
+     *
+     *
+     * @param accountManager -- account manager (for fetching credentials).
+     * @param headerFactory -- header factory.
+     *
+     * @return - the authentication helper which can be used for generating the appropriate
+     *         headers for handling authentication challenges for user agents.
+     *
+     * @since 2.0
+     */
+    public AuthenticationHelper getSecureAuthenticationHelper(SecureAccountManager accountManager,
             HeaderFactory headerFactory);
 
     /**

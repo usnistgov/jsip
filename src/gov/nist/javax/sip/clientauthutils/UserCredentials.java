@@ -33,7 +33,8 @@ public interface UserCredentials
     * @return the sip domain
     */
    public String getSipDomain();
-
+   
+   
   
 }
 
