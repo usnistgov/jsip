@@ -79,7 +79,7 @@ import javax.sip.message.Response;
  *
  *
  *
- * @version 1.2 $Revision: 1.59 $ $Date: 2009-07-29 20:38:15 $
+ * @version 1.2 $Revision: 1.60 $ $Date: 2009-08-16 17:28:27 $
  */
 public class UDPMessageChannel extends MessageChannel implements
         ParseExceptionListener, Runnable, RawMessageChannel {
@@ -573,9 +573,9 @@ public class UDPMessageChannel extends MessageChannel implements
                 /*
                  * We dont want to log empty trace messages.
                  */
-                this.sipStack.getStackLogger().logStackTrace(StackLogger.TRACE_MESSAGES);
+                this.sipStack.getStackLogger().logStackTrace(StackLogger.TRACE_INFO);
             } else {
-                this.sipStack.getStackLogger().logStackTrace(StackLogger.TRACE_MESSAGES);
+                this.sipStack.getStackLogger().logStackTrace(StackLogger.TRACE_INFO);
             }
         }
 
@@ -636,7 +636,7 @@ public class UDPMessageChannel extends MessageChannel implements
             int peerPort, boolean reConnect) throws IOException {
         // Via is not included in the request so silently drop the reply.
         if (sipStack.isLoggingEnabled() && this.sipStack.logStackTraceOnMessageSend ) {
-            this.sipStack.getStackLogger().logStackTrace(StackLogger.TRACE_MESSAGES);
+            this.sipStack.getStackLogger().logStackTrace(StackLogger.TRACE_INFO);
         }
         if (peerPort == -1) {
             if (sipStack.isLoggingEnabled()) {
@@ -711,9 +711,7 @@ public class UDPMessageChannel extends MessageChannel implements
         } else {
             if (sipStack.isLoggingEnabled()) {
                 this.sipStack.getStackLogger().logDebug( ":sendMessage " + peerAddress.getHostAddress() + "/"
-                        + peerPort + "\n" + " messageSize = " + msg.length
-                        + "\n message = "+ new String(msg));
-                this.sipStack.getStackLogger().logDebug("*******************\n");
+                        + peerPort + "\n" + " messageSize = " + msg.length);
             }
         }
         if (peerProtocol.compareToIgnoreCase("UDP") == 0) {

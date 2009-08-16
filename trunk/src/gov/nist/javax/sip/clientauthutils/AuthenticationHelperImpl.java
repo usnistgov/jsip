@@ -18,6 +18,7 @@ package gov.nist.javax.sip.clientauthutils;
  */
 
 import gov.nist.javax.sip.SipStackImpl;
+import gov.nist.javax.sip.address.SipUri;
 import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.stack.SIPClientTransaction;
 import gov.nist.javax.sip.stack.SIPTransactionStack;
@@ -35,6 +36,7 @@ import javax.sip.SipException;
 import javax.sip.SipProvider;
 import javax.sip.address.Hop;
 import javax.sip.address.SipURI;
+import javax.sip.address.URI;
 import javax.sip.header.AuthorizationHeader;
 import javax.sip.header.CSeqHeader;
 import javax.sip.header.Header;
@@ -68,7 +70,7 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
     /**
      * The account manager for the system. Stores user credentials.
      */
-    private AccountManager accountManager = null;
+    private Object accountManager = null;
 
     /*
      * Header factory for this security manager.
@@ -95,6 +97,24 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
 
         this.cachedCredentials = new CredentialsCache(((SIPTransactionStack) sipStack).getTimer());
     }
+    
+    /**
+     * Default constructor for the security manager. There is one Account manager. There is one
+     * SipSecurity manager for every user name,
+     *
+     * @param sipStack -- our stack.
+     * @param accountManger -- an implementation of the AccountManager interface.
+     * @param headerFactory -- header factory.
+     */
+    public AuthenticationHelperImpl(SipStackImpl sipStack, SecureAccountManager accountManager,
+            HeaderFactory headerFactory) {
+        this.accountManager = accountManager;
+        this.headerFactory = headerFactory;
+        this.sipStack = sipStack;
+
+        this.cachedCredentials = new CredentialsCache(((SIPTransactionStack) sipStack).getTimer());
+    }
+    
 
     /*
      * (non-Javadoc)
@@ -202,24 +222,37 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
             while (authHeaders.hasNext()) {
                 authHeader = (WWWAuthenticateHeader) authHeaders.next();
                 String realm = authHeader.getRealm();
-
-                UserCredentials userCreds = this.accountManager.getCredentials(challengedTransaction, realm);
-                if (userCreds == null)
-                    throw new SipException(
+                AuthorizationHeader authorization = null;
+                String sipDomain;
+                if ( this.accountManager instanceof SecureAccountManager ) {
+                    UserCredentialHash credHash =
+                        ((SecureAccountManager)this.accountManager).getCredentialHash(challengedTransaction,realm);
+                    URI uri = reoriginatedRequest.getRequestURI();
+                    sipDomain = credHash.getSipDomain();
+                    authorization = this.getAuthorization(reoriginatedRequest
+                            .getMethod(), uri.toString(),
+                            (reoriginatedRequest.getContent() == null) ? "" : new String(
+                            reoriginatedRequest.getRawContent()), authHeader, credHash);
+                } else {
+                    UserCredentials userCreds = ((AccountManager) this.accountManager).getCredentials(challengedTransaction, realm);
+                    sipDomain = userCreds.getSipDomain();
+                    if (userCreds == null)
+                         throw new SipException(
                             "Cannot find user creds for the given user name and realm");
 
-                // we haven't yet authentified this realm since we were
-                // started.
+                    // we haven't yet authenticated this realm since we were
+                    // started.
 
-                AuthorizationHeader authorization = this.getAuthorization(reoriginatedRequest
-                        .getMethod(), reoriginatedRequest.getRequestURI().toString(),
-                        (reoriginatedRequest.getContent() == null) ? "" : new String(
+                       authorization = this.getAuthorization(reoriginatedRequest
+                                .getMethod(), reoriginatedRequest.getRequestURI().toString(),
+                                (reoriginatedRequest.getContent() == null) ? "" : new String(
                                 reoriginatedRequest.getRawContent()), authHeader, userCreds);
+                }
                 sipStack.getStackLogger().logDebug(
                         "Created authorization header: " + authorization.toString());
 
                 if (cacheTime != 0)
-                    cachedCredentials.cacheAuthorizationHeader(userCreds.getSipDomain(),
+                    cachedCredentials.cacheAuthorizationHeader(sipDomain,
                             authorization, cacheTime);
 
                 reoriginatedRequest.addHeader(authorization);
@@ -237,6 +270,9 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
             throw new SipException("Unexpected exception ", ex);
         }
     }
+    
+    
+   
 
     /**
      * Generates an authorisation header in response to wwwAuthHeader.
@@ -305,7 +341,72 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
 
         return authorization;
     }
+    /**
+     * Generates an authorisation header in response to wwwAuthHeader.
+     *
+     * @param method method of the request being authenticated
+     * @param uri digest-uri
+     * @param requestBody the body of the request.
+     * @param authHeader the challenge that we should respond to
+     * @param userCredentials username and pass
+     *
+     * @return an authorisation header in response to authHeader.
+     *
+     * @throws OperationFailedException if auth header was malformated.
+     */
+    private AuthorizationHeader getAuthorization(String method, String uri, String requestBody,
+            WWWAuthenticateHeader authHeader, UserCredentialHash userCredentials) {
+        String response = null;
 
+        // JvB: authHeader.getQop() is a quoted _list_ of qop values
+        // (e.g. "auth,auth-int") Client is supposed to pick one
+        String qopList = authHeader.getQop();
+        String qop = (qopList != null) ? "auth" : null;
+        String nc_value = "00000001";
+        String cnonce = "xyz";
+
+        response = MessageDigestAlgorithm.calculateResponse(authHeader.getAlgorithm(),
+              userCredentials.getHashUserDomainPassword(), authHeader.getNonce(), nc_value, // JvB added
+                cnonce, // JvB added
+                method, uri, requestBody, qop,sipStack.getStackLogger());// jvb changed
+
+        AuthorizationHeader authorization = null;
+        try {
+            if (authHeader instanceof ProxyAuthenticateHeader) {
+                authorization = headerFactory.createProxyAuthorizationHeader(authHeader
+                        .getScheme());
+            } else {
+                authorization = headerFactory.createAuthorizationHeader(authHeader.getScheme());
+            }
+
+            authorization.setUsername(userCredentials.getUserName());
+            authorization.setRealm(authHeader.getRealm());
+            authorization.setNonce(authHeader.getNonce());
+            authorization.setParameter("uri", uri);
+            authorization.setResponse(response);
+            if (authHeader.getAlgorithm() != null) {
+                authorization.setAlgorithm(authHeader.getAlgorithm());
+            }
+
+            if (authHeader.getOpaque() != null) {
+                authorization.setOpaque(authHeader.getOpaque());
+            }
+
+            // jvb added
+            if (qop != null) {
+                authorization.setQop(qop);
+                authorization.setCNonce(cnonce);
+                authorization.setNonceCount(Integer.parseInt(nc_value));
+            }
+
+            authorization.setResponse(response);
+
+        } catch (ParseException ex) {
+            throw new RuntimeException("Failed to create an authorization header!");
+        }
+
+        return authorization;
+    }
     /**
      * Removes all via headers from <tt>request</tt> and replaces them with a new one, equal to
      * the one that was top most.

@@ -53,7 +53,7 @@ import java.io.*;
  * accessed from the SIPMessage using the getContent and getContentBytes methods
  * provided by the SIPMessage class.
  *
- * @version 1.2 $Revision: 1.22 $ $Date: 2009-07-17 18:58:02 $
+ * @version 1.2 $Revision: 1.23 $ $Date: 2009-08-16 17:28:28 $
  *
  * @author M. Ranganathan
  *
@@ -231,8 +231,9 @@ public final class PipelinedMsgParser implements Runnable {
                         line1 = readLine(inputStream);
                         // ignore blank lines.
                         if (line1.equals("\n")) {
-                            if (Debug.parserDebug)
-                                Debug.println("Discarding " + line1);
+                            if (Debug.parserDebug) {
+                                Debug.println("Discarding blank line. ");
+                            }
                             continue;
                         } else
                             break;
@@ -248,6 +249,7 @@ public final class PipelinedMsgParser implements Runnable {
                 // Guard against bad guys.
                 this.rawInputStream.startTimer();
 
+                Debug.println("Reading Input Stream");
                 while (true) {
                     try {
                         line2 = readLine(inputStream);
@@ -270,6 +272,9 @@ public final class PipelinedMsgParser implements Runnable {
                 SIPMessage sipMessage = null;
 
                 try {
+                    if (Debug.debug) {
+                        Debug.println("About to parse : " + inputBuffer.toString());
+                    }
                     sipMessage = smp.parseSIPMessage(inputBuffer.toString());
                     if (sipMessage == null) {
                         this.rawInputStream.stopTimer();
@@ -277,11 +282,13 @@ public final class PipelinedMsgParser implements Runnable {
                     }
                 } catch (ParseException ex) {
                     // Just ignore the parse exception.
+                    Debug.logError("Detected a parse error", ex);
                     continue;
                 }
 
-                if (Debug.parserDebug)
+                if (Debug.debug) {
                     Debug.println("Completed parsing message");
+                }
                 ContentLength cl = (ContentLength) sipMessage
                         .getContentLength();
                 int contentLength = 0;
@@ -291,10 +298,8 @@ public final class PipelinedMsgParser implements Runnable {
                     contentLength = 0;
                 }
 
-                if (Debug.parserDebug) {
+                if (Debug.debug) {
                     Debug.println("contentLength " + contentLength);
-                    Debug.println("sizeCounter " + this.sizeCounter);
-                    Debug.println("maxMessageSize " + this.maxMessageSize);
                 }
 
                 if (contentLength == 0) {
@@ -321,7 +326,7 @@ public final class PipelinedMsgParser implements Runnable {
                                 break;
                             }
                         } catch (IOException ex) {
-                            ex.printStackTrace();
+                            Debug.logError("Exception Reading Content",ex);
                             break;
                         } finally {
                             // Stop my starvation timer.
@@ -361,6 +366,9 @@ public final class PipelinedMsgParser implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.22  2009/07/17 18:58:02  emcho
+ * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
+ *
  * Revision 1.21  2008/05/24 04:10:01  mranga
  *
  * Issue number:   158

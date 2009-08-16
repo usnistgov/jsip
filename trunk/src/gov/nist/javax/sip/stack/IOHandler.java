@@ -179,7 +179,7 @@ class IOHandler {
                     + contactPort + " length = " + length);
         }
         if ( sipStack.isLoggingEnabled() && sipStack.logStackTraceOnMessageSend ) {
-            sipStack.getStackLogger().logStackTrace(StackLogger.TRACE_MESSAGES);
+            sipStack.getStackLogger().logStackTrace(StackLogger.TRACE_INFO);
         }
         if (transport.compareToIgnoreCase(TCP) == 0) {
             String key = makeKey(receiverAddress, contactPort);

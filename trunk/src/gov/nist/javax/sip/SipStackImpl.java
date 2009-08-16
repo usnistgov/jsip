@@ -34,6 +34,7 @@ import gov.nist.core.net.SslNetworkLayer;
 import gov.nist.javax.sip.clientauthutils.AccountManager;
 import gov.nist.javax.sip.clientauthutils.AuthenticationHelper;
 import gov.nist.javax.sip.clientauthutils.AuthenticationHelperImpl;
+import gov.nist.javax.sip.clientauthutils.SecureAccountManager;
 import gov.nist.javax.sip.parser.StringMsgParser;
 import gov.nist.javax.sip.stack.DefaultMessageLogFactory;
 import gov.nist.javax.sip.stack.DefaultRouter;
@@ -80,7 +81,7 @@ import org.apache.log4j.Logger;
  * <ul>
  *
  * <li><b>gov.nist.javax.sip.TRACE_LEVEL = integer </b><br/> You can use the standard log4j
- * level names here (i.e. ERROR, INFO, WARNING, OFF, DEBUG) If this is set to INFO (or TRACE) or
+ * level names here (i.e. ERROR, INFO, WARNING, OFF, DEBUG, TRACE) If this is set to INFO  or
  * above, then incoming valid messages are logged in SERVER_LOG. If you set this to 32 and specify
  * a DEBUG_LOG then vast amounts of trace information will be dumped in to the specified
  * DEBUG_LOG. The server log accumulates the signaling trace. <a href="{@docRoot}/tools/tracesviewer/tracesviewer.html">
@@ -324,7 +325,7 @@ import org.apache.log4j.Logger;
  * in this class. </b>
  *
  *
- * @version 1.2 $Revision: 1.94 $ $Date: 2009-08-05 02:33:53 $
+ * @version 1.2 $Revision: 1.95 $ $Date: 2009-08-16 17:28:28 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -1124,6 +1125,17 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
      *      javax.sip.header.HeaderFactory)
      */
     public AuthenticationHelper getAuthenticationHelper(AccountManager accountManager,
+            HeaderFactory headerFactory) {
+        return new AuthenticationHelperImpl(this, accountManager, headerFactory);
+    }
+    
+    /*
+     * (non-Javadoc)
+     *
+     * @see gov.nist.javax.sip.SipStackExt#getAuthenticationHelper(gov.nist.javax.sip.clientauthutils.AccountManager,
+     *      javax.sip.header.HeaderFactory)
+     */
+    public AuthenticationHelper getSecureAuthenticationHelper(SecureAccountManager accountManager,
             HeaderFactory headerFactory) {
         return new AuthenticationHelperImpl(this, accountManager, headerFactory);
     }
