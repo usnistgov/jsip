@@ -265,7 +265,7 @@ public class LogWriter implements StackLogger {
      * @param configurationProperties
      */
     public LogWriter(Properties configurationProperties) {
-
+        
         this.configurationProperties = configurationProperties;
 
         String logLevel = configurationProperties
@@ -287,98 +287,107 @@ public class LogWriter implements StackLogger {
         logger = Logger.getLogger(category);
         if (logLevel != null) {
             if (logLevel.equals("LOG4J")) {
-            //if TRACE_LEVEL property is specified as
-            //"LOG4J" then, set the traceLevel based on
-            //the log4j effective log level.
-            Level level = logger.getEffectiveLevel();
-            this.needsLogging = true;
-            if (level == Level.OFF)
-                this.needsLogging = false;
-            this.traceLevel = TRACE_NONE;
-            if (level.isGreaterOrEqual(Level.DEBUG)) {
-                this.traceLevel = TRACE_DEBUG;
-            } else if (level.isGreaterOrEqual(Level.INFO)) {
-                this.traceLevel = TRACE_MESSAGES;
-            } else if (level.isGreaterOrEqual(Level.WARN)) {
-                this.traceLevel = TRACE_EXCEPTION;
-            }
+                //if TRACE_LEVEL property is specified as
+                //"LOG4J" then, set the traceLevel based on
+                //the log4j effective log level.
+                Level level = logger.getEffectiveLevel();
+                this.needsLogging = true;
+                if (level == Level.OFF)
+                    this.needsLogging = false;
+                this.traceLevel = TRACE_NONE;
+                if (level.isGreaterOrEqual(Level.DEBUG)) {
+                    this.traceLevel = TRACE_DEBUG;
+                } else if (level.isGreaterOrEqual(Level.INFO)) {
+                    this.traceLevel = TRACE_INFO;
+                } else if (level.isGreaterOrEqual(Level.WARN)) {
+                    this.traceLevel = TRACE_ERROR;
+                }
             }
             else {
-            try {
-                int ll = 0;
-                if (logLevel.equals("DEBUG")) {
-                    ll = TRACE_DEBUG;
-                } else if (logLevel.equals("TRACE") || logLevel.equals("INFO")) {
-                    ll = TRACE_MESSAGES;
-                } else if (logLevel.equals("ERROR")) {
-                    ll = TRACE_EXCEPTION;
-                } else if (logLevel.equals("NONE") || logLevel.equals("OFF")) {
-                    ll = TRACE_NONE;
-                } else {
-                    ll = Integer.parseInt(logLevel);
-                }
-
-                this.setTraceLevel(ll);
-                this.needsLogging = true;
-                if (traceLevel == TRACE_DEBUG) {
-                    logger.setLevel(Level.DEBUG);
-                } else if (traceLevel == TRACE_MESSAGES) {
-                    logger.setLevel(Level.INFO);
-                } else if (traceLevel == TRACE_EXCEPTION) {
-                    logger.setLevel(Level.ERROR);
-                } else if (traceLevel == TRACE_NONE) {
-                    logger.setLevel(Level.OFF);
-                    this.needsLogging = false;
-                }
-
-                /*
-                 * If user specifies a logging file as part of the startup
-                 * properties then we try to create the appender.
-                 */
-                if (this.needsLogging && this.logFileName != null) {
-
-                    boolean overwrite = Boolean.valueOf(
-                        configurationProperties.getProperty(
-                                "gov.nist.javax.sip.DEBUG_LOG_OVERWRITE"));
-
-                    FileAppender fa = null;
-                    try {
-                        fa = new FileAppender(new SimpleLayout(),
-                                this.logFileName, !overwrite);
-                    } catch (FileNotFoundException fnf) {
-
-                        // Likely due to some directoy not existing. Create
-                        // them
-                        File logfile = new File(this.logFileName);
-                        logfile.getParentFile().mkdirs();
-                        logfile.delete();
-
-                        try {
-                            fa = new FileAppender(new SimpleLayout(),
-                                    this.logFileName);
-                        } catch (IOException ioe) {
-                            ioe.printStackTrace(); // give up
+                try {
+                    int ll = 0;
+                    if (logLevel.equals("TRACE")) {
+                        ll = TRACE_DEBUG;
+                        Debug.debug = true;
+                        Debug.setStackLogger(this);
+                    } else if (logLevel.equals("DEBUG")) {
+                        ll = TRACE_DEBUG;
+                    } else if ( logLevel.equals("INFO")) {
+                        ll = TRACE_INFO;
+                    } else if (logLevel.equals("ERROR")) {
+                        ll = TRACE_ERROR;
+                    } else if (logLevel.equals("NONE") || logLevel.equals("OFF")) {
+                        ll = TRACE_NONE;
+                    } else {
+                        ll = Integer.parseInt(logLevel);
+                        if ( ll > 32 ) {
+                            Debug.debug = true;
+                            Debug.setStackLogger(this);
                         }
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
                     }
 
-                    if (fa != null)
-                        logger.addAppender(fa);
-                }
+                    this.setTraceLevel(ll);
+                    this.needsLogging = true;
+                    if (traceLevel == TRACE_DEBUG) {
+                        logger.setLevel(Level.DEBUG);
+                    } else if (traceLevel == TRACE_INFO) {
+                        logger.setLevel(Level.INFO);
+                    } else if (traceLevel == TRACE_ERROR) {
+                        logger.setLevel(Level.ERROR);
+                    } else if (traceLevel == TRACE_NONE) {
+                        logger.setLevel(Level.OFF);
+                        this.needsLogging = false;
+                    }
 
-            } catch (NumberFormatException ex) {
-                ex.printStackTrace();
-                System.err.println("LogWriter: Bad integer " + logLevel);
-                System.err.println("logging dislabled ");
-                needsLogging = false;
-            }
+                    /*
+                     * If user specifies a logging file as part of the startup
+                     * properties then we try to create the appender.
+                     */
+                    if (this.needsLogging && this.logFileName != null) {
+
+                        boolean overwrite = Boolean.valueOf(
+                                configurationProperties.getProperty(
+                                "gov.nist.javax.sip.DEBUG_LOG_OVERWRITE"));
+
+                        FileAppender fa = null;
+                        try {
+                            fa = new FileAppender(new SimpleLayout(),
+                                    this.logFileName, !overwrite);
+                        } catch (FileNotFoundException fnf) {
+
+                            // Likely due to some directoy not existing. Create
+                            // them
+                            File logfile = new File(this.logFileName);
+                            logfile.getParentFile().mkdirs();
+                            logfile.delete();
+
+                            try {
+                                fa = new FileAppender(new SimpleLayout(),
+                                        this.logFileName);
+                            } catch (IOException ioe) {
+                                ioe.printStackTrace(); // give up
+                            }
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+
+                        if (fa != null)
+                            logger.addAppender(fa);
+                    }
+
+                } catch (NumberFormatException ex) {
+                    ex.printStackTrace();
+                    System.err.println("LogWriter: Bad integer " + logLevel);
+                    System.err.println("logging dislabled ");
+                    needsLogging = false;
+                }
             }
         } else {
             this.needsLogging = false;
 
         }
 
+        
     }
 
     /**
@@ -452,9 +461,9 @@ public class LogWriter implements StackLogger {
     }
 
     public Priority getLogPriority() {
-         if ( this.traceLevel == TRACE_MESSAGES ) {
+         if ( this.traceLevel == TRACE_INFO ) {
             return Priority.INFO;
-        } else if ( this.traceLevel == TRACE_EXCEPTION ) {
+        } else if ( this.traceLevel == TRACE_ERROR ) {
             return Priority.ERROR;
         } else if ( this.traceLevel == TRACE_DEBUG) {
             return Priority.DEBUG;
@@ -462,18 +471,26 @@ public class LogWriter implements StackLogger {
     }
 
     public Level getLevel(int traceLevel) {
-        if ( traceLevel == TRACE_MESSAGES ) {
+        if ( traceLevel == TRACE_INFO ) {
            return Level.INFO;
-       } else if ( traceLevel == TRACE_EXCEPTION ) {
+       } else if ( traceLevel == TRACE_ERROR ) {
            return Level.ERROR;
        } else if ( traceLevel == TRACE_DEBUG) {
            return Level.DEBUG;
        } else return Level.OFF;
    }
 
-	public void setStackProperties(Properties stackProperties) {
-		// TODO Auto-generated method stub
-		
+	public void setStackProperties(Properties configurationProperties) {
+	    
+	    
+	}
+	
+	public String getLoggerName() {
+	    if ( this.logger != null ) {
+	        return logger.getName();
+	    } else {
+	        return null;
+	    }
 	}
 
 }

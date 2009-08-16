@@ -93,7 +93,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.114 $ $Date: 2009-08-05 02:17:15 $
+ * @version 1.2 $Revision: 1.115 $ $Date: 2009-08-16 17:28:27 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener {
 
@@ -1162,7 +1162,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
                 // JvB: Need to log before passing the response to the client
                 // app, it
                 // gets modified!
-                if (this.stackLogger.isLoggingEnabled(StackLogger.TRACE_MESSAGES)) {
+                if (this.stackLogger.isLoggingEnabled(StackLogger.TRACE_INFO)) {
                     responseMessageChannel.logResponse(responseReceived, System
                             .currentTimeMillis(), "before processing");
                 }
@@ -1178,7 +1178,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
         boolean acquired = currentTransaction.acquireSem();
         // Set ths transaction's encapsulated response interface
         // from the superclass
-        if (this.stackLogger.isLoggingEnabled(StackLogger.TRACE_MESSAGES)) {
+        if (this.stackLogger.isLoggingEnabled(StackLogger.TRACE_INFO)) {
             currentTransaction.logResponse(responseReceived, System.currentTimeMillis(),
                     "before processing");
         }
