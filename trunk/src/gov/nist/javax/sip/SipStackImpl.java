@@ -80,8 +80,12 @@ import org.apache.log4j.Logger;
  * when you create the JAIN-SIP statck):
  * <ul>
  *
- * <li><b>gov.nist.javax.sip.TRACE_LEVEL = integer </b><br/> You can use the standard log4j
- * level names here (i.e. ERROR, INFO, WARNING, OFF, DEBUG, TRACE) If this is set to INFO  or
+ * <li><b>gov.nist.javax.sip.TRACE_LEVEL = integer </b><br/> 
+ *  <b> Use of this property is still supported but deprecated. Please use gov.nist.javax.sip.STACK_LOGGER
+ * and gov.nist.javax.sip.SERVER_LOGGER for integration with logging frameworks and for custom formatting 
+ * of log records. </b>
+   This property is used by the built in log4j based logger.
+ * You can use the standard log4j level names here (i.e. ERROR, INFO, WARNING, OFF, DEBUG, TRACE) If this is set to INFO  or
  * above, then incoming valid messages are logged in SERVER_LOG. If you set this to 32 and specify
  * a DEBUG_LOG then vast amounts of trace information will be dumped in to the specified
  * DEBUG_LOG. The server log accumulates the signaling trace. <a href="{@docRoot}/tools/tracesviewer/tracesviewer.html">
@@ -95,12 +99,33 @@ import org.apache.log4j.Logger;
  * properties.setProperty("gov.nist.javax.sip.LOG4J_LOGGER_NAME", "SIPStackLogger");
  * </code>
  * allows you to now control logging in the stack entirely using log4j facilities. </li>
+ * 
+ * <li><b>gov.nist.javax.sip.LOG_FACTORY = classpath </b> 
+ * <b> Use of this property is still supported but deprecated. Please use gov.nist.javax.sip.STACK_LOGGER
+ * and gov.nist.javax.sip.SERVER_LOGGER for integration with logging frameworks and for custom
+ * formatting of log records. </b>
+ * <br/> The fully qualified classpath for
+ * an implementation of the MessageLogFactory. The stack calls the MessageLogFactory functions to
+ * format the log for messages that are received or sent. This function allows you to log
+ * auxiliary information related to the application or environmental conditions into the log
+ * stream. The log factory must have a default constructor. </li>
  *
- * <li><b>gov.nist.javax.sip.SERVER_LOG = fileName </b><br/> Log valid incoming messages here.
+ * <li><b>gov.nist.javax.sip.SERVER_LOG = fileName </b><br/> 
+ * <b> Use of this property is still supported but deprecated. Please use gov.nist.javax.sip.STACK_LOGGER
+ * and gov.nist.javax.sip.SERVER_LOGGER for integration with logging frameworks and for custom formatting 
+ * of log records. </b>
+ * Log valid incoming messages here.
  * If this is left null AND the TRACE_LEVEL is above INFO (or TRACE) then the messages are printed
  * to stdout. Otherwise messages are logged in a format that can later be viewed using the trace
  * viewer application which is located in the tools/tracesviewer directory. <font color=red> Mail
  * this to us with bug reports. </font> </li>
+ * 
+ * <li><b>gov.nist.javax.sip.DEBUG_LOG = fileName </b>
+ * <b> Use of this property is still supported but deprecated. Please use gov.nist.javax.sip.STACK_LOGGER
+ * and gov.nist.javax.sip.SERVER_LOGGER for integration with logging frameworks and for custom formatting 
+ * of log records. </b>
+ * <br/> Where the debug log goes. <font
+ * color=red> Mail this to us with bug reports. </font> </li>
  *
  * <li><b>gov.nist.javax.sip.LOG_MESSAGE_CONTENT = true|false </b><br/> Set true if you want to
  * capture content into the log. Default is false. A bad idea to log content if you are using SIP
@@ -109,9 +134,6 @@ import org.apache.log4j.Logger;
  * <li><b>gov.nist.javax.sip.LOG_STACK_TRACE_ON_MESSAGE_SEND = true|false </b><br/> Set true if you want to
  * to log a stack trace at INFO level for each message send. This is really handy
  * for debugging.</li>
- *
- * <li><b>gov.nist.javax.sip.DEBUG_LOG = fileName </b><br/> Where the debug log goes. <font
- * color=red> Mail this to us with bug reports. </font> </li>
  * 
  * <li><b>gov.nist.javax.sip.STACK_LOGGER = full path name to the class implementing gov.nist.core.StackLogger interface</b><br/> 
  * If this property is defined the sip stack will try to instantiate it through a no arg constructor.
@@ -239,11 +261,7 @@ import org.apache.log4j.Logger;
  * specified, audits will remain disabled. An example of how to use this property is in
  * src/examples/threadaudit. </li>
  *
- * <li><b>gov.nist.javax.sip.LOG_FACTORY = classpath </b> <br/> The fully qualified classpath for
- * an implementation of the MessageLogFactory. The stack calls the MessageLogFactory functions to
- * format the log for messages that are received or sent. This function allows you to log
- * auxiliary information related to the application or environmental conditions into the log
- * stream. The log factory must have a default constructor. </li>
+ 
  *
  * <li><b>gov.nist.javax.sip.COMPUTE_CONTENT_LENGTH_FROM_MESSAGE_BODY = [true|false] </b> <br/>
  * Default is <it>false</it> If set to <it>true</it>, when you are creating a message from a
@@ -325,7 +343,7 @@ import org.apache.log4j.Logger;
  * in this class. </b>
  *
  *
- * @version 1.2 $Revision: 1.95 $ $Date: 2009-08-16 17:28:28 $
+ * @version 1.2 $Revision: 1.96 $ $Date: 2009-08-16 17:46:00 $
  *
  * @author M. Ranganathan <br/>
  *
