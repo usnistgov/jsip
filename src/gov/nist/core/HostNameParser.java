@@ -279,6 +279,9 @@ public class HostNameParser extends ParserCore {
                     }
                     break;
 
+                case ',':	// allowed in case of multi-headers, e.g. Route
+                			// Could check that current header is a multi hdr
+                    
                 case ';':   // OK, can appear in URIs (parameters)
                 case '?':   // same, header parameters
                 case '>':   // OK, can appear in headers
