@@ -105,7 +105,12 @@ public class FactoryTestHarness extends TestHarness {
             "Record-Route: <sip:bob@biloxi.com>,"
                 + "<sip:bob@biloxi.com;maddr=10.1.1.1>,"
                 + "<sip:+1-650-555-2222@iftgw.there.com;"
-                + "maddr=ss1.wcom.com>\r\n" };
+                + "maddr=ss1.wcom.com>\r\n",
+
+        // JvB: added, bug report by Young-Geun Park on 17-8-2009              
+        "P-Asserted-Identity: sip:07077005000@abc.com,tel:07077005000\r\n",
+        "Record-Route: sip:07077005000@abc.com,tel:07077005000\r\n",
+        };
 
     protected static String headers[] =
         {
