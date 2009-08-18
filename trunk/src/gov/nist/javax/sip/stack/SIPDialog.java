@@ -67,7 +67,7 @@ import java.text.ParseException;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  *
- * @version 1.2 $Revision: 1.114 $ $Date: 2009-08-18 02:44:28 $
+ * @version 1.2 $Revision: 1.115 $ $Date: 2009-08-18 03:03:41 $
  *
  * @author M. Ranganathan
  *
@@ -428,16 +428,12 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * @param transaction -- the transaction ( client/server)
      * @param sipResponse -- response with the appropriate tags.
      */
-    public SIPDialog(SIPTransaction transaction, SIPResponse sipResponse) {
+    public SIPDialog(SIPClientTransaction transaction, SIPResponse sipResponse) {
 
         this(transaction);
         if (sipResponse == null)
             throw new NullPointerException("Null SipResponse");
         this.setLastResponse(transaction, sipResponse);
-        if ( transaction instanceof SIPServerTransaction ) {
-            this.startRetransmitTimer((SIPServerTransaction) transaction, sipResponse);
-        }
-
     }
 
     /**
