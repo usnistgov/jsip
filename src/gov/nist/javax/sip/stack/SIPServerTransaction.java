@@ -163,7 +163,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.107 $ $Date: 2009-07-31 22:18:00 $
+ * @version 1.2 $Revision: 1.108 $ $Date: 2009-08-18 02:44:28 $
  * @author M. Ranganathan
  *
  */
@@ -1374,6 +1374,10 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
             // into the dialog table to avoid a possible race condition.
 
             this.sendMessage((SIPResponse) response);
+            
+            if ( dialog != null ) {
+                dialog.startRetransmitTimer(this, (SIPResponse)response);
+            }
 
         } catch (IOException ex) {
             if (sipStack.isLoggingEnabled())

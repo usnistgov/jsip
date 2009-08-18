@@ -67,7 +67,7 @@ import java.text.ParseException;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  *
- * @version 1.2 $Revision: 1.113 $ $Date: 2009-08-05 02:17:16 $
+ * @version 1.2 $Revision: 1.114 $ $Date: 2009-08-18 02:44:28 $
  *
  * @author M. Ranganathan
  *
@@ -265,7 +265,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 }
                 if (SIPDialog.this.getState() != DialogState.TERMINATED) {   
                     SIPDialog.this.reInviteTransaction = (SIPClientTransaction)ctx;
-                    Thread.sleep(500);
+                    
                     SIPDialog.this.sendRequest(ctx,true);
                 }
                 sipStack.getStackLogger().logDebug("re-INVITE successfully sent");
@@ -434,6 +434,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         if (sipResponse == null)
             throw new NullPointerException("Null SipResponse");
         this.setLastResponse(transaction, sipResponse);
+        if ( transaction instanceof SIPServerTransaction ) {
+            this.startRetransmitTimer((SIPServerTransaction) transaction, sipResponse);
+        }
 
     }
 
@@ -1982,7 +1985,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             this.timerTask.transaction = transaction;
         } else {
             this.timerTask = new DialogTimerTask(transaction);
-            sipStack.getTimer().schedule(timerTask, SIPTransactionStack.BASE_TIMER_INTERVAL,
+            sipStack.getTimer().schedule(timerTask, SIPTransaction.T1,
                     SIPTransactionStack.BASE_TIMER_INTERVAL);
 
         }
@@ -2445,15 +2448,23 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 }
             }
 
-            // In any state: start 2xx retransmission timer for INVITE
-            if ((statusCode / 100 == 2) && cseqMethod.equals(Request.INVITE)) {
-                SIPServerTransaction sipServerTx = (SIPServerTransaction) transaction;
-                this.startTimer(sipServerTx);
-            }
+            
         }
 
     }
 
+    /**
+     * Start the retransmit timer.
+     * 
+     * @param sipServerTx -- server transaction on which the response was sent
+     * @param response - response that was sent.
+     */
+    public void startRetransmitTimer(SIPServerTransaction sipServerTx, Response response) {
+         if ( sipServerTx.getRequest().getMethod().equals(Request.INVITE) &&
+                response.getStatusCode()/100 == 2) {
+            this.startTimer(sipServerTx);
+        }
+    }
     /**
      * @return -- the last response associated with the dialog.
      */
@@ -2694,6 +2705,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         this.setDialogId(sipResponse.getDialogId(true));
 
         serverTransaction.sendReliableProvisionalResponse(relResponse);
+        
+        this.startRetransmitTimer(serverTransaction, relResponse);
 
     }
 
