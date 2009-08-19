@@ -41,7 +41,7 @@ import java.util.Random;
  * and odds and ends.
  *
  * @author mranga
- * @version 1.2 $Revision: 1.19 $ $Date: 2009-08-19 03:14:20 $
+ * @version 1.2 $Revision: 1.20 $ $Date: 2009-08-19 17:47:47 $
  */
 public class Utils implements UtilsExt {
 
@@ -71,7 +71,7 @@ public class Utils implements UtilsExt {
             throw new RuntimeException("Could not intialize Digester ", ex);
         }
         rand = new java.util.Random();
-        signature = "." +toHexString(new Integer(Math.abs( rand.nextInt() % 1000 )).toString().getBytes());
+        signature = toHexString(new Integer(Math.abs( rand.nextInt() % 1000 )).toString().getBytes());
     }
 
    
