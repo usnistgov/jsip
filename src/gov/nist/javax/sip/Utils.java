@@ -28,8 +28,12 @@
  *******************************************************************************/
 package gov.nist.javax.sip;
 
+import gov.nist.javax.sip.header.Via;
+import gov.nist.javax.sip.message.SIPResponse;
+
 import java.security.MessageDigest;
 import java.util.HashSet;
+import java.util.Random;
 
 /**
  * A few utilities that are used in various places by the stack. This is used to
@@ -37,37 +41,44 @@ import java.util.HashSet;
  * and odds and ends.
  *
  * @author mranga
- * @version 1.2 $Revision: 1.18 $ $Date: 2009-07-17 18:57:21 $
+ * @version 1.2 $Revision: 1.19 $ $Date: 2009-08-19 03:14:20 $
  */
 public class Utils implements UtilsExt {
 
     private static MessageDigest digester;
-    static {
-        try {
-            digester = MessageDigest.getInstance("MD5");
-        } catch (Exception ex) {
-            throw new RuntimeException("Could not intialize Digester ", ex);
-        }
-    }
-
-    private static java.util.Random rand = new java.util.Random();
-
+   
+    private static java.util.Random rand;
+   
     private static long counter = 0;
 
     private static int callIDCounter;
 
+    private static String signature ;
+    
     private static Utils instance = new Utils();
 
-    public static Utils getInstance() {
-        return instance;
-    }
-
+    
     /**
      * to hex converter
      */
     private static final char[] toHex = { '0', '1', '2', '3', '4', '5', '6',
             '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
+    static {
+        try {
+            digester = MessageDigest.getInstance("MD5");
+        } catch (Exception ex) {
+            throw new RuntimeException("Could not intialize Digester ", ex);
+        }
+        rand = new java.util.Random();
+        signature = "." +toHexString(new Integer(Math.abs( rand.nextInt() % 1000 )).toString().getBytes());
+    }
+
+   
+    public static Utils getInstance() {
+        return instance;
+    }
+   
     /**
      * convert an array of bytes to an hexadecimal string
      *
@@ -164,9 +175,19 @@ public class Utils implements UtilsExt {
 
             byte bid[] = digester.digest(Long.toString(num).getBytes());
             // prepend with a magic cookie to indicate we are bis09 compatible.
-            return SIPConstants.BRANCH_MAGIC_COOKIE + Utils.toHexString(bid);
+            return SIPConstants.BRANCH_MAGIC_COOKIE + Utils.toHexString(bid) + this.signature;
 
 
+    }
+    
+    public boolean responseBelongsToUs(SIPResponse response) {
+        Via topmostVia = response.getTopmostVia();
+        String branch = topmostVia.getBranch();
+        return branch != null && branch.endsWith(this.signature);
+    }
+    
+    public static String getSignature() {
+        return signature;
     }
 
     public static void main(String[] args) {
@@ -182,5 +203,7 @@ public class Utils implements UtilsExt {
         System.out.println("Done!!");
 
     }
+
+  
 
 }
