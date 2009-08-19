@@ -30,6 +30,7 @@ package gov.nist.javax.sip.message;
 
 import gov.nist.core.InternalErrorHandler;
 import gov.nist.javax.sip.SIPConstants;
+import gov.nist.javax.sip.Utils;
 import gov.nist.javax.sip.header.AlertInfo;
 import gov.nist.javax.sip.header.Authorization;
 import gov.nist.javax.sip.header.CSeq;
@@ -116,7 +117,7 @@ import javax.sip.message.Request;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  *
- * @version 1.2 $Revision: 1.45 $ $Date: 2009-07-17 18:57:55 $
+ * @version 1.2 $Revision: 1.46 $ $Date: 2009-08-19 03:14:21 $
  * @since 1.1
  *
  * @author M. Ranganathan <br/>
@@ -915,9 +916,10 @@ public abstract class SIPMessage extends MessageObject implements
                     retval.append("-").append(5060);
                 }
             }
-            if (this.getCSeq().getMethod().equals(Request.CANCEL))
+            if (this.getCSeq().getMethod().equals(Request.CANCEL)) {
                 retval.append(Request.CANCEL);
-            return retval.toString().toLowerCase().replace(":", "-").replace("@", "-");
+            }
+            return retval.toString().toLowerCase().replace(":", "-").replace("@", "-") + Utils.getSignature();
         }
     }
 
