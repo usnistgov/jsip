@@ -81,7 +81,7 @@ import javax.sip.message.Response;
 /**
  * Implementation of the JAIN-SIP provider interface.
  *
- * @version 1.2 $Revision: 1.64 $ $Date: 2009-07-30 17:07:08 $
+ * @version 1.2 $Revision: 1.65 $ $Date: 2009-08-19 03:14:20 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -372,11 +372,13 @@ public final class SipProviderImpl implements javax.sip.SipProvider,
             // Set the brannch id before you ask for a tx.
             // If the user has set his own branch Id and the
             // branch id starts with a valid prefix, then take it.
-            // otherwise, generate one.
+            // otherwise, generate one. If branch ID checking has 
+            // been requested, set the branch ID.
             String branchId = null;
             if (sipRequest.getTopmostVia().getBranch() == null
                     || !sipRequest.getTopmostVia().getBranch().startsWith(
-                            SIPConstants.BRANCH_MAGIC_COOKIE)) {
+                            SIPConstants.BRANCH_MAGIC_COOKIE)
+                            || sipStack.checkBranchId() ) {
                 branchId = Utils.getInstance().generateBranchId();
 
                 sipRequest.getTopmostVia().setBranch(branchId);

@@ -57,6 +57,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Random;
 import java.util.Set;
 import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
@@ -93,7 +94,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.115 $ $Date: 2009-08-16 17:28:27 $
+ * @version 1.2 $Revision: 1.116 $ $Date: 2009-08-19 03:14:21 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener {
 
@@ -355,6 +356,9 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     protected boolean allowReinviteInterleaving = true;
 
+    protected boolean checkBranchId;
+
+   
     // / Timer to regularly ping the thread auditor (on behalf of the timer
     // thread)
     class PingTimer extends SIPStackTimerTask {
@@ -392,7 +396,6 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
      */
     protected SIPTransactionStack() {
         this.toExit = false;
-
         this.forkedEvents = new HashSet<String>();
         // set of events for which subscriptions can be forked.
         // Set an infinite thread pool size.
@@ -2291,5 +2294,15 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 	public void setStackLogger(StackLogger stackLogger) {		
 		this.stackLogger = stackLogger;
 	}
-
+	
+	 /**
+	  * Flag that reqests checking of branch IDs on responses.
+	  * 
+	  * @return
+	  */
+	 public boolean checkBranchId() {
+	       return this.checkBranchId;
+	 }
+	
+	
 }

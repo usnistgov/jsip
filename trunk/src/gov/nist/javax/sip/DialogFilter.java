@@ -79,7 +79,7 @@ import javax.sip.message.Response;
  * interface). This is part of the glue that ties together the NIST-SIP stack and event model with
  * the JAIN-SIP stack. This is strictly an implementation class.
  *
- * @version 1.2 $Revision: 1.31 $ $Date: 2009-07-29 20:38:16 $
+ * @version 1.2 $Revision: 1.32 $ $Date: 2009-08-19 03:14:20 $
  *
  * @author M. Ranganathan
  */
@@ -963,6 +963,13 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                         "Dropping message: No listening point" + " registered!");
             return;
         }
+        
+        if (sipStack.checkBranchId() && !Utils.getInstance().responseBelongsToUs(response)) {
+            if ( sipStack.isLoggingEnabled()) {
+                sipStack.getStackLogger().logError("Dropping response - topmost VIA header does not originate from this stack");
+            }
+            return;
+        }
 
         SipProviderImpl sipProvider = listeningPoint.getProvider();
         if (sipProvider == null) {
@@ -1083,6 +1090,8 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
     public void processResponse(SIPResponse sipResponse, MessageChannel incomingChannel) {
         String dialogID = sipResponse.getDialogId(false);
         SIPDialog sipDialog = this.sipStack.getDialog(dialogID);
+        
+        
 
         String method = sipResponse.getCSeq().getMethod();
         if (sipStack.isLoggingEnabled()) {
@@ -1090,6 +1099,14 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     "PROCESSING INCOMING RESPONSE: " + sipResponse.encodeMessage());
         }
 
+        if ( sipStack.checkBranchId() && 
+                !Utils.getInstance().responseBelongsToUs(sipResponse)) {
+            if ( sipStack.isLoggingEnabled() ) {
+                sipStack.getStackLogger().logError("Detected stray response -- dropping");       
+            }
+            return;
+        }
+        
         if (listeningPoint == null) {
             if (sipStack.isLoggingEnabled())
                 sipStack.getStackLogger().logDebug(
