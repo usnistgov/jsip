@@ -2,9 +2,10 @@ package gov.nist.javax.sip;
 
 import java.io.IOException;
 
+import javax.sip.ListeningPoint;
 import javax.sip.header.ContactHeader;
 
-public interface ListeningPointExt {
+public interface ListeningPointExt extends ListeningPoint {
 
     /**
      * Create a contact for this listening point.

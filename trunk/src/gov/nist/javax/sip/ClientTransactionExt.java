@@ -1,9 +1,10 @@
 package gov.nist.javax.sip;
 
+import javax.sip.ClientTransaction;
 import javax.sip.Timeout;
 import javax.sip.address.Hop;
 
-public interface ClientTransactionExt {
+public interface ClientTransactionExt extends ClientTransaction {
 
     /**
      * Notify on retransmission from the client transaction side. The listener will get a

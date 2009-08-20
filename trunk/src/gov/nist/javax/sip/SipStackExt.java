@@ -13,6 +13,7 @@ import java.net.SocketAddress;
 import java.util.Collection;
 
 import javax.sip.Dialog;
+import javax.sip.SipStack;
 import javax.sip.header.HeaderFactory;
 
 /**
@@ -22,7 +23,7 @@ import javax.sip.header.HeaderFactory;
  * @author M. Ranganathan
  *
  */
-public interface SipStackExt {
+public interface SipStackExt extends SipStack {
 
     /**
      * Get the collection of dialogs currently in the Dialog table. This is useful for debugging

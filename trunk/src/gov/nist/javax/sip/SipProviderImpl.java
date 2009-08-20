@@ -81,14 +81,14 @@ import javax.sip.message.Response;
 /**
  * Implementation of the JAIN-SIP provider interface.
  *
- * @version 1.2 $Revision: 1.65 $ $Date: 2009-08-19 03:14:20 $
+ * @version 1.2 $Revision: 1.66 $ $Date: 2009-08-20 19:01:24 $
  *
  * @author M. Ranganathan <br/>
  *
  *
  */
 
-public final class SipProviderImpl implements javax.sip.SipProvider,
+public class SipProviderImpl implements javax.sip.SipProvider,
         SIPTransactionEventListener {
 
     protected SipListener sipListener;

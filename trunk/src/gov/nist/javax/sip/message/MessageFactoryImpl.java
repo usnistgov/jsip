@@ -42,7 +42,7 @@ import gov.nist.javax.sip.parser.*;
 /**
  * Message Factory implementation
  *
- * @version 1.2 $Revision: 1.20 $ $Date: 2009-07-17 18:57:54 $
+ * @version 1.2 $Revision: 1.21 $ $Date: 2009-08-20 19:01:21 $
  * @since 1.1
  *
  * @author M. Ranganathan <br/>
@@ -817,6 +817,21 @@ public class MessageFactoryImpl implements MessageFactory, MessageFactoryExt {
 
     public static String getDefaultContentEncodingCharset() {
         return MessageFactoryImpl.defaultContentEncodingCharset;
+    }
+
+    
+    public MultipartMimeContent createMultipartMimeContent(ContentTypeHeader multipartMimeCth,
+            String[] contentType,
+            String[] contentSubtype, 
+            String[] contentBody) {
+        String boundary = multipartMimeCth.getParameter("boundary");
+        MultipartMimeContentImpl retval = new MultipartMimeContentImpl(multipartMimeCth);
+        for (int i = 0 ;  i < contentType.length; i++ ) {
+            ContentTypeHeader cth = new ContentType(contentType[i],contentSubtype[i]);
+            ContentImpl contentImpl  = new ContentImpl(cth,contentBody[i],boundary);
+            retval.add(contentImpl);
+        }
+        return retval;
     }
 
 
