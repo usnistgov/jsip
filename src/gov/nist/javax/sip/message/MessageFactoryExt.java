@@ -1,7 +1,9 @@
 package gov.nist.javax.sip.message;
 
+import javax.sip.header.ContentTypeHeader;
 import javax.sip.header.ServerHeader;
 import javax.sip.header.UserAgentHeader;
+import javax.sip.message.MessageFactory;
 
 /**
  * Intefaces that will be supported by the next release of JAIN-SIP.
@@ -9,7 +11,7 @@ import javax.sip.header.UserAgentHeader;
  * @author mranga
  *
  */
-public interface MessageFactoryExt {
+public interface MessageFactoryExt extends MessageFactory {
     /**
      * Set the common UserAgent header for all Requests created from this message factory.
      * This header is applied to all Messages created from this Factory object except those
@@ -28,6 +30,8 @@ public interface MessageFactoryExt {
      * that take String for an argument and create Message from the given String.
      *
      * @param userAgent -- the user agent header to set.
+     * 
+     * @since 2.0
      *
      */
 
@@ -36,6 +40,8 @@ public interface MessageFactoryExt {
     /**
      * Set default charset used for encoding String content. Note that this
      * will be applied to all content that is encoded. The default is UTF-8.
+     * 
+     * @since 2.0
      *
      * @param charset -- charset to set.
      * @throws NullPointerException if null arg
@@ -44,5 +50,17 @@ public interface MessageFactoryExt {
      */
     public  void setDefaultContentEncodingCharset(String charset)
             throws NullPointerException,IllegalArgumentException ;
-
+    
+    /**
+     * Create a MultipartMime attachment from a list of content type, subtype and content.
+     * 
+     * @throws NullPointerException, IllegalArgumentException
+     */
+    public MultipartMimeContent createMultipartMimeContent(ContentTypeHeader multipartMimeContentTypeHeader,
+            String[] contentType, 
+            String[] contentSubtype, 
+            String[] contentBody);
+    
+    
+    
 }
