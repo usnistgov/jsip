@@ -2,8 +2,9 @@
 package gov.nist.javax.sip;
 
 import javax.sip.SipProvider;
+import javax.sip.Transaction;
 
-public interface TransactionExt {
+public interface TransactionExt extends Transaction {
 
     /**
      * Get the Sip Provider associated with this transaction

@@ -3,7 +3,7 @@ package gov.nist.javax.sip;
 import javax.sip.ServerTransaction;
 
 
-public interface ServerTransactionExt {
+public interface ServerTransactionExt extends ServerTransaction {
     /**
      * Return the canceled Invite transaction corresponding to an
      * incoming CANCEL server transaction.

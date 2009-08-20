@@ -1,11 +1,15 @@
 package gov.nist.javax.sip.message;
 
+import java.text.ParseException;
+
+import javax.sip.message.Message;
+
 /**
  *
  * @author jean.deruelle@gmail.com
  *
  */
-public interface MessageExt {
+public interface MessageExt extends Message {
 
      /**
      * This method allows applications to associate application context with
@@ -34,4 +38,19 @@ public interface MessageExt {
      *
      */
     public Object getApplicationData();
+    
+    /**
+     * Get the multipart mime content from a message. Builds a wrapper around the
+     * content and breaks it into multiple sections. Returns these sections as
+     * a multipart mime content list. If the content type is not multipart mime
+     * then the list will have a single element in it. 
+     * 
+     * @since v2.0
+     * @param Message message
+     * @throws ParseException if the content type is multipart mime but the content
+     *  is not properly encoded.
+     *  
+     */
+    public MultipartMimeContent getMultipartMimeContent() throws ParseException;
+
 }

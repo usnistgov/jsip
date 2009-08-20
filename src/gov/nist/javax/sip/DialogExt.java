@@ -1,5 +1,6 @@
 package gov.nist.javax.sip;
 
+import javax.sip.Dialog;
 import javax.sip.SipProvider;
 
 /**
@@ -10,7 +11,7 @@ import javax.sip.SipProvider;
  * @author mranga
  *
  */
-public interface DialogExt {
+public interface DialogExt extends Dialog {
 
     /**
      * Returns the SipProvider that was used for the first transaction in this Dialog

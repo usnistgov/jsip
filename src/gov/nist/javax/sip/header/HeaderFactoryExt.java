@@ -29,6 +29,7 @@ import gov.nist.javax.sip.header.ims.ServiceRouteHeader;
 
 import javax.sip.InvalidArgumentException;
 import javax.sip.address.Address;
+import javax.sip.header.HeaderFactory;
 
 /**
  * Header factory extensions. These will be included in the next release of
@@ -37,7 +38,7 @@ import javax.sip.address.Address;
  * @author mranga
  *
  */
-public interface HeaderFactoryExt {
+public interface HeaderFactoryExt extends HeaderFactory {
     /**
      * Create a ReferredBy Header.
      *
