@@ -43,7 +43,7 @@ import gov.nist.javax.sip.address.*;
 
 /** Implementation of the JAIN SIP  HeaderFactory
 *
-* @version 1.2 $Revision: 1.18 $ $Date: 2009-07-17 18:57:31 $
+* @version 1.2 $Revision: 1.19 $ $Date: 2009-08-21 20:56:05 $
 * @since 1.1
 *
 *@author M. Ranganathan   <br/>
@@ -1154,6 +1154,40 @@ public class HeaderFactoryImpl implements HeaderFactory , HeaderFactoryExt {
             throw new NullPointerException("null arg");
         return new ErrorInfo((GenericURI) errorInfo);
     }
+    
+    /**
+     * Create a header from the given header text.
+     * Header should not have the trailng crlf.
+     * @throws ParseException 
+     */
+    public javax.sip.header.Header createHeader(String headerText) throws ParseException {
+        StringMsgParser smp = new StringMsgParser();
+        SIPHeader sipHeader = smp.parseSIPHeader(headerText.trim());
+        if (sipHeader instanceof SIPHeaderList) {
+            if (((SIPHeaderList) sipHeader).size() > 1) {
+                throw new ParseException(
+                    "Only singleton allowed " + headerText,
+                    0);
+            } else if (((SIPHeaderList) sipHeader).size() == 0) {
+                try {
+                    return (Header) ((SIPHeaderList) sipHeader)
+                        .getMyClass()
+                        .newInstance();
+                } catch (InstantiationException ex) {
+                    ex.printStackTrace();
+                    return null;
+                } catch (IllegalAccessException ex) {
+                    ex.printStackTrace();
+                    return null;
+                }
+            } else {
+                return (Header) ((SIPHeaderList) sipHeader).getFirst();
+            }
+        } else {
+            return (Header) sipHeader;
+        }
+        
+    }
 
     /** Create and parse a header.
      *
@@ -1174,31 +1208,8 @@ public class HeaderFactoryImpl implements HeaderFactory , HeaderFactoryExt {
                 .append(":")
                 .append(headerValue)
                 .toString();
-        StringMsgParser smp = new StringMsgParser();
-        SIPHeader sipHeader = smp.parseSIPHeader(hdrText);
-        if (sipHeader instanceof SIPHeaderList) {
-            if (((SIPHeaderList) sipHeader).size() > 1) {
-                throw new ParseException(
-                    "Only singleton allowed " + hdrText,
-                    0);
-            } else if (((SIPHeaderList) sipHeader).size() == 0) {
-                try {
-                    return (Header) ((SIPHeaderList) sipHeader)
-                        .getMyClass()
-                        .newInstance();
-                } catch (InstantiationException ex) {
-                    ex.printStackTrace();
-                    return null;
-                } catch (IllegalAccessException ex) {
-                    ex.printStackTrace();
-                    return null;
-                }
-            } else {
-                return (Header) ((SIPHeaderList) sipHeader).getFirst();
-            }
-        } else {
-            return (Header) sipHeader;
-        }
+        return createHeader(hdrText);
+        
     }
 
     /** Create and return a list of headers.

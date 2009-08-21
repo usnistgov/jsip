@@ -42,7 +42,7 @@ import gov.nist.javax.sip.parser.*;
 /**
  * Message Factory implementation
  *
- * @version 1.2 $Revision: 1.21 $ $Date: 2009-08-20 19:01:21 $
+ * @version 1.2 $Revision: 1.22 $ $Date: 2009-08-21 20:56:04 $
  * @since 1.1
  *
  * @author M. Ranganathan <br/>
@@ -828,7 +828,8 @@ public class MessageFactoryImpl implements MessageFactory, MessageFactoryExt {
         MultipartMimeContentImpl retval = new MultipartMimeContentImpl(multipartMimeCth);
         for (int i = 0 ;  i < contentType.length; i++ ) {
             ContentTypeHeader cth = new ContentType(contentType[i],contentSubtype[i]);
-            ContentImpl contentImpl  = new ContentImpl(cth,contentBody[i],boundary);
+            ContentImpl contentImpl  = new ContentImpl(contentBody[i],boundary);
+            contentImpl.setContentTypeHeader(cth);
             retval.add(contentImpl);
         }
         return retval;
