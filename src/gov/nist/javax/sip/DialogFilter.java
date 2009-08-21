@@ -73,13 +73,13 @@ import javax.sip.message.Response;
 /**
  * An adapter class from the JAIN implementation objects to the NIST-SIP stack. The primary
  * purpose of this class is to do early rejection of bad messages and deliver meaningful messages
- * to the application. This class is essentially a Dialog filter. It checks for and rejects
- * requests and responses which may be filtered out because of sequence number, Dialog not found,
+ * to the application. This class is essentially a Dialog filter. It is a helper for the UAC Core.
+ * It checks for and rejects requests and responses which may be filtered out because of sequence number, Dialog not found,
  * etc. Note that this is not part of the JAIN-SIP spec (it does not implement a JAIN-SIP
  * interface). This is part of the glue that ties together the NIST-SIP stack and event model with
  * the JAIN-SIP stack. This is strictly an implementation class.
  *
- * @version 1.2 $Revision: 1.32 $ $Date: 2009-08-19 03:14:20 $
+ * @version 1.2 $Revision: 1.33 $ $Date: 2009-08-21 18:01:22 $
  *
  * @author M. Ranganathan
  */
@@ -383,10 +383,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                             transaction.setMapped(true);
                         }
 
-                        /*
-                         * try { sipStack.addTransaction(transaction); } catch (IOException ex) { //
-                         * should never happen. }
-                         */
+                        
 
                     }
                 }
@@ -1189,6 +1186,18 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     if (sipStack.isLoggingEnabled()) {
                         sipStack.getStackLogger().logDebug(
                                 "Dialog is terminated -- dropping response!");
+                    }
+                   // Dialog exists but was terminated - just create and send an ACK for the OK. 
+                   // It could be late arriving.
+                    if (sipResponse.getStatusCode() / 100 == 2
+                            && sipResponse.getCSeq().getMethod().equals(Request.INVITE)) {
+                        try {
+                            Request ackRequest = sipDialog.createAck(sipResponse.getCSeq()
+                                    .getSeqNumber());
+                            sipDialog.sendAck(ackRequest);
+                        } catch (Exception ex) {
+                            sipStack.getStackLogger().logError("Error creating ack", ex);
+                        }
                     }
                     return;
                 } else {
