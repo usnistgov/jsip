@@ -2,6 +2,7 @@ package gov.nist.javax.sip.message;
 
 import java.text.ParseException;
 
+import javax.sip.header.ContentDispositionHeader;
 import javax.sip.header.ContentTypeHeader;
 
 public class ContentImpl implements Content {
@@ -10,17 +11,20 @@ public class ContentImpl implements Content {
     /*
      * The content type header for this chunk of content.
      */
-    private ContentTypeHeader contentTypeHeader;
-
+   
     private Object content;
 
     private String boundary;
+    
+    private ContentTypeHeader contentTypeHeader;
+    
+    private ContentDispositionHeader contentDispositionHeader;
 
     
 
-    public ContentImpl(ContentTypeHeader ctHeader, String content, String boundary ) {
+    public ContentImpl( String content, String boundary ) {
         this.content = content;
-        this.contentTypeHeader = ctHeader;
+    
         this.boundary = boundary;
     }
 
@@ -57,8 +61,41 @@ public class ContentImpl implements Content {
         if (boundary == null) {
             return content.toString();
         } else {
-            return "--" + boundary + "\r\n" + contentTypeHeader + "\r\n" + content.toString().trim()+"\r\n";
+           if ( this.contentDispositionHeader != null ) {
+            return "--" + boundary + "\r\n" + getContentTypeHeader() + 
+                    this.getContentDispositionHeader().toString() + "\r\n"
+                    + content.toString();
+           } else {
+               return "--" + boundary + "\r\n" + getContentTypeHeader() + "\r\n" +  content.toString();
+           }
         }
+    }
+
+
+
+    /**
+     * @param contentDispositionHeader the contentDispositionHeader to set
+     */
+    public void setContentDispositionHeader(ContentDispositionHeader contentDispositionHeader) {
+        this.contentDispositionHeader = contentDispositionHeader;
+    }
+
+
+
+    /**
+     * @return the contentDispositionHeader
+     */
+    public ContentDispositionHeader getContentDispositionHeader() {
+        return contentDispositionHeader;
+    }
+
+
+
+    /**
+     * @param contentTypeHeader the contentTypeHeader to set
+     */
+    public void setContentTypeHeader(ContentTypeHeader contentTypeHeader) {
+        this.contentTypeHeader = contentTypeHeader;
     }
 
 

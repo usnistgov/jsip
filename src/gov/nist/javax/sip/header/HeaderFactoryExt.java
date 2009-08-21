@@ -29,6 +29,7 @@ import gov.nist.javax.sip.header.ims.ServiceRouteHeader;
 
 import javax.sip.InvalidArgumentException;
 import javax.sip.address.Address;
+import javax.sip.header.Header;
 import javax.sip.header.HeaderFactory;
 
 /**
@@ -251,5 +252,12 @@ public interface HeaderFactoryExt extends HeaderFactory {
      * @return The newly created P-Asserted-Service Header.
      */
     public PAssertedServiceHeader createPAssertedServiceHeader();
+    
+    /**
+     * Create a header from a string. The string is assumed to be in the 
+     * name:value format. The trailing CRLF (if any ) will be stripped
+     * before parsing this. The header should be a singleton.
+     */
+    public Header createHeader(String header) throws ParseException;
 
 }

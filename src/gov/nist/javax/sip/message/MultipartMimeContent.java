@@ -28,8 +28,15 @@ public interface MultipartMimeContent {
     /**
      * Retrieve the list of Content that is part of this MultitypeMime content.
      * 
-     * @return - the content list. Returns an empty list if no content list present.
+     * @return - the content iterator. Returns an empty iterator if no content list present.
      */
     public Iterator<Content> getContents();
+    
+    /**
+     * Get the number of Content parts.
+     * 
+     * @return - the content parts.
+     */
+    public int getContentCount();
 
 }
