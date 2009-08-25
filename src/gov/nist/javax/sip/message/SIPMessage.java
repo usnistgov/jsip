@@ -117,7 +117,7 @@ import javax.sip.message.Request;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.47 $ $Date: 2009-08-20 19:01:21 $
+ * @version 1.2 $Revision: 1.48 $ $Date: 2009-08-25 19:39:12 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -127,6 +127,7 @@ import javax.sip.message.Request;
 public abstract class SIPMessage extends MessageObject implements javax.sip.message.Message,
         MessageExt {
 
+	// JvB: use static here?
     private String contentEncodingCharset = MessageFactoryImpl.getDefaultContentEncodingCharset();
 
     /**
@@ -432,7 +433,7 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
 
             byte[] msgarray = null;
             try {
-                msgarray = encoding.toString().getBytes("UTF-8");
+                msgarray = encoding.toString().getBytes( contentEncodingCharset );
             } catch (UnsupportedEncodingException ex) {
                 InternalErrorHandler.handleException(ex);
             }
@@ -444,7 +445,7 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
             // Message content does not exist.
 
             try {
-                retval = encoding.toString().getBytes("UTF-8");
+                retval = encoding.toString().getBytes( contentEncodingCharset );
             } catch (UnsupportedEncodingException ex) {
                 InternalErrorHandler.handleException(ex);
             }
