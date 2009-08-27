@@ -67,7 +67,7 @@ import java.text.ParseException;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  *
- * @version 1.2 $Revision: 1.115 $ $Date: 2009-08-18 03:03:41 $
+ * @version 1.2 $Revision: 1.116 $ $Date: 2009-08-27 19:34:45 $
  *
  * @author M. Ranganathan
  *
@@ -181,7 +181,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
     // Stores the last OK for the INVITE
     // Used in createAck.
-    private boolean lastInviteOkReceived;
+    private long lastInviteOkReceived;
     
     private AtomicBoolean waitingToSendReInvite = new AtomicBoolean();
     
@@ -190,8 +190,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     private int reInviteWaitTime = 100;
 
     private DialogDeleteTask dialogDeleteTask;
-    
-    private boolean allowReInviteInterleaving = false;
     
     private SIPClientTransaction reInviteTransaction = null;
 
@@ -771,7 +769,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                     inetAddress, hop.getPort());
             this.lastAck = ackRequest;
             messageChannel.sendMessage(ackRequest);
-            if ( releaseAckSem && ! this.allowReInviteInterleaving )  {
+            if ( releaseAckSem && ! this.sipStack.allowReinviteInterleaving )  {
                 this.ackSem.release();
             }
         } catch (IOException ex) {
@@ -1687,13 +1685,13 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     
     public void sendRequest(ClientTransaction clientTransactionId)  
     throws TransactionDoesNotExistException, SipException  {
-        this.sendRequest(clientTransactionId, this.allowReInviteInterleaving);
+        this.sendRequest(clientTransactionId, this.sipStack.allowReinviteInterleaving);
     }
     
     public void sendRequest(ClientTransaction clientTransactionId, boolean allowInterleaving)
             throws TransactionDoesNotExistException, SipException {
 
-        if ( !allowInterleaving && 
+        if ( !allowInterleaving&& 
                 clientTransactionId.getRequest().getMethod().equals(Request.INVITE)) {
             new Thread((new ReInviteSender(clientTransactionId))).start();
             return;
@@ -2090,16 +2088,17 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         }
 
         if (this.sipStack.getStackLogger().isLoggingEnabled()) {
-            this.sipStack.getStackLogger().logDebug("createAck " + this);
+            this.sipStack.getStackLogger().logDebug("createAck " + this + " cseqno " + cseqno);
         }
 
-        if (!lastInviteOkReceived) {
+       
+        // MUST ack in the same order that the OKs were received. This traps 
+        // out of order ACK sending. Old ACKs seqno's can always be ACKed.
+        if (lastInviteOkReceived < cseqno) {
+            this.sipStack.getStackLogger().logDebug("WARNING : Attempt to crete ACK without OK " + this);
+            this.sipStack.getStackLogger().logDebug("LAST RESPONSE = " + this.lastResponse);
             throw new SipException("Dialog not yet established -- no OK response!");
-        } else {
-            // Reset it, it will be set again by the next 2xx response to
-            // reINVITE (if any)
-            lastInviteOkReceived = false;
-        }
+        } 
 
         try {
 
@@ -2313,7 +2312,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
                     // Capture the OK response for later use in createAck
                     if (cseqMethod.equals(Request.INVITE)) {
-                        this.lastInviteOkReceived = true;
+                        this.lastInviteOkReceived = sipResponse.getCSeq().getSeqNumber();
                     }
 
                 } else if (statusCode >= 300

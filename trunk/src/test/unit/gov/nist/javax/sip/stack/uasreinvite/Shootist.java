@@ -17,7 +17,7 @@
 *
 *
 */
-package test.unit.gov.nist.javax.sip.stack.reInvite;
+package test.unit.gov.nist.javax.sip.stack.uasreinvite;
 
 import gov.nist.javax.sip.DialogExt;
 import gov.nist.javax.sip.address.SipUri;
@@ -78,6 +78,8 @@ public class Shootist  implements SipListener {
     private boolean byeSent;
 
     int reInviteReceivedCount;
+    
+   
 
 
     private static Logger logger = Logger.getLogger(Shootist.class);
@@ -94,6 +96,8 @@ public class Shootist  implements SipListener {
     private ProtocolObjects protocolObjects;
 
     private Dialog dialog;
+
+    private boolean ackReceived;
 
 
 
@@ -142,19 +146,20 @@ public class Shootist  implements SipListener {
                     .createContactHeader(address);
             response.addHeader(contactHeader);
             st.sendResponse(response);
-            ReInviteTest.assertEquals("Dialog for reinvite must match original dialog", dialog, this.dialog);
+            ReInviteAllowInterleavingTest.assertEquals("Dialog for reinvite must match original dialog", dialog, this.dialog);
         } catch (Exception ex) {
             logger.error("unexpected exception",ex);
-            ReInviteTest.fail("unexpected exception");
+            ReInviteAllowInterleavingTest.fail("unexpected exception");
         }
     }
 
     public void processAck(Request request, ServerTransaction tid) {
         try {
             logger.info("Got an ACK! sending bye : " + tid);
+            this.ackReceived = true;
             if (tid != null) {
                 Dialog dialog = tid.getDialog();
-                ReInviteTest.assertSame("dialog id mismatch", dialog,this.dialog);
+                ReInviteAllowInterleavingTest.assertSame("dialog id mismatch", dialog,this.dialog);
                 Request bye = dialog.createRequest(Request.BYE);
                 MaxForwardsHeader mf = protocolObjects.headerFactory
                         .createMaxForwardsHeader(10);
@@ -165,7 +170,7 @@ public class Shootist  implements SipListener {
             }
         } catch (Exception ex) {
             logger.error("unexpected exception",ex);
-            ReInviteTest.fail("unexpected exception");
+            ReInviteAllowInterleavingTest.fail("unexpected exception");
 
         }
     }
@@ -179,18 +184,18 @@ public class Shootist  implements SipListener {
                 return;
             }
             Dialog dialog = serverTransactionId.getDialog();
-            ReInviteTest.assertSame("dialog mismatch", dialog,this.dialog);
+            ReInviteAllowInterleavingTest.assertSame("dialog mismatch", dialog,this.dialog);
             logger.info("Dialog State = " + dialog.getState());
             Response response = protocolObjects.messageFactory.createResponse(
                     200, request);
             serverTransactionId.sendResponse(response);
             logger.info("shootist:  Sending OK.");
             logger.info("Dialog State = " + dialog.getState());
-            ReInviteTest.assertEquals("Should be terminated", dialog.getState() , DialogState.TERMINATED);
+            ReInviteAllowInterleavingTest.assertEquals("Should be terminated", dialog.getState() , DialogState.TERMINATED);
 
         } catch (Exception ex) {
             logger.error("unexpected exception",ex);
-            ReInviteTest.fail("unexpected exception");
+            ReInviteAllowInterleavingTest.fail("unexpected exception");
 
         }
     }
@@ -225,34 +230,10 @@ public class Shootist  implements SipListener {
                 Request ackRequest = dialog.createAck( cseq.getSeqNumber() );
                 logger.info("Ack request to send = " + ackRequest);
                 logger.info("Sending ACK");
+                this.okReceived = true;
                 dialog.sendAck(ackRequest);
 
-                // Send a Re INVITE but this time force it
-                // to use UDP as the transport. Else, it will
-                // Use whatever transport was used to create
-                // the dialog.
-                if (reInviteCount == 0) {
-                    for ( int i = 0 ; i <  2 ; i ++ ) {
-                        reInviteCount ++;
-                        Request inviteRequest = dialog
-                        .createRequest(Request.INVITE);
-                        ((SipURI) inviteRequest.getRequestURI())
-                        .removeParameter("transport");
-                        ((ViaHeader) inviteRequest.getHeader(ViaHeader.NAME))
-                        .setTransport("udp");
-                        inviteRequest.addHeader(contactHeader);
-                        MaxForwardsHeader mf = protocolObjects.headerFactory
-                        .createMaxForwardsHeader(10);
-                        inviteRequest.addHeader(mf);
-                       
-                        ClientTransaction ct = provider
-                        .getNewClientTransaction(inviteRequest);
-                        dialog.sendRequest(ct);
-                        
-                    }
-                } else {
-                    this.okReceived = true;
-                }
+               
 
             } else if (response.getStatusCode() == Response.OK
                     && ((CSeqHeader) response.getHeader(CSeqHeader.NAME))
@@ -263,7 +244,7 @@ public class Shootist  implements SipListener {
             ex.printStackTrace();
 
             logger.error(ex);
-            ReInviteTest.fail("unexpceted exception");
+            ReInviteAllowInterleavingTest.fail("unexpceted exception");
         }
 
     }
@@ -284,7 +265,7 @@ public class Shootist  implements SipListener {
             return provider;
         } catch (Exception ex) {
             logger.error(ex);
-            ReInviteTest.fail("unable to create provider");
+            ReInviteAllowInterleavingTest.fail("unable to create provider");
             return null;
         }
     }
@@ -424,7 +405,7 @@ public class Shootist  implements SipListener {
             this.dialog = this.inviteTid.getDialog();
             // Note that the response may have arrived right away so
             // we cannot check after the message is sent.
-            ReInviteTest.assertTrue(this.dialog.getState() == null);
+            ReInviteAllowInterleavingTest.assertTrue(this.dialog.getState() == null);
 
             // send the request out.
             this.inviteTid.sendRequest();
@@ -432,16 +413,17 @@ public class Shootist  implements SipListener {
 
         } catch (Exception ex) {
             logger.error("Unexpected exception", ex);
-            ReInviteTest.fail("unexpected exception");
+            ReInviteAllowInterleavingTest.fail("unexpected exception");
         }
     }
 
 
 
     public void checkState() {
-        ReInviteTest.assertTrue("Expect to send a re-invite" , reInviteCount == 2 && this.okReceived);
-        ReInviteTest.assertTrue("Expect to send a bye and get OK for the bye", this.byeSent && this.byeOkRecieved);
-        ReInviteTest.assertTrue("Expecting a re-invite",this.reInviteReceivedCount == 1);
+        ReInviteAllowInterleavingTest.assertTrue("Expect to get an OK for the INVITE" , this.okReceived);
+        ReInviteAllowInterleavingTest.assertTrue("Expect to get an ACK for the OK sent", this.ackReceived);
+        ReInviteAllowInterleavingTest.assertTrue("Expect to send a bye and get OK for the bye", this.byeSent && this.byeOkRecieved);
+        ReInviteAllowInterleavingTest.assertTrue("Expecting a re-invite",this.reInviteReceivedCount == 1);
 
     }
 
@@ -452,7 +434,7 @@ public class Shootist  implements SipListener {
      */
     public void processIOException(IOExceptionEvent exceptionEvent) {
         logger.error("IO Exception!");
-        ReInviteTest.fail("Unexpected exception");
+        ReInviteAllowInterleavingTest.fail("Unexpected exception");
 
     }
 

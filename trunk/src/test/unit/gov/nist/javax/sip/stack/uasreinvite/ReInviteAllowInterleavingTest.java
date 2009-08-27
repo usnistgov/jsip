@@ -1,34 +1,8 @@
-/*
-* Conditions Of Use
-*
-* This software was developed by employees of the National Institute of
-* Standards and Technology (NIST), and others.
-* This software is has been contributed to the public domain.
-* As a result, a formal license is not needed to use the software.
-*
-* This software is provided "AS IS."
-* NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
-* OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
-* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
-* AND DATA ACCURACY.  NIST does not warrant or make any representations
-* regarding the use of the software or the results thereof, including but
-* not limited to the correctness, accuracy, reliability or usefulness of
-* the software.
-*
-*
-*/
-/**
- *
- */
-package test.unit.gov.nist.javax.sip.stack.reInvite;
+package test.unit.gov.nist.javax.sip.stack.uasreinvite;
 
-import gov.nist.javax.sip.SipProviderImpl;
 import gov.nist.javax.sip.SipStackImpl;
 
 import java.util.EventObject;
-import java.util.Hashtable;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import javax.sip.DialogTerminatedEvent;
 import javax.sip.IOExceptionEvent;
@@ -39,26 +13,11 @@ import javax.sip.SipProvider;
 import javax.sip.TimeoutEvent;
 import javax.sip.TransactionTerminatedEvent;
 
-import org.apache.log4j.Appender;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-import org.apache.log4j.SimpleLayout;
-import org.apache.log4j.helpers.NullEnumeration;
 
-import test.tck.msgflow.callflows.ProtocolObjects;
 import test.tck.msgflow.callflows.ScenarioHarness;
-import test.tck.TestHarness;
 
-import junit.framework.TestCase;
-
-/**
- * @author M. Ranganathan
- *
- */
-public class ReInviteTest extends ScenarioHarness implements SipListener {
-
+public class ReInviteAllowInterleavingTest extends ScenarioHarness implements SipListener {
 
     protected Shootist shootist;
 
@@ -67,8 +26,8 @@ public class ReInviteTest extends ScenarioHarness implements SipListener {
     private static Logger logger = Logger.getLogger("test.tck");
 
     static {
-        //if (!logger.isAttached(console))
-        //    logger.addAppender(console);
+        if (!logger.isAttached(console))
+            logger.addAppender(console);
     }
 
     private SipListener getSipListener(EventObject sipEvent) {
@@ -78,7 +37,7 @@ public class ReInviteTest extends ScenarioHarness implements SipListener {
         return listener;
     }
 
-    public ReInviteTest() {
+    public ReInviteAllowInterleavingTest() {
         super("reinvitetest", true);
     }
 
@@ -99,9 +58,8 @@ public class ReInviteTest extends ScenarioHarness implements SipListener {
             providerTable.put(shootmeProvider, shootme);
             shootistProvider.addSipListener(this);
             shootmeProvider.addSipListener(this);
-            
-            ((SipStackImpl)getTiProtocolObjects().sipStack).setAllowReInviteInterleaving(false);
-            ((SipStackImpl)getRiProtocolObjects().sipStack).setAllowReInviteInterleaving(false);
+            ((SipStackImpl)getTiProtocolObjects().sipStack).setAllowReInviteInterleaving(true);
+            ((SipStackImpl)getRiProtocolObjects().sipStack).setAllowReInviteInterleaving(true);
 
             getRiProtocolObjects().start();
             if (getTiProtocolObjects() != getRiProtocolObjects())
@@ -118,7 +76,7 @@ public class ReInviteTest extends ScenarioHarness implements SipListener {
 
     public void tearDown() {
         try {
-            Thread.sleep(2000);
+            Thread.sleep(4000);
             this.shootist.checkState();
             this.shootme.checkState();
             super.tearDown();
@@ -163,5 +121,4 @@ public class ReInviteTest extends ScenarioHarness implements SipListener {
                 dialogTerminatedEvent);
 
     }
-
 }
