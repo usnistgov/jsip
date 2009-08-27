@@ -79,7 +79,7 @@ import javax.sip.message.Response;
  * interface). This is part of the glue that ties together the NIST-SIP stack and event model with
  * the JAIN-SIP stack. This is strictly an implementation class.
  *
- * @version 1.2 $Revision: 1.33 $ $Date: 2009-08-21 18:01:22 $
+ * @version 1.2 $Revision: 1.34 $ $Date: 2009-08-27 19:34:46 $
  *
  * @author M. Ranganathan
  */
@@ -1192,10 +1192,10 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     if (sipResponse.getStatusCode() / 100 == 2
                             && sipResponse.getCSeq().getMethod().equals(Request.INVITE)) {
                         try {
-                            Request ackRequest = sipDialog.createAck(sipResponse.getCSeq()
+                               Request ackRequest = sipDialog.createAck(sipResponse.getCSeq()
                                     .getSeqNumber());
-                            sipDialog.sendAck(ackRequest);
-                        } catch (Exception ex) {
+                                sipDialog.sendAck(ackRequest);
+                          } catch (Exception ex) {
                             sipStack.getStackLogger().logError("Error creating ack", ex);
                         }
                     }
