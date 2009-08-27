@@ -467,7 +467,11 @@ public class LogWriter implements StackLogger {
             return Priority.ERROR;
         } else if ( this.traceLevel == TRACE_DEBUG) {
             return Priority.DEBUG;
-        } else return null;
+        } else if ( this.traceLevel == TRACE_TRACE) {
+            return Priority.DEBUG;
+        } else {
+            return Priority.FATAL;
+        }
     }
 
     public Level getLevel(int traceLevel) {
@@ -477,7 +481,11 @@ public class LogWriter implements StackLogger {
            return Level.ERROR;
        } else if ( traceLevel == TRACE_DEBUG) {
            return Level.DEBUG;
-       } else return Level.OFF;
+       } else if (traceLevel == TRACE_TRACE) {
+           return Level.ALL;
+       } else {
+           return Level.OFF;
+       }
    }
 
 	public void setStackProperties(Properties configurationProperties) {
