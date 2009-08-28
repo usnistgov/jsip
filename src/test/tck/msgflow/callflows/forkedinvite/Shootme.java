@@ -157,8 +157,7 @@ public class Shootme   implements SipListener {
             // that may not be too good about handling re-entrancy.
             int timeToSleep = (int) ( Math.random() * 1000);
 
-            Thread.sleep(timeToSleep);
-
+         
             st.sendResponse(response);
 
             Response ringingResponse = protocolObjects.messageFactory.createResponse(Response.RINGING,
@@ -175,7 +174,7 @@ public class Shootme   implements SipListener {
 
             this.inviteSeen = true;
 
-            new Timer().schedule(new MyTimerTask(requestEvent,st/*,toTag*/), 1000);
+            new Timer().schedule(new MyTimerTask(requestEvent,st/*,toTag*/), timeToSleep);
         } catch (Exception ex) {
             ex.printStackTrace();
             System.exit(0);
