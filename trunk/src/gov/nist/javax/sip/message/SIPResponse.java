@@ -46,6 +46,7 @@ import gov.nist.javax.sip.header.StatusLine;
 import gov.nist.javax.sip.header.To;
 import gov.nist.javax.sip.header.Via;
 import gov.nist.javax.sip.header.ViaList;
+import gov.nist.javax.sip.header.extensions.SessionExpires;
 
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
@@ -60,7 +61,7 @@ import javax.sip.message.Request;
 /**
  * SIP Response structure.
  *
- * @version 1.2 $Revision: 1.27 $ $Date: 2009-07-17 18:57:55 $
+ * @version 1.2 $Revision: 1.28 $ $Date: 2009-08-28 15:27:57 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
@@ -702,6 +703,7 @@ public final class SIPResponse
                 || nextHeader instanceof ContentLength
                 || nextHeader instanceof ServerHeader
                 || nextHeader instanceof ReasonHeader
+                || nextHeader instanceof SessionExpires
                 || nextHeader instanceof ReasonList) {
                 continue;
             }
