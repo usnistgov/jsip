@@ -57,7 +57,7 @@ import java.util.Iterator;
  * connection. This is the active object that creates new TLS MessageChannels (one for each new
  * accept socket).
  * 
- * @version 1.2 $Revision: 1.17 $ $Date: 2009-07-29 20:38:13 $
+ * @version 1.2 $Revision: 1.18 $ $Date: 2009-08-31 16:18:00 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -74,11 +74,6 @@ public class TLSMessageProcessor extends MessageProcessor {
 
     protected int useCount = 0;
 
-    /**
-     * The SIP Stack Structure.
-     */
-    protected SIPTransactionStack sipStack;
-
     private ArrayList<TLSMessageChannel> incomingTlsMessageChannels;
 
     /**
@@ -89,7 +84,7 @@ public class TLSMessageProcessor extends MessageProcessor {
      * @param port port where this message processor listens.
      */
     protected TLSMessageProcessor(InetAddress ipAddress, SIPTransactionStack sipStack, int port) {
-        super(ipAddress, port, "tls");
+        super(ipAddress, port, "tls",sipStack);
         this.sipStack = sipStack;
         this.tlsMessageChannels = new Hashtable<String, TLSMessageChannel>();
         this.incomingTlsMessageChannels = new ArrayList<TLSMessageChannel>();

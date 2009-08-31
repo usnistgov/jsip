@@ -49,7 +49,7 @@ import java.util.*;
  * connection. This is the active object that creates new TCP MessageChannels (one for each new
  * accept socket).
  * 
- * @version 1.2 $Revision: 1.30 $ $Date: 2009-07-29 20:38:13 $
+ * @version 1.2 $Revision: 1.31 $ $Date: 2009-08-31 16:18:00 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -70,18 +70,13 @@ public class TCPMessageProcessor extends MessageProcessor {
     protected int useCount;
 
     /**
-     * The SIP Stack Structure.
-     */
-    protected SIPTransactionStack sipStack;
-
-    /**
      * Constructor.
      * 
      * @param sipStack SIPStack structure.
      * @param port port where this message processor listens.
      */
     protected TCPMessageProcessor(InetAddress ipAddress, SIPTransactionStack sipStack, int port) {
-        super(ipAddress, port, "tcp");
+        super(ipAddress, port, "tcp",sipStack);
 
         this.sipStack = sipStack;
 
