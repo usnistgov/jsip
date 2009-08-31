@@ -25,20 +25,17 @@
 */
 package gov.nist.javax.sip.stack;
 
+import gov.nist.core.Host;
+import gov.nist.core.HostPort;
+import gov.nist.core.InternalErrorHandler;
+import gov.nist.javax.sip.ListeningPointImpl;
+import gov.nist.javax.sip.header.Via;
+
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.Socket;
-import java.net.SocketAddress;
-
-import gov.nist.core.*;
-import gov.nist.javax.sip.*;
-import gov.nist.javax.sip.header.*;
-import java.text.*;
+import java.text.ParseException;
 
 import javax.sip.InvalidArgumentException;
-/*
- * Enhancements contributed by Jeff Keyser.
- */
 
 /**
  * This is the Stack abstraction for the active object that waits for messages
@@ -47,7 +44,7 @@ import javax.sip.InvalidArgumentException;
  * The main job of the message processor is to instantiate message channels for
  * the given transport.
  *
- * @version 1.2 $Revision: 1.15 $ $Date: 2009-07-29 20:38:14 $
+ * @version 1.2 $Revision: 1.16 $ $Date: 2009-08-31 16:17:59 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -97,7 +94,15 @@ public abstract class MessageProcessor implements Runnable {
 
     private boolean sentBySet;
 
-
+    /**
+     * Our stack (that created us).
+     */
+    protected SIPTransactionStack sipStack;
+    
+    protected MessageProcessor( String transport ) {
+    	this.transport = transport;
+    }
+    
     /**
      * Constructor
      *
@@ -105,17 +110,32 @@ public abstract class MessageProcessor implements Runnable {
      * @param port -- port where i am listening for incoming requests.
      * @param transport -- transport to use for the message processor (UDP/TCP/TLS).
      */
-    public MessageProcessor(InetAddress ipAddress, int port, String transport) {
+    protected MessageProcessor( InetAddress ipAddress, int port, String transport,
+    							SIPTransactionStack transactionStack ) {
+    	this( transport );
+    	this.initialize(ipAddress, port, transactionStack);
+    }
 
+    /**
+     * Initializes this MessageProcessor. Needed for extensions
+     * that use classloading
+     * 
+     * @param ipAddress2
+     * @param transactionStack
+     * @param port2
+     */
+	public final void initialize( InetAddress ipAddress, int port,
+			SIPTransactionStack transactionStack ) {
+		
+		this.sipStack = transactionStack;
         this.savedIpAddress = ipAddress.getHostAddress();
         this.ipAddress = ipAddress;
         this.port = port;
-        this.transport = transport;
         this.sentByHostPort = new HostPort();
         this.sentByHostPort.setHost(new Host(ipAddress.getHostAddress()));
-        this.sentByHostPort.setPort(port);
-    }
-
+        this.sentByHostPort.setPort(port);		
+	}
+    
     /**
      * Get the transport string.
      *
@@ -334,10 +354,6 @@ public abstract class MessageProcessor implements Runnable {
 
         return transport.equalsIgnoreCase("TLS")?5061:5060;
     }
-
-
-
-
 
 
 
