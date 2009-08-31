@@ -19,7 +19,7 @@ Revisions and fixes by:
 
                 Dan Muresan		 <muresan@gmail.com>
 
-                Jeroen van Bemmel <jbemmel@lucent.com>
+                Jeroen van Bemmel <jbemmel@zonnet.nl>
 
                 Ivelin Ivanov <ivelin@mobicents.org>
 
@@ -143,12 +143,17 @@ c:/jakarta-ant/bin/ant all
         </delete>
     </target>
 
+    <target name="check_java_version">
+		  <!-- JvB: Check for Java 1.5 -->
+		  <available classname="java.lang.ProcessBuilder" property="jdk15.available" />
+
+		  <!-- JvB: New: also check for Java 7, for SCTP support -->
+		  <available classname="java.security.cert.CertificateRevokedException" property="jdk7.available"/>
+	  </target>
+
     <!-- Create ${classes} -->
     <target name="init">
         <mkdir dir="${classes}" />
-
-        <!-- JvB: Check for Java 1.5 -->
-        <available classname="java.lang.ProcessBuilder" property="jdk15.available" />
     </target>
 
     <target name="cleandocs">
@@ -246,13 +251,15 @@ c:/jakarta-ant/bin/ant all
                 </target>
                 <!-- Compile and build jars -->
                 <target name="compileri" depends="clean,init,compileapi">
-                    <jain-javac includes="gov/nist/core/**/*.java, gov/nist/javax/sip/**/*.java">
+                    <jain-javac includes="gov/nist/core/**/*.java, gov/nist/javax/sip/**/*.java"
+                                excludes="gov/nist/javax/sip/stack/sctp/**/*.class">
                         <classpath>
                             <pathelement location="${log4j_jar}" />
                         </classpath>
                     </jain-javac>
                     <copy file="TIMESTAMP" toDir="classes/" />
-                    <jar destfile="${jain-sip-ri-jar}" basedir="${classes}" includes="TIMESTAMP,gov/nist/**/*.class" >
+                    <jar destfile="${jain-sip-ri-jar}" basedir="${classes}" includes="TIMESTAMP,gov/nist/**/*.class"
+                                                                            excludes="gov/nist/javax/sip/stack/sctp/**/*.class">
                         <manifest>
                             <attribute	name="Original-Jar-Name"
                                         value="${jain-sip-ri-jar}"/>
@@ -272,6 +279,21 @@ c:/jakarta-ant/bin/ant all
                                         value="${sdp_jar}"/>
                         </manifest>
                     </jar>
+                </target>
+
+                <target name="compilesctp" depends="check_java_version" if="jdk7.available">
+                  <javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" 
+                	  nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" 
+                		optimize="${javac.optimize}" srcdir="${srcroot}" 
+                		source="1.7" target="1.7" 
+                		includes="gov/nist/javax/sip/stack/sctp/**/*.java" destdir="${classes}">
+                		<classpath>
+                		  <pathelement location="${classes}" />
+                			<pathelement location="${log4j_jar}" />
+                		</classpath>
+                	</javac>
+                	<jar destfile="${jain-sip-sctp-jar}" basedir="${classes}"  
+                	  includes="gov/nist/javax/sip/stack/sctp/**/*.class" />
                 </target>
 
                 <target name="compileunit" depends="init">
@@ -297,7 +319,7 @@ c:/jakarta-ant/bin/ant all
                     </jar>
                 </target>
 
-                <target name='compilejain' depends='init,compile,compilesdp' />
+                <target name='compilejain' depends='init,compile,compilesdp,compilesctp' />
 
                 <!-- Compile the examples -->
                 <target name="compileexamples" depends="init">
