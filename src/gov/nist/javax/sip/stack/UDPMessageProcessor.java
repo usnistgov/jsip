@@ -39,7 +39,7 @@ import gov.nist.core.*;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size).
  * Each UDP message is processed in its own thread).
  *
- * @version 1.2 $Revision: 1.35 $ $Date: 2009-07-31 00:43:37 $
+ * @version 1.2 $Revision: 1.36 $ $Date: 2009-08-31 16:18:00 $
  *
  * @author M. Ranganathan  <br/>
  *
@@ -76,12 +76,6 @@ public class UDPMessageProcessor extends MessageProcessor {
      */
     protected int threadPoolSize;
 
-    /**
-     * Our stack (that created us).
-     */
-    protected SIPTransactionStack sipStack;
-
-
     protected DatagramSocket sock;
 
     /**
@@ -102,7 +96,7 @@ public class UDPMessageProcessor extends MessageProcessor {
      */
     protected UDPMessageProcessor(InetAddress ipAddress,
             SIPTransactionStack sipStack, int port) throws IOException {
-        super(ipAddress, port, "udp");
+        super(ipAddress, port, "udp",sipStack);
 
         this.sipStack = sipStack;
 

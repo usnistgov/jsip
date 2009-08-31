@@ -27,7 +27,6 @@ package gov.nist.javax.sip.stack;
 
 import gov.nist.core.Host;
 import gov.nist.core.HostPort;
-import gov.nist.core.LogWriter;
 import gov.nist.core.ServerLogger;
 import gov.nist.core.StackLogger;
 import gov.nist.core.ThreadAuditor;
@@ -49,7 +48,6 @@ import gov.nist.javax.sip.message.SIPResponse;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -57,7 +55,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Random;
 import java.util.Set;
 import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
@@ -94,7 +91,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.116 $ $Date: 2009-08-19 03:14:21 $
+ * @version 1.2 $Revision: 1.117 $ $Date: 2009-08-31 16:18:00 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener {
 
@@ -1799,6 +1796,23 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
             this.addMessageProcessor(tlsMessageProcessor);
             // this.tlsFlag = true;
             return tlsMessageProcessor;
+        } else if (transport.equalsIgnoreCase("sctp")) {
+        	
+        	// Need Java 7 for this, so these classes are packaged in a separate jar
+        	// Try to load it indirectly, if fails report an error
+        	try {
+				Class<?> mpc = ClassLoader.getSystemClassLoader().loadClass( "gov.nist.javax.sip.stack.sctp.SCTPMessageProcessor" );
+				MessageProcessor mp = (MessageProcessor) mpc.newInstance();
+				mp.initialize( ipAddress, port, this );
+				this.addMessageProcessor(mp);
+				return mp;
+			} catch (ClassNotFoundException e) {
+				throw new IllegalArgumentException("SCTP not supported (needs Java 7 and SCTP jar in classpath)");
+			} catch ( InstantiationException ie ) {
+				throw new IllegalArgumentException("Error initializing SCTP", ie);				
+			} catch ( IllegalAccessException ie ) {
+				throw new IllegalArgumentException("Error initializing SCTP", ie);				
+			}
         } else {
             throw new IllegalArgumentException("bad transport");
         }
