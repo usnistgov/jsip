@@ -42,7 +42,6 @@ import gov.nist.javax.sip.header.ContentType;
 import gov.nist.javax.sip.header.ErrorInfo;
 import gov.nist.javax.sip.header.ErrorInfoList;
 import gov.nist.javax.sip.header.From;
-import gov.nist.javax.sip.header.HeaderFactoryImpl;
 import gov.nist.javax.sip.header.InReplyTo;
 import gov.nist.javax.sip.header.MaxForwards;
 import gov.nist.javax.sip.header.Priority;
@@ -117,7 +116,7 @@ import javax.sip.message.Request;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.48 $ $Date: 2009-08-25 19:39:12 $
+ * @version 1.2 $Revision: 1.49 $ $Date: 2009-09-02 16:38:27 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -380,10 +379,12 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
             try {
                 if (messageContent != null)
                     content = messageContent;
-                else
-                    content = new String(messageContentBytes, contentEncodingCharset);
+                else {
+                	// JvB: Check for 'charset' parameter which overrides the default UTF-8
+                    content = new String(messageContentBytes, getCharset() );
+                }
             } catch (UnsupportedEncodingException ex) {
-                content = "";
+            	InternalErrorHandler.handleException(ex);
             }
 
             encoding.append(content);
@@ -433,7 +434,7 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
 
             byte[] msgarray = null;
             try {
-                msgarray = encoding.toString().getBytes( contentEncodingCharset );
+                msgarray = encoding.toString().getBytes( getCharset() );
             } catch (UnsupportedEncodingException ex) {
                 InternalErrorHandler.handleException(ex);
             }
@@ -445,7 +446,7 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
             // Message content does not exist.
 
             try {
-                retval = encoding.toString().getBytes( contentEncodingCharset );
+                retval = encoding.toString().getBytes( getCharset() );
             } catch (UnsupportedEncodingException ex) {
                 InternalErrorHandler.handleException(ex);
             }
@@ -1158,16 +1159,7 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
         if (this.messageContent == null && this.messageContentBytes == null)
             return null;
         else if (this.messageContent == null) {
-            ContentType contentTypeHeader = getContentTypeHeader();
-            if (contentTypeHeader != null) {
-                String charset = contentTypeHeader.getCharset();
-                if (charset != null) {
-                    this.messageContent = new String(messageContentBytes, charset);
-                } else {
-                    this.messageContent = new String(messageContentBytes, contentEncodingCharset);
-                }
-            } else
-                this.messageContent = new String(messageContentBytes, contentEncodingCharset);
+            this.messageContent = new String(messageContentBytes, getCharset() );
         }
         return this.messageContent;
     }
@@ -1181,40 +1173,15 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
      */
     public byte[] getRawContent() {
         try {
-            if (this.messageContent == null && this.messageContentBytes == null
-                    && this.messageContentObject == null) {
-                return null;
+            if ( this.messageContentBytes != null ) {
+                // return messageContentBytes;
             } else if (this.messageContentObject != null) {
                 String messageContent = this.messageContentObject.toString();
-                byte[] messageContentBytes;
-                ContentType contentTypeHeader = getContentTypeHeader();
-                if (contentTypeHeader != null) {
-                    String charset = contentTypeHeader.getCharset();
-                    if (charset != null) {
-                        messageContentBytes = messageContent.getBytes(charset);
-                    } else {
-                        messageContentBytes = messageContent.getBytes(contentEncodingCharset);
-                    }
-                } else
-                    messageContentBytes = messageContent.getBytes(contentEncodingCharset);
-                return messageContentBytes;
+                this.messageContentBytes = messageContent.getBytes( getCharset() );
             } else if (this.messageContent != null) {
-                byte[] messageContentBytes;
-                ContentType contentTypeHeader = getContentTypeHeader();
-                if (contentTypeHeader != null) {
-                    String charset = contentTypeHeader.getCharset();
-                    if (charset != null) {
-                        messageContentBytes = this.messageContent.getBytes(charset);
-                    } else {
-                        messageContentBytes = this.messageContent
-                                .getBytes(contentEncodingCharset);
-                    }
-                } else
-                    messageContentBytes = this.messageContent.getBytes(contentEncodingCharset);
-                return messageContentBytes;
-            } else {
-                return messageContentBytes;
+            	this.messageContentBytes = messageContent.getBytes( getCharset() );                
             }
+            return this.messageContentBytes;
         } catch (UnsupportedEncodingException ex) {
             InternalErrorHandler.handleException(ex);
             return null;
@@ -1268,7 +1235,7 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
     }
 
     /**
-     * Get the content of the header.
+     * Get the content (body) of the message.
      * 
      * @return the content of the sip message.
      */
@@ -1359,16 +1326,8 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
         int length = 0;
         if (content != null) {
             if (content instanceof String) {
-                String charset = null;
-                ContentType contentTypeHeader = getContentTypeHeader();
-                if (contentTypeHeader != null) {
-                    charset = contentTypeHeader.getCharset();
-                }
-                if (charset == null) {
-                    charset = contentEncodingCharset;
-                }
                 try {
-                    length = ((String) content).getBytes(charset).length;
+                    length = ((String) content).getBytes( getCharset() ).length;
                 } catch (UnsupportedEncodingException ex) {
                     InternalErrorHandler.handleException(ex);
                 }
@@ -1847,11 +1806,14 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
         MultipartMimeContentImpl retval = new MultipartMimeContentImpl(this
                 .getContentTypeHeader());
         byte[] rawContent = getRawContent();
-        String body = new String(rawContent);
-
-        retval.createContentList(body);
-
-        return retval;
+		try {
+			String body = new String( rawContent, getCharset() );
+	        retval.createContentList(body);
+	        return retval;
+		} catch (UnsupportedEncodingException e) {
+			InternalErrorHandler.handleException(e);
+			return null;
+		}
     }
 
     public abstract void setSIPVersion(String sipVersion) throws ParseException;
@@ -1860,4 +1822,15 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
 
     public abstract String toString();
 
+    /**
+     * Returns the charset to use for encoding/decoding the body of this message
+     */
+    protected final String getCharset() {
+    	ContentType ct = getContentTypeHeader();
+    	if (ct!=null) {
+    		String c = ct.getCharset();
+    		return c!=null ? c : contentEncodingCharset;
+    	} else return contentEncodingCharset;
+    }
+    
 }
