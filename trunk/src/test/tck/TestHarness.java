@@ -360,6 +360,7 @@ public class TestHarness extends TestCase {
     public static void fail(String message, Exception ex) {
         logFailure(message);
         logger.error(message,ex);
+        TestCase.fail( message );
     }
 
     public static void fail() {
