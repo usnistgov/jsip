@@ -187,6 +187,7 @@ public class Shootist implements SipListener {
                 System.out.println(".: Security-Verify built and added to response...");
             }
 
+            CSeqHeader cseq = (CSeqHeader) ok.getHeader(CSeqHeader.NAME);
             ackRequest = dialog.createAck( cseq.getSeqNumber() );
 
             if (secVerifyList != null && !secVerifyList.isEmpty())

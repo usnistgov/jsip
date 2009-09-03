@@ -179,6 +179,7 @@ public class Shootme implements SipListener {
         System.out.println("Got a response");
         Response response = (Response) responseReceivedEvent.getResponse();
         Transaction tid = responseReceivedEvent.getClientTransaction();
+        CSeqHeader cseq = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
 
         System.out.println("Response received with client transaction id "
                 + tid + ":\n" + response);

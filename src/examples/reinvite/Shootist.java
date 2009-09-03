@@ -228,6 +228,7 @@ public class Shootist  implements SipListener {
 
         Response response = (Response) responseReceivedEvent.getResponse();
         Transaction tid = responseReceivedEvent.getClientTransaction();
+        CSeqHeader cseq = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
 
         logger.info("Response received with client transaction id " + tid
                 + ":\n" + response.getStatusCode());

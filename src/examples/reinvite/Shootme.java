@@ -227,6 +227,7 @@ public class Shootme  implements SipListener {
         logger.info("Got a response");
         Response response = (Response) responseReceivedEvent.getResponse();
         Transaction tid = responseReceivedEvent.getClientTransaction();
+        CSeqHeader cseq = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
 
         logger.info("Response received with client transaction id "
                 + tid + ":\n" + response);
@@ -237,7 +238,7 @@ public class Shootme  implements SipListener {
                 this.okRecieved  = true;
                 Dialog dialog = tid.getDialog();
                 Request ackRequest = dialog.createAck( cseq.getSeqNumber() );
-                dialog.sendAck(request);
+                dialog.sendAck(ackRequest);
             }
             if ( tid != null ) {
                 Dialog dialog = tid.getDialog();
