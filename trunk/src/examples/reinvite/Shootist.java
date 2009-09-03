@@ -252,7 +252,7 @@ public class Shootist  implements SipListener {
                 logger.info("dialogs = " + dialog + " thisdialog = "  + this.dialog);
                 TestCase.assertTrue("dialog mismatch",dialog == this.dialog);
 
-                Request ackRequest = dialog.createRequest(Request.ACK);
+                Request ackRequest = dialog.createAck( cseq.getSeqNumber() );
                 logger.info("Ack request to send = " + ackRequest);
                 logger.info("Sending ACK");
                 dialog.sendAck(ackRequest);

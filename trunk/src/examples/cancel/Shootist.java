@@ -127,7 +127,7 @@ public class Shootist extends TestCase implements SipListener {
                     if (!sendDelayedCancel) fail("Should not see OK for the Invite");
                     // Got the OK for the invite. If Send Cancel was delayed.
 
-                    Request ackRequest = dialog.createRequest(Request.ACK);
+                    Request ackRequest = dialog.createAck( cseq.getSeqNumber() );
                     logger.info("Sending ACK");
                     dialog.sendAck(ackRequest);
                     Request byeRequest = dialog.createRequest(Request.BYE);
