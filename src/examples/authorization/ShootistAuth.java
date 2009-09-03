@@ -91,7 +91,7 @@ public class ShootistAuth implements SipListener {
             if (response.getStatusCode() == Response.OK) {
                 if (cseq.getMethod().equals(Request.INVITE)) {
                     Dialog dialog = inviteTid.getDialog();
-                    Request ackRequest = dialog.createRequest(Request.ACK);
+                    Request ackRequest = dialog.createAck( cseq.getSeqNumber() );
                     System.out.println("Sending ACK");
                     dialog.sendAck(ackRequest);
                 } else if (cseq.getMethod().equals(Request.CANCEL)) {

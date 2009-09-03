@@ -153,7 +153,7 @@ public class Shootist implements SipListener {
                 //  sipProvider.getNewClientTransaction(cancel);
                 // ct.sendRequest();
                 Dialog dialog = tid.getDialog();
-                Request ackRequest = dialog.createRequest(Request.ACK);
+                Request ackRequest = dialog.createAck( cseq.getSeqNumber() );
                 System.out.println("Sending ACK");
                 dialog.sendAck(ackRequest);
 
