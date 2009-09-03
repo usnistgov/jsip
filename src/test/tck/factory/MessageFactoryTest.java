@@ -464,9 +464,88 @@ public class MessageFactoryTest extends FactoryTestHarness {
         }
     }
 
+public void testMessageSyntax() {
+		try{
+			Request request = tiMessageFactory.createRequest( 
+			  "BYE sip:127.0.0.1:5080;transport=tcp SIP/2.0\r\n"+
+        "Via: SIP/2.0/TCP 127.0.0.1:5060;rport=5060;branch=z9hG4bKd2c87858eb0a7a09becc7a115c608d27\r\n"+
+        "CSeq: 2 BYE\r\n"+
+        "Call-ID: 84a5c57fd263bcce6fec05edf20c5aba@127.0.0.1\r\n"+
+        "From: \"The Master Blaster\" <sip:BigGuy@here.com>;tag=12345\r\n"+
+        "To: \"The Little Blister\" <sip:LittleGuy@there.com>;tag=2955\r\n"+
+        "Max-Forwards: 70\r\n"+
+        "Route: \"proxy\" <sip:proxy@127.0.0.1:5070;transport=tcp;lr>\r\n"+
+        "Content-Length: 0\r\n"+
+        " \r\n"   // the space here is invalid
+			);
+			fail( "Should throw an exception" );
+		} catch (junit.framework.AssertionFailedError afe) {
+		  // already reported
+		} catch (ParseException ex) {
+			ex.printStackTrace();
+		} catch (Throwable t) {
+		  t.printStackTrace();
+		  fail( "Should throw a ParseException" );
+		} finally {
+			logTestCompleted("testMessageSyntax()");
+		}
+	}
 
+public void testMessageSyntax2() {
+		try{
+			Request request = tiMessageFactory.createRequest( 
+			  "BYE sip:127.0.0.1:5080;transport=tcp SIP/2.0\r\n"+
+        "Via: SIP/2.0/TCP 127.0.0.1:5060;rport=5060;branch=z9hG4bKd2c87858eb0a7a09becc7a115c608d27\r\n"+
+        "CSeq: 2 BYE\r\n"+
+        "Call-ID: 84a5c57fd263bcce6fec05edf20c5aba@127.0.0.1\r\n"+
+        "From: \"The Master Blaster\" <sip:BigGuy@here.com>;tag=12345\r\n"+
+        "To: \"The Little Blister\" <sip:LittleGuy@there.com>;tag=2955\r\n"+
+        "Max-Forwards: 70\r\n"+
+        "Route: \"proxy\" <sip:proxy@127.0.0.1:5070;transport=tcp;lr>\r\n"+
+        "Content-Length: 0\r\n"+
+        "\r \n"   // the space here is invalid
+			);
+			fail( "Should throw an exception" );
+		} catch (junit.framework.AssertionFailedError afe) {
+		  // already reported
+		} catch (ParseException ex) {
+			ex.printStackTrace();
+		} catch (Throwable t) {
+		  t.printStackTrace();
+		  fail( "Should throw a ParseException" );
+		} finally {
+			logTestCompleted("testMessageSyntax2()");
+		}
+	}
 
+	public void testCharset() {
+	try{
+		Request request = tiMessageFactory.createRequest( 
+		  "MESSAGE sip:127.0.0.1 SIP/2.0\r\n"+
+		  "Via: SIP/2.0/TCP 127.0.0.1:5060;rport=5060;branch=z9hG4bKd2c87858eb0a7a09becc7a115c608d27\r\n"+
+		  "CSeq: 2 BYE\r\n"+
+		  "Call-ID: 84a5c57fd263bcce6fec05edf20c5aba@127.0.0.1\r\n"+
+		  "From: \"The Master Blaster\" <sip:BigGuy@here.com>;tag=12345\r\n"+
+		  "To: \"The Little Blister\" <sip:LittleGuy@there.com>;tag=2955\r\n"+
+		  "Max-Forwards: 70\r\n"+
+		  "Content-Type: text/plain;charset=ISO-8859-1\r\n" +
+		  "Content-Length: 0\r\n"+
+		  "\r\n"
+		);
 
+		// JvB: in UTF-8 these character would be encoded as multiple bytes
+		byte[] content = "öê".getBytes( "ISO-8859-1" );
+		request.setContent( new String(content,"ISO-8859-1"), 
+				(ContentTypeHeader) request.getHeader(ContentTypeHeader.NAME) );
+		
+		assertEquals( 2, request.getRawContent().length );		
+	} catch (Exception t) {
+	  t.printStackTrace();
+	  fail( "ParseException", t );
+	} finally {
+		logTestCompleted("testCharset()");
+	}
+}
 
     public void setUp() {
         try {
