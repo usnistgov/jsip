@@ -161,7 +161,7 @@ public class Shootist implements SipListener {
                     dialog.sendAck(ackRequest);
 
                     // JvB: test REFER, reported bug in tag handling
-                    dialog.sendRequest(  sipProvider.getNewClientTransaction( dialog.createRequest("REFER") ));
+                    // dialog.sendRequest(  sipProvider.getNewClientTransaction( dialog.createRequest("REFER") ));
 
                 } else if (cseq.getMethod().equals(Request.CANCEL)) {
                     if (dialog.getState() == DialogState.CONFIRMED) {
