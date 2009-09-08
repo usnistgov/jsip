@@ -42,7 +42,7 @@ import gov.nist.javax.sip.parser.*;
 /**
  * Message Factory implementation
  *
- * @version 1.2 $Revision: 1.22 $ $Date: 2009-08-21 20:56:04 $
+ * @version 1.2 $Revision: 1.23 $ $Date: 2009-09-08 01:58:40 $
  * @since 1.1
  *
  * @author M. Ranganathan <br/>
@@ -53,6 +53,8 @@ import gov.nist.javax.sip.parser.*;
 public class MessageFactoryImpl implements MessageFactory, MessageFactoryExt {
 
     private boolean testing = false;
+    
+    private boolean strict  = true;
 
     private static String defaultContentEncodingCharset = "UTF-8";
 
@@ -66,6 +68,11 @@ public class MessageFactoryImpl implements MessageFactory, MessageFactoryExt {
      * The Server header to include
      */
     private static ServerHeader server;
+    
+    
+    public void setStrict(boolean strict) {
+        this.strict = strict;
+    }
 
 
 
@@ -690,6 +697,7 @@ public class MessageFactoryImpl implements MessageFactory, MessageFactoryExt {
         }
 
         StringMsgParser smp = new StringMsgParser();
+        smp.setStrict(this.strict);
 
         /*
          * This allows you to catch parse exceptions and create invalid messages
