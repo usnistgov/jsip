@@ -64,7 +64,7 @@ import java.text.ParseException;
  * feld swoop).
  *
  *
- * @version 1.2 $Revision: 1.24 $ $Date: 2009-07-17 18:58:05 $
+ * @version 1.2 $Revision: 1.25 $ $Date: 2009-09-08 01:58:41 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -75,6 +75,7 @@ public class StringMsgParser {
     protected boolean readBody;
     private ParseExceptionListener parseExceptionListener;
     private String rawStringMessage;
+    private boolean strict;
 
     private static boolean computeContentLengthFromMessage = false;
 
@@ -321,10 +322,15 @@ public class StringMsgParser {
         message.setSize(i);
 
         // Check for content legth header
-        if (readBody && message.getContentLength() != null &&
-                message.getContentLength().getContentLength() != 0) {
-            String body = msgString.substring(i);
-            message.setMessageContent(body,computeContentLengthFromMessage,message.getContentLength().getContentLength());
+        if (readBody && message.getContentLength() != null ) {
+            if ( message.getContentLength().getContentLength() != 0) {
+                String body = msgString.substring(i);
+                message.setMessageContent(body,this.strict,computeContentLengthFromMessage,message.getContentLength().getContentLength());
+             } else if (!computeContentLengthFromMessage && message.getContentLength().getContentLength() == 0 && !msgString.endsWith("\r\n\r\n") ){
+                 if ( strict ) {
+                     throw new ParseException("Extraneous characters at the end of the message ",i);
+                 }
+             } 
 
         }
 
@@ -693,6 +699,11 @@ public class StringMsgParser {
             new Thread(new ParserThread(messages)).start();
         }
 
+    }
+
+    public void setStrict(boolean strict) {
+       this.strict = strict;
+        
     }
 
 }
