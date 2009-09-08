@@ -116,7 +116,7 @@ import javax.sip.message.Request;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.49 $ $Date: 2009-09-02 16:38:27 $
+ * @version 1.2 $Revision: 1.50 $ $Date: 2009-09-08 01:58:40 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -1270,14 +1270,17 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
      * 
      * @param content Message body as a string.
      */
-    public void setMessageContent(String content, boolean computeContentLength, int givenLength)
+    public void setMessageContent(String content, boolean strict, boolean computeContentLength, int givenLength)
             throws ParseException {
         // Note that that this could be a double byte character
         // set - bug report by Masafumi Watanabe
         computeContentLength(content);
-        if ((!computeContentLength) && this.contentLengthHeader.getContentLength() < givenLength) {
-            throw new ParseException("Invalid content length "
-                    + this.contentLengthHeader.getContentLength() + " / " + givenLength, 0);
+        if ((!computeContentLength)) {
+            if ( (!strict && this.contentLengthHeader.getContentLength() != givenLength) 
+                    || this.contentLengthHeader.getContentLength() < givenLength) {
+                throw new ParseException("Invalid content length "
+                        + this.contentLengthHeader.getContentLength() + " / " + givenLength, 0);
+            }
         }
 
         messageContent = content;
