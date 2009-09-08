@@ -33,8 +33,8 @@ public class MultipartMimeParserTest extends TestCase {
         "History-info: <sip:5201;phone-context=cdp.udp@nortel.com;user=phone>;index=1\r\n" +
         "X-nt-corr-id: 000000220e182d1508@001bbafd3d0f-2f0b1b42\r\n" +
         "Min-SE: 0\r\n" +
-        "Allow: INVITE,ACK,BYE,REGISTER,REFER,NOTIFY,CANCEL,PRACK,OPTIONS,INFO,SUBSCRIBE,UPDATE\r\n" 
-       
+        "Allow: INVITE,ACK,BYE,REGISTER,REFER,NOTIFY,CANCEL,PRACK,OPTIONS,INFO,SUBSCRIBE,UPDATE\r\n" +
+        "Content-Length: 0\r\n\r\n"  
         ;
         private static String contentType1 = "Content-Type: multipart/mixed;boundary=unique-boundary-1\r\n" ;
         private static String contentString1 = 
@@ -82,7 +82,8 @@ public class MultipartMimeParserTest extends TestCase {
         "From: user1 <sip:user1@server1.com>;tag=1928301774\r\n" +
         "Call-ID: a84b4c76e66710@pc33.server1.com\r\n" +
         "CSeq: 314159 INVITE\r\n" +
-        "Contact: <sip:user1@pc33.server1.com>\r\n";
+        "Contact: <sip:user1@pc33.server1.com>\r\n" +
+        "Content-Length: 0\r\n\r\n";
     
     String type[] = {"application","applicaiton"};
     String subtype[] = {"sdp","p25issi"};
