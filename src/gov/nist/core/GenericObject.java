@@ -215,11 +215,13 @@ public abstract class GenericObject implements Serializable, Cloneable {
      * mergeOject object.
      */
     public void merge(Object mergeObject) {
-        if (!mergeObject.getClass().equals(this.getClass()))
-            throw new IllegalArgumentException("Bad override object");
         // Base case.
         if (mergeObject == null)
             return;
+
+        if (!mergeObject.getClass().equals(this.getClass()))
+            throw new IllegalArgumentException("Bad override object");
+                        
         Class<?> myclass = this.getClass();
         while (true) {
             Field[] fields = myclass.getDeclaredFields();
