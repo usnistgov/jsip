@@ -245,6 +245,13 @@ class IOHandler {
             }
 
             if (clientSock == null) {
+                
+                 if (sipStack.isLoggingEnabled() ) {
+                    sipStack.getStackLogger().logDebug(this.socketTable.toString());
+                    sipStack.getStackLogger().logError("Could not connect to " + receiverAddress
+                            + ":" + contactPort);
+                 }
+                                         
                 throw new IOException("Could not connect to " + receiverAddress
                         + ":" + contactPort);
             } else

@@ -68,7 +68,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.62 $ $Date: 2009-07-29 20:38:13 $
+ * @version 1.2 $Revision: 1.63 $ $Date: 2009-09-10 21:47:26 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -972,7 +972,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 
                 // If the branch parameter exists but
                 // does not start with the magic cookie,
-                if (!messageBranch.startsWith(SIPConstants.BRANCH_MAGIC_COOKIE)) {
+                if (!messageBranch.toLowerCase().startsWith(SIPConstants.BRANCH_MAGIC_COOKIE_LOWER_CASE)) {
 
                     // Flags this as old
                     // (RFC2543-compatible) client
