@@ -60,7 +60,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.54 $ $Date: 2009-07-29 20:38:14 $
+ * @version 1.2 $Revision: 1.55 $ $Date: 2009-09-10 21:47:26 $
  */
 public class TCPMessageChannel extends MessageChannel implements SIPMessageListener, Runnable,
         RawMessageChannel {
@@ -134,6 +134,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
         mythread.setName("TCPMessageChannelThread");
         // Stash away a pointer to our sipStack structure.
         this.sipStack = sipStack;
+        this.peerPort = mySock.getPort();
 
         this.tcpMessageProcessor = msgProcessor;
         this.myPort = this.tcpMessageProcessor.getPort();
@@ -247,8 +248,8 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
          * 
          * JvB 22/5 removed
          */
-        // Socket s = this.sipStack.ioHandler.getSocket(IOHandler.makeKey(
-        // this.peerAddress, this.peerPort));
+       // Socket s = this.sipStack.ioHandler.getSocket(IOHandler.makeKey(
+       // this.peerAddress, this.peerPort));
         Socket sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor.getIpAddress(),
                 this.peerAddress, this.peerPort, this.peerProtocol, msg, retry);
 
@@ -451,7 +452,6 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
             if (sipMessage instanceof SIPRequest) {
                 Via v = (Via) viaList.getFirst();
                 Hop hop = sipStack.addressResolver.resolveAddress(v.getHop());
-                this.peerPort = hop.getPort();
                 this.peerProtocol = v.getTransport();
                 try {
                     this.peerAddress = mySock.getInetAddress();
@@ -487,8 +487,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
                 }
             }
 
-            // System.out.println("receiver address = " + receiverAddress);
-
+         
             // Foreach part of the request header, fetch it and process it
 
             long receptionTime = System.currentTimeMillis();
