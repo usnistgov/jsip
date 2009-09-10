@@ -1,0 +1,53 @@
+<project basedir="." default="shootme">
+    <property name="root" value="../../../" />
+    <property file="${root}/ant-build-config.properties" />
+    <property name="classes" value="${root}/classes" />
+    <property name="srcroot" value="${root}/src" />
+    <property name="log4j_jar" value="${root}/lib/${log4j}" />
+    <property name="junit_jar" value="${root}/lib/${junit}" />
+    <path id="project.class.path">
+        <pathelement location="${classes}" />
+        <pathelement location="${log4j_jar}" />
+        <pathelement location="${junit_jar}" />
+    </path>
+    <target name="make">
+        <javac debug="true" source="${javac.source}" deprecation="${javac.deprecation}" debuglevel="${javac.debuglevel}" srcdir="${srcroot}" includes="examples/ims/**/*.java" classpathref="project.class.path" destdir="${classes}">
+        </javac>
+    </target>
+    <target name="shootme" depends="make" description="build and run the  example UAS.">
+        <delete file="shootmedebug.txt" />
+        <delete file="shootmelog.txt" />
+        <java classname="examples.ims.Shootme" classpathref="project.class.path" fork="true">
+        </java>
+    </target>
+
+    <target name="shootist" depends="make" description="run the example UAC.">
+        <delete file="shootistdebug.txt" />
+        <delete file="shootistlog.txt" />
+        <java classname="examples.ims.Shootist" fork="true" classpathref="project.class.path" />
+    </target>
+    <target name="shootistlog" description="Show the  log">
+        <java classname="tools.tracesviewer.TracesViewer" fork="true" classpathref="project.class.path">
+            <arg value="-server_file" />
+            <arg value="shootistlog.txt" />
+        </java>
+    </target>
+    <target name="shootmelog" description="Show the  log">
+        <java classname="tools.tracesviewer.TracesViewer" fork="true">
+            <arg value="-server_file" />
+            <arg value="shootmelog.txt" />
+        </java>
+    </target>
+    <target name="clean" description="clean the logs">
+        <delete file="*debug.txt" />
+        <delete file="*log.txt" />
+    </target>
+
+    <target name="cleanall" description="clean all">
+        <delete file="*.txt" />
+        <delete file="*.class" />
+    </target>
+
+
+
+</project>
