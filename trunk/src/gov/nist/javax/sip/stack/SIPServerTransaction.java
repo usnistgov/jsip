@@ -163,7 +163,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.108 $ $Date: 2009-08-18 02:44:28 $
+ * @version 1.2 $Revision: 1.109 $ $Date: 2009-09-10 21:47:26 $
  * @author M. Ranganathan
  *
  */
@@ -939,15 +939,10 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                     } else {
                         // This is the case for INVITE server transactions.
                         // essentially, it duplicates the code in the
-                        // PROCEEDING
-                        // case below. There is no TRYING state for INVITE
-                        // transactions
-                        // in the RFC. We are using it to signal whether the
-                        // application
-                        // has sent a provisional response or not. Hence
-                        // this is
-                        // treated
-                        // the same as as Proceeding.
+                        // PROCEEDING case below. There is no TRYING state for INVITE
+                        // transactions in the RFC. We are using it to signal whether the
+                        // application has sent a provisional response or not. Hence
+                        // this is treated the same as as Proceeding.
                         if (statusCode / 100 == 2) {
                             // Status code is 2xx means that the
                             // transaction transitions to TERMINATED

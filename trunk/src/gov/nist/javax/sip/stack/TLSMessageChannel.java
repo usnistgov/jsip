@@ -64,7 +64,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.20 $ $Date: 2009-07-29 20:38:15 $
+ * @version 1.2 $Revision: 1.21 $ $Date: 2009-09-10 21:47:26 $
  */
 public final class TLSMessageChannel extends MessageChannel implements SIPMessageListener,
         Runnable, RawMessageChannel {
@@ -135,6 +135,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
 
         this.tlsMessageProcessor = msgProcessor;
         this.myPort = this.tlsMessageProcessor.getPort();
+        this.peerPort = mySock.getPort();
         // Bug report by Vishwashanti Raj Kadiayl
         super.messageProcessor = msgProcessor;
         // Can drop this after response is sent potentially.
@@ -394,7 +395,6 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
                 Via v = (Via) viaList.getFirst();
                 // the peer address and tag it appropriately.
                 Hop hop = sipStack.addressResolver.resolveAddress(v.getHop());
-                this.peerPort = hop.getPort();
                 this.peerProtocol = v.getTransport();
                 try {
                     this.peerAddress = mySock.getInetAddress();
