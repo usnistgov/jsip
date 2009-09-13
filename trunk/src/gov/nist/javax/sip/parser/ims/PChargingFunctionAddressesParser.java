@@ -60,6 +60,7 @@ import java.text.ParseException;
  * </pre>
  *
  * @author ALEXANDRE MIGUEL SILVA SANTOS
+ * @author aayush.bhatnagar: proposed change to allow duplicate ecf and ccf header parameters.
  */
 
 public class PChargingFunctionAddressesParser
@@ -123,9 +124,9 @@ public class PChargingFunctionAddressesParser
         try {
 
             NameValue nv = this.nameValue('=');
-
-            chargingFunctionAddresses.setParameter(nv);
-
+             
+            //chargingFunctionAddresses.setParameter(nv);
+            chargingFunctionAddresses.setMultiParameter(nv);
 
         } finally {
             if (debug)

@@ -30,9 +30,13 @@
 
 package gov.nist.javax.sip.header.ims;
 
+import gov.nist.core.NameValue;
+
 import javax.sip.header.Header;
 import javax.sip.header.Parameters;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.ListIterator;
 
 
 /**
@@ -108,7 +112,7 @@ public interface PChargingFunctionAddressesHeader extends Parameters, Header {
      * <p>Get all the Charging Collection Function (CCF) Addresses set in this header</p>
      * @return ListIterator that constains all CCF addresses of this header
      */
-    public java.util.ListIterator getChargingCollectionFunctionAddresses();
+    public ListIterator getChargingCollectionFunctionAddresses();
 
     /**
      * <p>Set the Event Charging Function (ECF) Address</p>
@@ -135,6 +139,6 @@ public interface PChargingFunctionAddressesHeader extends Parameters, Header {
      * <p>Get all the Event Charging Function (ECF) Addresses set in this header</p>
      * @return ListIterator that constains all CCF addresses of this header
      */
-    public java.util.ListIterator getEventChargingFunctionAddresses();
+    public ListIterator getEventChargingFunctionAddresses();
 
 }

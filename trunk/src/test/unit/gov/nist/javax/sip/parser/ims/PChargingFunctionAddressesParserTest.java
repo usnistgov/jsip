@@ -41,7 +41,10 @@ public class PChargingFunctionAddressesParserTest extends ParserTestCase
 
          "P-Charging-Function-Addresses: ccf=token; ecf=\"test quoted str\"\n",
 
-         "P-Charging-Function-Addresses: ccf=192.1.1.1; ccf=192.1.1.2; ecf=192.1.1.3; ecf=192.1.1.4\n"
+         "P-Charging-Function-Addresses: ccf=192.1.1.1; ccf=192.1.1.2; ecf=192.1.1.3; ecf=192.1.1.4\n",
+         
+         "P-Charging-Function-Addresses: ccf=1.2.3.4; ccf=2.3.4.5;ecf=1.2.3.4; ecf=4.5.6.7\n"
+         
 
          /*
          "P-Charging-Function-Addresses: ccf=[5555::b99:c88:d77:e66]; ccf=[5555::a55:b44:c33:d22]; " +

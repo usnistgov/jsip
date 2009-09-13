@@ -37,6 +37,7 @@ import java.util.*;
 import javax.sip.header.Parameters;
 
 import gov.nist.javax.sip.address.*;
+import gov.nist.javax.sip.header.ims.PChargingFunctionAddresses;
 
 /**
  * Parameters header. Suitable for extension by headers that have parameters.
@@ -44,27 +45,31 @@ import gov.nist.javax.sip.address.*;
  * @author M. Ranganathan   <br/>
  *
  *
- *
- * @version 1.2 $Revision: 1.12 $ $Date: 2009-07-17 18:57:33 $
+ * @version 1.2 $Revision: 1.13 $ $Date: 2009-09-13 15:53:54 $
  *
  */
 public abstract class ParametersHeader
     extends SIPHeader
     implements javax.sip.header.Parameters, Serializable {
     protected NameValueList parameters;
-
+    
+    protected DuplicateNameValueList duplicates;
+    
     protected ParametersHeader() {
         this.parameters = new NameValueList();
+        this.duplicates = new DuplicateNameValueList();
     }
 
     protected ParametersHeader(String hdrName) {
         super(hdrName);
         this.parameters = new NameValueList();
+        this.duplicates = new DuplicateNameValueList();
     }
 
     protected ParametersHeader(String hdrName, boolean sync) {
         super(hdrName);
         this.parameters = new NameValueList(sync);
+        this.duplicates = new DuplicateNameValueList();
     }
 
     /**
@@ -149,7 +154,7 @@ public abstract class ParametersHeader
             this.parameters.set(nv);
         }
     }
-
+    
     /**
      * Sets the value of the specified parameter. If the parameter already had
      *
@@ -463,6 +468,111 @@ public abstract class ParametersHeader
         return retval;
     }
 
+    //-------------------------
+    /**
+     * Introduced specifically for the P-Charging-Function-Addresses Header and 
+     * all other headers that may have multiple header parameters of the same name, but 
+     * with multiple possible values.
+     * 
+     * Example: P-Charging-Function-Addresses: ccf=[5555::b99:c88:d77:e66]; ccf=[5555::a55:b44:c33:d22]; 
+     *                                         ecf=[5555::1ff:2ee:3dd:4cc]; ecf=[5555::6aa:7bb:8cc:9dd]
+     * @param name of the parameter
+     * @param value of the parameter
+     */
+    public void setMultiParameter(String name, String value)
+    {
+    	NameValue nv = new NameValue();
+    	nv.setName(name);
+    	nv.setValue(value);
+    	duplicates.set(nv);
+    }
+    
+    /** Set the parameter given a name and value.
+    *
+    * @param nameValue - the name value of the parameter to set.
+    */
+   public void setMultiParameter(NameValue nameValue) {
+       this.duplicates.set(nameValue);
+   }
+    
+    /**
+     * Returns the parameter name
+     * @param name
+     * @return
+     */
+    public String getMultiParameter(String name) {
+        return this.duplicates.getParameter(name);
+
+    }
+    
+
+    public DuplicateNameValueList getMultiParameters() {
+        return duplicates;
+    }
+    
+    
+    /**
+     * Return the parameter as an object (dont convert to string).
+     *
+     * @param name is the name of the parameter to get.
+     * @return the object associated with the name.
+     */
+    public Object getMultiParameterValue(String name) {
+        return this.duplicates.getValue(name);
+    }
+
+    /**
+     * Returns an Iterator over the names (Strings) of all parameters present
+     * in this ParametersHeader.
+     *
+     * @return an Iterator over all the parameter names
+     */
+
+    public Iterator<String> getMultiParameterNames() {
+        return duplicates.getNames();
+    }
+
+    /** Return true if you have a parameter and false otherwise.
+     *
+     *@return true if the parameters list is non-empty.
+     */
+
+    public boolean hasMultiParameters() {
+        return duplicates != null && !duplicates.isEmpty();
+    }
+
+    /**
+    * Removes the specified parameter from Parameters of this ParametersHeader.
+    * This method returns silently if the parameter is not part of the
+    * ParametersHeader.
+    *
+    * @param name - a String specifying the parameter name
+    */
+
+    public void removeMultiParameter(String name) {
+        this.duplicates.delete(name);
+    }
+    
+    /**
+     * Return true if has a parameter.
+     *
+     * @param parameterName is the name of the parameter.
+     *
+     * @return true if the parameter exists and false if not.
+     */
+    public boolean hasMultiParameter(String parameterName) {
+        return this.duplicates.hasNameValue(parameterName);
+    }
+
+    /**
+     *Remove all parameters.
+     */
+    public void removeMultiParameters() {
+        this.duplicates = new DuplicateNameValueList();
+    }
+
+    //-------------------------------
+    
     @SuppressWarnings("unchecked")
     protected final boolean equalParameters( Parameters other ) {
         if (this==other) return true;
