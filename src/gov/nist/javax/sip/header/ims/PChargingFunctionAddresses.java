@@ -32,7 +32,9 @@ package gov.nist.javax.sip.header.ims;
 
 import gov.nist.core.NameValue;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.ListIterator;
 
 import javax.sip.header.ExtensionHeader;
@@ -89,9 +91,9 @@ public class PChargingFunctionAddresses
         StringBuffer encoding = new StringBuffer();
 
         // issued by Miguel Freitas
-        if (!parameters.isEmpty())
+        if (!duplicates.isEmpty())
         {
-            encoding.append(parameters.encode());
+            encoding.append(duplicates.encode());
         }
 
         return encoding.toString();
@@ -111,7 +113,8 @@ public class PChargingFunctionAddresses
                 "JAIN-SIP Exception, "
                     + "P-Charging-Function-Addresses, setChargingCollectionFunctionAddress(), the ccfAddress parameter is null.");
 
-        setParameter(ParameterNamesIms.CCF, ccfAddress);
+       // setParameter(ParameterNamesIms.CCF, ccfAddress);
+        setMultiParameter(ParameterNamesIms.CCF, ccfAddress);
 
     }
 
@@ -193,7 +196,8 @@ public class PChargingFunctionAddresses
                 "JAIN-SIP Exception, "
                     + "P-Charging-Function-Addresses, setEventChargingFunctionAddress(), the ecfAddress parameter is null.");
 
-        setParameter(ParameterNamesIms.ECF, ecfAddress);
+        setMultiParameter(ParameterNamesIms.ECF, ecfAddress);
+       // setParameter(ParameterNamesIms.ECF, ecfAddress);
 
     }
 
@@ -240,10 +244,12 @@ public class PChargingFunctionAddresses
      *
      * @return ListIterator that constains all CCF addresses of this header
      */
-    public ListIterator getEventChargingFunctionAddresses() {
+    public ListIterator<NameValue> getEventChargingFunctionAddresses() {
 
+    	LinkedList<NameValue> listw = new LinkedList<NameValue>();
+   
         Iterator li = this.parameters.iterator();
-        ListIterator ecfLIST = null;
+        ListIterator<NameValue> ecfLIST = listw.listIterator();
         NameValue nv;
         boolean removed = false;
         while (li.hasNext()) {
