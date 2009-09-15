@@ -54,12 +54,16 @@ public interface MessageFactoryExt extends MessageFactory {
     /**
      * Create a MultipartMime attachment from a list of content type, subtype and content.
      * 
+     * @since 2.0
+     * 
      * @throws NullPointerException, IllegalArgumentException
      */
     public MultipartMimeContent createMultipartMimeContent(ContentTypeHeader multipartMimeContentTypeHeader,
             String[] contentType, 
             String[] contentSubtype, 
             String[] contentBody);
+    
+    
     
     
     

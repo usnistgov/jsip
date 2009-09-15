@@ -38,7 +38,7 @@ import gov.nist.javax.sip.header.*;
  *
  *
  */
-class RequestLineParser extends Parser {
+public class RequestLineParser extends Parser {
     public RequestLineParser(String requestLine) {
         this.lexer = new Lexer("method_keywordLexer", requestLine);
     }
@@ -95,6 +95,9 @@ class RequestLineParser extends Parser {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2009/07/17 18:58:03  emcho
+ * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
+ *
  * Revision 1.8  2006/07/13 09:02:14  mranga
  * Issue number:
  * Obtained from:
