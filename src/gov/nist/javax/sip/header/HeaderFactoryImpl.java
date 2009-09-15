@@ -43,7 +43,7 @@ import gov.nist.javax.sip.address.*;
 
 /** Implementation of the JAIN SIP  HeaderFactory
 *
-* @version 1.2 $Revision: 1.19 $ $Date: 2009-08-21 20:56:05 $
+* @version 1.2 $Revision: 1.20 $ $Date: 2009-09-15 02:55:26 $
 * @since 1.1
 *
 *@author M. Ranganathan   <br/>
@@ -1564,7 +1564,6 @@ public class HeaderFactoryImpl implements HeaderFactory , HeaderFactoryExt {
     }
 
     /**
-     * added by aayush here:
      * @return the newly create P-User-Database header.
      * Please note that this is not a SIP/TEL uri. It is a
      * DIAMETER AAA URI.
@@ -1582,7 +1581,7 @@ public class HeaderFactoryImpl implements HeaderFactory , HeaderFactoryExt {
 
 
     /**
-     * added by aayush here:
+     * 
      * @return The newly created P-Profile-Key header.
      *
      */
@@ -1597,7 +1596,7 @@ public class HeaderFactoryImpl implements HeaderFactory , HeaderFactoryExt {
     }
 
     /**
-     * added by aayush here:
+     * 
      * @return The newly created P-Served-User header.
      */
     public PServedUserHeader createPServedUserHeader(Address address)
@@ -1645,6 +1644,25 @@ public class HeaderFactoryImpl implements HeaderFactory , HeaderFactoryExt {
         s.setExpires(expires);
 
         return s;
+    }
+    
+    
+    /**
+     * Create a new Request Line from a String.
+     * 
+     */
+    public SipRequestLine createRequestLine(String requestLine)  throws ParseException {
+        
+        RequestLineParser requestLineParser = new RequestLineParser(requestLine);
+        return (SipRequestLine) requestLineParser.parse();
+    }
+    
+    /**
+     * Create a new StatusLine from a String.
+     */
+    public SipStatusLine createStatusLine(String statusLine) throws ParseException {
+        StatusLineParser statusLineParser = new StatusLineParser(statusLine);
+        return (SipStatusLine) statusLineParser.parse();
     }
 
 

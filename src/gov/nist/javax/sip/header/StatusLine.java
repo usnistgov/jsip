@@ -33,13 +33,13 @@ import gov.nist.javax.sip.SIPConstants;
 /**
  * Status Line (for SIPReply) messages.
  *
- * @version 1.2 $Revision: 1.5 $ $Date: 2009-07-17 18:57:38 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2009-09-15 02:55:26 $
  *
  * @author M. Ranganathan   <br/>
  *
  *
  */
-public final class StatusLine extends SIPObject {
+public final class StatusLine extends SIPObject implements SipStatusLine {
 
     /**
      * Comment for <code>serialVersionUID</code>
@@ -120,54 +120,50 @@ public final class StatusLine extends SIPObject {
         return encoding;
     }
 
-    /** get the Sip Version
-     * @return SipVersion
+    /* (non-Javadoc)
+     * @see gov.nist.javax.sip.header.SipStatusLine#getSipVersion()
      */
     public String getSipVersion() {
         return sipVersion;
     }
 
-    /** get the Status Code
-     * @return StatusCode
+    /* (non-Javadoc)
+     * @see gov.nist.javax.sip.header.SipStatusLine#getStatusCode()
      */
     public int getStatusCode() {
         return statusCode;
     }
 
-    /** get the ReasonPhrase field
-     * @return  ReasonPhrase field
+    /* (non-Javadoc)
+     * @see gov.nist.javax.sip.header.SipStatusLine#getReasonPhrase()
      */
     public String getReasonPhrase() {
         return reasonPhrase;
     }
 
-    /**
-     * Set the sipVersion member
-     * @param s String to set
+    /* (non-Javadoc)
+     * @see gov.nist.javax.sip.header.SipStatusLine#setSipVersion(java.lang.String)
      */
     public void setSipVersion(String s) {
         sipVersion = s;
     }
 
-    /**
-     * Set the statusCode member
-     * @param statusCode int to set
+    /* (non-Javadoc)
+     * @see gov.nist.javax.sip.header.SipStatusLine#setStatusCode(int)
      */
     public void setStatusCode(int statusCode) {
         this.statusCode = statusCode;
     }
 
-    /**
-     * Set the reasonPhrase member
-     * @param reasonPhrase String to set
+    /* (non-Javadoc)
+     * @see gov.nist.javax.sip.header.SipStatusLine#setReasonPhrase(java.lang.String)
      */
     public void setReasonPhrase(String reasonPhrase) {
         this.reasonPhrase = reasonPhrase;
     }
 
-    /**
-     * Get the major version number.
-     *@return String major version number
+    /* (non-Javadoc)
+     * @see gov.nist.javax.sip.header.SipStatusLine#getVersionMajor()
      */
     public String getVersionMajor() {
         if (sipVersion == null)
@@ -189,9 +185,8 @@ public final class StatusLine extends SIPObject {
         return major;
     }
 
-    /**
-     * Get the minor version number.
-     *@return String minor version number
+    /* (non-Javadoc)
+     * @see gov.nist.javax.sip.header.SipStatusLine#getVersionMinor()
      */
     public String getVersionMinor() {
         if (sipVersion == null)
@@ -213,6 +208,9 @@ public final class StatusLine extends SIPObject {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2009/07/17 18:57:38  emcho
+ * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
+ *
  * Revision 1.4  2006/07/13 09:01:48  mranga
  * Issue number:
  * Obtained from:
