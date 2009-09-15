@@ -28,15 +28,17 @@
 *******************************************************************************/
 package gov.nist.javax.sip.header;
 
+import javax.sip.address.URI;
+
 import gov.nist.javax.sip.address.*;
 
 /**
  * RequestLine of SIP Request.
  *
- * @version 1.2 $Revision: 1.7 $ $Date: 2009-07-17 18:57:36 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2009-09-15 02:55:27 $
  * @author M. Ranganathan
  */
-public class RequestLine extends SIPObject {
+public class RequestLine extends SIPObject implements SipRequestLine {
 
     /**
      * Comment for <code>serialVersionUID</code>
@@ -62,13 +64,7 @@ public class RequestLine extends SIPObject {
         sipVersion = "SIP/2.0";
     }
 
-    /** Set the SIP version.
-    *@param sipVersion -- the SIP version to set.
-    */
-    public void setSIPVersion(String sipVersion) {
-        this.sipVersion = sipVersion;
-    }
-
+   
     /** Encode the request line as a String.
     *
      * @return requestLine encoded as a string.
@@ -91,10 +87,9 @@ public class RequestLine extends SIPObject {
         return buffer;
     }
 
-    /** get the Request-URI.
-     *
-         * @return the request URI
-         */
+    /* (non-Javadoc)
+     * @see gov.nist.javax.sip.header.SipRequestLine#getUri()
+     */
     public GenericURI getUri() {
         return uri;
     }
@@ -107,55 +102,44 @@ public class RequestLine extends SIPObject {
         this.sipVersion = "SIP/2.0";
     }
 
-    /**
-         * Get the Method
-     *
-         * @return method string.
-         */
+    /* (non-Javadoc)
+     * @see gov.nist.javax.sip.header.SipRequestLine#getMethod()
+     */
     public String getMethod() {
         return method;
     }
 
-    /**
-         * Get the SIP version.
-     *
-         * @return String
-         */
+    /* (non-Javadoc)
+     * @see gov.nist.javax.sip.header.SipRequestLine#getSipVersion()
+     */
     public String getSipVersion() {
         return sipVersion;
     }
 
-    /**
-         * Set the uri member.
-         * @param uri URI to set.
-         */
-    public void setUri(GenericURI uri) {
-        this.uri = uri;
+    /* (non-Javadoc)
+     * @see gov.nist.javax.sip.header.SipRequestLine#setUri(gov.nist.javax.sip.address.GenericURI)
+     */
+    public void setUri(URI uri) {
+        this.uri = (GenericURI)uri;
     }
 
-    /**
-         * Set the method member
-     *
-         * @param method String to set
-         */
+    /* (non-Javadoc)
+     * @see gov.nist.javax.sip.header.SipRequestLine#setMethod(java.lang.String)
+     */
     public void setMethod(String method) {
         this.method = method;
     }
 
-    /**
-         * Set the sipVersion member
-     *
-         * @param s String to set
-         */
-    public void setSipVersion(String s) {
-        sipVersion = s;
+    /* (non-Javadoc)
+     * @see gov.nist.javax.sip.header.SipRequestLine#setSipVersion(java.lang.String)
+     */
+    public void setSipVersion(String version) {
+        this.sipVersion = version;
     }
 
-    /**
-    * Get the major verrsion number.
-    *
-    *@return String major version number
-    */
+    /* (non-Javadoc)
+     * @see gov.nist.javax.sip.header.SipRequestLine#getVersionMajor()
+     */
     public String getVersionMajor() {
         if (sipVersion == null)
             return null;
@@ -176,12 +160,9 @@ public class RequestLine extends SIPObject {
         return major;
     }
 
-    /**
-     * Get the minor version number.
-    *
-    *@return String minor version number
-    *
-    */
+    /* (non-Javadoc)
+     * @see gov.nist.javax.sip.header.SipRequestLine#getVersionMinor()
+     */
     public String getVersionMinor() {
         if (sipVersion == null)
             return null;
@@ -232,6 +213,9 @@ public class RequestLine extends SIPObject {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2009/07/17 18:57:36  emcho
+ * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
+ *
  * Revision 1.6  2007/02/12 15:19:23  belangery
  * Changed the encode() and encodeBody() methods of SIP headers and basic classes to make them use the same StringBuffer instance during the encoding phase.
  *

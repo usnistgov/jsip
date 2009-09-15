@@ -60,7 +60,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.43 $ $Date: 2009-05-30 04:22:00 $
+ * @version 1.2 $Revision: 1.44 $ $Date: 2009-09-15 02:55:28 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -1088,7 +1088,7 @@ public final class SIPRequest extends SIPMessage implements javax.sip.message.Re
     public void setSIPVersion(String sipVersion) throws ParseException {
         if (sipVersion == null || !sipVersion.equalsIgnoreCase("SIP/2.0"))
             throw new ParseException("sipVersion", 0);
-        this.requestLine.setSIPVersion(sipVersion);
+        this.requestLine.setSipVersion(sipVersion);
     }
 
     /**

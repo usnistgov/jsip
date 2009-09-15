@@ -35,11 +35,25 @@ import javax.sip.header.HeaderFactory;
 /**
  * Header factory extensions. These will be included in the next release of
  * JAIN-SIP.
- *
- * @author mranga
+ * 
+ * @since 2.0
  *
  */
 public interface HeaderFactoryExt extends HeaderFactory {
+    
+    /**
+     * Create a RequestLine from a String
+     * @throws ParseException 
+     */
+    public SipRequestLine createRequestLine(String requestLine) throws ParseException;
+    
+    
+    /**
+     * Create a StatusLine from a String.
+     */
+    public SipStatusLine createStatusLine(String statusLine) throws ParseException;
+    
+    
     /**
      * Create a ReferredBy Header.
      *
