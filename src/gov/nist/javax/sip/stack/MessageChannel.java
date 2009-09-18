@@ -66,7 +66,7 @@ import javax.sip.header.ViaHeader;
  * @author M. Ranganathan <br/> Contains additions for support of symmetric NAT contributed by
  *         Hagai.
  * 
- * @version 1.2 $Revision: 1.25 $ $Date: 2009-09-18 09:19:37 $
+ * @version 1.2 $Revision: 1.26 $ $Date: 2009-09-18 13:22:39 $
  * 
  * 
  */
@@ -216,7 +216,11 @@ public abstract class MessageChannel {
         } catch (IOException ioe) {
             throw ioe;
         } catch (Exception ex) {
-            throw new IOException("Error self routing message", ex);
+        	if (this.getSIPStack().getStackLogger().isLoggingEnabled(ServerLogger.TRACE_ERROR)) {
+        		this.getSIPStack().getStackLogger().logError("Error self routing message cause by: ", ex);
+        	}
+        	// TODO: When moving to Java 6, use the IOExcpetion(message, exception) constructor
+            throw new IOException("Error self routing message");
         } finally {
 
             if (this.getSIPStack().getStackLogger().isLoggingEnabled(ServerLogger.TRACE_MESSAGES))
