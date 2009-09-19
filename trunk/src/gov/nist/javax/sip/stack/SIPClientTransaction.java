@@ -175,7 +175,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.108 $ $Date: 2009-08-27 19:34:45 $
+ * @version 1.2 $Revision: 1.109 $ $Date: 2009-09-19 21:54:12 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -1324,7 +1324,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
      * @param sipResponse the response to check.
      * @return true if the check passes.
      */
-    protected boolean checkFromTag(SIPResponse sipResponse) {
+    public boolean checkFromTag(SIPResponse sipResponse) {
         String originalFromTag = ((SIPRequest) this.getRequest()).getFromTag();
         if (this.defaultDialog != null) {
             if (originalFromTag == null ^ sipResponse.getFrom().getTag() == null) {
