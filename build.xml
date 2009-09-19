@@ -333,7 +333,7 @@ c:/jakarta-ant/bin/ant all
                 </target>
 
                 <!-- Compile the tck, always with debug on -->
-                <target name="compiletck" depends="clean,init,compileri">
+                <target name="compiletck" depends="clean,init,compileri,compilesctp">
                     <mkdir dir="${classes}" />
                     <jain-javac>
                         <include name="test/tck/**/*.java" />
@@ -370,6 +370,8 @@ c:/jakarta-ant/bin/ant all
                             <pathelement location="${jain-sip-tck-jar}" />
                             <pathelement location='${junit_jar}' />
                             <pathelement location='${log4j_jar}' />
+                            
+                            <pathelement location='${jain-sip-sctp-jar}'/> <!-- only for Java 7 -->
 
                             <!-- add source path since this will pick up test.tck.gui.images -->
                             <pathelement location='src' />
