@@ -350,7 +350,7 @@ import org.apache.log4j.Logger;
  * in this class. </b>
  *
  *
- * @version 1.2 $Revision: 1.97 $ $Date: 2009-08-19 03:14:20 $
+ * @version 1.2 $Revision: 1.98 $ $Date: 2009-09-19 21:53:28 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -881,7 +881,8 @@ public class SipStackImpl extends SIPTransactionStack implements javax.sip.SipSt
             throw new InvalidArgumentException("bad port");
 
         if (!transport.equalsIgnoreCase("UDP") && !transport.equalsIgnoreCase("TLS")
-                && !transport.equalsIgnoreCase("TCP"))
+                && !transport.equalsIgnoreCase("TCP") 
+                && !transport.equalsIgnoreCase("SCTP") )
             throw new TransportNotSupportedException("bad transport " + transport);
 
         /** Reusing an old stack instance */
