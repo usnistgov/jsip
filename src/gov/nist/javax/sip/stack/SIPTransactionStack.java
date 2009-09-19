@@ -91,7 +91,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.117 $ $Date: 2009-08-31 16:18:00 $
+ * @version 1.2 $Revision: 1.118 $ $Date: 2009-09-19 21:54:33 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener {
 
@@ -1118,7 +1118,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
      *
      * @return A client transaction.
      */
-    protected ServerResponseInterface newSIPServerResponse(SIPResponse responseReceived,
+    public ServerResponseInterface newSIPServerResponse(SIPResponse responseReceived,
             MessageChannel responseMessageChannel) {
 
         // Iterator through all client transactions
