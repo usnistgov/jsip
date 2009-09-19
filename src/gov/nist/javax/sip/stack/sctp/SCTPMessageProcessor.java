@@ -126,6 +126,7 @@ public final class SCTPMessageProcessor extends MessageProcessor {
 
 	@Override
 	public void stop() {
+		this.isRunning = false;
 		for ( SCTPMessageChannel c : channels ) {
 			c.closeNoRemove();	// avoids call to removeChannel -> ConcurrentModification
 		}
