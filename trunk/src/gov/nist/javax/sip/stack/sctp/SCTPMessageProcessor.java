@@ -25,6 +25,7 @@ public final class SCTPMessageProcessor extends MessageProcessor {
 
 	private SctpServerChannel sctpServerChannel;
 	private Selector selector;
+	private SelectionKey key;
 	private boolean isRunning;
 	
 	private final Set<SCTPMessageChannel> channels 
@@ -112,7 +113,7 @@ public final class SCTPMessageProcessor extends MessageProcessor {
 		sctpServerChannel.bind( new InetSocketAddress(this.getIpAddress(),this.getPort()) );
 		
 		this.selector = Selector.open();
-		sctpServerChannel.register( selector, SelectionKey.OP_ACCEPT );
+		this.key = sctpServerChannel.register( selector, SelectionKey.OP_ACCEPT );
 				
 		// Start a daemon thread to handle reception
 		this.isRunning = true;
@@ -129,6 +130,18 @@ public final class SCTPMessageProcessor extends MessageProcessor {
 			c.closeNoRemove();	// avoids call to removeChannel -> ConcurrentModification
 		}
 		channels.clear();
+		try {
+			key.cancel();
+			sctpServerChannel.close();			
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				selector.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	void removeChannel(SCTPMessageChannel messageChannel) {
