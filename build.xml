@@ -389,6 +389,7 @@ c:/jakarta-ant/bin/ant all
                                 <exclude name="**/TCP*Test.java" />
                                 <!-- Tls Tests excluded for tck compliance  -->
                                 <exclude name="test/tck/msgflow/callflows/tls/*Test.java" />
+                                <exclude name="test/tck/msgflow/callflows/sctp/*Test.java" />
                             </fileset>
                         </batchtest>
                     </junit>
