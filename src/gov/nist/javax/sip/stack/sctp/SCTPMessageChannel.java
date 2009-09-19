@@ -84,7 +84,7 @@ final class SCTPMessageChannel extends MessageChannel implements ParseExceptionL
 	
 	private SelectionKey initChannel( Selector s ) throws IOException {
 		channel.configureBlocking( false );
-		return channel.register( s, SelectionKey.OP_READ | SelectionKey.OP_WRITE, this );
+		return channel.register( s, SelectionKey.OP_READ, this );
 	}
 	
 	@Override
