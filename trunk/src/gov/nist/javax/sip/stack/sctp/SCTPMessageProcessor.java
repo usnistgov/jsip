@@ -62,7 +62,7 @@ public final class SCTPMessageProcessor extends MessageProcessor {
 
 	@Override
 	public int getMaximumMessageSize() {
-		return 0;
+		return Integer.MAX_VALUE;
 	}
 
 	@Override
