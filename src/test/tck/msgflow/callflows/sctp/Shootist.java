@@ -149,7 +149,7 @@ public class Shootist  implements SipListener {
                             .getTag());
 
             Address address = protocolObjects.addressFactory
-                    .createAddress("Shootme <sips:" + myAddress + ":" + myPort
+                    .createAddress("Shootme <sip:" + myAddress + ":" + myPort
                             + ">");
             ContactHeader contactHeader = protocolObjects.headerFactory
                     .createContactHeader(address);
@@ -308,7 +308,6 @@ public class Shootist  implements SipListener {
             // create >From Header
             SipURI fromAddress = protocolObjects.addressFactory.createSipURI(
                     fromName, fromSipAddress);
-            fromAddress.setSecure( true );
 
             Address fromNameAddress = protocolObjects.addressFactory
                     .createAddress(fromAddress);
@@ -320,7 +319,6 @@ public class Shootist  implements SipListener {
             // create To Header
             SipURI toAddress = protocolObjects.addressFactory.createSipURI(
                     toUser, toSipAddress);
-            toAddress.setSecure(true);
             Address toNameAddress = protocolObjects.addressFactory
                     .createAddress(toAddress);
             toNameAddress.setDisplayName(toDisplayName);
@@ -330,7 +328,6 @@ public class Shootist  implements SipListener {
             // create Request URI
             SipURI requestURI = protocolObjects.addressFactory.createSipURI(
                     toUser, peerHostPort);
-            requestURI.setSecure(true);
 
             // Create ViaHeaders
 
@@ -373,7 +370,6 @@ public class Shootist  implements SipListener {
             // Create the contact name address.
             SipURI contactURI = protocolObjects.addressFactory.createSipURI(
                     fromName, myAddress);
-            contactURI.setSecure( true );
             contactURI.setPort(provider.getListeningPoint(
                     protocolObjects.transport).getPort());
 
@@ -407,7 +403,7 @@ public class Shootist  implements SipListener {
             // parameter for the router header.
 
             Address address = protocolObjects.addressFactory
-                    .createAddress("<sips:" + PEER_ADDRESS + ":" + PEER_PORT
+                    .createAddress("<sip:" + PEER_ADDRESS + ":" + PEER_PORT
                             + ">");
             // SipUri sipUri = (SipUri) address.getURI();
             // sipUri.setPort(PEER_PORT);

@@ -65,7 +65,7 @@ public class SctpTest extends ScenarioHarness implements SipListener {
     }
 
     public SctpTest() {
-        super("tlstest", true);
+        super("SctpTest", true);
     }
 
     public void setUp() {
