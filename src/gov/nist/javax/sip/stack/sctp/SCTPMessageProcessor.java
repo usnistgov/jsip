@@ -3,8 +3,10 @@ package gov.nist.javax.sip.stack.sctp;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
@@ -26,7 +28,7 @@ public final class SCTPMessageProcessor extends MessageProcessor {
 	private SctpServerChannel sctpServerChannel;
 	private Selector selector;
 	private SelectionKey key;
-	private boolean isRunning;
+	private boolean isRunning, doClose;
 	
 	private final Set<SCTPMessageChannel> channels 
 		= new ConcurrentSkipListSet<SCTPMessageChannel>();
@@ -38,7 +40,13 @@ public final class SCTPMessageProcessor extends MessageProcessor {
 		super( "sctp" );
 	}
 
-	Selector getSelector() { return selector; }
+	SelectionKey registerChannel( SCTPMessageChannel c, SctpChannel channel ) 
+		throws ClosedChannelException {
+		synchronized (this) {
+			selector.wakeup();
+			return channel.register( selector, SelectionKey.OP_READ, c );
+		}
+	}
 	
 	@Override
 	public MessageChannel createMessageChannel(HostPort targetHostPort)
@@ -86,8 +94,10 @@ public final class SCTPMessageProcessor extends MessageProcessor {
 		try {
 			do {
 				int n = selector.select();
-				if (n>0) {				
-					for (SelectionKey key : selector.selectedKeys() ) {
+				if (n>0) {
+					Iterator<SelectionKey> i = selector.selectedKeys().iterator();
+					while ( i.hasNext() ) {
+						SelectionKey key = i.next();
 						if ( key.isReadable() ) {
 							SCTPMessageChannel channel = (SCTPMessageChannel) key.attachment();
 							channel.readMessages();
@@ -96,8 +106,17 @@ public final class SCTPMessageProcessor extends MessageProcessor {
 							SCTPMessageChannel c = new SCTPMessageChannel( this, ch );
 							channels.add( c );
 						}
+						i.remove();
 					}
 				} else sipStack.getStackLogger().logDebug( "no keys ready after select()?" );
+				
+				synchronized (this) {
+					if (doClose) {
+						selector.close();
+						return;
+					}
+				}
+				
 			} while ( selector.isOpen() );
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
@@ -127,6 +146,8 @@ public final class SCTPMessageProcessor extends MessageProcessor {
 	@Override
 	public void stop() {
 		this.isRunning = false;
+		this.doClose = true;
+		
 		for ( SCTPMessageChannel c : channels ) {
 			c.closeNoRemove();	// avoids call to removeChannel -> ConcurrentModification
 		}
@@ -137,10 +158,8 @@ public final class SCTPMessageProcessor extends MessageProcessor {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			try {
-				selector.close();
-			} catch (IOException e) {
-				e.printStackTrace();
+			synchronized (this) {
+				selector.wakeup();
 			}
 		}
 	}
