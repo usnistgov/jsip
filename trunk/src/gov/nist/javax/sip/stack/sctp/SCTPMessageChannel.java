@@ -27,7 +27,6 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
 import java.text.ParseException;
 
 import com.sun.nio.sctp.MessageInfo;
@@ -38,7 +37,8 @@ import com.sun.nio.sctp.SctpChannel;
  * 
  * @author Jeroen van Bemmel
  */
-final class SCTPMessageChannel extends MessageChannel implements ParseExceptionListener {
+final class SCTPMessageChannel extends MessageChannel 
+	implements ParseExceptionListener, Comparable<SCTPMessageChannel> {
 
 	private final SCTPMessageProcessor processor;
 	private InetSocketAddress peerAddress;			// destination address
@@ -63,7 +63,7 @@ final class SCTPMessageChannel extends MessageChannel implements ParseExceptionL
 		messageInfo.unordered( true );
 		
 		this.channel = SctpChannel.open( dest, 1, 1 );
-		this.key = this.initChannel( p.getSelector() );
+		this.key = this.initChannel();
 		
 		parser = new StringMsgParser( this );
 	}
@@ -77,14 +77,14 @@ final class SCTPMessageChannel extends MessageChannel implements ParseExceptionL
 		messageInfo.unordered( true );
 		
 		this.channel = c;
-		this.key = this.initChannel( p.getSelector() );
+		this.key = this.initChannel();
 		
 		parser = new StringMsgParser( this );
 	}
 	
-	private SelectionKey initChannel( Selector s ) throws IOException {
+	private SelectionKey initChannel() throws IOException {
 		channel.configureBlocking( false );
-		return channel.register( s, SelectionKey.OP_READ, this );
+		return processor.registerChannel( this, channel );
 	}
 	
 	@Override
@@ -188,7 +188,8 @@ final class SCTPMessageChannel extends MessageChannel implements ParseExceptionL
 		assert( receiverPort == peerAddress.getPort() );
 		
 		// XX ignoring 'reconnect' for now
-		channel.send( ByteBuffer.wrap(message), messageInfo );		
+		int nBytes = channel.send( ByteBuffer.wrap(message), messageInfo );
+		getSIPStack().getStackLogger().logDebug( "SCTP bytes sent:" + nBytes );
 	}
 
 	/**
@@ -197,11 +198,17 @@ final class SCTPMessageChannel extends MessageChannel implements ParseExceptionL
 	 */
 	void readMessages() throws IOException {
 		long rxTime = System.currentTimeMillis();
+		rxBuffer.rewind();
 		MessageInfo info = channel.receive( rxBuffer, null, null );
+		if (info==null) {
+			getSIPStack().getStackLogger().logDebug( "SCTP read-event but no message??" );
+			return;
+		}
+		
 		// Assume it is 1 full message
 		byte[] msg = new byte[ info.bytes() ];
 		rxBuffer.flip();
-		rxBuffer.get( msg );
+		rxBuffer.get( msg );		
 		try {
 			SIPMessage m = parser.parseSIPMessage( msg );
 			this.processMessage( m, rxTime );
@@ -338,4 +345,7 @@ final class SCTPMessageChannel extends MessageChannel implements ParseExceptionL
         }
     }
 	
+    public int compareTo(SCTPMessageChannel o) {
+    	return this.hashCode() - o.hashCode();
+    }
 }
