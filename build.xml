@@ -233,7 +233,8 @@ c:/jakarta-ant/bin/ant all
                 </target>
                 <!-- Compile but dont build any jars -->
                 <target name="compile" depends="init,compileapi">
-                    <jain-javac includes="gov/nist/core/**/*.java, gov/nist/javax/sip/**/*.java">
+                    <jain-javac includes="gov/nist/core/**/*.java, gov/nist/javax/sip/**/*.java"
+                      excludes="gov/nist/javax/sip/stack/sctp/**/*.java">
                         <classpath>
                             <pathelement location="${log4j_jar}" />
                         </classpath>
