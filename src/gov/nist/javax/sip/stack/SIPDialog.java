@@ -67,7 +67,7 @@ import java.text.ParseException;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  *
- * @version 1.2 $Revision: 1.118 $ $Date: 2009-09-22 15:27:33 $
+ * @version 1.2 $Revision: 1.119 $ $Date: 2009-09-29 15:52:59 $
  *
  * @author M. Ranganathan
  *
@@ -202,7 +202,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * is to prevent interleaving INVITEs ( which will result in a 493 from the UA that receives
      * the out of order INVITE).
      */
-    public class ReInviteSender implements Runnable {
+    public class ReInviteSender implements Runnable, Serializable {
       
         ClientTransaction ctx;
 
@@ -276,7 +276,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             }
         }
     }
-    class LingerTimer extends SIPStackTimerTask {
+    class LingerTimer extends SIPStackTimerTask implements Serializable {
 
         public LingerTimer() {
 
@@ -369,7 +369,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      *
      */
 
-    class DialogDeleteTask extends SIPStackTimerTask {
+    class DialogDeleteTask extends SIPStackTimerTask implements Serializable {
 
         protected void runTask() {
             delete();
