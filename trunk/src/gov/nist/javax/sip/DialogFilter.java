@@ -79,7 +79,7 @@ import javax.sip.message.Response;
  * interface). This is part of the glue that ties together the NIST-SIP stack and event model with
  * the JAIN-SIP stack. This is strictly an implementation class.
  *
- * @version 1.2 $Revision: 1.34 $ $Date: 2009-08-27 19:34:46 $
+ * @version 1.2 $Revision: 1.35 $ $Date: 2009-10-08 16:19:09 $
  *
  * @author M. Ranganathan
  */
@@ -652,40 +652,38 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                 return;
             }
 
+           
+        
+          
+            
             /*
+             * Saw an interleaved invite before ACK was sent.
              * RFC 3261 Chapter 14. A UAS that receives an INVITE on a dialog while an INVITE it
              * had sent on that dialog is in progress MUST return a 491 (Request Pending) response
              * to the received INVITE.
              */
-
             lastTransaction = (dialog == null ? null : dialog.getLastTransaction());
 
-            if (dialog != null && lastTransaction != null
-                    && lastTransaction.isInviteTransaction()
-                    && lastTransaction instanceof SIPClientTransaction
-                    && lastTransaction.getState() != TransactionState.COMPLETED
-                    && lastTransaction.getState() != TransactionState.TERMINATED) {
-
-                if (dialog.getRemoteSeqNumber() + 1 == sipRequest.getCSeq().getSeqNumber()) {
-                    dialog.setRemoteSequenceNumber(sipRequest.getCSeq().getSeqNumber());
-                    if (sipStack.isLoggingEnabled())
-                        sipStack.getStackLogger().logDebug(
-                                "Sending 491 response for out of sequence message");
-                    SIPResponse sipResponse = sipRequest.createResponse(Response.REQUEST_PENDING);
-                    try {
-                        transaction.sendMessage(sipResponse);
-                    } catch (IOException ex) {
-                        transaction.raiseIOExceptionEvent();
-                    }
-                    dialog.requestConsumed();
-                } else {
-                    if (sipStack.isLoggingEnabled())
-                        sipStack.getStackLogger().logDebug(
-                                "Dropping message -- sequence number is too high!");
+            if (dialog != null && lastTransaction != null && 
+                    lastTransaction.isInviteTransaction() 
+                    && ( dialog.getLastAck() == null ||
+                    (dialog.getRemoteSeqNumber() + 1 ==  sipRequest.getCSeq().getSeqNumber()))) {
+                if (sipStack.isLoggingEnabled())
+                    sipStack.getStackLogger().logDebug(
+                            "Sending 491 response for out of sequence message");
+                SIPResponse sipResponse = sipRequest.createResponse(Response.REQUEST_PENDING);
+                try {
+                    transaction.sendMessage(sipResponse);
+                } catch (IOException ex) {
+                    transaction.raiseIOExceptionEvent();
                 }
                 return;
             }
         }
+        
+        
+        
+        
 
         // Sequence numbers are supposed to be incremented
         // sequentially within a dialog for RFC 3261
