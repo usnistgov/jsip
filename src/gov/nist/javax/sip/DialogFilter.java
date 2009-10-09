@@ -74,13 +74,13 @@ import javax.sip.message.Response;
  * An adapter class from the JAIN implementation objects to the NIST-SIP stack. The primary
  * purpose of this class is to do early rejection of bad messages and deliver meaningful messages
  * to the application. This class is essentially a Dialog filter. It is a helper for the UAC Core.
- * It checks for and rejects requests and responses which may be filtered out because of sequence number, Dialog not found,
- * etc. Note that this is not part of the JAIN-SIP spec (it does not implement a JAIN-SIP
- * interface). This is part of the glue that ties together the NIST-SIP stack and event model with
- * the JAIN-SIP stack. This is strictly an implementation class.
- *
- * @version 1.2 $Revision: 1.35 $ $Date: 2009-10-08 16:19:09 $
- *
+ * It checks for and rejects requests and responses which may be filtered out because of sequence
+ * number, Dialog not found, etc. Note that this is not part of the JAIN-SIP spec (it does not
+ * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
+ * and event model with the JAIN-SIP stack. This is strictly an implementation class.
+ * 
+ * @version 1.2 $Revision: 1.36 $ $Date: 2009-10-09 08:50:35 $
+ * 
  * @author M. Ranganathan
  */
 class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
@@ -98,14 +98,15 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
     /**
      * Send back an error Response.
-     *
+     * 
      * @param sipRequest
      * @param transaction
      */
 
     private void send500Response(SIPRequest sipRequest, SIPServerTransaction transaction) {
         if (sipStack.isLoggingEnabled())
-            sipStack.getStackLogger().logDebug("Sending 500 response for out of sequence message");
+            sipStack.getStackLogger()
+                    .logDebug("Sending 500 response for out of sequence message");
         SIPResponse sipResponse = sipRequest.createResponse(Response.SERVER_INTERNAL_ERROR);
         sipResponse.setReasonPhrase("Request out of order");
 
@@ -124,7 +125,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
     /**
      * Process a request. Check for various conditions in the dialog that can result in the
      * message being dropped. Possibly return errors for these conditions.
-     *
+     * 
      * @exception SIPServerException is thrown when there is an error processing the request.
      */
     public void processRequest(SIPRequest sipRequest, MessageChannel incomingMessageChannel) {
@@ -158,7 +159,8 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
         SIPServerTransaction transaction = (SIPServerTransaction) this.transactionChannel;
         if (transaction != null) {
             if (sipStack.isLoggingEnabled())
-                sipStack.getStackLogger().logDebug("transaction state = " + transaction.getState());
+                sipStack.getStackLogger().logDebug(
+                        "transaction state = " + transaction.getState());
         }
         String dialogId = sipRequest.getDialogId(true);
         SIPDialog dialog = sipStack.getDialog(dialogId);
@@ -214,8 +216,8 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             SIPServerTransaction sipServerTransaction = sipStack
                     .findMergedTransaction(sipRequest);
             if (sipServerTransaction != null
-                    && !sipServerTransaction.isMessagePartOfTransaction(sipRequest) &&
-                    sipServerTransaction.getState() != TransactionState.TERMINATED ) {
+                    && !sipServerTransaction.isMessagePartOfTransaction(sipRequest)
+                    && sipServerTransaction.getState() != TransactionState.TERMINATED) {
                 SIPResponse response = sipRequest.createResponse(Response.LOOP_DETECTED);
 
                 if (sipStack.getStackLogger().isLoggingEnabled())
@@ -294,7 +296,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             /*
              * Got an UPDATE method and the user dialog does not exist and the user wants to be a
              * User agent.
-             *
+             * 
              */
             if (sipProvider.isAutomaticDialogSupportEnabled() && dialog == null) {
                 Response notExist = sipRequest
@@ -338,16 +340,18 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     /*
                      * JvB: must never drop ACKs that dont match a transaction! One cannot be sure
                      * if it isn't an ACK for a 2xx response
-                     *
+                     * 
                      */
 
                 } else {
                     if (!dialog.handleAck(transaction)) {
-                        if(sipStack.isLooseDialogValidation()) {
+                        if (sipStack.isLooseDialogValidation()) {
                             if (sipStack.isLoggingEnabled()) {
                                 sipStack.getStackLogger().logDebug(
-                                        "Dialog exists with loose dialog validation " + sipRequest.getFirstLine()
-                                                + " isServerTransaction = " + true + " dialog = " + dialog.getDialogId());
+                                        "Dialog exists with loose dialog validation "
+                                                + sipRequest.getFirstLine()
+                                                + " isServerTransaction = " + true + " dialog = "
+                                                + dialog.getDialogId());
 
                             }
                             SIPServerTransaction st = sipStack
@@ -382,8 +386,6 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                         } else {
                             transaction.setMapped(true);
                         }
-
-                        
 
                     }
                 }
@@ -652,22 +654,31 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                 return;
             }
 
-           
-        
-          
-            
             /*
-             * Saw an interleaved invite before ACK was sent.
-             * RFC 3261 Chapter 14. A UAS that receives an INVITE on a dialog while an INVITE it
-             * had sent on that dialog is in progress MUST return a 491 (Request Pending) response
-             * to the received INVITE.
+             * Saw an interleaved invite before ACK was sent. RFC 3261 Chapter 14. A UAS that
+             * receives an INVITE on a dialog while an INVITE it had sent on that dialog is in
+             * progress MUST return a 491 (Request Pending) response to the received INVITE.
              */
             lastTransaction = (dialog == null ? null : dialog.getLastTransaction());
 
-            if (dialog != null && lastTransaction != null && 
-                    lastTransaction.isInviteTransaction() 
-                    && ( dialog.getLastAck() == null ||
-                    (dialog.getRemoteSeqNumber() + 1 ==  sipRequest.getCSeq().getSeqNumber()))) {
+            if (dialog != null && lastTransaction != null
+                    && lastTransaction.isInviteTransaction()
+                    && lastTransaction instanceof ClientTransaction && !dialog.isAckSent()) {
+                if (sipStack.isLoggingEnabled())
+                    sipStack.getStackLogger().logDebug(
+                            "Sending 491 response for out of sequence message");
+                SIPResponse sipResponse = sipRequest.createResponse(Response.REQUEST_PENDING);
+                try {
+                    transaction.sendMessage(sipResponse);
+                } catch (IOException ex) {
+                    transaction.raiseIOExceptionEvent();
+                }
+                return;
+            }
+
+            if (dialog != null && lastTransaction != null
+                    && lastTransaction.isInviteTransaction()
+                    && lastTransaction instanceof ServerTransaction && !dialog.isAckSeen()) {
                 if (sipStack.isLoggingEnabled())
                     sipStack.getStackLogger().logDebug(
                             "Sending 491 response for out of sequence message");
@@ -680,10 +691,6 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                 return;
             }
         }
-        
-        
-        
-        
 
         // Sequence numbers are supposed to be incremented
         // sequentially within a dialog for RFC 3261
@@ -942,7 +949,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
     /**
      * Process the response.
-     *
+     * 
      * @exception SIPServerException is thrown when there is an error processing the response
      * @param incomingMessageChannel -- message channel on which the response is received.
      */
@@ -958,10 +965,13 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                         "Dropping message: No listening point" + " registered!");
             return;
         }
-        
+
         if (sipStack.checkBranchId() && !Utils.getInstance().responseBelongsToUs(response)) {
-            if ( sipStack.isLoggingEnabled()) {
-                sipStack.getStackLogger().logError("Dropping response - topmost VIA header does not originate from this stack");
+            if (sipStack.isLoggingEnabled()) {
+                sipStack
+                        .getStackLogger()
+                        .logError(
+                                "Dropping response - topmost VIA header does not originate from this stack");
             }
             return;
         }
@@ -1068,7 +1078,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
     /**
      * Just a placeholder. This is called from the stack for message logging. Auxiliary processing
      * information can be passed back to be written into the log file.
-     *
+     * 
      * @return auxiliary information that we may have generated during the message processing
      *         which is retrieved by the message logger.
      */
@@ -1078,15 +1088,13 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see gov.nist.javax.sip.stack.ServerResponseInterface#processResponse(gov.nist.javax.sip.message.SIPResponse,
      *      gov.nist.javax.sip.stack.MessageChannel)
      */
     public void processResponse(SIPResponse sipResponse, MessageChannel incomingChannel) {
         String dialogID = sipResponse.getDialogId(false);
         SIPDialog sipDialog = this.sipStack.getDialog(dialogID);
-        
-        
 
         String method = sipResponse.getCSeq().getMethod();
         if (sipStack.isLoggingEnabled()) {
@@ -1094,14 +1102,13 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     "PROCESSING INCOMING RESPONSE: " + sipResponse.encodeMessage());
         }
 
-        if ( sipStack.checkBranchId() && 
-                !Utils.getInstance().responseBelongsToUs(sipResponse)) {
-            if ( sipStack.isLoggingEnabled() ) {
-                sipStack.getStackLogger().logError("Detected stray response -- dropping");       
+        if (sipStack.checkBranchId() && !Utils.getInstance().responseBelongsToUs(sipResponse)) {
+            if (sipStack.isLoggingEnabled()) {
+                sipStack.getStackLogger().logError("Detected stray response -- dropping");
             }
             return;
         }
-        
+
         if (listeningPoint == null) {
             if (sipStack.isLoggingEnabled())
                 sipStack.getStackLogger().logDebug(
@@ -1119,7 +1126,8 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
         if (sipProvider.sipListener == null) {
             if (sipStack.isLoggingEnabled()) {
-                sipStack.getStackLogger().logDebug("Dropping message:  no sipListener registered!");
+                sipStack.getStackLogger().logDebug(
+                        "Dropping message:  no sipListener registered!");
             }
             return;
         }
@@ -1185,15 +1193,15 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                         sipStack.getStackLogger().logDebug(
                                 "Dialog is terminated -- dropping response!");
                     }
-                   // Dialog exists but was terminated - just create and send an ACK for the OK. 
-                   // It could be late arriving.
+                    // Dialog exists but was terminated - just create and send an ACK for the OK.
+                    // It could be late arriving.
                     if (sipResponse.getStatusCode() / 100 == 2
                             && sipResponse.getCSeq().getMethod().equals(Request.INVITE)) {
                         try {
-                               Request ackRequest = sipDialog.createAck(sipResponse.getCSeq()
+                            Request ackRequest = sipDialog.createAck(sipResponse.getCSeq()
                                     .getSeqNumber());
-                                sipDialog.sendAck(ackRequest);
-                          } catch (Exception ex) {
+                            sipDialog.sendAck(ackRequest);
+                        } catch (Exception ex) {
                             sipStack.getStackLogger().logError("Error creating ack", ex);
                         }
                     }
