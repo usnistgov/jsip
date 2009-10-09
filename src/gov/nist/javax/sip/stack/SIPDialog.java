@@ -66,7 +66,7 @@ import java.text.ParseException;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.120 $ $Date: 2009-10-08 16:19:08 $
+ * @version 1.2 $Revision: 1.121 $ $Date: 2009-10-09 08:50:33 $
  * 
  * @author M. Ranganathan
  * 
@@ -1009,6 +1009,24 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      */
     public SIPRequest getLastAck() {
         return this.lastAck;
+    }
+    
+    /**
+     * Return true if ACK was sent ( for client tx ).
+     * For server tx, this is a NO-OP ( we dont send ACK).
+     */
+    public boolean isAckSent() {
+        if (this.getLastTransaction() == null ) return true;
+        if ( this.getLastTransaction() instanceof ClientTransaction ) {
+            if ( this.lastAck == null) {
+                return false;
+            } else {
+               return ((SIPRequest)this.getLastTransaction().getRequest()).getCSeq().getSeqNumber() == 
+                ((SIPRequest)this.lastAck).getCSeq().getSeqNumber();
+            }
+        } else {
+            return true;
+        }
     }
 
     /**
