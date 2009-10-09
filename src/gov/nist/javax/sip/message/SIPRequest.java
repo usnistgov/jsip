@@ -60,7 +60,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.44 $ $Date: 2009-09-15 02:55:28 $
+ * @version 1.2 $Revision: 1.45 $ $Date: 2009-10-09 12:45:48 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -96,6 +96,12 @@ public final class SIPRequest extends SIPMessage implements javax.sip.message.Re
      */
     private static final Set<String> targetRefreshMethods = new HashSet<String>();
 
+    /**
+     * Set of dialog creating methods, currently: INVITE, SUBSCRIBE, NOTIFY, REFER
+     */
+    private static final Set<String> dialogCreatingMethods = new HashSet<String>();
+
+    
     /*
      * A table that maps a name string to its cannonical constant. This is used to speed up
      * parsing of messages .equals reduces to == if we use the constant value.
@@ -113,6 +119,11 @@ public final class SIPRequest extends SIPMessage implements javax.sip.message.Re
         targetRefreshMethods.add(Request.NOTIFY);
         targetRefreshMethods.add(Request.REFER);
 
+        dialogCreatingMethods.add(Request.INVITE);
+        dialogCreatingMethods.add(Request.SUBSCRIBE);
+        dialogCreatingMethods.add(Request.NOTIFY);
+        dialogCreatingMethods.add(Request.REFER);
+        
         putName(Request.INVITE);
         putName(Request.BYE);
         putName(Request.CANCEL);
@@ -138,6 +149,13 @@ public final class SIPRequest extends SIPMessage implements javax.sip.message.Re
         return targetRefreshMethods.contains(ucaseMethod);
     }
 
+    /**
+     * @return true iff the method is a dialog creating method
+     */
+    public static boolean isDialogCreating(String ucaseMethod) {
+        return dialogCreatingMethods.contains(ucaseMethod);
+    }
+    
     /**
      * Set to standard constants to speed up processing. this makes equals comparisons run much
      * faster in the stack because then it is just identity comparision. Character by char
@@ -688,8 +706,7 @@ public final class SIPRequest extends SIPMessage implements javax.sip.message.Re
                     || nextHeader instanceof To
                     || nextHeader instanceof ViaList
                     || nextHeader instanceof CallID
-                    || (statusCode / 100 <= 2 && statusCode != 100 && nextHeader instanceof RecordRouteList)
-                    // No record routing for error and 100 (only applies to 100 not all 1xx)
+                    || (nextHeader instanceof RecordRouteList && mustCopyRR(statusCode))
                     || nextHeader instanceof CSeq
                     // We just copy TimeStamp for all headers (not just 100).
                     || nextHeader instanceof TimeStamp) {
@@ -718,6 +735,14 @@ public final class SIPRequest extends SIPMessage implements javax.sip.message.Re
         return newResponse;
     }
 
+    // Helper method for createResponse, to avoid copying Record-Route unless needed
+    private final boolean mustCopyRR( int code ) {
+    	// Only for 1xx-2xx, not for 100 or errors
+    	if ( code>100 && code<300 ) {
+    		return isDialogCreating( this.getMethod() ) && getToTag() == null;
+    	} else return false;
+    }
+    
     /**
      * Creates a default SIPResquest message that would cancel this request. Note that tag
      * assignment and removal of is left to the caller (we use whatever tags are present in the
