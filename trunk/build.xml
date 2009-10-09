@@ -463,7 +463,7 @@ c:/jakarta-ant/bin/ant all
 
                         <batchtest fork="yes" todir="test-reports" haltonfailure="no">
                             <fileset dir="${srcroot}">
-                                <include name="test/unit/gov/nist/javax/sip/**/*Test.java" />
+                                <include name="test/unit/gov/nist/javax/**/*Test.java" />
                             </fileset>
                         </batchtest>
                     </junit>
