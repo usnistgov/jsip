@@ -66,7 +66,7 @@ import java.text.ParseException;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.121 $ $Date: 2009-10-09 08:50:33 $
+ * @version 1.2 $Revision: 1.122 $ $Date: 2009-10-09 11:07:46 $
  * 
  * @author M. Ranganathan
  * 
@@ -229,18 +229,16 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                     /*
                      * Could not send re-INVITE fire a timeout on the INVITE.
                      */
-                    sipStack.getStackLogger()
-                            .logError("Could not send re-INVITE time out ClientTransaction");
+                    sipStack.getStackLogger().logError(
+                            "Could not send re-INVITE time out ClientTransaction");
                     ((SIPClientTransaction) ctx).fireTimeoutTimer();
                     return;
                 }
                 if (getState() != DialogState.TERMINATED) {
-                   
 
                     timeToWait = System.currentTimeMillis() - startTime;
                 }
 
-                
                 /*
                  * If we had to wait for ACK then wait for the ACK to actually get to the other
                  * side. Wait for any ACK retransmissions to finish. Then send out the request.
@@ -640,14 +638,18 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             // Update route list on response if I am a client dialog.
             if (!isServer()) {
 
-                RecordRouteList rrlist = sipResponse.getRecordRouteHeaders();
-                // Add the route set from the incoming response in reverse
-                // order for record route headers.
-                if (rrlist != null) {
-                    this.addRoute(rrlist);
-                } else {
-                    // Set the rotue list to the last seen route list.
-                    this.routeList = new RouteList();
+                // only update the route set if the dialog is not in the confirmed state.
+                if (this.getState() != DialogState.CONFIRMED
+                        && this.getState() != DialogState.TERMINATED) {
+                    RecordRouteList rrlist = sipResponse.getRecordRouteHeaders();
+                    // Add the route set from the incoming response in reverse
+                    // order for record route headers.
+                    if (rrlist != null) {
+                        this.addRoute(rrlist);
+                    } else {
+                        // Set the rotue list to the last seen route list.
+                        this.routeList = new RouteList();
+                    }
                 }
 
                 ContactList contactList = sipResponse.getContactHeaders();
@@ -1010,19 +1012,20 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     public SIPRequest getLastAck() {
         return this.lastAck;
     }
-    
+
     /**
-     * Return true if ACK was sent ( for client tx ).
-     * For server tx, this is a NO-OP ( we dont send ACK).
+     * Return true if ACK was sent ( for client tx ). For server tx, this is a NO-OP ( we dont
+     * send ACK).
      */
     public boolean isAckSent() {
-        if (this.getLastTransaction() == null ) return true;
-        if ( this.getLastTransaction() instanceof ClientTransaction ) {
-            if ( this.lastAck == null) {
+        if (this.getLastTransaction() == null)
+            return true;
+        if (this.getLastTransaction() instanceof ClientTransaction) {
+            if (this.lastAck == null) {
                 return false;
             } else {
-               return ((SIPRequest)this.getLastTransaction().getRequest()).getCSeq().getSeqNumber() == 
-                ((SIPRequest)this.lastAck).getCSeq().getSeqNumber();
+                return ((SIPRequest) this.getLastTransaction().getRequest()).getCSeq()
+                        .getSeqNumber() == ((SIPRequest) this.lastAck).getCSeq().getSeqNumber();
             }
         } else {
             return true;
@@ -2947,8 +2950,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 if (sipStack.isLoggingEnabled()) {
                     sipStack.getStackLogger().logError("Cannot aquire ACK semaphore");
                 }
-                
-               return false;
+
+                return false;
             }
         } catch (InterruptedException ex) {
             sipStack.getStackLogger().logError("Cannot aquire ACK semaphore");
