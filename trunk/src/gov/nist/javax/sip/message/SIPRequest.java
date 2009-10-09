@@ -45,6 +45,7 @@ import javax.sip.*;
 import javax.sip.header.*;
 
 import gov.nist.javax.sip.header.*;
+import gov.nist.javax.sip.stack.SIPTransactionStack;
 
 /*
  * Acknowledgements: Mark Bednarek made a few fixes to this code. Jeff Keyser added two methods
@@ -60,7 +61,7 @@ import gov.nist.javax.sip.header.*;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.45 $ $Date: 2009-10-09 12:45:48 $
+ * @version 1.2 $Revision: 1.46 $ $Date: 2009-10-09 13:19:04 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -96,12 +97,6 @@ public final class SIPRequest extends SIPMessage implements javax.sip.message.Re
      */
     private static final Set<String> targetRefreshMethods = new HashSet<String>();
 
-    /**
-     * Set of dialog creating methods, currently: INVITE, SUBSCRIBE, NOTIFY, REFER
-     */
-    private static final Set<String> dialogCreatingMethods = new HashSet<String>();
-
-    
     /*
      * A table that maps a name string to its cannonical constant. This is used to speed up
      * parsing of messages .equals reduces to == if we use the constant value.
@@ -119,11 +114,6 @@ public final class SIPRequest extends SIPMessage implements javax.sip.message.Re
         targetRefreshMethods.add(Request.NOTIFY);
         targetRefreshMethods.add(Request.REFER);
 
-        dialogCreatingMethods.add(Request.INVITE);
-        dialogCreatingMethods.add(Request.SUBSCRIBE);
-        dialogCreatingMethods.add(Request.NOTIFY);
-        dialogCreatingMethods.add(Request.REFER);
-        
         putName(Request.INVITE);
         putName(Request.BYE);
         putName(Request.CANCEL);
@@ -153,7 +143,7 @@ public final class SIPRequest extends SIPMessage implements javax.sip.message.Re
      * @return true iff the method is a dialog creating method
      */
     public static boolean isDialogCreating(String ucaseMethod) {
-        return dialogCreatingMethods.contains(ucaseMethod);
+        return SIPTransactionStack.isDialogCreated(ucaseMethod);
     }
     
     /**
