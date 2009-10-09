@@ -91,7 +91,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.118 $ $Date: 2009-09-19 21:54:33 $
+ * @version 1.2 $Revision: 1.119 $ $Date: 2009-10-09 13:19:17 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener {
 
@@ -118,7 +118,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     protected ConcurrentHashMap<String, SIPDialog> dialogTable;
 
     // A set of methods that result in dialog creations.
-    protected HashSet<String> dialogCreatingMethods;
+    protected static final Set<String> dialogCreatingMethods = new HashSet<String>();
 
     // Global timer. Use this for all timer tasks.
 
@@ -388,6 +388,13 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     }
 
+    static {
+    	// Standard set of methods that create dialogs.
+    	dialogCreatingMethods.add(Request.REFER);
+        dialogCreatingMethods.add(Request.INVITE);
+        dialogCreatingMethods.add(Request.SUBSCRIBE);
+    }
+    
     /**
      * Default constructor.
      */
@@ -415,12 +422,6 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
         this.maxListenerResponseTime = -1;
 
-        // a set of methods that result in dialog creation.
-        this.dialogCreatingMethods = new HashSet<String>();
-        // Standard set of methods that create dialogs.
-        this.dialogCreatingMethods.add(Request.REFER);
-        this.dialogCreatingMethods.add(Request.INVITE);
-        this.dialogCreatingMethods.add(Request.SUBSCRIBE);
         // The default (identity) address lookup scheme
 
         this.addressResolver = new DefaultAddressResolver();
@@ -548,13 +549,8 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
      *
      * @return true if extension is supported and false otherwise.
      */
-    public boolean isDialogCreated(String method) {
-
-        boolean retval = dialogCreatingMethods.contains(method);
-        if (this.isLoggingEnabled()) {
-            this.getStackLogger().logDebug("isDialogCreated : " + method + " returning " + retval);
-        }
-        return retval;
+    public static boolean isDialogCreated(String method) {
+    	return dialogCreatingMethods.contains(method);
     }
 
     /**
@@ -567,7 +563,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
             if (stackLogger.isLoggingEnabled())
                 stackLogger.logDebug("NOTIFY Supported Natively");
         } else {
-            this.dialogCreatingMethods.add(extensionMethod.trim().toUpperCase());
+            dialogCreatingMethods.add(extensionMethod.trim().toUpperCase());
         }
     }
 
