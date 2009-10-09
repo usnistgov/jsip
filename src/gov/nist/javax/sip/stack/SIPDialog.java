@@ -66,7 +66,7 @@ import java.text.ParseException;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.122 $ $Date: 2009-10-09 11:07:46 $
+ * @version 1.2 $Revision: 1.123 $ $Date: 2009-10-09 13:37:08 $
  * 
  * @author M. Ranganathan
  * 
@@ -1084,19 +1084,23 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         if (this.dialogState == CONFIRMED_STATE || this.dialogState == TERMINATED_STATE) {
             return;
         }
+        
+        // Fix for issue #225: mustn't learn Route set from mid-dialog requests
+        if ( sipRequest.getToTag()!=null ) return;
+        
         // Incoming Request has the route list
         RecordRouteList rrlist = sipRequest.getRecordRouteHeaders();
         // Add the route set from the incoming response in reverse
         // order
         if (rrlist != null) {
-
             this.addRoute(rrlist);
         } else {
             // Set the rotue list to the last seen route list.
             this.routeList = new RouteList();
         }
+
         // put the contact header from the incoming request into
-        // the route set.
+        // the route set. JvB: some duplication here, ref. doTargetRefresh
         ContactList contactList = sipRequest.getContactHeaders();
         if (contactList != null) {
             this.setRemoteTarget((ContactHeader) contactList.getFirst());
