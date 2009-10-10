@@ -66,7 +66,7 @@ import java.text.ParseException;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.123 $ $Date: 2009-10-09 13:37:08 $
+ * @version 1.2 $Revision: 1.124 $ $Date: 2009-10-10 01:25:17 $
  * 
  * @author M. Ranganathan
  * 
@@ -2387,17 +2387,19 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                  * record route headers present in the original request so the loop will not
                  * execute.
                  */
-                if (originalRequest != null) {
-                    RecordRouteList rrList = originalRequest.getRecordRouteHeaders();
-                    if (rrList != null) {
-                        ListIterator<RecordRoute> it = rrList.listIterator(rrList.size());
-                        while (it.hasPrevious()) {
-                            RecordRoute rr = (RecordRoute) it.previous();
-                            Route route = (Route) routeList.getFirst();
-                            if (route != null && rr.getAddress().equals(route.getAddress())) {
-                                routeList.removeFirst();
-                            } else
-                                break;
+                if ( this.getState() != DialogState.CONFIRMED && this.getState() != DialogState.TERMINATED ) {
+                    if (originalRequest != null) {
+                        RecordRouteList rrList = originalRequest.getRecordRouteHeaders();
+                        if (rrList != null) {
+                            ListIterator<RecordRoute> it = rrList.listIterator(rrList.size());
+                            while (it.hasPrevious()) {
+                                RecordRoute rr = (RecordRoute) it.previous();
+                                Route route = (Route) routeList.getFirst();
+                                if (route != null && rr.getAddress().equals(route.getAddress())) {
+                                    routeList.removeFirst();
+                                } else
+                                    break;
+                            }
                         }
                     }
                 }
