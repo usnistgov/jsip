@@ -20,7 +20,7 @@
 /**
  *
  */
-package test.unit.gov.nist.javax.sip.stxrequestpending;
+package test.unit.gov.nist.javax.sip.stack.stx491;
 
 import gov.nist.javax.sip.SipProviderImpl;
 import gov.nist.javax.sip.SipStackImpl;

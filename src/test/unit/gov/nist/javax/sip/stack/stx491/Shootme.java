@@ -17,7 +17,7 @@
 *
 *
 */
-package test.unit.gov.nist.javax.sip.norequestpending;
+package test.unit.gov.nist.javax.sip.stack.stx491;
 
 import gov.nist.javax.sip.DialogExt;
 
@@ -69,7 +69,7 @@ public class Shootme  implements SipListener {
     private boolean okRecieved;
 
 
-    private boolean reInviteSeen;
+    private boolean requestPendingSeen;
 
     class ApplicationData {
         protected int ackCount;
@@ -104,7 +104,8 @@ public class Shootme  implements SipListener {
      */
     public void processAck(RequestEvent requestEvent,
             ServerTransaction serverTransaction) {
-      logger.info("processAck");
+             logger.info("shootme: got an ACK "
+                    + requestEvent.getRequest());
     }
 
     /**
@@ -125,7 +126,7 @@ public class Shootme  implements SipListener {
                     + myAddress + ":" + myPort + ">");
             ContactHeader contactHeader = protocolObjects.headerFactory
                     .createContactHeader(address);
-            response.addHeader(contactHeader);
+            response.setHeader(contactHeader);
             ServerTransaction st = requestEvent.getServerTransaction();
 
             if (st == null) {
@@ -140,7 +141,6 @@ public class Shootme  implements SipListener {
                 // If Server transaction is not null, then
                 // this is a re-invite.
                 logger.info("This is a RE INVITE ");
-                this.reInviteSeen = true;
                 ReInviteTest.assertSame("Dialog mismatch ", st.getDialog(),this.dialog);
             }
 
@@ -165,10 +165,11 @@ public class Shootme  implements SipListener {
             toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
             toHeader.setTag("4321");
             // Application is supposed to set.
-            response.addHeader(contactHeader);
+            response.setHeader(contactHeader);
             st.sendResponse(response);
             logger.info("TxState after sendResponse = " + st.getState());
             this.inviteTid = st;
+            this.sendReInvite(sipProvider);
         } catch (Exception ex) {
             String s = "unexpected exception";
 
@@ -230,15 +231,8 @@ public class Shootme  implements SipListener {
         logger.info("Response received with client transaction id "
                 + tid + ":\n" + response);
         try {
-            if (response.getStatusCode() == Response.OK
-                    && ((CSeqHeader) response.getHeader(CSeqHeader.NAME))
-                            .getMethod().equals(Request.INVITE)) {
-                this.okRecieved  = true;
-                ReInviteTest.assertNotNull( "INVITE 200 response should match a transaction", tid );
-                Dialog dialog = tid.getDialog();
-                CSeqHeader cseq = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
-                Request request = dialog.createAck(cseq.getSeqNumber());
-                dialog.sendAck(request);
+            if ( response.getStatusCode() == Response.REQUEST_PENDING) {
+                this.requestPendingSeen = true;
             }
             if ( tid != null ) {
                 Dialog dialog = tid.getDialog();
@@ -290,7 +284,7 @@ public class Shootme  implements SipListener {
     }
 
     public void checkState() {
-      ReInviteTest.assertTrue("ReINVITE should be seen ", this.reInviteSeen);
+       ReInviteTest.assertTrue("Should see request pending" , this.requestPendingSeen);
     }
     /*
      * (non-Javadoc)
