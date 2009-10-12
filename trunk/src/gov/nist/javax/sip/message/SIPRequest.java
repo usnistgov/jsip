@@ -61,7 +61,7 @@ import gov.nist.javax.sip.stack.SIPTransactionStack;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.46 $ $Date: 2009-10-09 13:19:04 $
+ * @version 1.2 $Revision: 1.47 $ $Date: 2009-10-12 15:48:34 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -374,10 +374,14 @@ public final class SIPRequest extends SIPMessage implements javax.sip.message.Re
      * @param uri the new Request URI of this request message
      */
     public void setRequestURI(URI uri) {
+        if ( uri == null ) {
+            throw new NullPointerException("Null request URI");
+        }
         if (this.requestLine == null) {
             this.requestLine = new RequestLine();
         }
         this.requestLine.setUri((GenericURI) uri);
+        this.nullRequest = false;
     }
 
     /**

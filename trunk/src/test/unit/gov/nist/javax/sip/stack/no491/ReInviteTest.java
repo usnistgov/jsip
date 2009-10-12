@@ -20,7 +20,7 @@
 /**
  *
  */
-package test.unit.gov.nist.javax.sip.requestpending;
+package test.unit.gov.nist.javax.sip.stack.no491;
 
 import gov.nist.javax.sip.SipProviderImpl;
 import gov.nist.javax.sip.SipStackImpl;
@@ -96,8 +96,8 @@ public class ReInviteTest extends ScenarioHarness implements SipListener {
             shootistProvider.addSipListener(this);
             shootmeProvider.addSipListener(this);
             
-            ((SipStackImpl)getTiProtocolObjects().sipStack).setAllowReInviteInterleaving(true);
-            ((SipStackImpl)getRiProtocolObjects().sipStack).setAllowReInviteInterleaving(true);
+            ((SipStackImpl)getTiProtocolObjects().sipStack).setAllowReInviteInterleaving(false);
+            ((SipStackImpl)getRiProtocolObjects().sipStack).setAllowReInviteInterleaving(false);
 
             getRiProtocolObjects().start();
             if (getTiProtocolObjects() != getRiProtocolObjects())
@@ -114,7 +114,7 @@ public class ReInviteTest extends ScenarioHarness implements SipListener {
 
     public void tearDown() {
         try {
-            Thread.sleep(2000);
+            Thread.sleep(4000);
             this.shootist.checkState();
             this.shootme.checkState();
             super.tearDown();
