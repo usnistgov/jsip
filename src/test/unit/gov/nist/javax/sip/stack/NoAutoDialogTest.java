@@ -88,6 +88,7 @@ public class NoAutoDialogTest extends TestCase {
 
         this.client = new Client();
         this.server = new Server();
+        Thread.sleep(500);
     }
 
     @Override
@@ -195,7 +196,7 @@ public class NoAutoDialogTest extends TestCase {
         }
 
         public void processRequest(RequestEvent requestEvent) {
-            System.err.println("PROCESS REQUEST ON SERVER");
+            System.out.println("PROCESS REQUEST ON SERVER");
             Request request = requestEvent.getRequest();
             SipProvider provider = (SipProvider) requestEvent.getSource();
             if (request.getMethod().equals(Request.INVITE)) {

@@ -17,7 +17,7 @@
  *
  *
  */
-package test.unit.gov.nist.javax.sip.requestpending;
+package test.unit.gov.nist.javax.sip.stack.ctx491;
 
 import gov.nist.javax.sip.DialogExt;
 import gov.nist.javax.sip.address.SipUri;
