@@ -37,7 +37,7 @@ import gov.nist.core.ThreadAuditor;
 /**
  * Event Scanner to deliver events to the Listener.
  *
- * @version 1.2 $Revision: 1.31 $ $Date: 2009-07-29 20:38:16 $
+ * @version 1.2 $Revision: 1.32 $ $Date: 2009-10-13 20:05:44 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -326,7 +326,7 @@ class EventScanner implements Runnable {
                             .equals(Request.INVITE)
                             && sipDialog != null
                             && sipResponse.getStatusCode() == 200
-                            && sipDialog.getLastAck() == null) {
+                            && sipDialog.getLastAckSent() == null) {
                         if (sipStack.getStackLogger().isLoggingEnabled()) {
                             sipStack.getStackLogger().logDebug(
                                     "Garbage collecting unacknowledged dialog");

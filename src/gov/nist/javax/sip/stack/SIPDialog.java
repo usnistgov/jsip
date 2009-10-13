@@ -45,7 +45,9 @@ import javax.sip.address.*;
 import javax.sip.message.*;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.net.InetAddress;
 import java.text.ParseException;
 
@@ -66,7 +68,7 @@ import java.text.ParseException;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.125 $ $Date: 2009-10-13 17:14:11 $
+ * @version 1.2 $Revision: 1.126 $ $Date: 2009-10-13 20:05:42 $
  * 
  * @author M. Ranganathan
  * 
@@ -78,6 +80,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     private static final long serialVersionUID = -1429794423085204069L;
 
     private boolean dialogTerminatedEventDelivered; // prevent duplicate
+    
+    private String stackTrace; // for semaphore debugging.
 
     // private DefaultRouter defaultRouter;
 
@@ -122,8 +126,10 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     private int dialogState;
 
     private boolean ackSeen;
+    
+    private SIPRequest lastAckSent;
 
-    protected SIPRequest lastAck;
+    private SIPRequest lastAckReceived;
 
     protected boolean ackProcessed;
 
@@ -182,8 +188,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     // Used in createAck.
     private long lastInviteOkReceived;
 
-    private AtomicBoolean waitingToSendReInvite = new AtomicBoolean();
-
     private Semaphore ackSem = new Semaphore(1);
 
     private int reInviteWaitTime = 100;
@@ -216,7 +220,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
         public ReInviteSender(ClientTransaction ctx) {
             this.ctx = ctx;
-            waitingToSendReInvite.set(true);
         }
 
         public void run() {
@@ -262,8 +265,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             } catch (Exception ex) {
                 sipStack.getStackLogger().logError("Error sending INVITE", ex);
             } finally {
-                waitingToSendReInvite.set(false);
-
                 this.ctx = null;
             }
         }
@@ -384,6 +385,13 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         localSequenceNumber = 0;
         remoteSequenceNumber = -1;
 
+    }
+    
+    private void recordStackTrace() {
+      StringWriter stringWriter = new StringWriter();
+      PrintWriter writer = new PrintWriter(stringWriter);
+      new Exception().printStackTrace(writer);
+       this.stackTrace = stringWriter.getBuffer().toString();
     }
 
     /**
@@ -766,16 +774,18 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             MessageChannel messageChannel = lp.getMessageProcessor().createMessageChannel(
                     inetAddress, hop.getPort());
             boolean releaseAckSem = false;
-            if (this.lastAck == null) {
-                releaseAckSem = true;
-            } else if (!this.isAckSent()) {
+            if (!this.isAckSent()) {
                 releaseAckSem = true;
             }
 
-            this.lastAck = ackRequest;
+            this.setLastAckSent(ackRequest);
             messageChannel.sendMessage(ackRequest);
             if (releaseAckSem && !this.sipStack.allowReinviteInterleaving) {
                 this.releaseAckSem();
+            } else {
+                if ( sipStack.isLoggingEnabled() ) {
+                    sipStack.getStackLogger().logDebug("Not releasing ack sem for " + this + " isAckSent " + releaseAckSem );
+                }
             }
         } catch (IOException ex) {
             if (throwIOExceptionAsSipException)
@@ -852,7 +862,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                     this.dialogDeleteTask.cancel();
                     this.dialogDeleteTask = null;
                 }
-                this.lastAck = sipRequest;
+                this.setLastAckReceived(sipRequest);
                 if (sipStack.isLoggingEnabled()) {
                     sipStack.getStackLogger().logDebug(
                             "ackReceived for " + ((SIPTransaction) tr).getMethod());
@@ -1008,8 +1018,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     /**
      * Get the last ACK for this transaction.
      */
-    public SIPRequest getLastAck() {
-        return this.lastAck;
+    public SIPRequest getLastAckSent() {
+        return this.lastAckSent;
     }
 
     /**
@@ -1020,11 +1030,11 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         if (this.getLastTransaction() == null)
             return true;
         if (this.getLastTransaction() instanceof ClientTransaction) {
-            if (this.lastAck == null) {
+            if (this.getLastAckSent() == null) {
                 return false;
             } else {
                 return ((SIPRequest) this.getLastTransaction().getRequest()).getCSeq()
-                        .getSeqNumber() == ((SIPRequest) this.lastAck).getCSeq().getSeqNumber();
+                        .getSeqNumber() == ((SIPRequest) this.getLastAckSent()).getCSeq().getSeqNumber();
             }
         } else {
             return true;
@@ -1978,18 +1988,18 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     public void resendAck() throws SipException {
         // Check for null.
 
-        if (this.lastAck != null) {
-            if (lastAck.getHeader(TimeStampHeader.NAME) != null
+        if (this.getLastAckSent() != null) {
+            if (getLastAckSent().getHeader(TimeStampHeader.NAME) != null
                     && sipStack.generateTimeStampHeader) {
                 TimeStamp ts = new TimeStamp();
                 try {
                     ts.setTimeStamp(System.currentTimeMillis());
-                    lastAck.setHeader(ts);
+                    getLastAckSent().setHeader(ts);
                 } catch (InvalidArgumentException e) {
 
                 }
             }
-            this.sendAck(lastAck, false);
+            this.sendAck(getLastAckSent(), false);
         }
 
     }
@@ -2941,7 +2951,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     }
 
     boolean takeAckSem() {
-
         if (sipStack.isLoggingEnabled()) {
             sipStack.getStackLogger().logDebug("[takeAckSem " + this);
         }
@@ -2951,8 +2960,19 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                     sipStack.getStackLogger().logError("Cannot aquire ACK semaphore");
                 }
 
+                if ( sipStack.isLoggingEnabled() ) {
+                    sipStack.getStackLogger().logDebug("Semaphore previously acquired at " + this.stackTrace);
+                    sipStack.getStackLogger().logStackTrace();
+                    
+                }
                 return false;
             }
+            
+            if ( sipStack.isLoggingEnabled() ) {
+                
+                this.recordStackTrace();
+            }
+            
         } catch (InterruptedException ex) {
             sipStack.getStackLogger().logError("Cannot aquire ACK semaphore");
             return false;
@@ -2960,6 +2980,27 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         }
         return true;
 
+    }
+
+    /**
+     * @param lastAckReceived the lastAckReceived to set
+     */
+    private void setLastAckReceived(SIPRequest lastAckReceived) {
+        this.lastAckReceived = lastAckReceived;
+    }
+
+    /**
+     * @return the lastAckReceived
+     */
+    protected SIPRequest getLastAckReceived() {
+        return lastAckReceived;
+    }
+
+    /**
+     * @param lastAckSent the lastAckSent to set
+     */
+    private void setLastAckSent(SIPRequest lastAckSent) {
+        this.lastAckSent = lastAckSent;
     }
 
 }
