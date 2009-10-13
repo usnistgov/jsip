@@ -79,7 +79,7 @@ import javax.sip.message.Response;
  * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
  * and event model with the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.36 $ $Date: 2009-10-09 08:50:35 $
+ * @version 1.2 $Revision: 1.37 $ $Date: 2009-10-13 20:05:43 $
  * 
  * @author M. Ranganathan
  */
@@ -1018,8 +1018,8 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     return;
                 } else {
                     boolean ackAlreadySent = false;
-                    if (dialog.isAckSeen() && dialog.getLastAck() != null) {
-                        if (dialog.getLastAck().getCSeq().getSeqNumber() == response.getCSeq()
+                    if (dialog.isAckSeen() && dialog.getLastAckSent() != null) {
+                        if (dialog.getLastAckSent().getCSeq().getSeqNumber() == response.getCSeq()
                                 .getSeqNumber()) {
                             // the last ack sent corresponded to this 200
                             ackAlreadySent = true;
@@ -1208,11 +1208,11 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     return;
                 } else {
                     boolean ackAlreadySent = false;
-                    if (sipDialog.isAckSeen() && sipDialog.getLastAck() != null) {
-                        if (sipDialog.getLastAck().getCSeq().getSeqNumber() == sipResponse
+                    if (sipDialog.isAckSeen() && sipDialog.getLastAckSent() != null) {
+                        if (sipDialog.getLastAckSent().getCSeq().getSeqNumber() == sipResponse
                                 .getCSeq().getSeqNumber()
                                 && sipResponse.getDialogId(false).equals(
-                                        sipDialog.getLastAck().getDialogId(false))) {
+                                        sipDialog.getLastAckSent().getDialogId(false))) {
                             // the last ack sent corresponded to this 200
                             ackAlreadySent = true;
                         }
