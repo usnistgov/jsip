@@ -66,7 +66,7 @@ import java.text.ParseException;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.124 $ $Date: 2009-10-10 01:25:17 $
+ * @version 1.2 $Revision: 1.125 $ $Date: 2009-10-13 17:14:11 $
  * 
  * @author M. Ranganathan
  * 
@@ -768,8 +768,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             boolean releaseAckSem = false;
             if (this.lastAck == null) {
                 releaseAckSem = true;
-            } else if (this.lastAck.getCSeq().getSeqNumber() != ackRequest.getCSeq()
-                    .getSeqNumber()) {
+            } else if (!this.isAckSent()) {
                 releaseAckSem = true;
             }
 
@@ -2497,12 +2496,11 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                             && sipResponse.getStatusCode() == Response.OK
                             && cseqMethod.equals(Request.INVITE)
                             && !sipStack.allowReinviteInterleaving) {
-                        try {
                             /*
                              * Acquire the flag for re-INVITE so that we cannot re-INVITE before
                              * ACK is received.
                              */
-                            if (!ackSem.tryAcquire(8, TimeUnit.SECONDS)) {
+                            if (!this.takeAckSem()) {
                                 if (sipStack.isLoggingEnabled()) {
                                     sipStack.getStackLogger().logDebug(
                                             "Delete dialog -- cannot acquire ackSem");
@@ -2510,11 +2508,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                                 this.delete();
                                 return;
                             }
-                        } catch (InterruptedException e) {
-                            this.sipStack.getStackLogger().logDebug(
-                                    "Acquire of ACK sem was interrupted");
-                            this.delete();
-                        }
+                        
                     }
                 }
             }
