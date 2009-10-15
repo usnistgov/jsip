@@ -411,6 +411,7 @@ public class Shootist  implements SipListener {
             RouteHeader routeHeader = protocolObjects.headerFactory
                     .createRouteHeader(address);
             ((SipURI)address.getURI()).setLrParam();
+            ((SipURI)address.getURI()).setTransportParam(protocolObjects.transport);
             request.addHeader(routeHeader);
             extensionHeader = protocolObjects.headerFactory.createHeader(
                     "My-Other-Header", "my new header value ");
@@ -431,7 +432,7 @@ public class Shootist  implements SipListener {
             this.inviteTid.sendRequest();
 
 
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             logger.error("Unexpected exception", ex);
             SctpTest.fail("unexpected exception");
         }
