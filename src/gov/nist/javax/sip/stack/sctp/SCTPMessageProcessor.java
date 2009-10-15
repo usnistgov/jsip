@@ -40,6 +40,8 @@ public final class SCTPMessageProcessor extends MessageProcessor {
 		super( "sctp" );
 	}
 
+	Selector getSelector() { return selector; }
+	
 	SelectionKey registerChannel( SCTPMessageChannel c, SctpChannel channel ) 
 		throws ClosedChannelException {
 		synchronized (this) {
@@ -98,15 +100,15 @@ public final class SCTPMessageProcessor extends MessageProcessor {
 					Iterator<SelectionKey> i = selector.selectedKeys().iterator();
 					while ( i.hasNext() ) {
 						SelectionKey key = i.next();
-						if ( key.isReadable() ) {
-							SCTPMessageChannel channel = (SCTPMessageChannel) key.attachment();
-							channel.readMessages();
-						} else if (key.isAcceptable()) {
+						i.remove();
+						if (key.isAcceptable()) {
 							SctpChannel ch = sctpServerChannel.accept();
 							SCTPMessageChannel c = new SCTPMessageChannel( this, ch );
 							channels.add( c );
-						}
-						i.remove();
+						} else if ( key.isReadable() ) {
+							SCTPMessageChannel channel = (SCTPMessageChannel) key.attachment();
+							channel.readMessages();
+						} 
 					}
 				} else sipStack.getStackLogger().logDebug( "no keys ready after select()?" );
 				
@@ -127,9 +129,9 @@ public final class SCTPMessageProcessor extends MessageProcessor {
 	@Override
 	public void start() throws IOException {
 
-		this.sctpServerChannel = SctpServerChannel.open();
-		sctpServerChannel.configureBlocking( false );
+		this.sctpServerChannel = SctpServerChannel.open();		
 		sctpServerChannel.bind( new InetSocketAddress(this.getIpAddress(),this.getPort()) );
+		sctpServerChannel.configureBlocking( false );
 		
 		this.selector = Selector.open();
 		this.key = sctpServerChannel.register( selector, SelectionKey.OP_ACCEPT );

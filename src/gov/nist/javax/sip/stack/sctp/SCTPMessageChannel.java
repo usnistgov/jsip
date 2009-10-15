@@ -51,7 +51,7 @@ final class SCTPMessageChannel extends MessageChannel
 
 	private final ByteBuffer rxBuffer = ByteBuffer.allocateDirect( 5000 );
 	
-	private final StringMsgParser parser;	// Parser instance
+	private final StringMsgParser parser = new StringMsgParser( this );	// Parser instance
 	
 	// for outgoing connections
 	SCTPMessageChannel( SCTPMessageProcessor p, InetSocketAddress dest ) throws IOException {
@@ -63,9 +63,8 @@ final class SCTPMessageChannel extends MessageChannel
 		messageInfo.unordered( true );
 		
 		this.channel = SctpChannel.open( dest, 1, 1 );
-		this.key = this.initChannel();
-		
-		parser = new StringMsgParser( this );
+		channel.configureBlocking( false );
+		this.key = processor.registerChannel( this, channel );
 	}
 	
 	// For incoming connections
@@ -77,16 +76,10 @@ final class SCTPMessageChannel extends MessageChannel
 		messageInfo.unordered( true );
 		
 		this.channel = c;
-		this.key = this.initChannel();
-		
-		parser = new StringMsgParser( this );
-	}
-	
-	private SelectionKey initChannel() throws IOException {
 		channel.configureBlocking( false );
-		return processor.registerChannel( this, channel );
+		this.key = c.register( p.getSelector(), SelectionKey.OP_READ, this );
 	}
-	
+			
 	@Override
 	public void close() {		
 		try {
