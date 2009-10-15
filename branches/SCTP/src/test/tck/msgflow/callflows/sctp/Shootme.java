@@ -131,8 +131,9 @@ public class Shootme  implements SipListener {
             Response response = protocolObjects.messageFactory.createResponse(180, request);
             ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
             toHeader.setTag("4321");
-            Address address = protocolObjects.addressFactory.createAddress("Shootme <sips:"
+            Address address = protocolObjects.addressFactory.createAddress("Shootme <sip:"
                     + myAddress + ":" + myPort + ">");
+            ((SipURI)address.getURI()).setTransportParam(protocolObjects.transport);
             ContactHeader contactHeader = protocolObjects.headerFactory
                     .createContactHeader(address);
             response.addHeader(contactHeader);

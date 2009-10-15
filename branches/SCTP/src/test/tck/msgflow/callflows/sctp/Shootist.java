@@ -372,6 +372,7 @@ public class Shootist  implements SipListener {
                     fromName, myAddress);
             contactURI.setPort(provider.getListeningPoint(
                     protocolObjects.transport).getPort());
+            contactURI.setTransportParam(protocolObjects.transport);
 
             Address contactAddress = protocolObjects.addressFactory
                     .createAddress(contactURI);
