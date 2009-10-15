@@ -50,7 +50,7 @@ import org.apache.log4j.Logger;
  *
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.18 $ $Date: 2009-07-17 18:57:22 $
+ * @version 1.2 $Revision: 1.19 $ $Date: 2009-10-15 20:05:32 $
  *
  *
  *
@@ -994,7 +994,8 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI , Sip
             throw new NullPointerException("null arg");
         if (transport.compareToIgnoreCase("UDP") == 0
             || transport.compareToIgnoreCase("TLS") == 0
-            || transport.compareToIgnoreCase("TCP") == 0) {
+            || transport.compareToIgnoreCase("TCP") == 0
+            || transport.compareToIgnoreCase("SCTP") == 0) {
             NameValue nv = new NameValue(TRANSPORT, transport.toLowerCase());
             uriParms.set(nv);
         } else
