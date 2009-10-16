@@ -106,7 +106,11 @@ public class SDPAnnounceParser extends ParserCore {
         for (int i = 0; i < sdpMessage.size(); i++) {
             String field = (String) sdpMessage.elementAt(i);
             SDPParser sdpParser = ParserFactory.createParser(field);
-            SDPField sdpField = sdpParser.parse();
+            SDPField sdpField = null;
+            if (sdpParser != null)
+            {
+               sdpField = sdpParser.parse();
+            }
             retval.addField(sdpField);
         }
         return retval;
@@ -118,6 +122,9 @@ public class SDPAnnounceParser extends ParserCore {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2009/07/17 18:57:17  emcho
+ * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
+ *
  * Revision 1.9  2008/01/18 02:18:24  mranga
  * Issue number:
  * Obtained from:
