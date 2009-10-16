@@ -49,4 +49,6 @@ public interface ServerLogger extends LogLevels {
 	 public void setStackProperties(Properties stackProperties);
 	 
 	 public void setSipStack(SipStack sipStack);
+	 
+	
 }

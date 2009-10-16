@@ -175,7 +175,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.111 $ $Date: 2009-10-13 20:05:42 $
+ * @version 1.2 $Revision: 1.112 $ $Date: 2009-10-16 19:19:40 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -1313,12 +1313,13 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
     /**
      * Start the timer task.
      */
-    protected synchronized void startTransactionTimer() {
-        if (this.transactionTimerStarted)
+    protected  void startTransactionTimer() {
+        if (this.testAndSetIsTransactionTimerStarted())
             return;
         TimerTask myTimer = new TransactionTimer();
-        this.transactionTimerStarted = true;
-        sipStack.getTimer().schedule(myTimer, BASE_TIMER_INTERVAL, BASE_TIMER_INTERVAL);
+        if ( sipStack.getTimer() != null ) {
+            sipStack.getTimer().schedule(myTimer, BASE_TIMER_INTERVAL, BASE_TIMER_INTERVAL);
+        }
     }
 
     /*
