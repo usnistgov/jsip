@@ -64,7 +64,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.21 $ $Date: 2009-09-10 21:47:26 $
+ * @version 1.2 $Revision: 1.22 $ $Date: 2009-10-16 22:57:07 $
  */
 public final class TLSMessageChannel extends MessageChannel implements SIPMessageListener,
         Runnable, RawMessageChannel {
@@ -96,7 +96,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
     // Incremented whenever a transaction gets assigned
     // to the message channel and decremented when
     // a transaction gets freed from the message channel.
-    protected int useCount = 0;
+    // protected int useCount = 0;
 
     private TLSMessageProcessor tlsMessageProcessor;
 
@@ -631,7 +631,9 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
     }
 
     protected void uncache() {
-        this.tlsMessageProcessor.remove(this);
+    	if (isCached && !isRunning) {    	
+    		this.tlsMessageProcessor.remove(this);
+    	}
     }
 
     /**

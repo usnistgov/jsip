@@ -29,26 +29,34 @@
 
 package gov.nist.javax.sip.stack;
 
-import java.net.*;
-import gov.nist.javax.sip.*;
-import gov.nist.core.*;
-import gov.nist.javax.sip.header.*;
-import gov.nist.javax.sip.parser.*;
-import gov.nist.javax.sip.message.*;
+import gov.nist.core.InternalErrorHandler;
+import gov.nist.core.ServerLogger;
+import gov.nist.core.StackLogger;
+import gov.nist.core.ThreadAuditor;
+import gov.nist.javax.sip.SIPConstants;
+import gov.nist.javax.sip.header.CSeq;
+import gov.nist.javax.sip.header.CallID;
+import gov.nist.javax.sip.header.From;
+import gov.nist.javax.sip.header.RequestLine;
+import gov.nist.javax.sip.header.StatusLine;
+import gov.nist.javax.sip.header.To;
+import gov.nist.javax.sip.header.Via;
+import gov.nist.javax.sip.header.ViaList;
+import gov.nist.javax.sip.message.SIPMessage;
+import gov.nist.javax.sip.message.SIPRequest;
+import gov.nist.javax.sip.message.SIPResponse;
+import gov.nist.javax.sip.parser.ParseExceptionListener;
+import gov.nist.javax.sip.parser.StringMsgParser;
+
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.String;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.text.ParseException;
 
 import javax.sip.address.Hop;
-import javax.sip.header.CSeqHeader;
-import javax.sip.header.CallIdHeader;
-import javax.sip.header.ContentTypeHeader;
-import javax.sip.header.FromHeader;
-import javax.sip.header.ToHeader;
-import javax.sip.header.ViaHeader;
-import javax.sip.message.Request;
-import javax.sip.message.Response;
 
 /*
  * Kim Kirby (Keyvoice) suggested that duplicate checking should be added to the
@@ -79,7 +87,7 @@ import javax.sip.message.Response;
  *
  *
  *
- * @version 1.2 $Revision: 1.60 $ $Date: 2009-08-16 17:28:27 $
+ * @version 1.2 $Revision: 1.61 $ $Date: 2009-10-16 22:57:07 $
  */
 public class UDPMessageChannel extends MessageChannel implements
         ParseExceptionListener, Runnable, RawMessageChannel {
@@ -420,7 +428,6 @@ public class UDPMessageChannel extends MessageChannel implements
      *
      * @param sipMessage
      */
-
     public void processMessage(SIPMessage sipMessage) {
 
         if (sipMessage instanceof SIPRequest) {

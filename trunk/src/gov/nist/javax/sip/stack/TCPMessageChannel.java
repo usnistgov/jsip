@@ -38,7 +38,6 @@ import java.text.ParseException;
 import java.util.TimerTask;
 
 import javax.sip.address.Hop;
-import javax.sip.message.Response;
 
 /*
  * Ahmet Uyar <auyar@csit.fsu.edu>sent in a bug report for TCP operation of the JAIN sipStack.
@@ -60,7 +59,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.55 $ $Date: 2009-09-10 21:47:26 $
+ * @version 1.2 $Revision: 1.56 $ $Date: 2009-10-16 22:57:07 $
  */
 public class TCPMessageChannel extends MessageChannel implements SIPMessageListener, Runnable,
         RawMessageChannel {
@@ -96,7 +95,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
     // Incremented whenever a transaction gets assigned
     // to the message channel and decremented when
     // a transaction gets freed from the message channel.
-    protected int useCount;
+    // protected int useCount;
 
     private TCPMessageProcessor tcpMessageProcessor;
 
@@ -682,7 +681,9 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
     }
 
     protected void uncache() {
-        this.tcpMessageProcessor.remove(this);
+    	if (isCached && !isRunning) {
+    		this.tcpMessageProcessor.remove(this);
+    	}
     }
 
     /**
