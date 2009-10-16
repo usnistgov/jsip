@@ -175,7 +175,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.112 $ $Date: 2009-10-16 19:19:40 $
+ * @version 1.2 $Revision: 1.113 $ $Date: 2009-10-16 22:57:06 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -242,14 +242,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                 // return responses.
                 if ((!sipStack.cacheClientConnections) && clientTransaction.isReliable()) {
 
-                    int newUseCount;
-
-                    if (clientTransaction.getMessageChannel() instanceof TCPMessageChannel)
-                        newUseCount = --((TCPMessageChannel) clientTransaction
-                                .getMessageChannel()).useCount;
-                    else
-                        newUseCount = --((TLSMessageChannel) clientTransaction
-                                .getMessageChannel()).useCount;
+                    int newUseCount = --clientTransaction.getMessageChannel().useCount;
                     if (newUseCount <= 0) {
                         // Let the connection linger for a while and then close
                         // it.
@@ -263,17 +256,8 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                     // connection. This keeps the connection open permanently
                     // until the client disconnects.
                     if (sipStack.isLoggingEnabled() && clientTransaction.isReliable()) {
-
-                        int useCount;
-
-                        if (clientTransaction.getMessageChannel() instanceof TCPMessageChannel)
-                            useCount = ((TCPMessageChannel) clientTransaction.getMessageChannel()).useCount;
-                        else
-                            useCount = ((TLSMessageChannel) clientTransaction.getMessageChannel()).useCount;
-
-                        if (sipStack.isLoggingEnabled()) {
-                            sipStack.getStackLogger().logDebug("Client Use Count = " + useCount);
-                        }
+                       	int useCount = clientTransaction.getMessageChannel().useCount;
+                       	sipStack.getStackLogger().logDebug("Client Use Count = " + useCount);
                     }
                 }
 
