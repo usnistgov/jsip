@@ -83,8 +83,7 @@ public final class SCTPMessageProcessor extends MessageProcessor {
 
 	@Override
 	public boolean inUse() {
-		// TODO Auto-generated method stub
-		return false;
+		return isRunning;
 	}
 
 	@Override
@@ -101,24 +100,23 @@ public final class SCTPMessageProcessor extends MessageProcessor {
 					while ( i.hasNext() ) {
 						SelectionKey key = i.next();
 						i.remove();
-						if (key.isAcceptable()) {
+						if ( key.isReadable() ) {
+							SCTPMessageChannel channel = (SCTPMessageChannel) key.attachment();
+							channel.readMessages();
+						} else if (key.isAcceptable()) {
 							SctpChannel ch = sctpServerChannel.accept();
 							SCTPMessageChannel c = new SCTPMessageChannel( this, ch );
 							channels.add( c );
-						} else if ( key.isReadable() ) {
-							SCTPMessageChannel channel = (SCTPMessageChannel) key.attachment();
-							channel.readMessages();
-						} 
+						}
 					}
-				} else sipStack.getStackLogger().logDebug( "no keys ready after select()?" );
+				}
 				
 				synchronized (this) {
 					if (doClose) {
 						selector.close();
 						return;
 					}
-				}
-				
+				}				
 			} while ( selector.isOpen() );
 		} catch (IOException ioe) {
 			ioe.printStackTrace();

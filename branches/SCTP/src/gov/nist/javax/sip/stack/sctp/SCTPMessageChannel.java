@@ -49,13 +49,15 @@ final class SCTPMessageChannel extends MessageChannel
 	
 	private final MessageInfo messageInfo;	// outgoing SCTP options, cached
 
-	private final ByteBuffer rxBuffer = ByteBuffer.allocateDirect( 5000 );
+	// XXX Hardcoded, enough? TODO make stack property
+	private final ByteBuffer rxBuffer = ByteBuffer.allocateDirect( 10000 );
 	
 	private final StringMsgParser parser = new StringMsgParser( this );	// Parser instance
 	
 	// for outgoing connections
 	SCTPMessageChannel( SCTPMessageProcessor p, InetSocketAddress dest ) throws IOException {
 		this.processor = p;
+		this.messageProcessor = p;	// super class
 		this.peerAddress = dest;		
 		this.peerSrcAddress = dest;		// assume the same, override upon packet
 		
@@ -70,14 +72,16 @@ final class SCTPMessageChannel extends MessageChannel
 	// For incoming connections
 	SCTPMessageChannel( SCTPMessageProcessor p, SctpChannel c ) throws IOException {
 		this.processor = p;
-		
+		this.messageProcessor = p;	// super class
 		SocketAddress a = c.getRemoteAddresses().iterator().next();
+		this.peerAddress = (InetSocketAddress) a;
+		this.peerSrcAddress = (InetSocketAddress) a;
 		this.messageInfo = MessageInfo.createOutgoing( a, 0 );
 		messageInfo.unordered( true );
 		
 		this.channel = c;
 		channel.configureBlocking( false );
-		this.key = c.register( p.getSelector(), SelectionKey.OP_READ, this );
+		this.key = processor.registerChannel( this, channel );
 	}
 			
 	@Override
@@ -182,7 +186,9 @@ final class SCTPMessageChannel extends MessageChannel
 		
 		// XX ignoring 'reconnect' for now
 		int nBytes = channel.send( ByteBuffer.wrap(message), messageInfo );
-		getSIPStack().getStackLogger().logDebug( "SCTP bytes sent:" + nBytes );
+		if ( getSIPStack().getStackLogger().isLoggingEnabled( ServerLogger.TRACE_DEBUG ) ) {
+			getSIPStack().getStackLogger().logDebug( "SCTP bytes sent:" + nBytes );
+		}
 	}
 
 	/**
@@ -194,7 +200,14 @@ final class SCTPMessageChannel extends MessageChannel
 		rxBuffer.rewind();
 		MessageInfo info = channel.receive( rxBuffer, null, null );
 		if (info==null) {
-			getSIPStack().getStackLogger().logDebug( "SCTP read-event but no message??" );
+			// happens a lot, some sort of keep-alive?
+			if ( getSIPStack().getStackLogger().isLoggingEnabled( ServerLogger.TRACE_DEBUG ) ) {
+				getSIPStack().getStackLogger().logDebug( "SCTP read-event but no message" );
+			}
+			return;
+		} else if (info.bytes()==-1) {
+			getSIPStack().getStackLogger().logWarning( "SCTP peer closed, closing too..." );
+			this.close();
 			return;
 		}
 		
