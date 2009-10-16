@@ -354,4 +354,9 @@ final class SCTPMessageChannel extends MessageChannel
     public int compareTo(SCTPMessageChannel o) {
     	return this.hashCode() - o.hashCode();
     }
+    
+    @Override
+    protected void uncache() {
+    	// TODO Auto-generated method stub
+    }
 }
