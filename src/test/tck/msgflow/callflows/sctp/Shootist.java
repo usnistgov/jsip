@@ -234,8 +234,6 @@ public class Shootist  implements SipListener {
                 // sipProvider.getNewClientTransaction(cancel);
                 Dialog dialog = tid.getDialog();
                 Request ackRequest = dialog.createAck(cseq.getSeqNumber());
-                SctpTest.assertTrue( "Secure URI",
-                        ((SipURI)ackRequest.getRequestURI()).isSecure() );
                 logger.info("Ack request to send = " + ackRequest);
                 logger.info("Sending ACK");
                 dialog.sendAck(ackRequest);
