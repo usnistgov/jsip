@@ -34,11 +34,8 @@ import gov.nist.core.HostPort;
 import gov.nist.core.InternalErrorHandler;
 import gov.nist.core.ServerLogger;
 import gov.nist.javax.sip.address.AddressImpl;
-import gov.nist.javax.sip.header.CSeq;
-import gov.nist.javax.sip.header.CallID;
 import gov.nist.javax.sip.header.ContentLength;
 import gov.nist.javax.sip.header.ContentType;
-import gov.nist.javax.sip.header.Server;
 import gov.nist.javax.sip.header.Via;
 import gov.nist.javax.sip.message.MessageFactoryImpl;
 import gov.nist.javax.sip.message.SIPMessage;
@@ -66,12 +63,22 @@ import javax.sip.header.ViaHeader;
  * @author M. Ranganathan <br/> Contains additions for support of symmetric NAT contributed by
  *         Hagai.
  * 
- * @version 1.2 $Revision: 1.26 $ $Date: 2009-09-18 13:22:39 $
+ * @version 1.2 $Revision: 1.27 $ $Date: 2009-10-16 22:57:05 $
  * 
  * 
  */
 public abstract class MessageChannel {
 
+    // Incremented whenever a transaction gets assigned
+    // to the message channel and decremented when
+    // a transaction gets freed from the message channel.
+	protected int useCount;
+	
+	/**
+	 * Hook method, overridden by subclasses
+	 */
+	protected void uncache() {}
+	
     /**
      * Message processor to whom I belong (if set).
      */

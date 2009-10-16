@@ -28,21 +28,20 @@
 /**************************************************************************/
 package gov.nist.javax.sip.stack;
 
-import java.util.*;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import gov.nist.javax.sip.*;
+import gov.nist.core.InternalErrorHandler;
+import gov.nist.core.NameValueList;
+import gov.nist.javax.sip.DialogExt;
+import gov.nist.javax.sip.ListeningPointImpl;
+import gov.nist.javax.sip.SipProviderImpl;
+import gov.nist.javax.sip.Utils;
+import gov.nist.javax.sip.address.AddressImpl;
+import gov.nist.javax.sip.address.SipUri;
 import gov.nist.javax.sip.header.*;
-import gov.nist.javax.sip.address.*;
-import gov.nist.javax.sip.message.*;
-import gov.nist.core.*;
 
-import javax.sip.header.*;
-import javax.sip.*;
-import javax.sip.address.*;
-import javax.sip.message.*;
+import gov.nist.javax.sip.message.MessageFactoryImpl;
+import gov.nist.javax.sip.message.SIPMessage;
+import gov.nist.javax.sip.message.SIPRequest;
+import gov.nist.javax.sip.message.SIPResponse;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -50,6 +49,32 @@ import java.io.Serializable;
 import java.io.StringWriter;
 import java.net.InetAddress;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+
+import javax.sip.ClientTransaction;
+import javax.sip.Dialog;
+import javax.sip.DialogDoesNotExistException;
+import javax.sip.DialogState;
+import javax.sip.IOExceptionEvent;
+import javax.sip.InvalidArgumentException;
+import javax.sip.ListeningPoint;
+import javax.sip.ObjectInUseException;
+import javax.sip.SipException;
+import javax.sip.Transaction;
+import javax.sip.TransactionDoesNotExistException;
+import javax.sip.TransactionState;
+import javax.sip.address.Address;
+import javax.sip.address.Hop;
+import javax.sip.address.SipURI;
+import javax.sip.header.*;
+import javax.sip.message.Request;
+import javax.sip.message.Response;
 
 /*
  * Acknowledgements:
@@ -68,7 +93,7 @@ import java.text.ParseException;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.126 $ $Date: 2009-10-13 20:05:42 $
+ * @version 1.2 $Revision: 1.127 $ $Date: 2009-10-16 22:57:06 $
  * 
  * @author M. Ranganathan
  * 
@@ -1834,48 +1859,25 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         }
 
         try {
-            TCPMessageChannel oldChannel = null;
-            TLSMessageChannel oldTLSChannel = null;
-
             MessageChannel messageChannel = sipStack.createRawMessageChannel(this
                     .getSipProvider().getListeningPoint(hop.getTransport()).getIPAddress(),
                     this.firstTransaction.getPort(), hop);
-            if (((SIPClientTransaction) clientTransactionId).getMessageChannel() instanceof TCPMessageChannel) {
-                // Remove this from the connection cache if it is in the
-                // connection
-                // cache and is not yet active.
-                oldChannel = (TCPMessageChannel) ((SIPClientTransaction) clientTransactionId)
-                        .getMessageChannel();
-                if (oldChannel.isCached && !oldChannel.isRunning) {
-                    oldChannel.uncache();
-                }
-                // Not configured to cache client connections.
-                if (!sipStack.cacheClientConnections) {
-                    oldChannel.useCount--;
-                    if (sipStack.isLoggingEnabled())
-                        sipStack.getStackLogger().logDebug(
-                                "oldChannel: useCount " + oldChannel.useCount);
+            
+            MessageChannel oldChannel = ((SIPClientTransaction) 
+            		clientTransactionId).getMessageChannel();
 
-                }
-            }
-            // This section is copied & pasted from the previous one,
-            // and then modified for TLS management (Daniel Martinez)
-            else if (((SIPClientTransaction) clientTransactionId).getMessageChannel() instanceof TLSMessageChannel) {
-                // Remove this from the connection cache if it is in the
-                // connection
-                // cache and is not yet active.
-                oldTLSChannel = (TLSMessageChannel) ((SIPClientTransaction) clientTransactionId)
-                        .getMessageChannel();
-                if (oldTLSChannel.isCached && !oldTLSChannel.isRunning) {
-                    oldTLSChannel.uncache();
-                }
-                // Not configured to cache client connections.
-                if (!sipStack.cacheClientConnections) {
-                    oldTLSChannel.useCount--;
-                    if (sipStack.isLoggingEnabled())
-                        sipStack.getStackLogger().logDebug(
-                                "oldChannel: useCount " + oldTLSChannel.useCount);
-                }
+            // Remove this from the connection cache if it is in the
+            // connection
+            // cache and is not yet active.
+            oldChannel.uncache();
+
+            // Not configured to cache client connections.
+            if (!sipStack.cacheClientConnections) {
+                oldChannel.useCount--;
+                if (sipStack.isLoggingEnabled())
+                    sipStack.getStackLogger().logDebug(
+                            "oldChannel: useCount " + oldChannel.useCount);
+
             }
 
             if (messageChannel == null) {
@@ -1915,17 +1917,12 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
             }
 
-            if (messageChannel != null && messageChannel instanceof TCPMessageChannel)
-                ((TCPMessageChannel) messageChannel).useCount++;
-            if (messageChannel != null && messageChannel instanceof TLSMessageChannel)
-                ((TLSMessageChannel) messageChannel).useCount++;
+            if (messageChannel != null) messageChannel.useCount++;
+            
             // See if we need to release the previously mapped channel.
             if ((!sipStack.cacheClientConnections) && oldChannel != null
                     && oldChannel.useCount <= 0)
-                oldChannel.close();
-            if ((!sipStack.cacheClientConnections) && oldTLSChannel != null
-                    && oldTLSChannel.useCount == 0)
-                oldTLSChannel.close();
+                oldChannel.close();            
         } catch (Exception ex) {
             if (sipStack.isLoggingEnabled())
                 sipStack.getStackLogger().logException(ex);

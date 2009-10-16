@@ -69,7 +69,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.64 $ $Date: 2009-10-16 19:19:38 $
+ * @version 1.2 $Revision: 1.65 $ $Date: 2009-10-16 22:57:06 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -300,26 +300,14 @@ public abstract class SIPTransaction extends MessageChannel implements
                     sipStack.getStackLogger().logDebug("removing" + transaction);
                 sipStack.removeTransaction(transaction);
                 if ((!sipStack.cacheServerConnections)
-                        && transaction.encapsulatedChannel instanceof TCPMessageChannel
-                        && --((TCPMessageChannel) transaction.encapsulatedChannel).useCount <= 0) {
+                        && --transaction.encapsulatedChannel.useCount <= 0) {
                     // Close the encapsulated socket if stack is configured
-                    transaction.close();
-                } else if ((!sipStack.cacheServerConnections)
-                        && transaction.encapsulatedChannel instanceof TLSMessageChannel
-                        && --((TLSMessageChannel) transaction.encapsulatedChannel).useCount <= 0) {
-                    // Close the encapsulated socket if stack is configured
-                    transaction.close();
+                    transaction.close(); 
                 } else {
                     if (sipStack.isLoggingEnabled()
                             && (!sipStack.cacheServerConnections)
                             && transaction.isReliable()) {
-                        int useCount;
-
-                        if (transaction.encapsulatedChannel instanceof TCPMessageChannel)
-                            useCount = ((TCPMessageChannel) transaction.encapsulatedChannel).useCount;
-                        else
-                            useCount = ((TLSMessageChannel) transaction.encapsulatedChannel).useCount;
-
+                        int useCount = transaction.encapsulatedChannel.useCount;
                         sipStack.getStackLogger().logDebug("Use Count = " + useCount);
                     }
                 }
@@ -354,24 +342,14 @@ public abstract class SIPTransaction extends MessageChannel implements
         this.peerPacketSourceAddress = newEncapsulatedChannel
                 .getPeerPacketSourceAddress();
         this.peerProtocol = newEncapsulatedChannel.getPeerProtocol();
-        if (this.isReliable()) {
-            if (encapsulatedChannel instanceof TLSMessageChannel) {
-                ((TLSMessageChannel) encapsulatedChannel).useCount++;
+        if (this.isReliable()) {            
+                encapsulatedChannel.useCount++;
                 if (sipStack.isLoggingEnabled())
                     sipStack.getStackLogger()
                             .logDebug("use count for encapsulated channel"
                                     + this
                                     + " "
-                                    + ((TLSMessageChannel) encapsulatedChannel).useCount);
-            } else {
-                ((TCPMessageChannel) encapsulatedChannel).useCount++;
-                if (sipStack.isLoggingEnabled())
-                    sipStack.getStackLogger()
-                            .logDebug("use count for encapsulated channel"
-                                    + this
-                                    + " "
-                                    + ((TCPMessageChannel) encapsulatedChannel).useCount);
-            }
+                                    + encapsulatedChannel.useCount );
         }
 
         this.currentState = null;
