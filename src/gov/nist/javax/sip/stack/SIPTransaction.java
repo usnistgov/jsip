@@ -46,6 +46,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.sip.Dialog;
 import javax.sip.IOExceptionEvent;
@@ -68,7 +69,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.63 $ $Date: 2009-09-10 21:47:26 $
+ * @version 1.2 $Revision: 1.64 $ $Date: 2009-10-16 19:19:38 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -205,7 +206,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 
     protected InetAddress peerPacketSourceAddress;
 
-    protected boolean transactionTimerStarted = false;
+    private AtomicBoolean transactionTimerStarted = new AtomicBoolean(false);
 
     // Transaction branch ID
     private String branch;
@@ -1052,7 +1053,7 @@ public abstract class SIPTransaction extends MessageChannel implements
         if (retransmitTimer <= 0)
             throw new IllegalArgumentException(
                     "Retransmit timer must be positive!");
-        if (this.transactionTimerStarted)
+        if (this.testAndSetIsTransactionTimerStarted())
             throw new IllegalStateException(
                     "Transaction timer is already started");
         BASE_TIMER_INTERVAL = retransmitTimer;
@@ -1262,5 +1263,18 @@ public abstract class SIPTransaction extends MessageChannel implements
      * This method is called when this transaction's timeout timer has fired.
      */
     protected abstract void fireTimeoutTimer();
+
+   
+
+    /**
+     * @return the transactionTimerStarted
+     */
+    public boolean testAndSetIsTransactionTimerStarted() {
+        synchronized (this.transactionTimerStarted) {
+            boolean oldValue = this.transactionTimerStarted.get();
+            this.transactionTimerStarted.set(true);
+            return oldValue;
+        }
+    }
 
 }
