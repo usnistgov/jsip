@@ -99,7 +99,7 @@ public class SctpTest extends ScenarioHarness implements SipListener {
 
     public void tearDown() {
         try {
-            Thread.sleep(2000);
+            Thread.sleep(4000); // needs some time
             this.shootist.checkState();
             this.shootme.checkState();
             getTiProtocolObjects().destroy();
