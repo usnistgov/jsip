@@ -481,7 +481,7 @@ public class MessageFactoryTest extends FactoryTestHarness {
 		);
 
 		// JvB: in UTF-8 these character would be encoded as multiple bytes
-		byte[] content = "ï¿½ï¿½".getBytes( "ISO-8859-1" );
+		byte[] content = "öê".getBytes( "ISO-8859-1" );
 		request.setContent( new String(content,"ISO-8859-1"), 
 				(ContentTypeHeader) request.getHeader(ContentTypeHeader.NAME) );
 		
