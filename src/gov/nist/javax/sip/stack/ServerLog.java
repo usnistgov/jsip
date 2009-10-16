@@ -52,7 +52,7 @@ import org.apache.log4j.Logger;
  * the debug file if needed. This class keeps an XML formatted trace around for later access via
  * RMI. The trace can be viewed with a trace viewer (see tools.traceviewerapp).
  *
- * @version 1.2 $Revision: 1.37 $ $Date: 2009-07-29 20:38:13 $
+ * @version 1.2 $Revision: 1.38 $ $Date: 2009-10-16 19:19:39 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -451,6 +451,10 @@ public class ServerLog implements ServerLogger {
 	public void setStackProperties(Properties stackProperties) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public void setLevel(int jsipLoggingLevel) {
+	    
 	}
 
 }
