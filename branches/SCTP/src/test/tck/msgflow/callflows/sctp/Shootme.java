@@ -150,7 +150,6 @@ public class Shootme  implements SipListener {
                 // this is a re-invite.
                 logger.info("This is a RE INVITE ");
                 SctpTest.assertSame( "Dialog mismatch ", st.getDialog(),this.dialog);
-                SctpTest.assertTrue( "Secure dialog", this.dialog.isSecure() );
             }
 
             // Thread.sleep(5000);
