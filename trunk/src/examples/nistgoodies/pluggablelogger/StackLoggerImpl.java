@@ -1,5 +1,7 @@
 package examples.nistgoodies.pluggablelogger;
 
+import gov.nist.core.StackLogger;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -8,10 +10,7 @@ import java.util.Properties;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
 import org.apache.log4j.SimpleLayout;
-
-import gov.nist.core.StackLogger;
 
 public class StackLoggerImpl implements StackLogger {
     
@@ -50,67 +49,55 @@ public class StackLoggerImpl implements StackLogger {
         StackLoggerImpl.logger = logger;
     }
 
-    @Override
     public void disableLogging() {
         enabled = false;
     }
 
-    @Override
     public void enableLogging() {
         enabled = true;
 
     }
 
-    @Override
     public int getLineCount() {
         return 0;
     }
 
-    @Override
     public boolean isLoggingEnabled() {   
         return enabled;
     }
 
-    @Override
     public boolean isLoggingEnabled(int sipLogLevel) {
        System.out.println("level " + logger.getLevel());
        int levelSet = levelMap.get( logger.getLevel().toString());
        return sipLogLevel <= levelSet;
     }
 
-    @Override
     public void logDebug(String string) {
        logger.debug(string);
 
     }
 
-    @Override
     public void logError(String string) {
         logger.error(string);
     }
 
-    @Override
     public void logError(String string, Exception exception) {
       logger.error(string,exception);
 
     }
 
-    @Override
     public void logException(Throwable throwable) {
         logger.error("Exception occured",throwable);
     }
 
-    @Override
     public void logFatalError(String string) {     
         logger.fatal("Fatal error " + string);
     }
 
-    @Override
     public void logInfo(String string) { 
         logger.info(string);
     }
 
-    @Override
     public void logStackTrace() {
         if (enabled) {
             StringWriter sw = new StringWriter();
@@ -130,7 +117,6 @@ public class StackLoggerImpl implements StackLogger {
         
     }
 
-    @Override
     public void logStackTrace(int level) {
         if ( this.isLoggingEnabled(level)) {
             logStackTrace();
@@ -138,22 +124,18 @@ public class StackLoggerImpl implements StackLogger {
 
     }
 
-    @Override
     public void logWarning(String message) {
         logger.warn(message);
     }
 
-    @Override
     public void setBuildTimeStamp(String timeStamp) {
        logger.info("BuildTimeStamp = " + timeStamp);
     }
 
-    @Override
     public void setStackProperties(Properties properties) {
         logger.info("StackProperties " + properties);
     }
 
-    @Override
     public String getLoggerName() {
         return logger.getName();
     }
