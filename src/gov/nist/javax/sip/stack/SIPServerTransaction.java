@@ -163,7 +163,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.110 $ $Date: 2009-10-16 19:19:39 $
+ * @version 1.2 $Revision: 1.111 $ $Date: 2009-10-17 12:55:39 $
  * @author M. Ranganathan
  *
  */
@@ -1433,7 +1433,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
      * Start the timer task.
      */
     protected void startTransactionTimer() {
-        if (this.testAndSetIsTransactionTimerStarted()) {
+        if (this.transactionTimerStarted.getAndSet(true)) {
             return;
         }
         if (sipStack.getTimer() != null) {
