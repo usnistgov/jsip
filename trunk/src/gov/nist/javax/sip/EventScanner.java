@@ -37,7 +37,7 @@ import gov.nist.core.ThreadAuditor;
 /**
  * Event Scanner to deliver events to the Listener.
  *
- * @version 1.2 $Revision: 1.32 $ $Date: 2009-10-13 20:05:44 $
+ * @version 1.2 $Revision: 1.33 $ $Date: 2009-10-17 22:59:22 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -319,19 +319,24 @@ class EventScanner implements Runnable {
                      *
                      * If the Listener does not ACK the 200 then we assume he
                      * does not care about the dialog and gc the dialog after
-                     * some time.
+                     * some time. We cannot do this for in-dialog ACKs - only for
+                     * the Dialog forming ACK.
                      *
                      */
                     if (sipResponse.getCSeq().getMethod()
                             .equals(Request.INVITE)
                             && sipDialog != null
+                            && sipResponse.getFromTag() != null 
+                            && sipResponse.getToTag() != null
                             && sipResponse.getStatusCode() == 200
                             && sipDialog.getLastAckSent() == null) {
                         if (sipStack.getStackLogger().isLoggingEnabled()) {
                             sipStack.getStackLogger().logDebug(
-                                    "Garbage collecting unacknowledged dialog");
+                                    "Warning! unacknowledged dialog. " +
+                                    "Scheduling the dialog for termination.");
                         }
-                        sipDialog.doDeferredDelete();
+                        
+                       sipDialog.doDeferredDelete();
 
                     }
                 } catch (Exception ex) {
