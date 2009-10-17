@@ -2,13 +2,23 @@
 <head><title>JAVA API for SIP Signaling </title></head>
 <BODY>
 <p>
-Contains RI, TCK, examples, tools for JAIN-SIP-1.2 
-(JSR-32 maintenance release)  and an SDP library that conforms to the 
-public release of  JSR 141 (JAIN-SDP) interfaces.  
-JAIN-SIP RI is a full implementation of RFC 3261.
-JAIN-SDP interfaces are still under public review and are subject to change.
-Tools include a signaling trace viewer that can take input from an etherreal/stack trace. RI, TCK and tools are in the public domain. 
+RI, TCK, examples, tools for JAIN-SIP-1.2 (JSR-32 maintenance
+release)  and an SDP library that conforms to the public release of  JSR
+141 (JAIN-SDP) interfaces.  JAIN-SIP RI is a full implementation of RFC
+3261.  JAIN-SDP interfaces are still under public review and are subject
+to change.  The JAIN SIP RI, TCK and tools are in the public domain.
+The intended users of this project are SIP developers. 
 
+<p>You can imbed the JAIN-SIP stack in an applet, HTTP servlet or an
+application. JAIN-SIP can be used in SIP Proxy Servers (stateful and
+statelss) and in  SIP User Agents.  JAIN-SIP has been used to build a
+Session Border Controller, a few Softphones, a Resource Adapter for the
+JAVA Service Logic Execution Environment, a SIP Servlet Implementation
+and in a few Test tools. 
+
+<p>The JAIN-SIP Reference implementation is a product of the Advanced
+Networking Technologies Division at the National Institute of Standards
+and Technology (NIST).
 
 <br/>
 <div class="h2" id="getsource">
@@ -40,7 +50,6 @@ check out the project from java.net using cvs.
 <li> CVS Path is /cvs
 <li> Module name is jain-sip
 <li> CVS login and passsword is the same as your java.net login
-</ul>
 </ul>
 
 
@@ -87,28 +96,21 @@ before submitting patches and make sure your bug fix does
 not break something else.  Please follow coding guidelines. If you are 
 using eclipse, codefmt.xml is the style file to use.
 
-<div class="h2" id="links">
-<h2>Links</h2>
-</div>
-
-<p> <a href= "http://www.oracle.com/technology/pub/articles/dev2arch/2007/10/introduction-jain-sip.html" > A nice getting started article. </a>
-<p>
 
 <p><b> You are encouraged to subscribe to the jain-sip 
 user mailing list for project announcements.  </b>
-
 <div class="h2" id="links">
- <h2>News</h2>
+<h2>Performance and Stability</h2>
 </div>
 
-<p>
-<ul>
-<li> The JAIN-SIP 1.2 RI now supports SCTP (experimental). Many thanks to Jeroen van Bemmel for adding this support.
-<li> The JAIN-SIP 1.2 RI now offers you thread liveness monitoring features.
-<li> The JAIN-SIP RI offers you IMS header support.
-<li> The JAIN-SIP 1.2 API has been finalized and the change log is 
-now up to date. 
-<li>The stack performance measures in at 476 CAPS on a P5 dual core,
+<p>This project includes an extensive test suite that is run when ever a change is made to the CVS repository. 
+Visit the download link above to see the tests run by cruise control for each commit.
+JAIN-SIP has been leak tested under both error conditions and error
+free operational scenarios.  Here are the results of long term stability
+testing (Pascal Maugeri: "Genaker VoIP API using JAIN-SIP v1.2.85"):
+<li> <a href="performance.html"> See Stability testing results.</a>
+
+<p>The stack performance measures in at 476 CAPS on a P5 dual core,
 3.2 GHZ using TCP for transport. Using P4 3.2 GHZ single core with
 hyperthreading and 2GB of RAM, a thruput of 267 CAPS has been reported.
 On a dual core 3.4 Mhz P5 with 1 Gig RAM a thruput of 476 CAPS has been
@@ -116,17 +118,25 @@ reported.  Using UDP for transport, on a P4 single core, 2 GHZ machine
 with 1 Gb of RAM and with no hyperthreading a a performance of 82 CAPS
 was observed.  Using TCP for the same scenario, we measure in at 200
 CAPS. Load tests were performed using test in test/load/concurrency. No
-memory leaks were seen after 1000000 calls.  Thanks to Yanick Belanger
-for several performance improvements and measurement.  </li>
+memory leaks were seen after 1000000 calls.  
 
-<li > JAIN-SIP has been leak tested under both error conditions and error
-free operational scenarios.  Here are the results of long term stability
-testing (Pascal Maugeri: "Genaker VoIP API using JAIN-SIP v1.2.85"):
-<li> <a href="performance.html"> See Stability testing results.</a>
 
-<p/>
+<div class="h2" id="links">
+<h2>Getting Started</h2>
+</div>
+<p> <a href= "http://www.oracle.com/technology/pub/articles/dev2arch/2007/10/introduction-jain-sip.html" > A nice getting started article. </a>
 
+<div class="h2" id="links">
+ <h2>Recent Developments</h2>
+</div>
+
+<p>
+<ul>
+<li> SCTP supporte added (experimental). Many thanks to Jeroen van Bemmel for adding this support.
+<li> Thread liveness monitoring features added.
+<li> IMS header support added.
 </ul>
+
 <div class="h2" id="related">
 <h2>Related Projects</h2>
 </div>
@@ -138,24 +148,10 @@ is use-able as is. Join the  <br/>
 <a href="http://sip-for-me.dev.java.net/"> sip-for-me </a>  project
 on java.net as an observer to get the code from cvs on java.net.
 
-<p>You can imbed the JAIN-SIP stack in an applet, HTTP servlet or an 
-application  - check out <br/>
-<a href="http://jain-sip-applet-phone.dev.java.net"> jain-sip.applet.phone.dev.java.net</a>. <br/>
-
-It is stable and well tested but we all know bugs are a fact of life.
-JAIN-SIP has an active community who volunteer their time to help
-maintain it.  They use the source code and hence have a vested interest
-in helping out. Your bug is their bug so report bugs.  
-
-JAIN-SIP can be used in proxy servers, User Agents or imbedded into
-containers or in an applet.  JAIN-SIP has been used to build a Session
-Border Controller, a few Softphones, a Resource Adapter for the JAVA
-Service Logic Execution Environment, a SIP Servlet Implementation
-and in a few Test tools (future applications include combination
-microwave-oven-toaster-phones). 
 
 
 <p/>Some other active projects that use JAIN-SIP: <br/>
+<a href="http://jain-sip-applet-phone.dev.java.net"> jain-sip.applet.phone.dev.java.net</a>. <br/>
 <a href="http://sip-communicator.dev.java.net">SIP Communicator Project on java.net </a><br/>
 <a href="http://www.cafesip.org/projects.html">http://www.cafesip.org/projects.html </a> <br/>
 <a href="http://echarts.org/KitCATScreencast/kitcat.htm"> A cool testing tool from AT&T that uses JAIN-SIP </a><br/>
