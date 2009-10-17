@@ -23,17 +23,14 @@ public class ServerLoggerImpl implements ServerLogger {
         this.logRecordFactory = new LogRecordFactoryImpl();
     }
 
-    @Override
     public void closeLogFile() {
     
     }
 
-    @Override
     public void logException(Exception exception) {
         sipStack.getStackLogger().logStackTrace();
     }
 
-    @Override
     public void logMessage(SIPMessage message, String source, String destination, boolean isSender, long timeStamp) {
         String firstLine = message.getFirstLine();
         String tid = message.getTransactionId();
@@ -45,12 +42,10 @@ public class ServerLoggerImpl implements ServerLogger {
         
     }
 
-    @Override
     public void logMessage(SIPMessage message, String from, String to, String status, boolean sender) {
         logMessage(message, from, to, status, sender, System.currentTimeMillis());
     }
 
-    @Override
     public void logMessage(SIPMessage message, String source, String destination, String status, boolean isSender,
             long timeStamp) {
         // TODO Auto-generated method stub
@@ -68,13 +63,11 @@ public class ServerLoggerImpl implements ServerLogger {
      
     }
 
-    @Override
     public void setSipStack(SipStack sipStack) {
         this.sipStack = (SipStackImpl) sipStack;
        
     }
 
-    @Override
     public void setStackProperties(Properties properties) {
        
     }

@@ -8,13 +8,18 @@
     <artifactId>jain-sip</artifactId>
   </parent>
 
-  <artifactId>jain-sip-ri</artifactId>
+  <artifactId>jain-sip-sctp</artifactId>
   <version>1.2.122-SNAPSHOT</version>
   
   <packaging>jar</packaging>
-  <name>jain-sip-ri</name>
+  <name>jain-sip-sctp</name>
   <url>http://jain-sip.dev.java.net</url>
-  <build>
+  <profiles>
+  <profile>
+    <activation>
+      <jdk>1.7</jdk>
+    </activation>
+    <build>
 	<sourceDirectory>../../src</sourceDirectory>
 	<plugins>
 		<plugin>
@@ -24,14 +29,8 @@
 				<source>1.5</source>
 				<target>1.5</target>
 				<includes>
-					<include>gov/nist/javax/sip/**</include>
-					<include>gov/nist/javax/sdp/**</include>
-					<include>gov/nist/core/**</include>
-					<include>javax/sdp/**</include>
+					<include>gov/nist/javax/sip/stack/sctp/**</include>
 				</includes>
-				<excludes>
-					<exclude>gov/nist/javax/sip/stack/sctp/**</exclude>
-				</excludes>
 			</configuration>
 		</plugin>
 		<plugin>
@@ -52,14 +51,10 @@
 		<resource>
 			<directory>target</directory>
 			<includes>
-				<include>gov/nist/javax/sip/**</include>
-				<include>gov/nist/javax/sdp/**</include>
-				<include>gov/nist/core/**</include>
-				<include>javax/sdp/**</include>
+				<include>gov/nist/javax/sip/stack/sctp/**</include>
 			</includes>
 			<excludes>
 				<exclude>**/*.java</exclude>
-				<exclude>gov/nist/javax/sip/stack/sctp/**</exclude>
 			</excludes>
 		</resource>
 	</resources>
@@ -67,17 +62,18 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.8</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>javax.sip</groupId>
       <artifactId>jain-sip-api</artifactId>
       <version>1.2</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>javax.sip</groupId>
+      <artifactId>jain-sip-ri</artifactId>
+      <version>${pom.version}</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
-
+  </profile>
+</profiles>
 </project>
