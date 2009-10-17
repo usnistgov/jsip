@@ -69,7 +69,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.65 $ $Date: 2009-10-16 22:57:06 $
+ * @version 1.2 $Revision: 1.66 $ $Date: 2009-10-17 12:55:39 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -206,7 +206,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 
     protected InetAddress peerPacketSourceAddress;
 
-    private AtomicBoolean transactionTimerStarted = new AtomicBoolean(false);
+    protected AtomicBoolean transactionTimerStarted = new AtomicBoolean(false);
 
     // Transaction branch ID
     private String branch;
@@ -1031,7 +1031,7 @@ public abstract class SIPTransaction extends MessageChannel implements
         if (retransmitTimer <= 0)
             throw new IllegalArgumentException(
                     "Retransmit timer must be positive!");
-        if (this.testAndSetIsTransactionTimerStarted())
+        if (this.transactionTimerStarted.getAndSet(true))
             throw new IllegalStateException(
                     "Transaction timer is already started");
         BASE_TIMER_INTERVAL = retransmitTimer;
@@ -1240,19 +1240,6 @@ public abstract class SIPTransaction extends MessageChannel implements
     /**
      * This method is called when this transaction's timeout timer has fired.
      */
-    protected abstract void fireTimeoutTimer();
-
-   
-
-    /**
-     * @return the transactionTimerStarted
-     */
-    public boolean testAndSetIsTransactionTimerStarted() {
-        synchronized (this.transactionTimerStarted) {
-            boolean oldValue = this.transactionTimerStarted.get();
-            this.transactionTimerStarted.set(true);
-            return oldValue;
-        }
-    }
+    protected abstract void fireTimeoutTimer();    
 
 }

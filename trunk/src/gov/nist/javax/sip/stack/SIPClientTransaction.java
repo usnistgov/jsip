@@ -175,7 +175,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.113 $ $Date: 2009-10-16 22:57:06 $
+ * @version 1.2 $Revision: 1.114 $ $Date: 2009-10-17 12:55:39 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -1298,7 +1298,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
      * Start the timer task.
      */
     protected  void startTransactionTimer() {
-        if (this.testAndSetIsTransactionTimerStarted())
+        if (this.transactionTimerStarted.getAndSet(true))
             return;
         TimerTask myTimer = new TransactionTimer();
         if ( sipStack.getTimer() != null ) {
