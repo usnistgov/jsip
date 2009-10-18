@@ -93,7 +93,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.132 $ $Date: 2009-10-18 18:04:59 $
+ * @version 1.2 $Revision: 1.133 $ $Date: 2009-10-18 18:24:46 $
  * 
  * @author M. Ranganathan
  * 
@@ -217,9 +217,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
     private DialogDeleteTask dialogDeleteTask;
 
-    private SIPClientTransaction reInviteTransaction = null;
-
     private boolean isAcknowledged;
+    
+    private long highestSequenceNumberAcknowledged = -1;
 
     // //////////////////////////////////////////////////////
     // Inner classes
@@ -298,8 +298,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                     return;
                 }
                 if (SIPDialog.this.getState() != DialogState.TERMINATED) {
-                    SIPDialog.this.reInviteTransaction = (SIPClientTransaction) ctx;
-
                     SIPDialog.this.sendRequest(ctx, true);
                 }
                 sipStack.getStackLogger().logDebug("re-INVITE successfully sent");
@@ -419,9 +417,20 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      */
 
     class DialogDeleteIfNoAckSentTask extends SIPStackTimerTask implements Serializable {
+        private long seqno;
+
+        public DialogDeleteIfNoAckSentTask(long seqno) {
+            this.seqno = seqno;
+        }
 
         protected void runTask() {
-            if (!SIPDialog.this.isAtleastOneAckSent()) {           
+            if (SIPDialog.this.highestSequenceNumberAcknowledged < seqno) {  
+                /*
+                 * Did not send ACK so we need to delete the dialog.
+                 * B2BUA NOTE: we may want to send BYE to the Dialog at this 
+                 * point. Do we want to make this behavior tailorable?
+                 */
+                sipStack.getStackLogger().logError("ACK Was not sent. Deleting Dialog");
                 delete();
             }
         }
@@ -838,6 +847,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             messageChannel.sendMessage(ackRequest);
             // Sent atleast one ACK.
             this.isAcknowledged = true;
+            this.highestSequenceNumberAcknowledged = Math.max(this.highestSequenceNumberAcknowledged,
+                    ((SIPRequest)ackRequest).getCSeq().getSeqNumber());
             if (releaseAckSem && !this.sipStack.allowReinviteInterleaving) {
                 this.releaseAckSem();
             } else {
@@ -3040,12 +3051,12 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         return this.isAcknowledged;
     }
 
-    public void doDeferredDeleteIfNoAckSent() {
+    public void doDeferredDeleteIfNoAckSent(long seqno) {
         if (sipStack.getTimer() == null)
             this.setState(TERMINATED_STATE);
         else {
             // Delete the transaction after the max ack timeout.
-            sipStack.getTimer().schedule(new DialogDeleteIfNoAckSentTask(),
+            sipStack.getTimer().schedule(new DialogDeleteIfNoAckSentTask(seqno),
                     SIPTransaction.TIMER_J * SIPTransactionStack.BASE_TIMER_INTERVAL);
         }
         
