@@ -91,7 +91,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.119 $ $Date: 2009-10-09 13:19:17 $
+ * @version 1.2 $Revision: 1.120 $ $Date: 2009-10-18 22:18:18 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener {
 
@@ -351,7 +351,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     protected boolean stackDoesCongestionControl = true;
 
-    protected boolean allowReinviteInterleaving = true;
+    protected boolean isBackToBackUserAgent = false;
 
     protected boolean checkBranchId;
 
