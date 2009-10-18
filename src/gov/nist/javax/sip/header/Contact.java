@@ -47,7 +47,7 @@ import java.text.ParseException;
  * @see gov.nist.javax.sip.header.ContactList
  *
  * @author M. Ranganathan  <br/>
- * @version 1.2 $Revision: 1.12 $ $Date: 2009-07-17 18:57:28 $
+ * @version 1.2 $Revision: 1.13 $ $Date: 2009-10-18 13:46:31 $
  * @since 1.1
  *
  *
@@ -164,7 +164,7 @@ public final  class Contact
     */
 
     public void setExpires(int expiryDeltaSeconds) {
-        Integer deltaSeconds = new Integer(expiryDeltaSeconds);
+        Integer deltaSeconds = Integer.valueOf(expiryDeltaSeconds);
         this.parameters.set(EXPIRES, deltaSeconds);
     }
 
@@ -214,7 +214,7 @@ public final  class Contact
             throw new InvalidArgumentException(
                 "JAIN-SIP Exception, Contact, setQValue(), "
                     + "the qValue is not between 0 and 1");
-        this.parameters.set(Q, new Float(qValue));
+        this.parameters.set(Q, Float.valueOf(qValue));
     }
 
     public Object clone() {

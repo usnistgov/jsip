@@ -35,7 +35,7 @@ import javax.sip.header.*;
 /**
  * TimeStamp SIP Header.
  *
- * @version 1.2 $Revision: 1.6 $ $Date: 2009-07-17 18:57:39 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2009-10-18 13:46:31 $
  *
  * @author M. Ranganathan <br/>
  * @author Olivier Deruelle <br/>
@@ -76,18 +76,18 @@ public class TimeStamp extends SIPHeader implements TimeStampHeader {
         if (timeStamp == -1 && timeStampFloat == -1)
             return "";
         else if (timeStamp != -1)
-            return new Long(timeStamp).toString();
+            return Long.toString(timeStamp);
         else
-            return new Float(timeStampFloat).toString();
+            return Float.toString(timeStampFloat);
     }
 
     private String getDelayAsString() {
         if (delay == -1 && delayFloat == -1)
             return "";
         else if (delay != -1)
-            return new Integer(delay).toString();
+            return Integer.toString(delay);
         else
-            return new Float(delayFloat).toString();
+            return Float.toString(delayFloat);
     }
 
     /**
@@ -138,14 +138,14 @@ public class TimeStamp extends SIPHeader implements TimeStampHeader {
 
 
     public float getTimeStamp() {
-        return this.timeStampFloat == -1 ? new Float(timeStamp).floatValue()
+        return this.timeStampFloat == -1 ? Float.valueOf(timeStamp).floatValue()
                 : this.timeStampFloat;
     }
 
 
 
     public float getDelay() {
-        return delayFloat == -1 ? new Float(delay).floatValue() : delayFloat;
+        return delayFloat == -1 ? Float.valueOf(delay).floatValue() : delayFloat;
     }
 
     /**
@@ -153,7 +153,7 @@ public class TimeStamp extends SIPHeader implements TimeStampHeader {
      * passed to this method
      *
      * @param delay -
-     *            the new float delay value
+     *            the Float.valueOf delay value
      * @throws InvalidArgumentException
      *             if the delay value argumenmt is a negative value other than
      *             <code>-1</code>.

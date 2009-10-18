@@ -38,7 +38,7 @@ import java.text.ParseException;
  *  CSeq SIP Header.
  *
  * @author M. Ranganathan    <br/>
- * @version 1.2 $Revision: 1.9 $ $Date: 2009-07-17 18:57:27 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2009-10-18 13:46:33 $
  * @since 1.1
  *
  */
@@ -75,7 +75,7 @@ public class CSeq extends SIPHeader implements javax.sip.header.CSeqHeader {
      */
     public CSeq(long seqno, String method) {
         this();
-        this.seqno = new Long(seqno);
+        this.seqno = Long.valueOf(seqno);
         this.method = SIPRequest.getCannonicalName(method);
     }
 
@@ -139,7 +139,7 @@ public class CSeq extends SIPHeader implements javax.sip.header.CSeqHeader {
                     "JAIN-SIP Exception, CSeq, setSequenceNumber(), "
                         + "the sequence number parameter is too large : " + sequenceNumber);
 
-        seqno = new Long(sequenceNumber);
+        seqno = Long.valueOf(sequenceNumber);
     }
 
     /**

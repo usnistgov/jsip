@@ -44,7 +44,7 @@ import java.text.ParseException;
  *
  * @see ViaList
  *
- * @version 1.2 $Revision: 1.16 $ $Date: 2009-07-17 18:57:40 $
+ * @version 1.2 $Revision: 1.17 $ $Date: 2009-10-18 13:46:33 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -307,7 +307,7 @@ public class Via
      * Set the port part of this ViaHeader to the newly supplied <code>port</code>
      * parameter.
      *
-     * @param port - the new integer value of the port of this ViaHeader
+     * @param port - the Integer.valueOf value of the port of this ViaHeader
      */
     public void setPort(int port) throws InvalidArgumentException {
 
@@ -351,7 +351,7 @@ public class Via
        public int getRPort() {
          String strRport = getParameter(ParameterNames.RPORT);
          if (strRport != null && ! strRport.equals(""))
-            return new Integer(strRport).intValue();
+            return Integer.valueOf(strRport).intValue();
          else
             return -1;
          }
@@ -442,7 +442,7 @@ public class Via
             throw new InvalidArgumentException(
                 "JAIN-SIP Exception"
                     + ", Via, setTTL(), the ttl parameter is < 0");
-        setParameter(new NameValue(ParameterNames.TTL, new Integer(ttl)));
+        setParameter(new NameValue(ParameterNames.TTL, Integer.valueOf(ttl)));
     }
 
     /**

@@ -32,7 +32,7 @@ import javax.sip.*;
 /**
  * Parser for TimeStamp header.
  *
- * @version 1.2 $Revision: 1.8 $ $Date: 2009-07-17 18:58:06 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2009-10-18 13:46:39 $
  *
  * @author Olivier Deruelle   <br/>
  * @author M. Ranganathan   <br/>
@@ -81,7 +81,7 @@ public class TimeStampParser extends HeaderParser {
                     this.lexer.match('.');
                     String secondNumber = this.lexer.number();
 
-                    String s = new String(firstNumber + "." + secondNumber);
+                    String s = firstNumber + "." + secondNumber;
                     float ts = Float.parseFloat(s);
                     timeStamp.setTimeStamp(ts);
                 } else {
@@ -106,7 +106,7 @@ public class TimeStampParser extends HeaderParser {
                         this.lexer.match('.');
                         String secondNumber = this.lexer.number();
 
-                        String s = new String(firstNumber + "." + secondNumber);
+                        String s = firstNumber + "." + secondNumber;
                         float ts = Float.parseFloat(s);
                         timeStamp.setDelay(ts);
                     } else {
@@ -136,6 +136,9 @@ public class TimeStampParser extends HeaderParser {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2009/07/17 18:58:06  emcho
+ * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
+ *
  * Revision 1.7  2006/08/15 21:44:50  mranga
  * Issue number:
  * Obtained from:

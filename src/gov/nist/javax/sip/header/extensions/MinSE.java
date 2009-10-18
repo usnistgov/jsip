@@ -17,7 +17,7 @@ import javax.sip.header.ExtensionHeader;
  *
  * (Created by modifying Expires.java)
  *
- * @version JAIN-SIP-1.1 $Revision: 1.3 $ $Date: 2009-07-17 18:57:42 $
+ * @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2009-10-18 13:46:36 $
  *
  * @author P. Musgrave <pmusgrave@newheights.com>  <br/>
  *
@@ -48,7 +48,7 @@ public class MinSE
      * @return String
      */
     public String encodeBody() {
-        String retval = new Integer(expires).toString(); // seems overkill - but Expires did this.
+        String retval = Integer.toString(expires); // seems overkill - but Expires did this.
 
         if (!parameters.isEmpty()) {
             retval += SEMICOLON + parameters.encode();

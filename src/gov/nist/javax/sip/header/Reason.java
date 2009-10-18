@@ -38,14 +38,14 @@
 
 package gov.nist.javax.sip.header;
 
-import java.text.ParseException;
-import gov.nist.core.*;
 import gov.nist.javax.sip.Utils;
+
+import java.text.ParseException;
 
 /**
  * Definition of the Reason SIP Header.
  *
- * @version 1.2 $Revision: 1.7 $ $Date: 2009-07-17 18:57:35 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2009-10-18 13:46:34 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -77,7 +77,7 @@ public class Reason
      *@param cause - cause to set.
      */
     public void setCause(int cause) throws javax.sip.InvalidArgumentException {
-        this.parameters.set("cause", new Integer(cause));
+        this.parameters.set("cause", Integer.valueOf(cause));
     }
 
     /** Set the protocol
@@ -150,6 +150,9 @@ public class Reason
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2009/07/17 18:57:35  emcho
+ * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
+ *
  * Revision 1.6  2008/11/19 10:56:27  jbemmel
  * Ensure that reason text is quoted
  *
