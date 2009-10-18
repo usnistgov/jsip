@@ -36,7 +36,7 @@ import javax.sip.InvalidArgumentException;
  *
  * @author M. Ranganathan   <br/>
  * @author Olivier Deruelle <br/>
- * @version 1.2 $Revision: 1.7 $ $Date: 2009-07-17 18:57:41 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2009-10-18 13:46:33 $
  *
  *
  *
@@ -74,14 +74,14 @@ public class Warning extends SIPHeader implements WarningHeader {
      */
     public String encodeBody() {
         return text != null
-            ? new Integer(code).toString()
+            ? Integer.toString(code)
                 + SP
                 + agent
                 + SP
                 + DOUBLE_QUOTE
                 + text
                 + DOUBLE_QUOTE
-            : new Integer(code).toString() + SP + agent;
+            : Integer.toString(code) + SP + agent;
     }
 
     /**
@@ -151,6 +151,9 @@ public class Warning extends SIPHeader implements WarningHeader {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.7  2009/07/17 18:57:41  emcho
+ * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
+ *
  * Revision 1.6  2006/07/13 09:01:44  mranga
  * Issue number:
  * Obtained from:

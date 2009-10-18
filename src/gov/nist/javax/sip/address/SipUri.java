@@ -50,7 +50,7 @@ import org.apache.log4j.Logger;
  *
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.19 $ $Date: 2009-10-15 20:05:32 $
+ * @version 1.2 $Revision: 1.20 $ $Date: 2009-10-18 13:46:39 $
  *
  *
  *
@@ -974,7 +974,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI , Sip
         if (ttl <= 0)
             throw new IllegalArgumentException("Bad ttl value");
         if (uriParms != null) {
-            NameValue nv = new NameValue("ttl", new Integer(ttl));
+            NameValue nv = new NameValue("ttl", Integer.valueOf(ttl));
             uriParms.set(nv);
         }
     }

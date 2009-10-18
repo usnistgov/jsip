@@ -270,7 +270,7 @@ public class NameValue extends GenericObject implements Entry<String,String> {
      * @see java.util.Map$Entry#setValue(java.lang.Object)
      */
     public String setValue(String value) {
-        String retval = this.value == null ? null : value.toString();
+        String retval = this.value == null ? null : value;
         this.value = value;
         return retval;
 

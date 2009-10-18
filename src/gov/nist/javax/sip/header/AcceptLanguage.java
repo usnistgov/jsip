@@ -36,7 +36,7 @@ import java.util.Locale;
  * Accept Language body.
  *
  * @author M. Ranganathan
- * @version 1.2 $Revision: 1.7 $ $Date: 2009-07-17 18:57:25 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2009-10-18 13:46:32 $
  * @since 1.1
  *
  *
@@ -152,7 +152,7 @@ public final class AcceptLanguage
         if (q == -1)
             this.removeParameter("q");
         else
-            this.setParameter(new NameValue("q", new Float(q)));
+            this.setParameter(new NameValue("q", Float.valueOf(q)));
     }
 
     /**

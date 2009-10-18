@@ -28,16 +28,16 @@
 /**************************************************************************/
 
 package gov.nist.javax.sip.header;
-import gov.nist.core.*;
+import gov.nist.core.DuplicateNameValueList;
+import gov.nist.core.NameValue;
+import gov.nist.core.NameValueList;
+import gov.nist.javax.sip.address.GenericURI;
 
 import java.io.Serializable;
 import java.text.ParseException;
-import java.util.*;
+import java.util.Iterator;
 
 import javax.sip.header.Parameters;
-
-import gov.nist.javax.sip.address.*;
-import gov.nist.javax.sip.header.ims.PChargingFunctionAddresses;
 
 /**
  * Parameters header. Suitable for extension by headers that have parameters.
@@ -45,7 +45,7 @@ import gov.nist.javax.sip.header.ims.PChargingFunctionAddresses;
  * @author M. Ranganathan   <br/>
  *
  *
- * @version 1.2 $Revision: 1.13 $ $Date: 2009-09-13 15:53:54 $
+ * @version 1.2 $Revision: 1.14 $ $Date: 2009-10-18 13:46:32 $
  *
  */
 public abstract class ParametersHeader
@@ -202,7 +202,7 @@ public abstract class ParametersHeader
      *
      */
     protected void setParameter(String name, int value) {
-        Integer val = new Integer(value);
+        Integer val = Integer.valueOf(value);
         this.parameters.set(name,val);
 
     }
@@ -223,7 +223,7 @@ public abstract class ParametersHeader
      *
      */
     protected void setParameter(String name, boolean value) {
-        Boolean val = new Boolean(value);
+        Boolean val = Boolean.valueOf(value);
         this.parameters.set(name,val);
     }
 
@@ -242,7 +242,7 @@ public abstract class ParametersHeader
      *
      */
     protected void setParameter(String name, float value) {
-        Float val = new Float(value);
+        Float val = Float.valueOf(value);
         NameValue nv = parameters.getNameValue(name);
         if (nv != null) {
             nv.setValueAsObject(val);

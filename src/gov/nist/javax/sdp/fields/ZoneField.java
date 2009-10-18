@@ -111,8 +111,8 @@ public class ZoneField
                 return null;
         else {
             while ((zone = (ZoneAdjustment) zoneAdjustments.next()) != null) {
-                Long l = new Long(zone.getTime());
-                Integer time = new Integer(l.toString());
+                Long l = Long.valueOf(zone.getTime());
+                Integer time = Integer.valueOf(l.toString());
                 Date date = new Date(zone.getTime());
                 result.put(date, time);
             }

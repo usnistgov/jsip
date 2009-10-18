@@ -43,7 +43,7 @@ import java.text.ParseException;
  * @author Olivier Deruelle
  * @author M. Ranganathan <br/>
  * @since 1.1
- * @version 1.2 $Revision: 1.12 $ $Date: 2009-07-17 18:57:26 $
+ * @version 1.2 $Revision: 1.13 $ $Date: 2009-10-18 13:46:32 $
  *
  *
  */
@@ -396,11 +396,11 @@ public abstract class AuthenticationHeader extends ParametersHeader {
      * <var>stale</var> parameter value.
      *
      * @param stale -
-     *            the new boolean value of the stale parameter.
+     *            the Boolean.valueOf value of the stale parameter.
      * @since v1.1
      */
     public void setStale(boolean stale) {
-        setParameter(new NameValue(ParameterNames.STALE, new Boolean(stale)));
+        setParameter(new NameValue(ParameterNames.STALE, Boolean.valueOf(stale)));
     }
 
     /**
@@ -439,7 +439,7 @@ public abstract class AuthenticationHeader extends ParametersHeader {
     }
 
     /**
-     * Set the nonce count pakrameter. Bug fix sent in by Andreas Byström
+     * Set the nonce count pakrameter. Bug fix sent in by Andreas Bystrï¿½m
      */
 
     public void setNonceCount(int param) throws java.text.ParseException {
@@ -472,7 +472,7 @@ public abstract class AuthenticationHeader extends ParametersHeader {
     public void setResponse(String response) throws ParseException {
         if (response == null)
             throw new NullPointerException("Null parameter");
-        // Bug fix from Andreas Byström
+        // Bug fix from Andreas Bystrï¿½m
         this.setParameter(RESPONSE, response);
     }
 

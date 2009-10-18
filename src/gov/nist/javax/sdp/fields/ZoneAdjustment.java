@@ -87,7 +87,7 @@ public class ZoneAdjustment extends SDPObject {
     *@return encoded form of the header.
     */
     public String encode() {
-        String retval = new Long(time).toString();
+        String retval = Long.toString(time);
         retval += Separators.SP;
         if (sign != null)
             retval += sign;

@@ -34,7 +34,7 @@ import javax.sip.header.*;
 /**
  * MinExpires SIP Header.
  *
- * @version 1.2 $Revision: 1.5 $ $Date: 2009-07-17 18:57:32 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2009-10-18 13:46:35 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
@@ -64,7 +64,7 @@ public class MinExpires extends SIPHeader implements MinExpiresHeader {
      * @return String
      */
     public String encodeBody() {
-        return new Integer(expires).toString();
+        return Integer.toString(expires);
     }
 
     /**
@@ -99,6 +99,9 @@ public class MinExpires extends SIPHeader implements MinExpiresHeader {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2009/07/17 18:57:32  emcho
+ * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
+ *
  * Revision 1.4  2006/07/13 09:01:20  mranga
  * Issue number:
  * Obtained from:

@@ -96,7 +96,7 @@ public class LexerCore extends StringTokenizer {
     protected void addKeyword(String name, int value) {
         // System.out.println("addKeyword " + name + " value = " + value);
         // new Exception().printStackTrace();
-        Integer val = new Integer(value);
+        Integer val = Integer.valueOf(value);
         currentLexer.put(name, val);
         if (!globalSymbolTable.containsKey(val))
             globalSymbolTable.put(val, name);
@@ -104,9 +104,9 @@ public class LexerCore extends StringTokenizer {
 
     public String lookupToken(int value) {
         if (value > START) {
-            return (String) globalSymbolTable.get(new Integer(value));
+            return (String) globalSymbolTable.get(Integer.valueOf(value));
         } else {
-            Character ch = new Character((char) value);
+            Character ch = Character.valueOf((char) value);
             return ch.toString();
         }
     }

@@ -27,8 +27,11 @@
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
 *******************************************************************************/
 package gov.nist.javax.sdp.fields;
-import gov.nist.core.*;
-import javax.sdp.*;
+import gov.nist.core.Host;
+import gov.nist.core.Separators;
+
+import javax.sdp.SdpException;
+import javax.sdp.SdpParseException;
 /**
 *   Origin Field SDP header
 *
@@ -66,7 +69,7 @@ public class OriginField extends SDPField implements javax.sdp.Origin {
     */
     public long getSessId() {
 
-        return new Long(this.sessIdString).longValue();
+        return Long.valueOf(this.sessIdString).longValue();
     }
 
     public String getSessIdAsString() {
@@ -77,7 +80,7 @@ public class OriginField extends SDPField implements javax.sdp.Origin {
     */
     public long getSessVersion() {
 
-        return new Long(sessVersionString).longValue();
+        return Long.valueOf(sessVersionString).longValue();
     }
 
     public String getSessVersionAsString() {
@@ -105,7 +108,7 @@ public class OriginField extends SDPField implements javax.sdp.Origin {
     * Set the sessId member
     */
     public void setSessId(long s) {
-        this.sessIdString = new Long(s).toString();
+        this.sessIdString =  Long.toString(s);
     }
 
     /**
@@ -119,7 +122,7 @@ public class OriginField extends SDPField implements javax.sdp.Origin {
     * Set the sessVersion member
     */
     public void setSessVersion(long s) {
-        sessVersionString = new Long(s).toString();
+        sessVersionString =  Long.toString(s);
     }
 
     /**
