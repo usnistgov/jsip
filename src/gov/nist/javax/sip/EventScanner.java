@@ -37,7 +37,7 @@ import gov.nist.core.ThreadAuditor;
 /**
  * Event Scanner to deliver events to the Listener.
  *
- * @version 1.2 $Revision: 1.34 $ $Date: 2009-10-18 00:33:40 $
+ * @version 1.2 $Revision: 1.35 $ $Date: 2009-10-18 17:08:42 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -275,6 +275,7 @@ class EventScanner implements Runnable {
                 SIPResponse sipResponse = (SIPResponse) responseEvent
                         .getResponse();
                 SIPDialog sipDialog = ((SIPDialog) responseEvent.getDialog());
+                DialogState dialogState = sipDialog.getState();
                 try {
                     if (sipStack.isLoggingEnabled()) {
 
@@ -319,22 +320,26 @@ class EventScanner implements Runnable {
                      *
                      * If the Listener does not ACK the 200 then we assume he
                      * does not care about the dialog and gc the dialog after
-                     * some time. We cannot do this for in-dialog ACKs - only for
-                     * the Dialog forming ACK.
+                     * some time. However, this is really an application bug.
+                     * 
+                     * IMPORTANT: We cannot do this for in-dialog ACKs - only for
+                     * the Dialog forming ACK. Note that this check should NOT be 
+                     * applied for re-INVITE because re-INVITE can have a delayed ACK.
+                     * For dialog creating INVITE we need for the ACK to be delivered
+                     * within a time window after the OK was seen or we just delete
+                     * the dialog.
                      *
                      */
                     if (sipResponse.getCSeq().getMethod()
                             .equals(Request.INVITE)
                             && sipDialog != null
-                            && sipResponse.getStatusCode() == 200
-                            && sipDialog.getLastAckSent() == null) {
+                            && !sipDialog.isAtleastOneAckSent()
+                            && sipResponse.getStatusCode() == 200) {
                         if (sipStack.getStackLogger().isLoggingEnabled()) {
                             sipStack.getStackLogger().logDebug(
-                                    "Warning! unacknowledged dialog. ");
+                                    "Warning! unacknowledged dialog. " + sipDialog.getState());
                         }
-                        
-                       //sipDialog.doDeferredDelete();
-
+                        sipDialog.doDeferredDelete();
                     }
                 } catch (Exception ex) {
                     // We cannot let this thread die under any
