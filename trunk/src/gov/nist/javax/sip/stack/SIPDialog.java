@@ -93,7 +93,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.130 $ $Date: 2009-10-18 13:46:37 $
+ * @version 1.2 $Revision: 1.131 $ $Date: 2009-10-18 17:08:41 $
  * 
  * @author M. Ranganathan
  * 
@@ -107,8 +107,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     private boolean dialogTerminatedEventDelivered; // prevent duplicate
     
     private String stackTrace; // for semaphore debugging.
-
-    // private DefaultRouter defaultRouter;
 
     private String method;
 
@@ -220,6 +218,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     private DialogDeleteTask dialogDeleteTask;
 
     private SIPClientTransaction reInviteTransaction = null;
+
+    private boolean isAcknowledged;
 
     // //////////////////////////////////////////////////////
     // Inner classes
@@ -821,6 +821,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
             this.setLastAckSent(ackRequest);
             messageChannel.sendMessage(ackRequest);
+            // Sent atleast one ACK.
+            this.isAcknowledged = true;
             if (releaseAckSem && !this.sipStack.allowReinviteInterleaving) {
                 this.releaseAckSem();
             } else {
@@ -3014,6 +3016,13 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      */
     private void setLastAckSent(SIPRequest lastAckSent) {
         this.lastAckSent = lastAckSent;
+    }
+    
+    /**
+     * @return true if an ack was ever sent for this Dialog
+     */
+    public boolean isAtleastOneAckSent() {
+        return this.isAcknowledged;
     }
 
 }
