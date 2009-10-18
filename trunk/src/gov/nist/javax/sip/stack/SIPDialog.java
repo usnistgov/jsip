@@ -93,7 +93,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.128 $ $Date: 2009-10-18 00:33:39 $
+ * @version 1.2 $Revision: 1.129 $ $Date: 2009-10-18 01:34:50 $
  * 
  * @author M. Ranganathan
  * 
@@ -228,7 +228,11 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     /**
      * This task waits till a pending ACK has been recorded and then sends out a re-INVITE. This
      * is to prevent interleaving INVITEs ( which will result in a 493 from the UA that receives
-     * the out of order INVITE).
+     * the out of order INVITE). This is primarily for B2BUA support. A B2BUA may send a delayed
+     * ACK while it does mid call codec renegotiation. In the meanwhile, it cannot send an intervening
+     * re-INVITE otherwise the othr end will respond with a REQUEST_PENDING. We want to avoid this
+     * condition. Hence we wait till the ACK for the previous re-INVITE has been sent before 
+     * sending the next re-INVITE. 
      */
     public class ReInviteSender implements Runnable, Serializable {
 
@@ -265,13 +269,13 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                     Request byeRequest = SIPDialog.this.createRequest(Request.BYE);
                     if ( MessageFactoryImpl.getDefaultUserAgentHeader() != null ) {
                         byeRequest.addHeader(MessageFactoryImpl.getDefaultUserAgentHeader());
-                        ReasonHeader reasonHeader = new Reason();
-                        reasonHeader.setCause(1024);
-                        reasonHeader.setText("Timed out waiting to re-INVITE");
-                        byeRequest.addHeader(reasonHeader);
-                        ClientTransaction byeCtx = SIPDialog.this.getSipProvider().getNewClientTransaction(byeRequest);
-                        SIPDialog.this.sendRequest(byeCtx);
                     }
+                    ReasonHeader reasonHeader = new Reason();
+                    reasonHeader.setCause(1024);
+                    reasonHeader.setText("Timed out waiting to re-INVITE");
+                    byeRequest.addHeader(reasonHeader);
+                    ClientTransaction byeCtx = SIPDialog.this.getSipProvider().getNewClientTransaction(byeRequest);
+                    SIPDialog.this.sendRequest(byeCtx);
                     return;
                 }
                 if (getState() != DialogState.TERMINATED) {
