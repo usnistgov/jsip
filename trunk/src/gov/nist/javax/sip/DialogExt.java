@@ -21,6 +21,15 @@ public interface DialogExt extends Dialog {
      */
     public SipProvider getSipProvider() ;
     
+    /**
+     * Sets a flag that indicates that this Dialog is part of a BackToBackUserAgent.
+     * If this flag is set, INVITEs are not allowed to interleave and timed out ACK
+     * transmission results in a BYE being sent to the other side.
+     * 
+     * @since 2.0
+     */
+    public void setBackToBackUserAgent(boolean flag);
+    
     
 
 }

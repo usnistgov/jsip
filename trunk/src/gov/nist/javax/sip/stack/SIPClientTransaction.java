@@ -175,7 +175,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.114 $ $Date: 2009-10-17 12:55:39 $
+ * @version 1.2 $Revision: 1.115 $ $Date: 2009-10-18 22:18:19 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -802,7 +802,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                     this.semRelease();
                 }
 
-                if (this.getDialog() != null && ! sipStack.allowReinviteInterleaving) {
+                if (this.getDialog() != null &&  ((SIPDialog)this.getDialog()).isBackToBackUserAgent()) {
                     ((SIPDialog) this.getDialog()).releaseAckSem();
                 }
 
@@ -950,7 +950,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
             if (this.getMethod().equals(Request.INVITE)) {
                 SIPDialog dialog = this.getDefaultDialog();
 
-                if (dialog != null && !sipStack.allowReinviteInterleaving) {
+                if (dialog != null && dialog.isBackToBackUserAgent()) {
                     // Block sending re-INVITE till we see the ACK.
                     if ( ! dialog.takeAckSem() ) {
                         throw new SipException ("Failed to take ACK semaphore");
