@@ -5,21 +5,17 @@
 
 package gov.nist.javax.sip.header.extensions;
 
+import gov.nist.javax.sip.header.ParametersHeader;
+
 import java.text.ParseException;
-import gov.nist.javax.sip.header.*;
 
 import javax.sip.InvalidArgumentException;
 import javax.sip.header.ExtensionHeader;
 
-import gov.nist.javax.sip.address.*;
-/*
-*This code is in the public domain.
-*/
-
 /**
  * ReferredBy SIP Header.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.4 $ $Date: 2009-07-17 18:57:42 $
+ * @version JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2009-10-18 13:46:36 $
  *
  * @author Peter Musgrave.
  *
@@ -87,7 +83,7 @@ public final class SessionExpires
      */
     protected String encodeBody() {
 
-        String retval = new Integer(expires).toString(); // seems overkill - but Expires did this.
+        String retval = Integer.toString(expires);
 
         if (!parameters.isEmpty()) {
             retval += SEMICOLON + parameters.encode();

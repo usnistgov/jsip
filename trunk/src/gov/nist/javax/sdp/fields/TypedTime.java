@@ -40,7 +40,7 @@ public class TypedTime extends SDPObject {
 
     public String encode() {
         String retval = "";
-        retval += new Integer(time).toString();
+        retval += Integer.toString(time);
         if (unit != null)
             retval += unit;
         return retval;

@@ -54,7 +54,7 @@ import java.lang.IllegalArgumentException;
 *       Date: Tue, 15 Nov 1994 08:12:31 GMT
 *</pre>
 *
-*@version 1.2 $Revision: 1.8 $ $Date: 2009-07-17 18:57:37 $
+*@version 1.2 $Revision: 1.9 $ $Date: 2009-10-18 13:46:33 $
 *
 *@author M. Ranganathan   <br/>
 *
@@ -407,7 +407,7 @@ public class SIPDate implements Cloneable,Serializable {
     public void setDay(int d) throws IllegalArgumentException {
         if (d < 1 || d > 31)
             throw new IllegalArgumentException(
-                "Illegal Day of the month " + new Integer(d).toString());
+                "Illegal Day of the month " + Integer.toString(d));
         day = d;
     }
 
@@ -486,7 +486,7 @@ public class SIPDate implements Cloneable,Serializable {
     public void setMinute(int m) throws IllegalArgumentException {
         if (m < 0 || m >= 60)
             throw new IllegalArgumentException(
-                "Illegal minute : " + (new Integer(m).toString()));
+                "Illegal minute : " + (Integer.toString(m)));
         javaCal = null;
         minute = m;
     }
@@ -499,7 +499,7 @@ public class SIPDate implements Cloneable,Serializable {
     public void setSecond(int s) throws IllegalArgumentException {
         if (s < 0 || s >= 60)
             throw new IllegalArgumentException(
-                "Illegal second : " + new Integer(s).toString());
+                "Illegal second : " + Integer.toString(s));
         javaCal = null;
         second = s;
     }
@@ -528,6 +528,9 @@ public class SIPDate implements Cloneable,Serializable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2009/07/17 18:57:37  emcho
+ * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
+ *
  * Revision 1.7  2006/07/13 09:01:16  mranga
  * Issue number:
  * Obtained from:

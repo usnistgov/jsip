@@ -25,14 +25,11 @@
 */
 package gov.nist.javax.sip.header;
 
-import java.text.ParseException;
-
-import javax.sip.*;
-import javax.sip.header.ExtensionHeader;
+import javax.sip.InvalidArgumentException;
 
 /**
  *
- * @version 1.2 $Revision: 1.6 $ $Date: 2009-07-17 18:57:35 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2009-10-18 13:46:35 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -63,7 +60,7 @@ public class RSeq extends SIPHeader implements javax.sip.header.RSeqHeader {
      * A.K.A headerValue.
      */
     protected String encodeBody() {
-        return new Long(this.sequenceNumber).toString();
+        return Long.toString(this.sequenceNumber);
     }
 
     public long getSeqNumber() {

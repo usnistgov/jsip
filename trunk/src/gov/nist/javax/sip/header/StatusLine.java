@@ -33,7 +33,7 @@ import gov.nist.javax.sip.SIPConstants;
 /**
  * Status Line (for SIPReply) messages.
  *
- * @version 1.2 $Revision: 1.6 $ $Date: 2009-09-15 02:55:26 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2009-10-18 13:46:34 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -78,8 +78,8 @@ public final class StatusLine extends SIPObject implements SipStatusLine {
         if (sl.statusCode != 0) {
             if (matchStatusClass) {
                 int hiscode = sl.statusCode;
-                String codeString = new Integer(sl.statusCode).toString();
-                String mycode = new Integer(statusCode).toString();
+                String codeString = Integer.toString(sl.statusCode);
+                String mycode = Integer.toString(statusCode);
                 if (codeString.charAt(0) != mycode.charAt(0))
                     return false;
             } else {
@@ -208,6 +208,12 @@ public final class StatusLine extends SIPObject implements SipStatusLine {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2009/09/15 02:55:26  mranga
+ * Issue number:  222
+ * Add HeaderFactoryExt.createStatusLine(String) and HeaderFactoryExt.createRequestLine(String)
+ * Allows users to easily parse SipFrag bodies (for example NOTIFY bodies
+ * during call transfer).
+ *
  * Revision 1.5  2009/07/17 18:57:38  emcho
  * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
  *

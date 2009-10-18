@@ -69,7 +69,7 @@ import javax.sip.header.ContentLengthHeader;
 *
 *@author M. Ranganathan   <br/>
 *@author Olivier Deruelle <br/>
-*@version 1.2 $Revision: 1.6 $ $Date: 2009-07-17 18:57:29 $
+*@version 1.2 $Revision: 1.7 $ $Date: 2009-10-18 13:46:34 $
 *@since 1.1
 */
 public class ContentLength
@@ -97,7 +97,7 @@ public class ContentLength
      */
     public ContentLength(int length) {
         super(NAME);
-        this.contentLength = new Integer(length);
+        this.contentLength = Integer.valueOf(length);
     }
 
     /**
@@ -118,7 +118,7 @@ public class ContentLength
             throw new InvalidArgumentException(
                 "JAIN-SIP Exception"
                     + ", ContentLength, setContentLength(), the contentLength parameter is <0");
-        this.contentLength = new Integer(contentLength);
+        this.contentLength = Integer.valueOf(contentLength);
     }
 
     /**

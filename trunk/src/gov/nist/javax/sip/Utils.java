@@ -33,7 +33,6 @@ import gov.nist.javax.sip.message.SIPResponse;
 
 import java.security.MessageDigest;
 import java.util.HashSet;
-import java.util.Random;
 
 /**
  * A few utilities that are used in various places by the stack. This is used to
@@ -41,7 +40,7 @@ import java.util.Random;
  * and odds and ends.
  *
  * @author mranga
- * @version 1.2 $Revision: 1.20 $ $Date: 2009-08-19 17:47:47 $
+ * @version 1.2 $Revision: 1.21 $ $Date: 2009-10-18 13:46:37 $
  */
 public class Utils implements UtilsExt {
 
@@ -71,7 +70,7 @@ public class Utils implements UtilsExt {
             throw new RuntimeException("Could not intialize Digester ", ex);
         }
         rand = new java.util.Random();
-        signature = toHexString(new Integer(Math.abs( rand.nextInt() % 1000 )).toString().getBytes());
+        signature = toHexString(Integer.toString(Math.abs( rand.nextInt() % 1000 )).getBytes());
     }
 
    
@@ -135,8 +134,8 @@ public class Utils implements UtilsExt {
      */
     public synchronized String generateCallIdentifier(String address) {
 
-            String date = new Long(System.currentTimeMillis() + callIDCounter++
-                    + rand.nextLong()).toString();
+            String date = Long.toString(System.currentTimeMillis() + callIDCounter++
+                    + rand.nextLong());
             byte cid[] = digester.digest(date.getBytes());
 
             String cidString = Utils.toHexString(cid);
