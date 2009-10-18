@@ -93,7 +93,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.131 $ $Date: 2009-10-18 17:08:41 $
+ * @version 1.2 $Revision: 1.132 $ $Date: 2009-10-18 18:04:59 $
  * 
  * @author M. Ranganathan
  * 
@@ -409,6 +409,21 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
         protected void runTask() {
             delete();
+        }
+
+    }
+    
+    /**
+     * This timer task is used to garbage collect the dialog after some time.
+     * 
+     */
+
+    class DialogDeleteIfNoAckSentTask extends SIPStackTimerTask implements Serializable {
+
+        protected void runTask() {
+            if (!SIPDialog.this.isAtleastOneAckSent()) {           
+                delete();
+            }
         }
 
     }
@@ -3023,6 +3038,17 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      */
     public boolean isAtleastOneAckSent() {
         return this.isAcknowledged;
+    }
+
+    public void doDeferredDeleteIfNoAckSent() {
+        if (sipStack.getTimer() == null)
+            this.setState(TERMINATED_STATE);
+        else {
+            // Delete the transaction after the max ack timeout.
+            sipStack.getTimer().schedule(new DialogDeleteIfNoAckSentTask(),
+                    SIPTransaction.TIMER_J * SIPTransactionStack.BASE_TIMER_INTERVAL);
+        }
+        
     }
 
 }
