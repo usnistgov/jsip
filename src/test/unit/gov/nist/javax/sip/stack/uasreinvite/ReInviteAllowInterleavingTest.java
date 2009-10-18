@@ -58,8 +58,8 @@ public class ReInviteAllowInterleavingTest extends ScenarioHarness implements Si
             providerTable.put(shootmeProvider, shootme);
             shootistProvider.addSipListener(this);
             shootmeProvider.addSipListener(this);
-            ((SipStackImpl)getTiProtocolObjects().sipStack).setAllowReInviteInterleaving(true);
-            ((SipStackImpl)getRiProtocolObjects().sipStack).setAllowReInviteInterleaving(true);
+            ((SipStackImpl)getTiProtocolObjects().sipStack).setIsBackToBackUserAgent(false);
+            ((SipStackImpl)getRiProtocolObjects().sipStack).setIsBackToBackUserAgent(false);
 
             getRiProtocolObjects().start();
             if (getTiProtocolObjects() != getRiProtocolObjects())
