@@ -37,7 +37,7 @@ import gov.nist.core.ThreadAuditor;
 /**
  * Event Scanner to deliver events to the Listener.
  *
- * @version 1.2 $Revision: 1.36 $ $Date: 2009-10-18 18:05:00 $
+ * @version 1.2 $Revision: 1.37 $ $Date: 2009-10-18 18:24:47 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -321,25 +321,21 @@ class EventScanner implements Runnable {
                      * If the Listener does not ACK the 200 then we assume he
                      * does not care about the dialog and gc the dialog after
                      * some time. However, this is really an application bug.
-                     * 
-                     * IMPORTANT: We cannot do this for in-dialog ACKs - only for
-                     * the Dialog forming ACK. Note that this check should NOT be 
-                     * applied for re-INVITE because re-INVITE can have a delayed ACK.
-                     * For dialog creating INVITE we need for the ACK to be delivered
-                     * within a time window after the OK was seen or we just delete
-                     * the dialog.
+                     * This garbage collects unacknowledged dialogs.
                      *
                      */
                     if (sipResponse.getCSeq().getMethod()
                             .equals(Request.INVITE)
                             && sipDialog != null
-                            && !sipDialog.isAtleastOneAckSent()
                             && sipResponse.getStatusCode() == 200) {
                         if (sipStack.getStackLogger().isLoggingEnabled()) {
                             sipStack.getStackLogger().logDebug(
                                     "Warning! unacknowledged dialog. " + sipDialog.getState());
                         }
-                        sipDialog.doDeferredDeleteIfNoAckSent();
+                        /*
+                         * If we dont see an ACK in 32 seconds, we want to tear down the dialog.
+                         */
+                        sipDialog.doDeferredDeleteIfNoAckSent(sipResponse.getCSeq().getSeqNumber());
                     }
                 } catch (Exception ex) {
                     // We cannot let this thread die under any
