@@ -152,7 +152,7 @@ public class Shootist implements SipListener {
     public void checkState() {
         TestCase.assertTrue("INVITE transaction should temrinate.", seen_txTerm);
         TestCase.assertFalse("INVITE transaction should not timeout.", seen_txTimeout);
-        TestCase.assertTrue("INVITE should die.", seen_dte);
+        TestCase.assertTrue("INVITE Dialog should die.", seen_dte);
 
     }
 
