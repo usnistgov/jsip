@@ -93,7 +93,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.127 $ $Date: 2009-10-16 22:57:06 $
+ * @version 1.2 $Revision: 1.128 $ $Date: 2009-10-18 00:33:39 $
  * 
  * @author M. Ranganathan
  * 
@@ -249,7 +249,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
         public void run() {
             try {
-                int i = 0;
                 long timeToWait = 0;
                 long startTime = System.currentTimeMillis();
 
@@ -260,6 +259,19 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                     sipStack.getStackLogger().logError(
                             "Could not send re-INVITE time out ClientTransaction");
                     ((SIPClientTransaction) ctx).fireTimeoutTimer();
+                    /*
+                     * Send BYE to the Dialog. 
+                     */
+                    Request byeRequest = SIPDialog.this.createRequest(Request.BYE);
+                    if ( MessageFactoryImpl.getDefaultUserAgentHeader() != null ) {
+                        byeRequest.addHeader(MessageFactoryImpl.getDefaultUserAgentHeader());
+                        ReasonHeader reasonHeader = new Reason();
+                        reasonHeader.setCause(1024);
+                        reasonHeader.setText("Timed out waiting to re-INVITE");
+                        byeRequest.addHeader(reasonHeader);
+                        ClientTransaction byeCtx = SIPDialog.this.getSipProvider().getNewClientTransaction(byeRequest);
+                        SIPDialog.this.sendRequest(byeCtx);
+                    }
                     return;
                 }
                 if (getState() != DialogState.TERMINATED) {
@@ -288,7 +300,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 }
                 sipStack.getStackLogger().logDebug("re-INVITE successfully sent");
             } catch (Exception ex) {
-                sipStack.getStackLogger().logError("Error sending INVITE", ex);
+                sipStack.getStackLogger().logError("Error sending re-INVITE", ex);
             } finally {
                 this.ctx = null;
             }

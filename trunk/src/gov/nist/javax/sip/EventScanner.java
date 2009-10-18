@@ -37,7 +37,7 @@ import gov.nist.core.ThreadAuditor;
 /**
  * Event Scanner to deliver events to the Listener.
  *
- * @version 1.2 $Revision: 1.33 $ $Date: 2009-10-17 22:59:22 $
+ * @version 1.2 $Revision: 1.34 $ $Date: 2009-10-18 00:33:40 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -326,17 +326,14 @@ class EventScanner implements Runnable {
                     if (sipResponse.getCSeq().getMethod()
                             .equals(Request.INVITE)
                             && sipDialog != null
-                            && sipResponse.getFromTag() != null 
-                            && sipResponse.getToTag() != null
                             && sipResponse.getStatusCode() == 200
                             && sipDialog.getLastAckSent() == null) {
                         if (sipStack.getStackLogger().isLoggingEnabled()) {
                             sipStack.getStackLogger().logDebug(
-                                    "Warning! unacknowledged dialog. " +
-                                    "Scheduling the dialog for termination.");
+                                    "Warning! unacknowledged dialog. ");
                         }
                         
-                       sipDialog.doDeferredDelete();
+                       //sipDialog.doDeferredDelete();
 
                     }
                 } catch (Exception ex) {
