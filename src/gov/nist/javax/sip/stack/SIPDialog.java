@@ -93,7 +93,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.133 $ $Date: 2009-10-18 18:24:46 $
+ * @version 1.2 $Revision: 1.134 $ $Date: 2009-10-18 22:18:19 $
  * 
  * @author M. Ranganathan
  * 
@@ -220,6 +220,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     private boolean isAcknowledged;
     
     private long highestSequenceNumberAcknowledged = -1;
+    
+    private boolean isBackToBackUserAgent;
+
 
     // //////////////////////////////////////////////////////
     // Inner classes
@@ -418,7 +421,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
     class DialogDeleteIfNoAckSentTask extends SIPStackTimerTask implements Serializable {
         private long seqno;
-
+   
         public DialogDeleteIfNoAckSentTask(long seqno) {
             this.seqno = seqno;
         }
@@ -430,8 +433,30 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                  * B2BUA NOTE: we may want to send BYE to the Dialog at this 
                  * point. Do we want to make this behavior tailorable?
                  */
-                sipStack.getStackLogger().logError("ACK Was not sent. Deleting Dialog");
-                delete();
+                if ( !SIPDialog.this.isBackToBackUserAgent) {
+                    delete();
+                } else {
+                    sipStack.getStackLogger().logError("ACK Was not sent. Sending BYE");
+                    
+                    /*
+                     * Send BYE to the Dialog. 
+                     */
+                    try {
+                        Request byeRequest = SIPDialog.this.createRequest(Request.BYE);
+                        if ( MessageFactoryImpl.getDefaultUserAgentHeader() != null ) {
+                            byeRequest.addHeader(MessageFactoryImpl.getDefaultUserAgentHeader());
+                        }
+                        ReasonHeader reasonHeader = new Reason();
+                        reasonHeader.setCause(1025);
+                        reasonHeader.setText("Timed out waiting to send ACK");
+                        byeRequest.addHeader(reasonHeader);
+                        ClientTransaction byeCtx = SIPDialog.this.getSipProvider().getNewClientTransaction(byeRequest);
+                        SIPDialog.this.sendRequest(byeCtx);
+                        return;
+                    } catch (Exception ex) {
+                        SIPDialog.this.delete();
+                    }
+                }
             }
         }
 
@@ -485,6 +510,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                     "provider port = " + this.sipProvider.getListeningPoint().getPort());
             sipStack.getStackLogger().logStackTrace();
         }
+        this.isBackToBackUserAgent = sipStack.isBackToBackUserAgent;
     }
 
     /**
@@ -849,7 +875,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             this.isAcknowledged = true;
             this.highestSequenceNumberAcknowledged = Math.max(this.highestSequenceNumberAcknowledged,
                     ((SIPRequest)ackRequest).getCSeq().getSeqNumber());
-            if (releaseAckSem && !this.sipStack.allowReinviteInterleaving) {
+            if (releaseAckSem && this.isBackToBackUserAgent) {
                 this.releaseAckSem();
             } else {
                 if ( sipStack.isLoggingEnabled() ) {
@@ -938,7 +964,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                     this.ackLine = sipStack.getStackLogger().getLineCount();
                     this.printDebugInfo();
                 }
-                if (!sipStack.allowReinviteInterleaving) {
+                if (this.isBackToBackUserAgent) {
                     this.releaseAckSem();
                 }
                 this.setState(CONFIRMED_STATE);
@@ -1803,7 +1829,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
     public void sendRequest(ClientTransaction clientTransactionId)
             throws TransactionDoesNotExistException, SipException {
-        this.sendRequest(clientTransactionId, this.sipStack.allowReinviteInterleaving);
+        this.sendRequest(clientTransactionId, !this.isBackToBackUserAgent);
     }
 
     public void sendRequest(ClientTransaction clientTransactionId, boolean allowInterleaving)
@@ -2546,7 +2572,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                     if (transaction.getState() != TransactionState.TERMINATED
                             && sipResponse.getStatusCode() == Response.OK
                             && cseqMethod.equals(Request.INVITE)
-                            && !sipStack.allowReinviteInterleaving) {
+                            && this.isBackToBackUserAgent) {
                             /*
                              * Acquire the flag for re-INVITE so that we cannot re-INVITE before
                              * ACK is received.
@@ -2982,7 +3008,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * Release the semaphore for ACK processing so the next re-INVITE may proceed.
      */
     void releaseAckSem() {
-        if (!sipStack.allowReinviteInterleaving) {
+        if (this.isBackToBackUserAgent) {
             if (sipStack.isLoggingEnabled()) {
                 sipStack.getStackLogger().logDebug("releaseAckSem]" + this);
             }
@@ -3051,6 +3077,15 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         return this.isAcknowledged;
     }
 
+    public void setBackToBackUserAgent(boolean flag) {
+        this.isBackToBackUserAgent = true;
+    }
+    
+    
+    public boolean isBackToBackUserAgent() {
+        return this.isBackToBackUserAgent;
+    }
+    
     public void doDeferredDeleteIfNoAckSent(long seqno) {
         if (sipStack.getTimer() == null)
             this.setState(TERMINATED_STATE);

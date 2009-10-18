@@ -37,7 +37,7 @@ import gov.nist.core.ThreadAuditor;
 /**
  * Event Scanner to deliver events to the Listener.
  *
- * @version 1.2 $Revision: 1.37 $ $Date: 2009-10-18 18:24:47 $
+ * @version 1.2 $Revision: 1.38 $ $Date: 2009-10-18 22:18:17 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -275,7 +275,6 @@ class EventScanner implements Runnable {
                 SIPResponse sipResponse = (SIPResponse) responseEvent
                         .getResponse();
                 SIPDialog sipDialog = ((SIPDialog) responseEvent.getDialog());
-                DialogState dialogState = sipDialog.getState();
                 try {
                     if (sipStack.isLoggingEnabled()) {
 
