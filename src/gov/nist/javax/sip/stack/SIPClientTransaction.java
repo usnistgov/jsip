@@ -175,7 +175,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.115 $ $Date: 2009-10-18 22:18:19 $
+ * @version 1.2 $Revision: 1.116 $ $Date: 2009-10-19 15:11:48 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -184,7 +184,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
     // dialogs in the early state. These dialogs all have
     // the same call ID and same From tag but different to tags.
 
-    private ConcurrentHashMap sipDialogs;
+    private ConcurrentHashMap<String,SIPDialog> sipDialogs;
 
     private SIPRequest lastRequest;
 
@@ -1445,7 +1445,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
      * 
      * @see gov.nist.javax.sip.stack.SIPTransaction#getDialog()
      */
-    public synchronized Dialog getDialog() {
+    public  Dialog getDialog() {
         // This is for backwards compatibility.
         Dialog retval = null;
         if (this.lastResponse != null && this.lastResponse.getFromTag() != null
@@ -1474,7 +1474,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
      * @see gov.nist.javax.sip.stack.SIPTransaction#setDialog(gov.nist.javax.sip.stack.SIPDialog,
      *      gov.nist.javax.sip.message.SIPMessage)
      */
-    public synchronized SIPDialog getDialog(String dialogId) {
+    public SIPDialog getDialog(String dialogId) {
         SIPDialog retval = (SIPDialog) this.sipDialogs.get(dialogId);
         return retval;
 
@@ -1486,7 +1486,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
      * @see gov.nist.javax.sip.stack.SIPTransaction#setDialog(gov.nist.javax.sip.stack.SIPDialog,
      *      gov.nist.javax.sip.message.SIPMessage)
      */
-    public synchronized void setDialog(SIPDialog sipDialog, String dialogId) {
+    public void setDialog(SIPDialog sipDialog, String dialogId) {
         if (sipStack.isLoggingEnabled())
             sipStack.getStackLogger().logDebug(
                     "setDialog: " + dialogId + "sipDialog = " + sipDialog);
@@ -1504,8 +1504,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
 
     }
 
-    public synchronized SIPDialog getDefaultDialog() {
-        // TODO Auto-generated method stub
+    public SIPDialog getDefaultDialog() {
         return this.defaultDialog;
     }
 
