@@ -17,9 +17,9 @@
 
 	<profiles>
 	  <profile>
-	    <activation>
-	      <jdk>1.4</jdk>
-	    </activation>
+		<activation>
+			<jdk>1.7</jdk>
+		</activation>
 	  	<modules>
 			<module>jain-sip-sctp</module>
 		</modules>
@@ -103,9 +103,7 @@
 	</build>
 
 <!--distributionManagement>
-    <repository>
-      <!-- Copy the distribution jar file to a local checkout of the maven repository 
-        -  This variable can be set in $MAVEN_HOME/conf/settings.xml -->
+    <repository>      
       <id>repository.jboss.org</id>
       <url>file://${maven.repository.root}</url>
     </repository>
