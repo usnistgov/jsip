@@ -13,12 +13,7 @@
   
   <packaging>jar</packaging>
   <name>jain-sip-sctp</name>
-  <url>http://jain-sip.dev.java.net</url>
-  <profiles>
-  <profile>
-    <activation>
-      <jdk>1.7</jdk>
-    </activation>
+  <url>http://jain-sip.dev.java.net</url>  
     <build>
 	<sourceDirectory>../../src</sourceDirectory>
 	<plugins>
@@ -26,8 +21,8 @@
 			<groupId>org.apache.maven.plugins</groupId>
 			<artifactId>maven-compiler-plugin</artifactId>
 			<configuration>
-				<source>1.5</source>
-				<target>1.5</target>
+				<source>1.7</source>
+				<target>1.7</target>
 				<includes>
 					<include>gov/nist/javax/sip/stack/sctp/**</include>
 				</includes>
@@ -42,9 +37,9 @@
 					<phase>verify</phase>
 					<goals>
 						<goal>jar</goal>
-					</goals>
+					</goals>					
 				</execution>
-			</executions>
+			</executions>			
 		</plugin>
 	</plugins>
 	<resources>
@@ -58,7 +53,6 @@
 			</excludes>
 		</resource>
 	</resources>
-
   </build>
   <dependencies>
     <dependency>
@@ -74,6 +68,4 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
-  </profile>
-</profiles>
 </project>
