@@ -32,7 +32,7 @@ import java.text.ParseException;
 /**
  * Address parameters parser.
  *
- * @version 1.2 $Revision: 1.9 $ $Date: 2009-07-17 18:57:56 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2009-10-22 10:25:57 $
  * @author M. Ranganathan
  * @since 1.1
  *
@@ -52,7 +52,7 @@ public class AddressParametersParser extends ParametersParser {
         dbg_enter("AddressParametersParser.parse");
         try {
             AddressParser addressParser = new AddressParser(this.getLexer());
-            AddressImpl addr = addressParser.address();
+            AddressImpl addr = addressParser.address(false);
             addressParametersHeader.setAddress(addr);
             lexer.SPorHT();
             char la = this.lexer.lookAhead(0);

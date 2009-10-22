@@ -37,7 +37,7 @@ import java.util.Iterator;
 /**
  * A parser for The SIP contact header.
  *
- * @version 1.2 $Revision: 1.12 $ $Date: 2009-07-17 18:57:58 $
+ * @version 1.2 $Revision: 1.13 $ $Date: 2009-10-22 10:27:37 $
  * @since 1.1
  */
 public class ContactParser extends AddressParametersParser {
@@ -67,29 +67,6 @@ public class ContactParser extends AddressParametersParser {
                 }
             } else {
                 super.parse(contact);
-            }
-            AddressImpl address = (AddressImpl) contact.getAddress();
-            URI uri = contact.getAddress().getURI();
-            /*
-             * When the header field value contains a display name, the URI
-             * including all URI parameters is enclosed in "<" and ">". If no "<"
-             * and ">" are present, all parameters after the URI are header
-             * parameters, not URI parameters.
-             */
-            if (address.getAddressType() == AddressImpl.ADDRESS_SPEC
-                    && uri instanceof SipUri) {
-                SipUri   sipUri = (SipUri) uri;
-                HashSet parameterNames = new HashSet();
-                for (Iterator it = sipUri.getParameterNames(); it.hasNext(); ) {
-                    parameterNames.add(it.next());
-                }
-                // This avoids the concurrent modification exception.
-                for (Iterator it = parameterNames.iterator(); it.hasNext();) {
-                    String name = (String) it.next();
-                    String val = sipUri.getParameter(name);
-                    sipUri.removeParameter(name);
-                    contact.setParameter(name,val);
-                }
             }
             retval.add(contact);
             this.lexer.SPorHT();

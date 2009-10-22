@@ -64,7 +64,7 @@ import java.text.ParseException;
  * feld swoop).
  *
  *
- * @version 1.2 $Revision: 1.25 $ $Date: 2009-09-08 01:58:41 $
+ * @version 1.2 $Revision: 1.26 $ $Date: 2009-10-22 10:27:38 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -431,7 +431,7 @@ public class StringMsgParser {
      */
     public AddressImpl parseAddress(String address) throws ParseException {
         AddressParser addressParser = new AddressParser(address);
-        return addressParser.address();
+        return addressParser.address(true);
     }
 
     /**
@@ -480,7 +480,7 @@ public class StringMsgParser {
     public TelephoneNumber parseTelephoneNumber(String telephone_number)
             throws ParseException {
         // Bug fix contributed by Will Scullin
-        return new URLParser(telephone_number).parseTelephoneNumber();
+        return new URLParser(telephone_number).parseTelephoneNumber(true);
 
     }
 
@@ -496,7 +496,7 @@ public class StringMsgParser {
 
     public SipUri parseSIPUrl(String url) throws ParseException {
         try {
-            return new URLParser(url).sipURL();
+            return new URLParser(url).sipURL(true);
         } catch (ClassCastException ex) {
             throw new ParseException(url + " Not a SIP URL ", 0);
         }

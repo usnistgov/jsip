@@ -32,7 +32,7 @@ import gov.nist.core.*;
 /**
  * To Header parser.
  *
- * @version 1.2 $Revision: 1.10 $ $Date: 2009-07-17 18:58:06 $
+ * @version 1.2 $Revision: 1.11 $ $Date: 2009-10-22 10:27:38 $
  *
  * @author Olivier Deruelle   <br/>
  *
@@ -57,19 +57,7 @@ public class ToParser extends AddressParametersParser {
         headerName(TokenTypes.TO);
         To to = new To();
         super.parse(to);
-        this.lexer.match('\n');
-        if (((AddressImpl) to.getAddress()).getAddressType()
-            == AddressImpl.ADDRESS_SPEC) {
-            // the parameters are header parameters.
-            if (to.getAddress().getURI() instanceof SipUri) {
-                SipUri sipUri = (SipUri) to.getAddress().getURI();
-                NameValueList parms = sipUri.getParameters();
-                if (parms != null && !parms.isEmpty()) {
-                    to.setParameters(parms);
-                }
-                sipUri.removeParameters();
-            }
-        }
+        this.lexer.match('\n');        
         return to;
     }
 
@@ -100,6 +88,9 @@ public class ToParser extends AddressParametersParser {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2009/07/17 18:58:06  emcho
+ * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
+ *
  * Revision 1.9  2007/10/23 17:34:55  mranga
  * Issue number:
  * Obtained from:
