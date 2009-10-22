@@ -127,6 +127,10 @@ public class StackLoggerImpl implements StackLogger {
     public void logWarning(String message) {
         logger.warn(message);
     }
+    
+    public void logTrace(String message) {
+        logger.trace(message);
+    }
 
     public void setBuildTimeStamp(String timeStamp) {
        logger.info("BuildTimeStamp = " + timeStamp);
