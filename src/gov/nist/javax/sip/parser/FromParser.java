@@ -24,14 +24,14 @@
 *
 */
 package gov.nist.javax.sip.parser;
-import gov.nist.javax.sip.address.*;
-import gov.nist.javax.sip.header.*;
+import gov.nist.javax.sip.header.From;
+import gov.nist.javax.sip.header.SIPHeader;
+
 import java.text.ParseException;
-import gov.nist.core.*;
 
 /** From header parser.
  *
- * @version 1.2 $Revision: 1.11 $ $Date: 2009-07-17 18:58:00 $
+ * @version 1.2 $Revision: 1.12 $ $Date: 2009-10-22 10:27:37 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -58,27 +58,16 @@ public class FromParser extends AddressParametersParser {
         this.lexer.SPorHT();
         super.parse(from);
         this.lexer.match('\n');
-        if (((AddressImpl) from.getAddress()).getAddressType()
-            == AddressImpl.ADDRESS_SPEC) {
-            // the parameters are header parameters.
-            if (from.getAddress().getURI() instanceof SipUri) {
-                SipUri sipUri = (SipUri) from.getAddress().getURI();
-                NameValueList parms = sipUri.getParameters();
-                if (parms != null && !parms.isEmpty()) {
-                    from.setParameters(parms);
-                }
-                sipUri.removeParameters();
-            }
-        }
-
         return from;
-
     }
 
 
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.11  2009/07/17 18:58:00  emcho
+ * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
+ *
  * Revision 1.10  2007/10/23 17:34:55  mranga
  * Issue number:
  * Obtained from:

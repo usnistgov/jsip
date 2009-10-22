@@ -57,7 +57,7 @@ public class RequestLineParser extends Parser {
             retval.setMethod(m);
             this.lexer.selectLexer("sip_urlLexer");
             URLParser urlParser = new URLParser(this.getLexer());
-            GenericURI url = urlParser.uriReference();
+            GenericURI url = urlParser.uriReference(true);
             lexer.SPorHT();
             retval.setUri(url);
             this.lexer.selectLexer("request_lineLexer");
@@ -95,6 +95,12 @@ public class RequestLineParser extends Parser {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2009/09/15 02:55:27  mranga
+ * Issue number:  222
+ * Add HeaderFactoryExt.createStatusLine(String) and HeaderFactoryExt.createRequestLine(String)
+ * Allows users to easily parse SipFrag bodies (for example NOTIFY bodies
+ * during call transfer).
+ *
  * Revision 1.9  2009/07/17 18:58:03  emcho
  * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
  *
