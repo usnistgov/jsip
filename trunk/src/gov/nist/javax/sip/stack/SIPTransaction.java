@@ -69,7 +69,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.66 $ $Date: 2009-10-17 12:55:39 $
+ * @version 1.2 $Revision: 1.67 $ $Date: 2009-10-22 15:02:05 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -119,7 +119,7 @@ public abstract class SIPTransaction extends MessageChannel implements
     protected static final int TIMER_H = 64;
 
     // Proposed feature for next release.
-    protected Object applicationData;
+    protected transient Object applicationData;
 
     protected SIPResponse lastResponse;
 
@@ -1031,7 +1031,7 @@ public abstract class SIPTransaction extends MessageChannel implements
         if (retransmitTimer <= 0)
             throw new IllegalArgumentException(
                     "Retransmit timer must be positive!");
-        if (this.transactionTimerStarted.getAndSet(true))
+        if (this.transactionTimerStarted.get())
             throw new IllegalStateException(
                     "Transaction timer is already started");
         BASE_TIMER_INTERVAL = retransmitTimer;
