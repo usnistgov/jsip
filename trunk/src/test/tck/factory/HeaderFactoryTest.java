@@ -4,6 +4,7 @@ package test.tck.factory;
 import java.lang.reflect.*;
 
 import javax.sip.address.SipURI;
+import javax.sip.address.TelURL;
 import javax.sip.address.URI;
 import javax.sip.header.*;
 
@@ -268,6 +269,50 @@ public class HeaderFactoryTest extends FactoryTestHarness {
         }
     }
 
+    /**
+     * This tests that header parameters are properly assigned to the header, not the URI,
+     * when there are no angle brackets - in particular for 'tag'
+     */
+    public void testHeaderParams2() {
+        try {
+            Header h = tiHeaderFactory.createHeader( "From", "sip:07077004201@x.com;tag=gc2zbu" );
+            System.err.println( h );
+            assertTrue( h instanceof FromHeader );
+            FromHeader c = (FromHeader) h;
+            URI u = c.getAddress().getURI();
+            assertTrue( u.isSipURI() );
+            assertFalse( "URI must have no params", ((SipURI)u).getParameterNames().hasNext() );
+            assertNotNull( "Parameter 'tag' must be assigned to the header", c.getTag() );
+        } catch (ParseException e) {
+            e.printStackTrace();
+            fail( e.getMessage() );
+        } finally {
+            logTestCompleted("testHeaderParams2()");
+        }
+    }
+    
+    /**
+     * This tests that header parameters are properly assigned to the header, not the URI,
+     * when there are no angle brackets - in particular for 'tag'
+     */
+    public void testHeaderParams3() {
+        try {
+            Header h = tiHeaderFactory.createHeader( "From", "tel:07077004201;tag=gc2zbu" );
+            System.err.println( h );
+            assertTrue( h instanceof FromHeader );
+            FromHeader c = (FromHeader) h;
+            URI u = c.getAddress().getURI();
+            assertTrue( u instanceof TelURL );
+            assertFalse( "URI must have no params", ((TelURL)u).getParameterNames().hasNext() );
+            assertNotNull( "Parameter 'tag' must be assigned to the header", c.getTag() );
+        } catch (ParseException e) {
+            e.printStackTrace();
+            fail( e.getMessage() );
+        } finally {
+            logTestCompleted("testHeaderParams3()");
+        }
+    }
+    
     public HeaderFactoryTest() {
         super("HeaderFactoryTest");
     }
