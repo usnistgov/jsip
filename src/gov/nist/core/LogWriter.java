@@ -217,6 +217,25 @@ public class LogWriter implements StackLogger {
         }
 
     }
+    
+    /**
+     * Log a message into the log file.
+     *
+     * @param message
+     *            message to log into the log file.
+     */
+    public void logTrace(String message) {
+        if (needsLogging) {
+            String newMessage = this.enhanceMessage(message);
+            if ( this.lineCount == 0) {
+                getLogger().debug("BUILD TIMESTAMP = " + this.buildTimeStamp);
+                getLogger().debug("Config Propeties = " + this.configurationProperties);
+            }
+            countLines(newMessage);
+            getLogger().trace(newMessage);
+        }
+
+    }
 
     /**
      * Set the trace level for the stack.
