@@ -76,7 +76,7 @@ public class HostNameParser extends ParserCore {
     }
 
     private static final char[] VALID_DOMAIN_LABEL_CHAR =
-        new char[] {LexerCore.ALPHADIGIT_VALID_CHARS, '-', '.'};
+        new char[] {LexerCore.ALPHADIGIT_VALID_CHARS, '-', '.', '%'};
     protected void consumeDomainLabel() throws ParseException {
         if (debug)
             dbg_enter("domainLabel");
@@ -295,6 +295,12 @@ public class HostNameParser extends ParserCore {
                     if(stripAddressScopeZones){
                         break;//OK,allow IPv6 address scope zone
                     }
+                    // if next two components are integers it is probably a % HEX HEX value
+                    if (lexer.hasNMoreChars(2)) {
+                        if (lexer.isHexDigit(lexer.lookAhead(1)) && lexer.isHexDigit(lexer.lookAhead(2))) {
+                           break;//OK,allow % HEX HEX values
+                        }
+                    }  
                 default:
                     if (!allowWS) {
                         throw new ParseException( lexer.getBuffer() +
@@ -315,6 +321,8 @@ public class HostNameParser extends ParserCore {
             {
                 "foo.bar.com:1234",
                 "proxima.chaplin.bt.co.uk",
+                "proxima.chaplin.bt.co.uk",
+                "de%66.ghi",
                 "129.6.55.181:2345",
                 ":1234",
                 "foo.bar.com:         1234",
