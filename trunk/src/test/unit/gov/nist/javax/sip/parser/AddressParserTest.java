@@ -43,8 +43,8 @@ public class AddressParserTest extends ParserTestCase {
         try {
             for (int i = 0; i < addresses.length; i++) {
                 AddressParser addressParser = new AddressParser(addresses[i]);
-                AddressImpl addr = addressParser.address();
-                assertEquals(addr, new AddressParser(addr.encode()).address());
+                AddressImpl addr = addressParser.address(true);
+                assertEquals(addr, new AddressParser(addr.encode()).address(true));
             }
         } catch (ParseException ex) {
             fail(this.getClass().getName());

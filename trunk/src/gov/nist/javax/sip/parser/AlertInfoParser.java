@@ -25,15 +25,18 @@
 */
 package gov.nist.javax.sip.parser;
 
-import gov.nist.core.*;
-import gov.nist.javax.sip.header.*;
-import gov.nist.javax.sip.address.*;
+import gov.nist.javax.sip.address.GenericURI;
+import gov.nist.javax.sip.header.AlertInfo;
+import gov.nist.javax.sip.header.AlertInfoList;
+import gov.nist.javax.sip.header.SIPHeader;
+import gov.nist.javax.sip.header.SIPHeaderNames;
+
 import java.text.ParseException;
 
 /**
  * Parser for AlertInfo header.
  *
- * @version 1.2 $Revision: 1.8 $ $Date: 2009-07-17 18:57:57 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2009-10-22 10:27:36 $
  *
  * @author Olivier Deruelle
  * @author M. Ranganathan
@@ -77,46 +80,26 @@ public class AlertInfoParser extends ParametersParser {
                 URLParser urlParser;
                 GenericURI uri;
 
-                this.lexer.SPorHT();
-                if (this.lexer.lookAhead(0) == '<') {
-                    this.lexer.match('<');
-                    urlParser = new URLParser((Lexer) this.lexer);
-                    uri = urlParser.uriReference();
-                    alertInfo.setAlertInfo(uri);
-                    this.lexer.match('>');
-                } else {
-                    this.lexer.match(TokenTypes.ID);
-                    Token token = lexer.getNextToken();
-                    alertInfo.setAlertInfo(token.getTokenValue());
-                }
-                this.lexer.SPorHT();
-
-                super.parse(alertInfo);
-                list.add(alertInfo);
-
-                while (lexer.lookAhead(0) == ',') {
-                    this.lexer.match(',');
-                    this.lexer.SPorHT();
-
-                    alertInfo = new AlertInfo();
-
-                    this.lexer.SPorHT();
-                    if (this.lexer.lookAhead(0) == '<') {
-                        this.lexer.match('<');
-                        urlParser = new URLParser((Lexer) this.lexer);
-                        uri = urlParser.uriReference();
-                        alertInfo.setAlertInfo(uri);
-                        this.lexer.match('>');
-                    } else {
-                        this.lexer.match(TokenTypes.ID);
-                        Token token = lexer.getNextToken();
-                        alertInfo.setAlertInfo(token.getTokenValue());
-                    }
-                    this.lexer.SPorHT();
-
-                    super.parse(alertInfo);
-                    list.add(alertInfo);
-                }
+                do {
+	                this.lexer.SPorHT();
+	                if (this.lexer.lookAhead(0) == '<') {
+	                    this.lexer.match('<');
+	                    urlParser = new URLParser((Lexer) this.lexer);
+	                    uri = urlParser.uriReference( true );
+	                    alertInfo.setAlertInfo(uri);
+	                    this.lexer.match('>');
+	                } else {
+	                	throw new ParseException( "Alert-Info missing '<'" , lexer.getPtr() );
+	                }
+	                this.lexer.SPorHT();
+	
+	                super.parse(alertInfo);
+	                list.add(alertInfo);
+	                
+	                if ( lexer.lookAhead(0) == ',' ) {
+	                	this.lexer.match(',');
+	                } else break;
+                } while (true);
             }
             return list;
         } finally {
@@ -127,6 +110,9 @@ public class AlertInfoParser extends ParametersParser {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2009/07/17 18:57:57  emcho
+ * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
+ *
  * Revision 1.7  2007/10/18 17:48:09  mranga
  * Issue number:
  * Obtained from:

@@ -32,7 +32,7 @@ import javax.sip.address.*;
 
 /**
  * Implementation of the JAIN-SIP address factory.
- * @version 1.2 $Revision: 1.8 $ $Date: 2009-07-17 18:57:21 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2009-10-22 10:25:56 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -213,11 +213,11 @@ public class AddressFactoryImpl implements javax.sip.address.AddressFactory {
             if (scheme == null)
                 throw new ParseException("bad scheme", 0);
             if (scheme.equalsIgnoreCase("sip")) {
-                return (javax.sip.address.URI) urlParser.sipURL();
+                return (javax.sip.address.URI) urlParser.sipURL(true);
             } else if (scheme.equalsIgnoreCase("sips")) {
-                return (javax.sip.address.URI) urlParser.sipURL();
+                return (javax.sip.address.URI) urlParser.sipURL(true);
             } else if (scheme.equalsIgnoreCase("tel")) {
-                return (javax.sip.address.URI) urlParser.telURL();
+                return (javax.sip.address.URI) urlParser.telURL(true);
             }
         } catch (ParseException ex) {
             throw new ParseException(ex.getMessage(), 0);

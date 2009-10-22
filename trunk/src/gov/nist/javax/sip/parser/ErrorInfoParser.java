@@ -32,7 +32,7 @@ import java.text.ParseException;
 /**
  * Parser for ErrorInfo header.
  *
- * @version 1.2 $Revision: 1.8 $ $Date: 2009-07-17 18:57:59 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2009-10-22 10:27:37 $
  *
  * @author Olivier Deruelle   <br/>
  * @author M. Ranganathan   <br/>
@@ -72,37 +72,25 @@ public class ErrorInfoParser extends ParametersParser {
             headerName(TokenTypes.ERROR_INFO);
 
             while (lexer.lookAhead(0) != '\n') {
-                ErrorInfo errorInfo = new ErrorInfo();
-                errorInfo.setHeaderName(SIPHeaderNames.ERROR_INFO);
-
-                this.lexer.SPorHT();
-                this.lexer.match('<');
-                URLParser urlParser = new URLParser((Lexer) this.lexer);
-                GenericURI uri = urlParser.uriReference();
-                errorInfo.setErrorInfo(uri);
-                this.lexer.match('>');
-                this.lexer.SPorHT();
-
-                super.parse(errorInfo);
-                list.add(errorInfo);
-
-                while (lexer.lookAhead(0) == ',') {
-                    this.lexer.match(',');
-                    this.lexer.SPorHT();
-
-                    errorInfo = new ErrorInfo();
-
-                    this.lexer.SPorHT();
-                    this.lexer.match('<');
-                    urlParser = new URLParser((Lexer) this.lexer);
-                    uri = urlParser.uriReference();
-                    errorInfo.setErrorInfo(uri);
-                    this.lexer.match('>');
-                    this.lexer.SPorHT();
-
-                    super.parse(errorInfo);
-                    list.add(errorInfo);
-                }
+            	do {
+	                ErrorInfo errorInfo = new ErrorInfo();
+	                errorInfo.setHeaderName(SIPHeaderNames.ERROR_INFO);
+	
+	                this.lexer.SPorHT();
+	                this.lexer.match('<');
+	                URLParser urlParser = new URLParser((Lexer) this.lexer);
+	                GenericURI uri = urlParser.uriReference( true );
+	                errorInfo.setErrorInfo(uri);
+	                this.lexer.match('>');
+	                this.lexer.SPorHT();
+	
+	                super.parse(errorInfo);
+	                list.add(errorInfo);
+	                
+	                if ( lexer.lookAhead(0) == ',' ) {
+	                	this.lexer.match(',');
+	                } else break;
+            	} while (true);
             }
 
             return list;
@@ -116,6 +104,9 @@ public class ErrorInfoParser extends ParametersParser {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.8  2009/07/17 18:57:59  emcho
+ * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
+ *
  * Revision 1.7  2006/07/13 09:02:17  mranga
  * Issue number:
  * Obtained from:

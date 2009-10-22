@@ -30,7 +30,7 @@ import java.text.ParseException;
 
 /** Parser for addresses.
  *
- * @version 1.2 $Revision: 1.10 $ $Date: 2009-07-17 18:57:57 $
+ * @version 1.2 $Revision: 1.11 $ $Date: 2009-10-22 10:26:27 $
  * @author M. Ranganathan
  *
  *
@@ -55,7 +55,7 @@ public class AddressParser extends Parser {
                 this.lexer.selectLexer("sip_urlLexer");
                 this.lexer.SPorHT();
                 URLParser uriParser = new URLParser((Lexer) lexer);
-                GenericURI uri = uriParser.uriReference();
+                GenericURI uri = uriParser.uriReference( true );
                 AddressImpl retval = new AddressImpl();
                 retval.setAddressType(AddressImpl.NAME_ADDR);
                 retval.setURI(uri);
@@ -75,7 +75,7 @@ public class AddressParser extends Parser {
                 this.lexer.match('<');
                 this.lexer.SPorHT();
                 URLParser uriParser = new URLParser((Lexer) lexer);
-                GenericURI uri = uriParser.uriReference();
+                GenericURI uri = uriParser.uriReference( true );
                 AddressImpl retval = new AddressImpl();
                 addr.setAddressType(AddressImpl.NAME_ADDR);
                 addr.setURI(uri);
@@ -89,7 +89,7 @@ public class AddressParser extends Parser {
         }
     }
 
-    public AddressImpl address() throws ParseException {
+    public AddressImpl address( boolean inclParams ) throws ParseException {
         if (debug)
             dbg_enter("address");
         AddressImpl retval = null;
@@ -113,7 +113,7 @@ public class AddressParser extends Parser {
             } else if (la == ':' || la == '/') {
                 retval = new AddressImpl();
                 URLParser uriParser = new URLParser((Lexer) lexer);
-                GenericURI uri = uriParser.uriReference();
+                GenericURI uri = uriParser.uriReference( inclParams );
                 retval.setAddressType(AddressImpl.ADDRESS_SPEC);
                 retval.setURI(uri);
             } else {
@@ -133,6 +133,9 @@ public class AddressParser extends Parser {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.10  2009/07/17 18:57:57  emcho
+ * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
+ *
  * Revision 1.9  2007/02/12 15:19:26  belangery
  * Changed the encode() and encodeBody() methods of SIP headers and basic classes to make them use the same StringBuffer instance during the encoding phase.
  *

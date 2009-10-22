@@ -38,7 +38,7 @@ import java.text.ParseException;
 /**
  * Parser For SIP and Tel URLs. Other kinds of URL's are handled by the
  * J2SE 1.4 URL class.
- * @version 1.2 $Revision: 1.26 $ $Date: 2009-07-17 18:58:06 $
+ * @version 1.2 $Revision: 1.27 $ $Date: 2009-10-22 10:27:39 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -332,7 +332,7 @@ public class URLParser extends Parser {
      * @return URI is a URL structure for a SIP url.
      * @throws ParseException if there was a problem parsing.
      */
-    public GenericURI uriReference() throws ParseException {
+    public GenericURI uriReference( boolean inBrackets ) throws ParseException {
         if (debug)
             dbg_enter("uriReference");
         GenericURI retval = null;
@@ -344,12 +344,12 @@ public class URLParser extends Parser {
             if (t1.getTokenType() == TokenTypes.SIP ||
                     t1.getTokenType() == TokenTypes.SIPS) {
                 if (t2.getTokenType() == ':')
-                    retval = sipURL();
+                    retval = sipURL( inBrackets );
                 else
                     throw createParseException("Expecting \':\'");
             } else if (t1.getTokenType() == TokenTypes.TEL) {
                 if (t2.getTokenType() == ':') {
-                    retval = telURL();
+                    retval = telURL( inBrackets );
                 } else
                     throw createParseException("Expecting \':\'");
             } else {
@@ -440,7 +440,8 @@ public class URLParser extends Parser {
      *
      * @return the parsed telephone number.
      */
-    public final TelephoneNumber parseTelephoneNumber() throws ParseException {
+    public final TelephoneNumber parseTelephoneNumber( boolean inBrackets ) 
+    	throws ParseException {
         TelephoneNumber tn;
 
         if (debug)
@@ -449,7 +450,7 @@ public class URLParser extends Parser {
         try {
             char c = lexer.lookAhead(0);
             if (c == '+')
-                tn = global_phone_number();
+                tn = global_phone_number( inBrackets );
             else if (
                 Lexer.isHexDigit(c)// see RFC3966
                     || c == '#'
@@ -458,7 +459,7 @@ public class URLParser extends Parser {
                     || c == '.'
                     || c == '('
                     || c == ')' ) {
-                tn = local_phone_number();
+                tn = local_phone_number( inBrackets );
             } else
                 throw createParseException("unexpected char " + c);
             return tn;
@@ -469,7 +470,7 @@ public class URLParser extends Parser {
 
     }
 
-    private final TelephoneNumber global_phone_number() throws ParseException {
+    private final TelephoneNumber global_phone_number( boolean inBrackets ) throws ParseException {
         if (debug)
             dbg_enter("global_phone_number");
         try {
@@ -481,7 +482,7 @@ public class URLParser extends Parser {
             tn.setPhoneNumber(b);
             if (lexer.hasMoreChars()) {
                 char tok = lexer.lookAhead(0);
-                if (tok == ';') {
+                if (tok == ';' && inBrackets) {
                     this.lexer.consume(1);
                     nv = tel_parameters();
                     tn.setParameters(nv);
@@ -494,7 +495,7 @@ public class URLParser extends Parser {
         }
     }
 
-    private TelephoneNumber local_phone_number() throws ParseException {
+    private TelephoneNumber local_phone_number( boolean inBrackets ) throws ParseException {
         if (debug)
             dbg_enter("local_phone_number");
         TelephoneNumber tn = new TelephoneNumber();
@@ -507,11 +508,13 @@ public class URLParser extends Parser {
             if (lexer.hasMoreChars()) {
                 Token tok = this.lexer.peekNextToken();
                 switch (tok.getTokenType()) {
-                    case SEMICOLON :
+                    case SEMICOLON:
                         {
-                            this.lexer.consume(1);
-                            nv = tel_parameters();
-                            tn.setParameters(nv);
+                        	if (inBrackets) {
+                        		this.lexer.consume(1);
+                        		nv = tel_parameters();
+                        		tn.setParameters(nv);
+                        	}
                             break;
                         }
                     default :
@@ -584,10 +587,10 @@ public class URLParser extends Parser {
      * Parse and return a structure for a Tel URL.
      * @return a parsed tel url structure.
      */
-    public TelURLImpl telURL() throws ParseException {
+    public TelURLImpl telURL( boolean inBrackets ) throws ParseException {
         lexer.match(TokenTypes.TEL);
         lexer.match(':');
-        TelephoneNumber tn = this.parseTelephoneNumber();
+        TelephoneNumber tn = this.parseTelephoneNumber(inBrackets);
         TelURLImpl telUrl = new TelURLImpl();
         telUrl.setTelephoneNumber(tn);
         return telUrl;
@@ -599,7 +602,7 @@ public class URLParser extends Parser {
      * @return a URL structure for a SIP url.
      * @throws ParseException if there was a problem parsing.
      */
-    public SipUri sipURL() throws ParseException {
+    public SipUri sipURL( boolean inBrackets ) throws ParseException {
         if (debug)
             dbg_enter("sipURL");
         SipUri retval = new SipUri();
@@ -643,7 +646,8 @@ public class URLParser extends Parser {
 
             lexer.selectLexer("charLexer");
             while (lexer.hasMoreChars()) {
-                if (lexer.lookAhead(0) != ';')
+            	// If the URI is not enclosed in brackets, parameters belong to header
+                if (lexer.lookAhead(0) != ';' || !inBrackets)
                     break;
                 lexer.consume(1);
                 NameValue parms = uriParam();
@@ -800,7 +804,7 @@ public class URLParser extends Parser {
      * Default parse method. This method just calls uriReference.
      */
     public GenericURI parse() throws ParseException {
-        return uriReference();
+        return uriReference( true );
     }
 
     // quick test routine for debugging type assignment

@@ -58,7 +58,7 @@ abstract class AddressHeaderParser extends HeaderParser {
         dbg_enter("AddressHeaderParser.parse");
         try {
             AddressParser addressParser = new AddressParser(this.getLexer());
-            AddressImpl addr = addressParser.address();
+            AddressImpl addr = addressParser.address(true);
             addressHeader.setAddress(addr);
 
 
