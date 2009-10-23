@@ -93,7 +93,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.134 $ $Date: 2009-10-18 22:18:19 $
+ * @version 1.2 $Revision: 1.135 $ $Date: 2009-10-23 13:14:59 $
  * 
  * @author M. Ranganathan
  * 
@@ -447,6 +447,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                             byeRequest.addHeader(MessageFactoryImpl.getDefaultUserAgentHeader());
                         }
                         ReasonHeader reasonHeader = new Reason();
+                        reasonHeader.setProtocol("SIP");
                         reasonHeader.setCause(1025);
                         reasonHeader.setText("Timed out waiting to send ACK");
                         byeRequest.addHeader(reasonHeader);
