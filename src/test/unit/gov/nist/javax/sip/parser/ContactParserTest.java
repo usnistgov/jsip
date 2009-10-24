@@ -52,6 +52,7 @@ public class ContactParserTest extends ParserTestCase {
                 "Contact:*\n",
                 "Contact:BigGuy<sip:utente@127.0.0.1;5000>;Expires=3600\n" ,
                 "Contact: sip:nobody@192.168.0.241;expires=600;q=0.5\n",
+                "Contact: <sip:abc%66@de.ghi>\n",
                 // pmusgrave - add +sip-instance tests (outbound & gruu drafts)
                 "Contact: <sip:callee@192.0.2.1>;+sip-instance=\"<urn:uid:f81d-5463>\"\n" };
         super.testParser(ContactParser.class, contact);
