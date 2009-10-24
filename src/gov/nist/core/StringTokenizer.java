@@ -72,11 +72,6 @@ public class StringTokenizer {
         return ptr < bufferLen;
     }
 
-    public boolean hasNMoreChars(int x) {
-        int n = ptr;
-        return (n+x) < bufferLen;
-    }
-
     public static boolean isHexDigit(char ch) {
         return (ch >= 'A' && ch <= 'F') ||
                (ch >= 'a' && ch <= 'f') ||
