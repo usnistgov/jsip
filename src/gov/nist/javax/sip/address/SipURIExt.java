@@ -1,4 +1,7 @@
 package gov.nist.javax.sip.address;
+
+import javax.sip.address.SipURI;
+
 /**
  * URI Interface extensions that will be added to version 2.0 of the JSR 32 spec.
  *
@@ -7,7 +10,7 @@ package gov.nist.javax.sip.address;
  * @since 2.0
  *
  */
-public interface SipURIExt {
+public interface SipURIExt extends SipURI {
 
     /**
      * Strip the headers that are tacked to the URI.

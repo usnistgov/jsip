@@ -61,7 +61,7 @@ import javax.sip.message.Request;
 /**
  * SIP Response structure.
  *
- * @version 1.2 $Revision: 1.28 $ $Date: 2009-08-28 15:27:57 $
+ * @version 1.2 $Revision: 1.29 $ $Date: 2009-10-25 03:07:52 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
@@ -70,7 +70,7 @@ import javax.sip.message.Request;
  */
 public final class SIPResponse
     extends SIPMessage
-    implements javax.sip.message.Response {
+    implements javax.sip.message.Response, ResponseExt {
     protected StatusLine statusLine;
 
     public static String getReasonPhrase(int rc) {
