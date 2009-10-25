@@ -61,7 +61,7 @@ import gov.nist.javax.sip.stack.SIPTransactionStack;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.47 $ $Date: 2009-10-12 15:48:34 $
+ * @version 1.2 $Revision: 1.48 $ $Date: 2009-10-25 03:07:53 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -70,7 +70,7 @@ import gov.nist.javax.sip.stack.SIPTransactionStack;
  * 
  */
 
-public final class SIPRequest extends SIPMessage implements javax.sip.message.Request {
+public final class SIPRequest extends SIPMessage implements javax.sip.message.Request, RequestExt {
 
     private static final long serialVersionUID = 3360720013577322927L;
 

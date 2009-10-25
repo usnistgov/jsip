@@ -4,7 +4,7 @@ import javax.sip.ClientTransaction;
 import javax.sip.Timeout;
 import javax.sip.address.Hop;
 
-public interface ClientTransactionExt extends ClientTransaction {
+public interface ClientTransactionExt extends ClientTransaction, TransactionExt {
 
     /**
      * Notify on retransmission from the client transaction side. The listener will get a

@@ -26,11 +26,12 @@
 package gov.nist.javax.sip.address;
 
 import javax.sip.address.Hop;
+import javax.sip.address.Router;
 
 /**
  * 
  */
-public interface RouterExt {
+public interface RouterExt extends Router {
     
     /**
      * Record that a transaction failure occured for the given hop.
