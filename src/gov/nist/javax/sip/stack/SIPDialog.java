@@ -93,7 +93,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.135 $ $Date: 2009-10-23 13:14:59 $
+ * @version 1.2 $Revision: 1.136 $ $Date: 2009-10-25 03:07:55 $
  * 
  * @author M. Ranganathan
  * 
@@ -434,6 +434,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                  * point. Do we want to make this behavior tailorable?
                  */
                 if ( !SIPDialog.this.isBackToBackUserAgent) {
+                    sipStack.getStackLogger().logError("ACK Was not sent. killing dialog");
+                    
                     delete();
                 } else {
                     sipStack.getStackLogger().logError("ACK Was not sent. Sending BYE");
@@ -526,6 +528,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         if (sipResponse == null)
             throw new NullPointerException("Null SipResponse");
         this.setLastResponse(transaction, sipResponse);
+        this.isBackToBackUserAgent = sipStack.isBackToBackUserAgent;
     }
 
     /**
@@ -552,6 +555,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             sipStack.getStackLogger().logDebug("Creating a dialog : " + this);
             sipStack.getStackLogger().logStackTrace();
         }
+        this.isBackToBackUserAgent = sipStack.isBackToBackUserAgent;
     }
 
     // ///////////////////////////////////////////////////////////
@@ -3078,9 +3082,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         return this.isAcknowledged;
     }
 
-    public void setBackToBackUserAgent(boolean flag) {
-        this.isBackToBackUserAgent = true;
-    }
     
     
     public boolean isBackToBackUserAgent() {
@@ -3095,6 +3096,15 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             sipStack.getTimer().schedule(new DialogDeleteIfNoAckSentTask(seqno),
                     SIPTransaction.TIMER_J * SIPTransactionStack.BASE_TIMER_INTERVAL);
         }
+        
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see gov.nist.javax.sip.DialogExt#setBackToBackUserAgent(boolean)
+     */
+    public void setBackToBackUserAgent(boolean flag) {
+        this.isBackToBackUserAgent = flag;
         
     }
 
