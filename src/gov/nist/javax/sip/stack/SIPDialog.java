@@ -93,7 +93,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.137 $ $Date: 2009-10-27 14:57:04 $
+ * @version 1.2 $Revision: 1.138 $ $Date: 2009-10-27 14:59:18 $
  * 
  * @author M. Ranganathan
  * 
@@ -2344,6 +2344,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             } else if (responseFromTag.equals(this.getRemoteTag())) {
                 sipResponse.setToTag(this.getLocalTag());
             }
+        } else {
+            sipStack.getStackLogger().logWarning("No from tag in response! Not RFC 3261 compatible.");
         }
 
     }
