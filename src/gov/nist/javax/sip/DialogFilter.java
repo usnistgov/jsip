@@ -79,7 +79,7 @@ import javax.sip.message.Response;
  * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
  * and event model with the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.38 $ $Date: 2009-10-23 11:45:53 $
+ * @version 1.2 $Revision: 1.39 $ $Date: 2009-10-28 16:31:23 $
  * 
  * @author M. Ranganathan
  */
@@ -1177,7 +1177,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                                 .getDialogId(false));
                     }
                 } else {
-                    sipDialog = new SIPDialog(sipProvider, sipResponse);
+                    sipDialog = this.sipStack.createDialog(sipProvider, sipResponse);
                 }
             }
 
