@@ -91,7 +91,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.120 $ $Date: 2009-10-18 22:18:18 $
+ * @version 1.2 $Revision: 1.121 $ $Date: 2009-10-28 16:31:22 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener {
 
@@ -647,6 +647,17 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
         return retval;
 
     }
+    /**
+     * Create a Dialog given a sip provider and response.
+     *
+     * @param sipProvider
+     * @param sipResponse
+     * @return
+     */
+    public SIPDialog createDialog(SipProviderImpl sipProvider,
+			SIPResponse sipResponse) {
+		return new SIPDialog(sipProvider, sipResponse);
+	}
 
     /**
      * Remove the dialog from the dialog table.
