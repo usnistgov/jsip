@@ -91,7 +91,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.121 $ $Date: 2009-10-28 16:31:22 $
+ * @version 1.2 $Revision: 1.122 $ $Date: 2009-10-30 03:27:53 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener {
 
@@ -338,7 +338,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     // Is to tag reassignment allowed.
     protected boolean remoteTagReassignmentAllowed = true;
 
-    public boolean logStackTraceOnMessageSend = true;
+    protected boolean logStackTraceOnMessageSend = true;
 
     // Set to true to delegate some dialog validation to the application.
     protected boolean looseDialogValidation = false;
@@ -2324,6 +2324,20 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 	 public boolean checkBranchId() {
 	       return this.checkBranchId;
 	 }
+
+    /**
+     * @param logStackTraceOnMessageSend the logStackTraceOnMessageSend to set
+     */
+    public void setLogStackTraceOnMessageSend(boolean logStackTraceOnMessageSend) {
+        this.logStackTraceOnMessageSend = logStackTraceOnMessageSend;
+    }
+
+    /**
+     * @return the logStackTraceOnMessageSend
+     */
+    public boolean isLogStackTraceOnMessageSend() {
+        return logStackTraceOnMessageSend;
+    }
 	
 	
 }

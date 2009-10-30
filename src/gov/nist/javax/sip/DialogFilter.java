@@ -49,10 +49,12 @@ import gov.nist.javax.sip.stack.ServerRequestInterface;
 import gov.nist.javax.sip.stack.ServerResponseInterface;
 
 import java.io.IOException;
+import java.util.TimerTask;
 
 import javax.sip.ClientTransaction;
 import javax.sip.DialogState;
 import javax.sip.InvalidArgumentException;
+import javax.sip.ObjectInUseException;
 import javax.sip.RequestEvent;
 import javax.sip.ResponseEvent;
 import javax.sip.ServerTransaction;
@@ -79,7 +81,7 @@ import javax.sip.message.Response;
  * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
  * and event model with the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.39 $ $Date: 2009-10-28 16:31:23 $
+ * @version 1.2 $Revision: 1.40 $ $Date: 2009-10-30 03:27:53 $
  * 
  * @author M. Ranganathan
  */
@@ -90,7 +92,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
     protected ListeningPointImpl listeningPoint;
 
     private SipStackImpl sipStack;
-
+    
     public DialogFilter(SipStackImpl sipStack) {
         this.sipStack = sipStack;
 
@@ -109,19 +111,25 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     .logDebug("Sending 500 response for out of sequence message");
         SIPResponse sipResponse = sipRequest.createResponse(Response.SERVER_INTERNAL_ERROR);
         sipResponse.setReasonPhrase("Request out of order");
+        if (MessageFactoryImpl.getDefaultServerHeader() != null ) {
+            ServerHeader serverHeader = MessageFactoryImpl.getDefaultServerHeader();
+            sipResponse.setHeader(serverHeader);
+        }
 
         try {
-            transaction.sendMessage(sipResponse);
+            SipProvider sipProvider = transaction.getSipProvider();
+            sipProvider.sendResponse(sipResponse);
             sipStack.removeTransaction(transaction);
             transaction.releaseSem();
-        } catch (IOException ex) {
-
-            transaction.raiseIOExceptionEvent();
+        } catch (Exception ex) {
             sipStack.removeTransaction(transaction);
 
         }
     }
 
+   
+    
+    
     /**
      * Process a request. Check for various conditions in the dialog that can result in the
      * message being dropped. Possibly return errors for these conditions.
@@ -361,6 +369,9 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
                             }
                         } else {
+                            if ( sipStack.isLoggingEnabled() ) {
+                                sipStack.getStackLogger().logDebug("Dropping ACK - cannot find a transaction or dialog");
+                            }
                             return;
                         }
                     } else {
@@ -632,26 +643,13 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     && lastTransaction.getState() != TransactionState.COMPLETED
                     && lastTransaction.getState() != TransactionState.TERMINATED
                     && lastTransaction.getState() != TransactionState.CONFIRMED) {
-
+                
                 if (sipStack.isLoggingEnabled())
                     sipStack.getStackLogger().logDebug(
                             "Sending 500 response for out of sequence message");
-                SIPResponse sipResponse = sipRequest
-                        .createResponse(Response.SERVER_INTERNAL_ERROR);
-
-                RetryAfter retryAfter = new RetryAfter();
-                try {
-                    retryAfter.setRetryAfter((int) (10 * Math.random()));
-                } catch (InvalidArgumentException ex) {
-                    ex.printStackTrace();
-                }
-                sipResponse.addHeader(retryAfter);
-                try {
-                    transaction.sendMessage(sipResponse);
-                } catch (IOException ex) {
-                    transaction.raiseIOExceptionEvent();
-                }
+                this.send500Response(sipRequest, transaction);
                 return;
+               
             }
 
             /*
@@ -666,31 +664,52 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     && lastTransaction instanceof ClientTransaction && 
                     lastTransaction.getLastResponse().getStatusCode() == 200 &&
                     !dialog.isAckSent()) {
-                if (sipStack.isLoggingEnabled())
-                    sipStack.getStackLogger().logDebug(
-                            "Sending 491 response for out of sequence message");
-                SIPResponse sipResponse = sipRequest.createResponse(Response.REQUEST_PENDING);
-                try {
-                    transaction.sendMessage(sipResponse);
-                } catch (IOException ex) {
-                    transaction.raiseIOExceptionEvent();
-                }
-                return;
+              
+                    if (sipStack.isLoggingEnabled())
+                        sipStack.getStackLogger().logDebug(
+                        "Sending 491 response for out of sequence message");
+                    SIPResponse sipResponse = sipRequest.createResponse(Response.REQUEST_PENDING);
+                    ServerHeader serverHeader = MessageFactoryImpl.getDefaultServerHeader();
+                    if (serverHeader != null ) {
+                        sipResponse.setHeader(serverHeader);
+                    }
+                    try {    
+                        transaction.releaseSem();
+                        sipStack.removeTransaction(transaction);
+                        RetryAfter retryAfter = new RetryAfter();
+                        retryAfter.setDuration(1);
+                        sipResponse.setHeader(retryAfter);
+                        sipProvider.sendResponse(sipResponse);
+                    } catch (Exception ex) {
+                        sipStack.getStackLogger().logError("Problem sending error response",ex);
+                    }
+                    return;
+                
             }
 
-            if (dialog != null && lastTransaction != null
+            if ( dialog != null && lastTransaction != null
                     && lastTransaction.isInviteTransaction()
                     && lastTransaction instanceof ServerTransaction && !dialog.isAckSeen()) {
-                if (sipStack.isLoggingEnabled())
+                if (sipStack.isLoggingEnabled()) {
                     sipStack.getStackLogger().logDebug(
-                            "Sending 491 response for out of sequence message");
+                            "Sending 491 response");  
+                }
+                
                 SIPResponse sipResponse = sipRequest.createResponse(Response.REQUEST_PENDING);
+                ServerHeader serverHeader = MessageFactoryImpl.getDefaultServerHeader();
+                if (serverHeader != null) {
+                    sipResponse.setHeader(serverHeader);
+                }
                 try {
-                    transaction.sendMessage(sipResponse);
-                } catch (IOException ex) {
-                    transaction.raiseIOExceptionEvent();
+                    RetryAfter retryAfter = new RetryAfter();
+                    retryAfter.setDuration(1);
+                    transaction.releaseSem();
+                    sipStack.removeTransaction(transaction);
+                } catch (Exception ex) {
+                    sipStack.getStackLogger().logError("Error sending 491",ex);
                 }
                 return;
+               
             }
         }
 
