@@ -61,7 +61,7 @@ import gov.nist.javax.sip.stack.SIPTransactionStack;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.48 $ $Date: 2009-10-25 03:07:53 $
+ * @version 1.2 $Revision: 1.49 $ $Date: 2009-10-30 11:12:35 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -87,7 +87,7 @@ public final class SIPRequest extends SIPMessage implements javax.sip.message.Re
     private boolean nullRequest;
     
 
-    private Object inviteTransaction; // The original invite request for a
+    private transient Object inviteTransaction; // The original invite request for a
     // given cancel request
 
     /**
