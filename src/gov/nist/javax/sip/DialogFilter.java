@@ -81,7 +81,7 @@ import javax.sip.message.Response;
  * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
  * and event model with the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.41 $ $Date: 2009-10-30 03:51:14 $
+ * @version 1.2 $Revision: 1.42 $ $Date: 2009-10-30 13:59:41 $
  * 
  * @author M. Ranganathan
  */
@@ -113,12 +113,12 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             sipResponse.setHeader(serverHeader);
         }
         try {    
-            transaction.releaseSem();
-            sipStack.removeTransaction(transaction);
             RetryAfter retryAfter = new RetryAfter();
             retryAfter.setDuration(1);
+            retryAfter.setComment("Request Pending");
             sipResponse.setHeader(retryAfter);
-            sipProvider.sendResponse(sipResponse);
+            sipStack.addTransactionPendingAck(transaction);
+            transaction.sendResponse(sipResponse);
         } catch (Exception ex) {
             sipStack.getStackLogger().logError("Problem sending error response",ex);
             sipStack.removeTransaction(transaction);
@@ -145,12 +145,12 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
         }
 
         try {
-            SipProvider sipProvider = transaction.getSipProvider();
-            sipProvider.sendResponse(sipResponse);
             RetryAfter retryAfter = new RetryAfter();
             retryAfter.setDuration(10);
-            sipStack.removeTransaction(transaction);
-            transaction.releaseSem();
+            retryAfter.setComment("Out of order request");
+            sipResponse.setHeader(retryAfter);
+            sipStack.addTransactionPendingAck(transaction);
+            transaction.sendResponse(sipResponse);
         } catch (Exception ex) {
             sipStack.getStackLogger().logError("Problem sending response",ex);
             sipStack.removeTransaction(transaction);
@@ -402,6 +402,19 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                         } else {
                             if ( sipStack.isLoggingEnabled() ) {
                                 sipStack.getStackLogger().logDebug("Dropping ACK - cannot find a transaction or dialog");
+                            }
+                            SIPServerTransaction ackTransaction = sipStack.findTransactionPendingAck(sipRequest);
+                            if ( ackTransaction != null ) {
+                                sipStack.getStackLogger().logDebug("Found Tx pending ACK");
+                                try {
+                                    ackTransaction.setAckSeen();
+                                    sipStack.removeTransaction(ackTransaction);
+                                    sipStack.removeTransactionPendingAck(ackTransaction);
+                                } catch (Exception ex) {
+                                    if ( sipStack.isLoggingEnabled() )  {
+                                        sipStack.getStackLogger().logError("Problem terminating transaction",ex);
+                                    }
+                                }
                             }
                             return;
                         }

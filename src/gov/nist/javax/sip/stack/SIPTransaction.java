@@ -69,7 +69,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.67 $ $Date: 2009-10-22 15:02:05 $
+ * @version 1.2 $Revision: 1.68 $ $Date: 2009-10-30 13:59:40 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -637,7 +637,7 @@ public abstract class SIPTransaction extends MessageChannel implements
                 // Fire the timeout timer
                 fireRetransmissionTimer();
             }
-        }
+        } 
     }
 
     /**
