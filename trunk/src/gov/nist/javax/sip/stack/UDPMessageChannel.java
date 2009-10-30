@@ -87,7 +87,7 @@ import javax.sip.address.Hop;
  *
  *
  *
- * @version 1.2 $Revision: 1.61 $ $Date: 2009-10-16 22:57:07 $
+ * @version 1.2 $Revision: 1.62 $ $Date: 2009-10-30 03:27:53 $
  */
 public class UDPMessageChannel extends MessageChannel implements
         ParseExceptionListener, Runnable, RawMessageChannel {
@@ -574,7 +574,7 @@ public class UDPMessageChannel extends MessageChannel implements
      *             If there is a problem with sending the message.
      */
     public void sendMessage(SIPMessage sipMessage) throws IOException {
-        if (sipStack.isLoggingEnabled() && this.sipStack.logStackTraceOnMessageSend) {
+        if (sipStack.isLoggingEnabled() && this.sipStack.isLogStackTraceOnMessageSend()) {
             if ( sipMessage instanceof SIPRequest &&
                     ((SIPRequest)sipMessage).getRequestLine() != null) {
                 /*
@@ -642,7 +642,7 @@ public class UDPMessageChannel extends MessageChannel implements
     protected void sendMessage(byte[] msg, InetAddress peerAddress,
             int peerPort, boolean reConnect) throws IOException {
         // Via is not included in the request so silently drop the reply.
-        if (sipStack.isLoggingEnabled() && this.sipStack.logStackTraceOnMessageSend ) {
+        if (sipStack.isLoggingEnabled() && this.sipStack.isLogStackTraceOnMessageSend() ) {
             this.sipStack.getStackLogger().logStackTrace(StackLogger.TRACE_INFO);
         }
         if (peerPort == -1) {

@@ -178,7 +178,7 @@ class IOHandler {
                     + receiverAddress.getHostAddress() + " port = "
                     + contactPort + " length = " + length);
         }
-        if ( sipStack.isLoggingEnabled() && sipStack.logStackTraceOnMessageSend ) {
+        if ( sipStack.isLoggingEnabled() && sipStack.isLogStackTraceOnMessageSend() ) {
             sipStack.getStackLogger().logStackTrace(StackLogger.TRACE_INFO);
         }
         if (transport.compareToIgnoreCase(TCP) == 0) {
