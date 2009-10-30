@@ -93,7 +93,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.139 $ $Date: 2009-10-30 03:27:53 $
+ * @version 1.2 $Revision: 1.140 $ $Date: 2009-10-30 11:12:35 $
  * 
  * @author M. Ranganathan
  * 
@@ -104,21 +104,20 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
     private static final long serialVersionUID = -1429794423085204069L;
 
-    private boolean dialogTerminatedEventDelivered; // prevent duplicate
+    private transient boolean dialogTerminatedEventDelivered; // prevent duplicate
     
-    private String stackTrace; // for semaphore debugging.
+    private transient String stackTrace; // for semaphore debugging.
 
     private String method;
 
     // delivery of the event
-
-    private boolean isAssigned;
+    private transient boolean isAssigned;
 
     private boolean reInviteFlag;
 
-    private Object applicationData; // Opaque pointer to application data.
+    private transient Object applicationData; // Opaque pointer to application data.
 
-    private SIPRequest originalRequest;
+    private transient SIPRequest originalRequest;
 
     // Last response (JvB: either sent or received).
     private SIPResponse lastResponse;
@@ -128,11 +127,11 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     // created
     private transient SIPTransaction firstTransaction;
 
-    private SIPTransaction lastTransaction;
+    private transient SIPTransaction lastTransaction;
 
     private String dialogId;
 
-    private String earlyDialogId;
+    private transient String earlyDialogId;
 
     private long localSequenceNumber;
 
@@ -148,29 +147,30 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
     private int dialogState;
 
-    private boolean ackSeen;
+    protected transient boolean ackSeen;
     
-    private SIPRequest lastAckSent;
+    private transient SIPRequest lastAckSent;
 
     private SIPRequest lastAckReceived;
 
-    protected boolean ackProcessed;
+    // could be set on recovery by examining the method looks like a duplicate of ackSeen
+    protected transient boolean ackProcessed;
 
-    protected DialogTimerTask timerTask;
+    protected transient DialogTimerTask timerTask;
 
-    protected Long nextSeqno;
+    protected transient Long nextSeqno;
 
-    private int retransmissionTicksLeft;
+    private transient int retransmissionTicksLeft;
 
-    private int prevRetransmissionTicks;
+    private transient int prevRetransmissionTicks;
 
     private long originalLocalSequenceNumber;
 
     // This is for debugging only.
-    private int ackLine;
+    private transient int ackLine;
 
     // Audit tag used by the SIP Stack audit
-    public long auditTag = 0;
+    public transient long auditTag = 0;
 
     // The following fields are extracted from the request that created the
     // Dialog.
@@ -199,7 +199,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
     private boolean terminateOnBye;
 
-    private boolean byeSent; // Flag set when BYE is sent, to disallow new
+    private transient boolean byeSent; // Flag set when BYE is sent, to disallow new
 
     // requests
 
@@ -209,17 +209,17 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
     // Stores the last OK for the INVITE
     // Used in createAck.
-    private long lastInviteOkReceived;
+    private transient long lastInviteOkReceived;
 
-    private Semaphore ackSem = new Semaphore(1);
+    private transient Semaphore ackSem = new Semaphore(1);
 
-    private int reInviteWaitTime = 100;
+    private transient int reInviteWaitTime = 100;
 
-    private DialogDeleteTask dialogDeleteTask;
+    private transient DialogDeleteTask dialogDeleteTask;
 
-    private boolean isAcknowledged;
+    private transient boolean isAcknowledged;
     
-    private long highestSequenceNumberAcknowledged = -1;
+    private transient long highestSequenceNumberAcknowledged = -1;
     
     private boolean isBackToBackUserAgent;
 
@@ -312,7 +312,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         }
     }
 
-    class LingerTimer extends SIPStackTimerTask implements Serializable {
+	class LingerTimer extends SIPStackTimerTask implements Serializable {
 
         public LingerTimer() {
 
@@ -696,7 +696,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * 
      */
 
-    private void setRemoteTarget(ContactHeader contact) {
+    void setRemoteTarget(ContactHeader contact) {
         this.remoteTarget = contact.getAddress();
         if (sipStack.isLoggingEnabled()) {
             sipStack.getStackLogger().logDebug("Dialog.setRemoteTarget: " + this.remoteTarget);
@@ -799,6 +799,10 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             sipStack.getStackLogger().logDebug("----- ");
         }
         return retval;
+    }
+    
+    void setRouteList(RouteList routeList) {
+    	this.routeList = routeList;
     }
 
     /**
@@ -3111,4 +3115,31 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         
     }
 
+	/**
+	 * @return the eventHeader
+	 */
+	EventHeader getEventHeader() {
+		return eventHeader;
+	}
+
+	/**
+	 * @param eventHeader the eventHeader to set
+	 */
+	void setEventHeader(EventHeader eventHeader) {
+		this.eventHeader = eventHeader;
+	}	
+
+	/**
+	 * @param serverTransactionFlag the serverTransactionFlag to set
+	 */
+	void setServerTransactionFlag(boolean serverTransactionFlag) {
+		this.serverTransactionFlag = serverTransactionFlag;
+	}
+
+	/**
+	 * @param reInviteFlag the reinviteFlag to set
+	 */
+	void setReInviteFlag(boolean reInviteFlag) {
+		this.reInviteFlag = reInviteFlag;
+	}
 }
