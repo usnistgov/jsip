@@ -91,7 +91,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.122 $ $Date: 2009-10-30 03:27:53 $
+ * @version 1.2 $Revision: 1.123 $ $Date: 2009-10-30 13:59:40 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener {
 
@@ -163,6 +163,8 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     // A table of ongoing transactions indexed by mergeId ( for detecting merged
     // requests.
     private ConcurrentHashMap<String, SIPServerTransaction> mergeTable;
+    
+    private ConcurrentHashMap<String,SIPServerTransaction> terminatedServerTransactionsPendingAck;
 
     /*
      * A wrapper around differnt logging implementations (log4j, commons logging, slf4j, ...) to help log debug.
@@ -436,6 +438,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
         clientTransactionTable = new ConcurrentHashMap<String, SIPClientTransaction>();
         serverTransactionTable = new ConcurrentHashMap<String, SIPServerTransaction>();
+        this.terminatedServerTransactionsPendingAck = new ConcurrentHashMap<String, SIPServerTransaction>();
         mergeTable = new ConcurrentHashMap<String, SIPServerTransaction>();
         retransmissionAlertTransactions = new ConcurrentHashMap<String, SIPServerTransaction>();
 
@@ -807,7 +810,58 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
         }
 
     }
-
+    
+    /**
+     * Add entry to "Transaction Pending ACK" table.
+     * 
+     * @param serverTransaction
+     */
+    public void addTransactionPendingAck(SIPServerTransaction serverTransaction) {
+        String branchId = ((SIPRequest)serverTransaction.getRequest()).getTopmostVia().getBranch();
+        if ( branchId != null ) {
+            this.terminatedServerTransactionsPendingAck.put(branchId, serverTransaction);
+        }
+        
+    }
+    
+    /**
+     * Get entry in the server transaction pending ACK table corresponding to an ACK.
+     * 
+     * @param ackMessage
+     * @return
+     */
+    public SIPServerTransaction findTransactionPendingAck(SIPRequest ackMessage) {
+        return this.terminatedServerTransactionsPendingAck.get(ackMessage.getTopmostVia().getBranch());
+    }
+    
+    /**
+     * Remove entry from "Transaction Pending ACK" table.
+     * 
+     * @param serverTransaction
+     * @return
+     */
+    
+    public boolean removeTransactionPendingAck(SIPServerTransaction serverTransaction) {
+        String branchId = ((SIPRequest)serverTransaction.getRequest()).getTopmostVia().getBranch();
+        if ( branchId != null && this.terminatedServerTransactionsPendingAck.containsKey(branchId) ) {
+            this.terminatedServerTransactionsPendingAck.remove(branchId);
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Check if this entry exists in the "Transaction Pending ACK" table.
+     * 
+     * @param serverTransaction
+     * @return
+     */
+    public boolean isTransactionPendingAck(SIPServerTransaction serverTransaction) {
+        String branchId = ((SIPRequest)serverTransaction.getRequest()).getTopmostVia().getBranch();
+        return this.terminatedServerTransactionsPendingAck.contains(branchId); 
+    }
+    
     /**
      * Find the transaction corresponding to a given request.
      *
@@ -2338,6 +2392,8 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     public boolean isLogStackTraceOnMessageSend() {
         return logStackTraceOnMessageSend;
     }
+
+   
 	
 	
 }

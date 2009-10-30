@@ -163,7 +163,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.112 $ $Date: 2009-10-22 15:02:05 $
+ * @version 1.2 $Revision: 1.113 $ $Date: 2009-10-30 13:59:41 $
  * @author M. Ranganathan
  *
  */
@@ -531,8 +531,10 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
     }
 
+    
+    
     /**
-     * Deterines if the message is a part of this transaction.
+     * Determines if the message is a part of this transaction.
      *
      * @param messageToTest Message to check if it is part of this transaction.
      *
@@ -1106,9 +1108,9 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
             // Resend the last response sent by this transaction
             if (isInviteTransaction() && lastResponse != null) {
                 // null can happen if this is terminating when the timer fires.
-                if (!this.retransmissionAlertEnabled) {
+                if (!this.retransmissionAlertEnabled || sipStack.isTransactionPendingAck(this) ) {
                     // Retransmit last response until ack.
-                    if (lastResponse.getStatusCode() / 100 > 2)
+                    if (lastResponse.getStatusCode() / 100 > 2 && !this.isAckSeen)
                         super.sendMessage(lastResponse);
                 } else {
                     // alert the application to retransmit the last response
@@ -1152,6 +1154,13 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                     + " current state = " + this.getRealState() + " method = "
                     + this.getOriginalRequest().getMethod());
 
+        if ( this.getMethod().equals(Request.INVITE) && sipStack.removeTransactionPendingAck(this) ) {
+            if ( sipStack.isLoggingEnabled() ) {
+                sipStack.getStackLogger().logDebug("Found tx pending ACK - returning");
+            }
+            return;
+            
+        }
         SIPDialog dialog = (SIPDialog) this.dialog;
         if (((SIPTransactionStack) getSIPStack()).isDialogCreated(this.getOriginalRequest()
                 .getMethod())
