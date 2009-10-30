@@ -81,7 +81,7 @@ import javax.sip.message.Response;
  * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
  * and event model with the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.40 $ $Date: 2009-10-30 03:27:53 $
+ * @version 1.2 $Revision: 1.41 $ $Date: 2009-10-30 03:51:14 $
  * 
  * @author M. Ranganathan
  */
@@ -98,6 +98,34 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
     }
 
+    
+    /**
+     * Send back a Request Pending response.
+     * 
+     * @param sipRequest
+     * @param transaction
+     */
+    private void send491Response(SIPRequest sipRequest, SIPServerTransaction transaction  ) {
+        SIPResponse sipResponse = sipRequest.createResponse(Response.REQUEST_PENDING);
+        ServerHeader serverHeader = MessageFactoryImpl.getDefaultServerHeader();
+        SipProvider sipProvider = transaction.getSipProvider();
+        if (serverHeader != null ) {
+            sipResponse.setHeader(serverHeader);
+        }
+        try {    
+            transaction.releaseSem();
+            sipStack.removeTransaction(transaction);
+            RetryAfter retryAfter = new RetryAfter();
+            retryAfter.setDuration(1);
+            sipResponse.setHeader(retryAfter);
+            sipProvider.sendResponse(sipResponse);
+        } catch (Exception ex) {
+            sipStack.getStackLogger().logError("Problem sending error response",ex);
+            sipStack.removeTransaction(transaction);
+        }
+    }
+    
+    
     /**
      * Send back an error Response.
      * 
@@ -119,9 +147,12 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
         try {
             SipProvider sipProvider = transaction.getSipProvider();
             sipProvider.sendResponse(sipResponse);
+            RetryAfter retryAfter = new RetryAfter();
+            retryAfter.setDuration(10);
             sipStack.removeTransaction(transaction);
             transaction.releaseSem();
         } catch (Exception ex) {
+            sipStack.getStackLogger().logError("Problem sending response",ex);
             sipStack.removeTransaction(transaction);
 
         }
@@ -668,21 +699,8 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     if (sipStack.isLoggingEnabled())
                         sipStack.getStackLogger().logDebug(
                         "Sending 491 response for out of sequence message");
-                    SIPResponse sipResponse = sipRequest.createResponse(Response.REQUEST_PENDING);
-                    ServerHeader serverHeader = MessageFactoryImpl.getDefaultServerHeader();
-                    if (serverHeader != null ) {
-                        sipResponse.setHeader(serverHeader);
-                    }
-                    try {    
-                        transaction.releaseSem();
-                        sipStack.removeTransaction(transaction);
-                        RetryAfter retryAfter = new RetryAfter();
-                        retryAfter.setDuration(1);
-                        sipResponse.setHeader(retryAfter);
-                        sipProvider.sendResponse(sipResponse);
-                    } catch (Exception ex) {
-                        sipStack.getStackLogger().logError("Problem sending error response",ex);
-                    }
+                    this.send491Response(sipRequest,transaction);
+                   
                     return;
                 
             }
@@ -695,19 +713,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                             "Sending 491 response");  
                 }
                 
-                SIPResponse sipResponse = sipRequest.createResponse(Response.REQUEST_PENDING);
-                ServerHeader serverHeader = MessageFactoryImpl.getDefaultServerHeader();
-                if (serverHeader != null) {
-                    sipResponse.setHeader(serverHeader);
-                }
-                try {
-                    RetryAfter retryAfter = new RetryAfter();
-                    retryAfter.setDuration(1);
-                    transaction.releaseSem();
-                    sipStack.removeTransaction(transaction);
-                } catch (Exception ex) {
-                    sipStack.getStackLogger().logError("Error sending 491",ex);
-                }
+                this.send491Response(sipRequest, transaction);
                 return;
                
             }
