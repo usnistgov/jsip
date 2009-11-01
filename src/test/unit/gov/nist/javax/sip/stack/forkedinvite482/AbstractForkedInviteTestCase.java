@@ -104,7 +104,7 @@ public class AbstractForkedInviteTestCase extends ScenarioHarness implements
     public void tearDown() {
         try {
             Thread.sleep(4000);
-            this.shootist.checkState();
+            // this.shootist.checkState();
             this.shootme.checkState();
             this.proxy.checkState();
             getTiProtocolObjects().destroy();
