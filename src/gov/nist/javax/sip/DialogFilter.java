@@ -81,7 +81,7 @@ import javax.sip.message.Response;
  * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
  * and event model with the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.42 $ $Date: 2009-10-30 13:59:41 $
+ * @version 1.2 $Revision: 1.43 $ $Date: 2009-11-01 16:06:02 $
  * 
  * @author M. Ranganathan
  */
@@ -108,7 +108,6 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
     private void send491Response(SIPRequest sipRequest, SIPServerTransaction transaction  ) {
         SIPResponse sipResponse = sipRequest.createResponse(Response.REQUEST_PENDING);
         ServerHeader serverHeader = MessageFactoryImpl.getDefaultServerHeader();
-        SipProvider sipProvider = transaction.getSipProvider();
         if (serverHeader != null ) {
             sipResponse.setHeader(serverHeader);
         }
@@ -119,10 +118,40 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             sipResponse.setHeader(retryAfter);
             sipStack.addTransactionPendingAck(transaction);
             transaction.sendResponse(sipResponse);
+            transaction.releaseSem();
         } catch (Exception ex) {
             sipStack.getStackLogger().logError("Problem sending error response",ex);
+            transaction.releaseSem();
             sipStack.removeTransaction(transaction);
         }
+    }
+    
+    
+    /**
+     * Send back a LOOP Detected Response.
+     * 
+     * @param sipRequest
+     * @param transaction
+     * 
+     */
+    private void send482Response(SIPRequest sipRequest, SIPServerTransaction transaction) {
+        SIPResponse sipResponse = sipRequest.createResponse(Response.LOOP_DETECTED);
+        
+        ServerHeader serverHeader = MessageFactoryImpl.getDefaultServerHeader();
+        if (serverHeader != null ) {
+            sipResponse.setHeader(serverHeader);
+        }
+        try {    
+            sipStack.addTransactionPendingAck(transaction);
+            transaction.sendResponse(sipResponse);
+            transaction.releaseSem();
+        } catch (Exception ex) {
+            sipStack.getStackLogger().logError("Problem sending error response",ex);
+            transaction.releaseSem();
+            sipStack.removeTransaction(transaction);
+           
+        }
+        
     }
     
     
@@ -151,9 +180,12 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             sipResponse.setHeader(retryAfter);
             sipStack.addTransactionPendingAck(transaction);
             transaction.sendResponse(sipResponse);
+            transaction.releaseSem();
         } catch (Exception ex) {
             sipStack.getStackLogger().logError("Problem sending response",ex);
+            transaction.releaseSem();
             sipStack.removeTransaction(transaction);
+           
 
         }
     }
@@ -253,20 +285,11 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
          */
         if (sipProvider.isAutomaticDialogSupportEnabled() && sipRequest.getToTag() == null) {
             SIPServerTransaction sipServerTransaction = sipStack
-                    .findMergedTransaction(sipRequest);
+                    .findMergedTransaction(sipRequest);     
             if (sipServerTransaction != null
-                    && !sipServerTransaction.isMessagePartOfTransaction(sipRequest)
-                    && sipServerTransaction.getState() != TransactionState.TERMINATED) {
-                SIPResponse response = sipRequest.createResponse(Response.LOOP_DETECTED);
-
-                if (sipStack.getStackLogger().isLoggingEnabled())
-                    sipStack.getStackLogger().logError("Loop detected while processing request");
-                try {
-                    sipProvider.sendResponse(response);
-                } catch (SipException e) {
-                    if (sipStack.getStackLogger().isLoggingEnabled())
-                        sipStack.getStackLogger().logError("Error sending response");
-                }
+                    && !sipServerTransaction.isMessagePartOfTransaction(sipRequest)) {
+                this.send482Response(sipRequest,transaction);
+              
                 return;
             }
         }
