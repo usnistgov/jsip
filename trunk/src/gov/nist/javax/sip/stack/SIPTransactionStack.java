@@ -91,7 +91,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.123 $ $Date: 2009-10-30 13:59:40 $
+ * @version 1.2 $Revision: 1.124 $ $Date: 2009-11-01 16:06:02 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener {
 
@@ -1382,6 +1382,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
             Object removed = serverTransactionTable.remove(key);
             String method = sipTransaction.getMethod();
             this.removePendingTransaction((SIPServerTransaction) sipTransaction);
+            this.removeTransactionPendingAck((SIPServerTransaction) sipTransaction);
             if (this.isDialogCreated(method)) {
                 this.removeFromMergeTable((SIPServerTransaction) sipTransaction);
             }
