@@ -93,7 +93,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.140 $ $Date: 2009-10-30 11:12:35 $
+ * @version 1.2 $Revision: 1.141 $ $Date: 2009-11-02 03:31:32 $
  * 
  * @author M. Ranganathan
  * 
@@ -2382,6 +2382,13 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 sipStack.getStackLogger().logDebug(
                         "sipDialog: setLastResponse -- dialog is terminated - ignoring ");
             }
+            // Capture the OK response for later use in createAck
+            // This is handy for late arriving OK's that we want to ACK.
+            if (sipResponse.getCSeq().getMethod().equals(Request.INVITE)) {
+               
+                this.lastInviteOkReceived = Math.max(sipResponse.getCSeq().getSeqNumber(),
+                        sipResponse.getCSeq().getSeqNumber());
+            }
             return;
         }
         String cseqMethod = sipResponse.getCSeq().getMethod();
@@ -2447,7 +2454,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
                     // Capture the OK response for later use in createAck
                     if (cseqMethod.equals(Request.INVITE)) {
-                        this.lastInviteOkReceived = sipResponse.getCSeq().getSeqNumber();
+                        this.lastInviteOkReceived = Math.max(sipResponse.getCSeq().getSeqNumber(),
+                                sipResponse.getCSeq().getSeqNumber());
                     }
 
                 } else if (statusCode >= 300
