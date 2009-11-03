@@ -115,12 +115,12 @@ c:/jakarta-ant/bin/ant all
 
     <target name="cleanlogs">
         <delete failonerror="0">
-            <fileset file="*Log.txt" />
-            <fileset file="*Log.txt" />
             <fileset file="*log.txt" />
             <fileset file="tckoutput.txt" />
-            <fileset file="*debug.txt" />
-            <fileset file="*Debug.txt" />
+            <fileset file="*debug*.txt" />
+            <fileset file="*Debug*.txt" />
+            <fileset file="*log*.txt" />
+            <fileset file="*Log*.txt" />
             <fileset dir="./logs" />
             <fileset dir="./test-reports" />
             <fileset dir="./src" includes="**/*log*.txt" />
