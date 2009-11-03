@@ -93,7 +93,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.142 $ $Date: 2009-11-02 13:04:30 $
+ * @version 1.2 $Revision: 1.143 $ $Date: 2009-11-03 05:27:12 $
  * 
  * @author M. Ranganathan
  * 
@@ -873,7 +873,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             MessageChannel messageChannel = lp.getMessageProcessor().createMessageChannel(
                     inetAddress, hop.getPort());
             boolean releaseAckSem = false;
-            if (!this.isAckSent()) {
+            long cseqNo = ((SIPRequest)request).getCSeq().getSeqNumber();
+            if (!this.isAckSent(cseqNo)) {
                 releaseAckSem = true;
             }
 
@@ -1129,15 +1130,14 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * Return true if ACK was sent ( for client tx ). For server tx, this is a NO-OP ( we dont
      * send ACK).
      */
-    public boolean isAckSent() {
+    public boolean isAckSent(long cseqNo) {
         if (this.getLastTransaction() == null)
             return true;
         if (this.getLastTransaction() instanceof ClientTransaction) {
             if (this.getLastAckSent() == null) {
                 return false;
             } else {
-                return ((SIPRequest) this.getLastTransaction().getRequest()).getCSeq()
-                        .getSeqNumber() == ((SIPRequest) this.getLastAckSent()).getCSeq().getSeqNumber();
+                return cseqNo <=((SIPRequest) this.getLastAckSent()).getCSeq().getSeqNumber();
             }
         } else {
             return true;
