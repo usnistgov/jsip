@@ -253,10 +253,19 @@ public class NoAutoDialogTest extends TestCase {
 
         public void processTransactionTerminated(TransactionTerminatedEvent tte) {
             ClientTransaction ctx = tte.getClientTransaction();
-            String method = ctx.getRequest().getMethod();
-            if (method.equals(Request.INVITE)) {
-                i_inviteTxTerm = true;
-                System.out.println("Invite term TERM");
+            ServerTransaction stx = tte.getServerTransaction();
+            if (ctx != null) {
+                String method = ctx.getRequest().getMethod();
+                if (method.equals(Request.INVITE)) {
+                    i_inviteTxTerm = true;
+                    System.out.println("Invite term TERM");
+                }
+            } else {
+                String method = stx.getRequest().getMethod();
+                if (method.equals(Request.INVITE)) {
+                    i_inviteTxTerm = true;
+                    System.out.println("Invite term TERM");
+                }
             }
         }
 
