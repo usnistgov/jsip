@@ -20,6 +20,7 @@ public class RetryAfterParserTest extends ParserTestCase {
             super.testParser(RetryAfterParser.class, rr);
             try {
                 RetryAfter retryAfter = new RetryAfter();
+                retryAfter.setRetryAfter(100);
                 retryAfter.setDuration(10);
                 retryAfter.setComment("foo");
                 System.out.println(new RetryAfterParser(retryAfter.encode()).parse().toString());
