@@ -81,7 +81,7 @@ import javax.sip.message.Response;
  * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
  * and event model with the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.47 $ $Date: 2009-11-04 01:38:02 $
+ * @version 1.2 $Revision: 1.48 $ $Date: 2009-11-04 17:35:56 $
  * 
  * @author M. Ranganathan
  */
@@ -113,7 +113,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
         }
         try {
             RetryAfter retryAfter = new RetryAfter();
-            retryAfter.setDuration(1);
+            retryAfter.setRetryAfter(1);
             sipResponse.setHeader(retryAfter);
             if ( sipRequest.getMethod().equals(Request.INVITE)) {
                 sipStack.addTransactionPendingAck(transaction);
@@ -238,7 +238,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
         try {
             RetryAfter retryAfter = new RetryAfter();
-            retryAfter.setDuration(10);
+            retryAfter.setRetryAfter(10);
             sipResponse.setHeader(retryAfter);
             sipStack.addTransactionPendingAck(transaction);
             transaction.sendResponse(sipResponse);
