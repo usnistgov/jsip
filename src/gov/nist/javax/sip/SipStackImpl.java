@@ -290,18 +290,6 @@ import org.apache.log4j.Logger;
  * before re-INVITE is allowed to be sent. If a dialog is not ACKed within 32 seconds,
  * then the dialog is torn down and a BYE sent to the peer. </li>
  * 
- * <li><b>gov.nist.javax.sip.LOOSE_DIALOG_VALIDATION = int </b> <br/> Default is <it>false</it>.
- * This flag turns off some dialog validation features when the stack is used in dialog-stateful
- * mode. This means the validation is delegated to the application and the stack will not attempt
- * to block requests from reaching the application. In particular, the validation of CSeq and the
- * ACK retransmission recognition are delegated to the application. The stack will no longer
- * return an error when a CSeq number is out of order and it will no longer ignore incoming ACK
- * requests for the same dialog. Your application will be responsible for these cases. <br/>This
- * mode is needed for cases where multiple applications are using the same SipStack but are
- * unaware of each other, like Sip Servlets containers. In particular PROXY-B2BUA application
- * composion would cause an error when subsequent requests re-enter the container to reach the
- * B2BUA application. On the other hand if the ACK has to re-enter it would be rejected as a
- * retransmission.
  * 
  * <li><b>gov.nist.javax.sip.RECEIVE_UDP_BUFFER_SIZE = int </b> <br/> Default is <it>8*1024</it>.
  * This property control the size of the UDP buffer used for SIP messages. Under load, if the
@@ -353,7 +341,7 @@ import org.apache.log4j.Logger;
  * in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.99 $ $Date: 2009-10-18 22:18:18 $
+ * @version 1.2 $Revision: 1.100 $ $Date: 2009-11-04 20:37:55 $
  * 
  * @author M. Ranganathan <br/>
  * 
