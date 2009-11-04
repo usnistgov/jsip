@@ -81,7 +81,7 @@ import javax.sip.message.Response;
  * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
  * and event model with the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.49 $ $Date: 2009-11-04 20:37:55 $
+ * @version 1.2 $Revision: 1.50 $ $Date: 2009-11-04 20:43:15 $
  * 
  * @author M. Ranganathan
  */
@@ -387,7 +387,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             }
         }
 
-        if (sipRequest.getMethod().equals(Request.REFER)) {
+        if (sipRequest.getMethod().equals(Request.REFER) && sipProvider.isAutomaticDialogSupportEnabled()) {
             /*
              * An agent responding to a REFER method MUST return a 400 (Bad Request) if the
              * request contained zero or more than one Refer-To header field values.
