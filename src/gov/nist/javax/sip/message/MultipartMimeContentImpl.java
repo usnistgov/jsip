@@ -2,6 +2,7 @@ package gov.nist.javax.sip.message;
 
 import gov.nist.javax.sip.header.HeaderFactoryExt;
 import gov.nist.javax.sip.header.HeaderFactoryImpl;
+import gov.nist.javax.sip.parser.StringMsgParser;
 
 import java.text.ParseException;
 import java.util.Iterator;
@@ -14,7 +15,7 @@ import javax.sip.header.Header;
 import javax.sip.header.HeaderFactory;
 import javax.sip.message.Message;
 
-import org.apache.log4j.Logger;
+
 
 /**
  * Content list for multipart mime content type.
@@ -23,8 +24,6 @@ import org.apache.log4j.Logger;
  * 
  */
 public class MultipartMimeContentImpl implements MultipartMimeContent {
-
-    private static Logger logger = Logger.getLogger(MultipartMimeContentImpl.class);
     private List<Content> contentList = new LinkedList<Content>();
 
     private ContentTypeHeader multipartMimeContentTypeHeader;
@@ -97,11 +96,6 @@ public class MultipartMimeContentImpl implements MultipartMimeContent {
 
             String[] fragments = body.split("--" + delimiter + "\r\n");
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("nFragments = " + fragments.length);
-                logger.debug("delimiter = " + delimiter);
-                logger.debug("body = " + body);
-            }
 
             for (String nextPart : fragments) {
                 // NOTE - we are not hanlding line folding for the sip header here.
