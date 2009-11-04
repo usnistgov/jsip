@@ -43,22 +43,20 @@ import javax.sip.address.SipURI;
 import javax.sip.header.Header;
 import javax.sip.header.HeaderFactory;
 
-import org.apache.log4j.Logger;
 
 /**
  * Implementation of the SipURI interface.
  *
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.20 $ $Date: 2009-10-18 13:46:39 $
+ * @version 1.2 $Revision: 1.21 $ $Date: 2009-11-04 17:02:45 $
  *
  *
  *
  */
 public class SipUri extends GenericURI implements javax.sip.address.SipURI , SipURIExt{
 
-    private static Logger logger = Logger.getLogger(SipUri.class);
-
+ 
     private static final long serialVersionUID = 7749781076218987044L;
 
     protected String scheme;
@@ -199,7 +197,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI , Sip
                 try {
                     headerFactory = SipFactory.getInstance().createHeaderFactory();
                 } catch (PeerUnavailableException e) {
-                    logger.error("Cannot get the header factory to parse the header of the sip uris to compare", e);
+                    Debug.logError("Cannot get the header factory to parse the header of the sip uris to compare", e);
                     return false;
                 }
                 for (Iterator i = a.getHeaderNames(); i.hasNext();) {
@@ -216,7 +214,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI , Sip
                         // those present in both must match according to the equals method of the corresponding header
                         if (!header1.equals(header2)) return false;
                     } catch (ParseException e) {
-                        logger.error("Cannot parse one of the header of the sip uris to compare " + a + " " + b, e);
+                        Debug.logError("Cannot parse one of the header of the sip uris to compare " + a + " " + b, e);
                         return false;
                     }
                 }
