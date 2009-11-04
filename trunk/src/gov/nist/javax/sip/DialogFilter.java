@@ -81,7 +81,7 @@ import javax.sip.message.Response;
  * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
  * and event model with the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.48 $ $Date: 2009-11-04 17:35:56 $
+ * @version 1.2 $Revision: 1.49 $ $Date: 2009-11-04 20:37:55 $
  * 
  * @author M. Ranganathan
  */
@@ -393,7 +393,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
              * request contained zero or more than one Refer-To header field values.
              */
             ReferToHeader sipHeader = (ReferToHeader) sipRequest.getHeader(ReferTo.NAME);
-            if (sipHeader == null && dialog != null) {
+            if (sipHeader == null && dialog != null && sipProvider.isAutomaticDialogSupportEnabled()) {
                 this
                         .sendBadRequestResponse(sipRequest, transaction,
                                 "Refer-To header is missing");
@@ -444,7 +444,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
                 } else {
                     if (!dialog.handleAck(transaction)) {
-                        if (sipStack.isLooseDialogValidation()) {
+                        if (! sipProvider.isAutomaticDialogSupportEnabled()) {
                             if (sipStack.isLoggingEnabled()) {
                                 sipStack.getStackLogger().logDebug(
                                         "Dialog exists with loose dialog validation "
@@ -486,7 +486,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                         dialog.addTransaction(transaction);
                         dialog.addRoute(sipRequest);
                         transaction.setDialog(dialog, dialogId);
-                        if (sipStack.isDialogCreated(sipRequest.getMethod())) {
+                        if (sipRequest.getMethod().equals(Request.INVITE)) {
                             sipStack.putInMergeTable(transaction, sipRequest);
                         }
                         /*
@@ -766,7 +766,8 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
              */
             lastTransaction = (dialog == null ? null : dialog.getLastTransaction());
 
-            if (dialog != null && lastTransaction != null
+            if (dialog != null && sipProvider.isAutomaticDialogSupportEnabled() 
+                    && lastTransaction != null
                     && lastTransaction.isInviteTransaction()
                     && lastTransaction instanceof ClientTransaction
                     && lastTransaction.getLastResponse().getStatusCode() == 200
@@ -781,7 +782,8 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
             }
 
-            if (dialog != null && lastTransaction != null
+            if (dialog != null && lastTransaction != null 
+                    && sipProvider.isAutomaticDialogSupportEnabled()
                     && lastTransaction.isInviteTransaction()
                     && lastTransaction instanceof ServerTransaction && !dialog.isAckSeen()) {
                 if (sipStack.isLoggingEnabled()) {
