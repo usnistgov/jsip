@@ -112,7 +112,7 @@ public class ReInviteTest extends ScenarioHarness implements SipListener {
 
     public void tearDown() {
         try {
-            Thread.sleep(2000);
+            Thread.sleep(4000);
             this.shootist.checkState();
             this.shootme.checkState();
             super.tearDown();
