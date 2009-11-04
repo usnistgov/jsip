@@ -39,7 +39,7 @@ import javax.sip.*;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.9 $ $Date: 2009-11-04 17:15:35 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2009-11-04 17:23:00 $
  */
 public class RetryAfterParser extends HeaderParser {
 
@@ -126,30 +126,6 @@ public class RetryAfterParser extends HeaderParser {
         }
 
         return retryAfter;
-    }
-
-
-    public static void main(String args[]) throws Exception {
-        String rr[] = {
-            "Retry-After: 18000;duration=3600\n",
-            "Retry-After: 120;duration=3600;ra=oli\n",
-            "Retry-After: 1220 (I'm in a meeting)\n",
-            "Retry-After: 1230 (I'm in a meeting);fg=der;duration=23\n"
-        };
-
-        for (int i = 0; i < rr.length; i++ ) {
-            RetryAfterParser parser =
-            new RetryAfterParser(rr[i]);
-            RetryAfter r= (RetryAfter) parser.parse();
-            System.out.println("encoded = " + r.encode());
-        }
-        
-        RetryAfter retryAfter = new RetryAfter();
-        retryAfter.setDuration(10);
-        retryAfter.setComment("foo");
-        System.out.println(new RetryAfterParser(retryAfter.encode()).parse().toString());
-        
-
     }
 
 }

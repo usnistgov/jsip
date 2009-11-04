@@ -87,7 +87,6 @@ public abstract class ParserTestCase extends TestCase {
         } catch (Exception e) {
             e.printStackTrace();
             fail("Unexpected exception " + getClass().getName());
-            System.exit(0);
         }
     }
 
