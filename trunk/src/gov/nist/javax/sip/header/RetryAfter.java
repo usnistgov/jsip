@@ -36,7 +36,7 @@ import javax.sip.header.*;
 /**
  * Retry-After SIP Header.
  *
- * @version 1.2 $Revision: 1.7 $ $Date: 2009-10-18 13:46:31 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2009-11-04 17:15:34 $
  *
  * @author M. Ranganathan   <br/>
  * @author Olivier Deruelle <br/>
@@ -172,7 +172,7 @@ public class RetryAfter extends ParametersHeader implements RetryAfterHeader {
     public void setDuration(int duration) throws InvalidArgumentException {
         if (duration < 0)
             throw new InvalidArgumentException("the duration parameter is <0");
-        super.setParameter(DURATION, Integer.valueOf(duration));
+        this.retryAfter = new Integer(duration);
     }
 
     /**
@@ -185,7 +185,7 @@ public class RetryAfter extends ParametersHeader implements RetryAfterHeader {
      */
 
     public int getDuration() {
-        int retval = super.getParameterAsInt(DURATION);
-        return retval == -1? 0: retval;
+      if (this.retryAfter == null) return -1;
+      else return this.retryAfter.intValue();
     }
 }
