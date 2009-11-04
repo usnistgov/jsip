@@ -2,6 +2,8 @@ package test.unit.gov.nist.javax.sip.stack.forkedinvite482;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.sip.ClientTransaction;
 import javax.sip.Dialog;
@@ -72,8 +74,38 @@ public class Shootist implements SipListener {
 
     private Dialog ackedDialog;
 
+    private static Timer timer = new Timer();
+
     private Shootist() {
         this.forkedDialogs = new HashSet();
+    }
+
+    class AckSender extends TimerTask {
+
+        private Dialog dialog;
+        private Request ackRequest;
+
+        public AckSender(Request ackRequest, Dialog dialog) {
+            this.dialog = dialog;
+            this.ackRequest = ackRequest;
+        }
+
+        @Override
+        public void run() {
+            try {
+                logger.info("Sending ACK");
+                dialog.sendAck(ackRequest);
+                TestHarness.assertTrue("Dialog state should be CONFIRMED",
+                dialog.getState() == DialogState.CONFIRMED);
+                Shootist.this.ackedDialog = dialog;
+            } catch (Exception ex) {
+                logger.error("Unepxected exception ", ex);
+            }
+        }
+        public void sendAck() {
+            timer.schedule(this, (int)(100 * Math.abs(Math.random())) );
+        }
+
     }
 
     public Shootist(int myPort, int proxyPort, ProtocolObjects protocolObjects) {
@@ -157,11 +189,7 @@ public class Shootist implements SipListener {
                     }
                     this.forkedDialogs.add(dialog);
 
-                    logger.info("Sending ACK");
-                    dialog.sendAck(ackRequest);
-                    TestHarness.assertTrue("Dialog state should be CONFIRMED",
-                            dialog.getState() == DialogState.CONFIRMED);
-                    this.ackedDialog = dialog;
+                    new AckSender(ackRequest, dialog).sendAck();
 
                 } else {
                     logger.info("Response method = " + cseq.getMethod());

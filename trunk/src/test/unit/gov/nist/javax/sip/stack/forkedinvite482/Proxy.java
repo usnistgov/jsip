@@ -99,7 +99,7 @@ public class Proxy extends TestHarness implements SipListener {
                     ct1.setApplicationData(st);
                     this.clientTxTable.add(ct1);
 
-                    Thread.sleep(100);
+                    Thread.sleep((int) ( Math.abs((Math.random() * 100 ))));
                     newRequest = (Request) request.clone();
                     sipUri = protocolObjects.addressFactory.createSipURI("UA2", "127.0.0.1");
                     sipUri.setLrParam();
