@@ -81,7 +81,7 @@ import javax.sip.message.Response;
  * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
  * and event model with the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.50 $ $Date: 2009-11-04 20:43:15 $
+ * @version 1.2 $Revision: 1.51 $ $Date: 2009-11-05 19:44:42 $
  * 
  * @author M. Ranganathan
  */
@@ -337,10 +337,10 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
          * does not match that transaction (based on the matching rules in Section 17.2.3), the
          * UAS core SHOULD generate a 482 (Loop Detected) response and pass it to the server
          * transaction. This support is only enabled when the stack has been instructed to
-         * function with Automatic Dialog Support. Otherwise the application is in charge of
-         * sending the response. TODO -- JAVADOC documentation explaining this behavior.
+         * function with Automatic Dialog Support. 
          */
-        if (sipProvider.isAutomaticDialogSupportEnabled() && sipRequest.getToTag() == null) {
+        if (dialog != null && 
+            dialog.isDialogErrorsAutomaticallyHandled() && sipRequest.getToTag() == null) {
             SIPServerTransaction sipServerTransaction = sipStack
                     .findMergedTransaction(sipRequest);
             if (sipServerTransaction != null) {
@@ -387,13 +387,14 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             }
         }
 
-        if (sipRequest.getMethod().equals(Request.REFER) && sipProvider.isAutomaticDialogSupportEnabled()) {
+        if (sipRequest.getMethod().equals(Request.REFER) && dialog != null &&
+                dialog.isDialogErrorsAutomaticallyHandled()) {
             /*
              * An agent responding to a REFER method MUST return a 400 (Bad Request) if the
              * request contained zero or more than one Refer-To header field values.
              */
             ReferToHeader sipHeader = (ReferToHeader) sipRequest.getHeader(ReferTo.NAME);
-            if (sipHeader == null && dialog != null && sipProvider.isAutomaticDialogSupportEnabled()) {
+            if (sipHeader == null ) {
                 this
                         .sendBadRequestResponse(sipRequest, transaction,
                                 "Refer-To header is missing");
@@ -444,7 +445,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
                 } else {
                     if (!dialog.handleAck(transaction)) {
-                        if (! sipProvider.isAutomaticDialogSupportEnabled()) {
+                        if (!dialog.isDialogErrorsAutomaticallyHandled()) {
                             if (sipStack.isLoggingEnabled()) {
                                 sipStack.getStackLogger().logDebug(
                                         "Dialog exists with loose dialog validation "
@@ -766,7 +767,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
              */
             lastTransaction = (dialog == null ? null : dialog.getLastTransaction());
 
-            if (dialog != null && sipProvider.isAutomaticDialogSupportEnabled() 
+            if (dialog != null && dialog.isDialogErrorsAutomaticallyHandled()
                     && lastTransaction != null
                     && lastTransaction.isInviteTransaction()
                     && lastTransaction instanceof ClientTransaction
@@ -783,7 +784,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             }
 
             if (dialog != null && lastTransaction != null 
-                    && sipProvider.isAutomaticDialogSupportEnabled()
+                    && dialog.isDialogErrorsAutomaticallyHandled()
                     && lastTransaction.isInviteTransaction()
                     && lastTransaction instanceof ServerTransaction && !dialog.isAckSeen()) {
                 if (sipStack.isLoggingEnabled()) {
