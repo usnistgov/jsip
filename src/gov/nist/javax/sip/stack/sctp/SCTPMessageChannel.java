@@ -48,6 +48,7 @@ final class SCTPMessageChannel extends MessageChannel
 	private final SelectionKey key;
 	
 	private final MessageInfo messageInfo;	// outgoing SCTP options, cached
+	private long rxTime;	//< Time first byte of message was received
 
 	// XXX Hardcoded, enough? TODO make stack property
 	private final ByteBuffer rxBuffer = ByteBuffer.allocateDirect( 10000 );
@@ -196,8 +197,10 @@ final class SCTPMessageChannel extends MessageChannel
 	 * @throws IOException 
 	 */
 	void readMessages() throws IOException {
-		long rxTime = System.currentTimeMillis();
-		rxBuffer.rewind();
+		if (rxTime==0) {
+			rxTime = System.currentTimeMillis();
+			rxBuffer.rewind();
+		}
 		MessageInfo info = channel.receive( rxBuffer, null, null );
 		if (info==null) {
 			// happens a lot, some sort of keep-alive?
@@ -209,15 +212,21 @@ final class SCTPMessageChannel extends MessageChannel
 			getSIPStack().getStackLogger().logWarning( "SCTP peer closed, closing too..." );
 			this.close();
 			return;
+		} else if ( !info.isComplete() ) {
+			if ( getSIPStack().getStackLogger().isLoggingEnabled( ServerLogger.TRACE_DEBUG ) ) {
+				getSIPStack().getStackLogger().logDebug( "SCTP incomplete message; bytes=" + info.bytes() );
+			}
+			return;
 		}
 		
-		// Assume it is 1 full message
+		// Assume it is 1 full message, not multiple messages
 		byte[] msg = new byte[ info.bytes() ];
 		rxBuffer.flip();
 		rxBuffer.get( msg );		
 		try {
 			SIPMessage m = parser.parseSIPMessage( msg );
 			this.processMessage( m, rxTime );
+			rxTime = 0;	// reset for next message
 		} catch (ParseException e) {
 			e.printStackTrace();
 			this.close();
