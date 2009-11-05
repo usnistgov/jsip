@@ -93,7 +93,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.143 $ $Date: 2009-11-03 05:27:12 $
+ * @version 1.2 $Revision: 1.144 $ $Date: 2009-11-05 19:44:43 $
  * 
  * @author M. Ranganathan
  * 
@@ -222,6 +222,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     private transient long highestSequenceNumberAcknowledged = -1;
     
     private boolean isBackToBackUserAgent;
+
+    private boolean isDialogErrorsAutomaticallyHandled;
 
 
     // //////////////////////////////////////////////////////
@@ -471,12 +473,15 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     /**
      * Protected Dialog constructor.
      */
-    private SIPDialog() {
+    private SIPDialog(SipProviderImpl provider) {
         this.terminateOnBye = true;
         this.routeList = new RouteList();
         this.dialogState = NULL_STATE; // not yet initialized.
         localSequenceNumber = 0;
         remoteSequenceNumber = -1;
+        this.sipProvider = provider;
+        this.isDialogErrorsAutomaticallyHandled = provider.isAutomaticDialogSupportEnabled() || 
+            provider.isDialogErrorsAutomaticallyHandled();
     }
     
     private void recordStackTrace() {
@@ -492,7 +497,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * @param transaction is the first transaction.
      */
     public SIPDialog(SIPTransaction transaction) {
-        this();
+        this(transaction.getSipProvider());
         SIPRequest sipRequest = (SIPRequest) transaction.getRequest();
         this.earlyDialogId = sipRequest.getDialogId(false);
         if (transaction == null)
@@ -534,8 +539,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * create a sip dialog with a response ( no tx)
      */
     public SIPDialog(SipProviderImpl sipProvider, SIPResponse sipResponse) {
-
-        this.sipProvider = sipProvider;
+        this(sipProvider);
         this.sipStack = (SIPTransactionStack) sipProvider.getSipStack();
         this.setLastResponse(null, sipResponse);
         this.localSequenceNumber = sipResponse.getCSeq().getSeqNumber();
@@ -3118,8 +3122,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * (non-Javadoc)
      * @see gov.nist.javax.sip.DialogExt#setBackToBackUserAgent(boolean)
      */
-    public void setBackToBackUserAgent(boolean flag) {
-        this.isBackToBackUserAgent = flag;
+    public void setBackToBackUserAgent() {
+        this.isBackToBackUserAgent = true;
+        this.isDialogErrorsAutomaticallyHandled = true;
         
     }
 
@@ -3150,4 +3155,10 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 	void setReInviteFlag(boolean reInviteFlag) {
 		this.reInviteFlag = reInviteFlag;
 	}
+
+  
+    
+    public boolean isDialogErrorsAutomaticallyHandled() {
+        return this.isDialogErrorsAutomaticallyHandled;
+    }
 }

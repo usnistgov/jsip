@@ -81,14 +81,14 @@ import javax.sip.message.Response;
 /**
  * Implementation of the JAIN-SIP provider interface.
  *
- * @version 1.2 $Revision: 1.66 $ $Date: 2009-08-20 19:01:24 $
+ * @version 1.2 $Revision: 1.67 $ $Date: 2009-11-05 19:44:41 $
  *
  * @author M. Ranganathan <br/>
  *
  *
  */
 
-public class SipProviderImpl implements javax.sip.SipProvider,
+public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.sip.SipProviderExt,
         SIPTransactionEventListener {
 
     protected SipListener sipListener;
@@ -118,6 +118,8 @@ public class SipProviderImpl implements javax.sip.SipProvider,
      * A string containing the ::0 IPv6 ANY address.
      */
     private String IN6_ADDR_ANY = "::0";
+
+    private boolean dialogErrorsAutomaticallyHandled;
 
     /**
      * Stop processing messages for this provider. Post an empty message to our
@@ -193,6 +195,7 @@ public class SipProviderImpl implements javax.sip.SipProvider,
         this.listeningPoints = new ConcurrentHashMap<String,ListeningPointImpl>();
         this.automaticDialogSupportEnabled = this.sipStack
                 .isAutomaticDialogSupportEnabled();
+        this.dialogErrorsAutomaticallyHandled = this.automaticDialogSupportEnabled;
     }
 
     /*
@@ -1049,6 +1052,9 @@ public class SipProviderImpl implements javax.sip.SipProvider,
     public void setAutomaticDialogSupportEnabled(
             boolean automaticDialogSupportEnabled) {
         this.automaticDialogSupportEnabled = automaticDialogSupportEnabled;
+        if ( automaticDialogSupportEnabled ) {
+            this.dialogErrorsAutomaticallyHandled = automaticDialogSupportEnabled;
+        }
     }
 
     /**
@@ -1056,6 +1062,15 @@ public class SipProviderImpl implements javax.sip.SipProvider,
      */
     public boolean isAutomaticDialogSupportEnabled() {
         return automaticDialogSupportEnabled;
+    }
+
+    @Override
+    public void setDialogErrorsAutomaticallyHandled() {
+        this.dialogErrorsAutomaticallyHandled = true;
+    }
+    
+    public boolean isDialogErrorsAutomaticallyHandled() {
+        return this.dialogErrorsAutomaticallyHandled;
     }
 
 
