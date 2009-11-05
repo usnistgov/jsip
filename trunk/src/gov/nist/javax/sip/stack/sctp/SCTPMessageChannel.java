@@ -199,7 +199,6 @@ final class SCTPMessageChannel extends MessageChannel
 	void readMessages() throws IOException {
 		if (rxTime==0) {
 			rxTime = System.currentTimeMillis();
-			rxBuffer.rewind();
 		}
 		MessageInfo info = channel.receive( rxBuffer, null, null );
 		if (info==null) {
@@ -226,7 +225,8 @@ final class SCTPMessageChannel extends MessageChannel
 		// Assume it is 1 full message, not multiple messages
 		byte[] msg = new byte[ rxBuffer.position() ];
 		rxBuffer.flip();
-		rxBuffer.get( msg );		
+		rxBuffer.get( msg );
+		rxBuffer.compact();
 		try {
 			SIPMessage m = parser.parseSIPMessage( msg );
 			this.processMessage( m, rxTime );
