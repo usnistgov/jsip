@@ -120,7 +120,13 @@ public final class SCTPMessageProcessor extends MessageProcessor {
 			} while ( selector.isOpen() );
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
-			isRunning = false;
+			try {
+				selector.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				this.stop();
+			}
 		}
 	}
 

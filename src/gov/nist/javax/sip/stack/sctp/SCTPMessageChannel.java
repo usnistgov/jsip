@@ -217,10 +217,14 @@ final class SCTPMessageChannel extends MessageChannel
 				getSIPStack().getStackLogger().logDebug( "SCTP incomplete message; bytes=" + info.bytes() );
 			}
 			return;
+		} else {
+			if ( getSIPStack().getStackLogger().isLoggingEnabled( ServerLogger.TRACE_DEBUG ) ) {
+				getSIPStack().getStackLogger().logDebug( "SCTP message now complete; bytes=" + info.bytes() );
+			}			
 		}
 		
 		// Assume it is 1 full message, not multiple messages
-		byte[] msg = new byte[ info.bytes() ];
+		byte[] msg = new byte[ rxBuffer.position() ];
 		rxBuffer.flip();
 		rxBuffer.get( msg );		
 		try {
@@ -228,9 +232,12 @@ final class SCTPMessageChannel extends MessageChannel
 			this.processMessage( m, rxTime );
 			rxTime = 0;	// reset for next message
 		} catch (ParseException e) {
-			e.printStackTrace();
+			getSIPStack().getStackLogger().logException( e );
+			if ( getSIPStack().getStackLogger().isLoggingEnabled( ServerLogger.TRACE_DEBUG ) ) {
+				getSIPStack().getStackLogger().logDebug( "Invalid message bytes=" + msg.length + ":" + new String(msg) );
+			}
 			this.close();
-			throw new IOException( e.toString() );
+			throw new IOException( "Error parsing incoming SCTP message", e );
 		}		
 	}
 	
