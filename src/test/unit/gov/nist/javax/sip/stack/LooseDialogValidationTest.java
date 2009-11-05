@@ -12,6 +12,7 @@ import javax.sip.PeerUnavailableException;
 import javax.sip.RequestEvent;
 import javax.sip.ResponseEvent;
 import javax.sip.ServerTransaction;
+import javax.sip.SipException;
 import javax.sip.SipFactory;
 import javax.sip.SipListener;
 import javax.sip.SipProvider;
@@ -37,6 +38,14 @@ import javax.sip.message.Response;
 
 import junit.framework.TestCase;
 
+/**
+ * Test originally tested the LOOSE_DIALOG_VALIDATION stack proprty to accept ACK retransmissions and to not validate CSeq numbers.
+ * Later 4th Novemenr 2009 it was decided that instead of turing on LOOSE_DIALOG_VALIDATION, these features will be active when
+ * AUTOMATIC_DIALOG_SUPPORT is "off".
+ * 
+ * @author vralev
+ *
+ */
 public class LooseDialogValidationTest extends TestCase {
 
     public class Shootme implements SipListener {
@@ -162,11 +171,13 @@ public class LooseDialogValidationTest extends TestCase {
          */
         public void processInvite(RequestEvent requestEvent,
                 ServerTransaction serverTransaction) {
+        
             SipProvider sipProvider = (SipProvider) requestEvent.getSource();
+  
             Request request = requestEvent.getRequest();
             try {
                 serverTransaction = sipProvider.getNewServerTransaction(request);
-                dialog = serverTransaction.getDialog();
+                dialog = sipProvider.getNewDialog(serverTransaction);
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -232,6 +243,7 @@ public class LooseDialogValidationTest extends TestCase {
             properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
                     "shootmelog.txt");
             properties.setProperty("gov.nist.javax.sip.LOOSE_DIALOG_VALIDATION", "true");
+            properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "false");
 
             try {
                 // Create SipStack object
@@ -347,6 +359,7 @@ public class LooseDialogValidationTest extends TestCase {
 
         public void processResponse(ResponseEvent responseReceivedEvent) {
             if ( responseReceivedEvent.getResponse().getStatusCode() == Response.OK) {
+
                 Dialog d = responseReceivedEvent.getDialog();
                 try {
                     Request ack = d.createAck(1);
@@ -404,6 +417,7 @@ public class LooseDialogValidationTest extends TestCase {
             // Your code will limp at 32 but it is best for debugging.
             properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "DEBUG");
             properties.setProperty("gov.nist.javax.sip.LOOSE_DIALOG_VALIDATION", "true");
+            properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "false");
 
             try {
                 // Create SipStack object
@@ -536,6 +550,13 @@ public class LooseDialogValidationTest extends TestCase {
 
                 // Create the client transaction.
                 ClientTransaction inviteTid = sipProvider.getNewClientTransaction(request);
+            	Dialog d = null;
+				try {
+					d = sipProvider.getNewDialog(inviteTid);
+				} catch (SipException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 
                 // send the request out.
                 inviteTid.sendRequest();
