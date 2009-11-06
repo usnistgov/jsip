@@ -81,7 +81,7 @@ import javax.sip.message.Response;
 /**
  * Implementation of the JAIN-SIP provider interface.
  *
- * @version 1.2 $Revision: 1.67 $ $Date: 2009-11-05 19:44:41 $
+ * @version 1.2 $Revision: 1.68 $ $Date: 2009-11-06 04:23:11 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -1064,7 +1064,10 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
         return automaticDialogSupportEnabled;
     }
 
-    @Override
+    /*
+     * (non-Javadoc)
+     * @see gov.nist.javax.sip.SipProviderExt#setDialogErrorsAutomaticallyHandled()
+     */
     public void setDialogErrorsAutomaticallyHandled() {
         this.dialogErrorsAutomaticallyHandled = true;
     }
