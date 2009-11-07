@@ -91,7 +91,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.127 $ $Date: 2009-11-07 21:56:28 $
+ * @version 1.2 $Revision: 1.128 $ $Date: 2009-11-07 23:35:46 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener {
 
@@ -354,7 +354,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     protected boolean checkBranchId;
 
-	protected boolean isAutomaticDialogErrorHandlingEnabled;
+	protected boolean isAutomaticDialogErrorHandlingEnabled = true;
 
    
     // / Timer to regularly ping the thread auditor (on behalf of the timer

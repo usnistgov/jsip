@@ -93,7 +93,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.145 $ $Date: 2009-11-07 21:56:28 $
+ * @version 1.2 $Revision: 1.146 $ $Date: 2009-11-07 23:35:46 $
  * 
  * @author M. Ranganathan
  * 
@@ -1042,7 +1042,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             throw new RuntimeException("Illegal method");
 
         // For loose validation this function is delegated to the application
-        if (!sipStack.isAutomaticDialogErrorHandlingEnabled) {
+        if (! sipProvider.isDialogErrorsAutomaticallyHandled()) {
             return true;
         }
 

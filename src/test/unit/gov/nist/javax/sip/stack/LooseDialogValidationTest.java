@@ -1,5 +1,7 @@
 package test.unit.gov.nist.javax.sip.stack;
 
+import gov.nist.javax.sip.SipProviderExt;
+
 import java.util.ArrayList;
 import java.util.Properties;
 
@@ -242,8 +244,8 @@ public class LooseDialogValidationTest extends TestCase {
                     "shootmedebug.txt");
             properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
                     "shootmelog.txt");
-            properties.setProperty("gov.nist.javax.sip.DIALOG_ERRORS_AUTOMATICALLY_HANDLED", "false");
-            properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "false");
+            properties.setProperty("gov.nist.javax.sip.AUTOMATIC_DIALOG_ERROR_HANDLING", "false");
+            properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
 
             try {
                 // Create SipStack object
@@ -416,8 +418,8 @@ public class LooseDialogValidationTest extends TestCase {
             // You need 16 (or TRACE) for logging traces. 32 (or DEBUG) for debug + traces.
             // Your code will limp at 32 but it is best for debugging.
             properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "DEBUG");
-            properties.setProperty("gov.nist.javax.sip.LOOSE_DIALOG_VALIDATION", "true");
-            properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "false");
+            properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
+            properties.setProperty("gov.nist.javax.sip.AUTOMATIC_DIALOG_ERROR_HANDLING","false");
 
             try {
                 // Create SipStack object
