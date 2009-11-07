@@ -81,7 +81,7 @@ import javax.sip.message.Response;
  * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
  * and event model with the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.52 $ $Date: 2009-11-07 14:34:12 $
+ * @version 1.2 $Revision: 1.53 $ $Date: 2009-11-07 20:53:22 $
  * 
  * @author M. Ranganathan
  */
@@ -339,8 +339,9 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
          * transaction. This support is only enabled when the stack has been instructed to
          * function with Automatic Dialog Support. 
          */
-        if (dialog != null && 
-            dialog.isDialogErrorsAutomaticallyHandled() && sipRequest.getToTag() == null) {
+        if (sipProvider.isAutomaticDialogSupportEnabled() &&
+            sipProvider.isDialogErrorsAutomaticallyHandled() &&
+            sipRequest.getToTag() == null) {
             SIPServerTransaction sipServerTransaction = sipStack
                     .findMergedTransaction(sipRequest);
             if (sipServerTransaction != null) {
@@ -388,7 +389,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
         }
 
         if (sipRequest.getMethod().equals(Request.REFER) && dialog != null &&
-                dialog.isDialogErrorsAutomaticallyHandled()) {
+                sipProvider.isDialogErrorsAutomaticallyHandled()) {
             /*
              * An agent responding to a REFER method MUST return a 400 (Bad Request) if the
              * request contained zero or more than one Refer-To header field values.
@@ -445,7 +446,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
                 } else {
                     if (!dialog.handleAck(transaction)) {
-                        if (!dialog.isDialogErrorsAutomaticallyHandled()) {
+                        if (!sipProvider.isDialogErrorsAutomaticallyHandled()) {
                             if (sipStack.isLoggingEnabled()) {
                                 sipStack.getStackLogger().logDebug(
                                         "Dialog exists with loose dialog validation "
@@ -767,7 +768,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
              */
             lastTransaction = (dialog == null ? null : dialog.getLastTransaction());
 
-            if (dialog != null && dialog.isDialogErrorsAutomaticallyHandled()
+            if (dialog != null && sipProvider.isDialogErrorsAutomaticallyHandled()
                     && lastTransaction != null
                     && lastTransaction.isInviteTransaction()
                     && lastTransaction instanceof ClientTransaction
@@ -784,7 +785,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             }
 
             if (dialog != null && lastTransaction != null 
-                    && dialog.isDialogErrorsAutomaticallyHandled()
+                    && sipProvider.isDialogErrorsAutomaticallyHandled()
                     && lastTransaction.isInviteTransaction()
                     && lastTransaction instanceof ServerTransaction && !dialog.isAckSeen()) {
                 if (sipStack.isLoggingEnabled()) {
