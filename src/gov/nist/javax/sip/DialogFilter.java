@@ -81,7 +81,7 @@ import javax.sip.message.Response;
  * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
  * and event model with the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.53 $ $Date: 2009-11-07 20:53:22 $
+ * @version 1.2 $Revision: 1.54 $ $Date: 2009-11-07 23:35:47 $
  * 
  * @author M. Ranganathan
  */
@@ -748,6 +748,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             if (dialog != null && transaction != null && lastTransaction != null
                     && sipRequest.getCSeq().getSeqNumber() > dialog.getRemoteSeqNumber()
                     && lastTransaction instanceof SIPServerTransaction
+                    && sipProvider.isDialogErrorsAutomaticallyHandled()
                     && lastTransaction.isInviteTransaction()
                     && lastTransaction.getState() != TransactionState.COMPLETED
                     && lastTransaction.getState() != TransactionState.TERMINATED
@@ -828,11 +829,13 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
                 // send error when stricly higher, ignore when ==
                 // (likely still processing, error would interrupt that)
+                
+              
                 if (dialog.getRemoteSeqNumber() >= sipRequest.getCSeq().getSeqNumber()
+                		&& sipProvider.isDialogErrorsAutomaticallyHandled()
                         && (transaction.getState() == TransactionState.TRYING || transaction
                                 .getState() == TransactionState.PROCEEDING)) {
-
-                    this.sendServerInternalErrorResponse(sipRequest, transaction);
+                	  this.sendServerInternalErrorResponse(sipRequest, transaction);
 
                 }
                 return;
@@ -890,7 +893,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             /*
              * RFC 3265: Upon receiving a NOTIFY request, the subscriber should check that it
              * matches at least one of its outstanding subscriptions; if not, it MUST return a
-             * "481 Subscription does not exist" response unless another 400- or 500-class
+             * "481 Subscription does not exist" response unless another 400- or -class
              * response is more appropriate.
              */
             if (sipProvider.isAutomaticDialogSupportEnabled() && pendingSubscribeClientTx == null

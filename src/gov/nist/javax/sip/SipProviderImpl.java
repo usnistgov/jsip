@@ -81,7 +81,7 @@ import javax.sip.message.Response;
 /**
  * Implementation of the JAIN-SIP provider interface.
  *
- * @version 1.2 $Revision: 1.71 $ $Date: 2009-11-07 21:56:29 $
+ * @version 1.2 $Revision: 1.72 $ $Date: 2009-11-07 23:35:47 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -119,6 +119,10 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
     private String IN6_ADDR_ANY = "::0";
 
     private boolean dialogErrorsAutomaticallyHandled = true;
+    
+    private SipProviderImpl() {
+    	
+    }
 
     /**
      * Stop processing messages for this provider. Post an empty message to our
