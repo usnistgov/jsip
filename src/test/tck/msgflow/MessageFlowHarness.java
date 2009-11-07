@@ -442,6 +442,9 @@ public class MessageFlowHarness extends TestHarness {
         }
     }
 
+    public static void waitLongForMessage() {
+        sleep(2*MESSAGES_ARRIVE_FOR);
+    }
     /**
      * Waits during LISTEN_TIMEOUT milliseconds. This method is called after a
      * message has been sent so that it has the time to propagate though the

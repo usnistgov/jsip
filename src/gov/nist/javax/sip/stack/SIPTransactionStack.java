@@ -91,7 +91,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.125 $ $Date: 2009-11-04 01:37:58 $
+ * @version 1.2 $Revision: 1.126 $ $Date: 2009-11-07 14:34:11 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener {
 
@@ -874,51 +874,62 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
      */
     public SIPTransaction findTransaction(SIPMessage sipMessage, boolean isServer) {
         SIPTransaction retval = null;
+        try {
+            if (isServer) {
+                Via via = sipMessage.getTopmostVia();
+                if (via.getBranch() != null) {
+                    String key = sipMessage.getTransactionId();
 
-        if (isServer) {
-            Via via = sipMessage.getTopmostVia();
-            if (via.getBranch() != null) {
-                String key = sipMessage.getTransactionId();
+                    retval = (SIPTransaction) serverTransactionTable.get(key);
+                    if (stackLogger.isLoggingEnabled())
+                        getStackLogger().logDebug(
+                                "serverTx: looking for key " + key + " existing="
+                                + serverTransactionTable);
+                    if (key.startsWith(SIPConstants.BRANCH_MAGIC_COOKIE_LOWER_CASE)) {
+                        return retval;
+                    }
 
-                retval = (SIPTransaction) serverTransactionTable.get(key);
-                if (stackLogger.isLoggingEnabled())
-                    getStackLogger().logDebug(
-                            "serverTx: looking for key " + key + " existing="
-                                    + serverTransactionTable);
-                if (key.startsWith(SIPConstants.BRANCH_MAGIC_COOKIE_LOWER_CASE))
-                    return retval;
+                }
+                // Need to scan the table for old style transactions (RFC 2543
+                // style)
+                Iterator<SIPServerTransaction> it = serverTransactionTable.values().iterator();
+                while (it.hasNext()) {
+                    SIPServerTransaction sipServerTransaction = (SIPServerTransaction) it.next();
+                    if (sipServerTransaction.isMessagePartOfTransaction(sipMessage)) {
+                        retval = sipServerTransaction;
+                        return retval;
+                    }
+                }
+
+            } else {
+                Via via = sipMessage.getTopmostVia();
+                if (via.getBranch() != null) {
+                    String key = sipMessage.getTransactionId();
+                    if (stackLogger.isLoggingEnabled())
+                        getStackLogger().logDebug("clientTx: looking for key " + key);
+                    retval = (SIPTransaction) clientTransactionTable.get(key);
+                    if (key.startsWith(SIPConstants.BRANCH_MAGIC_COOKIE_LOWER_CASE)) {
+                        return retval;
+                    }
+
+                }
+                // Need to scan the table for old style transactions (RFC 2543
+                // style). This is terribly slow but we need to do this
+                // for backasswords compatibility.
+                Iterator<SIPClientTransaction> it = clientTransactionTable.values().iterator();
+                while (it.hasNext()) {
+                    SIPClientTransaction clientTransaction = (SIPClientTransaction) it.next();
+                    if (clientTransaction.isMessagePartOfTransaction(sipMessage)) {
+                        retval = clientTransaction;
+                        return retval;
+                    }
+                }
 
             }
-            // Need to scan the table for old style transactions (RFC 2543
-            // style)
-            Iterator<SIPServerTransaction> it = serverTransactionTable.values().iterator();
-            while (it.hasNext()) {
-                SIPServerTransaction sipServerTransaction = (SIPServerTransaction) it.next();
-                if (sipServerTransaction.isMessagePartOfTransaction(sipMessage))
-                    return sipServerTransaction;
+        } finally {
+            if (retval == null ) {
+                this.getStackLogger().logDebug("TxTable = " + this.clientTransactionTable);
             }
-
-        } else {
-            Via via = sipMessage.getTopmostVia();
-            if (via.getBranch() != null) {
-                String key = sipMessage.getTransactionId();
-                if (stackLogger.isLoggingEnabled())
-                    getStackLogger().logDebug("clientTx: looking for key " + key);
-                retval = (SIPTransaction) clientTransactionTable.get(key);
-                if (key.startsWith(SIPConstants.BRANCH_MAGIC_COOKIE_LOWER_CASE))
-                    return retval;
-
-            }
-            // Need to scan the table for old style transactions (RFC 2543
-            // style). This is terribly slow but we need to do this
-            // for backasswords compatibility.
-            Iterator<SIPClientTransaction> it = clientTransactionTable.values().iterator();
-            while (it.hasNext()) {
-                SIPClientTransaction clientTransaction = (SIPClientTransaction) it.next();
-                if (clientTransaction.isMessagePartOfTransaction(sipMessage))
-                    return clientTransaction;
-            }
-
         }
         return null;
 
@@ -1278,6 +1289,8 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
                 currentTransaction.releaseSem();
                 return null;
             }
+        } else {
+            this.stackLogger.logDebug("Could not aquire semaphore !!");
         }
 
         if (acquired)
@@ -1405,7 +1418,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
             String method = sipTransaction.getMethod();
             this.removePendingTransaction((SIPServerTransaction) sipTransaction);
             this.removeTransactionPendingAck((SIPServerTransaction) sipTransaction);
-            if (this.isDialogCreated(method)) {
+            if (method.equalsIgnoreCase(Request.INVITE)) {
                 this.removeFromMergeTable((SIPServerTransaction) sipTransaction);
             }
             // Send a notification to the listener.

@@ -1360,7 +1360,7 @@ public class InviteServerTransactionsStateMachineTest
                 "Retransmitted INVITEs should not be passed to the TU",
                 inviteReceivedEvent);
             //Wait for a retransmitted RINGING response
-            waitForMessage();
+            waitLongForMessage();
             //Verify whether there was a RINGING response
             responseEvent = responseCollector.extractCollectedResponseEvent();
             assertNotNull(

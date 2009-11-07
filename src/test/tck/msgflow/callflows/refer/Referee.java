@@ -284,7 +284,8 @@ public class Referee implements SipListener {
 
         logger.info("Response received with client transaction id "
                 + tid + ":\n" + response.getStatusCode() +
-                " cseq = " + response.getHeader(CSeqHeader.NAME) );
+                " cseq = " + response.getHeader(CSeqHeader.NAME) + 
+                " dialog " + tid.getDialog());
 
         CSeqHeader cseq = (CSeqHeader) response.getHeader( CSeqHeader.NAME );
         if (cseq.getMethod().equals(Request.INVITE)) {
@@ -301,9 +302,14 @@ public class Referee implements SipListener {
                     tid.getDialog().sendAck( ack );
 
                     // kill it right away
-                    Request bye = tid.getDialog().createRequest( Request.BYE );
-                    tid.getDialog().sendRequest( mySipProvider.getNewClientTransaction(bye) );
+                    if ( tid.getDialog().getState() != DialogState.TERMINATED ) {
+                    	Request bye = tid.getDialog()
+								.createRequest(Request.BYE);
+						tid.getDialog().sendRequest(
+								mySipProvider.getNewClientTransaction(bye));
+                    }
                 } catch (Exception e) {
+                	logger.error("Caught exception",e);
                     TestHarness.fail("Failed to send BYE request, because of " + e.getMessage());
                 }
             }
