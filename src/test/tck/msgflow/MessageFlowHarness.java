@@ -481,10 +481,10 @@ public class MessageFlowHarness extends TestHarness {
         while (haveBeenSleeping < sleepFor) {
             try {
                 //Thread.sleep(sleepFor - haveBeenSleeping);
-                if ( sleepFor - haveBeenSleeping < 500) {
+                if ( sleepFor - haveBeenSleeping < 750) {
                     Thread.sleep(sleepFor - haveBeenSleeping);
                 } else {
-                    Thread.sleep(500);
+                    Thread.sleep(750);
                     System.out.print(".");
                 }
             } catch (InterruptedException ex) {

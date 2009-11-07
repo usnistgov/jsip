@@ -248,7 +248,7 @@ public class InviteServerTransactionsStateMachineTest
                     ex);
             }
           //Check whether the RINGING is received by the RI.
-            waitForMessage();
+            waitLongForMessage();
 
             responseEvent = responseCollector.extractCollectedResponseEvent();
             assertNotNull(
