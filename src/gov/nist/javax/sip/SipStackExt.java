@@ -19,43 +19,14 @@ import javax.sip.header.HeaderFactory;
 /**
  * SIP Stack extensions to be added to the next spec revision. Only these may be safely used in
  * the interim between now and the next release. SipStackImpl implements this interface.
- * <ul>
- * <li><b>javax.sip.AUTOMATIC_DIALOG_SUPPORT = int </b> <br/> Default is <it>true</it>. This is
- * also settable on a per-provider basis.In addition to the behavior described in version 1.2 of
- * this specification, this flag enables the following additional behaviors:
+ * 
+ * The following new stack initialization flags are defined (not the gov.nist prefix will be
+ * dropped when the spec is updated):
  * 
  * <ul>
- * <li> Dialog CSeq validation. When this flag is true ( the default ), sequence numbers are
- * validated and out of sequence requests directed to a dialog will result in a 500 Error message.
- * When this flag is false, this means the validation is delegated to the application and the
- * stack will not attempt to block requests from reaching the application. In particular, the
- * validation of CSeq and the ACK retransmission recognition are delegated to the application. The
- * stack will no longer return an error when a CSeq number is out of order and it will no longer
- * ignore incoming ACK requests for the same dialog. Your application will be responsible for
- * these cases.
- * 
- * <li> Merged requests: If the request has no tag in the To header field, the UAS core MUST check
- * the request against ongoing transactions. If the From tag, Call-ID, and CSeq exactly match
- * those associated with an ongoing transaction, but the request does not match that transaction
- * (based on the matching rules in Section 17.2.3), the UAS core SHOULD generate a 482 (Loop
- * Detected) response and pass it to the server transaction.
- * 
+ *<li>javax.sip.AUTOMATIC_DIALOG_ERROR_HANDLING
+ *<li>javax.sip.IS_BACK_TO_BACK_USER_AGENT
  * </ul>
- * 
- * Other flags that are being considered for inclusion into the base spec :
- * <ul>
- * <li><b>gov.nist.javax.sip.IS_BACK_TO_BACK_USER_AGENT = [true|false] </b> <br/> Default is
- * <it>false</it> This property controls a setting on the Dialog objects that the stack manages.
- * Pure B2BUA applications should set this flag to <it>true</it>. This property can also be set
- * on a per-dialog basis. Setting this to <it>true</it> imposes serialization on re-INVITE and
- * makes the sending of re-INVITEs asynchronous. The sending of re-INVITE is controlled as follows :
- * If the previous in-DIALOG request was an invite ClientTransaction then the next re-INVITEs
- * that uses the dialog will wait till an ACK has been sent before admitting the new re-INVITE. If
- * the previous in-DIALOG transaction was a INVITE ServerTransaction then Dialog waits for ACK
- * before re-INVITE is allowed to be sent. If a dialog is not ACKed within 32 seconds,
- * then the dialog is torn down and a BYE sent to the peer. </li>
- * 
- * </li>
  * @author M. Ranganathan
  * 
  */

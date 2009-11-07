@@ -81,7 +81,7 @@ import javax.sip.message.Response;
 /**
  * Implementation of the JAIN-SIP provider interface.
  *
- * @version 1.2 $Revision: 1.70 $ $Date: 2009-11-07 20:53:22 $
+ * @version 1.2 $Revision: 1.71 $ $Date: 2009-11-07 21:56:29 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -107,8 +107,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
 
     private int port;
 
-    private boolean automaticDialogSupportEnabled = true;
-
+    private boolean automaticDialogSupportEnabled ; 
     /**
      * A string containing the 0.0.0.0 IPv4 ANY address.
      */
@@ -195,7 +194,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
         this.listeningPoints = new ConcurrentHashMap<String,ListeningPointImpl>();
         this.automaticDialogSupportEnabled = this.sipStack
                 .isAutomaticDialogSupportEnabled();
-        this.dialogErrorsAutomaticallyHandled = this.automaticDialogSupportEnabled;
+        this.dialogErrorsAutomaticallyHandled = this.sipStack.isAutomaticDialogErrorHandlingEnabled();
     }
 
     /*

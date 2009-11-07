@@ -91,7 +91,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.126 $ $Date: 2009-11-07 14:34:11 $
+ * @version 1.2 $Revision: 1.127 $ $Date: 2009-11-07 21:56:28 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener {
 
@@ -341,10 +341,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     protected boolean remoteTagReassignmentAllowed = true;
 
     protected boolean logStackTraceOnMessageSend = true;
-
-    // Set to true to delegate some dialog validation to the application.
-    protected boolean looseDialogValidation = false;
-    
+   
     // Receive UDP buffer size
     protected int receiveUdpBufferSize;
     
@@ -356,6 +353,8 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     protected boolean isBackToBackUserAgent = false;
 
     protected boolean checkBranchId;
+
+	protected boolean isAutomaticDialogErrorHandlingEnabled;
 
    
     // / Timer to regularly ping the thread auditor (on behalf of the timer
@@ -2341,24 +2340,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
         return timer;
     }
 
-    /**
-     * Delegate some dialog validation to the application.
-     *
-     * @return
-     */
-    public boolean isLooseDialogValidation() {
-        return looseDialogValidation;
-    }
-
-    /**
-     * Set to true if you want to delegate some dialog validation to the application.
-     *
-     * @param looseDialogValidation
-     */
-    public void setLooseDialogValidation(boolean looseDialogValidation) {
-        this.looseDialogValidation = looseDialogValidation;
-    }
-
+    
     /**
      * Size of the receive UDP buffer. This property affects performance under load. Bigger buffer
      * is better under load.
