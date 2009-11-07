@@ -36,7 +36,7 @@ import java.text.ParseException;
 /**
  * Parser for AlertInfo header.
  *
- * @version 1.2 $Revision: 1.9 $ $Date: 2009-10-22 10:27:36 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2009-11-07 23:35:49 $
  *
  * @author Olivier Deruelle
  * @author M. Ranganathan
@@ -89,8 +89,13 @@ public class AlertInfoParser extends ParametersParser {
 	                    alertInfo.setAlertInfo(uri);
 	                    this.lexer.match('>');
 	                } else {
-	                	throw new ParseException( "Alert-Info missing '<'" , lexer.getPtr() );
+	                	/* This is non standard for Polycom support. 
+	                	 * I know it is bad grammar but please do not remove. mranga 
+	                	 */
+	                	String alertInfoStr = this.lexer.byteStringNoSemicolon();
+	                	alertInfo.setAlertInfo(alertInfoStr);
 	                }
+	                	
 	                this.lexer.SPorHT();
 	
 	                super.parse(alertInfo);
@@ -110,6 +115,10 @@ public class AlertInfoParser extends ParametersParser {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.9  2009/10/22 10:27:36  jbemmel
+ * Fix for issue #230, restructured the code such that parsing for any address appearing without '<' '>'
+ * stops at ';', then parameters are assigned to the header as expected
+ *
  * Revision 1.8  2009/07/17 18:57:57  emcho
  * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
  *

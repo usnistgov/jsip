@@ -159,8 +159,7 @@ import org.apache.log4j.Logger;
  * <li><b>gov.nist.javax.sip.AUTOMATIC_DIALOG_ERROR_HANDLING = [true|false] </b>
  * <br/>
  * Default is <it>true</it>. This is also settable on a per-provider basis. This
- * flag is set to true by default when AUTOMATIC_DIALOG_SUPPORT is enabled and
- * set to <it>false</it> when AUTOMATIC_DIALOG_SUPPORT is NOT enabled. When set
+ * flag is set to true by default. When set
  * to <it>false</it> the following behaviors are enabled:
  * 
  * <ul>
@@ -428,7 +427,7 @@ import org.apache.log4j.Logger;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.101 $ $Date: 2009-11-07 21:56:29 $
+ * @version 1.2 $Revision: 1.102 $ $Date: 2009-11-07 23:35:48 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -704,17 +703,13 @@ public class SipStackImpl extends SIPTransactionStack implements
 				.getProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "on")
 				.equalsIgnoreCase("on");
 
-		super.isAutomaticDialogErrorHandlingEnabled = super.isAutomaticDialogSupportEnabled;
-
-		if (!isAutomaticDialogErrorHandlingEnabled
-				&& configurationProperties
-						.getProperty("gov.nist.javax.sip.AUTOMATIC_DIALOG_ERROR_HANDLING_ENABLED") != null) {
-			super.isAutomaticDialogErrorHandlingEnabled = configurationProperties
-					.getProperty(
-							"gov.nist.javax.sip.AUTOMATIC_DIALOG_ERROR_HANDLING_ENABLED")
+		super.isAutomaticDialogErrorHandlingEnabled = configurationProperties
+					.getProperty("gov.nist.javax.sip.AUTOMATIC_DIALOG_ERROR_HANDLING","true")
 					.equals(Boolean.TRUE.toString());
+		if ( super.isAutomaticDialogSupportEnabled ) {
+			super.isAutomaticDialogErrorHandlingEnabled = true;
 		}
-
+	
 		if (configurationProperties
 				.getProperty("gov.nist.javax.sip.MAX_LISTENER_RESPONSE_TIME") != null) {
 			super.maxListenerResponseTime = Integer
