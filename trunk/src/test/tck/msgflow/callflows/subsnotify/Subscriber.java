@@ -357,7 +357,6 @@ public class Subscriber implements SipListener {
 
     public void processIOException(IOExceptionEvent exceptionEvent) {
         logger.info("io exception event recieved");
-        AbstractSubsnotifyTestCase.fail("unexpected exception" );
     }
 
     public void processTransactionTerminated(
