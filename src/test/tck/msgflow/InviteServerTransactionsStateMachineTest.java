@@ -225,7 +225,16 @@ public class InviteServerTransactionsStateMachineTest
                         + "response using TI",
                     ex);
             }
-
+            //Create & send RINGING. See that it is properly sent
+            //and that tran state doesn't change
+            try {
+                //listen for the RINGING response
+                responseCollector.collectResponseEvent(riSipProvider);
+            } catch (TooManyListenersException ex) {
+                throw new TckInternalError(
+                    "Failed to register a SipListener with an RI SipProvider",
+                    ex);
+            }
             try {
                 tran.sendResponse(ringing);
             } catch (SipException ex) {
@@ -237,18 +246,9 @@ public class InviteServerTransactionsStateMachineTest
                 "The Transaction did not remain PROCEEDING after transmitting a RINGING response",
                 TransactionState.PROCEEDING,
                 tran.getState());
-            //Create & send RINGING. See that it is properly sent
-            //and that tran state doesn't change
-            try {
-                //listen for the RINGING response
-                responseCollector.collectResponseEvent(riSipProvider);
-            } catch (TooManyListenersException ex) {
-                throw new TckInternalError(
-                    "Failed to register a SipListener with an RI SipProvider",
-                    ex);
-            }
+           
           //Check whether the RINGING is received by the RI.
-            waitLongForMessage();
+            waitForMessage();
 
             responseEvent = responseCollector.extractCollectedResponseEvent();
             assertNotNull(
