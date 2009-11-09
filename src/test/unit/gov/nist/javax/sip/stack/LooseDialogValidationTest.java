@@ -1,5 +1,6 @@
 package test.unit.gov.nist.javax.sip.stack;
 
+import gov.nist.javax.sip.DialogExt;
 import gov.nist.javax.sip.SipProviderExt;
 
 import java.util.ArrayList;
@@ -68,7 +69,7 @@ public class LooseDialogValidationTest extends TestCase {
 
 
 
-        private Dialog dialog;
+        private DialogExt dialog;
 
         public static final boolean callerSendsBye = true;
 
@@ -179,7 +180,8 @@ public class LooseDialogValidationTest extends TestCase {
             Request request = requestEvent.getRequest();
             try {
                 serverTransaction = sipProvider.getNewServerTransaction(request);
-                dialog = sipProvider.getNewDialog(serverTransaction);
+                dialog = (DialogExt) sipProvider.getNewDialog(serverTransaction);
+                dialog.disableSequenceNumberValidation();
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
