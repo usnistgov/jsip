@@ -93,7 +93,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.146 $ $Date: 2009-11-07 23:35:46 $
+ * @version 1.2 $Revision: 1.147 $ $Date: 2009-11-09 02:30:51 $
  * 
  * @author M. Ranganathan
  * 
@@ -223,7 +223,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     
     private boolean isBackToBackUserAgent;
 
-    private boolean isDialogErrorsAutomaticallyHandled;
+    private boolean sequenceNumberValidation = true;
 
 
     // //////////////////////////////////////////////////////
@@ -480,8 +480,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         localSequenceNumber = 0;
         remoteSequenceNumber = -1;
         this.sipProvider = provider;
-        this.isDialogErrorsAutomaticallyHandled = provider.isAutomaticDialogSupportEnabled() || 
-            provider.isDialogErrorsAutomaticallyHandled();
     }
     
     private void recordStackTrace() {
@@ -1042,7 +1040,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             throw new RuntimeException("Illegal method");
 
         // For loose validation this function is delegated to the application
-        if (! sipProvider.isDialogErrorsAutomaticallyHandled()) {
+        if (!this.isSequnceNumberValidation()) {
             return true;
         }
 
@@ -3123,9 +3121,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * @see gov.nist.javax.sip.DialogExt#setBackToBackUserAgent(boolean)
      */
     public void setBackToBackUserAgent() {
-        this.isBackToBackUserAgent = true;
-        this.isDialogErrorsAutomaticallyHandled = true;
-        
+        this.isBackToBackUserAgent = true;   
     }
 
 	/**
@@ -3157,8 +3153,11 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 	}
 
   
-    
-    public boolean isDialogErrorsAutomaticallyHandled() {
-        return this.isDialogErrorsAutomaticallyHandled;
+	public boolean isSequnceNumberValidation() {
+	    return this.sequenceNumberValidation;
+	}
+    @Override
+    public void disableSequenceNumberValidation() {
+        this.sequenceNumberValidation = false;
     }
 }

@@ -34,6 +34,19 @@ public interface DialogExt extends Dialog {
      * @since 2.0
      */
     public void setBackToBackUserAgent();
+    
+    
+    /**
+     * Turn off sequence number validation for this dialog. This passes all requests to the
+     * application layer including those that arrive out of order. This is good for testing
+     * purposes. Validation is delegated to the application and the stack will not attempt to
+     * block requests arriving out of sequence from reaching the application. In particular, the
+     * validation of CSeq and the ACK retransmission recognition are delegated to the application.
+     * Your application will be responsible for error handling of these cases.
+     * 
+     * @since 2.0
+     */
+    public void disableSequenceNumberValidation();
 
   
     

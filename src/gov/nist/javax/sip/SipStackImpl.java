@@ -162,16 +162,6 @@ import org.apache.log4j.Logger;
  * flag is set to true by default. When set
  * to <it>false</it> the following behaviors are enabled:
  * 
- * <ul>
- * <li>Turn off Dialog CSeq validation : When this flag is false, this means the
- * validation is delegated to the application and the stack will not attempt to
- * block requests from reaching the application. In particular, the validation
- * of CSeq and the ACK retransmission recognition are delegated to the
- * application. When the flag is turned off, the stack will no longer return an
- * error when a CSeq number is out of order and it will no longer ignore
- * incoming ACK requests for the same dialog when the
- * AUTOMATIC_DIALOG_ERROR_HANDLING flag is set to false. Your application will
- * be responsible for error handling of these cases.
  * 
  * <li>Turn off Merged requests Loop Detection: The following behavior is turned off
  * : If the request has no tag in the To header field, the UAS core MUST check
@@ -427,7 +417,7 @@ import org.apache.log4j.Logger;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.102 $ $Date: 2009-11-07 23:35:48 $
+ * @version 1.2 $Revision: 1.103 $ $Date: 2009-11-09 02:30:50 $
  * 
  * @author M. Ranganathan <br/>
  * 

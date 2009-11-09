@@ -81,7 +81,7 @@ import javax.sip.message.Response;
  * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
  * and event model with the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.54 $ $Date: 2009-11-07 23:35:47 $
+ * @version 1.2 $Revision: 1.55 $ $Date: 2009-11-09 02:30:50 $
  * 
  * @author M. Ranganathan
  */
@@ -446,7 +446,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
                 } else {
                     if (!dialog.handleAck(transaction)) {
-                        if (!sipProvider.isDialogErrorsAutomaticallyHandled()) {
+                        if (!dialog.isSequnceNumberValidation()) {
                             if (sipStack.isLoggingEnabled()) {
                                 sipStack.getStackLogger().logDebug(
                                         "Dialog exists with loose dialog validation "
@@ -749,6 +749,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     && sipRequest.getCSeq().getSeqNumber() > dialog.getRemoteSeqNumber()
                     && lastTransaction instanceof SIPServerTransaction
                     && sipProvider.isDialogErrorsAutomaticallyHandled()
+                    && dialog.isSequnceNumberValidation()
                     && lastTransaction.isInviteTransaction()
                     && lastTransaction.getState() != TransactionState.COMPLETED
                     && lastTransaction.getState() != TransactionState.TERMINATED
@@ -772,6 +773,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             if (dialog != null && sipProvider.isDialogErrorsAutomaticallyHandled()
                     && lastTransaction != null
                     && lastTransaction.isInviteTransaction()
+                    && dialog.isSequnceNumberValidation()
                     && lastTransaction instanceof ClientTransaction
                     && lastTransaction.getLastResponse().getStatusCode() == 200
                     && !dialog.isAckSent(sipRequest.getCSeq().getSeqNumber())) {
