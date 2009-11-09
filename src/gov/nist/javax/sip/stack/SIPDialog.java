@@ -93,7 +93,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.147 $ $Date: 2009-11-09 02:30:51 $
+ * @version 1.2 $Revision: 1.148 $ $Date: 2009-11-09 04:37:58 $
  * 
  * @author M. Ranganathan
  * 
@@ -3156,7 +3156,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 	public boolean isSequnceNumberValidation() {
 	    return this.sequenceNumberValidation;
 	}
-    @Override
+   
     public void disableSequenceNumberValidation() {
         this.sequenceNumberValidation = false;
     }
