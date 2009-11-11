@@ -412,7 +412,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.104 $ $Date: 2009-11-11 14:01:00 $
+ * @version 1.2 $Revision: 1.105 $ $Date: 2009-11-11 14:11:04 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -1270,11 +1270,12 @@ public class SipStackImpl extends SIPTransactionStack implements
 
 	/**
 	 * Set the log appender ( this is useful if you want to specify a particular
-	 * log format or log to something other than a file for example).
+	 * log format or log to something other than a file for example). This method
+	 * is will be removed May 11, 2010 or shortly there after.
 	 * 
 	 * @param Appender
 	 *            - the log4j appender to add.
-	 * @deprecated TODO: This method will be removed in a future release!
+	 * @deprecated TODO: This method will be removed in a future release! 
 	 */
 	@Deprecated
 	public void addLogAppender(org.apache.log4j.Appender appender) {
@@ -1285,6 +1286,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 
 	/**
 	 * Get the log4j logger ( for log stream integration ).
+	 * This method will be removed May 11, 2010 or shortly there after.
 	 * 
 	 * @return
 	 * @deprecated TODO: This method will be removed in a future release!
