@@ -52,7 +52,7 @@ import org.apache.log4j.Logger;
  * the debug file if needed. This class keeps an XML formatted trace around for later access via
  * RMI. The trace can be viewed with a trace viewer (see tools.traceviewerapp).
  *
- * @version 1.2 $Revision: 1.38 $ $Date: 2009-10-16 19:19:39 $
+ * @version 1.2 $Revision: 1.39 $ $Date: 2009-11-11 14:00:58 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -87,11 +87,8 @@ public class ServerLog implements ServerLogger {
 
     private Properties configurationProperties;
 
-    public ServerLog(SIPTransactionStack sipStack, Properties configurationProperties) {
+    public ServerLog() {
         // Debug log file. Whatever gets logged by us also makes its way into debug log.
-        this.stackLogger = sipStack.getStackLogger();
-        this.sipStack = sipStack;
-        this.setProperties(configurationProperties);
     }
 
     private void setProperties(Properties configurationProperties) {
@@ -444,13 +441,16 @@ public class ServerLog implements ServerLogger {
     }
 
 	public void setSipStack(SipStack sipStack) {
-		// TODO Auto-generated method stub
-		
+		if(sipStack instanceof SIPTransactionStack) {
+			this.sipStack = (SIPTransactionStack)sipStack;
+	        this.stackLogger = this.sipStack.getStackLogger();
+		}
+		else
+			throw new IllegalArgumentException("sipStack must be a SIPTransactionStack");
 	}
 
 	public void setStackProperties(Properties stackProperties) {
-		// TODO Auto-generated method stub
-		
+		setProperties(stackProperties);
 	}
 	
 	public void setLevel(int jsipLoggingLevel) {

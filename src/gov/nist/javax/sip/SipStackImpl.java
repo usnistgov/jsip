@@ -25,7 +25,6 @@
  */
 package gov.nist.javax.sip;
 
-import gov.nist.core.LogWriter;
 import gov.nist.core.ServerLogger;
 import gov.nist.core.StackLogger;
 import gov.nist.core.net.AddressResolver;
@@ -40,7 +39,6 @@ import gov.nist.javax.sip.stack.DefaultMessageLogFactory;
 import gov.nist.javax.sip.stack.DefaultRouter;
 import gov.nist.javax.sip.stack.MessageProcessor;
 import gov.nist.javax.sip.stack.SIPTransactionStack;
-import gov.nist.javax.sip.stack.ServerLog;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -67,9 +65,6 @@ import javax.sip.TransportNotSupportedException;
 import javax.sip.address.Router;
 import javax.sip.header.HeaderFactory;
 import javax.sip.message.Request;
-
-import org.apache.log4j.Appender;
-import org.apache.log4j.Logger;
 
 /**
  * Implementation of SipStack.
@@ -417,7 +412,7 @@ import org.apache.log4j.Logger;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.103 $ $Date: 2009-11-09 02:30:50 $
+ * @version 1.2 $Revision: 1.104 $ $Date: 2009-11-11 14:01:00 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -539,7 +534,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 		String stackLoggerClassName = configurationProperties
 				.getProperty("gov.nist.javax.sip.STACK_LOGGER");
 		// To log debug messages.
-		if (stackLoggerClassName != null) {
+		if (stackLoggerClassName == null)
+			stackLoggerClassName = "gov.nist.core.LogWriter";
 			try {
 				Class<?> stackLoggerClass = Class.forName(stackLoggerClassName);
 				Class<?>[] constructorArgs = new Class[0];
@@ -562,14 +558,12 @@ public class SipStackImpl extends SIPTransactionStack implements
 								+ "- check that it is present on the classpath and that there is a no-args constructor defined",
 						ex);
 			}
-		} else {
-			this.setStackLogger(new LogWriter(configurationProperties));
-		}
 
 		String serverLoggerClassName = configurationProperties
 				.getProperty("gov.nist.javax.sip.SERVER_LOGGER");
 		// To log debug messages.
-		if (serverLoggerClassName != null) {
+		if (serverLoggerClassName == null)
+			serverLoggerClassName = "gov.nist.javax.sip.stack.ServerLog";
 			try {
 				Class<?> serverLoggerClass = Class
 						.forName(serverLoggerClassName);
@@ -593,9 +587,6 @@ public class SipStackImpl extends SIPTransactionStack implements
 								+ "- check that it is present on the classpath and that there is a no-args constructor defined",
 						ex);
 			}
-		} else {
-			this.serverLogger = new ServerLog(this, configurationProperties);
-		}
 
 		// Default router -- use this for routing SIP URIs.
 		// Our router does not do DNS lookups.
@@ -1283,11 +1274,12 @@ public class SipStackImpl extends SIPTransactionStack implements
 	 * 
 	 * @param Appender
 	 *            - the log4j appender to add.
-	 * @deprecated
+	 * @deprecated TODO: This method will be removed in a future release!
 	 */
-	public void addLogAppender(Appender appender) {
-		if (this.getStackLogger() instanceof LogWriter) {
-			((LogWriter) this.getStackLogger()).addAppender(appender);
+	@Deprecated
+	public void addLogAppender(org.apache.log4j.Appender appender) {
+		if (this.getStackLogger() instanceof gov.nist.core.LogWriter) {
+			((gov.nist.core.LogWriter) this.getStackLogger()).addAppender(appender);
 		}
 	}
 
@@ -1295,11 +1287,12 @@ public class SipStackImpl extends SIPTransactionStack implements
 	 * Get the log4j logger ( for log stream integration ).
 	 * 
 	 * @return
-	 * @deprecated
+	 * @deprecated TODO: This method will be removed in a future release!
 	 */
-	public Logger getLogger() {
-		if (this.getStackLogger() instanceof LogWriter) {
-			return ((LogWriter) this.getStackLogger()).getLogger();
+	@Deprecated
+	public org.apache.log4j.Logger getLogger() {
+		if (this.getStackLogger() instanceof gov.nist.core.LogWriter) {
+			return ((gov.nist.core.LogWriter) this.getStackLogger()).getLogger();
 		}
 		return null;
 	}

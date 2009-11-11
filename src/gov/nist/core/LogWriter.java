@@ -280,11 +280,11 @@ public class LogWriter implements StackLogger {
 
     }
 
-    /**
-     * @param configurationProperties
-     */
-    public LogWriter(Properties configurationProperties) {
-        
+    public LogWriter() {
+    }
+    
+	public void setStackProperties(Properties configurationProperties) {
+
         this.configurationProperties = configurationProperties;
 
         String logLevel = configurationProperties
@@ -506,11 +506,6 @@ public class LogWriter implements StackLogger {
            return Level.OFF;
        }
    }
-
-	public void setStackProperties(Properties configurationProperties) {
-	    
-	    
-	}
 	
 	public String getLoggerName() {
 	    if ( this.logger != null ) {
