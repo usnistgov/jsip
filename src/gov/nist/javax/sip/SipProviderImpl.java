@@ -81,7 +81,7 @@ import javax.sip.message.Response;
 /**
  * Implementation of the JAIN-SIP provider interface.
  *
- * @version 1.2 $Revision: 1.75 $ $Date: 2009-11-12 22:51:36 $
+ * @version 1.2 $Revision: 1.76 $ $Date: 2009-11-12 23:33:27 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -487,140 +487,149 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
                         "Cannot find matching Subscription (and gov.nist.javax.sip.DELIVER_UNSOLICITED_NOTIFY not set)");
             }
         }
-        if (sipStack.isDialogCreated(sipRequest.getMethod())) {
-            if (sipStack.findTransaction((SIPRequest) request, true) != null)
-                throw new TransactionAlreadyExistsException(
-                        "server transaction already exists!");
-
-            transaction = (SIPServerTransaction) ((SIPRequest) request)
-                    .getTransaction();
-            if (transaction == null)
+        boolean acquired = false;
+        try {
+            if ( !( acquired = sipStack.acquireSem())) {
                 throw new TransactionUnavailableException(
-                        "Transaction not available");
-            if (transaction.getOriginalRequest() == null)
-                transaction.setOriginalRequest(sipRequest);
-            try {
-                sipStack.addTransaction(transaction);
-            } catch (IOException ex) {
-                throw new TransactionUnavailableException(
-                        "Error sending provisional response");
+                "Transaction not available -- could not acquire stack lock");
             }
-            // So I can handle timeouts.
-            transaction.addEventListener(this);
-            if (isAutomaticDialogSupportEnabled()) {
-                // If automatic dialog support is enabled then
-                // this tx gets his own dialog.
-                String dialogId = sipRequest.getDialogId(true);
-                SIPDialog dialog = sipStack.getDialog(dialogId);
-                if (dialog == null) {
-                    dialog = sipStack.createDialog(transaction);
-
-                }
-                transaction.setDialog(dialog, sipRequest.getDialogId(true));
-                if (sipStack.isDialogCreated(sipRequest.getMethod())) {
-                    sipStack.putInMergeTable(transaction, sipRequest);
-                }
-                dialog.addRoute(sipRequest);
-                if (dialog.getRemoteTag() != null
-                        && dialog.getLocalTag() != null) {
-                    this.sipStack.putDialog(dialog);
-                }
-            }
-
-        } else {
-            if (isAutomaticDialogSupportEnabled()) {
-                // Under autmatic dialog support, dialog is tied into a
-                // transaction.
-                // You cannot create a server tx except for dialog creating
-                // transactions.
-                // After that, all subsequent transactions are created for you
-                // by the stack.
-                transaction = (SIPServerTransaction) sipStack.findTransaction(
-                        (SIPRequest) request, true);
-                if (transaction != null)
+            if (sipStack.isDialogCreated(sipRequest.getMethod())) {
+                if (sipStack.findTransaction((SIPRequest) request, true) != null)
                     throw new TransactionAlreadyExistsException(
-                            "Transaction exists! ");
+                    "server transaction already exists!");
+
                 transaction = (SIPServerTransaction) ((SIPRequest) request)
-                        .getTransaction();
+                .getTransaction();
                 if (transaction == null)
                     throw new TransactionUnavailableException(
-                            "Transaction not available!");
+                    "Transaction not available");
                 if (transaction.getOriginalRequest() == null)
                     transaction.setOriginalRequest(sipRequest);
-                // Map the transaction.
                 try {
                     sipStack.addTransaction(transaction);
                 } catch (IOException ex) {
                     throw new TransactionUnavailableException(
-                            "Could not send back provisional response!");
+                    "Error sending provisional response");
                 }
+                // So I can handle timeouts.
+                transaction.addEventListener(this);
+                if (isAutomaticDialogSupportEnabled()) {
+                    // If automatic dialog support is enabled then
+                    // this tx gets his own dialog.
+                    String dialogId = sipRequest.getDialogId(true);
+                    SIPDialog dialog = sipStack.getDialog(dialogId);
+                    if (dialog == null) {
+                        dialog = sipStack.createDialog(transaction);
 
-                // If there is a dialog already assigned then just update the
-                // dialog state.
-                String dialogId = sipRequest.getDialogId(true);
-                SIPDialog dialog = sipStack.getDialog(dialogId);
-                if (dialog != null) {
-                    dialog.addTransaction(transaction);
-                    dialog.addRoute(sipRequest);
+                    }
                     transaction.setDialog(dialog, sipRequest.getDialogId(true));
+                    if (sipStack.isDialogCreated(sipRequest.getMethod())) {
+                        sipStack.putInMergeTable(transaction, sipRequest);
+                    }
+                    dialog.addRoute(sipRequest);
+                    if (dialog.getRemoteTag() != null
+                            && dialog.getLocalTag() != null) {
+                        this.sipStack.putDialog(dialog);
+                    }
                 }
 
             } else {
-                transaction = (SIPServerTransaction) sipStack.findTransaction(
-                        (SIPRequest) request, true);
-                if (transaction != null)
-                    throw new TransactionAlreadyExistsException(
-                            "Transaction exists! ");
-                transaction = (SIPServerTransaction) ((SIPRequest) request)
-                        .getTransaction();
-                if (transaction != null) {
+                if (isAutomaticDialogSupportEnabled()) {
+                    /*
+                     * Under automatic dialog support, dialog is tied into a transaction. You cannot
+                     * create a server tx except for dialog creating transactions. After that, all
+                     * subsequent transactions are created for you by the stack.
+                     */
+                    transaction = (SIPServerTransaction) sipStack.findTransaction(
+                            (SIPRequest) request, true);
+                    if (transaction != null)
+                        throw new TransactionAlreadyExistsException(
+                        "Transaction exists! ");
+                    transaction = (SIPServerTransaction) ((SIPRequest) request)
+                    .getTransaction();
+                    if (transaction == null)
+                        throw new TransactionUnavailableException(
+                        "Transaction not available!");
                     if (transaction.getOriginalRequest() == null)
                         transaction.setOriginalRequest(sipRequest);
                     // Map the transaction.
-                    sipStack.mapTransaction(transaction);
-
-                    // If there is a dialog already assigned then just
-                    // assign the dialog to the transaction.
-                    String dialogId = sipRequest.getDialogId(true);
-                    SIPDialog dialog = sipStack.getDialog(dialogId);
-                    if (dialog != null) {
-                        dialog.addTransaction(transaction);
-                        dialog.addRoute(sipRequest);
-                        transaction.setDialog(dialog, sipRequest
-                                .getDialogId(true));
-                    }
-
-                    return transaction;
-                } else {
-                    // tx does not exist so create the tx.
-
-                    MessageChannel mc = (MessageChannel) sipRequest
-                            .getMessageChannel();
-                    transaction = sipStack.createServerTransaction(mc);
-                    if (transaction == null)
+                    try {
+                        sipStack.addTransaction(transaction);
+                    } catch (IOException ex) {
                         throw new TransactionUnavailableException(
-                                "Transaction unavailable -- too many servrer transactions");
+                        "Could not send back provisional response!");
+                    }
 
-                    transaction.setOriginalRequest(sipRequest);
-                    sipStack.mapTransaction(transaction);
-
-                    // If there is a dialog already assigned then just
-                    // assign the dialog to the transaction.
+                    // If there is a dialog already assigned then just update the
+                    // dialog state.
                     String dialogId = sipRequest.getDialogId(true);
                     SIPDialog dialog = sipStack.getDialog(dialogId);
                     if (dialog != null) {
                         dialog.addTransaction(transaction);
                         dialog.addRoute(sipRequest);
-                        transaction.setDialog(dialog, sipRequest
-                                .getDialogId(true));
+                        transaction.setDialog(dialog, sipRequest.getDialogId(true));
                     }
 
-                    return transaction;
-                }
-            }
+                } else {
+                    transaction = (SIPServerTransaction) sipStack.findTransaction(
+                            (SIPRequest) request, true);
+                    if (transaction != null)
+                        throw new TransactionAlreadyExistsException(
+                        "Transaction exists! ");
+                    transaction = (SIPServerTransaction) ((SIPRequest) request)
+                    .getTransaction();
+                    if (transaction != null) {
+                        if (transaction.getOriginalRequest() == null)
+                            transaction.setOriginalRequest(sipRequest);
+                        // Map the transaction.
+                        sipStack.mapTransaction(transaction);
 
+                        // If there is a dialog already assigned then just
+                        // assign the dialog to the transaction.
+                        String dialogId = sipRequest.getDialogId(true);
+                        SIPDialog dialog = sipStack.getDialog(dialogId);
+                        if (dialog != null) {
+                            dialog.addTransaction(transaction);
+                            dialog.addRoute(sipRequest);
+                            transaction.setDialog(dialog, sipRequest
+                                    .getDialogId(true));
+                        }
+
+                        return transaction;
+                    } else {
+                        // tx does not exist so create the tx.
+
+                        MessageChannel mc = (MessageChannel) sipRequest
+                        .getMessageChannel();
+                        transaction = sipStack.createServerTransaction(mc);
+                        if (transaction == null)
+                            throw new TransactionUnavailableException(
+                            "Transaction unavailable -- too many servrer transactions");
+
+                        transaction.setOriginalRequest(sipRequest);
+                        sipStack.mapTransaction(transaction);
+
+                        // If there is a dialog already assigned then just
+                        // assign the dialog to the transaction.
+                        String dialogId = sipRequest.getDialogId(true);
+                        SIPDialog dialog = sipStack.getDialog(dialogId);
+                        if (dialog != null) {
+                            dialog.addTransaction(transaction);
+                            dialog.addRoute(sipRequest);
+                            transaction.setDialog(dialog, sipRequest
+                                    .getDialogId(true));
+                        }
+
+                        return transaction;
+                    }
+                }
+
+            }
+            return transaction;
+        } finally {
+            if (acquired)
+            sipStack.releaseSem();
         }
-        return transaction;
 
     }
 
