@@ -81,7 +81,7 @@ import javax.sip.message.Response;
 /**
  * Implementation of the JAIN-SIP provider interface.
  *
- * @version 1.2 $Revision: 1.73 $ $Date: 2009-11-12 19:25:53 $
+ * @version 1.2 $Revision: 1.74 $ $Date: 2009-11-12 21:16:25 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -535,19 +535,13 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
 
         } else {
             if (isAutomaticDialogSupportEnabled()) {
-                // Under autmatic dialog support, dialog is tied into a
-                // transaction.
-                // You cannot create a server tx except for dialog creating
-                // transactions.
-                // After that, all subsequent transactions are created for you
-                // by the stack.
+                /*
+                 * Under automatic dialog support, dialog is tied into a transaction. You cannot
+                 * create a server tx except for dialog creating transactions.After that, all
+                 * subsequent transactions are created for you by the stack.
+                 */
             	
                 // Issue 239 : check if the transaction was not added in the transaction table since the last find
-//                transaction = (SIPServerTransaction) sipStack.findTransaction(
-//                        (SIPRequest) request, true); 
-//                if (transaction != null)
-//                    throw new TransactionAlreadyExistsException(
-//                            "Transaction exists! ");
                 transaction = (SIPServerTransaction) ((SIPRequest) request)
                         .getTransaction();
                 if (transaction == null)
@@ -557,7 +551,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
                     transaction.setOriginalRequest(sipRequest);
                 // Map the transaction.
                 try {
-                	// Issue 239 : if the tx is alerady present we throw the expected exception 
+                	// Issue 239 : if the tx is already present we throw the expected exception 
                 	SIPTransaction previousValue = sipStack.addTransaction(transaction);
                     if(previousValue != null) {
                     	throw new TransactionAlreadyExistsException(
@@ -580,12 +574,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
 
             } else {
                 // Issue 239 : check if the transaction was not added in the transaction table since the last find
-//                transaction = (SIPServerTransaction) sipStack.findTransaction(
-//                        (SIPRequest) request, true);
-//                if (transaction != null)
-//                    throw new TransactionAlreadyExistsException(
-//                            "Transaction exists! ");
-                transaction = (SIPServerTransaction) ((SIPRequest) request)
+                 transaction = (SIPServerTransaction) ((SIPRequest) request)
                         .getTransaction();
                 if (transaction != null) {
                     if (transaction.getOriginalRequest() == null)

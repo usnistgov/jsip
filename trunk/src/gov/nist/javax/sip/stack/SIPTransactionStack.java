@@ -91,7 +91,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.130 $ $Date: 2009-11-12 19:25:53 $
+ * @version 1.2 $Revision: 1.131 $ $Date: 2009-11-12 21:16:24 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener {
 
@@ -1103,10 +1103,10 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
      * @param transaction -- the server transaction to map.
      */
     public SIPTransaction mapTransaction(SIPServerTransaction transaction) {
-        if (transaction.isMapped)
+        if (transaction.isMapped) {
             return null;
+        }
         SIPTransaction retVal = addTransactionHash(transaction);
-        // transaction.startTransactionTimer();
         transaction.isMapped = true;
         return retVal;
     }
@@ -1475,7 +1475,6 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
         serverTransaction.map();
 
         return addTransactionHash(serverTransaction);
-        // serverTransaction.startTransactionTimer();
     }
 
     /**
