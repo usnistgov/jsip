@@ -91,7 +91,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.131 $ $Date: 2009-11-12 21:16:24 $
+ * @version 1.2 $Revision: 1.132 $ $Date: 2009-11-12 22:51:36 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener {
 
@@ -1102,13 +1102,12 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
      *
      * @param transaction -- the server transaction to map.
      */
-    public SIPTransaction mapTransaction(SIPServerTransaction transaction) {
-        if (transaction.isMapped) {
-            return null;
-        }
-        SIPTransaction retVal = addTransactionHash(transaction);
+    public void mapTransaction(SIPServerTransaction transaction) {
+        if (transaction.isMapped)
+            return;
+        addTransactionHash(transaction);
+        // transaction.startTransactionTimer();
         transaction.isMapped = true;
-        return retVal;
     }
 
     /**
@@ -1469,18 +1468,19 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
      *
      * @param serverTransaction -- server transaction to add to the set.
      */
-    public SIPTransaction addTransaction(SIPServerTransaction serverTransaction) throws IOException {
+    public void addTransaction(SIPServerTransaction serverTransaction) throws IOException {
         if (stackLogger.isLoggingEnabled())
             stackLogger.logDebug("added transaction " + serverTransaction);
         serverTransaction.map();
 
-        return addTransactionHash(serverTransaction);
+        addTransactionHash(serverTransaction);
+        // serverTransaction.startTransactionTimer();
     }
 
     /**
      * Hash table for quick lookup of transactions. Here we wait for room if needed.
      */
-    private SIPTransaction addTransactionHash(SIPTransaction sipTransaction) {
+    private void addTransactionHash(SIPTransaction sipTransaction) {
         SIPRequest sipRequest = sipTransaction.getOriginalRequest();
         if (sipTransaction instanceof SIPClientTransaction) {
             if (!this.unlimitedClientTransactionTableSize) {
@@ -1501,18 +1501,18 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
             } else {
                 this.activeClientTransactionCount.incrementAndGet();
             }
-            String key = sipRequest.getTransactionId();            
+            String key = sipRequest.getTransactionId();
+            clientTransactionTable.put(key, (SIPClientTransaction) sipTransaction);
             if (stackLogger.isLoggingEnabled()) {
                 stackLogger.logDebug(" putTransactionHash : " + " key = " + key);
             }
-            return clientTransactionTable.put(key, (SIPClientTransaction) sipTransaction);
         } else {
             String key = sipRequest.getTransactionId();
 
             if (stackLogger.isLoggingEnabled()) {
                 stackLogger.logDebug(" putTransactionHash : " + " key = " + key);
             }
-            return serverTransactionTable.put(key, (SIPServerTransaction) sipTransaction);
+            serverTransactionTable.put(key, (SIPServerTransaction) sipTransaction);
 
         }
 
