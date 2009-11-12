@@ -185,6 +185,14 @@ import javax.sip.message.Request;
  * Default is "infinity" -- ie. no limit. This is to prevent DOS attacks
  * launched by writing to a TCP connection until the server chokes.</li>
  * 
+ * <li><b>gov.nist.javax.sip.DELIVER_TERMINATED_EVENT_FOR_NULL_DIALOG = [true|false] </b><br/>
+ * If set to false (the default), the application does NOT get notified when a Dialog in the
+ * NULL state is terminated. ( Dialogs in the NULL state are not associated with an actual SIP Dialog.
+ * They are a programming convenience. A Dialog is in the NULL state before the first response for the 
+ * Dialog forming Transaction). If set to true, the SipListener will get a DialogTerminatedEvent
+ * when a Dialog in the NULL state is terminated. 
+ * </li>
+ * 
  * <li><b>gov.nist.javax.sip.CACHE_SERVER_CONNECTIONS = [true|false] </b> <br/>
  * Default value is true. Setting this to false makes the Stack close the server
  * socket after a Server Transaction goes to the TERMINATED state. This allows a
@@ -193,6 +201,7 @@ import javax.sip.message.Request;
  * action), the stack will keep the socket open so as to maximize performance at
  * the expense of Thread and memory resources - leaving itself open to DOS
  * attacks.</li>
+ * 
  * 
  * <li><b>gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS = [true|false] </b> <br/>
  * Default value is true. Setting this to false makes the Stack close the server
@@ -412,7 +421,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.106 $ $Date: 2009-11-11 17:17:26 $
+ * @version 1.2 $Revision: 1.107 $ $Date: 2009-11-12 12:35:25 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -1000,6 +1009,9 @@ public class SipStackImpl extends SIPTransactionStack implements
 		super.checkBranchId = Boolean.parseBoolean(configurationProperties
 				.getProperty("gov.nist.javax.sip.REJECT_STRAY_RESPONSES",
 						Boolean.FALSE.toString()));
+		
+		super.isDialogTerminatedEventDeliveredForNullDialog = (Boolean.parseBoolean(configurationProperties.getProperty("gov.nist.javax.sip.DELIVER_TERMINATED_EVENT_FOR_NULL_DIALOG",
+		        Boolean.FALSE.toString())));
 	}
 
 	/*
