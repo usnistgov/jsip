@@ -81,7 +81,7 @@ import javax.sip.message.Response;
 /**
  * Implementation of the JAIN-SIP provider interface.
  *
- * @version 1.2 $Revision: 1.72 $ $Date: 2009-11-07 23:35:47 $
+ * @version 1.2 $Revision: 1.73 $ $Date: 2009-11-12 19:25:53 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -488,9 +488,10 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
             }
         }
         if (sipStack.isDialogCreated(sipRequest.getMethod())) {
-            if (sipStack.findTransaction((SIPRequest) request, true) != null)
-                throw new TransactionAlreadyExistsException(
-                        "server transaction already exists!");
+        	// Issue 239 : Not needed anymore since the put addTransaction will check for it
+//            if (sipStack.findTransaction((SIPRequest) request, true) != null)
+//                throw new TransactionAlreadyExistsException(
+//                        "server transaction already exists!");
 
             transaction = (SIPServerTransaction) ((SIPRequest) request)
                     .getTransaction();
@@ -500,7 +501,12 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
             if (transaction.getOriginalRequest() == null)
                 transaction.setOriginalRequest(sipRequest);
             try {
-                sipStack.addTransaction(transaction);
+            	// Issue 239 : if the tx is alerady present we throw the expected exception 
+                SIPTransaction previousValue = sipStack.addTransaction(transaction);
+                if(previousValue != null) {
+                	throw new TransactionAlreadyExistsException(
+                    	"server transaction already exists!");
+                }
             } catch (IOException ex) {
                 throw new TransactionUnavailableException(
                         "Error sending provisional response");
@@ -535,11 +541,13 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
                 // transactions.
                 // After that, all subsequent transactions are created for you
                 // by the stack.
-                transaction = (SIPServerTransaction) sipStack.findTransaction(
-                        (SIPRequest) request, true);
-                if (transaction != null)
-                    throw new TransactionAlreadyExistsException(
-                            "Transaction exists! ");
+            	
+                // Issue 239 : check if the transaction was not added in the transaction table since the last find
+//                transaction = (SIPServerTransaction) sipStack.findTransaction(
+//                        (SIPRequest) request, true); 
+//                if (transaction != null)
+//                    throw new TransactionAlreadyExistsException(
+//                            "Transaction exists! ");
                 transaction = (SIPServerTransaction) ((SIPRequest) request)
                         .getTransaction();
                 if (transaction == null)
@@ -549,7 +557,12 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
                     transaction.setOriginalRequest(sipRequest);
                 // Map the transaction.
                 try {
-                    sipStack.addTransaction(transaction);
+                	// Issue 239 : if the tx is alerady present we throw the expected exception 
+                	SIPTransaction previousValue = sipStack.addTransaction(transaction);
+                    if(previousValue != null) {
+                    	throw new TransactionAlreadyExistsException(
+                        	"server transaction already exists!");
+                    }
                 } catch (IOException ex) {
                     throw new TransactionUnavailableException(
                             "Could not send back provisional response!");
@@ -566,18 +579,24 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
                 }
 
             } else {
-                transaction = (SIPServerTransaction) sipStack.findTransaction(
-                        (SIPRequest) request, true);
-                if (transaction != null)
-                    throw new TransactionAlreadyExistsException(
-                            "Transaction exists! ");
+                // Issue 239 : check if the transaction was not added in the transaction table since the last find
+//                transaction = (SIPServerTransaction) sipStack.findTransaction(
+//                        (SIPRequest) request, true);
+//                if (transaction != null)
+//                    throw new TransactionAlreadyExistsException(
+//                            "Transaction exists! ");
                 transaction = (SIPServerTransaction) ((SIPRequest) request)
                         .getTransaction();
                 if (transaction != null) {
                     if (transaction.getOriginalRequest() == null)
                         transaction.setOriginalRequest(sipRequest);
                     // Map the transaction.
-                    sipStack.mapTransaction(transaction);
+                    // Issue 239 : if the tx is alerady present we throw the expected exception
+                    SIPTransaction previousValue = sipStack.mapTransaction(transaction);
+                    if(previousValue != null) {
+                    	throw new TransactionAlreadyExistsException(
+                        	"server transaction already exists!");
+                    }
 
                     // If there is a dialog already assigned then just
                     // assign the dialog to the transaction.
@@ -596,13 +615,18 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
 
                     MessageChannel mc = (MessageChannel) sipRequest
                             .getMessageChannel();
+                    // Issue 239 : if the tx is alerady present we throw the expected exception
                     transaction = sipStack.createServerTransaction(mc);
                     if (transaction == null)
                         throw new TransactionUnavailableException(
                                 "Transaction unavailable -- too many servrer transactions");
 
                     transaction.setOriginalRequest(sipRequest);
-                    sipStack.mapTransaction(transaction);
+                    SIPTransaction previousValue = sipStack.mapTransaction(transaction);
+                    if(previousValue != null) {
+                    	throw new TransactionAlreadyExistsException(
+                        	"server transaction already exists!");
+                    }
 
                     // If there is a dialog already assigned then just
                     // assign the dialog to the transaction.
