@@ -51,6 +51,8 @@ import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import javax.sip.InvalidArgumentException;
 import javax.sip.ListeningPoint;
@@ -421,7 +423,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.107 $ $Date: 2009-11-12 12:35:25 $
+ * @version 1.2 $Revision: 1.108 $ $Date: 2009-11-12 23:33:27 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -456,6 +458,9 @@ public class SipStackImpl extends SIPTransactionStack implements
 	// If set to true then the application want to receive
 	// unsolicited NOTIFYs, ie NOTIFYs that don't match any dialog
 	boolean deliverUnsolicitedNotify = false;
+	
+	// Stack semaphore (global lock).
+	private Semaphore stackSemaphore = new Semaphore(1);
 
 	// RFC3261: TLS_RSA_WITH_AES_128_CBC_SHA MUST be supported
 	// RFC3261: TLS_RSA_WITH_3DES_EDE_CBC_SHA SHOULD be supported for backwards
@@ -1386,5 +1391,17 @@ public class SipStackImpl extends SIPTransactionStack implements
 	public boolean isAutomaticDialogErrorHandlingEnabled() {
 		return super.isAutomaticDialogErrorHandlingEnabled;
 	}
+
+    public boolean acquireSem() {
+        try {
+            return this.stackSemaphore.tryAcquire(10, TimeUnit.SECONDS);
+        } catch ( InterruptedException ex) {
+            return false;
+        }
+    }
+    
+    public void releaseSem() {
+        this.stackSemaphore.release();
+    }
 
 }
