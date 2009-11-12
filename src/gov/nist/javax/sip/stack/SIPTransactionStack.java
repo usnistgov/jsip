@@ -91,7 +91,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.128 $ $Date: 2009-11-07 23:35:46 $
+ * @version 1.2 $Revision: 1.129 $ $Date: 2009-11-12 12:35:24 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener {
 
@@ -355,6 +355,8 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     protected boolean checkBranchId;
 
 	protected boolean isAutomaticDialogErrorHandlingEnabled = true;
+	
+	protected boolean isDialogTerminatedEventDeliveredForNullDialog = false;
 
    
     // / Timer to regularly ping the thread auditor (on behalf of the timer
@@ -687,7 +689,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
             if (old == dialog) {
                 this.dialogTable.remove(id);
             }
-
+       
             // We now deliver DTE even when the dialog is not originally present in the Dialog
             // Table
             // This happens before the dialog state is assigned.
@@ -702,6 +704,16 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
             }
 
+        } else if ( this.isDialogTerminatedEventDeliveredForNullDialog ) {
+            if (!dialog.testAndSetIsDialogTerminatedEventDelivered()) {
+                DialogTerminatedEvent event = new DialogTerminatedEvent(dialog.getSipProvider(),
+                        dialog);
+
+                // Provide notification to the listener that the dialog has
+                // ended.
+                dialog.getSipProvider().handleEvent(event, null);
+
+            }
         }
 
     }
@@ -2409,6 +2421,10 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
      */
     public boolean isLogStackTraceOnMessageSend() {
         return logStackTraceOnMessageSend;
+    }
+    
+    public void setDeliverDialogTerminatedEventForNullDialog() {
+        this.isDialogTerminatedEventDeliveredForNullDialog = true;
     }
 
    
