@@ -24,8 +24,9 @@ import javax.sip.header.HeaderFactory;
  * dropped when the spec is updated):
  * 
  * <ul>
- *<li>javax.sip.AUTOMATIC_DIALOG_ERROR_HANDLING
- *<li>javax.sip.IS_BACK_TO_BACK_USER_AGENT
+ *<li>gov.nist.javax.sip.AUTOMATIC_DIALOG_ERROR_HANDLING
+ *<li>gov.nist.javax.sip.IS_BACK_TO_BACK_USER_AGENT
+ *<li>gov.nist.javax.sip.DELIVER_TERMINATED_EVENT_FOR_NULL_DIALOG
  * </ul>
  * @author M. Ranganathan
  * 
