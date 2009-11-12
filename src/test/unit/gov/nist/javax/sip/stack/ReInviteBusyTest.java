@@ -499,15 +499,14 @@ public class ReInviteBusyTest extends TestCase {
                     MaxForwardsHeader mf = protocolObjects.headerFactory
                             .createMaxForwardsHeader(10);
                     inviteRequest.addHeader(mf);
-                    Thread.sleep(100);
-                    ClientTransaction ct = provider.getNewClientTransaction(inviteRequest);
+                     ClientTransaction ct = provider.getNewClientTransaction(inviteRequest);
                     dialog.sendRequest(ct);
                     reInviteCount++;
                     logger.info("RE-INVITE sent");
 
                 } else if (response.getStatusCode() == Response.BUSY_HERE) {
                     this.busyHereReceived = true;
-                    TestCase.assertTrue(dialog.getState() == DialogState.CONFIRMED);
+                    TestCase.assertEquals("Dialog State must be CONFIRMED", dialog.getState() == DialogState.CONFIRMED);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -754,7 +753,7 @@ public class ReInviteBusyTest extends TestCase {
 
     public void tearDown() {
         try {
-            Thread.sleep(3000);
+            Thread.sleep(4000);
             this.shootist.checkState();
             this.shootme.checkState();
             shootmeProtocolObjs.destroy();
