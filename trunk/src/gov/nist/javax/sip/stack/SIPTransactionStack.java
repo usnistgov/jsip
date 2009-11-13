@@ -91,7 +91,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.132 $ $Date: 2009-11-12 22:51:36 $
+ * @version 1.2 $Revision: 1.133 $ $Date: 2009-11-13 21:43:35 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener {
 
@@ -938,9 +938,12 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
             }
         } finally {
-            if (retval == null ) {
-                this.getStackLogger().logDebug("TxTable = " + this.clientTransactionTable);
-            }
+        	if ( this.getStackLogger().isLoggingEnabled()) {
+        		if (retval == null) {
+        			this.getStackLogger().logDebug(
+        					"TxTable = " + this.clientTransactionTable);
+        		}
+        	}
         }
         return null;
 
