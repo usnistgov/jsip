@@ -491,6 +491,7 @@ public class ReInviteBusyTest extends TestCase {
                     logger.info("Sending ACK");
                     dialog.sendAck(ackRequest);
 
+                    Thread.sleep(100);
                   
                     Request inviteRequest = dialog.createRequest(Request.INVITE);
                     ((SipURI) inviteRequest.getRequestURI()).removeParameter("transport");
