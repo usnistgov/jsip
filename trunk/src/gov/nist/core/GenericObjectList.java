@@ -282,9 +282,9 @@ public abstract class GenericObjectList extends LinkedList<GenericObject> implem
         while (obj != null) {
             sprint("[");
 
-            if (GenericObjectList.class.isAssignableFrom(obj.getClass())) {
+            if (obj.getClass().isAssignableFrom(GenericObjectList.class)) {
                 sprint(((GenericObjectList) obj).debugDump(this.indentation));
-            } else if (GenericObject.class.isAssignableFrom(obj.getClass())) {
+            } else if (obj.getClass().isAssignableFrom(GenericObject.class)) {
                 sprint(((GenericObject) obj).debugDump(this.indentation));
             }
 
