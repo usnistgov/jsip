@@ -81,7 +81,7 @@ import javax.sip.message.Response;
 /**
  * Implementation of the JAIN-SIP provider interface.
  *
- * @version 1.2 $Revision: 1.76 $ $Date: 2009-11-12 23:33:27 $
+ * @version 1.2 $Revision: 1.77 $ $Date: 2009-11-14 16:23:36 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -523,7 +523,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
 
                     }
                     transaction.setDialog(dialog, sipRequest.getDialogId(true));
-                    if (sipStack.isDialogCreated(sipRequest.getMethod())) {
+                    if (sipRequest.getMethod().equals(Request.INVITE) && this.isDialogErrorsAutomaticallyHandled()) {
                         sipStack.putInMergeTable(transaction, sipRequest);
                     }
                     dialog.addRoute(sipRequest);
@@ -863,7 +863,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
             } else {
                 sipTransaction.setDialog(dialog, sipRequest.getDialogId(true));
             }
-            if (sipStack.isDialogCreated(sipRequest.getMethod())) {
+            if (sipRequest.getMethod().equals(Request.INVITE) && this.isDialogErrorsAutomaticallyHandled()) {
                 sipStack.putInMergeTable(st, sipRequest);
             }
         } else {
