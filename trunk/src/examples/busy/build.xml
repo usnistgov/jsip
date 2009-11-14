@@ -3,7 +3,7 @@
     <property file="${root}/ant-build-config.properties" />
         <property name = "classes" value="${root}/classes" />
         <property name = "srcroot" value ="${root}/src" />
-        <property name = "log4j_jar" value="${root}/lib/${log4j}" />
+        <property name = "log4j_jar" value="${root}/${log4j}" />
     <path id="project.class.path" >
         <pathelement location="${classes}"/>
         <pathelement location="${log4j_jar}"/>
