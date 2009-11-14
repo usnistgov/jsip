@@ -175,7 +175,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.117 $ $Date: 2009-10-22 15:02:04 $
+ * @version 1.2 $Revision: 1.118 $ $Date: 2009-11-14 20:06:18 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -257,7 +257,8 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                     // until the client disconnects.
                     if (sipStack.isLoggingEnabled() && clientTransaction.isReliable()) {
                        	int useCount = clientTransaction.getMessageChannel().useCount;
-                       	sipStack.getStackLogger().logDebug("Client Use Count = " + useCount);
+                       	if (sipStack.isLoggingEnabled())
+                       		sipStack.getStackLogger().logDebug("Client Use Count = " + useCount);
                     }
                 }
 
@@ -411,7 +412,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
             } catch (java.text.ParseException ex) {
             }
 
-            if (sipStack.getStackLogger().isLoggingEnabled()) {
+            if (sipStack.isLoggingEnabled()) {
                 sipStack.getStackLogger().logDebug("Sending Message " + messageToSend);
                 sipStack.getStackLogger().logDebug("TransactionState " + this.getState());
             }
@@ -653,7 +654,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
             }
         } else {
             if (sipStack.isLoggingEnabled()) {
-                getSIPStack().getStackLogger().logDebug(
+                sipStack.getStackLogger().logDebug(
                         " Not sending response to TU! " + getState());
             }
             this.semRelease();
@@ -887,14 +888,15 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
         if (this.getState() != null)
             throw new SipException("Request already sent");
 
-        if (sipStack.getStackLogger().isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled()) {
             sipStack.getStackLogger().logDebug("sendRequest() " + sipRequest);
         }
 
         try {
             sipRequest.checkHeaders();
         } catch (ParseException ex) {
-            sipStack.getStackLogger().logError("missing required header");
+        	if (sipStack.isLoggingEnabled())
+        		sipStack.getStackLogger().logError("missing required header");
             throw new SipException(ex.getMessage());
         }
 
@@ -905,7 +907,8 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
              * defined by the event package being used.
              * 
              */
-            sipStack.getStackLogger().logWarning(
+        	if (sipStack.isLoggingEnabled())
+        		sipStack.getStackLogger().logWarning(
                     "Expires header missing in outgoing subscribe --"
                             + " Notifier will assume implied value on event package");
         }
@@ -1329,12 +1332,14 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
         String originalFromTag = ((SIPRequest) this.getRequest()).getFromTag();
         if (this.defaultDialog != null) {
             if (originalFromTag == null ^ sipResponse.getFrom().getTag() == null) {
-                sipStack.getStackLogger().logDebug("From tag mismatch -- dropping response");
+            	if (sipStack.isLoggingEnabled())
+            		sipStack.getStackLogger().logDebug("From tag mismatch -- dropping response");
                 return false;
             }
             if (originalFromTag != null
                     && !originalFromTag.equalsIgnoreCase(sipResponse.getFrom().getTag())) {
-                sipStack.getStackLogger().logDebug("From tag mismatch -- dropping response");
+            	if (sipStack.isLoggingEnabled())
+            		sipStack.getStackLogger().logDebug("From tag mismatch -- dropping response");
                 return false;
             }
         }
@@ -1492,7 +1497,8 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                     "setDialog: " + dialogId + "sipDialog = " + sipDialog);
 
         if (sipDialog == null) {
-            sipStack.getStackLogger().logError("NULL DIALOG!!");
+        	if (sipStack.isLoggingEnabled())
+        		sipStack.getStackLogger().logError("NULL DIALOG!!");
             throw new NullPointerException("bad dialog null");
         }
         if (this.defaultDialog == null)

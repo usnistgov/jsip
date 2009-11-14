@@ -57,7 +57,7 @@ import java.util.Iterator;
  * connection. This is the active object that creates new TLS MessageChannels (one for each new
  * accept socket).
  * 
- * @version 1.2 $Revision: 1.18 $ $Date: 2009-08-31 16:18:00 $
+ * @version 1.2 $Revision: 1.19 $ $Date: 2009-11-14 20:06:18 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -144,7 +144,7 @@ public class TLSMessageProcessor extends MessageProcessor {
                 }
 
                 Socket newsock = sock.accept();
-                if (sipStack.getStackLogger().isLoggingEnabled())
+                if (sipStack.isLoggingEnabled())
                     sipStack.getStackLogger().logDebug("Accepting new connection!");
 
                 // Note that for an incoming message channel, the

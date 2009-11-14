@@ -163,7 +163,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.113 $ $Date: 2009-10-30 13:59:41 $
+ * @version 1.2 $Revision: 1.114 $ $Date: 2009-11-14 20:06:17 $
  * @author M. Ranganathan
  *
  */
@@ -333,11 +333,11 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                 try {
                     serverTransaction.sendMessage(serverTransaction.getOriginalRequest()
                             .createResponse(100, "Trying"));
-                    if (serverTransaction.sipStack.isLoggingEnabled())
+                    if (sipStack.isLoggingEnabled())
                         sipStack.getStackLogger().logDebug(" trying sent "
                                 + serverTransaction.getRealState());
                 } catch (IOException ex) {
-                    if (serverTransaction.sipStack.isLoggingEnabled())
+                    if (sipStack.isLoggingEnabled())
                         sipStack.getStackLogger().logError("IO error sending  TRYING");
                 }
             }
@@ -348,7 +348,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
     class TransactionTimer extends SIPStackTimerTask {
 
         public TransactionTimer() {
-            if (sipStack.getStackLogger().isLoggingEnabled()) {
+            if (sipStack.isLoggingEnabled()) {
                 sipStack.getStackLogger().logDebug("TransactionTimer() : " + getTransactionId());
             }
 
@@ -707,7 +707,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
         // transaction at a time. For a given server transaction
         // the listener sees only one event at a time.
 
-        if (sipStack.getStackLogger().isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled()) {
             sipStack.getStackLogger().logDebug("processRequest: " + transactionRequest.getFirstLine());
             sipStack.getStackLogger().logDebug("tx state = " + this.getRealState());
         }
@@ -760,7 +760,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                 } else {
                     // According to RFC3261 Application should not Ack in
                     // CONFIRMED state
-                    if (sipStack.getStackLogger().isLoggingEnabled()) {
+                    if (sipStack.isLoggingEnabled()) {
                         sipStack.getStackLogger().logDebug("ACK received for server Tx "
                                 + this.getTransactionId() + " not delivering to application!");
 
@@ -793,7 +793,8 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                     else
                         this.semRelease();
                 }
-                sipStack.getStackLogger().logDebug("completed processing retransmitted request : "
+                if (sipStack.isLoggingEnabled())
+                	sipStack.getStackLogger().logDebug("completed processing retransmitted request : "
                         + transactionRequest.getFirstLine() + this + " txState = "
                         + this.getState() + " lastResponse = " + this.getLastResponse());
                 return;
@@ -847,11 +848,13 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                         // just ignore the IOException.
                     }
                 }
-                sipStack.getStackLogger().logDebug("Dropping request " + getRealState());
+                if (sipStack.isLoggingEnabled())
+                	sipStack.getStackLogger().logDebug("Dropping request " + getRealState());
             }
 
         } catch (IOException e) {
-            sipStack.getStackLogger().logError("IOException " ,e);
+        	if (sipStack.isLoggingEnabled())
+        		sipStack.getStackLogger().logError("IOException " ,e);
             this.semRelease();
             this.raiseIOExceptionEvent();
         }
@@ -1063,7 +1066,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
             try {
                 // Send the message to the client.
                 // Record the last message sent out.
-                if (sipStack.getStackLogger().isLoggingEnabled()) {
+                if (sipStack.isLoggingEnabled()) {
                     sipStack.getStackLogger().logDebug(
                             "sendMessage : tx = " + this + " getState = " + this.getState());
                 }
@@ -1102,7 +1105,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
     protected void fireRetransmissionTimer() {
 
         try {
-            if (sipStack.getStackLogger().isLoggingEnabled()) {
+            if (sipStack.isLoggingEnabled()) {
                 sipStack.getStackLogger().logDebug("fireRetransmissionTimer() -- ");
             }
             // Resend the last response sent by this transaction
@@ -1477,8 +1480,8 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
      *      gov.nist.javax.sip.message.SIPMessage)
      */
     public void setDialog(SIPDialog sipDialog, String dialogId) {
-        if (sipStack.getStackLogger().isLoggingEnabled())
-            this.sipStack.getStackLogger().logDebug("setDialog " + this + " dialog = " + sipDialog);
+        if (sipStack.isLoggingEnabled())
+            sipStack.getStackLogger().logDebug("setDialog " + this + " dialog = " + sipDialog);
         this.dialog = sipDialog;
         if (dialogId != null)
             this.dialog.setAssigned();
