@@ -91,7 +91,7 @@ import javax.sip.address.*;
  * Subsequently, the request URI will be used as next hop target
  *
  *
- * @version 1.2 $Revision: 1.16 $ $Date: 2009-07-29 20:38:13 $
+ * @version 1.2 $Revision: 1.17 $ $Date: 2009-11-14 20:06:17 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -273,7 +273,7 @@ public class DefaultRouter implements Router {
 
         routes.add(route); // as last one
         req.setRequestURI(firstUri);
-        if (sipStack.getStackLogger().isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled()) {
             sipStack.getStackLogger().logDebug("post: fixStrictRouting" + req);
         }
     }

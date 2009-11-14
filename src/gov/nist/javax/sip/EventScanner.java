@@ -37,7 +37,7 @@ import gov.nist.core.ThreadAuditor;
 /**
  * Event Scanner to deliver events to the Listener.
  *
- * @version 1.2 $Revision: 1.38 $ $Date: 2009-10-18 22:18:17 $
+ * @version 1.2 $Revision: 1.39 $ $Date: 2009-11-14 20:06:19 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -78,7 +78,8 @@ class EventScanner implements Runnable {
     }
 
     public void addEvent(EventWrapper eventWrapper) {
-        sipStack.getStackLogger().logDebug("addEvent " + eventWrapper);
+    	if (sipStack.isLoggingEnabled())
+    		sipStack.getStackLogger().logDebug("addEvent " + eventWrapper);
         synchronized (this.eventMutex) {
 
             pendingEvents.add(eventWrapper);
@@ -299,7 +300,7 @@ class EventScanner implements Runnable {
                             .getState().equals(DialogState.TERMINATED)))
                             && (sipResponse.getStatusCode() == Response.CALL_OR_TRANSACTION_DOES_NOT_EXIST || sipResponse
                                     .getStatusCode() == Response.REQUEST_TIMEOUT)) {
-                        if (sipStack.getStackLogger().isLoggingEnabled()) {
+                        if (sipStack.isLoggingEnabled()) {
                             sipStack.getStackLogger().logDebug(
                                     "Removing dialog on 408 or 481 response");
                         }
@@ -327,7 +328,7 @@ class EventScanner implements Runnable {
                             .equals(Request.INVITE)
                             && sipDialog != null
                             && sipResponse.getStatusCode() == 200) {
-                        if (sipStack.getStackLogger().isLoggingEnabled()) {
+                        if (sipStack.isLoggingEnabled()) {
                             sipStack.getStackLogger().logDebug(
                                     "Warning! unacknowledged dialog. " + sipDialog.getState());
                         }
@@ -405,7 +406,8 @@ class EventScanner implements Runnable {
                             .processTransactionTerminated((TransactionTerminatedEvent) sipEvent);
             } catch (AbstractMethodError ame) {
                 // JvB: for backwards compatibility, accept this
-                sipStack
+            	if (sipStack.isLoggingEnabled())
+            		sipStack
                         .getStackLogger()
                         .logWarning(
                                 "Unable to call sipListener.processTransactionTerminated");
@@ -419,7 +421,8 @@ class EventScanner implements Runnable {
                             .processDialogTerminated((DialogTerminatedEvent) sipEvent);
             } catch (AbstractMethodError ame) {
                 // JvB: for backwards compatibility, accept this
-                sipStack.getStackLogger().logWarning(
+            	if (sipStack.isLoggingEnabled())
+            		sipStack.getStackLogger().logWarning(
                         "Unable to call sipListener.processDialogTerminated");
             } catch (Exception ex) {
                 sipStack.getStackLogger().logException(ex);
@@ -469,7 +472,8 @@ class EventScanner implements Runnable {
                             eventMutex.wait(threadHandle.getPingIntervalInMillisecs());
                         } catch (InterruptedException ex) {
                             // Let the thread die a normal death
-                            sipStack.getStackLogger().logDebug("Interrupted!");
+                        	if (sipStack.isLoggingEnabled())
+                        		sipStack.getStackLogger().logDebug("Interrupted!");
                             return;
                         }
                     }

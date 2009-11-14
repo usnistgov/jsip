@@ -64,7 +64,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.22 $ $Date: 2009-10-16 22:57:07 $
+ * @version 1.2 $Revision: 1.23 $ $Date: 2009-11-14 20:06:18 $
  */
 public final class TLSMessageChannel extends MessageChannel implements SIPMessageListener,
         Runnable, RawMessageChannel {
@@ -333,7 +333,8 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
                         || hdrClass.equals(CSeq.class) || hdrClass.equals(Via.class)
                         || hdrClass.equals(CallID.class) || hdrClass.equals(RequestLine.class) || hdrClass
                         .equals(StatusLine.class))) {
-            sipStack.getStackLogger().logDebug("Encountered bad message \n" + message);
+        	if (sipStack.isLoggingEnabled())
+        		sipStack.getStackLogger().logDebug("Encountered bad message \n" + message);
             // JvB: send a 400 response for requests (except ACK)
             String msgString = sipMessage.toString();
             if (!msgString.startsWith("SIP/") && !msgString.startsWith("ACK ")) {
@@ -487,7 +488,8 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
                     } catch (Exception e) {
                         // IGNore
                     }
-                    sipStack.getStackLogger()
+                    if (sipStack.isLoggingEnabled())
+                    	sipStack.getStackLogger()
                             .logWarning("Dropping message -- could not acquire semaphore");
                 }
             } else {

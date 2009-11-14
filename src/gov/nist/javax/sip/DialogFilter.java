@@ -81,7 +81,7 @@ import javax.sip.message.Response;
  * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
  * and event model with the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.58 $ $Date: 2009-11-14 16:23:36 $
+ * @version 1.2 $Revision: 1.59 $ $Date: 2009-11-14 20:06:19 $
  * 
  * @author M. Ranganathan
  */
@@ -469,7 +469,8 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                             SIPServerTransaction ackTransaction = sipStack
                                     .findTransactionPendingAck(sipRequest);
                             if (ackTransaction != null) {
-                                sipStack.getStackLogger().logDebug("Found Tx pending ACK");
+                            	if (sipStack.isLoggingEnabled())
+                            		sipStack.getStackLogger().logDebug("Found Tx pending ACK");
                                 try {
                                     ackTransaction.setAckSeen();
                                     sipStack.removeTransaction(ackTransaction);
@@ -552,7 +553,8 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
             } else if (dialog != null) {
                 if (!dialog.handlePrack(sipRequest)) {
-                    sipStack.getStackLogger().logDebug("Dropping out of sequence PRACK ");
+                	if (sipStack.isLoggingEnabled())
+                		sipStack.getStackLogger().logDebug("Dropping out of sequence PRACK ");
                     if (transaction != null) {
                         sipStack.removeTransaction(transaction);
                         transaction.releaseSem();
@@ -569,7 +571,8 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     }
                 }
             } else {
-                sipStack.getStackLogger().logDebug(
+            	if (sipStack.isLoggingEnabled())
+            		sipStack.getStackLogger().logDebug(
                         "Processing PRACK without a DIALOG -- this must be a proxy element");
             }
 
@@ -606,7 +609,8 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                         .createResponse(Response.CALL_OR_TRANSACTION_DOES_NOT_EXIST);
                 response.setReasonPhrase("Dialog Not Found");
 
-                sipStack.getStackLogger().logDebug(
+                if (sipStack.isLoggingEnabled())
+                	sipStack.getStackLogger().logDebug(
                         "dropping request -- automatic dialog "
                                 + "support enabled and dialog does not exist!");
                 try {
@@ -640,7 +644,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     InternalErrorHandler.handleException(ex);
                 }
             }
-            if (sipStack.getStackLogger().isLoggingEnabled()) {
+            if (sipStack.isLoggingEnabled()) {
                 sipStack.getStackLogger().logDebug(
                         "BYE Tx = " + transaction + " isMapped ="
                                 + transaction.isTransactionMapped());
@@ -650,7 +654,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
             SIPServerTransaction st = (SIPServerTransaction) sipStack.findCancelTransaction(
                     sipRequest, true);
-            if (sipStack.getStackLogger().isLoggingEnabled()) {
+            if (sipStack.isLoggingEnabled()) {
                 sipStack.getStackLogger().logDebug(
                         "Got a CANCEL, InviteServerTx = " + st + " cancel Server Tx ID = "
                                 + transaction + " isMapped = "
@@ -862,8 +866,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
         RequestEvent sipEvent;
 
-        if (sipStack.getStackLogger().isLoggingEnabled()) {
-
+        if (sipStack.isLoggingEnabled()) {
             sipStack.getStackLogger().logDebug(
                     sipRequest.getMethod() + " transaction.isMapped = "
                             + transaction.isTransactionMapped());
@@ -887,7 +890,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             SIPClientTransaction pendingSubscribeClientTx = sipStack.findSubscribeTransaction(
                     sipRequest, listeningPoint);
 
-            if (sipStack.getStackLogger().isLoggingEnabled()) {
+            if (sipStack.isLoggingEnabled()) {
                 sipStack.getStackLogger().logDebug(
                         "PROCESSING NOTIFY  DIALOG == null " + pendingSubscribeClientTx);
             }
@@ -953,7 +956,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     } else {
                         subscriptionDialog = pendingSubscribeClientTx.getDialog(dialogId);
                     }
-                    if (sipStack.getStackLogger().isLoggingEnabled()) {
+                    if (sipStack.isLoggingEnabled()) {
                         sipStack.getStackLogger().logDebug(
                                 "PROCESSING NOTIFY Subscribe DIALOG " + subscriptionDialog);
                     }
@@ -1033,7 +1036,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                 }
 
             } else {
-                if (sipStack.getStackLogger().isLoggingEnabled()) {
+                if (sipStack.isLoggingEnabled()) {
                     sipStack.getStackLogger().logDebug("could not find subscribe tx");
                 }
 
@@ -1263,12 +1266,14 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             String originalFrom = ((SIPRequest) this.transactionChannel.getRequest())
                     .getFromTag();
             if (originalFrom == null ^ sipResponse.getFrom().getTag() == null) {
-                sipStack.getStackLogger().logDebug("From tag mismatch -- dropping response");
+            	if (sipStack.isLoggingEnabled())
+            		sipStack.getStackLogger().logDebug("From tag mismatch -- dropping response");
                 return;
             }
             if (originalFrom != null
                     && !originalFrom.equalsIgnoreCase(sipResponse.getFrom().getTag())) {
-                sipStack.getStackLogger().logDebug("From tag mismatch -- dropping response");
+            	if (sipStack.isLoggingEnabled())
+            		sipStack.getStackLogger().logDebug("From tag mismatch -- dropping response");
                 return;
             }
 

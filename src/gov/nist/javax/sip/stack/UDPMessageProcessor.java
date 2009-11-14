@@ -39,7 +39,7 @@ import gov.nist.core.*;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size).
  * Each UDP message is processed in its own thread).
  *
- * @version 1.2 $Revision: 1.36 $ $Date: 2009-08-31 16:18:00 $
+ * @version 1.2 $Revision: 1.37 $ $Date: 2009-11-14 20:06:16 $
  *
  * @author M. Ranganathan  <br/>
  *
@@ -202,7 +202,7 @@ public class UDPMessageProcessor extends MessageProcessor {
              // port and IP address.
              if ( sipStack.stackDoesCongestionControl ) {  
              if ( this.messageQueue.size() >= HIGHWAT) {
-                    if (sipStack.getStackLogger().isLoggingEnabled()) {
+                    if (sipStack.isLoggingEnabled()) {
                         sipStack.getStackLogger().logDebug("Dropping message -- queue length exceeded");
 
                     }
@@ -213,7 +213,7 @@ public class UDPMessageProcessor extends MessageProcessor {
                     float threshold = ((float)(messageQueue.size() - LOWAT))/ ((float)(HIGHWAT - LOWAT));
                     boolean decision = Math.random() > 1.0 - threshold;
                     if ( decision ) {
-                        if (sipStack.getStackLogger().isLoggingEnabled()) {
+                        if (sipStack.isLoggingEnabled()) {
                             sipStack.getStackLogger().logDebug("Dropping message with probability  " + (1.0 - threshold));
 
                         }

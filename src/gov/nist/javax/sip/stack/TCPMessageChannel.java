@@ -59,7 +59,7 @@ import javax.sip.address.Hop;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.56 $ $Date: 2009-10-16 22:57:07 $
+ * @version 1.2 $Revision: 1.57 $ $Date: 2009-11-14 20:06:17 $
  */
 public class TCPMessageChannel extends MessageChannel implements SIPMessageListener, Runnable,
         RawMessageChannel {
@@ -385,7 +385,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
                         || hdrClass.equals(CallID.class) || hdrClass.equals(RequestLine.class) || hdrClass
                         .equals(StatusLine.class))) {
             if (sipStack.isLoggingEnabled()) {
-                this.getSIPStack().getStackLogger().logDebug(
+                sipStack.getStackLogger().logDebug(
                         "Encountered Bad Message \n" + sipMessage.toString());
             }
 
@@ -536,7 +536,8 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
                         }
                     }
                 } else {
-                    this.sipStack.getStackLogger()
+                	if (sipStack.isLoggingEnabled())
+                		this.sipStack.getStackLogger()
                             .logWarning("Dropping request -- could not acquire semaphore in 10 sec");
                 }
 

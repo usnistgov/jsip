@@ -248,7 +248,8 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
                                 (reoriginatedRequest.getContent() == null) ? "" : new String(
                                 reoriginatedRequest.getRawContent()), authHeader, userCreds);
                 }
-                sipStack.getStackLogger().logDebug(
+                if (sipStack.isLoggingEnabled())
+                	sipStack.getStackLogger().logDebug(
                         "Created authorization header: " + authorization.toString());
 
                 if (cacheTime != 0)
@@ -436,7 +437,8 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
         Collection<AuthorizationHeader> authHeaders = this.cachedCredentials
                 .getCachedAuthorizationHeaders(callId);
         if (authHeaders == null) {
-            sipStack.getStackLogger().logDebug(
+        	if (sipStack.isLoggingEnabled())
+        		sipStack.getStackLogger().logDebug(
                     "Could not find authentication headers for " + callId);
             return;
         }
