@@ -115,14 +115,10 @@ public class Shootme implements SipListener {
 
             this.okResponse = messageFactory.createResponse(Response.BUSY_HERE,
                     request);
-            Address address = addressFactory.createAddress("Shootme <sip:"
-                    + myAddress + ":" + myPort + ">");
-            ContactHeader contactHeader = headerFactory
-                    .createContactHeader(address);
-            response.addHeader(contactHeader);
+            
             ToHeader toHeader = (ToHeader) okResponse.getHeader(ToHeader.NAME);
             toHeader.setTag("4321"); // Application is supposed to set.
-            okResponse.addHeader(contactHeader);
+            
             this.inviteTid = st;
             // Defer sending the OK to simulate the phone ringing.
             this.inviteRequest = request;
