@@ -69,7 +69,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.68 $ $Date: 2009-10-30 13:59:40 $
+ * @version 1.2 $Revision: 1.69 $ $Date: 2009-11-14 20:06:17 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -273,7 +273,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 
         public LingerTimer() {
             SIPTransaction sipTransaction = SIPTransaction.this;
-            if (sipStack.getStackLogger().isLoggingEnabled()) {
+            if (sipStack.isLoggingEnabled()) {
                 sipStack.getStackLogger().logDebug("LingerTimer : "
                         + sipTransaction.getTransactionId());
             }
@@ -285,7 +285,7 @@ public abstract class SIPTransaction extends MessageChannel implements
             // release the connection associated with this transaction.
             SIPTransactionStack sipStack = transaction.getSIPStack();
 
-            if (sipStack.getStackLogger().isLoggingEnabled()) {
+            if (sipStack.isLoggingEnabled()) {
                 sipStack.getStackLogger().logDebug("LingerTimer: run() : "
                         + getTransactionId());
             }
@@ -1172,7 +1172,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 
     protected void semRelease() {
         try {
-            if (sipStack.getStackLogger().isLoggingEnabled()) {
+            if (sipStack.isLoggingEnabled()) {
                 sipStack.getStackLogger().logDebug("semRelease ]]]]" + this);
                 sipStack.getStackLogger().logStackTrace();
             }
@@ -1199,7 +1199,7 @@ public abstract class SIPTransaction extends MessageChannel implements
      * Set the passToListener flag to true.
      */
     public void setPassToListener() {
-        if (sipStack.getStackLogger().isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled()) {
             sipStack.getStackLogger().logDebug("setPassToListener()");
         }
         this.toListener = true;

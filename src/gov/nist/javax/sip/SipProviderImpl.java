@@ -81,7 +81,7 @@ import javax.sip.message.Response;
 /**
  * Implementation of the JAIN-SIP provider interface.
  *
- * @version 1.2 $Revision: 1.77 $ $Date: 2009-11-14 16:23:36 $
+ * @version 1.2 $Revision: 1.78 $ $Date: 2009-11-14 20:06:19 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -680,7 +680,8 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
             Dialog dialog = sipStack.getDialog(((SIPRequest) request)
                     .getDialogId(false));
             if (dialog != null && dialog.getState() != null) {
-                sipStack.getStackLogger().logWarning(
+            	if (sipStack.isLoggingEnabled())
+            		sipStack.getStackLogger().logWarning(
                         "Dialog exists -- you may want to use Dialog.sendAck() "
                                 + dialog.getState());
             }

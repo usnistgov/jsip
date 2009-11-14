@@ -91,7 +91,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.134 $ $Date: 2009-11-14 16:23:35 $
+ * @version 1.2 $Revision: 1.135 $ $Date: 2009-11-14 20:06:17 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener {
 
@@ -531,7 +531,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
      *
      */
     public void printDialogTable() {
-        if (this.getStackLogger().isLoggingEnabled()) {
+        if (isLoggingEnabled()) {
             this.getStackLogger().logDebug("dialog table  = " + this.dialogTable);
             System.out.println("dialog table = " + this.dialogTable);
         }
@@ -745,10 +745,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
         if (stackLogger.isLoggingEnabled()) {
             stackLogger.logWarning("Silently removing dialog from table");
         }
-        if (dialogTable.containsKey(dialogId)) {
-            dialogTable.remove(dialogId);
-        }
-
+        dialogTable.remove(dialogId);
     }
 
     /**
@@ -769,7 +766,8 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
         SIPClientTransaction retval = null;
         try {
             Iterator it = clientTransactionTable.values().iterator();
-            stackLogger.logDebug("ct table size = " + clientTransactionTable.size());
+            if (stackLogger.isLoggingEnabled())
+            	stackLogger.logDebug("ct table size = " + clientTransactionTable.size());
             String thisToTag = notifyMessage.getTo().getTag();
             if (thisToTag == null) {
                 return retval;
@@ -794,12 +792,11 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
                 // dont include it.
                 if (hisEvent == null)
                     continue;
-                if (this.isLoggingEnabled()) {
+                if (stackLogger.isLoggingEnabled()) {
                     stackLogger.logDebug("ct.fromTag = " + fromTag);
                     stackLogger.logDebug("thisToTag = " + thisToTag);
                     stackLogger.logDebug("hisEvent = " + hisEvent);
                     stackLogger.logDebug("eventHdr " + eventHdr);
-
                 }
 
                 if (  fromTag.equalsIgnoreCase(thisToTag)
@@ -815,7 +812,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
             return retval;
         } finally {
-            if (this.isLoggingEnabled())
+        	if (stackLogger.isLoggingEnabled())
                 stackLogger.logDebug("findSubscribeTransaction : returning " + retval);
 
         }
@@ -1206,7 +1203,8 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
                     currentTransaction.getMessageChannel().sendMessage(trying);
                 }
             } catch (Exception ex) {
-                stackLogger.logError("Exception occured sending TRYING");
+            	if (isLoggingEnabled())
+            		stackLogger.logError("Exception occured sending TRYING");
             }
             return null;
         } else {
@@ -1301,7 +1299,8 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
                 return null;
             }
         } else {
-            this.stackLogger.logDebug("Could not aquire semaphore !!");
+        	if (stackLogger.isLoggingEnabled())
+        		this.stackLogger.logDebug("Could not aquire semaphore !!");
         }
 
         if (acquired)
@@ -2128,7 +2127,8 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
                         // Kill it
                         itDialog.setState(SIPDialog.TERMINATED_STATE);
-                        stackLogger.logDebug("auditDialogs: leaked " + dialogReport);
+                        if (stackLogger.isLoggingEnabled())
+                        	stackLogger.logDebug("auditDialogs: leaked " + dialogReport);
                     }
                 }
             }
@@ -2189,7 +2189,8 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
                         // Kill it
                         removeTransaction(sipTransaction);
-                        stackLogger.logDebug("auditTransactions: leaked " + transactionReport);
+                        if (isLoggingEnabled())
+                        	stackLogger.logDebug("auditTransactions: leaked " + transactionReport);
                     }
                 }
             }
@@ -2293,7 +2294,8 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
             dialogId.append(fromTag);
         }
         String did = dialogId.toString().toLowerCase();
-        getStackLogger().logDebug("Looking for dialog " + did);
+        if (stackLogger.isLoggingEnabled())
+        	stackLogger.logDebug("Looking for dialog " + did);
         /*
          * Check if we can find this dialog in our dialog table.
          */

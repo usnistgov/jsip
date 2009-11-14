@@ -87,7 +87,7 @@ import javax.sip.address.Hop;
  *
  *
  *
- * @version 1.2 $Revision: 1.62 $ $Date: 2009-10-30 03:27:53 $
+ * @version 1.2 $Revision: 1.63 $ $Date: 2009-11-14 20:06:17 $
  */
 public class UDPMessageChannel extends MessageChannel implements
         ParseExceptionListener, Runnable, RawMessageChannel {
@@ -372,9 +372,6 @@ public class UDPMessageChannel extends MessageChannel implements
                         + sipMessage.getCSeq() + "Via = "
                         + sipMessage.getViaHeaders());
             }
-
-            sipStack.getStackLogger().logError("BAD MESSAGE!");
-
             return;
         }
         // For a request first via header tells where the message
@@ -556,8 +553,10 @@ public class UDPMessageChannel extends MessageChannel implements
                         || hdrClass.equals(CallID.class)
                         || hdrClass.equals(RequestLine.class) || hdrClass
                         .equals(StatusLine.class))) {
-            sipStack.getStackLogger().logError("BAD MESSAGE!");
-            sipStack.getStackLogger().logError(message);
+        	if (sipStack.isLoggingEnabled()) {
+        		sipStack.getStackLogger().logError("BAD MESSAGE!");
+            	sipStack.getStackLogger().logError(message);
+        	}
             throw ex;
         } else {
             sipMessage.addUnparsed(header);
@@ -603,7 +602,8 @@ public class UDPMessageChannel extends MessageChannel implements
                     if (messageChannel instanceof RawMessageChannel) {
                         ((RawMessageChannel) messageChannel)
                                 .processMessage(sipMessage);
-                        sipStack.getStackLogger().logDebug("Self routing message");
+                        if (sipStack.isLoggingEnabled())
+                        	sipStack.getStackLogger().logDebug("Self routing message");
                         return;
                     }
 
