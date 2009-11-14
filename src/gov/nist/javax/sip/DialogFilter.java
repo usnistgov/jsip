@@ -81,7 +81,7 @@ import javax.sip.message.Response;
  * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
  * and event model with the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.57 $ $Date: 2009-11-12 22:51:36 $
+ * @version 1.2 $Revision: 1.58 $ $Date: 2009-11-14 16:23:36 $
  * 
  * @author M. Ranganathan
  */
@@ -488,7 +488,8 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                         dialog.addTransaction(transaction);
                         dialog.addRoute(sipRequest);
                         transaction.setDialog(dialog, dialogId);
-                        if (sipRequest.getMethod().equals(Request.INVITE)) {
+                        if (sipRequest.getMethod().equals(Request.INVITE) && 
+                                sipProvider.isDialogErrorsAutomaticallyHandled()) {
                             sipStack.putInMergeTable(transaction, sipRequest);
                         }
                         /*
@@ -755,9 +756,10 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     && lastTransaction.getState() != TransactionState.TERMINATED
                     && lastTransaction.getState() != TransactionState.CONFIRMED) {
 
-                if (sipStack.isLoggingEnabled())
+                if (sipStack.isLoggingEnabled()) {
                     sipStack.getStackLogger().logDebug(
                             "Sending 500 response for out of sequence message");
+                }
                 this.sendServerInternalErrorResponse(sipRequest, transaction);
                 return;
 
@@ -776,14 +778,12 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     && lastTransaction instanceof ClientTransaction
                     && lastTransaction.getLastResponse() != null && lastTransaction.getLastResponse().getStatusCode() == 200
                     && !dialog.isAckSent(lastTransaction.getLastResponse().getCSeq().getSeqNumber())) {
-
-                if (sipStack.isLoggingEnabled())
+                if (sipStack.isLoggingEnabled()) {
                     sipStack.getStackLogger().logDebug(
-                            "Sending 491 response for out of sequence message");
+                            "Sending 491 response for client Dialog ACK not sent.");
+                }
                 this.sendRequestPendingResponse(sipRequest, transaction);
-
                 return;
-
             }
 
             if (dialog != null && lastTransaction != null 
@@ -791,9 +791,8 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     && lastTransaction.isInviteTransaction()
                     && lastTransaction instanceof ServerTransaction && !dialog.isAckSeen()) {
                 if (sipStack.isLoggingEnabled()) {
-                    sipStack.getStackLogger().logDebug("Sending 491 response");
+                    sipStack.getStackLogger().logDebug("Sending 491 response for server Dialog ACK not seen.");
                 }
-
                 this.sendRequestPendingResponse(sipRequest, transaction);
                 return;
 
@@ -804,8 +803,10 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
         // sequentially within a dialog for RFC 3261
         // Note BYE, CANCEL and ACK is handled above - so no check here.
 
-        sipStack.getStackLogger().logDebug(
-                "CHECK FOR OUT OF SEQ MESSAGE " + dialog + " transaction " + transaction);
+        if ( sipStack.isLoggingEnabled() ) {
+            sipStack.getStackLogger().logDebug(
+                    "CHECK FOR OUT OF SEQ MESSAGE " + dialog + " transaction " + transaction);
+        }
 
         if (dialog != null && transaction != null && !sipRequest.getMethod().equals(Request.BYE)
                 && !sipRequest.getMethod().equals(Request.CANCEL)
@@ -1103,8 +1104,9 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
         SIPClientTransaction transaction = (SIPClientTransaction) this.transactionChannel;
         SipStackImpl sipStackImpl = sipProvider.sipStack;
 
-        if (sipStack.isLoggingEnabled())
+        if (sipStack.isLoggingEnabled()) {
             sipStackImpl.getStackLogger().logDebug("Transaction = " + transaction);
+        }
 
         if (transaction == null) {
             // Transaction is null but the dialog is not null. This means that
