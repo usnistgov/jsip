@@ -51,7 +51,7 @@ import java.util.Set;
  *
  */
 
-public class NameValueList implements Serializable, Map<String,NameValue> {
+public class NameValueList implements Serializable, Cloneable, Map<String,NameValue> {
 
 
     private static final long serialVersionUID = -6998271876574260243L;
@@ -342,5 +342,10 @@ public class NameValueList implements Serializable, Map<String,NameValue> {
      */
     public Collection<NameValue> values() {
         return this.hmap.values();
+    }
+    
+    @Override
+    public int hashCode() {
+        return this.hmap.keySet().hashCode();
     }
 }
