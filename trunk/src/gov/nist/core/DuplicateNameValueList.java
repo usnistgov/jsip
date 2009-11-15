@@ -43,7 +43,7 @@ import java.util.Set;
  */
 public class DuplicateNameValueList implements Serializable, Cloneable {
 
-    private MultiValueMapImpl nameValueMap = new MultiValueMapImpl();
+    private MultiValueMapImpl<NameValue> nameValueMap = new MultiValueMapImpl<NameValue>();
     private String separator;
 
     private static final long serialVersionUID = -5611332957903796952L;
@@ -234,33 +234,12 @@ public class DuplicateNameValueList implements Serializable, Cloneable {
 
     }
 
-    public boolean containsKey(Object key) {
-        return nameValueMap.containsKey(key.toString().toLowerCase());
-    }
-
-    public boolean containsValue(Object value) {
-        return nameValueMap.containsValue(value);
-    }
-
-    public NameValue get(Object key) {
-        return (NameValue) this.nameValueMap.get(key);
-    }
-
     public boolean isEmpty() {
         return this.nameValueMap.isEmpty();
     }
 
-    public Set<String> keySet() {
-        return this.nameValueMap.keySet();
-    }
-
     public NameValue put(String key, NameValue value) {
         return (NameValue) this.nameValueMap.put(key, value);
-    }
-
-    public void putAll(Map< ? extends String, ? extends NameValue> t) {
-        this.nameValueMap.putAll(t);
-
     }
 
     public NameValue remove(Object key) {
@@ -275,7 +254,6 @@ public class DuplicateNameValueList implements Serializable, Cloneable {
         return this.nameValueMap.values();
     }
 
-    @Override
     public int hashCode() {
         return this.nameValueMap.keySet().hashCode();
     }
