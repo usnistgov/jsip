@@ -69,7 +69,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.69 $ $Date: 2009-11-14 20:06:17 $
+ * @version 1.2 $Revision: 1.70 $ $Date: 2009-11-15 19:50:43 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -828,7 +828,7 @@ public abstract class SIPTransaction extends MessageChannel implements
     /**
      * A shortcut way of telling if we are a server transaction.
      */
-    protected boolean IsServerTransaction() {
+    protected boolean isServerTransaction() {
         return this instanceof SIPServerTransaction;
     }
 

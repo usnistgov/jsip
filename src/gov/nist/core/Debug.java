@@ -28,7 +28,6 @@
 *******************************************************************************/
 package gov.nist.core;
 
-import java.io.IOException;
 
 /**
  *   A class to do debug printfs

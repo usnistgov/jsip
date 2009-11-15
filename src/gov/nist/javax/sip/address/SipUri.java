@@ -32,6 +32,8 @@ package gov.nist.javax.sip.address;
  *Bug fix contributions
  *Daniel J. Martinez Manzano <dani@dif.um.es>
  *Stefan Marx.
+ *pmusgrave@newheights.com (Additions for gruu and outbound drafts)
+ *Jeroen van Bemmel ( additions for SCTP transport )
  */
 import gov.nist.core.*;
 import java.util.*;
@@ -49,7 +51,7 @@ import javax.sip.header.HeaderFactory;
  *
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.21 $ $Date: 2009-11-04 17:02:45 $
+ * @version 1.2 $Revision: 1.22 $ $Date: 2009-11-15 19:50:45 $
  *
  *
  *
@@ -58,8 +60,6 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI , Sip
 
  
     private static final long serialVersionUID = 7749781076218987044L;
-
-    protected String scheme;
 
     /** Authority for the uri.
      */
@@ -147,6 +147,8 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI , Sip
      *    header equality enforced in comparison
      *
      */
+    @SuppressWarnings("unchecked")
+    @Override
     public boolean equals(Object that) {
 
         // Shortcut for same object
@@ -166,7 +168,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI , Sip
 
             if (a.getUser()!=null && !RFC2396UrlDecoder.decode(a.getUser()).equals(RFC2396UrlDecoder.decode(b.getUser()))) return false;
             if (a.getUserPassword()!=null && !RFC2396UrlDecoder.decode(a.getUserPassword()).equals(RFC2396UrlDecoder.decode(b.getUserPassword()))) return false;
-            if ( a.getHost() == null ^ b.getHost() == null) return false;
+            if (a.getHost() == null ^ b.getHost() == null) return false;
             if (a.getHost() != null && !a.getHost().equalsIgnoreCase(b.getHost())) return false;
             if (a.getPort() != b.getPort()) return false;
 
@@ -208,6 +210,8 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI , Sip
 
                     if(h1 == null && h2 != null) return false;
                     if(h2 == null && h1 != null) return false;
+                    // The following check should not be needed but we add it for findbugs.
+                    if(h1 == null && h2 == null) continue; 
                     try {
                         Header header1 = headerFactory.createHeader(hname, RFC2396UrlDecoder.decode(h1));
                         Header header2 = headerFactory.createHeader(hname, RFC2396UrlDecoder.decode(h2));
@@ -740,7 +744,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI , Sip
      *
      * @return an Iterator over all the header names
      */
-    public Iterator getHeaderNames() {
+    public Iterator<String> getHeaderNames() {
         return this.qheaders.getNames();
 
     }
@@ -805,7 +809,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI , Sip
      * @return an Iterator over all the parameter names
      *
      */
-    public Iterator getParameterNames() {
+    public Iterator<String> getParameterNames() {
         return this.uriParms.getNames();
     }
 
@@ -942,7 +946,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI , Sip
     public void setParameter(String name, String value) throws ParseException {
         if (name.equalsIgnoreCase("ttl")) {
             try {
-                int ttl = Integer.parseInt(value);
+                Integer.parseInt(value);
             } catch (NumberFormatException ex) {
                 throw new ParseException("bad parameter " + value, 0);
             }
@@ -1019,10 +1023,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI , Sip
         return uriParms.getNameValue("lr") != null;
     }
 
-    /*
-     * pmusgrave@newheights.com
-     * Additions for gruu and outbound drafts
-     */
+  
     /**
      * Returns whether the <code>gr</code> parameter is set.
      *

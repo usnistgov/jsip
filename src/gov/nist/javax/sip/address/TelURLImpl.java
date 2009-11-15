@@ -33,7 +33,7 @@ import java.util.Iterator;
 /**
  * Implementation of the TelURL interface.
  *
- * @version 1.2 $Revision: 1.9 $ $Date: 2009-07-17 18:57:23 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2009-11-15 19:50:45 $
  *
  * @author M. Ranganathan
  *
@@ -44,8 +44,6 @@ public class TelURLImpl
 
 
     private static final long serialVersionUID = 5873527320305915954L;
-
-    protected String scheme;
 
     protected TelephoneNumber telephoneNumber;
 

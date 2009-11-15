@@ -86,7 +86,7 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
      * SipSecurity manager for every user name,
      *
      * @param sipStack -- our stack.
-     * @param accountManger -- an implementation of the AccountManager interface.
+     * @param accountManager -- an implementation of the AccountManager interface.
      * @param headerFactory -- header factory.
      */
     public AuthenticationHelperImpl(SipStackImpl sipStack, AccountManager accountManager,
@@ -103,7 +103,7 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
      * SipSecurity manager for every user name,
      *
      * @param sipStack -- our stack.
-     * @param accountManger -- an implementation of the AccountManager interface.
+     * @param accountManager -- an implementation of the AccountManager interface.
      * @param headerFactory -- header factory.
      */
     public AuthenticationHelperImpl(SipStackImpl sipStack, SecureAccountManager accountManager,
