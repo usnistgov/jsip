@@ -31,8 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class MultiValueMapImpl<V> implements MultiValueMap<Object, V> {
-    private HashMap<Object, ArrayList<V>> map = new HashMap<Object, ArrayList<V>>();
+public class MultiValueMapImpl<V> implements MultiValueMap<String, V> {
+    private HashMap<String, ArrayList<V>> map = new HashMap<String, ArrayList<V>>();
 
     private static final long serialVersionUID = 4275505380960964605L;
 
@@ -41,7 +41,7 @@ public class MultiValueMapImpl<V> implements MultiValueMap<Object, V> {
 
     }
 
-    public List<V> put(Object key, V value) {
+    public List<V> put(String key, V value) {
         ArrayList<V> keyList = map.get(key);
         if (keyList == null) {
             keyList = new ArrayList<V>(10);
@@ -118,11 +118,11 @@ public class MultiValueMapImpl<V> implements MultiValueMap<Object, V> {
         return map.isEmpty();
     }
 
-    public Set<Object> keySet() {
+    public Set<String> keySet() {
         return this.map.keySet();
     }
 
-    public Object remove(Object key, V item) {
+    public Object remove(String key, V item) {
         ArrayList<V> list = this.map.get(key);
         if (list == null) {
             return null;
@@ -135,20 +135,20 @@ public class MultiValueMapImpl<V> implements MultiValueMap<Object, V> {
         return map.get(key);
     }
 
-    public List<V> put(Object key, List<V> value) {
+    public List<V> put(String key, List<V> value) {
         return this.map.put(key,(ArrayList<V>) value);
-    }
-
-    public void putAll(Map< ? extends Object, ? extends List<V>> m) {
-        for (Object k : m.keySet()) {
-            ArrayList<V> al = new ArrayList<V>();
-            al.addAll(m.get(k));
-            map.put(k, al);
-        }
     }
 
     public List<V> remove(Object key) {
         return map.remove(key);
+    }
+    
+    public void putAll(Map< ? extends String, ? extends List<V>> mapToPut) {
+        for (String k : mapToPut.keySet()) {
+            ArrayList<V> al = new ArrayList<V>();
+            al.addAll(mapToPut.get(k));
+            this.map.put(k, al);
+        }  
     }
 
 }

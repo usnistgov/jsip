@@ -93,7 +93,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.150 $ $Date: 2009-11-15 19:50:43 $
+ * @version 1.2 $Revision: 1.151 $ $Date: 2009-11-15 23:23:29 $
  * 
  * @author M. Ranganathan
  * 
@@ -500,7 +500,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      */
     public SIPDialog(SIPTransaction transaction) {
         this(transaction.getSipProvider());
+       
         SIPRequest sipRequest = (SIPRequest) transaction.getRequest();
+        this.callIdHeader = sipRequest.getCallId();
         this.earlyDialogId = sipRequest.getDialogId(false);
         if (transaction == null)
             throw new NullPointerException("Null tx");
@@ -529,7 +531,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * @param sipResponse -- response with the appropriate tags.
      */
     public SIPDialog(SIPClientTransaction transaction, SIPResponse sipResponse) {
-
         this(transaction);
         if (sipResponse == null)
             throw new NullPointerException("Null SipResponse");
@@ -550,9 +551,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         this.hisTag = sipResponse.getTo().getTag();
         this.localParty = sipResponse.getFrom().getAddress();
         this.remoteParty = sipResponse.getTo().getAddress();
-        // this.defaultRouter = new DefaultRouter((SipStack) sipStack,
-        // sipStack.outboundProxy);
-
         this.method = sipResponse.getCSeq().getMethod();
         this.callIdHeader = sipResponse.getCallId();
         this.serverTransactionFlag = false;
@@ -2382,7 +2380,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * @param sipResponse -- the last response to set.
      */
     public void setLastResponse(SIPTransaction transaction, SIPResponse sipResponse) {
-
+        this.callIdHeader = sipResponse.getCallId();     
         int statusCode = sipResponse.getStatusCode();
         if (statusCode == 100) {
         	if (sipStack.isLoggingEnabled())
