@@ -43,7 +43,7 @@ import java.util.Set;
  */
 public class DuplicateNameValueList implements Serializable, Cloneable {
 
-    private MultiHashMap nameValueMap = new MultiHashMap();
+    private MultiValueMapImpl nameValueMap = new MultiValueMapImpl();
     private String separator;
 
     private static final long serialVersionUID = -5611332957903796952L;
@@ -120,6 +120,9 @@ public class DuplicateNameValueList implements Serializable, Cloneable {
      * @return true if the two objects compare for equality.
      */
     public boolean equals(Object otherObject) {
+        if ( otherObject == null ) {
+            throw new NullPointerException("Null argument!");
+        }
         if (!otherObject.getClass().equals(this.getClass())) {
             return false;
         }

@@ -32,7 +32,7 @@ import javax.sip.address.URI;
  * Implementation of the URI class. This relies on the 1.4 URI class.
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.9 $ $Date: 2009-07-17 18:57:22 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2009-11-15 19:50:45 $
  *
  *
  */
@@ -54,6 +54,9 @@ public class GenericURI extends NetObject implements javax.sip.address.URI {
      */
     protected String uriString;
 
+    /**
+     * The URI Scheme.
+     */
     protected String scheme;
 
     /** Consturctor
