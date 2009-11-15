@@ -115,8 +115,7 @@ public interface SipStackExt extends SipStack {
      * <b>NOTE: This function must be called before adding a TLS listener</b>
      *
      * @since 2.0
-     * @param String[] The new set of ciphers to support.
-     * @return
+     * @param newCipherSuites -- The new set of ciphers to support.
      *
      */
     public void setEnabledCipherSuites(String[] newCipherSuites);

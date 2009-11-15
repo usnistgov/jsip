@@ -107,6 +107,7 @@ public class Shootme  implements SipListener {
             int ackCount = ((ApplicationData) dialog.getApplicationData()).ackCount;
             if (ackCount == 1) {
                 dialog = inviteTid.getDialog();
+                Thread.sleep(100);
                 this.sendReInvite(sipProvider);
 
             } else
@@ -154,7 +155,6 @@ public class Shootme  implements SipListener {
                 ReInviteTest.assertSame("Dialog mismatch ", st.getDialog(),this.dialog);
             }
 
-            // Thread.sleep(5000);
             logger.info("got a server tranasaction " + st);
             byte[] content = request.getRawContent();
             if (content != null) {
@@ -193,11 +193,6 @@ public class Shootme  implements SipListener {
         inviteRequest.addHeader(mf);
         ((ViaHeader) inviteRequest.getHeader(ViaHeader.NAME))
                 .setTransport(protocolObjects.transport);
-        Address address = protocolObjects.addressFactory.createAddress("Shootme <sip:"
-                + myAddress + ":" + myPort + ">");
-        ContactHeader contactHeader = protocolObjects.headerFactory
-                .createContactHeader(address);
-        inviteRequest.addHeader(contactHeader);
         ClientTransaction ct = sipProvider
                 .getNewClientTransaction(inviteRequest);
         dialog.sendRequest(ct);

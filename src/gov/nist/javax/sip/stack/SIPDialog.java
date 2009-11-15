@@ -93,7 +93,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.149 $ $Date: 2009-11-14 20:06:18 $
+ * @version 1.2 $Revision: 1.150 $ $Date: 2009-11-15 19:50:43 $
  * 
  * @author M. Ranganathan
  * 
@@ -240,7 +240,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * sending the next re-INVITE. 
      */
     public class ReInviteSender implements Runnable, Serializable {
-
+        private static final long serialVersionUID = 1019346148741070635L;
         ClientTransaction ctx;
 
         public void terminate() {
@@ -1389,7 +1389,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                     .logDebug("Transaction Added " + this + myTag + "/" + hisTag);
             sipStack.getStackLogger().logDebug(
                     "TID = " + transaction.getTransactionId() + "/"
-                            + transaction.IsServerTransaction());
+                            + transaction.isServerTransaction());
             sipStack.getStackLogger().logStackTrace();
         }
     }
@@ -3181,5 +3181,10 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
    
     public void disableSequenceNumberValidation() {
         this.sequenceNumberValidation = false;
+    }
+    
+    @Override
+    public int hashCode() {
+        return this.getCallId().getCallId().hashCode();
     }
 }
