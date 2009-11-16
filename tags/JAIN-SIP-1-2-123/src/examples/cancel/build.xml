@@ -1,0 +1,65 @@
+<project basedir="." default="shootme" >
+    <property name="root" value="../../../" />
+    <property file="${root}/ant-build-config.properties" />
+        <property name = "classes" value="${root}/classes" />
+        <property name = "srcroot" value ="${root}/src" />
+        <property name = "log4j_jar" value="${root}/lib/${log4j}" />
+        <property name = "junit_jar" value="${root}/lib/${junit}" />
+    <path id="project.class.path" >
+        <pathelement location="${classes}"/>
+        <pathelement location="${log4j_jar}"/>
+        <pathelement location="${junit_jar}"/>
+    </path>
+        <target name="make" >
+        <javac debug="${javac.debug}"
+            debuglevel="${javac.debuglevel}"
+            source="${javac.source}"
+            nowarn="${javac.nowarn}"
+            deprecation="${javac.deprecation}"
+            optimize="${javac.optimize}"
+            srcdir="${srcroot}"
+            includes="examples/cancel/**/*.java"
+            destdir= "${classes}"
+            classpathref = "project.class.path"
+        />
+     </target>
+     <target name="shootme" depends="make"
+        description="build and run the  example UAS.">
+        <delete file="shootmedebug.txt" failonerror="false"/>
+        <delete file="shootmelog.txt" failonerror="false"/>
+            <java
+            classname="examples.cancel.Shootme"
+            classpathref="project.class.path"
+            fork="true" >
+            </java>
+    </target>
+
+    <target name="shootist"
+    depends = "make"
+    description="run the example UAC.">
+    <delete file="shootistdebug.txt" failonerror="false"/>
+    <delete file="shootistlog.txt" failonerror="false"/>
+        <java classname="examples.cancel.Shootist"
+        classpathref="project.class.path"
+        fork="true">
+        </java>
+     </target>
+    <target name="shootistlog" description= "Show the cancel log" >
+        <java classname="tools.tracesviewer.TracesViewer" fork="true">
+      <arg name="-server_file" value="cancellog.txt" />
+    </java>
+     </target>
+    <target name="shootmelog" description= "Show the cancel log" >
+        <java classname="tools.tracesviewer.TracesViewer" fork="true">
+      <arg name="-server_file" value="shootmelog.txt" />
+    </java>
+     </target>
+     <target name="clean" description="clean the logs">
+        <delete failonerror="false" >
+            <fileset dir="." includes="*debug*.txt" />
+            <fileset dir="." includes="*log*.txt" />
+        </delete>
+     </target>
+
+
+</project>
