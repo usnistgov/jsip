@@ -67,7 +67,6 @@ public class StackLoggerImpl implements StackLogger {
     }
 
     public boolean isLoggingEnabled(int sipLogLevel) {
-       System.out.println("level " + logger.getLevel());
        int levelSet = levelMap.get( logger.getLevel().toString());
        return sipLogLevel <= levelSet;
     }

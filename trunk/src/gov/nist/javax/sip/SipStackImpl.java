@@ -423,7 +423,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.109 $ $Date: 2009-11-14 20:06:19 $
+ * @version 1.2 $Revision: 1.110 $ $Date: 2009-11-17 21:23:58 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -1283,7 +1283,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 	 * @return -- the stack SipListener
 	 * 
 	 */
-	protected SipListener getSipListener() {
+	public SipListener getSipListener() {
 		return this.sipListener;
 	}
 
@@ -1397,6 +1397,16 @@ public class SipStackImpl extends SIPTransactionStack implements
 	 */
 	public void setIsBackToBackUserAgent(boolean flag) {
 		super.isBackToBackUserAgent = flag;
+	}
+	
+	/**
+	 * Get the "back to back User Agent" flag.
+	 * 
+	 * return the value of the flag
+	 * 
+	 */
+	public boolean isBackToBackUserAgent() {
+		return super.isBackToBackUserAgent;
 	}
 
 	public boolean isAutomaticDialogErrorHandlingEnabled() {
