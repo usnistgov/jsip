@@ -34,9 +34,12 @@ public class ProtocolObjects {
 
     private boolean isStarted;
 
+	public boolean autoDialog;
+
     public ProtocolObjects(String stackname, String pathname, String transport,
             boolean autoDialog) {
 
+    	this.autoDialog = autoDialog;
         this.transport = transport;
         SipFactory sipFactory = SipFactory.getInstance();
         sipFactory.resetFactory();

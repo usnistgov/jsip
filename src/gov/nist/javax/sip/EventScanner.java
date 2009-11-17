@@ -37,7 +37,7 @@ import gov.nist.core.ThreadAuditor;
 /**
  * Event Scanner to deliver events to the Listener.
  *
- * @version 1.2 $Revision: 1.39 $ $Date: 2009-11-14 20:06:19 $
+ * @version 1.2 $Revision: 1.40 $ $Date: 2009-11-17 21:23:57 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -372,6 +372,19 @@ class EventScanner implements Runnable {
                 // Check for null as listener could be removed.
                 if (sipListener != null)
                     sipListener.processTimeout((TimeoutEvent) sipEvent);
+            } catch (Exception ex) {
+                // We cannot let this thread die under any
+                // circumstances. Protect ourselves by logging
+                // errors to the console but continue.
+                sipStack.getStackLogger().logException(ex);
+            }
+
+        } else if (sipEvent instanceof DialogTimeoutEvent) {
+            try {
+                // Check for null as listener could be removed.
+                if (sipListener != null && sipListener instanceof SipListenerExt) {
+                    ((SipListenerExt)sipListener).processTimeout((DialogTimeoutEvent) sipEvent);                    
+                }
             } catch (Exception ex) {
                 // We cannot let this thread die under any
                 // circumstances. Protect ourselves by logging

@@ -37,7 +37,9 @@ import gov.nist.javax.sip.DefaultAddressResolver;
 import gov.nist.javax.sip.ListeningPointImpl;
 import gov.nist.javax.sip.LogRecordFactory;
 import gov.nist.javax.sip.SIPConstants;
+import gov.nist.javax.sip.SipListenerExt;
 import gov.nist.javax.sip.SipProviderImpl;
+import gov.nist.javax.sip.SipStackImpl;
 import gov.nist.javax.sip.header.Event;
 import gov.nist.javax.sip.header.Via;
 import gov.nist.javax.sip.header.extensions.JoinHeader;
@@ -66,6 +68,7 @@ import javax.sip.DialogState;
 import javax.sip.DialogTerminatedEvent;
 import javax.sip.ServerTransaction;
 import javax.sip.SipException;
+import javax.sip.SipListener;
 import javax.sip.TransactionState;
 import javax.sip.TransactionTerminatedEvent;
 import javax.sip.address.Hop;
@@ -91,9 +94,9 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.135 $ $Date: 2009-11-14 20:06:17 $
+ * @version 1.2 $Revision: 1.136 $ $Date: 2009-11-17 21:24:02 $
  */
-public abstract class SIPTransactionStack implements SIPTransactionEventListener {
+public abstract class SIPTransactionStack implements SIPTransactionEventListener, SIPDialogEventListener {
 
     /*
      * Number of milliseconds between timer ticks (500).
@@ -1575,6 +1578,19 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
             transaction.disableTimeoutTimer();
             transaction.disableRetransmissionTimer();
             // Send a IO Exception to the Listener.
+        }
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see gov.nist.javax.sip.stack.SIPDialogEventListener#dialogErrorEvent(gov.nist.javax.sip.stack.SIPDialogErrorEvent)
+     */
+    public synchronized void dialogErrorEvent(SIPDialogErrorEvent dialogErrorEvent) {
+        SIPDialog sipDialog = (SIPDialog) dialogErrorEvent.getSource();
+        SipListener sipListener = ((SipStackImpl)this).getSipListener();
+        // if the app is not implementing the SipListenerExt interface we delete the dialog to avoid leaks
+        if(sipDialog != null && !(sipListener instanceof SipListenerExt)) {
+        	sipDialog.delete();
         }
     }
 
