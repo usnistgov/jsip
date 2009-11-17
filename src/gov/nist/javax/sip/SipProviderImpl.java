@@ -29,6 +29,7 @@
 package gov.nist.javax.sip;
 
 import gov.nist.core.InternalErrorHandler;
+import gov.nist.javax.sip.DialogTimeoutEvent.Reason;
 import gov.nist.javax.sip.address.RouterExt;
 import gov.nist.javax.sip.header.CallID;
 import gov.nist.javax.sip.header.Via;
@@ -39,6 +40,8 @@ import gov.nist.javax.sip.stack.HopImpl;
 import gov.nist.javax.sip.stack.MessageChannel;
 import gov.nist.javax.sip.stack.SIPClientTransaction;
 import gov.nist.javax.sip.stack.SIPDialog;
+import gov.nist.javax.sip.stack.SIPDialogErrorEvent;
+import gov.nist.javax.sip.stack.SIPDialogEventListener;
 import gov.nist.javax.sip.stack.SIPServerTransaction;
 import gov.nist.javax.sip.stack.SIPTransaction;
 import gov.nist.javax.sip.stack.SIPTransactionErrorEvent;
@@ -81,7 +84,7 @@ import javax.sip.message.Response;
 /**
  * Implementation of the JAIN-SIP provider interface.
  *
- * @version 1.2 $Revision: 1.78 $ $Date: 2009-11-14 20:06:19 $
+ * @version 1.2 $Revision: 1.79 $ $Date: 2009-11-17 21:23:57 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -89,7 +92,7 @@ import javax.sip.message.Response;
  */
 
 public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.sip.SipProviderExt,
-        SIPTransactionEventListener {
+        SIPTransactionEventListener, SIPDialogEventListener {
 
     protected SipListener sipListener;
 
@@ -892,6 +895,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
                         "Cannot call this method after response is received!");
             }
         }
+        dialog.addEventListener(this);
         return dialog;
 
     }
@@ -978,6 +982,25 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
             }
             this.handleEvent(ev, (SIPTransaction) errorObject);
         }
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see gov.nist.javax.sip.stack.SIPDialogEventListener#dialogErrorEvent(gov.nist.javax.sip.stack.SIPDialogErrorEvent)
+     */
+    public synchronized void dialogErrorEvent(SIPDialogErrorEvent dialogErrorEvent) {
+        SIPDialog sipDialog = (SIPDialog) dialogErrorEvent.getSource();
+        Reason reason = Reason.AckNotReceived;
+        if (dialogErrorEvent.getErrorID() == SIPDialogErrorEvent.DIALOG_TIMEOUT_ACK_NOT_SENT_ERROR) {
+        	reason= Reason.AckNotSent;
+        } 
+        if (sipStack.isLoggingEnabled()) {
+            sipStack.getStackLogger().logDebug(
+                    "Dialog TimeoutError occured on " + sipDialog);
+        }
+        DialogTimeoutEvent ev = new DialogTimeoutEvent(this, sipDialog, reason);
+        // Handling transport error like timeout
+        this.handleEvent(ev, null);
     }
 
     /*

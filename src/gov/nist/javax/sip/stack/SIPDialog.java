@@ -33,11 +33,28 @@ import gov.nist.core.NameValueList;
 import gov.nist.javax.sip.DialogExt;
 import gov.nist.javax.sip.ListeningPointImpl;
 import gov.nist.javax.sip.SipProviderImpl;
+import gov.nist.javax.sip.SipStackImpl;
 import gov.nist.javax.sip.Utils;
 import gov.nist.javax.sip.address.AddressImpl;
 import gov.nist.javax.sip.address.SipUri;
-import gov.nist.javax.sip.header.*;
-
+import gov.nist.javax.sip.header.Authorization;
+import gov.nist.javax.sip.header.CSeq;
+import gov.nist.javax.sip.header.Contact;
+import gov.nist.javax.sip.header.ContactList;
+import gov.nist.javax.sip.header.From;
+import gov.nist.javax.sip.header.MaxForwards;
+import gov.nist.javax.sip.header.RAck;
+import gov.nist.javax.sip.header.RSeq;
+import gov.nist.javax.sip.header.Reason;
+import gov.nist.javax.sip.header.RecordRoute;
+import gov.nist.javax.sip.header.RecordRouteList;
+import gov.nist.javax.sip.header.Require;
+import gov.nist.javax.sip.header.Route;
+import gov.nist.javax.sip.header.RouteList;
+import gov.nist.javax.sip.header.SIPHeader;
+import gov.nist.javax.sip.header.TimeStamp;
+import gov.nist.javax.sip.header.To;
+import gov.nist.javax.sip.header.Via;
 import gov.nist.javax.sip.message.MessageFactoryImpl;
 import gov.nist.javax.sip.message.SIPMessage;
 import gov.nist.javax.sip.message.SIPRequest;
@@ -54,6 +71,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -66,13 +85,24 @@ import javax.sip.InvalidArgumentException;
 import javax.sip.ListeningPoint;
 import javax.sip.ObjectInUseException;
 import javax.sip.SipException;
+import javax.sip.SipListener;
 import javax.sip.Transaction;
 import javax.sip.TransactionDoesNotExistException;
 import javax.sip.TransactionState;
 import javax.sip.address.Address;
 import javax.sip.address.Hop;
 import javax.sip.address.SipURI;
-import javax.sip.header.*;
+import javax.sip.header.CallIdHeader;
+import javax.sip.header.ContactHeader;
+import javax.sip.header.EventHeader;
+import javax.sip.header.OptionTag;
+import javax.sip.header.RAckHeader;
+import javax.sip.header.RSeqHeader;
+import javax.sip.header.ReasonHeader;
+import javax.sip.header.RequireHeader;
+import javax.sip.header.RouteHeader;
+import javax.sip.header.SupportedHeader;
+import javax.sip.header.TimeStampHeader;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 
@@ -93,7 +123,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.151 $ $Date: 2009-11-15 23:23:29 $
+ * @version 1.2 $Revision: 1.152 $ $Date: 2009-11-17 21:24:02 $
  * 
  * @author M. Ranganathan
  * 
@@ -217,6 +247,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
     private transient DialogDeleteTask dialogDeleteTask;
 
+	private transient DialogDeleteIfNoAckSentTask dialogDeleteIfNoAckSentTask;
+    
     private transient boolean isAcknowledged;
     
     private transient long highestSequenceNumberAcknowledged = -1;
@@ -225,6 +257,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
     private boolean sequenceNumberValidation = true;
 
+    // List of event listeners for this dialog
+	private transient Set<SIPDialogEventListener> eventListeners;
 
     // //////////////////////////////////////////////////////
     // Inner classes
@@ -325,6 +359,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
         protected void runTask() {
             SIPDialog dialog = SIPDialog.this;
+            if(eventListeners != null) {
+            	eventListeners.clear();
+            }
             sipStack.removeDialog(dialog);
         }
 
@@ -357,7 +394,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
              */
 
             if (nRetransmissions > 64 * SIPTransaction.T1) {
-                dialog.setState(SIPDialog.TERMINATED_STATE);
+                raiseErrorEvent(SIPDialogErrorEvent.DIALOG_TIMEOUT_ACK_NOT_RECEIVED_ERROR);
                 // if (transaction != null)
                 if (transaction != null
                         && transaction.getState() != javax.sip.TransactionState.TERMINATED)
@@ -437,11 +474,11 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                  * B2BUA NOTE: we may want to send BYE to the Dialog at this 
                  * point. Do we want to make this behavior tailorable?
                  */
+            	dialogDeleteIfNoAckSentTask = null;
                 if ( !SIPDialog.this.isBackToBackUserAgent) {
                 	if (sipStack.isLoggingEnabled())
                 		sipStack.getStackLogger().logError("ACK Was not sent. killing dialog");
-                    
-                    delete();
+                	raiseErrorEvent(SIPDialogErrorEvent.DIALOG_TIMEOUT_ACK_NOT_SENT_ERROR);
                 } else {
                 	if (sipStack.isLoggingEnabled())
                 		sipStack.getStackLogger().logError("ACK Was not sent. Sending BYE");
@@ -484,6 +521,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         localSequenceNumber = 0;
         remoteSequenceNumber = -1;
         this.sipProvider = provider;
+        eventListeners = new CopyOnWriteArraySet<SIPDialogEventListener>();
     }
     
     private void recordStackTrace() {
@@ -522,6 +560,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             sipStack.getStackLogger().logStackTrace();
         }
         this.isBackToBackUserAgent = sipStack.isBackToBackUserAgent;
+        addEventListener(sipStack);
     }
 
     /**
@@ -559,6 +598,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             sipStack.getStackLogger().logStackTrace();
         }
         this.isBackToBackUserAgent = sipStack.isBackToBackUserAgent;
+        addEventListener(sipStack);
     }
 
     // ///////////////////////////////////////////////////////////
@@ -602,6 +642,42 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
         setState(SIPDialog.TERMINATED_STATE);
     }
+    
+    /**
+     * Raise a dialog timeout if an ACK has not been sent or received
+     * 
+     * @param dialogTimeoutError 
+     */
+    private void raiseErrorEvent(int dialogTimeoutError) {
+		// Error event to send to all listeners
+		SIPDialogErrorEvent newErrorEvent;
+		// Iterator through the list of listeners
+		Iterator<SIPDialogEventListener> listenerIterator;
+		// Next listener in the list
+		SIPDialogEventListener nextListener;
+
+		// Create the error event
+		newErrorEvent = new SIPDialogErrorEvent(this, dialogTimeoutError);
+
+		// Loop through all listeners of this transaction
+		synchronized (eventListeners) {
+			listenerIterator = eventListeners.iterator();
+			while (listenerIterator.hasNext()) {
+				// Send the event to the next listener
+				nextListener = (SIPDialogEventListener) listenerIterator.next();
+				nextListener.dialogErrorEvent(newErrorEvent);
+			}
+		}
+		// Clear the event listeners after propagating the error.
+		eventListeners.clear();
+		// Errors always terminate a dialog except if a timeout has occured because an ACK was not sent or received, then it is the responsibility of the app to terminate
+		// the dialog, either by sending a BYE or by calling delete() on the dialog		
+		if(dialogTimeoutError != SIPDialogErrorEvent.DIALOG_TIMEOUT_ACK_NOT_SENT_ERROR && dialogTimeoutError != SIPDialogErrorEvent.DIALOG_TIMEOUT_ACK_NOT_RECEIVED_ERROR) {
+			delete();
+		}
+		// we stop the timer in any case
+		stopTimer();
+	}
 
     /**
      * Set the remote party for this Dialog.
@@ -1002,6 +1078,26 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     // Public methods
     // /////////////////////////////////////////////////////////
 
+    /**
+	 * Adds a new event listener to this dialog.
+	 * 
+	 * @param newListener
+	 *            Listener to add.
+	 */
+	public void addEventListener(SIPDialogEventListener newListener) {
+		eventListeners.add(newListener);
+	}
+
+	/**
+	 * Removed an event listener from this dialog.
+	 * 
+	 * @param oldListener
+	 *            Listener to remove.
+	 */
+	public void removeEventListener(SIPDialogEventListener oldListener) {
+		eventListeners.remove(oldListener);
+	}
+    
     /*
      * @see javax.sip.Dialog#setApplicationData()
      */
@@ -3125,16 +3221,18 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         return this.isBackToBackUserAgent;
     }
     
-    public void doDeferredDeleteIfNoAckSent(long seqno) {
-        if (sipStack.getTimer() == null)
-            this.setState(TERMINATED_STATE);
-        else {
-            // Delete the transaction after the max ack timeout.
-            sipStack.getTimer().schedule(new DialogDeleteIfNoAckSentTask(seqno),
-                    SIPTransaction.TIMER_J * SIPTransactionStack.BASE_TIMER_INTERVAL);
-        }
-        
-    }
+    public synchronized void doDeferredDeleteIfNoAckSent(long seqno) {
+		if (sipStack.getTimer() == null) {
+			this.setState(TERMINATED_STATE);
+		} else if(dialogDeleteIfNoAckSentTask == null){
+			// Delete the transaction after the max ack timeout.
+			dialogDeleteIfNoAckSentTask = new DialogDeleteIfNoAckSentTask(seqno);
+			sipStack.getTimer().schedule(
+					dialogDeleteIfNoAckSentTask,
+					SIPTransaction.TIMER_J
+							* SIPTransactionStack.BASE_TIMER_INTERVAL);
+		}
+	}
 
     /*
      * (non-Javadoc)
@@ -3185,4 +3283,5 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     public int hashCode() {
         return this.getCallId().getCallId().hashCode();
     }
+	
 }
