@@ -306,7 +306,7 @@ public class Shootist implements SipListenerExt {
     	}    	
     }
     
-    public void processTimeout(DialogTimeoutEvent timeoutEvent) {    	
+    public void processDialogTimeout(DialogTimeoutEvent timeoutEvent) {    	
 		DialogTimeoutEvent dialogTimeoutEvent = (DialogTimeoutEvent)timeoutEvent;
 		Dialog timeoutDialog = dialogTimeoutEvent.getDialog();
 		if(timeoutDialog == null){

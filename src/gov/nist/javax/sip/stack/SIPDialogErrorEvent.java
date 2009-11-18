@@ -30,13 +30,18 @@ public class SIPDialogErrorEvent extends EventObject {
     /**
      * This event ID indicates that the transaction has timed out.
      */
-    public static final int DIALOG_TIMEOUT_ACK_NOT_RECEIVED_ERROR = 1;
+    public static final int DIALOG_ACK_NOT_RECEIVED_TIMEOUT = 1;
 
     /**
      * This event ID indicates that there was an error sending a message using
      * the underlying transport.
      */
-    public static final int DIALOG_TIMEOUT_ACK_NOT_SENT_ERROR = 2;
+    public static final int DIALOG_ACK_NOT_SENT_TIMEOUT = 2;
+    
+    /**
+     * This event ID indicates a timeout occured waiting to send re-INVITE ( for B2BUA)
+     */
+    public static final int DIALOG_REINVITE_TIMEOUT = 3;
     
 
     // ID of this error event

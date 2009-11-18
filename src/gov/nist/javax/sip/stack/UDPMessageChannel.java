@@ -87,7 +87,7 @@ import javax.sip.address.Hop;
  *
  *
  *
- * @version 1.2 $Revision: 1.63 $ $Date: 2009-11-14 20:06:17 $
+ * @version 1.2 $Revision: 1.64 $ $Date: 2009-11-18 02:35:19 $
  */
 public class UDPMessageChannel extends MessageChannel implements
         ParseExceptionListener, Runnable, RawMessageChannel {
@@ -622,8 +622,10 @@ public class UDPMessageChannel extends MessageChannel implements
             throw new IOException(
                     "An exception occured while sending message");
         } finally {
-            if (sipStack.getStackLogger().isLoggingEnabled(ServerLogger.TRACE_MESSAGES))
+            if (sipStack.getStackLogger().isLoggingEnabled(ServerLogger.TRACE_MESSAGES) && !sipMessage.isNullRequest())
                 logMessage(sipMessage, peerAddress, peerPort, time);
+            else if (sipStack.getStackLogger().isLoggingEnabled(ServerLogger.TRACE_DEBUG))
+                sipStack.getStackLogger().logDebug("Sent EMPTY Message");
         }
     }
 

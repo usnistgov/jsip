@@ -45,6 +45,8 @@ import gov.nist.javax.sip.SipStackImpl;
 
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLSocket;
+
 import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
@@ -57,7 +59,7 @@ import java.util.Iterator;
  * connection. This is the active object that creates new TLS MessageChannels (one for each new
  * accept socket).
  * 
- * @version 1.2 $Revision: 1.19 $ $Date: 2009-11-14 20:06:18 $
+ * @version 1.2 $Revision: 1.20 $ $Date: 2009-11-18 02:35:19 $
  * 
  * @author M. Ranganathan <br/>
  * 

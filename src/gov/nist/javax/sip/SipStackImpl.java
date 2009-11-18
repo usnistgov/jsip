@@ -423,7 +423,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.110 $ $Date: 2009-11-17 21:23:58 $
+ * @version 1.2 $Revision: 1.111 $ $Date: 2009-11-18 02:35:17 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -1153,7 +1153,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 		// sipProviderImpl.sipListener!=null
 		// so we should throw if app did not call removeSipListener
 		// sipProviderImpl.sipListener = null;
-		if (sipProviderImpl.sipListener != null) {
+		if (sipProviderImpl.getSipListener() != null) {
 			throw new ObjectInUseException(
 					"SipProvider still has an associated SipListener!");
 		}

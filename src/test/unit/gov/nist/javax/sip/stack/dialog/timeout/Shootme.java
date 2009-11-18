@@ -315,7 +315,7 @@ public class Shootme implements SipListenerExt {
 
     }
     
-    public void processTimeout(DialogTimeoutEvent timeoutEvent) {
+    public void processDialogTimeout(DialogTimeoutEvent timeoutEvent) {
     	DialogTimeoutEvent dialogAckTimeoutEvent = (DialogTimeoutEvent)timeoutEvent;
 		Dialog timeoutDialog = dialogAckTimeoutEvent.getDialog();
 		if(timeoutDialog == null){

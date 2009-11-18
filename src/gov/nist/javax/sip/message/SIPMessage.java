@@ -116,7 +116,7 @@ import javax.sip.message.Request;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.50 $ $Date: 2009-09-08 01:58:40 $
+ * @version 1.2 $Revision: 1.51 $ $Date: 2009-11-18 02:35:19 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -128,7 +128,12 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
 
 	// JvB: use static here?
     private String contentEncodingCharset = MessageFactoryImpl.getDefaultContentEncodingCharset();
-
+    
+    /*
+     * True if this is a null request.
+     */
+    protected boolean nullRequest;
+    
     /**
      * unparsed headers
      */
@@ -1836,4 +1841,20 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
     	} else return contentEncodingCharset;
     }
     
+    /**
+     * Return true if this is a null request (i.e. does not have a request line ).
+     * 
+     * @return true if null request.
+     */
+    public boolean isNullRequest() {
+        return  this.nullRequest;
+    }
+    
+    /**
+     * Set a flag to indiate this is a special message ( encoded with CRLFCRLF ).
+     * 
+     */
+    public void setNullRequest() {
+        this.nullRequest = true;
+    }
 }
