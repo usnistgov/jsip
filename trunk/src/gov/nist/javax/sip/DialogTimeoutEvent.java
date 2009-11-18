@@ -24,7 +24,6 @@ import javax.sip.Dialog;
  * DialogAckTimeoutEvent is delivered to the Listener when the
  * dialog does not receive or send an ACK. 
  *
- * Should be refactored in V2 so that the Timeout class can take Dialog related event as well
  * 
  * @author jean deruelle
  * @since v2.0
@@ -32,7 +31,7 @@ import javax.sip.Dialog;
  */
 public class DialogTimeoutEvent extends EventObject {
 	private static final long serialVersionUID = -2514000059989311925L;
-	public enum Reason {AckNotReceived, AckNotSent};	    
+	public enum Reason {AckNotReceived, AckNotSent,ReInviteTimeout};	    
 	/**
      * Constructs a DialogTerminatedEvent to indicate a dialog
      * timeout.
@@ -59,6 +58,11 @@ public class DialogTimeoutEvent extends EventObject {
         return m_dialog;
     }    
     
+    /**
+     * The reason for the Dialog Timeout Event being delivered to the application.
+     * 
+     * @return the reason for the timeout event.
+     */
     public Reason getReason() {
     	return m_reason;
     }

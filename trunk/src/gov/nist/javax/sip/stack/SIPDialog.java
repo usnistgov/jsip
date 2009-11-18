@@ -32,6 +32,7 @@ import gov.nist.core.InternalErrorHandler;
 import gov.nist.core.NameValueList;
 import gov.nist.javax.sip.DialogExt;
 import gov.nist.javax.sip.ListeningPointImpl;
+import gov.nist.javax.sip.SipListenerExt;
 import gov.nist.javax.sip.SipProviderImpl;
 import gov.nist.javax.sip.SipStackImpl;
 import gov.nist.javax.sip.Utils;
@@ -123,7 +124,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.152 $ $Date: 2009-11-17 21:24:02 $
+ * @version 1.2 $Revision: 1.153 $ $Date: 2009-11-18 02:35:19 $
  * 
  * @author M. Ranganathan
  * 
@@ -306,17 +307,21 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                     /*
                      * Send BYE to the Dialog. 
                      */
-                    Request byeRequest = SIPDialog.this.createRequest(Request.BYE);
-                    if ( MessageFactoryImpl.getDefaultUserAgentHeader() != null ) {
-                        byeRequest.addHeader(MessageFactoryImpl.getDefaultUserAgentHeader());
+                    if ( sipProvider.getSipListener() != null && sipProvider.getSipListener() instanceof SipListenerExt ) {
+                        raiseErrorEvent(SIPDialogErrorEvent.DIALOG_REINVITE_TIMEOUT);
+                    } else {
+                        Request byeRequest = SIPDialog.this.createRequest(Request.BYE);
+                        if ( MessageFactoryImpl.getDefaultUserAgentHeader() != null ) {
+                            byeRequest.addHeader(MessageFactoryImpl.getDefaultUserAgentHeader());
+                        }
+                        ReasonHeader reasonHeader = new Reason();
+                        reasonHeader.setCause(1024);
+                        reasonHeader.setText("Timed out waiting to re-INVITE");
+                        byeRequest.addHeader(reasonHeader);
+                        ClientTransaction byeCtx = SIPDialog.this.getSipProvider().getNewClientTransaction(byeRequest);
+                        SIPDialog.this.sendRequest(byeCtx);
+                        return;
                     }
-                    ReasonHeader reasonHeader = new Reason();
-                    reasonHeader.setCause(1024);
-                    reasonHeader.setText("Timed out waiting to re-INVITE");
-                    byeRequest.addHeader(reasonHeader);
-                    ClientTransaction byeCtx = SIPDialog.this.getSipProvider().getNewClientTransaction(byeRequest);
-                    SIPDialog.this.sendRequest(byeCtx);
-                    return;
                 }
                 if (getState() != DialogState.TERMINATED) {
 
@@ -394,11 +399,15 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
              */
 
             if (nRetransmissions > 64 * SIPTransaction.T1) {
-                raiseErrorEvent(SIPDialogErrorEvent.DIALOG_TIMEOUT_ACK_NOT_RECEIVED_ERROR);
-                // if (transaction != null)
+                if (sipProvider.getSipListener() != null && sipProvider.getSipListener() instanceof SipListenerExt ) {
+                    raiseErrorEvent(SIPDialogErrorEvent.DIALOG_ACK_NOT_RECEIVED_TIMEOUT);
+                } else  {
+                    dialog.delete();
+                }
                 if (transaction != null
-                        && transaction.getState() != javax.sip.TransactionState.TERMINATED)
-                    transaction.raiseErrorEvent(SIPTransactionErrorEvent.TIMEOUT_ERROR);
+                        && transaction.getState() != javax.sip.TransactionState.TERMINATED) {
+                    transaction.raiseErrorEvent(SIPTransactionErrorEvent.TIMEOUT_ERROR);  
+                }
             } else if ((!dialog.ackSeen) && (transaction != null)) {
                 // Retransmit to 200 until ack receivedialog.
                 SIPResponse response = transaction.getLastResponse();
@@ -478,29 +487,38 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 if ( !SIPDialog.this.isBackToBackUserAgent) {
                 	if (sipStack.isLoggingEnabled())
                 		sipStack.getStackLogger().logError("ACK Was not sent. killing dialog");
-                	raiseErrorEvent(SIPDialogErrorEvent.DIALOG_TIMEOUT_ACK_NOT_SENT_ERROR);
+                	if ( ((SipProviderImpl)sipProvider).getSipListener() instanceof SipListenerExt ){
+                	    raiseErrorEvent(SIPDialogErrorEvent.DIALOG_ACK_NOT_SENT_TIMEOUT);
+                	} else {
+                	    delete();
+                	}
                 } else {
-                	if (sipStack.isLoggingEnabled())
+                	if (sipStack.isLoggingEnabled()) 
                 		sipStack.getStackLogger().logError("ACK Was not sent. Sending BYE");
-                    
-                    /*
-                     * Send BYE to the Dialog. 
-                     */
-                    try {
-                        Request byeRequest = SIPDialog.this.createRequest(Request.BYE);
-                        if ( MessageFactoryImpl.getDefaultUserAgentHeader() != null ) {
-                            byeRequest.addHeader(MessageFactoryImpl.getDefaultUserAgentHeader());
+                	   if ( ((SipProviderImpl)sipProvider).getSipListener() instanceof SipListenerExt ){    
+                	       raiseErrorEvent(SIPDialogErrorEvent.DIALOG_ACK_NOT_SENT_TIMEOUT);
+                	   } else {
+
+                        /*
+                         * Send BYE to the Dialog. 
+                         * This will be removed for the next spec revision.
+                         */
+                        try {
+                            Request byeRequest = SIPDialog.this.createRequest(Request.BYE);
+                            if ( MessageFactoryImpl.getDefaultUserAgentHeader() != null ) {
+                                byeRequest.addHeader(MessageFactoryImpl.getDefaultUserAgentHeader());
+                            }
+                            ReasonHeader reasonHeader = new Reason();
+                            reasonHeader.setProtocol("SIP");
+                            reasonHeader.setCause(1025);
+                            reasonHeader.setText("Timed out waiting to send ACK");
+                            byeRequest.addHeader(reasonHeader);
+                            ClientTransaction byeCtx = SIPDialog.this.getSipProvider().getNewClientTransaction(byeRequest);
+                            SIPDialog.this.sendRequest(byeCtx);
+                            return;
+                        } catch (Exception ex) {
+                            SIPDialog.this.delete();
                         }
-                        ReasonHeader reasonHeader = new Reason();
-                        reasonHeader.setProtocol("SIP");
-                        reasonHeader.setCause(1025);
-                        reasonHeader.setText("Timed out waiting to send ACK");
-                        byeRequest.addHeader(reasonHeader);
-                        ClientTransaction byeCtx = SIPDialog.this.getSipProvider().getNewClientTransaction(byeRequest);
-                        SIPDialog.this.sendRequest(byeCtx);
-                        return;
-                    } catch (Exception ex) {
-                        SIPDialog.this.delete();
                     }
                 }
             }
@@ -672,7 +690,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 		eventListeners.clear();
 		// Errors always terminate a dialog except if a timeout has occured because an ACK was not sent or received, then it is the responsibility of the app to terminate
 		// the dialog, either by sending a BYE or by calling delete() on the dialog		
-		if(dialogTimeoutError != SIPDialogErrorEvent.DIALOG_TIMEOUT_ACK_NOT_SENT_ERROR && dialogTimeoutError != SIPDialogErrorEvent.DIALOG_TIMEOUT_ACK_NOT_RECEIVED_ERROR) {
+		if(dialogTimeoutError != SIPDialogErrorEvent.DIALOG_ACK_NOT_SENT_TIMEOUT &&
+		        dialogTimeoutError != SIPDialogErrorEvent.DIALOG_ACK_NOT_RECEIVED_TIMEOUT &&
+		        dialogTimeoutError != SIPDialogErrorEvent.DIALOG_REINVITE_TIMEOUT ) {
 			delete();
 		}
 		// we stop the timer in any case

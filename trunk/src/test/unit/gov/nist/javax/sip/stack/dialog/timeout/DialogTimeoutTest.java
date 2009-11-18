@@ -340,9 +340,9 @@ public class DialogTimeoutTest extends ScenarioHarness implements SipListenerExt
         getSipListener(timeoutEvent).processTimeout(timeoutEvent);
     }
     
-    public void processTimeout(DialogTimeoutEvent timeoutEvent) {
+    public void processDialogTimeout(DialogTimeoutEvent timeoutEvent) {
     	if(getSipListener(timeoutEvent) instanceof SipListenerExt) {
-    		((SipListenerExt)getSipListener(timeoutEvent)).processTimeout(timeoutEvent);
+    		((SipListenerExt)getSipListener(timeoutEvent)).processDialogTimeout(timeoutEvent);
     	}
     }
 
