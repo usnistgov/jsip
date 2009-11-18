@@ -84,7 +84,7 @@ import javax.sip.message.Response;
 /**
  * Implementation of the JAIN-SIP provider interface.
  *
- * @version 1.2 $Revision: 1.79 $ $Date: 2009-11-17 21:23:57 $
+ * @version 1.2 $Revision: 1.80 $ $Date: 2009-11-18 02:35:17 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -94,7 +94,7 @@ import javax.sip.message.Response;
 public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.sip.SipProviderExt,
         SIPTransactionEventListener, SIPDialogEventListener {
 
-    protected SipListener sipListener;
+    private SipListener sipListener;
 
     protected SipStackImpl sipStack;
 
@@ -170,7 +170,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
             sipStack.getStackLogger().logDebug(
                     "handleEvent " + sipEvent + "currentTransaction = "
                             + transaction + "this.sipListener = "
-                            + this.sipListener + "sipEvent.source = "
+                            + this.getSipListener() + "sipEvent.source = "
                             + sipEvent.getSource());
             if (sipEvent instanceof RequestEvent) {
                 Dialog dialog = ((RequestEvent) sipEvent).getDialog();
@@ -651,7 +651,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
      * @see javax.sip.SipProvider#removeSipListener(javax.sip.SipListener)
      */
     public void removeSipListener(SipListener sipListener) {
-        if (sipListener == this.sipListener) {
+        if (sipListener == this.getSipListener()) {
             this.sipListener = null;
         }
 
@@ -659,7 +659,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
 
         for (Iterator<SipProviderImpl> it = sipStack.getSipProviders(); it.hasNext();) {
             SipProviderImpl nextProvider = (SipProviderImpl) it.next();
-            if (nextProvider.sipListener != null)
+            if (nextProvider.getSipListener() != null)
                 found = true;
         }
         if (!found) {
@@ -991,9 +991,11 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
     public synchronized void dialogErrorEvent(SIPDialogErrorEvent dialogErrorEvent) {
         SIPDialog sipDialog = (SIPDialog) dialogErrorEvent.getSource();
         Reason reason = Reason.AckNotReceived;
-        if (dialogErrorEvent.getErrorID() == SIPDialogErrorEvent.DIALOG_TIMEOUT_ACK_NOT_SENT_ERROR) {
+        if (dialogErrorEvent.getErrorID() == SIPDialogErrorEvent.DIALOG_ACK_NOT_SENT_TIMEOUT) {
         	reason= Reason.AckNotSent;
-        } 
+        } else if (dialogErrorEvent.getErrorID() == SIPDialogErrorEvent.DIALOG_REINVITE_TIMEOUT) {
+            reason = Reason.ReInviteTimeout;
+        }
         if (sipStack.isLoggingEnabled()) {
             sipStack.getStackLogger().logDebug(
                     "Dialog TimeoutError occured on " + sipDialog);
@@ -1110,6 +1112,14 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
     
     public boolean isDialogErrorsAutomaticallyHandled() {
         return this.dialogErrorsAutomaticallyHandled;
+    }
+
+
+    /**
+     * @return the sipListener
+     */
+    public SipListener getSipListener() {
+        return sipListener;
     }
 
 

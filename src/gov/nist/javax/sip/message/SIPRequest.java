@@ -61,7 +61,7 @@ import gov.nist.javax.sip.stack.SIPTransactionStack;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.49 $ $Date: 2009-10-30 11:12:35 $
+ * @version 1.2 $Revision: 1.50 $ $Date: 2009-11-18 02:35:20 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -84,7 +84,6 @@ public final class SIPRequest extends SIPMessage implements javax.sip.message.Re
 
     private transient Object messageChannel;
     
-    private boolean nullRequest;
     
 
     private transient Object inviteTransaction; // The original invite request for a
@@ -1201,21 +1200,6 @@ public final class SIPRequest extends SIPMessage implements javax.sip.message.Re
         return inviteTransaction;
     }
 
-    /**
-     * Return true if this is a null request (i.e. does not have a request line ).
-     * 
-     * @return true if null request.
-     */
-    public boolean isNullRequest() {
-        return  this.nullRequest;
-    }
     
-    /**
-     * Set a flag to indiate this is a special message ( encoded with CRLFCRLF ).
-     * 
-     */
-    public void setNullRequest() {
-        this.nullRequest = true;
-    }
 
 }
