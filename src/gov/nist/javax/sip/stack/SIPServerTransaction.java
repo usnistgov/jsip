@@ -163,7 +163,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.114 $ $Date: 2009-11-14 20:06:17 $
+ * @version 1.2 $Revision: 1.115 $ $Date: 2009-11-18 17:03:14 $
  * @author M. Ranganathan
  *
  */
@@ -1572,7 +1572,8 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
         if (this.pendingReliableResponse == null)
             return false;
-        this.provisionalResponseTask.cancel();
+        if(provisionalResponseTask != null)
+        	this.provisionalResponseTask.cancel();
         this.pendingReliableResponse = null;
         return true;
     }
