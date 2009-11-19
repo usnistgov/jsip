@@ -275,5 +275,10 @@ public class NameValue extends GenericObject implements Entry<String,String> {
         return retval;
 
     }
+    
+    @Override
+    public int hashCode() {
+        return this.encode().toLowerCase().hashCode();
+    }
 
 }

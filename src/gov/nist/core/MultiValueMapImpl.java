@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class MultiValueMapImpl<V> implements MultiValueMap<String, V> {
+public class MultiValueMapImpl<V> implements MultiValueMap<String, V>, Cloneable {
     private HashMap<String, ArrayList<V>> map = new HashMap<String, ArrayList<V>>();
 
     private static final long serialVersionUID = 4275505380960964605L;
