@@ -1,4 +1,4 @@
-package test.unit.gov.nist.javax.sip.stack.dialog.b2bua;
+package test.unit.gov.nist.javax.sip.stack.dialog.b2bua.reinvite;
 
 import gov.nist.javax.sip.SipStackImpl;
 
@@ -381,7 +381,7 @@ public class Shootist implements SipListener {
 
             // Create a new Cseq header
             CSeqHeader cSeqHeader = headerFactory
-                    .createCSeqHeader(1L, Request.INVITE);
+                    .createCSeqHeader(4321L, Request.INVITE);
 
             // Create a new MaxForwardsHeader
             MaxForwardsHeader maxForwards = headerFactory

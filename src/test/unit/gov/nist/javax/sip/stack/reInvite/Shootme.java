@@ -109,6 +109,7 @@ public class Shootme  implements SipListener {
             int ackCount = ((ApplicationData) dialog.getApplicationData()).ackCount;
             if (ackCount == 1) {
                 dialog = inviteTid.getDialog();
+                Thread.sleep(100);
                 this.sendReInvite(sipProvider);
 
             } else
@@ -294,7 +295,7 @@ public class Shootme  implements SipListener {
 
     public static void main(String args[]) throws Exception {
         logger.addAppender( new ConsoleAppender(new SimpleLayout()));
-        ProtocolObjects protocolObjects = new ProtocolObjects("shootme", "gov.nist","udp",true);
+        ProtocolObjects protocolObjects = new ProtocolObjects("shootme", "gov.nist","udp",true,false);
 
         Shootme shootme = new Shootme(protocolObjects);
         shootme.createSipProvider().addSipListener(shootme);

@@ -32,10 +32,10 @@ public abstract class ScenarioHarness extends TestHarness {
     public void setUp() throws Exception {
         if (testedImplFlag) {
             this.tiProtocolObjects.add(new ProtocolObjects("ti" + super.getName(), "gov.nist",
-                    transport, true));
+                    transport, true,false));
 
             this.addRiProtocolObjects(new ProtocolObjects("ri" + super.getName(), super
-                    .getImplementationPath(), transport, true));
+                    .getImplementationPath(), transport, true,false));
             /*
              * if (!getImplementationPath().equals("gov.nist")) this.riProtocolObjects = new
              * ProtocolObjects( super.getName(), super.getImplementationPath(), transport, true);
@@ -44,9 +44,9 @@ public abstract class ScenarioHarness extends TestHarness {
 
         } else {
             this.tiProtocolObjects.add(new ProtocolObjects("ti" + super.getName(),
-                    getImplementationPath(), transport, true));
+                    getImplementationPath(), transport, true,false));
             this.addRiProtocolObjects(new ProtocolObjects("ri" + super.getName(), "gov.nist",
-                    transport, true));
+                    transport, true,false));
 
             /*
              * if (!getImplementationPath().equals("gov.nist")) this.riProtocolObjects = new
@@ -61,12 +61,12 @@ public abstract class ScenarioHarness extends TestHarness {
         if (testedImplFlag) {
             for (int i = 0; i < nti; i++) {
                 this.tiProtocolObjects.add(new ProtocolObjects("ti" + super.getName() + i,
-                        "gov.nist", transport, true));
+                        "gov.nist", transport, true,false));
             }
             for (int i = 0; i < nri; i++) {
 
                 this.addRiProtocolObjects(new ProtocolObjects("ri" + super.getName() + i, super
-                        .getImplementationPath(), transport, true));
+                        .getImplementationPath(), transport, true,false));
             }
             /*
              * if (!getImplementationPath().equals("gov.nist")) this.riProtocolObjects = new
@@ -77,11 +77,11 @@ public abstract class ScenarioHarness extends TestHarness {
         } else {
             for (int i = 0; i < nti; i++) {
                 this.tiProtocolObjects.add(new ProtocolObjects("ti" + super.getName() + i,
-                        getImplementationPath(), transport, true));
+                        getImplementationPath(), transport, true,false));
             }
             for (int i = 0; i < nri; i++) {
                 this.addRiProtocolObjects(new ProtocolObjects("ri" + super.getName() + i,
-                        "gov.nist", transport, true));
+                        "gov.nist", transport, true,false));
             }
 
             /*
@@ -96,10 +96,10 @@ public abstract class ScenarioHarness extends TestHarness {
     public void setUp(boolean riAutoDialog) throws Exception {
         if (testedImplFlag) {
             this.tiProtocolObjects.add(new ProtocolObjects("ti" + super.getName(), "gov.nist",
-                    transport, true));
+                    transport, true, false));
 
             this.addRiProtocolObjects(new ProtocolObjects("ri" + super.getName(), super
-                    .getImplementationPath(), transport, riAutoDialog));
+                    .getImplementationPath(), transport, riAutoDialog,false));
             /*
              * if (!getImplementationPath().equals("gov.nist")) this.riProtocolObjects = new
              * ProtocolObjects( super.getName(), super.getImplementationPath(), transport, true);
@@ -108,9 +108,9 @@ public abstract class ScenarioHarness extends TestHarness {
 
         } else {
             this.tiProtocolObjects.add(new ProtocolObjects("ti" + super.getName(),
-                    getImplementationPath(), transport, true));
+                    getImplementationPath(), transport, true,false));
             this.addRiProtocolObjects(new ProtocolObjects("ri" + super.getName(), "gov.nist",
-                    transport, riAutoDialog));
+                    transport, riAutoDialog,false));
 
             /*
              * if (!getImplementationPath().equals("gov.nist")) this.riProtocolObjects = new
@@ -125,22 +125,22 @@ public abstract class ScenarioHarness extends TestHarness {
         if (testedImplFlag) {
             for (int i = 0; i < nti; i++) {
                 this.tiProtocolObjects.add(new ProtocolObjects("ti" + super.getName() + i,
-                        "gov.nist", transport, true));
+                        "gov.nist", transport, true,false));
 
             }
             for (int i = 0; i < nri; i++) {
                 this.addRiProtocolObjects(new ProtocolObjects("ri" + super.getName(), super
-                        .getImplementationPath(), transport, riAutoDialog));
+                        .getImplementationPath(), transport, riAutoDialog,false));
             }
 
         } else {
             for (int i = 0; i < nti; i++) {
                 this.tiProtocolObjects.add(new ProtocolObjects("ti" + super.getName() + i,
-                        getImplementationPath(), transport, true));
+                        getImplementationPath(), transport, true,false));
             }
             for (int i = 0; i < nri; i++) {
                 this.addRiProtocolObjects(new ProtocolObjects("ri" + super.getName(), "gov.nist",
-                        transport, riAutoDialog));
+                        transport, riAutoDialog,false));
             }
 
         }
