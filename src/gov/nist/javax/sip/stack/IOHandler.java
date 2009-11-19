@@ -38,6 +38,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.ssl.HandshakeCompletedListener;
+import javax.net.ssl.SSLSocket;
+
 /*
  * TLS support Added by Daniel J.Martinez Manzano <dani@dif.um.es>
  *
@@ -167,7 +170,7 @@ class IOHandler {
 
     public Socket sendBytes(InetAddress senderAddress,
             InetAddress receiverAddress, int contactPort, String transport,
-            byte[] bytes, boolean retry) throws IOException {
+            byte[] bytes, boolean retry, MessageChannel messageChannel) throws IOException {
         int retry_count = 0;
         int max_retry = retry ? 2 : 1;
         // Server uses TCP transport. TCP client sockets are cached
@@ -194,6 +197,7 @@ class IOHandler {
                 throw new IOException("exception in aquiring sem");
             }
             Socket clientSock = getSocket(key);
+           
 
             try {
 
@@ -267,6 +271,7 @@ class IOHandler {
                 throw new IOException("exception in aquiring sem");
             }
             Socket clientSock = getSocket(key);
+             
             try {
                 while (retry_count < max_retry) {
                     if (clientSock == null) {
@@ -280,6 +285,11 @@ class IOHandler {
                             clientSock = sipStack.getNetworkLayer()
                                     .createSSLSocket(receiverAddress,
                                             contactPort, senderAddress);
+                            SSLSocket sslsock = (SSLSocket)clientSock;
+                            HandshakeCompletedListener listner = new HandshakeCompletedListenerImpl((TLSMessageChannel)messageChannel);
+                                ((TLSMessageChannel) messageChannel).setHandshakeCompletedListener(listner);
+                            sslsock.addHandshakeCompletedListener(listner);
+                            sslsock.startHandshake();
                         } else {
                             clientSock = sipStack.getNetworkLayer()
                                     .createSocket(receiverAddress, contactPort,

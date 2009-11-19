@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.sip.ListeningPoint;
 import javax.sip.header.ContactHeader;
+import javax.sip.header.ViaHeader;
 
 public interface ListeningPointExt extends ListeningPoint {
 
@@ -26,6 +27,15 @@ public interface ListeningPointExt extends ListeningPoint {
      * @since 2.0
      */
     public void sendHeartbeat(String ipAddress, int port) throws IOException ;
+    
+    /**
+     * Create a Via header for this listening point.
+     * 
+     * @return a via header corresponding to this listening point. Branch ID is set to NULL.
+     * 
+     * @since 2.0
+     */
+    public ViaHeader createViaHeader();
 
 
 }

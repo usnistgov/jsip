@@ -124,7 +124,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.153 $ $Date: 2009-11-18 02:35:19 $
+ * @version 1.2 $Revision: 1.154 $ $Date: 2009-11-19 05:26:57 $
  * 
  * @author M. Ranganathan
  * 
@@ -3063,29 +3063,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     }
 
     /**
-     * Override for the equals method.
-     */
-    public boolean equals(Object obj) {
-
-        // JvB: by definition, if this!=obj, the Dialog objects should not be
-        // equal.
-        // Else there is something very wrong (ie 2 Dialog objects exist for
-        // same call-id)
-        //
-        // So all this code could be replaced by simply 'return obj==this';
-        //
-        if (obj == this) {
-            return true;
-        } else if (!(obj instanceof Dialog)) { // also handles null
-            return false;
-        } else {
-            String id1 = this.getDialogId();
-            String id2 = ((Dialog) obj).getDialogId();
-            return id1 != null && id2 != null && id1.equals(id2);
-        }
-    }
-
-    /**
      * Do the necessary processing to handle an ACK directed at this Dialog.
      * 
      * @param ackTransaction -- the ACK transaction that was directed at this dialog.
@@ -3299,9 +3276,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         this.sequenceNumberValidation = false;
     }
     
-    @Override
-    public int hashCode() {
-        return this.getCallId().getCallId().hashCode();
-    }
+   
+    
+    
 	
 }
