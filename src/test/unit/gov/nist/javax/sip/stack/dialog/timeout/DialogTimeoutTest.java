@@ -95,11 +95,11 @@ public class DialogTimeoutTest extends ScenarioHarness implements SipListenerExt
     public void testDialogTimeoutSipListenerExt() {
         
             try {
-            	this.shootistProtocolObjs = new ProtocolObjects("shootist", "gov.nist", "udp", false);
+            	this.shootistProtocolObjs = new ProtocolObjects("shootist", "gov.nist", "udp", false,false);
                 shootist = new Shootist(shootistProtocolObjs);
                 SipProvider shootistProvider = shootist.createSipProvider();
 
-                this.shootmeProtocolObjs = new ProtocolObjects("shootme", "gov.nist", "udp", false);
+                this.shootmeProtocolObjs = new ProtocolObjects("shootme", "gov.nist", "udp", false,false);
                 shootme = new Shootme(shootmeProtocolObjs);
                 SipProvider shootmeProvider = shootme.createSipProvider();
                
@@ -137,12 +137,12 @@ public class DialogTimeoutTest extends ScenarioHarness implements SipListenerExt
     public void testDialogTimeoutAndTerminatedSipListenerExt() {
         
         try {
-        	this.shootistProtocolObjs = new ProtocolObjects("shootist", "gov.nist", "udp", false);
+        	this.shootistProtocolObjs = new ProtocolObjects("shootist", "gov.nist", "udp", false,false);
             shootist = new Shootist(shootistProtocolObjs);
             shootist.setSendByeOnDialogTimeout(true);
             SipProvider shootistProvider = shootist.createSipProvider();
 
-            this.shootmeProtocolObjs = new ProtocolObjects("shootme", "gov.nist", "udp", false);
+            this.shootmeProtocolObjs = new ProtocolObjects("shootme", "gov.nist", "udp", false,false);
             shootme = new Shootme(shootmeProtocolObjs);
             shootme.setReceiveBye(true);
             SipProvider shootmeProvider = shootme.createSipProvider();
@@ -180,11 +180,11 @@ public class DialogTimeoutTest extends ScenarioHarness implements SipListenerExt
     public void testDialogTimeoutDialogDeletedNotImplementedSipListenerExt() {
         
         try {
-        	this.shootistProtocolObjs = new ProtocolObjects("shootist", "gov.nist", "udp", false);
+        	this.shootistProtocolObjs = new ProtocolObjects("shootist", "gov.nist", "udp", false,false);
             shootistNotImplementingSipListenerExt = new ShootistNotImplementingSipListenerExt(shootistProtocolObjs);
             SipProvider shootistProvider = shootistNotImplementingSipListenerExt.createSipProvider();
 
-            this.shootmeProtocolObjs = new ProtocolObjects("shootme", "gov.nist", "udp", false);
+            this.shootmeProtocolObjs = new ProtocolObjects("shootme", "gov.nist", "udp", false,false);
             shootme = new Shootme(shootmeProtocolObjs);
             SipProvider shootmeProvider = shootme.createSipProvider();
            
@@ -221,11 +221,11 @@ public class DialogTimeoutTest extends ScenarioHarness implements SipListenerExt
     public void testDialogTimeoutAutoDialog() {
         
         try {
-        	this.shootistProtocolObjs = new ProtocolObjects("shootist", "gov.nist", "udp", true);
+        	this.shootistProtocolObjs = new ProtocolObjects("shootist", "gov.nist", "udp", true,false);
             shootist = new Shootist(shootistProtocolObjs);
             SipProvider shootistProvider = shootist.createSipProvider();
 
-            this.shootmeProtocolObjs = new ProtocolObjects("shootme", "gov.nist", "udp", true);
+            this.shootmeProtocolObjs = new ProtocolObjects("shootme", "gov.nist", "udp", true,false);
             shootme = new Shootme(shootmeProtocolObjs);
             SipProvider shootmeProvider = shootme.createSipProvider();
            
@@ -262,12 +262,11 @@ public class DialogTimeoutTest extends ScenarioHarness implements SipListenerExt
     public void testDialogTimeoutB2BUABothCalled() {
         
         try {
-        	this.shootistProtocolObjs = new ProtocolObjects("shootist", "gov.nist", "udp", false);
-        	((SipStackImpl)shootistProtocolObjs.sipStack).setIsBackToBackUserAgent(true);
+        	this.shootistProtocolObjs = new ProtocolObjects("shootist", "gov.nist", "udp", false,true);
             shootist = new Shootist(shootistProtocolObjs);
             SipProvider shootistProvider = shootist.createSipProvider();
 
-            this.shootmeProtocolObjs = new ProtocolObjects("shootme", "gov.nist", "udp", false);
+            this.shootmeProtocolObjs = new ProtocolObjects("shootme", "gov.nist", "udp", false,false);
             shootmeNotImplementingListener = new ShootmeNotImplementingListener(shootmeProtocolObjs);
             shootmeNotImplementingListener.setStateIsOk(true);
             SipProvider shootmeProvider = shootmeNotImplementingListener.createSipProvider();
