@@ -1,4 +1,4 @@
-package test.unit.gov.nist.javax.sip.stack.dialog.b2bua;
+package test.unit.gov.nist.javax.sip.stack.dialog.b2bua.reinvite;
 
 import gov.nist.javax.sip.DialogTimeoutEvent;
 import gov.nist.javax.sip.ListeningPointExt;
@@ -53,6 +53,8 @@ public class BackToBackUserAgent implements SipListenerExt {
     private ProtocolObjects protocolObjects;
     private HeaderFactory headerFactory;
     private AddressFactory addressFactory;
+    private boolean inviteOkSeen;
+    private boolean dialogTimedOut;
     
     public Dialog getPeer(Dialog dialog) {
         Object[] dialogArray = dialogs.toArray();
@@ -115,6 +117,7 @@ public class BackToBackUserAgent implements SipListenerExt {
 
    
     public void processDialogTimeout(DialogTimeoutEvent timeoutEvent) {
+        this.dialogTimedOut = true;
       
     }
 
@@ -177,14 +180,39 @@ public class BackToBackUserAgent implements SipListenerExt {
             Dialog dialog = responseEvent.getDialog();
             this.lastResponseTable.put(dialog, response);
              ServerTransaction serverTransaction = (ServerTransaction)responseEvent.getClientTransaction().getApplicationData();
-            Request stRequest = serverTransaction.getRequest();
-            Response newResponse = this.messageFactory.createResponse(response.getStatusCode(),stRequest);
-            SipProvider provider = (SipProvider)responseEvent.getSource();
-            SipProvider peerProvider = this.getPeerProvider(provider);
-            ListeningPoint peerListeningPoint = peerProvider.getListeningPoint("udp");
-            ContactHeader peerContactHeader = ((ListeningPointExt)peerListeningPoint).createContactHeader();
-            newResponse.setHeader(peerContactHeader);
-            serverTransaction.sendResponse(newResponse);
+            if ( serverTransaction != null ) {
+                Request stRequest = serverTransaction.getRequest();
+                Response newResponse = this.messageFactory.createResponse(response.getStatusCode(),stRequest);
+                SipProvider provider = (SipProvider)responseEvent.getSource();
+                SipProvider peerProvider = this.getPeerProvider(provider);
+                ListeningPoint peerListeningPoint = peerProvider.getListeningPoint("udp");
+                ContactHeader peerContactHeader = ((ListeningPointExt)peerListeningPoint).createContactHeader();
+                newResponse.setHeader(peerContactHeader);
+                serverTransaction.sendResponse(newResponse);
+                if ( ((CSeqHeader)response.getHeader(CSeqHeader.NAME)).getMethod().equals(Request.INVITE) &&
+                        response.getStatusCode() == 200 ) {
+                    Request newRequest = dialog.createRequest(Request.INVITE);
+                    ListeningPointExt listeningPoint = (ListeningPointExt) provider.getListeningPoint("udp");
+                    ContactHeader contact = listeningPoint.createContactHeader();
+                    newRequest.setHeader(contact);
+                    ClientTransaction clientTransaction = provider.getNewClientTransaction(newRequest);
+                    // Send without waiting for ACK.
+                    dialog.sendRequest(clientTransaction);
+                }
+            } else {
+                this.inviteOkSeen = true;
+                if ( ((CSeqHeader)response.getHeader(CSeqHeader.NAME)).getMethod().equals(Request.INVITE) &&
+                        response.getStatusCode() == 200){
+                    long cseqno = ((CSeqHeader)response.getHeader(CSeqHeader.NAME)).getSeqNumber();
+                    Request ack = dialog.createAck(cseqno);
+                    dialog.sendAck(ack);
+                } else {
+                    if ( !((CSeqHeader)response.getHeader(CSeqHeader.NAME)).getMethod().equals(Request.INVITE)) {
+                        System.out.println("Unexpected response " + response);
+                        BackToBackUserAgentTest.fail("Unexpected response");
+                    }
+                }
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
             BackToBackUserAgentTest.fail("Unexpected exception");
@@ -227,6 +255,11 @@ public class BackToBackUserAgent implements SipListenerExt {
             
         }
 
+    }
+    
+    public void checkState() {
+        BackToBackUserAgentTest.assertTrue("INVITE OK not seen", this.inviteOkSeen);
+        BackToBackUserAgentTest.assertFalse("Dialog timed out ", this.dialogTimedOut);
     }
 
 }

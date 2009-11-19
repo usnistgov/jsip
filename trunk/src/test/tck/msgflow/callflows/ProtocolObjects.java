@@ -35,9 +35,10 @@ public class ProtocolObjects {
     private boolean isStarted;
 
 	public boolean autoDialog;
+	
 
     public ProtocolObjects(String stackname, String pathname, String transport,
-            boolean autoDialog) {
+            boolean autoDialog, boolean isBackToBackUserAgent) {
 
     	this.autoDialog = autoDialog;
         this.transport = transport;
@@ -69,6 +70,8 @@ public class ProtocolObjects {
 
 
         properties.setProperty("gov.nist.javax.sip.THREAD_POOL_SIZE", "1");
+        
+        properties.setProperty("gov.nist.javax.sip.IS_BACK_TO_BACK_USER_AGENT", Boolean.toString(isBackToBackUserAgent));
 
 
 

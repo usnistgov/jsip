@@ -1,4 +1,4 @@
-package test.unit.gov.nist.javax.sip.stack.dialog.b2bua;
+package test.unit.gov.nist.javax.sip.stack.dialog.b2bua.reinvite;
 
 import gov.nist.javax.sip.SipStackImpl;
 
@@ -196,8 +196,13 @@ public class Shootme   implements SipListener {
             ContactHeader contactHeader = headerFactory.createContactHeader(address);
             response.addHeader(contactHeader);
             ToHeader toHeader = (ToHeader) ringingResponse.getHeader(ToHeader.NAME);
-            String toTag =  new Integer(new Random().nextInt()).toString();
-            toHeader.setTag(toTag);
+            String toTag;
+            if ( ((ToHeader) ringingResponse.getHeader(ToHeader.NAME)).getTag() == null ) {
+                toTag =  new Integer(new Random().nextInt()).toString();
+                toHeader.setTag(toTag);
+            } else {
+                toTag = ((ToHeader) ringingResponse.getHeader(ToHeader.NAME)).getTag();
+            }
             if ( sendRinging ) {
                 ringingResponse.addHeader(contactHeader);
                 st.sendResponse(ringingResponse);
@@ -207,7 +212,7 @@ public class Shootme   implements SipListener {
 
             this.inviteSeen = true;
 
-            timer.schedule(new MyTimerTask(requestEvent,st,toTag), this.delay);
+            this.sendInviteOK(requestEvent,st,toTag);
         } catch (Exception ex) {
             ex.printStackTrace();
             System.exit(0);
@@ -216,6 +221,7 @@ public class Shootme   implements SipListener {
 
     private void sendInviteOK(RequestEvent requestEvent, ServerTransaction inviteTid, String toTag) {
         try {
+            
             logger.info("sendInviteOK: " + inviteTid);
             if (inviteTid.getState() != TransactionState.COMPLETED) {
                 logger.info("shootme: Dialog state before OK: "
