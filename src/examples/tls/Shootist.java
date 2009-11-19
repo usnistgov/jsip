@@ -1,8 +1,12 @@
 package examples.tls;
+import gov.nist.javax.sip.ClientTransactionExt;
+
 import javax.sip.*;
 import javax.sip.address.*;
 import javax.sip.header.*;
 import javax.sip.message.*;
+
+import java.security.cert.Certificate;
 import java.util.*;
 
 
@@ -72,9 +76,9 @@ public class Shootist implements SipListener {
             this.reInviteCount = 0;
             System.gc();
             //Redo this from the start.
-            if (counter < 10 )
-                this.init();
-            else counter ++;
+           //  if (counter < 10 )
+           //     this.init();
+           //  else counter ++;
         } catch (Exception ex) { ex.printStackTrace(); }
     }
 
@@ -149,10 +153,6 @@ public class Shootist implements SipListener {
                     .getMethod()
                     .equals(
                     Request.INVITE)) {
-                // Request cancel = inviteTid.createCancel();
-                // ClientTransaction ct =
-                //  sipProvider.getNewClientTransaction(cancel);
-                // ct.sendRequest();
                 Dialog dialog = tid.getDialog();
                 Request ackRequest = dialog.createAck( cseq.getSeqNumber() );
                 System.out.println("Sending ACK");
@@ -190,10 +190,9 @@ public class Shootist implements SipListener {
         sipFactory = SipFactory.getInstance();
         sipFactory.setPathName("gov.nist");
         Properties properties = new Properties();
-        // If you want to try TCP transport change the following to
-        String transport = "tcp";
+        String transport = "tls";
+        int port = 5061;
         String peerHostPort = "127.0.0.1:5071";
-        properties.setProperty("javax.sip.IP_ADDRESS", "127.0.0.1");
         properties.setProperty(
             "javax.sip.OUTBOUND_PROXY",
             peerHostPort + "/" + transport);
@@ -202,9 +201,7 @@ public class Shootist implements SipListener {
         //  "javax.sip.ROUTER_PATH",
         //  "examples.shootistTLS.MyRouter");
         properties.setProperty("javax.sip.STACK_NAME", "shootist");
-        properties.setProperty("javax.sip.RETRANSMISSION_FILTER",
-                "on");
-
+   
         // The following properties are specific to nist-sip
         // and are not necessarily part of any other jain-sip
         // implementation.
@@ -245,9 +242,8 @@ public class Shootist implements SipListener {
             messageFactory = sipFactory.createMessageFactory();
             Shootist listener = this;
 
-
             tlsListeningPoint = sipStack.createListeningPoint
-                                (sipStack.getIPAddress(), 5060, "tcp");
+                                ("127.0.0.1", port, "tls");
             tlsProvider = sipStack.createSipProvider(tlsListeningPoint);
             tlsProvider.addSipListener(listener);
 
@@ -287,11 +283,10 @@ public class Shootist implements SipListener {
 
             // Create ViaHeaders
 
-            ArrayList viaHeaders = new ArrayList();
-            int port = sipProvider.getListeningPoint(transport).getPort();
-            ViaHeader viaHeader =
+           ArrayList viaHeaders = new ArrayList();
+           ViaHeader viaHeader =
                 headerFactory.createViaHeader(
-                    sipStack.getIPAddress(),
+                    "127.0.0.1",
                     port,
                     transport,
                     null);
@@ -327,7 +322,7 @@ public class Shootist implements SipListener {
                     viaHeaders,
                     maxForwards);
             // Create contact headers
-            String host = sipStack.getIPAddress();
+            String host = "127.0.0.1";
 
             //SipURI contactUrl = addressFactory.createSipURI(fromName, host);
             //contactUrl.setPort(tlsListeningPoint.getPort());
@@ -336,7 +331,7 @@ public class Shootist implements SipListener {
             SipURI contactURI = addressFactory.createSipURI(fromName, host);
             //contactURI.setSecure( true );
             contactURI.setPort(port);
-            contactURI.setTransportParam("tcp");
+            contactURI.setTransportParam("tls");
 
             Address contactAddress = addressFactory.createAddress(contactURI);
 
@@ -370,17 +365,20 @@ public class Shootist implements SipListener {
 
             request.setContent(contents, contentTypeHeader);
 
-            extensionHeader =
-                headerFactory.createHeader(
-                    "My-Other-Header",
-                    "my new header value ");
-            request.addHeader(extensionHeader);
-
             Header callInfoHeader =
                 headerFactory.createHeader(
                     "Call-Info",
                     "<http://www.antd.nist.gov>");
             request.addHeader(callInfoHeader);
+            
+            SipURI routeUri = (SipURI) requestURI.clone();
+            routeUri.setLrParam();
+            routeUri.setTransportParam("tls");
+            Address peerAddress = addressFactory.createAddress(requestURI);
+           
+            
+            RouteHeader routeHeader = headerFactory.createRouteHeader(peerAddress);
+            request.setHeader(routeHeader);
 
 
             // Create the client transaction.
@@ -388,7 +386,17 @@ public class Shootist implements SipListener {
 
             // send the request out.
             listener.inviteTid.sendRequest();
-
+            
+            System.out.println("isSecure = " + ((ClientTransactionExt)listener.inviteTid).isSecure());
+            if ( ((ClientTransactionExt)listener.inviteTid).isSecure() ) {
+                System.out.println("cipherSuite = " + ((ClientTransactionExt)listener.inviteTid).getCipherSuite());
+                for ( Certificate cert : ((ClientTransactionExt)listener.inviteTid).getLocalCertificates()) {
+                    System.out.println("localCert =" + cert);
+                }
+                for ( Certificate cert : ((ClientTransactionExt)listener.inviteTid).getPeerCertificates()) {
+                    System.out.println("remoteCerts = " + cert);
+                }
+            }
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             ex.printStackTrace();
