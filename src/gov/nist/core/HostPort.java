@@ -162,4 +162,9 @@ public final class HostPort extends GenericObject {
     public String toString() {
         return this.encode();
     }
+    
+    @Override
+    public int hashCode() {
+        return this.host.hashCode() + this.port;
+    }
 }

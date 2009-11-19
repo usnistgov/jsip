@@ -290,4 +290,10 @@ public class Host extends GenericObject {
         return address.charAt(0) == '['
             && address.charAt(address.length() - 1) == ']';
     }
+    
+    @Override
+    public int hashCode() {
+        return this.getHostname().hashCode();
+        
+    }
 }
