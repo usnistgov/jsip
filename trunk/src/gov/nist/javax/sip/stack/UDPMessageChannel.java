@@ -87,7 +87,7 @@ import javax.sip.address.Hop;
  *
  *
  *
- * @version 1.2 $Revision: 1.64 $ $Date: 2009-11-18 02:35:19 $
+ * @version 1.2 $Revision: 1.65 $ $Date: 2009-11-19 05:26:57 $
  */
 public class UDPMessageChannel extends MessageChannel implements
         ParseExceptionListener, Runnable, RawMessageChannel {
@@ -754,7 +754,7 @@ public class UDPMessageChannel extends MessageChannel implements
             // Use TCP to talk back to the sender.
             Socket outputSocket = sipStack.ioHandler.sendBytes(
                     this.messageProcessor.getIpAddress(), peerAddress,
-                    peerPort, "tcp", msg, retry);
+                    peerPort, "tcp", msg, retry,this);
             OutputStream myOutputStream = outputSocket.getOutputStream();
             myOutputStream.write(msg, 0, msg.length);
             myOutputStream.flush();

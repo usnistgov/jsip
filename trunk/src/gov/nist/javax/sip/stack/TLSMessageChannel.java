@@ -48,6 +48,7 @@ import java.net.*;
 import java.io.*;
 import java.text.ParseException;
 
+import javax.net.ssl.HandshakeCompletedListener;
 import javax.sip.address.Hop;
 import javax.sip.message.Response;
 
@@ -64,7 +65,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.23 $ $Date: 2009-11-14 20:06:18 $
+ * @version 1.2 $Revision: 1.24 $ $Date: 2009-11-19 05:26:58 $
  */
 public final class TLSMessageChannel extends MessageChannel implements SIPMessageListener,
         Runnable, RawMessageChannel {
@@ -101,6 +102,8 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
     private TLSMessageProcessor tlsMessageProcessor;
 
     private SIPTransactionStack sipStack;
+
+    private HandshakeCompletedListener handshakeCompletedListener;
 
     /**
      * Constructor - gets called from the SIPStack class with a socket on accepting a new client.
@@ -239,7 +242,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
     private void sendMessage(byte[] msg, boolean retry) throws IOException {
         Socket sock = this.sipStack.ioHandler.sendBytes(
                 this.getMessageProcessor().getIpAddress(), this.peerAddress, this.peerPort,
-                this.peerProtocol, msg, retry);
+                this.peerProtocol, msg, retry,this);
         // Created a new socket so close the old one and stick the new
         // one in its place but dont do this if it is a datagram socket.
         // (could have replied via udp but received via tcp!).
@@ -291,7 +294,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
         if (message == null || receiverAddress == null)
             throw new IllegalArgumentException("Null argument");
         Socket sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor.getIpAddress(),
-                receiverAddress, receiverPort, "TLS", message, retry);
+                receiverAddress, receiverPort, "TLS", message, retry, this);
         //
         // Created a new socket so close the old one and s
         // Check for null (bug fix sent in by Christophe)
@@ -710,5 +713,17 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
      */
     public boolean isSecure() {
         return true;
+    }
+
+    public void setHandshakeCompletedListener(
+            HandshakeCompletedListener handshakeCompletedListenerImpl) {
+        this.handshakeCompletedListener = handshakeCompletedListenerImpl;
+    }
+
+    /**
+     * @return the handshakeCompletedListener
+     */
+    public HandshakeCompletedListenerImpl getHandshakeCompletedListener() {
+        return (HandshakeCompletedListenerImpl) handshakeCompletedListener;
     }
 }

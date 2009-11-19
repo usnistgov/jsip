@@ -3,8 +3,8 @@
 	<property file="${root}/ant-build-config.properties" />
 	<property name="classes" value="${root}/classes" />
 	<property name="srcroot" value="${root}/src" />
-	<property name="log4j_jar" value="${root}/lib/${log4j}" />
-	<property name="junit_jar" value="${root}/lib/${junit}" />
+	<property name="log4j_jar" value="${root}/${log4j}" />
+	<property name="junit_jar" value="${root}/${junit}" />
 	<property name="keystore" value="testkeys"/>
 	<property name="keystorePassword" value="passphrase"/>
 	<path id="project.class.path">
@@ -20,12 +20,11 @@
 		<delete file="shootmedebug.txt" />
 		<delete file="shootmelog.txt" />
 		<java classname="examples.tls.Shootme" classpathref="project.class.path" fork="true">
-		 
-		 <jvmarg value="-Djavax.net.ssl.trustStore=${keystore}"/>
-		 <jvmarg value="-Djavax.net.ssl.keyStore=${keystore}"/>
-     <jvmarg value="-Djavax.net.ssl.keyStorePassword=${keystorePassword}"/>
-     <jvmarg value="-Djavax.net.ssl.keyStoreType=jks"/>
-     <!--jvmarg value="-Djavax.net.debug=all"/-->     
+		 	<jvmarg value="-Djavax.net.ssl.trustStore=${keystore}"/>
+		 	<jvmarg value="-Djavax.net.ssl.keyStore=${keystore}"/>
+                 	<jvmarg value="-Djavax.net.ssl.keyStorePassword=${keystorePassword}"/>
+                  	<jvmarg value="-Djavax.net.ssl.keyStoreType=jks"/>
+     			<!--jvmarg value="-Djavax.net.debug=all"/-->     
      
 		</java>
 	</target>

@@ -32,6 +32,7 @@ import java.text.ParseException;
 import javax.sip.*;
 import javax.sip.address.SipURI;
 import javax.sip.header.ContactHeader;
+import javax.sip.header.ViaHeader;
 
 import gov.nist.core.Host;
 import gov.nist.core.HostPort;
@@ -46,7 +47,7 @@ import gov.nist.javax.sip.stack.*;
 /**
  * Implementation of the ListeningPoint interface
  *
- * @version 1.2 $Revision: 1.14 $ $Date: 2009-07-29 20:38:17 $
+ * @version 1.2 $Revision: 1.15 $ $Date: 2009-11-19 05:26:58 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -76,7 +77,6 @@ public class ListeningPointImpl implements javax.sip.ListeningPoint, gov.nist.ja
      * Our stack
      */
     protected SipStackImpl sipStack;
-
 
 
 
@@ -234,6 +234,7 @@ public class ListeningPointImpl implements javax.sip.ListeningPoint, gov.nist.ja
             AddressImpl address = new AddressImpl();
             address.setURI(sipURI);
             contact.setAddress(address);
+            
             return contact;
         } catch (Exception ex) {
             InternalErrorHandler.handleException("Unexpected exception",sipStack.getStackLogger());
@@ -252,6 +253,11 @@ public class ListeningPointImpl implements javax.sip.ListeningPoint, gov.nist.ja
         siprequest.setNullRequest();
         messageChannel.sendMessage(siprequest);
 
+    }
+
+    
+    public ViaHeader createViaHeader() {
+           return this.getViaHeader();
     }
 
 }

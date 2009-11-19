@@ -59,7 +59,7 @@ import javax.sip.address.Hop;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.57 $ $Date: 2009-11-14 20:06:17 $
+ * @version 1.2 $Revision: 1.58 $ $Date: 2009-11-19 05:26:57 $
  */
 public class TCPMessageChannel extends MessageChannel implements SIPMessageListener, Runnable,
         RawMessageChannel {
@@ -250,7 +250,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
        // Socket s = this.sipStack.ioHandler.getSocket(IOHandler.makeKey(
        // this.peerAddress, this.peerPort));
         Socket sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor.getIpAddress(),
-                this.peerAddress, this.peerPort, this.peerProtocol, msg, retry);
+                this.peerAddress, this.peerPort, this.peerProtocol, msg, retry, this);
 
         // Created a new socket so close the old one and stick the new
         // one in its place but dont do this if it is a datagram socket.
@@ -318,7 +318,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
         // Socket s = this.sipStack.ioHandler.getSocket(IOHandler.makeKey(
         // receiverAddress, receiverPort));
         Socket sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor.getIpAddress(),
-                receiverAddress, receiverPort, "TCP", message, retry);
+                receiverAddress, receiverPort, "TCP", message, retry, this);
         //
         // Created a new socket so close the old one and s
         // Check for null (bug fix sent in by Christophe)
