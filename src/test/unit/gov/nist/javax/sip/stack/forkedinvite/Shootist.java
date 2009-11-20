@@ -221,15 +221,11 @@ public class Shootist implements SipListener {
 
                     TestCase.assertNotNull( ackRequest.getHeader( MaxForwardsHeader.NAME ) );
 
-                    if ( dialog == this.ackedDialog ) {
-                        dialog.sendAck(ackRequest);
-                        return;
-                    }
-                    // Proxy will fork. I will accept the first dialog.
+                     dialog.sendAck(ackRequest);
+                     // Proxy will fork. I will accept the first dialog.
                     this.forkedDialogs.add(dialog);
                     if ( responseReceivedEvent.getClientTransaction() != null ) {
                         logger.info("Sending ACK");
-                        dialog.sendAck(ackRequest);
                         TestCase.assertTrue(
                                 "Dialog state should be CONFIRMED", dialog
                                         .getState() == DialogState.CONFIRMED);
@@ -245,9 +241,6 @@ public class Shootist implements SipListener {
 
                     } else {
                         this.canceledDialog.add(dialog);
-                        // Send ACK to quench re-transmission
-                        sipProvider.sendRequest(ackRequest);
-                        // Kill the second dialog by sending a bye.
                         SipProvider sipProvider = (SipProvider) responseReceivedEvent
                                 .getSource();
 
