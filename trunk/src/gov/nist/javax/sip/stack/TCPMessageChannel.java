@@ -59,7 +59,7 @@ import javax.sip.address.Hop;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.58 $ $Date: 2009-11-19 05:26:57 $
+ * @version 1.2 $Revision: 1.59 $ $Date: 2009-11-20 04:45:53 $
  */
 public class TCPMessageChannel extends MessageChannel implements SIPMessageListener, Runnable,
         RawMessageChannel {
@@ -307,24 +307,8 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
             boolean retry) throws IOException {
         if (message == null || receiverAddress == null)
             throw new IllegalArgumentException("Null argument");
-        /*
-         * Patch from kircuv@dev.java.net (Issue 119 ) This patch avoids the case where two
-         * TCPMessageChannels are now pointing to the same socket.getInputStream().
-         * 
-         * JvB 22/5 : removed, I don't see how this fixes anything given that the code below was
-         * commented out too
-         * 
-         */
-        // Socket s = this.sipStack.ioHandler.getSocket(IOHandler.makeKey(
-        // receiverAddress, receiverPort));
-        Socket sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor.getIpAddress(),
+         Socket sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor.getIpAddress(),
                 receiverAddress, receiverPort, "TCP", message, retry, this);
-        //
-        // Created a new socket so close the old one and s
-        // Check for null (bug fix sent in by Christophe)
-        // if (mySock == null && s != null) {
-        // this.uncache();
-        // } else
         if (sock != mySock && sock != null) {
             if (mySock != null) {
                 /*
