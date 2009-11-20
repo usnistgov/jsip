@@ -84,7 +84,7 @@ import javax.sip.message.Response;
 /**
  * Implementation of the JAIN-SIP provider interface.
  *
- * @version 1.2 $Revision: 1.80 $ $Date: 2009-11-18 02:35:17 $
+ * @version 1.2 $Revision: 1.81 $ $Date: 2009-11-20 04:45:54 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -213,15 +213,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
         throw new java.lang.CloneNotSupportedException();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    public boolean equals(Object obj) {
-        return super.equals(obj);
-    }
-
+    
     /*
      * (non-Javadoc)
      *
@@ -1122,6 +1114,5 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
         return sipListener;
     }
 
-
-
+   
 }
