@@ -1,0 +1,156 @@
+<!-- Use the  Trace Viewer in src/tools/tracesviewer to view this  trace  
+Here are the stack configuration properties 
+javax.sip.IP_ADDRESS= null
+javax.sip.STACK_NAME= client
+javax.sip.ROUTER_PATH= null
+javax.sip.OUTBOUND_PROXY= null
+-->
+<description
+ logDescription="client"
+ name="client"
+ auxInfo="null"/>
+ 
+<message
+from="127.0.0.1:6500" 
+to="127.0.0.1:5600" 
+time="1258663512109"
+isSender="true" 
+transactionId="z9hg4bkb662f0b320c86fa781add1e49e3c46a2383636" 
+callId="6ae1ceeea64bedb7b176fca9ddd20d09@127.0.0.1" 
+firstLine="INVITE sip:127.0.0.1:5600 SIP/2.0" 
+>
+<![CDATA[INVITE sip:127.0.0.1:5600 SIP/2.0
+Call-ID: 6ae1ceeea64bedb7b176fca9ddd20d09@127.0.0.1
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=1347927220
+To: <sip:there.com>
+Contact: <sip:127.0.0.1:6500>
+Via: SIP/2.0/UDP 127.0.0.1:6500;branch=z9hG4bKb662f0b320c86fa781add1e49e3c46a2383636
+Max-Forwards: 5
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="127.0.0.1:5600" 
+to="127.0.0.1:6500" 
+time="1258663512186"
+isSender="false" 
+transactionId="z9hg4bkb662f0b320c86fa781add1e49e3c46a2383636" 
+callId="6ae1ceeea64bedb7b176fca9ddd20d09@127.0.0.1" 
+firstLine="SIP/2.0 100 Trying" 
+>
+<![CDATA[SIP/2.0 100 Trying
+Call-ID: 6ae1ceeea64bedb7b176fca9ddd20d09@127.0.0.1
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=1347927220
+To: <sip:there.com>
+Via: SIP/2.0/UDP 127.0.0.1:6500;branch=z9hG4bKb662f0b320c86fa781add1e49e3c46a2383636
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="127.0.0.1:5600" 
+to="127.0.0.1:6500" 
+time="1258663512190"
+isSender="false" 
+transactionId="z9hg4bkb662f0b320c86fa781add1e49e3c46a2383636" 
+callId="6ae1ceeea64bedb7b176fca9ddd20d09@127.0.0.1" 
+firstLine="SIP/2.0 180 Ringing" 
+>
+<![CDATA[SIP/2.0 180 Ringing
+Call-ID: 6ae1ceeea64bedb7b176fca9ddd20d09@127.0.0.1
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=1347927220
+To: <sip:there.com>;tag=asdgaeyvewacyta0.6728364701794527
+Via: SIP/2.0/UDP 127.0.0.1:6500;branch=z9hG4bKb662f0b320c86fa781add1e49e3c46a2383636
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="127.0.0.1:6500" 
+to="127.0.0.1:5600" 
+time="1258663512201"
+isSender="true" 
+transactionId="z9hg4bkb662f0b320c86fa781add1e49e3c46a2383636:cancel" 
+callId="6ae1ceeea64bedb7b176fca9ddd20d09@127.0.0.1" 
+firstLine="CANCEL sip:127.0.0.1:5600 SIP/2.0" 
+>
+<![CDATA[CANCEL sip:127.0.0.1:5600 SIP/2.0
+Call-ID: 6ae1ceeea64bedb7b176fca9ddd20d09@127.0.0.1
+To: <sip:there.com>
+CSeq: 1 CANCEL
+From: <sip:here.com>;tag=1347927220
+Via: SIP/2.0/UDP 127.0.0.1:6500;branch=z9hG4bKb662f0b320c86fa781add1e49e3c46a2383636
+Max-Forwards: 5
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="127.0.0.1:5600" 
+to="127.0.0.1:6500" 
+time="1258663512221"
+isSender="false" 
+transactionId="z9hg4bkb662f0b320c86fa781add1e49e3c46a2383636:cancel" 
+callId="6ae1ceeea64bedb7b176fca9ddd20d09@127.0.0.1" 
+firstLine="SIP/2.0 200 OK" 
+>
+<![CDATA[SIP/2.0 200 OK
+Call-ID: 6ae1ceeea64bedb7b176fca9ddd20d09@127.0.0.1
+To: <sip:there.com>
+CSeq: 1 CANCEL
+From: <sip:here.com>;tag=1347927220
+Via: SIP/2.0/UDP 127.0.0.1:6500;branch=z9hG4bKb662f0b320c86fa781add1e49e3c46a2383636
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="127.0.0.1:5600" 
+to="127.0.0.1:6500" 
+time="1258663512225"
+isSender="false" 
+transactionId="z9hg4bkb662f0b320c86fa781add1e49e3c46a2383636" 
+callId="6ae1ceeea64bedb7b176fca9ddd20d09@127.0.0.1" 
+firstLine="SIP/2.0 487 Request Terminated" 
+>
+<![CDATA[SIP/2.0 487 Request Terminated
+Call-ID: 6ae1ceeea64bedb7b176fca9ddd20d09@127.0.0.1
+CSeq: 1 INVITE
+From: <sip:here.com>;tag=1347927220
+To: <sip:there.com>
+Via: SIP/2.0/UDP 127.0.0.1:6500;branch=z9hG4bKb662f0b320c86fa781add1e49e3c46a2383636
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="127.0.0.1:6500" 
+to="127.0.0.1:5600" 
+time="1258663512227"
+isSender="true" 
+transactionId="z9hg4bkb662f0b320c86fa781add1e49e3c46a2383636" 
+callId="6ae1ceeea64bedb7b176fca9ddd20d09@127.0.0.1" 
+firstLine="ACK sip:127.0.0.1:5600 SIP/2.0" 
+>
+<![CDATA[ACK sip:127.0.0.1:5600 SIP/2.0
+Call-ID: 6ae1ceeea64bedb7b176fca9ddd20d09@127.0.0.1
+Max-Forwards: 5
+From: <sip:here.com>;tag=1347927220
+To: <sip:there.com>
+Via: SIP/2.0/UDP 127.0.0.1:6500;branch=z9hG4bKb662f0b320c86fa781add1e49e3c46a2383636
+CSeq: 1 ACK
+Content-Length: 0
+
+]]>
+</message>
+
