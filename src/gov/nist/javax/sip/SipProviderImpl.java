@@ -84,7 +84,7 @@ import javax.sip.message.Response;
 /**
  * Implementation of the JAIN-SIP provider interface.
  *
- * @version 1.2 $Revision: 1.81 $ $Date: 2009-11-20 04:45:54 $
+ * @version 1.2 $Revision: 1.82 $ $Date: 2009-11-24 17:16:59 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -482,12 +482,11 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
                         "Cannot find matching Subscription (and gov.nist.javax.sip.DELIVER_UNSOLICITED_NOTIFY not set)");
             }
         }
-        boolean acquired = false;
+        if ( !sipStack.acquireSem()) {
+            throw new TransactionUnavailableException(
+            "Transaction not available -- could not acquire stack lock");
+        }
         try {
-            if ( !( acquired = sipStack.acquireSem())) {
-                throw new TransactionUnavailableException(
-                "Transaction not available -- could not acquire stack lock");
-            }
             if (sipStack.isDialogCreated(sipRequest.getMethod())) {
                 if (sipStack.findTransaction((SIPRequest) request, true) != null)
                     throw new TransactionAlreadyExistsException(
@@ -622,7 +621,6 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
             }
             return transaction;
         } finally {
-            if (acquired)
             sipStack.releaseSem();
         }
 

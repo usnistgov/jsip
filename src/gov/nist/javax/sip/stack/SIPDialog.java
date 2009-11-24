@@ -124,7 +124,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.154 $ $Date: 2009-11-19 05:26:57 $
+ * @version 1.2 $Revision: 1.155 $ $Date: 2009-11-24 17:17:00 $
  * 
  * @author M. Ranganathan
  * 
@@ -260,6 +260,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
     // List of event listeners for this dialog
 	private transient Set<SIPDialogEventListener> eventListeners;
+	// added for Issue 248 : https://jain-sip.dev.java.net/issues/show_bug.cgi?id=248
+	private Semaphore timerTaskLock = new Semaphore(1);
 
     // //////////////////////////////////////////////////////
     // Inner classes
@@ -367,6 +369,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             if(eventListeners != null) {
             	eventListeners.clear();
             }
+            timerTaskLock = null;
             sipStack.removeDialog(dialog);
         }
 
@@ -1060,8 +1063,13 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         if (tr != null) {
             if (tr.getCSeq() == sipRequest.getCSeq().getSeqNumber()) {
                 if (this.timerTask != null) {
-                    this.timerTask.cancel();
-                    this.timerTask = null;
+                	acquireTimerTaskSem();
+                	try {
+	                    this.timerTask.cancel();
+	                    this.timerTask = null;
+                	} finally {
+                		releaseTimerTaskSem();
+                	}
                 }
                 this.ackSeen = true;
                 if (this.dialogDeleteTask != null) {
@@ -2233,14 +2241,20 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         if (sipStack.isLoggingEnabled())
             sipStack.getStackLogger().logDebug("Starting dialog timer for " + getDialogId());
         this.ackSeen = false;
-        if (this.timerTask != null) {
-            this.timerTask.transaction = transaction;
-        } else {
-            this.timerTask = new DialogTimerTask(transaction);
-            sipStack.getTimer().schedule(timerTask, SIPTransactionStack.BASE_TIMER_INTERVAL,
-                    SIPTransactionStack.BASE_TIMER_INTERVAL);
-
-        }
+        
+		acquireTimerTaskSem();
+		try {
+	        if (this.timerTask != null) {
+	            this.timerTask.transaction = transaction;
+	        } else {
+	            this.timerTask = new DialogTimerTask(transaction);
+	            sipStack.getTimer().schedule(timerTask, SIPTransactionStack.BASE_TIMER_INTERVAL,
+	                    SIPTransactionStack.BASE_TIMER_INTERVAL);
+	        }
+		} finally {
+			releaseTimerTaskSem();
+		}
+        
         this.setRetransmissionTicks();
     }
 
@@ -2250,9 +2264,15 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      */
     protected void stopTimer() {
         try {
-            if (this.timerTask != null)
-                this.timerTask.cancel();
-            this.timerTask = null;
+            if (this.timerTask != null) {
+            	acquireTimerTaskSem();
+            	try {
+	                this.timerTask.cancel();
+	                this.timerTask = null;
+            	} finally {
+            		releaseTimerTaskSem();
+            	}
+            }            
         } catch (Exception ex) {
         }
     }
@@ -3079,8 +3099,13 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                         "ACK already seen by dialog -- dropping Ack" + " retransmission");
             }
             if (this.timerTask != null) {
-                this.timerTask.cancel();
-                this.timerTask = null;
+            	acquireTimerTaskSem();
+            	try {
+	                this.timerTask.cancel();
+	                this.timerTask = null;
+            	} finally {
+            		releaseTimerTaskSem();
+            	}
             }
             return false;
         } else if (this.getState() == DialogState.TERMINATED) {
@@ -3277,7 +3302,21 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     }
     
    
+    public void acquireTimerTaskSem() {
+    	boolean acquired = false;
+        try {
+            acquired = this.timerTaskLock.tryAcquire(10, TimeUnit.SECONDS);
+        } catch ( InterruptedException ex) {
+            acquired = false;
+        }
+        if(!acquired) {
+        	throw new IllegalStateException("Impossible to acquire the dialog timer task lock");
+        }
+    }
     
+    public void releaseTimerTaskSem() {
+        this.timerTaskLock.release();
+    }    
     
 	
 }
