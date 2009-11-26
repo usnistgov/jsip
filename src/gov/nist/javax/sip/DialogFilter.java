@@ -81,7 +81,7 @@ import javax.sip.message.Response;
  * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
  * and event model with the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.60 $ $Date: 2009-11-18 02:35:17 $
+ * @version 1.2 $Revision: 1.61 $ $Date: 2009-11-26 02:44:18 $
  * 
  * @author M. Ranganathan
  */
@@ -443,6 +443,26 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                      * if it isn't an ACK for a 2xx response
                      * 
                      */
+                    SIPServerTransaction ackTransaction = sipStack.findTransactionPendingAck(sipRequest);
+                    /*
+                     * Found a transaction ( that we generated ) which is waiting for ACK. So ACK it
+                     * and return.
+                     */
+                    if (ackTransaction != null) {
+                        if (sipStack.isLoggingEnabled())
+                            sipStack.getStackLogger().logDebug("Found Tx pending ACK");
+                        try {
+                            ackTransaction.setAckSeen();
+                            sipStack.removeTransaction(ackTransaction);
+                            sipStack.removeTransactionPendingAck(ackTransaction);
+                        } catch (Exception ex) {
+                            if (sipStack.isLoggingEnabled()) {
+                                sipStack.getStackLogger().logError(
+                                        "Problem terminating transaction", ex);
+                            }
+                        }
+                        return;
+                    }
 
                 } else {
                     if (!dialog.handleAck(transaction)) {
