@@ -48,6 +48,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.sip.Dialog;
 import javax.sip.IOExceptionEvent;
 import javax.sip.ServerTransaction;
@@ -69,7 +70,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.70 $ $Date: 2009-11-15 19:50:43 $
+ * @version 1.2 $Revision: 1.71 $ $Date: 2009-11-29 04:31:29 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -1216,6 +1217,41 @@ public abstract class SIPTransaction extends MessageChannel implements
         this.terminatedEventDelivered = true;
         return retval;
     }
+    
+    public String getCipherSuite() throws UnsupportedOperationException {
+        if (this.getMessageChannel() instanceof TLSMessageChannel ) {
+            if (  ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener() == null ) 
+                return null;
+            else if ( ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getHandshakeCompletedEvent() == null)
+                return null;
+            else return ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getHandshakeCompletedEvent().getCipherSuite();
+        } else throw new UnsupportedOperationException("Not a TLS channel");
+
+    }
+
+    
+    public java.security.cert.Certificate[] getLocalCertificates() throws UnsupportedOperationException {
+         if (this.getMessageChannel() instanceof TLSMessageChannel ) {
+            if (  ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener() == null ) 
+                return null;
+            else if ( ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getHandshakeCompletedEvent() == null)
+                return null;
+            else return ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getHandshakeCompletedEvent().getLocalCertificates();
+        } else throw new UnsupportedOperationException("Not a TLS channel");
+    }
+
+    
+    public java.security.cert.Certificate[] getPeerCertificates() throws SSLPeerUnverifiedException {
+        if (this.getMessageChannel() instanceof TLSMessageChannel ) {
+            if (  ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener() == null ) 
+                return null;
+            else if ( ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getHandshakeCompletedEvent() == null)
+                return null;
+            else return ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getHandshakeCompletedEvent().getPeerCertificates();
+        } else throw new UnsupportedOperationException("Not a TLS channel");
+
+    }
+
 
     /**
      * Start the timer that runs the transaction state machine.

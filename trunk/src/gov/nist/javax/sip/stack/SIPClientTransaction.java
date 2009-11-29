@@ -177,7 +177,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.119 $ $Date: 2009-11-19 05:26:57 $
+ * @version 1.2 $Revision: 1.120 $ $Date: 2009-11-29 04:31:30 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -1558,39 +1558,5 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
     }
 
     
-    public String getCipherSuite() throws UnsupportedOperationException {
-        if (this.getMessageChannel() instanceof TLSMessageChannel ) {
-            if (  ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener() == null ) 
-                return null;
-            else if ( ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getHandshakeCompletedEvent() == null)
-                return null;
-            else return ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getHandshakeCompletedEvent().getCipherSuite();
-        } else throw new UnsupportedOperationException("Not a TLS channel");
-
-    }
-
-    
-    public java.security.cert.Certificate[] getLocalCertificates() throws UnsupportedOperationException {
-         if (this.getMessageChannel() instanceof TLSMessageChannel ) {
-            if (  ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener() == null ) 
-                return null;
-            else if ( ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getHandshakeCompletedEvent() == null)
-                return null;
-            else return ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getHandshakeCompletedEvent().getLocalCertificates();
-        } else throw new UnsupportedOperationException("Not a TLS channel");
-    }
-
-    
-    public java.security.cert.Certificate[] getPeerCertificates() throws SSLPeerUnverifiedException {
-        // TODO Auto-generated method stub
-        if (this.getMessageChannel() instanceof TLSMessageChannel ) {
-            if (  ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener() == null ) 
-                return null;
-            else if ( ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getHandshakeCompletedEvent() == null)
-                return null;
-            else return ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getHandshakeCompletedEvent().getPeerCertificates();
-        } else throw new UnsupportedOperationException("Not a TLS channel");
-
-    }
-
+   
 }
