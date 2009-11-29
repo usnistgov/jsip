@@ -33,6 +33,7 @@
  * contributed a bug fix for symmetric nat. Jeroen van Bemmel
  * added compensation for buggy clients ( Microsoft RTC clients ).
  * Bug fixes by viswashanti.kadiyala@antepo.com, Joost Yervante Damand
+ * Lamine Brahimi (IBM Zurich) sent in a bug fix - a thread was being uncessarily created.
  */
 
 /******************************************************************************
@@ -49,6 +50,7 @@ import java.io.*;
 import java.text.ParseException;
 
 import javax.net.ssl.HandshakeCompletedListener;
+import javax.net.ssl.SSLSocket;
 import javax.sip.address.Hop;
 import javax.sip.message.Response;
 
@@ -65,7 +67,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.25 $ $Date: 2009-11-20 04:45:53 $
+ * @version 1.2 $Revision: 1.26 $ $Date: 2009-11-29 04:31:30 $
  */
 public final class TLSMessageChannel extends MessageChannel implements SIPMessageListener,
         Runnable, RawMessageChannel {
@@ -125,7 +127,18 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
             sipStack.getStackLogger().logDebug("creating new TLSMessageChannel ");
             sipStack.getStackLogger().logStackTrace();
         }
-        mySock = sock;
+        
+        mySock = (SSLSocket) sock;
+        if ( sock instanceof SSLSocket ) {
+            
+            SSLSocket sslSock = (SSLSocket) sock;
+            sslSock.setNeedClientAuth(true);
+            this.handshakeCompletedListener = new HandshakeCompletedListenerImpl(this);
+            sslSock.addHandshakeCompletedListener(this.handshakeCompletedListener);
+            sslSock.startHandshake();
+       
+        }
+        
         peerAddress = mySock.getInetAddress();
         myAddress = msgProcessor.getIpAddress().getHostAddress();
         myClientInputStream = mySock.getInputStream();
@@ -146,8 +159,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
     }
 
     /**
-     * Constructor - connects to the given inet address. Acknowledgement -- Lamine Brahimi (IBM
-     * Zurich) sent in a bug fix for this method. A thread was being uncessarily created.
+     * Constructor - connects to the given inet address.
      *
      * @param inetAddr inet address to connect to.
      * @param sipStack is the sip sipStack from which we are created.

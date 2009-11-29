@@ -1,8 +1,12 @@
     package examples.tls;
+import gov.nist.javax.sip.TransactionExt;
+
 import javax.sip.*;
 import javax.sip.address.*;
 import javax.sip.header.*;
 import javax.sip.message.*;
+
+import java.security.cert.Certificate;
 import java.util.*;
 
 /**
@@ -117,7 +121,7 @@ public class Shootme implements SipListener {
                     if (st.getDialog().getApplicationData() == null) {
                     st.getDialog().setApplicationData(new ApplicationData());
                 }
-            } else {
+                } else {
                 System.out.println("This is a RE INVITE ");
                 if (st.getDialog() != dialog) {
                    System.out.println("Whoopsa Daisy Dialog Mismatch");
@@ -140,6 +144,14 @@ public class Shootme implements SipListener {
                 System.out.println("Dialog state " + dialog.getState());
             }
             st.sendResponse(response);
+            TransactionExt stExt = ( TransactionExt)st  ;
+            Certificate[] certs = stExt.getPeerCertificates();
+            System.out.println("Certs = " + certs);
+            
+            for (Certificate cert: certs ) {
+                System.out.println("Cert = " + cert);
+            }
+  
             response = messageFactory.createResponse(200, request);
             toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
             toHeader.setTag("4321"); // Application is supposed to set.
