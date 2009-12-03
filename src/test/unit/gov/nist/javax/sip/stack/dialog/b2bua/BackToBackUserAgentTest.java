@@ -22,7 +22,7 @@ public class BackToBackUserAgentTest extends TestCase {
     
     @Override 
     public void tearDown() throws Exception {
-        Thread.sleep(2000);
+        Thread.sleep(3000);
         this.shootist.checkState();
         this.shootme.checkState();
     }
