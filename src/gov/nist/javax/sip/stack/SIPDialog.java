@@ -124,7 +124,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.155 $ $Date: 2009-11-24 17:17:00 $
+ * @version 1.2 $Revision: 1.156 $ $Date: 2009-12-03 14:48:03 $
  * 
  * @author M. Ranganathan
  * 
@@ -1062,15 +1062,15 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         SIPServerTransaction tr = this.getInviteTransaction();
         if (tr != null) {
             if (tr.getCSeq() == sipRequest.getCSeq().getSeqNumber()) {
-                if (this.timerTask != null) {
-                	acquireTimerTaskSem();
-                	try {
-	                    this.timerTask.cancel();
-	                    this.timerTask = null;
-                	} finally {
-                		releaseTimerTaskSem();
-                	}
-                }
+            	acquireTimerTaskSem();
+            	try {
+	                if (this.timerTask != null) {                	                	
+	                	this.timerTask.cancel();
+		                this.timerTask = null;                	
+	                }
+            	} finally {
+            		releaseTimerTaskSem();
+            	}
                 this.ackSeen = true;
                 if (this.dialogDeleteTask != null) {
                     this.dialogDeleteTask.cancel();
@@ -2264,15 +2264,15 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      */
     protected void stopTimer() {
         try {
-            if (this.timerTask != null) {
-            	acquireTimerTaskSem();
-            	try {
-	                this.timerTask.cancel();
-	                this.timerTask = null;
-            	} finally {
-            		releaseTimerTaskSem();
-            	}
-            }            
+        	acquireTimerTaskSem();
+        	try {
+	            if (this.timerTask != null) {            	
+	            	this.timerTask.cancel();
+		            this.timerTask = null;
+	            }   
+        	} finally {
+        		releaseTimerTaskSem();
+        	}
         } catch (Exception ex) {
         }
     }
@@ -3098,15 +3098,15 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 sipStack.getStackLogger().logDebug(
                         "ACK already seen by dialog -- dropping Ack" + " retransmission");
             }
-            if (this.timerTask != null) {
-            	acquireTimerTaskSem();
-            	try {
+            acquireTimerTaskSem();
+            try {
+            	if (this.timerTask != null) {            	
 	                this.timerTask.cancel();
 	                this.timerTask = null;
-            	} finally {
-            		releaseTimerTaskSem();
-            	}
-            }
+            	} 
+            } finally {
+        		releaseTimerTaskSem();
+        	}
             return false;
         } else if (this.getState() == DialogState.TERMINATED) {
             if (sipStack.isLoggingEnabled())
