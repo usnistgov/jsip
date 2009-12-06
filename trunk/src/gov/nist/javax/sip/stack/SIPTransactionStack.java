@@ -94,7 +94,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.136 $ $Date: 2009-11-17 21:24:02 $
+ * @version 1.2 $Revision: 1.137 $ $Date: 2009-12-06 15:58:39 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener, SIPDialogEventListener {
 
@@ -319,12 +319,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     // want to respond to requests).
     protected int maxListenerResponseTime;
 
-    /*
-     * Flag to indicate whether the stack will delegate the TLS encryption/decryption to external
-     * hardware.
-     */
-    protected boolean useTlsAccelerator = false;
-
+  
     // A flag that indicates whether or not RFC 2543 clients are fully supported.
     // If this is set to true, then To tag checking on the Dialog layer is
     // disabled in a few places - resulting in possible breakage of forked dialogs.
@@ -2122,7 +2117,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
             String callID = (callIdHeader != null ? callIdHeader.getCallId() : null);
 
             // Check if the application knows about this call id
-            if (callID != null && !activeCallIDs.contains(callID)) {
+            if (itDialog != null && callID != null && !activeCallIDs.contains(callID)) {
                 // Application doesn't know anything about this dialog...
                 if (itDialog.auditTag == 0) {
                     // Mark this dialog as suspect

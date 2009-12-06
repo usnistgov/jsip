@@ -268,19 +268,6 @@ import javax.sip.message.Request;
  * responds, the stack will hang on to a reference for the transaction and
  * result in a memory leak.
  * 
- * <li><b>gov.nist.javax.sip.USE_TLS_ACCELERATOR = true|false </b> <br/>
- * Default value is false. Setting this to true permits the delegation of TLS
- * encryption/decryption to an external, non SIP-aware, TLS accelerator
- * hardware. Such deployment requires the SIP stack to make its TLS traffic goes
- * over un-encrypted TCP connections to the TLS accelerator. So all TLS
- * listening points will be listening for plain TCP traffic, and outgoing
- * messages sent with a TLS provider will not be encrypted. Note that this does
- * not affect the transport value in the Via header. Another deployment strategy
- * for TLS acceleration would be to use one or a cluster of outbound proxies
- * that transform the TCP or UDP SIP connection to TLS connections. This
- * scenario does not need the USE_TLS_ACCELERATOR switch, as the messages will
- * be sent using a plain TCP or UDP provider.</li>
- * 
  * <li><b>gov.nist.javax.sip.DELIVER_TERMINATED_EVENT_FOR_ACK = [true|false]</b>
  * <br/>
  * Default is <it>false</it>. ACK Server Transaction is a Pseuedo-transaction.
@@ -423,7 +410,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.111 $ $Date: 2009-11-18 02:35:17 $
+ * @version 1.2 $Revision: 1.112 $ $Date: 2009-12-06 15:58:38 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -717,14 +704,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 			super.maxListenerResponseTime = -1;
 		}
 
-		this.useTlsAccelerator = false;
-		String useTlsAcceleratorFlag = configurationProperties
-				.getProperty("gov.nist.javax.sip.USE_TLS_ACCELERATOR");
-
-		if (useTlsAcceleratorFlag != null
-				&& "true".equalsIgnoreCase(useTlsAcceleratorFlag.trim())) {
-			this.useTlsAccelerator = true;
-		}
+		
 
 		this.deliverTerminatedEventForAck = configurationProperties
 				.getProperty(
