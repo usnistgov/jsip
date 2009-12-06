@@ -59,7 +59,7 @@ import java.util.Iterator;
  * connection. This is the active object that creates new TLS MessageChannels (one for each new
  * accept socket).
  * 
- * @version 1.2 $Revision: 1.22 $ $Date: 2009-11-29 04:31:30 $
+ * @version 1.2 $Revision: 1.23 $ $Date: 2009-12-06 15:58:39 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -102,20 +102,17 @@ public class TLSMessageProcessor extends MessageProcessor {
         // ISSUE 184
         thread.setPriority(Thread.MAX_PRIORITY);
         thread.setDaemon(true);
-        if (!sipStack.useTlsAccelerator) {
-            this.sock = sipStack.getNetworkLayer().createSSLServerSocket(this.getPort(), 0,
-                    this.getIpAddress());
-            ((SSLServerSocket) this.sock).setNeedClientAuth(false);
-            ((SSLServerSocket) this.sock).setUseClientMode(false);
-            ((SSLServerSocket) this.sock).setWantClientAuth(true);
-            String []enabledCiphers = ((SipStackImpl)sipStack).getEnabledCipherSuites();
-            ((SSLServerSocket) this.sock).setEnabledCipherSuites(enabledCiphers);
-            ((SSLServerSocket)this.sock).setWantClientAuth(true);
-            
-        } else {
-            this.sock = sipStack.getNetworkLayer().createServerSocket(this.getPort(), 0,
-                    getIpAddress());
-        }
+
+        this.sock = sipStack.getNetworkLayer().createSSLServerSocket(this.getPort(), 0,
+                this.getIpAddress());
+        ((SSLServerSocket) this.sock).setNeedClientAuth(false);
+        ((SSLServerSocket) this.sock).setUseClientMode(false);
+        ((SSLServerSocket) this.sock).setWantClientAuth(true);
+        String []enabledCiphers = ((SipStackImpl)sipStack).getEnabledCipherSuites();
+        ((SSLServerSocket) this.sock).setEnabledCipherSuites(enabledCiphers);
+        ((SSLServerSocket)this.sock).setWantClientAuth(true);
+
+
         this.isRunning = true;
         thread.start();
 

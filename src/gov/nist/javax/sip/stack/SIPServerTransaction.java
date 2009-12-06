@@ -163,7 +163,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.115 $ $Date: 2009-11-18 17:03:14 $
+ * @version 1.2 $Revision: 1.116 $ $Date: 2009-12-06 15:58:39 $
  * @author M. Ranganathan
  *
  */
@@ -634,8 +634,8 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                         transactionMatches = false;
                     } else if ((isResponse || getOriginalRequest().getRequestURI().equals(
                             ((SIPRequest) messageToTest).getRequestURI()))
-                            && (skipFrom || originalFromTag.equalsIgnoreCase(thisFromTag))
-                            && (skipTo || originalToTag.equalsIgnoreCase(thisToTag))
+                            && (skipFrom || originalFromTag != null && originalFromTag.equalsIgnoreCase(thisFromTag))
+                            && (skipTo || originalToTag != null && originalToTag.equalsIgnoreCase(thisToTag))
                             && getOriginalRequest().getCallId().getCallId().equalsIgnoreCase(
                                     messageToTest.getCallId().getCallId())
                             && getOriginalRequest().getCSeq().getSeqNumber() == messageToTest

@@ -177,7 +177,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.120 $ $Date: 2009-11-29 04:31:30 $
+ * @version 1.2 $Revision: 1.121 $ $Date: 2009-12-06 15:58:39 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -723,7 +723,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
     private void inviteClientTransaction(SIPResponse transactionResponse,
             MessageChannel sourceChannel, SIPDialog dialog) throws IOException {
         int statusCode = transactionResponse.getStatusCode();
-
+       
         if (TransactionState.TERMINATED == this.getState()) {
             boolean ackAlreadySent = false;
             if (dialog != null && dialog.isAckSeen() && dialog.getLastAckSent() != null) {
@@ -736,7 +736,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                 }
             }
             // retransmit the ACK for this response.
-            if (ackAlreadySent
+            if (dialog!= null && ackAlreadySent
                     && transactionResponse.getCSeq().getMethod().equals(dialog.getMethod())) {
                 try {
                     // Found the dialog - resend the ACK and
@@ -1425,7 +1425,11 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                                 }
 
                             }
-                            this.setDialog(dialog, dialog.getDialogId());
+                            if ( dialog != null ) {
+                                this.setDialog(dialog, dialog.getDialogId());
+                            } else {
+                                sipStack.getStackLogger().logError("dialog is unexpectedly null",new NullPointerException());
+                            }
                         } else {
                             throw new RuntimeException("Response without from-tag");
                         }
