@@ -164,7 +164,7 @@ public class PChargingFunctionAddresses
     public ListIterator getChargingCollectionFunctionAddresses() {
 
         Iterator li = this.parameters.iterator();
-        ListIterator ccfLIST = null;
+        LinkedList ccfLIST = new LinkedList();
         NameValue nv;
         while (li.hasNext()) {
             nv = (NameValue) li.next();
@@ -180,7 +180,7 @@ public class PChargingFunctionAddresses
             }
         }
 
-        return ccfLIST;
+        return ccfLIST.listIterator();
     }
 
     /**
