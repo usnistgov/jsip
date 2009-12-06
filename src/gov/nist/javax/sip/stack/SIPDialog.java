@@ -34,7 +34,6 @@ import gov.nist.javax.sip.DialogExt;
 import gov.nist.javax.sip.ListeningPointImpl;
 import gov.nist.javax.sip.SipListenerExt;
 import gov.nist.javax.sip.SipProviderImpl;
-import gov.nist.javax.sip.SipStackImpl;
 import gov.nist.javax.sip.Utils;
 import gov.nist.javax.sip.address.AddressImpl;
 import gov.nist.javax.sip.address.SipUri;
@@ -78,7 +77,6 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import javax.sip.ClientTransaction;
-import javax.sip.Dialog;
 import javax.sip.DialogDoesNotExistException;
 import javax.sip.DialogState;
 import javax.sip.IOExceptionEvent;
@@ -86,7 +84,6 @@ import javax.sip.InvalidArgumentException;
 import javax.sip.ListeningPoint;
 import javax.sip.ObjectInUseException;
 import javax.sip.SipException;
-import javax.sip.SipListener;
 import javax.sip.Transaction;
 import javax.sip.TransactionDoesNotExistException;
 import javax.sip.TransactionState;
@@ -124,7 +121,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.156 $ $Date: 2009-12-03 14:48:03 $
+ * @version 1.2 $Revision: 1.157 $ $Date: 2009-12-06 15:58:39 $
  * 
  * @author M. Ranganathan
  * 
