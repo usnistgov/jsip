@@ -11,20 +11,20 @@
 		<pathelement location="${junit_jar}" />
 	</path>
 	<target name="make">
-		<javac debug="true" source="${javac.source}" deprecation="${javac.deprecation}" debuglevel="${javac.debuglevel}" srcdir="${srcroot}" includes="examples/simplecallsetup/**/*.java" classpathref="project.class.path" destdir="${classes}">
+		<javac debug="true" source="${javac.source}" deprecation="${javac.deprecation}" debuglevel="${javac.debuglevel}" srcdir="${srcroot}" includes="performance/uas/**/*.java" classpathref="project.class.path" destdir="${classes}">
 		</javac>
 	</target>
 	<target name="shootme" depends="make" description="build and run the  example UAS.">
 		<delete file="shootmedebug.txt" />
 		<delete file="shootmelog.txt" />
-		<java classname="examples.simplecallsetup.Shootme" jvmargs="-Xmn100M -Xms600M -Xmx600M" classpathref="project.class.path" fork="true">
+		<java classname="performance.uas.Shootme" jvmargs="-Xmn100M -Xms600M -Xmx600M" classpathref="project.class.path" fork="true">
 		</java>
 	</target>
 
 	<target name="shootist" depends="make" description="run the example UAC.">
 		<delete file="shootistdebug.txt" />
 		<delete file="shootistlog.txt" />
-		<java classname="examples.simplecallsetup.Shootist" fork="true" classpathref="project.class.path" />
+		<java classname="performance.uas.Shootist" fork="true" classpathref="project.class.path" />
 	</target>
 	<target name="shootistlog" description="Show the  log">
 		<java classname="tools.tracesviewer.TracesViewer" fork="true" classpathref="project.class.path">
