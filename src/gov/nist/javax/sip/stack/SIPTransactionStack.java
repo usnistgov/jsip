@@ -94,7 +94,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.137 $ $Date: 2009-12-06 15:58:39 $
+ * @version 1.2 $Revision: 1.138 $ $Date: 2009-12-10 20:35:41 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener, SIPDialogEventListener {
 
@@ -134,10 +134,9 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     private ConcurrentHashMap<String, SIPClientTransaction> clientTransactionTable;
 
     // Set to false if you want hiwat and lowat to be consulted.
-    private boolean unlimitedServerTransactionTableSize = false;
+    protected boolean unlimitedServerTransactionTableSize = true;
 
     // Set to false if you want unlimited size of client trnansactin table.
-
     protected boolean unlimitedClientTransactionTableSize = true;
 
     // High water mark for ServerTransaction Table
@@ -151,11 +150,9 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     // Hiwater mark for client transaction table. These defaults can be
     // overriden by stack
     // configuration.
-
     protected int clientTransactionTableHiwaterMark = 1000;
 
     // Low water mark for client tx table.
-
     protected int clientTransactionTableLowaterMark = 800;
 
     private AtomicInteger activeClientTransactionCount = new AtomicInteger(0);
@@ -1367,12 +1364,10 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
      * @param encapsulatedMessageChannel Message channel of the transport layer.
      */
     public SIPServerTransaction createServerTransaction(MessageChannel encapsulatedMessageChannel) {
-        if (unlimitedServerTransactionTableSize
-                || this.serverTransactionTable.size() < serverTransactionTableLowaterMark)
+    	// Issue 256 : be consistent with createClientTransaction, if unlimitedServerTransactionTableSize is true,
+    	// a new Server Transaction is created no matter what
+        if (unlimitedServerTransactionTableSize) {                
             return new SIPServerTransaction(this, encapsulatedMessageChannel);
-        else if (this.serverTransactionTable.size() >= serverTransactionTableHighwaterMark) {
-
-            return null;
         } else {
             float threshold = ((float) (serverTransactionTable.size() - serverTransactionTableLowaterMark))
                     / ((float) (serverTransactionTableHighwaterMark - serverTransactionTableLowaterMark));
