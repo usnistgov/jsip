@@ -79,8 +79,10 @@
 
     ]]>
   </send>
-  <pause milliseconds="2000"/>
-<send>
+
+  <pause milliseconds="60000"/>
+
+<send retrans="1000">
 
 <![CDATA[
       BYE sip:[service]@[remote_ip]:[remote_port] SIP/2.0

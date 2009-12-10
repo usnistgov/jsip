@@ -1,12 +1,28 @@
 package performance.uas;
 
-import javax.sip.*;
-import javax.sip.address.*;
-import javax.sip.header.*;
-import javax.sip.message.*;
+import java.util.Properties;
 
-import java.text.ParseException;
-import java.util.*;
+import javax.sip.Dialog;
+import javax.sip.DialogTerminatedEvent;
+import javax.sip.IOExceptionEvent;
+import javax.sip.ListeningPoint;
+import javax.sip.PeerUnavailableException;
+import javax.sip.RequestEvent;
+import javax.sip.ResponseEvent;
+import javax.sip.ServerTransaction;
+import javax.sip.SipFactory;
+import javax.sip.SipListener;
+import javax.sip.SipProvider;
+import javax.sip.SipStack;
+import javax.sip.TransactionTerminatedEvent;
+import javax.sip.address.Address;
+import javax.sip.address.AddressFactory;
+import javax.sip.header.ContactHeader;
+import javax.sip.header.HeaderFactory;
+import javax.sip.header.ToHeader;
+import javax.sip.message.MessageFactory;
+import javax.sip.message.Request;
+import javax.sip.message.Response;
 
 /**
  * This is the UAS application for performance testing
@@ -39,9 +55,8 @@ public class Shootme implements SipListener {
     }
 
     public void processRequest(RequestEvent requestEvent) {
-        Request request = requestEvent.getRequest();
-        ServerTransaction serverTransactionId = requestEvent
-                .getServerTransaction();
+        final Request request = requestEvent.getRequest();
+	final ServerTransaction serverTransactionId = requestEvent.getServerTransaction();
 
         if (request.getMethod().equals(Request.INVITE)) {
             processInvite(requestEvent, serverTransactionId);
@@ -71,32 +86,36 @@ public class Shootme implements SipListener {
      */
     public void processInvite(RequestEvent requestEvent,
             ServerTransaction serverTransaction) {
-        SipProvider sipProvider = (SipProvider) requestEvent.getSource();
-        Request request = requestEvent.getRequest();
+
+        final Request request = requestEvent.getRequest();
+        final SipProvider sipProvider = (SipProvider) requestEvent.getSource();
+        ServerTransaction st = serverTransaction;        
         try {
-            Response response = messageFactory.createResponse(Response.RINGING,
-                    request);
-            ServerTransaction st = requestEvent.getServerTransaction();
-
-            if (st == null) {
-                st = sipProvider.getNewServerTransaction(request);
+        	if (st == null) {
+        		st = sipProvider.getNewServerTransaction(request);
             }
-
+        	final String toTag = ""+System.nanoTime();
+            Response response = messageFactory.createResponse(Response.RINGING,
+                    request);            
+            ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
+            toHeader.setTag(toTag); // Application is supposed to set.
+            sipProvider.getNewDialog(st);
+			// Creates a dialog only for non trying responses				
             st.sendResponse(response);
 
             response = messageFactory.createResponse(Response.OK,
                     request);
-            Address address = addressFactory.createAddress("Shootme <sip:"
+            final Address address = addressFactory.createAddress("Shootme <sip:"
                     + myAddress + ":" + myPort + ">");
-            ContactHeader contactHeader = headerFactory
+            final ContactHeader contactHeader = headerFactory
                     .createContactHeader(address);
             response.addHeader(contactHeader);
-            ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
-            toHeader.setTag(""+System.nanoTime()); // Application is supposed to set.
+            toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
+            toHeader.setTag(toTag); // Application is supposed to set.
             response.addHeader(contactHeader);
             st.sendResponse(response);
         } catch (Exception ex) {
-            //ex.printStackTrace();
+            ex.printStackTrace();
             //System.exit(0);
         }
     }
@@ -107,9 +126,9 @@ public class Shootme implements SipListener {
      */
     public void processBye(RequestEvent requestEvent,
             ServerTransaction serverTransactionId) {
-        Request request = requestEvent.getRequest();
+        final Request request = requestEvent.getRequest();
         try {
-            Response response = messageFactory.createResponse(200, request);
+            final Response response = messageFactory.createResponse(200, request);
             serverTransactionId.sendResponse(response);
 
         } catch (Exception ex) {
@@ -137,6 +156,8 @@ public class Shootme implements SipListener {
         // You need 16 for logging traces. 32 for debug + traces.
         // Your code will limp at 32 but it is best for debugging.
         properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "0");
+        properties.setProperty("gov.nist.javax.sip.LOG_MESSAGE_CONTENT", "false");
+        properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");        
         properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
                 "shootmedebug.txt");
         properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
@@ -147,10 +168,10 @@ public class Shootme implements SipListener {
         "shootmelog.txt");
         properties.setProperty("gov.nist.javax.sip.REENTRANT_LISTENER",
         "true");
-        properties.setProperty("gov.nist.javax.sip.THREAD_POOL_SIZE", "32");
-
-        properties.setProperty("gov.nist.javax.sip.RECEIVE_UDP_BUFFER_SIZE", "64000");
-        properties.setProperty("gov.nist.javax.sip.SEND_UDP_BUFFER_SIZE", "64000");
+        properties.setProperty("gov.nist.javax.sip.THREAD_POOL_SIZE", "64");
+        properties.setProperty("gov.nist.javax.sip.RECEIVE_UDP_BUFFER_SIZE", "65536");
+        properties.setProperty("gov.nist.javax.sip.SEND_UDP_BUFFER_SIZE", "65536");
+        properties.setProperty("gov.nist.javax.sip.CONGESTION_CONTROL_ENABLED", "false");
         try {
             // Create SipStack object
             sipStack = sipFactory.createSipStack(properties);
