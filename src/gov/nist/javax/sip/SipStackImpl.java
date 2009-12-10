@@ -410,7 +410,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.112 $ $Date: 2009-12-06 15:58:38 $
+ * @version 1.2 $Revision: 1.113 $ $Date: 2009-12-10 20:35:42 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -804,6 +804,10 @@ public class SipStackImpl extends SIPTransactionStack implements
 								"transaction table size - bad value "
 										+ ex.getMessage());
 			}
+		} else {
+			// Issue 256 : consistent with MAX_CLIENT_TRANSACTIONS, if the MAX_SERVER_TRANSACTIONS is not set
+			// we assume the transaction table size can grow unlimited
+			this.unlimitedServerTransactionTableSize = true;
 		}
 
 		String clientTransactionTableSize = configurationProperties

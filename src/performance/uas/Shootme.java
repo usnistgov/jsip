@@ -133,7 +133,7 @@ public class Shootme implements SipListener {
 
         } catch (Exception ex) {
             ex.printStackTrace();
-            System.exit(0);
+            //System.exit(0);
 
         }
     }
