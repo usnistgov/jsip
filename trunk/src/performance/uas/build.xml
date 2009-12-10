@@ -17,21 +17,16 @@
 	<target name="shootme" depends="make" description="build and run the  example UAS.">
 		<delete file="shootmedebug.txt" />
 		<delete file="shootmelog.txt" />
-		<java classname="performance.uas.Shootme" jvmargs="-Xmn100M -Xms600M -Xmx600M" classpathref="project.class.path" fork="true">
+		<java classname="performance.uas.Shootme" classpathref="project.class.path" fork="true">
+			<jvmarg value="-XX:PermSize=128M"/>
+			<jvmarg value="-XX:MaxPermSize=256M"/>
+			<jvmarg value="-Xms2048M"/>
+			<jvmarg value="-Xmx2048M"/>
+			<jvmarg value="-XX:+UseConcMarkSweepGC"/>
+			<jvmarg value="-XX:+CMSIncrementalMode"/>
 		</java>
 	</target>
-
-	<target name="shootist" depends="make" description="run the example UAC.">
-		<delete file="shootistdebug.txt" />
-		<delete file="shootistlog.txt" />
-		<java classname="performance.uas.Shootist" fork="true" classpathref="project.class.path" />
-	</target>
-	<target name="shootistlog" description="Show the  log">
-		<java classname="tools.tracesviewer.TracesViewer" fork="true" classpathref="project.class.path">
-			<arg value="-server_file" />
-			<arg value="shootistlog.txt" />
-		</java>
-	</target>
+	
 	<target name="shootmelog" description="Show the  log">
 		<java classname="tools.tracesviewer.TracesViewer" fork="true">
 			<arg value="-server_file" />
