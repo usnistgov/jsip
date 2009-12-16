@@ -116,7 +116,7 @@ import javax.sip.message.Request;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.52 $ $Date: 2009-12-16 02:38:34 $
+ * @version 1.2 $Revision: 1.53 $ $Date: 2009-12-16 14:58:40 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -928,13 +928,23 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
      * 
      * @return contentType header
      */
+    
     public ContentType getContentTypeHeader() {
         return (ContentType) getHeaderLowerCase(CONTENT_TYPE_LOWERCASE);
     }
-
+    
     private static final String CONTENT_TYPE_LOWERCASE = SIPHeaderNamesCache
-            .toLowerCase(ContentTypeHeader.NAME);
+    .toLowerCase(ContentTypeHeader.NAME);
 
+    
+    /**
+     * Get the contentLength header.
+     */
+    public ContentLengthHeader getContentLengthHeader() {
+        return this.getContentLength();
+    }
+
+  
     /**
      * Get the from header.
      * 

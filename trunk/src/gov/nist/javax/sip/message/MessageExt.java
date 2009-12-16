@@ -4,6 +4,8 @@ import java.text.ParseException;
 
 import javax.sip.header.CSeqHeader;
 import javax.sip.header.CallIdHeader;
+import javax.sip.header.ContentLengthHeader;
+import javax.sip.header.ContentTypeHeader;
 import javax.sip.header.FromHeader;
 import javax.sip.header.ToHeader;
 import javax.sip.header.ViaHeader;
@@ -93,6 +95,20 @@ public interface MessageExt extends Message {
      * @since v2.0
      */
     public  CSeqHeader getCSeqHeader();
+    
+    /**
+     * Get the content type header or null if none present.
+     * 
+     * @since v2.0
+     */
+    public ContentTypeHeader getContentTypeHeader();
+    
+    /**
+     * Get the content length header or null if none present.
+     * 
+     * @since v2.0
+     */
+    public ContentLengthHeader getContentLengthHeader();
     
     /**
      * Get the first line of the request or response.
