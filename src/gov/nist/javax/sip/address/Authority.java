@@ -32,7 +32,7 @@ import gov.nist.core.*;
 /**
  * Authority part of a URI structure. Section 3.2.2 RFC2396
  *
- * @version 1.2 $Revision: 1.9 $ $Date: 2009-07-17 18:57:21 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2009-12-16 14:48:33 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -74,7 +74,9 @@ public class Authority extends NetObject {
      * @param other Object to test.
      * @return boolean
      */
+    @Override
     public boolean equals(Object other) {
+        if (other == null) return false;
         if (other.getClass() != getClass()) {
             return false;
         }
@@ -225,82 +227,10 @@ public class Authority extends NetObject {
             retval.userInfo = (UserInfo) this.userInfo.clone();
         return retval;
     }
+    
+    @Override
+    public int hashCode() {
+        if ( this.hostPort == null ) throw new UnsupportedOperationException("Null hostPort cannot compute hashcode");
+        return this.hostPort.encode().hashCode();
+    }
 }
-/*
- * $Log: not supported by cvs2svn $
- * Revision 1.8  2007/10/22 03:38:22  mranga
- * Issue number:
- * Obtained from:
- * Submitted by:  mranga
- * Reviewed by:   mranga
- *
- * Java 5 porting.
- *
- * Revision 1.7  2007/02/12 15:19:18  belangery
- * Changed the encode() and encodeBody() methods of SIP headers and basic classes to make them use the same StringBuffer instance during the encoding phase.
- *
- * Revision 1.6  2006/07/13 09:02:27  mranga
- * Issue number:
- * Obtained from:
- * Submitted by:  jeroen van bemmel
- * Reviewed by:   mranga
- * Moved some changes from jain-sip-1.2 to java.net
- *
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- * Revision 1.3  2006/06/19 06:47:26  mranga
- * javadoc fixups
- *
- * Revision 1.2  2006/06/16 15:26:29  mranga
- * Added NIST disclaimer to all public domain files. Clean up some javadoc. Fixed a leak
- *
- * Revision 1.1.1.1  2005/10/04 17:12:34  mranga
- *
- * Import
- *
- *
- * Revision 1.4  2005/04/16 20:39:31  dmuresan
- * Eliminated 'c1.getClass().getName().equals(c2.getClass().getName())' idiom (c1 == c2 suffices)
- *
- * Revision 1.3  2005/04/16 20:38:46  dmuresan
- * Canonical clone() implementations for the GenericObject and GenericObjectList hierarchies
- *
- * Revision 1.2  2004/01/22 13:26:28  sverker
- * Issue number:
- * Obtained from:
- * Submitted by:  sverker
- * Reviewed by:   mranga
- *
- * Major reformat of code to conform with style guide. Resolved compiler and javadoc warnings. Added CVS tags.
- *
- * CVS: ----------------------------------------------------------------------
- * CVS: Issue number:
- * CVS:   If this change addresses one or more issues,
- * CVS:   then enter the issue number(s) here.
- * CVS: Obtained from:
- * CVS:   If this change has been taken from another system,
- * CVS:   then name the system in this line, otherwise delete it.
- * CVS: Submitted by:
- * CVS:   If this code has been contributed to the project by someone else; i.e.,
- * CVS:   they sent us a patch or a set of diffs, then include their name/email
- * CVS:   address here. If this is your work then delete this line.
- * CVS: Reviewed by:
- * CVS:   If we are doing pre-commit code reviews and someone else has
- * CVS:   reviewed your changes, include their name(s) here.
- * CVS:   If you have not had it reviewed then delete this line.
- *
- */

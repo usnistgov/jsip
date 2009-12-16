@@ -186,4 +186,10 @@ public class AttributeField extends SDPField implements javax.sdp.Attribute {
         return other.getAttribute().getName().equalsIgnoreCase(this.getAttribute().getName()) &&
                 this.getAttribute().getValueAsObject().equals(other.getAttribute().getValueAsObject());
     }
+    
+    @Override
+    public int hashCode() {
+        if (getAttribute() == null ) throw new UnsupportedOperationException("Attribute is null cannot compute hashCode ");
+        return this.encode().hashCode();
+    }
 }
