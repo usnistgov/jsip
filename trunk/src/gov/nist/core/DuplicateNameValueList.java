@@ -121,7 +121,7 @@ public class DuplicateNameValueList implements Serializable, Cloneable {
      */
     public boolean equals(Object otherObject) {
         if ( otherObject == null ) {
-            throw new NullPointerException("Null argument!");
+            return false;
         }
         if (!otherObject.getClass().equals(this.getClass())) {
             return false;
