@@ -52,7 +52,7 @@ import gov.nist.javax.sip.stack.SIPTransactionStack;
  * that create responses and generate cancel requests from incoming orignial requests without the
  * additional overhead of encoding and decoding messages. Bruno Konik noticed an extraneous
  * newline added to the end of the buffer when encoding it. Incorporates a bug report from Andreas
- * Bystr�m. Szabo Barna noticed a contact in a cancel request - this is a pointless header for
+ * Bystrom. Szabo Barna noticed a contact in a cancel request - this is a pointless header for
  * cancel. Antonis Kyardis contributed bug fixes. Jeroen van Bemmel noted that method names are
  * case sensitive, should use equals() in getting CannonicalName
  * 
@@ -61,7 +61,7 @@ import gov.nist.javax.sip.stack.SIPTransactionStack;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.51 $ $Date: 2009-12-16 02:38:34 $
+ * @version 1.2 $Revision: 1.52 $ $Date: 2009-12-16 14:58:40 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
