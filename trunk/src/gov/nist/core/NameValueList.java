@@ -141,6 +141,9 @@ public class NameValueList implements Serializable, Cloneable, Map<String,NameVa
      * @return true if the two objects compare for equality.
      */
     public boolean equals(Object otherObject) {
+        if ( otherObject == null ) {
+            return false;
+        }
         if (!otherObject.getClass().equals(this.getClass())) {
             return false;
         }

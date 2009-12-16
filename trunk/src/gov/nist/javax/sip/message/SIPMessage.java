@@ -116,7 +116,7 @@ import javax.sip.message.Request;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.51 $ $Date: 2009-11-18 02:35:19 $
+ * @version 1.2 $Revision: 1.52 $ $Date: 2009-12-16 02:38:34 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -1823,13 +1823,30 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
 			return null;
 		}
     }
+    
+    public CallIdHeader getCallIdHeader() {
+        return this.callIdHeader;
+    }
 
-    public abstract void setSIPVersion(String sipVersion) throws ParseException;
+   
+    public FromHeader getFromHeader() {
+        return this.fromHeader;
+    }
 
-    public abstract String getSIPVersion();
+   
+    public ToHeader getToHeader() {
+        return this.toHeader;
+    }
 
-    public abstract String toString();
-
+  
+    public ViaHeader getTopmostViaHeader() {
+        return this.getTopmostVia();
+    }
+    
+    public CSeqHeader getCSeqHeader() {
+        return this.cSeqHeader;
+    }
+ 
     /**
      * Returns the charset to use for encoding/decoding the body of this message
      */
@@ -1857,4 +1874,12 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
     public void setNullRequest() {
         this.nullRequest = true;
     }
+    
+    
+    public abstract void setSIPVersion(String sipVersion) throws ParseException;
+
+    public abstract String getSIPVersion();
+
+    public abstract String toString();
+
 }

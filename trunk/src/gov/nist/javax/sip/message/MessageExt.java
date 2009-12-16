@@ -2,6 +2,11 @@ package gov.nist.javax.sip.message;
 
 import java.text.ParseException;
 
+import javax.sip.header.CSeqHeader;
+import javax.sip.header.CallIdHeader;
+import javax.sip.header.FromHeader;
+import javax.sip.header.ToHeader;
+import javax.sip.header.ViaHeader;
 import javax.sip.message.Message;
 
 /**
@@ -52,5 +57,48 @@ public interface MessageExt extends Message {
      *  
      */
     public MultipartMimeContent getMultipartMimeContent() throws ParseException;
+    
+    /**
+     * Get the topmost Via header.
+     * 
+     * @since v2.0
+     */
+    public ViaHeader getTopmostViaHeader();
+    
+    /**
+     * Get the From header or null if none present.
+     * 
+     * @since v2.0
+     */
+    public FromHeader getFromHeader();
+    
+    /**
+     * Get the To header or null if none present.
+     * 
+     * @since v2.0
+     */
+    public ToHeader getToHeader();
+    
+    
+    /**
+     * Get the callId header or null if none present.
+     * 
+     * @since v2.0
+     */
+    public CallIdHeader getCallIdHeader();
+    
+    /**
+     * Get the CSeq header or null if none present.
+     * 
+     * @since v2.0
+     */
+    public  CSeqHeader getCSeqHeader();
+    
+    /**
+     * Get the first line of the request or response.
+     * 
+     * @since v2.0
+     */
+    public String getFirstLine();
 
 }
