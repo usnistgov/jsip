@@ -220,6 +220,7 @@ public class NameValue extends GenericObject implements Entry<String,String> {
      * Equality comparison predicate.
      */
     public boolean equals(Object other) {
+        if (other == null ) return false;
         if (!other.getClass().equals(this.getClass()))
             return false;
         NameValue that = (NameValue) other;
