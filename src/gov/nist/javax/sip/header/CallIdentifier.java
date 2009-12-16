@@ -32,7 +32,7 @@ package gov.nist.javax.sip.header;
  * The call identifer that goes into a callID header and a in-reply-to header.
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.6 $ $Date: 2009-07-17 18:57:27 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2009-12-16 02:38:35 $
  * @see CallID
  * @see InReplyTo
  * @since 1.1
@@ -103,6 +103,7 @@ public final class CallIdentifier extends SIPObject {
      * otherwise
      */
     public boolean equals(Object other) {
+        if (other == null ) return false;
         if (!other.getClass().equals(this.getClass())) {
             return false;
         }
@@ -119,6 +120,14 @@ public final class CallIdentifier extends SIPObject {
             return false;
         }
         return true;
+    }
+    
+    @Override
+    public int hashCode() {
+        if (this.localId  == null ) {
+             throw new UnsupportedOperationException("Hash code called before id is set");
+        }
+        return this.localId.hashCode();
     }
 
     /** get the LocalId field

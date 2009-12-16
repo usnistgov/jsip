@@ -407,6 +407,7 @@ public abstract class GenericObject implements Serializable, Cloneable {
      *@return true if the objects are euqal and false otherwise
      */
     public boolean equals(Object that) {
+        if ( that == null ) return false;
         if (!this.getClass().equals(that.getClass()))
             return false;
         Class<?> myclass = this.getClass();

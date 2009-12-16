@@ -84,6 +84,7 @@ public final class HostPort extends GenericObject {
      * @return boolean
      */
     public boolean equals(Object other) {
+        if (other == null) return false;
         if (getClass () != other.getClass ()) {
             return false;
         }

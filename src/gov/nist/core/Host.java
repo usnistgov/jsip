@@ -137,6 +137,7 @@ public class Host extends GenericObject {
      * @return boolean
      */
     public boolean equals(Object obj) {
+        if ( obj == null ) return false;
         if (!this.getClass().equals(obj.getClass())) {
             return false;
         }
