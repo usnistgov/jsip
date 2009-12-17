@@ -127,6 +127,7 @@ public abstract class SDPFieldList extends SDPField {
     *@param other is the other object to compare ourselves against.
     */
     public boolean equals(Object other) {
+        if (other == null ) return false;
         if (!this.getClass().equals(other.getClass()))
             return false;
         SDPFieldList that = (SDPFieldList) other;

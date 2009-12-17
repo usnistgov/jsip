@@ -384,6 +384,11 @@ public abstract class GenericObjectList extends LinkedList<GenericObject> implem
     public void setSeparator(String sep) {
         separator = sep;
     }
+    
+    /**
+     * Hash code. We never expect to put this in a hash table so return a constant.
+     */
+    public int hashCode() { return 42; }
 
     /**
      * Equality checking predicate.
