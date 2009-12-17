@@ -94,7 +94,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.140 $ $Date: 2009-12-17 23:33:52 $
+ * @version 1.2 $Revision: 1.141 $ $Date: 2009-12-17 23:38:27 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener, SIPDialogEventListener {
 
@@ -404,7 +404,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
         @Override
         protected void runTask() {
-           forkedClientTransactionTable.remove(clientTransaction); 
+           forkedClientTransactionTable.remove(clientTransaction.getTransactionId()); 
         }
         
     }
