@@ -1,5 +1,6 @@
 package test.unit.gov.nist.javax.sip.stack.forkedinvite;
 
+import gov.nist.javax.sip.ResponseEventExt;
 import gov.nist.javax.sip.SipStackImpl;
 
 import java.util.ArrayList;
@@ -105,6 +106,8 @@ public class Shootist implements SipListener {
     private boolean byeSent;
 
     private Timer timer = new Timer();
+
+    private ClientTransaction originalTransaction;
 
 
     class SendBye extends TimerTask {
@@ -225,6 +228,7 @@ public class Shootist implements SipListener {
                      // Proxy will fork. I will accept the first dialog.
                     this.forkedDialogs.add(dialog);
                     if ( responseReceivedEvent.getClientTransaction() != null ) {
+                        this.originalTransaction = responseReceivedEvent.getClientTransaction();
                         logger.info("Sending ACK");
                         TestCase.assertTrue(
                                 "Dialog state should be CONFIRMED", dialog
@@ -240,9 +244,14 @@ public class Shootist implements SipListener {
 
 
                     } else {
+                        ResponseEventExt responseEventExt  = (ResponseEventExt) responseReceivedEvent;
+                        TestCase.assertTrue("forked event must set flag",responseEventExt.isForkedResponse());
                         this.canceledDialog.add(dialog);
                         SipProvider sipProvider = (SipProvider) responseReceivedEvent
                                 .getSource();
+                        
+                        TestCase.assertSame("original ctx must match " , 
+                                responseEventExt.getOriginalTransaction(),this.originalTransaction);
 
                         Request byeRequest = dialog.createRequest(Request.BYE);
                         ClientTransaction ct = sipProvider

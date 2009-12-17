@@ -81,7 +81,7 @@ import javax.sip.message.Response;
  * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
  * and event model with the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.61 $ $Date: 2009-11-26 02:44:18 $
+ * @version 1.2 $Revision: 1.62 $ $Date: 2009-12-17 23:33:53 $
  * 
  * @author M. Ranganathan
  */
@@ -1187,18 +1187,28 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             // Pass the response up to the application layer to handle
             // statelessly.
 
-            ResponseEvent sipEvent = new ResponseEvent(sipProvider, transaction, dialog,
+            ResponseEventExt sipEvent = new ResponseEventExt(sipProvider, transaction, dialog,
                     (Response) response);
+            
+            if ( response.getCSeqHeader().getMethod().equals(Request.INVITE)) {
+                SIPClientTransaction forked = this.sipStack.getForkedTransaction(response.getTransactionId());
+                sipEvent.setOriginalTransaction(forked);
+            }
 
             sipProvider.handleEvent(sipEvent, transaction);
             return;
         }
 
-        ResponseEvent responseEvent = null;
+        ResponseEventExt responseEvent = null;
 
         // Here if there is an assigned dialog
-        responseEvent = new javax.sip.ResponseEvent(sipProvider, (ClientTransaction) transaction,
+        responseEvent = new ResponseEventExt(sipProvider, (ClientTransactionExt) transaction,
                 dialog, (Response) response);
+        if ( response.getCSeqHeader().getMethod().equals(Request.INVITE)) {
+            SIPClientTransaction forked = this.sipStack.getForkedTransaction(response.getTransactionId());
+            responseEvent.setOriginalTransaction(forked);
+        }
+
         // Set the Dialog for the response.
         if (dialog != null && response.getStatusCode() != 100) {
             // set the last response for the dialog.
@@ -1382,8 +1392,13 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             sipDialog.setLastResponse(transaction, sipResponse);
         }
 
-        ResponseEvent responseEvent = new javax.sip.ResponseEvent(sipProvider,
-                (ClientTransaction) transaction, sipDialog, (Response) sipResponse);
+        ResponseEventExt responseEvent = new ResponseEventExt(sipProvider,
+                (ClientTransactionExt) transaction, sipDialog, (Response) sipResponse);
+        
+        if ( sipResponse.getCSeq().getMethod().equals(Request.INVITE) ) {
+            ClientTransactionExt originalTx = this.sipStack.getForkedTransaction(sipResponse.getTransactionId());
+            responseEvent.setOriginalTransaction(originalTx);
+        }
 
         sipProvider.handleEvent(responseEvent, transaction);
 
