@@ -94,7 +94,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.138 $ $Date: 2009-12-10 20:35:41 $
+ * @version 1.2 $Revision: 1.139 $ $Date: 2009-12-17 12:23:55 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener, SIPDialogEventListener {
 
@@ -1389,6 +1389,15 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
      */
     public int getClientTransactionTableSize() {
         return this.clientTransactionTable.size();
+    }
+    
+    /**
+     * Get the size of the server transaction table.
+     *
+     * @return -- size of the server table.
+     */
+    public int getServerTransactionTableSize() {
+        return this.serverTransactionTable.size();
     }
 
     /**
