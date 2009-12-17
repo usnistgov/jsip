@@ -388,6 +388,14 @@ import javax.sip.message.Request;
  * to see if that response suffix is present. If it is not present, then the
  * stack will silently drop the response.</li>
  * 
+ * <li><b>gov.nist.javax.sip.MAX_FORK_TIME_SECONDS = integer </b> Maximum time for which the original 
+ * transaction for which a forked response is received is tracked. This property
+ * is only relevant to Dialog Stateful applications ( User Agents or B2BUA).
+ * When a forked response is received in this time interval from when the original
+ * INVITE client transaction was sent, the stack will place the original INVITE
+ * client transction in the ResponseEventExt and deliver that to the application.
+ * The event handler can get the original transaction from this event. </li>
+ * 
  * <li><b>javax.net.ssl.keyStore = fileName </b> <br/>
  * Default is <it>NULL</it>. If left undefined the keyStore and trustStore will
  * be left to the java runtime defaults. If defined, any TLS sockets created
@@ -410,7 +418,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.113 $ $Date: 2009-12-10 20:35:42 $
+ * @version 1.2 $Revision: 1.114 $ $Date: 2009-12-17 23:33:53 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -1010,6 +1018,11 @@ public class SipStackImpl extends SIPTransactionStack implements
 		
 		super.isDialogTerminatedEventDeliveredForNullDialog = (Boolean.parseBoolean(configurationProperties.getProperty("gov.nist.javax.sip.DELIVER_TERMINATED_EVENT_FOR_NULL_DIALOG",
 		        Boolean.FALSE.toString())));
+		
+		
+		super.maxForkTime = Integer.parseInt(
+		        configurationProperties.getProperty("gov.nist.javax.sip.MAX_FORK_TIME_SECONDS","0"));
+		
 	}
 
 	/*
@@ -1408,5 +1421,7 @@ public class SipStackImpl extends SIPTransactionStack implements
     public void releaseSem() {
         this.stackSemaphore.release();
     }
+
+    
 
 }

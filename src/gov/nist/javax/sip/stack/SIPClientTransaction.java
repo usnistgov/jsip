@@ -177,7 +177,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.121 $ $Date: 2009-12-06 15:58:39 $
+ * @version 1.2 $Revision: 1.122 $ $Date: 2009-12-17 23:33:52 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -1507,8 +1507,12 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
         		sipStack.getStackLogger().logError("NULL DIALOG!!");
             throw new NullPointerException("bad dialog null");
         }
-        if (this.defaultDialog == null)
+        if (this.defaultDialog == null) {
             this.defaultDialog = sipDialog;
+            if ( this.getMethod().equals(Request.INVITE) && this.getSIPStack().maxForkTime != 0) {
+                this.getSIPStack().addForkedClientTransaction(this);
+            }
+        }
         if (dialogId != null && sipDialog.getDialogId() != null) {
             this.sipDialogs.put(dialogId, sipDialog);
 
