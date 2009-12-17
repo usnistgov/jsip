@@ -94,7 +94,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.139 $ $Date: 2009-12-17 12:23:55 $
+ * @version 1.2 $Revision: 1.140 $ $Date: 2009-12-17 23:33:52 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener, SIPDialogEventListener {
 
@@ -165,6 +165,8 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     private ConcurrentHashMap<String, SIPServerTransaction> mergeTable;
     
     private ConcurrentHashMap<String,SIPServerTransaction> terminatedServerTransactionsPendingAck;
+    
+    private ConcurrentHashMap<String,SIPClientTransaction> forkedClientTransactionTable;
 
     /*
      * A wrapper around differnt logging implementations (log4j, commons logging, slf4j, ...) to help log debug.
@@ -352,6 +354,11 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 	protected boolean isAutomaticDialogErrorHandlingEnabled = true;
 	
 	protected boolean isDialogTerminatedEventDeliveredForNullDialog = false;
+	
+	// Max time for a forked response to arrive. After this time, the original dialog
+	// is not tracked. If you want to track the original transaction you need to specify
+	// the max fork time with a stack init property.
+	protected int maxForkTime = 0;
 
    
     // / Timer to regularly ping the thread auditor (on behalf of the timer
@@ -384,6 +391,22 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
             }
         }
 
+    }
+    
+    
+    class RemoveForkedTransactionTimerTask extends SIPStackTimerTask {
+        
+        private SIPClientTransaction clientTransaction;
+
+        public RemoveForkedTransactionTimerTask(SIPClientTransaction sipClientTransaction ) {
+            this.clientTransaction = sipClientTransaction;
+        }
+
+        @Override
+        protected void runTask() {
+           forkedClientTransactionTable.remove(clientTransaction); 
+        }
+        
     }
 
     static {
@@ -442,6 +465,9 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
         this.timer = new Timer();
         this.pendingTransactions = new ConcurrentHashMap<String, SIPServerTransaction>();
+        
+        
+        this.forkedClientTransactionTable = new ConcurrentHashMap<String,SIPClientTransaction>();
 
         if (getThreadAuditor().isEnabled()) {
             // Start monitoring the timer thread
@@ -470,6 +496,8 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
         // Dialog dable.
         this.dialogTable = new ConcurrentHashMap<String, SIPDialog>();
         this.earlyDialogTable = new ConcurrentHashMap<String, SIPDialog>();
+        this.terminatedServerTransactionsPendingAck = new ConcurrentHashMap<String,SIPServerTransaction>();
+        this.forkedClientTransactionTable = new ConcurrentHashMap<String,SIPClientTransaction>();
 
         this.timer = new Timer();
 
@@ -1410,7 +1438,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
         if (stackLogger.isLoggingEnabled())
             stackLogger.logDebug("added transaction " + clientTransaction);
         addTransactionHash(clientTransaction);
-        // clientTransaction.startTransactionTimer();
+       
     }
 
     /**
@@ -1449,6 +1477,13 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
             if (stackLogger.isLoggingEnabled()) {
                 stackLogger.logDebug("REMOVED client tx " + removed + " KEY = " + key);
+                if ( removed != null ) {
+                   SIPClientTransaction clientTx = (SIPClientTransaction)removed;
+                   if ( clientTx.getMethod().equals(Request.INVITE) && this.maxForkTime != 0 ) {
+                       RemoveForkedTransactionTimerTask ttask = new RemoveForkedTransactionTimerTask(clientTx);
+                       this.timer.schedule(ttask, this.maxForkTime * 1000);
+                   }
+                }
             }
 
             // Send a notification to the listener.
@@ -1475,7 +1510,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
         serverTransaction.map();
 
         addTransactionHash(serverTransaction);
-        // serverTransaction.startTransactionTimer();
+      
     }
 
     /**
@@ -1504,6 +1539,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
             }
             String key = sipRequest.getTransactionId();
             clientTransactionTable.put(key, (SIPClientTransaction) sipTransaction);
+            
             if (stackLogger.isLoggingEnabled()) {
                 stackLogger.logDebug(" putTransactionHash : " + " key = " + key);
             }
@@ -2443,8 +2479,14 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     public void setDeliverDialogTerminatedEventForNullDialog() {
         this.isDialogTerminatedEventDeliveredForNullDialog = true;
     }
+    
+    public void addForkedClientTransaction(SIPClientTransaction clientTransaction) {
+        this.forkedClientTransactionTable.put(clientTransaction.getTransactionId(), clientTransaction );
+    }
 
-   
+    public SIPClientTransaction getForkedTransaction(String transactionId) {
+        return this.forkedClientTransactionTable.get(transactionId);
+    }
 	
 	
 }
