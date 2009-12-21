@@ -163,7 +163,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.116 $ $Date: 2009-12-06 15:58:39 $
+ * @version 1.2 $Revision: 1.117 $ $Date: 2009-12-21 05:23:40 $
  * @author M. Ranganathan
  *
  */
@@ -1289,10 +1289,11 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
              * response until those provisional responses are acknowledged.
              */
             if (this.pendingReliableResponse != null
+                    && ((SIPResponse)response).getContentTypeHeader() != null 
                     && response.getStatusCode() / 100 == 2
-                    && this.pendingReliableResponse.getContentTypeHeader().getContentType()
+                    && ((SIPResponse)response).getContentTypeHeader().getContentType()
                             .equalsIgnoreCase("application")
-                    && this.pendingReliableResponse.getContentTypeHeader().getContentSubType()
+                    && ((SIPResponse)response).getContentTypeHeader().getContentSubType()
                             .equalsIgnoreCase("sdp")) {
                 throw new SipException("cannot send response -- unacked povisional");
             } else {
