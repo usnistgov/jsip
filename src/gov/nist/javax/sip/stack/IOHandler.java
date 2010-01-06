@@ -276,6 +276,7 @@ class IOHandler {
                         clientSock = sipStack.getNetworkLayer().createSSLSocket(receiverAddress,
                                 contactPort, senderAddress);
                         SSLSocket sslsock = (SSLSocket) clientSock;
+                        sslsock.setEnabledProtocols(new String[]{"SSLv2Hello","TLSv1"});
                         HandshakeCompletedListener listner = new HandshakeCompletedListenerImpl(
                                 (TLSMessageChannel) messageChannel);
                         ((TLSMessageChannel) messageChannel)
