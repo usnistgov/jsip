@@ -121,7 +121,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.157 $ $Date: 2009-12-06 15:58:39 $
+ * @version 1.2 $Revision: 1.158 $ $Date: 2010-01-07 08:37:57 $
  * 
  * @author M. Ranganathan
  * 
@@ -259,6 +259,17 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 	private transient Set<SIPDialogEventListener> eventListeners;
 	// added for Issue 248 : https://jain-sip.dev.java.net/issues/show_bug.cgi?id=248
 	private Semaphore timerTaskLock = new Semaphore(1);
+	
+	// We store here the useful data from the first transaction without having to
+	// keep the whole transaction object for the duration of the dialog. It also
+	// contains the non-transient information used in the replication of dialogs.
+	private boolean firstTransactionSecure;
+	private boolean firstTransactionSeen;
+    private String firstTransactionMethod;
+    private String firstTransactionId;
+    private boolean firstTransactionIsServerTransaction;
+    private int firstTransactionPort = 5060;   
+    private Contact contactHeader;
 
     // //////////////////////////////////////////////////////
     // Inner classes
@@ -1278,6 +1289,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         return this.firstTransaction;
     }
 
+
     /**
      * Gets the route set for the dialog. When acting as an User Agent Server the route set MUST
      * be set to the list of URIs in the Record-Route header field from the request, taken in
@@ -1374,9 +1386,10 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         //
         d.serverTransactionFlag = false;
         // they share this one
-        d.firstTransaction = d.lastTransaction = subscribeTx;
+        d.lastTransaction = subscribeTx;
+        storeFirstTransactionInfo(d, subscribeTx);
         d.terminateOnBye = false;
-        d.localSequenceNumber = d.firstTransaction.getCSeq();
+        d.localSequenceNumber = subscribeTx.getCSeq();
         SIPRequest not = (SIPRequest) notifyST.getRequest();
         d.remoteSequenceNumber = not.getCSeq().getSeqNumber();
         d.setDialogId(not.getDialogId(true));
@@ -1403,10 +1416,10 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * @return true if is server transaction created this dialog.
      */
     public boolean isServer() {
-        if (this.firstTransaction == null)
+        if (this.firstTransactionSeen == false)
             return this.serverTransactionFlag;
         else
-            return this.firstTransaction instanceof SIPServerTransaction;
+            return this.firstTransactionIsServerTransaction;
 
     }
 
@@ -1433,6 +1446,28 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         return this.dialogId;
     }
 
+    private static void storeFirstTransactionInfo(SIPDialog dialog, SIPTransaction transaction) {
+    	dialog.firstTransaction = transaction;
+    	dialog.firstTransactionSeen = true;
+    	dialog.firstTransactionIsServerTransaction = transaction.isServerTransaction(); 
+    	dialog.firstTransactionSecure = transaction.getRequest().getRequestURI().getScheme()
+        	.equalsIgnoreCase("sips");
+    	dialog.firstTransactionPort = transaction.getPort();
+    	dialog.firstTransactionId = transaction.getBranchId();
+    	dialog.firstTransactionMethod = transaction.getMethod();
+    	
+        if (dialog.isServer()) {
+            SIPServerTransaction st = (SIPServerTransaction) transaction;
+            SIPResponse response = st.getLastResponse();
+            dialog.contactHeader = response != null ? response.getContactHeader() : null;
+        } else {
+            SIPClientTransaction ct = (SIPClientTransaction) transaction;
+            if (ct != null){
+            	SIPRequest sipRequest = ct.getOriginalRequest();
+            	dialog.contactHeader = sipRequest.getContactHeader();
+            }
+        }
+    }
     /**
      * Add a transaction record to the dialog.
      * 
@@ -1443,16 +1478,16 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         SIPRequest sipRequest = (SIPRequest) transaction.getOriginalRequest();
 
         // Proessing a re-invite.
-        if (firstTransaction != null && firstTransaction != transaction
-                && transaction.getMethod().equals(firstTransaction.getMethod())) {
+        if (firstTransactionSeen && !firstTransactionId.equals(transaction.getBranchId()) 
+                && transaction.getMethod().equals(firstTransactionMethod)) {
             this.reInviteFlag = true;
         }
 
-        if (firstTransaction == null) {
+        if (firstTransactionSeen == false) {
             // Record the local and remote sequenc
             // numbers and the from and to tags for future
             // use on this dialog.
-            firstTransaction = transaction;
+        	storeFirstTransactionInfo(this, transaction);
             if (sipRequest.getMethod().equals(Request.SUBSCRIBE))
                 this.eventHeader = (EventHeader) sipRequest.getHeader(EventHeader.NAME);
 
@@ -1478,12 +1513,14 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 		sipStack.getStackLogger().logError(
                             "The request's From header is missing the required Tag parameter.");
             }
-        } else if (transaction.getMethod().equals(firstTransaction.getMethod())
-                && !(firstTransaction.getClass().equals(transaction.getClass()))) {
+        } else if (transaction.getMethod().equals(firstTransactionMethod)
+                && firstTransactionIsServerTransaction != transaction.isServerTransaction()) {
             // This case occurs when you are processing a re-invite.
             // Switch from client side to server side for re-invite
             // (put the other side on hold).
-            firstTransaction = transaction;
+        	
+			storeFirstTransactionInfo(this, transaction);
+			
             this.setLocalParty(sipRequest);
             this.setRemoteParty(sipRequest);
             this.setCallId(sipRequest);
@@ -1795,8 +1832,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      *         <code>false</code> otherwise.
      */
     public boolean isSecure() {
-        return this.getFirstTransaction().getRequest().getRequestURI().getScheme()
-                .equalsIgnoreCase("sips");
+        return this.firstTransactionSecure;
     }
 
     /*
@@ -2073,7 +2109,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         try {
             MessageChannel messageChannel = sipStack.createRawMessageChannel(this
                     .getSipProvider().getListeningPoint(hop.getTransport()).getIPAddress(),
-                    this.firstTransaction.getPort(), hop);
+                    this.firstTransactionPort, hop);
             
             MessageChannel oldChannel = ((SIPClientTransaction) 
             		clientTransactionId).getMessageChannel();
@@ -2114,7 +2150,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                     throw new SipException("No route found! hop=" + hop);
                 messageChannel = sipStack.createRawMessageChannel(this.getSipProvider()
                         .getListeningPoint(outboundProxy.getTransport()).getIPAddress(),
-                        this.firstTransaction.getPort(), outboundProxy);
+                        this.firstTransactionPort, outboundProxy);
                 if (messageChannel != null)
                     ((SIPClientTransaction) clientTransactionId)
                             .setEncapsulatedChannel(messageChannel);
@@ -2835,10 +2871,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      */
     public Response createReliableProvisionalResponse(int statusCode)
             throws InvalidArgumentException, SipException {
-        SIPServerTransaction sipServerTransaction = (SIPServerTransaction) this
-                .getFirstTransaction();
 
-        if (!(sipServerTransaction instanceof SIPServerTransaction)) {
+        if (!(firstTransactionIsServerTransaction)) {
             throw new SipException("Not a Server Dialog!");
 
         }
@@ -3066,17 +3100,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * @return contact header belonging to the dialog.
      */
     public Contact getMyContactHeader() {
-        if (this.isServer()) {
-            SIPServerTransaction st = (SIPServerTransaction) this.getFirstTransaction();
-            SIPResponse response = st.getLastResponse();
-            return response != null ? response.getContactHeader() : null;
-        } else {
-            SIPClientTransaction ct = (SIPClientTransaction) this.getFirstTransaction();
-            if (ct == null)
-                return null;
-            SIPRequest sipRequest = ct.getOriginalRequest();
-            return sipRequest.getContactHeader();
-        }
+    	return contactHeader;
     }
 
     /**
