@@ -121,7 +121,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.158 $ $Date: 2010-01-07 08:37:57 $
+ * @version 1.2 $Revision: 1.159 $ $Date: 2010-01-08 15:14:12 $
  * 
  * @author M. Ranganathan
  * 
@@ -165,9 +165,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
     private long remoteSequenceNumber;
 
-    private String myTag;
+    protected String myTag;
 
-    private String hisTag;
+    protected String hisTag;
 
     private RouteList routeList;
 
@@ -203,9 +203,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     // The following fields are extracted from the request that created the
     // Dialog.
 
-    private javax.sip.address.Address localParty;
+    protected javax.sip.address.Address localParty;
 
-    private javax.sip.address.Address remoteParty;
+    protected javax.sip.address.Address remoteParty;
 
     protected CallIdHeader callIdHeader;
 
@@ -263,13 +263,13 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 	// We store here the useful data from the first transaction without having to
 	// keep the whole transaction object for the duration of the dialog. It also
 	// contains the non-transient information used in the replication of dialogs.
-	private boolean firstTransactionSecure;
-	private boolean firstTransactionSeen;
-    private String firstTransactionMethod;
-    private String firstTransactionId;
-    private boolean firstTransactionIsServerTransaction;
-    private int firstTransactionPort = 5060;   
-    private Contact contactHeader;
+	protected boolean firstTransactionSecure;
+	protected boolean firstTransactionSeen;
+    protected String firstTransactionMethod;
+    protected String firstTransactionId;
+    protected boolean firstTransactionIsServerTransaction;
+    protected int firstTransactionPort = 5060;   
+    protected Contact contactHeader;
 
     // //////////////////////////////////////////////////////
     // Inner classes
