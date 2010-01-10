@@ -3,7 +3,7 @@
  *
  * This software was developed by employees of the National Institute of
  * Standards and Technology (NIST), an agency of the Federal Government.
- * Pursuant to title 15 Untied States Code Section 105, works of NIST
+ * Pursuant to title 15 United States Code Section 105, works of NIST
  * employees are not subject to copyright protection in the United States
  * and are considered to be in the public domain.  As a result, a formal
  * license is not needed to use the software.
@@ -97,7 +97,7 @@ class IOHandler {
     }
 
     /**
-     * A private function to write things out. This needs to be syncrhonized as writes can occur
+     * A private function to write things out. This needs to be synchronized as writes can occur
      * from multiple threads. We write in chunks to allow the other side to synchronize for large
      * sized writes.
      */
@@ -187,10 +187,10 @@ class IOHandler {
                                                                                             // parameter?
                 if (!retval) {
                     throw new IOException(
-                            "Could not acquire IO Semaphore after 10 second -- giving up ");
+                            "Could not acquire IO Semaphore after 10 seconds -- giving up ");
                 }
             } catch (InterruptedException ex) {
-                throw new IOException("exception in aquiring sem");
+                throw new IOException("exception in acquiring sem");
             }
             Socket clientSock = getSocket(key);
 
@@ -259,9 +259,9 @@ class IOHandler {
             try {
                 boolean retval = this.ioSemaphore.tryAcquire(10000, TimeUnit.MILLISECONDS);
                 if (!retval)
-                    throw new IOException("Timeout aquiring IO SEM");
+                    throw new IOException("Timeout acquiring IO SEM");
             } catch (InterruptedException ex) {
-                throw new IOException("exception in aquiring sem");
+                throw new IOException("exception in acquiring sem");
             }
             Socket clientSock = getSocket(key);
 
@@ -276,12 +276,12 @@ class IOHandler {
                         clientSock = sipStack.getNetworkLayer().createSSLSocket(receiverAddress,
                                 contactPort, senderAddress);
                         SSLSocket sslsock = (SSLSocket) clientSock;
-                        sslsock.setEnabledProtocols(new String[]{"SSLv2Hello","TLSv1"});
                         HandshakeCompletedListener listner = new HandshakeCompletedListenerImpl(
                                 (TLSMessageChannel) messageChannel);
                         ((TLSMessageChannel) messageChannel)
                                 .setHandshakeCompletedListener(listner);
                         sslsock.addHandshakeCompletedListener(listner);
+                        sslsock.setEnabledProtocols(sipStack.getEnabledProtocols());
                         sslsock.startHandshake();
 
                         OutputStream outputStream = clientSock.getOutputStream();
