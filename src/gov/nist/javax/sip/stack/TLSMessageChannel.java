@@ -67,7 +67,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.26 $ $Date: 2009-11-29 04:31:30 $
+ * @version 1.2 $Revision: 1.27 $ $Date: 2010-01-10 00:13:14 $
  */
 public final class TLSMessageChannel extends MessageChannel implements SIPMessageListener,
         Runnable, RawMessageChannel {
@@ -124,10 +124,10 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
     protected TLSMessageChannel(Socket sock, SIPTransactionStack sipStack,
             TLSMessageProcessor msgProcessor) throws IOException {
         if (sipStack.isLoggingEnabled()) {
-            sipStack.getStackLogger().logDebug("creating new TLSMessageChannel ");
+            sipStack.getStackLogger().logDebug("creating new TLSMessageChannel (incoming)");
             sipStack.getStackLogger().logStackTrace();
         }
-        
+
         mySock = (SSLSocket) sock;
         if ( sock instanceof SSLSocket ) {
             
@@ -169,7 +169,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
     protected TLSMessageChannel(InetAddress inetAddr, int port, SIPTransactionStack sipStack,
             TLSMessageProcessor messageProcessor) throws IOException {
         if (sipStack.isLoggingEnabled()) {
-            sipStack.getStackLogger().logDebug("creating new TLSMessageChannel ");
+            sipStack.getStackLogger().logDebug("creating new TLSMessageChannel (outgoing)");
             sipStack.getStackLogger().logStackTrace();
         }
         this.peerAddress = inetAddr;
@@ -383,7 +383,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
      * Gets invoked by the parser as a callback on successful message parsing (i.e. no parser
      * errors).
      *
-     * @param sipMessage Mesage to process (this calls the application for processing the
+     * @param sipMessage Message to process (this calls the application for processing the
      *        message).
      *
      * Jvb: note that this code is identical to TCPMessageChannel, refactor some day
