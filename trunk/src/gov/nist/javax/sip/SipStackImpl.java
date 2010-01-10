@@ -396,6 +396,12 @@ import javax.sip.message.Request;
  * client transction in the ResponseEventExt and deliver that to the application.
  * The event handler can get the original transaction from this event. </li>
  * 
+ *  * <li><b>gov.nist.javax.sip.TLS_CLIENT_PROTOCOLS = String </b>
+ *  Comma-separated list of protocols to use when creating outgoing TLS connections.
+ *  The default is "SSLv3, SSLv2Hello, TLSv1".
+ *  Some servers do not support SSLv2Hello, so override to "SSLv3, TLSv1". 
+ * </li>
+
  * <li><b>javax.net.ssl.keyStore = fileName </b> <br/>
  * Default is <it>NULL</it>. If left undefined the keyStore and trustStore will
  * be left to the java runtime defaults. If defined, any TLS sockets created
@@ -418,7 +424,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.114 $ $Date: 2009-12-17 23:33:53 $
+ * @version 1.2 $Revision: 1.115 $ $Date: 2010-01-10 00:13:14 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -470,6 +476,13 @@ public class SipStackImpl extends SIPTransactionStack implements
 			// ciphersuites
 			"TLS_DH_anon_WITH_AES_128_CBC_SHA",
 			"SSL_DH_anon_WITH_3DES_EDE_CBC_SHA", };
+
+	// Supported protocols for TLS client: can be overridden by application
+	private String[] enabledProtocols = {
+			"SSLv3",
+			"SSLv2Hello",
+			"TLSv1"
+	};
 
 	/**
 	 * Creates a new instance of SipStackImpl.
@@ -960,6 +973,20 @@ public class SipStackImpl extends SIPTransactionStack implements
 		StringMsgParser
 				.setComputeContentLengthFromMessage(computeContentLength);
 
+		String tlsClientProtocols = configurationProperties.getProperty(
+				"gov.nist.javax.sip.TLS_CLIENT_PROTOCOLS");
+		if (tlsClientProtocols != null)
+		{
+			StringTokenizer st = new StringTokenizer(tlsClientProtocols, " ,");
+			String[] protocols = new String[st.countTokens()];
+			
+			int i=0;
+			while (st.hasMoreTokens()) {
+				protocols[i++] = st.nextToken();
+			}
+			this.enabledProtocols = protocols;
+		}
+
 		super.rfc2543Supported = configurationProperties.getProperty(
 				"gov.nist.javax.sip.RFC_2543_SUPPORT_ENABLED", "true")
 				.equalsIgnoreCase("true");
@@ -1386,6 +1413,39 @@ public class SipStackImpl extends SIPTransactionStack implements
 	}
 
 	/**
+	 * Set the list of protocols supported by the stack for outgoing TLS connections.
+	 * A stack can have only one set of protocols.
+	 * These are not validated against the supported
+	 * protocols of the java runtime, so specifying a protocol here does not
+	 * guarantee that it will work.<br>
+	 * The stack has a default protocol suite of:
+	 * <ul>
+	 * <li>SSLv3</li>
+	 * <li>SSLv2Hello</li>
+	 * <li>TLSv1</li>
+	 * </ul>
+	 * 
+	 * <b>NOTE: This function must be called before creating a TLSMessageChannel.</b>
+	 * 
+	 * @param String
+	 *            [] The new set of protocols to use for outgoing TLS connections.
+	 * @return
+	 * 
+	 */
+	public void setEnabledProtocols(String[] newProtocols) {
+		enabledProtocols = newProtocols;
+	}
+
+	/**
+	 * Return the currently enabled protocols to use when creating TLS connection.
+	 * 
+	 * @return The currently enabled protocols.
+	 */
+	public String[] getEnabledProtocols() {
+		return enabledProtocols;
+	}
+
+	/**
 	 * Set the "back to back User Agent" flag.
 	 * 
 	 * @param flag
@@ -1421,6 +1481,7 @@ public class SipStackImpl extends SIPTransactionStack implements
     public void releaseSem() {
         this.stackSemaphore.release();
     }
+
 
     
 

@@ -42,6 +42,8 @@ import gov.nist.javax.sip.message.SIPResponse;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.TimerTask;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import javax.sip.Dialog;
 import javax.sip.DialogState;
@@ -62,6 +64,7 @@ import javax.sip.message.Response;
  * Bug fixes / enhancements:Emil Ivov, Antonis Karydas, Daniel J. Martinez Manzano, Daniel, Hagai
  * Sela, Vazques-Illa, Bill Roome, Thomas Froment and Pierre De Rop, Christophe Anzille and Jeroen
  * van Bemmel, Frank Reif.
+ * Carolyn Beeton ( Avaya ).
  *
  */
 
@@ -163,7 +166,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.117 $ $Date: 2009-12-21 05:23:40 $
+ * @version 1.2 $Revision: 1.118 $ $Date: 2010-01-10 00:13:14 $
  * @author M. Ranganathan
  *
  */
@@ -197,6 +200,8 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
     private SIPClientTransaction pendingSubscribeTransaction;
 
     private SIPServerTransaction inviteTransaction;
+    
+    private Semaphore provisionalResponseSem = new Semaphore(1);
 
     /**
      * This timer task is used for alerting the application to send retransmission alerts.
@@ -1282,20 +1287,29 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
         // Fix up the response if the dialog has already been established.
         try {
             /*
-             * TODO Check this. The UAS MAY send a final response to the initial request before
+             * The UAS MAY send a final response to the initial request before
              * having received PRACKs for all unacknowledged reliable provisional responses,
              * unless the final response is 2xx and any of the unacknowledged reliable provisional
              * responses contained a session description. In that case, it MUST NOT send a final
              * response until those provisional responses are acknowledged.
              */
             if (this.pendingReliableResponse != null
+                    && this.getDialog() != null 
+                    && this.getState() != TransactionState.TERMINATED
                     && ((SIPResponse)response).getContentTypeHeader() != null 
                     && response.getStatusCode() / 100 == 2
                     && ((SIPResponse)response).getContentTypeHeader().getContentType()
                             .equalsIgnoreCase("application")
                     && ((SIPResponse)response).getContentTypeHeader().getContentSubType()
                             .equalsIgnoreCase("sdp")) {
-                throw new SipException("cannot send response -- unacked povisional");
+                try {
+                    boolean acquired = this.provisionalResponseSem.tryAcquire(1,TimeUnit.SECONDS);
+                    if (!acquired ) {
+                        throw new SipException("cannot send response -- unacked povisional");
+                    }
+                } catch (Exception ex) {
+                    this.sipStack.getStackLogger().logError("Could not acquire PRACK sem ", ex);
+                }
             } else {
                 // Sending the final response cancels the
                 // pending response task.
@@ -1547,10 +1561,17 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
             // start the timer task which will retransmit the reliable response
             // until the PRACK is received
             this.lastResponse = (SIPResponse) relResponse;
+            if ( this.getDialog() != null ) {
+                boolean acquired = this.provisionalResponseSem.tryAcquire(1, TimeUnit.SECONDS);
+                if (!acquired) {
+                    throw new SipException("Unacknowledged response");
+                }
+            }
             this.sendMessage((SIPMessage) relResponse);
             this.provisionalResponseTask = new ProvisionalResponseTask();
             this.sipStack.getTimer().schedule(provisionalResponseTask, 0,
                     SIPTransactionStack.BASE_TIMER_INTERVAL);
+            
 
         } catch (Exception ex) {
             InternalErrorHandler.handleException(ex);
@@ -1576,6 +1597,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
         if(provisionalResponseTask != null)
         	this.provisionalResponseTask.cancel();
         this.pendingReliableResponse = null;
+        this.provisionalResponseSem.release();
         return true;
     }
 
