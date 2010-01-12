@@ -45,7 +45,7 @@ import gov.nist.javax.sip.address.*;
 
 /** Implementation of the JAIN SIP  HeaderFactory
 *
-* @version 1.2 $Revision: 1.21 $ $Date: 2010-01-12 00:05:26 $
+* @version 1.2 $Revision: 1.22 $ $Date: 2010-01-12 18:58:48 $
 * @since 1.1
 *
 *@author M. Ranganathan   <br/>
@@ -1668,11 +1668,24 @@ public class HeaderFactoryImpl implements HeaderFactory , HeaderFactoryExt {
     }
 
 
+    
+    /**
+     * Create and return a references header.
+     * 
+     * @param callId
+     * @param rel
+     * @return
+     * @throws ParseException
+     */
 
-    public ReferencesHeader createReferencesHeader(String references) throws ParseException {
-        ReferencesParser parser = new ReferencesParser(references);
-        return (ReferencesHeader) parser.parse();
+    public ReferencesHeader createReferencesHeader(String callId, String rel) throws ParseException {
+        ReferencesHeader retval = new References();
+        retval.setCallId(callId);
+        retval.setRel(rel);
+        return retval;
     }
+    
+    
 
 
     //////////////////////////////////////////////////////////
