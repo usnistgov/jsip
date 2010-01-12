@@ -19,43 +19,26 @@ public class References extends ParametersHeader  implements ReferencesHeader,Ex
     }
   
    
-    public String getBranch() {
-        return this.getParameter(BRANCH);
-    }
 
   
     public String getCallId() {
        return callId;
     }
 
-   
-    public String getMethod() {
-        return this.getParameter(METHOD);
-    }
-
+  
    
     public String getRel() {
         return this.getParameter(REL);
     }
 
    
-    public void setBranch(String branch) throws ParseException {
-       this.setParameter(BRANCH,branch);
-    }
 
 
     public void setCallId(String callId) {
         this.callId = callId;
     }
 
-   
-    public void setMethod(String method) throws ParseException {
-        if ( method != null ) {
-            this.setParameter(METHOD,method);
-        }
-    }
-
-    
+       
     public void setRel(String rel) throws ParseException{
       if ( rel != null ) {
           this.setParameter(REL,rel);
