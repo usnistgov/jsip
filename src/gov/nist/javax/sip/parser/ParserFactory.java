@@ -39,7 +39,7 @@ import gov.nist.javax.sip.parser.extensions.*;
  * A factory class that does a name lookup on a registered parser and
  * returns a header parser for the given name.
  *
- * @version 1.2 $Revision: 1.16 $ $Date: 2009-07-17 18:58:01 $
+ * @version 1.2 $Revision: 1.17 $ $Date: 2010-01-12 00:05:25 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -48,12 +48,12 @@ import gov.nist.javax.sip.parser.extensions.*;
  */
 public class ParserFactory {
 
-    private static Hashtable parserTable;
+    private static Hashtable<String,Class<? extends HeaderParser>> parserTable;
     private static Class[] constructorArgs;
     private static Hashtable parserConstructorCache;
 
     static {
-        parserTable = new Hashtable();
+        parserTable = new Hashtable<String,Class<? extends HeaderParser>>();
         parserConstructorCache = new Hashtable();
         constructorArgs = new Class[1];
         constructorArgs[0] = String.class;
@@ -273,6 +273,9 @@ public class ParserFactory {
 
         // Per RFC3911 (jean deruelle)
         parserTable.put(Join.NAME.toLowerCase(), JoinParser.class);
+        
+        //http://tools.ietf.org/html/draft-worley-references-05
+        parserTable.put(References.NAME.toLowerCase(), ReferencesParser.class);
     }
 
     /**
@@ -312,6 +315,9 @@ public class ParserFactory {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.16  2009/07/17 18:58:01  emcho
+ * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
+ *
  * Revision 1.15  2009/01/22 19:33:48  deruelle_jean
  * Add support for JOIN (RFC 3911)
  * Issue number:  186
