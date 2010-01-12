@@ -30,6 +30,8 @@ import gov.nist.javax.sip.header.extensions.*; // extension headers - pmusgrave
 import javax.sip.header.*;
 
 import gov.nist.javax.sip.parser.*;
+import gov.nist.javax.sip.parser.extensions.ReferencesParser;
+
 import javax.sip.address.*;
 import java.text.ParseException;
 import javax.sip.InvalidArgumentException;
@@ -43,7 +45,7 @@ import gov.nist.javax.sip.address.*;
 
 /** Implementation of the JAIN SIP  HeaderFactory
 *
-* @version 1.2 $Revision: 1.20 $ $Date: 2009-09-15 02:55:26 $
+* @version 1.2 $Revision: 1.21 $ $Date: 2010-01-12 00:05:26 $
 * @since 1.1
 *
 *@author M. Ranganathan   <br/>
@@ -1667,6 +1669,10 @@ public class HeaderFactoryImpl implements HeaderFactory , HeaderFactoryExt {
 
 
 
+    public ReferencesHeader createReferencesHeader(String references) throws ParseException {
+        ReferencesParser parser = new ReferencesParser(references);
+        return (ReferencesHeader) parser.parse();
+    }
 
 
     //////////////////////////////////////////////////////////
