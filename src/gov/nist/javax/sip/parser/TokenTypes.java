@@ -28,7 +28,7 @@ package gov.nist.javax.sip.parser;
 import gov.nist.core.*;
 
 /**
- * @version 1.2 $Revision: 1.12 $ $Date: 2009-07-17 18:58:06 $
+ * @version 1.2 $Revision: 1.13 $ $Date: 2010-01-12 00:05:25 $
  */
 public interface TokenTypes {
 
@@ -164,6 +164,8 @@ public interface TokenTypes {
     public static final int P_PREFERRED_SERVICE = START + 96;
     //aayush.bhatnagar: P-Asserted-Service Header:
     public static final int P_ASSERTED_SERVICE = START + 97;
+    //mranga - References header
+    public static final int REFERENCES = START + 98;
 
     public static final int ALPHA = LexerCore.ALPHA;
     public static final int DIGIT = LexerCore.DIGIT;
@@ -207,6 +209,9 @@ public interface TokenTypes {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.12  2009/07/17 18:58:06  emcho
+ * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
+ *
  * Revision 1.11  2009/05/10 00:29:53  mranga
  *
  * Submitted by:  Aayush Bhatnagar

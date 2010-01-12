@@ -302,6 +302,9 @@ public class Lexer extends LexerCore {
                     // added by aayush@rancore
                     addKeyword(PAssertedServiceHeader.NAME.toUpperCase(),
                             TokenTypes.P_ASSERTED_SERVICE);
+                    
+                    // added References header
+                    addKeyword(ReferencesHeader.NAME.toUpperCase(),TokenTypes.REFERENCES);
 
                     // end //
 

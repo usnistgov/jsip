@@ -45,7 +45,7 @@ import javax.sip.header.Parameters;
  * @author M. Ranganathan   <br/>
  *
  *
- * @version 1.2 $Revision: 1.14 $ $Date: 2009-10-18 13:46:32 $
+ * @version 1.2 $Revision: 1.15 $ $Date: 2010-01-12 00:05:27 $
  *
  */
 public abstract class ParametersHeader
@@ -459,8 +459,7 @@ public abstract class ParametersHeader
         return parameters.getNameValue(parameterName);
     }
 
-    protected abstract String encodeBody();
-
+ 
     public Object clone() {
         ParametersHeader retval = (ParametersHeader) super.clone();
         if (this.parameters != null)
@@ -609,5 +608,9 @@ public abstract class ParametersHeader
 
         return true;
     }
+    
+    
+    // ----------- Abstract methods --------------
+    protected abstract String encodeBody();
 
 }

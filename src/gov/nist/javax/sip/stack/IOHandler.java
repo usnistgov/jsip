@@ -177,14 +177,7 @@ class IOHandler {
             // Jayashenkhar ( lucent ).
 
             try {
-                boolean retval = this.ioSemaphore.tryAcquire(10000, TimeUnit.MILLISECONDS); // TODO
-                                                                                            // -
-                                                                                            // make
-                                                                                            // this
-                                                                                            // a
-                                                                                            // stack
-                                                                                            // config
-                                                                                            // parameter?
+                boolean retval = this.ioSemaphore.tryAcquire(10000, TimeUnit.MILLISECONDS); 
                 if (!retval) {
                     throw new IOException(
                             "Could not acquire IO Semaphore after 10 seconds -- giving up ");
