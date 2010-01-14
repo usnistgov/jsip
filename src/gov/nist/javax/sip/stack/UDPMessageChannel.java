@@ -55,6 +55,9 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.text.ParseException;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.TimerTask;
 
 import javax.sip.address.Hop;
 
@@ -87,10 +90,11 @@ import javax.sip.address.Hop;
  *
  *
  *
- * @version 1.2 $Revision: 1.65 $ $Date: 2009-11-19 05:26:57 $
+ * @version 1.2 $Revision: 1.66 $ $Date: 2010-01-14 05:15:49 $
  */
 public class UDPMessageChannel extends MessageChannel implements
         ParseExceptionListener, Runnable, RawMessageChannel {
+    
 
     /**
      * SIP Stack structure for this channel.
@@ -128,6 +132,32 @@ public class UDPMessageChannel extends MessageChannel implements
     private DatagramPacket incomingPacket;
 
     private long receptionTime;
+    
+    /*
+     * A table that keeps track of when the last pingback was sent to a given remote IP address
+     * and port. This is for NAT compensation. This stays in the table for 1 seconds and prevents 
+     * infinite loop. If a second pingback happens in that period of time, it will be dropped.
+     */
+    private Hashtable<String,PingBackTimerTask> pingBackRecord = new Hashtable<String,PingBackTimerTask>();
+    
+    class PingBackTimerTask extends TimerTask {
+        String ipAddress;
+        int port;
+        
+        public PingBackTimerTask(String ipAddress, int port) {
+            this.ipAddress = ipAddress;
+            this.port = port;
+            pingBackRecord.put(ipAddress + ":" + port, this);
+        }
+        @Override
+        public void run() {
+           pingBackRecord.remove(ipAddress + ":" + port);
+        }
+        @Override
+        public int hashCode() {
+            return (ipAddress + ":" + port).hashCode();
+        }
+    }
 
     /**
      * Constructor - takes a datagram packet and a stack structure Extracts the
@@ -353,6 +383,13 @@ public class UDPMessageChannel extends MessageChannel implements
         if (sipMessage == null) {
             if (sipStack.isLoggingEnabled()) {
                 this.sipStack.getStackLogger().logDebug("Rejecting message !  + Null message parsed.");
+            }
+            if (pingBackRecord.get(packet.getAddress().getHostAddress() + ":" + packet.getPort()) == null ) {
+                byte[] retval = "\r\n\r\n".getBytes();
+                DatagramPacket keepalive = new DatagramPacket(retval,0,retval.length,packet.getAddress(),packet.getPort());
+                ((UDPMessageProcessor)this.messageProcessor).sock.send(keepalive);
+                this.sipStack.getTimer().schedule(new PingBackTimerTask(packet.getAddress().getHostAddress(), 
+                            packet.getPort()), 1000);                
             }
             return;
         }
