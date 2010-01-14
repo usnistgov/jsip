@@ -1,0 +1,69 @@
+<project basedir="." default="shootme">
+    <property name="root" value="../../../../" />
+    <property file="${root}/ant-build-config.properties" />
+    <property name="classes" value="${root}/classes" />
+    <property name="srcroot" value="${root}/src" />
+        <property name = "junit_jar" value="${root}/lib/${junit}" />
+    <property name="log4j_jar" value="${root}/lib/${log4j}" />
+    <path id="project.class.path">
+        <pathelement location="${classes}" />
+        <pathelement location="${log4j_jar}" />
+        <pathelement location="${junit_jar}" />
+    </path>
+    <target name="make">
+        <javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" source="${javac.source}" nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" srcdir="${srcroot}" includes="examples/forked/invite/**/*.java" classpathref="project.class.path" destdir="${classes}">
+        </javac>
+    </target>
+    <target name="shootme" depends="make" description="build and run the  example UAS.">
+            <delete file="shootmedebug_5080.txt" />
+            <delete file="shootmelog_5080.txt" />
+            <java classname="examples.forked.invite.Shootme" classpathref="project.class.path" fork="true">
+                <arg value="5080"/>
+            </java>
+        </target>
+    <target name="shootme2" depends="make" description="build and run the  example UAS.">
+            <delete file="shootmedebug_5090.txt" />
+            <delete file="shootmelog_5090.txt" />
+            <java classname="examples.forked.invite.Shootme" classpathref="project.class.path" fork="true">
+                <arg value="5090"/>
+            </java>
+        </target>
+
+    <target name="shootist" depends="make" description="run the example UAC.">
+        <delete file="shootistdebug.txt" />
+        <delete file="shootistlog.txt" />
+        <java classname="examples.forked.invite.Shootist" fork="true" classpathref="project.class.path" />
+    </target>
+
+    <target name="proxy" depends="make" description="run the simple proxy.">
+        <delete file="proxydebug.txt" />
+        <delete file="proxylog.txt" />
+        <java classname="examples.forked.invite.Proxy" fork="true" classpathref="project.class.path" />
+    </target>
+
+    <target name="shootistlog" description="Show the  log">
+        <java classname="tools.tracesviewer.TracesViewer" fork="true">
+            <arg name="-server_file" value="shootistlog.txt" />
+        </java>
+    </target>
+    <target name="shootmelog" description="Show the  log">
+        <java classname="tools.tracesviewer.TracesViewer" fork="true">
+            <arg name="-server_file" value="shootmelog.txt" />
+        </java>
+    </target>
+    <target name="proxylog" description="Show the  log">
+        <java classname="tools.tracesviewer.TracesViewer" fork="true">
+            <arg name="-server_file" value="proxylog.txt" />
+        </java>
+    </target>
+
+    <target name="clean" description="clean the logs">
+        <delete file="proxydebug.txt" />
+        <delete file="proxylog.txt" />
+        <delete file="shootistdebug.txt" />
+        <delete file="shootistlog.txt" />
+        <delete file="shootmedebug.txt" />
+        <delete file="shootmelog.txt" />
+    </target>
+
+</project>

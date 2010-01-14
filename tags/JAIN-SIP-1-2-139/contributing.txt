@@ -1,0 +1,35 @@
+
+Here are the conditions for contributing to the packages in this 
+distribution:
+
+The packages that are prefixed with "gov.nist" are all in the public domain.
+To contribute to these packages you have to place your code in the public
+domain. 
+
+The packages prefixed with "test" are in the public domain. To contribute
+to these packages you have to place your code in the public domain. 
+
+The packages prefixed with "tools" are in the public domain. To contribute
+to the code in these packages you have to place your code in the
+public domain.
+
+You may contribute examples (i.e. packages prefixed with  "examples") using 
+a standard open source license (for example Apache, GPL, LGPL, BSD etc.) 
+or place your code in the public domain.
+
+Please use the code template file codefmt.xml for any code submissions. This
+works with eclipse. If you are using some other IDE, make sure you follow
+these coding guidelines:
+
+1. No tabs.
+2. Braces follow the pattern of the existing code.
+3. Use bean naming convention.
+
+Please dont use Java 6 specific features. 
+
+Please contribute! Your contributions will be recognized.
+
+No proprietary code of any kind will be accepted into this project.
+When you contribute code to this project, it is implicit that you 
+have read and understood the above conditions.
+
