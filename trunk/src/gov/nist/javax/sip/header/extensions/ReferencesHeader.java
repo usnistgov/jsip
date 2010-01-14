@@ -25,6 +25,8 @@ public interface ReferencesHeader extends Parameters, Header {
       
     public static final String REL = "rel";
     
+    public static final String SERVICE = "service";
+    
     public void setCallId(String callId) throws ParseException;
        
     public String getCallId();
