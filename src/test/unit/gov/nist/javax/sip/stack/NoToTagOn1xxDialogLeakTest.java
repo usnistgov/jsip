@@ -1,6 +1,6 @@
 package test.unit.gov.nist.javax.sip.stack;
 
-import gov.nist.javax.sip.SipStackImpl;
+import gov.nist.javax.sip.stack.SIPTransactionStack;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -779,8 +779,8 @@ public class NoToTagOn1xxDialogLeakTest extends TestCase {
         //should be enough to check for remaining dialogs
         Thread.sleep(20000);
 
-        assertEquals(0,((SipStackImpl)shootist.sipStack).getDialogs().size());
-        assertEquals(0,((SipStackImpl)shootme.sipStack).getDialogs().size());
+        assertEquals(0,((SIPTransactionStack)shootist.sipStack).getDialogs().size());
+        assertEquals(0,((SIPTransactionStack)shootme.sipStack).getDialogs().size());
 
     }
 }

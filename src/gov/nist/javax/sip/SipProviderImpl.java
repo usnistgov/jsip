@@ -84,7 +84,7 @@ import javax.sip.message.Response;
 /**
  * Implementation of the JAIN-SIP provider interface.
  *
- * @version 1.2 $Revision: 1.82 $ $Date: 2009-11-24 17:16:59 $
+ * @version 1.2 $Revision: 1.83 $ $Date: 2010-01-20 23:37:39 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -477,7 +477,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
             SIPClientTransaction ct = sipStack.findSubscribeTransaction(
                     sipRequest, (ListeningPointImpl) this.getListeningPoint());
             /* Issue 104 */
-            if (ct == null && ! sipStack.deliverUnsolicitedNotify) {
+            if (ct == null && ! sipStack.isDeliverUnsolicitedNotify()) {
                 throw new TransactionUnavailableException(
                         "Cannot find matching Subscription (and gov.nist.javax.sip.DELIVER_UNSOLICITED_NOTIFY not set)");
             }

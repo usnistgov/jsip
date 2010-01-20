@@ -19,7 +19,7 @@
 */
 package test.tck.msgflow;
 
-import gov.nist.javax.sip.SipStackImpl;
+import gov.nist.javax.sip.stack.SIPTransactionStack;
 
 import java.text.ParseException;
 import java.util.LinkedList;
@@ -114,7 +114,7 @@ public class MessageFlowHarness extends TestHarness {
                 riFactory.resetFactory();
 
             riSipStack = riFactory.createSipStack(getRiProperties(autoDialog));
-            assertTrue( "RI must be gov.nist", riSipStack instanceof SipStackImpl );
+            assertTrue( "RI must be gov.nist", riSipStack instanceof SIPTransactionStack );
 
             tiFactory.resetFactory();
             tiFactory.setPathName( getImplementationPath() );

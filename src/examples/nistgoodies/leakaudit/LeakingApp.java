@@ -2,7 +2,7 @@ package examples.nistgoodies.leakaudit;
 
 import gov.nist.javax.sip.stack.SIPDialog;
 import gov.nist.javax.sip.stack.SIPClientTransaction;
-import gov.nist.javax.sip.SipStackImpl;
+import gov.nist.javax.sip.stack.SIPTransactionStack;
 
 import javax.sip.*;
 import javax.sip.address.Address;
@@ -203,9 +203,9 @@ public class LeakingApp implements SipListener {
         // Also notice that leaked transactions are a little harder to simulate so I'm not even trying in this example.
         Request request = createRequest();
         SIPClientTransaction transaction = (SIPClientTransaction) createTransaction(request);
-        SIPDialog dialog = ((SipStackImpl) LeakAudit.sipStack).createDialog(transaction);
+        SIPDialog dialog = ((SIPTransactionStack) LeakAudit.sipStack).createDialog(transaction);
         dialog.setDialogId("1234");
-        ((SipStackImpl) LeakAudit.sipStack).putDialog(dialog);
+        ((SIPTransactionStack) LeakAudit.sipStack).putDialog(dialog);
         System.out.println("Intentionally inserted a leaked dialog, CallID = " + dialog.getCallId());
     }
 

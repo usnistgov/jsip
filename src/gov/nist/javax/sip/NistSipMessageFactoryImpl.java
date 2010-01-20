@@ -42,7 +42,7 @@ import javax.sip.*;
  * messageChannel, the NIST-SIP stack calls the SIPStackMessageFactory
  * implementation that has been registered with it to process the request.)
  * 
- * @version 1.2 $Revision: 1.14 $ $Date: 2009-07-29 20:38:17 $
+ * @version 1.2 $Revision: 1.15 $ $Date: 2010-01-20 23:37:38 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -50,7 +50,7 @@ import javax.sip.*;
  */
 class NistSipMessageFactoryImpl implements StackMessageFactory {
 
-    private SipStackImpl sipStack;
+    private SIPTransactionStack sipStack;
 
     /**
      * Construct a new SIP Server Request.
@@ -68,7 +68,7 @@ class NistSipMessageFactoryImpl implements StackMessageFactory {
             throw new IllegalArgumentException("Null Arg!");
         }
 
-        SipStackImpl theStack = (SipStackImpl) messageChannel.getSIPStack();
+        SIPTransactionStack theStack = (SIPTransactionStack) messageChannel.getSIPStack();
         DialogFilter retval = new DialogFilter(
                 theStack);
         if (messageChannel instanceof SIPTransaction) {
@@ -139,7 +139,7 @@ class NistSipMessageFactoryImpl implements StackMessageFactory {
         return retval;
     }
 
-    public NistSipMessageFactoryImpl(SipStackImpl sipStackImpl) {
+    public NistSipMessageFactoryImpl(SIPTransactionStack sipStackImpl) {
         this.sipStack = sipStackImpl;
 
     }
