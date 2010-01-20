@@ -45,6 +45,7 @@ import gov.nist.javax.sip.stack.SIPClientTransaction;
 import gov.nist.javax.sip.stack.SIPDialog;
 import gov.nist.javax.sip.stack.SIPServerTransaction;
 import gov.nist.javax.sip.stack.SIPTransaction;
+import gov.nist.javax.sip.stack.SIPTransactionStack;
 import gov.nist.javax.sip.stack.ServerRequestInterface;
 import gov.nist.javax.sip.stack.ServerResponseInterface;
 
@@ -82,7 +83,7 @@ import javax.sip.message.Response;
  * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
  * and event model with the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.64 $ $Date: 2010-01-14 18:58:30 $
+ * @version 1.2 $Revision: 1.65 $ $Date: 2010-01-20 23:37:39 $
  * 
  * @author M. Ranganathan
  */
@@ -92,9 +93,9 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
     protected ListeningPointImpl listeningPoint;
 
-    private SipStackImpl sipStack;
+    private SIPTransactionStack sipStack;
 
-    public DialogFilter(SipStackImpl sipStack) {
+    public DialogFilter(SIPTransactionStack sipStack) {
         this.sipStack = sipStack;
 
     }
@@ -271,7 +272,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             return;
         }
 
-        SipStackImpl sipStack = (SipStackImpl) transactionChannel.getSIPStack();
+        SIPTransactionStack sipStack = (SIPTransactionStack) transactionChannel.getSIPStack();
 
         SipProviderImpl sipProvider = listeningPoint.getProvider();
         if (sipProvider == null) {
@@ -542,7 +543,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                          * and you do not get transaction terminated events on ACK.
                          */
 
-                        if (sipStack.deliverTerminatedEventForAck) {
+                        if (sipStack.isDeliverTerminatedEventForAck()) {
                             try {
                                 sipStack.addTransaction(transaction);
                                 transaction.scheduleAckRemoval();
@@ -949,7 +950,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
              * is more appropriate.
              */
             if (sipProvider.isAutomaticDialogSupportEnabled() && pendingSubscribeClientTx == null
-                    && !sipStack.deliverUnsolicitedNotify) {
+                    && !sipStack.isDeliverUnsolicitedNotify()) {
                 /*
                  * This is the case of the UAC receiving a Stray NOTIFY for which it has not
                  * previously sent out a SUBSCRIBE and for which it does not have an established
@@ -1152,7 +1153,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
         }
 
         SIPClientTransaction transaction = (SIPClientTransaction) this.transactionChannel;
-        SipStackImpl sipStackImpl = sipProvider.sipStack;
+        SIPTransactionStack sipStackImpl = sipProvider.sipStack;
 
         if (sipStack.isLoggingEnabled()) {
             sipStackImpl.getStackLogger().logDebug("Transaction = " + transaction);

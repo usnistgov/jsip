@@ -17,7 +17,6 @@ package gov.nist.javax.sip.clientauthutils;
  * proposed a way to fix them (his proposition was taken into account).
  */
 
-import gov.nist.javax.sip.SipStackImpl;
 import gov.nist.javax.sip.address.SipUri;
 import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.stack.SIPClientTransaction;
@@ -77,7 +76,7 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
      */
     private HeaderFactory headerFactory;
 
-    private SipStackImpl sipStack;
+    private SIPTransactionStack sipStack;
 
     Timer timer;
 
@@ -89,7 +88,7 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
      * @param accountManager -- an implementation of the AccountManager interface.
      * @param headerFactory -- header factory.
      */
-    public AuthenticationHelperImpl(SipStackImpl sipStack, AccountManager accountManager,
+    public AuthenticationHelperImpl(SIPTransactionStack sipStack, AccountManager accountManager,
             HeaderFactory headerFactory) {
         this.accountManager = accountManager;
         this.headerFactory = headerFactory;
@@ -106,7 +105,7 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
      * @param accountManager -- an implementation of the AccountManager interface.
      * @param headerFactory -- header factory.
      */
-    public AuthenticationHelperImpl(SipStackImpl sipStack, SecureAccountManager accountManager,
+    public AuthenticationHelperImpl(SIPTransactionStack sipStack, SecureAccountManager accountManager,
             HeaderFactory headerFactory) {
         this.accountManager = accountManager;
         this.headerFactory = headerFactory;

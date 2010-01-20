@@ -8,13 +8,13 @@ import javax.sip.header.TimeStampHeader;
 import gov.nist.core.ServerLogger;
 import gov.nist.javax.sip.LogRecord;
 import gov.nist.javax.sip.LogRecordFactory;
-import gov.nist.javax.sip.SipStackImpl;
 import gov.nist.javax.sip.header.CallID;
 import gov.nist.javax.sip.message.SIPMessage;
+import gov.nist.javax.sip.stack.SIPTransactionStack;
 
 public class ServerLoggerImpl implements ServerLogger {
    
-    private SipStackImpl sipStack;
+    private SIPTransactionStack sipStack;
 
     private LogRecordFactory logRecordFactory;
     
@@ -64,7 +64,7 @@ public class ServerLoggerImpl implements ServerLogger {
     }
 
     public void setSipStack(SipStack sipStack) {
-        this.sipStack = (SipStackImpl) sipStack;
+        this.sipStack = (SIPTransactionStack) sipStack;
        
     }
 

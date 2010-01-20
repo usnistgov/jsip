@@ -91,14 +91,14 @@ import javax.sip.address.*;
  * Subsequently, the request URI will be used as next hop target
  *
  *
- * @version 1.2 $Revision: 1.17 $ $Date: 2009-11-14 20:06:17 $
+ * @version 1.2 $Revision: 1.18 $ $Date: 2010-01-20 23:37:37 $
  *
  * @author M. Ranganathan <br/>
  *
  */
 public class DefaultRouter implements Router {
 
-    private SipStackImpl sipStack;
+    private SIPTransactionStack sipStack;
 
     private Hop defaultRoute;
 
@@ -110,7 +110,7 @@ public class DefaultRouter implements Router {
      * Constructor.
      */
     public DefaultRouter(SipStack sipStack, String defaultRoute) {
-        this.sipStack = (SipStackImpl) sipStack;
+        this.sipStack = (SIPTransactionStack) sipStack;
         if (defaultRoute != null) {
             try {
                 this.defaultRoute = (Hop) this.sipStack.getAddressResolver()

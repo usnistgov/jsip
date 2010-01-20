@@ -1,6 +1,6 @@
 package examples.nistgoodies.leakaudit;
 
-import gov.nist.javax.sip.SipStackImpl;
+import gov.nist.javax.sip.stack.SIPTransactionStack;
 
 import javax.sip.*;
 import java.util.Timer;
@@ -119,7 +119,7 @@ public class LeakAudit {
             public final void run() {
                 // That's all we need to do in order to check if there's any dialog or transaction leak
                 Set activeCallIDs = leakingApp.getActiveCallIDs();
-                String auditReport = ((SipStackImpl) sipStack).auditStack(activeCallIDs,
+                String auditReport = ((SIPTransactionStack) sipStack).auditStack(activeCallIDs,
                         30 * 1000, // Note: We're using an unrealistically short value just for this test.
                                    // For real applications, see the suggested values in the README.txt.
                         60 * 1000);

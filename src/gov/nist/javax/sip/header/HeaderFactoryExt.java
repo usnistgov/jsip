@@ -3,6 +3,7 @@ package gov.nist.javax.sip.header;
 import java.text.ParseException;
 
 import gov.nist.javax.sip.header.extensions.JoinHeader;
+import gov.nist.javax.sip.header.extensions.ReferencesHeader;
 import gov.nist.javax.sip.header.extensions.ReferredByHeader;
 import gov.nist.javax.sip.header.extensions.ReplacesHeader;
 import gov.nist.javax.sip.header.extensions.SessionExpiresHeader;
@@ -235,7 +236,8 @@ public interface HeaderFactoryExt extends HeaderFactory {
             String fromTag) throws ParseException;
 
     /**
-     *
+     * Create a P-User-Database header.
+     * 
      * @return the newly created P-User-Database header
      * @param the database name, that may be an IP:port or a domain name.
      */
@@ -243,29 +245,45 @@ public interface HeaderFactoryExt extends HeaderFactory {
 
 
     /**
-     *
+     * Create a P-Profile-Key header.
+     * 
      * @param address
      * @return The newly created P-Profile-Key header
      */
     public PProfileKeyHeader createPProfileKeyHeader(Address address);
 
     /**
+     * Create a P-Served-User header.
+     * 
      * @param address of the served user.
      * @return The newly created P-Served-User Header.
      */
     public PServedUserHeader createPServedUserHeader(Address address);
 
     /**
-     *
+     * Create a P-Preferred-Service header.
+     * 
      * @return The newly created P-Preferred-Service Header.
      */
     public PPreferredServiceHeader createPPreferredServiceHeader();
 
     /**
+     * Create an AssertedService Header
      *
      * @return The newly created P-Asserted-Service Header.
      */
     public PAssertedServiceHeader createPAssertedServiceHeader();
+    
+    
+    /**
+     * Create a References header.
+     * 
+     * @param callId -- the referenced call Id.
+     * @param rel -- the rel parameter of the references header.
+     * 
+     * @return the newly created References header.
+     */
+    public ReferencesHeader createReferencesHeader(String callId, String rel) throws ParseException;
     
     /**
      * Create a header from a string. The string is assumed to be in the 

@@ -424,7 +424,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.115 $ $Date: 2010-01-10 00:13:14 $
+ * @version 1.2 $Revision: 1.116 $ $Date: 2010-01-20 23:37:39 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -452,14 +452,6 @@ public class SipStackImpl extends SIPTransactionStack implements
 
 	SipListener sipListener;
 
-	// If set to true then a transaction terminated event is
-	// delivered for ACK transactions.
-	boolean deliverTerminatedEventForAck = false;
-
-	// If set to true then the application want to receive
-	// unsolicited NOTIFYs, ie NOTIFYs that don't match any dialog
-	boolean deliverUnsolicitedNotify = false;
-	
 	// Stack semaphore (global lock).
 	private Semaphore stackSemaphore = new Semaphore(1);
 
@@ -727,14 +719,14 @@ public class SipStackImpl extends SIPTransactionStack implements
 
 		
 
-		this.deliverTerminatedEventForAck = configurationProperties
+		this.setDeliverTerminatedEventForAck(configurationProperties
 				.getProperty(
 						"gov.nist.javax.sip.DELIVER_TERMINATED_EVENT_FOR_ACK",
-						"false").equalsIgnoreCase("true");
+						"false").equalsIgnoreCase("true"));
 
-		this.deliverUnsolicitedNotify = configurationProperties.getProperty(
-				"gov.nist.javax.sip.DELIVER_UNSOLICITED_NOTIFY", "false")
-				.equalsIgnoreCase("true");
+		super.setDeliverUnsolicitedNotify(Boolean.parseBoolean( configurationProperties.getProperty(
+				"gov.nist.javax.sip.DELIVER_UNSOLICITED_NOTIFY", "false")));
+				
 
 		String forkedSubscriptions = configurationProperties
 				.getProperty("javax.sip.FORKABLE_EVENTS");

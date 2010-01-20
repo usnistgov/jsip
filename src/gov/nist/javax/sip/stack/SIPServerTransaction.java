@@ -166,7 +166,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.118 $ $Date: 2010-01-10 00:13:14 $
+ * @version 1.2 $Revision: 1.119 $ $Date: 2010-01-20 23:37:36 $
  * @author M. Ranganathan
  *
  */
@@ -200,6 +200,9 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
     private SIPClientTransaction pendingSubscribeTransaction;
 
     private SIPServerTransaction inviteTransaction;
+   
+    // Experimental.
+    private static boolean interlockProvisionalResponses = true;
     
     private Semaphore provisionalResponseSem = new Semaphore(1);
 
@@ -1302,13 +1305,19 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                             .equalsIgnoreCase("application")
                     && ((SIPResponse)response).getContentTypeHeader().getContentSubType()
                             .equalsIgnoreCase("sdp")) {
-                try {
-                    boolean acquired = this.provisionalResponseSem.tryAcquire(1,TimeUnit.SECONDS);
-                    if (!acquired ) {
-                        throw new SipException("cannot send response -- unacked povisional");
+                if (!interlockProvisionalResponses ) {
+                    throw new SipException("cannot send response -- unacked povisional");
+                } else {            
+                    try {
+                       boolean acquired = this.provisionalResponseSem.tryAcquire(1,TimeUnit.SECONDS);
+                       if (!acquired ) {
+                           throw new SipException("cannot send response -- unacked povisional");
+                       }
+                    } catch (InterruptedException ex) {
+                        sipStack.getStackLogger().logError ("Interrupted acuqiring PRACK sem");
+                        throw new SipException("Cannot aquire PRACK sem");
                     }
-                } catch (Exception ex) {
-                    this.sipStack.getStackLogger().logError("Could not acquire PRACK sem ", ex);
+                  
                 }
             } else {
                 // Sending the final response cancels the
@@ -1559,12 +1568,12 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
             rseq.setSeqNumber(this.rseqNumber);
 
             // start the timer task which will retransmit the reliable response
-            // until the PRACK is received
+            // until the PRACK is received. Cannot send a second provisional. 
             this.lastResponse = (SIPResponse) relResponse;
-            if ( this.getDialog() != null ) {
+            if ( this.getDialog() != null  && interlockProvisionalResponses ) {
                 boolean acquired = this.provisionalResponseSem.tryAcquire(1, TimeUnit.SECONDS);
                 if (!acquired) {
-                    throw new SipException("Unacknowledged response");
+                    throw new SipException("Unacknowledged reliable response");
                 }
             }
             this.sendMessage((SIPMessage) relResponse);
@@ -1597,7 +1606,9 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
         if(provisionalResponseTask != null)
         	this.provisionalResponseTask.cancel();
         this.pendingReliableResponse = null;
-        this.provisionalResponseSem.release();
+        if ( interlockProvisionalResponses && this.dialog != null )  {
+            this.provisionalResponseSem.release();
+        }
         return true;
     }
 
@@ -1669,7 +1680,9 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
              * When a notify is being processed we take a lock on the subscribe to avoid racing
              * with the OK of the subscribe.
              */
-            pendingSubscribeTransaction.releaseSem();
+            if (! sipStack.isDeliverUnsolicitedNotify()) {
+                pendingSubscribeTransaction.releaseSem();
+            }
         } else if (this.inviteTransaction != null && this.getMethod().equals(Request.CANCEL)) {
             /*
              * When a CANCEL is being processed we take a nested lock on the associated INVITE
