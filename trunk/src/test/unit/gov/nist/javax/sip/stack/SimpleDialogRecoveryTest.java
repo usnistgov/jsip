@@ -1,8 +1,8 @@
 package test.unit.gov.nist.javax.sip.stack;
 
 import gov.nist.javax.sip.SipProviderImpl;
-import gov.nist.javax.sip.SipStackImpl;
 import gov.nist.javax.sip.stack.SIPDialog;
+import gov.nist.javax.sip.stack.SIPTransactionStack;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -365,7 +365,7 @@ public class SimpleDialogRecoveryTest extends TestCase {
                 System.out.println("Dialog State = " + dialog.getState());
                 SipProvider provider = (SipProvider) requestEvent.getSource();
                 //stopping the node and starting the recovery
-                Collection<Dialog> dialogs=((SipStackImpl)sipStack).getDialogs(DialogState.CONFIRMED);
+                Collection<Dialog> dialogs=((SIPTransactionStack)sipStack).getDialogs(DialogState.CONFIRMED);
                 stop();
                 shootmeRecoveryNode.init(dialogs);
 
@@ -548,7 +548,7 @@ public class SimpleDialogRecoveryTest extends TestCase {
                     Collection<Dialog> serializedDialogs = simulateDialogSerialization(dialogs);
                     for (Dialog dialog : serializedDialogs) {
                         ((SIPDialog)dialog).setSipProvider((SipProviderImpl)sipProvider);
-                        ((SipStackImpl)sipStack).putDialog((SIPDialog)dialog);
+                        ((SIPTransactionStack)sipStack).putDialog((SIPDialog)dialog);
                     }
                     this.dialog = (SIPDialog)serializedDialogs.iterator().next();
                 }

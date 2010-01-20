@@ -1,6 +1,6 @@
 package examples.nistgoodies.threadaudit;
 
-import gov.nist.javax.sip.SipStackImpl;
+import gov.nist.javax.sip.stack.SIPTransactionStack;
 
 import javax.sip.*;
 import java.util.Properties;
@@ -113,7 +113,7 @@ public class ThreadAudit {
             /// Action to be performed by this timer task
             public final void run() {
                 // That's all we need to do in order to check if the internal threads of the stack are healthy
-                String auditReport = ((SipStackImpl) sipStack).getThreadAuditor().auditThreads();
+                String auditReport = ((SIPTransactionStack) sipStack).getThreadAuditor().auditThreads();
                 if (auditReport != null) {
                     System.out.println("--> RED ALERT!!! " + auditReport);
                 } else {

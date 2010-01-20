@@ -94,7 +94,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.141 $ $Date: 2009-12-17 23:38:27 $
+ * @version 1.2 $Revision: 1.142 $ $Date: 2010-01-20 23:37:37 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener, SIPDialogEventListener {
 
@@ -359,6 +359,12 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 	// is not tracked. If you want to track the original transaction you need to specify
 	// the max fork time with a stack init property.
 	protected int maxForkTime = 0;
+	
+	// Whether or not to deliver unsolicited NOTIFY
+
+    private boolean deliverUnsolicitedNotify = false;
+
+    private boolean deliverTerminatedEventForAck = false;
 
    
     // / Timer to regularly ping the thread auditor (on behalf of the timer
@@ -827,9 +833,11 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
                       && eventHdr.match(hisEvent)
                       && notifyMessage.getCallId().getCallId().equalsIgnoreCase(
                                 ct.callId.getCallId())) {
-                    if (ct.acquireSem())
-                        retval = ct;
-                    return retval;
+                    if (!this.isDeliverUnsolicitedNotify() ) {
+                        ct.acquireSem();
+                    }      
+                    retval = ct;
+                    return ct;
                 }
             }
 
@@ -2486,6 +2494,34 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     public SIPClientTransaction getForkedTransaction(String transactionId) {
         return this.forkedClientTransactionTable.get(transactionId);
+    }
+
+    /**
+     * @param deliverUnsolicitedNotify the deliverUnsolicitedNotify to set
+     */
+    public void setDeliverUnsolicitedNotify(boolean deliverUnsolicitedNotify) {
+        this.deliverUnsolicitedNotify = deliverUnsolicitedNotify;
+    }
+
+    /**
+     * @return the deliverUnsolicitedNotify
+     */
+    public boolean isDeliverUnsolicitedNotify() {
+        return deliverUnsolicitedNotify;
+    }
+
+    /**
+     * @param deliverTerminatedEventForAck the deliverTerminatedEventForAck to set
+     */
+    public void setDeliverTerminatedEventForAck(boolean deliverTerminatedEventForAck) {
+        this.deliverTerminatedEventForAck = deliverTerminatedEventForAck;
+    }
+
+    /**
+     * @return the deliverTerminatedEventForAck
+     */
+    public boolean isDeliverTerminatedEventForAck() {
+        return deliverTerminatedEventForAck;
     }
 	
 	

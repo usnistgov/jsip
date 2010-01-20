@@ -70,7 +70,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.71 $ $Date: 2009-11-29 04:31:29 $
+ * @version 1.2 $Revision: 1.72 $ $Date: 2010-01-20 23:37:36 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -1137,7 +1137,12 @@ public abstract class SIPTransaction extends MessageChannel implements
                 sipStack.getStackLogger().logDebug("acquireSem [[[[" + this);
                 sipStack.getStackLogger().logStackTrace();
             }
-            retval = this.semaphore.tryAcquire(1000, TimeUnit.MILLISECONDS);
+            if ( this.sipStack.maxListenerResponseTime == -1 ) {
+                this.semaphore.acquire();
+                retval = true;
+            } else {
+                retval = this.semaphore.tryAcquire(this.sipStack.maxListenerResponseTime, TimeUnit.SECONDS);
+            }
             if ( sipStack.isLoggingEnabled())
                 sipStack.getStackLogger().logDebug(
                     "acquireSem() returning : " + retval);
