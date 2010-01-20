@@ -51,7 +51,7 @@ import javax.sip.header.HeaderFactory;
  *
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.22 $ $Date: 2009-11-15 19:50:45 $
+ * @version 1.2 $Revision: 1.23 $ $Date: 2010-01-20 10:12:03 $
  *
  *
  *
@@ -166,8 +166,8 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI , Sip
             if (a.getUser()==null ^ b.getUser()==null) return false;
             if (a.getUserPassword()==null ^ b.getUserPassword()==null) return false;
 
-            if (a.getUser()!=null && !RFC2396UrlDecoder.decode(a.getUser()).equals(RFC2396UrlDecoder.decode(b.getUser()))) return false;
-            if (a.getUserPassword()!=null && !RFC2396UrlDecoder.decode(a.getUserPassword()).equals(RFC2396UrlDecoder.decode(b.getUserPassword()))) return false;
+            if (a.getUser()!=null && !UriDecoder.decode(a.getUser()).equals(UriDecoder.decode(b.getUser()))) return false;
+            if (a.getUserPassword()!=null && !UriDecoder.decode(a.getUserPassword()).equals(UriDecoder.decode(b.getUserPassword()))) return false;
             if (a.getHost() == null ^ b.getHost() == null) return false;
             if (a.getHost() != null && !a.getHost().equalsIgnoreCase(b.getHost())) return false;
             if (a.getPort() != b.getPort()) return false;
@@ -180,7 +180,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI , Sip
                 String p2 = b.getParameter(pname);
 
                 // those present in both must match (case-insensitive)
-                if (p1!=null && p2!=null && !RFC2396UrlDecoder.decode(p1).equalsIgnoreCase(RFC2396UrlDecoder.decode(p2))) return false;
+                if (p1!=null && p2!=null && !UriDecoder.decode(p1).equalsIgnoreCase(UriDecoder.decode(p2))) return false;
             }
 
             // transport, user, ttl or method must match when present in either
@@ -213,8 +213,8 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI , Sip
                     // The following check should not be needed but we add it for findbugs.
                     if(h1 == null && h2 == null) continue; 
                     try {
-                        Header header1 = headerFactory.createHeader(hname, RFC2396UrlDecoder.decode(h1));
-                        Header header2 = headerFactory.createHeader(hname, RFC2396UrlDecoder.decode(h2));
+                        Header header1 = headerFactory.createHeader(hname, UriDecoder.decode(h1));
+                        Header header2 = headerFactory.createHeader(hname, UriDecoder.decode(h2));
                         // those present in both must match according to the equals method of the corresponding header
                         if (!header1.equals(header2)) return false;
                     } catch (ParseException e) {
