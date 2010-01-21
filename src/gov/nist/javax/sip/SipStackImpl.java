@@ -396,6 +396,11 @@ import javax.sip.message.Request;
  * client transction in the ResponseEventExt and deliver that to the application.
  * The event handler can get the original transaction from this event. </li>
  * 
+ * <li><b>gov.nist.javax.sip.MIN_KEEPALIVE_TIME_SECONDS = integer</b> Minimum time between keep alive
+ * pings (CRLF CRLF) from clients. If pings arrive with less than this frequency they will be replied
+ * with CRLF CRLF if greater they will be rejected. The default is -1 (i.e. do not respond to CRLF CRLF).
+ * </li>
+ * 
  *  * <li><b>gov.nist.javax.sip.TLS_CLIENT_PROTOCOLS = String </b>
  *  Comma-separated list of protocols to use when creating outgoing TLS connections.
  *  The default is "SSLv3, SSLv2Hello, TLSv1".
@@ -424,7 +429,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.116 $ $Date: 2010-01-20 23:37:39 $
+ * @version 1.2 $Revision: 1.117 $ $Date: 2010-01-21 21:26:39 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -1041,6 +1046,9 @@ public class SipStackImpl extends SIPTransactionStack implements
 		
 		super.maxForkTime = Integer.parseInt(
 		        configurationProperties.getProperty("gov.nist.javax.sip.MAX_FORK_TIME_SECONDS","0"));
+		
+		
+		super.minKeepAliveInterval = Integer.parseInt(configurationProperties.getProperty("gov.nist.javax.sip.MIN_KEEPALIVE_TIME_SECONDS","-1"));
 		
 	}
 

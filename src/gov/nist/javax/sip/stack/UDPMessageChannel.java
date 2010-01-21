@@ -90,7 +90,7 @@ import javax.sip.address.Hop;
  *
  *
  *
- * @version 1.2 $Revision: 1.66 $ $Date: 2010-01-14 05:15:49 $
+ * @version 1.2 $Revision: 1.67 $ $Date: 2010-01-21 21:26:38 $
  */
 public class UDPMessageChannel extends MessageChannel implements
         ParseExceptionListener, Runnable, RawMessageChannel {
@@ -138,7 +138,7 @@ public class UDPMessageChannel extends MessageChannel implements
      * and port. This is for NAT compensation. This stays in the table for 1 seconds and prevents 
      * infinite loop. If a second pingback happens in that period of time, it will be dropped.
      */
-    private Hashtable<String,PingBackTimerTask> pingBackRecord = new Hashtable<String,PingBackTimerTask>();
+    private static Hashtable<String,PingBackTimerTask> pingBackRecord = new Hashtable<String,PingBackTimerTask>();
     
     class PingBackTimerTask extends TimerTask {
         String ipAddress;
@@ -147,7 +147,6 @@ public class UDPMessageChannel extends MessageChannel implements
         public PingBackTimerTask(String ipAddress, int port) {
             this.ipAddress = ipAddress;
             this.port = port;
-            pingBackRecord.put(ipAddress + ":" + port, this);
         }
         @Override
         public void run() {
@@ -384,12 +383,17 @@ public class UDPMessageChannel extends MessageChannel implements
             if (sipStack.isLoggingEnabled()) {
                 this.sipStack.getStackLogger().logDebug("Rejecting message !  + Null message parsed.");
             }
-            if (pingBackRecord.get(packet.getAddress().getHostAddress() + ":" + packet.getPort()) == null ) {
+            String key = packet.getAddress().getHostAddress() + ":" + packet.getPort();
+            if (pingBackRecord.get(key) == null && sipStack.getMinKeepAliveInterval() > 0) {
                 byte[] retval = "\r\n\r\n".getBytes();
                 DatagramPacket keepalive = new DatagramPacket(retval,0,retval.length,packet.getAddress(),packet.getPort());
-                ((UDPMessageProcessor)this.messageProcessor).sock.send(keepalive);
-                this.sipStack.getTimer().schedule(new PingBackTimerTask(packet.getAddress().getHostAddress(), 
-                            packet.getPort()), 1000);                
+                PingBackTimerTask task = new PingBackTimerTask(packet.getAddress().getHostAddress(), 
+                        packet.getPort());
+                this.pingBackRecord.put(key, task);
+                this.sipStack.getTimer().schedule(task, sipStack.getMinKeepAliveInterval() * 1000);   
+                ((UDPMessageProcessor)this.messageProcessor).sock.send(keepalive);              
+            } else {
+                sipStack.getStackLogger().logDebug("Not sending ping back");
             }
             return;
         }
