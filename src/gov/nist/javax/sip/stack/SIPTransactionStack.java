@@ -54,6 +54,7 @@ import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -94,7 +95,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.142 $ $Date: 2010-01-20 23:37:37 $
+ * @version 1.2 $Revision: 1.143 $ $Date: 2010-01-21 21:26:38 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener, SIPDialogEventListener {
 
@@ -365,6 +366,11 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     private boolean deliverUnsolicitedNotify = false;
 
     private boolean deliverTerminatedEventForAck = false;
+
+    // Minimum time between NAT kee alive pings from clients.
+    // Any ping that exceeds this time will result in  CRLF CRLF going
+    // from the UDP message channel. 
+    protected long minKeepAliveInterval = -1L;
 
    
     // / Timer to regularly ping the thread auditor (on behalf of the timer
@@ -2522,6 +2528,10 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
      */
     public boolean isDeliverTerminatedEventForAck() {
         return deliverTerminatedEventForAck;
+    }
+
+    public long getMinKeepAliveInterval() {
+       return this.minKeepAliveInterval;
     }
 	
 	
