@@ -230,6 +230,11 @@ public class Host extends GenericObject {
                 && (zoneStart = hostname.indexOf('%'))!= -1){
 
                 hostname = hostname.substring(0, zoneStart);
+
+                //if the above was an IPv6 literal, then we would need to
+                //restore the closing bracket
+                if( hostname.charAt(0) == '[')
+                    hostname += ']';
             }
         }
     }
@@ -291,10 +296,10 @@ public class Host extends GenericObject {
         return address.charAt(0) == '['
             && address.charAt(address.length() - 1) == ']';
     }
-    
+
     @Override
     public int hashCode() {
         return this.getHostname().hashCode();
-        
+
     }
 }
