@@ -233,7 +233,7 @@ public class Host extends GenericObject {
 
                 //if the above was an IPv6 literal, then we would need to
                 //restore the closing bracket
-                if( hostname.charAt(0) == '[')
+                if( hostname.startsWith("[") && !hostname.endsWith("]"))
                     hostname += ']';
             }
         }
