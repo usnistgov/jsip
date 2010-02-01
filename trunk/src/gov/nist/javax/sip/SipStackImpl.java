@@ -158,11 +158,11 @@ import javax.sip.message.Request;
  * Default is <it>true</it>. This is also settable on a per-provider basis. This
  * flag is set to true by default. When set
  * to <it>false</it> the following behaviors are enabled:
+ * <ul>
  * 
- * 
- * <li>Turn off Merged requests Loop Detection: The following behavior is turned off
- * : If the request has no tag in the To header field, the UAS core MUST check
- * the request against ongoing transactions. If the From tag, Call-ID, and CSeq
+ * <li>Turn off Merged requests Loop Detection:<br/>
+ *  The following behavior is turned off: If the request has no tag in the To header field, 
+ *  the UAS core MUST check the request against ongoing transactions. If the From tag, Call-ID, and CSeq
  * exactly match those associated with an ongoing transaction, but the request
  * does not match that transaction (based on the matching rules in Section
  * 17.2.3), the UAS core SHOULD generate a 482 (Loop Detected) response and pass
@@ -423,13 +423,14 @@ import javax.sip.message.Request;
  * </code> <br>
  * If the trust store property is provided the password on the trust store must
  * be the same as the key store. <br>
- * <br>
+ * <br></li>
+ * </ul>
  * <b> Note that the stack supports the extensions that are defined in
  * SipStackExt. These will be supported in the next release of JAIN-SIP. You
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.117 $ $Date: 2010-01-21 21:26:39 $
+ * @version 1.2 $Revision: 1.118 $ $Date: 2010-02-01 20:04:18 $
  * 
  * @author M. Ranganathan <br/>
  * 
