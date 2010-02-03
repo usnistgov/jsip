@@ -177,7 +177,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.122 $ $Date: 2009-12-17 23:33:52 $
+ * @version 1.2 $Revision: 1.123 $ $Date: 2010-02-03 05:53:44 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -1509,7 +1509,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
         }
         if (this.defaultDialog == null) {
             this.defaultDialog = sipDialog;
-            if ( this.getMethod().equals(Request.INVITE) && this.getSIPStack().maxForkTime != 0) {
+            if ( this.getMethod().equals(Request.INVITE) && this.getSIPStack().getMaxForkTime() != 0) {
                 this.getSIPStack().addForkedClientTransaction(this);
             }
         }
@@ -1565,6 +1565,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
         this.callingStateTimeoutCount = count;
     }
 
+    
     
    
 }

@@ -83,7 +83,7 @@ import javax.sip.message.Response;
  * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
  * and event model with the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.65 $ $Date: 2010-01-20 23:37:39 $
+ * @version 1.2 $Revision: 1.66 $ $Date: 2010-02-03 05:53:43 $
  * 
  * @author M. Ranganathan
  */
@@ -1218,10 +1218,9 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             ResponseEventExt sipEvent = new ResponseEventExt(sipProvider, transaction, dialog,
                     (Response) response);
 
-            if (response.getCSeqHeader().getMethod().equals(Request.INVITE)) {
-                SIPClientTransaction forked = this.sipStack.getForkedTransaction(response
-                        .getTransactionId());
-                sipEvent.setOriginalTransaction(forked);
+            if (sipStack.getMaxForkTime() != 0 && response.getCSeqHeader().getMethod().equals(Request.INVITE) ) {
+                SIPClientTransaction forked = this.sipStack.getForkedTransaction(response.getForkId());
+                sipEvent.setOriginalTransaction(forked); 
             }
 
             sipProvider.handleEvent(sipEvent, transaction);
@@ -1233,9 +1232,9 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
         // Here if there is an assigned dialog
         responseEvent = new ResponseEventExt(sipProvider, (ClientTransactionExt) transaction,
                 dialog, (Response) response);
-        if (response.getCSeqHeader().getMethod().equals(Request.INVITE)) {
+        if (sipStack.getMaxForkTime() != 0 && response.getCSeqHeader().getMethod().equals(Request.INVITE)) {
             SIPClientTransaction forked = this.sipStack.getForkedTransaction(response
-                    .getTransactionId());
+                    .getForkId());
             responseEvent.setOriginalTransaction(forked);
         }
 
@@ -1426,9 +1425,9 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
         ResponseEventExt responseEvent = new ResponseEventExt(sipProvider,
                 (ClientTransactionExt) transaction, sipDialog, (Response) sipResponse);
 
-        if (sipResponse.getCSeq().getMethod().equals(Request.INVITE)) {
+        if (sipStack.getMaxForkTime() != 0 && sipResponse.getCSeq().getMethod().equals(Request.INVITE)) {
             ClientTransactionExt originalTx = this.sipStack.getForkedTransaction(sipResponse
-                    .getTransactionId());
+                    .getForkId());
             responseEvent.setOriginalTransaction(originalTx);
         }
 
