@@ -95,7 +95,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.143 $ $Date: 2010-01-21 21:26:38 $
+ * @version 1.2 $Revision: 1.144 $ $Date: 2010-02-03 05:53:44 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener, SIPDialogEventListener {
 
@@ -416,7 +416,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
         @Override
         protected void runTask() {
-           forkedClientTransactionTable.remove(clientTransaction.getTransactionId()); 
+           forkedClientTransactionTable.remove(((SIPRequest)clientTransaction.getRequest()).getForkId()); 
         }
         
     }
@@ -2495,7 +2495,7 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     }
     
     public void addForkedClientTransaction(SIPClientTransaction clientTransaction) {
-        this.forkedClientTransactionTable.put(clientTransaction.getTransactionId(), clientTransaction );
+        this.forkedClientTransactionTable.put(((SIPRequest)clientTransaction.getRequest()).getForkId(), clientTransaction );
     }
 
     public SIPClientTransaction getForkedTransaction(String transactionId) {
@@ -2532,6 +2532,20 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 
     public long getMinKeepAliveInterval() {
        return this.minKeepAliveInterval;
+    }
+
+    /**
+     * @param maxForkTime the maxForkTime to set
+     */
+    public void setMaxForkTime(int maxForkTime) {
+        this.maxForkTime = maxForkTime;
+    }
+
+    /**
+     * @return the maxForkTime
+     */
+    public int getMaxForkTime() {
+        return maxForkTime;
     }
 	
 	

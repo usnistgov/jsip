@@ -116,7 +116,7 @@ import javax.sip.message.Request;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.53 $ $Date: 2009-12-16 14:58:40 $
+ * @version 1.2 $Revision: 1.54 $ $Date: 2010-02-03 05:53:43 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -177,6 +177,8 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
      * convenient way of keeping book-keeping data for applications.
      */
     protected Object applicationData;
+
+    private String forkId;
 
     /**
      * Return true if the header belongs only in a Request.
@@ -1884,7 +1886,19 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
     public void setNullRequest() {
         this.nullRequest = true;
     }
-    
+    public String getForkId() {
+        if ( this.forkId != null ) {
+            return forkId;
+        } else {
+            String callId =  this.getCallId().getCallId();
+            String fromTag = this.getFromTag();
+            if ( fromTag == null ) {
+                throw new IllegalStateException("From tag is not yet set. Cannot compute forkId");
+            }
+            this.forkId =  (callId + ":" + fromTag).toLowerCase();
+            return this.forkId;
+        }
+    }
     
     public abstract void setSIPVersion(String sipVersion) throws ParseException;
 
