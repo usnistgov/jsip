@@ -1,11 +1,7 @@
 package gov.nist.javax.sip;
 
-import java.security.cert.Certificate;
-import java.security.cert.X509Certificate;
-
-import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.sip.ClientTransaction;
-import javax.sip.Timeout;
+import javax.sip.Dialog;
 import javax.sip.address.Hop;
 
 public interface ClientTransactionExt extends ClientTransaction, TransactionExt {
@@ -39,15 +35,29 @@ public interface ClientTransactionExt extends ClientTransaction, TransactionExt 
      * when it sent out the request. This allows you to route requests
      * to the SAME destination if required ( for example if you get
      * an authentication challenge ).
+     * 
+     * @since 2.0
      */
     public Hop getNextHop();
     
     /**
      * Return true if this Ctx is a secure transport.
      * 
+     * @since 2.0
+     * 
      */
     public boolean isSecure();
     
+    /**
+     * Get the default dialog that was originally assigned to the client transaction.
+     * This will differ from the dialog that is assigned to the transaction when a
+     * forked response comes in. This method is useful for UACs that have to deal with
+     * forked responses.
+     * 
+     * @since 2.0
+     * 
+     */
+    public Dialog getDefaultDialog();
   
    
    
