@@ -9,7 +9,8 @@
     <property file="${root}/ant-build-config.properties" />
     <property name="classes" value="${root}/classes" />
     <property name="srcroot" value="${root}/src" />
-    <property name="log4j_jar" value="${root}/lib/${log4j}" />
+    <property name="log4j_jar" value="${root}${log4j}" />
+    <echo> ${log4j_jar} </echo>
     <path id="project.class.path">
         <pathelement location="${classes}" />
         <pathelement location="${log4j_jar}" />
@@ -26,14 +27,14 @@
         </javac>
     </target>
 
-    <target name="ShootmeAuth" depends="make" description="run the Shootme with Authorization">
+    <target name="shootme" depends="make" description="run the Shootme with Authorization">
         <delete file="ShootmeAuthdebug.txt" failonerror="false" />
         <delete file="ShootmeAuthlog.txt" failonerror="false" />
         <java classname="examples.authorization.ShootmeAuth" fork="true" classpathref="project.class.path">
         </java>
     </target>
 
-    <target name="ShootistAuth" depends="make" description="run the example Shootist with Authorization">
+    <target name="shootist" depends="make" description="run the example Shootist with Authorization">
         <delete file="ShootistAuthdebug.txt" failonerror="false" />
         <delete file="ShootistAuthlog.txt" failonerror="false" />
         <java classname="examples.authorization.ShootistAuth" fork="true" classpathref="project.class.path">
