@@ -38,6 +38,7 @@ import gov.nist.javax.sip.header.ViaList;
 import gov.nist.javax.sip.message.SIPMessage;
 import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.message.SIPResponse;
+import gov.nist.javax.sip.stack.SIPDialog.DialogTimerTask;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -166,7 +167,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.119 $ $Date: 2010-01-20 23:37:36 $
+ * @version 1.2 $Revision: 1.120 $ $Date: 2010-02-05 19:20:13 $
  * @author M. Ranganathan
  *
  */
@@ -1325,7 +1326,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                 if (this.pendingReliableResponse != null && sipResponse.isFinalResponse()) {
                     this.provisionalResponseTask.cancel();
                     this.provisionalResponseTask = null;
-                }
+                } 
             }
 
             // Dialog checks. These make sure that the response
@@ -1576,12 +1577,12 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                     throw new SipException("Unacknowledged reliable response");
                 }
             }
-            this.sendMessage((SIPMessage) relResponse);
+            //moved the task scheduling before the sending of the message to overcome 
+            // Issue 265 : https://jain-sip.dev.java.net/issues/show_bug.cgi?id=265
             this.provisionalResponseTask = new ProvisionalResponseTask();
             this.sipStack.getTimer().schedule(provisionalResponseTask, 0,
                     SIPTransactionStack.BASE_TIMER_INTERVAL);
-            
-
+            this.sendMessage((SIPMessage) relResponse);
         } catch (Exception ex) {
             InternalErrorHandler.handleException(ex);
         }
@@ -1603,8 +1604,11 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
         if (this.pendingReliableResponse == null)
             return false;
-        if(provisionalResponseTask != null)
-        	this.provisionalResponseTask.cancel();
+       	if(provisionalResponseTask != null) {
+           	this.provisionalResponseTask.cancel();
+           	this.provisionalResponseTask = null;
+       	} 
+        
         this.pendingReliableResponse = null;
         if ( interlockProvisionalResponses && this.dialog != null )  {
             this.provisionalResponseSem.release();
@@ -1720,5 +1724,5 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
         this.startTransactionTimer();
     }
-
+    
 }
