@@ -1,13 +1,44 @@
 package examples.authorization;
 
-import javax.sip.*;
-import javax.sip.address.*;
-import javax.sip.header.*;
-import javax.sip.message.*;
-import java.util.*;
+import gov.nist.javax.sip.SipStackExt;
+import gov.nist.javax.sip.clientauthutils.AuthenticationHelper;
+
 import java.text.ParseException;
-import gov.nist.javax.sip.header.ProxyAuthenticate;
-import gov.nist.javax.sip.header.SIPHeaderNames;
+import java.util.ArrayList;
+import java.util.Properties;
+
+import javax.sip.ClientTransaction;
+import javax.sip.Dialog;
+import javax.sip.DialogState;
+import javax.sip.DialogTerminatedEvent;
+import javax.sip.IOExceptionEvent;
+import javax.sip.InvalidArgumentException;
+import javax.sip.ListeningPoint;
+import javax.sip.PeerUnavailableException;
+import javax.sip.RequestEvent;
+import javax.sip.ResponseEvent;
+import javax.sip.ServerTransaction;
+import javax.sip.SipFactory;
+import javax.sip.SipListener;
+import javax.sip.SipProvider;
+import javax.sip.SipStack;
+import javax.sip.TransactionTerminatedEvent;
+import javax.sip.address.Address;
+import javax.sip.address.AddressFactory;
+import javax.sip.address.SipURI;
+import javax.sip.header.CSeqHeader;
+import javax.sip.header.CallIdHeader;
+import javax.sip.header.ContactHeader;
+import javax.sip.header.ContentTypeHeader;
+import javax.sip.header.FromHeader;
+import javax.sip.header.Header;
+import javax.sip.header.HeaderFactory;
+import javax.sip.header.MaxForwardsHeader;
+import javax.sip.header.ToHeader;
+import javax.sip.header.ViaHeader;
+import javax.sip.message.MessageFactory;
+import javax.sip.message.Request;
+import javax.sip.message.Response;
 
 /**
  * This class is a UAC template. Shootist is the guy that shoots and shootme is
@@ -31,9 +62,7 @@ public class ShootistAuth implements SipListener {
     long invco = 1;
     String peerHostPort = "127.0.0.1:5070";
     String transport = "udp";
-    String USER_AUTH = "auth";
-    String PASS_AUTH = "pass";
-    String realm = "nist.gov";
+   
 
     public void processRequest(RequestEvent requestReceivedEvent) {
         Request request = requestReceivedEvent.getRequest();
@@ -108,14 +137,13 @@ public class ShootistAuth implements SipListener {
                 }
             } else if (response.getStatusCode() == Response.PROXY_AUTHENTICATION_REQUIRED
                     || response.getStatusCode() == Response.UNAUTHORIZED) {
-                URI uriReq = tid.getRequest().getRequestURI();
-                Request authrequest = this.processResponseAuthorization(
-                        response, uriReq);
-
-                inviteTid = sipProvider.getNewClientTransaction(authrequest);
+                AuthenticationHelper authenticationHelper = 
+                    ((SipStackExt) sipStack).getAuthenticationHelper(new AccountManagerImpl(), headerFactory);
+                
+                inviteTid = authenticationHelper.handleChallenge(response, tid, sipProvider, 5);
+             
                 inviteTid.sendRequest();
-                System.out
-                        .println("INVITE AUTHORIZATION sent:\n" + authrequest);
+              
                 invco++;
             }
         } catch (Exception ex) {
@@ -142,49 +170,7 @@ public class ShootistAuth implements SipListener {
         }
     }
 
-    public Request processResponseAuthorization(Response response, URI uriReq) {
-        Request requestauth = null;
-        try {
-            System.out.println("processResponseAuthorization()");
-            String schema = ((ProxyAuthenticate) (response
-                    .getHeader(SIPHeaderNames.PROXY_AUTHENTICATE))).getScheme();
-            String nonce = ((ProxyAuthenticate) (response
-                    .getHeader(SIPHeaderNames.PROXY_AUTHENTICATE))).getNonce();
-            ProxyAuthorizationHeader proxyAuthheader = headerFactory
-                    .createProxyAuthorizationHeader(schema);
-            proxyAuthheader.setRealm(realm);
-            proxyAuthheader.setNonce(nonce);
-            proxyAuthheader.setAlgorithm("MD5");
-            proxyAuthheader.setUsername(USER_AUTH);
-            proxyAuthheader.setURI(uriReq);
-            DigestClientAuthenticationMethod digest = new DigestClientAuthenticationMethod();
-
-            String callId = ((CallIdHeader) response
-                    .getHeader(CallIdHeader.NAME)).getCallId();
-            requestauth = this.createInvite(callId);
-
-            digest.initialize(realm, USER_AUTH, uriReq.toString(), nonce,
-                    PASS_AUTH, ((CSeqHeader) response
-                            .getHeader(CSeqHeader.NAME)).getMethod(), null,
-                    "MD5");
-            System.out.println("Proxy Response antes de modificarlo : "
-                    + proxyAuthheader.getResponse());
-            String respuestaM = digest.generateResponse();
-            proxyAuthheader.setResponse(respuestaM);
-
-            requestauth.addHeader(proxyAuthheader);
-        } catch (ParseException pa) {
-            System.out
-                    .println("processResponseAuthorization() ParseException:");
-            System.out.println(pa.getMessage());
-            pa.printStackTrace();
-        } catch (Exception ex) {
-            System.out.println("processResponseAuthorization() Exception:");
-            System.out.println(ex.getMessage());
-            ex.printStackTrace();
-        }
-        return requestauth;
-    }
+    
 
     public Request createInvite(String callId) throws ParseException,
             InvalidArgumentException {
