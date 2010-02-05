@@ -1,5 +1,7 @@
 package examples.authorization;
 
+import gov.nist.javax.sip.clientauthutils.DigestServerAuthenticationHelper;
+
 import javax.sip.*;
 import javax.sip.address.*;
 import javax.sip.header.*;
@@ -7,9 +9,9 @@ import javax.sip.message.*;
 import java.util.*;
 
 /**
- * This class is a UAC template. Shootist is the guy that shoots and shootme is
- * the guy that gets shot and asks for authorization.
- *
+ * This class is a UAC template. Shootist is the guy that shoots and shootme is the guy that gets
+ * shot and asks for authorization.
+ * 
  * @author M. Ranganathan
  * @author Kathleen McCallum
  */
@@ -26,7 +28,7 @@ public class ShootmeAuth implements SipListener {
     private Response okResponse;
     private Request inviteRequest;
     private Dialog dialog;
-        DigestServerAuthenticationMethod dsam;
+    DigestServerAuthenticationHelper dsam;
 
     class MyTimerTask extends TimerTask {
         ShootmeAuth shootme;
@@ -41,8 +43,7 @@ public class ShootmeAuth implements SipListener {
         }
     }
 
-    protected static final String usageString = "java "
-            + "examples.shootist.Shootist \n"
+    protected static final String usageString = "java " + "examples.shootist.Shootist \n"
             + ">>>> is your class path set to the root?";
 
     private static void usage() {
@@ -53,12 +54,10 @@ public class ShootmeAuth implements SipListener {
 
     public void processRequest(RequestEvent requestEvent) {
         Request request = requestEvent.getRequest();
-        ServerTransaction serverTransactionId = requestEvent
-                .getServerTransaction();
+        ServerTransaction serverTransactionId = requestEvent.getServerTransaction();
 
-        System.out.println("\n\nRequest " + request.getMethod()
-                + " received at " + sipStack.getStackName()
-                + " with server transaction id " + serverTransactionId);
+        System.out.println("\n\nRequest " + request.getMethod() + " received at "
+                + sipStack.getStackName() + " with server transaction id " + serverTransactionId);
 
         if (request.getMethod().equals(Request.INVITE)) {
             processInvite(requestEvent, serverTransactionId);
@@ -78,76 +77,67 @@ public class ShootmeAuth implements SipListener {
     /**
      * Process the ACK request. Send the bye and complete the call flow.
      */
-    public void processAck(RequestEvent requestEvent,
-            ServerTransaction serverTransaction) {
+    public void processAck(RequestEvent requestEvent, ServerTransaction serverTransaction) {
         System.out.println("shootme: got an ACK! ");
         System.out.println("Dialog State = " + dialog.getState());
     }
 
-        /**
+    /**
      * Process the invite request.
      */
-    public void processInvite(RequestEvent requestEvent,
-            ServerTransaction serverTransaction) {
-            SipProvider sipProvider = (SipProvider) requestEvent.getSource();
-            Request request = requestEvent.getRequest();
-            try {
-                                    // Verify AUTHORIZATION !!!!!!!!!!!!!!!!
-                dsam = new DigestServerAuthenticationMethod();
-                dsam.initialize(); // it should read values from file, now all static
-                if ( !checkProxyAuthorization(request) ) {
-                    Response responseauth = messageFactory.createResponse(Response.PROXY_AUTHENTICATION_REQUIRED,request);
+    public void processInvite(RequestEvent requestEvent, ServerTransaction serverTransaction) {
+        SipProvider sipProvider = (SipProvider) requestEvent.getSource();
+        Request request = requestEvent.getRequest();
 
-                    ProxyAuthenticateHeader proxyAuthenticate =
-                            headerFactory.createProxyAuthenticateHeader(dsam.getScheme());
-                    proxyAuthenticate.setParameter("realm",dsam.getRealm(null));
-                    proxyAuthenticate.setParameter("nonce",dsam.generateNonce());
-                    //proxyAuthenticateImpl.setParameter("domain",authenticationMethod.getDomain());
-                    proxyAuthenticate.setParameter("opaque","");
-                    proxyAuthenticate.setParameter("stale","FALSE");
-                    proxyAuthenticate.setParameter("algorithm",dsam.getAlgorithm());
-                    responseauth.setHeader(proxyAuthenticate);
+        try {
+            ServerTransaction st = requestEvent.getServerTransaction();
 
-                    if (serverTransaction!=null)
-                        serverTransaction.sendResponse(responseauth);
-                    else
-                        sipProvider.sendResponse(responseauth);
+            if (st == null) {
+                st = sipProvider.getNewServerTransaction(request);
 
-                    System.out.println("RequestValidation: 407 PROXY_AUTHENTICATION_REQUIRED replied:\n"+responseauth.toString());
-                }
-                System.out.println("shootme: got an Invite with Authorization, sending Trying");
-                // System.out.println("shootme: " + request);
-                Response response = messageFactory.createResponse(Response.TRYING,
-                                request);
-                ServerTransaction st = requestEvent.getServerTransaction();
-
-                if (st == null) {
-                        st = sipProvider.getNewServerTransaction(request);
-                }
-                dialog = st.getDialog();
-
-                st.sendResponse(response);
-
-                this.okResponse = messageFactory.createResponse(Response.OK,
-                                request);
-                Address address = addressFactory.createAddress("Shootme <sip:"
-                                + myAddress + ":" + myPort + ">");
-                ContactHeader contactHeader = headerFactory
-                                .createContactHeader(address);
-                response.addHeader(contactHeader);
-                ToHeader toHeader = (ToHeader) okResponse.getHeader(ToHeader.NAME);
-                toHeader.setTag("4321"); // Application is supposed to set.
-                okResponse.addHeader(contactHeader);
-                this.inviteTid = st;
-                // Defer sending the OK to simulate the phone ringing.
-                // Answered in 1 second ( this guy is fast at taking calls)
-                this.inviteRequest = request;
-
-                new Timer().schedule(new MyTimerTask(this), 1000);
-            } catch (Exception ex) {
-                    ex.printStackTrace();
-                    System.exit(0);
             }
+            System.out.println("shootme: got an Invite with Authorization, sending Trying");
+            // System.out.println("shootme: " + request);
+            Response response = messageFactory.createResponse(Response.TRYING, request);
+            st.sendResponse(response);
+       
+            // Verify AUTHORIZATION !!!!!!!!!!!!!!!!
+            dsam = new DigestServerAuthenticationHelper();
+
+            if (!dsam.doAuthenticatePlainTextPassword(request, "pass")) {
+                Response challengeResponse = messageFactory.createResponse(
+                        Response.PROXY_AUTHENTICATION_REQUIRED, request);
+                dsam.generateChallenge(headerFactory, challengeResponse, "nist.gov");
+                st.sendResponse(challengeResponse);
+                return;
+
+            }
+
+            System.out.println("shootme: got an Invite with Authorization, sending Trying");
+            // System.out.println("shootme: " + request);
+
+            dialog = st.getDialog();
+
+            st.sendResponse(response);
+
+            this.okResponse = messageFactory.createResponse(Response.OK, request);
+            Address address = addressFactory.createAddress("Shootme <sip:" + myAddress + ":"
+                    + myPort + ">");
+            ContactHeader contactHeader = headerFactory.createContactHeader(address);
+            response.addHeader(contactHeader);
+            ToHeader toHeader = (ToHeader) okResponse.getHeader(ToHeader.NAME);
+            toHeader.setTag("4321"); // Application is supposed to set.
+            okResponse.addHeader(contactHeader);
+            this.inviteTid = st;
+            // Defer sending the OK to simulate the phone ringing.
+            // Answered in 1 second ( this guy is fast at taking calls)
+            this.inviteRequest = request;
+
+            new Timer().schedule(new MyTimerTask(this), 1000);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.exit(0);
+        }
     }
 
     private void sendInviteOK() {
@@ -169,16 +159,14 @@ public class ShootmeAuth implements SipListener {
     /**
      * Process the bye request.
      */
-    public void processBye(RequestEvent requestEvent,
-            ServerTransaction serverTransactionId) {
+    public void processBye(RequestEvent requestEvent, ServerTransaction serverTransactionId) {
         SipProvider sipProvider = (SipProvider) requestEvent.getSource();
         Request request = requestEvent.getRequest();
         try {
             System.out.println("shootme:  got a bye sending OK.");
             Response response = messageFactory.createResponse(200, request);
             serverTransactionId.sendResponse(response);
-            System.out.println("Dialog State is "
-                    + serverTransactionId.getDialog().getState());
+            System.out.println("Dialog State is " + serverTransactionId.getDialog().getState());
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -187,8 +175,7 @@ public class ShootmeAuth implements SipListener {
         }
     }
 
-    public void processCancel(RequestEvent requestEvent,
-            ServerTransaction serverTransactionId) {
+    public void processCancel(RequestEvent requestEvent, ServerTransaction serverTransactionId) {
         SipProvider sipProvider = (SipProvider) requestEvent.getSource();
         Request request = requestEvent.getRequest();
         try {
@@ -200,8 +187,8 @@ public class ShootmeAuth implements SipListener {
             Response response = messageFactory.createResponse(200, request);
             serverTransactionId.sendResponse(response);
             if (dialog.getState() != DialogState.CONFIRMED) {
-                response = messageFactory.createResponse(
-                        Response.REQUEST_TERMINATED, inviteRequest);
+                response = messageFactory.createResponse(Response.REQUEST_TERMINATED,
+                        inviteRequest);
                 inviteTid.sendResponse(response);
             }
 
@@ -221,38 +208,11 @@ public class ShootmeAuth implements SipListener {
         }
         System.out.println("state = " + transaction.getState());
         System.out.println("dialog = " + transaction.getDialog());
-        System.out.println("dialogState = "
-                + transaction.getDialog().getState());
+        System.out.println("dialogState = " + transaction.getDialog().getState());
         System.out.println("Transaction Time out");
     }
 
-        public boolean checkProxyAuthorization(Request request) {
-            // Let Acks go through unchallenged.
-            boolean retorno;
-            ProxyAuthorizationHeader proxyAuthorization=
-                    (ProxyAuthorizationHeader)request.getHeader(ProxyAuthorizationHeader.NAME);
-
-           if (proxyAuthorization==null) {
-               System.out.println("Authentication failed: ProxyAuthorization header missing!");
-               return false;
-           }else{
-               String username=proxyAuthorization.getParameter("username");
-               //String password=proxyAuthorization.getParameter("password");
-
-               try{
-                    boolean res=dsam.doAuthenticate(username,proxyAuthorization,request);
-                    if (res) System.out.println("Authentication passed for user: "+username);
-                    else System.out.println("Authentication failed for user: "+username);
-                    return res;
-               }
-               catch(Exception e) {
-                    e.printStackTrace();
-                    return false;
-               }
-           }
-        }
-
-        public void init() {
+    public void init() {
         SipFactory sipFactory = null;
         sipStack = null;
         sipFactory = SipFactory.getInstance();
@@ -262,10 +222,8 @@ public class ShootmeAuth implements SipListener {
         // You need 16 for logging traces. 32 for debug + traces.
         // Your code will limp at 32 but it is best for debugging.
         properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
-        properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
-                "shootmedebug.txt");
-        properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
-                "shootmelog.txt");
+        properties.setProperty("gov.nist.javax.sip.DEBUG_LOG", "shootmedebug.txt");
+        properties.setProperty("gov.nist.javax.sip.SERVER_LOG", "shootmelog.txt");
 
         try {
             // Create SipStack object
@@ -286,7 +244,7 @@ public class ShootmeAuth implements SipListener {
             headerFactory = sipFactory.createHeaderFactory();
             addressFactory = sipFactory.createAddressFactory();
             messageFactory = sipFactory.createMessageFactory();
-            ListeningPoint lp = sipStack.createListeningPoint("127.0.0.1",myPort, "udp");
+            ListeningPoint lp = sipStack.createListeningPoint("127.0.0.1", myPort, "udp");
 
             ShootmeAuth listener = this;
 
@@ -310,14 +268,12 @@ public class ShootmeAuth implements SipListener {
 
     }
 
-    public void processTransactionTerminated(
-            TransactionTerminatedEvent transactionTerminatedEvent) {
+    public void processTransactionTerminated(TransactionTerminatedEvent transactionTerminatedEvent) {
         System.out.println("Transaction terminated event recieved");
 
     }
 
-    public void processDialogTerminated(
-            DialogTerminatedEvent dialogTerminatedEvent) {
+    public void processDialogTerminated(DialogTerminatedEvent dialogTerminatedEvent) {
         System.out.println("Dialog terminated event recieved");
 
     }
