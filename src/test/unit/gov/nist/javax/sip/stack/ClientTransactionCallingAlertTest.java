@@ -198,7 +198,7 @@ public class ClientTransactionCallingAlertTest extends TestCase {
             // You can set a max message size for tcp transport to
             // guard against denial of service attack.
             properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
-                    "logs/shootistdebug.txt");
+                    "logs/" + this.getClass().getName() + ".shootistdebug.txt");
             properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
                     "logs/shootistlog.txt");
 
@@ -210,7 +210,7 @@ public class ClientTransactionCallingAlertTest extends TestCase {
             // You need 16 (or TRACE) for logging traces. 32 (or DEBUG) for
             // debug + traces.
             // Your code will limp at 32 but it is best for debugging.
-            properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "0");
+            properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "DEBUG");
 
             try {
                 // Create SipStack object
@@ -517,9 +517,9 @@ public class ClientTransactionCallingAlertTest extends TestCase {
             properties.setProperty("javax.sip.STACK_NAME", "shootme");
             // You need 16 for logging traces. 32 for debug + traces.
             // Your code will limp at 32 but it is best for debugging.
-            properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "0");
+            properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "DEBUG");
             properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
-                    "shootmedebug.txt");
+                    "logs/"+this.getClass().getName()+ ".shootmedebug.txt");
             properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
                     "shootmelog.txt");
 

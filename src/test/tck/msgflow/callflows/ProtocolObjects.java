@@ -26,7 +26,7 @@ public class ProtocolObjects {
 
     public final SipStack sipStack;
 
-    public int logLevel = 0;
+    public int logLevel = 32;
 
     String logFileDirectory = "logs/";
 
@@ -72,6 +72,8 @@ public class ProtocolObjects {
         properties.setProperty("gov.nist.javax.sip.THREAD_POOL_SIZE", "1");
         
         properties.setProperty("gov.nist.javax.sip.IS_BACK_TO_BACK_USER_AGENT", Boolean.toString(isBackToBackUserAgent));
+        
+        properties.setProperty("gov.nist.javax.sip.DELIVER_RETRANSMITTED_ACK_TO_LISTENER", "true");
 
 
 

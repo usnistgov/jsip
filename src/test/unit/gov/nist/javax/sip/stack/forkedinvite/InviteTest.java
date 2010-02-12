@@ -49,7 +49,7 @@ public class InviteTest extends TestCase {
 
         try {
             super.setUp();
-            shootist = new Shootist(5060, 5070);
+            shootist = new Shootist(6050, 5070);
             SipProvider shootistProvider = shootist.createSipProvider();
             shootistProvider.addSipListener(shootist);
             boolean sendRinging = true;

@@ -70,7 +70,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.72 $ $Date: 2010-01-20 23:37:36 $
+ * @version 1.2 $Revision: 1.73 $ $Date: 2010-02-12 13:50:53 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -330,7 +330,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 
         sipStack = newParentStack;
         this.semaphore = new Semaphore(1,true);
-
+        
         encapsulatedChannel = newEncapsulatedChannel;
         // Record this to check if the address has changed before sending
         // message to avoid possible race condition.

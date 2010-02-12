@@ -31,9 +31,11 @@ package gov.nist.javax.sip.stack;
 import gov.nist.core.InternalErrorHandler;
 import gov.nist.core.NameValueList;
 import gov.nist.javax.sip.DialogExt;
+import gov.nist.javax.sip.DialogTimeoutEvent;
 import gov.nist.javax.sip.ListeningPointImpl;
 import gov.nist.javax.sip.SipListenerExt;
 import gov.nist.javax.sip.SipProviderImpl;
+import gov.nist.javax.sip.SipStackImpl;
 import gov.nist.javax.sip.Utils;
 import gov.nist.javax.sip.address.AddressImpl;
 import gov.nist.javax.sip.address.SipUri;
@@ -121,7 +123,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.159 $ $Date: 2010-01-08 15:14:12 $
+ * @version 1.2 $Revision: 1.160 $ $Date: 2010-02-12 13:50:53 $
  * 
  * @author M. Ranganathan
  * 
@@ -174,8 +176,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     private transient SIPTransactionStack sipStack;
 
     private int dialogState;
-
-    protected transient boolean ackSeen;
     
     private transient SIPRequest lastAckSent;
 
@@ -387,10 +387,12 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         int nRetransmissions;
 
         SIPServerTransaction transaction;
+        long cseqNumber;
 
         public DialogTimerTask(SIPServerTransaction transaction) {
             this.transaction = transaction;
             this.nRetransmissions = 0;
+            this.cseqNumber = transaction.getLastResponse().getCSeq().getSeqNumber();
         }
 
         protected void runTask() {
@@ -409,17 +411,17 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
              * be terminated.
              */
 
-            if (nRetransmissions > 64 * SIPTransaction.T1) {
-                if (sipProvider.getSipListener() != null && sipProvider.getSipListener() instanceof SipListenerExt ) {
-                    raiseErrorEvent(SIPDialogErrorEvent.DIALOG_ACK_NOT_RECEIVED_TIMEOUT);
-                } else  {
-                    dialog.delete();
-                }
+            if (nRetransmissions > sipStack.getAckTimeoutFactor()* SIPTransaction.T1) {
+            	if (SIPDialog.this.getSipProvider().getSipListener() != null && SIPDialog.this.getSipProvider().getSipListener() instanceof SipListenerExt ) {
+            		raiseErrorEvent(SIPDialogErrorEvent.DIALOG_ACK_NOT_RECEIVED_TIMEOUT); 
+            	} else {
+            		SIPDialog.this.delete();
+            	}
                 if (transaction != null
                         && transaction.getState() != javax.sip.TransactionState.TERMINATED) {
                     transaction.raiseErrorEvent(SIPTransactionErrorEvent.TIMEOUT_ERROR);  
                 }
-            } else if ((!dialog.ackSeen) && (transaction != null)) {
+            } else if ( (transaction != null)&& (!dialog.isAckSeen()) ) {
                 // Retransmit to 200 until ack receivedialog.
                 SIPResponse response = transaction.getLastResponse();
                 if (response.getStatusCode() == 200) {
@@ -701,11 +703,12 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 		eventListeners.clear();
 		// Errors always terminate a dialog except if a timeout has occured because an ACK was not sent or received, then it is the responsibility of the app to terminate
 		// the dialog, either by sending a BYE or by calling delete() on the dialog		
-		if(dialogTimeoutError != SIPDialogErrorEvent.DIALOG_ACK_NOT_SENT_TIMEOUT &&
-		        dialogTimeoutError != SIPDialogErrorEvent.DIALOG_ACK_NOT_RECEIVED_TIMEOUT &&
+		if( dialogTimeoutError != SIPDialogErrorEvent.DIALOG_ACK_NOT_SENT_TIMEOUT  &&
+		        dialogTimeoutError != SIPDialogErrorEvent.DIALOG_ACK_NOT_RECEIVED_TIMEOUT  &&
 		        dialogTimeoutError != SIPDialogErrorEvent.DIALOG_REINVITE_TIMEOUT ) {
 			delete();
 		}
+		
 		// we stop the timer in any case
 		stopTimer();
 	}
@@ -1021,8 +1024,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             this.dialogDeleteTask.cancel();
             this.dialogDeleteTask = null;
         }
-        this.ackSeen = true;
-
+      
     }
 
     // /////////////////////////////////////////////////////////////
@@ -1065,7 +1067,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     void ackReceived(SIPRequest sipRequest) {
 
         // Suppress retransmission of the final response
-        if (this.ackSeen)
+        if (this.isAckSeen())
             return;
         SIPServerTransaction tr = this.getInviteTransaction();
         if (tr != null) {
@@ -1079,7 +1081,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             	} finally {
             		releaseTimerTaskSem();
             	}
-                this.ackSeen = true;
                 if (this.dialogDeleteTask != null) {
                     this.dialogDeleteTask.cancel();
                     this.dialogDeleteTask = null;
@@ -1253,8 +1254,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * 
      * @return flag that records if the ack has been seen.
      */
-    public boolean isAckSeen() {
-        return this.ackSeen;
+    public boolean isAckSeen() { 
+    	if (lastAckReceived == null ) return false;
+    	else return this.lastAckReceived.getCSeq().getSeqNumber() >= remoteSequenceNumber;
     }
 
     /**
@@ -2273,7 +2275,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         }
         if (sipStack.isLoggingEnabled())
             sipStack.getStackLogger().logDebug("Starting dialog timer for " + getDialogId());
-        this.ackSeen = false;
         
 		acquireTimerTaskSem();
 		try {
@@ -3272,7 +3273,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 			dialogDeleteIfNoAckSentTask = new DialogDeleteIfNoAckSentTask(seqno);
 			sipStack.getTimer().schedule(
 					dialogDeleteIfNoAckSentTask,
-					SIPTransaction.TIMER_J
+					sipStack.getAckTimeoutFactor()
 							* SIPTransactionStack.BASE_TIMER_INTERVAL);
 		}
 	}

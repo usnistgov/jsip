@@ -303,7 +303,7 @@ public class NoToTagOn1xxDialogLeakTest extends TestCase {
             // Your code will limp at 32 but it is best for debugging.
             properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
             properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
-                    "shootmedebug.txt");
+                  "logs/"+ this.getClass().getName() +  ".shootmedebug.txt");
             properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
                     "shootmelog.txt");
 
@@ -568,7 +568,7 @@ public class NoToTagOn1xxDialogLeakTest extends TestCase {
             // You can set a max message size for tcp transport to
             // guard against denial of service attack.
             properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
-                    "shootistdebug.txt");
+                    "logs/" + this.getClass().getName() + ".shootistdebug.txt");
             properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
                     "shootistlog.txt");
 

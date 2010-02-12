@@ -396,9 +396,18 @@ import javax.sip.message.Request;
  * client transction in the ResponseEventExt and deliver that to the application.
  * The event handler can get the original transaction from this event. </li>
  * 
+ * <li><b>gov.nist.javax.sip.DELIVER_RETRANSMITTED_ACK_TO_LISTENER=boolean</b> A testing property
+ * that allows application to see the ACK for retransmitted 200 OK requests. <b>Note that this is for test
+ * purposes only</b></li>
+ * 
  * <li><b>gov.nist.javax.sip.MIN_KEEPALIVE_TIME_SECONDS = integer</b> Minimum time between keep alive
  * pings (CRLF CRLF) from clients. If pings arrive with less than this frequency they will be replied
  * with CRLF CRLF if greater they will be rejected. The default is -1 (i.e. do not respond to CRLF CRLF).
+ * </li>
+ * 
+ * <li><b>gov.nist.javax.sip.DIALOG_TIMEOUT_FACTOR= integer</b> Default to 64. The number of ticks before a
+ * dialog that does not receive an ACK receives a Timeout notification. Note that this is only relevant
+ * if the registered SipListener is of type SipListenerExt
  * </li>
  * 
  *  * <li><b>gov.nist.javax.sip.TLS_CLIENT_PROTOCOLS = String </b>
@@ -430,7 +439,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.118 $ $Date: 2010-02-01 20:04:18 $
+ * @version 1.2 $Revision: 1.119 $ $Date: 2010-02-12 13:50:57 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -1051,6 +1060,10 @@ public class SipStackImpl extends SIPTransactionStack implements
 		
 		super.minKeepAliveInterval = Integer.parseInt(configurationProperties.getProperty("gov.nist.javax.sip.MIN_KEEPALIVE_TIME_SECONDS","-1"));
 		
+		super.deliverRetransmittedAckToListener = Boolean.parseBoolean(configurationProperties.getProperty
+				("gov.nist.javax.sip.DELIVER_RETRANSMITTED_ACK_TO_LISTENER","false"));
+		
+		super.dialogTimeoutFactor = Integer.parseInt(configurationProperties.getProperty("gov.nist.javax.sip.DIALOG_TIMEOUT_FACTOR","64"));
 	}
 
 	/*

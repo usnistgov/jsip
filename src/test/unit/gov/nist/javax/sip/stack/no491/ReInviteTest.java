@@ -74,6 +74,10 @@ public class ReInviteTest extends ScenarioHarness implements SipListener {
         return listener;
     }
 
+    @Override
+    public String getName() {
+    	return ReInviteTest.class.getName();
+    }
     public ReInviteTest() {
         super("reinvitetest", true);
     }
