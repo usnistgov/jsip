@@ -88,7 +88,8 @@ public class Shootist implements SipListener {
     private SipStack sipStack;
 
     private HashSet<Dialog> canceledDialog = new HashSet<Dialog>();
-
+    
+  
     private boolean byeResponseSeen;
 
     private int counter;
@@ -193,8 +194,9 @@ public class Shootist implements SipListener {
         }
     }
 
-    public synchronized void processResponse(ResponseEvent responseReceivedEvent) {
+    public synchronized void processResponse(ResponseEvent responseReceived) {
         logger.info("Got a response");
+        ResponseEventExt responseReceivedEvent = (ResponseEventExt) responseReceived;
         Response response = (Response) responseReceivedEvent.getResponse();
         ClientTransaction tid = responseReceivedEvent.getClientTransaction();
         CSeqHeader cseq = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
@@ -202,9 +204,16 @@ public class Shootist implements SipListener {
         logger.info("Response received : Status Code = "
                 + response.getStatusCode() + " " + cseq);
         logger.info("Response = " + response + " class=" + response.getClass() );
+        
 
         Dialog dialog = responseReceivedEvent.getDialog();
         TestCase.assertNotNull( dialog );
+        
+        System.out.println("original Tx " + responseReceivedEvent.getOriginalTransaction());
+        if ( cseq.getMethod().equals(Request.INVITE)) {
+        	TestCase.assertSame("Must preserve original dialog", 
+        		this.originalDialog,responseReceivedEvent.getOriginalTransaction().getDefaultDialog());
+        }
 
         if (tid != null)
             logger.info("transaction state is " + tid.getState());
@@ -221,7 +230,7 @@ public class Shootist implements SipListener {
                     TestCase.assertEquals( DialogState.CONFIRMED, dialog.getState() );
                     Request ackRequest = dialog.createAck(cseq
                             .getSeqNumber());
-
+                
                     TestCase.assertNotNull( ackRequest.getHeader( MaxForwardsHeader.NAME ) );
 
                      dialog.sendAck(ackRequest);
@@ -449,11 +458,12 @@ public class Shootist implements SipListener {
 
             TestCase.assertTrue("Initial dialog state should be null",
                     dialog.getState() == null);
-
+            
+            this.originalDialog = dialog;
             // send the request out.
             inviteTid.sendRequest();
 
-            this.originalDialog = dialog;
+           
 
         } catch (Exception ex) {
             logger.error(unexpectedException, ex);

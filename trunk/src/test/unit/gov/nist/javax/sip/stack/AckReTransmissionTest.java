@@ -398,13 +398,11 @@ public class AckReTransmissionTest extends ScenarioHarness implements SipListene
 
             logger.info("Response received with client transaction id " + tid
                     + ":\n" + response.getStatusCode());
-            if (tid == null) {
-                logger.info("Stray response -- dropping ");
-                return;
-            }
-            logger.info("transaction state is " + tid.getState());
-            logger.info("Dialog = " + tid.getDialog());
-            logger.info("Dialog State is " + tid.getDialog().getState());
+            if (tid != null) {
+				logger.info("Dialog = " + responseReceivedEvent.getDialog());
+				logger.info("Dialog State is "
+						+ responseReceivedEvent.getDialog().getState());
+			}
             SipProvider provider = (SipProvider) responseReceivedEvent.getSource();
 
             try {
@@ -412,7 +410,7 @@ public class AckReTransmissionTest extends ScenarioHarness implements SipListene
                         && ((CSeqHeader) response.getHeader(CSeqHeader.NAME))
                                 .getMethod().equals(Request.INVITE)) {
 
-                    Dialog dialog = tid.getDialog();
+                    Dialog dialog = responseReceivedEvent.getDialog();
                     CSeqHeader cseq = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
                     Request ackRequest = dialog.createAck(cseq.getSeqNumber());
                     logger.info("Ack request to send = " + ackRequest);
@@ -421,6 +419,7 @@ public class AckReTransmissionTest extends ScenarioHarness implements SipListene
                 }
             } catch (Exception ex) {
                 logger.error(ex);
+                ex.printStackTrace();
                 AckReTransmissionTest.fail("unexpected exception");
             }
 
@@ -673,7 +672,7 @@ public class AckReTransmissionTest extends ScenarioHarness implements SipListene
 
     public void tearDown() {
         try {
-            Thread.sleep(2000);
+            Thread.sleep(4000);
             this.shootme.checkState();
             getTiProtocolObjects().destroy();
             if (getTiProtocolObjects() != getRiProtocolObjects())

@@ -95,7 +95,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.144 $ $Date: 2010-02-03 05:53:44 $
+ * @version 1.2 $Revision: 1.145 $ $Date: 2010-02-12 13:50:54 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener, SIPDialogEventListener {
 
@@ -168,6 +168,8 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     private ConcurrentHashMap<String,SIPServerTransaction> terminatedServerTransactionsPendingAck;
     
     private ConcurrentHashMap<String,SIPClientTransaction> forkedClientTransactionTable;
+    
+    protected boolean deliverRetransmittedAckToListener = false;
 
     /*
      * A wrapper around differnt logging implementations (log4j, commons logging, slf4j, ...) to help log debug.
@@ -371,6 +373,9 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     // Any ping that exceeds this time will result in  CRLF CRLF going
     // from the UDP message channel. 
     protected long minKeepAliveInterval = -1L;
+
+    // The time after which a "dialog timeout event" is delivered to a listener.
+	protected int dialogTimeoutFactor = 64;
 
    
     // / Timer to regularly ping the thread auditor (on behalf of the timer
@@ -2547,6 +2552,32 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
     public int getMaxForkTime() {
         return maxForkTime;
     }
+    
+    /**
+     * This is a testing interface. Normally the application does not see retransmitted
+     * ACK for 200 OK retransmissions.
+     * 
+     * @return
+     */
+    public boolean isDeliverRetransmittedAckToListener() {
+    	return this.deliverRetransmittedAckToListener;
+    }
+
+	
+    /**
+     * Get the dialog timeout counter.
+     * @return
+     */
+
+	public int getAckTimeoutFactor() {
+		if ( getSipListener() != null && getSipListener() instanceof SipListenerExt ) {
+			return dialogTimeoutFactor;
+		} else {
+			return 64;
+		}
+	}
+	
+	public abstract SipListener getSipListener();
 	
 	
 }

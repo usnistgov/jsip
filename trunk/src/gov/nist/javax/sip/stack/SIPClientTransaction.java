@@ -177,7 +177,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.123 $ $Date: 2010-02-03 05:53:44 $
+ * @version 1.2 $Revision: 1.124 $ $Date: 2010-02-12 13:50:54 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -726,7 +726,8 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
        
         if (TransactionState.TERMINATED == this.getState()) {
             boolean ackAlreadySent = false;
-            if (dialog != null && dialog.isAckSeen() && dialog.getLastAckSent() != null) {
+           // if (dialog != null  && dialog.isAckSeen() && dialog.getLastAckSent() != null) 
+            if ( dialog!= null && dialog.isAckSent(transactionResponse.getCSeq().getSeqNumber())) {
                 if (dialog.getLastAckSent().getCSeq().getSeqNumber() == transactionResponse.getCSeq()
                         .getSeqNumber()
                         && transactionResponse.getFromTag().equals(

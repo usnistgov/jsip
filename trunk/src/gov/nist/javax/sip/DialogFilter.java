@@ -83,7 +83,7 @@ import javax.sip.message.Response;
  * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
  * and event model with the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.66 $ $Date: 2010-02-03 05:53:43 $
+ * @version 1.2 $Revision: 1.67 $ $Date: 2010-02-12 13:50:57 $
  * 
  * @author M. Ranganathan
  */
@@ -527,7 +527,14 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                                     }
                                 }
                             }
-                            return;
+                            /*
+                             * For test only we support a flag that will deliver retransmitted
+                             * ACK for 200 OK responses to the listener.
+                             */
+                            if ( (! sipStack.isDeliverRetransmittedAckToListener() ) ||  ( ackTransaction != null &&
+                            		!sipStack.isNon2XXAckPassedToListener() ) ) {
+                            	return;
+                            }
                         }
                     } else {
                         transaction.passToListener();
@@ -841,7 +848,8 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             if (dialog != null && lastTransaction != null
                     && sipProvider.isDialogErrorsAutomaticallyHandled()
                     && lastTransaction.isInviteTransaction()
-                    && lastTransaction instanceof ServerTransaction && !dialog.isAckSeen()) {
+                    && lastTransaction instanceof ServerTransaction 
+                    && !dialog.isAckSeen()) {
                 if (sipStack.isLoggingEnabled()) {
                     sipStack.getStackLogger().logDebug(
                             "Sending 491 response for server Dialog ACK not seen.");
@@ -1181,7 +1189,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     return;
                 } else {
                     boolean ackAlreadySent = false;
-                    if (dialog.isAckSeen() && dialog.getLastAckSent() != null) {
+                    if ( dialog.isAckSeen() && dialog.getLastAckSent() != null) {
                         if (dialog.getLastAckSent().getCSeq().getSeqNumber() == response
                                 .getCSeq().getSeqNumber()) {
                             // the last ack sent corresponded to this 200

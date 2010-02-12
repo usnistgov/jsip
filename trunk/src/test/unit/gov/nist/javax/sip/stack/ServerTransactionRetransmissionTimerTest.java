@@ -257,9 +257,9 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
             // You can set a max message size for tcp transport to
             // guard against denial of service attack.
             properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
-                    "logs/shootistdebug.txt");
+                    "logs/" + this.getClass().getName() + ".shootistdebug.txt");
             properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
-                    "logs/shootistlog.txt");
+                    "logs/" + this.getClass().getName() + ".shootistlog.txt");
 
             // Drop the client connection after we are done with the
             // transaction.
