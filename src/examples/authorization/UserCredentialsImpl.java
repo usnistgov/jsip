@@ -18,12 +18,12 @@ public class UserCredentialsImpl implements UserCredentials {
         return password;
     }
 
-    @Override
+
     public String getSipDomain() {
        return sipDomain;
     }
 
-    @Override
+   
     public String getUserName() {
        
         return userName;

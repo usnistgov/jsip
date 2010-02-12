@@ -15,6 +15,8 @@
  */
 package gov.nist.javax.sip;
 
+import gov.nist.javax.sip.stack.SIPDialog;
+
 import java.util.EventObject;
 
 import javax.sip.Dialog;
@@ -46,7 +48,7 @@ public class DialogTimeoutEvent extends EventObject {
       
     }
 
-    /**
+	/**
      * Gets the Dialog associated with the event. This 
      * enables application developers to access the dialog associated to this 
      * event. 

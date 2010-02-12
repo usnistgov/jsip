@@ -507,7 +507,7 @@ public class ReInviteBusyTest extends TestCase {
 
                 } else if (response.getStatusCode() == Response.BUSY_HERE) {
                     this.busyHereReceived = true;
-                    TestCase.assertEquals("Dialog State must be CONFIRMED", dialog.getState() == DialogState.CONFIRMED);
+                    TestCase.assertEquals("Dialog State must be CONFIRMED", dialog.getState(), DialogState.CONFIRMED);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

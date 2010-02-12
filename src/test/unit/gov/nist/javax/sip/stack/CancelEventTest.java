@@ -116,7 +116,7 @@ public class CancelEventTest extends  ScenarioHarness {
             // and are not necessarily part of any other jain-sip
             // implementation.
             properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
-                    logFileDirectory + stackname + "debug.txt");
+                    logFileDirectory + this.getClass().getName()  + ".debug.txt");
             properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
                     logFileDirectory + stackname + "log.txt");
 
@@ -447,7 +447,7 @@ public class CancelEventTest extends  ScenarioHarness {
             // and are not necessarily part of any other jain-sip
             // implementation.
             properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
-                    logFileDirectory + stackname + "debug.txt");
+                    logFileDirectory + this.getClass().getName() + ".debug.txt");
             properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
                     logFileDirectory + stackname + "log.txt");
 

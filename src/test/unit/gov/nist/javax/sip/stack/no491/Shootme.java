@@ -173,6 +173,7 @@ public class Shootme  implements SipListener {
             String s = "unexpected exception";
 
             logger.error(s,ex);
+            ex.printStackTrace();
             ReInviteTest.fail(s);
         }
     }

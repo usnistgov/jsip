@@ -16,11 +16,13 @@
 package gov.nist.javax.sip.stack;
 
 
+import gov.nist.javax.sip.DialogTimeoutEvent;
+
 import java.util.EventObject;
 
 /**
  * An event that indicates that a dialog has encountered an error.
- *
+ * 
  * @author jean deruelle
  * @since 2.0
  */
@@ -60,6 +62,17 @@ public class SIPDialogErrorEvent extends EventObject {
         super(sourceDialog);
         errorID = dialogErrorID;
 
+    }
+    
+    public SIPDialogErrorEvent (SIPDialog sourceDialog, DialogTimeoutEvent.Reason reason) {
+    	super(sourceDialog);
+    	if ( reason == DialogTimeoutEvent.Reason.AckNotReceived) {
+    		this.errorID = DIALOG_ACK_NOT_RECEIVED_TIMEOUT;
+    	} else if ( reason == DialogTimeoutEvent.Reason.AckNotSent ) {
+    		this.errorID = DIALOG_ACK_NOT_SENT_TIMEOUT;
+    	} else if ( reason == DialogTimeoutEvent.Reason.ReInviteTimeout) {
+    		this.errorID = DIALOG_REINVITE_TIMEOUT;
+    	}
     }
 
     /**
