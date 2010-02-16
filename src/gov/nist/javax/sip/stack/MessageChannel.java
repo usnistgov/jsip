@@ -63,7 +63,7 @@ import javax.sip.header.ViaHeader;
  * @author M. Ranganathan <br/> Contains additions for support of symmetric NAT contributed by
  *         Hagai.
  * 
- * @version 1.2 $Revision: 1.28 $ $Date: 2009-11-14 20:06:18 $
+ * @version 1.2 $Revision: 1.29 $ $Date: 2010-02-16 05:08:33 $
  * 
  * 
  */
@@ -83,6 +83,11 @@ public abstract class MessageChannel {
      * Message processor to whom I belong (if set).
      */
     protected transient MessageProcessor messageProcessor;
+    
+    /**
+     * The client transaction that this message channel points to.
+     */
+	private SIPClientTransaction encapsulatedClientTransaction;
 
     /**
      * Close the message channel.
@@ -486,4 +491,12 @@ public abstract class MessageChannel {
     public MessageProcessor getMessageProcessor() {
         return this.messageProcessor;
     }
+    
+    public SIPClientTransaction getEncapsulatedClientTransaction() {
+    	return this.encapsulatedClientTransaction;
+    }
+
+	public void setEncapsulatedClientTransaction(SIPClientTransaction transaction) {
+		this.encapsulatedClientTransaction = transaction;
+	}
 }

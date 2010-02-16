@@ -167,7 +167,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.120 $ $Date: 2010-02-05 19:20:13 $
+ * @version 1.2 $Revision: 1.121 $ $Date: 2010-02-16 05:08:30 $
  * @author M. Ranganathan
  *
  */
@@ -760,6 +760,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
                 }
 
+               
                 // JvB: For the purpose of testing a TI, added a property to
                 // pass it anyway
                 if (sipStack.isNon2XXAckPassedToListener()) {

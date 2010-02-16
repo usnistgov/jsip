@@ -5,6 +5,8 @@ import java.util.Properties;
 import javax.sip.SipStack;
 import javax.sip.header.TimeStampHeader;
 
+import examples.nistgoodies.configlogger.LogRecordFactoryImpl;
+
 import gov.nist.core.ServerLogger;
 import gov.nist.javax.sip.LogRecord;
 import gov.nist.javax.sip.LogRecordFactory;
