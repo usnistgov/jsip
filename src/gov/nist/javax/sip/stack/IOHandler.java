@@ -167,6 +167,7 @@ class IOHandler {
             sipStack.getStackLogger().logDebug(
                     "sendBytes " + transport + " inAddr " + receiverAddress.getHostAddress()
                             + " port = " + contactPort + " length = " + length);
+            
         }
         if (sipStack.isLoggingEnabled() && sipStack.isLogStackTraceOnMessageSend()) {
             sipStack.getStackLogger().logStackTrace(StackLogger.TRACE_INFO);

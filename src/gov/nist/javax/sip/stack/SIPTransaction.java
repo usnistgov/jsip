@@ -70,7 +70,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.73 $ $Date: 2010-02-12 13:50:53 $
+ * @version 1.2 $Revision: 1.74 $ $Date: 2010-02-16 05:08:31 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -1096,6 +1096,9 @@ public abstract class SIPTransaction extends MessageChannel implements
      */
     public void setEncapsulatedChannel(MessageChannel messageChannel) {
         this.encapsulatedChannel = messageChannel;
+        if ( this instanceof SIPClientTransaction ) {
+        	this.encapsulatedChannel.setEncapsulatedClientTransaction((SIPClientTransaction) this);
+        }
         this.peerInetAddress = messageChannel.getPeerInetAddress();
         this.peerPort = messageChannel.getPeerPort();
     }
