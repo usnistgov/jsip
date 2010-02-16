@@ -123,7 +123,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.161 $ $Date: 2010-02-16 05:08:32 $
+ * @version 1.2 $Revision: 1.162 $ $Date: 2010-02-16 17:36:08 $
  * 
  * @author M. Ranganathan
  * 
@@ -1270,7 +1270,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     			sipStack.getStackLogger().logDebug(this + "lastResponse is null -- returning true");
     		}
     		return false;
-    	} else if ( lastResponse.getStatusCode() != Response.OK) {
+    	} else if ( lastAckReceived == null  && lastResponse.getStatusCode() / 100 > 2 ) {
     		if ( sipStack.getStackLogger().isLoggingEnabled() ) {
     			sipStack.getStackLogger().logDebug(this + "lastResponse statusCode " + lastResponse.getStatusCode());
     		}

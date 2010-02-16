@@ -462,7 +462,7 @@ c:/jakarta-ant/bin/ant all
                         </classpath>
                         <formatter type="xml" />
 
-                        <batchtest fork="yes" todir="test-reports" haltonfailure="yes">
+                        <batchtest fork="yes" todir="test-reports" haltonfailure="no">
                             <fileset dir="${srcroot}">
                                 <include name="test/unit/gov/nist/javax/**/*Test.java" />
                                 <exclude name="test/unit/gov/nist/javax/sip/stack/NonRfc3261ForkedInviteTest.java" />
