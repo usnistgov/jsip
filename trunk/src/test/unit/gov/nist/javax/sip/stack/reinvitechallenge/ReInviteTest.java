@@ -20,9 +20,10 @@
 /**
  *
  */
-package test.tck.msgflow.callflows.reinvite;
+package test.unit.gov.nist.javax.sip.stack.reinvitechallenge;
 
 import gov.nist.javax.sip.SipProviderImpl;
+import gov.nist.javax.sip.SipStackImpl;
 
 import java.util.EventObject;
 import java.util.Hashtable;
@@ -66,8 +67,8 @@ public class ReInviteTest extends ScenarioHarness implements SipListener {
     private static Logger logger = Logger.getLogger("test.tck");
 
     static {
-        if (!logger.isAttached(console))
-            logger.addAppender(console);
+        //if (!logger.isAttached(console))
+        //    logger.addAppender(console);
     }
 
     private SipListener getSipListener(EventObject sipEvent) {
@@ -87,7 +88,9 @@ public class ReInviteTest extends ScenarioHarness implements SipListener {
             this.transport = "udp";
 
             super.setUp();
+            
             shootist = new Shootist(getRiProtocolObjects());
+            
             SipProvider shootistProvider = shootist.createSipProvider();
             providerTable.put(shootistProvider, shootist);
 
@@ -96,6 +99,9 @@ public class ReInviteTest extends ScenarioHarness implements SipListener {
             providerTable.put(shootmeProvider, shootme);
             shootistProvider.addSipListener(this);
             shootmeProvider.addSipListener(this);
+            
+            ((SipStackImpl)getTiProtocolObjects().sipStack).setIsBackToBackUserAgent(false);
+            ((SipStackImpl)getRiProtocolObjects().sipStack).setIsBackToBackUserAgent(false);
 
             getRiProtocolObjects().start();
             if (getTiProtocolObjects() != getRiProtocolObjects())
@@ -112,7 +118,7 @@ public class ReInviteTest extends ScenarioHarness implements SipListener {
 
     public void tearDown() {
         try {
-            Thread.sleep(8000);
+            Thread.sleep(4000);
             this.shootist.checkState();
             this.shootme.checkState();
             super.tearDown();

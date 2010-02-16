@@ -123,7 +123,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.160 $ $Date: 2010-02-12 13:50:53 $
+ * @version 1.2 $Revision: 1.161 $ $Date: 2010-02-16 05:08:32 $
  * 
  * @author M. Ranganathan
  * 
@@ -1067,8 +1067,10 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     void ackReceived(SIPRequest sipRequest) {
 
         // Suppress retransmission of the final response
-        if (this.isAckSeen())
+        if (this.isAckSeen()) {
+        	sipStack.getStackLogger().logDebug("Ack already seen for response -- dropping");
             return;
+        }
         SIPServerTransaction tr = this.getInviteTransaction();
         if (tr != null) {
             if (tr.getCSeq() == sipRequest.getCSeq().getSeqNumber()) {
@@ -1097,6 +1099,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 }
                 this.setState(CONFIRMED_STATE);
             }
+        } else {
+        	sipStack.getStackLogger().logDebug("tr is null -- not updating the ack state" );
         }
     }
 
@@ -1254,9 +1258,30 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * 
      * @return flag that records if the ack has been seen.
      */
-    public boolean isAckSeen() { 
-    	if (lastAckReceived == null ) return false;
-    	else return this.lastAckReceived.getCSeq().getSeqNumber() >= remoteSequenceNumber;
+    public boolean isAckSeen() {
+    	
+    	if (lastAckReceived == null && lastResponse.getStatusCode() == Response.OK ) {
+    		if ( sipStack.getStackLogger().isLoggingEnabled() ) {
+    			sipStack.getStackLogger().logDebug(this + "lastAckReceived is null -- returning false");
+    		}
+    		return false;
+    	} else if (lastResponse == null ) {
+    		if ( sipStack.getStackLogger().isLoggingEnabled() ) {
+    			sipStack.getStackLogger().logDebug(this + "lastResponse is null -- returning true");
+    		}
+    		return false;
+    	} else if ( lastResponse.getStatusCode() != Response.OK) {
+    		if ( sipStack.getStackLogger().isLoggingEnabled() ) {
+    			sipStack.getStackLogger().logDebug(this + "lastResponse statusCode " + lastResponse.getStatusCode());
+    		}
+    		return true;
+    	} else {
+    		if ( sipStack.getStackLogger().isLoggingEnabled() ) {
+    			sipStack.getStackLogger().logDebug(String.format("%s lastResponse statusCode %d %d ", this,
+    					this.lastAckReceived.getCSeq().getSeqNumber() , lastResponse.getCSeqHeader().getSeqNumber() ));
+    		}
+    		return this.lastAckReceived.getCSeq().getSeqNumber() >= this.getRemoteSeqNumber();
+    	}
     }
 
     /**
@@ -2558,7 +2583,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                     "Invalid status code - 100 in setLastResponse - ignoring");
             return;
         }
-
+        
         this.lastResponse = sipResponse;
         this.setAssigned();
         // Adjust state of the Dialog state machine.
@@ -2812,6 +2837,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * @param response - response that was sent.
      */
     public void startRetransmitTimer(SIPServerTransaction sipServerTx, Response response) {
+    	if (sipStack.getStackLogger().isLoggingEnabled()) {
+    		sipStack.getStackLogger().logDebug("startRetransmitTimer() "+ response.getStatusCode() + " method " + sipServerTx.getRequest().getMethod() );
+    	}
         if (sipServerTx.getRequest().getMethod().equals(Request.INVITE)
                 && response.getStatusCode() / 100 == 2) {
             this.startTimer(sipServerTx);

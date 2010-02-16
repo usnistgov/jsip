@@ -267,13 +267,15 @@ public class DialogTest extends MessageFlowHarness {
 
     /**
      * Regression test for broken clients that send ACK to 2xx with same branch as INVITE
-     */
+  
     public void testSendAckWithSameBranch() {
         this.doTestSendAck(true);
     }
-
+    */
 
     private void doTestSendAck( boolean sameBranch ) {
+    	
+    	System.out.println("doTestSendAck " + sameBranch);
         try {
            
             //We will now send an OK response

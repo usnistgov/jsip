@@ -83,7 +83,7 @@ import javax.sip.message.Response;
  * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
  * and event model with the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.67 $ $Date: 2010-02-12 13:50:57 $
+ * @version 1.2 $Revision: 1.68 $ $Date: 2010-02-16 05:08:37 $
  * 
  * @author M. Ranganathan
  */
@@ -853,6 +853,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                 if (sipStack.isLoggingEnabled()) {
                     sipStack.getStackLogger().logDebug(
                             "Sending 491 response for server Dialog ACK not seen.");
+                    sipStack.getStackLogger().logDebug("Last SipResponse sent " + dialog.getLastResponse());
                 }
                 this.sendRequestPendingResponse(sipRequest, transaction);
                 return;

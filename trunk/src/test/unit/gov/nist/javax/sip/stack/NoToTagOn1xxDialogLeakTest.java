@@ -102,7 +102,11 @@ public class NoToTagOn1xxDialogLeakTest extends TestCase {
             }
 
             public void run() {
-                shootme.sendInviteOK();
+            	try {
+            		shootme.sendInviteOK();
+            	} catch (Exception ex) {
+            		ex.printStackTrace();
+            	}
             }
 
         }
@@ -403,7 +407,7 @@ public class NoToTagOn1xxDialogLeakTest extends TestCase {
                    dialog = null;
                 } catch (Exception ex) {
                     ex.printStackTrace();
-                    System.exit(0);
+                    
                 }
 
             }
