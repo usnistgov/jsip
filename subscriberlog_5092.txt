@@ -1,0 +1,206 @@
+<!-- Use the  Trace Viewer in src/tools/tracesviewer to view this  trace  
+Here are the stack configuration properties 
+javax.sip.IP_ADDRESS= null
+javax.sip.STACK_NAME= subscriber5092
+javax.sip.ROUTER_PATH= null
+javax.sip.OUTBOUND_PROXY= null
+-->
+<description
+ logDescription="subscriber5092"
+ name="subscriber5092"
+ auxInfo="null"/>
+ 
+<message
+from="127.0.0.1:5092" 
+to="127.0.0.1:5090" 
+time="1266329295733"
+isSender="true" 
+transactionId="z9hg4bk845ed3e4e52678cbf2905404f45b3888353639" 
+callId="a6ee88d890fbc5504503d618cde615aa@127.0.0.1" 
+firstLine="SUBSCRIBE sip:LittleGuy@there.com SIP/2.0" 
+>
+<![CDATA[SUBSCRIBE sip:LittleGuy@there.com SIP/2.0
+Call-ID: a6ee88d890fbc5504503d618cde615aa@127.0.0.1
+CSeq: 1 SUBSCRIBE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>
+Via: SIP/2.0/UDP 127.0.0.1:5092;branch=z9hG4bK845ed3e4e52678cbf2905404f45b3888353639
+Max-Forwards: 70
+Contact: "BigGuy" <sip:BigGuy@127.0.0.1:5092;transport=udp>
+Route: <sip:127.0.0.1:5090;transport=udp;lr>
+Event: foo;id=foo
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="127.0.0.1:5090" 
+to="127.0.0.1:5092" 
+time="1266329295798"
+isSender="false" 
+transactionId="z9hg4bk09f14a3f9d3db21bd571785f00c241ac353639" 
+callId="a6ee88d890fbc5504503d618cde615aa@127.0.0.1" 
+firstLine="NOTIFY sip:BigGuy@127.0.0.1:5092;transport=udp SIP/2.0" 
+>
+<![CDATA[NOTIFY sip:BigGuy@127.0.0.1:5092;transport=udp SIP/2.0
+Call-ID: a6ee88d890fbc5504503d618cde615aa@127.0.0.1
+CSeq: 1 NOTIFY
+From: "The Little Blister" <sip:LittleGuy@there.com>;tag=37b415b3
+To: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+Via: SIP/2.0/UDP 127.0.0.1:5090;branch=z9hG4bK09f14a3f9d3db21bd571785f00c241ac353639
+Max-Forwards: 70
+Subscription-State: Pending
+Event: foo;id=foo
+Contact: "Notifier" <sip:127.0.0.1:5090;id=not>
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="127.0.0.1:5092" 
+to="127.0.0.1:5090" 
+time="1266329295825"
+isSender="true" 
+transactionId="z9hg4bk09f14a3f9d3db21bd571785f00c241ac353639" 
+callId="a6ee88d890fbc5504503d618cde615aa@127.0.0.1" 
+firstLine="SIP/2.0 200 OK" 
+>
+<![CDATA[SIP/2.0 200 OK
+Call-ID: a6ee88d890fbc5504503d618cde615aa@127.0.0.1
+CSeq: 1 NOTIFY
+From: "The Little Blister" <sip:LittleGuy@there.com>;tag=37b415b3
+To: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+Via: SIP/2.0/UDP 127.0.0.1:5090;branch=z9hG4bK09f14a3f9d3db21bd571785f00c241ac353639
+Contact: "BigGuy" <sip:BigGuy@127.0.0.1:5092;transport=udp;id=sub>
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="127.0.0.1:5090" 
+to="127.0.0.1:5092" 
+time="1266329295827"
+isSender="false" 
+transactionId="z9hg4bk845ed3e4e52678cbf2905404f45b3888353639" 
+callId="a6ee88d890fbc5504503d618cde615aa@127.0.0.1" 
+firstLine="SIP/2.0 202 Accepted" 
+>
+<![CDATA[SIP/2.0 202 Accepted
+Call-ID: a6ee88d890fbc5504503d618cde615aa@127.0.0.1
+CSeq: 1 SUBSCRIBE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>;tag=37b415b3
+Via: SIP/2.0/UDP 127.0.0.1:5092;branch=z9hG4bK845ed3e4e52678cbf2905404f45b3888353639
+Contact: "Notifier" <sip:127.0.0.1:5090;id=not>
+Expires: 30
+Content-Length: 0
+
+]]>
+</message>
+
+<!-- Use the  Trace Viewer in src/tools/tracesviewer to view this  trace  
+Here are the stack configuration properties 
+javax.sip.IP_ADDRESS= null
+javax.sip.STACK_NAME= subscriber5092
+javax.sip.ROUTER_PATH= null
+javax.sip.OUTBOUND_PROXY= null
+-->
+<description
+ logDescription="subscriber5092"
+ name="subscriber5092"
+ auxInfo="null"/>
+ 
+<message
+from="127.0.0.1:5092" 
+to="127.0.0.1:5090" 
+time="1266331469012"
+isSender="true" 
+transactionId="z9hg4bkce82967584565c5dff135975fc618373343537" 
+callId="2c44ba7553e30c9cfce5b304edcaa09e@127.0.0.1" 
+firstLine="SUBSCRIBE sip:LittleGuy@there.com SIP/2.0" 
+>
+<![CDATA[SUBSCRIBE sip:LittleGuy@there.com SIP/2.0
+Call-ID: 2c44ba7553e30c9cfce5b304edcaa09e@127.0.0.1
+CSeq: 1 SUBSCRIBE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>
+Via: SIP/2.0/UDP 127.0.0.1:5092;branch=z9hG4bKce82967584565c5dff135975fc618373343537
+Max-Forwards: 70
+Contact: "BigGuy" <sip:BigGuy@127.0.0.1:5092;transport=udp>
+Route: <sip:127.0.0.1:5090;transport=udp;lr>
+Event: foo;id=foo
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="127.0.0.1:5090" 
+to="127.0.0.1:5092" 
+time="1266331469075"
+isSender="false" 
+transactionId="z9hg4bk62f1136172f0724da821113e60d79311343537" 
+callId="2c44ba7553e30c9cfce5b304edcaa09e@127.0.0.1" 
+firstLine="NOTIFY sip:BigGuy@127.0.0.1:5092;transport=udp SIP/2.0" 
+>
+<![CDATA[NOTIFY sip:BigGuy@127.0.0.1:5092;transport=udp SIP/2.0
+Call-ID: 2c44ba7553e30c9cfce5b304edcaa09e@127.0.0.1
+CSeq: 1 NOTIFY
+From: "The Little Blister" <sip:LittleGuy@there.com>;tag=44be713e
+To: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+Via: SIP/2.0/UDP 127.0.0.1:5090;branch=z9hG4bK62f1136172f0724da821113e60d79311343537
+Max-Forwards: 70
+Subscription-State: Pending
+Event: foo;id=foo
+Contact: "Notifier" <sip:127.0.0.1:5090;id=not>
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="127.0.0.1:5092" 
+to="127.0.0.1:5090" 
+time="1266331469089"
+isSender="true" 
+transactionId="z9hg4bk62f1136172f0724da821113e60d79311343537" 
+callId="2c44ba7553e30c9cfce5b304edcaa09e@127.0.0.1" 
+firstLine="SIP/2.0 200 OK" 
+>
+<![CDATA[SIP/2.0 200 OK
+Call-ID: 2c44ba7553e30c9cfce5b304edcaa09e@127.0.0.1
+CSeq: 1 NOTIFY
+From: "The Little Blister" <sip:LittleGuy@there.com>;tag=44be713e
+To: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+Via: SIP/2.0/UDP 127.0.0.1:5090;branch=z9hG4bK62f1136172f0724da821113e60d79311343537
+Contact: "BigGuy" <sip:BigGuy@127.0.0.1:5092;transport=udp;id=sub>
+Content-Length: 0
+
+]]>
+</message>
+
+<message
+from="127.0.0.1:5090" 
+to="127.0.0.1:5092" 
+time="1266331469100"
+isSender="false" 
+transactionId="z9hg4bkce82967584565c5dff135975fc618373343537" 
+callId="2c44ba7553e30c9cfce5b304edcaa09e@127.0.0.1" 
+firstLine="SIP/2.0 202 Accepted" 
+>
+<![CDATA[SIP/2.0 202 Accepted
+Call-ID: 2c44ba7553e30c9cfce5b304edcaa09e@127.0.0.1
+CSeq: 1 SUBSCRIBE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>;tag=44be713e
+Via: SIP/2.0/UDP 127.0.0.1:5092;branch=z9hG4bKce82967584565c5dff135975fc618373343537
+Contact: "Notifier" <sip:127.0.0.1:5090;id=not>
+Expires: 30
+Content-Length: 0
+
+]]>
+</message>
+

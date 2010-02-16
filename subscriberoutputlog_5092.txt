@@ -1,0 +1,80 @@
+INFO - sipStack = gov.nist.javax.sip.SipStackImpl@1d6f122
+INFO - Subscribe Dialog = gov.nist.javax.sip.stack.SIPDialog@13785d3
+INFO - 
+
+Request SUBSCRIBE received at notifier5090 with server transaction id null and dialog id null
+INFO - notifier: got an Subscribe sending OK
+INFO - notifier:  SUBSCRIBE sip:LittleGuy@there.com SIP/2.0
+Call-ID: a6ee88d890fbc5504503d618cde615aa@127.0.0.1
+CSeq: 1 SUBSCRIBE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>
+Via: SIP/2.0/UDP 127.0.0.1:5092;branch=z9hG4bK845ed3e4e52678cbf2905404f45b3888353639
+Max-Forwards: 70
+Contact: "BigGuy" <sip:BigGuy@127.0.0.1:5092;transport=udp>
+Route: <sip:127.0.0.1:5090;transport=udp;lr>
+Event: foo;id=foo
+Content-Length: 0
+
+
+INFO - notifier : dialog = null
+INFO - Dialog gov.nist.javax.sip.stack.SIPDialog@1329642
+INFO - Dialog state null
+INFO - NOTIFY Branch ID z9hG4bK845ed3e4e52678cbf2905404f45b3888353639
+INFO - Dialog gov.nist.javax.sip.stack.SIPDialog@1329642
+INFO - Dialog state after pending NOTIFY: null
+INFO - 
+
+Request NOTIFY received at subscriber5092 with server transaction id gov.nist.javax.sip.stack.SIPServerTransaction@18425566 branch ID = z9hG4bK09f14a3f9d3db21bd571785f00c241ac353639
+INFO - subscriber:  got a notify count  0
+INFO - Dialog = gov.nist.javax.sip.stack.SIPDialog@13785d3
+INFO - Dialog State = Confirmed Dialog
+INFO - Transaction State = Trying Transaction
+INFO - Dialog State = Confirmed Dialog
+INFO - Subscriber: state now Pending
+INFO - Got a response
+INFO - Response received with client transaction id gov.nist.javax.sip.stack.SIPClientTransaction@b2314dae:
+202
+INFO - transaction state is Completed Transaction
+INFO - Dialog = gov.nist.javax.sip.stack.SIPDialog@13785d3
+INFO - Dialog State is Confirmed Dialog
+INFO - sipStack = gov.nist.javax.sip.SipStackImpl@102799c
+INFO - Subscribe Dialog = gov.nist.javax.sip.stack.SIPDialog@110c31
+INFO - 
+
+Request SUBSCRIBE received at notifier5090 with server transaction id null and dialog id null
+INFO - notifier: got an Subscribe sending OK
+INFO - notifier:  SUBSCRIBE sip:LittleGuy@there.com SIP/2.0
+Call-ID: 2c44ba7553e30c9cfce5b304edcaa09e@127.0.0.1
+CSeq: 1 SUBSCRIBE
+From: "The Master Blaster" <sip:BigGuy@here.com>;tag=12345
+To: "The Little Blister" <sip:LittleGuy@there.com>
+Via: SIP/2.0/UDP 127.0.0.1:5092;branch=z9hG4bKce82967584565c5dff135975fc618373343537
+Max-Forwards: 70
+Contact: "BigGuy" <sip:BigGuy@127.0.0.1:5092;transport=udp>
+Route: <sip:127.0.0.1:5090;transport=udp;lr>
+Event: foo;id=foo
+Content-Length: 0
+
+
+INFO - notifier : dialog = null
+INFO - Dialog gov.nist.javax.sip.stack.SIPDialog@1d53f5b
+INFO - Dialog state null
+INFO - NOTIFY Branch ID z9hG4bKce82967584565c5dff135975fc618373343537
+INFO - Dialog gov.nist.javax.sip.stack.SIPDialog@1d53f5b
+INFO - Dialog state after pending NOTIFY: null
+INFO - 
+
+Request NOTIFY received at subscriber5092 with server transaction id gov.nist.javax.sip.stack.SIPServerTransaction@bb0e4429 branch ID = z9hG4bK62f1136172f0724da821113e60d79311343537
+INFO - subscriber:  got a notify count  0
+INFO - Dialog = gov.nist.javax.sip.stack.SIPDialog@110c31
+INFO - Dialog State = Confirmed Dialog
+INFO - Transaction State = Trying Transaction
+INFO - Dialog State = Confirmed Dialog
+INFO - Subscriber: state now Pending
+INFO - Got a response
+INFO - Response received with client transaction id gov.nist.javax.sip.stack.SIPClientTransaction@1b4e50ea:
+202
+INFO - transaction state is Completed Transaction
+INFO - Dialog = gov.nist.javax.sip.stack.SIPDialog@110c31
+INFO - Dialog State is Confirmed Dialog
