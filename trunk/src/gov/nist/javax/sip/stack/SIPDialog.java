@@ -123,7 +123,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.162 $ $Date: 2010-02-16 17:36:08 $
+ * @version 1.2 $Revision: 1.163 $ $Date: 2010-02-18 06:58:24 $
  * 
  * @author M. Ranganathan
  * 
@@ -1267,7 +1267,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     		return false;
     	} else if (lastResponse == null ) {
     		if ( sipStack.getStackLogger().isLoggingEnabled() ) {
-    			sipStack.getStackLogger().logDebug(this + "lastResponse is null -- returning true");
+    			sipStack.getStackLogger().logDebug(this + "lastResponse is null -- returning false");
     		}
     		return false;
     	} else if ( lastAckReceived == null  && lastResponse.getStatusCode() / 100 > 2 ) {
@@ -1276,11 +1276,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     		}
     		return true;
     	} else {
-    		if ( sipStack.getStackLogger().isLoggingEnabled() ) {
-    			sipStack.getStackLogger().logDebug(String.format("%s lastResponse statusCode %d %d ", this,
-    					this.lastAckReceived.getCSeq().getSeqNumber() , lastResponse.getCSeqHeader().getSeqNumber() ));
-    		}
-    		return this.lastAckReceived.getCSeq().getSeqNumber() >= this.getRemoteSeqNumber();
+    		
+    		return this.lastAckReceived != null &&
+    			this.lastAckReceived.getCSeq().getSeqNumber() >= this.getRemoteSeqNumber();
     	}
     }
 
