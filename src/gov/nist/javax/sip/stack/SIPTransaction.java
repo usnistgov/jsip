@@ -26,6 +26,7 @@
 package gov.nist.javax.sip.stack;
 
 import gov.nist.core.InternalErrorHandler;
+import gov.nist.javax.sip.address.AddressFactoryImpl;
 import gov.nist.javax.sip.SIPConstants;
 import gov.nist.javax.sip.SipProviderImpl;
 import gov.nist.javax.sip.header.CallID;
@@ -40,19 +41,29 @@ import gov.nist.javax.sip.message.SIPResponse;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateParsingException;
+import java.security.cert.X509Certificate;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.sip.Dialog;
 import javax.sip.IOExceptionEvent;
 import javax.sip.ServerTransaction;
 import javax.sip.TransactionState;
+import javax.sip.address.SipURI;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 
@@ -70,7 +81,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.74 $ $Date: 2010-02-16 05:08:31 $
+ * @version 1.2 $Revision: 1.75 $ $Date: 2010-02-19 02:15:44 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -1258,6 +1269,105 @@ public abstract class SIPTransaction extends MessageChannel implements
             else return ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getHandshakeCompletedEvent().getPeerCertificates();
         } else throw new UnsupportedOperationException("Not a TLS channel");
 
+    }
+
+    /**
+     * Extract identities from certificates exchanged over TLS, based on guidelines
+     * from draft-ietf-sip-domain-certs-04.
+     * @return list of authenticated identities
+     */
+    public List<String> extractCertIdentities() throws SSLPeerUnverifiedException {
+        if (this.getMessageChannel() instanceof TLSMessageChannel) {
+            List<String> certIdentities = new ArrayList<String>();
+            Certificate[] certs = getPeerCertificates();
+            if (certs == null) {
+                if (sipStack.isLoggingEnabled()) {
+                    sipStack.getStackLogger().logDebug("No certificates available");
+                }
+                return certIdentities;
+            }
+            for (Certificate cert : certs) {
+                X509Certificate x509cert = (X509Certificate) cert;
+                Collection<List< ? >> subjAltNames = null;
+                try {
+                    subjAltNames = x509cert.getSubjectAlternativeNames();
+                } catch (CertificateParsingException ex) {
+                    if (sipStack.isLoggingEnabled()) {
+                        sipStack.getStackLogger().logError("Error parsing TLS certificate", ex);
+                    }
+                }
+                // subjAltName types are defined in rfc2459
+                final Integer dnsNameType = 2;
+                final Integer uriNameType = 6;
+                if (subjAltNames != null) {
+                    if (sipStack.isLoggingEnabled()) {
+                        sipStack.getStackLogger().logDebug("found subjAltNames: " + subjAltNames);
+                    }
+                    // First look for a URI in the subjectAltName field
+                    // as per draft-ietf-sip-domain-certs-04
+                    for (List< ? > altName : subjAltNames) {
+                        // 0th position is the alt name type
+                        // 1st position is the alt name data
+                        if (altName.get(0).equals(uriNameType)) {
+                            SipURI altNameUri;
+                            try {
+                                altNameUri = new AddressFactoryImpl().createSipURI((String) altName.get(1));
+                                String altHostName = altNameUri.getHost();
+                                if (sipStack.isLoggingEnabled()) {
+                                    sipStack.getStackLogger().logDebug(
+                                        "found uri " + altName.get(1) + ", hostName " + altHostName);
+                                }
+                                certIdentities.add(altHostName);
+                            } catch (ParseException e) {
+                                if (sipStack.isLoggingEnabled()) {
+                                    sipStack.getStackLogger().logError(
+                                        "certificate contains invalid uri: " + altName.get(1));
+                                }
+                            }
+                        }
+
+                    }
+                    // DNS An implementation MUST accept a domain name system
+                    // identifier as a SIP domain identity if and only if no other
+                    // identity is found that matches the "sip" URI type described
+                    // above.
+                    if (certIdentities.isEmpty()) {
+                        for (List< ? > altName : subjAltNames) {
+                            if (altName.get(0).equals(dnsNameType)) {
+                                if (sipStack.isLoggingEnabled()) {
+                                    sipStack.getStackLogger().logDebug("found dns " + altName.get(1));
+                                }
+                                certIdentities.add(altName.get(1).toString());
+                            }
+                        }
+                    }
+                } else {
+                    // If and only if the subjectAltName does not appear in the
+                    // certificate, the implementation MAY examine the CN field of the
+                    // certificate. If a valid DNS name is found there, the
+                    // implementation MAY accept this value as a SIP domain identity.
+                    String dname = x509cert.getSubjectDN().getName();
+                    String cname = "";
+                    try {
+                        Pattern EXTRACT_CN = Pattern.compile(".*CN\\s*=\\s*([\\w*\\.]+).*");
+                        Matcher matcher = EXTRACT_CN.matcher(dname);
+                        if (matcher.matches()) {
+                            cname = matcher.group(1);
+                            if (sipStack.isLoggingEnabled()) {
+                                sipStack.getStackLogger().logDebug("found CN: " + cname + " from DN: " + dname);
+                            }
+                            certIdentities.add(cname);
+                        }
+                    } catch (Exception ex) {
+                        if (sipStack.isLoggingEnabled()) {
+                            sipStack.getStackLogger().logError("exception while extracting CN", ex);
+                        }
+                    }
+                }
+            }
+            return certIdentities;
+        } else
+            throw new UnsupportedOperationException("Not a TLS channel");
     }
 
 
