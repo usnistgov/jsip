@@ -2,6 +2,7 @@
 package gov.nist.javax.sip;
 
 import java.security.cert.Certificate;
+import java.util.List;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.sip.SipProvider;
@@ -66,4 +67,12 @@ public interface TransactionExt extends Transaction {
      * @throw UnsupportedOperationException if this is not a secure client transaction.
      */
    Certificate[]  getPeerCertificates() throws SSLPeerUnverifiedException;
+   
+   /**
+    * Extract identities from certificates exchanged over TLS, based on guidelines
+    * from draft-ietf-sip-domain-certs-04.
+    * @return list of authenticated identities
+    */
+   public List<String> extractCertIdentities() throws SSLPeerUnverifiedException;
+
 }

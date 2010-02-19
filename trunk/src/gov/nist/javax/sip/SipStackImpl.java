@@ -54,6 +54,7 @@ import java.util.StringTokenizer;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import javax.sip.ClientTransaction;
 import javax.sip.InvalidArgumentException;
 import javax.sip.ListeningPoint;
 import javax.sip.ObjectInUseException;
@@ -410,12 +411,17 @@ import javax.sip.message.Request;
  * if the registered SipListener is of type SipListenerExt
  * </li>
  * 
- *  * <li><b>gov.nist.javax.sip.TLS_CLIENT_PROTOCOLS = String </b>
+ *  <li><b>gov.nist.javax.sip.TLS_CLIENT_PROTOCOLS = String </b>
  *  Comma-separated list of protocols to use when creating outgoing TLS connections.
  *  The default is "SSLv3, SSLv2Hello, TLSv1".
  *  Some servers do not support SSLv2Hello, so override to "SSLv3, TLSv1". 
  * </li>
-
+ * 
+ * <li><b>gov.nist.javax.sip.TLS_SECURITY_POLICY = String </b> The fully qualified path
+ * name of a TLS listener implementation that is consulted for certificate verification 
+ * of outbund TLS connections.
+ * </li>
+ * 
  * <li><b>javax.net.ssl.keyStore = fileName </b> <br/>
  * Default is <it>NULL</it>. If left undefined the keyStore and trustStore will
  * be left to the java runtime defaults. If defined, any TLS sockets created
@@ -439,7 +445,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.119 $ $Date: 2010-02-12 13:50:57 $
+ * @version 1.2 $Revision: 1.120 $ $Date: 2010-02-19 02:15:46 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -466,6 +472,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 	boolean reEntrantListener;
 
 	SipListener sipListener;
+	TlsSecurityPolicy tlsSecurityPolicy;
 
 	// Stack semaphore (global lock).
 	private Semaphore stackSemaphore = new Semaphore(1);
@@ -751,6 +758,27 @@ public class SipStackImpl extends SIPTransactionStack implements
 				String nextEvent = st.nextToken();
 				this.forkedEvents.add(nextEvent);
 			}
+		}
+
+		// Allow application to hook in a TLS Listener
+		String tlsListenerPath = configurationProperties.getProperty("gov.nist.javax.sip.TLS_SECURITY_POLICY");
+		if (tlsListenerPath == null) {
+			tlsListenerPath = "gov.nist.javax.sip.stack.DefaultTlsSecurityPolicy";
+		}
+		try {
+			Class< ? > tlsListenerClass = Class.forName(tlsListenerPath);
+			Class< ? >[] constructorArgs = new Class[0];
+			Constructor< ? > cons = tlsListenerClass.getConstructor(constructorArgs);
+			Object[] args = new Object[0];
+			this.tlsSecurityPolicy = (TlsSecurityPolicy) cons.newInstance(args);
+		} catch (InvocationTargetException ex1) {
+			throw new IllegalArgumentException("Cound not instantiate tls listener " + tlsListenerPath
+					+ "- check that it is present on the classpath and that there is a no-args constructor defined",
+					ex1);
+		} catch (Exception ex) {
+			throw new IllegalArgumentException("Cound not instantiate tls listener " + tlsListenerPath
+					+ "- check that it is present on the classpath and that there is a no-args constructor defined",
+					ex);
 		}
 
 		// The following features are unique to the NIST implementation.
@@ -1326,6 +1354,16 @@ public class SipStackImpl extends SIPTransactionStack implements
 	}
 
 	/**
+	 * Get the TLS listener for the stack. The TlsListener is application code.
+	 *
+	 * @return -- the stack SipListener
+	 *
+	 */
+	public TlsSecurityPolicy getTlsListener() {
+		return this.tlsSecurityPolicy;
+	}
+
+	/**
 	 * Get the message log factory registered with the stack.
 	 * 
 	 * @return -- the messageLogFactory of the stack.
@@ -1482,6 +1520,11 @@ public class SipStackImpl extends SIPTransactionStack implements
 
 	public boolean isAutomaticDialogErrorHandlingEnabled() {
 		return super.isAutomaticDialogErrorHandlingEnabled;
+	}
+
+	
+	public void setTlsSecurityPolicy(TlsSecurityPolicy tlsSecurityPolicy) {
+		this.tlsSecurityPolicy = tlsSecurityPolicy;
 	}
 
     public boolean acquireSem() {

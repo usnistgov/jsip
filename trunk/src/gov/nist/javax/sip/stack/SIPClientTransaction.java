@@ -177,7 +177,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.124 $ $Date: 2010-02-12 13:50:54 $
+ * @version 1.2 $Revision: 1.125 $ $Date: 2010-02-19 02:15:45 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -969,8 +969,9 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
 
         } catch (IOException ex) {
             this.setState(TransactionState.TERMINATED);
-            throw new SipException("IO Error sending request", ex);
-
+            throw new SipException(
+                    ex.getMessage() == null ? "IO Error sending request" : ex.getMessage(),
+                    ex);
         }
 
     }
