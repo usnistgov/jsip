@@ -1,4 +1,4 @@
-package examples.tls;
+package test.unit.gov.nist.javax.sip.stack.tls;
 import gov.nist.javax.sip.ClientTransactionExt;
 import gov.nist.javax.sip.TlsSecurityPolicy;
 import gov.nist.javax.sip.stack.SIPTransaction;
@@ -35,55 +35,15 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
     private int counter;
 
     protected ClientTransaction inviteTid;
+	private boolean byeSeen;
+	private boolean enforceTlsPolicyCalled;
 
     protected static final String usageString =
         "java "
             + "examples.shootistTLS.Shootist \n"
             + ">>>> is your class path set to the root?";
 
-    private static void usage() {
-        System.out.println(usageString);
-        System.exit(0);
-
-    }
-    private void shutDown() {
-        try {
-                try {
-                Thread.sleep(2000);
-                 } catch (InterruptedException e) {
-                 }
-            System.out.println("nulling reference");
-            sipStack.deleteListeningPoint(tlsListeningPoint);
-            // This will close down the stack and exit all threads
-            tlsProvider.removeSipListener(this);
-            while (true) {
-              try {
-                  sipStack.deleteSipProvider(tlsProvider);
-                  break;
-                } catch (ObjectInUseException  ex)  {
-                    try {
-                    Thread.sleep(2000);
-                     } catch (InterruptedException e) {
-                    continue;
-                     }
-               }
-            }
-            sipStack = null;
-            tlsProvider = null;
-            this.inviteTid = null;
-            this.contactHeader = null;
-            addressFactory = null;
-            headerFactory = null;
-            messageFactory = null;
-            this.tlsListeningPoint = null;
-            this.reInviteCount = 0;
-            System.gc();
-            //Redo this from the start.
-           //  if (counter < 10 )
-           //     this.init();
-           //  else counter ++;
-        } catch (Exception ex) { ex.printStackTrace(); }
-    }
+  
 
 
     public void processRequest(RequestEvent requestReceivedEvent) {
@@ -122,11 +82,11 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
             System.out.println("shootist:  Sending OK.");
             System.out.println("Dialog State = " + dialog.getState());
 
-            this.shutDown();
+            this.byeSeen = true;
 
         } catch (Exception ex) {
             ex.printStackTrace();
-            System.exit(0);
+            TlsTest.fail("unepxected exception");
 
         }
     }
@@ -178,7 +138,7 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            System.exit(0);
+            TlsTest.fail("unexpected exception");
         }
 
     }
@@ -239,7 +199,7 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
             // in the classpath
             e.printStackTrace();
             System.err.println(e.getMessage());
-            System.exit(0);
+            TlsTest.fail("unexpected Exception");
         }
 
         try {
@@ -390,6 +350,7 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
             // Create the client transaction.
             listener.inviteTid = sipProvider.getNewClientTransaction(request);
 
+            Thread.sleep(100);
             // send the request out.
             listener.inviteTid.sendRequest();
             
@@ -406,14 +367,11 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             ex.printStackTrace();
-            usage();
+            TlsTest.fail("unexpected exception ");
         }
     }
 
-    public static void main(String args[]) {
-        new Shootist().init();
-
-    }
+  
 
     public void processIOException(IOExceptionEvent exceptionEvent) {
         System.out.println("IOException occured while retransmitting requests:" + exceptionEvent);
@@ -429,6 +387,7 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
 
     public void enforceTlsPolicy(ClientTransactionExt transaction) throws IOException {
         System.out.println("enforceTlsPolicy");
+        this.enforceTlsPolicyCalled = true;
         List<String> certIdentities = transaction.extractCertIdentities();
         if (certIdentities.isEmpty()) {
             System.out.println("Could not find any identities in the TLS certificate");
@@ -454,4 +413,12 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
             throw new IOException("Certificate identity does not match requested domain");
         }
     }
+    
+    public void checkState() {
+    	TlsTest.assertTrue("enforceTlsPolicy should be called ", this.enforceTlsPolicyCalled);
+    }
+    
+	public void stop() {
+		this.sipStack.stop();
+	}
 }
