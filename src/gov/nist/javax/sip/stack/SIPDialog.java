@@ -125,7 +125,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.164 $ $Date: 2010-02-21 00:56:48 $
+ * @version 1.2 $Revision: 1.165 $ $Date: 2010-02-21 07:47:23 $
  * 
  * @author M. Ranganathan
  * 
@@ -1572,45 +1572,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         if ( sipStack.isLoggingEnabled() ) {
         	sipStack.getStackLogger().logDebug("isBackToBackUserAgent = " + this.isBackToBackUserAgent );
         }
-        if ( transaction instanceof SIPServerTransaction &&
-        		sipRequest.getMethod().equals(Request.INVITE)            
-                && this.isBackToBackUserAgent()) {
-			// 
-			// Acquire the flag for re-INVITE so that we cannot re-INVITE before
-			// ACK is received.
-			//
-			if (!this.takeAckSem()) {
-				if ( sipStack.isLoggingEnabled()) {
-					sipStack.getStackLogger().logDebug("Could not add the transaction -- an INVITE is in progress");
-				}
-				SIPResponse sipResponse = sipRequest
-						.createResponse(Response.REQUEST_PENDING);
-				ServerHeader serverHeader = MessageFactoryImpl
-						.getDefaultServerHeader();
-				if (serverHeader != null) {
-					sipResponse.setHeader(serverHeader);
-				}
-				try {
-					RetryAfter retryAfter = new RetryAfter();
-					retryAfter.setRetryAfter(1);
-					sipResponse.setHeader(retryAfter);
-					if (sipRequest.getMethod().equals(Request.INVITE)) {
-						sipStack
-								.addTransactionPendingAck((SIPServerTransaction) transaction);
-					}
-					((SIPServerTransaction) transaction)
-							.sendResponse(sipResponse);
-					transaction.releaseSem();
-				} catch (Exception ex) {
-					sipStack.getStackLogger().logError(
-							"Problem sending error response", ex);
-					transaction.releaseSem();
-					sipStack.removeTransaction(transaction);
-				}
-				return false;
-			}
-
-		}
+        
+        
         
         this.lastTransaction = transaction;
     
@@ -2851,9 +2814,10 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                     }
                     /*
                      * We put the dialog into the table. We must wait for ACK before re-INVITE is
-                     * sent
+                     * sent.
                      */
-                 /*   if (transaction.getState() != TransactionState.TERMINATED
+                    
+                    if (transaction.getState() != TransactionState.TERMINATED
                             && sipResponse.getStatusCode() == Response.OK
                             && cseqMethod.equals(Request.INVITE)
                             && this.isBackToBackUserAgent) {
@@ -2870,7 +2834,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                                 return;
                             }
                         
-                    } */
+                    }
+                    
                 }
             }
 
