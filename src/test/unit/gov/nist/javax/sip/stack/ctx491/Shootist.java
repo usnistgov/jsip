@@ -69,8 +69,7 @@ public class Shootist implements SipListener {
 
     private static final int myPort = 5060;
 
-    protected ClientTransaction inviteTid;
-
+  
     private boolean okReceived;
 
     private boolean byeOkRecieved;
@@ -223,6 +222,16 @@ public class Shootist implements SipListener {
 
                 ClientTransaction ct = provider.getNewClientTransaction(inviteRequest);
                 dialog.sendRequest(ct);
+                inviteRequest = dialog.createRequest(Request.INVITE);
+                ((SipURI) inviteRequest.getRequestURI()).removeParameter("transport");
+                ((ViaHeader) inviteRequest.getHeader(ViaHeader.NAME)).setTransport("udp");
+                inviteRequest.addHeader(contactHeader);
+                mf = protocolObjects.headerFactory.createMaxForwardsHeader(10);
+                inviteRequest.addHeader(mf);
+
+                ct = provider.getNewClientTransaction(inviteRequest);
+                dialog.sendRequest(ct);
+             
 
             } else if (response.getStatusCode() == Response.OK
                     && ((CSeqHeader) response.getHeader(CSeqHeader.NAME)).getMethod().equals(
@@ -375,14 +384,16 @@ public class Shootist implements SipListener {
             request.addHeader(callInfoHeader);
 
             // Create the client transaction.
-            this.inviteTid = provider.getNewClientTransaction(request);
-            this.dialog = this.inviteTid.getDialog();
+            ClientTransaction inviteTid = provider.getNewClientTransaction(request);
+            this.dialog = inviteTid.getDialog();
             // Note that the response may have arrived right away so
             // we cannot check after the message is sent.
             ReInviteTest.assertTrue(this.dialog.getState() == null);
 
             // send the request out.
-            this.inviteTid.sendRequest();
+            inviteTid.sendRequest();
+            
+            
 
         } catch (Exception ex) {
             logger.error("Unexpected exception", ex);

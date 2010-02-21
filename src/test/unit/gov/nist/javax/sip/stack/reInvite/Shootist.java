@@ -441,7 +441,7 @@ public class Shootist  implements SipListener {
     public void checkState() {
         ReInviteTest.assertTrue("Expect to send a re-invite" , reInviteCount == 2 && this.okReceived);
         ReInviteTest.assertTrue("Expect to send a bye and get OK for the bye", this.byeSent && this.byeOkRecieved);
-        ReInviteTest.assertTrue("Expecting a re-invite",this.reInviteReceivedCount == 1);
+        ReInviteTest.assertEquals("Expecting a re-invite", 1, this.reInviteReceivedCount);
 
     }
 
