@@ -167,7 +167,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.121 $ $Date: 2010-02-16 05:08:30 $
+ * @version 1.2 $Revision: 1.122 $ $Date: 2010-02-21 00:56:47 $
  * @author M. Ranganathan
  *
  */
@@ -484,10 +484,13 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                 MessageChannel messageChannel = ((SIPTransactionStack) getSIPStack())
                         .createRawMessageChannel(this.getSipProvider().getListeningPoint(
                                 hop.getTransport()).getIPAddress(), this.getPort(), hop);
-                if (messageChannel != null)
+                if (messageChannel != null) {
                     messageChannel.sendMessage(transactionResponse);
-                else
-                    throw new IOException("Could not create a message channel for " + hop);
+                } else {
+                    throw new IOException("Could not create a message channel for " + hop + " with source IP:Port "+
+                    		this.getSipProvider().getListeningPoint(
+                                    hop.getTransport()).getIPAddress() + ":" + this.getPort());
+                }
 
             }
         } finally {
@@ -760,7 +763,11 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
                 }
 
-               
+                // This is the interlock that prevents re-INVITEs from being dispatched before ACK arrives 
+                // on the transaction.
+                if ( this.dialog != null && this.dialog.isBackToBackUserAgent() ) {
+                	this.dialog.releaseAckSem();
+                }
                 // JvB: For the purpose of testing a TI, added a property to
                 // pass it anyway
                 if (sipStack.isNon2XXAckPassedToListener()) {
@@ -1175,6 +1182,12 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
             
         }
         SIPDialog dialog = (SIPDialog) this.dialog;
+        
+        if (dialog != null && this.isInviteTransaction() && dialog.isBackToBackUserAgent() && 
+        		this.getState() != TransactionState.TERMINATED ) {
+        	dialog.releaseAckSem();
+        }
+        
         if (((SIPTransactionStack) getSIPStack()).isDialogCreated(this.getOriginalRequest()
                 .getMethod())
                 && (TransactionState.CALLING == this.getRealState() || TransactionState.TRYING == this
@@ -1209,6 +1222,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
             // This state could be reached when retransmitting
 
             raiseErrorEvent(SIPTransactionErrorEvent.TIMEOUT_ERROR);
+            // TODO -- check this. This does not look right.
             if (dialog != null)
                 dialog.setState(SIPDialog.TERMINATED_STATE);
         }

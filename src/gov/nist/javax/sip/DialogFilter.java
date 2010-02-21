@@ -83,7 +83,7 @@ import javax.sip.message.Response;
  * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
  * and event model with the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.68 $ $Date: 2010-02-16 05:08:37 $
+ * @version 1.2 $Revision: 1.69 $ $Date: 2010-02-21 00:56:54 $
  * 
  * @author M. Ranganathan
  */
@@ -444,6 +444,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                 // take care of it.
                 if (sipStack.isLoggingEnabled())
                     sipStack.getStackLogger().logDebug("Processing ACK for INVITE Tx ");
+               
 
             } else {
                 if (sipStack.isLoggingEnabled())
@@ -537,8 +538,9 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                             }
                         }
                     } else {
-                        transaction.passToListener();
+                       
                         dialog.addTransaction(transaction);
+                        transaction.passToListener();
                         dialog.addRoute(sipRequest);
                         transaction.setDialog(dialog, dialogId);
                         if (sipRequest.getMethod().equals(Request.INVITE)
@@ -849,11 +851,18 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     && sipProvider.isDialogErrorsAutomaticallyHandled()
                     && lastTransaction.isInviteTransaction()
                     && lastTransaction instanceof ServerTransaction 
-                    && !dialog.isAckSeen()) {
+                    /* && !dialog.isAckSeen() */
+                    && lastTransaction.getState().equals(TransactionState.PROCEEDING) 
+                    ) {
+            	// Note that the completed state will be reached when we have sent an error 
+            	// response and the terminated state will be reached when we have sent an OK 
+            	// response. We do not need to wait till the ACK to be seen.
                 if (sipStack.isLoggingEnabled()) {
                     sipStack.getStackLogger().logDebug(
                             "Sending 491 response for server Dialog ACK not seen.");
                     sipStack.getStackLogger().logDebug("Last SipResponse sent " + dialog.getLastResponse());
+                    
+                    sipStack.getStackLogger().logDebug("last Transaction state = " + lastTransaction + " state "+ lastTransaction.getState());
                 }
                 this.sendRequestPendingResponse(sipRequest, transaction);
                 return;
@@ -908,7 +917,9 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                 if (sipProvider == dialog.getSipProvider()) {
                     sipStack.addTransaction(transaction);
                     // This will set the remote sequence number.
-                    dialog.addTransaction(transaction);
+                    if ( ! dialog.addTransaction(transaction) ) {
+                    	return;
+                    }
                     dialog.addRoute(sipRequest);
                     transaction.setDialog(dialog, dialogId);
 

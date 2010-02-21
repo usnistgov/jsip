@@ -96,13 +96,10 @@ public class Shootme  implements SipListener {
 
     }
 
-    /**
-     * Process the ACK request. Send the bye and complete the call flow.
-     */
+    
     public void processAck(RequestEvent requestEvent,
             ServerTransaction serverTransaction) {
-       ReInviteTest.fail("Should not see ACK");
-    }
+   }
 
     /**
      * Process the invite request.
@@ -138,6 +135,7 @@ public class Shootme  implements SipListener {
                 // this is a re-invite.
                 logger.info("This is a RE INVITE ");
                 ReInviteTest.assertSame("Dialog mismatch ", st.getDialog(),this.dialog);
+                Thread.sleep(100);
             }
 
             // Thread.sleep(5000);
@@ -173,22 +171,7 @@ public class Shootme  implements SipListener {
         }
     }
 
-    public void sendReInvite(SipProvider sipProvider) throws Exception {
-        Request inviteRequest = dialog.createRequest(Request.INVITE);
-        ((SipURI) inviteRequest.getRequestURI()).removeParameter("transport");
-        MaxForwardsHeader mf = protocolObjects.headerFactory.createMaxForwardsHeader(10);
-        inviteRequest.addHeader(mf);
-        ((ViaHeader) inviteRequest.getHeader(ViaHeader.NAME))
-                .setTransport(protocolObjects.transport);
-        Address address = protocolObjects.addressFactory.createAddress("Shootme <sip:"
-                + myAddress + ":" + myPort + ">");
-        ContactHeader contactHeader = protocolObjects.headerFactory
-                .createContactHeader(address);
-        inviteRequest.addHeader(contactHeader);
-        ClientTransaction ct = sipProvider
-                .getNewClientTransaction(inviteRequest);
-        dialog.sendRequest(ct);
-    }
+   
 
     /**
      * Process the bye request.
@@ -272,6 +255,7 @@ public class Shootme  implements SipListener {
 
 
         SipProvider sipProvider = protocolObjects.sipStack.createSipProvider(lp);
+        sipProvider.addListeningPoint(lp);
         return sipProvider;
     }
 

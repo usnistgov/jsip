@@ -116,10 +116,10 @@ public class Shootme  implements SipListener {
                 Thread.sleep(100);
                 this.sendReInvite(sipProvider);
 
-            } else {
-                ((ApplicationData) dialog.getApplicationData()).ackCount++;
+            } 
+            ((ApplicationData) dialog.getApplicationData()).ackCount++;
                
-            }
+          
                 
         } catch (Exception ex) {
             String s = "Unexpected error";
@@ -327,7 +327,7 @@ public class Shootme  implements SipListener {
 
     public void checkState() {
         ApplicationData data = (ApplicationData) dialog.getApplicationData();
-        ReInviteTest.assertTrue(data.ackCount == 1);
+        ReInviteTest.assertTrue("Must see ack", 2 <= data.ackCount);
         ReInviteTest.assertTrue(okRecieved);
     }
     /*
