@@ -167,7 +167,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.122 $ $Date: 2010-02-21 00:56:47 $
+ * @version 1.2 $Revision: 1.123 $ $Date: 2010-02-21 07:47:23 $
  * @author M. Ranganathan
  *
  */
@@ -763,11 +763,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
                 }
 
-                // This is the interlock that prevents re-INVITEs from being dispatched before ACK arrives 
-                // on the transaction.
-                if ( this.dialog != null && this.dialog.isBackToBackUserAgent() ) {
-                	this.dialog.releaseAckSem();
-                }
+               
                 // JvB: For the purpose of testing a TI, added a property to
                 // pass it anyway
                 if (sipStack.isNon2XXAckPassedToListener()) {
@@ -1183,10 +1179,6 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
         }
         SIPDialog dialog = (SIPDialog) this.dialog;
         
-        if (dialog != null && this.isInviteTransaction() && dialog.isBackToBackUserAgent() && 
-        		this.getState() != TransactionState.TERMINATED ) {
-        	dialog.releaseAckSem();
-        }
         
         if (((SIPTransactionStack) getSIPStack()).isDialogCreated(this.getOriginalRequest()
                 .getMethod())
