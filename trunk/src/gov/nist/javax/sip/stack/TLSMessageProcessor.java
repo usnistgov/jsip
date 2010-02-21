@@ -59,7 +59,7 @@ import java.util.Iterator;
  * connection. This is the active object that creates new TLS MessageChannels (one for each new
  * accept socket).
  * 
- * @version 1.2 $Revision: 1.23 $ $Date: 2009-12-06 15:58:39 $
+ * @version 1.2 $Revision: 1.24 $ $Date: 2010-02-21 00:56:47 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -113,7 +113,7 @@ public class TLSMessageProcessor extends MessageProcessor {
         ((SSLServerSocket)this.sock).setWantClientAuth(true);
 
 
-        this.isRunning = true;
+     //   this.isRunning = true;
         thread.start();
 
     }

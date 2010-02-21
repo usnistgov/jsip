@@ -445,7 +445,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.120 $ $Date: 2010-02-19 02:15:46 $
+ * @version 1.2 $Revision: 1.121 $ $Date: 2010-02-21 00:56:54 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -1314,6 +1314,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 	public void stop() {
 		if (isLoggingEnabled()) {
 			getStackLogger().logDebug("stopStack -- stoppping the stack");
+			getStackLogger().logStackTrace();
 		}
 		this.stopStack();
 		this.sipProviders = new LinkedList<SipProviderImpl>();

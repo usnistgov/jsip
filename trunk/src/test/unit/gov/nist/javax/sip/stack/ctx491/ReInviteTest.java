@@ -70,7 +70,6 @@ public class ReInviteTest extends ScenarioHarness implements SipListener {
     private SipListener getSipListener(EventObject sipEvent) {
         SipProvider source = (SipProvider) sipEvent.getSource();
         SipListener listener = (SipListener) providerTable.get(source);
-        assertTrue(listener != null);
         return listener;
     }
 
@@ -114,15 +113,18 @@ public class ReInviteTest extends ScenarioHarness implements SipListener {
 
     public void tearDown() {
         try {
-            Thread.sleep(2000);
+            Thread.sleep(8000);
             this.shootist.checkState();
-            this.shootme.checkState();
-            super.tearDown();
-            Thread.sleep(1000);
+            this.shootme.checkState();     
             this.providerTable.clear();
             logTestCompleted();
         } catch (Exception ex) {
             ex.printStackTrace();
+        } finally {
+        	try {
+        		super.tearDown();
+        	} catch (Exception ex) { ex.printStackTrace(); }
+             
         }
 
     }
@@ -148,6 +150,7 @@ public class ReInviteTest extends ScenarioHarness implements SipListener {
 
     public void processTransactionTerminated(
             TransactionTerminatedEvent transactionTerminatedEvent) {
+    	if (  getSipListener(transactionTerminatedEvent) != null )
         getSipListener(transactionTerminatedEvent)
                 .processTransactionTerminated(transactionTerminatedEvent);
 
@@ -155,6 +158,7 @@ public class ReInviteTest extends ScenarioHarness implements SipListener {
 
     public void processDialogTerminated(
             DialogTerminatedEvent dialogTerminatedEvent) {
+    	if (  getSipListener(dialogTerminatedEvent) != null )
         getSipListener(dialogTerminatedEvent).processDialogTerminated(
                 dialogTerminatedEvent);
 
