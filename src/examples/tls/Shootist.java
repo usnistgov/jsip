@@ -3,6 +3,7 @@ import gov.nist.javax.sip.ClientTransactionExt;
 import gov.nist.javax.sip.TlsSecurityPolicy;
 import gov.nist.javax.sip.stack.SIPTransaction;
 
+import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.sip.*;
 import javax.sip.address.*;
 import javax.sip.header.*;
@@ -427,10 +428,14 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
         System.out.println("Dialog Terminated event: " + dialogTerminatedEvent);
     }
 
-    public void enforceTlsPolicy(ClientTransactionExt transaction) throws IOException {
+    public void enforceTlsPolicy(ClientTransactionExt transaction) throws SecurityException {
         System.out.println("enforceTlsPolicy");
-        List<String> certIdentities = transaction.extractCertIdentities();
-        if (certIdentities.isEmpty()) {
+        List<String> certIdentities = null;
+        try {
+            certIdentities = transaction.extractCertIdentities();
+        } catch (SSLPeerUnverifiedException e) {
+        }
+        if ((certIdentities == null) || certIdentities.isEmpty()) {
             System.out.println("Could not find any identities in the TLS certificate");
         }
         else {
@@ -451,7 +456,7 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
             }
         }
         if (!foundPeerIdentity) {
-            throw new IOException("Certificate identity does not match requested domain");
+            throw new SecurityException("Certificate identity does not match requested domain");
         }
     }
 }
