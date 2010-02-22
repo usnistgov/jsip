@@ -31,8 +31,13 @@ package gov.nist.javax.sip.stack;
 import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.SipStackImpl;
 
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.SocketAddress;
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
@@ -40,7 +45,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HandshakeCompletedListener;
 import javax.net.ssl.SSLSocket;
-import javax.sip.ClientTransaction;
 
 /*
  * TLS support Added by Daniel J.Martinez Manzano <dani@dif.um.es>
@@ -251,26 +255,28 @@ class IOHandler {
             // Copied and modified from the former section for TCP
         } else if (transport.compareToIgnoreCase(TLS) == 0) {
             String key = makeKey(receiverAddress, contactPort);
-            try {
+           try {
                 boolean retval = this.ioSemaphore.tryAcquire(10000, TimeUnit.MILLISECONDS);
                 if (!retval)
                     throw new IOException("Timeout acquiring IO SEM");
             } catch (InterruptedException ex) {
                 throw new IOException("exception in acquiring sem");
-            }
+            } 
             Socket clientSock = getSocket(key);
 
             try {
                 while (retry_count < max_retry) {
                     if (clientSock == null) {
-                        if (sipStack.isLoggingEnabled()) {
-                            sipStack.getStackLogger().logDebug("inaddr = " + receiverAddress);
-                            sipStack.getStackLogger().logDebug("port = " + contactPort);
-                        }
+                       
 
                         clientSock = sipStack.getNetworkLayer().createSSLSocket(receiverAddress,
                                 contactPort, senderAddress);
                         SSLSocket sslsock = (SSLSocket) clientSock;
+                        
+                        if (sipStack.isLoggingEnabled()) {
+                            sipStack.getStackLogger().logDebug("inaddr = " + receiverAddress);
+                            sipStack.getStackLogger().logDebug("port = " + contactPort);
+                        }
                         HandshakeCompletedListener listner = new HandshakeCompletedListenerImpl(
                                 (TLSMessageChannel) messageChannel);
                         ((TLSMessageChannel) messageChannel)
@@ -278,14 +284,20 @@ class IOHandler {
                         sslsock.addHandshakeCompletedListener(listner);
                         sslsock.setEnabledProtocols(sipStack.getEnabledProtocols());
                         sslsock.startHandshake();
-
-                        // allow application to enforce policy by validating the certificate
-                        try {
-                            sipStack.getTlsSecurityPolicy().enforceTlsPolicy(messageChannel.getEncapsulatedClientTransaction());
-                        } catch (SecurityException ex) {
-                            throw new IOException(ex.getMessage());
+                        if ( sipStack.isLoggingEnabled() ) {
+                        	this.sipStack.getStackLogger().logDebug("Handshake passed");
                         }
+                        // allow application to enforce policy by validating the certificate
 
+                        try {
+                        	sipStack.getTlsSecurityPolicy().enforceTlsPolicy(messageChannel.getEncapsulatedClientTransaction());
+                        } catch (SecurityException ex) {
+                        	throw new IOException(ex.getMessage());
+                        } 
+
+                        if ( sipStack.isLoggingEnabled() ) {
+                        	this.sipStack.getStackLogger().logDebug("TLS Security policy passed");
+                        }
                         OutputStream outputStream = clientSock.getOutputStream();
                         writeChunks(outputStream, bytes, length);
                         putSocket(key, clientSock);
@@ -311,7 +323,7 @@ class IOHandler {
                     }
                 }
             } finally {
-                ioSemaphore.release();
+               ioSemaphore.release();
             }
             if (clientSock == null) {
                 throw new IOException("Could not connect to " + receiverAddress + ":"
