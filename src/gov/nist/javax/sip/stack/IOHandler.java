@@ -283,7 +283,7 @@ class IOHandler {
                         try {
                             sipStack.getTlsSecurityPolicy().enforceTlsPolicy(messageChannel.getEncapsulatedClientTransaction());
                         } catch (SecurityException ex) {
-                            throw new IOException(ex.getMessage(), ex);
+                            throw new IOException(ex.getMessage());
                         }
 
                         OutputStream outputStream = clientSock.getOutputStream();
