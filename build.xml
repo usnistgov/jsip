@@ -427,6 +427,7 @@ c:/jakarta-ant/bin/ant all
                                 <include name="test/tck/msgflow/callflows/**/*Test.java" />
                                 <exclude name="test/tck/msgflow/callflows/**/Udp*Test.java" />
                             	<exclude name="test/tck/msgflow/callflows/sctp/**" />
+                                <!-- Tls Tests excluded for tck compliance  -->
                             </fileset>
                         </batchtest>
                     </junit>
@@ -658,7 +659,7 @@ c:/jakarta-ant/bin/ant all
 
                 <!-- This is the build verification test run by cruise control. -->
 
-                <target name="cc-buildloop" depends="dist,runtck,runtckcallflows,parsertest,unittest" />
+                <target name="cc-buildloop" depends="dist,runtck,parsertest,unittest" />
 
 
                 <!-- compile to traces viewer jar -->
