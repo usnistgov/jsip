@@ -164,6 +164,10 @@ public class MessageFlowHarness extends TestHarness {
                 "udp");
         tiSipProvider = tiSipStack.createSipProvider(tiListeningPoint);
 
+        // JvB: don't forget to start them!
+        riSipStack.start();
+        tiSipStack.start();
+        
         // If we don't wait for them to start first messages get lost and are
         // therefore reported as test failures.
         sleep(STACKS_START_FOR);
