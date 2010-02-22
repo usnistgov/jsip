@@ -35,12 +35,6 @@ public class HandshakeCompletedListenerImpl implements HandshakeCompletedListene
     
     public void handshakeCompleted(HandshakeCompletedEvent handshakeCompletedEvent) {
        this.handshakeCompletedEvent = handshakeCompletedEvent;
-       /*
-       try {
-           Thread.sleep(10);
-       } catch (InterruptedException ex) {
-           
-       }*/
     }
 
     /**

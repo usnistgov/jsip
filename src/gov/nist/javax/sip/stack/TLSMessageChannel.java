@@ -67,7 +67,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.29 $ $Date: 2010-02-21 00:56:48 $
+ * @version 1.2 $Revision: 1.30 $ $Date: 2010-02-22 23:32:57 $
  */
 public final class TLSMessageChannel extends MessageChannel implements SIPMessageListener,
         Runnable, RawMessageChannel {
@@ -82,7 +82,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
 
     protected boolean isCached;
 
-  //  protected boolean isRunning;
+    protected boolean isRunning;
 
     private Thread mythread;
 
@@ -270,7 +270,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
             Thread thread = new Thread(this);
             thread.setDaemon(true);
             thread.setName("TLSMessageChannelThread");
-      //      this.isRunning = true;     
+            this.isRunning = true;     
             thread.start();
         }
 
@@ -582,7 +582,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
         // bug fix by Emmanuel Proulx
         int bufferSize = 4096;
         this.tlsMessageProcessor.useCount++;
-      //  this.isRunning = true;
+        this.isRunning = true;
         try {
             while (true) {
                 try {
@@ -637,7 +637,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
                 }
             }
         } finally {
-          //  this.isRunning = false;
+            this.isRunning = false;
             this.tlsMessageProcessor.remove(this);
             this.tlsMessageProcessor.useCount--;
             this.myParser.close();
@@ -646,7 +646,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
     }
 
     protected void uncache() {
-    	if (isCached /*&& !isRunning */) {    	
+    	if (isCached /* && !isRunning */ ) {    	
     		this.tlsMessageProcessor.remove(this);
     	}
     }

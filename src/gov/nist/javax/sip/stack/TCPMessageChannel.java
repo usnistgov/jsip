@@ -59,7 +59,7 @@ import javax.sip.address.Hop;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.61 $ $Date: 2010-02-21 00:56:46 $
+ * @version 1.2 $Revision: 1.62 $ $Date: 2010-02-22 23:32:57 $
  */
 public class TCPMessageChannel extends MessageChannel implements SIPMessageListener, Runnable,
         RawMessageChannel {
@@ -76,7 +76,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
 
     protected boolean isCached;
 
-   // protected boolean isRunning;
+    protected boolean isRunning;
 
     private Thread mythread;
 
@@ -345,7 +345,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
             mythread.setDaemon(true);
             mythread.setName("TCPMessageChannelThread");
             // Need to set this here to avoid race condition. See issue 266
-            //this.isRunning = true; 
+            this.isRunning = true; 
             mythread.start();
         }
 
@@ -603,7 +603,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
         // bug fix by Emmanuel Proulx
         int bufferSize = 4096;
         this.tcpMessageProcessor.useCount++;
-    //    this.isRunning = true;
+        this.isRunning = true;
         try {
             while (true) {
                 try {
@@ -659,7 +659,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
                 }
             }
         } finally {
-         //   this.isRunning = false;
+            this.isRunning = false;
             this.tcpMessageProcessor.remove(this);
             this.tcpMessageProcessor.useCount--;
             myParser.close();
@@ -668,7 +668,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
     }
 
     protected void uncache() {
-    	if (isCached /* && !isRunning */) {
+    	if (isCached /* && !isRunning */ ) {
     		this.tcpMessageProcessor.remove(this);
     	}
     }

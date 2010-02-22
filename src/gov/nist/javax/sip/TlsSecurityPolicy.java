@@ -12,6 +12,8 @@ public interface TlsSecurityPolicy {
      * @param transaction -- the transaction context for the connection
      * @throws SecurityException -- if the certificates extracted from the client transaction are not acceptable.
      */
-    void enforceTlsPolicy(ClientTransactionExt transaction) throws SecurityException;
+
+    public void enforceTlsPolicy(ClientTransactionExt transaction) throws SecurityException;
+
 
 }
