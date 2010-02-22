@@ -59,7 +59,7 @@ import java.util.Iterator;
  * connection. This is the active object that creates new TLS MessageChannels (one for each new
  * accept socket).
  * 
- * @version 1.2 $Revision: 1.24 $ $Date: 2010-02-21 00:56:47 $
+ * @version 1.2 $Revision: 1.25 $ $Date: 2010-02-22 23:32:58 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -113,7 +113,7 @@ public class TLSMessageProcessor extends MessageProcessor {
         ((SSLServerSocket)this.sock).setWantClientAuth(true);
 
 
-     //   this.isRunning = true;
+        this.isRunning = true;
         thread.start();
 
     }
@@ -125,6 +125,7 @@ public class TLSMessageProcessor extends MessageProcessor {
         // Accept new connectins on our socket.
         while (this.isRunning) {
             try {
+            	 
                 synchronized (this) {
                     // sipStack.maxConnections == -1 means we are
                     // willing to handle an "infinite" number of
@@ -133,6 +134,7 @@ public class TLSMessageProcessor extends MessageProcessor {
                     while (sipStack.maxConnections != -1
                             && this.nConnections >= sipStack.maxConnections) {
                         try {
+                        	
                             this.wait();
 
                             if (!this.isRunning)
@@ -143,11 +145,15 @@ public class TLSMessageProcessor extends MessageProcessor {
                     }
                     this.nConnections++;
                 }
-
+                if (sipStack.isLoggingEnabled()) {
+                    sipStack.getStackLogger().logDebug(" waiting to accept new connection!");
+                }
+                
                 Socket newsock = sock.accept();
                
-                if (sipStack.isLoggingEnabled())
+                if (sipStack.isLoggingEnabled()) {
                     sipStack.getStackLogger().logDebug("Accepting new connection!");
+                }
 
                 
                // Note that for an incoming message channel, the
