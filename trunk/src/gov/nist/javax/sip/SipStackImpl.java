@@ -418,7 +418,7 @@ import javax.sip.message.Request;
  * </li>
  * 
  * <li><b>gov.nist.javax.sip.TLS_SECURITY_POLICY = String </b> The fully qualified path
- * name of a TLS listener implementation that is consulted for certificate verification 
+ * name of a TLS Security Policy implementation that is consulted for certificate verification
  * of outbund TLS connections.
  * </li>
  * 
@@ -445,7 +445,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.121 $ $Date: 2010-02-21 00:56:54 $
+ * @version 1.2 $Revision: 1.122 $ $Date: 2010-02-22 18:57:32 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -760,23 +760,24 @@ public class SipStackImpl extends SIPTransactionStack implements
 			}
 		}
 
-		// Allow application to hook in a TLS Listener
-		String tlsListenerPath = configurationProperties.getProperty("gov.nist.javax.sip.TLS_SECURITY_POLICY");
-		if (tlsListenerPath == null) {
-			tlsListenerPath = "gov.nist.javax.sip.stack.DefaultTlsSecurityPolicy";
+		// Allow application to hook in a TLS Security Policy implementation
+		String tlsPolicyPath = configurationProperties.getProperty("gov.nist.javax.sip.TLS_SECURITY_POLICY");
+		if (tlsPolicyPath == null) {
+			tlsPolicyPath = "gov.nist.javax.sip.stack.DefaultTlsSecurityPolicy";
+			getStackLogger().logWarning("using default tls security policy");
 		}
 		try {
-			Class< ? > tlsListenerClass = Class.forName(tlsListenerPath);
+			Class< ? > tlsPolicyClass = Class.forName(tlsPolicyPath);
 			Class< ? >[] constructorArgs = new Class[0];
-			Constructor< ? > cons = tlsListenerClass.getConstructor(constructorArgs);
+			Constructor< ? > cons = tlsPolicyClass.getConstructor(constructorArgs);
 			Object[] args = new Object[0];
 			this.tlsSecurityPolicy = (TlsSecurityPolicy) cons.newInstance(args);
 		} catch (InvocationTargetException ex1) {
-			throw new IllegalArgumentException("Cound not instantiate tls listener " + tlsListenerPath
+			throw new IllegalArgumentException("Cound not instantiate TLS security policy " + tlsPolicyPath
 					+ "- check that it is present on the classpath and that there is a no-args constructor defined",
 					ex1);
 		} catch (Exception ex) {
-			throw new IllegalArgumentException("Cound not instantiate tls listener " + tlsListenerPath
+			throw new IllegalArgumentException("Cound not instantiate TLS security policy " + tlsPolicyPath
 					+ "- check that it is present on the classpath and that there is a no-args constructor defined",
 					ex);
 		}
@@ -1355,12 +1356,12 @@ public class SipStackImpl extends SIPTransactionStack implements
 	}
 
 	/**
-	 * Get the TLS listener for the stack. The TlsListener is application code.
+	 * Get the TLS Security Policy implementation for the stack. The TlsSecurityPolicy is application code.
 	 *
-	 * @return -- the stack SipListener
+	 * @return -- the TLS Security Policy implementation
 	 *
 	 */
-	public TlsSecurityPolicy getTlsListener() {
+	public TlsSecurityPolicy getTlsSecurityPolicy() {
 		return this.tlsSecurityPolicy;
 	}
 

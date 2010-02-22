@@ -280,7 +280,11 @@ class IOHandler {
                         sslsock.startHandshake();
 
                         // allow application to enforce policy by validating the certificate
-                        sipStack.getTlsListener().enforceTlsPolicy(messageChannel.getEncapsulatedClientTransaction());
+                        try {
+                            sipStack.getTlsSecurityPolicy().enforceTlsPolicy(messageChannel.getEncapsulatedClientTransaction());
+                        } catch (SecurityException ex) {
+                            throw new IOException(ex.getMessage(), ex);
+                        }
 
                         OutputStream outputStream = clientSock.getOutputStream();
                         writeChunks(outputStream, bytes, length);
