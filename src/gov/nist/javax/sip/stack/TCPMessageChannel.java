@@ -59,7 +59,7 @@ import javax.sip.address.Hop;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.62 $ $Date: 2010-02-22 23:32:57 $
+ * @version 1.2 $Revision: 1.63 $ $Date: 2010-02-23 02:33:42 $
  */
 public class TCPMessageChannel extends MessageChannel implements SIPMessageListener, Runnable,
         RawMessageChannel {
@@ -668,7 +668,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
     }
 
     protected void uncache() {
-    	if (isCached /* && !isRunning */ ) {
+    	if (isCached  && !isRunning ) {
     		this.tcpMessageProcessor.remove(this);
     	}
     }

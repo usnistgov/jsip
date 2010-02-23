@@ -67,7 +67,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.30 $ $Date: 2010-02-22 23:32:57 $
+ * @version 1.2 $Revision: 1.31 $ $Date: 2010-02-23 02:33:43 $
  */
 public final class TLSMessageChannel extends MessageChannel implements SIPMessageListener,
         Runnable, RawMessageChannel {
@@ -646,7 +646,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
     }
 
     protected void uncache() {
-    	if (isCached /* && !isRunning */ ) {    	
+    	if (isCached && !isRunning  ) {    	
     		this.tlsMessageProcessor.remove(this);
     	}
     }
