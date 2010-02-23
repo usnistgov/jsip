@@ -26,7 +26,7 @@ public class ProtocolObjects {
 
     public static String logFileDirectory = "";
 
-    public static String transport = "udp";
+    public static String transport = "tcp";
 
 
 
