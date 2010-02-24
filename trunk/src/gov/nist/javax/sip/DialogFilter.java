@@ -83,7 +83,7 @@ import javax.sip.message.Response;
  * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
  * and event model with the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.69 $ $Date: 2010-02-21 00:56:54 $
+ * @version 1.2 $Revision: 1.70 $ $Date: 2010-02-24 19:20:39 $
  * 
  * @author M. Ranganathan
  */
@@ -406,21 +406,22 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             }
 
             /*
-             * A refer cannot be processed until we have either sent or received an ACK.
+             * A refer cannot be processed until previous transaction has been completed.
              */
             SIPTransaction lastTransaction = ((SIPDialog) dialog).getLastTransaction();
             if (lastTransaction != null  && sipProvider.isDialogErrorsAutomaticallyHandled()) {
                 SIPRequest lastRequest = (SIPRequest) lastTransaction.getRequest();
                 if (lastTransaction instanceof SIPServerTransaction) {
-                    if (!((SIPDialog) dialog).isAckSeen()   
+                    if (lastTransaction.getState() == TransactionState.PROCEEDING
                             && lastRequest.getMethod().equals(Request.INVITE)) {
                         this.sendRequestPendingResponse(sipRequest, transaction);
                         return;
                     }
-                } else if (lastTransaction instanceof SIPClientTransaction) {
+                } else if (lastTransaction != null && lastTransaction instanceof SIPClientTransaction) {
                     long cseqno = lastRequest.getCSeqHeader().getSeqNumber();
                     String method = lastRequest.getMethod();
-                    if (method.equals(Request.INVITE) && !dialog.isAckSent(cseqno)) {
+                    if (method.equals(Request.INVITE) && lastTransaction.getState() != TransactionState.TERMINATED &&
+                    		lastTransaction.getState() != TransactionState.COMPLETED ) {
                         this.sendRequestPendingResponse(sipRequest, transaction);
                         return;
                     }
