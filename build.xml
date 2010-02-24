@@ -663,7 +663,7 @@ c:/jakarta-ant/bin/ant all
 
                 <!-- This is the build verification test run by cruise control. -->
 
-                <target name="cc-buildloop" depends="dist,runtck,runtckcallflows,parsertest,unittest,tlstests" />
+                <target name="cc-buildloop" depends="dist,runtck,runtckcallflows,parsertest,unittest" />
 
 
                 <!-- compile to traces viewer jar -->
