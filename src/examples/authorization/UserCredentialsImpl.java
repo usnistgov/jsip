@@ -13,7 +13,7 @@ public class UserCredentialsImpl implements UserCredentials {
         this.password = password;
     }
 
-    @Override
+  
     public String getPassword() {
         return password;
     }
