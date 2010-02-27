@@ -76,6 +76,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -125,7 +127,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.165 $ $Date: 2010-02-21 07:47:23 $
+ * @version 1.2 $Revision: 1.166 $ $Date: 2010-02-27 06:09:01 $
  * 
  * @author M. Ranganathan
  * 
@@ -2050,10 +2052,11 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     public void sendRequest(ClientTransaction clientTransactionId, boolean allowInterleaving)
             throws TransactionDoesNotExistException, SipException {
 
-        if ( (!allowInterleaving)
-                && clientTransactionId.getRequest().getMethod().equals(Request.INVITE)) {
-            new Thread((new ReInviteSender(clientTransactionId))).start();
-            return;
+        if ((!allowInterleaving) 
+            && clientTransactionId.getRequest().getMethod().equals(Request.INVITE)) 
+        {
+          sipStack.getReinviteExecutor().execute((new ReInviteSender(clientTransactionId)));
+          return;
         }
 
         SIPRequest dialogRequest = ((SIPClientTransaction) clientTransactionId)

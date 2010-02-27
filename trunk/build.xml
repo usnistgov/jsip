@@ -449,13 +449,10 @@ c:/jakarta-ant/bin/ant all
 
                     <junit fork="yes" showoutput="yes" failureproperty="testing.failed">
                         <classpath>
-                            <pathelement location="${jain-sip-api-jar}" />
-                            <pathelement location="${jain-sip-ri-jar}" />
+                            <pathelement location="${classes}" />
                             <pathelement location="${log4j_jar}" />
-                            <pathelement location="${jain-sip-tck-jar}" />
                             <pathelement location='${junit_jar}' />
                             <pathelement location='${log4j_jar}' />
-                            <pathelement location='${unit_test_jar}' />
 
                             <!-- add source path since this will pick up test.tck.gui.images -->
                             <pathelement location='src' />

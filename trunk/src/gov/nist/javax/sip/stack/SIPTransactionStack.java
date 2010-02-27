@@ -61,6 +61,9 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.sip.ClientTransaction;
@@ -95,7 +98,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.145 $ $Date: 2010-02-12 13:50:54 $
+ * @version 1.2 $Revision: 1.146 $ $Date: 2010-02-27 06:09:00 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener, SIPDialogEventListener {
 
@@ -378,6 +381,17 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 	protected int dialogTimeoutFactor = 64;
 
    
+	  /**
+	   * Executor used to optimise the ReinviteSender Runnable in the sendRequest of the SipDialog
+	   */
+	  private ExecutorService reinviteExecutor = Executors.newCachedThreadPool(new ThreadFactory() {
+	    private int threadCount = 0;
+
+	    public Thread newThread(Runnable pRunnable) {
+	      return new Thread(pRunnable, String.format("%s-%d", "ReInviteSender", threadCount++));
+	    }
+    });
+	
     // / Timer to regularly ping the thread auditor (on behalf of the timer
     // thread)
     class PingTimer extends SIPStackTimerTask {
@@ -2578,6 +2592,12 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
 	}
 	
 	public abstract SipListener getSipListener();
-	
+
+	/**
+   * Executor used to optimize the ReinviteSender Runnable in the sendRequest of the SipDialog
+   */
+	public ExecutorService getReinviteExecutor() {
+    return reinviteExecutor;
+  }
 	
 }

@@ -97,8 +97,7 @@ public class Pipeline extends InputStream {
         }
 
         public int getNextByte() {
-            int retval = bytes[ptr++] & 0xFF;
-            return retval;
+            return (int) bytes[ptr++] & 0xFF;
         }
 
     }
