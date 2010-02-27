@@ -53,7 +53,7 @@ import java.io.*;
  * accessed from the SIPMessage using the getContent and getContentBytes methods
  * provided by the SIPMessage class.
  *
- * @version 1.2 $Revision: 1.23 $ $Date: 2009-08-16 17:28:28 $
+ * @version 1.2 $Revision: 1.24 $ $Date: 2010-02-27 06:09:00 $
  *
  * @author M. Ranganathan
  *
@@ -179,14 +179,14 @@ public final class PipelinedMsgParser implements Runnable {
      * switch encodings mid-stream!
      */
     private String readLine(InputStream inputStream) throws IOException {
-        StringBuffer retval = new StringBuffer("");
+        StringBuilder retval = new StringBuilder("");
         while (true) {
             char ch;
             int i = inputStream.read();
             if (i == -1) {
                 throw new IOException("End of stream");
             } else
-                ch = (char) i;
+                ch = (char) ( i & 0xFF);
             // reduce the available read size by 1 ("size" of a char).
             if (this.maxMessageSize > 0) {
                 this.sizeCounter--;
@@ -366,6 +366,14 @@ public final class PipelinedMsgParser implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.23  2009/08/16 17:28:28  mranga
+ * Issue number:  208
+ * Obtained from:
+ * Submitted by:
+ * Reviewed by:
+ *
+ * Add authentication mechanism that uses H(username:domain:password)
+ *
  * Revision 1.22  2009/07/17 18:58:02  emcho
  * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
  *

@@ -78,16 +78,16 @@ public class TlsTest extends ScenarioHarness implements SipListener {
             this.transport = "tls";
 
             super.setUp();
-            shootist = new Shootist(getRiProtocolObjects());
-            SipProvider shootistProvider = shootist.createSipProvider();
-            providerTable.put(shootistProvider, shootist);
-
+        
             shootme = new Shootme(getTiProtocolObjects());
             SipProvider shootmeProvider = shootme.createSipProvider();
             providerTable.put(shootmeProvider, shootme);
-            shootistProvider.addSipListener(this);
+            shootist = new Shootist(getRiProtocolObjects());
+            SipProvider shootistProvider = shootist.createSipProvider();
+            providerTable.put(shootistProvider, shootist);
             shootmeProvider.addSipListener(this);
-
+            shootistProvider.addSipListener(this);
+             
             getRiProtocolObjects().start();
             if (getTiProtocolObjects() != getRiProtocolObjects())
                 getTiProtocolObjects().start();
@@ -103,7 +103,7 @@ public class TlsTest extends ScenarioHarness implements SipListener {
 
     public void tearDown() {
         try {
-            Thread.sleep(2000);
+            Thread.sleep(8000);
             this.shootist.checkState();
             this.shootme.checkState();
             getTiProtocolObjects().destroy();
