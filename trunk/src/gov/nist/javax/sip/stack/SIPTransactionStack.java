@@ -98,7 +98,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.146 $ $Date: 2010-02-27 06:09:00 $
+ * @version 1.2 $Revision: 1.147 $ $Date: 2010-03-06 04:12:09 $
  */
 public abstract class SIPTransactionStack implements SIPTransactionEventListener, SIPDialogEventListener {
 
@@ -1081,29 +1081,13 @@ public abstract class SIPTransactionStack implements SIPTransactionEventListener
             return null;
         }
         String mergeId = sipRequest.getMergeId();
-        SIPServerTransaction mergedTransaction = (SIPServerTransaction) this.mergeTable.get(mergeId);
-        if (mergeId == null ) {
-            return null;
-        } else if (mergedTransaction != null && !mergedTransaction.isMessagePartOfTransaction(sipRequest) ) {
+        if (mergeId != null ) {
+          SIPServerTransaction mergedTransaction = (SIPServerTransaction) this.mergeTable.get(mergeId);
+          if (mergedTransaction != null && !mergedTransaction.isMessagePartOfTransaction(sipRequest) ) {
             return mergedTransaction;
-        } else {
-            /*
-             * Check the server transactions that have resulted in dialogs.
-             */
-           for (Dialog dialog: this.dialogTable.values() ) {
-               SIPDialog sipDialog = (SIPDialog) dialog ;
-               if (sipDialog.getFirstTransaction()  != null && 
-                   sipDialog.getFirstTransaction() instanceof ServerTransaction) {
-                   SIPServerTransaction serverTransaction = ((SIPServerTransaction) sipDialog.getFirstTransaction());
-                   SIPRequest transactionRequest = ((SIPServerTransaction) sipDialog.getFirstTransaction()).getOriginalRequest();
-                   if ( (! serverTransaction.isMessagePartOfTransaction(sipRequest))
-                           && sipRequest.getMergeId().equals(transactionRequest.getMergeId())) {
-                           return (SIPServerTransaction) sipDialog.getFirstTransaction();  
-                   }
-               }
-           } 
-           return null;
+          }
         }
+        return null;
     }
 
     /**

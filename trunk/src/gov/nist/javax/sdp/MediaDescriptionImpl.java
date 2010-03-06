@@ -521,6 +521,23 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
         }
     }
 
+    public String getDuplexity() {
+    	  int i = 0;
+          for (i = 0; i < this.attributeFields.size(); i++) {
+              AttributeField af = (AttributeField) this.attributeFields
+                      .elementAt(i);
+              if (af.getAttribute().getName().equalsIgnoreCase("sendrecv") ||
+                      af.getAttribute().getName().equalsIgnoreCase("recvonly") ||
+                      af.getAttribute().getName().equalsIgnoreCase("sendonly") ||
+                      af.getAttribute().getName().equalsIgnoreCase("inactive")) {
+            	  return af.getAttribute().getName();
+              }
+          }
+          return null;
+         
+    }
+    
+    
     public void setDuplexity(String duplexity) {
         if ( duplexity == null ) throw new NullPointerException("Null arg");
         int i = 0;
