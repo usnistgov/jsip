@@ -127,7 +127,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.166 $ $Date: 2010-02-27 06:09:01 $
+ * @version 1.2 $Revision: 1.167 $ $Date: 2010-03-06 19:03:10 $
  * 
  * @author M. Ranganathan
  * 
@@ -272,8 +272,11 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     protected String firstTransactionMethod;
     protected String firstTransactionId;
     protected boolean firstTransactionIsServerTransaction;
+    protected String firstTransactionMergeId;
     protected int firstTransactionPort = 5060;   
     protected Contact contactHeader;
+
+	private String mergeId;
 
     // //////////////////////////////////////////////////////
     // Inner classes
@@ -1485,6 +1488,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     	dialog.firstTransactionPort = transaction.getPort();
     	dialog.firstTransactionId = transaction.getBranchId();
     	dialog.firstTransactionMethod = transaction.getMethod();
+    	if ( transaction instanceof SIPServerTransaction && dialog.firstTransactionMethod.equals(Request.INVITE) ) {
+    		dialog.firstTransactionMergeId = ((SIPRequest) transaction.getRequest()).getMergeId();
+    	}
     	
         if (dialog.isServer()) {
             SIPServerTransaction st = (SIPServerTransaction) transaction;
@@ -3382,7 +3388,14 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     
     public void releaseTimerTaskSem() {
         this.timerTaskLock.release();
-    }    
+    }
+
+	
+	
+	public String getMergeId( ) {
+		return mergeId;
+	}
+	
     
 	
 }
