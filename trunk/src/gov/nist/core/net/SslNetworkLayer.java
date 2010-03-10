@@ -74,8 +74,10 @@ public class SslNetworkLayer implements NetworkLayer {
         KeyManagerFactory kmFactory = KeyManagerFactory.getInstance(algorithm);
         SecureRandom secureRandom   = new SecureRandom();
         secureRandom.nextInt();
-        KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-        KeyStore trustStore = KeyStore.getInstance(keyStoreType);
+        KeyStore keyStore = KeyStore.getInstance(
+             keyStoreType != null ? keyStoreType : KeyStore.getDefaultType());
+        KeyStore trustStore = KeyStore.getInstance(
+             keyStoreType != null ? keyStoreType : KeyStore.getDefaultType());
         keyStore.load(new FileInputStream(keyStoreFile), keyStorePassword);
         trustStore.load(new FileInputStream(trustStoreFile), keyStorePassword);
         tmFactory.init(trustStore);
