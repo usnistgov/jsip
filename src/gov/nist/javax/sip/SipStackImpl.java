@@ -445,7 +445,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.122 $ $Date: 2010-02-22 18:57:32 $
+ * @version 1.2 $Revision: 1.123 $ $Date: 2010-03-10 00:27:24 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -706,7 +706,9 @@ public class SipStackImpl extends SIPTransactionStack implements
 					.getProperty("javax.net.ssl.keyStorePassword");
 			try {
 				this.networkLayer = new SslNetworkLayer(trustStoreFile,
-						keyStoreFile, keyStorePassword.toCharArray(),
+						keyStoreFile,
+						keyStorePassword != null ?
+						    keyStorePassword.toCharArray() : null,
 						configurationProperties
 								.getProperty("javax.net.ssl.keyStoreType"));
 			} catch (Exception e1) {
