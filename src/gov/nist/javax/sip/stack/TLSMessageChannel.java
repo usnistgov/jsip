@@ -67,7 +67,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.31 $ $Date: 2010-02-23 02:33:43 $
+ * @version 1.2 $Revision: 1.32 $ $Date: 2010-03-12 20:00:36 $
  */
 public final class TLSMessageChannel extends MessageChannel implements SIPMessageListener,
         Runnable, RawMessageChannel {
@@ -82,7 +82,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
 
     protected boolean isCached;
 
-    protected boolean isRunning;
+    protected boolean isRunning = true;
 
     private Thread mythread;
 
@@ -270,7 +270,6 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
             Thread thread = new Thread(this);
             thread.setDaemon(true);
             thread.setName("TLSMessageChannelThread");
-            this.isRunning = true;     
             thread.start();
         }
 
