@@ -59,7 +59,7 @@ import javax.sip.address.Hop;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.63 $ $Date: 2010-02-23 02:33:42 $
+ * @version 1.2 $Revision: 1.64 $ $Date: 2010-03-12 19:57:48 $
  */
 public class TCPMessageChannel extends MessageChannel implements SIPMessageListener, Runnable,
         RawMessageChannel {
@@ -76,7 +76,8 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
 
     protected boolean isCached;
 
-    protected boolean isRunning;
+    // Set here on initialization to avoid thread leak. See issue 266
+    protected boolean isRunning = true;
 
     private Thread mythread;
 
@@ -344,8 +345,6 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
             Thread mythread = new Thread(this);
             mythread.setDaemon(true);
             mythread.setName("TCPMessageChannelThread");
-            // Need to set this here to avoid race condition. See issue 266
-            this.isRunning = true; 
             mythread.start();
         }
 
