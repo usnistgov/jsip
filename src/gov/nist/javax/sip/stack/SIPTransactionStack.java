@@ -99,7 +99,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.148 $ $Date: 2010-03-06 19:03:09 $
+ * @version 1.2 $Revision: 1.149 $ $Date: 2010-03-13 06:23:35 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener, SIPDialogEventListener {
@@ -1163,13 +1163,13 @@ public abstract class SIPTransactionStack implements
 	 * generate a 482 (Loop Detected) response and pass it to the server
 	 * transaction.
 	 */
-	public SIPServerTransaction findMergedTransaction(SIPRequest sipRequest) {
+	public boolean findMergedTransaction(SIPRequest sipRequest) {
 		if (!sipRequest.getMethod().equals(Request.INVITE)) {
 			/*
 			 * Dont need to worry about request merging for Non-INVITE
 			 * transactions.
 			 */
-			return null;
+			return false;
 		}
 		String mergeId = sipRequest.getMergeId();
 		if (mergeId != null) {
@@ -1178,38 +1178,22 @@ public abstract class SIPTransactionStack implements
 			if (mergedTransaction != null
 					&& !mergedTransaction
 							.isMessagePartOfTransaction(sipRequest)) {
-				return mergedTransaction;
+				return true;
+			}else {
+				/*
+				 * Check for loop detection for really late arriving
+				 * requests
+				 */
+				SIPDialog serverDialog = this.serverDialogMergeTestTable
+						.get(mergeId);
+				if (serverDialog != null && serverDialog.firstTransactionIsServerTransaction
+						&& serverDialog.getState() == DialogState.CONFIRMED) {
+					return true;
+				}
 			}
-		} else {
-			/*
-			 * Check for loop detection.
-			 */
-			SIPDialog serverDialog = this.serverDialogMergeTestTable
-					.get(mergeId);
-			if (serverDialog != null
-					&& !((SIPServerTransaction) serverDialog
-							.getFirstTransaction())
-							.isMessagePartOfTransaction(sipRequest)) {
-				return (SIPServerTransaction) serverDialog
-						.getFirstTransaction();
-			}
+		} 
 
-			/*
-			 * for (Dialog dialog: this.dialogTable.values() ) { SIPDialog
-			 * sipDialog = (SIPDialog) dialog ; if
-			 * (sipDialog.getFirstTransaction() != null &&
-			 * sipDialog.getFirstTransaction() instanceof ServerTransaction) {
-			 * SIPServerTransaction serverTransaction = ((SIPServerTransaction)
-			 * sipDialog.getFirstTransaction()); SIPRequest transactionRequest =
-			 * ((SIPServerTransaction)
-			 * sipDialog.getFirstTransaction()).getOriginalRequest(); if ( (!
-			 * serverTransaction.isMessagePartOfTransaction(sipRequest)) &&
-			 * sipRequest.getMergeId().equals(transactionRequest.getMergeId()))
-			 * { return (SIPServerTransaction) sipDialog.getFirstTransaction();
-			 * } } }
-			 */
-		}
-		return null;
+		return false;
 	}
 
 	/**
