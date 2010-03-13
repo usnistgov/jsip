@@ -39,6 +39,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -52,8 +53,8 @@ import javax.net.ssl.SSLSocket;
  */
 
 /**
- * Low level Input output to a socket. Caches TCP connections and takes care of re-connecting to
- * the remote party if the other end drops the connection
+ * Low level Input output to a socket. Caches TCP connections and takes care of
+ * re-connecting to the remote party if the other end drops the connection
  * 
  * @version 1.2
  * 
@@ -64,298 +65,357 @@ import javax.net.ssl.SSLSocket;
 
 class IOHandler {
 
-    private Semaphore ioSemaphore = new Semaphore(1);
+	private final Map<String, Semaphore> socketCreationMap = new ConcurrentHashMap<String, Semaphore>();
 
-    private SipStackImpl sipStack;
+	private SipStackImpl sipStack;
 
-    private static String TCP = "tcp";
+	private static String TCP = "tcp";
 
-    // Added by Daniel J. Martinez Manzano <dani@dif.um.es>
-    private static String TLS = "tls";
+	// Added by Daniel J. Martinez Manzano <dani@dif.um.es>
+	private static String TLS = "tls";
 
-    // A cache of client sockets that can be re-used for
-    // sending tcp messages.
-    private ConcurrentHashMap<String, Socket> socketTable;
+	// A cache of client sockets that can be re-used for
+	// sending tcp messages.
+	private ConcurrentHashMap<String, Socket> socketTable;
 
-    protected static String makeKey(InetAddress addr, int port) {
-        return addr.getHostAddress() + ":" + port;
+	protected static String makeKey(InetAddress addr, int port) {
+		return addr.getHostAddress() + ":" + port;
 
-    }
+	}
 
-    protected IOHandler(SIPTransactionStack sipStack) {
-        this.sipStack = (SipStackImpl) sipStack;
-        this.socketTable = new ConcurrentHashMap<String, Socket>();
+	protected IOHandler(SIPTransactionStack sipStack) {
+		this.sipStack = (SipStackImpl) sipStack;
+		this.socketTable = new ConcurrentHashMap<String, Socket>();
 
-    }
+	}
 
-    protected void putSocket(String key, Socket sock) {
-        socketTable.put(key, sock);
+	protected void putSocket(String key, Socket sock) {
+		socketTable.put(key, sock);
 
-    }
+	}
 
-    protected Socket getSocket(String key) {
-        return (Socket) socketTable.get(key);
-    }
+	protected Socket getSocket(String key) {
+		return (Socket) socketTable.get(key);
+	}
 
-    protected void removeSocket(String key) {
-        socketTable.remove(key);
-    }
+	protected void removeSocket(String key) {
+		socketTable.remove(key);
+	}
 
-    /**
-     * A private function to write things out. This needs to be synchronized as writes can occur
-     * from multiple threads. We write in chunks to allow the other side to synchronize for large
-     * sized writes.
-     */
-    private void writeChunks(OutputStream outputStream, byte[] bytes, int length)
-            throws IOException {
-        // Chunk size is 16K - this hack is for large
-        // writes over slow connections.
-        synchronized (outputStream) {
-            // outputStream.write(bytes,0,length);
-            int chunksize = 8 * 1024;
-            for (int p = 0; p < length; p += chunksize) {
-                int chunk = p + chunksize < length ? chunksize : length - p;
-                outputStream.write(bytes, p, chunk);
-            }
-        }
-        outputStream.flush();
-    }
+	/**
+	 * A private function to write things out. This needs to be synchronized as
+	 * writes can occur from multiple threads. We write in chunks to allow the
+	 * other side to synchronize for large sized writes.
+	 */
+	private void writeChunks(OutputStream outputStream, byte[] bytes, int length)
+			throws IOException {
+		// Chunk size is 16K - this hack is for large
+		// writes over slow connections.
+		synchronized (outputStream) {
+			// outputStream.write(bytes,0,length);
+			int chunksize = 8 * 1024;
+			for (int p = 0; p < length; p += chunksize) {
+				int chunk = p + chunksize < length ? chunksize : length - p;
+				outputStream.write(bytes, p, chunk);
+			}
+		}
+		outputStream.flush();
+	}
 
-    /**
-     * Creates and binds, if necessary, a socket connected to the specified destination address
-     * and port and then returns its local address.
-     * 
-     * @param dst the destination address that the socket would need to connect to.
-     * @param dstPort the port number that the connection would be established with.
-     * @param localAddress the address that we would like to bind on (null for the "any" address).
-     * @param localPort the port that we'd like our socket to bind to (0 for a random port).
-     * 
-     * @return the SocketAddress that this handler would use when connecting to the specified
-     *         destination address and port.
-     * 
-     * @throws IOException
-     */
-    public SocketAddress obtainLocalAddress(InetAddress dst, int dstPort,
-            InetAddress localAddress, int localPort) throws IOException {
-        String key = makeKey(dst, dstPort);
+	/**
+	 * Creates and binds, if necessary, a socket connected to the specified
+	 * destination address and port and then returns its local address.
+	 * 
+	 * @param dst
+	 *            the destination address that the socket would need to connect
+	 *            to.
+	 * @param dstPort
+	 *            the port number that the connection would be established with.
+	 * @param localAddress
+	 *            the address that we would like to bind on (null for the "any"
+	 *            address).
+	 * @param localPort
+	 *            the port that we'd like our socket to bind to (0 for a random
+	 *            port).
+	 * 
+	 * @return the SocketAddress that this handler would use when connecting to
+	 *         the specified destination address and port.
+	 * 
+	 * @throws IOException
+	 */
+	public SocketAddress obtainLocalAddress(InetAddress dst, int dstPort,
+			InetAddress localAddress, int localPort) throws IOException {
+		String key = makeKey(dst, dstPort);
 
-        Socket clientSock = getSocket(key);
+		Socket clientSock = getSocket(key);
 
-        if (clientSock == null) {
-            clientSock = sipStack.getNetworkLayer().createSocket(dst, dstPort, localAddress,
-                    localPort);
-            putSocket(key, clientSock);
-        }
+		if (clientSock == null) {
+			clientSock = sipStack.getNetworkLayer().createSocket(dst, dstPort,
+					localAddress, localPort);
+			putSocket(key, clientSock);
+		}
 
-        return clientSock.getLocalSocketAddress();
+		return clientSock.getLocalSocketAddress();
 
-    }
+	}
 
-    /**
-     * Send an array of bytes.
-     * 
-     * @param receiverAddress -- inet address
-     * @param contactPort -- port to connect to.
-     * @param transport -- tcp or udp.
-     * @param retry -- retry to connect if the other end closed connection
-     * @throws IOException -- if there is an IO exception sending message.
-     */
+	/**
+	 * Send an array of bytes.
+	 * 
+	 * @param receiverAddress
+	 *            -- inet address
+	 * @param contactPort
+	 *            -- port to connect to.
+	 * @param transport
+	 *            -- tcp or udp.
+	 * @param retry
+	 *            -- retry to connect if the other end closed connection
+	 * @throws IOException
+	 *             -- if there is an IO exception sending message.
+	 */
 
-    public Socket sendBytes(InetAddress senderAddress, InetAddress receiverAddress,
-            int contactPort, String transport, byte[] bytes, boolean retry,
-            MessageChannel messageChannel) throws IOException {
-        int retry_count = 0;
-        int max_retry = retry ? 2 : 1;
-        // Server uses TCP transport. TCP client sockets are cached
-        int length = bytes.length;
-        if (sipStack.isLoggingEnabled()) {
-            sipStack.getStackLogger().logDebug(
-                    "sendBytes " + transport + " inAddr " + receiverAddress.getHostAddress()
-                            + " port = " + contactPort + " length = " + length);
-            
-        }
-        if (sipStack.isLoggingEnabled() && sipStack.isLogStackTraceOnMessageSend()) {
-            sipStack.getStackLogger().logStackTrace(StackLogger.TRACE_INFO);
-        }
-        if (transport.compareToIgnoreCase(TCP) == 0) {
-            String key = makeKey(receiverAddress, contactPort);
-            // This should be in a synchronized block ( reported by
-            // Jayashenkhar ( lucent ).
+	public Socket sendBytes(InetAddress senderAddress,
+			InetAddress receiverAddress, int contactPort, String transport,
+			byte[] bytes, boolean retry, MessageChannel messageChannel)
+			throws IOException {
+		int retry_count = 0;
+		int max_retry = retry ? 2 : 1;
+		// Server uses TCP transport. TCP client sockets are cached
+		int length = bytes.length;
+		if (sipStack.isLoggingEnabled()) {
+			sipStack.getStackLogger().logDebug(
+					"sendBytes " + transport + " inAddr "
+							+ receiverAddress.getHostAddress() + " port = "
+							+ contactPort + " length = " + length);
 
-            try {
-                boolean retval = this.ioSemaphore.tryAcquire(10000, TimeUnit.MILLISECONDS); 
-                if (!retval) {
-                    throw new IOException(
-                            "Could not acquire IO Semaphore after 10 seconds -- giving up ");
-                }
-            } catch (InterruptedException ex) {
-                throw new IOException("exception in acquiring sem");
-            }
-            Socket clientSock = getSocket(key);
+		}
+		if (sipStack.isLoggingEnabled()
+				&& sipStack.isLogStackTraceOnMessageSend()) {
+			sipStack.getStackLogger().logStackTrace(StackLogger.TRACE_INFO);
+		}
+		if (transport.compareToIgnoreCase(TCP) == 0) {
+			String key = makeKey(receiverAddress, contactPort);
+			// This should be in a synchronized block ( reported by
+			// Jayashenkhar ( lucent ).
 
-            try {
+			Socket clientSock = null;
+			enterIOCriticalSection(key);
 
-                while (retry_count < max_retry) {
-                    if (clientSock == null) {
-                        if (sipStack.isLoggingEnabled()) {
-                            sipStack.getStackLogger().logDebug("inaddr = " + receiverAddress);
-                            sipStack.getStackLogger().logDebug("port = " + contactPort);
-                        }
-                        // note that the IP Address for stack may not be
-                        // assigned.
-                        // sender address is the address of the listening point.
-                        // in version 1.1 all listening points have the same IP
-                        // address (i.e. that of the stack). In version 1.2
-                        // the IP address is on a per listening point basis.
-                        clientSock = sipStack.getNetworkLayer().createSocket(receiverAddress,
-                                contactPort, senderAddress);
-                        OutputStream outputStream = clientSock.getOutputStream();
-                        writeChunks(outputStream, bytes, length);
-                        putSocket(key, clientSock);
-                        break;
-                    } else {
-                        try {
-                            OutputStream outputStream = clientSock.getOutputStream();
-                            writeChunks(outputStream, bytes, length);
-                            break;
-                        } catch (IOException ex) {
-                            if (sipStack.isLoggingEnabled())
-                                sipStack.getStackLogger().logDebug(
-                                        "IOException occured retryCount " + retry_count);
-                            // old connection is bad.
-                            // remove from our table.
-                            removeSocket(key);
-                            try {
-                                clientSock.close();
-                            } catch (Exception e) {
-                            }
-                            clientSock = null;
-                            retry_count++;
-                        }
-                    }
-                }
-            } finally {
-                ioSemaphore.release();
-            }
+			try {
+				clientSock = getSocket(key);
+				while (retry_count < max_retry) {
+					if (clientSock == null) {
+						if (sipStack.isLoggingEnabled()) {
+							sipStack.getStackLogger().logDebug(
+									"inaddr = " + receiverAddress);
+							sipStack.getStackLogger().logDebug(
+									"port = " + contactPort);
+						}
+						// note that the IP Address for stack may not be
+						// assigned.
+						// sender address is the address of the listening point.
+						// in version 1.1 all listening points have the same IP
+						// address (i.e. that of the stack). In version 1.2
+						// the IP address is on a per listening point basis.
+						clientSock = sipStack.getNetworkLayer().createSocket(
+								receiverAddress, contactPort, senderAddress);
+						OutputStream outputStream = clientSock
+								.getOutputStream();
+						writeChunks(outputStream, bytes, length);
+						putSocket(key, clientSock);
+						break;
+					} else {
+						try {
+							OutputStream outputStream = clientSock
+									.getOutputStream();
+							writeChunks(outputStream, bytes, length);
+							break;
+						} catch (IOException ex) {
+							if (sipStack.isLoggingEnabled())
+								sipStack.getStackLogger().logDebug(
+										"IOException occured retryCount "
+												+ retry_count);
+							// old connection is bad.
+							// remove from our table.
+							removeSocket(key);
+							try {
+								clientSock.close();
+							} catch (Exception e) {
+							}
+							clientSock = null;
+							retry_count++;
+						}
+					}
+				}
+			} finally {
+				leaveIOCriticalSection(key);
+			}
 
-            if (clientSock == null) {
+			if (clientSock == null) {
 
-                if (sipStack.isLoggingEnabled()) {
-                    sipStack.getStackLogger().logDebug(this.socketTable.toString());
-                    sipStack.getStackLogger().logError(
-                            "Could not connect to " + receiverAddress + ":" + contactPort);
-                }
+				if (sipStack.isLoggingEnabled()) {
+					sipStack.getStackLogger().logDebug(
+							this.socketTable.toString());
+					sipStack.getStackLogger().logError(
+							"Could not connect to " + receiverAddress + ":"
+									+ contactPort);
+				}
 
-                throw new IOException("Could not connect to " + receiverAddress + ":"
-                        + contactPort);
-            } else
-                return clientSock;
+				throw new IOException("Could not connect to " + receiverAddress
+						+ ":" + contactPort);
+			} else
+				return clientSock;
 
-            // Added by Daniel J. Martinez Manzano <dani@dif.um.es>
-            // Copied and modified from the former section for TCP
-        } else if (transport.compareToIgnoreCase(TLS) == 0) {
-            String key = makeKey(receiverAddress, contactPort);
-           try {
-                boolean retval = this.ioSemaphore.tryAcquire(10000, TimeUnit.MILLISECONDS);
-                if (!retval)
-                    throw new IOException("Timeout acquiring IO SEM");
-            } catch (InterruptedException ex) {
-                throw new IOException("exception in acquiring sem");
-            } 
-            Socket clientSock = getSocket(key);
+			// Added by Daniel J. Martinez Manzano <dani@dif.um.es>
+			// Copied and modified from the former section for TCP
+		} else if (transport.compareToIgnoreCase(TLS) == 0) {
+			String key = makeKey(receiverAddress, contactPort);
+			Socket clientSock = null;
+			enterIOCriticalSection(key);
 
-            try {
-                while (retry_count < max_retry) {
-                    if (clientSock == null) {
-                       
+			try {
+				clientSock = getSocket(key);
 
-                        clientSock = sipStack.getNetworkLayer().createSSLSocket(receiverAddress,
-                                contactPort, senderAddress);
-                        SSLSocket sslsock = (SSLSocket) clientSock;
-                        
-                        if (sipStack.isLoggingEnabled()) {
-                            sipStack.getStackLogger().logDebug("inaddr = " + receiverAddress);
-                            sipStack.getStackLogger().logDebug("port = " + contactPort);
-                        }
-                        HandshakeCompletedListener listner = new HandshakeCompletedListenerImpl(
-                                (TLSMessageChannel) messageChannel);
-                        ((TLSMessageChannel) messageChannel)
-                                .setHandshakeCompletedListener(listner);
-                        sslsock.addHandshakeCompletedListener(listner);
-                        sslsock.setEnabledProtocols(sipStack.getEnabledProtocols());
-                        sslsock.startHandshake();
-                        if ( sipStack.isLoggingEnabled() ) {
-                        	this.sipStack.getStackLogger().logDebug("Handshake passed");
-                        }
-                        // allow application to enforce policy by validating the certificate
+				while (retry_count < max_retry) {
+					if (clientSock == null) {
 
-                        try {
-                        	sipStack.getTlsSecurityPolicy().enforceTlsPolicy(messageChannel.getEncapsulatedClientTransaction());
-                        } catch (SecurityException ex) {
-                        	throw new IOException(ex.getMessage());
-                        } 
+						clientSock = sipStack.getNetworkLayer()
+								.createSSLSocket(receiverAddress, contactPort,
+										senderAddress);
+						SSLSocket sslsock = (SSLSocket) clientSock;
 
-                        if ( sipStack.isLoggingEnabled() ) {
-                        	this.sipStack.getStackLogger().logDebug("TLS Security policy passed");
-                        }
-                        OutputStream outputStream = clientSock.getOutputStream();
-                        writeChunks(outputStream, bytes, length);
-                        putSocket(key, clientSock);
-                        break;
-                    } else {
-                        try {
-                            OutputStream outputStream = clientSock.getOutputStream();
-                            writeChunks(outputStream, bytes, length);
-                            break;
-                        } catch (IOException ex) {
-                            if (sipStack.isLoggingEnabled())
-                                sipStack.getStackLogger().logException(ex);
-                            // old connection is bad.
-                            // remove from our table.
-                            removeSocket(key);
-                            try {
-                                clientSock.close();
-                            } catch (Exception e) {
-                            }
-                            clientSock = null;
-                            retry_count++;
-                        }
-                    }
-                }
-            } finally {
-               ioSemaphore.release();
-            }
-            if (clientSock == null) {
-                throw new IOException("Could not connect to " + receiverAddress + ":"
-                        + contactPort);
-            } else
-                return clientSock;
+						if (sipStack.isLoggingEnabled()) {
+							sipStack.getStackLogger().logDebug(
+									"inaddr = " + receiverAddress);
+							sipStack.getStackLogger().logDebug(
+									"port = " + contactPort);
+						}
+						HandshakeCompletedListener listner = new HandshakeCompletedListenerImpl(
+								(TLSMessageChannel) messageChannel);
+						((TLSMessageChannel) messageChannel)
+								.setHandshakeCompletedListener(listner);
+						sslsock.addHandshakeCompletedListener(listner);
+						sslsock.setEnabledProtocols(sipStack
+								.getEnabledProtocols());
+						sslsock.startHandshake();
+						if (sipStack.isLoggingEnabled()) {
+							this.sipStack.getStackLogger().logDebug(
+									"Handshake passed");
+						}
+						// allow application to enforce policy by validating the
+						// certificate
 
-        } else {
-            // This is a UDP transport...
-            DatagramSocket datagramSock = sipStack.getNetworkLayer().createDatagramSocket();
-            datagramSock.connect(receiverAddress, contactPort);
-            DatagramPacket dgPacket = new DatagramPacket(bytes, 0, length, receiverAddress,
-                    contactPort);
-            datagramSock.send(dgPacket);
-            datagramSock.close();
-            return null;
-        }
+						try {
+							sipStack
+									.getTlsSecurityPolicy()
+									.enforceTlsPolicy(
+											messageChannel
+													.getEncapsulatedClientTransaction());
+						} catch (SecurityException ex) {
+							throw new IOException(ex.getMessage());
+						}
 
-    }
+						if (sipStack.isLoggingEnabled()) {
+							this.sipStack.getStackLogger().logDebug(
+									"TLS Security policy passed");
+						}
+						OutputStream outputStream = clientSock
+								.getOutputStream();
+						writeChunks(outputStream, bytes, length);
+						putSocket(key, clientSock);
+						break;
+					} else {
+						try {
+							OutputStream outputStream = clientSock
+									.getOutputStream();
+							writeChunks(outputStream, bytes, length);
+							break;
+						} catch (IOException ex) {
+							if (sipStack.isLoggingEnabled())
+								sipStack.getStackLogger().logException(ex);
+							// old connection is bad.
+							// remove from our table.
+							removeSocket(key);
+							try {
+								clientSock.close();
+							} catch (Exception e) {
+							}
+							clientSock = null;
+							retry_count++;
+						}
+					}
+				}
+			} finally {
+				leaveIOCriticalSection(key);
+			}
+			if (clientSock == null) {
+				throw new IOException("Could not connect to " + receiverAddress
+						+ ":" + contactPort);
+			} else
+				return clientSock;
 
-    /**
-     * Close all the cached connections.
-     */
-    public void closeAll() {
-        for (Enumeration<Socket> values = socketTable.elements(); values.hasMoreElements();) {
-            Socket s = (Socket) values.nextElement();
-            try {
-                s.close();
-            } catch (IOException ex) {
-            }
-        }
+		} else {
+			// This is a UDP transport...
+			DatagramSocket datagramSock = sipStack.getNetworkLayer()
+					.createDatagramSocket();
+			datagramSock.connect(receiverAddress, contactPort);
+			DatagramPacket dgPacket = new DatagramPacket(bytes, 0, length,
+					receiverAddress, contactPort);
+			datagramSock.send(dgPacket);
+			datagramSock.close();
+			return null;
+		}
 
-    }
+	}
+
+	private void leaveIOCriticalSection(String key) {
+		synchronized (socketCreationMap) {
+			Semaphore creationSemaphore = socketCreationMap.remove(key);
+			if (creationSemaphore != null) {
+				creationSemaphore.release();
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * @param key
+	 * @throws IOException
+	 *             when it failed to acquire the semaphore
+	 */
+	private void enterIOCriticalSection(String key) throws IOException {
+		Semaphore creationSemaphore = null;
+		synchronized (socketCreationMap) {
+			creationSemaphore = socketCreationMap.get(key);
+			if (creationSemaphore == null) {
+				creationSemaphore = new Semaphore(1, true);
+				socketCreationMap.put(key, creationSemaphore);
+			}
+		}
+		try {
+			boolean retval = creationSemaphore.tryAcquire(10, TimeUnit.SECONDS);
+			if (!retval) {
+				throw new IOException("Could not acquire IO Semaphore'" + key
+						+ "' after 10 seconds -- giving up ");
+			}
+		} catch (InterruptedException e) {
+			throw new IOException("exception in acquiring sem");
+		}
+	}
+
+	/**
+	 * Close all the cached connections.
+	 */
+	public void closeAll() {
+		for (Enumeration<Socket> values = socketTable.elements(); values
+				.hasMoreElements();) {
+			Socket s = (Socket) values.nextElement();
+			try {
+				s.close();
+			} catch (IOException ex) {
+			}
+		}
+
+	}
 
 }
