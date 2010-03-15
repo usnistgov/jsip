@@ -34,7 +34,9 @@ import gov.nist.javax.sip.clientauthutils.AccountManager;
 import gov.nist.javax.sip.clientauthutils.AuthenticationHelper;
 import gov.nist.javax.sip.clientauthutils.AuthenticationHelperImpl;
 import gov.nist.javax.sip.clientauthutils.SecureAccountManager;
+import gov.nist.javax.sip.parser.MessageParserFactory;
 import gov.nist.javax.sip.parser.StringMsgParser;
+import gov.nist.javax.sip.parser.StringMsgParserFactory;
 import gov.nist.javax.sip.stack.DefaultMessageLogFactory;
 import gov.nist.javax.sip.stack.DefaultRouter;
 import gov.nist.javax.sip.stack.MessageProcessor;
@@ -397,6 +399,10 @@ import javax.sip.message.Request;
  * client transction in the ResponseEventExt and deliver that to the application.
  * The event handler can get the original transaction from this event. </li>
  * 
+ * <li><b>gov.nist.javax.sip.MESSAGE_PARSER_FACTORY =  name of the class implementing gov.nist.javax.sip.parser.MessageParserFactory</b>
+ * This factory allows pluggable implementations of the MessageParser that will take care of parsing the incoming messages.
+ * By example one could plug a lazy parser through this factory.</li>
+ * 
  * <li><b>gov.nist.javax.sip.DELIVER_RETRANSMITTED_ACK_TO_LISTENER=boolean</b> A testing property
  * that allows application to see the ACK for retransmitted 200 OK requests. <b>Note that this is for test
  * purposes only</b></li>
@@ -445,7 +451,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.123 $ $Date: 2010-03-10 00:27:24 $
+ * @version 1.2 $Revision: 1.124 $ $Date: 2010-03-15 17:01:24 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -1095,6 +1101,15 @@ public class SipStackImpl extends SIPTransactionStack implements
 				("gov.nist.javax.sip.DELIVER_RETRANSMITTED_ACK_TO_LISTENER","false"));
 		
 		super.dialogTimeoutFactor = Integer.parseInt(configurationProperties.getProperty("gov.nist.javax.sip.DIALOG_TIMEOUT_FACTOR","64"));
+		
+		String messageParserFactoryName = configurationProperties.getProperty("gov.nist.javax.sip.MESSAGE_PARSER_FACTORY",StringMsgParserFactory.class.getName());
+		try {
+			super.messageParserFactory = (MessageParserFactory) Class.forName(messageParserFactoryName).newInstance();
+		} catch (Exception e) {
+			getStackLogger()
+				.logError(
+						"Bad configuration value for gov.nist.javax.sip.MESSAGE_PARSER_FACTORY", e);			
+		}
 	}
 
 	/*

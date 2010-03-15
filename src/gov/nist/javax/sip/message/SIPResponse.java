@@ -61,14 +61,14 @@ import javax.sip.message.Request;
 /**
  * SIP Response structure.
  *
- * @version 1.2 $Revision: 1.30 $ $Date: 2010-02-03 05:53:43 $
+ * @version 1.2 $Revision: 1.31 $ $Date: 2010-03-15 17:01:22 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
  *
  *
  */
-public final class SIPResponse
+public class SIPResponse
     extends SIPMessage
     implements javax.sip.message.Response, ResponseExt {
     protected StatusLine statusLine;

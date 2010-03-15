@@ -47,6 +47,7 @@ import gov.nist.javax.sip.header.extensions.ReplacesHeader;
 import gov.nist.javax.sip.message.SIPMessage;
 import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.message.SIPResponse;
+import gov.nist.javax.sip.parser.MessageParserFactory;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -99,7 +100,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.149 $ $Date: 2010-03-13 06:23:35 $
+ * @version 1.2 $Revision: 1.150 $ $Date: 2010-03-15 17:01:18 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener, SIPDialogEventListener {
@@ -390,6 +391,9 @@ public abstract class SIPTransactionStack implements
 	// The time after which a "dialog timeout event" is delivered to a listener.
 	protected int dialogTimeoutFactor = 64;
 
+	// factory used to create MessageParser objects
+	public MessageParserFactory messageParserFactory;
+	
 	/**
 	 * Executor used to optimise the ReinviteSender Runnable in the sendRequest
 	 * of the SipDialog
