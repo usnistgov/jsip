@@ -90,7 +90,7 @@ import javax.sip.address.Hop;
  *
  *
  *
- * @version 1.2 $Revision: 1.68 $ $Date: 2010-03-15 17:01:18 $
+ * @version 1.2 $Revision: 1.69 $ $Date: 2010-03-15 17:09:19 $
  */
 public class UDPMessageChannel extends MessageChannel implements
         ParseExceptionListener, Runnable, RawMessageChannel {
@@ -246,7 +246,7 @@ public class UDPMessageChannel extends MessageChannel implements
         while (true) {
             // Create a new string message parser to parse the list of messages.
             if (myParser == null) {
-                myParser = sipStack.messageParserFactory.createMessageParser();
+                myParser = sipStack.messageParserFactory.createMessageParser(sipStack);
                 myParser.setParseExceptionListener(this);
             }
             // messages that we write out to him.

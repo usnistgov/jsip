@@ -29,15 +29,33 @@ import gov.nist.javax.sip.message.SIPMessage;
 
 
 /**
+ * Interface defining the contract for the stack to interact with the message parser to parse a byte array containing the SIP Message
+ * into a SIPMessage object
+ * 
  * @author jean.deruelle@gmail.com
  *
  */
 public interface MessageParser {
 
+	/**
+	 * Callback if an exception occurs during the parsing to notify back the stack 
+	 * @param parseExceptionListener
+	 */
 	void setParseExceptionListener(ParseExceptionListener parseExceptionListener);
 	
+	/**
+	 * If the content body should be read or not
+	 * 
+	 * @param readBody
+	 */
 	void setReadBody(boolean readBody);
-
+	
+	/**
+	 * parse a byte array containing the SIP Message into a SIPMessage object
+	 * @param msgBytes the SIP Message received from the network
+	 * @return a SIPMessage object that the stack can interact with
+	 * @throws ParseException if a parseexception occurs
+	 */
 	SIPMessage parseSIPMessage(byte[] msgBytes) throws ParseException;
 
 }
