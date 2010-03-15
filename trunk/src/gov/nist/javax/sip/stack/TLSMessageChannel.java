@@ -67,7 +67,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.32 $ $Date: 2010-03-12 20:00:36 $
+ * @version 1.2 $Revision: 1.33 $ $Date: 2010-03-15 17:01:19 $
  */
 public final class TLSMessageChannel extends MessageChannel implements SIPMessageListener,
         Runnable, RawMessageChannel {
@@ -575,7 +575,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
                 ((SIPTransactionStack) sipStack).getTimer());
         // Create a pipelined message parser to read and parse
         // messages that we write out to him.
-        myParser = new PipelinedMsgParser(this, hispipe, this.sipStack.getMaxMessageSize());
+        myParser = new PipelinedMsgParser(sipStack, this, hispipe, this.sipStack.getMaxMessageSize());
         // Start running the parser thread.
         myParser.processInput();
         // bug fix by Emmanuel Proulx

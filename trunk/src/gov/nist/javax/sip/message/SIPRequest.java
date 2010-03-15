@@ -61,7 +61,7 @@ import gov.nist.javax.sip.stack.SIPTransactionStack;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.52 $ $Date: 2009-12-16 14:58:40 $
+ * @version 1.2 $Revision: 1.53 $ $Date: 2010-03-15 17:01:24 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -70,7 +70,7 @@ import gov.nist.javax.sip.stack.SIPTransactionStack;
  * 
  */
 
-public final class SIPRequest extends SIPMessage implements javax.sip.message.Request, RequestExt {
+public class SIPRequest extends SIPMessage implements javax.sip.message.Request, RequestExt {
 
     private static final long serialVersionUID = 3360720013577322927L;
 
@@ -269,9 +269,10 @@ public final class SIPRequest extends SIPMessage implements javax.sip.message.Re
          * If the Request-URI or top Route header field value contains a SIPS URI, the Contact
          * header field MUST contain a SIPS URI as well.
          */
-        if (requestLine.getMethod().equals(Request.INVITE)
-                || requestLine.getMethod().equals(Request.SUBSCRIBE)
-                || requestLine.getMethod().equals(Request.REFER)) {
+        final String method = requestLine.getMethod();
+        if (method.equals(Request.INVITE)
+                || method.equals(Request.SUBSCRIBE)
+                || method.equals(Request.REFER)) {
             if (this.getContactHeader() == null) {
                 // Make sure this is not a target refresh. If this is a target
                 // refresh its ok not to have a contact header. Otherwise
@@ -301,9 +302,9 @@ public final class SIPRequest extends SIPMessage implements javax.sip.message.Re
             throw new ParseException("Contact Header is Mandatory for a SIP INVITE", 0);
         }
 
-        if (requestLine != null && requestLine.getMethod() != null
+        if (requestLine != null && method != null
                 && getCSeq().getMethod() != null
-                && requestLine.getMethod().compareTo(getCSeq().getMethod()) != 0) {
+                && method.compareTo(getCSeq().getMethod()) != 0) {
             throw new ParseException("CSEQ method mismatch with  Request-Line ", 0);
 
         }
@@ -729,7 +730,7 @@ public final class SIPRequest extends SIPMessage implements javax.sip.message.Re
     }
 
     // Helper method for createResponse, to avoid copying Record-Route unless needed
-    private final boolean mustCopyRR( int code ) {
+    protected final boolean mustCopyRR( int code ) {
     	// Only for 1xx-2xx, not for 100 or errors
     	if ( code>100 && code<300 ) {
     		return isDialogCreating( this.getMethod() ) && getToTag() == null;
