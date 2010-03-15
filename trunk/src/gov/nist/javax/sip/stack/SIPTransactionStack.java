@@ -100,7 +100,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.150 $ $Date: 2010-03-15 17:01:18 $
+ * @version 1.2 $Revision: 1.151 $ $Date: 2010-03-15 19:35:01 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener, SIPDialogEventListener {
@@ -393,6 +393,8 @@ public abstract class SIPTransactionStack implements
 
 	// factory used to create MessageParser objects
 	public MessageParserFactory messageParserFactory;
+	// factory used to create MessageProcessor objects
+	public MessageProcessorFactory messageProcessorFactory;
 	
 	/**
 	 * Executor used to optimise the ReinviteSender Runnable in the sendRequest
@@ -2150,50 +2152,9 @@ public abstract class SIPTransactionStack implements
 	 */
 	protected MessageProcessor createMessageProcessor(InetAddress ipAddress,
 			int port, String transport) throws java.io.IOException {
-		if (transport.equalsIgnoreCase("udp")) {
-			UDPMessageProcessor udpMessageProcessor = new UDPMessageProcessor(
-					ipAddress, this, port);
-			this.addMessageProcessor(udpMessageProcessor);
-			this.udpFlag = true;
-			return udpMessageProcessor;
-		} else if (transport.equalsIgnoreCase("tcp")) {
-			TCPMessageProcessor tcpMessageProcessor = new TCPMessageProcessor(
-					ipAddress, this, port);
-			this.addMessageProcessor(tcpMessageProcessor);
-			// this.tcpFlag = true;
-			return tcpMessageProcessor;
-		} else if (transport.equalsIgnoreCase("tls")) {
-			TLSMessageProcessor tlsMessageProcessor = new TLSMessageProcessor(
-					ipAddress, this, port);
-			this.addMessageProcessor(tlsMessageProcessor);
-			// this.tlsFlag = true;
-			return tlsMessageProcessor;
-		} else if (transport.equalsIgnoreCase("sctp")) {
-
-			// Need Java 7 for this, so these classes are packaged in a separate
-			// jar
-			// Try to load it indirectly, if fails report an error
-			try {
-				Class<?> mpc = ClassLoader.getSystemClassLoader().loadClass(
-						"gov.nist.javax.sip.stack.sctp.SCTPMessageProcessor");
-				MessageProcessor mp = (MessageProcessor) mpc.newInstance();
-				mp.initialize(ipAddress, port, this);
-				this.addMessageProcessor(mp);
-				return mp;
-			} catch (ClassNotFoundException e) {
-				throw new IllegalArgumentException(
-						"SCTP not supported (needs Java 7 and SCTP jar in classpath)");
-			} catch (InstantiationException ie) {
-				throw new IllegalArgumentException("Error initializing SCTP",
-						ie);
-			} catch (IllegalAccessException ie) {
-				throw new IllegalArgumentException("Error initializing SCTP",
-						ie);
-			}
-		} else {
-			throw new IllegalArgumentException("bad transport");
-		}
-
+		MessageProcessor newMessageProcessor = messageProcessorFactory.createMessageProcessor(this, ipAddress, port, transport);
+		this.addMessageProcessor(newMessageProcessor);
+		return newMessageProcessor;
 	}
 
 	/**
