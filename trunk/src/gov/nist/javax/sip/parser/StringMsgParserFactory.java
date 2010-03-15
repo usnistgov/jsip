@@ -23,16 +23,21 @@
  */
 package gov.nist.javax.sip.parser;
 
+import gov.nist.javax.sip.stack.SIPTransactionStack;
+
 /**
+ * Default Mesasge Parser Factory Implementation
+ * 
  * @author jean.deruelle@gmail.com
  *
  */
 public class StringMsgParserFactory implements MessageParserFactory {
 
-	/* (non-Javadoc)
-	 * @see gov.nist.javax.sip.parser.MessageParserFactory#createMessageParser()
+	/*
+	 * (non-Javadoc)
+	 * @see gov.nist.javax.sip.parser.MessageParserFactory#createMessageParser(gov.nist.javax.sip.stack.SIPTransactionStack)
 	 */
-	public MessageParser createMessageParser() {		
+	public MessageParser createMessageParser(SIPTransactionStack stack) {	
 		return new StringMsgParser();
 	}
 
