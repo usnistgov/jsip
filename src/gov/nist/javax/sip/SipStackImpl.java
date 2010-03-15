@@ -40,6 +40,8 @@ import gov.nist.javax.sip.parser.StringMsgParserFactory;
 import gov.nist.javax.sip.stack.DefaultMessageLogFactory;
 import gov.nist.javax.sip.stack.DefaultRouter;
 import gov.nist.javax.sip.stack.MessageProcessor;
+import gov.nist.javax.sip.stack.MessageProcessorFactory;
+import gov.nist.javax.sip.stack.OIOMessageProcessorFactory;
 import gov.nist.javax.sip.stack.SIPTransactionStack;
 
 import java.io.BufferedReader;
@@ -56,7 +58,6 @@ import java.util.StringTokenizer;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-import javax.sip.ClientTransaction;
 import javax.sip.InvalidArgumentException;
 import javax.sip.ListeningPoint;
 import javax.sip.ObjectInUseException;
@@ -403,6 +404,11 @@ import javax.sip.message.Request;
  * This factory allows pluggable implementations of the MessageParser that will take care of parsing the incoming messages.
  * By example one could plug a lazy parser through this factory.</li>
  * 
+ * <li><b>gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY =  name of the class implementing gov.nist.javax.sip.parser.MessageProcessorFactory</b>
+ * This factory allows pluggable implementations of the MessageProcessor that will take care of incoming messages.
+ * By example one could plug a NIO Processor through this factory.</li>
+ * 
+ * 
  * <li><b>gov.nist.javax.sip.DELIVER_RETRANSMITTED_ACK_TO_LISTENER=boolean</b> A testing property
  * that allows application to see the ACK for retransmitted 200 OK requests. <b>Note that this is for test
  * purposes only</b></li>
@@ -451,7 +457,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.124 $ $Date: 2010-03-15 17:01:24 $
+ * @version 1.2 $Revision: 1.125 $ $Date: 2010-03-15 19:35:02 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -1109,6 +1115,15 @@ public class SipStackImpl extends SIPTransactionStack implements
 			getStackLogger()
 				.logError(
 						"Bad configuration value for gov.nist.javax.sip.MESSAGE_PARSER_FACTORY", e);			
+		}
+		
+		String messageProcessorFactoryName = configurationProperties.getProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY",OIOMessageProcessorFactory.class.getName());
+		try {
+			super.messageProcessorFactory = (MessageProcessorFactory) Class.forName(messageProcessorFactoryName).newInstance();
+		} catch (Exception e) {
+			getStackLogger()
+				.logError(
+						"Bad configuration value for gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", e);			
 		}
 	}
 
