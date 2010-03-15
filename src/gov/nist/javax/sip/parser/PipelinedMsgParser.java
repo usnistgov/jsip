@@ -57,7 +57,7 @@ import java.text.ParseException;
  * accessed from the SIPMessage using the getContent and getContentBytes methods
  * provided by the SIPMessage class.
  *
- * @version 1.2 $Revision: 1.26 $ $Date: 2010-03-15 17:01:21 $
+ * @version 1.2 $Revision: 1.27 $ $Date: 2010-03-15 17:08:57 $
  *
  * @author M. Ranganathan
  *
@@ -285,7 +285,7 @@ public final class PipelinedMsgParser implements Runnable {
                 // Stop the timer that will kill the read.
                 this.rawInputStream.stopTimer();
                 inputBuffer.append(line2);
-                MessageParser smp = sipStack.messageParserFactory.createMessageParser();
+                MessageParser smp = sipStack.messageParserFactory.createMessageParser(sipStack);
                 smp.setParseExceptionListener(sipMessageListener);
                 smp.setReadBody(false);
                 SIPMessage sipMessage = null;
@@ -385,6 +385,14 @@ public final class PipelinedMsgParser implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.26  2010/03/15 17:01:21  deruelle_jean
+ * Applying patch allowing pluggable message parser implementation
+ *
+ * Issue number:  251
+ * Obtained from:
+ * Submitted by:  Jean Deruelle
+ * Reviewed by:   Ranga
+ *
  * Revision 1.25  2010/02/27 17:34:04  mranga
  * Issue number:  269
  * Fix PipelinedMessageParser.java to use UTF-8 encoding when reading stream.
