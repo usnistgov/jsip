@@ -87,6 +87,7 @@ c:/jakarta-ant/bin/ant all
     <property name="srcroot" value="${root}/src" />
     <property name="dist" value="dist" />
     <property name="jain-sip-api-jar" value="${root}/jain-sip-api-1.2.jar" />
+    <property name="jain-sip-api-src-jar" value="${root}/jain-sip-api-1.2-src.jar" />
     <property name='j2se_api' value='http://java.sun.com/j2se/1.5/docs/api' />
     <property name="junit_jar" value="${junit}" />
     <property name="log4j_jar" value="${log4j}" />
@@ -230,6 +231,13 @@ c:/jakarta-ant/bin/ant all
                                         value="${jain-sip-api-jar}"/>
                         </manifest>
                     </jar>
+                    <jar destfile="${jain-sip-api-src-jar}" basedir="${srcroot}" includes="TIMESTAMP,javax/sip/**/*.java">
+                        <manifest>
+                            <attribute	name="Original-Jar-Name"
+                                        value="${jain-sip-api-src-jar}"/>
+                        </manifest>
+                    </jar>
+
                 </target>
                 <!-- Compile but dont build any jars -->
                 <target name="compile" depends="init,compileapi">
@@ -266,6 +274,13 @@ c:/jakarta-ant/bin/ant all
                                         value="${jain-sip-ri-jar}"/>
                         </manifest>
                     </jar>
+                    <jar destfile="${jain-sip-ri-src-jar}" basedir="${srcroot}" includes="TIMESTAMP,gov/nist/**/*.java"
+                                                                            excludes="gov/nist/javax/sip/stack/sctp/**/*.java">
+                        <manifest>
+                            <attribute	name="Original-Jar-Name"
+                                        value="${jain-sip-ri-src-jar}"/>
+                        </manifest>
+                    </jar>
                 </target>
 
                 <target name="compilesdp" depends="init">
@@ -278,6 +293,12 @@ c:/jakarta-ant/bin/ant all
                         <manifest>
                             <attribute	name="Original-Jar-Name"
                                         value="${sdp_jar}"/>
+                        </manifest>
+                    </jar>
+                    <jar destfile="${sdp-src_jar}" basedir="${srcroot}" includes="gov/nist/core/**/*.java,gov/nist/javax/sdp/**/*.java,javax/sdp/**/*.java" >
+                        <manifest>
+                            <attribute	name="Original-Jar-Name"
+                                        value="${sdp-src_jar}"/>
                         </manifest>
                     </jar>
                 </target>
