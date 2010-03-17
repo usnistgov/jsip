@@ -295,10 +295,10 @@ c:/jakarta-ant/bin/ant all
                                         value="${sdp_jar}"/>
                         </manifest>
                     </jar>
-                    <jar destfile="${sdp-src_jar}" basedir="${srcroot}" includes="gov/nist/core/**/*.java,gov/nist/javax/sdp/**/*.java,javax/sdp/**/*.java" >
+                    <jar destfile="${sdp-src-jar}" basedir="${srcroot}" includes="gov/nist/core/**/*.java,gov/nist/javax/sdp/**/*.java,javax/sdp/**/*.java" >
                         <manifest>
                             <attribute	name="Original-Jar-Name"
-                                        value="${sdp-src_jar}"/>
+                                        value="${sdp-src-jar}"/>
                         </manifest>
                     </jar>
                 </target>
