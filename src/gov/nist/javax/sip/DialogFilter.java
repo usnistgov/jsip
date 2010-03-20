@@ -83,7 +83,7 @@ import javax.sip.message.Response;
  * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
  * and event model with the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.71 $ $Date: 2010-03-13 06:23:34 $
+ * @version 1.2 $Revision: 1.72 $ $Date: 2010-03-20 03:37:05 $
  * 
  * @author M. Ranganathan
  */
@@ -901,11 +901,11 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
                 // send error when stricly higher, ignore when ==
                 // (likely still processing, error would interrupt that)
+                /* && (transaction.getState() == TransactionState.TRYING || transaction
+                .getState() == TransactionState.PROCEEDING) */
 
-                if (dialog.getRemoteSeqNumber() >= sipRequest.getCSeq().getSeqNumber()
-                        && sipProvider.isDialogErrorsAutomaticallyHandled()
-                        && (transaction.getState() == TransactionState.TRYING || transaction
-                                .getState() == TransactionState.PROCEEDING)) {
+                if (dialog.getRemoteSeqNumber() > sipRequest.getCSeq().getSeqNumber()
+                        && sipProvider.isDialogErrorsAutomaticallyHandled() ) {
                     this.sendServerInternalErrorResponse(sipRequest, transaction);
 
                 }
