@@ -77,6 +77,8 @@ class IOHandler {
 	// A cache of client sockets that can be re-used for
 	// sending tcp messages.
 	private ConcurrentHashMap<String, Socket> socketTable;
+	
+	private Semaphore ioSemaphore = new Semaphore(1);
 
 	protected static String makeKey(InetAddress addr, int port) {
 		return addr.getHostAddress() + ":" + port;
@@ -367,7 +369,24 @@ class IOHandler {
 		}
 
 	}
+	
+	
+	private void enterIOCriticalSection(String key)  throws IOException {
+		try {
+			if ( ! this.ioSemaphore.tryAcquire(10,TimeUnit.SECONDS) ) {
+				throw new IOException("Could not acquire semaphore");
+			}
+		} catch (InterruptedException e) {
+			throw new IOException("exception in acquiring sem");
+		}
+	}
+	
+	
+	private void leaveIOCriticalSection(String key) {
+		this.ioSemaphore.release();
+	}
 
+	/*
 	private void leaveIOCriticalSection(String key) {
 		synchronized (socketCreationMap) {
 			Semaphore creationSemaphore = socketCreationMap.remove(key);
@@ -377,12 +396,7 @@ class IOHandler {
 		}
 	}
 
-	/**
-	 * 
-	 * @param key
-	 * @throws IOException
-	 *             when it failed to acquire the semaphore
-	 */
+	
 	private void enterIOCriticalSection(String key) throws IOException {
 		Semaphore creationSemaphore = null;
 		synchronized (socketCreationMap) {
@@ -402,6 +416,7 @@ class IOHandler {
 			throw new IOException("exception in acquiring sem");
 		}
 	}
+	*/
 
 	/**
 	 * Close all the cached connections.
