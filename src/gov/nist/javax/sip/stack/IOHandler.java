@@ -68,16 +68,16 @@ class IOHandler {
 	
 	private SipStackImpl sipStack;
 
-	private static String TCP = "tcp";
+	private static final String TCP = "tcp";
 
 	// Added by Daniel J. Martinez Manzano <dani@dif.um.es>
-	private static String TLS = "tls";
+	private static final String TLS = "tls";
 
 	// A cache of client sockets that can be re-used for
 	// sending tcp messages.
-	private ConcurrentHashMap<String, Socket> socketTable;
+	private final ConcurrentHashMap<String, Socket> socketTable = new ConcurrentHashMap<String, Socket>();
 	
-	private final ConcurrentHashMap<String, Semaphore> socketCreationMap ;
+	private final ConcurrentHashMap<String, Semaphore> socketCreationMap  = new ConcurrentHashMap<String, Semaphore>();
 
 	
 	//private Semaphore ioSemaphore = new Semaphore(1);
@@ -89,8 +89,6 @@ class IOHandler {
 
 	protected IOHandler(SIPTransactionStack sipStack) {
 		this.sipStack = (SipStackImpl) sipStack;
-		this.socketTable = new ConcurrentHashMap<String, Socket>();
-		this.socketCreationMap = new ConcurrentHashMap<String, Semaphore>();
 	}
 
 	protected void putSocket(String key, Socket sock) {
@@ -403,8 +401,7 @@ class IOHandler {
 	
 	private void enterIOCriticalSection(String key) throws IOException {
 		Semaphore creationSemaphore = null;
-		creationSemaphore = socketCreationMap.get(key);
-		
+			
 		synchronized (socketCreationMap) {
 			creationSemaphore = socketCreationMap.get(key);
 			if (creationSemaphore == null) {
