@@ -65,8 +65,7 @@ import javax.net.ssl.SSLSocket;
 
 class IOHandler {
 
-	private final Map<String, Semaphore> socketCreationMap = new ConcurrentHashMap<String, Semaphore>();
-
+	
 	private SipStackImpl sipStack;
 
 	private static String TCP = "tcp";
@@ -78,7 +77,10 @@ class IOHandler {
 	// sending tcp messages.
 	private ConcurrentHashMap<String, Socket> socketTable;
 	
-	private Semaphore ioSemaphore = new Semaphore(1);
+	private final ConcurrentHashMap<String, Semaphore> socketCreationMap ;
+
+	
+	//private Semaphore ioSemaphore = new Semaphore(1);
 
 	protected static String makeKey(InetAddress addr, int port) {
 		return addr.getHostAddress() + ":" + port;
@@ -88,20 +90,21 @@ class IOHandler {
 	protected IOHandler(SIPTransactionStack sipStack) {
 		this.sipStack = (SipStackImpl) sipStack;
 		this.socketTable = new ConcurrentHashMap<String, Socket>();
-
+		this.socketCreationMap = new ConcurrentHashMap<String, Semaphore>();
 	}
 
 	protected void putSocket(String key, Socket sock) {
 		socketTable.put(key, sock);
-
 	}
 
 	protected Socket getSocket(String key) {
 		return (Socket) socketTable.get(key);
+		
 	}
 
 	protected void removeSocket(String key) {
 		socketTable.remove(key);
+		socketCreationMap.remove(key);
 	}
 
 	/**
@@ -370,7 +373,7 @@ class IOHandler {
 
 	}
 	
-	
+	/*
 	private void enterIOCriticalSection(String key)  throws IOException {
 		try {
 			if ( ! this.ioSemaphore.tryAcquire(10,TimeUnit.SECONDS) ) {
@@ -385,20 +388,23 @@ class IOHandler {
 	private void leaveIOCriticalSection(String key) {
 		this.ioSemaphore.release();
 	}
+	*/
 
-	/*
 	private void leaveIOCriticalSection(String key) {
 		synchronized (socketCreationMap) {
-			Semaphore creationSemaphore = socketCreationMap.remove(key);
+			Semaphore creationSemaphore = socketCreationMap.get(key);
 			if (creationSemaphore != null) {
 				creationSemaphore.release();
 			}
 		}
 	}
+	
 
 	
 	private void enterIOCriticalSection(String key) throws IOException {
 		Semaphore creationSemaphore = null;
+		creationSemaphore = socketCreationMap.get(key);
+		
 		synchronized (socketCreationMap) {
 			creationSemaphore = socketCreationMap.get(key);
 			if (creationSemaphore == null) {
@@ -416,7 +422,7 @@ class IOHandler {
 			throw new IOException("exception in acquiring sem");
 		}
 	}
-	*/
+
 
 	/**
 	 * Close all the cached connections.
