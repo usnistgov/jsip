@@ -214,14 +214,22 @@ public class HostNameParser extends ParserCore {
      * address (i.e. contains at least two colons) and false otherwise.
      */
     private boolean isIPv6Address(String uriHeader)
-    {
+    {    	
+    	// Issue 275 https://jain-sip.dev.java.net/issues/show_bug.cgi?id=275 
+    	// we check if the uriHeader includes a comma, if that's the case we are potentially parsing
+    	// a multi header so strip everything after it
+    	String hostName = uriHeader;
+    	int indexOfComma = uriHeader.indexOf(",");
+    	if(indexOfComma != -1) {
+    		hostName  = uriHeader.substring(0, indexOfComma);
+    	}
         // approximately detect the end the host part.
         //first check if we have an uri param
-        int hostEnd = uriHeader.indexOf(Lexer.QUESTION);
+        int hostEnd = hostName.indexOf(Lexer.QUESTION);
 
         //if not or if it appears after a semi-colon then the end of the
         //address would be a header param.
-        int semiColonIndex = uriHeader.indexOf(Lexer.SEMICOLON);
+        int semiColonIndex = hostName.indexOf(Lexer.SEMICOLON);
         if ( hostEnd == -1
             || (semiColonIndex!= -1 && hostEnd > semiColonIndex) )
             hostEnd = semiColonIndex;
@@ -229,10 +237,10 @@ public class HostNameParser extends ParserCore {
         //if there was no header param either the address
         //continues until the end of the string
         if ( hostEnd == -1 )
-            hostEnd = uriHeader.length();
+            hostEnd = hostName.length();
 
         //extract the address
-        String host = uriHeader.substring(0, hostEnd);
+        String host = hostName.substring(0, hostEnd);
 
         int firstColonIndex = host.indexOf(Lexer.COLON);
 
