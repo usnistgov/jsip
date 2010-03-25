@@ -65,6 +65,8 @@ public class Subscriber implements SipListener {
 
     private ListeningPoint listeningPoint;
 
+	private Dialog notifyDialog;
+
     protected static final String usageString = "java "
             + "examples.subsnotify.Subscriber \n"
             + ">>>> is your class path set to the root?";
@@ -107,7 +109,13 @@ public class Subscriber implements SipListener {
             if (dialog != null) {
                 logger.info("Dialog State = " + dialog.getState());
             }
-
+            
+            this.notifyDialog = dialog;
+            
+            NotifyBefore202Test.assertNotNull( "NOTIFY must set remote tag", notifyDialog.getRemoteTag());
+            
+            NotifyBefore202Test.assertEquals("DialogState should be CONFIRMED", DialogState.CONFIRMED, dialog.getState());
+            
            
             Response response = messageFactory.createResponse(200, notify);
             // SHOULD add a Contact
@@ -153,6 +161,8 @@ public class Subscriber implements SipListener {
         logger.info("Dialog = " + tid.getDialog());
         if ( tid.getDialog () != null )
         logger.info("Dialog State is " + tid.getDialog().getState());
+        
+        NotifyBefore202Test.assertEquals("Dialog should be same as NOTIFY dialog", this.notifyDialog,tid.getDialog());
 
     }
 
