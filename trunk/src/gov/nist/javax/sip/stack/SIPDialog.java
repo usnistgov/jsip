@@ -127,7 +127,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.169 $ $Date: 2010-03-25 00:21:15 $
+ * @version 1.2 $Revision: 1.170 $ $Date: 2010-03-25 06:06:30 $
  * 
  * @author M. Ranganathan
  * 
@@ -2684,7 +2684,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                     if (cseqMethod.equals(getMethod())
                             && (sipResponse.getToTag() != null || sipStack.rfc2543Supported)
                             && (this.getState() != DialogState.CONFIRMED || 
-                            		(cseqMethod.equals(Request.SUBSCRIBE)
+                            		(this.getState() == DialogState.CONFIRMED 
+                            		&& cseqMethod.equals(Request.SUBSCRIBE)
                             	    && this.pendingRouteUpdateOn202Response
                             		&& sipResponse.getStatusCode() == Response.ACCEPTED)))  {
                         if (this.getState() != DialogState.CONFIRMED) {
@@ -2707,6 +2708,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                         if ( cseqMethod.equals(Request.SUBSCRIBE)
                             		&& sipResponse.getStatusCode() == Response.ACCEPTED 
                             		&& this.pendingRouteUpdateOn202Response) {    
+                        			setRemoteTag(sipResponse.getToTag());
                             		this.addRoute(sipResponse);
                             		this.pendingRouteUpdateOn202Response = false;
                         }
