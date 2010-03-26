@@ -13,7 +13,8 @@ public class ForkedInviteTest extends AbstractForkedInviteTestCase {
     public void testForkedInvite() {
         this.shootist.sendInvite();
     }
-
+    
+   
 
 
 }
