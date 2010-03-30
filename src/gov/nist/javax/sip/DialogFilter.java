@@ -83,7 +83,7 @@ import javax.sip.message.Response;
  * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
  * and event model with the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.75 $ $Date: 2010-03-25 15:06:39 $
+ * @version 1.2 $Revision: 1.70 $ $Date: 2010-02-24 19:20:39 $
  * 
  * @author M. Ranganathan
  */
@@ -341,10 +341,12 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
          * transaction. This support is only enabled when the stack has been instructed to
          * function with Automatic Dialog Support.
          */
-        if ( sipProvider.isDialogErrorsAutomaticallyHandled()
+        if (sipProvider.isAutomaticDialogSupportEnabled()
+                && sipProvider.isDialogErrorsAutomaticallyHandled()
                 && sipRequest.getToTag() == null) {
-            if ( sipStack
-                    .findMergedTransaction(sipRequest)) {
+            SIPServerTransaction sipServerTransaction = sipStack
+                    .findMergedTransaction(sipRequest);
+            if (sipServerTransaction != null) {
                 this.sendLoopDetectedResponse(sipRequest, transaction);
                 return;
             }
@@ -901,20 +903,13 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
                 // send error when stricly higher, ignore when ==
                 // (likely still processing, error would interrupt that)
-                /* && (transaction.getState() == TransactionState.TRYING || transaction
-                .getState() == TransactionState.PROCEEDING) */
 
-                if (dialog.getRemoteSeqNumber() > sipRequest.getCSeq().getSeqNumber()
-                        && sipProvider.isDialogErrorsAutomaticallyHandled() ) {
+                if (dialog.getRemoteSeqNumber() >= sipRequest.getCSeq().getSeqNumber()
+                        && sipProvider.isDialogErrorsAutomaticallyHandled()
+                        && (transaction.getState() == TransactionState.TRYING || transaction
+                                .getState() == TransactionState.PROCEEDING)) {
                     this.sendServerInternalErrorResponse(sipRequest, transaction);
-                } else {
-                	try {
-						transaction.terminate();
-					} catch (ObjectInUseException e) {
-						if ( sipStack.isLoggingEnabled() ) {
-							sipStack.getStackLogger().logError("Unexpected exception",e);
-						}
-					}
+
                 }
                 return;
             }
@@ -1051,10 +1046,6 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     }
                     if (subscriptionDialog != null) {
                         transaction.setDialog(subscriptionDialog, dialogId);
-                        if ( subscriptionDialog.getState() != DialogState.CONFIRMED ) {
-                        	subscriptionDialog.setPendingRouteUpdateOn202Response(sipRequest);
-                        	
-                        }
                         subscriptionDialog.setState(DialogState.CONFIRMED.getValue());
                         sipStack.putDialog(subscriptionDialog);
                         pendingSubscribeClientTx.setDialog(subscriptionDialog, dialogId);

@@ -99,6 +99,7 @@ public class Proxy extends TestHarness implements SipListener {
                     ct1.setApplicationData(st);
                     this.clientTxTable.add(ct1);
 
+                    Thread.sleep((int) ( Math.abs((Math.random() * 100 ))));
                     newRequest = (Request) request.clone();
                     sipUri = protocolObjects.addressFactory.createSipURI("UA2", "127.0.0.1");
                     sipUri.setLrParam();
@@ -126,8 +127,6 @@ public class Proxy extends TestHarness implements SipListener {
                     // client.
 
                     ct2.sendRequest();
-                    Thread.sleep((int) ( Math.abs((Math.random() * 1000 ))));
-                    
                     ct1.sendRequest();
                 }
 
@@ -165,7 +164,6 @@ public class Proxy extends TestHarness implements SipListener {
                 return;
 
             if (response.getStatusCode() == Response.LOOP_DETECTED) {
-            	logger.info("Saw a LOOP DETECTED response");
                 this.loopDetectedSeen = true;
             }
             if (cseq.getMethod().equals(Request.INVITE)) {

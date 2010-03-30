@@ -45,8 +45,8 @@ import gov.nist.javax.sip.header.ViaList;
 import gov.nist.javax.sip.message.SIPMessage;
 import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.message.SIPResponse;
-import gov.nist.javax.sip.parser.MessageParser;
 import gov.nist.javax.sip.parser.ParseExceptionListener;
+import gov.nist.javax.sip.parser.StringMsgParser;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -90,7 +90,7 @@ import javax.sip.address.Hop;
  *
  *
  *
- * @version 1.2 $Revision: 1.70 $ $Date: 2010-03-19 17:29:45 $
+ * @version 1.2 $Revision: 1.67 $ $Date: 2010-01-21 21:26:38 $
  */
 public class UDPMessageChannel extends MessageChannel implements
         ParseExceptionListener, Runnable, RawMessageChannel {
@@ -104,7 +104,7 @@ public class UDPMessageChannel extends MessageChannel implements
     /**
      * The parser we are using for messages received from this channel.
      */
-    protected MessageParser myParser;
+    protected StringMsgParser myParser;
 
     /**
      * Where we got the stuff from
@@ -246,7 +246,7 @@ public class UDPMessageChannel extends MessageChannel implements
         while (true) {
             // Create a new string message parser to parse the list of messages.
             if (myParser == null) {
-                myParser = sipStack.getMessageParserFactory().createMessageParser(sipStack);
+                myParser = new StringMsgParser();
                 myParser.setParseExceptionListener(this);
             }
             // messages that we write out to him.
@@ -397,12 +397,12 @@ public class UDPMessageChannel extends MessageChannel implements
             }
             return;
         }
-        Via topMostVia = sipMessage.getTopmostVia();
+        ViaList viaList = sipMessage.getViaHeaders();
         // Check for the required headers.
         if (sipMessage.getFrom() == null || sipMessage.getTo() == null
                 || sipMessage.getCallId() == null
                 || sipMessage.getCSeq() == null
-                || topMostVia == null) {
+                || sipMessage.getViaHeaders() == null) {
             String badmsg = new String(msgBytes);
             if (sipStack.isLoggingEnabled()) {
                 this.sipStack.getStackLogger().logError("bad message " + badmsg);
@@ -418,10 +418,11 @@ public class UDPMessageChannel extends MessageChannel implements
         // For a request first via header tells where the message
         // is coming from.
         // For response, just get the port from the packet.
-        if (sipMessage instanceof SIPRequest) {            
-            Hop hop = sipStack.addressResolver.resolveAddress(topMostVia.getHop());
+        if (sipMessage instanceof SIPRequest) {
+            Via v = (Via) viaList.getFirst();
+            Hop hop = sipStack.addressResolver.resolveAddress(v.getHop());
             this.peerPort = hop.getPort();
-            this.peerProtocol = topMostVia.getTransport();
+            this.peerProtocol = v.getTransport();
 
             this.peerPacketSourceAddress = packet.getAddress();
             this.peerPacketSourcePort = packet.getPort();
@@ -431,16 +432,16 @@ public class UDPMessageChannel extends MessageChannel implements
                 // the peer address and tag it appropriately.
 
 
-                boolean hasRPort = topMostVia.hasParameter(Via.RPORT);
+                boolean hasRPort = v.hasParameter(Via.RPORT);
                 if (hasRPort
                         || !hop.getHost().equals(
                                 this.peerAddress.getHostAddress())) {
-                	topMostVia.setParameter(Via.RECEIVED, this.peerAddress
+                    v.setParameter(Via.RECEIVED, this.peerAddress
                             .getHostAddress());
                 }
 
                 if (hasRPort) {
-                	topMostVia.setParameter(Via.RPORT, Integer
+                    v.setParameter(Via.RPORT, Integer
                             .toString(this.peerPacketSourcePort));
                 }
             } catch (java.text.ParseException ex1) {
@@ -453,7 +454,7 @@ public class UDPMessageChannel extends MessageChannel implements
             this.peerPacketSourcePort = packet.getPort();
             this.peerAddress = packet.getAddress();
             this.peerPort = packet.getPort();
-            this.peerProtocol = topMostVia.getTransport();
+            this.peerProtocol = ((Via) viaList.getFirst()).getTransport();
         }
 
         this.processMessage(sipMessage);

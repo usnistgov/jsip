@@ -116,7 +116,7 @@ import javax.sip.message.Request;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.55 $ $Date: 2010-03-15 17:01:23 $
+ * @version 1.2 $Revision: 1.54 $ $Date: 2010-02-03 05:53:43 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -163,11 +163,11 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
     protected int size;
 
     // Payload
-    protected String messageContent;
+    private String messageContent;
 
-    protected byte[] messageContentBytes;
+    private byte[] messageContentBytes;
 
-    protected Object messageContentObject;
+    private Object messageContentObject;
 
     // Table of headers indexed by name.
     private Hashtable<String, SIPHeader> nameTable;
@@ -1416,7 +1416,7 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
         }
     }
 
-    protected SIPHeader getSIPHeaderListLowerCase(String lowerCaseHeaderName) {
+    private SIPHeader getSIPHeaderListLowerCase(String lowerCaseHeaderName) {
         return nameTable.get(lowerCaseHeaderName);
     }
 

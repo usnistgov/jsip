@@ -36,15 +36,11 @@ package gov.nist.javax.sip.parser;
  * life goes slower but more reliably.
  *
  */
-import gov.nist.core.Debug;
-import gov.nist.core.InternalErrorHandler;
-import gov.nist.javax.sip.header.ContentLength;
-import gov.nist.javax.sip.message.SIPMessage;
-import gov.nist.javax.sip.stack.SIPTransactionStack;
-
-import java.io.IOException;
-import java.io.InputStream;
+import gov.nist.core.*;
+import gov.nist.javax.sip.message.*;
+import gov.nist.javax.sip.header.*;
 import java.text.ParseException;
+import java.io.*;
 
 /**
  * This implements a pipelined message parser suitable for use with a stream -
@@ -57,7 +53,7 @@ import java.text.ParseException;
  * accessed from the SIPMessage using the getContent and getContentBytes methods
  * provided by the SIPMessage class.
  *
- * @version 1.2 $Revision: 1.28 $ $Date: 2010-03-19 17:29:46 $
+ * @version 1.2 $Revision: 1.25 $ $Date: 2010-02-27 17:34:04 $
  *
  * @author M. Ranganathan
  *
@@ -78,7 +74,6 @@ public final class PipelinedMsgParser implements Runnable {
     private Pipeline rawInputStream;
     private int maxMessageSize;
     private int sizeCounter;
-    private SIPTransactionStack sipStack;
     
   
     /**
@@ -107,10 +102,9 @@ public final class PipelinedMsgParser implements Runnable {
      * @param debug
      *            Enable/disable tracing or lexical analyser switch.
      */
-    public PipelinedMsgParser(SIPTransactionStack sipStack, SIPMessageListener sipMessageListener,
+    public PipelinedMsgParser(SIPMessageListener sipMessageListener,
             Pipeline in, boolean debug, int maxMessageSize) {
         this();
-        this.sipStack = sipStack;
         this.sipMessageListener = sipMessageListener;
         rawInputStream = in;
         this.maxMessageSize = maxMessageSize;
@@ -129,9 +123,9 @@ public final class PipelinedMsgParser implements Runnable {
      *            An input stream to read messages from.
      */
 
-    public PipelinedMsgParser(SIPTransactionStack sipStack, SIPMessageListener mhandler, Pipeline in,
+    public PipelinedMsgParser(SIPMessageListener mhandler, Pipeline in,
             int maxMsgSize) {
-        this(sipStack, mhandler, in, false, maxMsgSize);
+        this(mhandler, in, false, maxMsgSize);
     }
 
     /**
@@ -141,8 +135,8 @@ public final class PipelinedMsgParser implements Runnable {
      *            An input stream to read messages from.
      */
 
-    public PipelinedMsgParser(SIPTransactionStack sipStack, Pipeline in) {
-        this(sipStack, null, in, false, 0);
+    public PipelinedMsgParser(Pipeline in) {
+        this(null, in, false, 0);
     }
 
     /**
@@ -285,16 +279,15 @@ public final class PipelinedMsgParser implements Runnable {
                 // Stop the timer that will kill the read.
                 this.rawInputStream.stopTimer();
                 inputBuffer.append(line2);
-                MessageParser smp = sipStack.getMessageParserFactory().createMessageParser(sipStack);
-                smp.setParseExceptionListener(sipMessageListener);
-                smp.setReadBody(false);
+                StringMsgParser smp = new StringMsgParser(sipMessageListener);
+                smp.readBody = false;
                 SIPMessage sipMessage = null;
 
                 try {
                     if (Debug.debug) {
                         Debug.println("About to parse : " + inputBuffer.toString());
                     }
-                    sipMessage = smp.parseSIPMessage(inputBuffer.toString().getBytes());
+                    sipMessage = smp.parseSIPMessage(inputBuffer.toString());
                     if (sipMessage == null) {
                         this.rawInputStream.stopTimer();
                         continue;
@@ -385,26 +378,6 @@ public final class PipelinedMsgParser implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
- * Revision 1.27  2010/03/15 17:08:57  deruelle_jean
- * Adding javadoc
- *
- * Issue number:  251
- * Obtained from:
- * Submitted by:  Jean Deruelle
- * Reviewed by:   Ranga
- *
- * Revision 1.26  2010/03/15 17:01:21  deruelle_jean
- * Applying patch allowing pluggable message parser implementation
- *
- * Issue number:  251
- * Obtained from:
- * Submitted by:  Jean Deruelle
- * Reviewed by:   Ranga
- *
- * Revision 1.25  2010/02/27 17:34:04  mranga
- * Issue number:  269
- * Fix PipelinedMessageParser.java to use UTF-8 encoding when reading stream.
- *
  * Revision 1.24  2010/02/27 06:09:00  mranga
  * Patch from Frederic
  *

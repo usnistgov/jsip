@@ -127,7 +127,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.172 $ $Date: 2010-03-30 16:03:47 $
+ * @version 1.2 $Revision: 1.166 $ $Date: 2010-02-27 06:09:01 $
  * 
  * @author M. Ranganathan
  * 
@@ -272,12 +272,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     protected String firstTransactionMethod;
     protected String firstTransactionId;
     protected boolean firstTransactionIsServerTransaction;
-    protected String firstTransactionMergeId;
     protected int firstTransactionPort = 5060;   
     protected Contact contactHeader;
-
-	private boolean pendingRouteUpdateOn202Response;
-
 
     // //////////////////////////////////////////////////////
     // Inner classes
@@ -626,8 +622,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         this.setLastResponse(null, sipResponse);
         this.localSequenceNumber = sipResponse.getCSeq().getSeqNumber();
         this.originalLocalSequenceNumber = localSequenceNumber;
-        this.setLocalTag(sipResponse.getFrom().getTag());
-        this.setRemoteTag(sipResponse.getTo().getTag());
+        this.myTag = sipResponse.getFrom().getTag();
+        this.hisTag = sipResponse.getTo().getTag();
         this.localParty = sipResponse.getFrom().getAddress();
         this.remoteParty = sipResponse.getTo().getAddress();
         this.method = sipResponse.getCSeq().getMethod();
@@ -808,8 +804,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                                 "NON LR route in Route set detected for dialog : " + this);
                         	sipStack.getStackLogger().logStackTrace();
                     	}	
-                    } else {
-                    	sipStack.getStackLogger().logDebug("route = " + sipUri);
                     }
                 }
             }
@@ -862,16 +856,15 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                         this.setRemoteTarget((ContactHeader) contactList.getFirst());
                     }
                 }
-                if (! this.pendingRouteUpdateOn202Response ) return;
+                return;
             }
 
             // Update route list on response if I am a client dialog.
-            if (!isServer() || this.pendingRouteUpdateOn202Response) {
+            if (!isServer()) {
 
                 // only update the route set if the dialog is not in the confirmed state.
-                if ((this.getState() != DialogState.CONFIRMED
-                        && this.getState() != DialogState.TERMINATED) || 
-                        this.pendingRouteUpdateOn202Response ) {
+                if (this.getState() != DialogState.CONFIRMED
+                        && this.getState() != DialogState.TERMINATED) {
                     RecordRouteList rrlist = sipResponse.getRecordRouteHeaders();
                     // Add the route set from the incoming response in reverse
                     // order for record route headers.
@@ -1492,9 +1485,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     	dialog.firstTransactionPort = transaction.getPort();
     	dialog.firstTransactionId = transaction.getBranchId();
     	dialog.firstTransactionMethod = transaction.getMethod();
-    	if ( transaction instanceof SIPServerTransaction && dialog.firstTransactionMethod.equals(Request.INVITE) ) {
-    		dialog.firstTransactionMergeId = ((SIPRequest) transaction.getRequest()).getMergeId();
-    	}
     	
         if (dialog.isServer()) {
             SIPServerTransaction st = (SIPServerTransaction) transaction;
@@ -1551,7 +1541,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             } else {
                 setLocalSequenceNumber(sipRequest.getCSeq().getSeqNumber());
                 this.originalLocalSequenceNumber = localSequenceNumber;
-                this.setLocalTag(sipRequest.getFrom().getTag());
+                this.myTag = sipRequest.getFrom().getTag();
                 if (myTag == null)
                 	if (sipStack.isLoggingEnabled())
                 		sipStack.getStackLogger().logError(
@@ -1782,7 +1772,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      */
     private void setLocalTag(String mytag) {
         if (sipStack.isLoggingEnabled()) {
-            sipStack.getStackLogger().logDebug("set Local tag " + mytag + " dialog = " + this );
+            sipStack.getStackLogger().logDebug("set Local tag " + mytag + " " + this.dialogId);
             sipStack.getStackLogger().logStackTrace();
         }
 
@@ -2680,38 +2670,15 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
                     // Only do this if method equals initial request!
 
-                	sipStack.getStackLogger().logDebug("pendingRouteUpdateOn202Response : " + this.pendingRouteUpdateOn202Response);
                     if (cseqMethod.equals(getMethod())
                             && (sipResponse.getToTag() != null || sipStack.rfc2543Supported)
-                            && (this.getState() != DialogState.CONFIRMED || 
-                            		(this.getState() == DialogState.CONFIRMED 
-                            		&& cseqMethod.equals(Request.SUBSCRIBE)
-                            	    && this.pendingRouteUpdateOn202Response
-                            		&& sipResponse.getStatusCode() == Response.ACCEPTED)))  {
-                        if (this.getState() != DialogState.CONFIRMED) {
-							setRemoteTag(sipResponse.getToTag());
-							this.setDialogId(sipResponse.getDialogId(false));
-							sipStack.putDialog(this);
-							this.addRoute(sipResponse);
-							this.setState(CONFIRMED_STATE);
-						} 
-                        
-                        /*
-                         * Note: Subscribe NOTIFY processing. The route set is computed
-                         * only after we get the 202 response but the NOTIFY may come in before
-                         * we get the 202 response. So we need to update the route set after
-                         * we see the 202 despite the fact that the dialog is in the CONFIRMED
-                         * state. We do this only on the dialog forming SUBSCRIBE an not a 
-                         * resubscribe.
-                         */
-                        
-                        if ( cseqMethod.equals(Request.SUBSCRIBE)
-                            		&& sipResponse.getStatusCode() == Response.ACCEPTED 
-                            		&& this.pendingRouteUpdateOn202Response) {    
-                        			setRemoteTag(sipResponse.getToTag());
-                            		this.addRoute(sipResponse);
-                            		this.pendingRouteUpdateOn202Response = false;
-                        }
+                            && this.getState() != DialogState.CONFIRMED) {
+                        setRemoteTag(sipResponse.getToTag());
+                        this.setDialogId(sipResponse.getDialogId(false));
+                        sipStack.putDialog(this);
+                        this.addRoute(sipResponse);
+
+                        setState(SIPDialog.CONFIRMED_STATE);
                     }
 
                     // Capture the OK response for later use in createAck
@@ -2866,8 +2833,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                                     sipStack.getStackLogger().logDebug(
                                             "Delete dialog -- cannot acquire ackSem");
                                 }
-                                this.raiseErrorEvent(SIPDialogErrorEvent.DIALOG_ERROR_INTERNAL_COULD_NOT_TAKE_ACK_SEM);       
-                            	this.sipStack.getStackLogger().logError("IntenalError : Ack Sem already acquired ");
+                                this.delete();
                                 return;
                             }
                         
@@ -3416,23 +3382,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     
     public void releaseTimerTaskSem() {
         this.timerTaskLock.release();
-    }
-
-	
-	
-	public String getMergeId( ) {
-		return this.firstTransactionMergeId;
-	}
-
-	public void setPendingRouteUpdateOn202Response(SIPRequest sipRequest) {
-		this.pendingRouteUpdateOn202Response = true;
-		String toTag = sipRequest.getToHeader().getTag();
-		if ( toTag != null ) {
-			this.setRemoteTag(toTag);
-		}
-		
-	}
-	
+    }    
     
 	
 }

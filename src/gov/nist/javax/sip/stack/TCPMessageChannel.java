@@ -59,7 +59,7 @@ import javax.sip.address.Hop;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.65 $ $Date: 2010-03-15 17:01:17 $
+ * @version 1.2 $Revision: 1.63 $ $Date: 2010-02-23 02:33:42 $
  */
 public class TCPMessageChannel extends MessageChannel implements SIPMessageListener, Runnable,
         RawMessageChannel {
@@ -76,8 +76,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
 
     protected boolean isCached;
 
-    // Set here on initialization to avoid thread leak. See issue 266
-    protected boolean isRunning = true;
+    protected boolean isRunning;
 
     private Thread mythread;
 
@@ -345,6 +344,8 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
             Thread mythread = new Thread(this);
             mythread.setDaemon(true);
             mythread.setName("TCPMessageChannelThread");
+            // Need to set this here to avoid race condition. See issue 266
+            this.isRunning = true; 
             mythread.start();
         }
 
@@ -596,7 +597,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
                 ((SIPTransactionStack) sipStack).getTimer());
         // Create a pipelined message parser to read and parse
         // messages that we write out to him.
-        myParser = new PipelinedMsgParser(sipStack, this, hispipe, this.sipStack.getMaxMessageSize());
+        myParser = new PipelinedMsgParser(this, hispipe, this.sipStack.getMaxMessageSize());
         // Start running the parser thread.
         myParser.processInput();
         // bug fix by Emmanuel Proulx

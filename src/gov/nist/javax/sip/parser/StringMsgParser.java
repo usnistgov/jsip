@@ -64,20 +64,20 @@ import java.text.ParseException;
  * feld swoop).
  *
  *
- * @version 1.2 $Revision: 1.27 $ $Date: 2010-03-15 17:01:21 $
+ * @version 1.2 $Revision: 1.26 $ $Date: 2009-10-22 10:27:38 $
  *
  * @author M. Ranganathan <br/>
  *
   *
  */
-public class StringMsgParser implements MessageParser {
+public class StringMsgParser {
 
     protected boolean readBody;
-    protected ParseExceptionListener parseExceptionListener;
-    protected String rawStringMessage;
+    private ParseExceptionListener parseExceptionListener;
+    private String rawStringMessage;
     private boolean strict;
 
-    protected static boolean computeContentLengthFromMessage = false;
+    private static boolean computeContentLengthFromMessage = false;
 
     /**
      * @since v0.9
@@ -337,7 +337,7 @@ public class StringMsgParser implements MessageParser {
         return message;
     }
 
-    protected static String trimEndOfLine(String line) {
+    private String trimEndOfLine(String line) {
         if (line == null)
             return line;
 
@@ -387,7 +387,7 @@ public class StringMsgParser implements MessageParser {
         return message;
     }
 
-    protected void processHeader(String header, SIPMessage message) throws ParseException {
+    private void processHeader(String header, SIPMessage message) throws ParseException {
         if (header == null || header.length() == 0)
             return;
 
@@ -705,9 +705,5 @@ public class StringMsgParser implements MessageParser {
        this.strict = strict;
         
     }
-
-	public void setReadBody(boolean readBody) {
-		this.readBody = readBody;
-	}
 
 }

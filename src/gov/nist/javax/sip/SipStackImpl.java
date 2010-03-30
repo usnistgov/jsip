@@ -34,14 +34,10 @@ import gov.nist.javax.sip.clientauthutils.AccountManager;
 import gov.nist.javax.sip.clientauthutils.AuthenticationHelper;
 import gov.nist.javax.sip.clientauthutils.AuthenticationHelperImpl;
 import gov.nist.javax.sip.clientauthutils.SecureAccountManager;
-import gov.nist.javax.sip.parser.MessageParserFactory;
 import gov.nist.javax.sip.parser.StringMsgParser;
-import gov.nist.javax.sip.parser.StringMsgParserFactory;
 import gov.nist.javax.sip.stack.DefaultMessageLogFactory;
 import gov.nist.javax.sip.stack.DefaultRouter;
 import gov.nist.javax.sip.stack.MessageProcessor;
-import gov.nist.javax.sip.stack.MessageProcessorFactory;
-import gov.nist.javax.sip.stack.OIOMessageProcessorFactory;
 import gov.nist.javax.sip.stack.SIPTransactionStack;
 
 import java.io.BufferedReader;
@@ -58,6 +54,7 @@ import java.util.StringTokenizer;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import javax.sip.ClientTransaction;
 import javax.sip.InvalidArgumentException;
 import javax.sip.ListeningPoint;
 import javax.sip.ObjectInUseException;
@@ -400,15 +397,6 @@ import javax.sip.message.Request;
  * client transction in the ResponseEventExt and deliver that to the application.
  * The event handler can get the original transaction from this event. </li>
  * 
- * <li><b>gov.nist.javax.sip.MESSAGE_PARSER_FACTORY =  name of the class implementing gov.nist.javax.sip.parser.MessageParserFactory</b>
- * This factory allows pluggable implementations of the MessageParser that will take care of parsing the incoming messages.
- * By example one could plug a lazy parser through this factory.</li>
- * 
- * <li><b>gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY =  name of the class implementing gov.nist.javax.sip.parser.MessageProcessorFactory</b>
- * This factory allows pluggable implementations of the MessageProcessor that will take care of incoming messages.
- * By example one could plug a NIO Processor through this factory.</li>
- * 
- * 
  * <li><b>gov.nist.javax.sip.DELIVER_RETRANSMITTED_ACK_TO_LISTENER=boolean</b> A testing property
  * that allows application to see the ACK for retransmitted 200 OK requests. <b>Note that this is for test
  * purposes only</b></li>
@@ -457,7 +445,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.125 $ $Date: 2010-03-15 19:35:02 $
+ * @version 1.2 $Revision: 1.122 $ $Date: 2010-02-22 18:57:32 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -718,9 +706,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 					.getProperty("javax.net.ssl.keyStorePassword");
 			try {
 				this.networkLayer = new SslNetworkLayer(trustStoreFile,
-						keyStoreFile,
-						keyStorePassword != null ?
-						    keyStorePassword.toCharArray() : null,
+						keyStoreFile, keyStorePassword.toCharArray(),
 						configurationProperties
 								.getProperty("javax.net.ssl.keyStoreType"));
 			} catch (Exception e1) {
@@ -1107,24 +1093,6 @@ public class SipStackImpl extends SIPTransactionStack implements
 				("gov.nist.javax.sip.DELIVER_RETRANSMITTED_ACK_TO_LISTENER","false"));
 		
 		super.dialogTimeoutFactor = Integer.parseInt(configurationProperties.getProperty("gov.nist.javax.sip.DIALOG_TIMEOUT_FACTOR","64"));
-		
-		String messageParserFactoryName = configurationProperties.getProperty("gov.nist.javax.sip.MESSAGE_PARSER_FACTORY",StringMsgParserFactory.class.getName());
-		try {
-			super.messageParserFactory = (MessageParserFactory) Class.forName(messageParserFactoryName).newInstance();
-		} catch (Exception e) {
-			getStackLogger()
-				.logError(
-						"Bad configuration value for gov.nist.javax.sip.MESSAGE_PARSER_FACTORY", e);			
-		}
-		
-		String messageProcessorFactoryName = configurationProperties.getProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY",OIOMessageProcessorFactory.class.getName());
-		try {
-			super.messageProcessorFactory = (MessageProcessorFactory) Class.forName(messageProcessorFactoryName).newInstance();
-		} catch (Exception e) {
-			getStackLogger()
-				.logError(
-						"Bad configuration value for gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", e);			
-		}
 	}
 
 	/*
