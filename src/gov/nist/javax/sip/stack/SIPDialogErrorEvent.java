@@ -45,6 +45,11 @@ public class SIPDialogErrorEvent extends EventObject {
      */
     public static final int DIALOG_REINVITE_TIMEOUT = 3;
     
+    /*
+     * This event Id indicates that some internal error happened and the ACK semaphore could not be acquired.
+     */
+    public static final int DIALOG_ERROR_INTERNAL_COULD_NOT_TAKE_ACK_SEM = 4;
+    
 
     // ID of this error event
     private int errorID;
@@ -72,6 +77,8 @@ public class SIPDialogErrorEvent extends EventObject {
     		this.errorID = DIALOG_ACK_NOT_SENT_TIMEOUT;
     	} else if ( reason == DialogTimeoutEvent.Reason.ReInviteTimeout) {
     		this.errorID = DIALOG_REINVITE_TIMEOUT;
+    	} else if (reason == DialogTimeoutEvent.Reason.CannotAcquireAckSemaphoreForOk) {
+    		this.errorID = DIALOG_ERROR_INTERNAL_COULD_NOT_TAKE_ACK_SEM;
     	}
     }
 
