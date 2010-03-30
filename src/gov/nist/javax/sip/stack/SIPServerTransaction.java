@@ -167,7 +167,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.123 $ $Date: 2010-02-21 07:47:23 $
+ * @version 1.2 $Revision: 1.124 $ $Date: 2010-03-30 16:03:46 $
  * @author M. Ranganathan
  *
  */
@@ -1348,6 +1348,10 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                         // the user.
                         sipResponse.getTo().setTag(Utils.getInstance().generateTag());
                     } else if (dialog.getLocalTag() != null && sipResponse.getToTag() == null) {
+                    	if ( sipStack.getStackLogger().isLoggingEnabled()) {
+                    		sipStack.getStackLogger().logDebug("assigning toTag : serverTransaction = " + this + " dialog " 
+                    				+ dialog + " tag = " + dialog.getLocalTag());
+                    	}
                         sipResponse.setToTag(dialog.getLocalTag());
                     } else if (dialog.getLocalTag() != null && sipResponse.getToTag() != null
                             && !dialog.getLocalTag().equals(sipResponse.getToTag())) {
