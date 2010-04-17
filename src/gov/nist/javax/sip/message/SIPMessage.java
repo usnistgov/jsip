@@ -116,7 +116,7 @@ import javax.sip.message.Request;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.55 $ $Date: 2010-03-15 17:01:23 $
+ * @version 1.2 $Revision: 1.56 $ $Date: 2010-04-17 10:56:20 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -260,8 +260,44 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
      * 
      * @param isServerTransaction is a flag that indicates whether this is a server transaction.
      */
-    public abstract String getDialogId(boolean isServerTransaction);
+    public final String getDialogId(boolean isServer) {    	
+        To to = (To) this.getTo();
+        return this.getDialogId( isServer, to.getTag() );
+    }
 
+    /**
+     * Get a dialog id given the remote tag.
+     */
+    public final String getDialogId(boolean isServer, String toTag) {
+        From from = (From) this.getFrom();
+        CallID cid = (CallID) this.getCallId();
+        StringBuffer retval = new StringBuffer(cid.getCallId());
+        if (!isServer) {
+            // retval.append(COLON).append(from.getUserAtHostPort());
+            if (from.getTag() != null) {
+                retval.append(COLON);
+                retval.append(from.getTag());
+            }
+            // retval.append(COLON).append(to.getUserAtHostPort());
+            if (toTag != null) {
+                retval.append(COLON);
+                retval.append(toTag);
+            }
+        } else {
+            // retval.append(COLON).append(to.getUserAtHostPort());
+            if (toTag != null) {
+                retval.append(COLON);
+                retval.append(toTag);
+            }
+            // retval.append(COLON).append(from.getUserAtHostPort());
+            if (from.getTag() != null) {
+                retval.append(COLON);
+                retval.append(from.getTag());
+            }
+        }
+        return retval.toString().toLowerCase();
+    }
+    
     /**
      * Template match for SIP messages. The matchObj is a SIPMessage template to match against.
      * This method allows you to do pattern matching with incoming SIP messages. Null matches wild
