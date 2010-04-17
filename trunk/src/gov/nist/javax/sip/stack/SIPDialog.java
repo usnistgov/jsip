@@ -31,11 +31,9 @@ package gov.nist.javax.sip.stack;
 import gov.nist.core.InternalErrorHandler;
 import gov.nist.core.NameValueList;
 import gov.nist.javax.sip.DialogExt;
-import gov.nist.javax.sip.DialogTimeoutEvent;
 import gov.nist.javax.sip.ListeningPointImpl;
 import gov.nist.javax.sip.SipListenerExt;
 import gov.nist.javax.sip.SipProviderImpl;
-import gov.nist.javax.sip.SipStackImpl;
 import gov.nist.javax.sip.Utils;
 import gov.nist.javax.sip.address.AddressImpl;
 import gov.nist.javax.sip.address.SipUri;
@@ -51,7 +49,6 @@ import gov.nist.javax.sip.header.Reason;
 import gov.nist.javax.sip.header.RecordRoute;
 import gov.nist.javax.sip.header.RecordRouteList;
 import gov.nist.javax.sip.header.Require;
-import gov.nist.javax.sip.header.RetryAfter;
 import gov.nist.javax.sip.header.Route;
 import gov.nist.javax.sip.header.RouteList;
 import gov.nist.javax.sip.header.SIPHeader;
@@ -76,8 +73,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -104,7 +99,6 @@ import javax.sip.header.RSeqHeader;
 import javax.sip.header.ReasonHeader;
 import javax.sip.header.RequireHeader;
 import javax.sip.header.RouteHeader;
-import javax.sip.header.ServerHeader;
 import javax.sip.header.SupportedHeader;
 import javax.sip.header.TimeStampHeader;
 import javax.sip.message.Request;
@@ -127,7 +121,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.172 $ $Date: 2010-03-30 16:03:47 $
+ * @version 1.2 $Revision: 1.173 $ $Date: 2010-04-17 10:56:21 $
  * 
  * @author M. Ranganathan
  * 
@@ -1904,35 +1898,10 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         if (method.equals(Request.ACK) || method.equals(Request.PRACK)) {
             throw new SipException("Invalid method specified for createRequest:" + method);
         }
-        if (lastResponse != null)
-            return this.createRequest(method, this.lastResponse);
-        else
-            throw new SipException("Dialog not yet established -- no response!");
+        return createRequestInternal(method);
     }
 
-    /**
-     * The method that actually does the work of creating a request.
-     * 
-     * @param method
-     * @param response
-     * @return
-     * @throws SipException
-     */
-    private Request createRequest(String method, SIPResponse sipResponse) throws SipException {
-        /*
-         * Check if the dialog is in the right state (RFC 3261 section 15). The caller's UA MAY
-         * send a BYE for either CONFIRMED or EARLY dialogs, and the callee's UA MAY send a BYE on
-         * CONFIRMED dialogs, but MUST NOT send a BYE on EARLY dialogs.
-         * 
-         * Throw out cancel request.
-         */
-
-        if (method == null || sipResponse == null)
-            throw new NullPointerException("null argument");
-
-        if (method.equals(Request.CANCEL))
-            throw new SipException("Dialog.createRequest(): Invalid request");
-
+    private final Request createRequestInternal(String method) throws SipException {
         if (this.getState() == null
                 || (this.getState().getValue() == TERMINATED_STATE && !method
                         .equalsIgnoreCase(Request.BYE))
@@ -1952,7 +1921,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         CSeq cseq = new CSeq();
         try {
             cseq.setMethod(method);
-            cseq.setSeqNumber(this.getLocalSeqNumber());
+            cseq.setSeqNumber( this.localSequenceNumber + 1 );
         } catch (Exception ex) {
         	if (sipStack.isLoggingEnabled())
         		sipStack.getStackLogger().logError("Unexpected error");
@@ -1961,25 +1930,44 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         /*
          * Add a via header for the outbound request based on the transport of the message
          * processor.
+         * 
+         * JvB: Note: using same transport as first request we sent/received
          */
-
-        ListeningPointImpl lp = (ListeningPointImpl) this.sipProvider
-                .getListeningPoint(sipResponse.getTopmostVia().getTransport());
-        if (lp == null) {
-            if (sipStack.isLoggingEnabled())
-                sipStack.getStackLogger().logError(
-                        "Cannot find listening point for transport "
-                                + sipResponse.getTopmostVia().getTransport());
-            throw new SipException("Cannot find listening point for transport "
-                    + sipResponse.getTopmostVia().getTransport());
+        String transport = originalRequest.getTopmostVia().getTransport();
+        ListeningPoint lp = sipProvider.getListeningPoint( transport ); 
+        Via via = ((ListeningPointImpl) lp).getViaHeader();
+        
+        // For CANCEL, take the branch from the last response
+        // XXX This is not valid in case of PRACKs in between! Also a bug in original code
+        // Try INVITE-PRACK-CANCEL scenario
+        if (method.equals(Request.CANCEL)) {
+	        try {
+				via.setBranch( lastResponse.getTopmostVia().getBranch() );
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
         }
-        Via via = lp.getViaHeader();
 
         From from = new From();
-        from.setAddress(this.localParty);
+        from.setAddress(this.localParty);        
         To to = new To();
         to.setAddress(this.remoteParty);
-        SIPRequest sipRequest = sipResponse.createRequest(sipUri, via, cseq, from, to);
+
+        // Tags set below
+        
+        // SIPRequest sipRequest = sipResponse.createRequest(sipUri, via, cseq, from, to);
+        SIPRequest sipRequest = new SIPRequest();
+        sipRequest.setMethod(method);
+        sipRequest.setRequestURI( sipUri );
+        sipRequest.setHeader(via);	// branch gets set when sending
+        try {
+			sipRequest.setHeader( new MaxForwards(70) );
+		} catch (InvalidArgumentException e) {
+		}
+        sipRequest.setHeader(cseq);
+        sipRequest.setHeader(from);
+        sipRequest.setHeader(to);
+        sipRequest.setHeader( this.callIdHeader );	// clone?
 
         /*
          * The default contact header is obtained from the provider. The application can override
@@ -1990,31 +1978,21 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
         if (SIPRequest.isTargetRefresh(method)) {
             ContactHeader contactHeader = ((ListeningPointImpl) this.sipProvider
-                    .getListeningPoint(lp.getTransport())).createContactHeader();
+                    .getListeningPoint( via.getTransport() )).createContactHeader();
 
             ((SipURI) contactHeader.getAddress().getURI()).setSecure(this.isSecure());
             sipRequest.setHeader(contactHeader);
         }
 
-        try {
-            /*
-             * Guess of local sequence number - this is being re-set when the request is actually
-             * dispatched
-             */
-            cseq = (CSeq) sipRequest.getCSeq();
-            cseq.setSeqNumber(this.localSequenceNumber + 1);
-
-        } catch (InvalidArgumentException ex) {
-            InternalErrorHandler.handleException(ex);
-        }
-
         if (method.equals(Request.SUBSCRIBE)) {
-
             if (eventHeader != null)
                 sipRequest.addHeader(eventHeader);
-
         }
 
+        if (MessageFactoryImpl.getDefaultUserAgentHeader() != null ) {
+        	sipRequest.setHeader(MessageFactoryImpl.getDefaultUserAgentHeader());
+        }
+        
         /*
          * RFC3261, section 12.2.1.1:
          * 
@@ -2383,10 +2361,10 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
         try {
             SIPResponse sipResponse = (SIPResponse) relResponse;
-            SIPRequest sipRequest = (SIPRequest) this.createRequest(Request.PRACK,
-                    (SIPResponse) relResponse);
-            String toHeaderTag = sipResponse.getTo().getTag();
-            sipRequest.setToTag(toHeaderTag);
+            SIPRequest sipRequest = (SIPRequest) this.createRequestInternal( Request.PRACK );
+            // JvB: should already be set OK
+            // String toHeaderTag = sipResponse.getTo().getTag();
+            // sipRequest.setToTag(toHeaderTag);
             RAck rack = new RAck();
             RSeq rseq = (RSeq) relResponse.getHeader(RSeqHeader.NAME);
             rack.setMethod(sipResponse.getCSeq().getMethod());

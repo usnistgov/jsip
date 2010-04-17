@@ -61,7 +61,7 @@ import gov.nist.javax.sip.stack.SIPTransactionStack;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.53 $ $Date: 2010-03-15 17:01:24 $
+ * @version 1.2 $Revision: 1.54 $ $Date: 2010-04-17 10:56:20 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -540,76 +540,6 @@ public class SIPRequest extends SIPMessage implements javax.sip.message.Request,
     }
 
     /**
-     * Get a dialog identifier. Generates a string that can be used as a dialog identifier.
-     * 
-     * @param isServer is set to true if this is the UAS and set to false if this is the UAC
-     */
-    public String getDialogId(boolean isServer) {
-        CallID cid = (CallID) this.getCallId();
-        StringBuffer retval = new StringBuffer(cid.getCallId());
-        From from = (From) this.getFrom();
-        To to = (To) this.getTo();
-        if (!isServer) {
-            // retval.append(COLON).append(from.getUserAtHostPort());
-            if (from.getTag() != null) {
-                retval.append(COLON);
-                retval.append(from.getTag());
-            }
-            // retval.append(COLON).append(to.getUserAtHostPort());
-            if (to.getTag() != null) {
-                retval.append(COLON);
-                retval.append(to.getTag());
-            }
-        } else {
-            // retval.append(COLON).append(to.getUserAtHostPort());
-            if (to.getTag() != null) {
-                retval.append(COLON);
-                retval.append(to.getTag());
-            }
-            // retval.append(COLON).append(from.getUserAtHostPort());
-            if (from.getTag() != null) {
-                retval.append(COLON);
-                retval.append(from.getTag());
-            }
-        }
-        return retval.toString().toLowerCase();
-
-    }
-
-    /**
-     * Get a dialog id given the remote tag.
-     */
-    public String getDialogId(boolean isServer, String toTag) {
-        From from = (From) this.getFrom();
-        CallID cid = (CallID) this.getCallId();
-        StringBuffer retval = new StringBuffer(cid.getCallId());
-        if (!isServer) {
-            // retval.append(COLON).append(from.getUserAtHostPort());
-            if (from.getTag() != null) {
-                retval.append(COLON);
-                retval.append(from.getTag());
-            }
-            // retval.append(COLON).append(to.getUserAtHostPort());
-            if (toTag != null) {
-                retval.append(COLON);
-                retval.append(toTag);
-            }
-        } else {
-            // retval.append(COLON).append(to.getUserAtHostPort());
-            if (toTag != null) {
-                retval.append(COLON);
-                retval.append(toTag);
-            }
-            // retval.append(COLON).append(from.getUserAtHostPort());
-            if (from.getTag() != null) {
-                retval.append(COLON);
-                retval.append(from.getTag());
-            }
-        }
-        return retval.toString().toLowerCase();
-    }
-
-    /**
      * Encode this into a byte array. This is used when the body has been set as a binary array
      * and you want to encode the body as a byte array for transmission.
      * 
@@ -871,7 +801,7 @@ public class SIPRequest extends SIPMessage implements javax.sip.message.Request,
             } else {
                 nextHeader = (SIPHeader) nextHeader.clone();
             }
-
+            
             try {
                 newRequest.attachHeader(nextHeader, false);
             } catch (SIPDuplicateHeaderException e) {
