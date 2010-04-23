@@ -57,17 +57,20 @@
 			<url>http://download.java.net/maven/2/</url>
 			<layout>default</layout>
 		</repository>
-		<repository>			
-			<id>JbossRepository</id>
-			<name>Jboss Repository</name>
-			<url>http://repository.jboss.org/maven2</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</repository>
+		<repository>
+          <id>jboss-public-repository-group</id>
+          <name>JBoss Public Maven Repository Group</name>
+          <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+          <layout>default</layout>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+          </snapshots>
+        </repository>
 		<repository>
             <id>backup.repository.jboss.org</id>
             <name>JBoss Repository Backup</name>
@@ -78,18 +81,7 @@
 			<releases>
 				<enabled>true</enabled>
 			</releases>
-        </repository>
-		<repository>
-			<id>jboss-snapshots</id>
-			<name>JBoss Snapshot Repository</name>
-			<url>http://snapshots.jboss.org/maven2</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
+        </repository>		
 	</repositories>
 
 	<build>
@@ -103,14 +95,15 @@
 	</build>
 
 <distributionManagement>
-    <repository>      
-      <id>repository.jboss.org</id>
-      <url>file://${maven.repository.root}</url>
+    <repository>
+      <id>jboss-releases-repository</id>
+      <name>JBoss Releases Repository</name>
+      <url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</url>
     </repository>
     <snapshotRepository>
-      <id>snapshots.jboss.org</id>
-      <name>JBoss Snapshot Repository</name>
-      <url>dav:https://snapshots.jboss.org/maven2</url>
+      <id>jboss-snapshots-repository</id>
+      <name>JBoss Snapshots Repository</name>
+      <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
 
