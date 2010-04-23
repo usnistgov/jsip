@@ -105,6 +105,11 @@
       <name>JBoss Snapshots Repository</name>
       <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
     </snapshotRepository>
+    <snapshotRepository>
+      <id>snapshots.jboss.org</id>
+      <name>JBoss.org Snapshots Repository</name>
+      <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
+    </snapshotRepository>
   </distributionManagement>
 
 	<!--distributionManagement>
