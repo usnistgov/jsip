@@ -121,7 +121,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.174 $ $Date: 2010-04-26 08:08:05 $
+ * @version 1.2 $Revision: 1.175 $ $Date: 2010-04-27 13:42:03 $
  * 
  * @author M. Ranganathan
  * 
@@ -157,13 +157,13 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
     private transient SIPTransaction lastTransaction;
 
-    private String dialogId;
+    protected String dialogId;
 
-    private transient String earlyDialogId;
+    protected transient String earlyDialogId;
 
-    private long localSequenceNumber;
+    protected long localSequenceNumber;
 
-    private long remoteSequenceNumber;
+    protected long remoteSequenceNumber;
 
     protected String myTag;
 
@@ -190,7 +190,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
     private transient int prevRetransmissionTicks;
 
-    private long originalLocalSequenceNumber;
+    protected long originalLocalSequenceNumber;
 
     // This is for debugging only.
     private transient int ackLine;
@@ -1599,7 +1599,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * 
      * @param hisTag is the remote tag to set.
      */
-    private void setRemoteTag(String hisTag) {
+    protected void setRemoteTag(String hisTag) {
         if (sipStack.isLoggingEnabled()) {
             sipStack.getStackLogger().logDebug(
                     "setRemoteTag(): " + this + " remoteTag = " + this.hisTag + " new tag = "
@@ -1774,7 +1774,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      *        dialog and for generating To tags for Server transaction requests that belong to
      *        this dialog.
      */
-    private void setLocalTag(String mytag) {
+    protected void setLocalTag(String mytag) {
         if (sipStack.isLoggingEnabled()) {
             sipStack.getStackLogger().logDebug("set Local tag " + mytag + " dialog = " + this );
             sipStack.getStackLogger().logStackTrace();
