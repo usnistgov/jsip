@@ -121,7 +121,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.175 $ $Date: 2010-04-27 13:42:03 $
+ * @version 1.2 $Revision: 1.176 $ $Date: 2010-05-03 10:48:39 $
  * 
  * @author M. Ranganathan
  * 
@@ -3411,6 +3411,14 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 		
 	}
 	
-    
+	/**
+	 * @return the lastResponseTopMostVia
+	 */
+	public Via getLastResponseTopMostVia() {
+		if(lastResponse == null) {
+			return null;
+		}
+		return lastResponse.getTopmostVia();
+	}    
 	
 }
