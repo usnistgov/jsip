@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- You may freely edit this file. See commented blocks below for -->
+<!-- some examples of how to customize the build. -->
+<!-- (If you delete it and reopen the project it will be recreated.) -->
+<project basedir=".">
+    <description>Builds the Authorization project</description>
+
+    <property name="root" value="../../../" />
+    <property file="${root}/ant-build-config.properties" />
+    <property name="classes" value="${root}/classes" />
+    <property name="srcroot" value="${root}/src" />
+    <property name="log4j_jar" value="${root}${log4j}" />
+    <echo> ${log4j_jar} </echo>
+    <path id="project.class.path">
+        <pathelement location="${classes}" />
+        <pathelement location="${log4j_jar}" />
+    </path>
+    <target name="make">
+        <javac debug="${javac.debug}"
+            debuglevel="${javac.debuglevel}"
+            source="${javac.source}" nowarn="${javac.nowarn}"
+            deprecation="${javac.deprecation}"
+            optimize="${javac.optimize}"
+            srcdir="${srcroot}"
+            includes="examples/authorization/**/*.java"
+            classpathref="project.class.path" destdir="${classes}">
+        </javac>
+    </target>
+
+    <target name="shootme" depends="make" description="run the Shootme with Authorization">
+        <delete file="ShootmeAuthdebug.txt" failonerror="false" />
+        <delete file="ShootmeAuthlog.txt" failonerror="false" />
+        <java classname="examples.authorization.ShootmeAuth" fork="true" classpathref="project.class.path">
+        </java>
+    </target>
+
+    <target name="shootist" depends="make" description="run the example Shootist with Authorization">
+        <delete file="ShootistAuthdebug.txt" failonerror="false" />
+        <delete file="ShootistAuthlog.txt" failonerror="false" />
+        <java classname="examples.authorization.ShootistAuth" fork="true" classpathref="project.class.path">
+        </java>
+    </target>
+
+    <target name="ShootAuthlog" description="Show the notifier log">
+        <java classname="tools.tracesviewer.TracesViewer" classpathref="project.class.path" fork="true">
+            <arg value="-server_file" />
+            <arg value="ShootAuthlog.txt" />
+        </java>
+    </target>
+
+    <target name="clean" description="clean the logs">
+        <delete failonerror="false">
+            <fileset dir="." includes="*debug*.txt" />
+            <fileset dir="." includes="*log*.txt" />
+        </delete>
+    </target>
+
+
+
+</project>
