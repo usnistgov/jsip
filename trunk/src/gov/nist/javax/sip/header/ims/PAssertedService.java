@@ -48,8 +48,8 @@ public class PAssertedService extends SIPHeader implements PAssertedServiceHeade
     }
 
     @Override
-    protected String encodeBody() {
-        StringBuffer retval = new StringBuffer();
+    protected StringBuilder encodeBody(StringBuilder retval) {
+//        StringBuilder retval = new StringBuilder();
 
          retval.append(ParameterNamesIms.SERVICE_ID);
 
@@ -66,7 +66,7 @@ public class PAssertedService extends SIPHeader implements PAssertedServiceHeade
                 retval.append(this.getApplicationIdentifiers());
             }
 
-        return retval.toString();
+        return retval;
     }
 
     public void setValue(String value) throws ParseException {

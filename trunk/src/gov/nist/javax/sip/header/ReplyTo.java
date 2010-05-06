@@ -30,12 +30,13 @@ package gov.nist.javax.sip.header;
 
 import gov.nist.core.*;
 import gov.nist.javax.sip.address.*;
+
 import javax.sip.header.*;
 
 /**
  * ReplyTo Header.
  *
- * @version 1.2 $Revision: 1.5 $ $Date: 2009-07-17 18:57:36 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2010-05-06 14:07:51 $
  *
  * @author M. Ranganathan   <br/>
  * @author Olivier Deruelle <br/>
@@ -73,26 +74,28 @@ public final class ReplyTo
      * @return String
      */
     public String encode() {
-        return headerName + COLON + SP + encodeBody() + NEWLINE;
+        return headerName + COLON + SP + encodeBody(new StringBuilder()).toString() + NEWLINE;
     }
 
     /**
      * Encode the header content into a String.
      * @return String
      */
-    public String encodeBody() {
-        String retval = "";
-        if (address.getAddressType() == AddressImpl.ADDRESS_SPEC) {
-            retval += LESS_THAN;
+    public StringBuilder encodeBody(StringBuilder retval) {
+//        String retval = "";
+    	if (address.getAddressType() == AddressImpl.ADDRESS_SPEC) {
+            retval.append(LESS_THAN);
         }
-        retval += address.encode();
+        address.encode(retval);
         if (address.getAddressType() == AddressImpl.ADDRESS_SPEC) {
-            retval += GREATER_THAN;
+            retval.append(GREATER_THAN);
         }
+
         if (!parameters.isEmpty()) {
-            retval += SEMICOLON + parameters.encode();
+            retval.append(SEMICOLON); 
+            parameters.encode(retval);
         }
-        return retval;
+        return retval;        
     }
 
     /**
@@ -113,6 +116,9 @@ public final class ReplyTo
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2009/07/17 18:57:36  emcho
+ * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
+ *
  * Revision 1.4  2006/07/13 09:01:31  mranga
  * Issue number:
  * Obtained from:

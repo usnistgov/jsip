@@ -34,7 +34,7 @@ import java.text.*;
  * Content Dispositon SIP Header.
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.5 $ $Date: 2009-07-17 18:57:29 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2010-05-06 14:07:47 $
  * @since 1.1
  *
  */
@@ -63,12 +63,13 @@ public final class ContentDisposition
      * @return encoded value of header.
      *
      */
-    public String encodeBody() {
-        StringBuffer encoding = new StringBuffer(dispositionType);
+    public StringBuilder encodeBody(StringBuilder encoding) {
+//        StringBuilder encoding = new StringBuilder(dispositionType);
+    	encoding.append(dispositionType);
         if (!this.parameters.isEmpty()) {
             encoding.append(SEMICOLON).append(parameters.encode());
         }
-        return encoding.toString();
+        return encoding;
     }
 
     /**
@@ -118,11 +119,14 @@ public final class ContentDisposition
      * @return interpretation of the message body or message body part
      */
     public String getContentDisposition() {
-        return this.encodeBody();
+        return this.encodeBody(new StringBuilder()).toString();
     }
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2009/07/17 18:57:29  emcho
+ * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
+ *
  * Revision 1.4  2006/07/13 09:01:06  mranga
  * Issue number:
  * Obtained from:

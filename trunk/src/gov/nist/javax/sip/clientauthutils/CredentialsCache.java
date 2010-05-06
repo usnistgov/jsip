@@ -1,12 +1,16 @@
 package gov.nist.javax.sip.clientauthutils;
 
-import java.util.*;
+import gov.nist.javax.sip.stack.SIPStackTimerTask;
+import gov.nist.javax.sip.stack.timers.SipTimer;
+
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.sip.*;
-import javax.sip.header.*;
-import javax.sip.address.*;
-import javax.sip.message.*;
+import javax.sip.header.AuthorizationHeader;
 
 /**
  * A cache of authorization headers to be used for subsequent processing when we
@@ -24,9 +28,9 @@ class CredentialsCache {
      */
     private ConcurrentHashMap<String, List<AuthorizationHeader>> authorizationHeaders =
             new ConcurrentHashMap<String, List<AuthorizationHeader>>();
-    private Timer timer;
+    private SipTimer timer;
 
-    class TimeoutTask extends TimerTask {
+    class TimeoutTask extends SIPStackTimerTask {
         String callId;
         String userName;
 
@@ -35,8 +39,7 @@ class CredentialsCache {
             this.userName = userName;
         }
 
-        @Override
-        public void run() {
+        public void runTask() {
             authorizationHeaders.remove(callId);
 
         }
@@ -45,7 +48,7 @@ class CredentialsCache {
 
 
 
-    CredentialsCache (Timer timer) {
+    CredentialsCache (SipTimer timer) {
         this.timer = timer;
     }
 

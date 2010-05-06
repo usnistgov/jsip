@@ -52,7 +52,7 @@ import org.apache.log4j.Logger;
  * the debug file if needed. This class keeps an XML formatted trace around for later access via
  * RMI. The trace can be viewed with a trace viewer (see tools.traceviewerapp).
  *
- * @version 1.2 $Revision: 1.39 $ $Date: 2009-11-11 14:00:58 $
+ * @version 1.2 $Revision: 1.40 $ $Date: 2010-05-06 14:08:09 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -341,7 +341,7 @@ public class ServerLog implements ServerLogger {
         if (cid != null)
             callId = cid.getCallId();
         String firstLine = message.getFirstLine().trim();
-        String inputText = (logContent ? message.encode() : message.encodeMessage());
+        String inputText = (logContent ? message.encode() : message.encodeMessage(new StringBuilder()).toString());
         String tid = message.getTransactionId();
         TimeStampHeader tsHdr = (TimeStampHeader) message.getHeader(TimeStampHeader.NAME);
         long tsval = tsHdr == null ? 0 : tsHdr.getTime();
@@ -366,7 +366,7 @@ public class ServerLog implements ServerLogger {
         if (cid != null)
             callId = cid.getCallId();
         String firstLine = message.getFirstLine().trim();
-        String encoded = (logContent ? message.encode() : message.encodeMessage());
+        String encoded = (logContent ? message.encode() : message.encodeMessage(new StringBuilder()).toString());
         String tid = message.getTransactionId();
         TimeStampHeader tshdr = (TimeStampHeader) message.getHeader(TimeStampHeader.NAME);
         long tsval = tshdr == null ? 0 : tshdr.getTime();

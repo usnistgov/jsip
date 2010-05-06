@@ -56,15 +56,16 @@ public class Join
      * Encode the body part of this header (i.e. leave out the hdrName).
      * @return String encoded body part of the header.
      */
-    public String encodeBody() {
+    public StringBuilder encodeBody(StringBuilder retval) {
         if (callId == null)
-            return null;
+            return retval;
         else {
-            String retVal = callId;
+            retval.append(callId);
             if (!parameters.isEmpty()) {
-                retVal += SEMICOLON + parameters.encode();
+                retval.append(SEMICOLON);
+                parameters.encode(retval);
             }
-            return retVal;
+            return retval;
         }
     }
 

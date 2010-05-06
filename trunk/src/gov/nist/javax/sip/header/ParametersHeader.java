@@ -45,7 +45,7 @@ import javax.sip.header.Parameters;
  * @author M. Ranganathan   <br/>
  *
  *
- * @version 1.2 $Revision: 1.15 $ $Date: 2010-01-12 00:05:27 $
+ * @version 1.2 $Revision: 1.16 $ $Date: 2010-05-06 14:07:49 $
  *
  */
 public abstract class ParametersHeader
@@ -611,6 +611,6 @@ public abstract class ParametersHeader
     
     
     // ----------- Abstract methods --------------
-    protected abstract String encodeBody();
+    protected abstract StringBuilder encodeBody(StringBuilder buffer);
 
 }

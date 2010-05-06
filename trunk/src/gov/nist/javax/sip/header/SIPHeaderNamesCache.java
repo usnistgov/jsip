@@ -30,7 +30,7 @@ public abstract class SIPHeaderNamesCache
     public static String toLowerCase(String headerName) {
         String lowerCase = (String) lowercaseMap.get(headerName);
         if (lowerCase == null) {
-            return headerName.toLowerCase();
+            return headerName.toLowerCase().intern();
         }
         else {
             return lowerCase;

@@ -46,7 +46,7 @@ import java.text.ParseException;
  */
 
 public class HostNameParser extends ParserCore {
-
+	
     /**
      * Determines whether or not we should tolerate and strip address scope
      * zones from IPv6 addresses. Address scope zones are sometimes returned
@@ -55,13 +55,14 @@ public class HostNameParser extends ParserCore {
      * determines whether or not the parser should be stripping them (as
      * opposed simply being blunt and throwing an exception).
      */
-    private boolean stripAddressScopeZones = false;
+    private static boolean stripAddressScopeZones = false;
+    
+    static {
+    	stripAddressScopeZones = Boolean.getBoolean("gov.nist.core.STRIP_ADDR_SCOPES");
+    }
 
     public HostNameParser(String hname) {
         this.lexer = new LexerCore("charLexer", hname);
-
-        stripAddressScopeZones
-            = Boolean.getBoolean("gov.nist.core.STRIP_ADDR_SCOPES");
     }
 
     /**
@@ -70,9 +71,6 @@ public class HostNameParser extends ParserCore {
     public HostNameParser(LexerCore lexer) {
         this.lexer = lexer;
         lexer.selectLexer("charLexer");
-
-        stripAddressScopeZones
-            = Boolean.getBoolean("gov.nist.core.STRIP_ADDR_SCOPES");
     }
 
     private static final char[] VALID_DOMAIN_LABEL_CHAR =
@@ -89,7 +87,7 @@ public class HostNameParser extends ParserCore {
     }
 
     protected String ipv6Reference() throws ParseException {
-        StringBuffer retval = new StringBuffer();
+        StringBuilder retval = new StringBuilder();
         if (debug)
             dbg_enter("ipv6Reference");
 
@@ -180,7 +178,7 @@ public class HostNameParser extends ParserCore {
                 lexer.consumeValidChars(
                         new char[] {LexerCore.ALPHADIGIT_VALID_CHARS, ':'});
                 hostname
-                    = new StringBuffer("[").append(
+                    = new StringBuilder("[").append(
                         lexer.getBuffer().substring(startPtr, lexer.getPtr()))
                         .append("]").toString();
             }

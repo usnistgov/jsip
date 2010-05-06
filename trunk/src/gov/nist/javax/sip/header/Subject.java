@@ -37,7 +37,7 @@ import javax.sip.header.*;
 /**
  * Supported SIP Header.
  *
- * @version 1.2 $Revision: 1.5 $ $Date: 2009-07-17 18:57:39 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2010-05-06 14:07:52 $
  *
  * @author M. Ranganathan   <br/>
  * @author Olivier Deruelle <br/>
@@ -65,11 +65,11 @@ public class Subject extends SIPHeader implements SubjectHeader {
      * Generate the canonical form.
      * @return String.
      */
-    public String encodeBody() {
+    public StringBuilder encodeBody(StringBuilder retval) {        
         if (subject != null) {
-            return subject;
+            return retval.append(subject);
         } else {
-            return "";
+            return retval.append("");
         }
     }
 
@@ -101,6 +101,9 @@ public class Subject extends SIPHeader implements SubjectHeader {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2009/07/17 18:57:39  emcho
+ * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
+ *
  * Revision 1.4  2006/07/13 09:01:21  mranga
  * Issue number:
  * Obtained from:

@@ -65,7 +65,7 @@ public class MediaDescriptionImpl implements javax.sdp.MediaDescription {
      * @since v1.0
      */
     public String encode() {
-        StringBuffer retval = new StringBuffer();
+        StringBuilder retval = new StringBuilder();
 
         if (mediaField != null)
             retval.append(mediaField.encode());
