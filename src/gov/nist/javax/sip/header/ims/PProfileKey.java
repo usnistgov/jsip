@@ -50,9 +50,9 @@ public class PProfileKey extends AddressParametersHeader implements PProfileKeyH
     }
 
     @Override
-    protected String encodeBody() {
+    protected StringBuilder encodeBody(StringBuilder retval) {
 
-        StringBuffer retval = new StringBuffer();
+//        StringBuilder retval = new StringBuilder();
 
         if (address.getAddressType() == AddressImpl.ADDRESS_SPEC) {
             retval.append(LESS_THAN);
@@ -64,7 +64,7 @@ public class PProfileKey extends AddressParametersHeader implements PProfileKeyH
         if (!parameters.isEmpty())
             retval.append(SEMICOLON + this.parameters.encode());
 
-        return retval.toString();
+        return retval;
     }
 
     public void setValue(String value) throws ParseException {

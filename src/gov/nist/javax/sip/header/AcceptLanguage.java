@@ -36,7 +36,7 @@ import java.util.Locale;
  * Accept Language body.
  *
  * @author M. Ranganathan
- * @version 1.2 $Revision: 1.8 $ $Date: 2009-10-18 13:46:32 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2010-05-06 14:07:52 $
  * @since 1.1
  *
  *
@@ -71,15 +71,16 @@ public final class AcceptLanguage
     /** Encode the value of this header to a string.
      *@return  encoded header as a string.
      */
-    protected String encodeBody() {
-        StringBuffer encoding = new StringBuffer();
+    @Override
+    protected StringBuilder encodeBody(StringBuilder encoding) {
+//        StringBuilder encoding = new StringBuilder();
         if (languageRange != null) {
             encoding.append(languageRange);
         }
         if (!parameters.isEmpty()) {
             encoding.append(SEMICOLON).append(parameters.encode());
         }
-        return encoding.toString();
+        return encoding;
     }
 
     /** get the LanguageRange field

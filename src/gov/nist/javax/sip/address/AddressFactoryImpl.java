@@ -32,7 +32,7 @@ import javax.sip.address.*;
 
 /**
  * Implementation of the JAIN-SIP address factory.
- * @version 1.2 $Revision: 1.9 $ $Date: 2009-10-22 10:25:56 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2010-05-06 14:08:05 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -114,7 +114,7 @@ public class AddressFactoryImpl implements javax.sip.address.AddressFactory {
         if (host == null)
             throw new NullPointerException("null host");
 
-        StringBuffer uriString = new StringBuffer("sip:");
+        StringBuilder uriString = new StringBuilder("sip:");
         if (user != null) {
             uriString.append(user);
             uriString.append("@");

@@ -47,7 +47,7 @@ import java.text.ParseException;
  * @see gov.nist.javax.sip.header.ContactList
  *
  * @author M. Ranganathan  <br/>
- * @version 1.2 $Revision: 1.13 $ $Date: 2009-10-18 13:46:31 $
+ * @version 1.2 $Revision: 1.14 $ $Date: 2010-05-06 14:07:50 $
  * @since 1.1
  *
  *
@@ -97,10 +97,10 @@ public final  class Contact
      * @return string encoding of the header value.
      */
     protected String encodeBody() {
-        return encodeBody(new StringBuffer()).toString();
+        return encodeBody(new StringBuilder()).toString();
     }
 
-    protected StringBuffer encodeBody(StringBuffer buffer) {
+    protected StringBuilder encodeBody(StringBuilder buffer) {
         if (wildCardFlag) {
             buffer.append('*');
         }

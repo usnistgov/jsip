@@ -37,7 +37,7 @@ import java.text.ParseException;
  * @author Olivier Deruelle <br/>
  *
  *
- * @version 1.2 $Revision: 1.7 $ $Date: 2009-07-17 18:57:26 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2010-05-06 14:07:48 $
  * @since 1.1
  */
 public final class AllowEvents
@@ -94,7 +94,8 @@ public final class AllowEvents
     /** Return body encoded in canonical form.
         * @return body encoded as a string.
         */
-    protected String encodeBody() {
-        return eventType;
+    @Override
+    protected StringBuilder encodeBody(StringBuilder buffer) {
+        return buffer.append(eventType);
     }
 }

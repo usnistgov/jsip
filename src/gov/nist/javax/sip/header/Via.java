@@ -44,7 +44,7 @@ import java.text.ParseException;
  *
  * @see ViaList
  *
- * @version 1.2 $Revision: 1.17 $ $Date: 2009-10-18 13:46:33 $
+ * @version 1.2 $Revision: 1.18 $ $Date: 2010-05-06 14:07:49 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -251,10 +251,10 @@ public class Via
      * A.K.A headerValue.
      */
     protected String encodeBody() {
-        return encodeBody(new StringBuffer()).toString();
+        return encodeBody(new StringBuilder()).toString();
     }
 
-    protected StringBuffer encodeBody(StringBuffer buffer) {
+    protected StringBuilder encodeBody(StringBuilder buffer) {
         sentProtocol.encode(buffer);
         buffer.append(SP);
         sentBy.encode(buffer);

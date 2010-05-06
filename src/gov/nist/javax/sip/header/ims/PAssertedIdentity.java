@@ -72,20 +72,22 @@ public class PAssertedIdentity
     /** Encode into canonical form.
      *@return String containing the canonicaly encoded header.
      */
-    public String encodeBody() {
-        StringBuffer retval = new StringBuffer();
+    public StringBuilder encodeBody(StringBuilder retval) {
+//        StringBuilder retval = new StringBuilder();
         if (address.getAddressType() == AddressImpl.ADDRESS_SPEC) {
             retval.append(LESS_THAN);
         }
-        retval.append(address.encode());
+        address.encode(retval);
         if (address.getAddressType() == AddressImpl.ADDRESS_SPEC) {
             retval.append(GREATER_THAN);
         }
 
 
-        if (!parameters.isEmpty())
-            retval.append(COMMA + this.parameters.encode());
-        return retval.toString();
+        if (!parameters.isEmpty()) {
+            retval= retval.append(COMMA);
+            retval= this.parameters.encode(retval);
+        }
+        return retval;
     }
 
 

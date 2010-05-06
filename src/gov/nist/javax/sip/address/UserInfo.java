@@ -35,7 +35,7 @@ package gov.nist.javax.sip.address;
 /**
  * User information part of a URL.
  *
- * @version 1.2 $Revision: 1.8 $ $Date: 2009-07-17 18:57:23 $
+ * @version 1.2 $Revision: 1.9 $ $Date: 2010-05-06 14:08:06 $
  * @author M. Ranganathan   <br/>
  *
  */
@@ -103,10 +103,10 @@ public final class UserInfo extends NetObject {
      * @return String
      */
     public String encode() {
-        return encode(new StringBuffer()).toString();
+        return encode(new StringBuilder()).toString();
     }
 
-    public StringBuffer encode(StringBuffer buffer) {
+    public StringBuilder encode(StringBuilder buffer) {
         if (password != null)
             buffer.append(user).append(COLON).append(password);
         else

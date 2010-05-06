@@ -1033,7 +1033,7 @@ public class SessionDescriptionImpl implements SessionDescription {
     }
 
     private String encodeVector(Vector vector) {
-        StringBuffer encBuff = new StringBuffer();
+        StringBuilder encBuff = new StringBuilder();
 
         for (int i = 0; i < vector.size(); i++)
             encBuff.append(vector.elementAt(i));
@@ -1051,7 +1051,7 @@ public class SessionDescriptionImpl implements SessionDescription {
      */
 
     public String toString() {
-        StringBuffer encBuff = new StringBuffer();
+        StringBuilder encBuff = new StringBuilder();
 
         // Encode single attributes
         encBuff.append(getVersion() == null ? "" : getVersion().toString());

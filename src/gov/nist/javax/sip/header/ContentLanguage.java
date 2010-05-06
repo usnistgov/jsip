@@ -76,7 +76,7 @@ import java.util.Locale;
 *   limited to textual documents.
 *</pre>
 * @author M. Ranganathan
-* @version 1.2 $Revision: 1.8 $ $Date: 2009-07-17 18:57:29 $
+* @version 1.2 $Revision: 1.9 $ $Date: 2010-05-06 14:07:51 $
 * @since 1.1
 */
 public class ContentLanguage
@@ -108,8 +108,8 @@ public class ContentLanguage
      * Canonical encoding of the  value of the header.
      * @return encoded body of header.
      */
-    public String encodeBody() {
-        return this.getLanguageTag();
+    public StringBuilder encodeBody(StringBuilder buffer) {
+        return buffer.append(getLanguageTag());
     }
 
     /** get the languageTag field.

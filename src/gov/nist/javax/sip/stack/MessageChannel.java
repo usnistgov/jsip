@@ -63,7 +63,7 @@ import javax.sip.header.ViaHeader;
  * @author M. Ranganathan <br/> Contains additions for support of symmetric NAT contributed by
  *         Hagai.
  * 
- * @version 1.2 $Revision: 1.29 $ $Date: 2010-02-16 05:08:33 $
+ * @version 1.2 $Revision: 1.30 $ $Date: 2010-05-06 14:08:10 $
  * 
  * 
  */
@@ -385,7 +385,7 @@ public abstract class MessageChannel {
      */
     protected final String createBadReqRes(String badReq, ParseException pe) {
 
-        StringBuffer buf = new StringBuffer(512);
+        StringBuilder buf = new StringBuilder(512);
         buf.append("SIP/2.0 400 Bad Request (" + pe.getLocalizedMessage() + ')');
 
         // We need the following headers: all Vias, CSeq, Call-ID, From, To
@@ -444,7 +444,7 @@ public abstract class MessageChannel {
      * Note: some limitations here: does not work for short forms of headers, or continuations;
      * problems when header names appear in other parts of the request
      */
-    private static final boolean copyHeader(String name, String fromReq, StringBuffer buf) {
+    private static final boolean copyHeader(String name, String fromReq, StringBuilder buf) {
         int start = fromReq.indexOf(name);
         if (start != -1) {
             int end = fromReq.indexOf("\r\n", start);
@@ -467,7 +467,7 @@ public abstract class MessageChannel {
      * 
      * Note: some limitations here: does not work for short forms of headers, or continuations
      */
-    private static final boolean copyViaHeaders(String fromReq, StringBuffer buf) {
+    private static final boolean copyViaHeaders(String fromReq, StringBuilder buf) {
         int start = fromReq.indexOf(ViaHeader.NAME);
         boolean found = false;
         while (start != -1) {

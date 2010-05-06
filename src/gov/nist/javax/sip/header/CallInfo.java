@@ -35,7 +35,7 @@ import java.text.ParseException;
  *
  *
  * @author "M. Ranganathan"  <br/>
- * @version 1.2 $Revision: 1.7 $ $Date: 2009-07-17 18:57:28 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2010-05-06 14:07:48 $
  * @since 1.1
  */
 public final class CallInfo
@@ -61,10 +61,10 @@ public final class CallInfo
      * @return String
      */
     public String encodeBody() {
-        return encodeBody(new StringBuffer()).toString();
+        return encodeBody(new StringBuilder()).toString();
     }
 
-    protected StringBuffer encodeBody(StringBuffer buffer) {
+    protected StringBuilder encodeBody(StringBuilder buffer) {
         buffer.append(LESS_THAN);
         info.encode(buffer);
         buffer.append(GREATER_THAN);

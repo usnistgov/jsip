@@ -57,7 +57,7 @@ import java.text.ParseException;
  * accessed from the SIPMessage using the getContent and getContentBytes methods
  * provided by the SIPMessage class.
  *
- * @version 1.2 $Revision: 1.28 $ $Date: 2010-03-19 17:29:46 $
+ * @version 1.2 $Revision: 1.29 $ $Date: 2010-05-06 14:07:45 $
  *
  * @author M. Ranganathan
  *
@@ -79,14 +79,13 @@ public final class PipelinedMsgParser implements Runnable {
     private int maxMessageSize;
     private int sizeCounter;
     private SIPTransactionStack sipStack;
-    
+    private MessageParser smp = null;
   
     /**
      * default constructor.
      */
     protected PipelinedMsgParser() {
-        super();
-
+        super();        
     }
 
     private static int uid = 0;
@@ -111,6 +110,7 @@ public final class PipelinedMsgParser implements Runnable {
             Pipeline in, boolean debug, int maxMessageSize) {
         this();
         this.sipStack = sipStack;
+        smp = sipStack.getMessageParserFactory().createMessageParser(sipStack);
         this.sipMessageListener = sipMessageListener;
         rawInputStream = in;
         this.maxMessageSize = maxMessageSize;
@@ -236,7 +236,7 @@ public final class PipelinedMsgParser implements Runnable {
             while (true) {
                 this.sizeCounter = this.maxMessageSize;
                 // this.messageSize = 0;
-                StringBuffer inputBuffer = new StringBuffer();
+                StringBuilder inputBuffer = new StringBuilder();
 
                 if (Debug.parserDebug)
                     Debug.println("Starting parse!");
@@ -284,17 +284,16 @@ public final class PipelinedMsgParser implements Runnable {
 
                 // Stop the timer that will kill the read.
                 this.rawInputStream.stopTimer();
-                inputBuffer.append(line2);
-                MessageParser smp = sipStack.getMessageParserFactory().createMessageParser(sipStack);
-                smp.setParseExceptionListener(sipMessageListener);
-                smp.setReadBody(false);
+                inputBuffer.append(line2);               
+//                smp.setParseExceptionListener(sipMessageListener);
+//                smp.setReadBody(false);
                 SIPMessage sipMessage = null;
 
                 try {
                     if (Debug.debug) {
                         Debug.println("About to parse : " + inputBuffer.toString());
                     }
-                    sipMessage = smp.parseSIPMessage(inputBuffer.toString().getBytes());
+                    sipMessage = smp.parseSIPMessage(inputBuffer.toString().getBytes(), false, false, sipMessageListener);
                     if (sipMessage == null) {
                         this.rawInputStream.stopTimer();
                         continue;
@@ -385,6 +384,14 @@ public final class PipelinedMsgParser implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.28  2010/03/19 17:29:46  deruelle_jean
+ * Adding getters and setters for the new factories
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  Jean Deruelle
+ * Reviewed by:
+ *
  * Revision 1.27  2010/03/15 17:08:57  deruelle_jean
  * Adding javadoc
  *

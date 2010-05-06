@@ -245,24 +245,24 @@ public class PAccessNetworkInfo
         return this.extendAccessInfo;
     }
 
-    protected String encodeBody() {
+    public StringBuilder encodeBody(StringBuilder encoding) {
 
-        StringBuffer encoding = new StringBuffer();
+//        StringBuilder encoding = new StringBuilder();
 
         if (getAccessType() != null)
             encoding.append(getAccessType());
 
         if (!parameters.isEmpty()) {
-            encoding.append(SEMICOLON + SP + this.parameters.encode());
+            encoding = encoding.append(SEMICOLON).append(SP);
+            encoding = this.parameters.encode(encoding);
         }
         // else if (getExtendAccessInfo() != null) // stack deve limitar, de
         // acordo com a especificação ?
         if (getExtensionAccessInfo() != null) {
-            encoding.append(SEMICOLON + SP
-                    + getExtensionAccessInfo().toString());
+            encoding.append(SEMICOLON).append(SP).append(getExtensionAccessInfo().toString());
         }
 
-        return encoding.toString();
+        return encoding;
 
     }
 

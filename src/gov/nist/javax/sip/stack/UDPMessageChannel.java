@@ -55,7 +55,6 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.text.ParseException;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.TimerTask;
 
@@ -90,7 +89,7 @@ import javax.sip.address.Hop;
  *
  *
  *
- * @version 1.2 $Revision: 1.70 $ $Date: 2010-03-19 17:29:45 $
+ * @version 1.2 $Revision: 1.71 $ $Date: 2010-05-06 14:08:10 $
  */
 public class UDPMessageChannel extends MessageChannel implements
         ParseExceptionListener, Runnable, RawMessageChannel {
@@ -140,7 +139,7 @@ public class UDPMessageChannel extends MessageChannel implements
      */
     private static Hashtable<String,PingBackTimerTask> pingBackRecord = new Hashtable<String,PingBackTimerTask>();
     
-    class PingBackTimerTask extends TimerTask {
+    class PingBackTimerTask extends SIPStackTimerTask  {
         String ipAddress;
         int port;
         
@@ -148,8 +147,7 @@ public class UDPMessageChannel extends MessageChannel implements
             this.ipAddress = ipAddress;
             this.port = port;
         }
-        @Override
-        public void run() {
+        public void runTask() {
            pingBackRecord.remove(ipAddress + ":" + port);
         }
         @Override
@@ -172,6 +170,9 @@ public class UDPMessageChannel extends MessageChannel implements
             UDPMessageProcessor messageProcessor) {
         super.messageProcessor = messageProcessor;
         this.sipStack = stack;
+
+        // jeand : Create a new string message parser to parse the list of messages.
+        myParser = sipStack.getMessageParserFactory().createMessageParser(sipStack);                
 
         Thread mythread = new Thread(this);
 
@@ -202,6 +203,9 @@ public class UDPMessageChannel extends MessageChannel implements
         super.messageProcessor = messageProcessor;
         this.sipStack = stack;
 
+        // jeand : Create a new string message parser to parse the list of messages.
+        myParser = sipStack.getMessageParserFactory().createMessageParser(sipStack);                
+        
         this.myAddress = messageProcessor.getIpAddress().getHostAddress();
         this.myPort = messageProcessor.getPort();
         Thread mythread = new Thread(this);
@@ -230,6 +234,9 @@ public class UDPMessageChannel extends MessageChannel implements
         this.myAddress = messageProcessor.getIpAddress().getHostAddress();
         this.myPort = messageProcessor.getPort();
         this.sipStack = sipStack;
+        // jeand : Create a new string message parser to parse the list of messages.
+        myParser = sipStack.getMessageParserFactory().createMessageParser(sipStack);                
+
         if (sipStack.isLoggingEnabled()) {
             this.sipStack.getStackLogger().logDebug("Creating message channel "
                     + targetAddr.getHostAddress() + "/" + port);
@@ -244,22 +251,17 @@ public class UDPMessageChannel extends MessageChannel implements
         ThreadAuditor.ThreadHandle threadHandle = null;
 
         while (true) {
-            // Create a new string message parser to parse the list of messages.
-            if (myParser == null) {
-                myParser = sipStack.getMessageParserFactory().createMessageParser(sipStack);
-                myParser.setParseExceptionListener(this);
-            }
             // messages that we write out to him.
-            DatagramPacket packet;
+            DatagramPacket packet = null;
 
             if (sipStack.threadPoolSize != -1) {
-                synchronized (((UDPMessageProcessor) messageProcessor).messageQueue) {
-                    while (((UDPMessageProcessor) messageProcessor).messageQueue
-                            .isEmpty()) {
-                        // Check to see if we need to exit.
-                        if (!((UDPMessageProcessor) messageProcessor).isRunning)
-                            return;
-                        try {
+//                synchronized (((UDPMessageProcessor) messageProcessor).messageQueue) {
+            		final UDPMessageProcessor udpMessageProcessor = (UDPMessageProcessor) messageProcessor;            		
+//                    while (udpMessageProcessor.messageQueue.isEmpty()) {
+//                        // Check to see if we need to exit.
+//                        if (!udpMessageProcessor.isRunning)
+//                            return;
+////                        try {
                             // We're part of a thread pool. Ask the auditor to
                             // monitor this thread.
                             if (threadHandle == null) {
@@ -269,22 +271,25 @@ public class UDPMessageChannel extends MessageChannel implements
 
                             // Send a heartbeat to the thread auditor
                             threadHandle.ping();
-
-                            // Wait for packets
-                            // Note: getPingInterval returns 0 (infinite) if the
-                            // thread auditor is disabled.
-                            ((UDPMessageProcessor) messageProcessor).messageQueue
-                                    .wait(threadHandle
-                                            .getPingIntervalInMillisecs());
-                        } catch (InterruptedException ex) {
-                            if (!((UDPMessageProcessor) messageProcessor).isRunning)
-                                return;
-                        }
+////                            long pingInterval = threadHandle.getPingIntervalInMillisecs();
+//                            // Wait for packets
+//                            // Note: getPingInterval returns 0 (infinite) if the
+//                            // thread auditor is disabled.
+////                            synchronized (udpMessageProcessor.messageQueue) {
+////                            	udpMessageProcessor.messageQueue.wait();
+////                            }
+////                        } catch (InterruptedException ex) {
+////                            if (!udpMessageProcessor.isRunning)
+////                                return;
+////                        }
+//                    }
+                    try {
+                    	packet = udpMessageProcessor.messageQueue.take();
+                    } catch (InterruptedException ex) {
+                      if (!udpMessageProcessor.isRunning)
+                          return;
                     }
-                    packet = (DatagramPacket) ((UDPMessageProcessor) messageProcessor).messageQueue
-                            .removeFirst();
-
-                }
+//                }
                 this.incomingPacket = packet;
             } else {
                 packet = this.incomingPacket;
@@ -332,10 +337,10 @@ public class UDPMessageChannel extends MessageChannel implements
         SIPMessage sipMessage = null;
         try {
             this.receptionTime = System.currentTimeMillis();
-            sipMessage = myParser.parseSIPMessage(msgBytes);
-            myParser = null;
+            sipMessage = myParser.parseSIPMessage(msgBytes, true, false, this);
+//            myParser = null;
         } catch (ParseException ex) {
-            myParser = null; // let go of the parser reference.
+//            myParser = null; // let go of the parser reference.
             if (sipStack.isLoggingEnabled()) {
                 this.sipStack.getStackLogger().logDebug("Rejecting message !  "
                         + new String(msgBytes));
@@ -480,7 +485,7 @@ public class UDPMessageChannel extends MessageChannel implements
                         + this.myPort, false, receptionTime);
 
             }
-            ServerRequestInterface sipServerRequest = sipStack
+            final ServerRequestInterface sipServerRequest = sipStack
                     .newSIPServerRequest(sipRequest, this);
             // Drop it if there is no request returned
             if (sipServerRequest == null) {

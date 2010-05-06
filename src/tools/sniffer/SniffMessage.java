@@ -140,8 +140,7 @@ public class SniffMessage implements ParseExceptionListener {
 
         //parse SIP message
         StringMsgParser parser = new StringMsgParser();
-        parser.setParseExceptionListener(new SniffMessage());
-        sipMessage = parser.parseSIPMessage(msgBuffer);
+        sipMessage = parser.parseSIPMessage(msgBuffer.getBytes(), true, false, new SniffMessage());
     }
 
     public String getCallID() {

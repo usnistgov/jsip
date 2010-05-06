@@ -44,7 +44,7 @@ import java.util.LinkedList;
 /**
  * SIP Response structure.
  *
- * @version 1.2 $Revision: 1.32 $ $Date: 2010-04-17 10:56:21 $
+ * @version 1.2 $Revision: 1.33 $ $Date: 2010-05-06 14:08:04 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
@@ -430,13 +430,15 @@ public class SIPResponse
     *@return The string except for the body.
     */
 
-    public String encodeMessage() {
-        String retval;
-        if (statusLine != null)
-            retval = statusLine.encode() + super.encodeSIPHeaders();
-        else
-            retval = super.encodeSIPHeaders();
-        return retval ;
+    public StringBuilder encodeMessage(StringBuilder retval) {
+//        String retval;
+        if (statusLine != null) {
+            statusLine.encode(retval);
+            super.encodeSIPHeaders(retval);
+        } else {
+            retval = super.encodeSIPHeaders(retval);
+        }
+        return retval;
     }
 
 
@@ -554,5 +556,11 @@ public class SIPResponse
     public String toString() {
         if (statusLine == null) return  "";
         else return statusLine.encode() + super.encode();
+    }
+    
+    @Override
+    public void cleanUp() {
+//    	statusLine = null;
+    	super.cleanUp();
     }
 }

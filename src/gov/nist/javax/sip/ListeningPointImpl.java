@@ -47,7 +47,7 @@ import gov.nist.javax.sip.stack.*;
 /**
  * Implementation of the ListeningPoint interface
  *
- * @version 1.2 $Revision: 1.15 $ $Date: 2009-11-19 05:26:58 $
+ * @version 1.2 $Revision: 1.16 $ $Date: 2010-05-06 14:08:08 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -89,7 +89,7 @@ public class ListeningPointImpl implements javax.sip.ListeningPoint, gov.nist.ja
      * @return a string that is used as a key
      */
     public static String makeKey(String host, int port, String transport) {
-        return new StringBuffer(host)
+        return new StringBuilder(host)
             .append(":")
             .append(port)
             .append("/")

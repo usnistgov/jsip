@@ -15,7 +15,7 @@ import javax.sip.header.ExtensionHeader;
 /**
  * ReferredBy SIP Header.
  *
- * @version JAIN-SIP-1.1 $Revision: 1.5 $ $Date: 2009-10-18 13:46:36 $
+ * @version JAIN-SIP-1.1 $Revision: 1.6 $ $Date: 2010-05-06 14:07:56 $
  *
  * @author Peter Musgrave.
  *
@@ -81,13 +81,14 @@ public final class SessionExpires
      * Encode the header content into a String.
      * @return String
      */
-    protected String encodeBody() {
+    protected StringBuilder encodeBody(StringBuilder retval) {
 
-        String retval = Integer.toString(expires);
+        retval.append(Integer.toString(expires));
 
         if (!parameters.isEmpty()) {
-            retval += SEMICOLON + parameters.encode();
-        }
+    		retval.append(SEMICOLON); 
+    		parameters.encode(retval);
+    	}
         return retval;
     }
 

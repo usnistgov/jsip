@@ -35,7 +35,7 @@ import gov.nist.javax.sip.address.*;
 /**
  * ReferTo SIP Header.
  *
- * @version 1.2 $Revision: 1.6 $ $Date: 2009-07-17 18:57:35 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2010-05-06 14:07:50 $
  *
  * @author M. Ranganathan   <br/>
  * @author Olivier Deruelle <br/>
@@ -62,26 +62,29 @@ public final class ReferTo
      * Encode the header content into a String.
      * @return String
      */
-    protected String encodeBody() {
+    public StringBuilder encodeBody(StringBuilder retval) {
         if (address == null)
-            return null;
-        String retval = "";
+            return null;        
         if (address.getAddressType() == AddressImpl.ADDRESS_SPEC) {
-            retval += LESS_THAN;
+            retval.append(LESS_THAN);
         }
-        retval += address.encode();
+        address.encode(retval);
         if (address.getAddressType() == AddressImpl.ADDRESS_SPEC) {
-            retval += GREATER_THAN;
+            retval.append(GREATER_THAN);
         }
 
         if (!parameters.isEmpty()) {
-            retval += SEMICOLON + parameters.encode();
+            retval.append(SEMICOLON); 
+            parameters.encode(retval);
         }
         return retval;
     }
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.6  2009/07/17 18:57:35  emcho
+ * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
+ *
  * Revision 1.5  2006/07/13 09:01:40  mranga
  * Issue number:
  * Obtained from:

@@ -282,10 +282,17 @@ public class Referee implements SipListener {
         Response response = (Response) responseReceivedEvent.getResponse();
         Transaction tid = responseReceivedEvent.getClientTransaction();
 
-        logger.info("Response received with client transaction id "
-                + tid + ":\n" + response.getStatusCode() +
-                " cseq = " + response.getHeader(CSeqHeader.NAME) + 
-                " dialog " + tid.getDialog());
+        if(tid != null) {
+	        logger.info("Response received with client transaction id "
+	                + tid + ":\n" + response.getStatusCode() +
+	                " cseq = " + response.getHeader(CSeqHeader.NAME) + 
+	                " dialog " + tid.getDialog());
+        } else {
+        	logger.info("Response received with client transaction id "
+	                + tid + ":\n" + response.getStatusCode() +
+	                " cseq = " + response.getHeader(CSeqHeader.NAME) + 
+	                " dialog " + responseReceivedEvent.getDialog());
+        }
 
         CSeqHeader cseq = (CSeqHeader) response.getHeader( CSeqHeader.NAME );
         if (cseq.getMethod().equals(Request.INVITE)) {

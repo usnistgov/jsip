@@ -97,7 +97,7 @@ public class SDPObjectList extends GenericObjectList {
 
 
     public String encode() {
-        StringBuffer retval = new StringBuffer();
+        StringBuilder retval = new StringBuilder();
         SDPObject sdpObject;
         for (sdpObject = (SDPObject) this.first();
             sdpObject != null;
