@@ -43,6 +43,8 @@ import gov.nist.javax.sip.stack.MessageProcessor;
 import gov.nist.javax.sip.stack.MessageProcessorFactory;
 import gov.nist.javax.sip.stack.OIOMessageProcessorFactory;
 import gov.nist.javax.sip.stack.SIPTransactionStack;
+import gov.nist.javax.sip.stack.timers.DefaultSipTimer;
+import gov.nist.javax.sip.stack.timers.SipTimer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -408,6 +410,9 @@ import javax.sip.message.Request;
  * This factory allows pluggable implementations of the MessageProcessor that will take care of incoming messages.
  * By example one could plug a NIO Processor through this factory.</li>
  * 
+ * <li><b>gov.nist.javax.sip.TIMER_CLASS_NAME =  name of the class implementing gov.nist.javax.sip.stack.timers.SipTimer</b> interface
+ * This allows pluggable implementations of the Timer that will take care of scheduling the various SIP Timers.
+ * By example one could plug a regular timer, a scheduled thread pool executor.</li>
  * 
  * <li><b>gov.nist.javax.sip.DELIVER_RETRANSMITTED_ACK_TO_LISTENER=boolean</b> A testing property
  * that allows application to see the ACK for retransmitted 200 OK requests. <b>Note that this is for test
@@ -457,7 +462,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.125 $ $Date: 2010-03-15 19:35:02 $
+ * @version 1.2 $Revision: 1.126 $ $Date: 2010-05-06 14:08:08 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -481,7 +486,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 
 	// Flag to indicate that the listener is re-entrant and hence
 	// Use this flag with caution.
-	boolean reEntrantListener;
+	private boolean reEntrantListener;
 
 	SipListener sipListener;
 	TlsSecurityPolicy tlsSecurityPolicy;
@@ -510,6 +515,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 			"TLSv1"
 	};
 
+	private Properties configurationProperties;
 	/**
 	 * Creates a new instance of SipStackImpl.
 	 */
@@ -534,7 +540,21 @@ public class SipStackImpl extends SIPTransactionStack implements
 		this.listeningPoints = new Hashtable<String, ListeningPointImpl>();
 		this.sipProviders = new LinkedList<SipProviderImpl>();
 		this.sipListener = null;
-
+		if(!getTimer().isStarted()) {			
+			String defaultTimerName = configurationProperties.getProperty("gov.nist.javax.sip.TIMER_CLASS_NAME",DefaultSipTimer.class.getName());
+			try {				
+				setTimer((SipTimer)Class.forName(defaultTimerName).newInstance());
+				getTimer().start(this, configurationProperties);
+				if (getThreadAuditor().isEnabled()) {
+		            // Start monitoring the timer thread
+		            getTimer().schedule(new PingTimer(null), 0);
+		        }
+			} catch (Exception e) {
+				getStackLogger()
+					.logError(
+							"Bad configuration value for gov.nist.javax.sip.TIMER_CLASS_NAME", e);			
+			}
+		}
 	}
 
 	/**
@@ -558,6 +578,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 	public SipStackImpl(Properties configurationProperties)
 			throws PeerUnavailableException {
 		this();
+		this.configurationProperties = configurationProperties;
 		String address = configurationProperties
 				.getProperty("javax.sip.IP_ADDRESS");
 		try {
@@ -1125,6 +1146,20 @@ public class SipStackImpl extends SIPTransactionStack implements
 				.logError(
 						"Bad configuration value for gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", e);			
 		}
+		
+		String defaultTimerName = configurationProperties.getProperty("gov.nist.javax.sip.TIMER_CLASS_NAME",DefaultSipTimer.class.getName());
+		try {
+			setTimer((SipTimer)Class.forName(defaultTimerName).newInstance());
+			getTimer().start(this, configurationProperties);
+			if (getThreadAuditor().isEnabled()) {
+	            // Start monitoring the timer thread
+	            getTimer().schedule(new PingTimer(null), 0);
+	        }
+		} catch (Exception e) {
+			getStackLogger()
+				.logError(
+						"Bad configuration value for gov.nist.javax.sip.TIMER_CLASS_NAME", e);			
+		}
 	}
 
 	/*
@@ -1572,6 +1607,20 @@ public class SipStackImpl extends SIPTransactionStack implements
     public void releaseSem() {
         this.stackSemaphore.release();
     }
+
+	/**
+	 * @return the configurationProperties
+	 */
+	public Properties getConfigurationProperties() {
+		return configurationProperties;
+	}
+	
+	/**
+	 * @return the reEntrantListener
+	 */
+	public boolean isReEntrantListener() {
+		return reEntrantListener;
+	}
 
 
     

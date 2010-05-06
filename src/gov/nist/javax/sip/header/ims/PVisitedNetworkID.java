@@ -78,23 +78,25 @@ public class PVisitedNetworkID
 
     }
 
-    protected String encodeBody() {
+    public StringBuilder encodeBody(StringBuilder retval) {
 
-        StringBuffer retval = new StringBuffer();
+//        StringBuilder retval = new StringBuilder();
 
         if (getVisitedNetworkID() != null)
         {
             // issued by Miguel Freitas
             if (isQuoted)
-                retval.append(DOUBLE_QUOTE + getVisitedNetworkID() + DOUBLE_QUOTE);
+                retval.append(DOUBLE_QUOTE).append(getVisitedNetworkID()).append(DOUBLE_QUOTE);
             else
                 retval.append(getVisitedNetworkID());
         }
 
-        if (!parameters.isEmpty())
-            retval.append(SEMICOLON + this.parameters.encode());
+        if (!parameters.isEmpty()) {
+            retval.append(SEMICOLON);
+            this.parameters.encode(retval);
+        }
 
-        return retval.toString();
+        return retval;
 
     }
 

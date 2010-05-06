@@ -32,7 +32,7 @@ import java.util.Iterator;
 /**
  * Telephone number class.
  * @version 1.2
- * @version 1.2 $Revision: 1.10 $ $Date: 2009-07-17 18:57:23 $
+ * @version 1.2 $Revision: 1.11 $ $Date: 2010-05-06 14:08:05 $
  *
  * @author M. Ranganathan
  *
@@ -182,10 +182,10 @@ public class TelephoneNumber extends NetObject {
     }
 
     public String encode() {
-        return encode(new StringBuffer()).toString();
+        return encode(new StringBuilder()).toString();
     }
 
-    public StringBuffer encode(StringBuffer buffer) {
+    public StringBuilder encode(StringBuilder buffer) {
         if (isglobal)
             buffer.append('+');
         buffer.append(phoneNumber);

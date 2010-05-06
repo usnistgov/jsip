@@ -1,5 +1,6 @@
 package gov.nist.javax.sip.header.extensions;
 
+import gov.nist.core.Separators;
 import gov.nist.javax.sip.header.ParametersHeader;
 
 import java.text.ParseException;
@@ -71,11 +72,13 @@ public class References extends ParametersHeader  implements ReferencesHeader,Ex
     }
 
    
-    protected String encodeBody() {
+    public StringBuilder encodeBody(StringBuilder buffer) {
         if ( super.parameters.isEmpty()) {
-            return callId ;
+            return buffer.append(callId);
         } else {
-            return callId + ";" + super.parameters.encode();
+        	buffer = buffer.append(callId).append(Separators.SEMICOLON);
+        	buffer = super.parameters.encode(buffer);
+            return buffer;
         }
     }
 

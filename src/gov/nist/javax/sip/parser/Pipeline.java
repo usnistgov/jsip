@@ -27,9 +27,12 @@ package gov.nist.javax.sip.parser;
 
 import gov.nist.core.InternalErrorHandler;
 import gov.nist.javax.sip.stack.SIPStackTimerTask;
+import gov.nist.javax.sip.stack.timers.SipTimer;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.LinkedList;
+import java.util.NoSuchElementException;
 
 /**
  * Input class for the pipelined parser. Buffer all bytes read from the socket
@@ -47,13 +50,13 @@ public class Pipeline extends InputStream {
 
     private boolean isClosed;
 
-    private Timer timer;
+    private SipTimer timer;
 
     private InputStream pipe;
 
     private int readTimeout;
 
-    private TimerTask myTimerTask;
+    private SIPStackTimerTask myTimerTask;
 
     class MyTimer extends SIPStackTimerTask {
         Pipeline pipeline;
@@ -64,7 +67,7 @@ public class Pipeline extends InputStream {
             this.pipeline = pipeline;
         }
 
-        protected void runTask() {
+        public void runTask() {
             if (this.isCancelled)
                 return;
 
@@ -75,12 +78,12 @@ public class Pipeline extends InputStream {
             }
         }
 
-        public boolean cancel() {
-            boolean retval = super.cancel();
-            this.isCancelled = true;
-            return retval;
+        @Override
+        public void cleanUpBeforeCancel() {
+        	this.isCancelled = true;
+        	super.cleanUpBeforeCancel();
         }
-
+        
     }
 
     class Buffer {
@@ -115,10 +118,10 @@ public class Pipeline extends InputStream {
         if (this.readTimeout == -1)
             return;
         if (this.myTimerTask != null)
-            this.myTimerTask.cancel();
+        	this.timer.cancel(myTimerTask);            
     }
 
-    public Pipeline(InputStream pipe, int readTimeout, Timer timer) {
+    public Pipeline(InputStream pipe, int readTimeout, SipTimer timer) {
         // pipe is the Socket stream
         // this is recorded here to implement a timeout.
         this.timer = timer;

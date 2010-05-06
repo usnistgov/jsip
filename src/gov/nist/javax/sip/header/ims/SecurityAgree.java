@@ -117,9 +117,9 @@ public abstract class SecurityAgree
 
     }
 
-    public String encodeBody()
-    {
-        return this.secMechanism + SEMICOLON + SP + parameters.encode();
+    public StringBuilder encodeBody(StringBuilder retval) {
+    	retval.append(this.secMechanism).append(SEMICOLON).append(SP);
+    	return parameters.encode(retval);
     }
 
 

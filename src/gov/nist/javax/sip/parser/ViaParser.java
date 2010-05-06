@@ -32,7 +32,7 @@ import java.text.ParseException;
 /**
  * Parser for via headers.
  *
- * @version 1.2 $Revision: 1.12 $ $Date: 2009-07-17 18:58:07 $
+ * @version 1.2 $Revision: 1.13 $ $Date: 2010-05-06 14:07:45 $
  * @since 1.1
  *
  * @author Olivier Deruelle
@@ -111,7 +111,7 @@ public class ViaParser extends HeaderParser {
         if (lexer.lookAhead(0) == '(') {
             this.lexer.selectLexer("charLexer");
             lexer.consume(1);
-            StringBuffer comment = new StringBuffer();
+            StringBuilder comment = new StringBuilder();
             while (true) {
                 char ch = lexer.lookAhead(0);
                 if (ch == ')') {

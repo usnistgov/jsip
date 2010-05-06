@@ -92,7 +92,7 @@ public class PUserDatabaseParser extends ParametersParser implements TokenTypes{
 
     private void parseheader(PUserDatabase userDatabase) throws ParseException
     {
-        StringBuffer dbname = new StringBuffer();
+        StringBuilder dbname = new StringBuilder();
         this.lexer.match(LESS_THAN);
 
         while(this.lexer.hasMoreChars())

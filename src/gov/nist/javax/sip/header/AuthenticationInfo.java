@@ -31,7 +31,7 @@ import java.text.ParseException;
  *
  * @author M. Ranganathan   NIST/ITL/ANTD
  * @since 1.1
- * @version 1.2 $Revision: 1.9 $ $Date: 2009-07-17 18:57:27 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2010-05-06 14:07:50 $
  *
  *
  */
@@ -58,8 +58,8 @@ public final class AuthenticationInfo
     /** Value of header encoded in canonical form.
      */
 
-    protected String encodeBody() {
-        return parameters.encode();
+    protected StringBuilder encodeBody(StringBuilder buffer) {
+        return parameters.encode(buffer);
 
     }
 
@@ -84,7 +84,7 @@ public final class AuthenticationInfo
      *
      */
     public String getAuthenticationInfo() {
-        return this.encodeBody();
+        return this.encodeBody(new StringBuilder()).toString();
     }
 
     /** Returns the CNonce value of this AuthenticationInfoHeader.

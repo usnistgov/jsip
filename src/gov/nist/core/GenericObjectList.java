@@ -101,8 +101,6 @@ public abstract class GenericObjectList extends LinkedList<GenericObject> implem
 
     protected Class<?> myClass;
 
-    protected String separator;
-
     protected String getIndentation() {
         char[] chars = new char[indentation];
         java.util.Arrays.fill(chars, ' ');
@@ -144,7 +142,6 @@ public abstract class GenericObjectList extends LinkedList<GenericObject> implem
         super();
         listName = null;
         stringRep = "";
-        separator = ";";
     }
 
     protected GenericObjectList(String lname) {
@@ -347,7 +344,7 @@ public abstract class GenericObjectList extends LinkedList<GenericObject> implem
     public String encode() {
         if (this.isEmpty())
             return "";
-        StringBuffer encoding = new StringBuffer();
+        StringBuilder encoding = new StringBuilder();
         ListIterator iterator = this.listIterator();
         if (iterator.hasNext()) {
             while (true) {
@@ -359,7 +356,7 @@ public abstract class GenericObjectList extends LinkedList<GenericObject> implem
                     encoding.append(obj.toString());
                 }
                 if (iterator.hasNext())
-                    encoding.append(separator);
+                    encoding.append(Separators.SEMICOLON);
                 else
                     break;
             }
@@ -372,18 +369,7 @@ public abstract class GenericObjectList extends LinkedList<GenericObject> implem
      */
     public String toString() {
         return this.encode();
-    }
-
-    /**
-     * Set the separator (for encoding the list)
-     *
-     * @since v1.0
-     * @param sep
-     *            is the new seperator (default is semicolon)
-     */
-    public void setSeparator(String sep) {
-        separator = sep;
-    }
+    }   
     
     /**
      * Hash code. We never expect to put this in a hash table so return a constant.

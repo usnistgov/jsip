@@ -38,7 +38,7 @@ import java.text.ParseException;
  *  CSeq SIP Header.
  *
  * @author M. Ranganathan    <br/>
- * @version 1.2 $Revision: 1.10 $ $Date: 2009-10-18 13:46:33 $
+ * @version 1.2 $Revision: 1.11 $ $Date: 2010-05-06 14:07:48 $
  * @since 1.1
  *
  */
@@ -109,10 +109,10 @@ public class CSeq extends SIPHeader implements javax.sip.header.CSeqHeader {
      * @return encoded string.
      */
     public String encodeBody() {
-        return encodeBody(new StringBuffer()).toString();
+        return encodeBody(new StringBuilder()).toString();
     }
 
-    protected StringBuffer encodeBody(StringBuffer buffer) {
+    protected StringBuilder encodeBody(StringBuilder buffer) {
         return buffer.append(seqno).append(SP).append(method.toUpperCase());
     }
 

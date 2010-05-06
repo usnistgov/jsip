@@ -34,7 +34,7 @@ import gov.nist.core.*;
  * Challenge part of the Auth header. This is only used by the parser interface
  *
  * @author M. Ranganathan    <br/>
- * @version 1.2 $Revision: 1.7 $ $Date: 2009-07-17 18:57:28 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2010-05-06 14:07:54 $
  * @since 1.1
  *
 */
@@ -79,7 +79,7 @@ public class Challenge extends SIPObject {
      * @return String
      */
     public String encode() {
-        return new StringBuffer(scheme)
+        return new StringBuilder(scheme)
             .append(SP)
             .append(authParams.encode())
             .toString();

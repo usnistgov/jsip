@@ -36,7 +36,7 @@ import javax.sip.header.*;
 /**
  * Retry-After SIP Header.
  *
- * @version 1.2 $Revision: 1.9 $ $Date: 2009-11-04 17:35:55 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2010-05-06 14:07:47 $
  *
  * @author M. Ranganathan   <br/>
  * @author Olivier Deruelle <br/>
@@ -71,20 +71,21 @@ public class RetryAfter extends ParametersHeader implements RetryAfterHeader {
     /** Encode body of this into cannonical form.
      * @return encoded body
      */
-    public String encodeBody() {
-        StringBuffer s = new StringBuffer();
+    public StringBuilder encodeBody(StringBuilder retval) {
+//        StringBuilder s = new StringBuilder();
         
         if (retryAfter != null)
-            s.append(retryAfter);
+            retval.append(retryAfter);
 
         if (comment != null)
-            s.append(SP + LPAREN + comment + RPAREN);
+            retval.append(SP + LPAREN + comment + RPAREN);
 
         if (!parameters.isEmpty()) {
-            s.append(SEMICOLON + parameters.encode());
+            retval.append(SEMICOLON); 
+            parameters.encode(retval);
         }
 
-        return s.toString();
+        return retval;
     }
 
     /** Boolean function

@@ -1,6 +1,7 @@
 package gov.nist.core;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Thread Auditor class:
@@ -22,7 +23,8 @@ import java.util.*;
 
 public class ThreadAuditor {
     /// Threads being monitored
-    private Map<Thread,ThreadHandle> threadHandles = new HashMap<Thread,ThreadHandle>();
+    //jeand : moved to concurrent to avoid blocking witnessed by profiler
+    private Map<Thread,ThreadHandle> threadHandles = new ConcurrentHashMap<Thread,ThreadHandle>();
 
     /// How often are threads supposed to ping
     private long pingIntervalInMillisecs = 0;
@@ -76,7 +78,7 @@ public class ThreadAuditor {
          * @return a string representation of the object
          */
         public String toString() {
-            StringBuffer toString = new StringBuffer()
+            StringBuilder toString = new StringBuilder()
                     .append("Thread Name: ").append(thread.getName())
                     .append(", Alive: ").append(thread.isAlive());
             return toString.toString();
@@ -99,7 +101,7 @@ public class ThreadAuditor {
     }
 
     /// Called by a thread that wants to be monitored
-    public synchronized ThreadHandle addCurrentThread() {
+    public ThreadHandle addCurrentThread() {
         // Create and return a thread handle but only add it
         // to the list of monitored threads if the auditor is enabled
         ThreadHandle threadHandle = new ThreadHandle(this);
@@ -110,17 +112,17 @@ public class ThreadAuditor {
     }
 
     /// Stops monitoring a given thread
-    public synchronized void removeThread(Thread thread) {
+    public void removeThread(Thread thread) {
         threadHandles.remove(thread);
     }
 
     /// Called by a monitored thread reporting that it's alive and well
-    public synchronized void ping(ThreadHandle threadHandle) {
+    public void ping(ThreadHandle threadHandle) {
         threadHandle.setThreadActive(true);
     }
 
     /// Resets the auditor
-    public synchronized void reset() {
+    public void reset() {
         threadHandles.clear();
     }
 
@@ -129,7 +131,7 @@ public class ThreadAuditor {
      *
      * @return An audit report string (multiple lines), or null if all is well
      */
-    public synchronized String auditThreads() {
+    public String auditThreads() {
         String auditReport = null;
         // Map stackTraces = null;
 

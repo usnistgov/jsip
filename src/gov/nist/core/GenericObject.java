@@ -704,9 +704,9 @@ public abstract class GenericObject implements Serializable, Cloneable {
     public abstract String encode();
 
     /**
-     * Put the encoded version of this object in the given StringBuffer.
+     * Put the encoded version of this object in the given StringBuilder.
      */
-    public StringBuffer encode(StringBuffer buffer) {
+    public StringBuilder encode(StringBuilder buffer) {
         return buffer.append(encode());
     }
 }

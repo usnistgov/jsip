@@ -123,9 +123,9 @@ public class PServedUser extends AddressParametersHeader implements PServedUserH
     }
 
     @Override
-    protected String encodeBody() {
+    protected StringBuilder encodeBody(StringBuilder retval) {
 
-        StringBuffer retval = new StringBuffer();
+//        StringBuilder retval = new StringBuilder();
 
         retval.append(address.encode());
 
@@ -137,7 +137,7 @@ public class PServedUser extends AddressParametersHeader implements PServedUserH
             retval.append(SEMICOLON).append(ParameterNamesIms.SESSION_CASE).append(EQUALS)
             .append(this.getSessionCase());
 
-        return retval.toString();
+        return retval;
     }
 
     public void setValue(String value) throws ParseException {

@@ -26,7 +26,8 @@
 package gov.nist.core;
 
 import java.text.ParseException;
-import java.util.Hashtable;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /** A lexical analyzer that is used by all parsers in our implementation.
  *
@@ -82,15 +83,16 @@ public class LexerCore extends StringTokenizer {
     public static final int AND = (int) '&';
     public static final int UNDERSCORE = (int) '_';
 
-    protected static final Hashtable globalSymbolTable;
-    protected static final Hashtable lexerTables;
-    protected Hashtable currentLexer;
+    // jeand : using concurrent data structure to avoid excessive blocking witnessed during profiling
+    protected static final ConcurrentHashMap<Integer, String> globalSymbolTable;
+    protected static final ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> lexerTables;
+    protected Map<String, Integer> currentLexer;
     protected String currentLexerName;
     protected Token currentMatch;
 
     static {
-        globalSymbolTable = new Hashtable();
-        lexerTables = new Hashtable();
+        globalSymbolTable = new ConcurrentHashMap<Integer, String>();        
+        lexerTables = new ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>>();
     }
 
     protected void addKeyword(String name, int value) {
@@ -98,8 +100,8 @@ public class LexerCore extends StringTokenizer {
         // new Exception().printStackTrace();
         Integer val = Integer.valueOf(value);
         currentLexer.put(name, val);
-        if (!globalSymbolTable.containsKey(val))
-            globalSymbolTable.put(val, name);
+//        if (!globalSymbolTable.containsKey(val))
+        globalSymbolTable.putIfAbsent(val, name);
     }
 
     public String lookupToken(int value) {
@@ -111,14 +113,14 @@ public class LexerCore extends StringTokenizer {
         }
     }
 
-    protected Hashtable addLexer(String lexerName) {
-        currentLexer = (Hashtable) lexerTables.get(lexerName);
-        if (currentLexer == null) {
-            currentLexer = new Hashtable();
-            lexerTables.put(lexerName, currentLexer);
-        }
-        return currentLexer;
-    }
+//    protected Map<String, Integer> addLexer(String lexerName) {
+//        currentLexer = (Map<String, Integer>) lexerTables.get(lexerName);
+//        if (currentLexer == null) {
+//            currentLexer = new Hashtable();
+//            lexerTables.put(lexerName, currentLexer);
+//        }
+//        return currentLexer;
+//    }
 
     //public abstract void selectLexer(String lexerName);
 
@@ -127,7 +129,7 @@ public class LexerCore extends StringTokenizer {
     }
 
     protected LexerCore() {
-        this.currentLexer = new Hashtable();
+        this.currentLexer = new ConcurrentHashMap<String, Integer>();
         this.currentLexerName = "charLexer";
     }
 
@@ -380,7 +382,7 @@ public class LexerCore extends StringTokenizer {
                     break;
                 }
             }
-            return buffer.substring(startIdx, ptr);
+            return String.valueOf(buffer, startIdx, ptr - startIdx);
         } catch (ParseException ex) {
             return null;
         }
@@ -472,7 +474,7 @@ public class LexerCore extends StringTokenizer {
                     }
                 }
             }
-            return buffer.substring(startIdx, ptr);
+            return String.valueOf(buffer, startIdx, ptr - startIdx);
         } catch (ParseException ex) {
             return null;
         }
@@ -534,13 +536,13 @@ public class LexerCore extends StringTokenizer {
                 break;
             } else if (next == '\0') {
                 throw new ParseException(
-                    this.buffer + " :unexpected EOL",
+                    String.valueOf(this.buffer) + " :unexpected EOL",
                     this.ptr);
             } else if (next == '\\') {
                 consume(1);
             }
         }
-        return buffer.substring(startIdx, ptr - 1);
+        return String.valueOf(buffer, startIdx, ptr - startIdx - 1);
     }
 
     /** Parse a comment string cursor is at a "(". Leave cursor at )
@@ -548,7 +550,7 @@ public class LexerCore extends StringTokenizer {
     * closing brace.
     */
     public String comment() throws ParseException {
-        StringBuffer retval = new StringBuffer();
+        StringBuilder retval = new StringBuilder();
         if (lookAhead(0) != '(')
             return null;
         consume(1);
@@ -579,7 +581,7 @@ public class LexerCore extends StringTokenizer {
     *@return a substring containing no semicolons.
     */
     public String byteStringNoSemicolon() {
-        StringBuffer retval = new StringBuffer();
+        StringBuilder retval = new StringBuilder();
         try {
             while (true) {
                 char next = lookAhead(0);
@@ -603,7 +605,7 @@ public class LexerCore extends StringTokenizer {
      * @return substring containing no slash.
      */
     public String byteStringNoSlash() {
-        StringBuffer retval = new StringBuffer();
+        StringBuilder retval = new StringBuilder();
         try {
             while (true) {
                 char next = lookAhead(0);
@@ -626,7 +628,7 @@ public class LexerCore extends StringTokenizer {
     */
 
     public String byteStringNoComma() {
-        StringBuffer retval = new StringBuffer();
+        StringBuilder retval = new StringBuilder();
         try {
             while (true) {
                 char next = lookAhead(0);
@@ -650,7 +652,7 @@ public class LexerCore extends StringTokenizer {
      * Do not consume the input.
      */
     public String charAsString(int nchars) {
-        return buffer.substring(ptr, ptr + nchars);
+        return String.valueOf(buffer, ptr, nchars -1);
     }
 
     /** Get and consume the next number.
@@ -674,9 +676,9 @@ public class LexerCore extends StringTokenizer {
                 } else
                     break;
             }
-            return buffer.substring(startIdx, ptr);
+            return String.valueOf(buffer, startIdx, ptr - startIdx);
         } catch (ParseException ex) {
-            return buffer.substring(startIdx, ptr);
+            return String.valueOf(buffer, startIdx, ptr - startIdx);
         }
     }
 
@@ -698,10 +700,10 @@ public class LexerCore extends StringTokenizer {
      * @return rest of the buffer.
      */
     public String getRest() {
-        if (ptr >= buffer.length())
+        if (ptr >= bufferLen)
             return null;
         else
-            return buffer.substring(ptr);
+            return String.valueOf(buffer, ptr, bufferLen - ptr - 1);
     }
 
     /** Get the sub-String until the character is encountered
@@ -709,7 +711,7 @@ public class LexerCore extends StringTokenizer {
      * @return the substring that matches.
      */
     public String getString(char c) throws ParseException {
-        StringBuffer retval = new StringBuffer();
+        StringBuilder retval = new StringBuilder();
         while (true) {
             char next = lookAhead(0);
             //System.out.println(" next = [" + next + ']' + "ptr = " + ptr);
@@ -750,12 +752,12 @@ public class LexerCore extends StringTokenizer {
     /** Get the buffer.
      */
     public String getBuffer() {
-        return this.buffer;
+        return String.valueOf(buffer);
     }
 
     /** Create a parse exception.
      */
     public ParseException createParseException() {
-        return new ParseException(this.buffer, this.ptr);
+        return new ParseException(getBuffer(), this.ptr);
     }
 }

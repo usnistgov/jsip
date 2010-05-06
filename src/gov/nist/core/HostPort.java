@@ -69,10 +69,10 @@ public final class HostPort extends GenericObject {
      * @return String
      */
     public String encode() {
-        return encode(new StringBuffer()).toString();
+        return encode(new StringBuilder()).toString();
     }
 
-    public StringBuffer encode(StringBuffer buffer) {
+    public StringBuilder encode(StringBuilder buffer) {
         host.encode(buffer);
         if (port != -1)
             buffer.append(COLON).append(port);

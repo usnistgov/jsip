@@ -82,7 +82,7 @@ public abstract class SDPFieldList extends SDPField {
     * Encode into a canonical string.
     */
     public String encode() {
-        StringBuffer retval = new StringBuffer();
+        StringBuilder retval = new StringBuilder();
         ListIterator li = sdpFields.listIterator();
         while (li.hasNext()) {
             SDPField sdphdr = (SDPField) li.next();

@@ -71,18 +71,18 @@ public class PPreferredIdentity
     /** Encode into canonical form.
      * @return String containing the canonicaly encoded header.
      */
-    public String encodeBody() {
-        StringBuffer retval = new StringBuffer();
+    public StringBuilder encodeBody(StringBuilder retval) {
+//        StringBuilder retval = new StringBuilder();
         if (address.getAddressType() == AddressImpl.ADDRESS_SPEC) {
             retval.append(LESS_THAN);
         }
-        retval.append(address.encode());
+        address.encode(retval);
         if (address.getAddressType() == AddressImpl.ADDRESS_SPEC) {
             retval.append(GREATER_THAN);
         }
 
 
-        return retval.toString();
+        return retval;
     }
 
     public void setValue(String value) throws ParseException {

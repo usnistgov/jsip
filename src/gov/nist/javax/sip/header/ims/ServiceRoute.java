@@ -67,20 +67,23 @@ public class ServiceRoute
     /** Encode into canonical form.
      *@return String containing the canonicaly encoded header.
      */
-    public String encodeBody() {
-        StringBuffer retval = new StringBuffer();
-        if (address.getAddressType() == AddressImpl.ADDRESS_SPEC) {
-            retval.append(LESS_THAN);
-        }
-        retval.append(address.encode());
-        if (address.getAddressType() == AddressImpl.ADDRESS_SPEC) {
-            retval.append(GREATER_THAN);
-        }
+    public StringBuilder encodeBody(StringBuilder retval) {
+//      String retval = "";
+    	if (address.getAddressType() == AddressImpl.ADDRESS_SPEC) {
+    		retval.append(LESS_THAN);
+    	}
+    	address.encode(retval);
+    	if (address.getAddressType() == AddressImpl.ADDRESS_SPEC) {
+    		retval.append(GREATER_THAN);
+    	}
 
-        if (!parameters.isEmpty())
-            retval.append(SEMICOLON + this.parameters.encode());
-        return retval.toString();
+    	if (!parameters.isEmpty()) {
+    		retval.append(SEMICOLON); 
+    		parameters.encode(retval);
+    	}
+    	return retval;        
     }
+
 
     public void setValue(String value) throws ParseException {
         throw new ParseException (value,0);

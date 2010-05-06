@@ -65,24 +65,26 @@ public class PUserDatabase extends gov.nist.javax.sip.header.ParametersHeader  i
             throw new NullPointerException("Database name is null");
         else
             if(!databaseName.contains("aaa://"))
-        this.databaseName = new StringBuffer().append("aaa://").append(databaseName).toString();
+        this.databaseName = new StringBuilder().append("aaa://").append(databaseName).toString();
             else
                 this.databaseName = databaseName;
 
     }
 
-    protected String encodeBody() {
+    public StringBuilder encodeBody(StringBuilder retval) {
 
-        StringBuffer retval = new StringBuffer();
+//        StringBuilder retval = new StringBuilder();
         retval.append("<");
         if(getDatabaseName()!=null)
         retval.append(getDatabaseName());
 
-        if (!parameters.isEmpty())
-            retval.append(SEMICOLON + this.parameters.encode());
+        if (!parameters.isEmpty()) {
+            retval.append(SEMICOLON);
+            this.parameters.encode(retval);
+        }
         retval.append(">");
 
-        return retval.toString();
+        return retval;
     }
 
     public boolean equals(Object other)
