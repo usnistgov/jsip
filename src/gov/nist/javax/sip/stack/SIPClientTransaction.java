@@ -178,7 +178,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.126 $ $Date: 2010-05-06 14:08:09 $
+ * @version 1.2 $Revision: 1.127 $ $Date: 2010-05-07 18:41:57 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -1597,95 +1597,100 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
 
     // jeand method use to cleanup eagerly all structures that won't be needed anymore once the tx passed in the COMPLETED state
     protected void cleanUpOnTimer() {
-    	if (sipStack.isLoggingEnabled()) {
-            sipStack.getStackLogger().logDebug("cleanupOnTimer: "
-                    + getTransactionId());
-        }       
-    	// we release the ref to the dialog asap and just keep the id of the dialog to look it up in the dialog table
-    	if(defaultDialog != null) {
-	    	String dialogId = defaultDialog.getDialogId();
-	    	// we nullify the ref only if it can be find in the dialog table (not always true if the dialog is in null state, check challenge unittest of the testsuite)
-	    	if(dialogId != null && sipStack.getDialog(dialogId) != null) {
-	    		defaultDialogId = dialogId;
-	    		defaultDialog = null;	    		
+    	if(sipStack.isAggressiveCleanup()) {
+	    	if (sipStack.isLoggingEnabled()) {
+	            sipStack.getStackLogger().logDebug("cleanupOnTimer: "
+	                    + getTransactionId());
+	        }       
+	    	// we release the ref to the dialog asap and just keep the id of the dialog to look it up in the dialog table
+	    	if(defaultDialog != null) {
+		    	String dialogId = defaultDialog.getDialogId();
+		    	// we nullify the ref only if it can be find in the dialog table (not always true if the dialog is in null state, check challenge unittest of the testsuite)
+		    	if(dialogId != null && sipStack.getDialog(dialogId) != null) {
+		    		defaultDialogId = dialogId;
+		    		defaultDialog = null;	    		
+		    	}
 	    	}
+	    	if(originalRequest != null) {
+		    	originalRequest.setTransaction(null);
+		    	originalRequest.setInviteTransaction(null);
+		    	originalRequest.cleanUp();
+		    	if(!getMethod().equalsIgnoreCase(Request.INVITE) && !getMethod().equalsIgnoreCase(Request.CANCEL)) {
+	    			originalRequestBytes = originalRequest.encodeAsBytes(this.getTransport());
+	    			originalRequestFromTag = originalRequest.getFromTag();
+	    			originalRequestCallId = originalRequest.getCallId().getCallId();
+	    			originalRequestEventHeader = (Event) originalRequest.getHeader("Event");
+	    			originalRequestContact = originalRequest.getContactHeader();
+	    			originalRequestScheme = originalRequest.getRequestURI().getScheme();
+	    			originalRequest = null;    			
+	    		}  
+	    	}
+	    	// for subscribe Tx we need to keep the last response longer to be able to create notify from dialog
+	    	if(!getMethod().equalsIgnoreCase(Request.SUBSCRIBE)) {
+	    		lastResponse = null;
+	    	}    	 
+	    	lastRequest = null;
     	}
-    	if(originalRequest != null) {
-	    	originalRequest.setTransaction(null);
-	    	originalRequest.setInviteTransaction(null);
-	    	originalRequest.cleanUp();
-	    	if(!getMethod().equalsIgnoreCase(Request.INVITE) && !getMethod().equalsIgnoreCase(Request.CANCEL)) {
-    			originalRequestBytes = originalRequest.encodeAsBytes(this.getTransport());
-    			originalRequestFromTag = originalRequest.getFromTag();
-    			originalRequestCallId = originalRequest.getCallId().getCallId();
-    			originalRequestEventHeader = (Event) originalRequest.getHeader("Event");
-    			originalRequestContact = originalRequest.getContactHeader();
-    			originalRequestScheme = originalRequest.getRequestURI().getScheme();
-    			originalRequest = null;    			
-    		}  
-    	}
-    	// for subscribe Tx we need to keep the last response longer to be able to create notify from dialog
-    	if(!getMethod().equalsIgnoreCase(Request.SUBSCRIBE)) {
-    		lastResponse = null;
-    	}    	 
-    	lastRequest = null;
 	}
     
     //jeand : cleanup method to clear the state of the tx once it has been removed from the stack
     @Override    
     public void cleanUp() {
-    	// release the connection associated with this transaction.
-        if (sipStack.isLoggingEnabled()) {
-            sipStack.getStackLogger().logDebug("cleanup : "
-                    + getTransactionId());
-        }        
-    	if(defaultDialog != null) {
-    		defaultDialogId = defaultDialog.getDialogId();
-    		defaultDialog = null;
+    	if(sipStack.isAggressiveCleanup()) {
+	    	// release the connection associated with this transaction.
+	        if (sipStack.isLoggingEnabled()) {
+	            sipStack.getStackLogger().logDebug("cleanup : "
+	                    + getTransactionId());
+	        }        
+	    	if(defaultDialog != null) {
+	    		defaultDialogId = defaultDialog.getDialogId();
+	    		defaultDialog = null;
+	    	}
+		    originalRequest = null;
+	    	cleanUpOnTimer();
+			originalRequestBytes = null;
+		    originalRequestBranch = null;
+		    originalRequestCallId = null;
+		    originalRequestEventHeader = null;
+		    originalRequestFromTag = null;
+		    originalRequestContact = null;
+		    originalRequestScheme = null;
+	    	// Application Data has to be cleared by the application
+	//    	applicationData = null;    	
+	    	if(sipDialogs != null) {
+		    	sipDialogs.clear();	    	
+	//	    	sipDialogs = null;
+	    	}
+	    	respondTo = null;
+	    	transactionTimer = null;
+	    	lastResponse = null;
+	    	transactionTimerLock = null;
+	    	transactionTimerStarted = null;
+	    	timerKStarted = null;    	
     	}
-	    originalRequest = null;
-    	cleanUpOnTimer();
-		originalRequestBytes = null;
-	    originalRequestBranch = null;
-	    originalRequestCallId = null;
-	    originalRequestEventHeader = null;
-	    originalRequestFromTag = null;
-	    originalRequestContact = null;
-	    originalRequestScheme = null;
-    	// Application Data has to be cleared by the application
-//    	applicationData = null;    	
-    	if(sipDialogs != null) {
-	    	sipDialogs.clear();	    	
-//	    	sipDialogs = null;
-    	}
-    	respondTo = null;
-    	transactionTimer = null;
-    	lastResponse = null;
-    	transactionTimerLock = null;
-    	transactionTimerStarted = null;
-    	timerKStarted = null;    	
-    	
     }
     
     // jeand cleanup called after the ctx timer or the timer k has fired
     protected void cleanUpOnTerminated() {
-		
-		if (sipStack.isLoggingEnabled()) {
+    	if (sipStack.isLoggingEnabled()) {
             sipStack.getStackLogger().logDebug(
                     "removing  = " + this + " isReliable "
                             + isReliable());
         }  
-		
-		if(originalRequest == null && originalRequestBytes != null) {
-        	try {
-				originalRequest = (SIPRequest) sipStack.getMessageParserFactory().createMessageParser(sipStack).parseSIPMessage(originalRequestBytes, true, false, null);
-				originalRequestBytes = null;
-			} catch (ParseException e) {
-				sipStack.getStackLogger().logError("message " + originalRequestBytes + "could not be reparsed !");
-			}
-		}   
-        sipStack.removeTransaction(this);           
-
+    	if(sipStack.isAggressiveCleanup()) {
+			
+			if(originalRequest == null && originalRequestBytes != null) {
+	        	try {
+					originalRequest = (SIPRequest) sipStack.getMessageParserFactory().createMessageParser(sipStack).parseSIPMessage(originalRequestBytes, true, false, null);
+					originalRequestBytes = null;
+				} catch (ParseException e) {
+					sipStack.getStackLogger().logError("message " + originalRequestBytes + "could not be reparsed !");
+				}
+			}   
+    	}
+	       
+    	sipStack.removeTransaction(this);           
+	
         // Client transaction terminated. Kill connection if
         // this is a TCP after the linger timer has expired.
         // The linger timer is needed to allow any pending requests to
@@ -1712,7 +1717,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
             }                    
             // Let the connection linger for a while and then close
             // it.
-            if(((SipStackImpl)getSIPStack()).isReEntrantListener()) {
+            if(((SipStackImpl)getSIPStack()).isReEntrantListener() && sipStack.isAggressiveCleanup()) {
             	cleanUp();     
             } else {
             	SIPStackTimerTask myTimer = new LingerTimer();
@@ -1720,6 +1725,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                         SIPTransactionStack.CONNECTION_LINGER_TIME * 1000);
             }
         }
+    	
 	}
 
 	/**

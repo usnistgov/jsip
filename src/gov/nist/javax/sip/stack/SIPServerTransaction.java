@@ -167,7 +167,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.125 $ $Date: 2010-05-06 14:08:11 $
+ * @version 1.2 $Revision: 1.126 $ $Date: 2010-05-07 18:41:57 $
  * @author M. Ranganathan
  *
  */
@@ -1831,98 +1831,108 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
     // jeand cleanup the state of the stx to help GC
     public void cleanUp() {
-    	// release the connection associated with this transaction.
-        if (sipStack.isLoggingEnabled()) {
-            sipStack.getStackLogger().logDebug("cleanup : "
-                    + getTransactionId());
-        }
-        // Remove it from the set
+    	// Remove it from the set
         if (sipStack.isLoggingEnabled())
             sipStack.getStackLogger().logDebug("removing" + this);
-        if(originalRequest == null && originalRequestBytes != null) {
-        	try {
-				originalRequest = (SIPRequest) sipStack.getMessageParserFactory().createMessageParser(sipStack).parseSIPMessage(originalRequestBytes, true, false, null);
-				originalRequestBytes = null;
-			} catch (ParseException e) {
-				sipStack.getStackLogger().logError("message " + originalRequestBytes + "could not be reparsed !");
-			}
-		}   
-        sipStack.removeTransaction(this);
-        cleanUpOnTimer();
-        originalRequestBytes = null;
-        originalRequestBranch = null;
-        originalRequestFromTag = null;
-        originalRequestSentBy = null;
-        // it should be available in the processTxTerminatedEvent, so we can nullify it only here
-    	if(originalRequest != null) {
-//    		originalRequestSentBy = originalRequest.getTopmostVia().getSentBy();
-//    		originalRequestFromTag = originalRequest.getFromTag();    		
-    		originalRequest = null;     		
-    	}   
-    	if(inviteTransaction != null) {    		
-    		inviteTransaction = null;
+        
+    	if(sipStack.isAggressiveCleanup()) {
+    		
+	    	// release the connection associated with this transaction.
+	        if (sipStack.isLoggingEnabled()) {
+	            sipStack.getStackLogger().logDebug("cleanup : "
+	                    + getTransactionId());
+	        }
+	        
+	        if(originalRequest == null && originalRequestBytes != null) {
+	        	try {
+					originalRequest = (SIPRequest) sipStack.getMessageParserFactory().createMessageParser(sipStack).parseSIPMessage(originalRequestBytes, true, false, null);
+					originalRequestBytes = null;
+				} catch (ParseException e) {
+					sipStack.getStackLogger().logError("message " + originalRequestBytes + "could not be reparsed !");
+				}
+			}   
+	        sipStack.removeTransaction(this);
+	        cleanUpOnTimer();
+	        originalRequestBytes = null;
+	        originalRequestBranch = null;
+	        originalRequestFromTag = null;
+	        originalRequestSentBy = null;
+	        // it should be available in the processTxTerminatedEvent, so we can nullify it only here
+	    	if(originalRequest != null) {
+	//    		originalRequestSentBy = originalRequest.getTopmostVia().getSentBy();
+	//    		originalRequestFromTag = originalRequest.getFromTag();    		
+	    		originalRequest = null;     		
+	    	}   
+	    	if(inviteTransaction != null) {    		
+	    		inviteTransaction = null;
+	    	}
+	    	// Application Data has to be cleared by the application
+	//        applicationData = null;
+	        lastResponse = null;   
+	        lastResponseAsBytes = null;
+	        if ((!sipStack.cacheServerConnections)
+	                && --getMessageChannel().useCount <= 0) {
+	            // Close the encapsulated socket if stack is configured
+	            close(); 
+	        } else {
+	            if (sipStack.isLoggingEnabled()
+	                    && (!sipStack.cacheServerConnections)
+	                    && isReliable()) {
+	                int useCount = getMessageChannel().useCount;
+	                sipStack.getStackLogger().logDebug("Use Count = " + useCount);
+	            }
+	        }
+	        transactionTimerStarted = null;
+    	} else {
+    		sipStack.removeTransaction(this);
     	}
-    	// Application Data has to be cleared by the application
-//        applicationData = null;
-        lastResponse = null;   
-        lastResponseAsBytes = null;
-        if ((!sipStack.cacheServerConnections)
-                && --getMessageChannel().useCount <= 0) {
-            // Close the encapsulated socket if stack is configured
-            close(); 
-        } else {
-            if (sipStack.isLoggingEnabled()
-                    && (!sipStack.cacheServerConnections)
-                    && isReliable()) {
-                int useCount = getMessageChannel().useCount;
-                sipStack.getStackLogger().logDebug("Use Count = " + useCount);
-            }
-        }
-        transactionTimerStarted = null;
+    
     }
     
     // clean up the state of the stx when it goes to completed or terminated to help GC
     protected void cleanUpOnTimer() {
-    	if (sipStack.isLoggingEnabled()) {
-            sipStack.getStackLogger().logDebug("cleanup on timer : "
-                    + getTransactionId());
-        }
-    	if(dialog != null && getMethod().equals(Request.CANCEL)) {
-    		// used to deal with getting the dialog on cancel tx after the 200 OK to CANCEL has been sent
-    		dialogId = dialog.getDialogId();
-    	} 
-    	dialog = null;
-    	// we don't nullify the inviteTx for CANCEL since the app can get it from getCanceledInviteTransaction
-    	if(inviteTransaction != null && !getMethod().equals(Request.CANCEL)) {
-    		// we release the semaphore for Cancel processing
-    		inviteTransaction.releaseSem();
-    		inviteTransaction = null;
+    	if(sipStack.isAggressiveCleanup()) {
+	    	if (sipStack.isLoggingEnabled()) {
+	            sipStack.getStackLogger().logDebug("cleanup on timer : "
+	                    + getTransactionId());
+	        }
+	    	if(dialog != null && getMethod().equals(Request.CANCEL)) {
+	    		// used to deal with getting the dialog on cancel tx after the 200 OK to CANCEL has been sent
+	    		dialogId = dialog.getDialogId();
+	    	} 
+	    	dialog = null;
+	    	// we don't nullify the inviteTx for CANCEL since the app can get it from getCanceledInviteTransaction
+	    	if(inviteTransaction != null && !getMethod().equals(Request.CANCEL)) {
+	    		// we release the semaphore for Cancel processing
+	    		inviteTransaction.releaseSem();
+	    		inviteTransaction = null;
+	    	}
+	    	if(originalRequest != null) {
+	    		originalRequest.setTransaction(null);
+	    		originalRequest.setInviteTransaction(null);
+	    		if(!getMethod().equalsIgnoreCase(Request.INVITE)) {
+	    			if(originalRequestSentBy == null) {
+	    				originalRequestSentBy = originalRequest.getTopmostVia().getSentBy();
+	    			}
+	    			if(originalRequestFromTag == null) {
+	    				originalRequestFromTag = originalRequest.getFromTag();
+	    			}    			
+	    		}
+	    		if(!getMethod().equalsIgnoreCase(Request.INVITE) && !getMethod().equalsIgnoreCase(Request.CANCEL)) {
+	    			originalRequestBytes = originalRequest.encodeAsBytes(this.getTransport());
+	    			originalRequest = null;
+	    		}    		
+	    	}
+	    	if(lastResponse != null) {
+	    		lastResponseAsBytes = lastResponse.encodeAsBytes(this.getTransport());
+	    		lastResponse = null;
+	    	}
+	    	pendingReliableResponse = null;
+	    	pendingSubscribeTransaction = null;
+	    	provisionalResponseSem = null;    	
+	    	retransmissionAlertTimerTask = null;
+	    	requestOf = null;
+	        messageProcessor = null;
     	}
-    	if(originalRequest != null) {
-    		originalRequest.setTransaction(null);
-    		originalRequest.setInviteTransaction(null);
-    		if(!getMethod().equalsIgnoreCase(Request.INVITE)) {
-    			if(originalRequestSentBy == null) {
-    				originalRequestSentBy = originalRequest.getTopmostVia().getSentBy();
-    			}
-    			if(originalRequestFromTag == null) {
-    				originalRequestFromTag = originalRequest.getFromTag();
-    			}    			
-    		}
-    		if(!getMethod().equalsIgnoreCase(Request.INVITE) && !getMethod().equalsIgnoreCase(Request.CANCEL)) {
-    			originalRequestBytes = originalRequest.encodeAsBytes(this.getTransport());
-    			originalRequest = null;
-    		}    		
-    	}
-    	if(lastResponse != null) {
-    		lastResponseAsBytes = lastResponse.encodeAsBytes(this.getTransport());
-    		lastResponse = null;
-    	}
-    	pendingReliableResponse = null;
-    	pendingSubscribeTransaction = null;
-    	provisionalResponseSem = null;    	
-    	retransmissionAlertTimerTask = null;
-    	requestOf = null;
-        messageProcessor = null;
     }	
 }
