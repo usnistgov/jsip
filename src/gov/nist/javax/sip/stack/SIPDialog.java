@@ -35,6 +35,7 @@ import gov.nist.javax.sip.DialogExt;
 import gov.nist.javax.sip.ListeningPointImpl;
 import gov.nist.javax.sip.SipListenerExt;
 import gov.nist.javax.sip.SipProviderImpl;
+import gov.nist.javax.sip.SipStackImpl;
 import gov.nist.javax.sip.Utils;
 import gov.nist.javax.sip.address.AddressImpl;
 import gov.nist.javax.sip.address.SipUri;
@@ -126,7 +127,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.177 $ $Date: 2010-05-06 14:08:10 $
+ * @version 1.2 $Revision: 1.178 $ $Date: 2010-05-07 12:47:49 $
  * 
  * @author M. Ranganathan
  * 
@@ -392,7 +393,12 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         public void runTask() {
             SIPDialog dialog = SIPDialog.this;                       
             sipStack.removeDialog(dialog);
-            cleanUp();
+            // Issue 279 : https://jain-sip.dev.java.net/issues/show_bug.cgi?id=279 
+            // if non reentrant listener is used the event delivery of DialogTerminated 
+            // can happen after the clean  
+            if(((SipStackImpl)getStack()).isReEntrantListener()) {
+            	cleanUp();
+            }            
         }
 
     }
