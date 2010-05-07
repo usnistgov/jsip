@@ -127,7 +127,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.178 $ $Date: 2010-05-07 12:47:49 $
+ * @version 1.2 $Revision: 1.179 $ $Date: 2010-05-07 18:41:57 $
  * 
  * @author M. Ranganathan
  * 
@@ -3610,96 +3610,100 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 	// jeand cleanup the dialog from the data not needed anymore upon receiving or sending an ACK
     // to save on mem
     protected void cleanUpOnAck() {
-    	if (sipStack.isLoggingEnabled()) {
-            sipStack.getStackLogger().logDebug("cleanupOnAck : "
-                    + getDialogId());
-        }
-    	if(originalRequest != null) {
-//    		originalRequestRecordRouteHeaders = originalRequest.getRecordRouteHeaders();
-    		if(originalRequestRecordRouteHeaders != null) {
-    			originalRequestRecordRouteHeadersString = originalRequestRecordRouteHeaders.toString();
-    		}
-    		originalRequestRecordRouteHeaders = null;
-            originalRequest = null;
+    	if(sipStack.isAggressiveCleanup()) {
+	    	if (sipStack.isLoggingEnabled()) {
+	            sipStack.getStackLogger().logDebug("cleanupOnAck : "
+	                    + getDialogId());
+	        }
+	    	if(originalRequest != null) {
+	//    		originalRequestRecordRouteHeaders = originalRequest.getRecordRouteHeaders();
+	    		if(originalRequestRecordRouteHeaders != null) {
+	    			originalRequestRecordRouteHeadersString = originalRequestRecordRouteHeaders.toString();
+	    		}
+	    		originalRequestRecordRouteHeaders = null;
+	            originalRequest = null;
+	    	}
+	        if(firstTransaction != null) {
+	        	if(firstTransaction.getOriginalRequest() != null) {
+	        		firstTransaction.getOriginalRequest().cleanUp();
+	        	}
+	        	firstTransaction = null;
+	        }
+	        if(lastTransaction != null) {
+	        	if(lastTransaction.getOriginalRequest() != null) {
+	        		lastTransaction.getOriginalRequest().cleanUp();
+	        	}
+	        	lastTransaction =  null;	
+	        }
+	        // TODO those should be conditioned by a property
+	        if(callIdHeader != null) {
+	        	callIdHeaderString = callIdHeader.toString();
+	        	callIdHeader = null;
+	        }
+	        if(contactHeader != null) {
+	        	contactHeaderStringified = contactHeader.toString();
+	        	contactHeader = null;
+	        }
+	        if(remoteTarget != null) {
+	        	remoteTargetStringified = remoteTarget.toString();
+	        	remoteTarget = null;
+	        }
+	        if(remoteParty != null) {
+	        	remotePartyStringified = remoteParty.toString();
+	        	remoteParty = null;
+	        }
+	        if(localParty != null) {
+	        	localPartyStringified = localParty.toString();
+	        	localParty = null;
+	        }
     	}
-        if(firstTransaction != null) {
-        	if(firstTransaction.getOriginalRequest() != null) {
-        		firstTransaction.getOriginalRequest().cleanUp();
-        	}
-        	firstTransaction = null;
-        }
-        if(lastTransaction != null) {
-        	if(lastTransaction.getOriginalRequest() != null) {
-        		lastTransaction.getOriginalRequest().cleanUp();
-        	}
-        	lastTransaction =  null;	
-        }
-        // TODO those should be conditioned by a property
-        if(callIdHeader != null) {
-        	callIdHeaderString = callIdHeader.toString();
-        	callIdHeader = null;
-        }
-        if(contactHeader != null) {
-        	contactHeaderStringified = contactHeader.toString();
-        	contactHeader = null;
-        }
-        if(remoteTarget != null) {
-        	remoteTargetStringified = remoteTarget.toString();
-        	remoteTarget = null;
-        }
-        if(remoteParty != null) {
-        	remotePartyStringified = remoteParty.toString();
-        	remoteParty = null;
-        }
-        if(localParty != null) {
-        	localPartyStringified = localParty.toString();
-        	localParty = null;
-        }
     }
     
     // jeand : cleanup of the dialog 
     protected void cleanUp() {
-    	if (sipStack.isLoggingEnabled()) {
-            sipStack.getStackLogger().logDebug("cleanup : "
-                    + getDialogId());
-        }
-    	if(eventListeners != null) {
-        	eventListeners.clear();
-        }
-        timerTaskLock = null;
-        ackSem = null;
-        applicationData = null;
-        callIdHeader = null;
-        contactHeader = null;
-        eventHeader = null;
-        firstTransactionId = null;
-        firstTransactionMethod = null;        
-        hisTag = null;
-        myTag = null;
-        lastAckSent = null;
-//        lastAckReceivedCSeqNumber = null;
-        lastResponseDialogId = null;
-//        lastResponse = null;
-//        if(lastResponseHeaders != null) { 
-//        	lastResponseHeaders.clear();
-//            lastResponseHeaders = null;
-//        }
-        lastResponseMethod = null;
-        lastResponseTopMostVia = null;
-//        lastTransactionMethod = null;
-        localParty = null;
-        remoteParty = null;
-        method = null;
-        if(originalRequestRecordRouteHeaders != null) {
-        	originalRequestRecordRouteHeaders.clear();
-        	originalRequestRecordRouteHeaders = null;
-        	originalRequestRecordRouteHeadersString = null;
-        }
-        remoteTarget = null;
-        if(routeList != null) {
-        	routeList.clear();
-        	routeList = null;
-        }
+    	if(sipStack.isAggressiveCleanup()) {
+	    	if (sipStack.isLoggingEnabled()) {
+	            sipStack.getStackLogger().logDebug("cleanup : "
+	                    + getDialogId());
+	        }
+	    	if(eventListeners != null) {
+	        	eventListeners.clear();
+	        }
+	        timerTaskLock = null;
+	        ackSem = null;
+	        applicationData = null;
+	        callIdHeader = null;
+	        contactHeader = null;
+	        eventHeader = null;
+	        firstTransactionId = null;
+	        firstTransactionMethod = null;        
+	        hisTag = null;
+	        myTag = null;
+	        lastAckSent = null;
+	//        lastAckReceivedCSeqNumber = null;
+	        lastResponseDialogId = null;
+	//        lastResponse = null;
+	//        if(lastResponseHeaders != null) { 
+	//        	lastResponseHeaders.clear();
+	//            lastResponseHeaders = null;
+	//        }
+	        lastResponseMethod = null;
+	        lastResponseTopMostVia = null;
+	//        lastTransactionMethod = null;
+	        localParty = null;
+	        remoteParty = null;
+	        method = null;
+	        if(originalRequestRecordRouteHeaders != null) {
+	        	originalRequestRecordRouteHeaders.clear();
+	        	originalRequestRecordRouteHeaders = null;
+	        	originalRequestRecordRouteHeadersString = null;
+	        }
+	        remoteTarget = null;
+	        if(routeList != null) {
+	        	routeList.clear();
+	        	routeList = null;
+	        }
+    	}
 	}
 
     protected RecordRouteList getOriginalRequestRecordRouteHeaders() {

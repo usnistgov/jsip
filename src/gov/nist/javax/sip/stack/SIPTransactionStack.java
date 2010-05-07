@@ -99,7 +99,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.153 $ $Date: 2010-05-06 14:08:09 $
+ * @version 1.2 $Revision: 1.154 $ $Date: 2010-05-07 18:41:56 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener, SIPDialogEventListener {
@@ -381,6 +381,8 @@ public abstract class SIPTransactionStack implements
     private boolean deliverUnsolicitedNotify = false;
 
     private boolean deliverTerminatedEventForAck = false;
+    
+    protected boolean aggressiveCleanup = false;
 
     // Minimum time between NAT kee alive pings from clients.
     // Any ping that exceeds this time will result in  CRLF CRLF going
@@ -407,7 +409,7 @@ public abstract class SIPTransactionStack implements
 					return new Thread(pRunnable, String.format("%s-%d",
 							"ReInviteSender", threadCount++));
 	    }
-    });
+    });	
 	
     // / Timer to regularly ping the thread auditor (on behalf of the timer
     // thread)
@@ -2831,6 +2833,20 @@ public abstract class SIPTransactionStack implements
 	 */
 	public MessageProcessorFactory getMessageProcessorFactory() {
 		return messageProcessorFactory;
+	}
+
+	/**
+	 * @param aggressiveCleanup the aggressiveCleanup to set
+	 */
+	public void setAggressiveCleanup(boolean aggressiveCleanup) {
+		this.aggressiveCleanup = aggressiveCleanup;
+	}
+
+	/**
+	 * @return the aggressiveCleanup
+	 */
+	public boolean isAggressiveCleanup() {
+		return aggressiveCleanup;
 	}
 
 }
