@@ -41,7 +41,6 @@ import gov.nist.javax.sip.header.RequestLine;
 import gov.nist.javax.sip.header.StatusLine;
 import gov.nist.javax.sip.header.To;
 import gov.nist.javax.sip.header.Via;
-import gov.nist.javax.sip.header.ViaList;
 import gov.nist.javax.sip.message.SIPMessage;
 import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.message.SIPResponse;
@@ -56,7 +55,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.text.ParseException;
 import java.util.Hashtable;
-import java.util.TimerTask;
 
 import javax.sip.address.Hop;
 
@@ -89,7 +87,7 @@ import javax.sip.address.Hop;
  *
  *
  *
- * @version 1.2 $Revision: 1.71 $ $Date: 2010-05-06 14:08:10 $
+ * @version 1.2 $Revision: 1.72 $ $Date: 2010-05-10 11:32:09 $
  */
 public class UDPMessageChannel extends MessageChannel implements
         ParseExceptionListener, Runnable, RawMessageChannel {
@@ -131,6 +129,8 @@ public class UDPMessageChannel extends MessageChannel implements
     private DatagramPacket incomingPacket;
 
     private long receptionTime;
+    
+    private Thread mythread = null;
     
     /*
      * A table that keeps track of when the last pingback was sent to a given remote IP address
@@ -174,7 +174,7 @@ public class UDPMessageChannel extends MessageChannel implements
         // jeand : Create a new string message parser to parse the list of messages.
         myParser = sipStack.getMessageParserFactory().createMessageParser(sipStack);                
 
-        Thread mythread = new Thread(this);
+        mythread = new Thread(this);
 
         this.myAddress = messageProcessor.getIpAddress().getHostAddress();
         this.myPort = messageProcessor.getPort();
@@ -208,7 +208,7 @@ public class UDPMessageChannel extends MessageChannel implements
         
         this.myAddress = messageProcessor.getIpAddress().getHostAddress();
         this.myPort = messageProcessor.getPort();
-        Thread mythread = new Thread(this);
+        mythread = new Thread(this);
         mythread.setDaemon(true);
 
         mythread.start();
@@ -249,14 +249,16 @@ public class UDPMessageChannel extends MessageChannel implements
     public void run() {
         // Assume no thread pooling (bug fix by spierhj)
         ThreadAuditor.ThreadHandle threadHandle = null;
-
+        
+        final UDPMessageProcessor udpMessageProcessor = (UDPMessageProcessor) messageProcessor;
+        
         while (true) {
             // messages that we write out to him.
             DatagramPacket packet = null;
 
             if (sipStack.threadPoolSize != -1) {
 //                synchronized (((UDPMessageProcessor) messageProcessor).messageQueue) {
-            		final UDPMessageProcessor udpMessageProcessor = (UDPMessageProcessor) messageProcessor;            		
+            		            		
 //                    while (udpMessageProcessor.messageQueue.isEmpty()) {
 //                        // Check to see if we need to exit.
 //                        if (!udpMessageProcessor.isRunning)
@@ -941,7 +943,12 @@ public class UDPMessageChannel extends MessageChannel implements
     /**
      * Close the message channel.
      */
-    public void close() {
+    public void close() {    	
+    	if(mythread != null) {
+    		// jeand stop the thread waiting on the queue if the processor is stopped
+    		mythread.interrupt();
+    		mythread = null;
+    	}
     }
 
 
