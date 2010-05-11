@@ -30,6 +30,7 @@ package gov.nist.javax.sip;
 
 import gov.nist.core.HostPort;
 import gov.nist.core.InternalErrorHandler;
+import gov.nist.core.LogLevels;
 import gov.nist.javax.sip.address.SipUri;
 import gov.nist.javax.sip.header.Contact;
 import gov.nist.javax.sip.header.Event;
@@ -80,7 +81,7 @@ import javax.sip.message.Response;
  * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
  * and event model with the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.76 $ $Date: 2010-05-06 14:08:08 $
+ * @version 1.2 $Revision: 1.77 $ $Date: 2010-05-11 20:40:40 $
  * 
  * @author M. Ranganathan
  */
@@ -258,13 +259,13 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
     public void processRequest(SIPRequest sipRequest, MessageChannel incomingMessageChannel) {
     	try {
 	        // Generate the wrapper JAIN-SIP object.
-	        if (sipStack.isLoggingEnabled())
+	        if (sipStack.isLoggingEnabled( LogLevels.TRACE_DEBUG ) && listeningPoint!=null)
 	            sipStack.getStackLogger().logDebug(
 	                    "PROCESSING INCOMING REQUEST " + sipRequest + " transactionChannel = "
 	                            + transactionChannel + " listening point = "
 	                            + listeningPoint.getIPAddress() + ":" + listeningPoint.getPort());
 	        if (listeningPoint == null) {
-	            if (sipStack.isLoggingEnabled())
+	            if (sipStack.isLoggingEnabled( LogLevels.TRACE_DEBUG ))
 	                sipStack.getStackLogger().logDebug(
 	                        "Dropping message: No listening point registered!");
 	            return;
