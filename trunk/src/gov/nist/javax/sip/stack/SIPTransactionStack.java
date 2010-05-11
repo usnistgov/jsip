@@ -99,7 +99,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.154 $ $Date: 2010-05-07 18:41:56 $
+ * @version 1.2 $Revision: 1.155 $ $Date: 2010-05-11 20:40:26 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener, SIPDialogEventListener {
@@ -1920,6 +1920,11 @@ public abstract class SIPTransactionStack implements
 				.isLoggingEnabled();
     }
 
+    public boolean isLoggingEnabled( int level ) {
+		return this.stackLogger == null ? false 
+				: this.stackLogger.isLoggingEnabled( level );
+    }
+    
     /**
      * Get the logger.
      *
