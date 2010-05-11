@@ -53,7 +53,7 @@ final class SCTPMessageChannel extends MessageChannel
 	// XXX Hardcoded, enough? TODO make stack property
 	private final ByteBuffer rxBuffer = ByteBuffer.allocateDirect( 10000 );
 	
-	private final StringMsgParser parser = new StringMsgParser( this );	// Parser instance
+	private final StringMsgParser parser = new StringMsgParser();	// Parser instance
 	
 	// for outgoing connections
 	SCTPMessageChannel( SCTPMessageProcessor p, InetSocketAddress dest ) throws IOException {
@@ -228,7 +228,7 @@ final class SCTPMessageChannel extends MessageChannel
 		rxBuffer.get( msg );
 		rxBuffer.compact();
 		try {
-			SIPMessage m = parser.parseSIPMessage( msg );
+			SIPMessage m = parser.parseSIPMessage( msg, true, true, this );
 			this.processMessage( m, rxTime );
 			rxTime = 0;	// reset for next message
 		} catch (ParseException e) {
