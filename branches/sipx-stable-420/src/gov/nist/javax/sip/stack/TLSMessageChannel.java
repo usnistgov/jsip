@@ -50,6 +50,7 @@ import java.io.*;
 import java.text.ParseException;
 
 import javax.net.ssl.HandshakeCompletedListener;
+import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLSocket;
 import javax.sip.address.Hop;
 import javax.sip.message.Response;
@@ -67,7 +68,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.33 $ $Date: 2010-03-15 17:01:19 $
+ * @version 1.2 $Revision: 1.33.2.1 $ $Date: 2010-05-12 14:08:59 $
  */
 public final class TLSMessageChannel extends MessageChannel implements SIPMessageListener,
         Runnable, RawMessageChannel {
@@ -129,14 +130,16 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
         }
 
         mySock = (SSLSocket) sock;
-        if ( sock instanceof SSLSocket ) {
-            
-            SSLSocket sslSock = (SSLSocket) sock;
-            sslSock.setNeedClientAuth(true);
-            this.handshakeCompletedListener = new HandshakeCompletedListenerImpl(this);
-            sslSock.addHandshakeCompletedListener(this.handshakeCompletedListener);
-            sslSock.startHandshake();
-       
+        if (sock instanceof SSLSocket) {
+            try {
+                SSLSocket sslSock = (SSLSocket) sock;
+                sslSock.setNeedClientAuth(true);
+                this.handshakeCompletedListener = new HandshakeCompletedListenerImpl(this);
+                sslSock.addHandshakeCompletedListener(this.handshakeCompletedListener);
+                sslSock.startHandshake();
+            } catch (SSLHandshakeException ex) {
+                throw new IOException(ex.getMessage());
+            }
         }
         
         peerAddress = mySock.getInetAddress();
