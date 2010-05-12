@@ -59,7 +59,7 @@ import java.util.Iterator;
  * connection. This is the active object that creates new TLS MessageChannels (one for each new
  * accept socket).
  * 
- * @version 1.2 $Revision: 1.25 $ $Date: 2010-02-22 23:32:58 $
+ * @version 1.2 $Revision: 1.25.2.1 $ $Date: 2010-05-12 14:09:00 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -122,7 +122,7 @@ public class TLSMessageProcessor extends MessageProcessor {
      * Run method for the thread that gets created for each accept socket.
      */
     public void run() {
-        // Accept new connectins on our socket.
+        // Accept new connections on our socket.
         while (this.isRunning) {
             try {
             	 
@@ -170,7 +170,7 @@ public class TLSMessageProcessor extends MessageProcessor {
             } catch (SSLException ex) {
                 this.isRunning = false;
                 sipStack.getStackLogger().logError(
-                        "Fatal - SSSLException occured while Accepting connection", ex);
+                        "Fatal - SSLException occured while Accepting connection", ex);
                 break;
             } catch (IOException ex) {
                 // Problem accepting connection.
