@@ -45,6 +45,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HandshakeCompletedListener;
+import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLSocket;
 
 /*
@@ -250,6 +251,9 @@ class IOHandler {
 						}
 					}
 				}
+                        } catch (IOException ex) {
+                            removeSocket(key);
+                            throw ex;
 			} finally {
 				leaveIOCriticalSection(key);
 			}
@@ -348,6 +352,12 @@ class IOHandler {
 						}
 					}
 				}
+                         } catch (SSLHandshakeException ex) {
+			         removeSocket(key);
+                                 throw ex;
+                        } catch (IOException ex) {
+                                 removeSocket(key);
+                                 throw ex;
 			} finally {
 				leaveIOCriticalSection(key);
 			}
