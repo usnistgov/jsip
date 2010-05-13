@@ -700,10 +700,10 @@ public class LexerCore extends StringTokenizer {
      * @return rest of the buffer.
      */
     public String getRest() {
-        if (ptr >= bufferLen)
+        if (ptr > bufferLen)
             return null;
-        else
-            return String.valueOf(buffer, ptr, bufferLen - ptr - 1);
+        else if ( ptr == bufferLen ) return "";
+        else  return String.valueOf(buffer, ptr, bufferLen - ptr - 1);  
     }
 
     /** Get the sub-String until the character is encountered
