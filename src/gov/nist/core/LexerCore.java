@@ -703,7 +703,7 @@ public class LexerCore extends StringTokenizer {
         if (ptr > bufferLen)
             return null;
         else if ( ptr == bufferLen ) return "";
-        else  return String.valueOf(buffer, ptr, bufferLen - ptr - 1);  
+        else  return String.valueOf(buffer, ptr, bufferLen - ptr);  
     }
 
     /** Get the sub-String until the character is encountered
