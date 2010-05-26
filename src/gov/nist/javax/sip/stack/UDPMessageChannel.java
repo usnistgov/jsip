@@ -87,7 +87,7 @@ import javax.sip.address.Hop;
  *
  *
  *
- * @version 1.2 $Revision: 1.72 $ $Date: 2010-05-10 11:32:09 $
+ * @version 1.2 $Revision: 1.73 $ $Date: 2010-05-26 18:38:59 $
  */
 public class UDPMessageChannel extends MessageChannel implements
         ParseExceptionListener, Runnable, RawMessageChannel {
@@ -165,9 +165,10 @@ public class UDPMessageChannel extends MessageChannel implements
      *            is the shared SIPStack structure
      * @param messageProcessor
      *            is the creating message processor.
+     * @param threadName name that will be affected to the underlying thread 
      */
     protected UDPMessageChannel(SIPTransactionStack stack,
-            UDPMessageProcessor messageProcessor) {
+            UDPMessageProcessor messageProcessor, String threadName) {
         super.messageProcessor = messageProcessor;
         this.sipStack = stack;
 
@@ -179,7 +180,7 @@ public class UDPMessageChannel extends MessageChannel implements
         this.myAddress = messageProcessor.getIpAddress().getHostAddress();
         this.myPort = messageProcessor.getPort();
 
-        mythread.setName("UDPMessageChannelThread");
+        mythread.setName(threadName);
         mythread.setDaemon(true);
         mythread.start();
 
