@@ -127,7 +127,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.179 $ $Date: 2010-05-07 18:41:57 $
+ * @version 1.2 $Revision: 1.180 $ $Date: 2010-05-27 14:12:23 $
  * 
  * @author M. Ranganathan
  * 
@@ -448,7 +448,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
                         // resend the last response.
                         if (dialog.toRetransmitFinalResponse(transaction.T2)) {
-                            transaction.resendLastResponseAsBytes();
+                            transaction.resendLastResponseAsBytes(false);
                         }
                     } catch (IOException ex) {
 
@@ -3206,7 +3206,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         }
         SIPServerTransaction sipServerTransaction = (SIPServerTransaction) this
                 .getFirstTransaction();
-        SIPResponse sipResponse = sipServerTransaction.getReliableProvisionalResponse();
+        byte[] sipResponse = sipServerTransaction.getReliableProvisionalResponse();
 
         if (sipResponse == null) {
             if (sipStack.isLoggingEnabled())
@@ -3221,26 +3221,23 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             if (sipStack.isLoggingEnabled())
                 sipStack.getStackLogger().logDebug("Dropping Prack -- rack header not found");
             return false;
-        }
-        CSeq cseq = (CSeq) sipResponse.getCSeq();
+        }        
 
-        if (!rack.getMethod().equals(cseq.getMethod())) {
+        if (!rack.getMethod().equals(sipServerTransaction.getPendingReliableResponseMethod())) {
             if (sipStack.isLoggingEnabled())
                 sipStack.getStackLogger().logDebug(
                         "Dropping Prack -- CSeq Header does not match PRACK");
             return false;
         }
 
-        if (rack.getCSeqNumberLong() != cseq.getSeqNumber()) {
+        if (rack.getCSeqNumberLong() != sipServerTransaction.getPendingReliableCSeqNumber()) {
             if (sipStack.isLoggingEnabled())
                 sipStack.getStackLogger().logDebug(
                         "Dropping Prack -- CSeq Header does not match PRACK");
             return false;
         }
 
-        RSeq rseq = (RSeq) sipResponse.getHeader(RSeqHeader.NAME);
-
-        if (rack.getRSequenceNumber() != rseq.getSeqNumber()) {
+        if (rack.getRSequenceNumber() != sipServerTransaction.getPendingReliableRSeqNumber()) {
             if (sipStack.isLoggingEnabled())
                 sipStack.getStackLogger().logDebug(
                         "Dropping Prack -- RSeq Header does not match PRACK");

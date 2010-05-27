@@ -145,7 +145,7 @@ import javax.sip.message.Response;
  *                                                   |                     |send response      |
  *                                                   |  Request            V                   |
  *                                                   |  send response+-----------+             |
- *                                                   |      +--------|           |             |
+ *                                         	         |      +--------|           |             |
  *                                                   |      |        | Completed |&lt;------------+
  *                                                   |      +-------&gt;|           |
  *                                                   +&lt;--------------|           |
@@ -167,7 +167,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.126 $ $Date: 2010-05-07 18:41:57 $
+ * @version 1.2 $Revision: 1.127 $ $Date: 2010-05-27 14:12:22 $
  * @author M. Ranganathan
  *
  */
@@ -191,7 +191,12 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
     // the unacknowledged SIPResponse
 
-    private SIPResponse pendingReliableResponse;
+//    private SIPResponse pendingReliableResponse;
+    // wondering if the pendingReliableResponseAsBytes could be put into the lastResponseAsBytes
+    private byte[] pendingReliableResponseAsBytes;
+    private String pendingReliableResponseMethod;
+    private long pendingReliableCSeqNumber;
+    private long pendingReliableRSeqNumber;
 
     // The pending reliable Response Timer
     private ProvisionalResponseTask provisionalResponseTask;
@@ -995,13 +1000,8 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                          * state. The server transaction remains in this state until Timer J
                          * fires, at which point it MUST transition to the "Terminated" state.
                          */
-                        enableTimeoutTimer(TIMER_J);                        
-//                        sipStack.getTimer().schedule(new SIPStackTimerTask () {                        	
-//                            
-//                            public void runTask() {
-//                                fireTimeoutTimer();
-//                            }
-//                        }, TIMER_J * T1 * BASE_TIMER_INTERVAL);
+//                        enableTimeoutTimer(TIMER_J);                          
+                        startTransactionTimerJ();
                         cleanUpOnTimer();
                     } else {
                     	cleanUpOnTimer();
@@ -1097,20 +1097,15 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                          * transports, timer G is set to fire in T1 seconds, and is not set to
                          * fire for reliable transports.
                          */
-
                         enableRetransmissionTimer();
-
                     }
                     cleanUpOnTimer();
                     enableTimeoutTimer(TIMER_H);
-
                 }
-
                 // If the transaction is not an invite transaction
                 // and this is a final response,
             } else if (200 <= statusCode && statusCode <= 699) {
                 // This is for Non-invite server transactions.
-
                 // Set up to retransmit this response,
                 // or terminate the transaction
                 this.setState(TransactionState._COMPLETED);
@@ -1118,24 +1113,14 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
                     disableRetransmissionTimer();
 //                    enableTimeoutTimer(TIMER_J);
-                    sipStack.getTimer().schedule(new SIPStackTimerTask () {                        	
-                        
-                        public void runTask() {
-                            fireTimeoutTimer();
-                        }
-                    }, TIMER_J * T1 * BASE_TIMER_INTERVAL);
+                    startTransactionTimerJ();
                 } else {
-
                     this.setState(TransactionState._TERMINATED);
-
                 }
                 cleanUpOnTimer();
-
             }
-
             // If the transaction has already completed,
         } else if (TransactionState._COMPLETED == this.getRealState()) {
-
             return false;
         }
         return true;
@@ -1169,7 +1154,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                 if (!this.retransmissionAlertEnabled || sipStack.isTransactionPendingAck(this) ) {
                     // Retransmit last response until ack.
                 	if (lastResponseStatusCode / 100 >= 2 && !this.isAckSeen) {
-	                    resendLastResponseAsBytes();
+	                    resendLastResponseAsBytes(false);
                     }
                 } else {
                     // alert the application to retransmit the last response
@@ -1191,40 +1176,44 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
     // jeand we nullify the last response very fast to save on mem and help GC but we keep it as byte array
     // so this method is used to resend the last response either as a response or byte array depending on if it has been nullified
-    public void resendLastResponseAsBytes() throws IOException {
+    public void resendLastResponseAsBytes(boolean reliable) throws IOException {
 	
-    	if(lastResponse != null) {
-    		sendMessage(lastResponse);
-        } else if (lastResponseAsBytes != null) {
-            // Send the message to the client
-	    	if(!checkStateTimers(lastResponseStatusCode)) {
-	        	return;
+    	if(!reliable) {
+	    	if(lastResponse != null) {
+	    		sendMessage(lastResponse);
+	        } else if (lastResponseAsBytes != null) {
+	            // Send the message to the client
+		    	if(!checkStateTimers(lastResponseStatusCode)) {
+		        	return;
+		        }
+		    	if(isReliable()) {
+		    		getMessageChannel().sendMessage(lastResponseAsBytes, this.getPeerInetAddress(), this.getPeerPort(), false);
+		    	} else {
+		    		Hop hop = sipStack.addressResolver.resolveAddress(new HopImpl(lastResponseHost, lastResponsePort,
+		                    lastResponseTransport));
+		
+		            MessageChannel messageChannel = ((SIPTransactionStack) getSIPStack())
+		                    .createRawMessageChannel(this.getSipProvider().getListeningPoint(
+		                            hop.getTransport()).getIPAddress(), this.getPort(), hop);
+		            if (messageChannel != null) {
+		                messageChannel.sendMessage(lastResponseAsBytes, InetAddress.getByName(hop.getHost()), hop.getPort(), false);                                
+		            } else {
+		                throw new IOException("Could not create a message channel for " + hop + " with source IP:Port "+
+		                		this.getSipProvider().getListeningPoint(
+		                                hop.getTransport()).getIPAddress() + ":" + this.getPort());
+		            }                    		
+		    	}
 	        }
-	    	if(isReliable()) {
-	    		getMessageChannel().sendMessage(lastResponseAsBytes, this.getPeerInetAddress(), this.getPeerPort(), false);
-	    	} else {
-	    		Hop hop = sipStack.addressResolver.resolveAddress(new HopImpl(lastResponseHost, lastResponsePort,
-	                    lastResponseTransport));
-	
-	            MessageChannel messageChannel = ((SIPTransactionStack) getSIPStack())
-	                    .createRawMessageChannel(this.getSipProvider().getListeningPoint(
-	                            hop.getTransport()).getIPAddress(), this.getPort(), hop);
-	            if (messageChannel != null) {
-	                messageChannel.sendMessage(lastResponseAsBytes, InetAddress.getByName(hop.getHost()), hop.getPort(), false);                                
-	            } else {
-	                throw new IOException("Could not create a message channel for " + hop + " with source IP:Port "+
-	                		this.getSipProvider().getListeningPoint(
-	                                hop.getTransport()).getIPAddress() + ":" + this.getPort());
-	            }                    		
-	    	}
-        }
+    	} else {
+    		getMessageChannel().sendMessage(pendingReliableResponseAsBytes, this.getPeerInetAddress(), this.getPeerPort(), false);
+    	}
 		
 	}
 
 	private void fireReliableResponseRetransmissionTimer() {
         try {
-
-            super.sendMessage(this.pendingReliableResponse);
+        	resendLastResponseAsBytes(true);
+//            super.sendMessage(this.pendingReliableResponse);
 
         } catch (IOException e) {
             if (sipStack.isLoggingEnabled())
@@ -1385,7 +1374,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
              * response until those provisional responses are acknowledged.
              */
         	final ContentTypeHeader contentTypeHeader = ((SIPResponse)response).getContentTypeHeader();
-            if (this.pendingReliableResponse != null
+            if (this.pendingReliableResponseAsBytes != null
                     && this.getDialog() != null 
                     && this.getInternalState() != TransactionState._TERMINATED
                     && statusCode / 100 == 2
@@ -1411,7 +1400,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
             } else {
                 // Sending the final response cancels the
                 // pending response task.
-                if (this.pendingReliableResponse != null && sipResponse.isFinalResponse()) {
+                if (this.pendingReliableResponseAsBytes != null && sipResponse.isFinalResponse()) {
                 	sipStack.getTimer().cancel(provisionalResponseTask);                   
                     this.provisionalResponseTask = null;
                 } 
@@ -1565,18 +1554,46 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
      * Start the timer task.
      */
     protected void startTransactionTimer() {
-//    	if(getMethod().equalsIgnoreCase(Request.INVITE) || getMethod().equalsIgnoreCase(Request.CANCEL) || getMethod().equalsIgnoreCase(Request.ACK)) {
+    	if(getMethod().equalsIgnoreCase(Request.INVITE) || getMethod().equalsIgnoreCase(Request.CANCEL) || getMethod().equalsIgnoreCase(Request.ACK)) {
 	        if (this.transactionTimerStarted.compareAndSet(false, true)) {
 	        	if (sipStack.getTimer() != null) {
 	                // The timer is set to null when the Stack is
 	                // shutting down.
 	                SIPStackTimerTask myTimer = new TransactionTimer();
-	//                sipStack.getTimer().schedule(myTimer, BASE_TIMER_INTERVAL);
+//	                sipStack.getTimer().schedule(myTimer, BASE_TIMER_INTERVAL);
 	                sipStack.getTimer().scheduleWithFixedDelay(myTimer, BASE_TIMER_INTERVAL, BASE_TIMER_INTERVAL);
 	                myTimer = null;
 	            }
 	        }        
-//    	}
+    	}
+    }
+    
+    /**
+     * Start the timer task.
+     */
+    protected void startTransactionTimerJ() {
+	        if (this.transactionTimerStarted.compareAndSet(false, true)) {
+	        	if (sipStack.getTimer() != null) {
+	        		if (sipStack.isLoggingEnabled()) {
+	                    sipStack.getStackLogger().logDebug("starting TransactionTimerJ() : " + getTransactionId());
+	                }
+	                // The timer is set to null when the Stack is
+	                // shutting down.
+	        		 sipStack.getTimer().schedule(new SIPStackTimerTask () {                        	                         	        			 
+	        			 
+                         public void runTask() {
+                        	 if (sipStack.isLoggingEnabled()) {
+         	                    sipStack.getStackLogger().logDebug("executing TransactionTimerJ() : " + getTransactionId());
+         	                 }
+                             fireTimeoutTimer();
+                             cleanUp();
+                             if(originalRequest != null) {
+                             	originalRequest.cleanUp();
+                             }
+                         }
+                     }, TIMER_J * T1 * BASE_TIMER_INTERVAL);
+	            }
+	        }        
     }
 
     public boolean equals(Object other) {
@@ -1651,11 +1668,15 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
          * UAS MAY send additional reliable provisional responses. The UAS MUST NOT send a second
          * reliable provisional response until the first is acknowledged.
          */
-        if (this.pendingReliableResponse != null) {
+        if (this.pendingReliableResponseAsBytes != null) {
             throw new SipException("Unacknowledged response");
 
-        } else
-            this.pendingReliableResponse = (SIPResponse) relResponse;
+        } else {
+        	SIPResponse reliableResponse = (SIPResponse) relResponse;
+            this.pendingReliableResponseAsBytes = reliableResponse.encodeAsBytes(this.getTransport());
+            this.pendingReliableResponseMethod = reliableResponse.getCSeq().getMethod();
+            this.pendingReliableCSeqNumber = reliableResponse.getCSeq().getSeqNumber();                                    
+        }
         /*
          * In addition, it MUST contain a Require header field containing the option tag 100rel,
          * and MUST include an RSeq header field.
@@ -1663,7 +1684,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
         RSeq rseq = (RSeq) relResponse.getHeader(RSeqHeader.NAME);
         if (relResponse.getHeader(RSeqHeader.NAME) == null) {
             rseq = new RSeq();
-            relResponse.setHeader(rseq);
+            relResponse.setHeader(rseq);            
         }
 
         try {
@@ -1672,6 +1693,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
         	}
             this.rseqNumber++;
             rseq.setSeqNumber(this.rseqNumber);
+            this.pendingReliableRSeqNumber = rseq.getSeqNumber();
 
             // start the timer task which will retransmit the reliable response
             // until the PRACK is received. Cannot send a second provisional. 
@@ -1694,9 +1716,9 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
     }
 
-    public SIPResponse getReliableProvisionalResponse() {
+    public byte[] getReliableProvisionalResponse() {
 
-        return this.pendingReliableResponse;
+        return this.pendingReliableResponseAsBytes;
     }
 
     /**
@@ -1707,14 +1729,14 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
      */
     public boolean prackRecieved() {
 
-        if (this.pendingReliableResponse == null)
+        if (this.pendingReliableResponseAsBytes == null)
             return false;
        	if(provisionalResponseTask != null) {
        		sipStack.getTimer().cancel(provisionalResponseTask);
            	this.provisionalResponseTask = null;
        	} 
         
-        this.pendingReliableResponse = null;
+        this.pendingReliableResponseAsBytes = null;
         if ( interlockProvisionalResponses && getDialog() != null )  {
             this.provisionalResponseSem.release();
         }
@@ -1927,12 +1949,34 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 	    		lastResponseAsBytes = lastResponse.encodeAsBytes(this.getTransport());
 	    		lastResponse = null;
 	    	}
-	    	pendingReliableResponse = null;
+	    	pendingReliableResponseAsBytes = null;
+	    	pendingReliableResponseMethod = null;
 	    	pendingSubscribeTransaction = null;
 	    	provisionalResponseSem = null;    	
 	    	retransmissionAlertTimerTask = null;
 	    	requestOf = null;
 	        messageProcessor = null;
     	}
-    }	
+    }
+
+	/**
+	 * @return the pendingReliableResponseMethod
+	 */
+	public String getPendingReliableResponseMethod() {
+		return pendingReliableResponseMethod;
+	}
+
+	/**
+	 * @return the pendingReliableCSeqNumber
+	 */
+	public long getPendingReliableCSeqNumber() {
+		return pendingReliableCSeqNumber;
+	}
+
+	/**
+	 * @return the pendingReliableRSeqNumber
+	 */
+	public long getPendingReliableRSeqNumber() {
+		return pendingReliableRSeqNumber;
+	}	
 }
