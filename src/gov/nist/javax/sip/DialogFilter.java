@@ -81,7 +81,7 @@ import javax.sip.message.Response;
  * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
  * and event model with the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.77 $ $Date: 2010-05-11 20:40:40 $
+ * @version 1.2 $Revision: 1.78 $ $Date: 2010-05-27 19:37:32 $
  * 
  * @author M. Ranganathan
  */
@@ -257,7 +257,6 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
      * @exception SIPServerException is thrown when there is an error processing the request.
      */
     public void processRequest(SIPRequest sipRequest, MessageChannel incomingMessageChannel) {
-    	try {
 	        // Generate the wrapper JAIN-SIP object.
 	        if (sipStack.isLoggingEnabled( LogLevels.TRACE_DEBUG ) && listeningPoint!=null)
 	            sipStack.getStackLogger().logDebug(
@@ -1135,9 +1134,6 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 	            }
 	        }
 	        sipProvider.handleEvent(sipEvent, transaction);
-    	} finally {
-    		listeningPoint = null;
-    	}
 
     }
 
@@ -1149,7 +1145,6 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
      */
     public void processResponse(SIPResponse response, MessageChannel incomingMessageChannel,
             SIPDialog dialog) {
-    	try {
 	        if (sipStack.isLoggingEnabled()) {
 	            sipStack.getStackLogger().logDebug(
 	                    "PROCESSING INCOMING RESPONSE" + response.encodeMessage(new StringBuilder()));
@@ -1279,9 +1274,6 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 	        }
 	
 	        sipProvider.handleEvent(responseEvent, transaction);
-    	} finally {
-    		listeningPoint = null;
-    	}
     }
 
     /**
@@ -1302,7 +1294,6 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
      *      gov.nist.javax.sip.stack.MessageChannel)
      */
     public void processResponse(SIPResponse sipResponse, MessageChannel incomingChannel) {
-    	try {
 	        String dialogID = sipResponse.getDialogId(false);
 	        SIPDialog sipDialog = this.sipStack.getDialog(dialogID);
 	
@@ -1468,9 +1459,6 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 	        }
 	
 	        sipProvider.handleEvent(responseEvent, transaction);
-    	} finally {
-    		listeningPoint = null;
-    	}
 
     }
 }
