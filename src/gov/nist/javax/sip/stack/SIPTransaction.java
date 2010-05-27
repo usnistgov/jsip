@@ -28,6 +28,7 @@ package gov.nist.javax.sip.stack;
 import gov.nist.core.InternalErrorHandler;
 import gov.nist.javax.sip.SIPConstants;
 import gov.nist.javax.sip.SipProviderImpl;
+import gov.nist.javax.sip.SipStackImpl;
 import gov.nist.javax.sip.address.AddressFactoryImpl;
 import gov.nist.javax.sip.header.Via;
 import gov.nist.javax.sip.message.SIPMessage;
@@ -49,6 +50,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -74,7 +77,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.76 $ $Date: 2010-05-06 14:08:10 $
+ * @version 1.2 $Revision: 1.77 $ $Date: 2010-05-27 19:37:31 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -132,7 +135,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 
     protected boolean isMapped;
 
-    private Semaphore semaphore;
+    private TransactionSemaphore semaphore;
 
     // protected boolean eventPending; // indicate that an event is pending
     // here.
@@ -271,6 +274,64 @@ public abstract class SIPTransaction extends MessageChannel implements
         return this.branch;
     }
 
+    class TransactionSemaphore {
+        
+        Semaphore sem = null;
+        Lock lock = null;
+        
+        public TransactionSemaphore() {
+            if(((SipStackImpl)getSIPStack()).isReEntrantListener()) {
+                lock = new ReentrantLock();
+            } else {
+                sem = new Semaphore(1, true);
+            }
+        }
+        
+        public boolean acquire() {
+            try {
+                if(((SipStackImpl)getSIPStack()).isReEntrantListener()) {
+                    lock.lock();
+                } else {
+                    sem.acquire();
+                }
+                return true;
+            } catch (Exception ex) {
+                sipStack.getStackLogger().logError("Unexpected exception acquiring sem",
+                        ex);
+                InternalErrorHandler.handleException(ex);
+                return false;
+            }        
+        }
+        
+        public boolean tryAcquire() {
+            try {
+                if(((SipStackImpl)getSIPStack()).isReEntrantListener()) {
+                    return lock.tryLock(sipStack.maxListenerResponseTime, TimeUnit.SECONDS);
+                } else {
+                    return sem.tryAcquire(sipStack.maxListenerResponseTime, TimeUnit.SECONDS);
+                }                
+            } catch (Exception ex) {
+                sipStack.getStackLogger().logError("Unexpected exception trying acquiring sem",
+                        ex);
+                InternalErrorHandler.handleException(ex);
+                return false;
+            }        
+        }
+        
+        public void release() {
+            try {
+                if(((SipStackImpl)getSIPStack()).isReEntrantListener()) {
+                    lock.unlock();
+                } else {
+                    sem.release();
+                }                
+            } catch (Exception ex) {
+                sipStack.getStackLogger().logError("Unexpected exception releasing sem",
+                                ex);
+            }        
+        }
+    }
+    
     /**
      * The linger timer is used to remove the transaction from the transaction
      * table after it goes into terminated state. This allows connection caching
@@ -306,7 +367,7 @@ public abstract class SIPTransaction extends MessageChannel implements
             MessageChannel newEncapsulatedChannel) {
 
         sipStack = newParentStack;
-        this.semaphore = new Semaphore(1,true);
+        this.semaphore = new TransactionSemaphore();
         
         encapsulatedChannel = newEncapsulatedChannel;
         // Record this to check if the address has changed before sending
@@ -1125,28 +1186,21 @@ public abstract class SIPTransaction extends MessageChannel implements
      */
     public boolean acquireSem() {
         boolean retval = false;
-        try {
-            if (sipStack.getStackLogger().isLoggingEnabled()) {
-                sipStack.getStackLogger().logDebug("acquireSem [[[[" + this);
-                sipStack.getStackLogger().logStackTrace();
-            }
-            if ( this.sipStack.maxListenerResponseTime == -1 ) {
-                this.semaphore.acquire();
-                retval = true;
-            } else {
-                retval = this.semaphore.tryAcquire(this.sipStack.maxListenerResponseTime, TimeUnit.SECONDS);
-            }
-            if ( sipStack.isLoggingEnabled())
-                sipStack.getStackLogger().logDebug(
-                    "acquireSem() returning : " + retval);
-            return retval;
-        } catch (Exception ex) {
-            sipStack.getStackLogger().logError("Unexpected exception acquiring sem",
-                    ex);
-            InternalErrorHandler.handleException(ex);
-            return false;
+        if (sipStack.getStackLogger().isLoggingEnabled()) {
+            sipStack.getStackLogger().logDebug("acquireSem [[[[" + this);
+            sipStack.getStackLogger().logStackTrace();
         }
+        if ( this.sipStack.maxListenerResponseTime == -1 ) {
+            retval = this.semaphore.acquire();            
+        } else {
+            retval = this.semaphore.tryAcquire();
+        }
+        if ( sipStack.isLoggingEnabled())
+            sipStack.getStackLogger().logDebug(
+                "acquireSem() returning : " + retval);
+        return retval;
     }
+        
 
     /**
      * Release the transaction semaphore.
@@ -1167,18 +1221,11 @@ public abstract class SIPTransaction extends MessageChannel implements
     }
 
     protected void semRelease() {
-        try {
-            if (sipStack.isLoggingEnabled()) {
-                sipStack.getStackLogger().logDebug("semRelease ]]]]" + this);
-                sipStack.getStackLogger().logStackTrace();
-            }
-            this.semaphore.release();
-
-        } catch (Exception ex) {
-            sipStack.getStackLogger().logError("Unexpected exception releasing sem",
-                    ex);
-
+        if (sipStack.isLoggingEnabled()) {
+            sipStack.getStackLogger().logDebug("semRelease ]]]]" + this);
+            sipStack.getStackLogger().logStackTrace();
         }
+        this.semaphore.release();
     }
 
     /**
