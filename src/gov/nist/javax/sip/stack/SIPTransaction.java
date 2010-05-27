@@ -77,7 +77,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.77 $ $Date: 2010-05-27 19:37:31 $
+ * @version 1.2 $Revision: 1.78 $ $Date: 2010-05-27 19:43:24 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -274,6 +274,11 @@ public abstract class SIPTransaction extends MessageChannel implements
         return this.branch;
     }
 
+    // [Issue 284] https://jain-sip.dev.java.net/issues/show_bug.cgi?id=284
+    // JAIN SIP drops 200 OK due to race condition
+    // Wrapper that uses a semaphore for non reentrant listener
+    // and a lock for reetrant listener to avoid race conditions 
+    // when 2 responses 180/200 OK arrivesat the same time
     class TransactionSemaphore {
         
         Semaphore sem = null;
