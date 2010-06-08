@@ -29,6 +29,7 @@
 
 package gov.nist.javax.sip;
 
+import gov.nist.core.LogLevels;
 import gov.nist.javax.sip.stack.*;
 import gov.nist.javax.sip.message.*;
 import javax.sip.*;
@@ -42,7 +43,7 @@ import javax.sip.*;
  * messageChannel, the NIST-SIP stack calls the SIPStackMessageFactory
  * implementation that has been registered with it to process the request.)
  * 
- * @version 1.2 $Revision: 1.16 $ $Date: 2010-05-06 14:08:07 $
+ * @version 1.2 $Revision: 1.17 $ $Date: 2010-06-08 20:30:35 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -80,7 +81,7 @@ class NistSipMessageFactoryImpl implements StackMessageFactory {
                 .getListeningPoint();
         if (retval.listeningPoint == null)
             return null;
-        if (sipStack.isLoggingEnabled())
+        if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG))
             sipStack.getStackLogger().logDebug(
                     "Returning request interface for "
                             + sipRequest.getFirstLine() + " " + retval
@@ -104,7 +105,7 @@ class NistSipMessageFactoryImpl implements StackMessageFactory {
         // Tr is null if a transaction is not mapped.
         SIPTransaction tr = (SIPTransaction) ((SIPTransactionStack) theStack)
                 .findTransaction(sipResponse, false);
-        if (sipStack.isLoggingEnabled())
+        if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG))
             sipStack.getStackLogger().logDebug(
                     "Found Transaction " + tr + " for " + sipResponse);
 
@@ -114,14 +115,14 @@ class NistSipMessageFactoryImpl implements StackMessageFactory {
             // spurious response. This was moved up from the transaction
             // layer for efficiency.
             if (tr.getInternalState() < 0) {
-                if (sipStack.isLoggingEnabled())
+                if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG))
                     sipStack.getStackLogger().logDebug(
                             "Dropping response - null transaction state");
                 return null;
                 // Ignore 1xx
             } else if (TransactionState._COMPLETED == tr.getInternalState()
                     && sipResponse.getStatusCode() / 100 == 1) {
-                if (sipStack.isLoggingEnabled())
+                if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG))
                     sipStack.getStackLogger().logDebug(
                             "Dropping response - late arriving "
                                     + sipResponse.getStatusCode());

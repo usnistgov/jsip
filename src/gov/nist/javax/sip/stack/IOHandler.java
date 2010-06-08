@@ -28,6 +28,7 @@
  *******************************************************************************/
 package gov.nist.javax.sip.stack;
 
+import gov.nist.core.LogWriter;
 import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.SipStackImpl;
 
@@ -186,7 +187,7 @@ class IOHandler {
 		int max_retry = retry ? 2 : 1;
 		// Server uses TCP transport. TCP client sockets are cached
 		int length = bytes.length;
-		if (sipStack.isLoggingEnabled()) {
+		if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 			sipStack.getStackLogger().logDebug(
 					"sendBytes " + transport + " inAddr "
 							+ receiverAddress.getHostAddress() + " port = "
@@ -209,7 +210,7 @@ class IOHandler {
 				clientSock = getSocket(key);
 				while (retry_count < max_retry) {
 					if (clientSock == null) {
-						if (sipStack.isLoggingEnabled()) {
+						if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 							sipStack.getStackLogger().logDebug(
 									"inaddr = " + receiverAddress);
 							sipStack.getStackLogger().logDebug(
@@ -235,8 +236,8 @@ class IOHandler {
 							writeChunks(outputStream, bytes, length);
 							break;
 						} catch (IOException ex) {
-							if (sipStack.isLoggingEnabled())
-								sipStack.getStackLogger().logDebug(
+							if (sipStack.isLoggingEnabled(LogWriter.TRACE_ERROR))
+								sipStack.getStackLogger().logWarning(
 										"IOException occured retryCount "
 												+ retry_count);
 							// old connection is bad.
@@ -260,7 +261,7 @@ class IOHandler {
 
 			if (clientSock == null) {
 
-				if (sipStack.isLoggingEnabled()) {
+				if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 					sipStack.getStackLogger().logDebug(
 							this.socketTable.toString());
 					sipStack.getStackLogger().logError(
@@ -291,7 +292,7 @@ class IOHandler {
 										senderAddress);
 						SSLSocket sslsock = (SSLSocket) clientSock;
 
-						if (sipStack.isLoggingEnabled()) {
+						if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 							sipStack.getStackLogger().logDebug(
 									"inaddr = " + receiverAddress);
 							sipStack.getStackLogger().logDebug(
@@ -305,7 +306,7 @@ class IOHandler {
 						sslsock.setEnabledProtocols(sipStack
 								.getEnabledProtocols());
 						sslsock.startHandshake();
-						if (sipStack.isLoggingEnabled()) {
+						if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 							this.sipStack.getStackLogger().logDebug(
 									"Handshake passed");
 						}
@@ -322,7 +323,7 @@ class IOHandler {
 							throw new IOException(ex.getMessage());
 						}
 
-						if (sipStack.isLoggingEnabled()) {
+						if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 							this.sipStack.getStackLogger().logDebug(
 									"TLS Security policy passed");
 						}

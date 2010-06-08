@@ -30,6 +30,7 @@ package gov.nist.javax.sip.stack;
 
 import gov.nist.core.HostPort;
 import gov.nist.core.InternalErrorHandler;
+import gov.nist.core.LogWriter;
 import gov.nist.core.ThreadAuditor;
 
 import java.io.IOException;
@@ -48,7 +49,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size).
  * Each UDP message is processed in its own thread).
  *
- * @version 1.2 $Revision: 1.40 $ $Date: 2010-05-26 18:38:59 $
+ * @version 1.2 $Revision: 1.41 $ $Date: 2010-06-08 20:30:32 $
  *
  * @author M. Ranganathan  <br/>
  *
@@ -211,7 +212,7 @@ public class UDPMessageProcessor extends MessageProcessor {
              // port and IP address.
              if ( sipStack.stackDoesCongestionControl ) {  
             	 if ( this.messageQueue.size() >= HIGHWAT) {
-            		 if (sipStack.isLoggingEnabled()) {
+            		 if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             			 sipStack.getStackLogger().logDebug("Dropping message -- queue length exceeded");
             		 }
             		 //System.out.println("HIGHWAT Drop!");
@@ -221,7 +222,7 @@ public class UDPMessageProcessor extends MessageProcessor {
             		 float threshold = ((float)(messageQueue.size() - LOWAT))/ ((float)(HIGHWAT - LOWAT));
             		 boolean decision = Math.random() > 1.0 - threshold;
             		 if ( decision ) {
-            			 if (sipStack.isLoggingEnabled()) {
+            			 if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                             sipStack.getStackLogger().logDebug("Dropping message with probability  " + (1.0 - threshold));
 
             			 }
@@ -243,34 +244,25 @@ public class UDPMessageProcessor extends MessageProcessor {
                     // notify below.
 
                     this.messageQueue.offer(packet);                 
-//                    synchronized (messageQueue) {
-                          // was addLast   
-//                    	  this.messageQueue.add(packet);
-//                        this.messageQueue.notify();
-//                    }
+
                 } else {
                     new UDPMessageChannel(sipStack, this, packet);
                 }
             } catch (SocketTimeoutException ex) {
               // This socket timeout alows us to ping the thread auditor periodically
             } catch (SocketException ex) {
-                if (sipStack.isLoggingEnabled())
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                     getSIPStack().getStackLogger()
                             .logDebug("UDPMessageProcessor: Stopping");
                 isRunning = false;
-                // The notifyAll should be in a synchronized block.
-                // ( bug report by Niklas Uhrberg ).
-//                synchronized (messageQueue) {
-//                    this.messageQueue.notifyAll();
-//                }
             } catch (IOException ex) {
                 isRunning = false;
                 ex.printStackTrace();
-                if (sipStack.isLoggingEnabled())
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                     getSIPStack().getStackLogger()
                             .logDebug("UDPMessageProcessor: Got an IO Exception");
             } catch (Exception ex) {
-                if (sipStack.isLoggingEnabled())
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                     getSIPStack().getStackLogger()
                             .logDebug("UDPMessageProcessor: Unexpected Exception - quitting");
                 InternalErrorHandler.handleException(ex);

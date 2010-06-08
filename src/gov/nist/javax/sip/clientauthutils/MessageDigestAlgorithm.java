@@ -1,5 +1,6 @@
 package gov.nist.javax.sip.clientauthutils;
 
+import gov.nist.core.LogWriter;
 import gov.nist.core.StackLogger;
 
 import java.security.MessageDigest;
@@ -39,7 +40,7 @@ public class MessageDigestAlgorithm {
             String nonce_value, String nc_value, String cnonce_value,
             String method, String digest_uri_value, String entity_body, String qop_value,
             StackLogger stackLogger)  {
-        if (stackLogger.isLoggingEnabled()) {
+        if (stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             stackLogger.logDebug("trying to authenticate using : " + algorithm + ", "+
                     hashUserNameRealmPasswd + ", " + nonce_value + ", "
                     + nc_value + ", " + cnonce_value + ", " + method + ", " + digest_uri_value
@@ -115,7 +116,7 @@ public class MessageDigestAlgorithm {
             String passwd, String nonce_value, String nc_value, String cnonce_value,
             String method, String digest_uri_value, String entity_body, String qop_value,
             StackLogger stackLogger) {
-        if (stackLogger.isLoggingEnabled()) {
+        if (stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             stackLogger.logDebug("trying to authenticate using : " + algorithm + ", "
                     + username_value + ", " + realm_value + ", "
                     + (passwd != null && passwd.trim().length() > 0) + ", " + nonce_value + ", "
