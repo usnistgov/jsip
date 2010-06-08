@@ -1,5 +1,6 @@
 package gov.nist.javax.sip.stack.sctp;
 
+import gov.nist.core.LogWriter;
 import gov.nist.core.ServerLogger;
 import gov.nist.javax.sip.header.CSeq;
 import gov.nist.javax.sip.header.CallID;
@@ -187,7 +188,7 @@ final class SCTPMessageChannel extends MessageChannel
 		
 		// XX ignoring 'reconnect' for now
 		int nBytes = channel.send( ByteBuffer.wrap(message), messageInfo );
-		if ( getSIPStack().getStackLogger().isLoggingEnabled( ServerLogger.TRACE_DEBUG ) ) {
+		if ( getSIPStack().getStackLogger().isLoggingEnabled( LogWriter.TRACE_DEBUG ) ) {
 			getSIPStack().getStackLogger().logDebug( "SCTP bytes sent:" + nBytes );
 		}
 	}
@@ -203,7 +204,7 @@ final class SCTPMessageChannel extends MessageChannel
 		MessageInfo info = channel.receive( rxBuffer, null, null );
 		if (info==null) {
 			// happens a lot, some sort of keep-alive?
-			if ( getSIPStack().getStackLogger().isLoggingEnabled( ServerLogger.TRACE_DEBUG ) ) {
+			if ( getSIPStack().getStackLogger().isLoggingEnabled( LogWriter.TRACE_DEBUG ) ) {
 				getSIPStack().getStackLogger().logDebug( "SCTP read-event but no message" );
 			}
 			return;
@@ -212,12 +213,12 @@ final class SCTPMessageChannel extends MessageChannel
 			this.close();
 			return;
 		} else if ( !info.isComplete() ) {
-			if ( getSIPStack().getStackLogger().isLoggingEnabled( ServerLogger.TRACE_DEBUG ) ) {
+			if ( getSIPStack().getStackLogger().isLoggingEnabled( LogWriter.TRACE_DEBUG ) ) {
 				getSIPStack().getStackLogger().logDebug( "SCTP incomplete message; bytes=" + info.bytes() );
 			}
 			return;
 		} else {
-			if ( getSIPStack().getStackLogger().isLoggingEnabled( ServerLogger.TRACE_DEBUG ) ) {
+			if ( getSIPStack().getStackLogger().isLoggingEnabled( LogWriter.TRACE_DEBUG ) ) {
 				getSIPStack().getStackLogger().logDebug( "SCTP message now complete; bytes=" + info.bytes() );
 			}			
 		}
@@ -233,7 +234,7 @@ final class SCTPMessageChannel extends MessageChannel
 			rxTime = 0;	// reset for next message
 		} catch (ParseException e) {
 			getSIPStack().getStackLogger().logException( e );
-			if ( getSIPStack().getStackLogger().isLoggingEnabled( ServerLogger.TRACE_DEBUG ) ) {
+			if ( getSIPStack().getStackLogger().isLoggingEnabled( LogWriter.TRACE_DEBUG ) ) {
 				getSIPStack().getStackLogger().logDebug( "Invalid message bytes=" + msg.length + ":" + new String(msg) );
 			}
 			this.close();
@@ -272,9 +273,10 @@ final class SCTPMessageChannel extends MessageChannel
 
                 return;
             }
-            if (sipStack.isLoggingEnabled())
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                 sipStack.getStackLogger().logDebug("About to process "
                         + sipRequest.getFirstLine() + "/" + sipServerRequest);
+            }
             try {
                 sipServerRequest.processRequest(sipRequest, this);
             } finally {
@@ -285,7 +287,7 @@ final class SCTPMessageChannel extends MessageChannel
                     }
                 }
             }
-            if (sipStack.isLoggingEnabled())
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                 sipStack.getStackLogger().logDebug("Done processing "
                         + sipRequest.getFirstLine() + "/" + sipServerRequest);
 
@@ -328,7 +330,7 @@ final class SCTPMessageChannel extends MessageChannel
 
                 // Normal processing of message.
             } else {
-                if (sipStack.isLoggingEnabled()) {
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                     sipStack.getStackLogger().logDebug("null sipServerResponse!");
                 }
             }

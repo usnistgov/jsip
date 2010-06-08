@@ -29,6 +29,7 @@
 package gov.nist.javax.sip.stack;
 
 import gov.nist.core.InternalErrorHandler;
+import gov.nist.core.LogWriter;
 import gov.nist.core.NameValueList;
 import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.DialogExt;
@@ -127,7 +128,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.180 $ $Date: 2010-05-27 14:12:23 $
+ * @version 1.2 $Revision: 1.181 $ $Date: 2010-06-08 20:30:34 $
  * 
  * @author M. Ranganathan
  * 
@@ -371,14 +372,14 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                         Thread.sleep(SIPDialog.this.reInviteWaitTime);
                     }
                 } catch (InterruptedException ex) {
-                	if (sipStack.isLoggingEnabled())
+                	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                 		sipStack.getStackLogger().logDebug("Interrupted sleep");
                     return;
                 }
                 if (SIPDialog.this.getState() != DialogState.TERMINATED) {
                     SIPDialog.this.sendRequest(ctx, true);
                 }
-                if (sipStack.isLoggingEnabled())
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                 	sipStack.getStackLogger().logDebug("re-INVITE successfully sent");
             } catch (Exception ex) {
                 sipStack.getStackLogger().logError("Error sending re-INVITE", ex);
@@ -419,7 +420,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             // If I ACK has not been seen on Dialog,
             // resend last response.
             SIPDialog dialog = SIPDialog.this;
-            if (sipStack.isLoggingEnabled())
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                 sipStack.getStackLogger().logDebug("Running dialog timer");
             nRetransmissions++;
             SIPServerTransaction transaction = this.transaction;
@@ -463,7 +464,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                         // Note that this firing also
                         // drives Listener timeout.
                         SIPTransactionStack stack = dialog.sipStack;
-                        if (stack.isLoggingEnabled()) {
+                        if (stack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                             stack.getStackLogger().logDebug("resend 200 response from " + dialog);
                         }
                         transaction.fireTimer();
@@ -613,7 +614,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         this.isBackToBackUserAgent = sipStack.isBackToBackUserAgent;
         
         this.addTransaction(transaction);
-        if (sipStack.isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             sipStack.getStackLogger().logDebug("Creating a dialog : " + this);
             sipStack.getStackLogger().logDebug(
                     "provider port = " + this.sipProvider.getListeningPoint().getPort());
@@ -652,7 +653,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         this.method = sipResponse.getCSeq().getMethod();
         this.callIdHeader = sipResponse.getCallId();
         this.serverTransactionFlag = false;
-        if (sipStack.isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             sipStack.getStackLogger().logDebug("Creating a dialog : " + this);
             sipStack.getStackLogger().logStackTrace();
         }
@@ -667,7 +668,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * A debugging print routine.
      */
     private void printRouteList() {
-        if (sipStack.isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             sipStack.getStackLogger().logDebug("this : " + this);
             sipStack.getStackLogger().logDebug("printRouteList : " + this.routeList.encode());
         }
@@ -744,7 +745,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             this.remoteParty = sipMessage.getFrom().getAddress();
 
         }
-        if (sipStack.isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             sipStack.getStackLogger().logDebug("settingRemoteParty " + this.remoteParty);
         }
     }
@@ -817,7 +818,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                         	sipStack.getStackLogger().logStackTrace();
                     	}	
                     } else {
-                    	sipStack.getStackLogger().logDebug("route = " + sipUri);
+                        if ( sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG)) 
+                                sipStack.getStackLogger().logDebug("route = " + sipUri);
                     } 
                 }
             }
@@ -833,7 +835,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
     protected void setRemoteTarget(ContactHeader contact) {
         this.remoteTarget = contact.getAddress();
-        if (sipStack.isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             sipStack.getStackLogger().logDebug("Dialog.setRemoteTarget: " + this.remoteTarget);
             sipStack.getStackLogger().logStackTrace();
         }
@@ -849,7 +851,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     private synchronized void addRoute(SIPResponse sipResponse) {
 
         try {
-            if (sipStack.isLoggingEnabled()) {
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                 sipStack.getStackLogger().logDebug(
                         "setContact: dialogState: " + this + "state = " + this.getState());
             }
@@ -910,7 +912,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * @return -- a cloned copy of the dialog route list.
      */
     private synchronized RouteList getRouteList() {
-        if (sipStack.isLoggingEnabled())
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
             sipStack.getStackLogger().logDebug("getRouteList " + this);
         // Find the top via in the route list.
         ListIterator li;
@@ -925,7 +927,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             }
         }
 
-        if (sipStack.isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             sipStack.getStackLogger().logDebug("----- ");
             sipStack.getStackLogger().logDebug("getRouteList for " + this);
             if (retval != null)
@@ -956,13 +958,13 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             throws SipException {
     	
         SIPRequest ackRequest = (SIPRequest) request;
-        if (sipStack.isLoggingEnabled())
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
             sipStack.getStackLogger().logDebug("sendAck" + this);
 
         if (!ackRequest.getMethod().equals(Request.ACK))
             throw new SipException("Bad request method -- should be ACK");
         if (this.getState() == null || this.getState().getValue() == EARLY_STATE) {
-            if (sipStack.isLoggingEnabled()) {
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_ERROR)) {
                 sipStack.getStackLogger().logError(
                         "Bad Dialog State for " + this + " dialogID = " + this.getDialogId());
             }
@@ -970,7 +972,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         }
 
         if (!this.getCallId().getCallId().equals(((SIPRequest) request).getCallId().getCallId())) {
-            if (sipStack.isLoggingEnabled()) {
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                 sipStack.getStackLogger().logError("CallID " + this.getCallId());
                 sipStack.getStackLogger().logError(
                         "RequestCallID = " + ackRequest.getCallId().getCallId());
@@ -979,7 +981,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             throw new SipException("Bad call ID in request");
         }
         try {
-            if (sipStack.isLoggingEnabled()) {
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                 sipStack.getStackLogger().logDebug(
                         "setting from tag For outgoing ACK= " + this.getLocalTag());
                 sipStack.getStackLogger().logDebug(
@@ -999,7 +1001,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         if (hop == null)
             throw new SipException("No route!");
         try {
-            if (sipStack.isLoggingEnabled())
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                 sipStack.getStackLogger().logDebug("hop = " + hop);
             ListeningPointImpl lp = (ListeningPointImpl) this.sipProvider.getListeningPoint(hop
                     .getTransport());
@@ -1024,7 +1026,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             if (releaseAckSem && this.isBackToBackUserAgent) {
                 this.releaseAckSem();
             } else {
-                if ( sipStack.isLoggingEnabled() ) {
+                if ( sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG) ) {
                     sipStack.getStackLogger().logDebug("Not releasing ack sem for " + this + " isAckSent " + releaseAckSem );
                 }
             }
@@ -1088,7 +1090,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     void ackReceived(long cseqNumber) {
         // Suppress retransmission of the final response
         if (this.isAckSeen()) {
-        	sipStack.getStackLogger().logDebug("Ack already seen for response -- dropping");
+            if (sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                sipStack.getStackLogger().logDebug("Ack already seen for response -- dropping");
             return;
         }
         SIPServerTransaction tr = this.getInviteTransaction();
@@ -1108,7 +1111,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                     this.dialogDeleteTask = null;
                 }
                 lastAckReceivedCSeqNumber = Long.valueOf(cseqNumber);
-                if (sipStack.isLoggingEnabled()) {
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                     sipStack.getStackLogger().logDebug(
                             "ackReceived for " + ((SIPTransaction) tr).getMethod());
                     this.ackLine = sipStack.getStackLogger().getLineCount();
@@ -1120,7 +1123,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 this.setState(CONFIRMED_STATE);
             }
         } else {
-        	sipStack.getStackLogger().logDebug("tr is null -- not updating the ack state" );
+            if (sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                sipStack.getStackLogger().logDebug("tr is null -- not updating the ack state" );
         }
     }
 
@@ -1182,7 +1186,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     public synchronized void requestConsumed() {
         this.nextSeqno = this.getRemoteSeqNumber() + 1;
 
-        if (sipStack.isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             this.sipStack.getStackLogger().logDebug(
                     "Request Consumed -- next consumable Request Seqno = " + this.nextSeqno);
         }
@@ -1235,7 +1239,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      */
 
     public void setState(int state) {
-        if (sipStack.isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             sipStack.getStackLogger().logDebug(
                     "Setting dialog state for " + this + "newState = " + state);
             sipStack.getStackLogger().logStackTrace();
@@ -1263,7 +1267,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * Debugging print for the dialog.
      */
     public void printDebugInfo() {
-        if (sipStack.isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             sipStack.getStackLogger().logDebug("isServer = " + isServer());
             sipStack.getStackLogger().logDebug("localTag = " + getLocalTag());
             sipStack.getStackLogger().logDebug("remoteTag = " + getRemoteTag());
@@ -1281,17 +1285,17 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     public boolean isAckSeen() {
     	
     	if (lastAckReceivedCSeqNumber == null && lastResponseStatusCode == Response.OK ) {
-    		if ( sipStack.getStackLogger().isLoggingEnabled() ) {
+    		if ( sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG) ) {
     			sipStack.getStackLogger().logDebug(this + "lastAckReceived is null -- returning false");
     		}
     		return false;
     	} else if (lastResponseMethod == null ) {
-    		if ( sipStack.getStackLogger().isLoggingEnabled() ) {
+    		if ( sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG) ) {
     			sipStack.getStackLogger().logDebug(this + "lastResponse is null -- returning false");
     		}
     		return false;
     	} else if ( lastAckReceivedCSeqNumber == null  && lastResponseStatusCode / 100 > 2 ) {
-    		if ( sipStack.getStackLogger().isLoggingEnabled() ) {
+    		if ( sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG) ) {
     			sipStack.getStackLogger().logDebug(this + "lastResponse statusCode " + lastResponseStatusCode);
     		}
     		return true;
@@ -1372,7 +1376,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * @param sipRequest
      */
     public synchronized void addRoute(SIPRequest sipRequest) {
-        if (sipStack.isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             sipStack.getStackLogger().logDebug(
                     "setContact: dialogState: " + this + "state = " + this.getState());
         }
@@ -1542,7 +1546,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             this.reInviteFlag = true;
         }
         
-        if (sipStack.isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
         	sipStack.getStackLogger().logDebug("SipDialog.addTransaction() " + this + " transaction = " + transaction);
         }
 
@@ -1609,14 +1613,14 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         // with the same sequence number directed towards this
         // dialog.
         
-        if ( sipStack.isLoggingEnabled() ) {
+        if ( sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG) ) {
         	sipStack.getStackLogger().logDebug("isBackToBackUserAgent = " + this.isBackToBackUserAgent );
         }
         if(transaction.getMethod().equals(Request.INVITE)) {
         	this.lastTransaction = transaction;        
         }
     
-        if (sipStack.isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             sipStack.getStackLogger()
                     .logDebug("Transaction Added " + this + myTag + "/" + hisTag);
             sipStack.getStackLogger().logDebug(
@@ -1633,19 +1637,19 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * @param hisTag is the remote tag to set.
      */
     protected void setRemoteTag(String hisTag) {
-        if (sipStack.isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             sipStack.getStackLogger().logDebug(
                     "setRemoteTag(): " + this + " remoteTag = " + this.hisTag + " new tag = "
                             + hisTag);
         }
         if (this.hisTag != null && hisTag != null && !hisTag.equals(this.hisTag)) {
             if (this.getState() != DialogState.EARLY) {
-            	if (sipStack.isLoggingEnabled())
+            	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
             		sipStack.getStackLogger().logDebug(
                         "Dialog is already established -- ignoring remote tag re-assignment");
                 return;
             } else if (sipStack.isRemoteTagReassignmentAllowed()) {
-            	if (sipStack.isLoggingEnabled())
+            	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
             		sipStack.getStackLogger().logDebug(
                         "UNSAFE OPERATION !  tag re-assignment " + this.hisTag
                                 + " trying to set to " + hisTag
@@ -1660,7 +1664,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 this.dialogId = null;
                 this.hisTag = hisTag;
                 if (removed) {
-                	if (sipStack.isLoggingEnabled())
+                	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                 		sipStack.getStackLogger().logDebug("ReInserting Dialog");
                     this.sipStack.putDialog(this);
                 }
@@ -1700,7 +1704,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * 
      */
     private void setLocalSequenceNumber(long lCseq) {
-        if (sipStack.isLoggingEnabled())
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
             sipStack.getStackLogger().logDebug(
                     "setLocalSequenceNumber: original  " + this.localSequenceNumber + " new  = "
                             + lCseq);
@@ -1716,7 +1720,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * 
      */
     public void setRemoteSequenceNumber(long rCseq) {
-        if (sipStack.isLoggingEnabled())
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
             sipStack.getStackLogger().logDebug("setRemoteSeqno " + this + "/" + rCseq);
         this.remoteSequenceNumber = rCseq;
     }
@@ -1808,7 +1812,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      *        this dialog.
      */
     protected void setLocalTag(String mytag) {
-        if (sipStack.isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             sipStack.getStackLogger().logDebug("set Local tag " + mytag + " dialog = " + this);
             sipStack.getStackLogger().logStackTrace();
         }
@@ -1902,7 +1906,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 			}
 			remotePartyStringified = null;
     	}
-        if (sipStack.isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             sipStack.getStackLogger().logDebug("gettingRemoteParty " + this.remoteParty);
         }
         return this.remoteParty;
@@ -2237,7 +2241,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         SIPRequest dialogRequest = ((SIPClientTransaction) clientTransactionId)
                 .getOriginalRequest();
 
-        if (sipStack.isLoggingEnabled())
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
             sipStack.getStackLogger().logDebug(
                     "dialog.sendRequest " + " dialog = " + this + "\ndialogRequest = \n"
                             + dialogRequest);
@@ -2317,7 +2321,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         }
 
         Hop hop = ((SIPClientTransaction) clientTransactionId).getNextHop();
-        if (sipStack.isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             sipStack.getStackLogger().logDebug(
                     "Using hop = " + hop.getHost() + " : " + hop.getPort());
         }
@@ -2338,7 +2342,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             // Not configured to cache client connections.
             if (!sipStack.cacheClientConnections) {
                 oldChannel.useCount--;
-                if (sipStack.isLoggingEnabled())
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                     sipStack.getStackLogger().logDebug(
                             "oldChannel: useCount " + oldChannel.useCount);
 
@@ -2358,7 +2362,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                  * if one considers the 'first Route URI' of a request constructed according to
                  * 12.2.1.1 to be the request URI when the route set is empty.
                  */
-                if (sipStack.isLoggingEnabled())
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                     sipStack.getStackLogger().logDebug(
                             "Null message channel using outbound proxy !");
                 Hop outboundProxy = sipStack.getRouter(dialogRequest).getOutboundProxy();
@@ -2374,7 +2378,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 ((SIPClientTransaction) clientTransactionId)
                         .setEncapsulatedChannel(messageChannel);
 
-                if (sipStack.isLoggingEnabled()) {
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                     sipStack.getStackLogger().logDebug("using message channel " + messageChannel);
 
                 }
@@ -2483,11 +2487,11 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
     protected void startTimer(SIPServerTransaction transaction) {
         if (this.timerTask != null && timerTask.transaction == transaction) {
-        	if (sipStack.isLoggingEnabled())
+        	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
         		sipStack.getStackLogger().logDebug("Timer already running for " + getDialogId());
             return;
         }
-        if (sipStack.isLoggingEnabled())
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
             sipStack.getStackLogger().logDebug("Starting dialog timer for " + getDialogId());
         
 		acquireTimerTaskSem();
@@ -2613,14 +2617,14 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             throw new SipException("Cannot create ACK - no remote Target!");
         }
 
-        if (this.sipStack.isLoggingEnabled()) {
+        if (this.sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             this.sipStack.getStackLogger().logDebug("createAck " + this + " cseqno " + cseqno);
         }
 
         // MUST ack in the same order that the OKs were received. This traps
         // out of order ACK sending. Old ACKs seqno's can always be ACKed.
         if (lastInviteOkReceived < cseqno) {
-        	if (sipStack.isLoggingEnabled()) {
+        	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
         		this.sipStack.getStackLogger().logDebug(
                     "WARNING : Attempt to crete ACK without OK " + this);
             	this.sipStack.getStackLogger().logDebug("LAST RESPONSE = " + this.getLastResponseStatusCode());
@@ -2787,13 +2791,13 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         }       
         this.setAssigned();
         // Adjust state of the Dialog state machine.
-        if (sipStack.isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             sipStack.getStackLogger().logDebug(
                     "sipDialog: setLastResponse:" + this + " lastResponse = "
                             + this.lastResponseStatusCode);
         }
         if (this.getState() == DialogState.TERMINATED) {
-            if (sipStack.isLoggingEnabled()) {
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                 sipStack.getStackLogger().logDebug(
                         "sipDialog: setLastResponse -- dialog is terminated - ignoring ");
             }
@@ -2806,7 +2810,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             }
             return;
         }        
-        if (sipStack.isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             sipStack.getStackLogger().logStackTrace();
             sipStack.getStackLogger().logDebug("cseqMethod = " + lastResponseMethod);
             sipStack.getStackLogger().logDebug("dialogState = " + this.getState());
@@ -2854,8 +2858,10 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                     // state. To tag is MANDATORY for the response.
 
                     // Only do this if method equals initial request!
-                    
-                	sipStack.getStackLogger().logDebug("pendingRouteUpdateOn202Response : " + this.pendingRouteUpdateOn202Response);
+                    if ( sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                        sipStack.getStackLogger().logDebug("pendingRouteUpdateOn202Response : " 
+                                + this.pendingRouteUpdateOn202Response);
+                    }
                     if (lastResponseMethod.equals(getMethod())
                             && (sipResponse.getToTag() != null || sipStack.rfc2543Supported)
                             && (this.getState() != DialogState.CONFIRMED || 
@@ -2989,7 +2995,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                         if (statusCode == 489
                                 && (lastResponseMethod.equals(Request.NOTIFY) || lastResponseMethod
                                         .equals(Request.SUBSCRIBE))) {
-                        	if (sipStack.isLoggingEnabled())
+                        	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                         		sipStack.getStackLogger().logDebug(
                                     "RFC 3265 : Not setting dialog to TERMINATED for 489");
                         } else {
@@ -3034,7 +3040,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                             //  ACK is received.
                             //
                             if (!this.takeAckSem()) {
-                                if (sipStack.isLoggingEnabled()) {
+                                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                                     sipStack.getStackLogger().logDebug(
                                             "Delete dialog -- cannot acquire ackSem");
                                 }
@@ -3059,7 +3065,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * @param response - response that was sent.
      */
     public void startRetransmitTimer(SIPServerTransaction sipServerTx, Response response) {
-    	if (sipStack.getStackLogger().isLoggingEnabled()) {
+    	if (sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
     		sipStack.getStackLogger().logDebug("startRetransmitTimer() "+ response.getStatusCode() + " method " + sipServerTx.getMethod() );
     	}
         if (sipServerTx.getMethod().equals(Request.INVITE)
@@ -3200,7 +3206,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
          * acknowledged. The method name in the RAck header is case sensitive.
          */
         if (!this.isServer()) {
-            if (sipStack.isLoggingEnabled())
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                 sipStack.getStackLogger().logDebug("Dropping Prack -- not a server Dialog");
             return false;
         }
@@ -3209,7 +3215,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         byte[] sipResponse = sipServerTransaction.getReliableProvisionalResponse();
 
         if (sipResponse == null) {
-            if (sipStack.isLoggingEnabled())
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                 sipStack.getStackLogger()
                         .logDebug("Dropping Prack -- ReliableResponse not found");
             return false;
@@ -3218,27 +3224,27 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         RAck rack = (RAck) prackRequest.getHeader(RAckHeader.NAME);
 
         if (rack == null) {
-            if (sipStack.isLoggingEnabled())
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                 sipStack.getStackLogger().logDebug("Dropping Prack -- rack header not found");
             return false;
         }        
 
         if (!rack.getMethod().equals(sipServerTransaction.getPendingReliableResponseMethod())) {
-            if (sipStack.isLoggingEnabled())
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                 sipStack.getStackLogger().logDebug(
                         "Dropping Prack -- CSeq Header does not match PRACK");
             return false;
         }
 
         if (rack.getCSeqNumberLong() != sipServerTransaction.getPendingReliableCSeqNumber()) {
-            if (sipStack.isLoggingEnabled())
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                 sipStack.getStackLogger().logDebug(
                         "Dropping Prack -- CSeq Header does not match PRACK");
             return false;
         }
 
         if (rack.getRSequenceNumber() != sipServerTransaction.getPendingReliableRSeqNumber()) {
-            if (sipStack.isLoggingEnabled())
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                 sipStack.getStackLogger().logDebug(
                         "Dropping Prack -- RSeq Header does not match PRACK");
             return false;
@@ -3289,7 +3295,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         if (!found) {
             Require require = new Require("100rel");
             relResponse.addHeader(require);
-            if (sipStack.isLoggingEnabled()) {
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                 sipStack.getStackLogger().logDebug(
                         "Require header with optionTag 100rel is needed -- adding one");
             }
@@ -3371,7 +3377,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
         if (isAckSeen() && getRemoteSeqNumber() == ackTransaction.getCSeq()) {
 
-            if (sipStack.isLoggingEnabled()) {
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                 sipStack.getStackLogger().logDebug(
                         "ACK already seen by dialog -- dropping Ack" + " retransmission");
             }
@@ -3386,7 +3392,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         	}
             return false;
         } else if (this.getState() == DialogState.TERMINATED) {
-            if (sipStack.isLoggingEnabled())
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                 sipStack.getStackLogger().logDebug("Dialog is terminated -- dropping ACK");
             return false;
 
@@ -3411,7 +3417,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                  * record that we already saw an ACK for this dialog.
                  */
                 ackReceived(ackTransaction.getCSeq());
-                if (sipStack.isLoggingEnabled())
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                 	sipStack.getStackLogger().logDebug("ACK for 2XX response --- sending to TU ");
                 return true;
 
@@ -3421,7 +3427,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                  * processed.
                  */
 
-                if (sipStack.isLoggingEnabled())
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                     sipStack.getStackLogger().logDebug(
                             " INVITE transaction not found  -- Discarding ACK");
                 return false;
@@ -3438,7 +3444,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      */
     void releaseAckSem() {
         if (this.isBackToBackUserAgent) {
-            if (sipStack.isLoggingEnabled()) {
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                 sipStack.getStackLogger().logDebug("releaseAckSem]" + this);
             }
             this.ackSem.release();
@@ -3447,7 +3453,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     }
 
     boolean takeAckSem() {
-        if (sipStack.isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             sipStack.getStackLogger().logDebug("[takeAckSem " + this);
         }
         try {
@@ -3456,7 +3462,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                     sipStack.getStackLogger().logError("Cannot aquire ACK semaphore");
                 }
 
-                if ( sipStack.isLoggingEnabled() ) {
+                if ( sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG) ) {
                     sipStack.getStackLogger().logDebug("Semaphore previously acquired at " + this.stackTrace);
                     sipStack.getStackLogger().logStackTrace();
                     
@@ -3608,7 +3614,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     // to save on mem
     protected void cleanUpOnAck() {
     	if(sipStack.isAggressiveCleanup()) {
-	    	if (sipStack.isLoggingEnabled()) {
+	    	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 	            sipStack.getStackLogger().logDebug("cleanupOnAck : "
 	                    + getDialogId());
 	        }
@@ -3659,7 +3665,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     // jeand : cleanup of the dialog 
     protected void cleanUp() {
     	if(sipStack.isAggressiveCleanup()) {
-	    	if (sipStack.isLoggingEnabled()) {
+	    	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 	            sipStack.getStackLogger().logDebug("cleanup : "
 	                    + getDialogId());
 	        }
