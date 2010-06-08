@@ -25,6 +25,7 @@
  */
 package gov.nist.javax.sip;
 
+import gov.nist.core.LogLevels;
 import gov.nist.core.ServerLogger;
 import gov.nist.core.StackLogger;
 import gov.nist.core.net.AddressResolver;
@@ -467,7 +468,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.127 $ $Date: 2010-05-07 18:41:58 $
+ * @version 1.2 $Revision: 1.128 $ $Date: 2010-06-08 20:30:35 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -1074,7 +1075,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 		super.logStackTraceOnMessageSend = configurationProperties.getProperty(
 				"gov.nist.javax.sip.LOG_STACK_TRACE_ON_MESSAGE_SEND", "false")
 				.equalsIgnoreCase("true");
-		if (isLoggingEnabled())
+		if (isLoggingEnabled(LogLevels.TRACE_DEBUG))
 			getStackLogger().logDebug(
 				"created Sip stack. Properties = " + configurationProperties);
 		InputStream in = getClass().getResourceAsStream("/TIMESTAMP");
@@ -1179,7 +1180,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 	public synchronized ListeningPoint createListeningPoint(String address,
 			int port, String transport) throws TransportNotSupportedException,
 			InvalidArgumentException {
-		if (isLoggingEnabled())
+		if (isLoggingEnabled(LogLevels.TRACE_DEBUG))
 			getStackLogger().logDebug(
 				"createListeningPoint : address = " + address + " port = "
 						+ port + " transport = " + transport);
@@ -1215,7 +1216,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 				InetAddress inetAddr = InetAddress.getByName(address);
 				MessageProcessor messageProcessor = this
 						.createMessageProcessor(inetAddr, port, transport);
-				if (this.isLoggingEnabled()) {
+				if (this.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
 					this.getStackLogger().logDebug(
 							"Created Message Processor: " + address
 									+ " port = " + port + " transport = "
@@ -1247,7 +1248,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 			throws ObjectInUseException {
 		if (listeningPoint == null)
 			throw new NullPointerException("null listeningPoint");
-		if (this.isLoggingEnabled())
+		if (this.isLoggingEnabled(LogLevels.TRACE_DEBUG))
 			this.getStackLogger().logDebug(
 					"createSipProvider: " + listeningPoint);
 		ListeningPointImpl listeningPointImpl = (ListeningPointImpl) listeningPoint;
@@ -1388,7 +1389,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 	 * @see javax.sip.SipStack#stop()
 	 */
 	public void stop() {
-		if (isLoggingEnabled()) {
+		if (isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
 			getStackLogger().logDebug("stopStack -- stoppping the stack");
 			getStackLogger().logStackTrace();
 		}

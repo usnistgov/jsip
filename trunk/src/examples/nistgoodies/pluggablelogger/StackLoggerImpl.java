@@ -98,7 +98,7 @@ public class StackLoggerImpl implements StackLogger {
     }
 
     public void logStackTrace() {
-        if (enabled) {
+        if (this.isLoggingEnabled(TRACE_DEBUG)) {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             StackTraceElement[] ste = new Exception().getStackTrace();

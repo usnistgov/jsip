@@ -29,6 +29,7 @@
 package gov.nist.javax.sip;
 
 import gov.nist.core.InternalErrorHandler;
+import gov.nist.core.LogLevels;
 import gov.nist.javax.sip.DialogTimeoutEvent.Reason;
 import gov.nist.javax.sip.address.RouterExt;
 import gov.nist.javax.sip.header.CallID;
@@ -84,7 +85,7 @@ import javax.sip.message.Response;
 /**
  * Implementation of the JAIN-SIP provider interface.
  *
- * @version 1.2 $Revision: 1.84 $ $Date: 2010-05-06 14:08:08 $
+ * @version 1.2 $Revision: 1.85 $ $Date: 2010-06-08 20:30:36 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -133,7 +134,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
      */
     protected void stop() {
         // Put an empty event in the queue and post ourselves a message.
-        if (sipStack.isLoggingEnabled())
+        if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG))
             sipStack.getStackLogger().logDebug("Exiting provider");
         for (Iterator it = listeningPoints.values().iterator(); it.hasNext();) {
             ListeningPointImpl listeningPoint = (ListeningPointImpl) it.next();
@@ -166,7 +167,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
      */
 
     public void handleEvent(EventObject sipEvent, SIPTransaction transaction) {
-        if (sipStack.isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
             sipStack.getStackLogger().logDebug(
                     "handleEvent " + sipEvent + "currentTransaction = "
                             + transaction + "this.sipListener = "
@@ -229,7 +230,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
                     "Stack already has a listener. Only one listener per stack allowed");
         }
 
-        if (sipStack.isLoggingEnabled())
+        if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG))
             sipStack.getStackLogger().logDebug("add SipListener " + sipListener);
         this.sipListener = sipListener;
 
@@ -333,7 +334,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
             }
 
         }
-        if (sipStack.isLoggingEnabled())
+        if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG))
             sipStack.getStackLogger().logDebug(
                     "could not find existing transaction for "
                             + ((SIPRequest) request).getFirstLine()
@@ -725,7 +726,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
         } catch (ParseException ex1) {
             InternalErrorHandler.handleException(ex1);
         } finally {
-            if (sipStack.isLoggingEnabled())
+            if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG))
                 sipStack.getStackLogger().logDebug(
                         "done sending " + request.getMethod() + " to hop "
                                 + hop);
@@ -904,7 +905,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
 
         if (transactionErrorEvent.getErrorID() == SIPTransactionErrorEvent.TRANSPORT_ERROR) {
             // There must be a way to inform the TU here!!
-            if (sipStack.isLoggingEnabled()) {
+            if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                 sipStack.getStackLogger().logDebug(
                         "TransportError occured on " + transaction);
             }
@@ -986,7 +987,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
         } else if (dialogErrorEvent.getErrorID() == SIPDialogErrorEvent.DIALOG_REINVITE_TIMEOUT) {
             reason = Reason.ReInviteTimeout;
         }
-        if (sipStack.isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
             sipStack.getStackLogger().logDebug(
                     "Dialog TimeoutError occured on " + sipDialog);
         }

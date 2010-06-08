@@ -41,6 +41,7 @@
 package gov.nist.javax.sip.stack;
 
 import gov.nist.core.HostPort;
+import gov.nist.core.LogWriter;
 import gov.nist.javax.sip.SipStackImpl;
 
 import javax.net.ssl.SSLException;
@@ -59,7 +60,7 @@ import java.util.Iterator;
  * connection. This is the active object that creates new TLS MessageChannels (one for each new
  * accept socket).
  * 
- * @version 1.2 $Revision: 1.25 $ $Date: 2010-02-22 23:32:58 $
+ * @version 1.2 $Revision: 1.26 $ $Date: 2010-06-08 20:30:33 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -145,13 +146,13 @@ public class TLSMessageProcessor extends MessageProcessor {
                     }
                     this.nConnections++;
                 }
-                if (sipStack.isLoggingEnabled()) {
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                     sipStack.getStackLogger().logDebug(" waiting to accept new connection!");
                 }
                 
                 Socket newsock = sock.accept();
                
-                if (sipStack.isLoggingEnabled()) {
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                     sipStack.getStackLogger().logDebug("Accepting new connection!");
                 }
 
@@ -222,7 +223,7 @@ public class TLSMessageProcessor extends MessageProcessor {
     protected synchronized void remove(TLSMessageChannel tlsMessageChannel) {
 
         String key = tlsMessageChannel.getKey();
-        if (sipStack.isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             sipStack.getStackLogger().logDebug(Thread.currentThread() + " removing " + key);
         }
 
@@ -243,7 +244,7 @@ public class TLSMessageProcessor extends MessageProcessor {
                     targetHostPort.getPort(), sipStack, this);
             this.tlsMessageChannels.put(key, retval);
             retval.isCached = true;
-            if (sipStack.isLoggingEnabled()) {
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                 sipStack.getStackLogger().logDebug("key " + key);
                 sipStack.getStackLogger().logDebug("Creating " + retval);
             }
@@ -259,7 +260,7 @@ public class TLSMessageProcessor extends MessageProcessor {
                 sipStack.getStackLogger().logDebug("Closing " + key);
             currentChannel.close();
         }
-        if (sipStack.isLoggingEnabled())
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
             sipStack.getStackLogger().logDebug("Caching " + key);
         this.tlsMessageChannels.put(key, messageChannel);
 
@@ -275,7 +276,7 @@ public class TLSMessageProcessor extends MessageProcessor {
                 TLSMessageChannel retval = new TLSMessageChannel(host, port, sipStack, this);
                 this.tlsMessageChannels.put(key, retval);
                 retval.isCached = true;
-                if (sipStack.isLoggingEnabled()) {
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                     sipStack.getStackLogger().logDebug("key " + key);
                     sipStack.getStackLogger().logDebug("Creating " + retval);
                 }

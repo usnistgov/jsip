@@ -29,6 +29,7 @@
 
 package gov.nist.javax.sip.stack;
 
+import gov.nist.core.LogWriter;
 import gov.nist.core.ServerLogger;
 import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.LogRecord;
@@ -52,7 +53,7 @@ import org.apache.log4j.Logger;
  * the debug file if needed. This class keeps an XML formatted trace around for later access via
  * RMI. The trace can be viewed with a trace viewer (see tools.traceviewerapp).
  *
- * @version 1.2 $Revision: 1.40 $ $Date: 2010-05-06 14:08:09 $
+ * @version 1.2 $Revision: 1.41 $ $Date: 2010-06-08 20:30:32 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -212,7 +213,7 @@ public class ServerLog implements ServerLogger {
                         + "\"\n auxInfo=\"" + auxInfo + "\"/>\n ");
                 if (auxInfo != null) {
 
-                    if (sipStack.isLoggingEnabled()) {
+                    if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                         stackLogger
                                 .logDebug("Here are the stack configuration properties \n"
                                         + "javax.sip.IP_ADDRESS= "
@@ -252,7 +253,7 @@ public class ServerLog implements ServerLogger {
                     }
                 } else {
 
-                    if (sipStack.isLoggingEnabled()) {
+                    if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                         stackLogger.logDebug("Here are the stack configuration properties \n"
                                 + configurationProperties + "\n");
                         stackLogger.logDebug(" ]]>");

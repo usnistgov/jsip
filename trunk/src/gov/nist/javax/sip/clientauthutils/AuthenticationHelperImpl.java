@@ -17,6 +17,7 @@ package gov.nist.javax.sip.clientauthutils;
  * proposed a way to fix them (his proposition was taken into account).
  */
 
+import gov.nist.core.LogWriter;
 import gov.nist.javax.sip.address.SipUri;
 import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.stack.SIPClientTransaction;
@@ -125,9 +126,10 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
             ClientTransaction challengedTransaction, SipProvider transactionCreator, int cacheTime)
             throws SipException, NullPointerException {
         try {
-            if (sipStack.isLoggingEnabled()) {
-                sipStack.getStackLogger().logDebug("handleChallenge: " + challenge);
-            }
+          
+            if ( sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                 sipStack.getStackLogger().logDebug("handleChallenge: " + challenge);
+           
 
             SIPRequest challengedRequest = ((SIPRequest) challengedTransaction.getRequest());
 
@@ -247,9 +249,12 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
                                 (reoriginatedRequest.getContent() == null) ? "" : new String(
                                 reoriginatedRequest.getRawContent()), authHeader, userCreds);
                 }
-                if (sipStack.isLoggingEnabled())
-                	sipStack.getStackLogger().logDebug(
-                        "Created authorization header: " + authorization.toString());
+                
+                if ( sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                    sipStack.getStackLogger().logDebug(
+                            "Created authorization header: " + authorization.toString());
+                }
+              
 
                 if (cacheTime != 0)
                     cachedCredentials.cacheAuthorizationHeader(sipDomain,
@@ -258,10 +263,12 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
                 reoriginatedRequest.addHeader(authorization);
             }
 
-            if (sipStack.isLoggingEnabled()) {
+           
+            if ( sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                 sipStack.getStackLogger().logDebug(
                         "Returning authorization transaction." + retryTran);
             }
+          
             return retryTran;
         } catch (SipException ex) {
             throw ex;
@@ -436,7 +443,7 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
         Collection<AuthorizationHeader> authHeaders = this.cachedCredentials
                 .getCachedAuthorizationHeaders(callId);
         if (authHeaders == null) {
-        	if (sipStack.isLoggingEnabled())
+        	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) 
         		sipStack.getStackLogger().logDebug(
                     "Could not find authentication headers for " + callId);
             return;
