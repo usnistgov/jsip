@@ -37,6 +37,7 @@ import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.message.SIPResponse;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateParsingException;
@@ -78,7 +79,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.80 $ $Date: 2010-06-08 20:30:34 $
+ * @version 1.2 $Revision: 1.81 $ $Date: 2010-06-09 13:28:52 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -280,8 +281,9 @@ public abstract class SIPTransaction extends MessageChannel implements
     // Wrapper that uses a semaphore for non reentrant listener
     // and a lock for reetrant listener to avoid race conditions 
     // when 2 responses 180/200 OK arrives at the same time
-    class TransactionSemaphore {
+    class TransactionSemaphore implements Serializable {
         
+        private static final long serialVersionUID = -1634100711669020804L;
         Semaphore sem = null;
         ReentrantLock lock = null;
         
