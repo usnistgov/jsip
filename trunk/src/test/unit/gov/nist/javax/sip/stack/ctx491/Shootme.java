@@ -155,6 +155,8 @@ public class Shootme  implements SipListener {
                 logger.info("Dialog state " + dialog.getState());
             }
             st.sendResponse(response);
+            
+            Thread.sleep(500);
             response = protocolObjects.messageFactory.createResponse(200, request);
             toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
             toHeader.setTag("4321");

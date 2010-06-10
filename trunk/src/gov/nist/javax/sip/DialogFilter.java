@@ -84,7 +84,7 @@ import javax.sip.message.Response;
  * together the NIST-SIP stack and event model with the JAIN-SIP stack. This is
  * strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.79 $ $Date: 2010-06-08 20:30:36 $
+ * @version 1.2 $Revision: 1.80 $ $Date: 2010-06-10 16:56:42 $
  * 
  * @author M. Ranganathan
  */
@@ -950,7 +950,6 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     && sipProvider.isDialogErrorsAutomaticallyHandled()
                     && lastTransaction.isInviteTransaction()
                     && lastTransaction instanceof ServerTransaction
-                    /* && !dialog.isAckSeen() */
                     && lastTransaction.getInternalState() == TransactionState._PROCEEDING) {
                 // Note that the completed state will be reached when we have
                 // sent an error
@@ -961,7 +960,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     sipStack
                             .getStackLogger()
                             .logDebug(
-                                    "Sending 491 response for server Dialog ACK not seen.");
+                                    "Sending 491 response. Last transaction is in PROCEEDING state.");
                     sipStack.getStackLogger().logDebug(
                             "last Transaction state = " + lastTransaction
                                     + " state " + lastTransaction.getState());
