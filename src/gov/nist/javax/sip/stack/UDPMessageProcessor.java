@@ -49,7 +49,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size).
  * Each UDP message is processed in its own thread).
  *
- * @version 1.2 $Revision: 1.41 $ $Date: 2010-06-08 20:30:32 $
+ * @version 1.2 $Revision: 1.42 $ $Date: 2010-06-10 16:56:42 $
  *
  * @author M. Ranganathan  <br/>
  *
@@ -195,7 +195,7 @@ public class UDPMessageProcessor extends MessageProcessor {
                 // Let the thread auditor know we're up and running
                 threadHandle.ping();
 
-                int bufsize = sock.getReceiveBufferSize();
+                int bufsize = Math.max(UDPMessageProcessor.this.getMaximumMessageSize(),sock.getReceiveBufferSize());
                 byte message[] = new byte[bufsize];
                 DatagramPacket packet = new DatagramPacket(message, bufsize);
                 sock.receive(packet);
@@ -276,11 +276,8 @@ public class UDPMessageProcessor extends MessageProcessor {
      * messages.
      */
     public void stop() {
-//        synchronized (messageQueue) {
             this.isRunning = false;
-//            this.messageQueue.notifyAll();
-            sock.close();
-//        }  
+            sock.close();        
           // closing the channels
           for (Object messageChannel : messageChannels) {
 			((MessageChannel)messageChannel).close();
@@ -344,9 +341,6 @@ public class UDPMessageProcessor extends MessageProcessor {
      * Return true if there are any messages in use.
      */
     public boolean inUse() {
-//        synchronized (messageQueue) {
-//            return messageQueue.size() != 0;
-//        }
     	return !messageQueue.isEmpty();
     }
 
