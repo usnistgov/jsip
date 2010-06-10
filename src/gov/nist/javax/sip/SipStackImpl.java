@@ -468,7 +468,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.128 $ $Date: 2010-06-08 20:30:35 $
+ * @version 1.2 $Revision: 1.129 $ $Date: 2010-06-10 19:46:53 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -488,7 +488,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 	/**
 	 * Max datagram size.
 	 */
-	public static final Integer MAX_DATAGRAM_SIZE = 8 * 1024;
+	public static final Integer MAX_DATAGRAM_SIZE = 64 * 1024;
 
 	// Flag to indicate that the listener is re-entrant and hence
 	// Use this flag with caution.

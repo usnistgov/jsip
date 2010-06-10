@@ -32,6 +32,7 @@ import gov.nist.core.HostPort;
 import gov.nist.core.InternalErrorHandler;
 import gov.nist.core.LogWriter;
 import gov.nist.core.ThreadAuditor;
+import gov.nist.javax.sip.SipStackImpl;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -49,7 +50,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size).
  * Each UDP message is processed in its own thread).
  *
- * @version 1.2 $Revision: 1.42 $ $Date: 2010-06-10 16:56:42 $
+ * @version 1.2 $Revision: 1.43 $ $Date: 2010-06-10 19:46:52 $
  *
  * @author M. Ranganathan  <br/>
  *
@@ -195,7 +196,7 @@ public class UDPMessageProcessor extends MessageProcessor {
                 // Let the thread auditor know we're up and running
                 threadHandle.ping();
 
-                int bufsize = Math.max(UDPMessageProcessor.this.getMaximumMessageSize(),sock.getReceiveBufferSize());
+                int bufsize = sock.getReceiveBufferSize();
                 byte message[] = new byte[bufsize];
                 DatagramPacket packet = new DatagramPacket(message, bufsize);
                 sock.receive(packet);
@@ -334,7 +335,7 @@ public class UDPMessageProcessor extends MessageProcessor {
      * UDP can handle a message as large as the MAX_DATAGRAM_SIZE.
      */
     public int getMaximumMessageSize() {
-        return 8*1024;
+        return sipStack.getReceiveUdpBufferSize();
     }
 
     /**
