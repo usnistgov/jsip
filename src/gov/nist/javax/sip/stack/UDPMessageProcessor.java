@@ -50,7 +50,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size).
  * Each UDP message is processed in its own thread).
  *
- * @version 1.2 $Revision: 1.43 $ $Date: 2010-06-10 19:46:52 $
+ * @version 1.2 $Revision: 1.44 $ $Date: 2010-06-11 19:24:15 $
  *
  * @author M. Ranganathan  <br/>
  *
@@ -99,6 +99,8 @@ public class UDPMessageProcessor extends MessageProcessor {
     
     private static final int LOWAT=2500;
 
+    private int maxMessageSize = SipStackImpl.MAX_DATAGRAM_SIZE;
+    
     /**
      * Constructor.
      *
@@ -110,7 +112,12 @@ public class UDPMessageProcessor extends MessageProcessor {
         super(ipAddress, port, "udp",sipStack);
 
         this.sipStack = sipStack;
-
+        if(sipStack.getMaxMessageSize() < SipStackImpl.MAX_DATAGRAM_SIZE && sipStack.getMaxMessageSize() > 0) {
+            this.maxMessageSize = sipStack.getMaxMessageSize();
+        }
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+            sipStack.getStackLogger().logDebug("Max Message size is " + maxMessageSize);
+        }
         this.messageQueue = new LinkedBlockingQueue<DatagramPacket>();
 
         this.port = port;
@@ -180,7 +187,7 @@ public class UDPMessageProcessor extends MessageProcessor {
         if (sipStack.threadPoolSize != -1) {
             for (int i = 0; i < sipStack.threadPoolSize; i++) {
                 UDPMessageChannel channel = new UDPMessageChannel(sipStack,
-                        this, "UDPMessageChannelThread-" + i);
+                        this, ((SipStackImpl)sipStack).getStackName() + "-UDPMessageChannelThread-" + i);
                 this.messageChannels.add(channel);
 
             }
@@ -196,7 +203,7 @@ public class UDPMessageProcessor extends MessageProcessor {
                 // Let the thread auditor know we're up and running
                 threadHandle.ping();
 
-                int bufsize = sock.getReceiveBufferSize();
+                int bufsize = this.maxMessageSize;
                 byte message[] = new byte[bufsize];
                 DatagramPacket packet = new DatagramPacket(message, bufsize);
                 sock.receive(packet);
