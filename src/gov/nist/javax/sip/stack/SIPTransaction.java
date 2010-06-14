@@ -27,6 +27,7 @@ package gov.nist.javax.sip.stack;
 
 import gov.nist.core.InternalErrorHandler;
 import gov.nist.core.LogWriter;
+import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.SIPConstants;
 import gov.nist.javax.sip.SipProviderImpl;
 import gov.nist.javax.sip.SipStackImpl;
@@ -79,7 +80,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.81 $ $Date: 2010-06-09 13:28:52 $
+ * @version 1.2 $Revision: 1.82 $ $Date: 2010-06-14 18:16:11 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -281,7 +282,7 @@ public abstract class SIPTransaction extends MessageChannel implements
     // Wrapper that uses a semaphore for non reentrant listener
     // and a lock for reetrant listener to avoid race conditions 
     // when 2 responses 180/200 OK arrives at the same time
-    class TransactionSemaphore implements Serializable {
+    class TransactionSemaphore {
         
         private static final long serialVersionUID = -1634100711669020804L;
         Semaphore sem = null;
@@ -487,6 +488,17 @@ public abstract class SIPTransaction extends MessageChannel implements
      * @return the request that generated this transaction.
      */
     public Request getRequest() {
+        if(sipStack.isAggressiveCleanup() && originalRequest == null && originalRequestBytes != null) {
+            if(sipStack.getStackLogger().isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+                sipStack.getStackLogger().logDebug("reparsing original request " + originalRequestBytes + " since it was eagerly cleaned up, but beware this is not efficient with the aggressive flag set !");
+            }
+            try {
+                originalRequest = (SIPRequest) sipStack.getMessageParserFactory().createMessageParser(sipStack).parseSIPMessage(originalRequestBytes, true, false, null);
+                originalRequestBytes = null;
+            } catch (ParseException e) {
+                sipStack.getStackLogger().logError("message " + originalRequestBytes + " could not be reparsed !");
+            }
+        }   
         return (Request) originalRequest;
     }
 
