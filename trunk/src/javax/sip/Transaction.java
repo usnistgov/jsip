@@ -1,8 +1,8 @@
 /**
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
- * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
- * Copyright © 2005 BEA Systems, Inc. All rights reserved.
+ * Copyright ï¿½ 2003 Sun Microsystems, Inc. All rights reserved.
+ * Copyright ï¿½ 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
@@ -146,7 +146,12 @@ public interface Transaction extends Serializable{
      * retrieve the original Invite request to cancel branches of a fork when 
      * a final Response has been received by one branch.
      *
+     * @deprecated this method will be deprecated in future releases because
+     *   it results in excessive memory consumption under high load. Applications should retrieve the
+     *   request from the request event rather than rely on the Transaction maintaining
+     *   a reference to the Request indefinitely.
      * @return the Request message that created this transaction. 
+     * 
      */
     public Request getRequest(); 
     
