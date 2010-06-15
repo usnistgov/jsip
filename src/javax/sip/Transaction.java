@@ -146,10 +146,6 @@ public interface Transaction extends Serializable{
      * retrieve the original Invite request to cancel branches of a fork when 
      * a final Response has been received by one branch.
      *
-     * @deprecated this method will be deprecated in future releases because
-     *   it results in excessive memory consumption under high load. Applications should retrieve the
-     *   request from the request event rather than rely on the Transaction maintaining
-     *   a reference to the Request indefinitely.
      * @return the Request message that created this transaction. 
      * 
      */
