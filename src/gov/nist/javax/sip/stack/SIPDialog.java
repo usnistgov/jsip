@@ -128,7 +128,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.184 $ $Date: 2010-06-10 16:56:42 $
+ * @version 1.2 $Revision: 1.185 $ $Date: 2010-06-16 20:58:49 $
  * 
  * @author M. Ranganathan
  * 
@@ -1441,7 +1441,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         d.serverTransactionFlag = false;       	
         // they share this one
         d.lastTransaction = subscribeTx;
-        storeFirstTransactionInfo(d, subscribeTx);
+        d.storeFirstTransactionInfo(d, subscribeTx);
         d.terminateOnBye = false;
         d.localSequenceNumber = subscribeTx.getCSeq();
         SIPRequest not = (SIPRequest) notifyST.getRequest();
@@ -1500,7 +1500,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         return this.dialogId;
     }
 
-    private static void storeFirstTransactionInfo(SIPDialog dialog, SIPTransaction transaction) {
+    protected void storeFirstTransactionInfo(SIPDialog dialog, SIPTransaction transaction) {
     	dialog.firstTransaction = transaction;
     	dialog.firstTransactionSeen = true;
     	dialog.firstTransactionIsServerTransaction = transaction.isServerTransaction();
@@ -1541,7 +1541,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         // Proessing a re-invite.
         if (firstTransactionSeen && !firstTransactionId.equals(transaction.getBranchId()) 
                 && transaction.getMethod().equals(firstTransactionMethod)) {
-            this.reInviteFlag = true;
+            setReInviteFlag(true);
         }
         
         if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
