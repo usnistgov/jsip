@@ -128,7 +128,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.185 $ $Date: 2010-06-16 20:58:49 $
+ * @version 1.2 $Revision: 1.186 $ $Date: 2010-06-17 13:21:02 $
  * 
  * @author M. Ranganathan
  * 
@@ -2645,11 +2645,21 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             }
 
             String transport = uri4transport.getTransportParam();
-            if (transport == null) {
-                // JvB fix: also support TLS
-                transport = uri4transport.isSecure() ? ListeningPoint.TLS : ListeningPoint.UDP;
+            ListeningPointImpl lp;
+            if (transport != null) {
+               lp = (ListeningPointImpl) sipProvider.getListeningPoint(transport);
             }
-            ListeningPointImpl lp = (ListeningPointImpl) sipProvider.getListeningPoint(transport);
+            else
+            {
+               if (uri4transport.isSecure()) { // JvB fix: also support TLS
+                   lp = (ListeningPointImpl) sipProvider.getListeningPoint(ListeningPoint.TLS);
+               } else {
+                   lp = (ListeningPointImpl) sipProvider.getListeningPoint(ListeningPoint.UDP);
+                   if (lp == null) { // Alex K fix: let's try to find TCP
+                       lp = (ListeningPointImpl) sipProvider.getListeningPoint(ListeningPoint.TCP);
+                   }
+               }
+            }
             if (lp == null) {
             	if (sipStack.isLoggingEnabled()) {
             		sipStack.getStackLogger().logError(
