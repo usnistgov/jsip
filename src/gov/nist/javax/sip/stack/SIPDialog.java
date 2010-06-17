@@ -127,7 +127,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.172 $ $Date: 2010-03-30 16:03:47 $
+ * @version 1.2 $Revision: 1.172.2.1 $ $Date: 2010-06-17 11:30:35 $
  * 
  * @author M. Ranganathan
  * 
@@ -142,7 +142,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     
     private transient String stackTrace; // for semaphore debugging.
 
-    private String method;
+    protected String method;
 
     // delivery of the event
     private transient boolean isAssigned;
@@ -1424,7 +1424,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         d.serverTransactionFlag = false;
         // they share this one
         d.lastTransaction = subscribeTx;
-        storeFirstTransactionInfo(d, subscribeTx);
+        d.storeFirstTransactionInfo(d, subscribeTx);
         d.terminateOnBye = false;
         d.localSequenceNumber = subscribeTx.getCSeq();
         SIPRequest not = (SIPRequest) notifyST.getRequest();
@@ -1483,7 +1483,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         return this.dialogId;
     }
 
-    private static void storeFirstTransactionInfo(SIPDialog dialog, SIPTransaction transaction) {
+    private void storeFirstTransactionInfo(SIPDialog dialog, SIPTransaction transaction) {
     	dialog.firstTransaction = transaction;
     	dialog.firstTransactionSeen = true;
     	dialog.firstTransactionIsServerTransaction = transaction.isServerTransaction(); 
@@ -1520,7 +1520,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         // Proessing a re-invite.
         if (firstTransactionSeen && !firstTransactionId.equals(transaction.getBranchId()) 
                 && transaction.getMethod().equals(firstTransactionMethod)) {
-            this.reInviteFlag = true;
+            setReInviteFlag(true);
         }
         
         if (sipStack.isLoggingEnabled()) {
