@@ -228,6 +228,11 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
                 if ( this.accountManager instanceof SecureAccountManager ) {
                     UserCredentialHash credHash =
                         ((SecureAccountManager)this.accountManager).getCredentialHash(challengedTransaction,realm);
+                    if ( credHash == null ) {
+                        sipStack.getStackLogger().logDebug("Could not find creds");
+                        throw new SipException(
+                        "Cannot find user creds for the given user name and realm");
+                    }
                     URI uri = reoriginatedRequest.getRequestURI();
                     sipDomain = credHash.getSipDomain();
                     authorization = this.getAuthorization(reoriginatedRequest
@@ -236,11 +241,13 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
                             reoriginatedRequest.getRawContent()), authHeader, credHash);
                 } else {
                     UserCredentials userCreds = ((AccountManager) this.accountManager).getCredentials(challengedTransaction, realm);
-                    sipDomain = userCreds.getSipDomain();
-                    if (userCreds == null)
+                    
+                     if (userCreds == null) {
                          throw new SipException(
                             "Cannot find user creds for the given user name and realm");
-
+                     }
+                     sipDomain = userCreds.getSipDomain();
+                     
                     // we haven't yet authenticated this realm since we were
                     // started.
 
