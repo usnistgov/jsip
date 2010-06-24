@@ -68,8 +68,10 @@ public class Pipeline extends InputStream {
         }
 
         public void runTask() {
-            if (this.isCancelled)
+            if (this.isCancelled) {
+                this.pipeline = null;
                 return;
+            }
 
             try {
                 pipeline.close();
@@ -81,6 +83,7 @@ public class Pipeline extends InputStream {
         @Override
         public void cleanUpBeforeCancel() {
         	this.isCancelled = true;
+        	this.pipeline = null;
         	super.cleanUpBeforeCancel();
         }
         
