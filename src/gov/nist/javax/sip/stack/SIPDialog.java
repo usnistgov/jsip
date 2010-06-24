@@ -128,7 +128,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.186 $ $Date: 2010-06-17 13:21:02 $
+ * @version 1.2 $Revision: 1.187 $ $Date: 2010-06-24 18:18:33 $
  * 
  * @author M. Ranganathan
  * 
@@ -1329,10 +1329,17 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         }
     }
 
-    /**
-     * Get the transaction that created this dialog.
-     */
+   @Deprecated
     public Transaction getFirstTransaction() {
+        throw new UnsupportedOperationException("This method has been deprecated and is no longer supported");
+    }
+    
+  
+    /**
+     * This is for internal use only.
+     * 
+     */
+    public Transaction getFirstTransactionInt() {
     	// jeand : we try to avoid keeping the ref around for too long to help the GC
     	if(firstTransaction != null) {
     		return firstTransaction;
@@ -3219,7 +3226,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             return false;
         }
         SIPServerTransaction sipServerTransaction = (SIPServerTransaction) this
-                .getFirstTransaction();
+                .getFirstTransactionInt();
         byte[] sipResponse = sipServerTransaction.getReliableProvisionalResponse();
 
         if (sipResponse == null) {
@@ -3311,7 +3318,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         }
 
         SIPServerTransaction serverTransaction = (SIPServerTransaction) this
-                .getFirstTransaction();
+                .getFirstTransactionInt();
         /*
          * put into the dialog table before sending the response so as to avoid race condition
          * with PRACK
