@@ -80,7 +80,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.82 $ $Date: 2010-06-14 18:16:11 $
+ * @version 1.2 $Revision: 1.83 $ $Date: 2010-06-24 17:02:02 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -808,6 +808,38 @@ public abstract class SIPTransaction extends MessageChannel implements
         // created. Bug was noted by Bruce Evangelder
         // soleo communications.
         try {
+            for (MessageProcessor messageProcessor : sipStack
+                    .getMessageProcessors()) {
+            	boolean addrmatch = messageProcessor.getIpAddress().getHostAddress().toString().equals(this.getPeerAddress());
+                if (addrmatch
+                        && messageProcessor.getPort() == this.getPeerPort()
+                        && messageProcessor.getTransport().equalsIgnoreCase(
+                                this.getPeerProtocol())) {
+                    if (encapsulatedChannel instanceof TCPMessageChannel) {
+                        try {
+							((TCPMessageChannel) encapsulatedChannel)
+							        .processMessage(messageToSend, this.getPeerInetAddress());
+						} catch (Exception e) {
+							sipStack.getStackLogger().logError("Error passing message in self routing", e);
+						}
+                        if (sipStack.isLoggingEnabled())
+                        	sipStack.getStackLogger().logDebug("Self routing message");
+                        return;
+                    }
+                    if (encapsulatedChannel instanceof RawMessageChannel) {
+                        try {
+							((RawMessageChannel) encapsulatedChannel)
+							        .processMessage(messageToSend);
+						} catch (Exception e) {
+							sipStack.getStackLogger().logError("Error passing message in self routing", e);
+						}
+                        if (sipStack.isLoggingEnabled())
+                        	sipStack.getStackLogger().logDebug("Self routing message");
+                        return;
+                    }
+
+                }
+            }
             encapsulatedChannel.sendMessage(messageToSend,
                     this.getPeerInetAddress(), this.getPeerPort());
         } finally {
