@@ -36,6 +36,7 @@ import gov.nist.javax.sip.clientauthutils.AuthenticationHelper;
 import gov.nist.javax.sip.clientauthutils.AuthenticationHelperImpl;
 import gov.nist.javax.sip.clientauthutils.SecureAccountManager;
 import gov.nist.javax.sip.parser.MessageParserFactory;
+import gov.nist.javax.sip.parser.PipelinedMsgParser;
 import gov.nist.javax.sip.parser.StringMsgParser;
 import gov.nist.javax.sip.parser.StringMsgParserFactory;
 import gov.nist.javax.sip.stack.DefaultMessageLogFactory;
@@ -381,6 +382,41 @@ import javax.sip.message.Request;
  * The Max queue size is 5000 messages. The minimum queue size is 2500 messages.
  * </li>
  * 
+ * <li><b>gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE = integer </b> 
+ * Use 0 or do not set this option to disable it.
+ * 
+ * When using TCP your phones/clients usually connect independently creating their own TCP
+ * sockets. Sometimes however SIP devices are allowed to tunnel multiple calls over
+ * a single socket. This can also be simulated with SIPP by running "sipp  -t t1".
+ *  
+ * In the stack each TCP socket has it's own thread. When all calls are using the same
+ * socket they all use a single thread, which leads to severe performance penalty,
+ * especially on multi-core machines.
+ * 
+ * This option instructs the SIP stack to use a thread pool and split the CPU load
+ * between many threads. The number of the threads is specified in this parameter.
+ * 
+ * The processing is split immediately after the parsing of the message. It cannot
+ * be split before the parsing because in TCP the SIP message size is in the
+ * Content-Length header of the message and the access to the TCP network stream
+ * has to be synchronized. Additionally in TCP the message size can be larger.
+ * This causes most of the parsing for all calls to occur in a single thread, which
+ * may have impact on the performance in trivial applications using a single socket
+ * for all calls. In most applications it doesn't have performance impact.
+ * 
+ * If the phones/clients use separate TCP sockets for each call this option doesn't
+ * have much impact, except the slightly increased memory footprint caused by the
+ * thread pool. It is recommended to disable this option in this case by setting it
+ * 0 or not setting it at all. You can simulate multi-socket mode with "sipp -t t0".
+ * 
+ * With this option also we avoid closing the TCP socket when something fails, because
+ * we must keep processing other messages for other calls.
+ * 
+ * Note: This option relies on accurate Content-Length headers in the SIP messages. It
+ * cannot recover once a malformed message is processed, because the stream iterator
+ * will not be aligned any more. Eventually the connection will be closed.
+ * </li>
+ * 
  * <li><b>gov.nist.javax.sip.DELIVER_UNSOLICITED_NOTIFY = [true|false] </b> <br/>
  * Default is <it>false</it>. This flag is added to allow Sip Listeners to
  * receive all NOTIFY requests including those that are not part of a valid
@@ -468,7 +504,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.129 $ $Date: 2010-06-10 19:46:53 $
+ * @version 1.2 $Revision: 1.130 $ $Date: 2010-07-01 18:22:55 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -884,6 +920,20 @@ public class SipStackImpl extends SIPTransactionStack implements
 				if (isLoggingEnabled())
 					this.getStackLogger().logError(
 						"thread pool size - bad value " + ex.getMessage());
+			}
+		}
+		
+		String tcpTreadPoolSize = configurationProperties
+		.getProperty("gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE");
+		if (tcpTreadPoolSize != null) {
+			try {
+				int threads = new Integer(tcpTreadPoolSize).intValue();
+				super.setTcpPostParsingThreadPoolSize(threads);
+				PipelinedMsgParser.setPostParseExcutorSize(threads);
+			} catch (NumberFormatException ex) {
+				if (isLoggingEnabled())
+					this.getStackLogger().logError(
+							"TCP post-parse thread pool size - bad value " + tcpTreadPoolSize + " : " + ex.getMessage());
 			}
 		}
 

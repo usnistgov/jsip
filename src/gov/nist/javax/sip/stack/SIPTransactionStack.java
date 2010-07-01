@@ -100,7 +100,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.156 $ $Date: 2010-06-08 20:30:32 $
+ * @version 1.2 $Revision: 1.157 $ $Date: 2010-07-01 18:22:56 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener, SIPDialogEventListener {
@@ -382,6 +382,9 @@ public abstract class SIPTransactionStack implements
     private boolean deliverUnsolicitedNotify = false;
 
     private boolean deliverTerminatedEventForAck = false;
+	
+	// ThreadPool when parsed SIP messages are processed. Affects the case when many TCP calls use single socket.
+	private int tcpPostParsingThreadPoolSize = 0;
     
     protected boolean aggressiveCleanup = false;
 
@@ -1965,6 +1968,28 @@ public abstract class SIPTransactionStack implements
     public void setSingleThreaded() {
         this.threadPoolSize = 1;
     }
+    
+    /**
+	 * If all calls are occurring on a single TCP socket then the stack would process them in single thread.
+	 * This property allows immediately after parsing to split the load into many threads which increases
+	 * the performance significantly. If set to 0 then we just use the old model with single thread.
+	 * 
+	 * @return
+	 */
+	public int getTcpPostParsingThreadPoolSize() {
+		return tcpPostParsingThreadPoolSize;
+	}
+
+	/**
+	 * If all calls are occurring on a single TCP socket then the stack would process them in single thread.
+	 * This property allows immediately after parsing to split the load into many threads which increases
+	 * the performance significantly. If set to 0 then we just use the old model with single thread.
+	 * 
+	 * @param tcpPostParsingThreadPoolSize
+	 */
+	public void setTcpPostParsingThreadPoolSize(int tcpPostParsingThreadPoolSize) {
+		this.tcpPostParsingThreadPoolSize = tcpPostParsingThreadPoolSize;
+	}
 
     /**
 	 * Set the thread pool size for processing incoming UDP messages. Limit the
