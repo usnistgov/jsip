@@ -45,6 +45,8 @@ import gov.nist.javax.sip.stack.SIPTransactionStack;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * This implements a pipelined message parser suitable for use with a stream -
@@ -57,7 +59,7 @@ import java.text.ParseException;
  * accessed from the SIPMessage using the getContent and getContentBytes methods
  * provided by the SIPMessage class.
  *
- * @version 1.2 $Revision: 1.28 $ $Date: 2010-03-19 17:29:46 $
+ * @version 1.2 $Revision: 1.28.2.1 $ $Date: 2010-07-01 18:24:26 $
  *
  * @author M. Ranganathan
  *
@@ -358,7 +360,31 @@ public final class PipelinedMsgParser implements Runnable {
                 // return error from there.
                 if (sipMessageListener != null) {
                     try {
-                        sipMessageListener.processMessage(sipMessage);
+                    	if(postParseExecutor == null) {
+                    		/**
+                    		 * If gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE is disabled
+                    		 * we continue with the old logic here.
+                    		 */
+                    		sipMessageListener.processMessage(sipMessage);
+                    	} else {
+                    		/**
+                    		 * gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE is enabled so
+                    		 * we use the threadpool to execute the task.
+                    		 */
+                    		final SIPMessage message = sipMessage;
+                    		Thread messageDispatchTask = new Thread() {
+                    			@Override
+                    			public void run() {
+                    				try {
+                    					sipMessageListener.processMessage(message);
+                    				} catch (Exception e) {
+                    					Debug.logError("Error occured processing message", e);	
+                    					// We do not break the TCP connection because other calls use the same socket here
+                    				}
+                    			}
+                    		};
+                    		postParseExecutor.execute(messageDispatchTask); // run in executor thread
+                    	}
                     } catch (Exception ex) {
                         // fatal error in processing - close the
                         // connection.
@@ -374,6 +400,18 @@ public final class PipelinedMsgParser implements Runnable {
             }
         }
     }
+    
+    private static Executor postParseExecutor = null;
+    
+    public static void setPostParseExcutorSize(int threads){
+    	if(threads<=0) {
+    		postParseExecutor = null;
+    	} else {
+    		postParseExecutor = Executors.newFixedThreadPool(threads);
+    	}
+    }
+    
+
 
     public void close() {
         try {
@@ -385,6 +423,14 @@ public final class PipelinedMsgParser implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.28  2010/03/19 17:29:46  deruelle_jean
+ * Adding getters and setters for the new factories
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  Jean Deruelle
+ * Reviewed by:
+ *
  * Revision 1.27  2010/03/15 17:08:57  deruelle_jean
  * Adding javadoc
  *
