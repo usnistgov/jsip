@@ -59,7 +59,7 @@ import javax.sip.address.Hop;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.65 $ $Date: 2010-03-15 17:01:17 $
+ * @version 1.2 $Revision: 1.65.2.1 $ $Date: 2010-07-01 17:28:33 $
  */
 public class TCPMessageChannel extends MessageChannel implements SIPMessageListener, Runnable,
         RawMessageChannel {
@@ -404,6 +404,15 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
             sipMessage.addUnparsed(header);
         }
     }
+    
+    public void processMessage(SIPMessage sipMessage, InetAddress address) {
+    	this.peerAddress = address;
+    	try {
+			processMessage(sipMessage);
+		} catch (Exception e) {
+			sipStack.getStackLogger().logError("ERROR processing self routing", e);
+		}
+    }
 
     /**
      * Gets invoked by the parser as a callback on successful message parsing (i.e. no parser
@@ -438,7 +447,9 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
                 Hop hop = sipStack.addressResolver.resolveAddress(v.getHop());
                 this.peerProtocol = v.getTransport();
                 try {
-                    this.peerAddress = mySock.getInetAddress();
+                	if(mySock != null) { // selfrouting makes socket = null
+                		this.peerAddress = mySock.getInetAddress();
+                	}
                     // Check to see if the received parameter matches
                     // the peer address and tag it appropriately.
 
@@ -462,7 +473,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
                     InternalErrorHandler.handleException(ex, sipStack.getStackLogger());
                 }
                 // Use this for outgoing messages as well.
-                if (!this.isCached) {
+                if (!this.isCached && mySock != null) {
                     ((TCPMessageProcessor) this.messageProcessor).cacheMessageChannel(this);
                     this.isCached = true;
                     int remotePort = ((java.net.InetSocketAddress) mySock.getRemoteSocketAddress()).getPort();
@@ -619,7 +630,9 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
                                 }
                             }
                             hispipe.close();
-                            mySock.close();
+                            if(mySock != null) {
+                          	  mySock.close();
+                            }
                         } catch (IOException ioex) {
                         }
                         return;
@@ -645,7 +658,9 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
                                     tcpMessageProcessor.notify();
                                 }
                             }
-                            mySock.close();
+                            if(mySock != null) {
+                            	mySock.close();
+                            }
                             hispipe.close();
                         } catch (IOException ioex) {
                         }
