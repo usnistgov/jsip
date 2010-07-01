@@ -1,0 +1,22 @@
+<!-- DTD for torture test cases -->
+<!ELEMENT torture (testcase+)>
+<!ATTLIST torture 
+            testlog   CDATA    #IMPLIED
+            debug     CDATA    #IMPLIED
+            date     CDATA    #IMPLIED
+            output-results CDATA #IMPLIED
+            author   CDATA    "M. Ranganathan &lt; mailto:mranga@nist.gov &gt;"
+	    output-parsed-structures CDATA #IMPLIED
+	    abort-on-fail CDATA #IMPLIED
+>
+<!ELEMENT testcase (description?, (message|sip-header|sip-url), 
+	expect-exception-callback*)>
+<!ELEMENT description (#PCDATA) >
+<!ELEMENT message (#PCDATA) >
+<!ELEMENT sip-header (#PCDATA) >
+<!ELEMENT sip-url (#PCDATA) >
+<!ELEMENT expect-exception-callback (exception-text?) >
+<!ATTLIST expect-exception-callback 
+	  exception-class CDATA #REQUIRED
+>
+<!ELEMENT exception-text (#PCDATA) >

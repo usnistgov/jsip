@@ -1,0 +1,55 @@
+<project basedir="." default="shootme">
+	<property name="packageprefix" value="test.load.concurrency" />
+	<property name="root" value="../../../../" />
+	<property file="${root}/ant-build-config.properties" />
+	<property name="classes" value="${root}/classes" />
+	<property name="srcroot" value="${root}/src" />
+	<property name="log4j_jar" value="${root}/${log4j}" />
+	<property name="junit_jar" value="${root}/${junit}" />
+	<path id="project.class.path">
+		<pathelement location="${classes}" />
+		<pathelement location="${log4j_jar}" />
+		<pathelement location="${junit_jar}" />
+	</path>
+	<target name="make">
+		<javac debug="true" source="${javac.source}" deprecation="${javac.deprecation}" debuglevel="${javac.debuglevel}" srcdir="${srcroot}" includes="test/load/concurrency/**/*.java" classpathref="project.class.path" destdir="${classes}">
+		</javac>
+	</target>
+	<target name="shootist1" depends="make" description="build and run the  example UAc.">
+		<delete file="shootmedebug.txt" />
+		<delete file="shootmelog.txt" />
+		<exec dir="." executable="${java.home}/bin/java.exe" >
+		    <arg line="-classpath ${classes};${log4j_jar};${junit_jar}" />
+		    <arg line="-Xrunyjpagent:onexit=memory,alloc,dir=/. ${packageprefix}/Shootist" />
+		    <arg line="101" />
+		</exec>
+	</target>
+
+	<target name="shootme" depends="make" description="run the example UAs.">
+		<delete file="shootistdebug.txt" />
+		<delete file="shootistlog.txt" />
+		<java classname="${packageprefix}.Shootme" fork="true" maxmemory="128m" classpathref="project.class.path" />
+	</target>
+	<target name="shootist" depends="make" description="run the example UAs.">
+		<delete file="shootistdebug.txt" />
+		<delete file="shootistlog.txt" />
+		<java classname="${packageprefix}.Shootist" fork="true" maxmemory="128m" classpathref="project.class.path" >
+		<arg value="10000" />
+		</java>
+	</target>
+	<target name="selftest" depends="make" description="run the example UAs.">
+		<delete file="shootistdebug.txt" />
+		<delete file="shootistlog.txt" />
+		<java classname="${packageprefix}.SelfTest" fork="true" maxmemory="128m" classpathref="project.class.path" >
+		<arg value="10000" />
+		</java>
+	</target>
+	<target name="clean" description="clean the logs">
+		<delete failonerror="0">
+		   <fileset file="*debug.txt" />
+		   <fileset file="*log.txt" />
+		</delete>
+	</target>
+
+
+</project>
