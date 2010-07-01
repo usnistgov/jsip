@@ -81,7 +81,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.75 $ $Date: 2010-02-19 02:15:44 $
+ * @version 1.2 $Revision: 1.75.2.1 $ $Date: 2010-07-01 17:28:33 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -742,6 +742,38 @@ public abstract class SIPTransaction extends MessageChannel implements
         // created. Bug was noted by Bruce Evangelder
         // soleo communications.
         try {
+            for (MessageProcessor messageProcessor : sipStack
+                    .getMessageProcessors()) {
+            	boolean addrmatch = messageProcessor.getIpAddress().getHostAddress().toString().equals(this.peerAddress);
+                if (addrmatch
+                        && messageProcessor.getPort() == this.peerPort
+                        && messageProcessor.getTransport().equalsIgnoreCase(
+                                this.peerProtocol)) {
+                    if (encapsulatedChannel instanceof TCPMessageChannel) {
+                        try {
+							((TCPMessageChannel) encapsulatedChannel)
+							        .processMessage(messageToSend, this.peerInetAddress);
+						} catch (Exception e) {
+							sipStack.getStackLogger().logError("Error passing message in self routing", e);
+						}
+                        if (sipStack.isLoggingEnabled())
+                        	sipStack.getStackLogger().logDebug("Self routing message");
+                        return;
+                    }
+                    if (encapsulatedChannel instanceof RawMessageChannel) {
+                        try {
+							((RawMessageChannel) encapsulatedChannel)
+							        .processMessage(messageToSend);
+						} catch (Exception e) {
+							sipStack.getStackLogger().logError("Error passing message in self routing", e);
+						}
+                        if (sipStack.isLoggingEnabled())
+                        	sipStack.getStackLogger().logDebug("Self routing message");
+                        return;
+                    }
+
+                }
+            }
             encapsulatedChannel.sendMessage(messageToSend,
                     this.peerInetAddress, this.peerPort);
         } finally {
