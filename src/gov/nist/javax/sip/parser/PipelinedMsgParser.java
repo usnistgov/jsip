@@ -59,7 +59,7 @@ import java.util.concurrent.Executors;
  * accessed from the SIPMessage using the getContent and getContentBytes methods
  * provided by the SIPMessage class.
  *
- * @version 1.2 $Revision: 1.30 $ $Date: 2010-07-01 18:22:56 $
+ * @version 1.2 $Revision: 1.31 $ $Date: 2010-07-01 18:53:25 $
  *
  * @author M. Ranganathan
  *
@@ -403,10 +403,12 @@ public final class PipelinedMsgParser implements Runnable {
     private static Executor postParseExecutor = null;
     
     public static void setPostParseExcutorSize(int threads){
-    	if(threads<=0) {
-    		postParseExecutor = null;
-    	} else {
-    		postParseExecutor = Executors.newFixedThreadPool(threads);
+    	if(postParseExecutor == null) {
+    		if(threads<=0) {
+    			postParseExecutor = null;
+    		} else {
+    			postParseExecutor = Executors.newFixedThreadPool(threads);
+    		}
     	}
     }
     
@@ -422,6 +424,12 @@ public final class PipelinedMsgParser implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.30  2010/07/01 18:22:56  vralev
+ * Issue number:  301
+ * Obtained from: vralev
+ * Submitted by:  vralev
+ * Reviewed by:   ranga
+ *
  * Revision 1.29  2010/05/06 14:07:45  deruelle_jean
  * Big update to improve performance by 50% in some cases, TCK + testsuite (cc-buildloop) green, Mobicents Sip Servlets TCK + testsuite green as well
  *
