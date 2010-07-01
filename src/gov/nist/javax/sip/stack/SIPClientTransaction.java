@@ -179,7 +179,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.128 $ $Date: 2010-06-08 20:30:33 $
+ * @version 1.2 $Revision: 1.129 $ $Date: 2010-07-01 10:25:51 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -1685,7 +1685,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
 					originalRequest = (SIPRequest) sipStack.getMessageParserFactory().createMessageParser(sipStack).parseSIPMessage(originalRequestBytes, true, false, null);
 					originalRequestBytes = null;
 				} catch (ParseException e) {
-					sipStack.getStackLogger().logError("message " + originalRequestBytes + "could not be reparsed !");
+					sipStack.getStackLogger().logError("message " + originalRequestBytes + " could not be reparsed !");
 				}
 			}   
     	}
