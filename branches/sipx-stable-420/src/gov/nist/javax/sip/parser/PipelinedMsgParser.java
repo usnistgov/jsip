@@ -59,7 +59,7 @@ import java.util.concurrent.Executors;
  * accessed from the SIPMessage using the getContent and getContentBytes methods
  * provided by the SIPMessage class.
  *
- * @version 1.2 $Revision: 1.28.2.1 $ $Date: 2010-07-01 18:24:26 $
+ * @version 1.2 $Revision: 1.28.2.2 $ $Date: 2010-07-01 18:50:50 $
  *
  * @author M. Ranganathan
  *
@@ -404,10 +404,12 @@ public final class PipelinedMsgParser implements Runnable {
     private static Executor postParseExecutor = null;
     
     public static void setPostParseExcutorSize(int threads){
-    	if(threads<=0) {
-    		postParseExecutor = null;
-    	} else {
-    		postParseExecutor = Executors.newFixedThreadPool(threads);
+    	if(postParseExecutor == null) { // Only take into account the first setting
+    		if(threads<=0) {
+    			postParseExecutor = null;
+    		} else {
+    			postParseExecutor = Executors.newFixedThreadPool(threads);
+    		}
     	}
     }
     
@@ -423,6 +425,14 @@ public final class PipelinedMsgParser implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.28.2.1  2010/07/01 18:24:26  vralev
+ * Issue number:  301
+ * Obtained from: vralev
+ * Submitted by:  vralev
+ * Reviewed by:   ranga
+ *
+ * Backporting to the sipx stable branch
+ *
  * Revision 1.28  2010/03/19 17:29:46  deruelle_jean
  * Adding getters and setters for the new factories
  *
