@@ -168,7 +168,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.128 $ $Date: 2010-06-08 20:30:32 $
+ * @version 1.2 $Revision: 1.129 $ $Date: 2010-07-02 23:33:34 $
  * @author M. Ranganathan
  *
  */
@@ -1001,11 +1001,12 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                          * state. The server transaction remains in this state until Timer J
                          * fires, at which point it MUST transition to the "Terminated" state.
                          */
-                        startTransactionTimerJ();
+                        startTransactionTimerJ(TIMER_J);
                         cleanUpOnTimer();
                     } else {
-                    	cleanUpOnTimer();
+                    	cleanUpOnTimer();                    	
                         this.setState(TransactionState._TERMINATED);
+                        startTransactionTimerJ(0);
                     }
                 } else {
                     // This is the case for INVITE server transactions.
@@ -1113,9 +1114,10 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
                     disableRetransmissionTimer();
 //                    enableTimeoutTimer(TIMER_J);
-                    startTransactionTimerJ();
+                    startTransactionTimerJ(TIMER_J);
                 } else {
                     this.setState(TransactionState._TERMINATED);
+                    startTransactionTimerJ(0);
                 }
                 cleanUpOnTimer();
             }
@@ -1568,15 +1570,15 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
     /**
      * Start the timer task.
      */
-    protected void startTransactionTimerJ() {
+    protected void startTransactionTimerJ(long time) {
 	        if (this.transactionTimerStarted.compareAndSet(false, true)) {
 	        	if (sipStack.getTimer() != null) {
 	        		if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-	                    sipStack.getStackLogger().logDebug("starting TransactionTimerJ() : " + getTransactionId());
+	                    sipStack.getStackLogger().logDebug("starting TransactionTimerJ() : " + getTransactionId() + " time " + time);
 	                }
 	                // The timer is set to null when the Stack is
 	                // shutting down.
-	        		 sipStack.getTimer().schedule(new SIPStackTimerTask () {                        	                         	        			 
+	        		sipStack.getTimer().schedule(new SIPStackTimerTask () {                        	                         	        			 
 	        			 
                          public void runTask() {
                         	 if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
@@ -1588,7 +1590,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                              	originalRequest.cleanUp();
                              }
                          }
-                     }, TIMER_J * T1 * BASE_TIMER_INTERVAL);
+                     }, time * T1 * BASE_TIMER_INTERVAL);
 	            }
 	        }        
     }
