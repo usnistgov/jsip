@@ -127,7 +127,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.172.2.1 $ $Date: 2010-06-17 11:30:35 $
+ * @version 1.2 $Revision: 1.172.2.2 $ $Date: 2010-07-02 08:06:05 $
  * 
  * @author M. Ranganathan
  * 
@@ -154,36 +154,36 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     private transient SIPRequest originalRequest;
 
     // Last response (JvB: either sent or received).
-    private SIPResponse lastResponse;
+    protected SIPResponse lastResponse;
 
     // Should be transient, in case the dialog is serialized it will be null
     // so when a subsequent request will be sent it will be set and a new message channel can be
     // created
-    private transient SIPTransaction firstTransaction;
+    protected transient SIPTransaction firstTransaction;
 
-    private transient SIPTransaction lastTransaction;
+    protected transient SIPTransaction lastTransaction;
 
-    private String dialogId;
+    protected String dialogId;
 
-    private transient String earlyDialogId;
+    protected transient String earlyDialogId;
 
-    private long localSequenceNumber;
+    protected long localSequenceNumber;
 
-    private long remoteSequenceNumber;
+    protected long remoteSequenceNumber;
 
     protected String myTag;
 
     protected String hisTag;
 
-    private RouteList routeList;
+    protected RouteList routeList;
 
     private transient SIPTransactionStack sipStack;
 
     private int dialogState;
     
-    private transient SIPRequest lastAckSent;
+    protected transient SIPRequest lastAckSent;
 
-    private SIPRequest lastAckReceived;
+    protected SIPRequest lastAckReceived;
 
     // could be set on recovery by examining the method looks like a duplicate of ackSeen
     protected transient boolean ackProcessed;
@@ -196,7 +196,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
     private transient int prevRetransmissionTicks;
 
-    private long originalLocalSequenceNumber;
+    protected long originalLocalSequenceNumber;
 
     // This is for debugging only.
     private transient int ackLine;
@@ -225,23 +225,23 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
     private static final int DIALOG_LINGER_TIME = 8;
 
-    private boolean serverTransactionFlag;
+    protected boolean serverTransactionFlag;
 
     private transient SipProviderImpl sipProvider;
 
-    private boolean terminateOnBye;
+    protected boolean terminateOnBye;
 
-    private transient boolean byeSent; // Flag set when BYE is sent, to disallow new
+    protected transient boolean byeSent; // Flag set when BYE is sent, to disallow new
 
     // requests
 
-    private Address remoteTarget;
+    protected Address remoteTarget;
 
-    private EventHeader eventHeader; // for Subscribe notify
+    protected EventHeader eventHeader; // for Subscribe notify
 
     // Stores the last OK for the INVITE
     // Used in createAck.
-    private transient long lastInviteOkReceived;
+    protected transient long lastInviteOkReceived;
 
     private transient Semaphore ackSem = new Semaphore(1);
 
@@ -255,9 +255,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     
     private transient long highestSequenceNumberAcknowledged = -1;
     
-    private boolean isBackToBackUserAgent;
+    protected boolean isBackToBackUserAgent;
 
-    private boolean sequenceNumberValidation = true;
+    protected boolean sequenceNumberValidation = true;
 
     // List of event listeners for this dialog
 	private transient Set<SIPDialogEventListener> eventListeners;
@@ -1483,7 +1483,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         return this.dialogId;
     }
 
-    private void storeFirstTransactionInfo(SIPDialog dialog, SIPTransaction transaction) {
+    protected void storeFirstTransactionInfo(SIPDialog dialog, SIPTransaction transaction) {
     	dialog.firstTransaction = transaction;
     	dialog.firstTransactionSeen = true;
     	dialog.firstTransactionIsServerTransaction = transaction.isServerTransaction(); 
@@ -3433,6 +3433,13 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 		
 	}
 	
-    
+    	/**
+	 * @return the lastResponseTopMostVia
+	 */
+	public Via getLastResponseTopMostVia() {
+		if(lastResponse == null)
+			return null;
+		return lastResponse.getTopmostVia();
+	}
 	
 }
