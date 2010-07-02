@@ -179,7 +179,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.129 $ $Date: 2010-07-01 10:25:51 $
+ * @version 1.2 $Revision: 1.130 $ $Date: 2010-07-02 23:33:34 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -617,9 +617,10 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                 }
                 if (!isReliable()) {
                     this.setState(TransactionState._COMPLETED);
-                    scheduleTimerK();        
+                    scheduleTimerK(TIMER_K);        
                 } else {
                     this.setState(TransactionState._TERMINATED);
+                    cleanUpOnTerminated();
                 }
                 cleanUpOnTimer();
             }
@@ -640,9 +641,10 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                 disableTimeoutTimer();
                 if (!isReliable()) {
                     this.setState(TransactionState._COMPLETED);
-                    scheduleTimerK();
-                } else {
+                    scheduleTimerK(TIMER_K);
+                } else {                    
                     this.setState(TransactionState._TERMINATED);
+                    cleanUpOnTerminated();
                 }
                 cleanUpOnTimer();
             }
@@ -656,19 +658,25 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
     }    
 
     // avoid re-scheduling the transaction timer every 500ms while we know we have to wait for TIMER_K * 500 ms
-	private void scheduleTimerK() {
+	private void scheduleTimerK(long time) {
 		if(transactionTimer != null &&  timerKStarted.compareAndSet(false, true)) {
 			synchronized (transactionTimerLock) {
 				if(!transactionTimerCancelled) {
 					sipStack.getTimer().cancel(transactionTimer);
 					transactionTimer = null;
+					if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                        sipStack.getStackLogger().logDebug("starting TransactionTimerK() : " + getTransactionId() + " time " + time);
+                    }
 					sipStack.getTimer().schedule(new SIPStackTimerTask () {                        	
 		                
 		                public void runTask() {
+		                    if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                                sipStack.getStackLogger().logDebug("executing TransactionTimerJ() : " + getTransactionId());
+                            }
 		                    fireTimeoutTimer();                                  
 		                    cleanUpOnTerminated();
 		                }
-		            }, TIMER_K * BASE_TIMER_INTERVAL);
+		            }, time * BASE_TIMER_INTERVAL);
 					transactionTimerCancelled =true;
 				}
 			}        	        	
