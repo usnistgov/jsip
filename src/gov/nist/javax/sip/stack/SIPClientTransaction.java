@@ -179,7 +179,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.130 $ $Date: 2010-07-02 23:33:34 $
+ * @version 1.2 $Revision: 1.131 $ $Date: 2010-07-05 10:06:16 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -1728,11 +1728,15 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
             // it.
             if(((SipStackImpl)getSIPStack()).isReEntrantListener() && sipStack.isAggressiveCleanup()) {
             	cleanUp();     
-            } else {
-            	SIPStackTimerTask myTimer = new LingerTimer();
-                sipStack.getTimer().schedule(myTimer,
-                        SIPTransactionStack.CONNECTION_LINGER_TIME * 1000);
-            }
+            } 
+            // Commented out for Issue 298 : not to break backward compatibility
+            // this piece of code was not present before aggressive optimizations
+            // see sipx-stable-420 branch
+//            else {
+//            	SIPStackTimerTask myTimer = new LingerTimer();
+//                sipStack.getTimer().schedule(myTimer,
+//                        SIPTransactionStack.CONNECTION_LINGER_TIME * 1000);
+//            }
         }
     	
 	}
