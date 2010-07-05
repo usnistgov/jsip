@@ -100,7 +100,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.158 $ $Date: 2010-07-05 11:55:00 $
+ * @version 1.2 $Revision: 1.159 $ $Date: 2010-07-05 18:31:20 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener, SIPDialogEventListener {
@@ -399,6 +399,8 @@ public abstract class SIPTransactionStack implements
 	// factory used to create MessageProcessor objects
 	public MessageProcessorFactory messageProcessorFactory;
    
+	protected boolean aggressiveCleanup = false;
+	
 	  /**
 	 * Executor used to optimise the ReinviteSender Runnable in the sendRequest
 	 * of the SipDialog
@@ -2863,5 +2865,18 @@ public abstract class SIPTransactionStack implements
 	public MessageProcessorFactory getMessageProcessorFactory() {
 		return messageProcessorFactory;
 	}
-
+	
+	/**
+	 * @param aggressiveCleanup the aggressiveCleanup to set
+	 */
+	public void setAggressiveCleanup(boolean aggressiveCleanup) {
+	    this.aggressiveCleanup = aggressiveCleanup;
+	}
+	
+	/**
+	 * @return the aggressiveCleanup
+	 */
+	public boolean isAggressiveCleanup() {
+	    return aggressiveCleanup;
+	}
 }
