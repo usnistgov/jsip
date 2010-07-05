@@ -168,7 +168,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.129 $ $Date: 2010-07-02 23:33:34 $
+ * @version 1.2 $Revision: 1.130 $ $Date: 2010-07-05 11:55:02 $
  * @author M. Ranganathan
  *
  */
@@ -1856,7 +1856,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
         if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
             sipStack.getStackLogger().logDebug("removing" + this);
         
-    	if(sipStack.isAggressiveCleanup()) {
+    	if(isReleaseReferences()) {
     		
 	    	// release the connection associated with this transaction.
 	        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
@@ -1912,7 +1912,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
     
     // clean up the state of the stx when it goes to completed or terminated to help GC
     protected void cleanUpOnTimer() {
-    	if(sipStack.isAggressiveCleanup()) {
+    	if(isReleaseReferences()) {
 	    	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 	            sipStack.getStackLogger().logDebug("cleanup on timer : "
 	                    + getTransactionId());

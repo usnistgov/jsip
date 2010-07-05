@@ -179,7 +179,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.131 $ $Date: 2010-07-05 10:06:16 $
+ * @version 1.2 $Revision: 1.132 $ $Date: 2010-07-05 11:55:03 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -1606,7 +1606,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
 
     // jeand method use to cleanup eagerly all structures that won't be needed anymore once the tx passed in the COMPLETED state
     protected void cleanUpOnTimer() {
-    	if(sipStack.isAggressiveCleanup()) {
+    	if(isReleaseReferences()) {
 	    	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 	            sipStack.getStackLogger().logDebug("cleanupOnTimer: "
 	                    + getTransactionId());
@@ -1645,7 +1645,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
     //jeand : cleanup method to clear the state of the tx once it has been removed from the stack
     @Override    
     public void cleanUp() {
-    	if(sipStack.isAggressiveCleanup()) {
+    	if(isReleaseReferences()) {
 	    	// release the connection associated with this transaction.
 	        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 	            sipStack.getStackLogger().logDebug("cleanup : "
@@ -1686,7 +1686,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                     "removing  = " + this + " isReliable "
                             + isReliable());
         }  
-    	if(sipStack.isAggressiveCleanup()) {
+    	if(isReleaseReferences()) {
 			
 			if(originalRequest == null && originalRequestBytes != null) {
 	        	try {
@@ -1726,7 +1726,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
             }                    
             // Let the connection linger for a while and then close
             // it.
-            if(((SipStackImpl)getSIPStack()).isReEntrantListener() && sipStack.isAggressiveCleanup()) {
+            if(((SipStackImpl)getSIPStack()).isReEntrantListener() && isReleaseReferences()) {
             	cleanUp();     
             } 
             // Commented out for Issue 298 : not to break backward compatibility

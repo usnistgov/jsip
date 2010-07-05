@@ -48,8 +48,22 @@ public interface DialogExt extends Dialog {
      */
     public void disableSequenceNumberValidation();
 
-  
+    /**
+     * retrieve the value of release references to know if the stack performs optimizations
+     * on cleanup to save on memory
+     * @return release references value
+     * 
+     * @since 2.0
+     */
+    public boolean isReleaseReferences();
     
-    
-
+    /**
+     * If set to true it will release all references that it no longer needs. This will include the reference to the
+     * Request, Transactions, Any unused timers etc. This will significantly reduce memory
+     * consumption under high load
+     * @param releaseReferences 
+     * 
+     * @since 2.0
+     */
+    public void setReleaseReferences(boolean releaseReferences);
 }
