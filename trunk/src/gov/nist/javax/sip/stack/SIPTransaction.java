@@ -78,7 +78,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.84 $ $Date: 2010-07-05 11:55:01 $
+ * @version 1.2 $Revision: 1.85 $ $Date: 2010-07-05 18:31:21 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -413,6 +413,7 @@ public abstract class SIPTransaction extends MessageChannel implements
         // of this transaction
         addEventListener(newParentStack);
 
+        releaseReferences = sipStack.isAggressiveCleanup();
     }
 
     public abstract void cleanUp();
