@@ -84,7 +84,7 @@ import javax.sip.message.Response;
  * together the NIST-SIP stack and event model with the JAIN-SIP stack. This is
  * strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.80 $ $Date: 2010-06-10 16:56:42 $
+ * @version 1.2 $Revision: 1.81 $ $Date: 2010-07-05 09:09:02 $
  * 
  * @author M. Ranganathan
  */
@@ -453,13 +453,11 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             SIPTransaction lastTransaction = ((SIPDialog) dialog)
                     .getLastTransaction();
             if (lastTransaction != null
-                    && sipProvider.isDialogErrorsAutomaticallyHandled()) {
-                final SIPRequest lastRequest = (SIPRequest) lastTransaction
-                        .getRequest();
-                final String lastRequestMethod = lastRequest.getMethod();
+                    && sipProvider.isDialogErrorsAutomaticallyHandled()) {               
+                final String lastTransactionMethod = lastTransaction.getMethod();
                 if (lastTransaction instanceof SIPServerTransaction) {
                     if (lastTransaction.getInternalState() == TransactionState._PROCEEDING
-                            && lastRequestMethod.equals(Request.INVITE)) {
+                            && lastTransactionMethod.equals(Request.INVITE)) {
                         this
                                 .sendRequestPendingResponse(sipRequest,
                                         transaction);
@@ -467,7 +465,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     }
                 } else if (lastTransaction != null
                         && lastTransaction instanceof SIPClientTransaction) {
-                    if (lastRequestMethod.equals(Request.INVITE)
+                    if (lastTransactionMethod.equals(Request.INVITE)
                             && lastTransaction.getInternalState() != TransactionState._TERMINATED
                             && lastTransaction.getInternalState() != TransactionState._COMPLETED) {
                         this
