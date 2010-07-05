@@ -455,10 +455,6 @@ import javax.sip.message.Request;
  * that allows application to see the ACK for retransmitted 200 OK requests. <b>Note that this is for test
  * purposes only</b></li>
  * 
- * <li><b>gov.nist.javax.sip.AGGRESSIVE_CLEANUP=boolean</b> A property that will cleanup Dialog, and Transaction structures
- * agrressively to improve memroy usage and performance (up to 50% gain). However one needs to be careful in its code 
- * on how and when it accesses transaction and dialog data since it cleans up aggressively when transactions changes state
- * to COMPLETED or TERMINATED and for Dialog once the ACK is received/sent</li>
  * 
  * <li><b>gov.nist.javax.sip.MIN_KEEPALIVE_TIME_SECONDS = integer</b> Minimum time between keep alive
  * pings (CRLF CRLF) from clients. If pings arrive with less than this frequency they will be replied
@@ -504,7 +500,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.130 $ $Date: 2010-07-01 18:22:55 $
+ * @version 1.2 $Revision: 1.131 $ $Date: 2010-07-05 11:54:59 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -1216,9 +1212,6 @@ public class SipStackImpl extends SIPTransactionStack implements
 				.logError(
 						"Bad configuration value for gov.nist.javax.sip.TIMER_CLASS_NAME", e);			
 		}
-		super.aggressiveCleanup = Boolean.parseBoolean(configurationProperties
-				.getProperty("gov.nist.javax.sip.AGGRESSIVE_CLEANUP",
-						Boolean.FALSE.toString()));
 	}
 
 	/*
