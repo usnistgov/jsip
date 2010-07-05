@@ -38,7 +38,6 @@ import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.message.SIPResponse;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.net.InetAddress;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateParsingException;
@@ -53,7 +52,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -80,7 +78,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.83 $ $Date: 2010-06-24 17:02:02 $
+ * @version 1.2 $Revision: 1.84 $ $Date: 2010-07-05 11:55:01 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -271,7 +269,10 @@ public abstract class SIPTransaction extends MessageChannel implements
 
 //    protected String fromTag;
 
-    private boolean terminatedEventDelivered;        
+    private boolean terminatedEventDelivered;      
+    
+    // aggressive flag to optimize eagerly
+    private boolean releaseReferences;
 
     public String getBranchId() {
         return this.branch;
@@ -488,7 +489,7 @@ public abstract class SIPTransaction extends MessageChannel implements
      * @return the request that generated this transaction.
      */
     public Request getRequest() {
-        if(sipStack.isAggressiveCleanup() && originalRequest == null && originalRequestBytes != null) {
+        if(isReleaseReferences() && originalRequest == null && originalRequestBytes != null) {
             if(sipStack.getStackLogger().isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
                 sipStack.getStackLogger().logDebug("reparsing original request " + originalRequestBytes + " since it was eagerly cleaned up, but beware this is not efficient with the aggressive flag set !");
             }
@@ -1471,4 +1472,19 @@ public abstract class SIPTransaction extends MessageChannel implements
      */
     protected abstract void fireTimeoutTimer();    
 
+    /*
+     * (non-Javadoc)
+     * @see gov.nist.javax.sip.DialogExt#isReleaseReferences()
+     */
+    public boolean isReleaseReferences() {        
+        return releaseReferences;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see gov.nist.javax.sip.DialogExt#setReleaseReferences(boolean)
+     */
+    public void setReleaseReferences(boolean releaseReferences) {
+        this.releaseReferences = releaseReferences;
+    }
 }

@@ -128,7 +128,7 @@ import javax.sip.message.Response;
  * that has a To tag). The SIP Protocol stores enough state in the message structure to extract a
  * dialog identifier that can be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.187 $ $Date: 2010-06-24 18:18:33 $
+ * @version 1.2 $Revision: 1.188 $ $Date: 2010-07-05 11:55:02 $
  * 
  * @author M. Ranganathan
  * 
@@ -290,6 +290,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 	protected String contactHeaderStringified;
 	
 	private boolean pendingRouteUpdateOn202Response;
+
+	// aggressive flag to optimize eagerly
+    private boolean releaseReferences;
 
 
     // //////////////////////////////////////////////////////
@@ -3629,7 +3632,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 	// jeand cleanup the dialog from the data not needed anymore upon receiving or sending an ACK
     // to save on mem
     protected void cleanUpOnAck() {
-    	if(sipStack.isAggressiveCleanup()) {
+    	if(isReleaseReferences()) {
 	    	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 	            sipStack.getStackLogger().logDebug("cleanupOnAck : "
 	                    + getDialogId());
@@ -3679,7 +3682,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     
     // jeand : cleanup of the dialog 
     protected void cleanUp() {
-    	if(sipStack.isAggressiveCleanup()) {
+    	if(isReleaseReferences()) {
 	    	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 	            sipStack.getStackLogger().logDebug("cleanup : "
 	                    + getDialogId());
@@ -3742,4 +3745,20 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 	public Via getLastResponseTopMostVia() {
 		return lastResponseTopMostVia;
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see gov.nist.javax.sip.DialogExt#isReleaseReferences()
+	 */
+    public boolean isReleaseReferences() {        
+        return releaseReferences;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see gov.nist.javax.sip.DialogExt#setReleaseReferences(boolean)
+     */
+    public void setReleaseReferences(boolean releaseReferences) {
+        this.releaseReferences = releaseReferences;
+    }
 }

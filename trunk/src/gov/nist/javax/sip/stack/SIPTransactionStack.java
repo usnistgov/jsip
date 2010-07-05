@@ -100,7 +100,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.157 $ $Date: 2010-07-01 18:22:56 $
+ * @version 1.2 $Revision: 1.158 $ $Date: 2010-07-05 11:55:00 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener, SIPDialogEventListener {
@@ -386,8 +386,6 @@ public abstract class SIPTransactionStack implements
 	// ThreadPool when parsed SIP messages are processed. Affects the case when many TCP calls use single socket.
 	private int tcpPostParsingThreadPoolSize = 0;
     
-    protected boolean aggressiveCleanup = false;
-
     // Minimum time between NAT kee alive pings from clients.
     // Any ping that exceeds this time will result in  CRLF CRLF going
     // from the UDP message channel. 
@@ -2864,20 +2862,6 @@ public abstract class SIPTransactionStack implements
 	 */
 	public MessageProcessorFactory getMessageProcessorFactory() {
 		return messageProcessorFactory;
-	}
-
-	/**
-	 * @param aggressiveCleanup the aggressiveCleanup to set
-	 */
-	public void setAggressiveCleanup(boolean aggressiveCleanup) {
-		this.aggressiveCleanup = aggressiveCleanup;
-	}
-
-	/**
-	 * @return the aggressiveCleanup
-	 */
-	public boolean isAggressiveCleanup() {
-		return aggressiveCleanup;
 	}
 
 }
