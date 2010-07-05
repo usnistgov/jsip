@@ -274,11 +274,11 @@ c:/jakarta-ant/bin/ant all
                                         value="${jain-sip-ri-jar}"/>
                         </manifest>
                     </jar>
-                    <jar destfile="${jain-sip-ri-src-jar}" basedir="${srcroot}" includes="TIMESTAMP,gov/nist/**/*.java"
+                    <jar destfile="${jain-sip-src-jar}" basedir="${srcroot}" includes="TIMESTAMP,gov/nist/**/*.java"
                                                                             excludes="gov/nist/javax/sip/stack/sctp/**/*.java">
                         <manifest>
                             <attribute	name="Original-Jar-Name"
-                                        value="${jain-sip-ri-src-jar}"/>
+                                        value="${jain-sip-src-jar}"/>
                         </manifest>
                     </jar>
                 </target>
