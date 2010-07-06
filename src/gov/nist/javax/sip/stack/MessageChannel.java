@@ -63,7 +63,7 @@ import javax.sip.header.ViaHeader;
  * @author M. Ranganathan <br/> Contains additions for support of symmetric NAT contributed by
  *         Hagai.
  * 
- * @version 1.2 $Revision: 1.29 $ $Date: 2010-02-16 05:08:33 $
+ * @version 1.2 $Revision: 1.29.2.1 $ $Date: 2010-07-06 21:39:11 $
  * 
  * 
  */
@@ -210,7 +210,7 @@ public abstract class MessageChannel {
             for (MessageProcessor messageProcessor : getSIPStack().getMessageProcessors()) {
                 if (messageProcessor.getIpAddress().equals(hopAddr)
                         && messageProcessor.getPort() == hop.getPort()
-                        && messageProcessor.getTransport().equals(hop.getTransport())) {
+                        && messageProcessor.getTransport().equalsIgnoreCase(hop.getTransport())) {
                     MessageChannel messageChannel = messageProcessor.createMessageChannel(
                             hopAddr, hop.getPort());
                     if (messageChannel instanceof RawMessageChannel) {
