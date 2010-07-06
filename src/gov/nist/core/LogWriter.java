@@ -311,16 +311,24 @@ public class LogWriter implements StackLogger {
                 //the log4j effective log level.
                 Level level = logger.getEffectiveLevel();
                 this.needsLogging = true;
-                if (level == Level.OFF)
+                if (level == Level.OFF) {
                     this.needsLogging = false;
-                this.traceLevel = TRACE_NONE;
-                if (level.isGreaterOrEqual(Level.DEBUG)) {
-                    this.traceLevel = TRACE_DEBUG;
-                } else if (level.isGreaterOrEqual(Level.INFO)) {
-                    this.traceLevel = TRACE_INFO;
-                } else if (level.isGreaterOrEqual(Level.WARN)) {
-                    this.traceLevel = TRACE_ERROR;
                 }
+                this.traceLevel = TRACE_NONE;
+                if (level.equals(Level.TRACE)) {
+                    this.traceLevel = TRACE_TRACE;
+                } else if (level.equals(Level.DEBUG)) {
+                    this.traceLevel = TRACE_DEBUG;
+                } else if (level.equals(Level.INFO)) {
+                    this.traceLevel = TRACE_INFO;
+                } else if (level.equals(Level.ERROR)) {
+                    this.traceLevel = TRACE_ERROR;
+                } else if (level.equals(Level.WARN)) {
+                    this.traceLevel = TRACE_WARN;
+                } else if (level.equals(Level.FATAL)) {
+                    this.traceLevel = TRACE_FATAL;
+                }
+                
             }
             else {
                 try {
