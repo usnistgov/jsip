@@ -88,7 +88,7 @@ import javax.sip.address.Hop;
  *
  *
  *
- * @version 1.2 $Revision: 1.74 $ $Date: 2010-06-08 20:30:31 $
+ * @version 1.2 $Revision: 1.75 $ $Date: 2010-07-06 21:38:16 $
  */
 public class UDPMessageChannel extends MessageChannel implements
         ParseExceptionListener, Runnable, RawMessageChannel {
@@ -643,7 +643,7 @@ public class UDPMessageChannel extends MessageChannel implements
                     .getMessageProcessors()) {
                 if (messageProcessor.getIpAddress().equals(this.peerAddress)
                         && messageProcessor.getPort() == this.peerPort
-                        && messageProcessor.getTransport().equals(
+                        && messageProcessor.getTransport().equalsIgnoreCase(
                                 this.peerProtocol)) {
                     MessageChannel messageChannel = messageProcessor
                             .createMessageChannel(this.peerAddress,
