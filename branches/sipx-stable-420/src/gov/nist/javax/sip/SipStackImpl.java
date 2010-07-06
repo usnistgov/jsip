@@ -493,7 +493,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.125.2.1 $ $Date: 2010-07-01 18:24:27 $
+ * @version 1.2 $Revision: 1.125.2.2 $ $Date: 2010-07-06 13:18:06 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -545,6 +545,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 			"SSLv2Hello",
 			"TLSv1"
 	};
+	
+	private Properties configurationProperties;
 
 	/**
 	 * Creates a new instance of SipStackImpl.
@@ -594,6 +596,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 	public SipStackImpl(Properties configurationProperties)
 			throws PeerUnavailableException {
 		this();
+		this.configurationProperties = configurationProperties;
 		String address = configurationProperties
 				.getProperty("javax.sip.IP_ADDRESS");
 		try {
@@ -1624,6 +1627,11 @@ public class SipStackImpl extends SIPTransactionStack implements
     }
 
 
-    
+    /**
+	 * @return the configurationProperties
+	 */
+	public Properties getConfigurationProperties() {
+		return configurationProperties;
+	}
 
 }
