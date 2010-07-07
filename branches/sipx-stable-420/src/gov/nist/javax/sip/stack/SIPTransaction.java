@@ -81,7 +81,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.75.2.1 $ $Date: 2010-07-01 17:28:33 $
+ * @version 1.2 $Revision: 1.75.2.2 $ $Date: 2010-07-07 08:34:26 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -1079,14 +1079,10 @@ public abstract class SIPTransaction extends MessageChannel implements
             throw new IllegalStateException(
                     "Transaction timer is already started");
         BASE_TIMER_INTERVAL = retransmitTimer;
-        T4 = 5000 / BASE_TIMER_INTERVAL;
-
-        T2 = 4000 / BASE_TIMER_INTERVAL;
-        TIMER_I = T4;
-
-        TIMER_K = T4;
-
-        TIMER_D = 32000 / BASE_TIMER_INTERVAL;
+        // Commented out for Issue 303 since those timers are configured separately now  
+//      T4 = 5000 / BASE_TIMER_INTERVAL;
+//      T2 = 4000 / BASE_TIMER_INTERVAL;
+//      TIMER_D = 32000 / BASE_TIMER_INTERVAL;
 
     }
 
@@ -1428,4 +1424,54 @@ public abstract class SIPTransaction extends MessageChannel implements
      */
     protected abstract void fireTimeoutTimer();    
 
+
+    /*
+     * (non-Javadoc)
+     * @see gov.nist.javax.sip.TransactionExt#getTimerD()
+     */
+    public int getTimerD() {      
+        return TIMER_D;
+    }
+   
+    /*
+     * (non-Javadoc)
+     * @see gov.nist.javax.sip.TransactionExt#getTimerT2()
+     */
+    public int getTimerT2() {
+        return T2;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see gov.nist.javax.sip.TransactionExt#getTimerT4()
+     */
+    public int getTimerT4() {
+        return T4;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see gov.nist.javax.sip.TransactionExt#setTimerD(int)
+     */
+    public void setTimerD(int interval) {
+        TIMER_D = interval / BASE_TIMER_INTERVAL;
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see gov.nist.javax.sip.TransactionExt#setTimerT2(int)
+     */
+    public void setTimerT2(int interval) {
+        T2 = interval / BASE_TIMER_INTERVAL; 
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see gov.nist.javax.sip.TransactionExt#setTimerT4(int)
+     */
+    public void setTimerT4(int interval) {
+        T4 = interval / BASE_TIMER_INTERVAL;
+        TIMER_I = T4;
+        TIMER_K = T4;
+    }
 }
