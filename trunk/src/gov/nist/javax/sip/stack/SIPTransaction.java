@@ -78,7 +78,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.86 $ $Date: 2010-07-07 08:34:19 $
+ * @version 1.2 $Revision: 1.87 $ $Date: 2010-07-07 15:57:02 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -1514,6 +1514,9 @@ public abstract class SIPTransaction extends MessageChannel implements
      * @see gov.nist.javax.sip.TransactionExt#setTimerD(int)
      */
     public void setTimerD(int interval) {
+        if(interval < 32000) {
+            throw new IllegalArgumentException("To be RFC 3261 compliant, the value of Timer D should be at least 32s");
+        }
         TIMER_D = interval / BASE_TIMER_INTERVAL;
     }
     
