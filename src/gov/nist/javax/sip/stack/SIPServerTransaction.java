@@ -168,7 +168,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.130 $ $Date: 2010-07-05 11:55:02 $
+ * @version 1.2 $Revision: 1.131 $ $Date: 2010-07-07 18:57:35 $
  * @author M. Ranganathan
  *
  */
@@ -1874,8 +1874,11 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 			}   
 	        sipStack.removeTransaction(this);
 	        cleanUpOnTimer();
-	        originalRequestBytes = null;
-	        originalRequestBranch = null;
+	        // commented out because the application can hold on a ref to the tx
+            // after it has been removed from the stack
+            // and want to get the request or branch from it
+//          originalRequestBytes = null;
+//          originalRequestBranch = null;
 	        originalRequestFromTag = null;
 	        originalRequestSentBy = null;
 	        // it should be available in the processTxTerminatedEvent, so we can nullify it only here

@@ -78,7 +78,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.87 $ $Date: 2010-07-07 15:57:02 $
+ * @version 1.2 $Revision: 1.88 $ $Date: 2010-07-07 18:57:35 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -491,8 +491,8 @@ public abstract class SIPTransaction extends MessageChannel implements
      */
     public Request getRequest() {
         if(isReleaseReferences() && originalRequest == null && originalRequestBytes != null) {
-            if(sipStack.getStackLogger().isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-                sipStack.getStackLogger().logDebug("reparsing original request " + originalRequestBytes + " since it was eagerly cleaned up, but beware this is not efficient with the aggressive flag set !");
+            if(sipStack.getStackLogger().isLoggingEnabled(StackLogger.TRACE_WARN)) {
+                sipStack.getStackLogger().logWarning("reparsing original request " + originalRequestBytes + " since it was eagerly cleaned up, but beware this is not efficient with the aggressive flag set !");
             }
             try {
                 originalRequest = (SIPRequest) sipStack.getMessageParserFactory().createMessageParser(sipStack).parseSIPMessage(originalRequestBytes, true, false, null);
