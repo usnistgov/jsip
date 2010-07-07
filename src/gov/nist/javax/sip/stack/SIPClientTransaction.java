@@ -179,7 +179,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.132 $ $Date: 2010-07-05 11:55:03 $
+ * @version 1.2 $Revision: 1.133 $ $Date: 2010-07-07 18:57:35 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -1657,8 +1657,11 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
 	    	}
 		    originalRequest = null;
 	    	cleanUpOnTimer();
-			originalRequestBytes = null;
-		    originalRequestBranch = null;
+	    	// commented out because the application can hold on a ref to the tx
+	    	// after it has been removed from the stack
+	    	// and want to get the request or branch from it
+//			originalRequestBytes = null;
+//		    originalRequestBranch = null;
 		    originalRequestCallId = null;
 		    originalRequestEventHeader = null;
 		    originalRequestFromTag = null;
