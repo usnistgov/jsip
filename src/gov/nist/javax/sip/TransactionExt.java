@@ -75,4 +75,48 @@ public interface TransactionExt extends Transaction {
     */
    public List<String> extractCertIdentities() throws SSLPeerUnverifiedException;
 
+   /**
+    * Retrieve the value of Timer T2 (in ms)
+    * @return T2 value (in ms)
+    * 
+    * @since 2.0
+    */
+   public int getTimerT2();
+   /**
+    * Sets the value of Timer T2 (in ms)
+    * @param interval value of Timer T2 (in ms)
+    * 
+    * @since 2.0
+    */
+   public void setTimerT2(int interval);      
+   /**
+    * Retrieve the value of Timer T4 (in ms)
+    * @return T4 value (in ms)
+    * 
+    * @since 2.0
+    */
+   public int getTimerT4();
+   /**
+    * Sets the value of Timer T4 (in ms)
+    * @param interval value of Timer T4 (in ms)
+    * 
+    * @since 2.0
+    */
+   public void setTimerT4(int interval);
+   
+   /**
+    * Sets the value of Timer D (in ms)
+    * @param interval value of Timer D (in ms)
+    * 
+    * @since 2.0
+    */
+   public int getTimerD();
+   /**
+    * Sets the value of Timer D (in ms)
+    * @param interval value of Timer D (in ms)
+    * 
+    * @since 2.0
+    */
+   public void setTimerD(int interval);
+
 }
