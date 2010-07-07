@@ -1,5 +1,6 @@
 package test.unit.gov.nist.javax.sip.stack;
 
+import gov.nist.javax.sip.TransactionExt;
 import junit.framework.TestCase;
 
 import javax.sip.*;
@@ -388,7 +389,9 @@ public class SetRetransmissionTimerTest extends TestCase {
                 // Create the client transaction.
                 inviteTid = sipProvider.getNewClientTransaction(request);
                 inviteTid.setRetransmitTimer(100);
-
+                ((TransactionExt)inviteTid).setTimerD(6400);
+                ((TransactionExt)inviteTid).setTimerT2(800);
+                ((TransactionExt)inviteTid).setTimerT4(1000);
                 // send the request out.
                 inviteTid.sendRequest();
 
@@ -533,6 +536,9 @@ public class SetRetransmissionTimerTest extends TestCase {
                 if (st == null) {
                     st = sipProvider.getNewServerTransaction(request);
                     st.setRetransmitTimer(100);
+                    ((TransactionExt)st).setTimerD(6400);
+                    ((TransactionExt)st).setTimerT2(800);
+                    ((TransactionExt)st).setTimerT4(1000);
                 }
                 dialog = st.getDialog();
 
