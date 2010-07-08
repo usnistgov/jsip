@@ -75,7 +75,7 @@ import javax.sip.address.Hop;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.68 $ $Date: 2010-06-24 17:02:01 $
+ * @version 1.2 $Revision: 1.69 $ $Date: 2010-07-08 14:51:43 $
  */
 public class TCPMessageChannel extends MessageChannel implements SIPMessageListener, Runnable,
         RawMessageChannel {
@@ -423,7 +423,9 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
     	try {
 			processMessage(sipMessage);
 		} catch (Exception e) {
-			sipStack.getStackLogger().logError("ERROR processing self routing", e);
+			if(sipStack.getStackLogger().isLoggingEnabled(ServerLog.TRACE_ERROR)) {
+				sipStack.getStackLogger().logError("ERROR processing self routing", e);
+			}
 		}
     }
 

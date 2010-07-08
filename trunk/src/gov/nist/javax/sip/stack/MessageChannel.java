@@ -64,7 +64,7 @@ import javax.sip.header.ViaHeader;
  * @author M. Ranganathan <br/> Contains additions for support of symmetric NAT contributed by
  *         Hagai.
  * 
- * @version 1.2 $Revision: 1.32 $ $Date: 2010-07-06 21:38:16 $
+ * @version 1.2 $Revision: 1.33 $ $Date: 2010-07-08 14:51:43 $
  * 
  * 
  */
@@ -202,7 +202,7 @@ public abstract class MessageChannel {
      * @param hop hop to send it to.
      * @throws IOException If there is an error sending the message
      */
-    public void sendMessage(SIPMessage sipMessage, Hop hop) throws IOException {
+    public void sendMessage(final SIPMessage sipMessage, Hop hop) throws IOException {
         long time = System.currentTimeMillis();
         InetAddress hopAddr = InetAddress.getByName(hop.getHost());
 
@@ -215,7 +215,22 @@ public abstract class MessageChannel {
                     MessageChannel messageChannel = messageProcessor.createMessageChannel(
                             hopAddr, hop.getPort());
                     if (messageChannel instanceof RawMessageChannel) {
-                        ((RawMessageChannel) messageChannel).processMessage(sipMessage);
+                    	final RawMessageChannel channel = (RawMessageChannel) messageChannel;
+                    	Runnable processMessageTask = new Runnable() {
+							
+							@Override
+							public void run() {
+								try {
+									((RawMessageChannel) channel).processMessage(sipMessage);
+								} catch (Exception ex) {
+									if (getSIPStack().getStackLogger().isLoggingEnabled(ServerLogger.TRACE_ERROR)) {
+						        		getSIPStack().getStackLogger().logError("Error self routing message cause by: ", ex);
+						        	}
+								}
+							}
+						};
+						getSIPStack().getSelfRoutingThreadpoolExecutor().execute(processMessageTask);
+                        
                         if (getSIPStack().isLoggingEnabled(LogWriter.TRACE_DEBUG))
                         	getSIPStack().getStackLogger().logDebug("Self routing message");
                         return;
