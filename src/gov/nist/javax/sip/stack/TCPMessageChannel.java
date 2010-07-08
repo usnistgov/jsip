@@ -59,7 +59,7 @@ import javax.sip.address.Hop;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.65.2.2 $ $Date: 2010-07-08 14:52:55 $
+ * @version 1.2 $Revision: 1.65.2.3 $ $Date: 2010-07-08 19:44:53 $
  */
 public class TCPMessageChannel extends MessageChannel implements SIPMessageListener, Runnable,
         RawMessageChannel {
@@ -283,7 +283,32 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
      * @param sipMessage Message to send.
      * @throws IOException If there is an error sending the message
      */
-    public void sendMessage(SIPMessage sipMessage) throws IOException {
+    public void sendMessage(final SIPMessage sipMessage) throws IOException {
+        for (MessageProcessor messageProcessor : getSIPStack().getMessageProcessors()) {
+            if (messageProcessor.getIpAddress().getHostAddress().equals(this.getPeerAddress())
+                    && messageProcessor.getPort() == this.getPort()
+                    && messageProcessor.getTransport().equalsIgnoreCase(this.getPeerProtocol())) {
+                	Runnable processMessageTask = new Runnable() {
+						
+						@Override
+						public void run() {
+							try {
+								processMessage(sipMessage);
+							} catch (Exception ex) {
+								if (getSIPStack().getStackLogger().isLoggingEnabled(ServerLogger.TRACE_ERROR)) {
+					        		getSIPStack().getStackLogger().logError("Error self routing message cause by: ", ex);
+					        	}
+							}
+						}
+					};
+					getSIPStack().getSelfRoutingThreadpoolExecutor().execute(processMessageTask);
+                    
+                    if (getSIPStack().getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                    	getSIPStack().getStackLogger().logDebug("Self routing message");
+                    return;
+                }
+
+            }
         byte[] msg = sipMessage.encodeAsBytes(this.getTransport());
 
         long time = System.currentTimeMillis();
