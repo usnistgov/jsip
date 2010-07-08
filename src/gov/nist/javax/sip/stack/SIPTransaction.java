@@ -27,6 +27,7 @@ package gov.nist.javax.sip.stack;
 
 import gov.nist.core.InternalErrorHandler;
 import gov.nist.javax.sip.address.AddressFactoryImpl;
+import gov.nist.core.ServerLogger;
 import gov.nist.javax.sip.SIPConstants;
 import gov.nist.javax.sip.SipProviderImpl;
 import gov.nist.javax.sip.header.CallID;
@@ -81,7 +82,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.75.2.3 $ $Date: 2010-07-07 15:57:09 $
+ * @version 1.2 $Revision: 1.75.2.4 $ $Date: 2010-07-08 14:52:55 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -736,34 +737,63 @@ public abstract class SIPTransaction extends MessageChannel implements
      * @param messageToSend
      *            Message to send to the SIP peer.
      */
-    public void sendMessage(SIPMessage messageToSend) throws IOException {
+    public void sendMessage(final SIPMessage messageToSend) throws IOException {
         // Use the peer address, port and transport
         // that was specified when the transaction was
         // created. Bug was noted by Bruce Evangelder
         // soleo communications.
         try {
+        	final RawMessageChannel channel = (RawMessageChannel) encapsulatedChannel;
             for (MessageProcessor messageProcessor : sipStack
                     .getMessageProcessors()) {
-            	boolean addrmatch = messageProcessor.getIpAddress().getHostAddress().toString().equals(this.peerAddress);
-                if (addrmatch
-                        && messageProcessor.getPort() == this.peerPort
-                        && messageProcessor.getTransport().equalsIgnoreCase(
-                                this.peerProtocol)) {
-                    if (encapsulatedChannel instanceof TCPMessageChannel) {
-                        try {
-							((TCPMessageChannel) encapsulatedChannel)
-							        .processMessage(messageToSend, this.peerInetAddress);
-						} catch (Exception e) {
-							sipStack.getStackLogger().logError("Error passing message in self routing", e);
-						}
-                        if (sipStack.isLoggingEnabled())
+            	boolean addrmatch = messageProcessor.getIpAddress().getHostAddress().toString().equals(this.getPeerAddress());
+            	if (addrmatch
+            			&& messageProcessor.getPort() == this.getPeerPort()
+            			&& messageProcessor.getTransport().equalsIgnoreCase(
+            					this.getPeerProtocol())) {
+            		if (channel instanceof TCPMessageChannel) {
+            			try {
+
+            				Runnable processMessageTask = new Runnable() {
+
+            					@Override
+            					public void run() {
+            						try {
+            							((TCPMessageChannel) channel)
+            							.processMessage(messageToSend, getPeerInetAddress());
+            						} catch (Exception ex) {
+            							if (getSIPStack().getStackLogger().isLoggingEnabled(ServerLogger.TRACE_ERROR)) {
+            								getSIPStack().getStackLogger().logError("Error self routing message cause by: ", ex);
+            							}
+            						}
+            					}
+            				};
+            				getSIPStack().getSelfRoutingThreadpoolExecutor().execute(processMessageTask);
+
+            			} catch (Exception e) {
+            				sipStack.getStackLogger().logError("Error passing message in self routing", e);
+            			}
+            			if (sipStack.isLoggingEnabled())
                         	sipStack.getStackLogger().logDebug("Self routing message");
                         return;
                     }
-                    if (encapsulatedChannel instanceof RawMessageChannel) {
+                    if (channel instanceof RawMessageChannel) {
                         try {
-							((RawMessageChannel) encapsulatedChannel)
-							        .processMessage(messageToSend);
+                        	
+                        	Runnable processMessageTask = new Runnable() {
+    							
+    							@Override
+    							public void run() {
+    								try {
+    									((RawMessageChannel) channel).processMessage(messageToSend);
+    								} catch (Exception ex) {
+    									if (getSIPStack().getStackLogger().isLoggingEnabled(ServerLogger.TRACE_ERROR)) {
+    						        		getSIPStack().getStackLogger().logError("Error self routing message cause by: ", ex);
+    						        	}
+    								}
+    							}
+    						};
+    						getSIPStack().getSelfRoutingThreadpoolExecutor().execute(processMessageTask);
 						} catch (Exception e) {
 							sipStack.getStackLogger().logError("Error passing message in self routing", e);
 						}

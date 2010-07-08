@@ -62,6 +62,7 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -100,7 +101,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.152.2.1 $ $Date: 2010-07-01 18:24:27 $
+ * @version 1.2 $Revision: 1.152.2.2 $ $Date: 2010-07-08 14:52:55 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener, SIPDialogEventListener {
@@ -398,6 +399,32 @@ public abstract class SIPTransactionStack implements
 	protected MessageParserFactory messageParserFactory;
 	// factory used to create MessageProcessor objects
 	protected MessageProcessorFactory messageProcessorFactory;
+	
+	/**
+	 * Executor used to optimise the ReinviteSender Runnable in the sendRequest
+	 * of the SipDialog
+	 */
+	protected static Executor selfRoutingThreadpoolExecutor;
+	
+	private static class SameThreadExecutor implements Executor {
+
+		@Override
+		public void execute(Runnable command) {
+			command.run(); // Just run the command is the same thread
+		}
+	
+	}
+	
+	public Executor getSelfRoutingThreadpoolExecutor() {
+		if(selfRoutingThreadpoolExecutor == null) {
+			if(this.threadPoolSize<=0) {
+				selfRoutingThreadpoolExecutor = new SameThreadExecutor();
+			} else {
+				selfRoutingThreadpoolExecutor = Executors.newFixedThreadPool(this.threadPoolSize);
+			}
+		}
+		return selfRoutingThreadpoolExecutor;
+	}
 	
 	/**
 	 * Executor used to optimise the ReinviteSender Runnable in the sendRequest
