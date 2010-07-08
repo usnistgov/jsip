@@ -90,7 +90,7 @@ import javax.sip.address.Hop;
  *
  *
  *
- * @version 1.2 $Revision: 1.70.2.1 $ $Date: 2010-07-06 21:39:10 $
+ * @version 1.2 $Revision: 1.70.2.2 $ $Date: 2010-07-08 14:52:55 $
  */
 public class UDPMessageChannel extends MessageChannel implements
         ParseExceptionListener, Runnable, RawMessageChannel {
@@ -612,7 +612,7 @@ public class UDPMessageChannel extends MessageChannel implements
      * @throws IOException
      *             If there is a problem with sending the message.
      */
-    public void sendMessage(SIPMessage sipMessage) throws IOException {
+    public void sendMessage(final SIPMessage sipMessage) throws IOException {
         if (sipStack.isLoggingEnabled() && this.sipStack.isLogStackTraceOnMessageSend()) {
             if ( sipMessage instanceof SIPRequest &&
                     ((SIPRequest)sipMessage).getRequestLine() != null) {
@@ -638,13 +638,28 @@ public class UDPMessageChannel extends MessageChannel implements
                                 this.peerProtocol)) {
                     MessageChannel messageChannel = messageProcessor
                             .createMessageChannel(this.peerAddress,
-                                    this.peerPort);
+                            		this.peerPort);
                     if (messageChannel instanceof RawMessageChannel) {
-                        ((RawMessageChannel) messageChannel)
-                                .processMessage(sipMessage);
-                        if (sipStack.isLoggingEnabled())
-                        	sipStack.getStackLogger().logDebug("Self routing message");
-                        return;
+                    	final RawMessageChannel channel = (RawMessageChannel) messageChannel;
+                    	Runnable processMessageTask = new Runnable() {
+
+                    		@Override
+                    		public void run() {
+                    			try {
+                    				((RawMessageChannel) channel)
+                    				.processMessage(sipMessage);
+                    			} catch (Exception ex) {
+                    				if (getSIPStack().getStackLogger().isLoggingEnabled(ServerLogger.TRACE_ERROR)) {
+                    					getSIPStack().getStackLogger().logError("Error self routing message cause by: ", ex);
+                    				}
+                    			}
+                    		}
+                    	};
+                    	getSIPStack().getSelfRoutingThreadpoolExecutor().execute(processMessageTask);
+
+                    	if (sipStack.isLoggingEnabled())
+                    		sipStack.getStackLogger().logDebug("Self routing message");
+                    	return;
                     }
 
                 }
