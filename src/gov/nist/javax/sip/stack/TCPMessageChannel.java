@@ -75,7 +75,7 @@ import javax.sip.address.Hop;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.70 $ $Date: 2010-07-08 19:44:11 $
+ * @version 1.2 $Revision: 1.71 $ $Date: 2010-07-09 09:20:45 $
  */
 public class TCPMessageChannel extends MessageChannel implements SIPMessageListener, Runnable,
         RawMessageChannel {
@@ -306,7 +306,6 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
                     && messageProcessor.getTransport().equalsIgnoreCase(this.getPeerProtocol())) {
                 	Runnable processMessageTask = new Runnable() {
 						
-						@Override
 						public void run() {
 							try {
 								processMessage(sipMessage);
