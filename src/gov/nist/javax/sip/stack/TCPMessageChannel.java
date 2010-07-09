@@ -59,7 +59,7 @@ import javax.sip.address.Hop;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.65.2.4 $ $Date: 2010-07-09 09:26:07 $
+ * @version 1.2 $Revision: 1.65.2.5 $ $Date: 2010-07-09 11:54:00 $
  */
 public class TCPMessageChannel extends MessageChannel implements SIPMessageListener, Runnable,
         RawMessageChannel {
@@ -286,7 +286,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
     public void sendMessage(final SIPMessage sipMessage) throws IOException {
         for (MessageProcessor messageProcessor : getSIPStack().getMessageProcessors()) {
             if (messageProcessor.getIpAddress().getHostAddress().equals(this.getPeerAddress())
-                    && messageProcessor.getPort() == this.getPort()
+                    && messageProcessor.getPort() == this.getPeerPort()
                     && messageProcessor.getTransport().equalsIgnoreCase(this.getPeerProtocol())) {
                 	Runnable processMessageTask = new Runnable() {
 						
