@@ -389,7 +389,7 @@ public class SetRetransmissionTimerTest extends TestCase {
                 // Create the client transaction.
                 inviteTid = sipProvider.getNewClientTransaction(request);
                 inviteTid.setRetransmitTimer(100);
-                ((TransactionExt)inviteTid).setTimerD(6400);
+                ((TransactionExt)inviteTid).setTimerD(64000);
                 ((TransactionExt)inviteTid).setTimerT2(800);
                 ((TransactionExt)inviteTid).setTimerT4(1000);
                 // send the request out.
@@ -536,7 +536,7 @@ public class SetRetransmissionTimerTest extends TestCase {
                 if (st == null) {
                     st = sipProvider.getNewServerTransaction(request);
                     st.setRetransmitTimer(100);
-                    ((TransactionExt)st).setTimerD(6400);
+                    ((TransactionExt)st).setTimerD(64000);
                     ((TransactionExt)st).setTimerT2(800);
                     ((TransactionExt)st).setTimerT4(1000);
                 }
