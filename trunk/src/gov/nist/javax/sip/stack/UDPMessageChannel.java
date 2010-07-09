@@ -88,7 +88,7 @@ import javax.sip.address.Hop;
  *
  *
  *
- * @version 1.2 $Revision: 1.76 $ $Date: 2010-07-08 14:51:43 $
+ * @version 1.2 $Revision: 1.77 $ $Date: 2010-07-09 09:20:45 $
  */
 public class UDPMessageChannel extends MessageChannel implements
         ParseExceptionListener, Runnable, RawMessageChannel {
@@ -652,8 +652,6 @@ public class UDPMessageChannel extends MessageChannel implements
 
                 		final RawMessageChannel channel = (RawMessageChannel) messageChannel;
                 		Runnable processMessageTask = new Runnable() {
-
-                			@Override
                 			public void run() {
                 				try {
                 					((RawMessageChannel) channel)

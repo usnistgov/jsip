@@ -64,7 +64,7 @@ import javax.sip.header.ViaHeader;
  * @author M. Ranganathan <br/> Contains additions for support of symmetric NAT contributed by
  *         Hagai.
  * 
- * @version 1.2 $Revision: 1.33 $ $Date: 2010-07-08 14:51:43 $
+ * @version 1.2 $Revision: 1.34 $ $Date: 2010-07-09 09:20:46 $
  * 
  * 
  */
@@ -218,7 +218,6 @@ public abstract class MessageChannel {
                     	final RawMessageChannel channel = (RawMessageChannel) messageChannel;
                     	Runnable processMessageTask = new Runnable() {
 							
-							@Override
 							public void run() {
 								try {
 									((RawMessageChannel) channel).processMessage(sipMessage);
