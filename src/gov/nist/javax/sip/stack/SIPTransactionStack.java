@@ -101,7 +101,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.160 $ $Date: 2010-07-08 14:51:42 $
+ * @version 1.2 $Revision: 1.161 $ $Date: 2010-07-09 10:30:51 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener, SIPDialogEventListener {
@@ -406,7 +406,6 @@ public abstract class SIPTransactionStack implements
 	
 	private static class SameThreadExecutor implements Executor {
 
-		@Override
 		public void execute(Runnable command) {
 			command.run(); // Just run the command is the same thread
 		}
