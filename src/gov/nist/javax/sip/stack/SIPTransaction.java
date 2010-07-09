@@ -82,7 +82,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.75.2.4 $ $Date: 2010-07-08 14:52:55 $
+ * @version 1.2 $Revision: 1.75.2.5 $ $Date: 2010-07-09 09:26:09 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -756,7 +756,6 @@ public abstract class SIPTransaction extends MessageChannel implements
 
             				Runnable processMessageTask = new Runnable() {
 
-            					@Override
             					public void run() {
             						try {
             							((TCPMessageChannel) channel)
@@ -782,7 +781,6 @@ public abstract class SIPTransaction extends MessageChannel implements
                         	
                         	Runnable processMessageTask = new Runnable() {
     							
-    							@Override
     							public void run() {
     								try {
     									((RawMessageChannel) channel).processMessage(messageToSend);
