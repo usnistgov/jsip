@@ -101,7 +101,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.152.2.3 $ $Date: 2010-07-09 10:31:15 $
+ * @version 1.2 $Revision: 1.152.2.4 $ $Date: 2010-07-11 22:03:04 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener, SIPDialogEventListener {
@@ -1701,6 +1701,7 @@ public abstract class SIPTransactionStack implements
 
 				sipProvider.handleEvent(event, sipTransaction);
 			}
+		    ((SIPClientTransaction)sipTransaction).stopExpiresTimer();
 
 		}
 	}
