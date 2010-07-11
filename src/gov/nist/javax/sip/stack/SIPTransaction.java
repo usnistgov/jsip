@@ -33,10 +33,12 @@ import gov.nist.javax.sip.SIPConstants;
 import gov.nist.javax.sip.SipProviderImpl;
 import gov.nist.javax.sip.SipStackImpl;
 import gov.nist.javax.sip.address.AddressFactoryImpl;
+import gov.nist.javax.sip.header.Expires;
 import gov.nist.javax.sip.header.Via;
 import gov.nist.javax.sip.message.SIPMessage;
 import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.message.SIPResponse;
+import gov.nist.javax.sip.stack.SIPClientTransaction.ExpiresTimerTask;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -62,6 +64,7 @@ import javax.sip.Dialog;
 import javax.sip.IOExceptionEvent;
 import javax.sip.TransactionState;
 import javax.sip.address.SipURI;
+import javax.sip.header.ExpiresHeader;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 
@@ -79,7 +82,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.90 $ $Date: 2010-07-09 09:20:45 $
+ * @version 1.2 $Revision: 1.91 $ $Date: 2010-07-11 21:53:01 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -202,24 +205,6 @@ public abstract class SIPTransaction extends MessageChannel implements
     // Underlying channel being used to send messages for this transaction
     private transient MessageChannel encapsulatedChannel;
 
-    // Port of peer
-//    protected int peerPort;
-
-    // Address of peer
-//    protected InetAddress peerInetAddress;
-
-    // Address of peer as a string
-//    protected String peerAddress;
-
-    // Protocol of peer
-//    protected String peerProtocol;
-
-    // @@@ hagai - NAT changes
-    // Source port extracted from peer packet
-//    protected int peerPacketSourcePort;
-
-//    protected InetAddress peerPacketSourceAddress;
-
     protected AtomicBoolean transactionTimerStarted = new AtomicBoolean(false);
 
     // Transaction branch ID
@@ -227,9 +212,6 @@ public abstract class SIPTransaction extends MessageChannel implements
 
     // Method of the Request used to create the transaction.
     private String method;
-
-    // Sequence number of request used to create the transaction
-//    private long cSeq;
 
     // Current transaction state
     private int currentState = -1;
@@ -246,34 +228,18 @@ public abstract class SIPTransaction extends MessageChannel implements
     // List of event listeners for this transaction
     private transient Set<SIPTransactionEventListener> eventListeners;
 
-    // Hang on to these - we clear out the request URI after
-    // transaction goes to final state. Pointers to these are kept around
-    // for transaction matching as long as the transaction is in
-    // the transaction table.
-//    protected From from;
-
-//    protected To to;
-
-//    protected Event event;
-
-//    protected CallID callId;
-
-    // Back ptr to the JAIN layer.
-    // private Object wrapper;
 
     // Counter for caching of connections.
     // Connection lingers for collectionTime
     // after the Transaction goes to terminated state.
     protected int collectionTime;
 
-//    protected String toTag;
-
-//    protected String fromTag;
-
     private boolean terminatedEventDelivered;      
     
     // aggressive flag to optimize eagerly
     private boolean releaseReferences;
+    
+    public ExpiresTimerTask expiresTimerTask;
 
     public String getBranchId() {
         return this.branch;
@@ -383,17 +349,7 @@ public abstract class SIPTransaction extends MessageChannel implements
         this.semaphore = new TransactionSemaphore();
         
         encapsulatedChannel = newEncapsulatedChannel;
-        // Record this to check if the address has changed before sending
-        // message to avoid possible race condition.
-//        this.peerPort = newEncapsulatedChannel.getPeerPort();
-//        this.peerAddress = newEncapsulatedChannel.getPeerAddress();
-//        this.peerInetAddress = newEncapsulatedChannel.getPeerInetAddress();
-        // @@@ hagai
-//        this.peerPacketSourcePort = newEncapsulatedChannel
-//                .getPeerPacketSourcePort();
-//        this.peerPacketSourceAddress = newEncapsulatedChannel
-//                .getPeerPacketSourceAddress();
-//        this.peerProtocol = newEncapsulatedChannel.getPeerProtocol();
+     
         if (this.isReliable()) {            
                 encapsulatedChannel.useCount++;
                 if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
@@ -446,14 +402,7 @@ public abstract class SIPTransaction extends MessageChannel implements
         // just cache the control information so the
         // original request can be released later.
         this.method = newOriginalRequest.getMethod();
-//        this.from = (From) newOriginalRequest.getFrom();
-//        this.to = (To) newOriginalRequest.getTo();
-        // Save these to avoid concurrent modification exceptions!
-//        this.toTag = this.to.getTag();
-//        this.fromTag = this.from.getTag();
-//        this.callId = (CallID) newOriginalRequest.getCallId();
-//        this.cSeq = newOriginalRequest.getCSeq().getSeqNumber();
-//        this.event = (Event) newOriginalRequest.getHeader("Event");
+        
         this.transactionId = newTransactionId;
 
         originalRequest.setTransaction(this);
