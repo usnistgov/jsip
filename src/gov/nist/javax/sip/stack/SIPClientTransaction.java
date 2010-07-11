@@ -26,11 +26,14 @@
 package gov.nist.javax.sip.stack;
 
 import gov.nist.core.InternalErrorHandler;
+import gov.nist.core.LogWriter;
 import gov.nist.core.NameValueList;
 import gov.nist.javax.sip.SIPConstants;
+import gov.nist.javax.sip.SipProviderImpl;
 import gov.nist.javax.sip.Utils;
 import gov.nist.javax.sip.address.AddressImpl;
 import gov.nist.javax.sip.header.Contact;
+import gov.nist.javax.sip.header.Expires;
 import gov.nist.javax.sip.header.RecordRoute;
 import gov.nist.javax.sip.header.RecordRouteList;
 import gov.nist.javax.sip.header.Route;
@@ -177,7 +180,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.125 $ $Date: 2010-02-19 02:15:45 $
+ * @version 1.2 $Revision: 1.125.2.1 $ $Date: 2010-07-11 22:03:04 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -206,6 +209,8 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
     private boolean timeoutIfStillInCallingState;
 
     private int callingStateTimeoutCount;
+
+    private ExpiresTimerTask expiresTimerTask;
 
     public class TransactionTimer extends SIPStackTimerTask {
 
@@ -274,6 +279,30 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
 
         }
 
+    }
+    
+    class ExpiresTimerTask extends SIPStackTimerTask {
+        
+        public ExpiresTimerTask() {
+            
+        }
+
+        @Override
+        public void runTask() {
+            SIPClientTransaction ct = SIPClientTransaction.this;
+            SipProviderImpl provider = ct.getSipProvider();
+     
+            if (ct.getState() != TransactionState.TERMINATED ) {
+                TimeoutEvent tte = new TimeoutEvent(SIPClientTransaction.this.getSipProvider(), 
+                        SIPClientTransaction.this, Timeout.TRANSACTION);
+                provider.handleEvent(tte, ct);
+            } else {
+                if ( SIPClientTransaction.this.getSIPStack().getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG) ) {
+                    SIPClientTransaction.this.getSIPStack().getStackLogger().logDebug("state = " + ct.getState());
+                }
+            }
+        }
+        
     }
 
     /**
@@ -965,6 +994,19 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                 }
             }
             this.isMapped = true;
+            int expiresTime = -1;
+            if ( sipRequest.getHeader(ExpiresHeader.NAME) != null ) {
+                Expires expires = (Expires) sipRequest.getHeader(ExpiresHeader.NAME);
+                expiresTime = expires.getExpires();
+            } 
+            // This is a User Agent. The user has specified an Expires time. Start a timer
+            // which will check if the tx is terminated by that time.
+            if ( this.getDefaultDialog() != null  &&  getMethod().equals(Request.INVITE) &&
+                    expiresTime != -1 && expiresTimerTask == null ) {
+                this.expiresTimerTask = new ExpiresTimerTask();
+                sipStack.getTimer().schedule(expiresTimerTask, expiresTime * 1000);
+                
+            }
             this.sendMessage(sipRequest);
 
         } catch (IOException ex) {
@@ -1565,6 +1607,13 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
     public void alertIfStillInCallingStateBy(int count) {
         this.timeoutIfStillInCallingState = true;
         this.callingStateTimeoutCount = count;
+    }
+
+    public void stopExpiresTimer() {
+        if ( this.expiresTimerTask != null ) {
+            this.expiresTimerTask.cancel();
+            this.expiresTimerTask = null;
+        }
     }
 
     
