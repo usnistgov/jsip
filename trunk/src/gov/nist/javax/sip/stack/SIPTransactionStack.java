@@ -101,7 +101,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.161 $ $Date: 2010-07-09 10:30:51 $
+ * @version 1.2 $Revision: 1.162 $ $Date: 2010-07-11 21:53:01 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener, SIPDialogEventListener {
@@ -1694,6 +1694,7 @@ public abstract class SIPTransactionStack implements
 						RemoveForkedTransactionTimerTask ttask = new RemoveForkedTransactionTimerTask(
 								clientTx);
                        this.timer.schedule(ttask, this.maxForkTime * 1000);
+                       clientTx.stopExpiresTimer();
                    }
                 }
             }
@@ -2161,7 +2162,6 @@ public abstract class SIPTransactionStack implements
 	 */
 	protected void addMessageProcessor(MessageProcessor newMessageProcessor)
 			throws IOException {
-//		synchronized (messageProcessors) {
 			// Suggested changes by Jeyashankher, jai@lucent.com
 			// newMessageProcessor.start() can fail
 			// because a local port is not available
@@ -2172,7 +2172,7 @@ public abstract class SIPTransactionStack implements
 			// newMessageProcessor.start();
 			messageProcessors.add(newMessageProcessor);
 
-//		}
+
 	}
 
 	/**
@@ -2181,11 +2181,10 @@ public abstract class SIPTransactionStack implements
 	 * @param oldMessageProcessor
 	 */
 	protected void removeMessageProcessor(MessageProcessor oldMessageProcessor) {
-//		synchronized (messageProcessors) {
 			if (messageProcessors.remove(oldMessageProcessor)) {
 				oldMessageProcessor.stop();
 			}
-//		}
+
 	}
 
 	/**
@@ -2196,10 +2195,9 @@ public abstract class SIPTransactionStack implements
 	 * @return an array of running message processors.
 	 */
 	protected MessageProcessor[] getMessageProcessors() {
-//		synchronized (messageProcessors) {
 			return (MessageProcessor[]) messageProcessors
 					.toArray(new MessageProcessor[0]);
-//		}
+
 	}
 
     /**

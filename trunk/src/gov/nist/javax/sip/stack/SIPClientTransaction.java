@@ -29,11 +29,13 @@ import gov.nist.core.InternalErrorHandler;
 import gov.nist.core.LogWriter;
 import gov.nist.core.NameValueList;
 import gov.nist.javax.sip.SIPConstants;
+import gov.nist.javax.sip.SipProviderImpl;
 import gov.nist.javax.sip.SipStackImpl;
 import gov.nist.javax.sip.Utils;
 import gov.nist.javax.sip.address.AddressImpl;
 import gov.nist.javax.sip.header.Contact;
 import gov.nist.javax.sip.header.Event;
+import gov.nist.javax.sip.header.Expires;
 import gov.nist.javax.sip.header.RecordRoute;
 import gov.nist.javax.sip.header.RecordRouteList;
 import gov.nist.javax.sip.header.Route;
@@ -179,7 +181,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.133 $ $Date: 2010-07-07 18:57:35 $
+ * @version 1.2 $Revision: 1.134 $ $Date: 2010-07-11 21:53:01 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -225,6 +227,8 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
 	private Object transactionTimerLock = new Object();
 	private AtomicBoolean timerKStarted = new AtomicBoolean(false);
 	private boolean transactionTimerCancelled = false;
+	
+	
 
     public class TransactionTimer extends SIPStackTimerTask {
 
@@ -257,11 +261,34 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                 // Fire the transaction timer.
                 clientTransaction.fireTimer();
                                 
-//                sipStack.getTimer().schedule(this, BASE_TIMER_INTERVAL);
             }
 
         }
 
+    }
+    
+    class ExpiresTimerTask extends SIPStackTimerTask {
+        
+        public ExpiresTimerTask() {
+            
+        }
+
+        @Override
+        public void runTask() {
+            SIPClientTransaction ct = SIPClientTransaction.this;
+            SipProviderImpl provider = ct.getSipProvider();
+     
+            if (ct.getState() != TransactionState.TERMINATED ) {
+                TimeoutEvent tte = new TimeoutEvent(SIPClientTransaction.this.getSipProvider(), 
+                        SIPClientTransaction.this, Timeout.TRANSACTION);
+                provider.handleEvent(tte, ct);
+            } else {
+                if ( SIPClientTransaction.this.getSIPStack().getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG) ) {
+                    SIPClientTransaction.this.getSIPStack().getStackLogger().logDebug("state = " + ct.getState());
+                }
+            }
+        }
+        
     }
 
     /**
@@ -274,18 +301,11 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
     protected SIPClientTransaction(SIPTransactionStack newSIPStack, MessageChannel newChannelToUse) {
         super(newSIPStack, newChannelToUse);
         // Create a random branch parameter for this transaction
-        // setBranch( SIPConstants.BRANCH_MAGIC_COOKIE +
-        // Integer.toHexString( hashCode( ) ) );
         setBranch(Utils.getInstance().generateBranchId());
         this.messageProcessor = newChannelToUse.messageProcessor;
         this.setEncapsulatedChannel(newChannelToUse);
         this.notifyOnRetransmit = false;
         this.timeoutIfStillInCallingState = false;
-
-        // This semaphore guards the listener from being
-        // re-entered for this transaction. That is
-        // for a give tx, the listener is called at most
-        // once with an outstanding request.
 
         if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             sipStack.getStackLogger().logDebug("Creating clientTransaction " + this);
@@ -960,9 +980,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                 } else if (!ct.getMethod().equals(Request.INVITE)) {
                     throw new SipException("Cannot cancel non-invite requests RFC 3261 9.1");
                 }
-            } else
-
-            if (this.getMethod().equals(Request.BYE)
+            } else if (this.getMethod().equals(Request.BYE)
                     || this.getMethod().equals(Request.NOTIFY)) {
                 SIPDialog dialog = sipStack.getDialog(this.getOriginalRequest()
                         .getDialogId(false));
@@ -987,10 +1005,29 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                 }
             }
             this.isMapped = true;
+         // Time extracted from the Expires header.
+            int expiresTime = -1;
+
+           if ( sipRequest.getHeader(ExpiresHeader.NAME) != null ) {
+                Expires expires = (Expires) sipRequest.getHeader(ExpiresHeader.NAME);
+                expiresTime = expires.getExpires();
+            } 
+            // This is a User Agent. The user has specified an Expires time. Start a timer
+            // which will check if the tx is terminated by that time.
+            if ( this.getDefaultDialog() != null  &&  getMethod().equals(Request.INVITE) &&
+                    expiresTime != -1 && expiresTimerTask == null ) {
+                this.expiresTimerTask = new ExpiresTimerTask();
+                sipStack.getTimer().schedule(expiresTimerTask, expiresTime * 1000);
+                
+            }
             this.sendMessage(sipRequest);
+            
 
         } catch (IOException ex) {
             this.setState(TransactionState._TERMINATED);
+            if ( this.expiresTimerTask != null ) {
+                sipStack.getTimer().cancel(this.expiresTimerTask);
+            }
             throw new SipException(
                     ex.getMessage() == null ? "IO Error sending request" : ex.getMessage(),
                     ex);
@@ -1346,7 +1383,17 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
      */
     public void terminate() throws ObjectInUseException {
         this.setState(TransactionState._TERMINATED);
-
+     
+    }
+    
+    /**
+     * Stop the ExPIRES timer if it is running.
+     */
+    public void stopExpiresTimer() {
+        if ( this.expiresTimerTask != null ) {
+            sipStack.getTimer().cancel(this.expiresTimerTask);
+            this.expiresTimerTask = null;
+        }
     }
 
     /**
@@ -1667,11 +1714,8 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
 		    originalRequestFromTag = null;
 		    originalRequestContact = null;
 		    originalRequestScheme = null;
-	    	// Application Data has to be cleared by the application
-	//    	applicationData = null;    	
 	    	if(sipDialogs != null) {
 		    	sipDialogs.clear();	    	
-	//	    	sipDialogs = null;
 	    	}
 	    	respondTo = null;
 	    	transactionTimer = null;
