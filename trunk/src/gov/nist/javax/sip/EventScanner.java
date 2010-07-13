@@ -32,6 +32,7 @@ import javax.sip.message.*;
 import javax.sip.*;
 
 import gov.nist.core.LogLevels;
+import gov.nist.core.LogWriter;
 import gov.nist.core.ThreadAuditor;
 
 /* bug fixes SIPQuest communications and Shu-Lin Chen. */
@@ -39,7 +40,7 @@ import gov.nist.core.ThreadAuditor;
 /**
  * Event Scanner to deliver events to the Listener.
  *
- * @version 1.2 $Revision: 1.43 $ $Date: 2010-06-08 20:30:36 $
+ * @version 1.2 $Revision: 1.44 $ $Date: 2010-07-13 00:12:30 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -385,6 +386,10 @@ class EventScanner implements Runnable {
                 // Check for null as listener could be removed.
                 if (sipListener != null && sipListener instanceof SipListenerExt) {
                     ((SipListenerExt)sipListener).processDialogTimeout((DialogTimeoutEvent) sipEvent);                    
+                } else {
+                    if (sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                        sipStack.getStackLogger().logDebug("DialogTimeoutEvent not delivered" );
+                    }
                 }
             } catch (Exception ex) {
                 // We cannot let this thread die under any

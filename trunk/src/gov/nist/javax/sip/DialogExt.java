@@ -66,4 +66,13 @@ public interface DialogExt extends Dialog {
      * @since 2.0
      */
     public void setReleaseReferences(boolean releaseReferences);
+    
+    /**
+     * Sets the early dialog timeout period. Overrides the value set by the stack configuration property
+     * EARLY_DIALOG_TIMEOUT_SECONDS. 
+     * A dialog may remain in early state indefinitely. UACs may kill a dialog in early state of periodic 
+     * provisional responses are not seen for 3 minutes. This allows you to override the RFC
+     * specified value of 3 minutes hence allowing for fast fail over from unresponsive servers.
+     */
+    public void setEarlyDialogTimeoutSeconds(int timeoutValue);
 }

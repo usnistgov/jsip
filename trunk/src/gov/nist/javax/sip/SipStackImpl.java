@@ -55,8 +55,10 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.concurrent.Semaphore;
@@ -439,6 +441,10 @@ import javax.sip.message.Request;
  * client transction in the ResponseEventExt and deliver that to the application.
  * The event handler can get the original transaction from this event. </li>
  * 
+ * <li><b>gov.nist.javax.sip.EARLY_DIALOG_TIMEOUT_SECONDS=integer </b> Maximum time for which a dialog
+ * can remain in early state. This is defaulted to 3 minutes ( 180 seconds).
+ * </li>
+ * 
  * <li><b>gov.nist.javax.sip.MESSAGE_PARSER_FACTORY =  name of the class implementing gov.nist.javax.sip.parser.MessageParserFactory</b>
  * This factory allows pluggable implementations of the MessageParser that will take care of parsing the incoming messages.
  * By example one could plug a lazy parser through this factory.</li>
@@ -504,7 +510,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.132 $ $Date: 2010-07-05 18:31:22 $
+ * @version 1.2 $Revision: 1.133 $ $Date: 2010-07-13 00:12:31 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -519,7 +525,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 
 	private Hashtable<String, ListeningPointImpl> listeningPoints;
 
-	private LinkedList<SipProviderImpl> sipProviders;
+	private List<SipProviderImpl> sipProviders;
 
 	/**
 	 * Max datagram size.
@@ -569,7 +575,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 		super.setMessageFactory(msgFactory);
 		this.eventScanner = new EventScanner(this);
 		this.listeningPoints = new Hashtable<String, ListeningPointImpl>();
-		this.sipProviders = new LinkedList<SipProviderImpl>();
+		this.sipProviders = Collections.synchronizedList(new LinkedList<SipProviderImpl>());
 
 	}
 
@@ -580,7 +586,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 		super.reInit();
 		this.eventScanner = new EventScanner(this);
 		this.listeningPoints = new Hashtable<String, ListeningPointImpl>();
-		this.sipProviders = new LinkedList<SipProviderImpl>();
+		this.sipProviders = Collections.synchronizedList(new LinkedList<SipProviderImpl>());
 		this.sipListener = null;
 		if(!getTimer().isStarted()) {			
 			String defaultTimerName = configurationProperties.getProperty("gov.nist.javax.sip.TIMER_CLASS_NAME",DefaultSipTimer.class.getName());
@@ -1177,6 +1183,9 @@ public class SipStackImpl extends SIPTransactionStack implements
 		super.maxForkTime = Integer.parseInt(
 		        configurationProperties.getProperty("gov.nist.javax.sip.MAX_FORK_TIME_SECONDS","0"));
 		
+		super.earlyDialogTimeout = Integer.parseInt(
+                configurationProperties.getProperty("gov.nist.javax.sip.EARLY_DIALOG_TIMEOUT_SECONDS","180"));
+		
 		
 		super.minKeepAliveInterval = Integer.parseInt(configurationProperties.getProperty("gov.nist.javax.sip.MIN_KEEPALIVE_TIME_SECONDS","-1"));
 		
@@ -1444,7 +1453,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 			getStackLogger().logStackTrace();
 		}
 		this.stopStack();
-		this.sipProviders = new LinkedList<SipProviderImpl>();
+		this.sipProviders = Collections.synchronizedList(new LinkedList<SipProviderImpl>());
 		this.listeningPoints = new Hashtable<String, ListeningPointImpl>();
 		/*
 		 * Check for presence of an event scanner ( may happen if stack is
