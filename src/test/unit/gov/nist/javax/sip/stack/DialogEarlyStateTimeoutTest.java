@@ -240,24 +240,24 @@ public class DialogEarlyStateTimeoutTest extends TestCase {
             }
         }
 
-        @Override
+        
         public void processDialogTerminated(
                 DialogTerminatedEvent dialogTerminatedEvent) {
 
         }
 
-        @Override
+        
         public void processIOException(IOExceptionEvent exceptionEvent) {
             TestCase.fail("Unexpected event");
         }
 
-        @Override
+        
         public void processRequest(RequestEvent requestEvent) {
             TestCase.fail("Unexpected event : processRequest");
 
         }
 
-        @Override
+        
         public void processResponse(ResponseEvent responseEvent) {
 
             if (responseEvent.getResponse().getStatusCode() == 100) {
@@ -265,20 +265,20 @@ public class DialogEarlyStateTimeoutTest extends TestCase {
             }
         }
 
-        @Override
+        
         public void processTimeout(TimeoutEvent timeoutEvent) {
             TestCase.fail("No timeout should be seen here");
 
         }
 
-        @Override
+        
         public void processTransactionTerminated(
                 TransactionTerminatedEvent transactionTerminatedEvent) {
             logger.debug("Transaction Terminated Event seen");
 
         }
 
-        @Override
+        
         public void processDialogTimeout(DialogTimeoutEvent timeoutEvent) {
             try {
                 this.timeoutSeen = true;
@@ -318,20 +318,20 @@ public class DialogEarlyStateTimeoutTest extends TestCase {
             provider.addSipListener(this);
         }
 
-        @Override
+        
         public void processDialogTerminated(
                 DialogTerminatedEvent dialogTerminatedEvent) {
             // TODO Auto-generated method stub
 
         }
 
-        @Override
+        
         public void processIOException(IOExceptionEvent exceptionEvent) {
             // TODO Auto-generated method stub
 
         }
 
-        @Override
+        
         public void processRequest(RequestEvent requestEvent) {
             try {
                 Request request = requestEvent.getRequest();
@@ -373,19 +373,19 @@ public class DialogEarlyStateTimeoutTest extends TestCase {
             }
         }
 
-        @Override
+        
         public void processResponse(ResponseEvent responseEvent) {
             // TODO Auto-generated method stub
 
         }
 
-        @Override
+        
         public void processTimeout(TimeoutEvent timeoutEvent) {
             // TODO Auto-generated method stub
 
         }
 
-        @Override
+        
         public void processTransactionTerminated(
                 TransactionTerminatedEvent transactionTerminatedEvent) {
             // TODO Auto-generated method stub
@@ -394,7 +394,7 @@ public class DialogEarlyStateTimeoutTest extends TestCase {
 
     }
 
-    @Override
+    
     public void setUp() throws Exception {
         SipFactory sipFactory = null;
 
@@ -456,7 +456,7 @@ public class DialogEarlyStateTimeoutTest extends TestCase {
 
     }
 
-    @Override
+    
     public void tearDown() throws Exception {
         Thread.sleep(50000);
         this.shootist.checkState();
