@@ -85,7 +85,7 @@ import javax.sip.message.Response;
 /**
  * Implementation of the JAIN-SIP provider interface.
  *
- * @version 1.2 $Revision: 1.85 $ $Date: 2010-06-08 20:30:36 $
+ * @version 1.2 $Revision: 1.86 $ $Date: 2010-07-13 00:12:30 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -979,13 +979,15 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
      * (non-Javadoc)
      * @see gov.nist.javax.sip.stack.SIPDialogEventListener#dialogErrorEvent(gov.nist.javax.sip.stack.SIPDialogErrorEvent)
      */
-    public synchronized void dialogErrorEvent(SIPDialogErrorEvent dialogErrorEvent) {
+    public  void dialogErrorEvent(SIPDialogErrorEvent dialogErrorEvent) {
         SIPDialog sipDialog = (SIPDialog) dialogErrorEvent.getSource();
         Reason reason = Reason.AckNotReceived;
         if (dialogErrorEvent.getErrorID() == SIPDialogErrorEvent.DIALOG_ACK_NOT_SENT_TIMEOUT) {
         	reason= Reason.AckNotSent;
         } else if (dialogErrorEvent.getErrorID() == SIPDialogErrorEvent.DIALOG_REINVITE_TIMEOUT) {
             reason = Reason.ReInviteTimeout;
+        } else if (dialogErrorEvent.getErrorID() == SIPDialogErrorEvent.EARLY_STATE_TIMEOUT) {
+            reason = Reason.EarlyStateTimeout;
         }
         if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
             sipStack.getStackLogger().logDebug(

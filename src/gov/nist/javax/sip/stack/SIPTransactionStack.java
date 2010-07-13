@@ -101,7 +101,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.162 $ $Date: 2010-07-11 21:53:01 $
+ * @version 1.2 $Revision: 1.163 $ $Date: 2010-07-13 00:12:31 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener, SIPDialogEventListener {
@@ -116,6 +116,12 @@ public abstract class SIPTransactionStack implements
 	 * we linger the TCP connection before closing it.
      */
     public static final int CONNECTION_LINGER_TIME = 8;
+    
+    /*
+     * Dialog Early state timeout duration.
+     */
+    protected int earlyDialogTimeout = 180;
+    
 
     /*
      * Table of retransmission Alert timers.
@@ -560,8 +566,6 @@ public abstract class SIPTransactionStack implements
         messageProcessors = new CopyOnWriteArrayList<MessageProcessor>();
         // Handle IO for this process.
         this.ioHandler = new IOHandler(this);
-        // clientTransactions = new ConcurrentLinkedQueue();
-        // serverTransactions = new ConcurrentLinkedQueue();
         pendingTransactions = new ConcurrentHashMap<String, SIPServerTransaction>();
         clientTransactionTable = new ConcurrentHashMap<String, SIPClientTransaction>();
         serverTransactionTable = new ConcurrentHashMap<String, SIPServerTransaction>();
@@ -2898,4 +2902,10 @@ public abstract class SIPTransactionStack implements
 	public boolean isAggressiveCleanup() {
 	    return aggressiveCleanup;
 	}
+
+   
+
+    public int getEarlyDialogTimeout() {
+        return this.earlyDialogTimeout;
+    }
 }
