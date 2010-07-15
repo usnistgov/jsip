@@ -240,6 +240,9 @@ class IOHandler {
 								sipStack.getStackLogger().logWarning(
 										"IOException occured retryCount "
 												+ retry_count);
+							if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+				                sipStack.getStackLogger().logDebug(
+				                        "Removing and Closing socket");
 							// old connection is bad.
 							// remove from our table.
 							removeSocket(key);
@@ -436,6 +439,9 @@ class IOHandler {
 	 * Close all the cached connections.
 	 */
 	public void closeAll() {
+	    if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+            sipStack.getStackLogger().logDebug(
+                    "Closing " + socketTable.size() + " sockets from IOHandler");
 		for (Enumeration<Socket> values = socketTable.elements(); values
 				.hasMoreElements();) {
 			Socket s = (Socket) values.nextElement();

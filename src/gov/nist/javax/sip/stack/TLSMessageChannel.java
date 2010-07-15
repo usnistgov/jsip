@@ -72,7 +72,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  * 
  * 
- * @version 1.2 $Revision: 1.36 $ $Date: 2010-07-13 00:12:32 $
+ * @version 1.2 $Revision: 1.37 $ $Date: 2010-07-15 15:42:32 $
  */
 public final class TLSMessageChannel extends MessageChannel implements
         SIPMessageListener, Runnable, RawMessageChannel {
@@ -216,8 +216,9 @@ public final class TLSMessageChannel extends MessageChannel implements
      */
     public void close() {
         try {
-            if (mySock != null)
+            if (mySock != null) {
                 mySock.close();
+            }
             if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                 sipStack.getStackLogger().logDebug(
                         "Closing message Channel " + this);
@@ -284,8 +285,12 @@ public final class TLSMessageChannel extends MessageChannel implements
         // (could have replied via udp but received via tcp!).
         if (sock != mySock && sock != null) {
             try {
-                if (mySock != null)
+                if (mySock != null) {
+                    if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                        sipStack.getStackLogger().logDebug(
+                                "Closing socket");
                     mySock.close();
+                }
             } catch (IOException ex) {
             }
             mySock = sock;
@@ -344,8 +349,12 @@ public final class TLSMessageChannel extends MessageChannel implements
         // Check for null (bug fix sent in by Christophe)
         if (sock != mySock && sock != null) {
             try {
-                if (mySock != null)
+                if (mySock != null) {
+                    if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                        sipStack.getStackLogger().logDebug(
+                                "Closing socket");
                     mySock.close();
+                }
             } catch (IOException ex) {
                 /* ignore */
             }
@@ -693,7 +702,12 @@ public final class TLSMessageChannel extends MessageChannel implements
                                 }
                             }
                             hispipe.close();
-                            mySock.close();
+                            if(mySock != null) {
+                                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                                    sipStack.getStackLogger().logDebug(
+                                            "Closing socket");
+                                mySock.close();
+                            }
                         } catch (IOException ioex) {
                         }
                         return;
@@ -719,7 +733,12 @@ public final class TLSMessageChannel extends MessageChannel implements
                                     tlsMessageProcessor.notify();
                                 }
                             }
-                            mySock.close();
+                            if(mySock != null) {
+                                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                                    sipStack.getStackLogger().logDebug(
+                                            "Closing socket");
+                                mySock.close();
+                            }
                             hispipe.close();
                         } catch (IOException ioex) {
                         }

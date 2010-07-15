@@ -78,7 +78,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.73 $ $Date: 2010-07-13 00:12:32 $
+ * @version 1.2 $Revision: 1.74 $ $Date: 2010-07-15 15:42:31 $
  */
 public class TCPMessageChannel extends MessageChannel implements
         SIPMessageListener, Runnable, RawMessageChannel {
@@ -296,8 +296,12 @@ public class TCPMessageChannel extends MessageChannel implements
         // } else
         if (sock != mySock && sock != null) {
             try {
-                if (mySock != null)
+                if (mySock != null) {
+                    if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                        sipStack.getStackLogger().logDebug(
+                                "Closing socket");
                     mySock.close();
+                }
             } catch (IOException ex) {
             }
             mySock = sock;
@@ -399,6 +403,9 @@ public class TCPMessageChannel extends MessageChannel implements
                     @Override
                     public void cleanUpBeforeCancel() {
                         try {
+                            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                                sipStack.getStackLogger().logDebug(
+                                        "Closing socket");
                             mySock.close();
                         } catch (IOException ex) {
 
@@ -407,6 +414,9 @@ public class TCPMessageChannel extends MessageChannel implements
 
                     public void runTask() {
                         try {
+                            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                                sipStack.getStackLogger().logDebug(
+                                        "Closing socket");
                             mySock.close();
                         } catch (IOException ex) {
 
@@ -776,6 +786,9 @@ public class TCPMessageChannel extends MessageChannel implements
                             if (mySock != null) { // self routing makes sock =
                                                   // ull
                                                   // https://jain-sip.dev.java.net/issues/show_bug.cgi?id=297
+                                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                                    sipStack.getStackLogger().logDebug(
+                                            "Closing socket");
                                 mySock.close();
                             }
                         } catch (IOException ioex) {
@@ -807,6 +820,9 @@ public class TCPMessageChannel extends MessageChannel implements
                             if (mySock != null) { // self routing makes sock =
                                                   // null
                                                   // https://jain-sip.dev.java.net/issues/show_bug.cgi?id=297
+                                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                                    sipStack.getStackLogger().logDebug(
+                                            "Closing socket");
                                 mySock.close();
                             }
                             hispipe.close();
