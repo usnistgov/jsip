@@ -82,7 +82,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.91 $ $Date: 2010-07-11 21:53:01 $
+ * @version 1.2 $Revision: 1.92 $ $Date: 2010-07-15 12:14:32 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -446,7 +446,7 @@ public abstract class SIPTransaction extends MessageChannel implements
             }
             try {
                 originalRequest = (SIPRequest) sipStack.getMessageParserFactory().createMessageParser(sipStack).parseSIPMessage(originalRequestBytes, true, false, null);
-                originalRequestBytes = null;
+//                originalRequestBytes = null;
             } catch (ParseException e) {
                 sipStack.getStackLogger().logError("message " + originalRequestBytes + " could not be reparsed !");
             }
