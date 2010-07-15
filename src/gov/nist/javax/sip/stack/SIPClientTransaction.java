@@ -181,7 +181,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.134 $ $Date: 2010-07-11 21:53:01 $
+ * @version 1.2 $Revision: 1.135 $ $Date: 2010-07-15 12:14:33 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -1671,8 +1671,12 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
 		    	originalRequest.setTransaction(null);
 		    	originalRequest.setInviteTransaction(null);
 		    	originalRequest.cleanUp();
-		    	if(!getMethod().equalsIgnoreCase(Request.INVITE) && !getMethod().equalsIgnoreCase(Request.CANCEL)) {
-	    			originalRequestBytes = originalRequest.encodeAsBytes(this.getTransport());
+		    	// we keep the request in a byte array to be able to recreate it
+		    	// no matter what to keep API backward compatibility
+		    	if(originalRequestBytes == null) {
+		    	    originalRequestBytes = originalRequest.encodeAsBytes(this.getTransport());   
+		    	}		    	
+		    	if(!getMethod().equalsIgnoreCase(Request.INVITE) && !getMethod().equalsIgnoreCase(Request.CANCEL)) {	    			
 	    			originalRequestFromTag = originalRequest.getFromTag();
 	    			originalRequestCallId = originalRequest.getCallId().getCallId();
 	    			originalRequestEventHeader = (Event) originalRequest.getHeader("Event");
@@ -1702,7 +1706,12 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
 	    		defaultDialogId = defaultDialog.getDialogId();
 	    		defaultDialog = null;
 	    	}
-		    originalRequest = null;
+	    	// we keep the request in a byte array to be able to recreate it
+            // no matter what to keep API backward compatibility
+	    	if(originalRequest != null && originalRequestBytes == null) {
+	    	    originalRequestBytes = originalRequest.encodeAsBytes(this.getTransport());
+	    	}
+		    originalRequest = null;		    
 	    	cleanUpOnTimer();
 	    	// commented out because the application can hold on a ref to the tx
 	    	// after it has been removed from the stack
@@ -1738,7 +1747,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
 			if(originalRequest == null && originalRequestBytes != null) {
 	        	try {
 					originalRequest = (SIPRequest) sipStack.getMessageParserFactory().createMessageParser(sipStack).parseSIPMessage(originalRequestBytes, true, false, null);
-					originalRequestBytes = null;
+//					originalRequestBytes = null;
 				} catch (ParseException e) {
 					sipStack.getStackLogger().logError("message " + originalRequestBytes + " could not be reparsed !");
 				}
