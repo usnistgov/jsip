@@ -82,7 +82,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.92 $ $Date: 2010-07-15 12:14:32 $
+ * @version 1.2 $Revision: 1.93 $ $Date: 2010-07-16 15:15:58 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -201,6 +201,7 @@ public abstract class SIPTransaction extends MessageChannel implements
     protected long originalRequestCSeqNumber;
     protected String originalRequestBranch;	
     protected boolean originalRequestHasPort;
+    
 	
     // Underlying channel being used to send messages for this transaction
     private transient MessageChannel encapsulatedChannel;
@@ -399,6 +400,18 @@ public abstract class SIPTransaction extends MessageChannel implements
         final Via topmostVia = newOriginalRequest.getTopmostVia();
         this.originalRequestBranch = topmostVia.getBranch();
         this.originalRequestHasPort = topmostVia.hasPort();
+        this.setViaHost(topmostVia.getHost());
+        int originalRequestViaPort = topmostVia.getPort();
+       
+        if ( originalRequestViaPort == -1 ) {
+            if (topmostVia.getTransport().equalsIgnoreCase("TLS") ) {
+                originalRequestViaPort = 5061;         
+            } else {
+                originalRequestViaPort = 5060;
+            }
+        }
+        this.setViaPort(originalRequestViaPort);
+               
         // just cache the control information so the
         // original request can be released later.
         this.method = newOriginalRequest.getMethod();
@@ -1513,5 +1526,15 @@ public abstract class SIPTransaction extends MessageChannel implements
         T4 = interval / BASE_TIMER_INTERVAL;
         TIMER_I = T4;
         TIMER_K = T4;
+    }
+    
+    @Override
+    public void setViaHost(String viaHost) {
+        this.encapsulatedChannel.setViaHost(viaHost);
+    }
+    
+    @Override
+    public void setViaPort(int viaPort) {
+        this.encapsulatedChannel.setViaPort(viaPort);
     }
 }
