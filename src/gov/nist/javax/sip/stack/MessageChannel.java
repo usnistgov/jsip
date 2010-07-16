@@ -64,7 +64,7 @@ import javax.sip.header.ViaHeader;
  * @author M. Ranganathan <br/> Contains additions for support of symmetric NAT contributed by
  *         Hagai.
  * 
- * @version 1.2 $Revision: 1.34 $ $Date: 2010-07-09 09:20:46 $
+ * @version 1.2 $Revision: 1.35 $ $Date: 2010-07-16 15:15:57 $
  * 
  * 
  */
@@ -155,7 +155,7 @@ public abstract class MessageChannel {
     public abstract String getKey();
 
     /**
-     * Get the host to assign for an outgoing Request via header.
+     * Get the host for a viaHeader.
      */
     public abstract String getViaHost();
 
@@ -163,6 +163,12 @@ public abstract class MessageChannel {
      * Get the port to assign for the via header of an outgoing message.
      */
     public abstract int getViaPort();
+    
+    
+    public abstract void setViaHost(String viaHost);
+    
+    public abstract void setViaPort(int viaPort);
+    
 
     /**
      * Send the message (after it has been formatted), to a specified address and a specified port

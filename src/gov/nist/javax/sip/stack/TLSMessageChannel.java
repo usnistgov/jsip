@@ -72,7 +72,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  * 
  * 
- * @version 1.2 $Revision: 1.37 $ $Date: 2010-07-15 15:42:32 $
+ * @version 1.2 $Revision: 1.38 $ $Date: 2010-07-16 15:15:58 $
  */
 public final class TLSMessageChannel extends MessageChannel implements
         SIPMessageListener, Runnable, RawMessageChannel {
@@ -851,5 +851,13 @@ public final class TLSMessageChannel extends MessageChannel implements
      */
     public HandshakeCompletedListenerImpl getHandshakeCompletedListener() {
         return (HandshakeCompletedListenerImpl) handshakeCompletedListener;
+    }
+
+    public void setViaHost(String viaHost) {
+        this.myAddress = viaHost;      
+    }
+
+    public void setViaPort(int viaPort) {
+      this.myPort = viaPort; 
     }
 }

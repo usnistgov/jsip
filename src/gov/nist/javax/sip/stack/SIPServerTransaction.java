@@ -168,7 +168,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.132 $ $Date: 2010-07-15 12:14:33 $
+ * @version 1.2 $Revision: 1.133 $ $Date: 2010-07-16 15:15:57 $
  * @author M. Ranganathan
  *
  */
@@ -447,11 +447,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
                 getMessageChannel().sendMessage(transactionResponse);
 
-                // TODO If that connection attempt fails, the server SHOULD
-                // use SRV 3263 procedures
-                // for servers in order to determine the IP address
-                // and port to open the connection and send the response to.
-
+                
             } else {
                 Via via = transactionResponse.getTopmostVia();
                 String transport = via.getTransport();
@@ -1129,15 +1125,11 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
     }
 
     public String getViaHost() {
-
-        return getMessageChannel().getViaHost();
-
+        return super.getViaHost();
     }
 
     public int getViaPort() {
-
-        return getMessageChannel().getViaPort();
-
+        return super.getViaPort();
     }
 
     /**
@@ -1987,5 +1979,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 	 */
 	public long getPendingReliableRSeqNumber() {
 		return pendingReliableRSeqNumber;
-	}	
+	}
+
+  	
 }

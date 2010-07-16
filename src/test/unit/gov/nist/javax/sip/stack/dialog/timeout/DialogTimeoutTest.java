@@ -58,7 +58,7 @@ public class DialogTimeoutTest extends ScenarioHarness implements SipListenerExt
     private ShootmeNotImplementingListener shootmeNotImplementingListener;
 
     private static final Logger logger = Logger.getLogger("test.tck");
-    private static final int TIMEOUT = 45000;
+    private static final int TIMEOUT = 60000;
 
     static {
         if (!logger.isAttached(console))
@@ -311,7 +311,7 @@ public class DialogTimeoutTest extends ScenarioHarness implements SipListenerExt
 
     private void doTearDown(boolean definetly) {
         try {
-            Thread.sleep(2000);
+            Thread.sleep(3000);
             // this.shootist.checkState();
             // this.shootme.checkState();
             shootmeProtocolObjs.destroy();

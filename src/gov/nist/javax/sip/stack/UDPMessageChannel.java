@@ -90,7 +90,7 @@ import javax.sip.message.Response;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.78 $ $Date: 2010-07-13 00:12:32 $
+ * @version 1.2 $Revision: 1.79 $ $Date: 2010-07-16 15:15:58 $
  */
 public class UDPMessageChannel extends MessageChannel implements
         ParseExceptionListener, Runnable, RawMessageChannel {
@@ -1010,6 +1010,17 @@ public class UDPMessageChannel extends MessageChannel implements
             mythread.interrupt();
             mythread = null;
         }
+    }
+
+    
+    public void setViaHost(String viaHost) {
+        this.myAddress = viaHost;
+        
+    }
+
+ 
+    public void setViaPort(int viaPort) {
+        this.myPort = viaPort;
     }
 
 }
