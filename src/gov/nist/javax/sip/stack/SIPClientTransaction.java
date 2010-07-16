@@ -181,7 +181,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.135 $ $Date: 2010-07-15 12:14:33 $
+ * @version 1.2 $Revision: 1.136 $ $Date: 2010-07-16 15:15:57 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -1290,14 +1290,14 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
     /**
      * Set the port of the recipient.
      */
-    protected void setViaPort(int port) {
+    public void setViaPort(int port) {
         this.viaPort = port;
     }
 
     /**
      * Set the port of the recipient.
      */
-    protected void setViaHost(String host) {
+    public void setViaHost(String host) {
         this.viaHost = host;
     }
 

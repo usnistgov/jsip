@@ -78,7 +78,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.74 $ $Date: 2010-07-15 15:42:31 $
+ * @version 1.2 $Revision: 1.75 $ $Date: 2010-07-16 15:15:58 $
  */
 public class TCPMessageChannel extends MessageChannel implements
         SIPMessageListener, Runnable, RawMessageChannel {
@@ -103,9 +103,9 @@ public class TCPMessageChannel extends MessageChannel implements
     protected SIPTransactionStack sipStack;
 
     protected String myAddress;
-
+   
     protected int myPort;
-
+    
     protected InetAddress peerAddress;
 
     protected int peerPort;
@@ -199,6 +199,14 @@ public class TCPMessageChannel extends MessageChannel implements
         super.messageProcessor = messageProcessor;
 
     }
+    
+    public void setViaHost(String viaAddress) {
+        this.myAddress = viaAddress;
+    }
+    
+    public void setViaPort(int viaPort) {
+        this.myPort = viaPort;
+    }
 
     /**
      * Returns "true" as this is a reliable transport.
@@ -273,7 +281,7 @@ public class TCPMessageChannel extends MessageChannel implements
      *            is the message to send.
      * @param retry
      */
-    private void sendMessage(byte[] msg, boolean retry) throws IOException {
+    private void sendMessage(byte[] msg, boolean isClient) throws IOException {
 
         /*
          * Patch from kircuv@dev.java.net (Issue 119 ) This patch avoids the
@@ -282,11 +290,10 @@ public class TCPMessageChannel extends MessageChannel implements
          * 
          * JvB 22/5 removed
          */
-        // Socket s = this.sipStack.ioHandler.getSocket(IOHandler.makeKey(
-        // this.peerAddress, this.peerPort));
+      
         Socket sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor
                 .getIpAddress(), this.peerAddress, this.peerPort,
-                this.peerProtocol, msg, retry, this);
+                this.peerProtocol, msg, isClient, this);
 
         // Created a new socket so close the old one and stick the new
         // one in its place but dont do this if it is a datagram socket.
@@ -367,7 +374,7 @@ public class TCPMessageChannel extends MessageChannel implements
 
         // JvB: also retry for responses, if the connection is gone we should
         // try to reconnect
-        this.sendMessage(msg, /* sipMessage instanceof SIPRequest */true);
+        this.sendMessage(msg, sipMessage instanceof SIPRequest );
 
         if (this.sipStack.getStackLogger().isLoggingEnabled(
                 ServerLogger.TRACE_MESSAGES))
@@ -403,9 +410,7 @@ public class TCPMessageChannel extends MessageChannel implements
                     @Override
                     public void cleanUpBeforeCancel() {
                         try {
-                            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                                sipStack.getStackLogger().logDebug(
-                                        "Closing socket");
+                            sipStack.getStackLogger().logDebug("closing socket" );
                             mySock.close();
                         } catch (IOException ex) {
 
@@ -752,7 +757,9 @@ public class TCPMessageChannel extends MessageChannel implements
      * Implements a message loop - reading the tcp connection and processing
      * messages until we are done or the other end has closed.
      */
-    public void run() {
+    
+   
+   public void run() {
         Pipeline hispipe = null;
         // Create a pipeline to connect to our message parser.
         hispipe = new Pipeline(myClientInputStream, sipStack.readTimeout,
@@ -786,7 +793,7 @@ public class TCPMessageChannel extends MessageChannel implements
                             if (mySock != null) { // self routing makes sock =
                                                   // ull
                                                   // https://jain-sip.dev.java.net/issues/show_bug.cgi?id=297
-                                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                              if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                                     sipStack.getStackLogger().logDebug(
                                             "Closing socket");
                                 mySock.close();
@@ -844,7 +851,7 @@ public class TCPMessageChannel extends MessageChannel implements
             myParser.close();
         }
 
-    }
+    } 
 
     protected void uncache() {
         if (isCached && !isRunning) {
@@ -892,7 +899,7 @@ public class TCPMessageChannel extends MessageChannel implements
      * @return the host to assign to the via header.
      */
     public String getViaHost() {
-        return myAddress;
+        return this.myAddress;
     }
 
     /**
@@ -901,7 +908,7 @@ public class TCPMessageChannel extends MessageChannel implements
      * @return the port to assign to the via header.
      */
     public int getViaPort() {
-        return myPort;
+        return this.myPort;
     }
 
     /**
