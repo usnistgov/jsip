@@ -263,10 +263,11 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
                 }
               
 
-                if (cacheTime != 0)
-                    cachedCredentials.cacheAuthorizationHeader(sipDomain,
+                if (cacheTime != 0) {
+                    String callId = challengedRequest.getCallId().getCallId();
+                    cachedCredentials.cacheAuthorizationHeader(callId,
                             authorization, cacheTime);
-
+                }
                 reoriginatedRequest.addHeader(authorization);
             }
 
