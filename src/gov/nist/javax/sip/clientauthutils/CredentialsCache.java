@@ -34,8 +34,8 @@ class CredentialsCache {
         String callId;
         String userName;
 
-        public TimeoutTask(String userName, String proxyDomain) {
-            this.callId = proxyDomain;
+        public TimeoutTask(String userName, String callId) {
+            this.callId = callId;
             this.userName = userName;
         }
 
