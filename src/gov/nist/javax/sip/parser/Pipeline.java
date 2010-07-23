@@ -175,7 +175,8 @@ public class Pipeline extends InputStream {
                 // wait till something is posted.
                 while (this.buffList.isEmpty()) {
                     this.buffList.wait();
-                    if (this.isClosed)
+                    // jeand : Issue 314 : return -1 only if the buffer is empty 
+                    if (this.buffList.isEmpty() && this.isClosed)
                         return -1;
                 }
                 currentBuffer = (Buffer) this.buffList.removeFirst();
