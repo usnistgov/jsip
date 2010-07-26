@@ -28,6 +28,12 @@ import gov.nist.javax.sip.address.*;
 import gov.nist.javax.sip.parser.*;
 import java.text.ParseException;
 
+import javax.sip.PeerUnavailableException;
+import javax.sip.SipFactory;
+import javax.sip.address.Address;
+import javax.sip.address.AddressFactory;
+import javax.sip.address.URI;
+
 /**
  *
  */
@@ -49,7 +55,24 @@ public class AddressParserTest extends ParserTestCase {
         } catch (ParseException ex) {
             fail(this.getClass().getName());
         }
-
+        // Non regression test for Issue 316 : createAddress can add spurious angle brackets
+        try {
+            AddressFactory addressFactory = SipFactory.getInstance().createAddressFactory();
+            String uriString = "<sip:1004@172.16.0.99;user=phone>";
+            String uri2String = "sip:1004@172.16.0.99;user=phone";
+            URI uri = addressFactory.createURI(uriString);
+            URI uri2 = addressFactory.createURI(uri2String);
+            assertEquals(uriString, uri.toString());
+            assertEquals(uri2String, uri2.toString());
+            Address address = addressFactory.createAddress(uri);
+            assertEquals(uriString, address.toString());     
+            address.setDisplayName("1004");
+            assertEquals("\"1004\" " + uriString, address.toString());
+        } catch (ParseException e) {
+            fail(this.getClass().getName());
+        } catch (PeerUnavailableException e) {
+            fail(this.getClass().getName());
+        }
     }
 
 
