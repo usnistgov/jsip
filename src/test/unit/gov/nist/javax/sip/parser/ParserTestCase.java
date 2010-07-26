@@ -24,15 +24,13 @@
  */
 package test.unit.gov.nist.javax.sip.parser;
 
-import gov.nist.javax.sip.parser.HeaderParser;
-import gov.nist.javax.sip.header.ContactList;
 import gov.nist.javax.sip.header.SIPHeader;
 import gov.nist.javax.sip.header.SIPHeaderList;
-import junit.framework.*;
-import java.lang.reflect.*;
-import java.util.Iterator;
+import gov.nist.javax.sip.parser.HeaderParser;
 
-import javax.sip.header.ContactHeader;
+import java.lang.reflect.Constructor;
+
+import junit.framework.TestCase;
 
 /**
  * Superclass for all test cases in this directory. The printlns will be replaced with logger
@@ -43,7 +41,7 @@ public abstract class ParserTestCase extends TestCase {
     static {
         SIPHeaderList.setPrettyEncode(false);
     }
-    private HeaderParser createParser(Class parserClass, String header) {
+    protected HeaderParser createParser(Class parserClass, String header) {
 
         try {
             Constructor constructor = parserClass.getConstructor(new Class[] {
