@@ -124,8 +124,15 @@ public class NameValue extends GenericObject implements Entry<String,String> {
     }
 
     public Object getValueAsObject() {
-        return isFlagParameter ? "" : value; // never return null for flag
-                                                // params
+        if(isFlagParameter)
+            return ""; // never return null for flag params
+        
+        // Issue 315 : (https://jain-sip.dev.java.net/issues/show_bug.cgi?id=315)
+        // header.getParameter() doesn't return quoted value
+        if(isQuotedString)
+            return quotes + value.toString() + quotes; // add the quotes for quoted string
+        
+        return value;
     }
 
     /**
@@ -263,7 +270,15 @@ public class NameValue extends GenericObject implements Entry<String,String> {
      */
     public String getValue() {
 
-        return  value == null ? null : this.value.toString();
+        if(value == null)
+            return null;
+        
+        // Issue 315 : (https://jain-sip.dev.java.net/issues/show_bug.cgi?id=315)
+        // header.getParameter() doesn't return quoted value
+        if(isQuotedString)
+            return quotes + value.toString() + quotes; // add the quotes for quoted string
+        
+        return value.toString();
     }
 
     /*
@@ -281,5 +296,4 @@ public class NameValue extends GenericObject implements Entry<String,String> {
     public int hashCode() {
         return this.encode().toLowerCase().hashCode();
     }
-
 }

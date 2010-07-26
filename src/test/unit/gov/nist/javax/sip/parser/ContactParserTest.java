@@ -24,7 +24,14 @@
  */
 package test.unit.gov.nist.javax.sip.parser;
 
+import gov.nist.javax.sip.header.ContactList;
+import gov.nist.javax.sip.header.SIPHeader;
 import gov.nist.javax.sip.parser.ContactParser;
+import gov.nist.javax.sip.parser.HeaderParser;
+
+import java.text.ParseException;
+
+import javax.sip.header.Parameters;
 
 /**
  * Test case for contact parser
@@ -57,6 +64,16 @@ public class ContactParserTest extends ParserTestCase {
                 "Contact: <sip:callee@192.0.2.1>;+sip-instance=\"<urn:uid:f81d-5463>\"\n" };
         super.testParser(ContactParser.class, contact);
 
+        // Issue 315 : (https://jain-sip.dev.java.net/issues/show_bug.cgi?id=315)
+        // header.getParameter() doesn't return quoted value
+        try {
+            String parameters = "Contact: <sip:127.0.0.1:5056>;+sip.instance=\"<urn:uuid:some-xxxx>\"";
+            HeaderParser hp = createParser(ContactParser.class, parameters);
+            SIPHeader hdr = (SIPHeader) hp.parse();
+            assertEquals("\"<urn:uuid:some-xxxx>\"", ((Parameters)((ContactList)hdr).getFirst()).getParameter("+sip.instance"));
+        } catch (ParseException ex) {
+            fail(this.getClass().getName());
+        }
     }
 
 }
