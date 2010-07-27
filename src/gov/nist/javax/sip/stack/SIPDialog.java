@@ -33,7 +33,6 @@ import gov.nist.core.LogWriter;
 import gov.nist.core.NameValueList;
 import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.DialogExt;
-import gov.nist.javax.sip.DialogTimeoutEvent;
 import gov.nist.javax.sip.ListeningPointImpl;
 import gov.nist.javax.sip.SipListenerExt;
 import gov.nist.javax.sip.SipProviderImpl;
@@ -131,7 +130,7 @@ import javax.sip.message.Response;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.190 $ $Date: 2010-07-13 00:12:31 $
+ * @version 1.2 $Revision: 1.191 $ $Date: 2010-07-27 16:56:13 $
  * 
  * @author M. Ranganathan
  * 
@@ -2061,7 +2060,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     public CallIdHeader getCallId() {
         // jeand : we save the header in a string form and reparse it, help GC
         // for dialogs updated not too often
-        // TODO set a prop for that
         if (callIdHeader == null && callIdHeaderString != null) {
             try {
                 this.callIdHeader = (CallIdHeader) new CallIDParser(
@@ -2069,8 +2067,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             } catch (ParseException e) {
                 sipStack.getStackLogger().logError(
                         "error reparsing the call id header", e);
-            }
-            callIdHeaderString = null;
+            }            
         }
         return this.callIdHeader;
     }
@@ -2091,7 +2088,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     public javax.sip.address.Address getLocalParty() {
         // jeand : we save the address in a string form and reparse it, help GC
         // for dialogs updated not too often
-        // TODO set a prop for that
         if (localParty == null && localPartyStringified != null) {
             try {
                 this.localParty = (Address) new AddressParser(
@@ -2100,7 +2096,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 sipStack.getStackLogger().logError(
                         "error reparsing the localParty", e);
             }
-            localPartyStringified = null;
         }
         return this.localParty;
     }
@@ -2126,7 +2121,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     public javax.sip.address.Address getRemoteParty() {
         // jeand : we save the address in a string form and reparse it, help GC
         // for dialogs updated not too often
-        // TODO set a prop for that
         if (remoteParty == null && remotePartyStringified != null) {
             try {
                 this.remoteParty = (Address) new AddressParser(
@@ -2135,7 +2129,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 sipStack.getStackLogger().logError(
                         "error reparsing the remoteParty", e);
             }
-            remotePartyStringified = null;
         }
         if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             sipStack.getStackLogger().logDebug(
@@ -2153,7 +2146,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     public javax.sip.address.Address getRemoteTarget() {
         // jeand : we save the address in a string form and reparse it, help GC
         // for dialogs updated not too often
-        // TODO set a prop for that
         if (remoteTarget == null && remoteTargetStringified != null) {
             try {
                 this.remoteTarget = (Address) new AddressParser(
@@ -2162,7 +2154,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 sipStack.getStackLogger().logError(
                         "error reparsing the remoteTarget", e);
             }
-            remoteTargetStringified = null;
         }
         return this.remoteTarget;
     }
@@ -3791,7 +3782,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 sipStack.getStackLogger().logError(
                         "error reparsing the contact header", e);
             }
-            contactHeaderStringified = null;
         }
         return contactHeader;
     }
@@ -4076,7 +4066,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 }
                 lastTransaction = null;
             }
-            // TODO those should be conditioned by a property
             if (callIdHeader != null) {
                 callIdHeaderString = callIdHeader.toString();
                 callIdHeader = null;
