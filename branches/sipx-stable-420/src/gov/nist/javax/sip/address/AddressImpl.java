@@ -40,7 +40,7 @@ import javax.sip.address.*;
  *
  *
  *
- *@version 1.2 $Revision: 1.11.2.1 $ $Date: 2010-07-26 15:26:07 $
+ *@version 1.2 $Revision: 1.11.2.2 $ $Date: 2010-07-27 10:55:23 $
  *
  */
 public final class AddressImpl
@@ -175,18 +175,11 @@ public final class AddressImpl
                         .append(DOUBLE_QUOTE)
                         .append(SP);
             }
-            if (address != null) {
-                String uriString = address.encode().trim();
-                // Issue 316 : createAddress can add spurious angle brackets
-                // avoid adding brackets if already present
-                boolean containsAngleBrackets = false;
-                if(uriString.startsWith(LESS_THAN) && uriString.endsWith(GREATER_THAN)) {
-                    containsAngleBrackets = true;
-                }
-                if (!containsAngleBrackets && (addressType == NAME_ADDR || displayName != null))
+            if (address != null) {                
+                if (addressType == NAME_ADDR || displayName != null)
                     buffer.append(LESS_THAN);
                 address.encode(buffer);
-                if (!containsAngleBrackets && (addressType == NAME_ADDR || displayName != null))
+                if (addressType == NAME_ADDR || displayName != null)
                     buffer.append(GREATER_THAN);
             }
         }
