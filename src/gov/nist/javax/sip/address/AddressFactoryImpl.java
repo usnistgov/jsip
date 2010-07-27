@@ -28,11 +28,13 @@ package gov.nist.javax.sip.address;
 import gov.nist.javax.sip.parser.*;
 
 import java.text.ParseException;
+import java.util.regex.Pattern;
+
 import javax.sip.address.*;
 
 /**
  * Implementation of the JAIN-SIP address factory.
- * @version 1.2 $Revision: 1.9 $ $Date: 2009-10-22 10:25:56 $
+ * @version 1.2 $Revision: 1.9.2.1 $ $Date: 2010-07-27 10:55:22 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -44,7 +46,8 @@ import javax.sip.address.*;
  *
  */
 public class AddressFactoryImpl implements javax.sip.address.AddressFactory {
-
+	public static final Pattern SCHEME_PATTERN = Pattern.compile("\\p{Alpha}[[{\\p{Alpha}][\\p{Digit}][\\+][-][\\.]]*");
+	
     /** Creates a new instance of AddressFactoryImpl
      */
     public AddressFactoryImpl() {
@@ -218,6 +221,10 @@ public class AddressFactoryImpl implements javax.sip.address.AddressFactory {
                 return (javax.sip.address.URI) urlParser.sipURL(true);
             } else if (scheme.equalsIgnoreCase("tel")) {
                 return (javax.sip.address.URI) urlParser.telURL(true);
+            }
+            // Issue 316 : the scheme should match ALPHA *(ALPHA / DIGIT / "+" / "-" / "." )
+            if(!SCHEME_PATTERN.matcher(scheme).matches()) {
+                throw new ParseException("the scheme " + scheme + " from the following uri " + uri + " doesn't match ALPHA *(ALPHA / DIGIT / \"+\" / \"-\" / \".\" ) from RFC3261",0);
             }
         } catch (ParseException ex) {
             throw new ParseException(ex.getMessage(), 0);
