@@ -124,9 +124,18 @@ public class NameValue extends GenericObject implements Entry<String,String> {
     }
 
     public Object getValueAsObject() {
+        return getValueAsObject(false);
+    }
+    
+    public Object getValueAsObject(boolean stripQuotes) {
         if(isFlagParameter)
             return ""; // never return null for flag params
-                
+         
+        // Issue 315 : (https://jain-sip.dev.java.net/issues/show_bug.cgi?id=315)
+        // header.getParameter() doesn't return quoted value
+        if(!stripQuotes && isQuotedString)
+            return quotes + value.toString() + quotes; // add the quotes for quoted string
+        
         return value;
     }
 
