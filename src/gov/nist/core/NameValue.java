@@ -124,7 +124,7 @@ public class NameValue extends GenericObject implements Entry<String,String> {
     }
 
     public Object getValueAsObject() {
-        return getValueAsObject(false);
+        return getValueAsObject(true);
     }
     
     public Object getValueAsObject(boolean stripQuotes) {
