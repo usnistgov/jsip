@@ -32,7 +32,7 @@ import javax.sip.header.Parameters;
  * @author jean.deruelle@gmail.com
  * @ since 2.0
  */
-public interface ParametersExt {
+public interface ParametersExt extends Parameters {
     /**
      * Returns the value of the named parameter, or null if it is not set. A
      * zero-length String indicates flag parameter.
