@@ -174,9 +174,16 @@ public class NameValueList implements Serializable, Cloneable, Map<String,NameVa
      * Do a lookup on a given name and return value associated with it.
      */
     public Object getValue(String name) {
+        return getValue(name, false);
+    }
+    
+    /**
+     * Do a lookup on a given name and return value associated with it.
+     */
+    public Object getValue(String name, boolean stripQuotes) {
         NameValue nv = this.getNameValue(name.toLowerCase());
         if (nv != null)
-            return nv.getValueAsObject();
+            return nv.getValueAsObject(stripQuotes);
         else
             return null;
     }
@@ -276,7 +283,16 @@ public class NameValueList implements Serializable, Cloneable, Map<String,NameVa
      * @return the parameter as a string.
      */
     public String getParameter(String name) {
-        Object val = this.getValue(name);
+        return getParameter(name, false);
+    }
+    
+    /**
+     * Get the parameter as a String.
+     *
+     * @return the parameter as a string.
+     */
+    public String getParameter(String name, boolean asReceived) {
+        Object val = this.getValue(name, asReceived);
         if (val == null)
             return null;
         if (val instanceof GenericObject)
