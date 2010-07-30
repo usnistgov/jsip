@@ -1,11 +1,9 @@
 package test.unit.gov.nist.javax.sip.stack.forkedinvite;
 
 import gov.nist.javax.sip.ResponseEventExt;
-import gov.nist.javax.sip.SipStackImpl;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -18,8 +16,6 @@ import javax.sip.ListeningPoint;
 import javax.sip.RequestEvent;
 import javax.sip.ResponseEvent;
 import javax.sip.ServerTransaction;
-import javax.sip.SipException;
-import javax.sip.SipFactory;
 import javax.sip.SipListener;
 import javax.sip.SipProvider;
 import javax.sip.SipStack;
@@ -109,6 +105,8 @@ public class Shootist implements SipListener {
     private Timer timer = new Timer();
 
     private ClientTransaction originalTransaction;
+    
+    boolean isAutomaticDialogSupportEnabled = true;
 
 
     class SendBye extends TimerTask {
@@ -138,20 +136,21 @@ public class Shootist implements SipListener {
 
 
 
-    public Shootist(int myPort, int proxyPort) {
+    public Shootist(int myPort, int proxyPort, String createDialogAuto) {
 
 
         this.port = myPort;
 
-        SipObjects sipObjects = new SipObjects(myPort, "shootist","on");
+        SipObjects sipObjects = new SipObjects(myPort, "shootist", createDialogAuto);
         addressFactory = sipObjects.addressFactory;
         messageFactory = sipObjects.messageFactory;
         headerFactory = sipObjects.headerFactory;
         this.sipStack = sipObjects.sipStack;
 
-        this.peerPort = proxyPort;
-
-
+        this.peerPort = proxyPort;        
+        if(!createDialogAuto.equalsIgnoreCase("on")) {
+            isAutomaticDialogSupportEnabled = false;
+        }
     }
 
     public void processRequest(RequestEvent requestReceivedEvent) {
@@ -454,7 +453,12 @@ public class Shootist implements SipListener {
 
             // Create the client transaction.
             inviteTid = sipProvider.getNewClientTransaction(request);
-            Dialog dialog = inviteTid.getDialog();
+            Dialog dialog = null;
+            if(isAutomaticDialogSupportEnabled) {
+                dialog = inviteTid.getDialog();
+            } else {
+                dialog = sipProvider.getNewDialog(inviteTid);
+            }
 
             TestCase.assertTrue("Initial dialog state should be null",
                     dialog.getState() == null);
