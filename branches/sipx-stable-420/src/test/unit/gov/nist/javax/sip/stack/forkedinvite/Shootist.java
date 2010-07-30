@@ -110,7 +110,8 @@ public class Shootist implements SipListener {
 
     private ClientTransaction originalTransaction;
 
-
+    boolean isAutomaticDialogSupportEnabled = true;
+    
     class SendBye extends TimerTask {
 
         private Dialog dialog;
@@ -138,20 +139,21 @@ public class Shootist implements SipListener {
 
 
 
-    public Shootist(int myPort, int proxyPort) {
+    public Shootist(int myPort, int proxyPort, String createDialogAuto) {
 
 
         this.port = myPort;
 
-        SipObjects sipObjects = new SipObjects(myPort, "shootist","on");
+        SipObjects sipObjects = new SipObjects(myPort, "shootist", createDialogAuto);
         addressFactory = sipObjects.addressFactory;
         messageFactory = sipObjects.messageFactory;
         headerFactory = sipObjects.headerFactory;
         this.sipStack = sipObjects.sipStack;
 
         this.peerPort = proxyPort;
-
-
+        if(!createDialogAuto.equalsIgnoreCase("on")) {
+            isAutomaticDialogSupportEnabled = false;
+        }
     }
 
     public void processRequest(RequestEvent requestReceivedEvent) {
@@ -454,7 +456,12 @@ public class Shootist implements SipListener {
 
             // Create the client transaction.
             inviteTid = sipProvider.getNewClientTransaction(request);
-            Dialog dialog = inviteTid.getDialog();
+            Dialog dialog = null;
+            if(isAutomaticDialogSupportEnabled) {
+                dialog = inviteTid.getDialog();
+            } else {
+                dialog = sipProvider.getNewDialog(inviteTid);
+            }
 
             TestCase.assertTrue("Initial dialog state should be null",
                     dialog.getState() == null);
