@@ -83,7 +83,7 @@ import javax.sip.message.Response;
  * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
  * and event model with the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.75.2.1 $ $Date: 2010-05-28 18:28:40 $
+ * @version 1.2 $Revision: 1.75.2.2 $ $Date: 2010-07-30 08:35:27 $
  * 
  * @author M. Ranganathan
  */
@@ -1383,7 +1383,9 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
         if (sipStack.isDialogCreated(method) && sipResponse.getStatusCode() != 100
                 && sipResponse.getFrom().getTag() != null && sipResponse.getTo().getTag() != null
                 && sipDialog == null) {
-            if (sipProvider.isAutomaticDialogSupportEnabled()) {
+        	// Issue 317 : Commenting the line below because a new dialog should 
+            // be created for forked response even if automatic dialog support is not enabled
+//            if (sipProvider.isAutomaticDialogSupportEnabled()) {
                 if (this.transactionChannel != null) {
                     if (sipDialog == null) {
                         // There could be an existing dialog for this response.
@@ -1396,7 +1398,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                 } else {
                     sipDialog = this.sipStack.createDialog(sipProvider, sipResponse);
                 }
-            }
+//            }
 
         } else {
             // Have a dialog but could not find transaction.
