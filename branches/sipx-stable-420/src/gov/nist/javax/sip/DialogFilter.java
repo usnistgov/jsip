@@ -83,7 +83,7 @@ import javax.sip.message.Response;
  * implement a JAIN-SIP interface). This is part of the glue that ties together the NIST-SIP stack
  * and event model with the JAIN-SIP stack. This is strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.75.2.2 $ $Date: 2010-07-30 08:35:27 $
+ * @version 1.2 $Revision: 1.75.2.3 $ $Date: 2010-08-02 16:44:33 $
  * 
  * @author M. Ranganathan
  */
@@ -1383,9 +1383,20 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
         if (sipStack.isDialogCreated(method) && sipResponse.getStatusCode() != 100
                 && sipResponse.getFrom().getTag() != null && sipResponse.getTo().getTag() != null
                 && sipDialog == null) {
-        	// Issue 317 : Commenting the line below because a new dialog should 
-            // be created for forked response even if automatic dialog support is not enabled
-//            if (sipProvider.isAutomaticDialogSupportEnabled()) {
+        	// Issue 317 : for forked response even if automatic dialog support is not enabled
+            // a dialog should be created in the case where the original Tx already have a default dialog
+            // and the current dialog is null. This is also avoiding creating dialog automatically if the flag is not set
+            boolean createDialog = false;
+            if (sipProvider.isAutomaticDialogSupportEnabled()) {
+                 createDialog = true;
+            } else if(!sipProvider.isAutomaticDialogSupportEnabled() && sipResponse.getCSeq().getMethod().equals(Request.INVITE) && sipStack.getMaxForkTime() > 0 && sipDialog == null) {
+                ClientTransactionExt originalTx = this.sipStack
+                    .getForkedTransaction(sipResponse.getForkId());
+                if(originalTx != null && originalTx.getDefaultDialog() != null) {
+                    createDialog = true;
+                }
+            } 
+            if(createDialog) {
                 if (this.transactionChannel != null) {
                     if (sipDialog == null) {
                         // There could be an existing dialog for this response.
@@ -1398,7 +1409,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                 } else {
                     sipDialog = this.sipStack.createDialog(sipProvider, sipResponse);
                 }
-//            }
+            }
 
         } else {
             // Have a dialog but could not find transaction.

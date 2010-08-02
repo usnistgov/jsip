@@ -1,11 +1,9 @@
 package test.unit.gov.nist.javax.sip.stack.forkedinvite;
 
 import gov.nist.javax.sip.ResponseEventExt;
-import gov.nist.javax.sip.SipStackImpl;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -19,7 +17,6 @@ import javax.sip.RequestEvent;
 import javax.sip.ResponseEvent;
 import javax.sip.ServerTransaction;
 import javax.sip.SipException;
-import javax.sip.SipFactory;
 import javax.sip.SipListener;
 import javax.sip.SipProvider;
 import javax.sip.SipStack;
@@ -109,9 +106,11 @@ public class Shootist implements SipListener {
     private Timer timer = new Timer();
 
     private ClientTransaction originalTransaction;
-
-    boolean isAutomaticDialogSupportEnabled = true;
     
+    boolean isAutomaticDialogSupportEnabled = true;
+
+    private boolean createDialogAfterRequest = false;
+
     class SendBye extends TimerTask {
 
         private Dialog dialog;
@@ -150,7 +149,7 @@ public class Shootist implements SipListener {
         headerFactory = sipObjects.headerFactory;
         this.sipStack = sipObjects.sipStack;
 
-        this.peerPort = proxyPort;
+        this.peerPort = proxyPort;        
         if(!createDialogAuto.equalsIgnoreCase("on")) {
             isAutomaticDialogSupportEnabled = false;
         }
@@ -208,8 +207,13 @@ public class Shootist implements SipListener {
         logger.info("Response = " + response + " class=" + response.getClass() );
         
 
-        Dialog dialog = responseReceivedEvent.getDialog();
-        TestCase.assertNotNull( dialog );
+        Dialog dialog = responseReceivedEvent.getDialog();     
+        if(createDialogAfterRequest) {
+            TestCase.assertNull( dialog );
+            return;
+        } else {
+            TestCase.assertNotNull( dialog );
+        }
         
         System.out.println("original Tx " + responseReceivedEvent.getOriginalTransaction());
         if ( cseq.getMethod().equals(Request.INVITE)) {
@@ -310,11 +314,15 @@ public class Shootist implements SipListener {
     public void checkState() {
         TestCase.assertEquals("Should see " + this.counter + " distinct dialogs",
                 counter,this.forkedDialogs.size());
-        TestCase.assertTrue(
+        if(!createDialogAfterRequest) {
+            TestCase.assertTrue(
                 "Should see the original (default) dialog in the forked set",
                 this.forkedDialogs.contains(this.originalDialog));
-
-        TestCase.assertTrue("Should see BYE response for ACKED Dialog",this.byeResponseSeen);
+            TestCase.assertTrue("Should see BYE response for ACKED Dialog",this.byeResponseSeen);
+        } else {
+            TestCase.assertTrue(originalDialog == null);
+        }
+        
 
         // cleanup
         forkedDialogs.clear();
@@ -459,18 +467,23 @@ public class Shootist implements SipListener {
             Dialog dialog = null;
             if(isAutomaticDialogSupportEnabled) {
                 dialog = inviteTid.getDialog();
+                TestCase.assertTrue("Initial dialog state should be null",
+                                dialog.getState() == null);
             } else {
-                dialog = sipProvider.getNewDialog(inviteTid);
-            }
-
-            TestCase.assertTrue("Initial dialog state should be null",
-                    dialog.getState() == null);
+                if(!createDialogAfterRequest) {
+                    dialog = sipProvider.getNewDialog(inviteTid);
+                    TestCase.assertTrue("Initial dialog state should be null",
+                                    dialog.getState() == null);
+                }                
+            }           
             
             this.originalDialog = dialog;
             // send the request out.
             inviteTid.sendRequest();
 
-           
+            if(!isAutomaticDialogSupportEnabled && createDialogAfterRequest) {
+                timer.schedule(new DialogCreationDelayTask(), 1000);
+            }
 
         } catch (Exception ex) {
             logger.error(unexpectedException, ex);
@@ -500,5 +513,33 @@ public class Shootist implements SipListener {
 
     public void stop() {
       this.sipStack.stop();
+    }
+
+    /**
+     * @param createDialogAfterRequest the createDialogAfterRequest to set
+     */
+    public void setCreateDialogAfterRequest(boolean createDialogAfterRequest) {
+        this.createDialogAfterRequest = createDialogAfterRequest;
+    }
+
+    /**
+     * @return the createDialogAfterRequest
+     */
+    public boolean isCreateDialogAfterRequest() {
+        return createDialogAfterRequest;
+    }
+    
+    class DialogCreationDelayTask extends TimerTask {       
+
+        @Override
+        public void run() {
+            try {
+                originalDialog = sipProvider.getNewDialog(inviteTid);
+                TestCase.assertTrue("Initial dialog state should be null",
+                                originalDialog.getState() == null);
+            } catch (SipException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
