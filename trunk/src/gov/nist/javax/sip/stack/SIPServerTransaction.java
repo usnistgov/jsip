@@ -168,7 +168,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.133 $ $Date: 2010-07-16 15:15:57 $
+ * @version 1.2 $Revision: 1.134 $ $Date: 2010-08-02 20:55:07 $
  * @author M. Ranganathan
  *
  */
@@ -1888,7 +1888,11 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 	    	// Application Data has to be cleared by the application
 	//        applicationData = null;
 	        lastResponse = null;   
-	        lastResponseAsBytes = null;
+	        // Issue 318 : (https://jain-sip.dev.java.net/issues/show_bug.cgi?id=318)
+	        // Re-transmission of 200 to INVITE terminates prematurely :
+	        // don't nullify since the transaction may be terminated
+	        // but the ack not received so the 200 retransmissions should continue	    
+//	        lastResponseAsBytes = null;
 	        if ((!sipStack.cacheServerConnections)
 	                && --getMessageChannel().useCount <= 0) {
 	            // Close the encapsulated socket if stack is configured
