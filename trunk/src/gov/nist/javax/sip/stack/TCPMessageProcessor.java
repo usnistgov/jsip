@@ -50,7 +50,7 @@ import java.util.*;
  * connection. This is the active object that creates new TCP MessageChannels (one for each new
  * accept socket).
  * 
- * @version 1.2 $Revision: 1.32 $ $Date: 2010-06-08 20:30:32 $
+ * @version 1.2 $Revision: 1.33 $ $Date: 2010-08-03 13:42:23 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -138,7 +138,7 @@ public class TCPMessageProcessor extends MessageProcessor {
                 // Note that for an incoming message channel, the
                 // thread is already running
                
-                incomingTcpMessageChannels.add(new TCPMessageChannel(newsock, sipStack, this));
+                incomingTcpMessageChannels.add(new TCPMessageChannel(newsock, sipStack, this, "TCPMessageChannelThread-" + nConnections));
             } catch (SocketException ex) {
                 this.isRunning = false;
             } catch (IOException ex) {

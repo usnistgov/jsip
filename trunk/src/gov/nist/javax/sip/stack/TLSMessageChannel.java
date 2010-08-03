@@ -72,7 +72,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  * 
  * 
- * @version 1.2 $Revision: 1.38 $ $Date: 2010-07-16 15:15:58 $
+ * @version 1.2 $Revision: 1.39 $ $Date: 2010-08-03 13:42:23 $
  */
 public final class TLSMessageChannel extends MessageChannel implements
         SIPMessageListener, Runnable, RawMessageChannel {
@@ -131,7 +131,7 @@ public final class TLSMessageChannel extends MessageChannel implements
      */
 
     protected TLSMessageChannel(Socket sock, SIPTransactionStack sipStack,
-            TLSMessageProcessor msgProcessor) throws IOException {
+            TLSMessageProcessor msgProcessor, String threadName) throws IOException {
         if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             sipStack.getStackLogger().logDebug(
                     "creating new TLSMessageChannel (incoming)");
@@ -159,7 +159,7 @@ public final class TLSMessageChannel extends MessageChannel implements
 
         mythread = new Thread(this);
         mythread.setDaemon(true);
-        mythread.setName("TLSMessageChannelThread");
+        mythread.setName(threadName);
         // Stash away a pointer to our sipStack structure.
         this.sipStack = sipStack;
 
