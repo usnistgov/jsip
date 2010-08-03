@@ -78,7 +78,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.75 $ $Date: 2010-07-16 15:15:58 $
+ * @version 1.2 $Revision: 1.76 $ $Date: 2010-08-03 13:42:22 $
  */
 public class TCPMessageChannel extends MessageChannel implements
         SIPMessageListener, Runnable, RawMessageChannel {
@@ -140,7 +140,7 @@ public class TCPMessageChannel extends MessageChannel implements
      */
 
     protected TCPMessageChannel(Socket sock, SIPTransactionStack sipStack,
-            TCPMessageProcessor msgProcessor) throws IOException {
+            TCPMessageProcessor msgProcessor, String threadName) throws IOException {
 
         if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             sipStack.getStackLogger().logDebug(
@@ -154,7 +154,7 @@ public class TCPMessageChannel extends MessageChannel implements
         myClientOutputStream = mySock.getOutputStream();
         mythread = new Thread(this);
         mythread.setDaemon(true);
-        mythread.setName("TCPMessageChannelThread");
+        mythread.setName(threadName);
         // Stash away a pointer to our sipStack structure.
         this.sipStack = sipStack;
         this.peerPort = mySock.getPort();

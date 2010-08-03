@@ -60,7 +60,7 @@ import java.util.Iterator;
  * connection. This is the active object that creates new TLS MessageChannels (one for each new
  * accept socket).
  * 
- * @version 1.2 $Revision: 1.26 $ $Date: 2010-06-08 20:30:33 $
+ * @version 1.2 $Revision: 1.27 $ $Date: 2010-08-03 13:42:23 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -160,7 +160,7 @@ public class TLSMessageProcessor extends MessageProcessor {
                // Note that for an incoming message channel, the
                // thread is already running
 
-                incomingTlsMessageChannels.add(new TLSMessageChannel(newsock, sipStack, this));
+                incomingTlsMessageChannels.add(new TLSMessageChannel(newsock, sipStack, this, "TLSMessageChannelThread-" + nConnections));
             } catch (SocketException ex) {
                 if ( this.isRunning ) {
                   sipStack.getStackLogger().logError(
