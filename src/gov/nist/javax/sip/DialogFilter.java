@@ -84,7 +84,7 @@ import javax.sip.message.Response;
  * together the NIST-SIP stack and event model with the JAIN-SIP stack. This is
  * strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.83 $ $Date: 2010-08-02 16:44:48 $
+ * @version 1.2 $Revision: 1.84 $ $Date: 2010-08-04 13:28:01 $
  * 
  * @author M. Ranganathan
  */
@@ -555,10 +555,35 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
                             }
                             SIPServerTransaction st = sipStack
-                                    .getRetransmissionAlertTransaction(dialogId);
+                                    .getRetransmissionAlertTransaction(dialogId);                           
                             if (st != null && st.isRetransmissionAlertEnabled()) {
-                                st.disableRetransmissionAlerts();
+                            	st.disableRetransmissionAlerts();
 
+                            }
+                            // Issue 319 : https://jain-sip.dev.java.net/issues/show_bug.cgi?id=319
+                            // remove the pending ack to stop the transaction timer for transaction
+                            // where the stack replied with a final error response.
+                            SIPServerTransaction ackTransaction = sipStack
+                                    .findTransactionPendingAck(sipRequest);
+                            /*
+                             * Found a transaction ( that we generated ) which is
+                             * waiting for ACK. So ACK it and return.
+                             */
+                            if (ackTransaction != null) {
+                                if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG))
+                                    sipStack.getStackLogger().logDebug(
+                                            "Found Tx pending ACK");
+                                try {
+                                    ackTransaction.setAckSeen();
+                                    sipStack.removeTransaction(ackTransaction);
+                                    sipStack
+                                            .removeTransactionPendingAck(ackTransaction);
+                                } catch (Exception ex) {
+                                    if (sipStack.isLoggingEnabled()) {
+                                        sipStack.getStackLogger().logError(
+                                                "Problem terminating transaction", ex);
+                                    }
+                                }
                             }
                         } else {
                             if (sipStack
