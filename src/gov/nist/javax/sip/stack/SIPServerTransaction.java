@@ -168,7 +168,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.134 $ $Date: 2010-08-02 20:55:07 $
+ * @version 1.2 $Revision: 1.135 $ $Date: 2010-08-04 13:28:00 $
  * @author M. Ranganathan
  *
  */
@@ -1140,7 +1140,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
         try {
             if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                sipStack.getStackLogger().logDebug("fireRetransmissionTimer() -- ");
+                sipStack.getStackLogger().logDebug("fireRetransmissionTimer() -- " + this + " state " + getState());
             }
             // Resend the last response sent by this transaction
             if (isInviteTransaction() && (lastResponse != null || lastResponseAsBytes != null)) {
