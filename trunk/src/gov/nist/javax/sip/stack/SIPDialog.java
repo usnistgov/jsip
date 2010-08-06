@@ -78,6 +78,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Semaphore;
@@ -130,7 +131,7 @@ import javax.sip.message.Response;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.191 $ $Date: 2010-07-27 16:56:13 $
+ * @version 1.2 $Revision: 1.192 $ $Date: 2010-08-06 20:55:57 $
  * 
  * @author M. Ranganathan
  * 
@@ -666,7 +667,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         StringWriter stringWriter = new StringWriter();
         PrintWriter writer = new PrintWriter(stringWriter);
         new Exception().printStackTrace(writer);
-        this.stackTrace = stringWriter.getBuffer().toString();
+        this.stackTrace = "TraceRecord:" + Math.abs(new Random().nextInt())+ ":" +  stringWriter.getBuffer().toString();
     }
 
     /**
@@ -1083,7 +1084,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         SIPRequest ackRequest = (SIPRequest) request;
         if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
             sipStack.getStackLogger().logDebug("sendAck" + this);
-
+        
         if (!ackRequest.getMethod().equals(Request.ACK))
             throw new SipException("Bad request method -- should be ACK");
         if (this.getState() == null
@@ -3416,6 +3417,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
                         }
 
+
                     }
                 }
 
@@ -3822,15 +3824,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
         } else {
 
-            /*
-             * This could be a re-invite processing. check to see if the ack
-             * matches with the last transaction. s
-             */
-
-            SIPServerTransaction tr = getInviteTransaction();
-
-            // Idiot check for sending ACK from the wrong side!
-            if (tr != null && lastResponseStatusCode != null
+             if (lastResponseStatusCode != null
                     && lastResponseStatusCode.intValue() / 100 == 2
                     && lastResponseMethod.equals(Request.INVITE)
                     && lastResponseCSeqNumber == ackTransaction.getCSeq()) {
@@ -3846,15 +3840,15 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 return true;
 
             } else {
-                /*
+               	/*
                  * This happens when the ACK is re-transmitted and arrives too
                  * late to be processed.
                  */
-
-                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+              	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                     sipStack.getStackLogger().logDebug(
-                            " INVITE transaction not found  -- Discarding ACK");
-                return false;
+                               " INVITE transaction not found  -- Discarding ACK");
+              	return false;
+               
             }
         }
     }
@@ -3869,7 +3863,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      */
     void releaseAckSem() {
         if (this.isBackToBackUserAgent) {
-            if (this.ackSem.availablePermits() == 0) {
+            if (this.ackSem.availablePermits() == 0 ) {
                 this.ackSem.release();
                 if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                     sipStack.getStackLogger()
@@ -4109,6 +4103,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             firstTransactionMethod = null;
             hisTag = null;
             myTag = null;
+            // Cannot clear up the last Ack Sent.
             lastAckSent = null;
             // lastAckReceivedCSeqNumber = null;
             lastResponseDialogId = null;
