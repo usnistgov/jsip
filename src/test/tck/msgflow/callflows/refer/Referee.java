@@ -303,7 +303,7 @@ public class Referee implements SipListener {
                 TestHarness.fail("Failed to send notify, because of " + e1.getMessage());
             }
 
-            if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
+            if (response.getStatusCode() == 200 ) {
                 try {
                     Request ack = tid.getDialog().createAck( cseq.getSeqNumber() );
                     tid.getDialog().sendAck( ack );
