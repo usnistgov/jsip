@@ -168,7 +168,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.135 $ $Date: 2010-08-04 13:28:00 $
+ * @version 1.2 $Revision: 1.136 $ $Date: 2010-08-06 20:55:57 $
  * @author M. Ranganathan
  *
  */
@@ -429,7 +429,9 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
      */
 
     private void sendResponse(SIPResponse transactionResponse) throws IOException {
-
+    	if ( sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+    		sipStack.getStackLogger().logDebug("sipServerTransaction::sendResponse " + transactionResponse.getFirstLine());
+    	}
         try {
             // RFC18.2.2. Sending Responses
             // The server transport uses the value of the top Via header field
@@ -700,11 +702,9 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
         int realState = getRealState();
 
         if (realState < 0 || realState == TransactionState._TRYING) {
-            // JvB: Removed the condition 'dialog!=null'. Trying should also
-            // be
-            // sent by intermediate proxies. This fixes some TCK tests
-            // null check added as the stack may be stopped.
-            if (isInviteTransaction() && !this.isMapped && sipStack.getTimer() != null) {
+            // Also sent by intermediate proxies. 
+            // null check added as the stack may be stopped. TRYING is not sent by reliable transports.
+            if (this.getTransport().equalsIgnoreCase("UDP") && isInviteTransaction() && !this.isMapped && sipStack.getTimer() != null ) {
                 this.isMapped = true;
                 // Schedule a timer to fire in 200 ms if the
                 // TU did not send a trying in that time.
@@ -902,6 +902,10 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
      */
     public void sendMessage(SIPMessage messageToSend) throws IOException {
         try {
+        	
+        	if ( sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+        		sipStack.getStackLogger().logDebug("sipServerTransaction::sendMessage " + messageToSend.getFirstLine());
+        	}
             // Message typecast as a response
             final SIPResponse  transactionResponse = (SIPResponse) messageToSend;
             // Status code of the response being sent to the client
@@ -921,7 +925,8 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                 if (!originalRequestHasPort)
                     transactionResponse.getTopmostVia().removePort();
             } catch (ParseException ex) {
-                ex.printStackTrace();
+               sipStack.getStackLogger().logError("UnexpectedException",ex);
+               throw new IOException("Unexpected exception", ex);
             }
 
             // Method of the response does not match the request used to
@@ -933,6 +938,9 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
             }
 
             if(!checkStateTimers(statusCode)) {
+            	if (sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+            		sipStack.getStackLogger().logDebug("checkStateTimers returned false -- not sending message");
+            	}
             	return;
             }
 
@@ -1446,9 +1454,6 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                 if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                     sipStack.getStackLogger().logDebug("WARNING -- Null From tag in request!!");
             }
-
-
-
             // See if the dialog needs to be inserted into the dialog table
             // or if the state of the dialog needs to be changed.
             if (dialog != null && statusCode != 100) {
@@ -1480,8 +1485,11 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
             // Send message after possibly inserting the Dialog
             // into the dialog table to avoid a possible race condition.
-
+            
+           
             this.sendMessage((SIPResponse) response);
+            
+           
             
             if ( dialog != null ) {
                 dialog.startRetransmitTimer(this, (SIPResponse)response);

@@ -78,7 +78,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.76 $ $Date: 2010-08-03 13:42:22 $
+ * @version 1.2 $Revision: 1.77 $ $Date: 2010-08-06 20:55:57 $
  */
 public class TCPMessageChannel extends MessageChannel implements
         SIPMessageListener, Runnable, RawMessageChannel {
@@ -283,6 +283,9 @@ public class TCPMessageChannel extends MessageChannel implements
      */
     private void sendMessage(byte[] msg, boolean isClient) throws IOException {
 
+    	if ( sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+    		sipStack.getStackLogger().logDebug("sendMessage isClient  = " + isClient);
+    	}
         /*
          * Patch from kircuv@dev.java.net (Issue 119 ) This patch avoids the
          * case where two TCPMessageChannels are now pointing to the same
@@ -332,6 +335,11 @@ public class TCPMessageChannel extends MessageChannel implements
      *             If there is an error sending the message
      */
     public void sendMessage(final SIPMessage sipMessage) throws IOException {
+    	
+    	if ( sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG) ) {
+    		sipStack.getStackLogger().logDebug("sendMessage:: " + sipMessage.getFirstLine() + " cseq method = " + sipMessage.getCSeq().getMethod()); 
+    	}
+    	
         for (MessageProcessor messageProcessor : getSIPStack()
                 .getMessageProcessors()) {
             if (messageProcessor.getIpAddress().getHostAddress().equals(
