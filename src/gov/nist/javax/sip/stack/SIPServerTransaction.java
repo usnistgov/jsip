@@ -168,7 +168,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.136 $ $Date: 2010-08-06 20:55:57 $
+ * @version 1.2 $Revision: 1.137 $ $Date: 2010-08-07 02:50:38 $
  * @author M. Ranganathan
  *
  */
@@ -926,7 +926,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                     transactionResponse.getTopmostVia().removePort();
             } catch (ParseException ex) {
                sipStack.getStackLogger().logError("UnexpectedException",ex);
-               throw new IOException("Unexpected exception", ex);
+               throw new IOException("Unexpected exception");
             }
 
             // Method of the response does not match the request used to
