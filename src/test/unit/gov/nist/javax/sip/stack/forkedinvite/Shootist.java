@@ -535,10 +535,9 @@ public class Shootist implements SipListener {
         public void run() {
             try {
                 originalDialog = sipProvider.getNewDialog(inviteTid);
-                TestCase.assertTrue("Initial dialog state should be null",
-                                originalDialog.getState() == null);
+                TestCase.fail("Should not be able to create Dialog after request sent");
             } catch (SipException e) {
-                e.printStackTrace();
+                logger.info("Got the expected SIP Exception");
             }
         }
     }
