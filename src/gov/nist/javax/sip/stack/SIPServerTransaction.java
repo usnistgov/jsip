@@ -168,7 +168,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.137 $ $Date: 2010-08-07 02:50:38 $
+ * @version 1.2 $Revision: 1.138 $ $Date: 2010-08-08 20:34:55 $
  * @author M. Ranganathan
  *
  */
@@ -704,7 +704,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
         if (realState < 0 || realState == TransactionState._TRYING) {
             // Also sent by intermediate proxies. 
             // null check added as the stack may be stopped. TRYING is not sent by reliable transports.
-            if (this.getTransport().equalsIgnoreCase("UDP") && isInviteTransaction() && !this.isMapped && sipStack.getTimer() != null ) {
+            if (isInviteTransaction() && !this.isMapped && sipStack.getTimer() != null ) {
                 this.isMapped = true;
                 // Schedule a timer to fire in 200 ms if the
                 // TU did not send a trying in that time.
