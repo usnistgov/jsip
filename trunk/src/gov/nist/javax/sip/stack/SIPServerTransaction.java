@@ -168,7 +168,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.138 $ $Date: 2010-08-08 20:34:55 $
+ * @version 1.2 $Revision: 1.139 $ $Date: 2010-08-09 13:38:24 $
  * @author M. Ranganathan
  *
  */
@@ -1556,11 +1556,14 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
     protected void startTransactionTimer() {
     	if(getMethod().equalsIgnoreCase(Request.INVITE) || getMethod().equalsIgnoreCase(Request.CANCEL) || getMethod().equalsIgnoreCase(Request.ACK)) {
 	        if (this.transactionTimerStarted.compareAndSet(false, true)) {
-	        	if (sipStack.getTimer() != null) {
+	        	if (sipStack.getTimer() != null && sipStack.getTimer().isStarted() ) {
 	                // The timer is set to null when the Stack is
 	                // shutting down.
 	                SIPStackTimerTask myTimer = new TransactionTimer();
-	                sipStack.getTimer().scheduleWithFixedDelay(myTimer, BASE_TIMER_INTERVAL, BASE_TIMER_INTERVAL);
+	                // Do not schedule when the stack is not alive.
+	                if (sipStack.getTimer() != null && sipStack.getTimer().isStarted() ) { 
+	                	sipStack.getTimer().scheduleWithFixedDelay(myTimer, BASE_TIMER_INTERVAL, BASE_TIMER_INTERVAL);
+	                }
 	                myTimer = null;
 	            }
 	        }        
@@ -1572,7 +1575,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
      */
     protected void startTransactionTimerJ(long time) {
 	        if (this.transactionTimerStarted.compareAndSet(false, true)) {
-	        	if (sipStack.getTimer() != null) {
+	        	if (sipStack.getTimer() != null && sipStack.getTimer().isStarted() ) {
 	        		if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 	                    sipStack.getStackLogger().logDebug("starting TransactionTimerJ() : " + getTransactionId() + " time " + time);
 	                }
