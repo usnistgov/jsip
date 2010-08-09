@@ -101,7 +101,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.163 $ $Date: 2010-07-13 00:12:31 $
+ * @version 1.2 $Revision: 1.164 $ $Date: 2010-08-09 13:38:25 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener, SIPDialogEventListener {
@@ -1876,13 +1876,13 @@ public abstract class SIPTransactionStack implements
      */
     public void stopStack() {
         // Prevent NPE on two concurrent stops
+        this.toExit = true;
+        
         if (this.timer != null)
             this.timer.stop();
 
         // JvB: set it to null, SIPDialog tries to schedule things after stop
-//        timer = null;
         this.pendingTransactions.clear();
-        this.toExit = true;
         synchronized (this) {
             this.notifyAll();
         }
@@ -1900,9 +1900,7 @@ public abstract class SIPTransactionStack implements
         // Let the processing complete.
 
         try {
-
             Thread.sleep(1000);
-
         } catch (InterruptedException ex) {
         }
         this.clientTransactionTable.clear();
