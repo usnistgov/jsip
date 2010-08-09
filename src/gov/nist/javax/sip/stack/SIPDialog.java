@@ -131,7 +131,7 @@ import javax.sip.message.Response;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.192 $ $Date: 2010-08-06 20:55:57 $
+ * @version 1.2 $Revision: 1.193 $ $Date: 2010-08-09 13:38:24 $
  * 
  * @author M. Ranganathan
  * 
@@ -1372,10 +1372,14 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         else {
             this.dialogDeleteTask = new DialogDeleteTask();
             // Delete the transaction after the max ack timeout.
-            sipStack.getTimer().schedule(
+            if (sipStack.getTimer() != null && sipStack.getTimer().isStarted()) {
+            	sipStack.getTimer().schedule(
                     this.dialogDeleteTask,
                     SIPTransaction.TIMER_H
                             * SIPTransactionStack.BASE_TIMER_INTERVAL);
+            } else {
+            	this.delete();
+            }
         }
 
     }
@@ -1410,7 +1414,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         // Dialog is in terminated state set it up for GC.
         if (state == TERMINATED_STATE) {
             this.removeEventListener(this.getSipProvider());
-            if (sipStack.getTimer() != null) { // may be null after shutdown
+            if (sipStack.getTimer() != null && sipStack.getTimer().isStarted() ) { // may be null after shutdown
                 sipStack.getTimer().schedule(new LingerTimer(),
                         DIALOG_LINGER_TIME * 1000);
             }
@@ -2744,9 +2748,11 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 this.timerTask.transaction = transaction;
             } else {
                 this.timerTask = new DialogTimerTask(transaction);
-                sipStack.getTimer().scheduleWithFixedDelay(timerTask,
+                if ( sipStack.getTimer() != null && sipStack.getTimer().isStarted()) {
+                	sipStack.getTimer().scheduleWithFixedDelay(timerTask,
                         SIPTransactionStack.BASE_TIMER_INTERVAL,
                         SIPTransactionStack.BASE_TIMER_INTERVAL);
+                }
             }
         } finally {
             releaseTimerTaskSem();
@@ -3436,8 +3442,10 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                                 "EarlyStateTimerTask craeted "
                                         + this.earlyDialogTimeout * 1000);
                         this.earlyStateTimerTask = new EarlyStateTimerTask();
-                        sipStack.getTimer().schedule(this.earlyStateTimerTask,
+                        if (sipStack.getTimer() != null && sipStack.getTimer().isStarted() ) {
+                        	sipStack.getTimer().schedule(this.earlyStateTimerTask,
                                 this.earlyDialogTimeout * 1000);
+                        }
                     } else {
                         if (this.earlyStateTimerTask != null) {
                             sipStack.getTimer()
@@ -3934,10 +3942,12 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         } else if (dialogDeleteIfNoAckSentTask == null) {
             // Delete the transaction after the max ack timeout.
             dialogDeleteIfNoAckSentTask = new DialogDeleteIfNoAckSentTask(seqno);
-            sipStack.getTimer().schedule(
+            if (sipStack.getTimer() != null && sipStack.getTimer().isStarted()) {
+            	sipStack.getTimer().schedule(
                     dialogDeleteIfNoAckSentTask,
                     sipStack.getAckTimeoutFactor()
                             * SIPTransactionStack.BASE_TIMER_INTERVAL);
+            }
         }
     }
 
