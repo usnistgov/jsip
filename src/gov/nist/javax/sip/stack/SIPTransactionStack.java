@@ -60,8 +60,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -101,7 +101,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.164 $ $Date: 2010-08-09 13:38:25 $
+ * @version 1.2 $Revision: 1.165 $ $Date: 2010-08-10 17:21:08 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener, SIPDialogEventListener {
@@ -764,9 +764,14 @@ public abstract class SIPTransactionStack implements
             if (sipResponse.isFinalResponse()) {
                 this.earlyDialogTable.remove(dialogId);
             }
-
+            if (stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                stackLogger.logDebug(
+                        "retrieved the early dialog " + retval);
         } else {
             retval = new SIPDialog(transaction, sipResponse);
+            if (stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                stackLogger.logDebug(
+                        "created new dialog " + retval);
         }
         return retval;
 

@@ -84,7 +84,7 @@ import javax.sip.message.Response;
  * together the NIST-SIP stack and event model with the JAIN-SIP stack. This is
  * strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.85 $ $Date: 2010-08-06 20:55:56 $
+ * @version 1.2 $Revision: 1.86 $ $Date: 2010-08-10 17:21:09 $
  * 
  * @author M. Ranganathan
  */
@@ -1426,7 +1426,13 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                             Request.INVITE)) {
                 SIPClientTransaction forked = this.sipStack
                         .getForkedTransaction(response.getForkId());
-                sipEvent.setOriginalTransaction(forked);
+                if(dialog != null && forked != null && forked.getDefaultDialog() != null && !dialog.equals(forked.getDefaultDialog())) {
+                    if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+                        sipStack.getStackLogger().logDebug(
+                                "forked dialog " + dialog + " original tx " + forked + " original dialog " + forked.getDefaultDialog());
+                    }
+                    sipEvent.setOriginalTransaction(forked);
+                }
             }
 
             sipProvider.handleEvent(sipEvent, transaction);
@@ -1442,7 +1448,13 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                 && response.getCSeqHeader().getMethod().equals(Request.INVITE)) {
             SIPClientTransaction forked = this.sipStack
                     .getForkedTransaction(response.getForkId());
-            responseEvent.setOriginalTransaction(forked);
+            if(dialog != null && forked != null && forked.getDefaultDialog() != null && !dialog.equals(forked.getDefaultDialog())) {
+                if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+                    sipStack.getStackLogger().logDebug(
+                            "forked dialog " + dialog + " original tx " + forked + " original dialog " + forked.getDefaultDialog());
+                }
+                responseEvent.setOriginalTransaction(forked);
+            }
         }
 
         // Set the Dialog for the response.
@@ -1572,6 +1584,9 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                 ClientTransactionExt originalTx = this.sipStack
                     .getForkedTransaction(sipResponse.getForkId());
                 if(originalTx != null && originalTx.getDefaultDialog() != null) {
+                    if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG))
+                        sipStack.getStackLogger().logDebug(
+                                "Need to create dialog for response = " + sipResponse);
                     createDialog = true;
                 }
             } 
@@ -1676,7 +1691,13 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                 && sipResponse.getCSeq().getMethod().equals(Request.INVITE)) {
             ClientTransactionExt originalTx = this.sipStack
                     .getForkedTransaction(sipResponse.getForkId());
-            responseEvent.setOriginalTransaction(originalTx);
+            if(sipDialog != null && originalTx != null && originalTx.getDefaultDialog() != null && !sipDialog.equals(originalTx.getDefaultDialog())) {
+                if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+                    sipStack.getStackLogger().logDebug(
+                            "forked dialog " + sipDialog + " original tx " + originalTx + " original dialog " + originalTx.getDefaultDialog());
+                }
+                responseEvent.setOriginalTransaction(originalTx);
+            }
         }
 
         sipProvider.handleEvent(responseEvent, transaction);
