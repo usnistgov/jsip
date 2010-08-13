@@ -44,7 +44,7 @@ import java.text.ParseException;
  *
  * @see ViaList
  *
- * @version 1.2 $Revision: 1.18 $ $Date: 2010-05-06 14:07:49 $
+ * @version 1.2 $Revision: 1.19 $ $Date: 2010-08-13 10:31:54 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -324,8 +324,9 @@ public class Via
      * Set the RPort flag parameter
      */
     public void setRPort(){
+        // Fix for Issue 309 by jorabin
         try {
-            this.setParameter(Via.RPORT,"");
+            this.setParameter(Via.RPORT,null);
         } catch (ParseException e) {
             e.printStackTrace();    // should not occur
         }
