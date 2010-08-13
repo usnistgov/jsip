@@ -24,14 +24,12 @@ package test.unit.gov.nist.javax.sip.stack;
 
 
 
+import gov.nist.javax.sip.message.ResponseExt;
+
 import java.util.ArrayList;
-import java.util.EventObject;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Properties;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import javax.sip.ClientTransaction;
 import javax.sip.Dialog;
@@ -48,7 +46,6 @@ import javax.sip.SipFactory;
 import javax.sip.SipListener;
 import javax.sip.SipProvider;
 import javax.sip.SipStack;
-import javax.sip.TimeoutEvent;
 import javax.sip.Transaction;
 import javax.sip.TransactionTerminatedEvent;
 import javax.sip.address.Address;
@@ -69,19 +66,14 @@ import javax.sip.message.MessageFactory;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 
+import junit.framework.TestCase;
+
 import org.apache.log4j.Appender;
 import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.SimpleLayout;
-import org.apache.log4j.helpers.NullEnumeration;
 
 import test.tck.msgflow.callflows.NonSipUriRouter;
-import test.tck.msgflow.callflows.ProtocolObjects;
-import test.tck.msgflow.callflows.ScenarioHarness;
-
-import junit.framework.TestCase;
 
 /**
  * @author M. Ranganathan
@@ -270,6 +262,8 @@ public class ReInviteBusyTest extends TestCase {
 
         private int reInviteCount;
 
+        private boolean isToTagInTryingReInvitePresent = false;
+
         class ApplicationData {
             protected int ackCount;
         }
@@ -327,6 +321,7 @@ public class ReInviteBusyTest extends TestCase {
                 ServerTransaction st = requestEvent.getServerTransaction();
                 int finalResponse;
                 logger.info("Got an INVITE  " + request + " serverTx = " + st);
+                Thread.sleep(300);
                 
                 if (st == null) {
                     st = sipProvider.getNewServerTransaction(request);
@@ -453,6 +448,11 @@ public class ReInviteBusyTest extends TestCase {
                 if (tid != null) {
                     Dialog dialog = tid.getDialog();
                     logger.info("Dalog State = " + dialog.getState());
+                    String toTag = ((ResponseExt)response).getToHeader().getTag(); 
+                    if(DialogState.CONFIRMED.equals(dialog.getState()) && toTag != null && response.getStatusCode() == Response.TRYING) {
+                        this.isToTagInTryingReInvitePresent  = true;
+                        logger.info("to tag for trying in re INVITE is present " + toTag);
+                    }
                 }
             } catch (Exception ex) {
 
@@ -486,7 +486,8 @@ public class ReInviteBusyTest extends TestCase {
         }
 
         public void checkState() {
-            assertEquals("should see a re-INVITE", 2, this.reInviteCount);
+            assertTrue("should see a re-INVITE", this.reInviteCount >=2 );
+            assertTrue("To tag in trying for re-INVITE shoulnd't be null", isToTagInTryingReInvitePresent);
           
         }
 
@@ -579,6 +580,9 @@ public class ReInviteBusyTest extends TestCase {
                 Dialog dialog = st.getDialog();
                 logger.info("shootist received RE INVITE. Sending BUSY_HERE");
                 assertEquals("Dialog state must in confirmed state ",DialogState.CONFIRMED,dialog.getState());
+                
+                Thread.sleep(300);
+                
                 Response response = protocolObjects.messageFactory.createResponse(Response.BUSY_HERE,
                         request);
                 ((ToHeader) response.getHeader(ToHeader.NAME)).setTag(((ToHeader) request

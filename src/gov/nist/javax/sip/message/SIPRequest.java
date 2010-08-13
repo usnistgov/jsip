@@ -84,7 +84,7 @@ import javax.sip.message.Request;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.55 $ $Date: 2010-05-06 14:08:04 $
+ * @version 1.2 $Revision: 1.56 $ $Date: 2010-08-13 10:36:50 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -698,11 +698,14 @@ public class SIPRequest extends SIPMessage implements javax.sip.message.Request,
             newResponse.setHeader(MessageFactoryImpl.getDefaultServerHeader());
 
         }
-        if (newResponse.getStatusCode() == 100) {
-            // Trying is never supposed to have the tag parameter set.
-            newResponse.getTo().removeParameter("tag");
-
-        }
+        // Commented out for Issue 305 : 
+        // tag parameter in the To header in 100 Trying response for re-INVITE 
+        // is needed
+        // Fix by Tomasz Zieleniewski
+//        if (newResponse.getStatusCode() == 100) {
+//            // Trying is never supposed to have the tag parameter set.
+//            newResponse.getTo().removeParameter("tag");
+//        }
         ServerHeader server = MessageFactoryImpl.getDefaultServerHeader();
         if (server != null) {
             newResponse.setHeader(server);
