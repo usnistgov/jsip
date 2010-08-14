@@ -120,7 +120,8 @@ import javax.sip.message.Response;
  * Martin Le Clerk, Christophe Anzille, Andreas Bystrom, Lebing Xie, Jeroen van Bemmel. Hagai Sela
  * reported a bug in updating the route set (on RE-INVITE). Jens Tinfors submitted a bug fix and
  * the .equals method. Jan Schaumloeffel contributed a buf fix ( memory leak was happening when
- * 180 contained a To tag.
+ * 180 contained a To tag. Bug fixes by Vladimir Ralev (Redhat).
+ * Performance enhancements and memory reduction enhancements by Jean Deruelle.
  * 
  */
 
@@ -131,7 +132,7 @@ import javax.sip.message.Response;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.193 $ $Date: 2010-08-09 13:38:24 $
+ * @version 1.2 $Revision: 1.194 $ $Date: 2010-08-14 16:49:33 $
  * 
  * @author M. Ranganathan
  * 
@@ -316,6 +317,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     private EarlyStateTimerTask earlyStateTimerTask;
 
     private int earlyDialogTimeout = 180;
+
+	private int ackSemTakenFor;
 
     // //////////////////////////////////////////////////////
     // Inner classes
@@ -667,7 +670,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         StringWriter stringWriter = new StringWriter();
         PrintWriter writer = new PrintWriter(stringWriter);
         new Exception().printStackTrace(writer);
-        this.stackTrace = "TraceRecord:" + Math.abs(new Random().nextInt())+ ":" +  stringWriter.getBuffer().toString();
+        String stackTraceSignature = Integer.toString(Math.abs(new Random().nextInt()));
+        sipStack.getStackLogger().logDebug("TraceRecord = " + stackTraceSignature);
+        this.stackTrace = "TraceRecord = " + stackTraceSignature + ":" +  stringWriter.getBuffer().toString();
     }
 
     /**
@@ -3855,6 +3860,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
               	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                     sipStack.getStackLogger().logDebug(
                                " INVITE transaction not found  -- Discarding ACK");
+              	if ( this.isBackToBackUserAgent() ) {
+              		this.releaseAckSem();
+              	}
               	return false;
                
             }
@@ -3886,6 +3894,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             sipStack.getStackLogger().logDebug("[takeAckSem " + this);
         }
         try {
+        	
             if (!this.ackSem.tryAcquire(2, TimeUnit.SECONDS)) {
                 if (sipStack.isLoggingEnabled()) {
                     sipStack.getStackLogger().logError(
@@ -3901,7 +3910,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 }
                 return false;
             }
-
+   
             if (sipStack.getStackLogger().isLoggingEnabled(
                     StackLogger.TRACE_DEBUG)) {
 
