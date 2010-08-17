@@ -65,7 +65,7 @@ import javax.net.ssl.SSLSocket;
  * 
  */
 
-class IOHandler {
+public class IOHandler {
 
     private SipStackImpl sipStack;
 
