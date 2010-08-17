@@ -101,7 +101,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.165 $ $Date: 2010-08-10 17:21:08 $
+ * @version 1.2 $Revision: 1.166 $ $Date: 2010-08-17 03:15:07 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener, SIPDialogEventListener {
@@ -407,6 +407,8 @@ public abstract class SIPTransactionStack implements
 	public MessageProcessorFactory messageProcessorFactory;
    
 	protected boolean aggressiveCleanup = false;
+	
+	public SIPMessageValve sipMessageValve;
 	
 	protected static Executor selfRoutingThreadpoolExecutor;
 	
@@ -1333,6 +1335,17 @@ public abstract class SIPTransactionStack implements
         final String key = requestReceived.getTransactionId();
 
         requestReceived.setMessageChannel(requestMessageChannel);
+        
+        if(sipMessageValve != null) {
+        	if(!sipMessageValve.processRequest(
+        			requestReceived, requestMessageChannel)) {
+        		if(stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+        			stackLogger.logDebug(
+        					"Request dropped by the SIP message valve. Request = " + requestReceived);
+        		}
+        		return null;
+        	}
+        }
 
         // Transaction to handle this request
         SIPServerTransaction currentTransaction = (SIPServerTransaction) serverTransactionTable
