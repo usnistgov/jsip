@@ -44,6 +44,7 @@ import gov.nist.javax.sip.stack.DefaultRouter;
 import gov.nist.javax.sip.stack.MessageProcessor;
 import gov.nist.javax.sip.stack.MessageProcessorFactory;
 import gov.nist.javax.sip.stack.OIOMessageProcessorFactory;
+import gov.nist.javax.sip.stack.SIPMessageValve;
 import gov.nist.javax.sip.stack.SIPTransactionStack;
 import gov.nist.javax.sip.stack.timers.DefaultSipTimer;
 import gov.nist.javax.sip.stack.timers.SipTimer;
@@ -476,6 +477,13 @@ import javax.sip.message.Request;
  * if the registered SipListener is of type SipListenerExt
  * </li>
  * 
+ * <li><b>gov.nist.javax.sip.SIP_MESSAGE_VALVE= String</b> Default to null. The class name of your custom valve component.
+ * And instance of this class will be created and the the SIPMessageValve.processRequest() method will be called for every request
+ * before any long-lived SIP Stack resources are allocated (no transactions, no dialogs). From within the processRequest callback
+ * implementation you can drop messages, send a response statelessly or otherwise transform/pre-process the message before it reaches
+ * the next steps of the pipeline.
+ * </li>
+ * 
  *  <li><b>gov.nist.javax.sip.TLS_CLIENT_PROTOCOLS = String </b>
  *  Comma-separated list of protocols to use when creating outgoing TLS connections.
  *  The default is "SSLv3, SSLv2Hello, TLSv1".
@@ -510,7 +518,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.133 $ $Date: 2010-07-13 00:12:31 $
+ * @version 1.2 $Revision: 1.134 $ $Date: 2010-08-17 03:15:35 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -1228,6 +1236,18 @@ public class SipStackImpl extends SIPTransactionStack implements
 		super.aggressiveCleanup = Boolean.parseBoolean(configurationProperties
 				.getProperty("gov.nist.javax.sip.AGGRESSIVE_CLEANUP",
 						Boolean.FALSE.toString()));
+		
+		String valveClassName = configurationProperties.getProperty("gov.nist.javax.sip.SIP_MESSAGE_VALVE", null);
+		if(valveClassName != null && !valveClassName.isEmpty()) {
+			try {
+				super.sipMessageValve = (SIPMessageValve) Class.forName(valveClassName).newInstance();
+			} catch (Exception e) {
+				getStackLogger()
+					.logError(
+							"Bad configuration value for gov.nist.javax.sip.SIP_MESSAGE_VALVE", e);			
+			}
+		}
+		
 	}
 
 	/*
