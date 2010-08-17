@@ -478,10 +478,11 @@ import javax.sip.message.Request;
  * </li>
  * 
  * <li><b>gov.nist.javax.sip.SIP_MESSAGE_VALVE= String</b> Default to null. The class name of your custom valve component.
- * And instance of this class will be created and the the SIPMessageValve.processRequest() method will be called for every request
+ * An instance of this class will be created and the SIPMessageValve.processRequest/Response() methods will be called for every message
  * before any long-lived SIP Stack resources are allocated (no transactions, no dialogs). From within the processRequest callback
  * implementation you can drop messages, send a response statelessly or otherwise transform/pre-process the message before it reaches
- * the next steps of the pipeline.
+ * the next steps of the pipeline. Similarly from processResponse() you can manipulate a response or drop it silently, but dropping
+ * responses is not recommended, because the transaction already exists when the request for the response was sent.
  * </li>
  * 
  *  <li><b>gov.nist.javax.sip.TLS_CLIENT_PROTOCOLS = String </b>
@@ -518,7 +519,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.134 $ $Date: 2010-08-17 03:15:35 $
+ * @version 1.2 $Revision: 1.135 $ $Date: 2010-08-17 13:04:15 $
  * 
  * @author M. Ranganathan <br/>
  * 

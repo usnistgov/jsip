@@ -417,6 +417,7 @@ public class SIPMessageValveTest extends TestCase {
             properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "DEBUG");
             properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
             properties.setProperty("gov.nist.javax.sip.AUTOMATIC_DIALOG_ERROR_HANDLING","false");
+            properties.setProperty("gov.nist.javax.sip.SIP_MESSAGE_VALVE", SIPMessageValveImpl.class.getCanonicalName());
 
             try {
                 // Create SipStack object
@@ -614,6 +615,7 @@ public class SIPMessageValveTest extends TestCase {
 
         }
         if(this.shootist.lastResponseCode != 603) fail("We expcted 603");
+        if(SIPMessageValveImpl.lastResponseCode != 603) fail("We expcted 603");
     }
 
 
