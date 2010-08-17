@@ -101,7 +101,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.166 $ $Date: 2010-08-17 03:15:07 $
+ * @version 1.2 $Revision: 1.167 $ $Date: 2010-08-17 13:04:14 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener, SIPDialogEventListener {
@@ -1463,6 +1463,17 @@ public abstract class SIPTransactionStack implements
         SIPClientTransaction nextTransaction;
         // Transaction to handle this request
         SIPClientTransaction currentTransaction;
+        
+        if(sipMessageValve != null) {
+        	if(!sipMessageValve.processResponse(
+        			responseReceived, responseMessageChannel)) {
+        		if(stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+        			stackLogger.logDebug(
+        					"Response dropped by the SIP message valve. Response = " + responseReceived);
+        		}
+        		return null;
+        	}
+        }
 
         String key = responseReceived.getTransactionId();
 
