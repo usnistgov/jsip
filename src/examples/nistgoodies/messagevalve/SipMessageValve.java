@@ -110,7 +110,6 @@ public class SipMessageValve implements SIPMessageValve {
 
     }
 
-	@Override
 	public boolean processRequest(SIPRequest request,
 			MessageChannel messageChannel) {
 		try {
@@ -121,7 +120,6 @@ public class SipMessageValve implements SIPMessageValve {
 		return false;
 	}
 
-	@Override
 	public boolean processResponse(Response response,
 			MessageChannel messageChannel) {
 		// Just drop the all responses
