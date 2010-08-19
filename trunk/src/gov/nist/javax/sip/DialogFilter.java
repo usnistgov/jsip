@@ -84,7 +84,7 @@ import javax.sip.message.Response;
  * together the NIST-SIP stack and event model with the JAIN-SIP stack. This is
  * strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.87 $ $Date: 2010-08-19 21:34:05 $
+ * @version 1.2 $Revision: 1.88 $ $Date: 2010-08-19 21:44:51 $
  * 
  * @author M. Ranganathan
  */
@@ -456,6 +456,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     && sipProvider.isDialogErrorsAutomaticallyHandled()) {               
                 final String lastTransactionMethod = lastTransaction.getMethod();
                 if (lastTransaction instanceof SIPServerTransaction) {
+                    // Handle Pseudo State Trying on Server Transaction
                     if ((lastTransaction.getInternalState() == TransactionState._PROCEEDING
                                     || lastTransaction.getInternalState() == TransactionState._TRYING)
                             && lastTransactionMethod.equals(Request.INVITE)) {
@@ -974,6 +975,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     && sipProvider.isDialogErrorsAutomaticallyHandled()
                     && lastTransaction.isInviteTransaction()
                     && lastTransaction instanceof ServerTransaction
+                    // Handle Pseudo State Trying on Server Transaction
                     && (lastTransaction.getInternalState() == TransactionState._PROCEEDING
                                     || lastTransaction.getInternalState() == TransactionState._TRYING)) {
                 // Note that the completed state will be reached when we have
