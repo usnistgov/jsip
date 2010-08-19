@@ -38,6 +38,7 @@ package gov.nist.javax.sip.parser;
  */
 import gov.nist.core.Debug;
 import gov.nist.core.InternalErrorHandler;
+import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.header.ContentLength;
 import gov.nist.javax.sip.message.SIPMessage;
 import gov.nist.javax.sip.stack.SIPTransactionStack;
@@ -45,8 +46,11 @@ import gov.nist.javax.sip.stack.SIPTransactionStack;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This implements a pipelined message parser suitable for use with a stream -
@@ -59,7 +63,7 @@ import java.util.concurrent.Executors;
  * accessed from the SIPMessage using the getContent and getContentBytes methods
  * provided by the SIPMessage class.
  *
- * @version 1.2 $Revision: 1.28.2.2 $ $Date: 2010-07-01 18:50:50 $
+ * @version 1.2 $Revision: 1.28.2.3 $ $Date: 2010-08-19 19:17:55 $
  *
  * @author M. Ranganathan
  *
@@ -81,6 +85,7 @@ public final class PipelinedMsgParser implements Runnable {
     private int maxMessageSize;
     private int sizeCounter;
     private SIPTransactionStack sipStack;
+    private ConcurrentHashMap<String, Semaphore> messagesOrderingMap = new ConcurrentHashMap<String, Semaphore>();
     
   
     /**
@@ -231,6 +236,7 @@ public final class PipelinedMsgParser implements Runnable {
     public void run() {
 
         Pipeline inputStream = this.rawInputStream;
+        final StackLogger stackLogger = sipStack.getStackLogger();
         // inputStream = new MyFilterInputStream(this.rawInputStream);
         // I cannot use buffered reader here because we may need to switch
         // encodings to read the message body.
@@ -293,8 +299,8 @@ public final class PipelinedMsgParser implements Runnable {
                 SIPMessage sipMessage = null;
 
                 try {
-                    if (Debug.debug) {
-                        Debug.println("About to parse : " + inputBuffer.toString());
+                    if (stackLogger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+                    	stackLogger.logDebug("About to parse : " + inputBuffer.toString());
                     }
                     sipMessage = smp.parseSIPMessage(inputBuffer.toString().getBytes());
                     if (sipMessage == null) {
@@ -303,7 +309,7 @@ public final class PipelinedMsgParser implements Runnable {
                     }
                 } catch (ParseException ex) {
                     // Just ignore the parse exception.
-                    Debug.logError("Detected a parse error", ex);
+                	stackLogger.logError("Detected a parse error", ex);
                     continue;
                 }
 
@@ -347,7 +353,7 @@ public final class PipelinedMsgParser implements Runnable {
                                 break;
                             }
                         } catch (IOException ex) {
-                            Debug.logError("Exception Reading Content",ex);
+                            stackLogger.logError("Exception Reading Content",ex);
                             break;
                         } finally {
                             // Stop my starvation timer.
@@ -372,14 +378,71 @@ public final class PipelinedMsgParser implements Runnable {
                     		 * we use the threadpool to execute the task.
                     		 */
                     		final SIPMessage message = sipMessage;
+                    		
+                    		// we need to guarantee message ordering on the same socket on TCP
+                    		// so we lock per Call Id
+                    		
+                    		final String callId = message.getCallId().getCallId();
+                    		// http://dmy999.com/article/34/correct-use-of-concurrenthashmap
+                    		Semaphore semaphore = messagesOrderingMap.get(callId);
+                    		if(semaphore == null) {
+                    			Semaphore newSemaphore = new Semaphore(1, true);
+                    			semaphore = messagesOrderingMap.putIfAbsent(callId, newSemaphore);
+                    			if(semaphore == null) {
+                    				semaphore = newSemaphore;       
+                    				if (stackLogger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+                    					stackLogger.logDebug("semaphore added for message " + message);
+                    				}
+                    			}
+                    		}
+                    		final Semaphore callIdSemaphore = semaphore;     
+                    		if (stackLogger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+                    			stackLogger.logDebug("trying to acquiring semaphore for message " + message);
+                    		}
+                    		// we try to acquire here so that if the result if false because it is already acquired
+                    		// we acquire it in the thread to avoid blocking other messages with a different call id
+                    		// that could be processed in parallel
+                    		final boolean acquired = callIdSemaphore.tryAcquire(0, TimeUnit.SECONDS);                    		                    		
+                    		
                     		Thread messageDispatchTask = new Thread() {
                     			@Override
                     			public void run() {
+                    				// if it was not acquired above
+                    				// we acquire it in the thread to avoid blocking other messages with a different call id
+                            		// that could be processed in parallel
+                    				if (stackLogger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+        								stackLogger.logDebug("semaphore acquired " + acquired +  " for message " + message);
+        							}
+                    				if(!acquired) {
+                    					try {
+                    						if (stackLogger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+                                    			stackLogger.logDebug("trying to acquiring semaphore for message " + message);
+                                    		}
+											callIdSemaphore.acquire();
+										} catch (InterruptedException e) {
+											stackLogger.logError("Semaphore acquisition for message " + message + " interrupted", e);
+										}
+										if (stackLogger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+											stackLogger.logDebug("semaphore acquired for message " + message);
+										}
+                    				}
+                            		
                     				try {
                     					sipMessageListener.processMessage(message);
                     				} catch (Exception e) {
-                    					Debug.logError("Error occured processing message", e);	
+                    					stackLogger.logError("Error occured processing message", e);	
                     					// We do not break the TCP connection because other calls use the same socket here
+                    				} finally {
+                    					if (stackLogger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+                    						stackLogger.logDebug("releasing semaphore for message " + message);
+                    					}
+                    					callIdSemaphore.release();                    				
+                    					if(!callIdSemaphore.hasQueuedThreads()) {
+                    						messagesOrderingMap.remove(callId);
+                    						if (stackLogger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+                    							stackLogger.logDebug("semaphore removed for message " + message);
+                    						}
+                    					}
                     				}
                     			}
                     		};
@@ -394,6 +457,7 @@ public final class PipelinedMsgParser implements Runnable {
             }
         } finally {
             try {
+            	cleanMessageOrderingMap();
                 inputStream.close();
             } catch (IOException e) {
                 InternalErrorHandler.handleException(e);
@@ -421,10 +485,26 @@ public final class PipelinedMsgParser implements Runnable {
         } catch (IOException ex) {
             // Ignore.
         }
+        cleanMessageOrderingMap();
+    }
+    
+    private void cleanMessageOrderingMap() {
+    	for (Semaphore semaphore : messagesOrderingMap.values()) {
+			semaphore.release();
+		}
+    	messagesOrderingMap.clear();
     }
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.28.2.2  2010/07/01 18:50:50  vralev
+ * Issue number:  301
+ * Obtained from: vralev
+ * Submitted by:  vralev
+ * Reviewed by:   ranga
+ *
+ * Handle better conflicting multiple settings. Taking into account only the first one without creating unused threadpools for other settings.
+ *
  * Revision 1.28.2.1  2010/07/01 18:24:26  vralev
  * Issue number:  301
  * Obtained from: vralev
