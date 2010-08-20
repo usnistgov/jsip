@@ -101,7 +101,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.167 $ $Date: 2010-08-17 13:04:14 $
+ * @version 1.2 $Revision: 1.168 $ $Date: 2010-08-20 22:43:48 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener, SIPDialogEventListener {
@@ -2320,6 +2320,23 @@ public abstract class SIPTransactionStack implements
                     // try next processor
                 }
             }
+        }
+        
+        if(newChannel == null) {
+        	if(stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+        		stackLogger.logDebug("newChanne is null, messageProcessors.size = " + messageProcessors.size());
+        		processorIterator = messageProcessors.iterator();
+                while (processorIterator.hasNext() && newChannel == null) {
+                	nextProcessor = (MessageProcessor) processorIterator.next();
+                	stackLogger.logDebug("nextProcessor:" + nextProcessor + "| transport = " + 
+                			nextProcessor.getTransport() + " ipAddress=" + 
+                			nextProcessor.getIpAddress() + " port=" + 
+                			nextProcessor.getPort());
+                }
+                stackLogger.logDebug("More info on newChannel=null");
+        		stackLogger.logDebug("nextHop=" + nextHop + " sourceIp=" + sourceIpAddress + 
+        				" sourcePort=" + sourcePort + " targetHostPort=" + targetHostPort);
+        	}
         }
         // Return the newly-created channel
         return newChannel;
