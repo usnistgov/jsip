@@ -181,7 +181,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.136 $ $Date: 2010-07-16 15:15:57 $
+ * @version 1.2 $Revision: 1.137 $ $Date: 2010-08-20 11:14:23 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -629,17 +629,20 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                     this.semRelease();
                 }
             } else if (200 <= statusCode && statusCode <= 699) {
+                if (!isReliable()) {
+                    this.setState(TransactionState._COMPLETED);
+                    scheduleTimerK(TIMER_K);        
+                } else {
+                    this.setState(TransactionState._TERMINATED);
+                }
                 // Send the response up to the TU.
                 if (respondTo != null) {
                     respondTo.processResponse(transactionResponse, this, sipDialog);
                 } else {
                     this.semRelease();
                 }
-                if (!isReliable()) {
-                    this.setState(TransactionState._COMPLETED);
-                    scheduleTimerK(TIMER_K);        
-                } else {
-                    this.setState(TransactionState._TERMINATED);
+                if (isReliable()
+                    && TransactionState._TERMINATED == getInternalState()) {
                     cleanUpOnTerminated();
                 }
                 cleanUpOnTimer();
@@ -652,11 +655,6 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                     this.semRelease();
                 }
             } else if (200 <= statusCode && statusCode <= 699) {
-                if (respondTo != null) {
-                    respondTo.processResponse(transactionResponse, this, sipDialog);
-                } else {
-                    this.semRelease();
-                }
                 disableRetransmissionTimer();
                 disableTimeoutTimer();
                 if (!isReliable()) {
@@ -664,6 +662,14 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                     scheduleTimerK(TIMER_K);
                 } else {                    
                     this.setState(TransactionState._TERMINATED);
+                }
+                if (respondTo != null) {
+                    respondTo.processResponse(transactionResponse, this, sipDialog);
+                } else {
+                    this.semRelease();
+                }
+                if (isReliable()
+                    && TransactionState._TERMINATED == getInternalState()) {
                     cleanUpOnTerminated();
                 }
                 cleanUpOnTimer();
@@ -840,12 +846,6 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                  * TU, and the client transaction MUST generate an ACK request.
                  */
 
-                if (respondTo != null) {
-                    respondTo.processResponse(transactionResponse, this, dialog);
-                } else {
-                    this.semRelease();
-                }
-
                 if (this.getDialog() != null &&  ((SIPDialog)this.getDialog()).isBackToBackUserAgent()) {
                     ((SIPDialog) this.getDialog()).releaseAckSem();
                 }
@@ -856,6 +856,11 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                 } else {
                     // Proceed immediately to the TERMINATED state.
                     this.setState(TransactionState._TERMINATED);
+                }
+                if (respondTo != null) {
+                    respondTo.processResponse(transactionResponse, this, dialog);
+                } else {
+                    this.semRelease();
                 }
                 cleanUpOnTimer();
             }
