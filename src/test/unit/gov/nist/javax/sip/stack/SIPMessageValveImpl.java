@@ -10,7 +10,7 @@ import javax.sip.message.Response;
 
     public class SIPMessageValveImpl implements SIPMessageValve {
     	public static int lastResponseCode;
-    	@Override
+
     	public boolean processRequest(SIPRequest request, MessageChannel messageChannel) {
     		try {
     			sendResponse(messageChannel, createErrorResponse(request, 603));
@@ -36,7 +36,6 @@ import javax.sip.message.Response;
     		channel.sendMessage(response);
     	}
 
-		@Override
 		public boolean processResponse(Response response,
 				MessageChannel messageChannel) {
 			lastResponseCode = response.getStatusCode();
