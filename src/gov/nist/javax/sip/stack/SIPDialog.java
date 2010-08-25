@@ -132,7 +132,7 @@ import javax.sip.message.Response;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.194 $ $Date: 2010-08-14 16:49:33 $
+ * @version 1.2 $Revision: 1.195 $ $Date: 2010-08-25 14:46:49 $
  * 
  * @author M. Ranganathan
  * 
@@ -3878,12 +3878,22 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * proceed.
      */
     void releaseAckSem() {
+    	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+            sipStack.getStackLogger()
+                    .logDebug("releaseAckSem-enter]]" + this + " sem=" + this.ackSem + " b2bua=" + this.isBackToBackUserAgent);
+            sipStack.getStackLogger().logStackTrace();
+        }
         if (this.isBackToBackUserAgent) {
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                sipStack.getStackLogger()
+                        .logDebug("releaseAckSem]]" + this + " sem=" + this.ackSem);
+                sipStack.getStackLogger().logStackTrace();
+            }
             if (this.ackSem.availablePermits() == 0 ) {
                 this.ackSem.release();
                 if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                     sipStack.getStackLogger()
-                            .logDebug("releaseAckSem]]" + this);
+                            .logDebug("releaseAckSem]]" + this + " sem=" + this.ackSem);
                 }
             }
         }
@@ -3891,20 +3901,20 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
     boolean takeAckSem() {
         if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-            sipStack.getStackLogger().logDebug("[takeAckSem " + this);
+            sipStack.getStackLogger().logDebug("[takeAckSem " + this + " sem=" + this.ackSem);
         }
         try {
         	
             if (!this.ackSem.tryAcquire(2, TimeUnit.SECONDS)) {
                 if (sipStack.isLoggingEnabled()) {
                     sipStack.getStackLogger().logError(
-                            "Cannot aquire ACK semaphore");
+                            "Cannot aquire ACK semaphore ");
                 }
 
                 if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                     sipStack.getStackLogger().logDebug(
                             "Semaphore previously acquired at "
-                                    + this.stackTrace);
+                                    + this.stackTrace + " sem=" + this.ackSem);
                     sipStack.getStackLogger().logStackTrace();
 
                 }
