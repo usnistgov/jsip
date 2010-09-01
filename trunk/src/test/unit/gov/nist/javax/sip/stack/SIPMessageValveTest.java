@@ -614,8 +614,9 @@ public class SIPMessageValveTest extends TestCase {
         } catch (Exception ex) {
 
         }
-        if(this.shootist.lastResponseCode != 603) fail("We expcted 603");
-        if(SIPMessageValveImpl.lastResponseCode != 603) fail("We expcted 603");
+        if(this.shootist.lastResponseCode != 603) fail("We expected 603");
+        if(SIPMessageValveImpl.lastResponseCode != 603) fail("We expected 603");
+        assertTrue(SIPMessageValveImpl.inited);
     }
 
 
