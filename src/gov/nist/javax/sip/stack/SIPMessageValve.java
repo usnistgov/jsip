@@ -1,5 +1,6 @@
 package gov.nist.javax.sip.stack;
 
+import javax.sip.SipStack;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 
@@ -36,4 +37,16 @@ public interface SIPMessageValve {
 	 * @return
 	 */
 	public boolean processResponse(Response response, MessageChannel messageChannel);
+	
+	/**
+	 * This method is called when the valve is initialized. You can perform any initialization here.
+	 * 
+	 * @param stack
+	 */
+	public void init(SipStack stack);
+	
+	/**
+	 * This method is called when the valve is about to be destroyed. You can perform any cleanup here.
+	 */
+	public void destroy();
 }
