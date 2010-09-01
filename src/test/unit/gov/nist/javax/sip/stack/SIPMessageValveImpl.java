@@ -1,4 +1,5 @@
 package test.unit.gov.nist.javax.sip.stack;
+import gov.nist.javax.sip.SipStackImpl;
 import gov.nist.javax.sip.message.SIPMessage;
 import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.stack.MessageChannel;
@@ -6,10 +7,13 @@ import gov.nist.javax.sip.stack.SIPMessageValve;
 
 import java.io.IOException;
 
+import javax.sip.SipStack;
 import javax.sip.message.Response;
 
     public class SIPMessageValveImpl implements SIPMessageValve {
     	public static int lastResponseCode;
+    	public static boolean inited;
+    	public static boolean destroyed;
 
     	public boolean processRequest(SIPRequest request, MessageChannel messageChannel) {
     		try {
@@ -40,6 +44,17 @@ import javax.sip.message.Response;
 				MessageChannel messageChannel) {
 			lastResponseCode = response.getStatusCode();
 			return true;
+		}
+
+		public void destroy() {
+			destroyed = true;
+		}
+
+		public void init(SipStack stack) {
+			SipStackImpl impl = (SipStackImpl) stack;
+			impl.getConfigurationProperties().getProperty("keee");
+			impl.getActiveClientTransactionCount();
+			inited = true;
 		}
     	
     	

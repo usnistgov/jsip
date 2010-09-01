@@ -1,9 +1,11 @@
 package examples.nistgoodies.messagevalve;
 
 import examples.nistgoodies.threadaudit.ThreadAudit;
+import gov.nist.javax.sip.SipStackImpl;
 import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.stack.MessageChannel;
 import gov.nist.javax.sip.stack.SIPMessageValve;
+import gov.nist.javax.sip.stack.SIPTransactionStack;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -133,4 +135,15 @@ public class SipMessageValve implements SIPMessageValve {
         Thread.sleep(10000);
         System.out.println("Stopped.");
     }
+
+	public void destroy() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void init(SipStack stack) {
+		SipStackImpl s = (SipStackImpl) stack;
+		s.getConfigurationProperties();
+		System.out.println("SIP Message Valve initialized");
+	}
 }
