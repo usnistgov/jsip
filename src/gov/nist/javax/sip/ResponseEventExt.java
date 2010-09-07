@@ -1,6 +1,5 @@
 package gov.nist.javax.sip;
 
-import javax.sip.ClientTransaction;
 import javax.sip.Dialog;
 import javax.sip.ResponseEvent;
 import javax.sip.message.Response;
@@ -12,6 +11,8 @@ import javax.sip.message.Response;
  */
 public class ResponseEventExt extends ResponseEvent {
     private ClientTransactionExt  m_originalTransaction;
+    private boolean isForked;
+    
     public ResponseEventExt(Object source, ClientTransactionExt clientTransaction, 
             Dialog dialog,  Response response) {
         super(source,clientTransaction,dialog,response);
@@ -24,7 +25,16 @@ public class ResponseEventExt extends ResponseEvent {
      * @return true if the response event is for a forked response.
      */
     public boolean isForkedResponse() {
-        return super.getClientTransaction() == null && m_originalTransaction != null;
+        return isForked;
+    }
+    
+    /**
+     * Set true if this is a forked response.
+     * 
+     * @return true if the response event is for a forked response.
+     */
+    public void setForkedResponse(boolean forked) {
+        this.isForked= forked;
     }
     
     /**

@@ -84,7 +84,7 @@ import javax.sip.message.Response;
  * together the NIST-SIP stack and event model with the JAIN-SIP stack. This is
  * strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.88 $ $Date: 2010-08-19 21:44:51 $
+ * @version 1.2 $Revision: 1.89 $ $Date: 2010-09-07 20:30:37 $
  * 
  * @author M. Ranganathan
  */
@@ -1429,13 +1429,14 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     && response.getCSeqHeader().getMethod().equals(
                             Request.INVITE)) {
                 SIPClientTransaction forked = this.sipStack
-                        .getForkedTransaction(response.getForkId());
+                        .getForkedTransaction(response.getForkId());                
                 if(dialog != null && forked != null && forked.getDefaultDialog() != null && !dialog.equals(forked.getDefaultDialog())) {
                     if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                         sipStack.getStackLogger().logDebug(
                                 "forked dialog " + dialog + " original tx " + forked + " original dialog " + forked.getDefaultDialog());
                     }
                     sipEvent.setOriginalTransaction(forked);
+                    sipEvent.setForkedResponse(true);
                 }
             }
 
@@ -1451,13 +1452,14 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
         if (sipStack.getMaxForkTime() != 0
                 && response.getCSeqHeader().getMethod().equals(Request.INVITE)) {
             SIPClientTransaction forked = this.sipStack
-                    .getForkedTransaction(response.getForkId());
+                    .getForkedTransaction(response.getForkId());            
             if(dialog != null && forked != null && forked.getDefaultDialog() != null && !dialog.equals(forked.getDefaultDialog())) {
                 if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                     sipStack.getStackLogger().logDebug(
                             "forked dialog " + dialog + " original tx " + forked + " original dialog " + forked.getDefaultDialog());
                 }
                 responseEvent.setOriginalTransaction(forked);
+                responseEvent.setForkedResponse(true);
             }
         }
 
@@ -1594,9 +1596,13 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     createDialog = true;
                 }
             } 
-            if(createDialog) {
+            if (createDialog) {
                 if (this.transactionChannel != null) {
                     if (sipDialog == null) {
+                        if (sipStack.isLoggingEnabled()) {
+                            sipStack.getStackLogger().logDebug(
+                                    "Creating dialog for forked response " + sipResponse);
+                        }
                         // There could be an existing dialog for this response.
                         sipDialog = sipStack.createDialog(
                                 (SIPClientTransaction) this.transactionChannel,
@@ -1606,6 +1612,10 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                                 sipResponse.getDialogId(false));
                     }
                 } else {
+                    if (sipStack.isLoggingEnabled()) {
+                        sipStack.getStackLogger().logDebug(
+                                "Creating dialog for forked response " + sipResponse);
+                    }
                     sipDialog = this.sipStack.createDialog(sipProvider,
                             sipResponse);
                 }
@@ -1701,6 +1711,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                             "forked dialog " + sipDialog + " original tx " + originalTx + " original dialog " + originalTx.getDefaultDialog());
                 }
                 responseEvent.setOriginalTransaction(originalTx);
+                responseEvent.setForkedResponse(true);
             }
         }
 
