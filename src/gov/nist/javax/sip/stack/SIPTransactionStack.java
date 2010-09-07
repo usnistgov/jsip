@@ -101,7 +101,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.168 $ $Date: 2010-08-20 22:43:48 $
+ * @version 1.2 $Revision: 1.169 $ $Date: 2010-09-07 20:30:35 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener, SIPDialogEventListener {
@@ -720,25 +720,43 @@ public abstract class SIPTransactionStack implements
 	 *            -- tx to add to the dialog.
      * @return the newly created Dialog.
      */
+    /**
+     * Create a dialog and add this transaction to it.
+     * 
+     * @param transaction
+     *            -- tx to add to the dialog.
+     * @return the newly created Dialog.
+     */
     public SIPDialog createDialog(SIPTransaction transaction) {
 
         SIPDialog retval = null;
 
         if (transaction instanceof SIPClientTransaction) {
-			String dialogId = ((SIPRequest) transaction.getRequest())
-					.getDialogId(false);
+            String dialogId = ((SIPRequest) transaction.getRequest())
+                    .getDialogId(false);
+            if (stackLogger.isLoggingEnabled()) {
+                stackLogger.logDebug("createDialog dialogId=" + dialogId);
+            }
             if (this.earlyDialogTable.get(dialogId) != null) {
-                SIPDialog dialog = this.earlyDialogTable.get(dialogId);
-				if (dialog.getState() == null
-						|| dialog.getState() == DialogState.EARLY) {
+                SIPDialog dialog = this.earlyDialogTable.get(dialogId);             
+                if (dialog.getState() == null
+                        || dialog.getState() == DialogState.EARLY) {
                     retval = dialog;
+                    if (stackLogger.isLoggingEnabled()) {
+                        stackLogger.logDebug("createDialog early Dialog found : earlyDialogId=" 
+                                + dialogId + " earlyDialog= " + dialog);
+                    }
                 } else {
                     retval = new SIPDialog(transaction);
                     this.earlyDialogTable.put(dialogId, retval);
                 }
-            } else {
+            } else {                
                 retval = new SIPDialog(transaction);
                 this.earlyDialogTable.put(dialogId, retval);
+                if (stackLogger.isLoggingEnabled()) {
+                    stackLogger.logDebug("createDialog early Dialog not found : earlyDialogId=" 
+                            + dialogId + " created one " + retval);
+                }
             }
         } else {
             retval = new SIPDialog(transaction);
@@ -750,30 +768,42 @@ public abstract class SIPTransactionStack implements
 
     /**
      * Create a Dialog given a client tx and response.
-     *
+     * 
      * @param transaction
      * @param sipResponse
      * @return
      */
 
-	public SIPDialog createDialog(SIPClientTransaction transaction,
-			SIPResponse sipResponse) {
-		String dialogId = ((SIPRequest) transaction.getRequest())
-				.getDialogId(false);
-        SIPDialog retval = null;
-        if (this.earlyDialogTable.get(dialogId) != null) {
-            retval = this.earlyDialogTable.get(dialogId);
-            if (sipResponse.isFinalResponse()) {
-                this.earlyDialogTable.remove(dialogId);
+    public SIPDialog createDialog(SIPClientTransaction transaction,
+            SIPResponse sipResponse) {
+        String originalDialogId = ((SIPRequest)transaction.getRequest()).getDialogId(false);
+        String earlyDialogId = sipResponse.getDialogId(false);
+        if (stackLogger.isLoggingEnabled()) {
+            stackLogger.logDebug("createDialog originalDialogId=" + originalDialogId);
+            stackLogger.logDebug("createDialog earlyDialogId=" + earlyDialogId);
+            stackLogger.logDebug("createDialog default Dialog=" + transaction.getDefaultDialog());
+            if(transaction.getDefaultDialog() != null) {
+                stackLogger.logDebug("createDialog default Dialog Id=" + transaction.getDefaultDialog().getDialogId());
             }
-            if (stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                stackLogger.logDebug(
-                        "retrieved the early dialog " + retval);
-        } else {
+        }
+        SIPDialog retval = null;
+        SIPDialog earlyDialog = this.earlyDialogTable.get(originalDialogId);
+        if (earlyDialog != null && transaction != null && (transaction.getDefaultDialog() == null || transaction.getDefaultDialog().getDialogId().equals(originalDialogId))) {       
+            retval = earlyDialog;
+            if (stackLogger.isLoggingEnabled()) {
+                stackLogger.logDebug("createDialog early Dialog found : earlyDialogId=" 
+                        + originalDialogId + " earlyDialog= " + retval);
+            }
+            if (sipResponse.isFinalResponse()) {
+                this.earlyDialogTable.remove(originalDialogId);
+            }
+
+        } else {            
             retval = new SIPDialog(transaction, sipResponse);
-            if (stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                stackLogger.logDebug(
-                        "created new dialog " + retval);
+            if (stackLogger.isLoggingEnabled()) {
+                stackLogger.logDebug("createDialog early Dialog not found : earlyDialogId=" 
+                        + earlyDialogId + " created one " + retval);
+            }
         }
         return retval;
 
