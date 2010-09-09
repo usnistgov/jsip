@@ -2,6 +2,7 @@ package test.unit.gov.nist.javax.sip.stack.forkedinvite;
 
 import gov.nist.javax.sip.ResponseEventExt;
 import gov.nist.javax.sip.SipStackImpl;
+import gov.nist.javax.sip.message.ResponseExt;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -139,8 +140,6 @@ public class Shootist implements SipListener {
                TestCase.assertEquals ("Dialog state must be confirmed",
                         DialogState.CONFIRMED,dialog.getState());
 
-
-
                Request byeRequest = dialog.createRequest(Request.BYE);
                ClientTransaction ctx = sipProvider.getNewClientTransaction(byeRequest);
                dialog.sendRequest(ctx);
@@ -149,23 +148,18 @@ public class Shootist implements SipListener {
            }
 
         }
-
     }
 
-
-
     public Shootist(int myPort, int proxyPort, String createDialogAuto) {
-
-
         this.port = myPort;
-
+        this.peerPort = proxyPort;
+        
         SipObjects sipObjects = new SipObjects(myPort, "shootist", createDialogAuto);
         addressFactory = sipObjects.addressFactory;
         messageFactory = sipObjects.messageFactory;
         headerFactory = sipObjects.headerFactory;
         this.sipStack = sipObjects.sipStack;
-
-        this.peerPort = proxyPort;        
+        
         if(!createDialogAuto.equalsIgnoreCase("on")) {
             isAutomaticDialogSupportEnabled = false;
         }
@@ -212,8 +206,7 @@ public class Shootist implements SipListener {
     }
 
     public synchronized void processResponse(ResponseEvent responseReceived) {
-        try {
-            logger.info("Got a response");
+        try {            
             ResponseEventExt responseReceivedEvent = (ResponseEventExt) responseReceived;
             Response response = (Response) responseReceivedEvent.getResponse();
             ClientTransaction tid = responseReceivedEvent.getClientTransaction();
@@ -221,8 +214,7 @@ public class Shootist implements SipListener {
     
             logger.info("Response received : Status Code = "
                     + response.getStatusCode() + " " + cseq);
-            logger.info("Response = " + response + " class=" + response.getClass() );
-            
+            logger.info("Response = " + response + " class=" + response.getClass() );            
     
             Dialog dialog = responseReceivedEvent.getDialog();     
             if(createDialogAfterRequest) {
@@ -231,79 +223,64 @@ public class Shootist implements SipListener {
             } else {
                 TestCase.assertNotNull( dialog );
             }
-            
             System.out.println("original Tx " + responseReceivedEvent.getOriginalTransaction());            
-    
             if (tid != null)
                 logger.info("transaction state is " + tid.getState());
             else
                 logger.info("transaction = " + tid);
     
             logger.info("Dialog = " + dialog);
-    
             logger.info("Dialog state is " + dialog.getState());
 
-        
+            String toTag = ((ResponseExt)response).getToHeader().getTag();
+            boolean isFromFork = toTag != null && !toTag.contains("shootme-5080");
+            logger.info("isRetransmission = " + responseReceivedEvent.isRetransmission() + " isFromForked = " + isFromFork + " isForked = " + responseReceivedEvent.isForkedResponse() + " response "+ response);
+            
             if (response.getStatusCode() == Response.OK) {
                 if (cseq.getMethod().equals(Request.INVITE)) {
-//                    if(responseReceivedEvent.getClientTransaction() == null && canceledDialog != null && ackedDialog != null)
-                    
                      // Proxy will fork. I will accept the first dialog.
                     this.forkedDialogs.add(dialog);
-                    if ( responseReceivedEvent.getClientTransaction() != null ) {
-                        ResponseEventExt responseEventExt  = (ResponseEventExt) responseReceivedEvent;
-                        logger.info("isForked = " + responseEventExt.isForkedResponse() + " response "+ response);
-                        TestCase.assertFalse("non forked event must not set flag",responseEventExt.isForkedResponse());
+                    if (!isFromFork) {                        
+                        TestCase.assertFalse("non forked event must not set flag",responseReceivedEvent.isForkedResponse());                                                
                         
-                        this.originalTransaction = responseReceivedEvent.getClientTransaction();
-                                                
-                        TestCase.assertTrue(
-                                "Dialog state should be CONFIRMED", dialog
-                                        .getState() == DialogState.CONFIRMED);
-
-                        TestCase.assertTrue(this.ackedDialog == null ||
-                                this.ackedDialog == dialog);
-                        this.ackedDialog = dialog;
-
-                        Request ackRequest = dialog.createAck(cseq
-                                .getSeqNumber());
-                    
-                        TestCase.assertNotNull( ackRequest.getHeader( MaxForwardsHeader.NAME ) );
-                        //  sleeping to see how it reacts with retrans
-                        logger.info("Waiting to Send ACK");
-                        Thread.sleep(2000);
-                        logger.info("Sending " + ackRequest);
-                        dialog.sendAck(ackRequest);
+                        if(ackedDialog == null) {
+                            TestCase.assertFalse("retransmission flag should be false",responseReceivedEvent.isRetransmission());
+                            TestCase.assertTrue(
+                                    "Dialog state should be CONFIRMED", dialog
+                                            .getState() == DialogState.CONFIRMED);
+    
+                            TestCase.assertTrue(this.ackedDialog == null ||
+                                    this.ackedDialog == dialog);
+                            this.ackedDialog = dialog;
                         
-                        if ( callerSendsBye ) {
-                            timer.schedule( new SendBye(ackedDialog), 4000  );
+                            Request ackRequest = dialog.createAck(cseq
+                                    .getSeqNumber());
+                        
+                            TestCase.assertNotNull( ackRequest.getHeader( MaxForwardsHeader.NAME ) );
+                            //  sleeping to see how it reacts with retrans
+                            logger.info("Waiting to Send ACK");
+                            Thread.sleep(1000);
+                            logger.info("Sending " + ackRequest);
+                            dialog.sendAck(ackRequest);
+                            
+                            if ( callerSendsBye ) {
+                                timer.schedule( new SendBye(ackedDialog), 2000  );
+                            }
+                        } else {
+                            TestCase.assertTrue("retransmission flag should be true",responseReceivedEvent.isRetransmission()); 
                         }
-
 
                     } else {
-                        ResponseEventExt responseEventExt  = (ResponseEventExt) responseReceivedEvent;
-                        logger.info("isForked = " + responseEventExt.isForkedResponse() + " response "+ response);                        
-                        
-                        SipProvider sipProvider = (SipProvider) responseReceivedEvent
-                                .getSource();                                                
-
-                        if(responseEventExt.isForkedResponse()) {
-                            TestCase.assertSame("original ctx must match " , 
-                                            responseEventExt.getOriginalTransaction(),this.originalTransaction);
-                            if ( cseq.getMethod().equals(Request.INVITE)) {
-                                TestCase.assertSame("Must preserve original dialog", 
-                                    this.originalDialog,responseReceivedEvent.getOriginalTransaction().getDefaultDialog());
-                            }
-                        }
-                        // test retrans flag
-                        if(responseReceived.getDialog().equals(ackedDialog)) {
-                            TestCase.assertFalse("non forked event must set flag",responseEventExt.isForkedResponse());
-                        } else {
-                            TestCase.assertTrue("forked event must set flag",responseEventExt.isForkedResponse());
+                        TestCase.assertTrue("forked event must set flag",responseReceivedEvent.isForkedResponse());
+                        TestCase.assertSame("original ctx must match " , this.originalTransaction,
+                                        responseReceivedEvent.getOriginalTransaction());
+                        if ( cseq.getMethod().equals(Request.INVITE)) {
+                            TestCase.assertSame("Must preserve original dialog", 
+                                this.originalDialog,responseReceivedEvent.getOriginalTransaction().getDefaultDialog());
                         }
                         
-                        if(canceledDialog.isEmpty() && responseEventExt.isForkedResponse()) {
-                            TestCase.assertTrue("forked event must set flag",responseEventExt.isForkedResponse());
+                        if(canceledDialog.isEmpty()) {
+                            TestCase.assertFalse("retransmission flag should be false",responseReceivedEvent.isRetransmission());
                             TestCase.assertEquals( DialogState.CONFIRMED, dialog.getState() );
                             this.canceledDialog.add(dialog);
                             Request ackRequest = dialog.createAck(cseq
@@ -312,17 +289,19 @@ public class Shootist implements SipListener {
                             TestCase.assertNotNull( ackRequest.getHeader( MaxForwardsHeader.NAME ) );
                             //  sleeping to see how it reacts with retrans
                             logger.info("Waiting to Send ACK");
-                            Thread.sleep(2000);
+                            Thread.sleep(1000);
                             logger.info("Sending " + ackRequest);
                             dialog.sendAck(ackRequest);
                             
-                            Thread.sleep(1000);
+                            Thread.sleep(2000);
                             
                             Request byeRequest = dialog.createRequest(Request.BYE);
                             ClientTransaction ct = sipProvider
                                     .getNewClientTransaction(byeRequest);
                             dialog.sendRequest(ct);
-                        }                        
+                        } else {
+                            TestCase.assertTrue("retransmission flag should be true",responseReceivedEvent.isRetransmission());
+                        }
                     }
 
 
@@ -338,22 +317,18 @@ public class Shootist implements SipListener {
                 TestCase.assertEquals( DialogState.EARLY, dialog.getState() );     
                 this.forkedEarlyDialogs.add(dialog);
                 // Proxy will fork. This make sure the forked early dialog is not the same as the first one.
-                if ( responseReceivedEvent.getClientTransaction() != null ) {
-                    if(earlyDialog != null) {
-                        logger.info("forked early dialog= " + dialog + " for response " + response);
-                        ResponseEventExt responseEventExt  = (ResponseEventExt) responseReceivedEvent;
-                        logger.info("isForked = " + responseEventExt.isForkedResponse() + " response "+ response);
-                        TestCase.assertTrue("forked event must set flag",responseEventExt.isForkedResponse());
-                        TestCase.assertNotSame(dialog, earlyDialog);                        
-                        TestCase.assertSame(earlyDialog, responseEventExt.getOriginalTransaction().getDefaultDialog());
-                    } else {
-                        earlyDialog = dialog;
-                        logger.info("original early dialog= " + dialog + " for response " + response);
-                        ResponseEventExt responseEventExt  = (ResponseEventExt) responseReceivedEvent;
-                        logger.info("isForked = " + responseEventExt.isForkedResponse() + " response "+ response);
-                        TestCase.assertFalse("non forked event must not set flag",responseEventExt.isForkedResponse());
-                    }
-                } 
+                if(isFromFork) {
+                    logger.info("forked early dialog= " + dialog + " for response " + response);
+                    ResponseEventExt responseEventExt  = (ResponseEventExt) responseReceivedEvent;
+                    TestCase.assertTrue("forked event must set flag",responseEventExt.isForkedResponse());
+                    TestCase.assertNotSame(dialog, earlyDialog);                        
+                    TestCase.assertSame(earlyDialog, responseEventExt.getOriginalTransaction().getDefaultDialog());
+                } else {
+                    earlyDialog = dialog;
+                    logger.info("original early dialog= " + dialog + " for response " + response);
+                    ResponseEventExt responseEventExt  = (ResponseEventExt) responseReceivedEvent;
+                    TestCase.assertFalse("non forked event must not set flag",responseEventExt.isForkedResponse());
+                }
             }
         } catch (Throwable ex) {
             ex.printStackTrace();
@@ -537,6 +512,7 @@ public class Shootist implements SipListener {
 
             // Create the client transaction.
             inviteTid = sipProvider.getNewClientTransaction(request);
+            this.originalTransaction = inviteTid;
             Dialog dialog = null;
             if(isAutomaticDialogSupportEnabled) {
                 dialog = inviteTid.getDialog();

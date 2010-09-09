@@ -74,7 +74,7 @@ public class InviteTest extends TestCase {
             boolean sendRinging = true;
             for  (int i = 0 ; i <  forkCount ; i ++ ) {
                 
-                Shootme shootme = new Shootme(5080 + i,sendRinging,4000);
+                Shootme shootme = new Shootme(5080 + i,sendRinging,4000 + (500 *i));
                 sendRinging = true;
                 SipProvider shootmeProvider = shootme.createProvider();
                 shootmeProvider.addSipListener(shootme);
@@ -116,7 +116,7 @@ public class InviteTest extends TestCase {
             shootistProvider.addSipListener(shootist);
             boolean sendRinging = true;
             for  (int i = 0 ; i <  forkCount ; i ++ ) {
-                Shootme shootme = new Shootme(5080 + i,sendRinging, 4000);
+                Shootme shootme = new Shootme(5080 + i,sendRinging, 4000 + (100 *i));
                 sendRinging = true;
                 SipProvider shootmeProvider = shootme.createProvider();
                 shootmeProvider.addSipListener(shootme);
@@ -160,7 +160,7 @@ public class InviteTest extends TestCase {
             boolean sendRinging = true;
             forkCount = 1;
             for  (int i = 0 ; i <  forkCount ; i ++ ) {
-                Shootme shootme = new Shootme(5080 + i,sendRinging, 4000);
+                Shootme shootme = new Shootme(5080 + i,sendRinging, 4000 + (500 *i));
                 sendRinging = true;
                 SipProvider shootmeProvider = shootme.createProvider();
                 shootmeProvider.addSipListener(shootme);
