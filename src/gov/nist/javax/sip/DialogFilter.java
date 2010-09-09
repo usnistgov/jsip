@@ -84,7 +84,7 @@ import javax.sip.message.Response;
  * together the NIST-SIP stack and event model with the JAIN-SIP stack. This is
  * strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.89 $ $Date: 2010-09-07 20:30:37 $
+ * @version 1.2 $Revision: 1.90 $ $Date: 2010-09-09 16:05:27 $
  * 
  * @author M. Ranganathan
  */
@@ -1435,6 +1435,17 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                         sipStack.getStackLogger().logDebug(
                                 "forked dialog " + dialog + " original tx " + forked + " original dialog " + forked.getDefaultDialog());
                     }
+                    if(transaction == null && dialog.getState() != null && !dialog.getState().equals(DialogState.EARLY)) {
+                        if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+                            sipStack.getStackLogger().logDebug("marking response as retrans ");
+                        }
+                        response.setRetransmission(true);
+                    } else {
+                        if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+                            sipStack.getStackLogger().logDebug("marking response as non retrans ");
+                        }
+                        response.setRetransmission(false);
+                    }
                     sipEvent.setOriginalTransaction(forked);
                     sipEvent.setForkedResponse(true);
                 }
@@ -1444,10 +1455,8 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             return;
         }
 
-        ResponseEventExt responseEvent = null;
-
         // Here if there is an assigned dialog
-        responseEvent = new ResponseEventExt(sipProvider,
+        ResponseEventExt responseEvent = new ResponseEventExt(sipProvider,
                 (ClientTransactionExt) transaction, dialog, (Response) response);
         if (sipStack.getMaxForkTime() != 0
                 && response.getCSeqHeader().getMethod().equals(Request.INVITE)) {
@@ -1457,6 +1466,17 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                 if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                     sipStack.getStackLogger().logDebug(
                             "forked dialog " + dialog + " original tx " + forked + " original dialog " + forked.getDefaultDialog());
+                }
+                if(transaction == null && dialog.getState() != null && !dialog.getState().equals(DialogState.EARLY)) {     
+                    if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+                        sipStack.getStackLogger().logDebug("marking response as retrans ");
+                    }
+                    response.setRetransmission(true);
+                } else {
+                    if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+                        sipStack.getStackLogger().logDebug("marking response as non retrans ");
+                    }
+                    response.setRetransmission(false);
                 }
                 responseEvent.setOriginalTransaction(forked);
                 responseEvent.setForkedResponse(true);
@@ -1576,14 +1596,14 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             }
 
         }
+        boolean createDialog = false;
         if (sipStack.isDialogCreated(method)
                 && sipResponse.getStatusCode() != 100
                 && sipResponse.getFrom().getTag() != null
                 && sipResponse.getTo().getTag() != null && sipDialog == null) {
             // Issue 317 : for forked response even if automatic dialog support is not enabled
             // a dialog should be created in the case where the original Tx already have a default dialog
-            // and the current dialog is null. This is also avoiding creating dialog automatically if the flag is not set
-            boolean createDialog = false;
+            // and the current dialog is null. This is also avoiding creating dialog automatically if the flag is not set            
             if (sipProvider.isAutomaticDialogSupportEnabled()) {
                  createDialog = true;
             } else if(!sipProvider.isAutomaticDialogSupportEnabled() && sipResponse.getCSeq().getMethod().equals(Request.INVITE) && sipStack.getMaxForkTime() > 0 && sipDialog == null) {
@@ -1690,12 +1710,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
         }
         if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG))
             sipStack.getStackLogger().logDebug(
-                    "sending response to TU for processing ");
-
-        if (sipDialog != null && sipResponse.getStatusCode() != 100
-                && sipResponse.getTo().getTag() != null) {
-            sipDialog.setLastResponse(transaction, sipResponse);
-        }
+                    "sending response to TU for processing ");        
 
         ResponseEventExt responseEvent = new ResponseEventExt(sipProvider,
                 (ClientTransactionExt) transaction, sipDialog,
@@ -1710,9 +1725,27 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     sipStack.getStackLogger().logDebug(
                             "forked dialog " + sipDialog + " original tx " + originalTx + " original dialog " + originalTx.getDefaultDialog());
                 }
+                if(transaction == null && sipDialog.getState() != null && !sipDialog.getState().equals(DialogState.EARLY)) {
+                    if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+                        sipStack.getStackLogger().logDebug("marking response as retrans ");
+                        sipStack.getStackLogger().logDebug(
+                                        "forked dialog state " + sipDialog.getState()); 
+                    }
+                    sipResponse.setRetransmission(true);
+                } else {
+                    if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+                        sipStack.getStackLogger().logDebug("marking response as non retrans ");
+                    }
+                    sipResponse.setRetransmission(false);
+                }
                 responseEvent.setOriginalTransaction(originalTx);
                 responseEvent.setForkedResponse(true);
             }
+        }
+        
+        if (sipDialog != null && sipResponse.getStatusCode() != 100
+                && sipResponse.getTo().getTag() != null) {
+            sipDialog.setLastResponse(transaction, sipResponse);
         }
 
         sipProvider.handleEvent(responseEvent, transaction);

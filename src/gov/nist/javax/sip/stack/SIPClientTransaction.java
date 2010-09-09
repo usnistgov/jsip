@@ -181,7 +181,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.137 $ $Date: 2010-08-20 11:14:23 $
+ * @version 1.2 $Revision: 1.138 $ $Date: 2010-09-09 16:05:27 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -618,6 +618,9 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
         int statusCode = transactionResponse.getStatusCode();
         if (TransactionState._TRYING == this.getInternalState()) {
             if (statusCode / 100 == 1) {
+                if(this.getInternalState() == TransactionState._PROCEEDING) {
+                    transactionResponse.setRetransmission(true);
+                }
                 this.setState(TransactionState._PROCEEDING);
                 enableRetransmissionTimer(MAXIMUM_RETRANSMISSION_TICK_COUNT);
                 enableTimeoutTimer(TIMER_F);
@@ -630,9 +633,15 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                 }
             } else if (200 <= statusCode && statusCode <= 699) {
                 if (!isReliable()) {
+                    if(this.getInternalState() == TransactionState._COMPLETED) {
+                        transactionResponse.setRetransmission(true);
+                    }
                     this.setState(TransactionState._COMPLETED);
                     scheduleTimerK(TIMER_K);        
                 } else {
+                    if(this.getInternalState() == TransactionState._TERMINATED) {
+                        transactionResponse.setRetransmission(true);
+                    }
                     this.setState(TransactionState._TERMINATED);
                 }
                 // Send the response up to the TU.
@@ -658,9 +667,15 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                 disableRetransmissionTimer();
                 disableTimeoutTimer();
                 if (!isReliable()) {
+                    if(this.getInternalState() == TransactionState._COMPLETED) {
+                        transactionResponse.setRetransmission(true);
+                    }
                     this.setState(TransactionState._COMPLETED);
                     scheduleTimerK(TIMER_K);
                 } else {                    
+                    if(this.getInternalState() == TransactionState._TERMINATED) {
+                        transactionResponse.setRetransmission(true);
+                    }
                     this.setState(TransactionState._TERMINATED);
                 }
                 if (respondTo != null) {
@@ -807,6 +822,9 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                 // of the INVITE after app sends ACK
                 disableRetransmissionTimer();
                 disableTimeoutTimer();
+                if(this.getInternalState() == TransactionState._TERMINATED) {
+                    transactionResponse.setRetransmission(true);
+                }
                 this.setState(TransactionState._TERMINATED);
 
                 // 200 responses are always seen by TU.
@@ -819,6 +837,9 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
             } else if (statusCode / 100 == 1) {
                 disableRetransmissionTimer();
                 disableTimeoutTimer();
+                if(this.getInternalState() == TransactionState._PROCEEDING) {
+                    transactionResponse.setRetransmission(true);
+                }
                 this.setState(TransactionState._PROCEEDING);
 
                 if (respondTo != null)
@@ -851,9 +872,15 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                 }
 
                 if (!isReliable()) {
+                    if(this.getInternalState() == TransactionState._COMPLETED) {
+                        transactionResponse.setRetransmission(true);
+                    }
                     this.setState(TransactionState._COMPLETED);
                     enableTimeoutTimer(TIMER_D);
                 } else {
+                    if(this.getInternalState() == TransactionState._TERMINATED) {
+                        transactionResponse.setRetransmission(true);
+                    }
                     // Proceed immediately to the TERMINATED state.
                     this.setState(TransactionState._TERMINATED);
                 }
@@ -872,6 +899,9 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                     this.semRelease();
                 }
             } else if (statusCode / 100 == 2) {
+                if(this.getInternalState() == TransactionState._TERMINATED) {
+                    transactionResponse.setRetransmission(true);
+                }
                 this.setState(TransactionState._TERMINATED);
                 if (respondTo != null) {
                     respondTo.processResponse(transactionResponse, this, dialog);
@@ -892,9 +922,15 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                 }
                 // JvB: update state before passing to app
                 if (!isReliable()) {
+                    if(this.getInternalState() == TransactionState._COMPLETED) {
+                        transactionResponse.setRetransmission(true);
+                    }
                     this.setState(TransactionState._COMPLETED);
                     this.enableTimeoutTimer(TIMER_D);
                 } else {
+                    if(this.getInternalState() == TransactionState._TERMINATED) {
+                        transactionResponse.setRetransmission(true);
+                    }
                     this.setState(TransactionState._TERMINATED);
                 }
                 cleanUpOnTimer();
@@ -1524,7 +1560,12 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                 dialog = defaultDialog;
             }
         } else {
-            dialog.setLastResponse(this, sipResponse);
+            // Test added to make sure the retrans flag is correct on forked responses
+            // this will avoid setting the last response on the dialog and chnage its state
+            // before it is passed to the dialogfilter layer where it is done as well
+            if(TransactionState._TERMINATED != getInternalState()) {
+                dialog.setLastResponse(this, sipResponse);
+            }
         }
         this.processResponse(sipResponse, incomingChannel, dialog);
     }

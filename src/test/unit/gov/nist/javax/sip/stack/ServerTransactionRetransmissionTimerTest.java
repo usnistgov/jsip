@@ -1,5 +1,7 @@
 package test.unit.gov.nist.javax.sip.stack;
 
+import gov.nist.javax.sip.ResponseEventExt;
+
 import javax.sip.*;
 import javax.sip.address.*;
 import javax.sip.header.*;
@@ -45,6 +47,8 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
         private long startTime = System.currentTimeMillis();
 
         private boolean byeTaskRunning;
+        
+        public boolean sendAck = true;
 
         class ByeTask extends TimerTask {
             Dialog dialog;
@@ -134,7 +138,7 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
                     + response.getStatusCode() + " " + cseq);
 
             if (tid == null) {
-
+                TestCase.assertTrue("retrans flag should be true", ((ResponseEventExt)responseReceivedEvent).isRetransmission());
                 // RFC3261: MUST respond to every 2xx
                 if (ackRequest != null && dialog != null) {
                     logger.info("re-sending ACK");
@@ -167,19 +171,22 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
                 if (response.getStatusCode() == Response.OK) {
                     if (cseq.getMethod().equals(Request.INVITE)) {
 
-                        // *****************************************************************
-                        // BEGIN
-                        // Frank Reif: delayed-ack after 6s
-                        logger.info("Sending ACK after 15s ...");
-                        new Timer().schedule(new AckTimerTask(dialog,cseq.getSeqNumber()), 15000);
-
-                        // JvB: test REFER, reported bug in tag handling
-                        // dialog.sendRequest(
-                        // sipProvider.getNewClientTransaction(
-                        // dialog.createRequest("REFER") ));
-
-                        // *****************************************************************
-                        // END
+                        if (sendAck) {
+                            TestCase.assertFalse("retrans flag should be false", ((ResponseEventExt)responseReceivedEvent).isRetransmission());
+                            // *****************************************************************
+                            // BEGIN
+                            // Frank Reif: delayed-ack after 6s
+                            logger.info("Sending ACK after 15s ...");
+                            new Timer().schedule(new AckTimerTask(dialog,cseq.getSeqNumber()), 15000);
+    
+                            // JvB: test REFER, reported bug in tag handling
+                            // dialog.sendRequest(
+                            // sipProvider.getNewClientTransaction(
+                            // dialog.createRequest("REFER") ));
+    
+                            // *****************************************************************
+                            // END
+                        }
 
                     } else if (cseq.getMethod().equals(Request.CANCEL)) {
                         if (dialog.getState() == DialogState.CONFIRMED) {
@@ -269,7 +276,7 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
             // You need 16 (or TRACE) for logging traces. 32 (or DEBUG) for
             // debug + traces.
             // Your code will limp at 32 but it is best for debugging.
-            properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "0");
+            properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
 
             try {
                 // Create SipStack object
@@ -677,7 +684,7 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
             properties.setProperty("javax.sip.STACK_NAME", "shootme");
             // You need 16 for logging traces. 32 for debug + traces.
             // Your code will limp at 32 but it is best for debugging.
-            properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "0");
+            properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
             properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
                     "shootmedebug.txt");
             properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
@@ -764,6 +771,17 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
 
     public void testRetransmit() {
         this.shootme.init();
+        this.shootist.init();
+        try {
+            Thread.sleep(60000);
+        } catch (Exception ex) {
+
+        }
+    }
+    
+    public void testRetransmitNoAckSent() {
+        this.shootme.init();
+        this.shootist.sendAck = false;
         this.shootist.init();
         try {
             Thread.sleep(60000);
