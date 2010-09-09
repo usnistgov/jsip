@@ -1,5 +1,6 @@
 package test.unit.gov.nist.javax.sip.stack.subsnotify;
 
+import gov.nist.javax.sip.ResponseEventExt;
 import gov.nist.javax.sip.stack.SIPTransactionStack;
 
 import javax.sip.*;
@@ -154,9 +155,11 @@ public class Subscriber implements SipListener {
         logger.info("Response received with client transaction id " + tid
                 + ":\n" + response.getStatusCode()  );
         if (tid == null) {
+            TestCase.assertTrue("retrans flag should be true", ((ResponseEventExt)responseReceivedEvent).isRetransmission());
             logger.info("Stray response -- dropping ");
             return;
         }
+        TestCase.assertFalse("retrans flag should be false", ((ResponseEventExt)responseReceivedEvent).isRetransmission());
         logger.info("transaction state is " + tid.getState());
         logger.info("Dialog = " + tid.getDialog());
         if ( tid.getDialog () != null )
@@ -296,6 +299,8 @@ public class Subscriber implements SipListener {
         Properties properties = new Properties();
 
         properties.setProperty("javax.sip.USE_ROUTER_FOR_ALL_URIS", "false");
+        
+        properties.setProperty("gov.nist.javax.sip.AGGRESSIVE_CLEANUP", "true");
 
         properties.setProperty("javax.sip.STACK_NAME", "subscriber");
         properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
@@ -340,6 +345,15 @@ public class Subscriber implements SipListener {
     public void processTimeout(javax.sip.TimeoutEvent timeoutEvent) {
 
         logger.info("Transaction Time out");
+        logger.info("before sleep Transaction request " + timeoutEvent.getClientTransaction().getRequest());
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        logger.info("After sleep Transaction request " + timeoutEvent.getClientTransaction().getRequest());
+        
     }
 
 	public void tearDown() {

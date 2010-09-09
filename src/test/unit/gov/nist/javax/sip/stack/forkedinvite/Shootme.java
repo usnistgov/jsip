@@ -172,31 +172,32 @@ public class Shootme   implements SipListener {
             this.serverTxTable.put(txId, st);
 
             // Create the 100 Trying response.
-            Response response = messageFactory.createResponse(Response.TRYING,
-                    request);
-                ListeningPoint lp = sipProvider.getListeningPoint(transport);
-            int myPort = lp.getPort();
-
+//            Response response = messageFactory.createResponse(Response.TRYING,
+//                    request);
+//                ListeningPoint lp = sipProvider.getListeningPoint(transport);
+//            int myPort = lp.getPort();
+//
             Address address = addressFactory.createAddress("Shootme <sip:"
                     + myAddress + ":" + myPort + ">");
-
-            // Add a random sleep to stagger the two OK's for the benifit of implementations
-            // that may not be too good about handling re-entrancy.
-            int timeToSleep = (int) ( Math.random() * 1000);
-
-            Thread.sleep(timeToSleep);
-
-            st.sendResponse(response);
+//
+//            // Add a random sleep to stagger the two OK's for the benifit of implementations
+//            // that may not be too good about handling re-entrancy.
+//            int timeToSleep = (int) ( Math.random() * 1000);
+//
+//            Thread.sleep(timeToSleep);
+//
+//            st.sendResponse(response);
 
             Response ringingResponse = messageFactory.createResponse(Response.RINGING,
                     request);
             ContactHeader contactHeader = headerFactory.createContactHeader(address);
-            response.addHeader(contactHeader);
+            ringingResponse.addHeader(contactHeader);
             ToHeader toHeader = (ToHeader) ringingResponse.getHeader(ToHeader.NAME);
-            String toTag =  new Integer(new Random().nextInt()).toString();
+            String toTag =  "shootme-" + myPort + "-" + new Integer(new Random().nextInt()).toString();             
             toHeader.setTag(toTag);
             if ( sendRinging ) {
                 ringingResponse.addHeader(contactHeader);
+                Thread.sleep(this.delay / 2);
                 st.sendResponse(ringingResponse);
             }
             Dialog dialog =  st.getDialog();
