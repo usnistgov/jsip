@@ -168,7 +168,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.139 $ $Date: 2010-08-09 13:38:24 $
+ * @version 1.2 $Revision: 1.140 $ $Date: 2010-09-10 10:23:09 $
  * @author M. Ranganathan
  *
  */
@@ -709,7 +709,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                 // Schedule a timer to fire in 200 ms if the
                 // TU did not send a trying in that time.
                 sipStack.getTimer().schedule(new SendTrying(), 200);
-
+                
             } else {
                 isMapped = true;
             }
@@ -814,11 +814,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                     // Resend the last response to
                     // the client             
                     // Send the message to the client       
-                    if(lastResponse != null) {
-                    	super.sendMessage(lastResponse);
-                    } else if (lastResponseAsBytes != null) {
-                         super.getMessageChannel().sendMessage(lastResponseAsBytes, this.getPeerInetAddress(), this.getPeerPort(), false);
-                    }
+                    resendLastResponseAsBytes(isReliable());
                 } else if (transactionRequest.getMethod().equals(Request.ACK)) {
                     // This is passed up to the TU to suppress
                     // retransmission of OK
@@ -901,15 +897,14 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
      * @param messageToSend Response to process and send.
      */
     public void sendMessage(SIPMessage messageToSend) throws IOException {
-        try {
-        	
-        	if ( sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-        		sipStack.getStackLogger().logDebug("sipServerTransaction::sendMessage " + messageToSend.getFirstLine());
-        	}
-            // Message typecast as a response
-            final SIPResponse  transactionResponse = (SIPResponse) messageToSend;
-            // Status code of the response being sent to the client
-            final int statusCode = transactionResponse.getStatusCode();
+        if ( sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+            sipStack.getStackLogger().logDebug("sipServerTransaction::sendMessage " + messageToSend.getFirstLine());
+        }
+        // Message typecast as a response
+        final SIPResponse  transactionResponse = (SIPResponse) messageToSend;
+        // Status code of the response being sent to the client
+        final int statusCode = transactionResponse.getStatusCode();
+        try {        	        	
 
             try {
                 // Provided we have set the banch id for this we set the BID for
@@ -1185,9 +1180,9 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 	    		sendMessage(lastResponse);
 	        } else if (lastResponseAsBytes != null) {
 	            // Send the message to the client
-		    	if(!checkStateTimers(lastResponseStatusCode)) {
-		        	return;
-		        }
+//		    	if(!checkStateTimers(lastResponseStatusCode)) {
+//		        	return;
+//		        }
 		    	if(isReliable()) {
 		    		getMessageChannel().sendMessage(lastResponseAsBytes, this.getPeerInetAddress(), this.getPeerPort(), false);
 		    	} else {
