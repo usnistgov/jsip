@@ -47,7 +47,7 @@ import gov.nist.javax.sip.stack.*;
 /**
  * Implementation of the ListeningPoint interface
  *
- * @version 1.2 $Revision: 1.16 $ $Date: 2010-05-06 14:08:08 $
+ * @version 1.2 $Revision: 1.17 $ $Date: 2010-09-13 14:58:00 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -110,14 +110,14 @@ public class ListeningPointImpl implements javax.sip.ListeningPoint, gov.nist.ja
      * Set the sip provider for this structure.
      * @param sipProvider provider to set
      */
-    protected void setSipProvider(SipProviderImpl sipProviderImpl) {
+    public void setSipProvider(SipProviderImpl sipProviderImpl) {
         this.sipProvider = sipProviderImpl;
     }
 
     /**
      * Remove the sip provider from this listening point.
      */
-    protected void removeSipProvider() {
+    public void removeSipProvider() {
         this.sipProvider = null;
     }
 
