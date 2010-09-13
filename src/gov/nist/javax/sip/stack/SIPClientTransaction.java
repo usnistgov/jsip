@@ -182,7 +182,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.139 $ $Date: 2010-09-10 18:35:13 $
+ * @version 1.2 $Revision: 1.140 $ $Date: 2010-09-13 15:29:44 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -694,16 +694,21 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
 					if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                         sipStack.getStackLogger().logDebug("starting TransactionTimerK() : " + getTransactionId() + " time " + time);
                     }
-					sipStack.getTimer().schedule(new SIPStackTimerTask () {                        	
-		                
-		                public void runTask() {
-		                    if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+					SIPStackTimerTask task = new SIPStackTimerTask () {                         
+                        
+                        public void runTask() {
+                            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                                 sipStack.getStackLogger().logDebug("executing TransactionTimerJ() : " + getTransactionId());
                             }
-		                    fireTimeoutTimer();                                  
-		                    cleanUpOnTerminated();
-		                }
-		            }, time * BASE_TIMER_INTERVAL);
+                            fireTimeoutTimer();                                  
+                            cleanUpOnTerminated();
+                        }
+                    };
+                    if(time > 0) {
+                        sipStack.getTimer().schedule(task, time * BASE_TIMER_INTERVAL);
+                    } else {
+                        task.runTask();
+                    }
 					transactionTimerCancelled =true;
 				}
 			}        	        	
@@ -1749,8 +1754,8 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
 	    	respondTo = null;
 	    	transactionTimer = null;
 	    	lastResponse = null;
-	    	transactionTimerLock = null;
-	    	transactionTimerStarted = null;
+	    	transactionTimerLock = null; 
+//	    	transactionTimerStarted = null;
 	    	timerKStarted = null;    	
     	}
     }
