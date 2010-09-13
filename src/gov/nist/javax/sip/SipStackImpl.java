@@ -519,7 +519,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.137 $ $Date: 2010-09-01 13:31:31 $
+ * @version 1.2 $Revision: 1.138 $ $Date: 2010-09-13 14:58:01 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -532,9 +532,9 @@ public class SipStackImpl extends SIPTransactionStack implements
 
 	private EventScanner eventScanner;
 
-	private Hashtable<String, ListeningPointImpl> listeningPoints;
+	protected Hashtable<String, ListeningPointImpl> listeningPoints;
 
-	private List<SipProviderImpl> sipProviders;
+	protected List<SipProviderImpl> sipProviders;
 
 	/**
 	 * Max datagram size.

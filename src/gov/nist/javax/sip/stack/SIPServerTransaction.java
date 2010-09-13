@@ -1,5 +1,5 @@
 /*
- * Conditions Of Use
+g * Conditions Of Use
  *
  * This software was developed by employees of the National Institute of
  * Standards and Technology (NIST), an agency of the Federal Government.
@@ -168,7 +168,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.140 $ $Date: 2010-09-10 10:23:09 $
+ * @version 1.2 $Revision: 1.141 $ $Date: 2010-09-13 14:58:01 $
  * @author M. Ranganathan
  *
  */
@@ -1507,7 +1507,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
     /**
      * Return the book-keeping information that we actually use.
      */
-    private int getRealState() {
+    protected int getRealState() {
         return super.getInternalState();
     }
 
