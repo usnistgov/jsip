@@ -44,7 +44,7 @@ import java.util.LinkedList;
 /**
  * SIP Response structure.
  *
- * @version 1.2 $Revision: 1.34 $ $Date: 2010-09-09 16:05:25 $
+ * @version 1.2 $Revision: 1.35 $ $Date: 2010-09-14 14:39:39 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
@@ -55,7 +55,7 @@ public class SIPResponse
     extends SIPMessage
     implements javax.sip.message.Response, ResponseExt {
     protected StatusLine statusLine;
-    private boolean isRetransmission = false;
+    private boolean isRetransmission = true;
    
     public static String getReasonPhrase(int rc) {
         String retval = null;
