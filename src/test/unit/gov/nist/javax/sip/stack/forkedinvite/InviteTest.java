@@ -68,13 +68,13 @@ public class InviteTest extends TestCase {
 
     public void testInvite() throws Exception {
         try {
-            shootist = new Shootist(6050, 5070, "on");
+            shootist = new Shootist(6050, 5070, "on", true);
             SipProvider shootistProvider = shootist.createSipProvider();
             shootistProvider.addSipListener(shootist);
             boolean sendRinging = true;
             for  (int i = 0 ; i <  forkCount ; i ++ ) {
                 
-                Shootme shootme = new Shootme(5080 + i,sendRinging,4000 + (500 *i));
+                Shootme shootme = new Shootme(5080 + i,sendRinging,4000 + (500 *i), 4000 + (500 *i));
                 sendRinging = true;
                 SipProvider shootmeProvider = shootme.createProvider();
                 shootmeProvider.addSipListener(shootme);
@@ -111,12 +111,88 @@ public class InviteTest extends TestCase {
 
     public void testInviteAutomaticDialogNonEnabled() throws Exception {
         try {
-            shootist = new Shootist(6050, 5070, "off");        
+            shootist = new Shootist(6050, 5070, "off", true);        
             SipProvider shootistProvider = shootist.createSipProvider();
             shootistProvider.addSipListener(shootist);
             boolean sendRinging = true;
             for  (int i = 0 ; i <  forkCount ; i ++ ) {
-                Shootme shootme = new Shootme(5080 + i,sendRinging, 4000 + (100 *i));
+                Shootme shootme = new Shootme(5080 + i,sendRinging, 4000 + (100 *i), 4000 + (100 *i));
+                sendRinging = true;
+                SipProvider shootmeProvider = shootme.createProvider();
+                shootmeProvider.addSipListener(shootme);
+                this.shootme.add(shootme);
+            }
+            this.proxy = new Proxy(5070,forkCount);
+            SipProvider provider = proxy.createSipProvider();
+            provider.addSipListener(proxy);
+            logger.debug("setup completed");
+            
+            this.shootist.sendInvite(forkCount);
+            Thread.sleep(35000);
+            this.shootist.checkState();
+            int ackCount = 0;
+            for ( Shootme shootme: this.shootme) {
+                 shootme.checkState();
+                 if ( shootme.isAckSeen()) {
+                     ackCount ++;
+                 }
+            }
+            assertEquals("ACK count must be exactly 2", 2,ackCount);
+        } finally {
+            this.shootist.stop();
+            for ( Shootme shootme: this.shootme) {
+                shootme.stop();
+            }
+            this.proxy.stop();
+        }
+    }
+    
+    public void testInviteAutomaticDialogNonEnabledForkSecond() throws Exception {
+        try {
+            shootist = new Shootist(6050, 5070, "off", false);        
+            SipProvider shootistProvider = shootist.createSipProvider();
+            shootistProvider.addSipListener(shootist);
+            boolean sendRinging = true;
+            for  (int i = 0 ; i <  forkCount ; i ++ ) {
+                Shootme shootme = new Shootme(5080 + i,sendRinging, 4000 - (100 *i), 4000 - (100 *i));
+                sendRinging = true;
+                SipProvider shootmeProvider = shootme.createProvider();
+                shootmeProvider.addSipListener(shootme);
+                this.shootme.add(shootme);
+            }
+            this.proxy = new Proxy(5070,forkCount);
+            SipProvider provider = proxy.createSipProvider();
+            provider.addSipListener(proxy);
+            logger.debug("setup completed");
+            
+            this.shootist.sendInvite(forkCount);
+            Thread.sleep(35000);
+            this.shootist.checkState();
+            int ackCount = 0;
+            for ( Shootme shootme: this.shootme) {
+                 shootme.checkState();
+                 if ( shootme.isAckSeen()) {
+                     ackCount ++;
+                 }
+            }
+            assertEquals("ACK count must be exactly 2", 2,ackCount);
+        } finally {
+            this.shootist.stop();
+            for ( Shootme shootme: this.shootme) {
+                shootme.stop();
+            }
+            this.proxy.stop();
+        }
+    }
+    
+    public void testInviteAutomaticDialogNonEnabledOKFromSecondForkFirst() throws Exception {
+        try {
+            shootist = new Shootist(6050, 5070, "off", true);        
+            SipProvider shootistProvider = shootist.createSipProvider();
+            shootistProvider.addSipListener(shootist);
+            boolean sendRinging = true;
+            for  (int i = 0 ; i <  forkCount ; i ++ ) {
+                Shootme shootme = new Shootme(5080 + i,sendRinging, 4000 + (100 *i), 4000 - (100 *i));
                 sendRinging = true;
                 SipProvider shootmeProvider = shootme.createProvider();
                 shootmeProvider.addSipListener(shootme);
@@ -153,14 +229,14 @@ public class InviteTest extends TestCase {
      */
     public void testAutomaticDialogNonEnabledRaceCondition() throws Exception {
         try {
-            shootist = new Shootist(6050, 5070, "off"); 
+            shootist = new Shootist(6050, 5070, "off", false); 
             shootist.setCreateDialogAfterRequest(true);
             SipProvider shootistProvider = shootist.createSipProvider();
             shootistProvider.addSipListener(shootist);
             boolean sendRinging = true;
             forkCount = 1;
             for  (int i = 0 ; i <  forkCount ; i ++ ) {
-                Shootme shootme = new Shootme(5080 + i,sendRinging, 4000 + (500 *i));
+                Shootme shootme = new Shootme(5080 + i,sendRinging, 4000 + (500 *i), 4000 + (500 *i));
                 sendRinging = true;
                 SipProvider shootmeProvider = shootme.createProvider();
                 shootmeProvider.addSipListener(shootme);
