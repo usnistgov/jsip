@@ -74,9 +74,9 @@ public class Shootme   implements SipListener {
 
     private SipStack sipStack;
 
-    private int delay;
-
     private int ringingDelay;
+
+    private int okDelay;
 
     private boolean sendRinging;
 
@@ -197,7 +197,7 @@ public class Shootme   implements SipListener {
             toHeader.setTag(toTag);
             if ( sendRinging ) {
                 ringingResponse.addHeader(contactHeader);
-                Thread.sleep(this.delay / 2);
+                Thread.sleep(this.ringingDelay / 2);
                 st.sendResponse(ringingResponse);
             }
             Dialog dialog =  st.getDialog();
@@ -205,7 +205,7 @@ public class Shootme   implements SipListener {
 
             this.inviteSeen = true;
 
-            timer.schedule(new MyTimerTask(requestEvent,st,toTag), this.delay);
+            timer.schedule(new MyTimerTask(requestEvent,st,toTag), this.okDelay);
         } catch (Exception ex) {
             ex.printStackTrace();
             System.exit(0);
@@ -335,9 +335,10 @@ public class Shootme   implements SipListener {
 
     }
 
-    public Shootme( int myPort, boolean sendRinging, int delay ) {
+    public Shootme( int myPort, boolean sendRinging, int ringingDelay, int okDelay ) {
         this.myPort = myPort;
-        this.delay = delay;
+        this.ringingDelay = ringingDelay;
+        this.okDelay = okDelay;
         this.sendRinging = sendRinging;
 
         SipObjects sipObjects = new SipObjects(myPort, "shootme","on");

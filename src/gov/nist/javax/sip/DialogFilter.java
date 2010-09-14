@@ -84,7 +84,7 @@ import javax.sip.message.Response;
  * together the NIST-SIP stack and event model with the JAIN-SIP stack. This is
  * strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.90 $ $Date: 2010-09-09 16:05:27 $
+ * @version 1.2 $Revision: 1.91 $ $Date: 2010-09-14 14:39:41 $
  * 
  * @author M. Ranganathan
  */
@@ -1429,28 +1429,20 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     && response.getCSeqHeader().getMethod().equals(
                             Request.INVITE)) {
                 SIPClientTransaction forked = this.sipStack
-                        .getForkedTransaction(response.getForkId());                
-                if(dialog != null && forked != null && forked.getDefaultDialog() != null && !dialog.equals(forked.getDefaultDialog())) {
-                    if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
-                        sipStack.getStackLogger().logDebug(
-                                "forked dialog " + dialog + " original tx " + forked + " original dialog " + forked.getDefaultDialog());
-                    }
-                    if(transaction == null && dialog.getState() != null && !dialog.getState().equals(DialogState.EARLY)) {
+                        .getForkedTransaction(response.getForkId());
+                if(dialog != null && forked != null) {
+                    dialog.checkRetransmissionForForking(response);
+                    if(forked.getDefaultDialog() != null && !dialog.equals(forked.getDefaultDialog())) {
                         if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
-                            sipStack.getStackLogger().logDebug("marking response as retrans ");
+                            sipStack.getStackLogger().logDebug(
+                                    "forked dialog " + dialog + " original tx " + forked + " original dialog " + forked.getDefaultDialog());
                         }
-                        response.setRetransmission(true);
-                    } else {
-                        if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
-                            sipStack.getStackLogger().logDebug("marking response as non retrans ");
-                        }
-                        response.setRetransmission(false);
+                        sipEvent.setOriginalTransaction(forked);
+                        sipEvent.setForkedResponse(true);
                     }
-                    sipEvent.setOriginalTransaction(forked);
-                    sipEvent.setForkedResponse(true);
                 }
             }
-
+            
             sipProvider.handleEvent(sipEvent, transaction);
             return;
         }
@@ -1462,24 +1454,16 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                 && response.getCSeqHeader().getMethod().equals(Request.INVITE)) {
             SIPClientTransaction forked = this.sipStack
                     .getForkedTransaction(response.getForkId());            
-            if(dialog != null && forked != null && forked.getDefaultDialog() != null && !dialog.equals(forked.getDefaultDialog())) {
-                if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
-                    sipStack.getStackLogger().logDebug(
-                            "forked dialog " + dialog + " original tx " + forked + " original dialog " + forked.getDefaultDialog());
-                }
-                if(transaction == null && dialog.getState() != null && !dialog.getState().equals(DialogState.EARLY)) {     
+            if(dialog != null && forked != null) {
+                dialog.checkRetransmissionForForking(response);
+                if(forked.getDefaultDialog() != null && !dialog.equals(forked.getDefaultDialog())) {
                     if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
-                        sipStack.getStackLogger().logDebug("marking response as retrans ");
+                        sipStack.getStackLogger().logDebug(
+                                "forked dialog " + dialog + " original tx " + forked + " original dialog " + forked.getDefaultDialog());
                     }
-                    response.setRetransmission(true);
-                } else {
-                    if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
-                        sipStack.getStackLogger().logDebug("marking response as non retrans ");
-                    }
-                    response.setRetransmission(false);
+                    responseEvent.setOriginalTransaction(forked);
+                    responseEvent.setForkedResponse(true);
                 }
-                responseEvent.setOriginalTransaction(forked);
-                responseEvent.setForkedResponse(true);
             }
         }
 
@@ -1720,31 +1704,20 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                 && sipResponse.getCSeq().getMethod().equals(Request.INVITE)) {
             ClientTransactionExt originalTx = this.sipStack
                     .getForkedTransaction(sipResponse.getForkId());
-            if(sipDialog != null && originalTx != null && originalTx.getDefaultDialog() != null && !sipDialog.equals(originalTx.getDefaultDialog())) {
-                if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
-                    sipStack.getStackLogger().logDebug(
-                            "forked dialog " + sipDialog + " original tx " + originalTx + " original dialog " + originalTx.getDefaultDialog());
-                }
-                if(transaction == null && sipDialog.getState() != null && !sipDialog.getState().equals(DialogState.EARLY)) {
+            if(sipDialog != null && originalTx != null) {
+                sipDialog.checkRetransmissionForForking(sipResponse);
+                if(originalTx.getDefaultDialog() != null && !sipDialog.equals(originalTx.getDefaultDialog())) {
                     if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
-                        sipStack.getStackLogger().logDebug("marking response as retrans ");
                         sipStack.getStackLogger().logDebug(
-                                        "forked dialog state " + sipDialog.getState()); 
+                                "forked dialog " + sipDialog + " original tx " + originalTx + " original dialog " + originalTx.getDefaultDialog());
                     }
-                    sipResponse.setRetransmission(true);
-                } else {
-                    if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
-                        sipStack.getStackLogger().logDebug("marking response as non retrans ");
-                    }
-                    sipResponse.setRetransmission(false);
+                    responseEvent.setOriginalTransaction(originalTx);
+                    responseEvent.setForkedResponse(true);
                 }
-                responseEvent.setOriginalTransaction(originalTx);
-                responseEvent.setForkedResponse(true);
             }
         }
         
-        if (sipDialog != null && sipResponse.getStatusCode() != 100
-                && sipResponse.getTo().getTag() != null) {
+        if(sipDialog != null && sipResponse.getStatusCode() != 100 && sipResponse.getTo().getTag() != null) {
             sipDialog.setLastResponse(transaction, sipResponse);
         }
 

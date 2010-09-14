@@ -64,10 +64,6 @@ public class ResponseEventExt extends ResponseEvent {
      * @return true if the response event is for a forked response.
      */
     public boolean isRetransmission() {
-        if(getClientTransaction() == null && getOriginalTransaction() == null) {            
-            return true;
-        } else {
-            return ((SIPResponse)getResponse()).isRetransmission();
-        }
+        return ((SIPResponse)getResponse()).isRetransmission();
     }
 }

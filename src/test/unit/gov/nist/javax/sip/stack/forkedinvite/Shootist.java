@@ -126,7 +126,9 @@ public class Shootist implements SipListener {
 
     private boolean createDialogAfterRequest = false;
 
-    private boolean terminatedDialogWasOneOfCancelled;       
+    private boolean terminatedDialogWasOneOfCancelled;
+
+    private boolean forkFirst;       
 
     class SendBye extends TimerTask {
 
@@ -150,9 +152,10 @@ public class Shootist implements SipListener {
         }
     }
 
-    public Shootist(int myPort, int proxyPort, String createDialogAuto) {
+    public Shootist(int myPort, int proxyPort, String createDialogAuto, boolean forkFirst) {
         this.port = myPort;
         this.peerPort = proxyPort;
+        this.forkFirst = forkFirst;
         
         SipObjects sipObjects = new SipObjects(myPort, "shootist", createDialogAuto);
         addressFactory = sipObjects.addressFactory;
@@ -163,7 +166,7 @@ public class Shootist implements SipListener {
         if(!createDialogAuto.equalsIgnoreCase("on")) {
             isAutomaticDialogSupportEnabled = false;
         }
-    }
+    }   
 
     public void processRequest(RequestEvent requestReceivedEvent) {
         Request request = requestReceivedEvent.getRequest();
@@ -233,7 +236,12 @@ public class Shootist implements SipListener {
             logger.info("Dialog state is " + dialog.getState());
 
             String toTag = ((ResponseExt)response).getToHeader().getTag();
-            boolean isFromFork = toTag != null && !toTag.contains("shootme-5080");
+            boolean isFromFork = false;
+            if(forkFirst) {
+                isFromFork = toTag != null && !toTag.contains("shootme-5080");
+            } else {
+                isFromFork = toTag != null && !toTag.contains("shootme-5081");
+            }
             logger.info("isRetransmission = " + responseReceivedEvent.isRetransmission() + " isFromForked = " + isFromFork + " isForked = " + responseReceivedEvent.isForkedResponse() + " response "+ response);
             
             if (response.getStatusCode() == Response.OK) {

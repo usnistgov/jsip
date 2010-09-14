@@ -74,6 +74,7 @@ import java.io.StringWriter;
 import java.net.InetAddress;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -132,7 +133,7 @@ import javax.sip.message.Response;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.195 $ $Date: 2010-08-25 14:46:49 $
+ * @version 1.2 $Revision: 1.196 $ $Date: 2010-09-14 14:39:40 $
  * 
  * @author M. Ranganathan
  * 
@@ -319,6 +320,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     private int earlyDialogTimeout = 180;
 
 	private int ackSemTakenFor;
+	private Set<String> responsesReceivedInForkingCase = new HashSet<String>(0);
 
     // //////////////////////////////////////////////////////
     // Inner classes
@@ -4157,6 +4159,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 routeList.clear();
                 routeList = null;
             }
+            responsesReceivedInForkingCase.clear();
         }
     }
 
@@ -4208,5 +4211,17 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             throw new IllegalArgumentException("Invalid value " + seconds);
         }
         this.earlyDialogTimeout = seconds;
+    }
+
+    public void checkRetransmissionForForking(SIPResponse response) {
+        final int statusCode = response.getStatusCode();
+        final String responseMethod = response.getCSeqHeader().getMethod();
+        final long responseCSeqNumber = response.getCSeq().getSeqNumber();   
+        boolean isRetransmission = !responsesReceivedInForkingCase.add(statusCode + "/" + responseCSeqNumber + "/" + responseMethod);            
+        response.setRetransmission(isRetransmission);            
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+            sipStack.getStackLogger().logDebug(
+                    "marking response as retransmission " + isRetransmission + " for dialog " + this);
+        }
     }
 }
