@@ -314,7 +314,7 @@ public class Shootist implements SipListener {
 
 
                 } else if ( cseq.getMethod().equals(Request.BYE)) {
-
+                    TestCase.assertFalse("retransmission flag should be false",responseReceivedEvent.isRetransmission());
                     if ( dialog == this.ackedDialog) {
                         this.byeResponseSeen = true;
                     }
