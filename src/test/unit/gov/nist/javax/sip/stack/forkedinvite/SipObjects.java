@@ -44,7 +44,7 @@ public class SipObjects {
 
         properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
         String logFile = "logs/" + stackname + ".txt";
-        properties.setProperty("gov.nist.javax.sip.MAX_FORK_TIME_SECONDS", "60");
+        properties.setProperty("gov.nist.javax.sip.MAX_FORK_TIME_SECONDS", "12");
 
         properties.setProperty("gov.nist.javax.sip.DEBUG_LOG", logFile);
 
