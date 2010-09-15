@@ -168,7 +168,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.142 $ $Date: 2010-09-13 15:29:43 $
+ * @version 1.2 $Revision: 1.143 $ $Date: 2010-09-15 19:31:06 $
  * @author M. Ranganathan
  *
  */
@@ -1893,7 +1893,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 	//    		originalRequestFromTag = originalRequest.getFromTag();    		
 	    		originalRequest = null;     		
 	    	}   
-	    	if(inviteTransaction != null) {    		
+	    	if(!isReliable() && inviteTransaction != null) {    		
 	    		inviteTransaction = null;
 	    	}
 	    	// Application Data has to be cleared by the application
