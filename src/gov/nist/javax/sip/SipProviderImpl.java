@@ -47,6 +47,7 @@ import gov.nist.javax.sip.stack.SIPServerTransaction;
 import gov.nist.javax.sip.stack.SIPTransaction;
 import gov.nist.javax.sip.stack.SIPTransactionErrorEvent;
 import gov.nist.javax.sip.stack.SIPTransactionEventListener;
+import gov.nist.javax.sip.stack.SIPTransactionStack;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -85,7 +86,7 @@ import javax.sip.message.Response;
 /**
  * Implementation of the JAIN-SIP provider interface.
  *
- * @version 1.2 $Revision: 1.86 $ $Date: 2010-07-13 00:12:30 $
+ * @version 1.2 $Revision: 1.87 $ $Date: 2010-09-17 20:06:57 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -404,7 +405,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
             ct.setOriginalRequest(sipRequest);
             ct.setBranch(branchId);
             // if the stack supports dialogs then
-            if (sipStack.isDialogCreated(request.getMethod())) {
+            if (SIPTransactionStack.isDialogCreated(request.getMethod())) {
                 // create a new dialog to contain this transaction
                 // provided this is necessary.
                 // This could be a re-invite
@@ -488,7 +489,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
             "Transaction not available -- could not acquire stack lock");
         }
         try {
-            if (sipStack.isDialogCreated(sipRequest.getMethod())) {
+            if (SIPTransactionStack.isDialogCreated(sipRequest.getMethod())) {
                 if (sipStack.findTransaction((SIPRequest) request, true) != null)
                     throw new TransactionAlreadyExistsException(
                     "server transaction already exists!");
@@ -830,7 +831,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
         if (isAutomaticDialogSupportEnabled())
             throw new SipException(" Error - AUTOMATIC_DIALOG_SUPPORT is on");
 
-        if (!sipStack.isDialogCreated(transaction.getRequest().getMethod()))
+        if (!SIPTransactionStack.isDialogCreated(transaction.getRequest().getMethod()))
             throw new SipException("Dialog cannot be created for this method "
                     + transaction.getRequest().getMethod());
 
