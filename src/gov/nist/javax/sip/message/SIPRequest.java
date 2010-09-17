@@ -84,7 +84,7 @@ import javax.sip.message.Request;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.56 $ $Date: 2010-08-13 10:36:50 $
+ * @version 1.2 $Revision: 1.57 $ $Date: 2010-09-17 20:06:57 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -304,9 +304,7 @@ public class SIPRequest extends SIPMessage implements javax.sip.message.Request,
          * header field MUST contain a SIPS URI as well.
          */
         final String method = requestLine.getMethod();
-        if (method.equals(Request.INVITE)
-                || method.equals(Request.SUBSCRIBE)
-                || method.equals(Request.REFER)) {
+        if (SIPTransactionStack.isDialogCreated(method)) {
             if (this.getContactHeader() == null) {
                 // Make sure this is not a target refresh. If this is a target
                 // refresh its ok not to have a contact header. Otherwise
@@ -329,12 +327,11 @@ public class SIPRequest extends SIPMessage implements javax.sip.message.Request,
         /*
          * Contact header is mandatory for a SIP INVITE request.
          */
-        if (this.getContactHeader() == null
-                && (this.getMethod().equals(Request.INVITE)
-                        || this.getMethod().equals(Request.REFER) || this.getMethod().equals(
-                        Request.SUBSCRIBE))) {
+        /* emmartins: dupe logic, see above
+         if (this.getContactHeader() == null
+                && SIPTransactionStack.isDialogCreated(method)) {
             throw new ParseException("Contact Header is Mandatory for a SIP INVITE", 0);
-        }
+        }*/
 
         if (requestLine != null && method != null
                 && getCSeq().getMethod() != null

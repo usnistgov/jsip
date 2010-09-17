@@ -168,7 +168,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.143 $ $Date: 2010-09-15 19:31:06 $
+ * @version 1.2 $Revision: 1.144 $ $Date: 2010-09-17 20:06:59 $
  * @author M. Ranganathan
  *
  */
@@ -588,7 +588,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
         // transaction
         // table and are matched to compensate for
         // http://bugs.sipit.net/show_bug.cgi?id=769
-        if ((method.equals(Request.INVITE) || !isTerminated())) {
+        if (isInviteTransaction() || !isTerminated()) {
 
             // Get the topmost Via header and its branch parameter
         	final Via topViaHeader = messageToTest.getTopmostVia();
@@ -848,7 +848,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                 }
             } else {
                 // This seems like a common bug so I am allowing it through!
-                if (((SIPTransactionStack) getSIPStack()).isDialogCreated(getMethod())
+                if (SIPTransactionStack.isDialogCreated(getMethod())
                         && getRealState() == TransactionState._TERMINATED
                         && transactionRequest.getMethod().equals(Request.ACK)
                         && requestOf != null) {
@@ -1229,7 +1229,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                     + " current state = " + this.getRealState() + " method = "
                     + this.getMethod());
 
-        if ( this.getMethod().equals(Request.INVITE) && sipStack.removeTransactionPendingAck(this) ) {
+        if (isInviteTransaction() && sipStack.removeTransactionPendingAck(this) ) {
             if ( sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG) ) {
                 sipStack.getStackLogger().logDebug("Found tx pending ACK - returning");
             }
@@ -1239,7 +1239,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
         SIPDialog dialog = (SIPDialog) getDialog();
         
         
-        if (((SIPTransactionStack) getSIPStack()).isDialogCreated(getMethod())
+        if (SIPTransactionStack.isDialogCreated(getMethod())
                 && (TransactionState._CALLING == this.getRealState() || TransactionState._TRYING == this
                         .getRealState())) {
             dialog.setState(SIPDialog.TERMINATED_STATE);
@@ -1405,7 +1405,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
             // being sent makes sense.
             if (dialog != null) {
                 if (statusCode / 100 == 2
-                        && sipStack.isDialogCreated(responseMethod)) {
+                        && SIPTransactionStack.isDialogCreated(responseMethod)) {
                     if (dialog.getLocalTag() == null && sipResponse.getToTag() == null) {
                         // Trying to send final response and user forgot to set
                         // to
@@ -1465,7 +1465,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
                 }
 
-            } else if (dialog == null && this.getMethod().equals(Request.INVITE)
+            } else if (dialog == null && isInviteTransaction()
                     && this.retransmissionAlertEnabled
                     && this.retransmissionAlertTimerTask == null
                     && response.getStatusCode() / 100 == 2) {
@@ -1755,7 +1755,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
         if (this.getDialog() != null)
             throw new SipException("Dialog associated with tx");
 
-        else if (!this.getMethod().equals(Request.INVITE))
+        else if (!isInviteTransaction())
             throw new SipException("Request Method must be INVITE");
 
         this.retransmissionAlertEnabled = true;

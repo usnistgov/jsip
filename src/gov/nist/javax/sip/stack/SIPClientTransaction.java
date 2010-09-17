@@ -182,7 +182,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.141 $ $Date: 2010-09-15 16:39:42 $
+ * @version 1.2 $Revision: 1.142 $ $Date: 2010-09-17 20:06:58 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -988,7 +988,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                 } else if (ct.getInternalState() < 0) {
                     throw new SipException(
                             "State is null no provisional response yet -- cannot cancel RFC 3261 9.1");
-                } else if (!ct.getMethod().equals(Request.INVITE)) {
+                } else if (!ct.isInviteTransaction()) {
                     throw new SipException("Cannot cancel non-invite requests RFC 3261 9.1");
                 }
             } else if (this.getMethod().equals(Request.BYE)
@@ -1004,7 +1004,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                 }
             }
             // Only map this after the fist request is sent out.
-            if (this.getMethod().equals(Request.INVITE)) {
+            if (isInviteTransaction()) {
                 SIPDialog dialog = this.getDefaultDialog();
 
                 if (dialog != null && dialog.isBackToBackUserAgent()) {
@@ -1025,7 +1025,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
             } 
             // This is a User Agent. The user has specified an Expires time. Start a timer
             // which will check if the tx is terminated by that time.
-            if ( this.getDefaultDialog() != null  &&  getMethod().equals(Request.INVITE) &&
+            if ( this.getDefaultDialog() != null  &&  isInviteTransaction() &&
                     expiresTime != -1 && expiresTimerTask == null ) {
                 this.expiresTimerTask = new ExpiresTimerTask();
                 sipStack.getTimer().schedule(expiresTimerTask, expiresTime * 1000);
@@ -1124,7 +1124,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
             // creation then kill the dialog.
             if (dialog != null
                     && (dialog.getState() == null || dialog.getState() == DialogState.EARLY)) {
-                if (((SIPTransactionStack) getSIPStack()).isDialogCreated(this.getMethod())) {
+                if (SIPTransactionStack.isDialogCreated(this.getMethod())) {
                     // If this is a re-invite we do not delete the dialog even
                     // if the
                     // reinvite times out. Else
@@ -1285,7 +1285,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
         SIPRequest originalRequest = this.getOriginalRequest();
         if (originalRequest == null)
             throw new SipException("bad state " + getState());
-        if (!getMethod().equals(Request.INVITE)) {
+        if (!isInviteTransaction()) {
             throw new SipException("Can only ACK an INVITE!");
         } else if (lastResponse == null) {
             throw new SipException("bad Transaction state");
@@ -1472,7 +1472,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
             if ((code > 100 && code < 300)
             /* skip 100 (may have a to tag */
             && (sipResponse.getToTag() != null || sipStack.isRfc2543Supported())
-                    && sipStack.isDialogCreated(method)) {
+                    && SIPTransactionStack.isDialogCreated(method)) {
 
                 /*
                  * Dialog cannot be found for the response. This must be a forked response. no
@@ -1615,7 +1615,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
         }
         if (this.defaultDialog == null && defaultDialogId == null) {
             this.defaultDialog = sipDialog;
-            if ( this.getMethod().equals(Request.INVITE) && this.getSIPStack().getMaxForkTime() != 0) {
+            if (isDialogCreatingTransaction() && this.getSIPStack().getMaxForkTime() != 0) {
                 this.getSIPStack().addForkedClientTransaction(this);
             }
         }

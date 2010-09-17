@@ -84,7 +84,7 @@ import javax.sip.message.Response;
  * together the NIST-SIP stack and event model with the JAIN-SIP stack. This is
  * strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.91 $ $Date: 2010-09-14 14:39:41 $
+ * @version 1.2 $Revision: 1.92 $ $Date: 2010-09-17 20:06:56 $
  * 
  * @author M. Ranganathan
  */
@@ -1426,8 +1426,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     transaction, dialog, (Response) response);
 
             if (sipStack.getMaxForkTime() != 0
-                    && response.getCSeqHeader().getMethod().equals(
-                            Request.INVITE)) {
+                    && SIPTransactionStack.isDialogCreated(response.getCSeqHeader().getMethod())) {
                 SIPClientTransaction forked = this.sipStack
                         .getForkedTransaction(response.getForkId());
                 if(dialog != null && forked != null) {
@@ -1451,7 +1450,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
         ResponseEventExt responseEvent = new ResponseEventExt(sipProvider,
                 (ClientTransactionExt) transaction, dialog, (Response) response);
         if (sipStack.getMaxForkTime() != 0
-                && response.getCSeqHeader().getMethod().equals(Request.INVITE)) {
+                && SIPTransactionStack.isDialogCreated(response.getCSeqHeader().getMethod())) {
             SIPClientTransaction forked = this.sipStack
                     .getForkedTransaction(response.getForkId());            
             if(dialog != null && forked != null) {
@@ -1581,7 +1580,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
         }
         boolean createDialog = false;
-        if (sipStack.isDialogCreated(method)
+        if (SIPTransactionStack.isDialogCreated(method)
                 && sipResponse.getStatusCode() != 100
                 && sipResponse.getFrom().getTag() != null
                 && sipResponse.getTo().getTag() != null && sipDialog == null) {
@@ -1590,7 +1589,8 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             // and the current dialog is null. This is also avoiding creating dialog automatically if the flag is not set            
             if (sipProvider.isAutomaticDialogSupportEnabled()) {
                  createDialog = true;
-            } else if(!sipProvider.isAutomaticDialogSupportEnabled() && sipResponse.getCSeq().getMethod().equals(Request.INVITE) && sipStack.getMaxForkTime() > 0 && sipDialog == null) {
+            }
+            else {
                 ClientTransactionExt originalTx = this.sipStack
                     .getForkedTransaction(sipResponse.getForkId());
                 if(originalTx != null && originalTx.getDefaultDialog() != null) {
@@ -1701,7 +1701,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                 (Response) sipResponse);
 
         if (sipStack.getMaxForkTime() != 0
-                && sipResponse.getCSeq().getMethod().equals(Request.INVITE)) {
+        		&& SIPTransactionStack.isDialogCreated(sipResponse.getCSeqHeader().getMethod())) {
             ClientTransactionExt originalTx = this.sipStack
                     .getForkedTransaction(sipResponse.getForkId());
             if(sipDialog != null && originalTx != null) {

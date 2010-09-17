@@ -33,7 +33,6 @@ import gov.nist.javax.sip.SIPConstants;
 import gov.nist.javax.sip.SipProviderImpl;
 import gov.nist.javax.sip.SipStackImpl;
 import gov.nist.javax.sip.address.AddressFactoryImpl;
-import gov.nist.javax.sip.header.Expires;
 import gov.nist.javax.sip.header.Via;
 import gov.nist.javax.sip.message.SIPMessage;
 import gov.nist.javax.sip.message.SIPRequest;
@@ -64,7 +63,6 @@ import javax.sip.Dialog;
 import javax.sip.IOExceptionEvent;
 import javax.sip.TransactionState;
 import javax.sip.address.SipURI;
-import javax.sip.header.ExpiresHeader;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 
@@ -82,7 +80,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.93 $ $Date: 2010-07-16 15:15:58 $
+ * @version 1.2 $Revision: 1.94 $ $Date: 2010-09-17 20:06:59 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -239,6 +237,13 @@ public abstract class SIPTransaction extends MessageChannel implements
     
     // aggressive flag to optimize eagerly
     private boolean releaseReferences;
+    
+    // caching flags
+    private Boolean inviteTransaction = null;
+    private Boolean dialogCreatingTransaction = null; 
+    
+    // caching fork id
+    private String forkId = null;
     
     public ExpiresTimerTask expiresTimerTask;
 
@@ -468,13 +473,28 @@ public abstract class SIPTransaction extends MessageChannel implements
     }
 
     /**
+     * Returns a flag stating whether this transaction is for a request that creates a dialog.
+     *
+     * @return -- true if this is a request that creates a dialog, false if not.
+     */
+    public final boolean isDialogCreatingTransaction() {
+        if (dialogCreatingTransaction == null) {
+        	dialogCreatingTransaction = Boolean.valueOf(isInviteTransaction() || getMethod().equals(Request.SUBSCRIBE) || getMethod().equals(Request.REFER));
+        }
+    	return dialogCreatingTransaction.booleanValue();
+    }
+    
+    /**
      * Returns a flag stating whether this transaction is for an INVITE request
      * or not.
      *
      * @return -- true if this is an INVITE request, false if not.
      */
     public final boolean isInviteTransaction() {
-        return getMethod().equals(Request.INVITE);
+        if (inviteTransaction == null) {
+        	inviteTransaction = Boolean.valueOf(getMethod().equals(Request.INVITE));
+        }
+    	return inviteTransaction.booleanValue();
     }
 
     /**
@@ -1537,4 +1557,20 @@ public abstract class SIPTransaction extends MessageChannel implements
     public void setViaPort(int viaPort) {
         this.encapsulatedChannel.setViaPort(viaPort);
     }
+    
+    /**
+     * Sets the fork id for the transaction.
+     * @param forkId
+     */
+    public void setForkId(String forkId) {
+		this.forkId = forkId;
+	}
+    
+    /**
+     * Retrieves the fork id for the transaction.
+     * @return
+     */
+    public String getForkId() {
+		return forkId;
+	}
 }
