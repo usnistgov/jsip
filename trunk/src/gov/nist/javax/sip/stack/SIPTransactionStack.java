@@ -101,7 +101,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.169 $ $Date: 2010-09-07 20:30:35 $
+ * @version 1.2 $Revision: 1.170 $ $Date: 2010-09-17 20:06:59 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener, SIPDialogEventListener {
@@ -479,17 +479,15 @@ public abstract class SIPTransactionStack implements
     
     class RemoveForkedTransactionTimerTask extends SIPStackTimerTask {
         
-        private SIPClientTransaction clientTransaction;
+        private final String forkId;
 
-		public RemoveForkedTransactionTimerTask(
-				SIPClientTransaction sipClientTransaction) {
-            this.clientTransaction = sipClientTransaction;
+		public RemoveForkedTransactionTimerTask(String forkId) {
+            this.forkId = forkId;
         }
 
         @Override
         public void runTask() {
-			forkedClientTransactionTable.remove(((SIPRequest) clientTransaction
-					.getRequest()).getForkId());
+        	forkedClientTransactionTable.remove(forkId);
         }
         
     }
@@ -1750,16 +1748,15 @@ public abstract class SIPTransactionStack implements
             if (stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 				stackLogger.logDebug("REMOVED client tx " + removed + " KEY = "
 						+ key);
-                if ( removed != null ) {
-                   SIPClientTransaction clientTx = (SIPClientTransaction)removed;
-					if (clientTx.getMethod().equals(Request.INVITE)
-							&& this.maxForkTime != 0) {
-						RemoveForkedTransactionTimerTask ttask = new RemoveForkedTransactionTimerTask(
-								clientTx);
-                       this.timer.schedule(ttask, this.maxForkTime * 1000);
-                       clientTx.stopExpiresTimer();
-                   }
-                }
+            }
+            if ( removed != null ) {
+            	SIPClientTransaction clientTx = (SIPClientTransaction)removed;
+            	if (clientTx.isInviteTransaction()
+            			&& this.maxForkTime != 0) {
+            		this.timer.schedule(new RemoveForkedTransactionTimerTask(
+            				clientTx.getForkId()), this.maxForkTime * 1000);
+            		clientTx.stopExpiresTimer();
+            	}
             }
 
             // Send a notification to the listener.
@@ -2841,8 +2838,9 @@ public abstract class SIPTransactionStack implements
     
 	public void addForkedClientTransaction(
 			SIPClientTransaction clientTransaction) {
-		this.forkedClientTransactionTable.put(((SIPRequest) clientTransaction
-				.getRequest()).getForkId(), clientTransaction);
+		String forkId = ((SIPRequest)clientTransaction.getRequest()).getForkId();
+		clientTransaction.setForkId(forkId);
+		this.forkedClientTransactionTable.put(forkId, clientTransaction);
     }
 
     public SIPClientTransaction getForkedTransaction(String transactionId) {
