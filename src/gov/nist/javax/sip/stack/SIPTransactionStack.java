@@ -101,7 +101,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.170 $ $Date: 2010-09-17 20:06:59 $
+ * @version 1.2 $Revision: 1.171 $ $Date: 2010-09-18 12:37:59 $
  */
 public abstract class SIPTransactionStack implements
 		SIPTransactionEventListener, SIPDialogEventListener {
@@ -1750,13 +1750,14 @@ public abstract class SIPTransactionStack implements
 						+ key);
             }
             if ( removed != null ) {
-            	SIPClientTransaction clientTx = (SIPClientTransaction)removed;
-            	if (clientTx.isInviteTransaction()
-            			&& this.maxForkTime != 0) {
-            		this.timer.schedule(new RemoveForkedTransactionTimerTask(
-            				clientTx.getForkId()), this.maxForkTime * 1000);
-            		clientTx.stopExpiresTimer();
-            	}
+                SIPClientTransaction clientTx = (SIPClientTransaction)removed;
+                final String forkId = clientTx.getForkId();
+                if (forkId != null && clientTx.isInviteTransaction()
+                        && this.maxForkTime != 0) {
+                    this.timer.schedule(new RemoveForkedTransactionTimerTask(
+                            forkId), this.maxForkTime * 1000);
+                    clientTx.stopExpiresTimer();
+                }
             }
 
             // Send a notification to the listener.
