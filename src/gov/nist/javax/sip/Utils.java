@@ -40,23 +40,23 @@ import java.util.HashSet;
  * and odds and ends.
  *
  * @author mranga
- * @version 1.2 $Revision: 1.21 $ $Date: 2009-10-18 13:46:37 $
+ * @version 1.2 $Revision: 1.22 $ $Date: 2010-09-28 19:44:16 $
  */
 public class Utils implements UtilsExt {
 
     private static MessageDigest digester;
-   
+
     private static java.util.Random rand;
-   
+
     private static long counter = 0;
 
     private static int callIDCounter;
 
     private static String signature ;
-    
+
     private static Utils instance = new Utils();
 
-    
+
     /**
      * to hex converter
      */
@@ -73,11 +73,11 @@ public class Utils implements UtilsExt {
         signature = toHexString(Integer.toString(Math.abs( rand.nextInt() % 1000 )).getBytes());
     }
 
-   
+
     public static Utils getInstance() {
         return instance;
     }
-   
+
     /**
      * convert an array of bytes to an hexadecimal string
      *
@@ -174,17 +174,17 @@ public class Utils implements UtilsExt {
 
             byte bid[] = digester.digest(Long.toString(num).getBytes());
             // prepend with a magic cookie to indicate we are bis09 compatible.
-            return SIPConstants.BRANCH_MAGIC_COOKIE + Utils.toHexString(bid) + this.signature;
-
-
+            return SIPConstants.BRANCH_MAGIC_COOKIE + "-"
+                + this.signature + "-" + Utils.toHexString(bid);
     }
-    
+
     public boolean responseBelongsToUs(SIPResponse response) {
         Via topmostVia = response.getTopmostVia();
         String branch = topmostVia.getBranch();
-        return branch != null && branch.endsWith(this.signature);
+        return branch != null && branch.startsWith(
+                   SIPConstants.BRANCH_MAGIC_COOKIE + "-" + this.signature);
     }
-    
+
     public static String getSignature() {
         return signature;
     }
@@ -203,6 +203,6 @@ public class Utils implements UtilsExt {
 
     }
 
-  
+
 
 }
