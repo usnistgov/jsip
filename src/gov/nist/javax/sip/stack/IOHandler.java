@@ -51,18 +51,18 @@ import javax.net.ssl.SSLSocket;
 
 /*
  * TLS support Added by Daniel J.Martinez Manzano <dani@dif.um.es>
- * 
+ *
  */
 
 /**
  * Low level Input output to a socket. Caches TCP connections and takes care of
  * re-connecting to the remote party if the other end drops the connection
- * 
+ *
  * @version 1.2
- * 
+ *
  * @author M. Ranganathan <br/>
- * 
- * 
+ *
+ *
  */
 
 public class IOHandler {
@@ -132,7 +132,7 @@ public class IOHandler {
     /**
      * Creates and binds, if necessary, a socket connected to the specified
      * destination address and port and then returns its local address.
-     * 
+     *
      * @param dst
      *            the destination address that the socket would need to connect
      *            to.
@@ -144,13 +144,13 @@ public class IOHandler {
      * @param localPort
      *            the port that we'd like our socket to bind to (0 for a random
      *            port).
-     * 
+     *
      * @return the SocketAddress that this handler would use when connecting to
      *         the specified destination address and port.
-     * 
-     * @throws IOException
+     *
+     * @throws IOException if we fail binding the socket
      */
-    public SocketAddress obtainLocalAddress(InetAddress dst, int dstPort,
+    public SocketAddress getLocalAddressForTcpDst(InetAddress dst, int dstPort,
             InetAddress localAddress, int localPort) throws IOException {
         String key = makeKey(dst, dstPort);
 
@@ -167,8 +167,81 @@ public class IOHandler {
     }
 
     /**
+     * Creates and binds, if necessary, a socket connected to the specified
+     * destination address and port and then returns its local address.
+     *
+     * @param dst the destination address that the socket would need to connect
+     * to.
+     * @param dstPort the port number that the connection would be established
+     * with.
+     * @param localAddress the address that we would like to bind on (null for
+     * the "any" address).
+     *
+     * @param channel the message channel that will be servicing the socket
+     *
+     * @return the SocketAddress that this handler would use when connecting to
+     * the specified destination address and port.
+     *
+     * @throws IOException if we fail binding the socket
+     */
+    public SocketAddress getLocalAddressForTlsDst(InetAddress dst, int dstPort,
+             InetAddress localAddress, TLSMessageChannel channel)
+             throws IOException {
+        String key = makeKey(dst, dstPort);
+
+        Socket clientSock = getSocket(key);
+
+        if (clientSock == null) {
+
+            clientSock = sipStack.getNetworkLayer()
+                .createSSLSocket(dst, dstPort, localAddress);
+
+            SSLSocket sslsock = (SSLSocket) clientSock;
+
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                sipStack.getStackLogger().logDebug(
+                        "inaddr = " + dst);
+                sipStack.getStackLogger().logDebug(
+                        "port = " + dstPort);
+            }
+
+            HandshakeCompletedListener listner
+                    = new HandshakeCompletedListenerImpl(channel);
+
+            channel.setHandshakeCompletedListener(listner);
+            sslsock.addHandshakeCompletedListener(listner);
+            sslsock.setEnabledProtocols(sipStack.getEnabledProtocols());
+            sslsock.startHandshake();
+
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                this.sipStack.getStackLogger().logDebug(
+                        "Handshake passed");
+            }
+
+            // allow application to enforce policy by validating the
+            // certificate
+            try {
+                sipStack.getTlsSecurityPolicy().enforceTlsPolicy(
+                            channel.getEncapsulatedClientTransaction());
+            }
+            catch (SecurityException ex) {
+                throw new IOException(ex.getMessage());
+            }
+
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                this.sipStack.getStackLogger().logDebug(
+                        "TLS Security policy passed");
+            }
+
+            putSocket(key, clientSock);
+        }
+
+        return clientSock.getLocalSocketAddress();
+    }
+
+    /**
      * Send an array of bytes.
-     * 
+     *
      * @param receiverAddress
      *            -- inet address
      * @param contactPort
@@ -281,7 +354,7 @@ public class IOHandler {
                 /*
                  * For TCP responses, the transmission of responses is
                  * controlled by RFC 3261, section 18.2.2 :
-                 * 
+                 *
                  * o If the "sent-protocol" is a reliable transport protocol
                  * such as TCP or SCTP, or TLS over those, the response MUST be
                  * sent using the existing connection to the source of the
@@ -310,7 +383,7 @@ public class IOHandler {
                     if (clientSock == null) {
                         if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                             sipStack.getStackLogger().logDebug(
-                                    "inaddr = " + receiverAddress +  
+                                    "inaddr = " + receiverAddress +
                                     " port = " + contactPort);
                         }
                         clientSock = sipStack.getNetworkLayer().createSocket(
@@ -444,7 +517,7 @@ public class IOHandler {
                             // old connection is bad.
                             // remove from our table.
                             removeSocket(key);
-                            
+
                             try {
                                 sipStack.getStackLogger().logDebug(
                                         "Closing socket");
@@ -461,7 +534,7 @@ public class IOHandler {
                 throw ex;
             } catch (IOException ex) {
                 removeSocket(key);
-                
+
                 if (!isClient) {
                     receiverAddress = InetAddress.getByName(messageChannel
                             .getViaHost());
@@ -475,7 +548,7 @@ public class IOHandler {
                     if (clientSock == null) {
                         if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                             sipStack.getStackLogger().logDebug(
-                                    "inaddr = " + receiverAddress +  
+                                    "inaddr = " + receiverAddress +
                                     " port = " + contactPort);
                         }
                         SSLSocket sslsock = sipStack.getNetworkLayer().createSSLSocket(
@@ -559,8 +632,8 @@ public class IOHandler {
      * IOException("Could not acquire semaphore"); } } catch
      * (InterruptedException e) { throw new
      * IOException("exception in acquiring sem"); } }
-     * 
-     * 
+     *
+     *
      * private void leaveIOCriticalSection(String key) {
      * this.ioSemaphore.release(); }
      */
