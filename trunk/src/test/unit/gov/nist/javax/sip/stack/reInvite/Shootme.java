@@ -242,9 +242,8 @@ public class Shootme  implements SipListener {
 
         logger.info("Response received with client transaction id "
                 + tid + ":\n" + response);
-        try {
-            // Non regression test for Issue 333 : make sure the dialog stays server upon sending reinvite
-            if (tid != null && tid.getDialog().isServer() && response.getStatusCode() == Response.OK
+        try { 
+            if (response.getStatusCode() == Response.OK
                     && ((CSeqHeader) response.getHeader(CSeqHeader.NAME))
                             .getMethod().equals(Request.INVITE)) {
                 this.okRecieved  = true;
