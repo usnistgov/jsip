@@ -133,7 +133,7 @@ import javax.sip.message.Response;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.197 $ $Date: 2010-09-17 20:06:58 $
+ * @version 1.2 $Revision: 1.198 $ $Date: 2010-10-05 12:01:31 $
  * 
  * @author M. Ranganathan
  * 
@@ -1702,27 +1702,30 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
     protected void storeFirstTransactionInfo(SIPDialog dialog,
             SIPTransaction transaction) {
-        dialog.firstTransaction = transaction;
-        dialog.firstTransactionSeen = true;
-        dialog.firstTransactionIsServerTransaction = transaction
-                .isServerTransaction();
-        if (dialog.firstTransactionIsServerTransaction) {
-            dialog.firstTransactionSecure = transaction.getRequest()
-                    .getRequestURI().getScheme().equalsIgnoreCase("sips");
-        } else {
-            dialog.firstTransactionSecure = ((SIPClientTransaction) transaction)
-                    .getOriginalRequestScheme().equalsIgnoreCase("sips");
+        // Fix for Issue 333 : don't update those on reInvite
+        if(!dialog.firstTransactionSeen) {
+            dialog.firstTransactionSeen = true;
+            dialog.firstTransaction = transaction;            
+            dialog.firstTransactionIsServerTransaction = transaction
+                    .isServerTransaction();
+            if (dialog.firstTransactionIsServerTransaction) {
+                dialog.firstTransactionSecure = transaction.getRequest()
+                        .getRequestURI().getScheme().equalsIgnoreCase("sips");
+            } else {
+                dialog.firstTransactionSecure = ((SIPClientTransaction) transaction)
+                        .getOriginalRequestScheme().equalsIgnoreCase("sips");
+            }
+            dialog.firstTransactionPort = transaction.getPort();
+            dialog.firstTransactionId = transaction.getBranchId();
+            dialog.firstTransactionMethod = transaction.getMethod();
+            if (transaction instanceof SIPServerTransaction
+                    && dialog.firstTransactionMethod.equals(Request.INVITE)) {
+                dialog.firstTransactionMergeId = ((SIPRequest) transaction
+                        .getRequest()).getMergeId();
+            }
         }
-        dialog.firstTransactionPort = transaction.getPort();
-        dialog.firstTransactionId = transaction.getBranchId();
-        dialog.firstTransactionMethod = transaction.getMethod();
-        if (transaction instanceof SIPServerTransaction
-                && dialog.firstTransactionMethod.equals(Request.INVITE)) {
-            dialog.firstTransactionMergeId = ((SIPRequest) transaction
-                    .getRequest()).getMergeId();
-        }
-
-        if (dialog.isServer()) {
+        // Fix for Issue 333 : only update the target refresh on reinvite
+        if (transaction.isServerTransaction()) {
             SIPServerTransaction st = (SIPServerTransaction) transaction;
             SIPResponse response = st.getLastResponse();
             dialog.contactHeader = response != null ? response
@@ -1732,6 +1735,15 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             if (ct != null) {
                 dialog.contactHeader = ct.getOriginalRequestContact();
             }
+        }
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+            sipStack.getStackLogger().logDebug("firstTransaction = " + dialog.firstTransaction);
+            sipStack.getStackLogger().logDebug("firstTransactionIsServerTransaction = " + firstTransactionIsServerTransaction);
+            sipStack.getStackLogger().logDebug("firstTransactionSecure = " + firstTransactionSecure);
+            sipStack.getStackLogger().logDebug("firstTransactionPort = " + firstTransactionPort);
+            sipStack.getStackLogger().logDebug("firstTransactionId = " + firstTransactionId);
+            sipStack.getStackLogger().logDebug("firstTransactionMethod = " + firstTransactionMethod);
+            sipStack.getStackLogger().logDebug("firstTransactionMergeId = " + firstTransactionMergeId);
         }
     }
 
@@ -2455,13 +2467,17 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             boolean allowInterleaving) throws TransactionDoesNotExistException,
             SipException {
 
+
+        if (clientTransactionId == null)
+            throw new NullPointerException("null parameter");
+        
         if ((!allowInterleaving)
                 && clientTransactionId.getRequest().getMethod().equals(
                         Request.INVITE)) {
             sipStack.getReinviteExecutor().execute(
                     (new ReInviteSender(clientTransactionId)));
             return;
-        }
+        }        
 
         SIPRequest dialogRequest = ((SIPClientTransaction) clientTransactionId)
                 .getOriginalRequest();
@@ -2472,10 +2488,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
             sipStack.getStackLogger().logDebug(
                     "dialog.sendRequest " + " dialog = " + this
-                            + "\ndialogRequest = \n" + dialogRequest);
-
-        if (clientTransactionId == null)
-            throw new NullPointerException("null parameter");
+                            + "\ndialogRequest = \n" + dialogRequest);        
 
         if (dialogRequest.getMethod().equals(Request.ACK)
                 || dialogRequest.getMethod().equals(Request.CANCEL))
