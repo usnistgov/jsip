@@ -46,11 +46,10 @@ import gov.nist.javax.sip.stack.SIPTransactionStack;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
-import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
@@ -65,7 +64,7 @@ import java.util.concurrent.Semaphore;
  * accessed from the SIPMessage using the getContent and getContentBytes methods
  * provided by the SIPMessage class.
  *
- * @version 1.2 $Revision: 1.33 $ $Date: 2010-10-07 15:03:49 $
+ * @version 1.2 $Revision: 1.34 $ $Date: 2010-10-07 15:40:25 $
  *
  * @author M. Ranganathan
  *
@@ -450,6 +449,7 @@ public final class PipelinedMsgParser implements Runnable {
             }
         } finally {
             try {
+                cleanMessageOrderingMap();
                 inputStream.close();
             } catch (IOException e) {
                 InternalErrorHandler.handleException(e);
@@ -457,7 +457,7 @@ public final class PipelinedMsgParser implements Runnable {
         }
     }
     
-    private static Executor postParseExecutor = null;
+    private static ExecutorService postParseExecutor = null;
     
     public static void setPostParseExcutorSize(int threads){
         if(postParseExecutor == null) {
@@ -500,14 +500,34 @@ public final class PipelinedMsgParser implements Runnable {
 
     public void close() {
         try {
-            this.rawInputStream.close();
+            this.rawInputStream.close();            
         } catch (IOException ex) {
             // Ignore.
         }
+        if(postParseExecutor!=null) {
+            postParseExecutor.shutdown();
+        }
+        cleanMessageOrderingMap();        
+    }
+    
+    private void cleanMessageOrderingMap() {
+        for (CallIDOrderingStructure callIDOrderingStructure: messagesOrderingMap.values()) {
+            callIDOrderingStructure.getSemaphore().release();
+            callIDOrderingStructure.getMessagesForCallID().clear();
+        }
+        messagesOrderingMap.clear();
     }
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.33  2010/10/07 15:03:49  deruelle_jean
+ * Fixing a deadlock on one post_parser_thread_pool option when there is only 1 thread and message ordering on multiple threads + adding non regression test case
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  Jean Deruelle
+ * Reviewed by:
+ *
  * Revision 1.32  2010/08/19 19:18:01  deruelle_jean
  * Fixing Message Order, there could be race conditions on TCP with multiple threads the order should be maintained
  *
