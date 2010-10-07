@@ -46,11 +46,12 @@ import gov.nist.javax.sip.stack.SIPTransactionStack;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 
 /**
  * This implements a pipelined message parser suitable for use with a stream -
@@ -63,7 +64,7 @@ import java.util.concurrent.TimeUnit;
  * accessed from the SIPMessage using the getContent and getContentBytes methods
  * provided by the SIPMessage class.
  *
- * @version 1.2 $Revision: 1.28.2.3 $ $Date: 2010-08-19 19:17:55 $
+ * @version 1.2 $Revision: 1.28.2.4 $ $Date: 2010-10-07 15:38:52 $
  *
  * @author M. Ranganathan
  *
@@ -85,9 +86,8 @@ public final class PipelinedMsgParser implements Runnable {
     private int maxMessageSize;
     private int sizeCounter;
     private SIPTransactionStack sipStack;
-    private ConcurrentHashMap<String, Semaphore> messagesOrderingMap = new ConcurrentHashMap<String, Semaphore>();
+    private ConcurrentHashMap<String, CallIDOrderingStructure> messagesOrderingMap = new ConcurrentHashMap<String, CallIDOrderingStructure>();
     
-  
     /**
      * default constructor.
      */
@@ -366,88 +366,80 @@ public final class PipelinedMsgParser implements Runnable {
                 // return error from there.
                 if (sipMessageListener != null) {
                     try {
-                    	if(postParseExecutor == null) {
-                    		/**
-                    		 * If gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE is disabled
-                    		 * we continue with the old logic here.
-                    		 */
-                    		sipMessageListener.processMessage(sipMessage);
-                    	} else {
-                    		/**
-                    		 * gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE is enabled so
-                    		 * we use the threadpool to execute the task.
-                    		 */
-                    		final SIPMessage message = sipMessage;
-                    		
-                    		// we need to guarantee message ordering on the same socket on TCP
-                    		// so we lock per Call Id
-                    		
-                    		final String callId = message.getCallId().getCallId();
-                    		// http://dmy999.com/article/34/correct-use-of-concurrenthashmap
-                    		Semaphore semaphore = messagesOrderingMap.get(callId);
-                    		if(semaphore == null) {
-                    			Semaphore newSemaphore = new Semaphore(1, true);
-                    			semaphore = messagesOrderingMap.putIfAbsent(callId, newSemaphore);
-                    			if(semaphore == null) {
-                    				semaphore = newSemaphore;       
-                    				if (stackLogger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-                    					stackLogger.logDebug("semaphore added for message " + message);
-                    				}
-                    			}
-                    		}
-                    		final Semaphore callIdSemaphore = semaphore;     
-                    		if (stackLogger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-                    			stackLogger.logDebug("trying to acquiring semaphore for message " + message);
-                    		}
-                    		// we try to acquire here so that if the result if false because it is already acquired
-                    		// we acquire it in the thread to avoid blocking other messages with a different call id
-                    		// that could be processed in parallel
-                    		final boolean acquired = callIdSemaphore.tryAcquire(0, TimeUnit.SECONDS);                    		                    		
-                    		
-                    		Thread messageDispatchTask = new Thread() {
-                    			@Override
-                    			public void run() {
-                    				// if it was not acquired above
-                    				// we acquire it in the thread to avoid blocking other messages with a different call id
-                            		// that could be processed in parallel
-                    				if (stackLogger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-        								stackLogger.logDebug("semaphore acquired " + acquired +  " for message " + message);
-        							}
-                    				if(!acquired) {
-                    					try {
-                    						if (stackLogger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-                                    			stackLogger.logDebug("trying to acquiring semaphore for message " + message);
-                                    		}
-											callIdSemaphore.acquire();
-										} catch (InterruptedException e) {
-											stackLogger.logError("Semaphore acquisition for message " + message + " interrupted", e);
-										}
-										if (stackLogger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-											stackLogger.logDebug("semaphore acquired for message " + message);
-										}
-                    				}
-                            		
-                    				try {
-                    					sipMessageListener.processMessage(message);
-                    				} catch (Exception e) {
-                    					stackLogger.logError("Error occured processing message", e);	
-                    					// We do not break the TCP connection because other calls use the same socket here
-                    				} finally {
-                    					if (stackLogger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-                    						stackLogger.logDebug("releasing semaphore for message " + message);
-                    					}
-                    					callIdSemaphore.release();                    				
-                    					if(!callIdSemaphore.hasQueuedThreads()) {
-                    						messagesOrderingMap.remove(callId);
-                    						if (stackLogger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-                    							stackLogger.logDebug("semaphore removed for message " + message);
-                    						}
-                    					}
-                    				}
-                    			}
-                    		};
-                    		postParseExecutor.execute(messageDispatchTask); // run in executor thread
-                    	}
+                        if(postParseExecutor == null) {
+                            /**
+                             * If gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE is disabled
+                             * we continue with the old logic here.
+                             */
+                            sipMessageListener.processMessage(sipMessage);
+                        } else {
+                            /**
+                             * gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE is enabled so
+                             * we use the threadpool to execute the task.
+                             */
+                            // we need to guarantee message ordering on the same socket on TCP
+                            // so we lock and queue of messages per Call Id
+                            
+                            final String callId = sipMessage.getCallId().getCallId();
+                            // http://dmy999.com/article/34/correct-use-of-concurrenthashmap
+                            CallIDOrderingStructure orderingStructure = messagesOrderingMap.get(callId);
+                            if(orderingStructure == null) {
+                                CallIDOrderingStructure newCallIDOrderingStructure = new CallIDOrderingStructure();
+                                orderingStructure = messagesOrderingMap.putIfAbsent(callId, newCallIDOrderingStructure);
+                                if(orderingStructure == null) {
+                                    orderingStructure = newCallIDOrderingStructure;       
+                                    if (stackLogger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+                                        stackLogger.logDebug("new CallIDOrderingStructure added for message " + sipMessage);
+                                    }
+                                }
+                            }
+                            final CallIDOrderingStructure callIDOrderingStructure = orderingStructure;                                 
+                            // we add the message to the pending queue of messages to be processed for that call id here 
+                            // to avoid blocking other messages with a different call id
+                            // that could be processed in parallel
+                            callIDOrderingStructure.getMessagesForCallID().offer(sipMessage);                                                                                   
+                            
+                            Thread messageDispatchTask = new Thread() {
+                                @Override
+                                public void run() {                                    
+                                    // we acquire it in the thread to avoid blocking other messages with a different call id
+                                    // that could be processed in parallel                                    
+                                    Semaphore semaphore = callIDOrderingStructure.getSemaphore();
+                                    final Queue<SIPMessage> messagesForCallID = callIDOrderingStructure.getMessagesForCallID();
+                                    try {                                                                                
+                                        semaphore.acquire();                                        
+                                    } catch (InterruptedException e) {
+                                        stackLogger.logError("Semaphore acquisition for callId " + callId + " interrupted", e);
+                                    }
+                                    // once acquired we get the first message to process
+                                    SIPMessage message = messagesForCallID.poll();
+                                    if (stackLogger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+                                        stackLogger.logDebug("semaphore acquired for message " + message);
+                                    }
+                                    
+                                    try {
+                                        sipMessageListener.processMessage(message);
+                                    } catch (Exception e) {
+                                        stackLogger.logError("Error occured processing message", e);    
+                                        // We do not break the TCP connection because other calls use the same socket here
+                                    } finally {                                        
+                                        if(callIDOrderingStructure.getMessagesForCallID().size() <= 0) {
+                                            messagesOrderingMap.remove(callId);
+                                            if (stackLogger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+                                                stackLogger.logDebug("CallIDOrderingStructure removed for message " + callId);
+                                            }
+                                        }
+                                        if (stackLogger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+                                            stackLogger.logDebug("releasing semaphore for message " + message);
+                                        }
+                                        //release the semaphore so that another thread can process another message from the call id queue in the correct order
+                                        // or a new message from another call id queue
+                                        semaphore.release();                                                                          
+                                    }
+                                }
+                            };
+                            postParseExecutor.execute(messageDispatchTask); // run in executor thread
+                        }
                     } catch (Exception ex) {
                         // fatal error in processing - close the
                         // connection.
@@ -465,7 +457,7 @@ public final class PipelinedMsgParser implements Runnable {
         }
     }
     
-    private static Executor postParseExecutor = null;
+    private static ExecutorService postParseExecutor = null;
     
     public static void setPostParseExcutorSize(int threads){
     	if(postParseExecutor == null) { // Only take into account the first setting
@@ -476,8 +468,35 @@ public final class PipelinedMsgParser implements Runnable {
     		}
     	}
     }
-    
 
+    /**
+     * Data structure to make sure ordering of Messages is guaranteed under TCP when the post parsing thread pool is used
+     * @author jean.deruelle@gmail.com
+     *
+     */
+    class CallIDOrderingStructure {
+        private Semaphore semaphore;
+        private Queue<SIPMessage> messagesForCallID;
+        
+        public CallIDOrderingStructure() {
+            semaphore = new Semaphore(1, true);
+            messagesForCallID = new ConcurrentLinkedQueue<SIPMessage>();
+        }        
+
+        /**
+         * @return the semaphore
+         */
+        public Semaphore getSemaphore() {
+            return semaphore;
+        }
+       
+        /**
+         * @return the messagesForCallID
+         */
+        public Queue<SIPMessage> getMessagesForCallID() {
+            return messagesForCallID;
+        }
+    }
 
     public void close() {
         try {
@@ -485,33 +504,60 @@ public final class PipelinedMsgParser implements Runnable {
         } catch (IOException ex) {
             // Ignore.
         }
+        if(postParseExecutor!=null) {
+            postParseExecutor.shutdown();
+        }
         cleanMessageOrderingMap();
+        
     }
     
     private void cleanMessageOrderingMap() {
-    	for (Semaphore semaphore : messagesOrderingMap.values()) {
-			semaphore.release();
+    	for (CallIDOrderingStructure callIDOrderingStructure: messagesOrderingMap.values()) {
+			callIDOrderingStructure.getSemaphore().release();
+			callIDOrderingStructure.getMessagesForCallID().clear();
 		}
     	messagesOrderingMap.clear();
     }
 }
 /*
  * $Log: not supported by cvs2svn $
- * Revision 1.28.2.2  2010/07/01 18:50:50  vralev
+ * Revision 1.33  2010/10/07 15:03:49  deruelle_jean
+ * Fixing a deadlock on one post_parser_thread_pool option when there is only 1 thread and message ordering on multiple threads + adding non regression test case
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  Jean Deruelle
+ * Reviewed by:
+ *
+ * Revision 1.32  2010/08/19 19:18:01  deruelle_jean
+ * Fixing Message Order, there could be race conditions on TCP with multiple threads the order should be maintained
+ *
+ * Issue number:  301
+ * Obtained from:
+ * Submitted by:  Jean Deruelle
+ * Reviewed by:
+ *
+ * Revision 1.31  2010/07/01 18:53:25  vralev
  * Issue number:  301
  * Obtained from: vralev
  * Submitted by:  vralev
  * Reviewed by:   ranga
  *
- * Handle better conflicting multiple settings. Taking into account only the first one without creating unused threadpools for other settings.
+ * Handle better conflicting multiple settings. Taking into account only the first one without creating unused threadpools for other settings. In trunk.
  *
- * Revision 1.28.2.1  2010/07/01 18:24:26  vralev
+ * Revision 1.30  2010/07/01 18:22:56  vralev
  * Issue number:  301
  * Obtained from: vralev
  * Submitted by:  vralev
  * Reviewed by:   ranga
  *
- * Backporting to the sipx stable branch
+ * Revision 1.29  2010/05/06 14:07:45  deruelle_jean
+ * Big update to improve performance by 50% in some cases, TCK + testsuite (cc-buildloop) green, Mobicents Sip Servlets TCK + testsuite green as well
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  Jean Deruelle
+ * Reviewed by:
  *
  * Revision 1.28  2010/03/19 17:29:46  deruelle_jean
  * Adding getters and setters for the new factories

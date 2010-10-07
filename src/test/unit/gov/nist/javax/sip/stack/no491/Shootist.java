@@ -214,16 +214,18 @@ public class Shootist implements SipListener {
                 Dialog dialog = tid.getDialog();
 
                 reInviteCount++;
-                Request inviteRequest = dialog.createRequest(Request.INVITE);
-                ((SipURI) inviteRequest.getRequestURI()).removeParameter("transport");
-                ((ViaHeader) inviteRequest.getHeader(ViaHeader.NAME)).setTransport("udp");
-                inviteRequest.setHeader(contactHeader);
-                MaxForwardsHeader mf = protocolObjects.headerFactory.createMaxForwardsHeader(10);
-                inviteRequest.addHeader(mf);
-
-                ClientTransaction ct = provider.getNewClientTransaction(inviteRequest);
-                // This will block until the ACK is seen.
-                dialog.sendRequest(ct);
+                if(reInviteCount < 25) {
+                    Request inviteRequest = dialog.createRequest(Request.INVITE);
+                    ((SipURI) inviteRequest.getRequestURI()).removeParameter("transport");
+                    ((ViaHeader) inviteRequest.getHeader(ViaHeader.NAME)).setTransport(protocolObjects.transport);
+                    inviteRequest.setHeader(contactHeader);
+                    MaxForwardsHeader mf = protocolObjects.headerFactory.createMaxForwardsHeader(10);
+                    inviteRequest.addHeader(mf);
+    
+                    ClientTransaction ct = provider.getNewClientTransaction(inviteRequest);
+                    // This will block until the ACK is seen.
+                    dialog.sendRequest(ct);
+                }
                 
                 // Deliberately send the ACK out of sequence.
                 Request ackRequest = dialog.createAck(((CSeqHeader)response.getHeader(CSeqHeader.NAME)).getSeqNumber());

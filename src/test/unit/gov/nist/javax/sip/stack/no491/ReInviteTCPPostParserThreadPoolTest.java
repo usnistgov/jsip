@@ -23,6 +23,7 @@
 package test.unit.gov.nist.javax.sip.stack.no491;
 
 import gov.nist.javax.sip.SipStackImpl;
+import gov.nist.javax.sip.parser.PipelinedMsgParser;
 
 import java.util.EventObject;
 
@@ -43,7 +44,7 @@ import test.tck.msgflow.callflows.ScenarioHarness;
  * @author M. Ranganathan
  *
  */
-public class ReInviteTest extends ScenarioHarness implements SipListener {
+public class ReInviteTCPPostParserThreadPoolTest extends ScenarioHarness implements SipListener {
 
 
     protected Shootist shootist;
@@ -62,16 +63,16 @@ public class ReInviteTest extends ScenarioHarness implements SipListener {
 
     @Override
     public String getName() {
-    	return ReInviteTest.class.getName();
+    	return ReInviteTCPPostParserThreadPoolTest.class.getName();
     }
-    public ReInviteTest() {
+    public ReInviteTCPPostParserThreadPoolTest() {
         super("reinvitetest", true);
     }
 
     public void setUp() {
 
         try {
-            this.transport = "udp";
+            this.transport = "tcp";
 
             super.setUp();
             
@@ -88,17 +89,22 @@ public class ReInviteTest extends ScenarioHarness implements SipListener {
             
             ((SipStackImpl)getTiProtocolObjects().sipStack).setIsBackToBackUserAgent(true);
             ((SipStackImpl)getRiProtocolObjects().sipStack).setIsBackToBackUserAgent(true);
-
-            getRiProtocolObjects().start();
-            if (getTiProtocolObjects() != getRiProtocolObjects())
-                getTiProtocolObjects().start();
+            
         } catch (Exception ex) {
             ex.printStackTrace();
             fail("unexpected exception ");
         }
     }
 
-    public void testSendInvite() {
+    public void testSendInvite() throws Exception {
+        int threads = 32;
+        PipelinedMsgParser.setPostParseExcutorSize(threads);
+        ((SipStackImpl)getRiProtocolObjects().sipStack).setTcpPostParsingThreadPoolSize(threads);
+        ((SipStackImpl)getTiProtocolObjects().sipStack).setTcpPostParsingThreadPoolSize(threads);
+        getRiProtocolObjects().start();
+        if (getTiProtocolObjects() != getRiProtocolObjects())
+            getTiProtocolObjects().start();
+                   
         this.shootist.sendInvite();
         try {
             Thread.sleep(15000);
@@ -107,6 +113,23 @@ public class ReInviteTest extends ScenarioHarness implements SipListener {
         }
     }
     
+    public void testSendInvite1Thread() throws Exception {
+        int threads = 1;
+        PipelinedMsgParser.setPostParseExcutorSize(threads);
+        ((SipStackImpl)getRiProtocolObjects().sipStack).setTcpPostParsingThreadPoolSize(threads);
+        ((SipStackImpl)getTiProtocolObjects().sipStack).setTcpPostParsingThreadPoolSize(threads);
+        getRiProtocolObjects().start();
+        if (getTiProtocolObjects() != getRiProtocolObjects())
+            getTiProtocolObjects().start();
+                    
+        this.shootist.sendInvite();
+        try {
+            Thread.sleep(15000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void tearDown() {
         try {            
             this.shootist.checkState();

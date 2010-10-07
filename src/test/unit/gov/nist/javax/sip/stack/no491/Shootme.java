@@ -118,14 +118,14 @@ public class Shootme  implements SipListener {
         try {
             logger.info("shootme: got an Invite sending OK");
             // logger.info("shootme: " + request);
-            Response response = protocolObjects.messageFactory.createResponse(180, request);
-            ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
+            Response ringingResponse = protocolObjects.messageFactory.createResponse(180, request);
+            ToHeader toHeader = (ToHeader) ringingResponse.getHeader(ToHeader.NAME);
             toHeader.setTag("4321");
             Address address = protocolObjects.addressFactory.createAddress("Shootme <sip:"
                     + myAddress + ":" + myPort + ">");
             ContactHeader contactHeader = protocolObjects.headerFactory
                     .createContactHeader(address);
-            response.addHeader(contactHeader);
+            ringingResponse.addHeader(contactHeader);
             ServerTransaction st = requestEvent.getServerTransaction();
 
             if (st == null) {
@@ -151,8 +151,8 @@ public class Shootme  implements SipListener {
                 logger.info(" content = " + new String(content));
                 ContentTypeHeader contentTypeHeader = protocolObjects.headerFactory
                         .createContentTypeHeader("application", "sdp");
-                logger.info("response = " + response);
-                response.setContent(content, contentTypeHeader);
+                logger.info("response = " + ringingResponse);
+                ringingResponse.setContent(content, contentTypeHeader);
             }
             dialog = st.getDialog();
             
@@ -160,13 +160,13 @@ public class Shootme  implements SipListener {
                 logger.info("Dialog " + dialog);
                 logger.info("Dialog state " + dialog.getState());
             }
-            st.sendResponse(response);
-            response = protocolObjects.messageFactory.createResponse(200, request);
-            toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
+            st.sendResponse(ringingResponse);
+            Response okResponse = protocolObjects.messageFactory.createResponse(200, request);
+            toHeader = (ToHeader) okResponse .getHeader(ToHeader.NAME);
             toHeader.setTag("4321");
             // Application is supposed to set.
-            response.addHeader(contactHeader);
-            st.sendResponse(response);
+            okResponse .addHeader(contactHeader);
+            st.sendResponse(okResponse );
             logger.info("TxState after sendResponse = " + st.getState());
             this.inviteTid = st;
         } catch (Exception ex) {
