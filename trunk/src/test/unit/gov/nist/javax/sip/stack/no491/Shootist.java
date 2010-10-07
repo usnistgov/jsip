@@ -217,7 +217,7 @@ public class Shootist implements SipListener {
                 if(reInviteCount < 25) {
                     Request inviteRequest = dialog.createRequest(Request.INVITE);
                     ((SipURI) inviteRequest.getRequestURI()).removeParameter("transport");
-                    ((ViaHeader) inviteRequest.getHeader(ViaHeader.NAME)).setTransport("udp");
+                    ((ViaHeader) inviteRequest.getHeader(ViaHeader.NAME)).setTransport(protocolObjects.transport);
                     inviteRequest.setHeader(contactHeader);
                     MaxForwardsHeader mf = protocolObjects.headerFactory.createMaxForwardsHeader(10);
                     inviteRequest.addHeader(mf);
