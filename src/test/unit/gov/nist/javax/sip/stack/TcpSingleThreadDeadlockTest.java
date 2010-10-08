@@ -389,24 +389,34 @@ public class TcpSingleThreadDeadlockTest extends TestCase {
 
 
 int q=0;
+boolean inUse = false;
         public void processResponse(ResponseEvent responseReceivedEvent) {
-        	if(q%100==0) System.out.println("Receive " + q);
-        	q++;
-            if ( responseReceivedEvent.getResponse().getStatusCode() == Response.OK) {
+        	try {
+        		if(inUse!=false) {
+        			fail("Concurrent responses should not happen");
+        			throw new RuntimeException();
+        		}
+        		inUse = true;
+        		if(q%100==0) System.out.println("Receive " + q);
+        		q++;
+        		if ( responseReceivedEvent.getResponse().getStatusCode() == Response.OK) {
 
-                Dialog d = responseReceivedEvent.getDialog();
-                try {
-                    Request ack = d.createAck(1);
-                    sipProvider.sendRequest(ack);
-                    sipProvider.sendRequest(ack);
-                    sipProvider.sendRequest(ack);
-                    sipProvider.sendRequest(ack);
-                    sipProvider.sendRequest(ack);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    fail("Error sending ACK");
-                }
-            }
+        			Dialog d = responseReceivedEvent.getDialog();
+        			try {
+        				Request ack = d.createAck(1);
+        				sipProvider.sendRequest(ack);
+        				sipProvider.sendRequest(ack);
+        				sipProvider.sendRequest(ack);
+        				sipProvider.sendRequest(ack);
+        				sipProvider.sendRequest(ack);
+        			} catch (Exception e) {
+        				e.printStackTrace();
+        				fail("Error sending ACK");
+        			}
+        		}
+        	}finally {
+        		inUse = false;
+        	}
 
         }
 
@@ -642,7 +652,7 @@ int q=0;
         shootme.terminate();
     }
 
-    public void testCSeqValidationIsOff() {
+    public void testStressMessageSerialization() {
         this.shootme.init();
         this.shootist.init();
         try {
