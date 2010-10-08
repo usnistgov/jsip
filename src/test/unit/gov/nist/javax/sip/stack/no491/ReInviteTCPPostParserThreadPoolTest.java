@@ -107,7 +107,7 @@ public class ReInviteTCPPostParserThreadPoolTest extends ScenarioHarness impleme
                    
         this.shootist.sendInvite();
         try {
-            Thread.sleep(15000);
+            Thread.sleep(20000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -124,7 +124,7 @@ public class ReInviteTCPPostParserThreadPoolTest extends ScenarioHarness impleme
                     
         this.shootist.sendInvite();
         try {
-            Thread.sleep(15000);
+            Thread.sleep(20000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
