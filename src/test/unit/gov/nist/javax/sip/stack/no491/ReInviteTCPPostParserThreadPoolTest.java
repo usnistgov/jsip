@@ -101,9 +101,8 @@ public class ReInviteTCPPostParserThreadPoolTest extends ScenarioHarness impleme
         PipelinedMsgParser.setPostParseExcutorSize(threads);
         ((SipStackImpl)getRiProtocolObjects().sipStack).setTcpPostParsingThreadPoolSize(threads);
         ((SipStackImpl)getTiProtocolObjects().sipStack).setTcpPostParsingThreadPoolSize(threads);
-        getRiProtocolObjects().start();
-        if (getTiProtocolObjects() != getRiProtocolObjects())
-            getTiProtocolObjects().start();
+        getRiProtocolObjects().start();        
+        getTiProtocolObjects().start();
                    
         this.shootist.sendInvite();
         try {
@@ -111,29 +110,13 @@ public class ReInviteTCPPostParserThreadPoolTest extends ScenarioHarness impleme
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    }
-    
-    public void testSendInvite1Thread() throws Exception {
-        int threads = 1;
-        PipelinedMsgParser.setPostParseExcutorSize(threads);
-        ((SipStackImpl)getRiProtocolObjects().sipStack).setTcpPostParsingThreadPoolSize(threads);
-        ((SipStackImpl)getTiProtocolObjects().sipStack).setTcpPostParsingThreadPoolSize(threads);
-        getRiProtocolObjects().start();
-        if (getTiProtocolObjects() != getRiProtocolObjects())
-            getTiProtocolObjects().start();
-                    
-        this.shootist.sendInvite();
-        try {
-            Thread.sleep(20000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        this.shootist.checkState();
+        this.shootme.checkState();
     }
 
     public void tearDown() {
         try {            
-            this.shootist.checkState();
-            this.shootme.checkState();
+            
             super.tearDown();
             Thread.sleep(1000);
             this.providerTable.clear();
