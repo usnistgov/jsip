@@ -64,7 +64,7 @@ import java.util.concurrent.Semaphore;
  * accessed from the SIPMessage using the getContent and getContentBytes methods
  * provided by the SIPMessage class.
  *
- * @version 1.2 $Revision: 1.28.2.4 $ $Date: 2010-10-07 15:38:52 $
+ * @version 1.2 $Revision: 1.28.2.5 $ $Date: 2010-10-12 18:47:22 $
  *
  * @author M. Ranganathan
  *
@@ -506,6 +506,7 @@ public final class PipelinedMsgParser implements Runnable {
         }
         if(postParseExecutor!=null) {
             postParseExecutor.shutdown();
+            postParseExecutor = null;
         }
         cleanMessageOrderingMap();
         
@@ -521,6 +522,14 @@ public final class PipelinedMsgParser implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.28.2.4  2010/10/07 15:38:52  deruelle_jean
+ * Backporting POST_PARSING_THREAD_POOL fixes to the stable branch
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  Jean Deruelle
+ * Reviewed by:
+ *
  * Revision 1.33  2010/10/07 15:03:49  deruelle_jean
  * Fixing a deadlock on one post_parser_thread_pool option when there is only 1 thread and message ordering on multiple threads + adding non regression test case
  *
