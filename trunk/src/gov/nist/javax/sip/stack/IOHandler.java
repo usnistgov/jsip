@@ -40,7 +40,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.Enumeration;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -639,24 +638,26 @@ public class IOHandler {
      */
 
     private void leaveIOCriticalSection(String key) {
-        synchronized (socketCreationMap) {
-            Semaphore creationSemaphore = socketCreationMap.get(key);
-            if (creationSemaphore != null) {
-                creationSemaphore.release();
-            }
+        Semaphore creationSemaphore = socketCreationMap.get(key);
+        if (creationSemaphore != null) {
+            creationSemaphore.release();
         }
     }
 
     private void enterIOCriticalSection(String key) throws IOException {
-        Semaphore creationSemaphore = null;
-
-        synchronized (socketCreationMap) {
-            creationSemaphore = socketCreationMap.get(key);
-            if (creationSemaphore == null) {
-                creationSemaphore = new Semaphore(1, true);
-                socketCreationMap.put(key, creationSemaphore);
+        // http://dmy999.com/article/34/correct-use-of-concurrenthashmap
+        Semaphore creationSemaphore = socketCreationMap.get(key);
+        if(creationSemaphore == null) {
+            Semaphore newCreationSemaphore = new Semaphore(1, true);
+            creationSemaphore = socketCreationMap.putIfAbsent(key, newCreationSemaphore);
+            if(creationSemaphore == null) {
+                creationSemaphore = newCreationSemaphore;       
+                if (sipStack.getStackLogger().isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+                    sipStack.getStackLogger().logDebug("new Semaphore added for key " + key);
+                }
             }
         }
+        
         try {
             boolean retval = creationSemaphore.tryAcquire(10, TimeUnit.SECONDS);
             if (!retval) {

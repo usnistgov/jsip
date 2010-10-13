@@ -64,7 +64,7 @@ import java.util.concurrent.Semaphore;
  * accessed from the SIPMessage using the getContent and getContentBytes methods
  * provided by the SIPMessage class.
  *
- * @version 1.2 $Revision: 1.28.2.5 $ $Date: 2010-10-12 18:47:22 $
+ * @version 1.2 $Revision: 1.28.2.6 $ $Date: 2010-10-13 15:26:52 $
  *
  * @author M. Ranganathan
  *
@@ -264,10 +264,16 @@ public final class PipelinedMsgParser implements Runnable {
                         } else
                             break;
                     } catch (IOException ex) {
+                    	if(postParseExecutor != null){
+                            synchronized (messagesOrderingMap) {
+                                try {
+                                    messagesOrderingMap.wait();
+                                } catch (InterruptedException e) {}                                
+                            }                             
+                        }
                         Debug.printStackTrace(ex);
                         this.rawInputStream.stopTimer();
                         return;
-
                     }
                 }
 
@@ -283,10 +289,16 @@ public final class PipelinedMsgParser implements Runnable {
                         if (line2.trim().equals(""))
                             break;
                     } catch (IOException ex) {
+                    	if(postParseExecutor != null){
+                            synchronized (messagesOrderingMap) {
+                                try {
+                                    messagesOrderingMap.wait();
+                                } catch (InterruptedException e) {}                                
+                            }          
+                        } 
                         this.rawInputStream.stopTimer();
                         Debug.printStackTrace(ex);
                         return;
-
                     }
                 }
 
@@ -434,7 +446,12 @@ public final class PipelinedMsgParser implements Runnable {
                                         }
                                         //release the semaphore so that another thread can process another message from the call id queue in the correct order
                                         // or a new message from another call id queue
-                                        semaphore.release();                                                                          
+                                        semaphore.release();  
+                                        if(messagesOrderingMap.isEmpty()) {
+                                            synchronized (messagesOrderingMap) {
+                                                messagesOrderingMap.notify();
+                                            }
+                                        }
                                     }
                                 }
                             };
@@ -522,6 +539,14 @@ public final class PipelinedMsgParser implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.28.2.5  2010/10/12 18:47:22  deruelle_jean
+ * Fix for restarting the stack when the gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE option is used
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  Jean Deruelle
+ * Reviewed by:
+ *
  * Revision 1.28.2.4  2010/10/07 15:38:52  deruelle_jean
  * Backporting POST_PARSING_THREAD_POOL fixes to the stable branch
  *
