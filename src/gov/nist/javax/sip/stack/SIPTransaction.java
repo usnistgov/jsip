@@ -80,7 +80,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.94 $ $Date: 2010-09-17 20:06:59 $
+ * @version 1.2 $Revision: 1.95 $ $Date: 2010-10-13 11:52:27 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -449,7 +449,7 @@ public abstract class SIPTransaction extends MessageChannel implements
      * @return -- the original Request associated with this transaction.
      */
     public SIPRequest getOriginalRequest() {
-        return originalRequest;
+        return (SIPRequest) getRequest();
     }
 
     /**
@@ -1059,8 +1059,8 @@ public abstract class SIPTransaction extends MessageChannel implements
         boolean transactionMatches;
 
         transactionMatches = false;
-
-        if (this.getOriginalRequest() == null
+        final SIPRequest origRequest = getOriginalRequest();
+        if (origRequest == null
                 || this.getMethod().equals(Request.CANCEL))
             return false;
         // Get the topmost Via header and its branch parameter
@@ -1091,7 +1091,7 @@ public abstract class SIPTransaction extends MessageChannel implements
                 // this message,
                 if (getBranch().equalsIgnoreCase(messageBranch)
                         && topViaHeader.getSentBy().equals(
-                                getOriginalRequest().getTopmostVia().getSentBy())) {
+                                origRequest.getTopmostVia().getSentBy())) {
                     transactionMatches = true;
                     if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                         sipStack.getStackLogger().logDebug("returning  true");
@@ -1104,19 +1104,19 @@ public abstract class SIPTransaction extends MessageChannel implements
                 // headers are the same,
                 if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                     sipStack.getStackLogger().logDebug("testing against "
-                            + getOriginalRequest());
+                            + origRequest);
 
-                if (getOriginalRequest().getRequestURI().equals(
+                if (origRequest.getRequestURI().equals(
                         requestToTest.getRequestURI())
-                        && getOriginalRequest().getTo().equals(
+                        && origRequest.getTo().equals(
                                 requestToTest.getTo())
-                        && getOriginalRequest().getFrom().equals(
+                        && origRequest.getFrom().equals(
                                 requestToTest.getFrom())
-                        && getOriginalRequest().getCallId().getCallId().equals(
+                        && origRequest.getCallId().getCallId().equals(
                                 requestToTest.getCallId().getCallId())
-                        && getOriginalRequest().getCSeq().getSeqNumber() == requestToTest
+                        && origRequest.getCSeq().getSeqNumber() == requestToTest
                                 .getCSeq().getSeqNumber()
-                        && topViaHeader.equals(getOriginalRequest().getTopmostVia())) {
+                        && topViaHeader.equals(origRequest.getTopmostVia())) {
 
                     transactionMatches = true;
                 }

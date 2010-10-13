@@ -168,7 +168,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.145 $ $Date: 2010-10-13 09:30:27 $
+ * @version 1.2 $Revision: 1.146 $ $Date: 2010-10-13 11:52:28 $
  * @author M. Ranganathan
  *
  */
@@ -584,6 +584,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
         // Flags whether the select message is part of this transaction
         boolean transactionMatches = false;
         final String method = messageToTest.getCSeq().getMethod();
+        final SIPRequest origRequest = getOriginalRequest();
         // Invite Server transactions linger in the terminated state in the
         // transaction
         // table and are matched to compensate for
@@ -622,16 +623,16 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                         transactionMatches = this.getMethod().equals(Request.CANCEL)
                                 && getBranch().equalsIgnoreCase(messageBranch)
                                 && topViaHeader.getSentBy().equals(
-                                        getOriginalRequest().getTopmostVia()
+                                         origRequest.getTopmostVia()
                                                 .getSentBy());
 
                     } else {
                         // Matching server side transaction with only the
                         // branch parameter.
-                    	if(originalRequest != null) {
+                    	if(origRequest != null) {
                     		transactionMatches = getBranch().equalsIgnoreCase(messageBranch)
                                 && topViaHeader.getSentBy().equals(
-                                		getOriginalRequest().getTopmostVia()
+                                          origRequest.getTopmostVia()
                                                 .getSentBy());
                     	} else {
                     		transactionMatches = getBranch().equalsIgnoreCase(messageBranch)
@@ -649,13 +650,13 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                     // SIPMessage matches this transaction. An exception is for
                     // a CANCEL request, which is not deemed
                     // to be part of an otherwise-matching INVITE transaction.
-                    String originalFromTag = super.originalRequest.getFromTag();
+                    String originalFromTag = origRequest.getFromTag();
 
                     String thisFromTag = messageToTest.getFrom().getTag();
 
                     boolean skipFrom = (originalFromTag == null || thisFromTag == null);
 
-                    String originalToTag = super.originalRequest.getToTag();
+                    String originalToTag = origRequest.getToTag();
 
                     String thisToTag = messageToTest.getTo().getTag();
 
@@ -665,20 +666,20 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                     // the CSeq method of the original request must
                     // be CANCEL for it to have a chance at matching.
                     if (messageToTest.getCSeq().getMethod().equalsIgnoreCase(Request.CANCEL)
-                            && !getOriginalRequest().getCSeq().getMethod().equalsIgnoreCase(
+                            && !origRequest.getCSeq().getMethod().equalsIgnoreCase(
                                     Request.CANCEL)) {
                         transactionMatches = false;
-                    } else if ((isResponse || getOriginalRequest().getRequestURI().equals(
+                    } else if ((isResponse || origRequest.getRequestURI().equals(
                             ((SIPRequest) messageToTest).getRequestURI()))
                             && (skipFrom || originalFromTag != null && originalFromTag.equalsIgnoreCase(thisFromTag))
                             && (skipTo || originalToTag != null && originalToTag.equalsIgnoreCase(thisToTag))
-                            && getOriginalRequest().getCallId().getCallId().equalsIgnoreCase(
+                            && origRequest.getCallId().getCallId().equalsIgnoreCase(
                                     messageToTest.getCallId().getCallId())
-                            && getOriginalRequest().getCSeq().getSeqNumber() == messageToTest
+                            && origRequest.getCSeq().getSeqNumber() == messageToTest
                                     .getCSeq().getSeqNumber()
                             && ((!messageToTest.getCSeq().getMethod().equals(Request.CANCEL)) || 
                                     getMethod().equals(messageToTest.getCSeq().getMethod()))
-                            && topViaHeader.equals(getOriginalRequest().getTopmostVia())) {
+                            && topViaHeader.equals(origRequest.getTopmostVia())) {
 
                         transactionMatches = true;
                     }
