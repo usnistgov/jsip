@@ -168,7 +168,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.144 $ $Date: 2010-09-17 20:06:59 $
+ * @version 1.2 $Revision: 1.145 $ $Date: 2010-10-13 09:30:27 $
  * @author M. Ranganathan
  *
  */
@@ -1599,6 +1599,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
     }
 
     public boolean equals(Object other) {
+    	if(other == null) return false;
         if (!other.getClass().equals(this.getClass())) {
             return false;
         }
