@@ -399,41 +399,36 @@ public class IOHandler {
 	*/
 
 	private void leaveIOCriticalSection(String key) {
-		synchronized (socketCreationMap) {
-			Semaphore creationSemaphore = socketCreationMap.get(key);
-			if ( sipStack.isLoggingEnabled()) {
-	            sipStack.getStackLogger().logDebug("leaveIOCriticalSection : " + key);
-	        }
-			if (creationSemaphore != null) {
-				creationSemaphore.release();
-			}
-		}
-	}
-	
+        Semaphore creationSemaphore = socketCreationMap.get(key);
+        if (creationSemaphore != null) {
+            creationSemaphore.release();
+        }
+    }
 
-	
-	private void enterIOCriticalSection(String key) throws IOException {
-		Semaphore creationSemaphore = null;
-		if ( sipStack.isLoggingEnabled()) {
-		    sipStack.getStackLogger().logDebug("enterIOCriticalSection : " + key);
-		}
-		synchronized (socketCreationMap) {
-			creationSemaphore = socketCreationMap.get(key);
-			if (creationSemaphore == null) {
-				creationSemaphore = new Semaphore(1, true);
-				socketCreationMap.put(key, creationSemaphore);
-			}
-		}
-		try {
-			boolean retval = creationSemaphore.tryAcquire(10, TimeUnit.SECONDS);
-			if (!retval) {
-				throw new IOException("Could not acquire IO Semaphore'" + key
-						+ "' after 10 seconds -- giving up ");
-			}
-		} catch (InterruptedException e) {
-			throw new IOException("exception in acquiring sem");
-		}
-	}
+    private void enterIOCriticalSection(String key) throws IOException {
+        // http://dmy999.com/article/34/correct-use-of-concurrenthashmap
+        Semaphore creationSemaphore = socketCreationMap.get(key);
+        if(creationSemaphore == null) {
+            Semaphore newCreationSemaphore = new Semaphore(1, true);
+            creationSemaphore = socketCreationMap.putIfAbsent(key, newCreationSemaphore);
+            if(creationSemaphore == null) {
+                creationSemaphore = newCreationSemaphore;       
+                if (sipStack.getStackLogger().isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+                    sipStack.getStackLogger().logDebug("new Semaphore added for key " + key);
+                }
+            }
+        }
+        
+        try {
+            boolean retval = creationSemaphore.tryAcquire(10, TimeUnit.SECONDS);
+            if (!retval) {
+                throw new IOException("Could not acquire IO Semaphore'" + key
+                        + "' after 10 seconds -- giving up ");
+            }
+        } catch (InterruptedException e) {
+            throw new IOException("exception in acquiring sem");
+        }
+    }
 
 
 	/**
