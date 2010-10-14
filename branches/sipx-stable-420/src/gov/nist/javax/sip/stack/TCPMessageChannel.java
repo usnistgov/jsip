@@ -59,7 +59,7 @@ import javax.sip.address.Hop;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.65.2.5 $ $Date: 2010-07-09 11:54:00 $
+ * @version 1.2 $Revision: 1.65.2.6 $ $Date: 2010-10-14 12:01:53 $
  */
 public class TCPMessageChannel extends MessageChannel implements SIPMessageListener, Runnable,
         RawMessageChannel {
@@ -500,11 +500,14 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
                 }
                 // Use this for outgoing messages as well.
                 if (!this.isCached && mySock != null) {
-                    ((TCPMessageProcessor) this.messageProcessor).cacheMessageChannel(this);
                     this.isCached = true;
                     int remotePort = ((java.net.InetSocketAddress) mySock.getRemoteSocketAddress()).getPort();
                     String key = IOHandler.makeKey(mySock.getInetAddress(), remotePort);
                     sipStack.ioHandler.putSocket(key, mySock);
+                    // since it can close the socket it needs to be after the mySock usage otherwise
+                    // it the socket will be disconnected and NPE will be thrown in some edge cases
+                    ((TCPMessageProcessor) this.messageProcessor)
+                            .cacheMessageChannel(this);
                 }
             }
 
