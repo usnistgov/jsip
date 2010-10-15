@@ -168,7 +168,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.146 $ $Date: 2010-10-13 11:52:28 $
+ * @version 1.2 $Revision: 1.147 $ $Date: 2010-10-15 10:19:49 $
  * @author M. Ranganathan
  *
  */
@@ -584,7 +584,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
         // Flags whether the select message is part of this transaction
         boolean transactionMatches = false;
         final String method = messageToTest.getCSeq().getMethod();
-        final SIPRequest origRequest = getOriginalRequest();
+        SIPRequest origRequest = getOriginalRequest();
         // Invite Server transactions linger in the terminated state in the
         // transaction
         // table and are matched to compensate for
@@ -642,6 +642,9 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                     }
 
                 } else {
+                    // force the reparsing only on non RFC 3261 messages 
+                    origRequest = (SIPRequest) getRequest();
+                    
                     // This is an RFC2543-compliant message; this code is here
                     // for backwards compatibility.
                     // It is a weak check.
@@ -649,7 +652,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                     // top Via headers are the same, the
                     // SIPMessage matches this transaction. An exception is for
                     // a CANCEL request, which is not deemed
-                    // to be part of an otherwise-matching INVITE transaction.
+                    // to be part of an otherwise-matching INVITE transaction.                    
                     String originalFromTag = origRequest.getFromTag();
 
                     String thisFromTag = messageToTest.getFrom().getTag();
