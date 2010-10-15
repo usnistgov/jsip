@@ -182,7 +182,7 @@ import javax.sip.message.Request;
  * 
  * @author M. Ranganathan
  * 
- * @version 1.2 $Revision: 1.142 $ $Date: 2010-09-17 20:06:58 $
+ * @version 1.2 $Revision: 1.143 $ $Date: 2010-10-15 10:19:49 $
  */
 public class SIPClientTransaction extends SIPTransaction implements ServerResponseInterface,
         javax.sip.ClientTransaction, gov.nist.javax.sip.ClientTransactionExt {
@@ -391,7 +391,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                     transactionMatches = getBranch().equalsIgnoreCase(
                             messageToTest.getTransactionId());
                 } else {
-                    transactionMatches = getOriginalRequest().getTransactionId()
+                    transactionMatches = ((SIPRequest)getRequest()).getTransactionId()
                             .equalsIgnoreCase(messageToTest.getTransactionId());
                 }
 

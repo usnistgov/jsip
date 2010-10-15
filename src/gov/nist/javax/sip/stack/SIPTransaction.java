@@ -80,7 +80,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.95 $ $Date: 2010-10-13 11:52:27 $
+ * @version 1.2 $Revision: 1.96 $ $Date: 2010-10-15 10:19:49 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -449,7 +449,7 @@ public abstract class SIPTransaction extends MessageChannel implements
      * @return -- the original Request associated with this transaction.
      */
     public SIPRequest getOriginalRequest() {
-        return (SIPRequest) getRequest();
+        return this.originalRequest;
     }
 
     /**
