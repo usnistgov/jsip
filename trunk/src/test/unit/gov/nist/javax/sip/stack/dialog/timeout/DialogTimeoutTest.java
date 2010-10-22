@@ -15,20 +15,9 @@
  */
  package test.unit.gov.nist.javax.sip.stack.dialog.timeout;
 
-import gov.nist.javax.sip.DialogTimeoutEvent;
-import gov.nist.javax.sip.SipListenerExt;
 import gov.nist.javax.sip.SipStackImpl;
 
-import java.util.EventObject;
-
-import javax.sip.DialogTerminatedEvent;
-import javax.sip.IOExceptionEvent;
-import javax.sip.RequestEvent;
-import javax.sip.ResponseEvent;
-import javax.sip.SipListener;
 import javax.sip.SipProvider;
-import javax.sip.TimeoutEvent;
-import javax.sip.TransactionTerminatedEvent;
 
 import org.apache.log4j.Logger;
 
@@ -42,7 +31,7 @@ import test.tck.msgflow.callflows.ScenarioHarness;
  * @author jean deruelle
  *
  */
-public class DialogTimeoutTest extends ScenarioHarness implements SipListenerExt {
+public class DialogTimeoutTest extends ScenarioHarness {
 
 	private ProtocolObjects shootistProtocolObjs;
 
@@ -63,13 +52,6 @@ public class DialogTimeoutTest extends ScenarioHarness implements SipListenerExt
     static {
         if (!logger.isAttached(console))
             logger.addAppender(console);
-    }
-
-    private SipListener getSipListener(EventObject sipEvent) {
-        SipProvider source = (SipProvider) sipEvent.getSource();
-        SipListener listener = (SipListener) providerTable.get(source);
-        assertTrue(listener != null);
-        return listener;
     }
 
     public DialogTimeoutTest() {
@@ -95,11 +77,12 @@ public class DialogTimeoutTest extends ScenarioHarness implements SipListenerExt
     public void testDialogTimeoutSipListenerExt() {
         
             try {
-            	this.shootistProtocolObjs = new ProtocolObjects("shootist", "gov.nist", "udp", false,false);
+            	this.shootistProtocolObjs = new ProtocolObjects("shootist", "gov.nist", "udp", false,false, true);
                 shootist = new Shootist(shootistProtocolObjs);
                 SipProvider shootistProvider = shootist.createSipProvider();
 
-                this.shootmeProtocolObjs = new ProtocolObjects("shootme", "gov.nist", "udp", false,false);
+                this.shootmeProtocolObjs = new ProtocolObjects("shootme", "gov.nist", "udp", false,false, true);
+                ((SipStackImpl)shootmeProtocolObjs.sipStack).setAggressiveCleanup(true);
                 shootme = new Shootme(shootmeProtocolObjs);
                 SipProvider shootmeProvider = shootme.createSipProvider();
                
@@ -108,8 +91,8 @@ public class DialogTimeoutTest extends ScenarioHarness implements SipListenerExt
 
                 shootme.init();
                 providerTable.put(shootmeProvider, shootme);
-                shootistProvider.addSipListener(this);
-                shootmeProvider.addSipListener(this);
+                shootistProvider.addSipListener(shootist);
+                shootmeProvider.addSipListener(shootme);
 
                 getRiProtocolObjects().start();
                 if (getTiProtocolObjects() != getRiProtocolObjects())
@@ -137,12 +120,13 @@ public class DialogTimeoutTest extends ScenarioHarness implements SipListenerExt
     public void testDialogTimeoutAndTerminatedSipListenerExt() {
         
         try {
-        	this.shootistProtocolObjs = new ProtocolObjects("shootist", "gov.nist", "udp", false,false);
+        	this.shootistProtocolObjs = new ProtocolObjects("shootist", "gov.nist", "udp", false,false, true);
             shootist = new Shootist(shootistProtocolObjs);
             shootist.setSendByeOnDialogTimeout(true);
             SipProvider shootistProvider = shootist.createSipProvider();
 
-            this.shootmeProtocolObjs = new ProtocolObjects("shootme", "gov.nist", "udp", false,false);
+            this.shootmeProtocolObjs = new ProtocolObjects("shootme", "gov.nist", "udp", false,false, true);
+            ((SipStackImpl)shootmeProtocolObjs.sipStack).setAggressiveCleanup(true);
             shootme = new Shootme(shootmeProtocolObjs);
             shootme.setReceiveBye(true);
             SipProvider shootmeProvider = shootme.createSipProvider();
@@ -152,8 +136,8 @@ public class DialogTimeoutTest extends ScenarioHarness implements SipListenerExt
 
             shootme.init();
             providerTable.put(shootmeProvider, shootme);
-            shootistProvider.addSipListener(this);
-            shootmeProvider.addSipListener(this);
+            shootistProvider.addSipListener(shootist);
+            shootmeProvider.addSipListener(shootme);
 
             getRiProtocolObjects().start();
             if (getTiProtocolObjects() != getRiProtocolObjects())
@@ -180,11 +164,12 @@ public class DialogTimeoutTest extends ScenarioHarness implements SipListenerExt
     public void testDialogTimeoutDialogDeletedNotImplementedSipListenerExt() {
         
         try {
-        	this.shootistProtocolObjs = new ProtocolObjects("shootist", "gov.nist", "udp", false,false);
+        	this.shootistProtocolObjs = new ProtocolObjects("shootist", "gov.nist", "udp", false,false, true);
             shootistNotImplementingSipListenerExt = new ShootistNotImplementingSipListenerExt(shootistProtocolObjs);
             SipProvider shootistProvider = shootistNotImplementingSipListenerExt.createSipProvider();
 
-            this.shootmeProtocolObjs = new ProtocolObjects("shootme", "gov.nist", "udp", false,false);
+            this.shootmeProtocolObjs = new ProtocolObjects("shootme", "gov.nist", "udp", false,false, true);
+            ((SipStackImpl)shootmeProtocolObjs.sipStack).setAggressiveCleanup(true);
             shootme = new Shootme(shootmeProtocolObjs);
             SipProvider shootmeProvider = shootme.createSipProvider();
            
@@ -194,7 +179,7 @@ public class DialogTimeoutTest extends ScenarioHarness implements SipListenerExt
             shootme.init();
             providerTable.put(shootmeProvider, shootme);
             shootistProvider.addSipListener(shootistNotImplementingSipListenerExt);
-            shootmeProvider.addSipListener(this);
+            shootmeProvider.addSipListener(shootme);
 
             getRiProtocolObjects().start();
             if (getTiProtocolObjects() != getRiProtocolObjects())
@@ -221,11 +206,12 @@ public class DialogTimeoutTest extends ScenarioHarness implements SipListenerExt
     public void testDialogTimeoutAutoDialog() {
         
         try {
-        	this.shootistProtocolObjs = new ProtocolObjects("shootist", "gov.nist", "udp", true,false);
+        	this.shootistProtocolObjs = new ProtocolObjects("shootist", "gov.nist", "udp", true,false, true);
             shootist = new Shootist(shootistProtocolObjs);
             SipProvider shootistProvider = shootist.createSipProvider();
 
-            this.shootmeProtocolObjs = new ProtocolObjects("shootme", "gov.nist", "udp", true,false);
+            this.shootmeProtocolObjs = new ProtocolObjects("shootme", "gov.nist", "udp", true,false, true);
+            ((SipStackImpl)shootmeProtocolObjs.sipStack).setAggressiveCleanup(true);
             shootme = new Shootme(shootmeProtocolObjs);
             SipProvider shootmeProvider = shootme.createSipProvider();
            
@@ -234,8 +220,8 @@ public class DialogTimeoutTest extends ScenarioHarness implements SipListenerExt
 
             shootme.init();
             providerTable.put(shootmeProvider, shootme);
-            shootistProvider.addSipListener(this);
-            shootmeProvider.addSipListener(this);
+            shootistProvider.addSipListener(shootist);
+            shootmeProvider.addSipListener(shootme);
 
             getRiProtocolObjects().start();
             if (getTiProtocolObjects() != getRiProtocolObjects())
@@ -262,11 +248,12 @@ public class DialogTimeoutTest extends ScenarioHarness implements SipListenerExt
     public void testDialogTimeoutB2BUABothCalled() {
         
         try {
-        	this.shootistProtocolObjs = new ProtocolObjects("shootist", "gov.nist", "udp", false,true);
+        	this.shootistProtocolObjs = new ProtocolObjects("shootist", "gov.nist", "udp", false,true, true);
             shootist = new Shootist(shootistProtocolObjs);
             SipProvider shootistProvider = shootist.createSipProvider();
 
-            this.shootmeProtocolObjs = new ProtocolObjects("shootme", "gov.nist", "udp", false,false);
+            this.shootmeProtocolObjs = new ProtocolObjects("shootme", "gov.nist", "udp", false,false, true);
+            ((SipStackImpl)shootmeProtocolObjs.sipStack).setAggressiveCleanup(true);
             shootmeNotImplementingListener = new ShootmeNotImplementingListener(shootmeProtocolObjs);
             shootmeNotImplementingListener.setStateIsOk(true);
             SipProvider shootmeProvider = shootmeNotImplementingListener.createSipProvider();
@@ -276,8 +263,8 @@ public class DialogTimeoutTest extends ScenarioHarness implements SipListenerExt
 
             shootmeNotImplementingListener.init();
             providerTable.put(shootmeProvider, shootmeNotImplementingListener);
-            shootistProvider.addSipListener(this);
-            shootmeProvider.addSipListener(this);
+            shootistProvider.addSipListener(shootist);
+            shootmeProvider.addSipListener(shootmeNotImplementingListener);
 
             getRiProtocolObjects().start();
             if (getTiProtocolObjects() != getRiProtocolObjects())
@@ -324,40 +311,4 @@ public class DialogTimeoutTest extends ScenarioHarness implements SipListenerExt
             ex.printStackTrace();
         }
     }
-
-    public void processRequest(RequestEvent requestEvent) {
-        getSipListener(requestEvent).processRequest(requestEvent);
-
-    }
-
-    public void processResponse(ResponseEvent responseEvent) {
-        getSipListener(responseEvent).processResponse(responseEvent);
-
-    }
-
-    public void processTimeout(TimeoutEvent timeoutEvent) {
-        getSipListener(timeoutEvent).processTimeout(timeoutEvent);
-    }
-    
-    public void processDialogTimeout(DialogTimeoutEvent timeoutEvent) {
-    	if(getSipListener(timeoutEvent) instanceof SipListenerExt) {
-    		((SipListenerExt)getSipListener(timeoutEvent)).processDialogTimeout(timeoutEvent);
-    	}
-    }
-
-    public void processIOException(IOExceptionEvent exceptionEvent) {
-        fail("unexpected exception");
-
-    }
-
-    public void processTransactionTerminated(TransactionTerminatedEvent transactionTerminatedEvent) {
-        getSipListener(transactionTerminatedEvent).processTransactionTerminated(transactionTerminatedEvent);
-
-    }
-
-    public void processDialogTerminated(DialogTerminatedEvent dialogTerminatedEvent) {
-        getSipListener(dialogTerminatedEvent).processDialogTerminated(dialogTerminatedEvent);
-
-    }
-
 }
