@@ -133,7 +133,7 @@ import javax.sip.message.Response;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.199 $ $Date: 2010-10-05 12:41:17 $
+ * @version 1.2 $Revision: 1.200 $ $Date: 2010-10-22 08:01:13 $
  * 
  * @author M. Ranganathan
  * 
@@ -4136,7 +4136,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             }
             timerTaskLock = null;
             ackSem = null;
-            applicationData = null;
+//            applicationData = null;
             callIdHeader = null;
             contactHeader = null;
             eventHeader = null;
