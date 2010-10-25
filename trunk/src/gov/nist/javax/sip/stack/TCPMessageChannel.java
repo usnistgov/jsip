@@ -78,7 +78,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.78 $ $Date: 2010-10-14 12:01:47 $
+ * @version 1.2 $Revision: 1.79 $ $Date: 2010-10-25 15:25:34 $
  */
 public class TCPMessageChannel extends MessageChannel implements
         SIPMessageListener, Runnable, RawMessageChannel {
@@ -555,6 +555,8 @@ public class TCPMessageChannel extends MessageChannel implements
 
                 return;
             }
+            sipMessage.setRemoteAddress(this.peerAddress);
+            sipMessage.setRemotePort(this.getPeerPort());
 
             ViaList viaList = sipMessage.getViaHeaders();
             // For a request

@@ -250,6 +250,9 @@ final class SCTPMessageChannel extends MessageChannel
      */
     private void processMessage( SIPMessage sipMessage, long rxTime ) {
     	SIPTransactionStack sipStack = processor.getSIPStack();
+    	 sipMessage.setRemoteAddress(this.peerAddress.getAddress());
+    	 sipMessage.setRemotePort(this.getPeerPort());
+
         if (sipMessage instanceof SIPRequest) {
             SIPRequest sipRequest = (SIPRequest) sipMessage;
 
