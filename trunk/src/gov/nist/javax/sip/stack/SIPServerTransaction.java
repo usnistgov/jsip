@@ -168,7 +168,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.147 $ $Date: 2010-10-15 10:19:49 $
+ * @version 1.2 $Revision: 1.148 $ $Date: 2010-10-25 18:55:01 $
  * @author M. Ranganathan
  *
  */
@@ -818,7 +818,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                     // Resend the last response to
                     // the client             
                     // Send the message to the client       
-                    resendLastResponseAsBytes(isReliable());
+                    resendLastResponseAsBytes();
                 } else if (transactionRequest.getMethod().equals(Request.ACK)) {
                     // This is passed up to the TU to suppress
                     // retransmission of OK
@@ -1155,7 +1155,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                 if (!this.retransmissionAlertEnabled || sipStack.isTransactionPendingAck(this) ) {
                     // Retransmit last response until ack.
                 	if (lastResponseStatusCode / 100 >= 2 && !this.isAckSeen) {
-	                    resendLastResponseAsBytes(false);
+	                    resendLastResponseAsBytes();
                     }
                 } else {
                     // alert the application to retransmit the last response
@@ -1177,43 +1177,44 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
     // jeand we nullify the last response very fast to save on mem and help GC but we keep it as byte array
     // so this method is used to resend the last response either as a response or byte array depending on if it has been nullified
-    public void resendLastResponseAsBytes(boolean reliable) throws IOException {
-	
-    	if(!reliable) {
-	    	if(lastResponse != null) {
-	    		sendMessage(lastResponse);
-	        } else if (lastResponseAsBytes != null) {
-	            // Send the message to the client
+    public void resendLastResponseAsBytes() throws IOException {
+                    
+    	if(lastResponse != null) {
+    	    if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                sipStack.getStackLogger().logDebug("resend last response " + lastResponse);
+            }
+    		sendMessage(lastResponse);
+        } else if (lastResponseAsBytes != null) {
+            // Send the message to the client
 //		    	if(!checkStateTimers(lastResponseStatusCode)) {
 //		        	return;
 //		        }
-		    	if(isReliable()) {
-		    		getMessageChannel().sendMessage(lastResponseAsBytes, this.getPeerInetAddress(), this.getPeerPort(), false);
-		    	} else {
-		    		Hop hop = sipStack.addressResolver.resolveAddress(new HopImpl(lastResponseHost, lastResponsePort,
-		                    lastResponseTransport));
-		
-		            MessageChannel messageChannel = ((SIPTransactionStack) getSIPStack())
-		                    .createRawMessageChannel(this.getSipProvider().getListeningPoint(
-		                            hop.getTransport()).getIPAddress(), this.getPort(), hop);
-		            if (messageChannel != null) {
-		                messageChannel.sendMessage(lastResponseAsBytes, InetAddress.getByName(hop.getHost()), hop.getPort(), false);                                
-		            } else {
-		                throw new IOException("Could not create a message channel for " + hop + " with source IP:Port "+
-		                		this.getSipProvider().getListeningPoint(
-		                                hop.getTransport()).getIPAddress() + ":" + this.getPort());
-		            }                    		
-		    	}
-	        }
-    	} else {
-    		getMessageChannel().sendMessage(pendingReliableResponseAsBytes, this.getPeerInetAddress(), this.getPeerPort(), false);
-    	}
-		
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                sipStack.getStackLogger().logDebug("resend last response " + new String(lastResponseAsBytes));
+            }
+	    	if(isReliable()) {
+	    		getMessageChannel().sendMessage(lastResponseAsBytes, this.getPeerInetAddress(), this.getPeerPort(), false);
+	    	} else {
+	    		Hop hop = sipStack.addressResolver.resolveAddress(new HopImpl(lastResponseHost, lastResponsePort,
+	                    lastResponseTransport));
+	
+	            MessageChannel messageChannel = ((SIPTransactionStack) getSIPStack())
+	                    .createRawMessageChannel(this.getSipProvider().getListeningPoint(
+	                            hop.getTransport()).getIPAddress(), this.getPort(), hop);
+	            if (messageChannel != null) {
+	                messageChannel.sendMessage(lastResponseAsBytes, InetAddress.getByName(hop.getHost()), hop.getPort(), false);                                
+	            } else {
+	                throw new IOException("Could not create a message channel for " + hop + " with source IP:Port "+
+	                		this.getSipProvider().getListeningPoint(
+	                                hop.getTransport()).getIPAddress() + ":" + this.getPort());
+	            }                    		
+	    	}
+        }
 	}
 
 	private void fireReliableResponseRetransmissionTimer() {
         try {
-        	resendLastResponseAsBytes(true);
+        	resendLastResponseAsBytes();
         } catch (IOException e) {
             if (sipStack.isLoggingEnabled())
                 sipStack.getStackLogger().logException(e);
