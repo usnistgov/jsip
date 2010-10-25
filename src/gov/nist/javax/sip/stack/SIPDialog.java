@@ -133,7 +133,7 @@ import javax.sip.message.Response;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.201 $ $Date: 2010-10-22 10:23:04 $
+ * @version 1.2 $Revision: 1.202 $ $Date: 2010-10-25 18:55:02 $
  * 
  * @author M. Ranganathan
  * 
@@ -522,7 +522,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
                         // resend the last response.
                         if (dialog.toRetransmitFinalResponse(transaction.T2)) {
-                            transaction.resendLastResponseAsBytes(false);
+                            transaction.resendLastResponseAsBytes();
                         }
                     } catch (IOException ex) {
 
