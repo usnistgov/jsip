@@ -84,7 +84,7 @@ import javax.sip.message.Response;
  * together the NIST-SIP stack and event model with the JAIN-SIP stack. This is
  * strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.93 $ $Date: 2010-10-08 13:10:47 $
+ * @version 1.2 $Revision: 1.94 $ $Date: 2010-10-25 15:25:33 $
  * 
  * @author M. Ranganathan
  */
@@ -1259,16 +1259,18 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     // Shadow transaction has been created and the stack
                     // knows
                     // about it.
-                    sipEvent = new RequestEvent((SipProvider) sipProvider,
+                    sipEvent = new RequestEventExt((SipProvider) sipProvider,
                             (ServerTransaction) transaction,
                             subscriptionDialog, (Request) sipRequest);
+                    
                 } else {
                     /*
                      * Shadow transaction has been created but the stack does
                      * not know about it.
                      */
-                    sipEvent = new RequestEvent((SipProvider) sipProvider,
+                    sipEvent = new RequestEventExt((SipProvider) sipProvider,
                             null, subscriptionDialog, (Request) sipRequest);
+                  
                 }
 
             } else {
@@ -1279,7 +1281,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
                 // Got a notify out of the blue - just pass it up
                 // for stateless handling by the application.
-                sipEvent = new RequestEvent(sipProvider, null, null,
+                sipEvent = new RequestEventExt(sipProvider, null, null,
                         (Request) sipRequest);
             }
 
@@ -1290,14 +1292,18 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             if (transaction != null
                     && (((SIPServerTransaction) transaction)
                             .isTransactionMapped())) {
-                sipEvent = new RequestEvent(sipProvider,
+                sipEvent = new RequestEventExt(sipProvider,
                         (ServerTransaction) transaction, dialog,
                         (Request) sipRequest);
             } else {
-                sipEvent = new RequestEvent(sipProvider, null, dialog,
+                sipEvent = new RequestEventExt(sipProvider, null, dialog,
                         (Request) sipRequest);
+               
             }
+           
         }
+        ((RequestEventExt) sipEvent).setRemoteIpAddress(sipRequest.getRemoteAddress().getHostAddress());
+        ((RequestEventExt)sipEvent).setRemotePort(sipRequest.getRemotePort());
         sipProvider.handleEvent(sipEvent, transaction);
 
     }
@@ -1424,7 +1430,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
             ResponseEventExt sipEvent = new ResponseEventExt(sipProvider,
                     transaction, dialog, (Response) response);
-
+                
             if (sipStack.getMaxForkTime() != 0
                     && SIPTransactionStack.isDialogCreated(response.getCSeqHeader().getMethod())) {
                 SIPClientTransaction forked = this.sipStack
@@ -1443,6 +1449,8 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             }
             sipEvent.setRetransmission(response.isRetransmission());
             
+            sipEvent.setRemoteIpAddress(response.getRemoteAddress().getHostAddress());
+            sipEvent.setRemotePort(response.getRemotePort());
             sipProvider.handleEvent(sipEvent, transaction);
             return;
         }
@@ -1474,7 +1482,8 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             transaction.setDialog(dialog, dialog.getDialogId());
         }
         responseEvent.setRetransmission(response.isRetransmission());
-        
+        responseEvent.setRemoteIpAddress(response.getRemoteAddress().getHostAddress());
+        responseEvent.setRemotePort(response.getRemotePort());
         sipProvider.handleEvent(responseEvent, transaction);
     }
 
@@ -1701,6 +1710,9 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
         ResponseEventExt responseEvent = new ResponseEventExt(sipProvider,
                 (ClientTransactionExt) transaction, sipDialog,
                 (Response) sipResponse);
+        
+        responseEvent.setRemoteIpAddress(sipResponse.getRemoteAddress().getHostAddress());
+        responseEvent.setRemotePort(sipResponse.getRemotePort());
 
         if (sipStack.getMaxForkTime() != 0
         		&& SIPTransactionStack.isDialogCreated(sipResponse.getCSeqHeader().getMethod())) {
@@ -1723,7 +1735,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             sipDialog.setLastResponse(transaction, sipResponse);
         }
         responseEvent.setRetransmission(sipResponse.isRetransmission());
-        
+        responseEvent.setRemoteIpAddress(sipResponse.getRemoteAddress().getHostAddress());
         sipProvider.handleEvent(responseEvent, transaction);
 
     }
