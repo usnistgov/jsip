@@ -76,6 +76,7 @@ import gov.nist.javax.sip.parser.StringMsgParser;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.net.InetAddress;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -118,7 +119,7 @@ import javax.sip.message.Request;
  * @see StringMsgParser
  * @see PipelinedMsgParser
  * 
- * @version 1.2 $Revision: 1.57 $ $Date: 2010-05-06 14:08:03 $
+ * @version 1.2 $Revision: 1.58 $ $Date: 2010-10-25 15:25:34 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -181,6 +182,16 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
     protected Object applicationData;
 
     protected String forkId;
+    
+    /**
+     * The remote address from which the message was delivered.
+     */
+    private InetAddress remoteAddress;
+    
+    /*
+     * The remote port from which the message was delivered.
+     */
+    private int remotePort;
 
     /**
      * Return true if the header belongs only in a Request.
@@ -533,6 +544,8 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
         if (this.messageContentObject != null)
             retval.messageContentObject = makeClone(messageContentObject);
         retval.unrecognizedHeaders = this.unrecognizedHeaders;
+        retval.remoteAddress = this.remoteAddress;
+        retval.remotePort = this.remotePort;
         return retval;
     }
 
@@ -1990,5 +2003,21 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
 		}
 		return unrecognizedHeaders;
 	}
+
+    public void setRemoteAddress(InetAddress remoteAddress) {
+        this.remoteAddress = remoteAddress;
+    }
+
+    public InetAddress getRemoteAddress() {
+        return remoteAddress;
+    }
+
+    public void setRemotePort(int remotePort) {
+        this.remotePort = remotePort;
+    }
+
+    public int getRemotePort() {
+        return remotePort;
+    }
 
 }

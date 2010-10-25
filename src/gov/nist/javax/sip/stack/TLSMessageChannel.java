@@ -72,7 +72,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  * 
  * 
- * @version 1.2 $Revision: 1.39 $ $Date: 2010-08-03 13:42:23 $
+ * @version 1.2 $Revision: 1.40 $ $Date: 2010-10-25 15:25:35 $
  */
 public final class TLSMessageChannel extends MessageChannel implements
         SIPMessageListener, Runnable, RawMessageChannel {
@@ -446,6 +446,9 @@ public final class TLSMessageChannel extends MessageChannel implements
      */
     public void processMessage(SIPMessage sipMessage) throws Exception {
         try {
+            sipMessage.setRemoteAddress(this.peerAddress);
+            sipMessage.setRemotePort(this.getPeerPort());
+
             if (sipMessage.getFrom() == null || sipMessage.getTo() == null
                     || sipMessage.getCallId() == null
                     || sipMessage.getCSeq() == null
