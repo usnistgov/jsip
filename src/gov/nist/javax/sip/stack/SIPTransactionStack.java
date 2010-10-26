@@ -101,7 +101,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.172 $ $Date: 2010-09-28 19:36:55 $
+ * @version 1.2 $Revision: 1.173 $ $Date: 2010-10-26 23:49:10 $
  */
 public abstract class SIPTransactionStack implements
         SIPTransactionEventListener, SIPDialogEventListener {
@@ -409,6 +409,8 @@ public abstract class SIPTransactionStack implements
     protected boolean aggressiveCleanup = false;
 
     public SIPMessageValve sipMessageValve;
+    
+    public SIPEventInterceptor sipEventInterceptor;
 
     protected static Executor selfRoutingThreadpoolExecutor;
 

@@ -64,7 +64,7 @@ import java.util.concurrent.Semaphore;
  * accessed from the SIPMessage using the getContent and getContentBytes methods
  * provided by the SIPMessage class.
  *
- * @version 1.2 $Revision: 1.36 $ $Date: 2010-10-13 15:26:59 $
+ * @version 1.2 $Revision: 1.37 $ $Date: 2010-10-26 23:49:12 $
  *
  * @author M. Ranganathan
  *
@@ -379,11 +379,18 @@ public final class PipelinedMsgParser implements Runnable {
                 if (sipMessageListener != null) {
                     try {
                         if(postParseExecutor == null) {
+                        	
                             /**
                              * If gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE is disabled
                              * we continue with the old logic here.
                              */
+                        	if(sipStack.sipEventInterceptor != null) {
+                            	sipStack.sipEventInterceptor.beforeMessage(sipMessage);
+                            }
                             sipMessageListener.processMessage(sipMessage);
+                            if(sipStack.sipEventInterceptor != null) {
+                            	sipStack.sipEventInterceptor.afterMessage(sipMessage);
+                            }
                         } else {
                             /**
                              * gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE is enabled so
@@ -413,11 +420,15 @@ public final class PipelinedMsgParser implements Runnable {
                             
                             Thread messageDispatchTask = new Thread() {
                                 @Override
-                                public void run() {                                    
+                                public void run() {   
+                                	
                                     // we acquire it in the thread to avoid blocking other messages with a different call id
                                     // that could be processed in parallel                                    
                                     Semaphore semaphore = callIDOrderingStructure.getSemaphore();
                                     final Queue<SIPMessage> messagesForCallID = callIDOrderingStructure.getMessagesForCallID();
+                                    if(sipStack.sipEventInterceptor != null) {
+                                    	sipStack.sipEventInterceptor.beforeMessage(messagesForCallID.peek());
+                                    }
                                     try {                                                                                
                                         semaphore.acquire();                                        
                                     } catch (InterruptedException e) {
@@ -451,6 +462,9 @@ public final class PipelinedMsgParser implements Runnable {
                                             synchronized (messagesOrderingMap) {
                                                 messagesOrderingMap.notify();
                                             }
+                                        }
+                                        if(sipStack.sipEventInterceptor != null) {
+                                        	sipStack.sipEventInterceptor.afterMessage(message);
                                         }
                                     }
                                 }
@@ -538,6 +552,14 @@ public final class PipelinedMsgParser implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.36  2010/10/13 15:26:59  deruelle_jean
+ * Fix for TCP calls under load freeze JAIN SIP with TCP_POST_PARSING_THREAD_POOL_SIZE > 0
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  Jean Deruelle
+ * Reviewed by:
+ *
  * Revision 1.35  2010/10/12 18:47:16  deruelle_jean
  * Fix for restarting the stack when the gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE option is used
  *
