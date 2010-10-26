@@ -90,7 +90,7 @@ import javax.sip.message.Response;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.80 $ $Date: 2010-10-25 15:25:35 $
+ * @version 1.2 $Revision: 1.81 $ $Date: 2010-10-26 23:49:10 $
  */
 public class UDPMessageChannel extends MessageChannel implements
         ParseExceptionListener, Runnable, RawMessageChannel {
@@ -443,6 +443,10 @@ public class UDPMessageChannel extends MessageChannel implements
             }
             return;
         }
+        
+        if(sipStack.sipEventInterceptor != null) {
+        	sipStack.sipEventInterceptor.beforeMessage(sipMessage);
+        }
         // For a request first via header tells where the message
         // is coming from.
         // For response, just get the port from the packet.
@@ -485,7 +489,9 @@ public class UDPMessageChannel extends MessageChannel implements
         }
 
         this.processMessage(sipMessage);
-
+        if(sipStack.sipEventInterceptor != null) {
+        	sipStack.sipEventInterceptor.afterMessage(sipMessage);
+        }
     }
 
     /**
