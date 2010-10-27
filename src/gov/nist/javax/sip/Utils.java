@@ -33,6 +33,8 @@ import gov.nist.javax.sip.message.SIPResponse;
 
 import java.security.MessageDigest;
 import java.util.HashSet;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * A few utilities that are used in various places by the stack. This is used to
@@ -40,11 +42,13 @@ import java.util.HashSet;
  * and odds and ends.
  *
  * @author mranga
- * @version 1.2 $Revision: 1.22 $ $Date: 2010-09-28 19:44:16 $
+ * @version 1.2 $Revision: 1.23 $ $Date: 2010-10-27 11:17:02 $
  */
 public class Utils implements UtilsExt {
+	
+	private static int digesterPoolsSize = 20;
 
-    private static MessageDigest digester;
+    private static MessageDigest[] digesterPool = new MessageDigest[digesterPoolsSize];
 
     private static java.util.Random rand;
 
@@ -65,11 +69,12 @@ public class Utils implements UtilsExt {
 
     static {
         try {
-            digester = MessageDigest.getInstance("MD5");
+        	for(int q=0; q<digesterPoolsSize; q++)
+        		digesterPool[q] = MessageDigest.getInstance("MD5");
         } catch (Exception ex) {
             throw new RuntimeException("Could not intialize Digester ", ex);
         }
-        rand = new java.util.Random();
+        rand = new java.util.Random(System.nanoTime());
         signature = toHexString(Integer.toString(Math.abs( rand.nextInt() % 1000 )).getBytes());
     }
 
@@ -132,15 +137,19 @@ public class Utils implements UtilsExt {
      * Generate a call identifier. This is useful when we want to generate a
      * call identifier in advance of generating a message.
      */
-    public synchronized String generateCallIdentifier(String address) {
+    public String generateCallIdentifier(String address) {
+    	long random = rand.nextLong();
+    	int hash = (int) Math.abs(random%digesterPoolsSize);
+    	MessageDigest md = digesterPool[hash];
+    	
+    	synchronized (md) {
+    		String date = Long.toString(System.nanoTime() + System.currentTimeMillis() + callIDCounter++
+    				+ random);
+    		byte cid[] = md.digest(date.getBytes());
 
-            String date = Long.toString(System.currentTimeMillis() + callIDCounter++
-                    + rand.nextLong());
-            byte cid[] = digester.digest(date.getBytes());
-
-            String cidString = Utils.toHexString(cid);
-            return cidString + "@" + address;
-
+    		String cidString = Utils.toHexString(cid);
+    		return cidString + "@" + address;
+    	}
     }
 
     /**
@@ -166,16 +175,17 @@ public class Utils implements UtilsExt {
      * @return a cryptographically random gloablly unique string that can be
      *         used as a branch identifier.
      */
-    public synchronized String generateBranchId() {
-        //
-
-
-            long num = rand.nextLong() + Utils.counter++  + System.currentTimeMillis();
-
-            byte bid[] = digester.digest(Long.toString(num).getBytes());
-            // prepend with a magic cookie to indicate we are bis09 compatible.
-            return SIPConstants.BRANCH_MAGIC_COOKIE + "-"
-                + this.signature + "-" + Utils.toHexString(bid);
+    public String generateBranchId() {
+    	//
+    	long num = rand.nextLong() + Utils.counter++  + System.currentTimeMillis() + System.nanoTime();
+    	int hash = (int) Math.abs(num%digesterPoolsSize);
+    	MessageDigest digester = digesterPool[hash];
+    	synchronized(digester) {
+    		byte bid[] = digester.digest(Long.toString(num).getBytes());
+    		// prepend with a magic cookie to indicate we are bis09 compatible.
+    		return SIPConstants.BRANCH_MAGIC_COOKIE + "-"
+    		+ this.signature + "-" + Utils.toHexString(bid);
+    	}
     }
 
     public boolean responseBelongsToUs(SIPResponse response) {
@@ -190,16 +200,25 @@ public class Utils implements UtilsExt {
     }
 
     public static void main(String[] args) {
-        HashSet branchIds = new HashSet();
-        for (int b = 0; b < 100000; b++) {
-            String bid = Utils.getInstance().generateBranchId();
-            if (branchIds.contains(bid)) {
-                throw new RuntimeException("Duplicate Branch ID");
-            } else {
-                branchIds.add(bid);
-            }
-        }
-        System.out.println("Done!!");
+    	final HashSet branchIds = new HashSet();
+    	Executor e = Executors.newFixedThreadPool(100);
+    	for(int q=0; q<100; q++) {
+    		e.execute(new Runnable() {
+				
+				@Override
+				public void run() {
+					for (int b = 0; b < 1000000; b++) {
+		    			String bid = Utils.getInstance().generateBranchId();
+		    			if (branchIds.contains(bid)) {
+		    				throw new RuntimeException("Duplicate Branch ID");
+		    			} else {
+		    				branchIds.add(bid);
+		    			}
+		    		}
+				}
+			});
+    	}
+    	System.out.println("Done!!");
 
     }
 
