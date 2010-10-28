@@ -133,7 +133,7 @@ import javax.sip.message.Response;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.202 $ $Date: 2010-10-25 18:55:02 $
+ * @version 1.2 $Revision: 1.203 $ $Date: 2010-10-28 22:09:55 $
  * 
  * @author M. Ranganathan
  * 
@@ -384,6 +384,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             try {
                 long timeToWait = 0;
                 long startTime = System.currentTimeMillis();
+                boolean dialogTimedOut = false;
+                
 
                 if (!SIPDialog.this.takeAckSem()) {
                     /*
@@ -400,6 +402,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                      */
                     if (sipProvider.getSipListener() != null
                             && sipProvider.getSipListener() instanceof SipListenerExt) {
+                        dialogTimedOut = true;
                         raiseErrorEvent(SIPDialogErrorEvent.DIALOG_REINVITE_TIMEOUT);
                     } else {
                         Request byeRequest = SIPDialog.this
@@ -440,7 +443,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                         sipStack.getStackLogger().logDebug("Interrupted sleep");
                     return;
                 }
-                if (SIPDialog.this.getState() != DialogState.TERMINATED) {
+                if (SIPDialog.this.getState() != DialogState.TERMINATED && !dialogTimedOut ) {
                     SIPDialog.this.sendRequest(ctx, true);
                 }
                 if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
@@ -4124,7 +4127,10 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         }
     }
 
-    // jeand : cleanup of the dialog
+    /**
+     * Release references so the GC can clean up dialog state.
+     * 
+     */
     protected void cleanUp() {
         if (isReleaseReferences()) {
             if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
@@ -4146,15 +4152,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             // Cannot clear up the last Ack Sent.
             lastAckSent = null;
             // lastAckReceivedCSeqNumber = null;
-            lastResponseDialogId = null;
-            // lastResponse = null;
-            // if(lastResponseHeaders != null) {
-            // lastResponseHeaders.clear();
-            // lastResponseHeaders = null;
-            // }
+            lastResponseDialogId = null;         
             lastResponseMethod = null;
             lastResponseTopMostVia = null;
-            // lastTransactionMethod = null;
             localParty = null;
             remoteParty = null;
             method = null;
