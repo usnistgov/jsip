@@ -69,9 +69,9 @@ import javax.sip.message.Request;
 import javax.sip.message.Response;
 
 /*
- * Bug fix Contributions by Lamine Brahimi, Andreas Bystrom, Bill Roome, John Martin, Daniel
+ * Bug fixes and Contributions by Lamine Brahimi, Andreas Bystrom, Bill Roome, John Martin, Daniel
  * Machin Vasquez-Illa, Antonis Karydas, Joe Provino, Bruce Evangelder, Jeroen van Bemmel, Robert
- * S. Rosen.
+ * S. Rosen, Vladimir Ralev
  */
 /**
  * An adapter class from the JAIN implementation objects to the NIST-SIP stack.
@@ -84,7 +84,7 @@ import javax.sip.message.Response;
  * together the NIST-SIP stack and event model with the JAIN-SIP stack. This is
  * strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.94 $ $Date: 2010-10-25 15:25:33 $
+ * @version 1.2 $Revision: 1.95 $ $Date: 2010-10-28 03:20:29 $
  * 
  * @author M. Ranganathan
  */

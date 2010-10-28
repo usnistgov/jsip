@@ -78,7 +78,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.79 $ $Date: 2010-10-25 15:25:34 $
+ * @version 1.2 $Revision: 1.80 $ $Date: 2010-10-28 03:20:37 $
  */
 public class TCPMessageChannel extends MessageChannel implements
         SIPMessageListener, Runnable, RawMessageChannel {
@@ -200,14 +200,7 @@ public class TCPMessageChannel extends MessageChannel implements
 
     }
     
-    public void setViaHost(String viaAddress) {
-        this.myAddress = viaAddress;
-    }
-    
-    public void setViaPort(int viaPort) {
-        this.myPort = viaPort;
-    }
-
+ 
     /**
      * Returns "true" as this is a reliable transport.
      */

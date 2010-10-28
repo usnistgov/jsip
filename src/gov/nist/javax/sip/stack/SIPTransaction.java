@@ -80,7 +80,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.96 $ $Date: 2010-10-15 10:19:49 $
+ * @version 1.2 $Revision: 1.97 $ $Date: 2010-10-28 03:20:34 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -405,7 +405,6 @@ public abstract class SIPTransaction extends MessageChannel implements
         final Via topmostVia = newOriginalRequest.getTopmostVia();
         this.originalRequestBranch = topmostVia.getBranch();
         this.originalRequestHasPort = topmostVia.hasPort();
-        this.setViaHost(topmostVia.getHost());
         int originalRequestViaPort = topmostVia.getPort();
        
         if ( originalRequestViaPort == -1 ) {
@@ -415,8 +414,7 @@ public abstract class SIPTransaction extends MessageChannel implements
                 originalRequestViaPort = 5060;
             }
         }
-        this.setViaPort(originalRequestViaPort);
-               
+                
         // just cache the control information so the
         // original request can be released later.
         this.method = newOriginalRequest.getMethod();
@@ -1548,15 +1546,6 @@ public abstract class SIPTransaction extends MessageChannel implements
         TIMER_K = T4;
     }
     
-    @Override
-    public void setViaHost(String viaHost) {
-        this.encapsulatedChannel.setViaHost(viaHost);
-    }
-    
-    @Override
-    public void setViaPort(int viaPort) {
-        this.encapsulatedChannel.setViaPort(viaPort);
-    }
     
     /**
      * Sets the fork id for the transaction.
