@@ -381,13 +381,4 @@ final class SCTPMessageChannel extends MessageChannel
     	processor.removeChannel( this );
     }
 
-	@Override
-	public void setViaHost(String viaHost) {
-		// TODO processor.setSentBy( viaHost );
-	}
-
-	@Override
-	public void setViaPort(int viaPort) {
-		// TODO processor.setSentBy( viaPort );
-	}
 }

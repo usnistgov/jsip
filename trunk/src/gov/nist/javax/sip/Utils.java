@@ -20,12 +20,14 @@
  * Permission to use this software is contingent upon your acceptance
  * of the terms of this agreement
  *
- * .
  *
  */
 /*******************************************************************************
  * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).       *
  *******************************************************************************/
+/*
+ * Contributions and bug fixes by Vladimir Ralev
+ */
 package gov.nist.javax.sip;
 
 import gov.nist.javax.sip.header.Via;
@@ -42,7 +44,7 @@ import java.util.concurrent.Executors;
  * and odds and ends.
  *
  * @author mranga
- * @version 1.2 $Revision: 1.23 $ $Date: 2010-10-27 11:17:02 $
+ * @version 1.2 $Revision: 1.24 $ $Date: 2010-10-28 03:20:31 $
  */
 public class Utils implements UtilsExt {
 	
@@ -205,7 +207,7 @@ public class Utils implements UtilsExt {
     	for(int q=0; q<100; q++) {
     		e.execute(new Runnable() {
 				
-				@Override
+				
 				public void run() {
 					for (int b = 0; b < 1000000; b++) {
 		    			String bid = Utils.getInstance().generateBranchId();
