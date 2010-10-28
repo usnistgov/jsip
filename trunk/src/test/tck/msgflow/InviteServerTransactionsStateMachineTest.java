@@ -647,11 +647,10 @@ public class InviteServerTransactionsStateMachineTest
                 ex.printStackTrace();
                 fail("The TI failed to send a REQUEST_TERMINATED response");
             }
-            //The Transaction should now be COMPLETED
-            assertEquals(
+            //The Transaction should now be COMPLETED or CONFIRMED. Could be CONFIRMED if it gets an ACK very fast.
+            assertTrue(
                 "The Transaction did not remain COMPLETED after transmitting a REQUEST_TERMINATED response",
-                TransactionState.COMPLETED,
-                tran.getState());
+                tran.getState() == TransactionState.COMPLETED || tran.getState() == TransactionState.CONFIRMED);
             //Check whether the BUSY_HERE is received by the RI.
             waitForMessage();
             responseEvent = responseCollector.extractCollectedResponseEvent();
