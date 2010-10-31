@@ -532,7 +532,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.139 $ $Date: 2010-10-26 23:49:11 $
+ * @version 1.2 $Revision: 1.140 $ $Date: 2010-10-31 20:33:51 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -648,6 +648,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 	public SipStackImpl(Properties configurationProperties)
 			throws PeerUnavailableException {
 		this();
+		configurationProperties = new MergedSystemProperties(configurationProperties);
 		this.configurationProperties = configurationProperties;
 		String address = configurationProperties
 				.getProperty("javax.sip.IP_ADDRESS");
