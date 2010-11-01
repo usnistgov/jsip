@@ -12,8 +12,6 @@ import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
 import java.util.Set;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 public class MergedSystemProperties extends Properties {
 
 	private Properties parent;
