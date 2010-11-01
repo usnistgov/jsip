@@ -85,7 +85,12 @@ import javax.sip.message.Request;
  * 
  * The JAIN-SIP stack is initialized by a set of properties (see the JAIN SIP
  * documentation for an explanation of these properties
- * {@link javax.sip.SipStack} ). In addition to these, the following are
+ * {@link javax.sip.SipStack} ).
+ * 
+ * For NIST SIP stack all properties can also be passed as JVM system properties
+ * from the command line as -D arguments.
+ * 
+ *  In addition to these, the following are
  * meaningful properties for the NIST SIP stack (specify these in the property
  * array when you create the JAIN-SIP statck):
  * <ul>
@@ -532,7 +537,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.140 $ $Date: 2010-10-31 20:33:51 $
+ * @version 1.2 $Revision: 1.141 $ $Date: 2010-11-01 01:29:51 $
  * 
  * @author M. Ranganathan <br/>
  * 
