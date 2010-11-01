@@ -12,6 +12,8 @@ import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
 import java.util.Set;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 public class MergedSystemProperties extends Properties {
 
 	private Properties parent;
@@ -38,7 +40,7 @@ public class MergedSystemProperties extends Properties {
 	
 	public synchronized void load(Reader reader) throws IOException {
 		
-		parent.load(reader);
+		throw new RuntimeException("Not implemented for Java 5 compatibility");
 	}
 
 	
@@ -75,7 +77,7 @@ public class MergedSystemProperties extends Properties {
 	
 	public void store(Writer writer, String comments) throws IOException {
 		
-		parent.store(writer, comments);
+		throw new RuntimeException("Not implemented for Java 5 compatibility");
 	}
 
 	
@@ -95,7 +97,7 @@ public class MergedSystemProperties extends Properties {
 	
 	public Set<String> stringPropertyNames() {
 		
-		return parent.stringPropertyNames();
+		throw new RuntimeException("Not implemented for Java 5 compatibility");
 	}
 
 	public String getProperty(String key, String defaultValue) {
