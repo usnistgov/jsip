@@ -133,7 +133,7 @@ import javax.sip.message.Response;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.203 $ $Date: 2010-10-28 22:09:55 $
+ * @version 1.2 $Revision: 1.204 $ $Date: 2010-11-02 04:32:58 $
  * 
  * @author M. Ranganathan
  * 
@@ -173,6 +173,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     protected Integer lastResponseStatusCode;
     protected long lastResponseCSeqNumber;
     protected String lastResponseMethod;
+    protected String lastResponseFromTag;
+    protected String lastResponseToTag;
 
     // jeand: needed for reliable response sending but nullifyed right after the
     // ACK has been received or sent to let go of the ref ASAP
@@ -485,8 +487,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         public DialogTimerTask(SIPServerTransaction transaction) {
             this.transaction = transaction;
             this.nRetransmissions = 0;
-            // this.cseqNumber = transaction.getLastResponseCSeqNumber();
-        }
+         }
 
         public void runTask() {
             // If I ACK has not been seen on Dialog,
@@ -3119,6 +3120,12 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             this.lastResponseTopMostVia = sipResponse.getTopmostVia();
             this.lastResponseMethod = sipResponse.getCSeqHeader().getMethod();
             this.lastResponseCSeqNumber = sipResponse.getCSeq().getSeqNumber();
+            if (sipResponse.getToTag() != null ) {
+                this.lastResponseToTag = sipResponse.getToTag();
+            }
+            if ( sipResponse.getFromTag() != null ) {
+                this.lastResponseFromTag = sipResponse.getFromTag();
+            }
             if (transaction != null) {
                 this.lastResponseDialogId = sipResponse.getDialogId(transaction
                         .isServerTransaction());
@@ -3344,7 +3351,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                             && SIPTransactionStack.isDialogCreated(lastResponseMethod)
                             && lastResponseMethod.equals(getMethod())) {
                         setLocalTag(sipResponse.getTo().getTag());
-
                         doPutDialog = true;
                     }
 
