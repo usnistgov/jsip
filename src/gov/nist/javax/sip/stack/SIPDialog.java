@@ -133,7 +133,7 @@ import javax.sip.message.Response;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.204 $ $Date: 2010-11-02 04:32:58 $
+ * @version 1.2 $Revision: 1.205 $ $Date: 2010-11-03 17:24:25 $
  * 
  * @author M. Ranganathan
  * 
@@ -4139,37 +4139,31 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      */
     protected void cleanUp() {
         if (isReleaseReferences()) {
+            cleanUpOnAck();
             if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                 sipStack.getStackLogger()
                         .logDebug("dialog cleanup : " + getDialogId());
-            }
+            }            
             if (eventListeners != null) {
                 eventListeners.clear();
             }
             timerTaskLock = null;
-            ackSem = null;
-            callIdHeader = null;
+            ackSem = null;            
             contactHeader = null;
             eventHeader = null;
             firstTransactionId = null;
-            firstTransactionMethod = null;
-            hisTag = null;
-            myTag = null;
+            firstTransactionMethod = null;            
             // Cannot clear up the last Ack Sent.
             lastAckSent = null;
             // lastAckReceivedCSeqNumber = null;
             lastResponseDialogId = null;         
             lastResponseMethod = null;
-            lastResponseTopMostVia = null;
-            localParty = null;
-            remoteParty = null;
-            method = null;
+            lastResponseTopMostVia = null;            
             if (originalRequestRecordRouteHeaders != null) {
                 originalRequestRecordRouteHeaders.clear();
                 originalRequestRecordRouteHeaders = null;
                 originalRequestRecordRouteHeadersString = null;
-            }
-            remoteTarget = null;
+            }            
             if (routeList != null) {
                 routeList.clear();
                 routeList = null;
