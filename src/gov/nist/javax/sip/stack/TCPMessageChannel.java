@@ -59,7 +59,7 @@ import javax.sip.address.Hop;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.65.2.6 $ $Date: 2010-10-14 12:01:53 $
+ * @version 1.2 $Revision: 1.65.2.7 $ $Date: 2010-11-04 20:45:28 $
  */
 public class TCPMessageChannel extends MessageChannel implements SIPMessageListener, Runnable,
         RawMessageChannel {
@@ -292,7 +292,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
 						
 						public void run() {
 							try {
-								processMessage(sipMessage);
+								processMessage((SIPMessage) sipMessage.clone());
 							} catch (Exception ex) {
 								if (getSIPStack().getStackLogger().isLoggingEnabled(ServerLogger.TRACE_ERROR)) {
 					        		getSIPStack().getStackLogger().logError("Error self routing message cause by: ", ex);
