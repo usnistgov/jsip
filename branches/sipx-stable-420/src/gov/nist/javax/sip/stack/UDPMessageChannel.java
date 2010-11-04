@@ -90,7 +90,7 @@ import javax.sip.address.Hop;
  *
  *
  *
- * @version 1.2 $Revision: 1.70.2.3 $ $Date: 2010-07-09 09:26:07 $
+ * @version 1.2 $Revision: 1.70.2.4 $ $Date: 2010-11-04 20:45:29 $
  */
 public class UDPMessageChannel extends MessageChannel implements
         ParseExceptionListener, Runnable, RawMessageChannel {
@@ -646,7 +646,7 @@ public class UDPMessageChannel extends MessageChannel implements
                     		public void run() {
                     			try {
                     				((RawMessageChannel) channel)
-                    				.processMessage(sipMessage);
+                    				.processMessage((SIPMessage) sipMessage.clone());
                     			} catch (Exception ex) {
                     				if (getSIPStack().getStackLogger().isLoggingEnabled(ServerLogger.TRACE_ERROR)) {
                     					getSIPStack().getStackLogger().logError("Error self routing message cause by: ", ex);
