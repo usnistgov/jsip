@@ -90,7 +90,7 @@ import javax.sip.message.Response;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.82 $ $Date: 2010-10-28 03:20:38 $
+ * @version 1.2 $Revision: 1.83 $ $Date: 2010-11-04 20:44:13 $
  */
 public class UDPMessageChannel extends MessageChannel implements
         ParseExceptionListener, Runnable, RawMessageChannel {
@@ -691,7 +691,7 @@ public class UDPMessageChannel extends MessageChannel implements
                             public void run() {
                                 try {
                                     ((RawMessageChannel) channel)
-                                            .processMessage(sipMessage);
+                                            .processMessage((SIPMessage) sipMessage.clone());
                                 } catch (Exception ex) {
                                     if (getSIPStack().getStackLogger()
                                             .isLoggingEnabled(
