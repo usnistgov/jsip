@@ -78,7 +78,7 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.80 $ $Date: 2010-10-28 03:20:37 $
+ * @version 1.2 $Revision: 1.81 $ $Date: 2010-11-04 20:44:13 $
  */
 public class TCPMessageChannel extends MessageChannel implements
         SIPMessageListener, Runnable, RawMessageChannel {
@@ -344,7 +344,7 @@ public class TCPMessageChannel extends MessageChannel implements
 
                     public void run() {
                         try {
-                            processMessage(sipMessage);
+                            processMessage((SIPMessage) sipMessage.clone());
                         } catch (Exception ex) {
                             if (getSIPStack().getStackLogger()
                                     .isLoggingEnabled(ServerLogger.TRACE_ERROR)) {

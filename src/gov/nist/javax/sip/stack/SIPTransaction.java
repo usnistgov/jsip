@@ -80,7 +80,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.97 $ $Date: 2010-10-28 03:20:34 $
+ * @version 1.2 $Revision: 1.98 $ $Date: 2010-11-04 20:44:13 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -807,7 +807,7 @@ public abstract class SIPTransaction extends MessageChannel implements
             					public void run() {
             						try {
             							((TCPMessageChannel) channel)
-            							.processMessage(messageToSend, getPeerInetAddress());
+            							.processMessage((SIPMessage) messageToSend.clone(), getPeerInetAddress());
             						} catch (Exception ex) {
             							if (getSIPStack().getStackLogger().isLoggingEnabled(ServerLogger.TRACE_ERROR)) {
             								getSIPStack().getStackLogger().logError("Error self routing message cause by: ", ex);
@@ -831,7 +831,7 @@ public abstract class SIPTransaction extends MessageChannel implements
     							
     							public void run() {
     								try {
-    									((RawMessageChannel) channel).processMessage(messageToSend);
+    									((RawMessageChannel) channel).processMessage((SIPMessage) messageToSend.clone());
     								} catch (Exception ex) {
     									if (getSIPStack().getStackLogger().isLoggingEnabled(ServerLogger.TRACE_ERROR)) {
     						        		getSIPStack().getStackLogger().logError("Error self routing message cause by: ", ex);

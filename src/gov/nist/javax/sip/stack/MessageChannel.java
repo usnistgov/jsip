@@ -64,7 +64,7 @@ import javax.sip.header.ViaHeader;
  * @author M. Ranganathan <br/> Contains additions for support of symmetric NAT contributed by
  *         Hagai.
  * 
- * @version 1.2 $Revision: 1.36 $ $Date: 2010-10-28 03:20:33 $
+ * @version 1.2 $Revision: 1.37 $ $Date: 2010-11-04 20:44:13 $
  * 
  * 
  */
@@ -221,7 +221,7 @@ public abstract class MessageChannel {
 							
 							public void run() {
 								try {
-									((RawMessageChannel) channel).processMessage(sipMessage);
+									((RawMessageChannel) channel).processMessage((SIPMessage) sipMessage.clone());
 								} catch (Exception ex) {
 									if (getSIPStack().getStackLogger().isLoggingEnabled(ServerLogger.TRACE_ERROR)) {
 						        		getSIPStack().getStackLogger().logError("Error self routing message cause by: ", ex);
