@@ -70,15 +70,6 @@ free operational scenarios.  Here are the results of long term stability
 testing (Pascal Maugeri: "Genaker VoIP API using JAIN-SIP v1.2.85"):
 <li> <a href="performance.html"> See Stability testing results.</a>
 
-<p>The stack performance measures in at 476 CAPS on a P5 dual core,
-3.2 GHZ using TCP for transport. Using P4 3.2 GHZ single core with
-hyperthreading and 2GB of RAM, a thruput of 267 CAPS has been reported.
-On a dual core 3.4 Mhz P5 with 1 Gig RAM a thruput of 476 CAPS has been
-reported.  Using UDP for transport, on a P4 single core, 2 GHZ machine
-with 1 Gb of RAM and with no hyperthreading a a performance of 82 CAPS
-was observed.  Using TCP for the same scenario, we measure in at 200
-CAPS. Load tests were performed using test in test/load/concurrency. No
-memory leaks were seen after 1000000 calls.  
 
 
 <div class="h2" id="links">
@@ -89,15 +80,14 @@ memory leaks were seen after 1000000 calls.
 <div class="h2" id="links">
  <h2>Recent Developments</h2>
 </div>
-
 <p>
 <ul>
+<li> JAIN-SIP-2.0 specification work is under way. Please check out and contribute. 
+      See <a href="https://jain-sip.dev.java.net/servlets/ProjectDocumentList">JAIN-SIP 2.0 Proposed Draft Spec</a>
 <li> Significant performance enhancements. Many thanks to Jean Deruelle ( Redhat ).
 <li> SCTP support (experimental). Many thanks to Jeroen van Bemmel for adding this support.
 <li> HA support ( see mobicents project ) described here :
 http://jeanderuelle.blogspot.com/2010/08/introducing-jain-sip-ha-or-how-you-can.html
-
-
 </ul>
 
 <div class="h2" id="related">
