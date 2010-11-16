@@ -38,9 +38,9 @@ public class CallAnalysisInterceptor implements SIPEventInterceptor {
 		callAnalyzer = new CallAnalyzer(((SipStackImpl) stack));
 		Properties props = ((SipStackImpl) stack).getConfigurationProperties();
 		Long checkingInterval = Long.parseLong(
-				props.getProperty(CallAnalysisInterceptor.class.getName() + ".checkingInterval", "3000"));
+				props.getProperty(CallAnalysisInterceptor.class.getName() + ".checkingInterval", "1000"));
 		Long minStuckTime = Long.parseLong(
-				props.getProperty(CallAnalysisInterceptor.class.getName() + ".minStuckTIme", "10000"));
+				props.getProperty(CallAnalysisInterceptor.class.getName() + ".minStuckTIme", "4000"));
 		Long minTimeBetweenDumps = Long.parseLong(
 				props.getProperty(CallAnalysisInterceptor.class.getName() + ".minTimeBetweenDumps", "2000"));
 		MetricAnalysisConfiguration config = new MetricAnalysisConfiguration(
