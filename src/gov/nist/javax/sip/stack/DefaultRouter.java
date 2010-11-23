@@ -91,7 +91,7 @@ import javax.sip.address.*;
  * Subsequently, the request URI will be used as next hop target
  *
  *
- * @version 1.2 $Revision: 1.18 $ $Date: 2010-01-20 23:37:37 $
+ * @version 1.2 $Revision: 1.18.2.1 $ $Date: 2010-11-23 19:23:11 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -200,13 +200,13 @@ public class DefaultRouter implements Router {
                 if (!sipUri.hasLrParam()) {
 
                     fixStrictRouting(sipRequest);
-                    if (sipStack.isLoggingEnabled())
+                    if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                         sipStack.getStackLogger()
                                 .logDebug("Route post processing fixed strict routing");
                 }
 
                 Hop hop = createHop(sipUri,request);
-                if (sipStack.isLoggingEnabled())
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                     sipStack.getStackLogger()
                             .logDebug("NextHop based on Route:" + hop);
                 return hop;
@@ -217,7 +217,7 @@ public class DefaultRouter implements Router {
         } else if (requestURI.isSipURI()
                 && ((SipURI) requestURI).getMAddrParam() != null) {
             Hop hop = createHop((SipURI) requestURI,request);
-            if (sipStack.isLoggingEnabled())
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                 sipStack.getStackLogger()
                         .logDebug("Using request URI maddr to route the request = "
                                 + hop.toString());
@@ -228,17 +228,17 @@ public class DefaultRouter implements Router {
             return hop;
 
         } else if (defaultRoute != null) {
-            if (sipStack.isLoggingEnabled())
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                 sipStack.getStackLogger()
                         .logDebug("Using outbound proxy to route the request = "
                                 + defaultRoute.toString());
             return defaultRoute;
         } else if (requestURI.isSipURI()) {
             Hop hop = createHop((SipURI) requestURI,request);
-            if (hop != null && sipStack.isLoggingEnabled())
+            if (hop != null && sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                 sipStack.getStackLogger().logDebug("Used request-URI for nextHop = "
                         + hop.toString());
-            else if (sipStack.isLoggingEnabled()) {
+            else if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                 sipStack.getStackLogger()
                         .logDebug("returning null hop -- loop detected");
             }
@@ -273,7 +273,7 @@ public class DefaultRouter implements Router {
 
         routes.add(route); // as last one
         req.setRequestURI(firstUri);
-        if (sipStack.isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             sipStack.getStackLogger().logDebug("post: fixStrictRouting" + req);
         }
     }

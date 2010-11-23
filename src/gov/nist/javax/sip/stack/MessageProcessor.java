@@ -28,6 +28,7 @@ package gov.nist.javax.sip.stack;
 import gov.nist.core.Host;
 import gov.nist.core.HostPort;
 import gov.nist.core.InternalErrorHandler;
+import gov.nist.core.LogWriter;
 import gov.nist.javax.sip.ListeningPointImpl;
 import gov.nist.javax.sip.header.Via;
 
@@ -44,7 +45,7 @@ import javax.sip.InvalidArgumentException;
  * The main job of the message processor is to instantiate message channels for
  * the given transport.
  *
- * @version 1.2 $Revision: 1.18 $ $Date: 2009-10-16 22:58:41 $
+ * @version 1.2 $Revision: 1.18.2.1 $ $Date: 2010-11-23 19:23:12 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -195,7 +196,7 @@ public abstract class MessageProcessor implements Runnable {
     }
 
     public void setListeningPoint(ListeningPointImpl lp) {
-        if ( this.getSIPStack().isLoggingEnabled()) {
+        if ( this.getSIPStack().isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             this.getSIPStack().getStackLogger().logDebug("setListeningPoint" + this +
                     " listeningPoint = " + lp);
 

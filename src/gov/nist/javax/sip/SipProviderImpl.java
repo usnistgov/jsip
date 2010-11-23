@@ -29,6 +29,7 @@
 package gov.nist.javax.sip;
 
 import gov.nist.core.InternalErrorHandler;
+import gov.nist.core.LogWriter;
 import gov.nist.javax.sip.DialogTimeoutEvent.Reason;
 import gov.nist.javax.sip.address.RouterExt;
 import gov.nist.javax.sip.header.CallID;
@@ -84,7 +85,7 @@ import javax.sip.message.Response;
 /**
  * Implementation of the JAIN-SIP provider interface.
  *
- * @version 1.2 $Revision: 1.83 $ $Date: 2010-01-20 23:37:39 $
+ * @version 1.2 $Revision: 1.83.2.1 $ $Date: 2010-11-23 19:23:10 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -166,7 +167,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
      */
 
     public void handleEvent(EventObject sipEvent, SIPTransaction transaction) {
-        if (sipStack.isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             sipStack.getStackLogger().logDebug(
                     "handleEvent " + sipEvent + "currentTransaction = "
                             + transaction + "this.sipListener = "
@@ -174,10 +175,10 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
                             + sipEvent.getSource());
             if (sipEvent instanceof RequestEvent) {
                 Dialog dialog = ((RequestEvent) sipEvent).getDialog();
-                if ( sipStack.isLoggingEnabled())  sipStack.getStackLogger().logDebug("Dialog = " + dialog);
+                if ( sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))  sipStack.getStackLogger().logDebug("Dialog = " + dialog);
             } else if (sipEvent instanceof ResponseEvent) {
                 Dialog dialog = ((ResponseEvent) sipEvent).getDialog();
-                if (sipStack.isLoggingEnabled() ) sipStack.getStackLogger().logDebug("Dialog = " + dialog);
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG) ) sipStack.getStackLogger().logDebug("Dialog = " + dialog);
             }
             sipStack.getStackLogger().logStackTrace();
         }
@@ -229,7 +230,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
                     "Stack already has a listener. Only one listener per stack allowed");
         }
 
-        if (sipStack.isLoggingEnabled())
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
             sipStack.getStackLogger().logDebug("add SipListener " + sipListener);
         this.sipListener = sipListener;
 
@@ -333,7 +334,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
             }
 
         }
-        if (sipStack.isLoggingEnabled())
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
             sipStack.getStackLogger().logDebug(
                     "could not find existing transaction for "
                             + ((SIPRequest) request).getFirstLine()
@@ -725,7 +726,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
         } catch (ParseException ex1) {
             InternalErrorHandler.handleException(ex1);
         } finally {
-            if (sipStack.isLoggingEnabled())
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                 sipStack.getStackLogger().logDebug(
                         "done sending " + request.getMethod() + " to hop "
                                 + hop);
@@ -904,7 +905,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
 
         if (transactionErrorEvent.getErrorID() == SIPTransactionErrorEvent.TRANSPORT_ERROR) {
             // There must be a way to inform the TU here!!
-            if (sipStack.isLoggingEnabled()) {
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                 sipStack.getStackLogger().logDebug(
                         "TransportError occured on " + transaction);
             }
@@ -986,7 +987,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
         } else if (dialogErrorEvent.getErrorID() == SIPDialogErrorEvent.DIALOG_REINVITE_TIMEOUT) {
             reason = Reason.ReInviteTimeout;
         }
-        if (sipStack.isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             sipStack.getStackLogger().logDebug(
                     "Dialog TimeoutError occured on " + sipDialog);
         }

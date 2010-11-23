@@ -32,6 +32,7 @@ package gov.nist.javax.sip.stack;
 import gov.nist.core.Host;
 import gov.nist.core.HostPort;
 import gov.nist.core.InternalErrorHandler;
+import gov.nist.core.LogWriter;
 import gov.nist.core.ServerLogger;
 import gov.nist.javax.sip.address.AddressImpl;
 import gov.nist.javax.sip.header.ContentLength;
@@ -63,7 +64,7 @@ import javax.sip.header.ViaHeader;
  * @author M. Ranganathan <br/> Contains additions for support of symmetric NAT contributed by
  *         Hagai.
  * 
- * @version 1.2 $Revision: 1.29.2.4 $ $Date: 2010-11-04 20:45:29 $
+ * @version 1.2 $Revision: 1.29.2.5 $ $Date: 2010-11-23 19:23:14 $
  * 
  * 
  */
@@ -229,7 +230,7 @@ public abstract class MessageChannel {
 						};
 						getSIPStack().getSelfRoutingThreadpoolExecutor().execute(processMessageTask);
                         
-                        if (getSIPStack().isLoggingEnabled())
+                        if (getSIPStack().isLoggingEnabled(LogWriter.TRACE_DEBUG))
                         	getSIPStack().getStackLogger().logDebug("Self routing message");
                         return;
                     }

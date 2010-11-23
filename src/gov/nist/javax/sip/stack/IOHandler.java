@@ -28,11 +28,13 @@
  *******************************************************************************/
 package gov.nist.javax.sip.stack;
 
+import gov.nist.core.LogWriter;
 import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.SipStackImpl;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.ConnectException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -186,14 +188,14 @@ public class IOHandler {
 		int max_retry = retry ? 2 : 1;
 		// Server uses TCP transport. TCP client sockets are cached
 		int length = bytes.length;
-		if (sipStack.isLoggingEnabled()) {
+		if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 			sipStack.getStackLogger().logDebug(
 					"sendBytes " + transport + " inAddr "
 							+ receiverAddress.getHostAddress() + " port = "
 							+ contactPort + " length = " + length);
 
 		}
-		if (sipStack.isLoggingEnabled()
+		if (sipStack.isLoggingEnabled(LogWriter.TRACE_INFO)
 				&& sipStack.isLogStackTraceOnMessageSend()) {
 			sipStack.getStackLogger().logStackTrace(StackLogger.TRACE_INFO);
 		}
@@ -209,7 +211,7 @@ public class IOHandler {
 				clientSock = getSocket(key);
 				while (retry_count < max_retry) {
 					if (clientSock == null) {
-						if (sipStack.isLoggingEnabled()) {
+						if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 							sipStack.getStackLogger().logDebug(
 									"inaddr = " + receiverAddress);
 							sipStack.getStackLogger().logDebug(
@@ -221,8 +223,14 @@ public class IOHandler {
 						// in version 1.1 all listening points have the same IP
 						// address (i.e. that of the stack). In version 1.2
 						// the IP address is on a per listening point basis.
+						try{
 						clientSock = sipStack.getNetworkLayer().createSocket(
 								receiverAddress, contactPort, senderAddress);
+						} catch (ConnectException e) {
+							sipStack.getStackLogger().logError("Problem connecting " +
+									  receiverAddress + " " + contactPort + " " + senderAddress);
+							throw e;
+						}
 						OutputStream outputStream = clientSock
 								.getOutputStream();
 						writeChunks(outputStream, bytes, length);
@@ -235,7 +243,7 @@ public class IOHandler {
 							writeChunks(outputStream, bytes, length);
 							break;
 						} catch (IOException ex) {
-							if (sipStack.isLoggingEnabled())
+							if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
 								sipStack.getStackLogger().logDebug(
 										"IOException occured retryCount "
 												+ retry_count);
@@ -291,7 +299,7 @@ public class IOHandler {
 										senderAddress);
 						SSLSocket sslsock = (SSLSocket) clientSock;
 
-						if (sipStack.isLoggingEnabled()) {
+						if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 							sipStack.getStackLogger().logDebug(
 									"inaddr = " + receiverAddress);
 							sipStack.getStackLogger().logDebug(
@@ -305,7 +313,7 @@ public class IOHandler {
 						sslsock.setEnabledProtocols(sipStack
 								.getEnabledProtocols());
 						sslsock.startHandshake();
-						if (sipStack.isLoggingEnabled()) {
+						if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 							this.sipStack.getStackLogger().logDebug(
 									"Handshake passed");
 						}
@@ -322,7 +330,7 @@ public class IOHandler {
 							throw new IOException(ex.getMessage());
 						}
 
-						if (sipStack.isLoggingEnabled()) {
+						if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 							this.sipStack.getStackLogger().logDebug(
 									"TLS Security policy passed");
 						}
