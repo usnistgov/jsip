@@ -50,7 +50,7 @@ import java.util.*;
  * connection. This is the active object that creates new TCP MessageChannels (one for each new
  * accept socket).
  * 
- * @version 1.2 $Revision: 1.33 $ $Date: 2010-08-03 13:42:23 $
+ * @version 1.2 $Revision: 1.34 $ $Date: 2010-11-24 05:43:03 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -234,7 +234,7 @@ public class TCPMessageProcessor extends MessageProcessor {
         String key = messageChannel.getKey();
         TCPMessageChannel currentChannel = (TCPMessageChannel) tcpMessageChannels.get(key);
         if (currentChannel != null) {
-            if (sipStack.isLoggingEnabled())
+            if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG))
                 sipStack.getStackLogger().logDebug("Closing " + key);
             currentChannel.close();
         }

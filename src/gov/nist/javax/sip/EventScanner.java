@@ -40,7 +40,7 @@ import gov.nist.core.ThreadAuditor;
 /**
  * Event Scanner to deliver events to the Listener.
  *
- * @version 1.2 $Revision: 1.44 $ $Date: 2010-07-13 00:12:30 $
+ * @version 1.2 $Revision: 1.45 $ $Date: 2010-11-24 05:43:04 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -302,7 +302,7 @@ class EventScanner implements Runnable {
                             .getState().equals(DialogState.TERMINATED)))
                             && (sipResponse.getStatusCode() == Response.CALL_OR_TRANSACTION_DOES_NOT_EXIST || sipResponse
                                     .getStatusCode() == Response.REQUEST_TIMEOUT)) {
-                        if (sipStack.isLoggingEnabled()) {
+                        if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                             sipStack.getStackLogger().logDebug(
                                     "Removing dialog on 408 or 481 response");
                         }
