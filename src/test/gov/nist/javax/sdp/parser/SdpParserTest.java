@@ -1,13 +1,16 @@
 package test.gov.nist.javax.sdp.parser;
 
+import gov.nist.javax.sdp.SessionDescriptionImpl;
+import gov.nist.javax.sdp.parser.SDPAnnounceParser;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 import java.util.Vector;
 
 import javax.sdp.Attribute;
 import javax.sdp.MediaDescription;
 
-import gov.nist.javax.sdp.SessionDescriptionImpl;
-import gov.nist.javax.sdp.fields.AttributeField;
-import gov.nist.javax.sdp.parser.SDPAnnounceParser;
 import junit.framework.TestCase;
 
 public class SdpParserTest extends TestCase {
@@ -63,6 +66,12 @@ public class SdpParserTest extends TestCase {
             // Unfortunately equals is not yet implemented.
             // assertEquals("Equality check",
             // sessiondescription,sessiondescription1);
+            
+            // Check if SDP is serializable
+            File outFile = File.createTempFile("sdpObj",".dat");
+            outFile.deleteOnExit();
+            ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(outFile, false));
+            os.writeObject(sessiondescription1);
         }
 
     }
