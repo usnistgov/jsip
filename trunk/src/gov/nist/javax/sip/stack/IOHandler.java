@@ -28,6 +28,7 @@
  *******************************************************************************/
 package gov.nist.javax.sip.stack;
 
+import gov.nist.core.LogLevels;
 import gov.nist.core.LogWriter;
 import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.SipStackImpl;
@@ -268,7 +269,7 @@ public class IOHandler {
                             + contactPort + " length = " + length + " isClient " + isClient );
 
         }
-        if (sipStack.isLoggingEnabled()
+        if (sipStack.isLoggingEnabled(LogLevels.TRACE_INFO)
                 && sipStack.isLogStackTraceOnMessageSend()) {
             sipStack.getStackLogger().logStackTrace(StackLogger.TRACE_INFO);
         }

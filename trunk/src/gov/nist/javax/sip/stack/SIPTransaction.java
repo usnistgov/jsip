@@ -26,6 +26,7 @@
 package gov.nist.javax.sip.stack;
 
 import gov.nist.core.InternalErrorHandler;
+import gov.nist.core.LogLevels;
 import gov.nist.core.LogWriter;
 import gov.nist.core.ServerLogger;
 import gov.nist.core.StackLogger;
@@ -80,7 +81,7 @@ import javax.sip.message.Response;
  * @author M. Ranganathan
  *
  *
- * @version 1.2 $Revision: 1.98 $ $Date: 2010-11-04 20:44:13 $
+ * @version 1.2 $Revision: 1.99 $ $Date: 2010-11-24 05:43:03 $
  */
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
@@ -820,7 +821,7 @@ public abstract class SIPTransaction extends MessageChannel implements
             			} catch (Exception e) {
             				sipStack.getStackLogger().logError("Error passing message in self routing", e);
             			}
-            			if (sipStack.isLoggingEnabled())
+            			if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG))
                         	sipStack.getStackLogger().logDebug("Self routing message");
                         return;
                     }
@@ -843,7 +844,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 						} catch (Exception e) {
 							sipStack.getStackLogger().logError("Error passing message in self routing", e);
 						}
-                        if (sipStack.isLoggingEnabled())
+                        if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG))
                         	sipStack.getStackLogger().logDebug("Self routing message");
                         return;
                     }
