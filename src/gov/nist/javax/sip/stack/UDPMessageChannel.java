@@ -30,6 +30,7 @@
 package gov.nist.javax.sip.stack;
 
 import gov.nist.core.InternalErrorHandler;
+import gov.nist.core.LogLevels;
 import gov.nist.core.LogWriter;
 import gov.nist.core.ServerLogger;
 import gov.nist.core.StackLogger;
@@ -90,7 +91,7 @@ import javax.sip.message.Response;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.83 $ $Date: 2010-11-04 20:44:13 $
+ * @version 1.2 $Revision: 1.84 $ $Date: 2010-11-24 05:43:03 $
  */
 public class UDPMessageChannel extends MessageChannel implements
         ParseExceptionListener, Runnable, RawMessageChannel {
@@ -655,7 +656,7 @@ public class UDPMessageChannel extends MessageChannel implements
      *             If there is a problem with sending the message.
      */
     public void sendMessage(final SIPMessage sipMessage) throws IOException {
-        if (sipStack.isLoggingEnabled()
+        if (sipStack.isLoggingEnabled(LogLevels.TRACE_INFO)
                 && this.sipStack.isLogStackTraceOnMessageSend()) {
             if (sipMessage instanceof SIPRequest
                     && ((SIPRequest) sipMessage).getRequestLine() != null) {
@@ -752,7 +753,7 @@ public class UDPMessageChannel extends MessageChannel implements
     protected void sendMessage(byte[] msg, InetAddress peerAddress,
             int peerPort, boolean reConnect) throws IOException {
         // Via is not included in the request so silently drop the reply.
-        if (sipStack.isLoggingEnabled()
+        if (sipStack.isLoggingEnabled(LogLevels.TRACE_INFO)
                 && this.sipStack.isLogStackTraceOnMessageSend()) {
             this.sipStack.getStackLogger()
                     .logStackTrace(StackLogger.TRACE_INFO);

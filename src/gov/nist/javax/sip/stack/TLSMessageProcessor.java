@@ -41,6 +41,7 @@
 package gov.nist.javax.sip.stack;
 
 import gov.nist.core.HostPort;
+import gov.nist.core.LogLevels;
 import gov.nist.core.LogWriter;
 import gov.nist.javax.sip.SipStackImpl;
 
@@ -60,7 +61,7 @@ import java.util.Iterator;
  * connection. This is the active object that creates new TLS MessageChannels (one for each new
  * accept socket).
  * 
- * @version 1.2 $Revision: 1.27 $ $Date: 2010-08-03 13:42:23 $
+ * @version 1.2 $Revision: 1.28 $ $Date: 2010-11-24 05:43:03 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -256,7 +257,7 @@ public class TLSMessageProcessor extends MessageProcessor {
         String key = messageChannel.getKey();
         TLSMessageChannel currentChannel = (TLSMessageChannel) tlsMessageChannels.get(key);
         if (currentChannel != null) {
-            if (sipStack.isLoggingEnabled())
+            if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG))
                 sipStack.getStackLogger().logDebug("Closing " + key);
             currentChannel.close();
         }

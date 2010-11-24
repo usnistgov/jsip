@@ -29,6 +29,7 @@
 package gov.nist.javax.sip.stack;
 
 import gov.nist.core.InternalErrorHandler;
+import gov.nist.core.LogLevels;
 import gov.nist.core.LogWriter;
 import gov.nist.core.NameValueList;
 import gov.nist.core.StackLogger;
@@ -133,7 +134,7 @@ import javax.sip.message.Response;
  * enough state in the message structure to extract a dialog identifier that can
  * be used to retrieve this structure from the SipStack.
  * 
- * @version 1.2 $Revision: 1.205 $ $Date: 2010-11-03 17:24:25 $
+ * @version 1.2 $Revision: 1.206 $ $Date: 2010-11-24 05:43:03 $
  * 
  * @author M. Ranganathan
  * 
@@ -1028,7 +1029,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             }
 
         } finally {
-            if (sipStack.isLoggingEnabled()) {
+            if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                 sipStack.getStackLogger().logStackTrace();
             }
         }

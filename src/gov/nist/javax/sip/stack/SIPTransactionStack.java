@@ -27,6 +27,7 @@ package gov.nist.javax.sip.stack;
 
 import gov.nist.core.Host;
 import gov.nist.core.HostPort;
+import gov.nist.core.LogLevels;
 import gov.nist.core.LogWriter;
 import gov.nist.core.ServerLogger;
 import gov.nist.core.StackLogger;
@@ -101,7 +102,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.174 $ $Date: 2010-11-02 04:32:58 $
+ * @version 1.2 $Revision: 1.175 $ $Date: 2010-11-24 05:43:02 $
  */
 public abstract class SIPTransactionStack implements
         SIPTransactionEventListener, SIPDialogEventListener {
@@ -741,7 +742,7 @@ public abstract class SIPTransactionStack implements
                     + " dialog = " + dialog);
         }
         dialog.setStack(this);
-        if (stackLogger.isLoggingEnabled())
+        if (stackLogger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
             stackLogger.logStackTrace();
         dialogTable.put(dialogId, dialog);
         if (dialog.getMergeId() != null )  {
@@ -772,7 +773,7 @@ public abstract class SIPTransactionStack implements
         if (transaction instanceof SIPClientTransaction) {
             String dialogId = ((SIPRequest) transaction.getRequest())
                     .getDialogId(false);
-            if (stackLogger.isLoggingEnabled()) {
+            if (stackLogger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                 stackLogger.logDebug("createDialog dialogId=" + dialogId);
             }
             if (this.earlyDialogTable.get(dialogId) != null) {
@@ -780,7 +781,7 @@ public abstract class SIPTransactionStack implements
                 if (dialog.getState() == null
                         || dialog.getState() == DialogState.EARLY) {
                     retval = dialog;
-                    if (stackLogger.isLoggingEnabled()) {
+                    if (stackLogger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                         stackLogger.logDebug("createDialog early Dialog found : earlyDialogId="
                                 + dialogId + " earlyDialog= " + dialog);
                     }
@@ -791,7 +792,7 @@ public abstract class SIPTransactionStack implements
             } else {
                 retval = new SIPDialog(transaction);
                 this.earlyDialogTable.put(dialogId, retval);
-                if (stackLogger.isLoggingEnabled()) {
+                if (stackLogger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                     stackLogger.logDebug("createDialog early Dialog not found : earlyDialogId="
                             + dialogId + " created one " + retval);
                 }
@@ -816,7 +817,7 @@ public abstract class SIPTransactionStack implements
             SIPResponse sipResponse) {
         String originalDialogId = ((SIPRequest)transaction.getRequest()).getDialogId(false);
         String earlyDialogId = sipResponse.getDialogId(false);
-        if (stackLogger.isLoggingEnabled()) {
+        if (stackLogger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
             stackLogger.logDebug("createDialog originalDialogId=" + originalDialogId);
             stackLogger.logDebug("createDialog earlyDialogId=" + earlyDialogId);
             stackLogger.logDebug("createDialog default Dialog=" + transaction.getDefaultDialog());
@@ -828,7 +829,7 @@ public abstract class SIPTransactionStack implements
         SIPDialog earlyDialog = this.earlyDialogTable.get(originalDialogId);
         if (earlyDialog != null && transaction != null && (transaction.getDefaultDialog() == null || transaction.getDefaultDialog().getDialogId().equals(originalDialogId))) {
             retval = earlyDialog;
-            if (stackLogger.isLoggingEnabled()) {
+            if (stackLogger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                 stackLogger.logDebug("createDialog early Dialog found : earlyDialogId="
                         + originalDialogId + " earlyDialog= " + retval);
             }
@@ -838,7 +839,7 @@ public abstract class SIPTransactionStack implements
 
         } else {
             retval = new SIPDialog(transaction, sipResponse);
-            if (stackLogger.isLoggingEnabled()) {
+            if (stackLogger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                 stackLogger.logDebug("createDialog early Dialog not found : earlyDialogId="
                         + earlyDialogId + " created one " + retval);
             }
@@ -1756,7 +1757,7 @@ public abstract class SIPTransactionStack implements
                     + sipTransaction);
         }
         if (sipTransaction instanceof SIPServerTransaction) {
-            if (stackLogger.isLoggingEnabled())
+            if (stackLogger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
                 stackLogger.logStackTrace();
             String key = sipTransaction.getTransactionId();
             Object removed = serverTransactionTable.remove(key);

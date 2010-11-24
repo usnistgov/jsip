@@ -84,7 +84,7 @@ import javax.sip.message.Response;
  * together the NIST-SIP stack and event model with the JAIN-SIP stack. This is
  * strictly an implementation class.
  * 
- * @version 1.2 $Revision: 1.95 $ $Date: 2010-10-28 03:20:29 $
+ * @version 1.2 $Revision: 1.96 $ $Date: 2010-11-24 05:43:04 $
  * 
  * @author M. Ranganathan
  */
@@ -547,7 +547,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                 } else {
                     if (!dialog.handleAck(transaction)) {
                         if (!dialog.isSequnceNumberValidation()) {
-                            if (sipStack.isLoggingEnabled()) {
+                            if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                                 sipStack.getStackLogger().logDebug(
                                         "Dialog exists with loose dialog validation "
                                                 + sipRequest.getFirstLine()
@@ -598,7 +598,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                             SIPServerTransaction ackTransaction = sipStack
                                     .findTransactionPendingAck(sipRequest);
                             if (ackTransaction != null) {
-                                if (sipStack.isLoggingEnabled())
+                                if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG))
                                     sipStack.getStackLogger().logDebug(
                                             "Found Tx pending ACK");
                                 try {
@@ -675,7 +675,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                         "Processing PRACK for dialog " + dialog);
 
             if (dialog == null && sipProvider.isAutomaticDialogSupportEnabled()) {
-                if (sipStack.isLoggingEnabled()) {
+                if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                     sipStack.getStackLogger().logDebug(
                             "Dialog does not exist "
                                     + sipRequest.getFirstLine()
@@ -806,7 +806,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     InternalErrorHandler.handleException(ex);
                 }
             }
-            if (sipStack.isLoggingEnabled()) {
+            if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                 sipStack.getStackLogger().logDebug(
                         "BYE Tx = " + transaction + " isMapped ="
                                 + transaction.isTransactionMapped());
@@ -1575,7 +1575,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             String originalFrom = ((SIPRequest) this.transactionChannel
                     .getRequest()).getFromTag();
             if (originalFrom == null ^ sipResponse.getFrom().getTag() == null) {
-                if (sipStack.isLoggingEnabled())
+                if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG))
                     sipStack.getStackLogger().logDebug(
                             "From tag mismatch -- dropping response");
                 return;
@@ -1614,7 +1614,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             if (createDialog) {
                 if (this.transactionChannel != null) {
                     if (sipDialog == null) {
-                        if (sipStack.isLoggingEnabled()) {
+                        if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                             sipStack.getStackLogger().logDebug(
                                     "Creating dialog for forked response " + sipResponse);
                         }
@@ -1627,7 +1627,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                                 sipResponse.getDialogId(false));
                     }
                 } else {
-                    if (sipStack.isLoggingEnabled()) {
+                    if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                         sipStack.getStackLogger().logDebug(
                                 "Creating dialog for forked response " + sipResponse);
                     }
@@ -1646,7 +1646,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                                 "status code != 200 ; statusCode = "
                                         + sipResponse.getStatusCode());
                 } else if (sipDialog.getState() == DialogState.TERMINATED) {
-                    if (sipStack.isLoggingEnabled()) {
+                    if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                         sipStack.getStackLogger().logDebug(
                                 "Dialog is terminated -- dropping response!");
                     }
