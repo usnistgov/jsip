@@ -313,7 +313,7 @@ public class IOHandler {
                         } catch (IOException ex) {
                             if (sipStack
                                     .isLoggingEnabled(LogWriter.TRACE_ERROR))
-                                sipStack.getStackLogger().logWarning(
+                                sipStack.getStackLogger().logInfo(
                                         "IOException occured retryCount "
                                                 + retry_count);
                             if (sipStack

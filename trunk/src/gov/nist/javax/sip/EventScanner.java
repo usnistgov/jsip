@@ -40,7 +40,7 @@ import gov.nist.core.ThreadAuditor;
 /**
  * Event Scanner to deliver events to the Listener.
  *
- * @version 1.2 $Revision: 1.45 $ $Date: 2010-11-24 05:43:04 $
+ * @version 1.2 $Revision: 1.46 $ $Date: 2010-11-26 15:10:50 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -282,7 +282,7 @@ class EventScanner implements Runnable {
                 try {
                     if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                         sipStack.getStackLogger().logDebug(
-                                "Calling listener for "
+                                "Calling listener " + sipListener + " for "
                                         + sipResponse.getFirstLine());
                     }
                     if (sipListener != null) {
