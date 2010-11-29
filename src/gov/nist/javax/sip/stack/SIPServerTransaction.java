@@ -28,6 +28,7 @@ package gov.nist.javax.sip.stack;
 import gov.nist.core.HostPort;
 import gov.nist.core.InternalErrorHandler;
 import gov.nist.core.LogWriter;
+import gov.nist.core.ServerLogger;
 import gov.nist.javax.sip.SIPConstants;
 import gov.nist.javax.sip.ServerTransactionExt;
 import gov.nist.javax.sip.SipProviderImpl;
@@ -168,7 +169,7 @@ import javax.sip.message.Response;
  *
  * </pre>
  *
- * @version 1.2 $Revision: 1.148 $ $Date: 2010-10-25 18:55:01 $
+ * @version 1.2 $Revision: 1.149 $ $Date: 2010-11-29 10:54:33 $
  * @author M. Ranganathan
  *
  */
@@ -188,7 +189,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
     private SIPDialog dialog;
     // jeand needed because we nullify the dialog ref early and keep only the dialogId to save on mem and help GC
-    private String dialogId;
+    protected String dialogId;
 
     // the unacknowledged SIPResponse
 
@@ -428,7 +429,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
      *
      */
 
-    private void sendResponse(SIPResponse transactionResponse) throws IOException {
+    protected void sendResponse(SIPResponse transactionResponse) throws IOException {
     	if ( sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
     		sipStack.getStackLogger().logDebug("sipServerTransaction::sendResponse " + transactionResponse.getFirstLine());
     	}
@@ -1192,7 +1193,19 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
             if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                 sipStack.getStackLogger().logDebug("resend last response " + new String(lastResponseAsBytes));
             }
+            
 	    	if(isReliable()) {
+	    	    if (sipStack.getStackLogger().isLoggingEnabled(ServerLogger.TRACE_MESSAGES)) {
+	    	        // Issue 343 : we have to log the retransmission 
+	    	        try {	    	            
+    	    	        SIPResponse lastReparsedResponse = (SIPResponse) sipStack.getMessageParserFactory().createMessageParser(sipStack).parseSIPMessage(lastResponseAsBytes, true, false, null);
+    	    	        getMessageChannel().logMessage(lastReparsedResponse, this.getPeerInetAddress(), this.getPeerPort(), System.currentTimeMillis());
+    	    	    } catch (ParseException e) {
+                        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                            sipStack.getStackLogger().logDebug("couldn't reparse last response " + new String(lastResponseAsBytes));
+                        }
+                    }   
+	    	    }
 	    		getMessageChannel().sendMessage(lastResponseAsBytes, this.getPeerInetAddress(), this.getPeerPort(), false);
 	    	} else {
 	    		Hop hop = sipStack.addressResolver.resolveAddress(new HopImpl(lastResponseHost, lastResponsePort,
@@ -1202,6 +1215,17 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 	                    .createRawMessageChannel(this.getSipProvider().getListeningPoint(
 	                            hop.getTransport()).getIPAddress(), this.getPort(), hop);
 	            if (messageChannel != null) {
+	                if (sipStack.getStackLogger().isLoggingEnabled(ServerLogger.TRACE_MESSAGES)) {
+	                    // Issue 343 : we have to log the retransmission
+                        try {
+                            SIPResponse lastReparsedResponse = (SIPResponse) sipStack.getMessageParserFactory().createMessageParser(sipStack).parseSIPMessage(lastResponseAsBytes, true, false, null);
+                            getMessageChannel().logMessage(lastReparsedResponse, this.getPeerInetAddress(), this.getPeerPort(), System.currentTimeMillis());
+                        } catch (ParseException e) {
+                            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                                sipStack.getStackLogger().logDebug("couldn't reparse last response " + new String(lastResponseAsBytes));
+                            }
+                        }	                                 
+	                }
 	                messageChannel.sendMessage(lastResponseAsBytes, InetAddress.getByName(hop.getHost()), hop.getPort(), false);                                
 	            } else {
 	                throw new IOException("Could not create a message channel for " + hop + " with source IP:Port "+
