@@ -102,7 +102,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.175 $ $Date: 2010-11-24 05:43:02 $
+ * @version 1.2 $Revision: 1.176 $ $Date: 2010-11-29 10:54:59 $
  */
 public abstract class SIPTransactionStack implements
         SIPTransactionEventListener, SIPDialogEventListener {
@@ -149,7 +149,7 @@ public abstract class SIPTransactionStack implements
     private ConcurrentHashMap<String, SIPServerTransaction> pendingTransactions;
 
     // hashtable for fast lookup
-    private ConcurrentHashMap<String, SIPClientTransaction> clientTransactionTable;
+    protected ConcurrentHashMap<String, SIPClientTransaction> clientTransactionTable;
 
     // Set to false if you want hiwat and lowat to be consulted.
     protected boolean unlimitedServerTransactionTableSize = true;
@@ -176,7 +176,7 @@ public abstract class SIPTransactionStack implements
     private AtomicInteger activeClientTransactionCount = new AtomicInteger(0);
 
     // Hashtable for server transactions.
-    private ConcurrentHashMap<String, SIPServerTransaction> serverTransactionTable;
+    protected ConcurrentHashMap<String, SIPServerTransaction> serverTransactionTable;
 
     // A table of ongoing transactions indexed by mergeId ( for detecting merged
     // requests.

@@ -64,7 +64,7 @@ import javax.sip.header.ViaHeader;
  * @author M. Ranganathan <br/> Contains additions for support of symmetric NAT contributed by
  *         Hagai.
  * 
- * @version 1.2 $Revision: 1.37 $ $Date: 2010-11-04 20:44:13 $
+ * @version 1.2 $Revision: 1.38 $ $Date: 2010-11-29 10:54:59 $
  * 
  * 
  */
@@ -361,7 +361,7 @@ public abstract class MessageChannel {
      * @param address is the inet address to which the message is sent.
      * @param port is the port to which the message is directed.
      */
-    protected void logMessage(SIPMessage sipMessage, InetAddress address, int port, long time) {
+    public void logMessage(SIPMessage sipMessage, InetAddress address, int port, long time) {
         if (!getSIPStack().getStackLogger().isLoggingEnabled(ServerLogger.TRACE_MESSAGES))
             return;
 
