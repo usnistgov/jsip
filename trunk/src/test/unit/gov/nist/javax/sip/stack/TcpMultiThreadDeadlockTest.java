@@ -192,7 +192,7 @@ public class TcpMultiThreadDeadlockTest extends TestCase {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            for(int q = 0; q<16000; q++) {
+            for(int q = 0; q<6000; q++) {
             	try {
             		Response okResponse = messageFactory.createResponse(180,
             				request);
@@ -438,8 +438,8 @@ boolean inUse = false;
             // If you want to try TCP transport change the following to
             String transport = "tcp";
             String peerHostPort = "127.0.0.1:5070";
-            properties.setProperty("javax.sip.OUTBOUND_PROXY", peerHostPort + "/"
-                    + transport);
+            //properties.setProperty("javax.sip.OUTBOUND_PROXY", peerHostPort + "/"
+            //        + transport);
             // If you want to use UDP then uncomment this.
             properties.setProperty("javax.sip.STACK_NAME", "shootist");
 
@@ -656,7 +656,7 @@ boolean inUse = false;
         this.shootme.init();
         this.shootist.init();
         try {
-            Thread.sleep(40000);
+            Thread.sleep(10000);
         } catch (Exception ex) {
 
         }

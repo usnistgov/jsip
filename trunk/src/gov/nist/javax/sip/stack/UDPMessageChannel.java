@@ -91,7 +91,7 @@ import javax.sip.message.Response;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.84 $ $Date: 2010-11-24 05:43:03 $
+ * @version 1.2 $Revision: 1.85 $ $Date: 2010-12-02 11:44:14 $
  */
 public class UDPMessageChannel extends MessageChannel implements
         ParseExceptionListener, Runnable, RawMessageChannel {
@@ -281,7 +281,7 @@ public class UDPMessageChannel extends MessageChannel implements
                 // Send a heartbeat to the thread auditor
                 threadHandle.ping();
                 try {
-                    packet = udpMessageProcessor.messageQueue.take();
+                    packet = udpMessageProcessor.messageQueue.take().packet;
                 } catch (InterruptedException ex) {
                     if (!udpMessageProcessor.isRunning)
                         return;
