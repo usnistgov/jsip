@@ -102,7 +102,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.176 $ $Date: 2010-11-29 10:54:59 $
+ * @version 1.2 $Revision: 1.177 $ $Date: 2010-12-02 11:44:13 $
  */
 public abstract class SIPTransactionStack implements
         SIPTransactionEventListener, SIPDialogEventListener {
@@ -368,7 +368,7 @@ public abstract class SIPTransactionStack implements
     // Send UDP buffer size
     protected int sendUdpBufferSize;
 
-    protected boolean stackDoesCongestionControl = true;
+    protected int stackCongenstionControlTimeout = 0;
 
     protected boolean isBackToBackUserAgent = false;
 

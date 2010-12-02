@@ -50,7 +50,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size).
  * Each UDP message is processed in its own thread).
  *
- * @version 1.2 $Revision: 1.44 $ $Date: 2010-06-11 19:24:15 $
+ * @version 1.2 $Revision: 1.45 $ $Date: 2010-12-02 11:44:13 $
  *
  * @author M. Ranganathan  <br/>
  *
@@ -75,7 +75,12 @@ public class UDPMessageProcessor extends MessageProcessor {
     /**
      * Incoming messages are queued here.
      */
-    protected BlockingQueue<DatagramPacket> messageQueue;
+    protected BlockingQueue<DatagramQueuedMessageDispatch> messageQueue;
+    
+    /**
+     * Auditing taks that checks for outdated requests in the queue
+     */
+    BlockingQueueDispatchAuditor congestionAuditor;
 
     /**
      * A list of message channels that we have started.
@@ -118,7 +123,13 @@ public class UDPMessageProcessor extends MessageProcessor {
         if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             sipStack.getStackLogger().logDebug("Max Message size is " + maxMessageSize);
         }
-        this.messageQueue = new LinkedBlockingQueue<DatagramPacket>();
+        this.messageQueue = new LinkedBlockingQueue<DatagramQueuedMessageDispatch>();
+        if(sipStack.stackCongenstionControlTimeout>0) {
+        	this.congestionAuditor = new BlockingQueueDispatchAuditor(this.messageQueue);
+        	this.congestionAuditor.setLogger(getSIPStack().getStackLogger());
+        	this.congestionAuditor.setTimeout(sipStack.stackCongenstionControlTimeout);
+        	this.congestionAuditor.start(2000);
+        }
 
         this.port = port;
         try {
@@ -207,40 +218,6 @@ public class UDPMessageProcessor extends MessageProcessor {
                 byte message[] = new byte[bufsize];
                 DatagramPacket packet = new DatagramPacket(message, bufsize);
                 sock.receive(packet);
-
-           
-             
-             // This is a simplistic congestion control algorithm.
-             // It accepts packets if queuesize is < LOWAT. It drops
-             // requests if the queue size exceeds a HIGHWAT and accepts
-             // requests with probability p proportional to the difference
-             // between current queue size and LOWAT in the range
-             // of queue sizes between HIGHWAT and LOWAT.
-             // TODO -- penalize spammers by looking at the source
-             // port and IP address.
-             if ( sipStack.stackDoesCongestionControl ) {  
-            	 if ( this.messageQueue.size() >= HIGHWAT) {
-            		 if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-            			 sipStack.getStackLogger().logDebug("Dropping message -- queue length exceeded");
-            		 }
-            		 //System.out.println("HIGHWAT Drop!");
-            		 continue;
-            	 } else if ( this.messageQueue.size() > LOWAT && this .messageQueue.size() < HIGHWAT ) {
-            		 // Drop the message with a probabilty that is linear in the range 0 to 1
-            		 float threshold = ((float)(messageQueue.size() - LOWAT))/ ((float)(HIGHWAT - LOWAT));
-            		 boolean decision = Math.random() > 1.0 - threshold;
-            		 if ( decision ) {
-            			 if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                            sipStack.getStackLogger().logDebug("Dropping message with probability  " + (1.0 - threshold));
-
-            			 }
-            			 //System.out.println("RED Drop!");
-            			 continue;
-            		 }
-            	 }
-             }
-                
-                
                 
                 // Count of # of packets in process.
                 // this.useCount++;
@@ -251,7 +228,7 @@ public class UDPMessageProcessor extends MessageProcessor {
                     // condition you will have to call notifyAll instead of
                     // notify below.
 
-                    this.messageQueue.offer(packet);                 
+                    this.messageQueue.offer(new DatagramQueuedMessageDispatch(packet, System.currentTimeMillis()));                 
 
                 } else {
                     new UDPMessageChannel(sipStack, this, packet);
