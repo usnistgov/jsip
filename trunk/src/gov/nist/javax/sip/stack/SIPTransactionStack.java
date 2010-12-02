@@ -102,7 +102,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.177 $ $Date: 2010-12-02 11:44:13 $
+ * @version 1.2 $Revision: 1.178 $ $Date: 2010-12-02 15:48:40 $
  */
 public abstract class SIPTransactionStack implements
         SIPTransactionEventListener, SIPDialogEventListener {
@@ -727,7 +727,7 @@ public abstract class SIPTransactionStack implements
      *            -- dialog to put into the dialog table.
      *
      */
-    public void putDialog(SIPDialog dialog) {
+    public SIPDialog putDialog(SIPDialog dialog) {
         String dialogId = dialog.getDialogId();
         if (dialogTable.containsKey(dialogId)) {
             if (stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
@@ -735,7 +735,7 @@ public abstract class SIPTransactionStack implements
                         .logDebug("putDialog: dialog already exists" + dialogId
                                 + " in table = " + dialogTable.get(dialogId));
             }
-            return;
+            return dialogTable.get(dialogId);
         }
         if (stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             stackLogger.logDebug("putDialog dialogId=" + dialogId
@@ -749,7 +749,7 @@ public abstract class SIPTransactionStack implements
                 this.serverDialogMergeTestTable.put(dialog.getMergeId(), dialog);
 
         }
-
+        return dialog;
     }
 
     /**
