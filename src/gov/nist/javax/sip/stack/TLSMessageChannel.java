@@ -65,18 +65,18 @@ import javax.sip.message.Response;
  * talks to the message parser via a pipe. The message parser calls back via the
  * parseError or processMessage functions that are defined as part of the
  * SIPMessageListener interface.
- * 
+ *
  * @see gov.nist.javax.sip.parser.PipelinedMsgParser
- * 
- * 
+ *
+ *
  * @author M. Ranganathan
- * 
- * 
- * @version 1.2 $Revision: 1.42 $ $Date: 2010-12-02 22:04:17 $
+ *
+ *
+ * @version 1.2 $Revision: 1.43 $ $Date: 2010-12-02 22:44:53 $
  */
 public final class TLSMessageChannel extends MessageChannel implements
         SIPMessageListener, Runnable, RawMessageChannel {
-	private static StackLogger logger = CommonLogger.getLogger(TLSMessageChannel.class);
+    private static StackLogger logger = CommonLogger.getLogger(TLSMessageChannel.class);
     private Socket mySock;
 
     private PipelinedMsgParser myParser;
@@ -118,14 +118,14 @@ public final class TLSMessageChannel extends MessageChannel implements
      * with the sipStack being freed up to handle new connections. The sock
      * input is the socket that is returned from the accept. Global data that is
      * shared by all threads is accessible in the Server structure.
-     * 
+     *
      * @param sock
      *            Socket from which to read and write messages. The socket is
      *            already connected (was created as a result of an accept).
-     * 
+     *
      * @param sipStack
      *            Ptr to SIP Stack
-     * 
+     *
      * @param msgProcessor
      *            -- the message processor that created us.
      */
@@ -174,7 +174,7 @@ public final class TLSMessageChannel extends MessageChannel implements
 
     /**
      * Constructor - connects to the given inet address.
-     * 
+     *
      * @param inetAddr
      *            inet address to connect to.
      * @param sipStack
@@ -231,7 +231,7 @@ public final class TLSMessageChannel extends MessageChannel implements
 
     /**
      * Get my SIP Stack.
-     * 
+     *
      * @return The SIP Stack for this message channel.
      */
     public SIPTransactionStack getSIPStack() {
@@ -240,7 +240,7 @@ public final class TLSMessageChannel extends MessageChannel implements
 
     /**
      * get the transport string.
-     * 
+     *
      * @return "tcp" in this case.
      */
     public String getTransport() {
@@ -249,7 +249,7 @@ public final class TLSMessageChannel extends MessageChannel implements
 
     /**
      * get the address of the client that sent the data to us.
-     * 
+     *
      * @return Address of the client that sent us data that resulted in this
      *         channel being created.
      */
@@ -271,7 +271,7 @@ public final class TLSMessageChannel extends MessageChannel implements
     /**
      * Send message to whoever is connected to us. Uses the topmost via address
      * to send to.
-     * 
+     *
      * @param msg
      *            is the message to send.
      * @param retry
@@ -307,7 +307,7 @@ public final class TLSMessageChannel extends MessageChannel implements
     /**
      * Return a formatted message to the client. We try to re-connect with the
      * peer on the other end if possible.
-     * 
+     *
      * @param sipMessage
      *            Message to send.
      * @throws IOException
@@ -320,6 +320,13 @@ public final class TLSMessageChannel extends MessageChannel implements
 
         this.sendMessage(msg, sipMessage instanceof SIPRequest);
 
+        // we didn't run into any problems while sending the message so let's
+        // now set ports and addresses before feeding it to the logger.
+        sipMessage.setRemoteAddress(this.peerAddress);
+        sipMessage.setRemotePort(this.peerPort);
+        sipMessage.setLocalAddress(this.getMessageProcessor().getIpAddress());
+        sipMessage.setLocalPort(this.getPort());
+
         if (this.logger.isLoggingEnabled(
                 ServerLogger.TRACE_MESSAGES))
             logMessage(sipMessage, peerAddress, peerPort, time);
@@ -327,7 +334,7 @@ public final class TLSMessageChannel extends MessageChannel implements
 
     /**
      * Send a message to a specified address.
-     * 
+     *
      * @param message
      *            Pre-formatted message to send.
      * @param receiverAddress
@@ -373,7 +380,7 @@ public final class TLSMessageChannel extends MessageChannel implements
     /**
      * Exception processor for exceptions detected from the parser. (This is
      * invoked by the parser when an error is detected).
-     * 
+     *
      * @param sipMessage
      *            -- the message that incurred the error.
      * @param ex
@@ -435,11 +442,11 @@ public final class TLSMessageChannel extends MessageChannel implements
     /**
      * Gets invoked by the parser as a callback on successful message parsing
      * (i.e. no parser errors).
-     * 
+     *
      * @param sipMessage
      *            Message to process (this calls the application for processing
      *            the message).
-     * 
+     *
      *            Jvb: note that this code is identical to TCPMessageChannel,
      *            refactor some day
      */
@@ -447,6 +454,8 @@ public final class TLSMessageChannel extends MessageChannel implements
         try {
             sipMessage.setRemoteAddress(this.peerAddress);
             sipMessage.setRemotePort(this.getPeerPort());
+            sipMessage.setLocalAddress(this.getMessageProcessor().getIpAddress());
+            sipMessage.setLocalPort(this.getPort());
 
             if (sipMessage.getFrom() == null || sipMessage.getTo() == null
                     || sipMessage.getCallId() == null
@@ -768,7 +777,7 @@ public final class TLSMessageChannel extends MessageChannel implements
 
     /**
      * Equals predicate.
-     * 
+     *
      * @param other
      *            is the other object to compare ourselves to for equals
      */
@@ -802,7 +811,7 @@ public final class TLSMessageChannel extends MessageChannel implements
 
     /**
      * Get the host to assign to outgoing messages.
-     * 
+     *
      * @return the host to assign to the via header.
      */
     public String getViaHost() {
@@ -811,7 +820,7 @@ public final class TLSMessageChannel extends MessageChannel implements
 
     /**
      * Get the port for outgoing messages sent from the channel.
-     * 
+     *
      * @return the port to assign to the via header.
      */
     public int getViaPort() {
@@ -820,7 +829,7 @@ public final class TLSMessageChannel extends MessageChannel implements
 
     /**
      * Get the port of the peer to whom we are sending messages.
-     * 
+     *
      * @return the peer port.
      */
     public int getPeerPort() {
