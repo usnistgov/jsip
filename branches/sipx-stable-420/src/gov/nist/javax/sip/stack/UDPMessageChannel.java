@@ -91,7 +91,7 @@ import javax.sip.address.Hop;
  *
  *
  *
- * @version 1.2 $Revision: 1.70.2.5 $ $Date: 2010-11-23 19:23:11 $
+ * @version 1.2 $Revision: 1.70.2.6 $ $Date: 2010-12-02 01:41:35 $
  */
 public class UDPMessageChannel extends MessageChannel implements
         ParseExceptionListener, Runnable, RawMessageChannel {
@@ -282,8 +282,10 @@ public class UDPMessageChannel extends MessageChannel implements
                                 return;
                         }
                     }
-                    packet = (DatagramPacket) ((UDPMessageProcessor) messageProcessor).messageQueue
-                            .removeFirst();
+                    DatagramQueuedMessageDispatch dispatch = (DatagramQueuedMessageDispatch) ((UDPMessageProcessor) messageProcessor).messageQueue
+                    .poll();
+                    if(dispatch == null) continue;
+                    packet = dispatch.packet;
 
                 }
                 this.incomingPacket = packet;
