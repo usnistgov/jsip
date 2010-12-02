@@ -59,7 +59,7 @@ import javax.sip.address.Hop;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.65.2.8 $ $Date: 2010-11-23 19:23:11 $
+ * @version 1.2 $Revision: 1.65.2.9 $ $Date: 2010-12-02 08:06:38 $
  */
 public class TCPMessageChannel extends MessageChannel implements SIPMessageListener, Runnable,
         RawMessageChannel {
@@ -286,14 +286,16 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
     public void sendMessage(final SIPMessage sipMessage) throws IOException {
     	
         for (MessageProcessor messageProcessor : getSIPStack().getMessageProcessors()) {
-        	getSIPStack().getStackLogger().logError("messageProcessor=" + messageProcessor + 
-        			", addr=" + messageProcessor.getIpAddress().getHostAddress() +
-        			", peeraddr= " + this.getPeerAddress() + 
-        			", mpTransport=" + messageProcessor.getTransport() +
-        			", mpPort=" + messageProcessor.getPort() +
-        			", peerport=" + this.getPeerPort() +
-        			", peertrnsport=" + this.getPeerProtocol() + " EL\n");
-        	
+        	if (getSIPStack().getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG)){
+        		getSIPStack().getStackLogger().logDebug("messageProcessor=" + messageProcessor + 
+        				", addr=" + messageProcessor.getIpAddress().getHostAddress() +
+        				", peeraddr= " + this.getPeerAddress() + 
+        				", mpTransport=" + messageProcessor.getTransport() +
+        				", mpPort=" + messageProcessor.getPort() +
+        				", peerport=" + this.getPeerPort() +
+        				", peertrnsport=" + this.getPeerProtocol() + " EL\n");
+        	}
+
             if (messageProcessor.getIpAddress().getHostAddress().equals(this.getPeerAddress())
                     && messageProcessor.getPort() == this.getPeerPort()
                     && messageProcessor.getTransport().equalsIgnoreCase(this.getPeerProtocol())) {
