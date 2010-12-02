@@ -28,9 +28,11 @@
  *******************************************************************************/
 package gov.nist.javax.sip.stack;
 
+import gov.nist.core.CommonLogger;
 import gov.nist.core.HostPort;
 import gov.nist.core.InternalErrorHandler;
 import gov.nist.core.LogWriter;
+import gov.nist.core.StackLogger;
 import gov.nist.core.ThreadAuditor;
 import gov.nist.javax.sip.SipStackImpl;
 
@@ -50,7 +52,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size).
  * Each UDP message is processed in its own thread).
  *
- * @version 1.2 $Revision: 1.45 $ $Date: 2010-12-02 11:44:13 $
+ * @version 1.2 $Revision: 1.46 $ $Date: 2010-12-02 22:04:12 $
  *
  * @author M. Ranganathan  <br/>
  *
@@ -67,6 +69,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  * performance.
  */
 public class UDPMessageProcessor extends MessageProcessor {
+	
+	private static StackLogger logger = CommonLogger.getLogger(UDPMessageProcessor.class);
     /**
      * The Mapped port (in case STUN suport is enabled)
      */
@@ -120,13 +124,12 @@ public class UDPMessageProcessor extends MessageProcessor {
         if(sipStack.getMaxMessageSize() < SipStackImpl.MAX_DATAGRAM_SIZE && sipStack.getMaxMessageSize() > 0) {
             this.maxMessageSize = sipStack.getMaxMessageSize();
         }
-        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-            sipStack.getStackLogger().logDebug("Max Message size is " + maxMessageSize);
+        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+            logger.logDebug("Max Message size is " + maxMessageSize);
         }
         this.messageQueue = new LinkedBlockingQueue<DatagramQueuedMessageDispatch>();
         if(sipStack.stackCongenstionControlTimeout>0) {
         	this.congestionAuditor = new BlockingQueueDispatchAuditor(this.messageQueue);
-        	this.congestionAuditor.setLogger(getSIPStack().getStackLogger());
         	this.congestionAuditor.setTimeout(sipStack.stackCongenstionControlTimeout);
         	this.congestionAuditor.start(2000);
         }
@@ -236,19 +239,19 @@ public class UDPMessageProcessor extends MessageProcessor {
             } catch (SocketTimeoutException ex) {
               // This socket timeout alows us to ping the thread auditor periodically
             } catch (SocketException ex) {
-                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                    getSIPStack().getStackLogger()
+                if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                    logger
                             .logDebug("UDPMessageProcessor: Stopping");
                 isRunning = false;
             } catch (IOException ex) {
                 isRunning = false;
                 ex.printStackTrace();
-                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                    getSIPStack().getStackLogger()
+                if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                    logger
                             .logDebug("UDPMessageProcessor: Got an IO Exception");
             } catch (Exception ex) {
-                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                    getSIPStack().getStackLogger()
+                if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                    logger
                             .logDebug("UDPMessageProcessor: Unexpected Exception - quitting");
                 InternalErrorHandler.handleException(ex);
                 return;

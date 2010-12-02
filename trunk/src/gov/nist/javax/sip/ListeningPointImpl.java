@@ -34,9 +34,11 @@ import javax.sip.address.SipURI;
 import javax.sip.header.ContactHeader;
 import javax.sip.header.ViaHeader;
 
+import gov.nist.core.CommonLogger;
 import gov.nist.core.Host;
 import gov.nist.core.HostPort;
 import gov.nist.core.InternalErrorHandler;
+import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.address.AddressImpl;
 import gov.nist.javax.sip.address.SipUri;
 import gov.nist.javax.sip.header.Contact;
@@ -47,7 +49,7 @@ import gov.nist.javax.sip.stack.*;
 /**
  * Implementation of the ListeningPoint interface
  *
- * @version 1.2 $Revision: 1.17 $ $Date: 2010-09-13 14:58:00 $
+ * @version 1.2 $Revision: 1.18 $ $Date: 2010-12-02 22:04:18 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -55,7 +57,7 @@ import gov.nist.javax.sip.stack.*;
  *
  */
 public class ListeningPointImpl implements javax.sip.ListeningPoint, gov.nist.javax.sip.ListeningPointExt {
-
+	private static StackLogger logger = CommonLogger.getLogger(ListeningPointImpl.class);
 
     protected String transport;
 
@@ -237,7 +239,7 @@ public class ListeningPointImpl implements javax.sip.ListeningPoint, gov.nist.ja
             
             return contact;
         } catch (Exception ex) {
-            InternalErrorHandler.handleException("Unexpected exception",sipStack.getStackLogger());
+            InternalErrorHandler.handleException("Unexpected exception",logger);
             return null;
         }
     }

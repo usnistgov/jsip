@@ -36,8 +36,10 @@ package gov.nist.javax.sip.parser;
  * life goes slower but more reliably.
  *
  */
+import gov.nist.core.CommonLogger;
 import gov.nist.core.Debug;
 import gov.nist.core.InternalErrorHandler;
+import gov.nist.core.LogLevels;
 import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.header.ContentLength;
 import gov.nist.javax.sip.message.SIPMessage;
@@ -73,14 +75,14 @@ import java.util.concurrent.TimeUnit;
  * accessed from the SIPMessage using the getContent and getContentBytes methods
  * provided by the SIPMessage class.
  *
- * @version 1.2 $Revision: 1.38 $ $Date: 2010-12-02 11:44:16 $
+ * @version 1.2 $Revision: 1.39 $ $Date: 2010-12-02 22:04:22 $
  *
  * @author M. Ranganathan
  *
  * @see SIPMessageListener
  */
 public final class PipelinedMsgParser implements Runnable {
-
+	private static StackLogger logger = CommonLogger.getLogger(PipelinedMsgParser.class);
 
 
     /**
@@ -127,9 +129,6 @@ public final class PipelinedMsgParser implements Runnable {
             Pipeline in, boolean debug, int maxMessageSize) {
         this();
         this.sipStack = sipStack;
-        if(staticQueueAuditor != null) {
-        	 staticQueueAuditor.setLogger(sipStack.getStackLogger());
-        }
         smp = sipStack.getMessageParserFactory().createMessageParser(sipStack);
         this.sipMessageListener = sipMessageListener;
         rawInputStream = in;
@@ -262,28 +261,28 @@ public final class PipelinedMsgParser implements Runnable {
             try {                                                                                
                 semaphore.acquire();                                        
             } catch (InterruptedException e) {
-                sipStack.getStackLogger().logError("Semaphore acquisition for callId " + callId + " interrupted", e);
+                logger.logError("Semaphore acquisition for callId " + callId + " interrupted", e);
             }
             // once acquired we get the first message to process
             SIPMessage message = messagesForCallID.poll();
-            if (sipStack.getStackLogger().isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-            	sipStack.getStackLogger().logDebug("semaphore acquired for message " + message);
+            if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+            	logger.logDebug("semaphore acquired for message " + message);
             }
             
             try {
                 sipMessageListener.processMessage(message);
             } catch (Exception e) {
-            	sipStack.getStackLogger().logError("Error occured processing message", e);    
+            	logger.logError("Error occured processing message", e);    
                 // We do not break the TCP connection because other calls use the same socket here
             } finally {                                        
                 if(callIDOrderingStructure.getMessagesForCallID().size() <= 0) {
                     messagesOrderingMap.remove(callId);
-                    if (sipStack.getStackLogger().isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-                    	sipStack.getStackLogger().logDebug("CallIDOrderingStructure removed for message " + callId);
+                    if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+                    	logger.logDebug("CallIDOrderingStructure removed for message " + callId);
                     }
                 }
-                if (sipStack.getStackLogger().isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-                	sipStack.getStackLogger().logDebug("releasing semaphore for message " + message);
+                if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+                	logger.logDebug("releasing semaphore for message " + message);
                 }
                 //release the semaphore so that another thread can process another message from the call id queue in the correct order
                 // or a new message from another call id queue
@@ -311,7 +310,7 @@ public final class PipelinedMsgParser implements Runnable {
     public void run() {
 
         Pipeline inputStream = this.rawInputStream;
-        final StackLogger stackLogger = sipStack.getStackLogger();
+        final StackLogger stackLogger = logger;
         // inputStream = new MyFilterInputStream(this.rawInputStream);
         // I cannot use buffered reader here because we may need to switch
         // encodings to read the message body.
@@ -321,8 +320,9 @@ public final class PipelinedMsgParser implements Runnable {
                 // this.messageSize = 0;
                 StringBuilder inputBuffer = new StringBuilder();
 
-                if (Debug.parserDebug)
-                    Debug.println("Starting parse!");
+                if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+                	logger.logDebug("Starting to parse.");
+                }
 
                 String line1;
                 String line2 = null;
@@ -332,8 +332,8 @@ public final class PipelinedMsgParser implements Runnable {
                         line1 = readLine(inputStream);
                         // ignore blank lines.
                         if (line1.equals("\n")) {
-                            if (Debug.parserDebug) {
-                                Debug.println("Discarding blank line. ");
+                        	if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+                            	logger.logDebug("Discarding blank line");
                             }
                             continue;
                         } else
@@ -346,7 +346,9 @@ public final class PipelinedMsgParser implements Runnable {
                                 } catch (InterruptedException e) {}                                
                             }                             
                         }
-                        Debug.printStackTrace(ex);
+                        if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+                        	logger.logStackTrace(LogLevels.TRACE_DEBUG);
+                        }
                         this.rawInputStream.stopTimer();
                         return;
                     }
@@ -356,7 +358,9 @@ public final class PipelinedMsgParser implements Runnable {
                 // Guard against bad guys.
                 this.rawInputStream.startTimer();
 
-                Debug.println("Reading Input Stream");
+                if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+                	logger.logDebug("Reading Input stream.");
+                }
                 while (true) {
                     try {
                         line2 = readLine(inputStream);
@@ -372,7 +376,9 @@ public final class PipelinedMsgParser implements Runnable {
                             }          
                         } 
                         this.rawInputStream.stopTimer();
-                        Debug.printStackTrace(ex);
+                        if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+                        	logger.logStackTrace(LogLevels.TRACE_DEBUG);
+                        }
                         return;
                     }
                 }
@@ -399,8 +405,8 @@ public final class PipelinedMsgParser implements Runnable {
                     continue;
                 }
 
-                if (Debug.debug) {
-                    Debug.println("Completed parsing message");
+                if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+                	logger.logDebug("Completed parsing message");
                 }
                 ContentLength cl = (ContentLength) sipMessage
                         .getContentLength();
@@ -411,8 +417,8 @@ public final class PipelinedMsgParser implements Runnable {
                     contentLength = 0;
                 }
 
-                if (Debug.debug) {
-                    Debug.println("contentLength " + contentLength);
+                if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+                	logger.logDebug("Content length = " + contentLength);
                 }
 
                 if (contentLength == 0) {
@@ -604,6 +610,12 @@ public final class PipelinedMsgParser implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.38  2010/12/02 11:44:16  vralev
+ * Issue number:  346
+ * Obtained from: vralev
+ *
+ * Congestion control. Patch + Tests for HEAD
+ *
  * Revision 1.37  2010/10/26 23:49:12  vralev
  * Issue number:  337
  * Obtained from: vralev
