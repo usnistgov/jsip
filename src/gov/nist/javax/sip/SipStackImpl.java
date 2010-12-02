@@ -375,9 +375,10 @@ import javax.sip.message.Request;
  * causing even more retransmissions. Good values to this property for servers
  * is a big number in the order of 8*8*1024 or higher.</li>
  * 
- * <li><b>gov.nist.javax.sip.CONGESTION_CONTROL_ENABLED = boolean </b> Defailt
- * is true. If set to true stack will enforce queue length limitation for UDP.
- * The Max queue size is 5000 messages. The minimum queue size is 2500 messages.
+ * <li><b>gov.nist.javax.sip.CONGESTION_CONTROL_TIMEOUT = int </b> How 
+ * much time messages are allowed to wait in queue before being dropped due to
+ * stack being too slow to respond. Default value is 8000 ms. The value is in
+ *  milliseconds
  * </li>
  * 
  * <li><b>gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE = integer </b> 
@@ -494,7 +495,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.125.2.3 $ $Date: 2010-11-23 19:23:10 $
+ * @version 1.2 $Revision: 1.125.2.4 $ $Date: 2010-12-02 01:41:37 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -900,13 +901,20 @@ public class SipStackImpl extends SIPTransactionStack implements
 			}
 		}
 		
+
+		int stackCongestionControlTimeout = Integer
+				.parseInt(configurationProperties.getProperty(
+						"gov.nist.javax.sip.CONGESTION_CONTROL_TIMEOUT",
+						"8000"));
+		super.stackCongestionControlTimeout = stackCongestionControlTimeout;
+		
 		String tcpTreadPoolSize = configurationProperties
 		.getProperty("gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE");
 		if (tcpTreadPoolSize != null) {
 			try {
 				int threads = new Integer(tcpTreadPoolSize).intValue();
 				super.setTcpPostParsingThreadPoolSize(threads);
-				PipelinedMsgParser.setPostParseExcutorSize(threads);
+				PipelinedMsgParser.setPostParseExcutorSize(threads, stackCongestionControlTimeout);
 			} catch (NumberFormatException ex) {
 				if (isLoggingEnabled())
 					this.getStackLogger().logError(
@@ -1132,12 +1140,6 @@ public class SipStackImpl extends SIPTransactionStack implements
 						.toString());
 		bufferSizeInteger = new Integer(bufferSize).intValue();
 		super.setSendUdpBufferSize(bufferSizeInteger);
-
-		boolean congetstionControlEnabled = Boolean
-				.parseBoolean(configurationProperties.getProperty(
-						"gov.nist.javax.sip.CONGESTION_CONTROL_ENABLED",
-						Boolean.TRUE.toString()));
-		super.stackDoesCongestionControl = congetstionControlEnabled;
 
 		super.isBackToBackUserAgent = Boolean
 				.parseBoolean(configurationProperties.getProperty(

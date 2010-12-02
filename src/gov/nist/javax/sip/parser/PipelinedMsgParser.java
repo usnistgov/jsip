@@ -41,17 +41,24 @@ import gov.nist.core.InternalErrorHandler;
 import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.header.ContentLength;
 import gov.nist.javax.sip.message.SIPMessage;
+import gov.nist.javax.sip.stack.BlockingQueueDispatchAuditor;
+import gov.nist.javax.sip.stack.QueuedMessageDispatchBase;
 import gov.nist.javax.sip.stack.SIPTransactionStack;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This implements a pipelined message parser suitable for use with a stream -
@@ -64,7 +71,7 @@ import java.util.concurrent.Semaphore;
  * accessed from the SIPMessage using the getContent and getContentBytes methods
  * provided by the SIPMessage class.
  *
- * @version 1.2 $Revision: 1.28.2.6 $ $Date: 2010-10-13 15:26:52 $
+ * @version 1.2 $Revision: 1.28.2.7 $ $Date: 2010-12-02 01:41:36 $
  *
  * @author M. Ranganathan
  *
@@ -118,6 +125,9 @@ public final class PipelinedMsgParser implements Runnable {
             Pipeline in, boolean debug, int maxMessageSize) {
         this();
         this.sipStack = sipStack;
+        if(staticQueueAuditor != null) {
+        	 staticQueueAuditor.setLogger(sipStack.getStackLogger());
+        }
         this.sipMessageListener = sipMessageListener;
         rawInputStream = in;
         this.maxMessageSize = maxMessageSize;
@@ -227,6 +237,62 @@ public final class PipelinedMsgParser implements Runnable {
         }
         return new String(lineBuffer,0,counter,"UTF-8");
     }
+    
+    public class Dispatch implements Runnable, QueuedMessageDispatchBase{
+    	CallIDOrderingStructure callIDOrderingStructure;
+    	String callId;
+    	long time;
+    	public Dispatch(CallIDOrderingStructure callIDOrderingStructure, String callId) {
+    		this.callIDOrderingStructure = callIDOrderingStructure;
+    		this.callId = callId;
+    		time = System.currentTimeMillis();
+    	}
+        public void run() {   
+        	
+            // we acquire it in the thread to avoid blocking other messages with a different call id
+            // that could be processed in parallel                                    
+            Semaphore semaphore = callIDOrderingStructure.getSemaphore();
+            final Queue<SIPMessage> messagesForCallID = callIDOrderingStructure.getMessagesForCallID();
+            try {                                                                                
+                semaphore.acquire();                                        
+            } catch (InterruptedException e) {
+                sipStack.getStackLogger().logError("Semaphore acquisition for callId " + callId + " interrupted", e);
+            }
+            // once acquired we get the first message to process
+            SIPMessage message = messagesForCallID.poll();
+            if (sipStack.getStackLogger().isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+            	sipStack.getStackLogger().logDebug("semaphore acquired for message " + message);
+            }
+            
+            try {
+                sipMessageListener.processMessage(message);
+            } catch (Exception e) {
+            	sipStack.getStackLogger().logError("Error occured processing message", e);    
+                // We do not break the TCP connection because other calls use the same socket here
+            } finally {                                        
+                if(callIDOrderingStructure.getMessagesForCallID().size() <= 0) {
+                    messagesOrderingMap.remove(callId);
+                    if (sipStack.getStackLogger().isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+                    	sipStack.getStackLogger().logDebug("CallIDOrderingStructure removed for message " + callId);
+                    }
+                }
+                if (sipStack.getStackLogger().isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+                	sipStack.getStackLogger().logDebug("releasing semaphore for message " + message);
+                }
+                //release the semaphore so that another thread can process another message from the call id queue in the correct order
+                // or a new message from another call id queue
+                semaphore.release(); 
+                if(messagesOrderingMap.isEmpty()) {
+                    synchronized (messagesOrderingMap) {
+                        messagesOrderingMap.notify();
+                    }
+                }
+            }
+        }
+		public long getReceptionTime() {
+			return time;
+		}
+    };
     /**
      * This is input reading thread for the pipelined parser. You feed it input
      * through the input stream (see the constructor) and it calls back an event
@@ -410,52 +476,8 @@ public final class PipelinedMsgParser implements Runnable {
                             // to avoid blocking other messages with a different call id
                             // that could be processed in parallel
                             callIDOrderingStructure.getMessagesForCallID().offer(sipMessage);                                                                                   
-                            
-                            Thread messageDispatchTask = new Thread() {
-                                @Override
-                                public void run() {                                    
-                                    // we acquire it in the thread to avoid blocking other messages with a different call id
-                                    // that could be processed in parallel                                    
-                                    Semaphore semaphore = callIDOrderingStructure.getSemaphore();
-                                    final Queue<SIPMessage> messagesForCallID = callIDOrderingStructure.getMessagesForCallID();
-                                    try {                                                                                
-                                        semaphore.acquire();                                        
-                                    } catch (InterruptedException e) {
-                                        stackLogger.logError("Semaphore acquisition for callId " + callId + " interrupted", e);
-                                    }
-                                    // once acquired we get the first message to process
-                                    SIPMessage message = messagesForCallID.poll();
-                                    if (stackLogger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-                                        stackLogger.logDebug("semaphore acquired for message " + message);
-                                    }
-                                    
-                                    try {
-                                        sipMessageListener.processMessage(message);
-                                    } catch (Exception e) {
-                                        stackLogger.logError("Error occured processing message", e);    
-                                        // We do not break the TCP connection because other calls use the same socket here
-                                    } finally {                                        
-                                        if(callIDOrderingStructure.getMessagesForCallID().size() <= 0) {
-                                            messagesOrderingMap.remove(callId);
-                                            if (stackLogger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-                                                stackLogger.logDebug("CallIDOrderingStructure removed for message " + callId);
-                                            }
-                                        }
-                                        if (stackLogger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-                                            stackLogger.logDebug("releasing semaphore for message " + message);
-                                        }
-                                        //release the semaphore so that another thread can process another message from the call id queue in the correct order
-                                        // or a new message from another call id queue
-                                        semaphore.release();  
-                                        if(messagesOrderingMap.isEmpty()) {
-                                            synchronized (messagesOrderingMap) {
-                                                messagesOrderingMap.notify();
-                                            }
-                                        }
-                                    }
-                                }
-                            };
-                            postParseExecutor.execute(messageDispatchTask); // run in executor thread
+                         
+                            postParseExecutor.execute(new Dispatch(callIDOrderingStructure, callId));
                         }
                     } catch (Exception ex) {
                         // fatal error in processing - close the
@@ -476,15 +498,40 @@ public final class PipelinedMsgParser implements Runnable {
     
     private static ExecutorService postParseExecutor = null;
     
-    public static void setPostParseExcutorSize(int threads){
-    	if(postParseExecutor == null) { // Only take into account the first setting
+    public static class NamedThreadFactory implements ThreadFactory {
+    	static long threadNumber = 0;
+		@Override
+		public Thread newThread(Runnable arg0) {
+			Thread thread = new Thread(arg0);
+			thread.setName("SIP-TCP-Core-PipelineThreadpool-" + threadNumber++%999999999);
+			return thread;
+		}
+    	
+    }
+
+    public static BlockingQueue<Runnable> staticQueue;
+    public static BlockingQueueDispatchAuditor staticQueueAuditor;
+    public static void setPostParseExcutorSize(int threads, int timeout){
+    	if(postParseExecutor == null) {
     		if(threads<=0) {
     			postParseExecutor = null;
     		} else {
-    			postParseExecutor = Executors.newFixedThreadPool(threads);
+    			if(staticQueueAuditor != null) {
+    				staticQueueAuditor.stop();
+    			}
+    			staticQueue = new LinkedBlockingQueue<Runnable>();
+    			postParseExecutor = new ThreadPoolExecutor(threads, threads,
+    					0, TimeUnit.MINUTES, staticQueue,
+    					new NamedThreadFactory());
+    			if(timeout>0) {
+    				staticQueueAuditor = new BlockingQueueDispatchAuditor(staticQueue);
+    				staticQueueAuditor.setTimeout(timeout);
+    				staticQueueAuditor.start(2000);
+    			}
     		}
     	}
     }
+
 
     /**
      * Data structure to make sure ordering of Messages is guaranteed under TCP when the post parsing thread pool is used
@@ -539,6 +586,14 @@ public final class PipelinedMsgParser implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.28.2.6  2010/10/13 15:26:52  deruelle_jean
+ * Fix for TCP calls under load freeze JAIN SIP with TCP_POST_PARSING_THREAD_POOL_SIZE > 0
+ *
+ * Issue number:
+ * Obtained from:
+ * Submitted by:  Jean Deruelle
+ * Reviewed by:
+ *
  * Revision 1.28.2.5  2010/10/12 18:47:22  deruelle_jean
  * Fix for restarting the stack when the gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE option is used
  *

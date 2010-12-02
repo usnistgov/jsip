@@ -39,7 +39,7 @@ import gov.nist.core.*;
  * packet, a new UDPMessageChannel is created (upto the max thread pool size).
  * Each UDP message is processed in its own thread).
  *
- * @version 1.2 $Revision: 1.37.2.1 $ $Date: 2010-11-23 19:23:12 $
+ * @version 1.2 $Revision: 1.37.2.2 $ $Date: 2010-12-02 01:41:35 $
  *
  * @author M. Ranganathan  <br/>
  *
@@ -131,7 +131,7 @@ public class UDPMessageProcessor extends MessageProcessor {
         }
     }
 
-
+    BlockingQueueDispatchAuditor audit;
 
     /**
      * Get port on which to listen for incoming stuff.
@@ -148,9 +148,15 @@ public class UDPMessageProcessor extends MessageProcessor {
     public void start() throws IOException {
 
 
-        this.isRunning = true;
-        Thread thread = new Thread(this);
-        thread.setDaemon(true);
+    	this.isRunning = true;
+    	if(getSIPStack().stackCongestionControlTimeout>0) {
+    		this.audit = new BlockingQueueDispatchAuditor(this.messageQueue);
+    		this.audit.setLogger(getSIPStack().getStackLogger());
+    		this.audit.setTimeout(getSIPStack().stackCongestionControlTimeout);
+    		this.audit.start(2000);
+    	}
+    	Thread thread = new Thread(this);
+    	thread.setDaemon(true);
         // Issue #32 on java.net
         thread.setName("UDPMessageProcessorThread");
         // Issue #184
@@ -190,42 +196,6 @@ public class UDPMessageProcessor extends MessageProcessor {
                 DatagramPacket packet = new DatagramPacket(message, bufsize);
                 sock.receive(packet);
 
-           
-             
-             // This is a simplistic congestion control algorithm.
-             // It accepts packets if queuesize is < LOWAT. It drops
-             // requests if the queue size exceeds a HIGHWAT and accepts
-             // requests with probability p proportional to the difference
-             // between current queue size and LOWAT in the range
-             // of queue sizes between HIGHWAT and LOWAT.
-             // TODO -- penalize spammers by looking at the source
-             // port and IP address.
-             if ( sipStack.stackDoesCongestionControl ) {  
-             if ( this.messageQueue.size() >= HIGHWAT) {
-                    if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                        sipStack.getStackLogger().logDebug("Dropping message -- queue length exceeded");
-
-                    }
-                    //System.out.println("HIGHWAT Drop!");
-                    continue;
-                } else if ( this.messageQueue.size() > LOWAT && this .messageQueue.size() < HIGHWAT ) {
-                    // Drop the message with a probabilty that is linear in the range 0 to 1
-                    float threshold = ((float)(messageQueue.size() - LOWAT))/ ((float)(HIGHWAT - LOWAT));
-                    boolean decision = Math.random() > 1.0 - threshold;
-                    if ( decision ) {
-                        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                            sipStack.getStackLogger().logDebug("Dropping message with probability  " + (1.0 - threshold));
-
-                        }
-                        //System.out.println("RED Drop!");
-                        continue;
-                    }
-
-                }
-             }
-                
-                
-                
                 // Count of # of packets in process.
                 // this.useCount++;
                 if (sipStack.threadPoolSize != -1) {
@@ -237,7 +207,7 @@ public class UDPMessageProcessor extends MessageProcessor {
 
                     synchronized (this.messageQueue) {
                         // was addLast
-                        this.messageQueue.add(packet);
+                        this.messageQueue.add(new DatagramQueuedMessageDispatch(packet, System.currentTimeMillis()));
                         this.messageQueue.notify();
                     }
                 } else {
@@ -280,7 +250,9 @@ public class UDPMessageProcessor extends MessageProcessor {
             this.isRunning = false;
             this.messageQueue.notifyAll();
             sock.close();
-
+            if(this.audit != null) {
+            	this.audit.stop();
+            }
 
         }
     }

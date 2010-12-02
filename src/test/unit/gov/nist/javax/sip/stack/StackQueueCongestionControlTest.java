@@ -55,7 +55,7 @@ import junit.framework.TestCase;
  * @author vralev
  *
  */
-public class TcpMultiThreadDeadlockTest extends TestCase {
+public class StackQueueCongestionControlTest extends TestCase {
 
     public class Shootme implements SipListener {
 
@@ -174,6 +174,8 @@ public class TcpMultiThreadDeadlockTest extends TestCase {
             }
 
         }
+        int volume;
+        int sentResponses;
 
         /**
          * Process the invite request.
@@ -192,7 +194,8 @@ public class TcpMultiThreadDeadlockTest extends TestCase {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            for(int q = 0; q<6000; q++) {
+            for(int q = 0; q<volume; q++) {
+            	sentResponses ++;
             	try {
             		Response okResponse = messageFactory.createResponse(180,
             				request);
@@ -260,7 +263,8 @@ public class TcpMultiThreadDeadlockTest extends TestCase {
             System.out.println("Transaction Time out");
         }
 
-        public void init() {
+        public void init(String transport, int volume) {
+        	this.volume = volume;
             SipFactory sipFactory = null;
             sipStack = null;
             sipFactory = SipFactory.getInstance();
@@ -297,7 +301,7 @@ public class TcpMultiThreadDeadlockTest extends TestCase {
                 addressFactory = sipFactory.createAddressFactory();
                 messageFactory = sipFactory.createMessageFactory();
                 ListeningPoint lp = sipStack.createListeningPoint("127.0.0.1",
-                        myPort, "tcp");
+                        myPort, transport);
 
                 Shootme listener = this;
 
@@ -339,6 +343,7 @@ public class TcpMultiThreadDeadlockTest extends TestCase {
 
         public void terminate() {
             this.sipStack.stop();
+            this.sipStack = null;
         }
 
     }
@@ -367,6 +372,9 @@ public class TcpMultiThreadDeadlockTest extends TestCase {
 
         boolean messageSeen = false;
 
+        public int receivedResponses=0;
+        public boolean inUse = false;
+        public int sleep;
 
 
 
@@ -386,10 +394,6 @@ public class TcpMultiThreadDeadlockTest extends TestCase {
 
         }
 
-
-
-int q=0;
-boolean inUse = false;
         public void processResponse(ResponseEvent responseReceivedEvent) {
         	try {
         		if(inUse!=false) {
@@ -397,8 +401,10 @@ boolean inUse = false;
         			throw new RuntimeException();
         		}
         		inUse = true;
-        		if(q%100==0) System.out.println("Receive " + q);
-        		q++;
+        		if(receivedResponses%100==0) System.out.println("Receive " + receivedResponses);
+        		if ( responseReceivedEvent.getResponse().getStatusCode() == 180) {
+        			receivedResponses++;Thread.sleep(sleep);
+        		}
         		if ( responseReceivedEvent.getResponse().getStatusCode() == Response.OK) {
 
         			Dialog d = responseReceivedEvent.getDialog();
@@ -414,7 +420,7 @@ boolean inUse = false;
         				fail("Error sending ACK");
         			}
         		}
-        	}finally {
+        	}catch(Exception e) {} finally {
         		inUse = false;
         	}
 
@@ -429,17 +435,17 @@ boolean inUse = false;
 
 
 
-        public void init() {
+        public void init(String threads, String timeout, int sleep, String transport) {
             SipFactory sipFactory = null;
+            this.sleep = sleep;
             sipStack = null;
             sipFactory = SipFactory.getInstance();
             sipFactory.setPathName("gov.nist");
             Properties properties = new Properties();
             // If you want to try TCP transport change the following to
-            String transport = "tcp";
             String peerHostPort = "127.0.0.1:5070";
-            properties.setProperty("javax.sip.OUTBOUND_PROXY", peerHostPort + "/"
-                    + transport);
+           // properties.setProperty("javax.sip.OUTBOUND_PROXY", peerHostPort + "/"
+           //         + transport);
             // If you want to use UDP then uncomment this.
             properties.setProperty("javax.sip.STACK_NAME", "shootist");
 
@@ -460,7 +466,11 @@ boolean inUse = false;
             // You need 16 (or TRACE) for logging traces. 32 (or DEBUG) for debug + traces.
             // Your code will limp at 32 but it is best for debugging.
             properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "0");
-            properties.setProperty("gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE", "10");
+            if(threads!=null) {
+            	properties.setProperty("gov.nist.javax.sip.THREAD_POOL_SIZE", threads);
+                properties.setProperty("gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE", threads);
+            }
+            properties.setProperty("gov.nist.javax.sip.CONGESTION_CONTROL_TIMEOUT", timeout);
             properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
             properties.setProperty("gov.nist.javax.sip.AUTOMATIC_DIALOG_ERROR_HANDLING","false");
 
@@ -481,7 +491,7 @@ boolean inUse = false;
                 headerFactory = sipFactory.createHeaderFactory();
                 addressFactory = sipFactory.createAddressFactory();
                 messageFactory = sipFactory.createMessageFactory();
-                udpListeningPoint = sipStack.createListeningPoint("127.0.0.1", 5060, "tcp");
+                udpListeningPoint = sipStack.createListeningPoint("127.0.0.1", 5060, transport);
                 sipProvider = sipStack.createSipProvider(udpListeningPoint);
                 Shootist listener = this;
                 sipProvider.addSipListener(listener);
@@ -634,12 +644,14 @@ boolean inUse = false;
 
         }
         public void terminate() {
+        	sipProvider = null;
             this.sipStack.stop();
+            this.sipStack = null;
         }
     }
 
-    private test.unit.gov.nist.javax.sip.stack.TcpMultiThreadDeadlockTest.Shootme shootme;
-    private test.unit.gov.nist.javax.sip.stack.TcpMultiThreadDeadlockTest.Shootist shootist;
+    private test.unit.gov.nist.javax.sip.stack.StackQueueCongestionControlTest.Shootme shootme;
+    private test.unit.gov.nist.javax.sip.stack.StackQueueCongestionControlTest.Shootist shootist;
 
     public void setUp() {
         this.shootme = new Shootme();
@@ -652,21 +664,114 @@ boolean inUse = false;
         shootme.terminate();
     }
 
-    public void testStressMessageSerialization() {
-        this.shootme.init();
-        this.shootist.init();
+    public void testTCPZeroLostMessages() {
+        this.shootme.init("tcp",1000);
+        this.shootist.init("10", "10000", 2, "tcp");
         try {
             Thread.sleep(10000);
         } catch (Exception ex) {
 
         }
-        if(!this.shootist.messageSeen) {
-            fail("Something went wrong. We expected the MESSAGE requests. Why are they not sent?");
+        if(this.shootist.receivedResponses<=1) {
+            fail("We excpeted more than 0" + this.shootist.receivedResponses);
+        }
+        assertEquals(shootist.receivedResponses, shootme.sentResponses);
+        if(this.shootme.acks != 5) {
+            fail("We expect 5 ACKs because retransmissions are not filtered in loose dialog validation.");
+        }
+    }
+    
+
+    
+    public void testUDPHugeLoss() {
+        this.shootme.init("udp",1000);
+        this.shootist.init("10", "10", 20, "udp");
+        try {
+            Thread.sleep(10000);
+        } catch (Exception ex) {
+
+        }
+        if(this.shootist.receivedResponses<=1) {
+            fail("We excpeted more than 0" + this.shootist.receivedResponses);
+        }
+        assertTrue(shootist.receivedResponses<shootme.sentResponses/2);
+       
+    }
+    
+    public void testUDPIdle() {
+        this.shootme.init("udp",1);
+        this.shootist.init("10", "10", 6000, "udp");
+        try {
+            Thread.sleep(10000);
+        } catch (Exception ex) {
+
+        }
+        if(this.shootme.acks < 5) {
+            fail("We expect at least 5 ACKs because retransmissions are not filtered in loose dialog validation." + this.shootme.acks);
+        }
+    }
+    
+    public void testUDPNoThreadpool() {
+        this.shootme.init("udp",100);
+        this.shootist.init(null, "1", 1, "udp");
+        try {
+            Thread.sleep(4000);
+        } catch (Exception ex) {
+
+        }
+        if(this.shootist.receivedResponses<=1) {
+            fail("We excpeted more than 0" + this.shootist.receivedResponses);
         }
         if(this.shootme.acks != 5) {
             fail("We expect 5 ACKs because retransmissions are not filtered in loose dialog validation.");
         }
     }
+    
+    public void testTCPNoThreadpool() {
+        this.shootme.init("tcp",100);
+        this.shootist.init(null, "1", 1, "tcp");
+        try {
+            Thread.sleep(4000);
+        } catch (Exception ex) {
 
+        }
+        if(this.shootist.receivedResponses<=1) {
+            fail("We excpeted more than 0" + this.shootist.receivedResponses);
+        }
+        if(this.shootme.acks != 5) {
+            fail("We expect 5 ACKs because retransmissions are not filtered in loose dialog validation.");
+        }
+    }
+    
+    public void testTCPCongestionControlOff() {
+        this.shootme.init("tcp",1000);
+        this.shootist.init("10","0",1,"tcp");
+        try {
+            Thread.sleep(10000);
+        } catch (Exception ex) {
+
+        }
+        if(this.shootist.receivedResponses<=1) {
+            fail("We excpeted more than 0" + this.shootist.receivedResponses);
+        }
+        assertEquals(shootist.receivedResponses, shootme.sentResponses);
+        if(this.shootme.acks != 5) {
+            fail("We expect 5 ACKs because retransmissions are not filtered in loose dialog validation.");
+        }
+    }
+    public void testTCPHugeLoss() {
+        this.shootme.init("tcp",1000);
+        this.shootist.init("10", "10", 20, "tcp");
+        try {
+            Thread.sleep(10000);
+        } catch (Exception ex) {
+
+        }
+        if(this.shootist.receivedResponses<=1) {
+            fail("We excpeted more than 0" + this.shootist.receivedResponses);
+        }
+        assertTrue(shootist.receivedResponses<shootme.sentResponses/2);
+       
+    }
 
 }
