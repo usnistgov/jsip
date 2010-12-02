@@ -71,7 +71,7 @@ import java.util.concurrent.TimeUnit;
  * accessed from the SIPMessage using the getContent and getContentBytes methods
  * provided by the SIPMessage class.
  *
- * @version 1.2 $Revision: 1.28.2.7 $ $Date: 2010-12-02 01:41:36 $
+ * @version 1.2 $Revision: 1.28.2.8 $ $Date: 2010-12-02 08:06:37 $
  *
  * @author M. Ranganathan
  *
@@ -521,7 +521,7 @@ public final class PipelinedMsgParser implements Runnable {
     			}
     			staticQueue = new LinkedBlockingQueue<Runnable>();
     			postParseExecutor = new ThreadPoolExecutor(threads, threads,
-    					0, TimeUnit.MINUTES, staticQueue,
+    					0, TimeUnit.SECONDS, staticQueue,
     					new NamedThreadFactory());
     			if(timeout>0) {
     				staticQueueAuditor = new BlockingQueueDispatchAuditor(staticQueue);
@@ -586,6 +586,12 @@ public final class PipelinedMsgParser implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.28.2.7  2010/12/02 01:41:36  vralev
+ * Issue number:  346
+ * Obtained from: vralev
+ *
+ * Patch + Tests for sipx branch
+ *
  * Revision 1.28.2.6  2010/10/13 15:26:52  deruelle_jean
  * Fix for TCP calls under load freeze JAIN SIP with TCP_POST_PARSING_THREAD_POOL_SIZE > 0
  *
