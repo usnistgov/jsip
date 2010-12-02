@@ -25,6 +25,7 @@
 */
 package gov.nist.javax.sip.stack.timers;
 
+import gov.nist.core.CommonLogger;
 import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.SipStackImpl;
 import gov.nist.javax.sip.stack.SIPStackTimerTask;
@@ -42,6 +43,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  */
 public class DefaultSipTimer extends Timer implements SipTimer {
+	private static StackLogger logger = CommonLogger.getLogger(DefaultSipTimer.class);
 
 	protected AtomicBoolean started = new AtomicBoolean(false);
 	protected SipStackImpl sipStackImpl;
@@ -116,8 +118,8 @@ public class DefaultSipTimer extends Timer implements SipTimer {
 		sipStackImpl= sipStack;
 		// don't need the properties so nothing to see here
 		started.set(true);
-		if(sipStackImpl.getStackLogger().isLoggingEnabled(StackLogger.TRACE_INFO)) {
-			sipStackImpl.getStackLogger().logInfo("the sip stack timer " + this.getClass().getName() + " has been started");
+		if(logger.isLoggingEnabled(StackLogger.TRACE_INFO)) {
+			logger.logInfo("the sip stack timer " + this.getClass().getName() + " has been started");
 		}
 	}
 
@@ -128,9 +130,9 @@ public class DefaultSipTimer extends Timer implements SipTimer {
 	public void stop() {
 		started.set(false);
 		cancel();		
-		sipStackImpl.getStackLogger().logStackTrace(StackLogger.TRACE_DEBUG);
-		if(sipStackImpl.getStackLogger().isLoggingEnabled(StackLogger.TRACE_INFO)) {
-			sipStackImpl.getStackLogger().logInfo("the sip stack timer " + this.getClass().getName() + " has been stopped");
+		logger.logStackTrace(StackLogger.TRACE_DEBUG);
+		if(logger.isLoggingEnabled(StackLogger.TRACE_INFO)) {
+			logger.logInfo("the sip stack timer " + this.getClass().getName() + " has been stopped");
 		}
 	}
 	

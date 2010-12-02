@@ -50,13 +50,15 @@ import java.util.*;
  * connection. This is the active object that creates new TCP MessageChannels (one for each new
  * accept socket).
  * 
- * @version 1.2 $Revision: 1.34 $ $Date: 2010-11-24 05:43:03 $
+ * @version 1.2 $Revision: 1.35 $ $Date: 2010-12-02 22:04:13 $
  * 
  * @author M. Ranganathan <br/>
  * 
  * 
  */
 public class TCPMessageProcessor extends MessageProcessor {
+	
+	private static StackLogger logger = CommonLogger.getLogger(TCPMessageProcessor.class);
 
     protected int nConnections;
 
@@ -132,8 +134,8 @@ public class TCPMessageProcessor extends MessageProcessor {
                 }
 
                 Socket newsock = sock.accept();
-                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                    getSIPStack().getStackLogger().logDebug("Accepting new connection!");
+                if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                    logger.logDebug("Accepting new connection!");
                 }
                 // Note that for an incoming message channel, the
                 // thread is already running
@@ -143,8 +145,8 @@ public class TCPMessageProcessor extends MessageProcessor {
                 this.isRunning = false;
             } catch (IOException ex) {
                 // Problem accepting connection.
-                if (sipStack.isLoggingEnabled())
-                    getSIPStack().getStackLogger().logException(ex);
+                if (logger.isLoggingEnabled())
+                    logger.logException(ex);
                 continue;
             } catch (Exception ex) {
                 InternalErrorHandler.handleException(ex);
@@ -200,8 +202,8 @@ public class TCPMessageProcessor extends MessageProcessor {
     protected synchronized void remove(TCPMessageChannel tcpMessageChannel) {
 
         String key = tcpMessageChannel.getKey();
-        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-            sipStack.getStackLogger().logDebug(Thread.currentThread() + " removing " + key);
+        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+            logger.logDebug(Thread.currentThread() + " removing " + key);
         }
 
         /** May have been removed already */
@@ -222,9 +224,9 @@ public class TCPMessageProcessor extends MessageProcessor {
                     targetHostPort.getPort(), sipStack, this);
             this.tcpMessageChannels.put(key, retval);
             retval.isCached = true;
-            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                sipStack.getStackLogger().logDebug("key " + key);
-                sipStack.getStackLogger().logDebug("Creating " + retval);
+            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                logger.logDebug("key " + key);
+                logger.logDebug("Creating " + retval);
             }
             return retval;
         }
@@ -234,12 +236,12 @@ public class TCPMessageProcessor extends MessageProcessor {
         String key = messageChannel.getKey();
         TCPMessageChannel currentChannel = (TCPMessageChannel) tcpMessageChannels.get(key);
         if (currentChannel != null) {
-            if (sipStack.isLoggingEnabled(LogLevels.TRACE_DEBUG))
-                sipStack.getStackLogger().logDebug("Closing " + key);
+            if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
+                logger.logDebug("Closing " + key);
             currentChannel.close();
         }
-        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-            sipStack.getStackLogger().logDebug("Caching " + key);
+        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+            logger.logDebug("Caching " + key);
         this.tcpMessageChannels.put(key, messageChannel);
 
     }
@@ -254,9 +256,9 @@ public class TCPMessageProcessor extends MessageProcessor {
                 TCPMessageChannel retval = new TCPMessageChannel(host, port, sipStack, this);
                 this.tcpMessageChannels.put(key, retval);
                 retval.isCached = true;
-                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                    sipStack.getStackLogger().logDebug("key " + key);
-                    sipStack.getStackLogger().logDebug("Creating " + retval);
+                if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                    logger.logDebug("key " + key);
+                    logger.logDebug("Creating " + retval);
                 }
                 return retval;
             }

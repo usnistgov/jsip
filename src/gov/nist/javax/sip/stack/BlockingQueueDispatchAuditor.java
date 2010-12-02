@@ -1,5 +1,6 @@
 package gov.nist.javax.sip.stack;
 
+import gov.nist.core.CommonLogger;
 import gov.nist.core.LogLevels;
 import gov.nist.core.StackLogger;
 
@@ -9,17 +10,13 @@ import java.util.TimerTask;
 
 public class BlockingQueueDispatchAuditor extends TimerTask {
 	private Timer timer = new Timer();
-	private StackLogger logger;
+	private static StackLogger logger = CommonLogger.getLogger(BlockingQueueDispatchAuditor.class);
     private long totalReject = 0;     
     private boolean started = false;
     private Queue<? extends Runnable> queue;
     private int timeout = 8000;
     public BlockingQueueDispatchAuditor(Queue<? extends Runnable> queue) {
     	this.queue = queue;
-    }
-    
-    public void setLogger(StackLogger logger) {
-    	this.logger = logger;
     }
     
     public void start(int interval) {
