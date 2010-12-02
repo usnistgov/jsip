@@ -25,6 +25,7 @@
 */
 package gov.nist.javax.sip.stack.timers;
 
+import gov.nist.core.CommonLogger;
 import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.SipStackImpl;
 import gov.nist.javax.sip.stack.SIPStackTimerTask;
@@ -42,7 +43,7 @@ import java.util.concurrent.TimeUnit;
  *
  */
 public class ScheduledExecutorSipTimer implements SipTimer {
-
+	private static StackLogger logger = CommonLogger.getLogger(ScheduledExecutorSipTimer.class);
 	protected SipStackImpl sipStackImpl;
 	ScheduledThreadPoolExecutor threadPoolExecutor;
 	// Counts the number of cancelled tasks
@@ -57,9 +58,9 @@ public class ScheduledExecutorSipTimer implements SipTimer {
 	 */
 	public void stop() {
 		threadPoolExecutor.shutdown();
-		sipStackImpl.getStackLogger().logStackTrace(StackLogger.TRACE_DEBUG);
-		if(sipStackImpl.getStackLogger().isLoggingEnabled(StackLogger.TRACE_INFO)) {
-			sipStackImpl.getStackLogger().logInfo("the sip stack timer " + this.getClass().getName() + " has been stopped");
+		logger.logStackTrace(StackLogger.TRACE_DEBUG);
+		if(logger.isLoggingEnabled(StackLogger.TRACE_INFO)) {
+			logger.logInfo("the sip stack timer " + this.getClass().getName() + " has been stopped");
 		}
 	}
 
@@ -97,8 +98,8 @@ public class ScheduledExecutorSipTimer implements SipTimer {
 		sipStackImpl= sipStack;
 		// TODO have a param in the stack properties to set the number of thread for the timer executor
 		threadPoolExecutor.prestartAllCoreThreads();
-		if(sipStackImpl.getStackLogger().isLoggingEnabled(StackLogger.TRACE_INFO)) {
-			sipStackImpl.getStackLogger().logInfo("the sip stack timer " + this.getClass().getName() + " has been started");
+		if(logger.isLoggingEnabled(StackLogger.TRACE_INFO)) {
+			logger.logInfo("the sip stack timer " + this.getClass().getName() + " has been started");
 		}
 	}
 	/*

@@ -25,10 +25,12 @@
 */
 package gov.nist.javax.sip.stack;
 
+import gov.nist.core.CommonLogger;
 import gov.nist.core.Host;
 import gov.nist.core.HostPort;
 import gov.nist.core.InternalErrorHandler;
 import gov.nist.core.LogWriter;
+import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.ListeningPointImpl;
 import gov.nist.javax.sip.header.Via;
 
@@ -45,12 +47,13 @@ import javax.sip.InvalidArgumentException;
  * The main job of the message processor is to instantiate message channels for
  * the given transport.
  *
- * @version 1.2 $Revision: 1.19 $ $Date: 2010-06-08 20:30:32 $
+ * @version 1.2 $Revision: 1.20 $ $Date: 2010-12-02 22:04:15 $
  *
  * @author M. Ranganathan <br/>
  *
  */
 public abstract class MessageProcessor implements Runnable {
+	private static StackLogger logger = CommonLogger.getLogger(MessageProcessor.class);
     /**
      * A string containing the 0.0.0.0 IPv4 ANY address.
      */
@@ -186,8 +189,8 @@ public abstract class MessageProcessor implements Runnable {
     }
     public ListeningPointImpl getListeningPoint() {
         if ( listeningPoint == null )  {
-            if ( this.getSIPStack().isLoggingEnabled()) {
-                this.getSIPStack().getStackLogger().logError("getListeningPoint" + this +
+            if ( logger.isLoggingEnabled()) {
+                this.logger.logError("getListeningPoint" + this +
                         " returning null listeningpoint");
 
             }
@@ -196,14 +199,14 @@ public abstract class MessageProcessor implements Runnable {
     }
 
     public void setListeningPoint(ListeningPointImpl lp) {
-        if ( this.getSIPStack().isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-            this.getSIPStack().getStackLogger().logDebug("setListeningPoint" + this +
+        if ( logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+            this.logger.logDebug("setListeningPoint" + this +
                     " listeningPoint = " + lp);
 
         }
         if ( lp.getPort() != this.getPort())
             InternalErrorHandler.handleException
-            ("lp mismatch with provider",getSIPStack().getStackLogger());
+            ("lp mismatch with provider",logger);
         this.listeningPoint = lp;
 
     }

@@ -2,6 +2,8 @@ package gov.nist.javax.sip.stack;
 
 import java.io.IOException;
 
+import gov.nist.core.CommonLogger;
+import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.SipStackImpl;
 import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.message.SIPResponse;
@@ -27,7 +29,7 @@ import javax.sip.message.Response;
  *
  */
 public class CongestionControlMessageValve implements SIPMessageValve{
-
+	private static StackLogger logger = CommonLogger.getLogger(CongestionControlMessageValve.class);
 	protected SipStackImpl sipStack;
     // High water mark for ServerTransaction Table
     // after which requests are dropped.
@@ -52,7 +54,7 @@ public class CongestionControlMessageValve implements SIPMessageValve{
 					try {
 						messageChannel.sendMessage(response);
 					} catch (IOException e) {
-						sipStack.getStackLogger().logError("Failed to send congestion control error response" + response, e);
+						logger.logError("Failed to send congestion control error response" + response, e);
 					}
 				}
 				return false; // Do not pass this request to the pipeline
@@ -67,13 +69,13 @@ public class CongestionControlMessageValve implements SIPMessageValve{
 	}
 
 	public void destroy() {
-		sipStack.getStackLogger().logInfo("Destorying the congestion control valve " + this);
+		logger.logInfo("Destorying the congestion control valve " + this);
 		
 	}
 
 	public void init(SipStack stack) {
 		sipStack = (SipStackImpl) stack;
-		sipStack.getStackLogger().logInfo("Initializing congestion control valve");
+		logger.logInfo("Initializing congestion control valve");
 		String serverTransactionsString = sipStack.getConfigurationProperties().getProperty("gov.nist.javax.sip.MAX_SERVER_TRANSACTIONS", "10000");
 		serverTransactionTableHighwaterMark = new Integer(serverTransactionsString);
 		String dropResponseStatusString = sipStack.getConfigurationProperties().getProperty("DROP_RESPONSE_STATUS", "503");

@@ -29,11 +29,13 @@
 
 package gov.nist.javax.sip.stack;
 
+import gov.nist.core.CommonLogger;
 import gov.nist.core.Host;
 import gov.nist.core.HostPort;
 import gov.nist.core.InternalErrorHandler;
 import gov.nist.core.LogWriter;
 import gov.nist.core.ServerLogger;
+import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.address.AddressImpl;
 import gov.nist.javax.sip.header.ContentLength;
 import gov.nist.javax.sip.header.ContentType;
@@ -64,11 +66,13 @@ import javax.sip.header.ViaHeader;
  * @author M. Ranganathan <br/> Contains additions for support of symmetric NAT contributed by
  *         Hagai.
  * 
- * @version 1.2 $Revision: 1.38 $ $Date: 2010-11-29 10:54:59 $
+ * @version 1.2 $Revision: 1.39 $ $Date: 2010-12-02 22:04:14 $
  * 
  * 
  */
 public abstract class MessageChannel {
+	
+	private static StackLogger logger = CommonLogger.getLogger(MessageChannel.class);
 
     // Incremented whenever a transaction gets assigned
     // to the message channel and decremented when
@@ -223,16 +227,16 @@ public abstract class MessageChannel {
 								try {
 									((RawMessageChannel) channel).processMessage((SIPMessage) sipMessage.clone());
 								} catch (Exception ex) {
-									if (getSIPStack().getStackLogger().isLoggingEnabled(ServerLogger.TRACE_ERROR)) {
-						        		getSIPStack().getStackLogger().logError("Error self routing message cause by: ", ex);
+									if (logger.isLoggingEnabled(ServerLogger.TRACE_ERROR)) {
+						        		logger.logError("Error self routing message cause by: ", ex);
 						        	}
 								}
 							}
 						};
 						getSIPStack().getSelfRoutingThreadpoolExecutor().execute(processMessageTask);
                         
-                        if (getSIPStack().isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                        	getSIPStack().getStackLogger().logDebug("Self routing message");
+                        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                        	logger.logDebug("Self routing message");
                         return;
                     }
 
@@ -245,14 +249,14 @@ public abstract class MessageChannel {
         } catch (IOException ioe) {
             throw ioe;
         } catch (Exception ex) {
-        	if (this.getSIPStack().getStackLogger().isLoggingEnabled(ServerLogger.TRACE_ERROR)) {
-        		this.getSIPStack().getStackLogger().logError("Error self routing message cause by: ", ex);
+        	if (this.logger.isLoggingEnabled(ServerLogger.TRACE_ERROR)) {
+        		this.logger.logError("Error self routing message cause by: ", ex);
         	}
         	// TODO: When moving to Java 6, use the IOExcpetion(message, exception) constructor
             throw new IOException("Error self routing message");
         } finally {
 
-            if (this.getSIPStack().getStackLogger().isLoggingEnabled(ServerLogger.TRACE_MESSAGES))
+            if (this.logger.isLoggingEnabled(ServerLogger.TRACE_MESSAGES))
                 logMessage(sipMessage, hopAddr, hop.getPort(), time);
         }
     }
@@ -362,7 +366,7 @@ public abstract class MessageChannel {
      * @param port is the port to which the message is directed.
      */
     public void logMessage(SIPMessage sipMessage, InetAddress address, int port, long time) {
-        if (!getSIPStack().getStackLogger().isLoggingEnabled(ServerLogger.TRACE_MESSAGES))
+        if (!logger.isLoggingEnabled(ServerLogger.TRACE_MESSAGES))
             return;
 
         // Default port.

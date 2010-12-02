@@ -188,7 +188,7 @@ public class LogWriter implements StackLogger {
     private String enhanceMessage(String message) {
 
         StackTraceElement[] stackTrace = new Exception().getStackTrace();
-        StackTraceElement elem = stackTrace[2];
+        StackTraceElement elem = stackTrace[3];
         String className = elem.getClassName();
         String methodName = elem.getMethodName();
         String fileName = elem.getFileName();
@@ -306,28 +306,7 @@ public class LogWriter implements StackLogger {
         logger = Logger.getLogger(category);
         if (logLevel != null) {
             if (logLevel.equals("LOG4J")) {
-                //if TRACE_LEVEL property is specified as
-                //"LOG4J" then, set the traceLevel based on
-                //the log4j effective log level.
-                Level level = logger.getEffectiveLevel();
-                this.needsLogging = true;
-                if (level == Level.OFF) {
-                    this.needsLogging = false;
-                }
-                this.traceLevel = TRACE_NONE;
-                if (level.equals(Level.TRACE)) {
-                    this.traceLevel = TRACE_TRACE;
-                } else if (level.equals(Level.DEBUG)) {
-                    this.traceLevel = TRACE_DEBUG;
-                } else if (level.equals(Level.INFO)) {
-                    this.traceLevel = TRACE_INFO;
-                } else if (level.equals(Level.ERROR)) {
-                    this.traceLevel = TRACE_ERROR;
-                } else if (level.equals(Level.WARN)) {
-                    this.traceLevel = TRACE_WARN;
-                } else if (level.equals(Level.FATAL)) {
-                    this.traceLevel = TRACE_FATAL;
-                }
+                CommonLogger.useLegacyLogger = false;
                 
             }
             else {

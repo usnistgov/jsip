@@ -29,6 +29,7 @@
 
 package gov.nist.javax.sip.stack;
 
+import gov.nist.core.CommonLogger;
 import gov.nist.core.InternalErrorHandler;
 import gov.nist.core.LogLevels;
 import gov.nist.core.LogWriter;
@@ -91,11 +92,11 @@ import javax.sip.message.Response;
  * 
  * 
  * 
- * @version 1.2 $Revision: 1.85 $ $Date: 2010-12-02 11:44:14 $
+ * @version 1.2 $Revision: 1.86 $ $Date: 2010-12-02 22:04:16 $
  */
 public class UDPMessageChannel extends MessageChannel implements
         ParseExceptionListener, Runnable, RawMessageChannel {
-
+	private static StackLogger logger = CommonLogger.getLogger(UDPMessageChannel.class);
     /**
      * SIP Stack structure for this channel.
      */
@@ -251,8 +252,8 @@ public class UDPMessageChannel extends MessageChannel implements
         myParser = sipStack.getMessageParserFactory().createMessageParser(
                 sipStack);
 
-        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-            this.sipStack.getStackLogger().logDebug(
+        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+            this.logger.logDebug(
                     "Creating message channel " + targetAddr.getHostAddress()
                             + "/" + port);
         }
@@ -296,7 +297,7 @@ public class UDPMessageChannel extends MessageChannel implements
                 processIncomingDataPacket(packet);
             } catch (Exception e) {
 
-                sipStack.getStackLogger().logError(
+                logger.logError(
                         "Error while processing incoming UDP packet", e);
             }
 
@@ -322,8 +323,8 @@ public class UDPMessageChannel extends MessageChannel implements
         System.arraycopy(bytes, 0, msgBytes, 0, packetLength);
 
         // Do debug logging.
-        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-            this.sipStack.getStackLogger().logDebug(
+        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+            this.logger.logDebug(
                     "UDPMessageChannel: processIncomingDataPacket : peerAddress = "
                             + peerAddress.getHostAddress() + "/"
                             + packet.getPort() + " Length = " + packetLength);
@@ -359,12 +360,12 @@ public class UDPMessageChannel extends MessageChannel implements
            
         } catch (ParseException ex) {
             // myParser = null; // let go of the parser reference.
-            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                this.sipStack.getStackLogger().logDebug(
+            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                this.logger.logDebug(
                         "Rejecting message !  " + new String(msgBytes));
-                this.sipStack.getStackLogger().logDebug(
+                this.logger.logDebug(
                         "error message " + ex.getMessage());
-                this.sipStack.getStackLogger().logException(ex);
+                this.logger.logException(ex);
             }
 
             // JvB: send a 400 response for requests (except ACK)
@@ -374,21 +375,20 @@ public class UDPMessageChannel extends MessageChannel implements
 
                 String badReqRes = createBadReqRes(msgString, ex);
                 if (badReqRes != null) {
-                    if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                        sipStack.getStackLogger().logDebug(
+                    if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                        logger.logDebug(
                                 "Sending automatic 400 Bad Request:");
-                        sipStack.getStackLogger().logDebug(badReqRes);
+                        logger.logDebug(badReqRes);
                     }
                     try {
                         this.sendMessage(badReqRes.getBytes(), peerAddress,
                                 packet.getPort(), "UDP", false);
                     } catch (IOException e) {
-                        this.sipStack.getStackLogger().logException(e);
+                        this.logger.logException(e);
                     }
                 } else {
-                    if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                        sipStack
-                                .getStackLogger()
+                    if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                        logger
                                 .logDebug(
                                         "Could not formulate automatic 400 Bad Request");
                     }
@@ -402,8 +402,8 @@ public class UDPMessageChannel extends MessageChannel implements
         // exit this message processor if the message did not parse.
 
         if (sipMessage == null) {
-            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                this.sipStack.getStackLogger().logDebug(
+            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                this.logger.logDebug(
                         "Rejecting message !  + Null message parsed.");
             }
             String key = packet.getAddress().getHostAddress() + ":"
@@ -421,7 +421,7 @@ public class UDPMessageChannel extends MessageChannel implements
                 ((UDPMessageProcessor) this.messageProcessor).sock
                         .send(keepalive);
             } else {
-                sipStack.getStackLogger().logDebug("Not sending ping back");
+                logger.logDebug("Not sending ping back");
             }
             return;
         }
@@ -431,10 +431,10 @@ public class UDPMessageChannel extends MessageChannel implements
                 || sipMessage.getCallId() == null
                 || sipMessage.getCSeq() == null || topMostVia == null) {
             String badmsg = new String(msgBytes);
-            if (sipStack.isLoggingEnabled()) {
-                this.sipStack.getStackLogger()
+            if (logger.isLoggingEnabled()) {
+                this.logger
                         .logError("bad message " + badmsg);
-                this.sipStack.getStackLogger().logError(
+                this.logger.logError(
                         ">>> Dropped Bad Msg " + "From = "
                                 + sipMessage.getFrom() + "To = "
                                 + sipMessage.getTo() + "CallId = "
@@ -510,7 +510,7 @@ public class UDPMessageChannel extends MessageChannel implements
             // This is a request - process it.
             // So far so good -- we will commit this message if
             // all processing is OK.
-            if (sipStack.getStackLogger().isLoggingEnabled(
+            if (logger.isLoggingEnabled(
                     ServerLogger.TRACE_MESSAGES)) {
 
                 this.sipStack.serverLogger.logMessage(sipMessage, this
@@ -522,17 +522,16 @@ public class UDPMessageChannel extends MessageChannel implements
                     .newSIPServerRequest(sipRequest, this);
             // Drop it if there is no request returned
             if (sipServerRequest == null) {
-                if (sipStack.isLoggingEnabled()) {
-                    this.sipStack
-                            .getStackLogger()
+                if (logger.isLoggingEnabled()) {
+                    logger
                             .logWarning(
                                     "Null request interface returned -- dropping request");
                 }
 
                 return;
             }
-            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                this.sipStack.getStackLogger().logDebug(
+            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                this.logger.logDebug(
                         "About to process " + sipRequest.getFirstLine() + "/"
                                 + sipServerRequest);
             try {
@@ -545,8 +544,8 @@ public class UDPMessageChannel extends MessageChannel implements
                     }
                 }
             }
-            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                this.sipStack.getStackLogger().logDebug(
+            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                this.logger.logDebug(
                         "Done processing " + sipRequest.getFirstLine() + "/"
                                 + sipServerRequest);
 
@@ -559,8 +558,8 @@ public class UDPMessageChannel extends MessageChannel implements
             try {
                 sipResponse.checkHeaders();
             } catch (ParseException ex) {
-                if (sipStack.isLoggingEnabled())
-                    sipStack.getStackLogger().logError(
+                if (logger.isLoggingEnabled())
+                    logger.logError(
                             "Dropping Badly formatted response message >>> "
                                     + sipResponse);
                 return;
@@ -572,8 +571,8 @@ public class UDPMessageChannel extends MessageChannel implements
                     if (sipServerResponse instanceof SIPClientTransaction
                             && !((SIPClientTransaction) sipServerResponse)
                                     .checkFromTag(sipResponse)) {
-                        if (sipStack.isLoggingEnabled())
-                            sipStack.getStackLogger().logError(
+                        if (logger.isLoggingEnabled())
+                            logger.logError(
                                     "Dropping response message with invalid tag >>> "
                                             + sipResponse);
                         return;
@@ -589,8 +588,8 @@ public class UDPMessageChannel extends MessageChannel implements
 
                 // Normal processing of message.
             } else {
-                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                    this.sipStack.getStackLogger().logDebug(
+                if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                    this.logger.logDebug(
                             "null sipServerResponse!");
                 }
             }
@@ -625,8 +624,8 @@ public class UDPMessageChannel extends MessageChannel implements
     public void handleException(ParseException ex, SIPMessage sipMessage,
             Class hdrClass, String header, String message)
             throws ParseException {
-        if (sipStack.isLoggingEnabled())
-            this.sipStack.getStackLogger().logException(ex);
+        if (logger.isLoggingEnabled())
+            this.logger.logException(ex);
         // Log the bad message for later reference.
         if ((hdrClass != null)
                 && (hdrClass.equals(From.class) || hdrClass.equals(To.class)
@@ -636,9 +635,9 @@ public class UDPMessageChannel extends MessageChannel implements
                         || hdrClass.equals(ContentLength.class)
                         || hdrClass.equals(RequestLine.class) || hdrClass
                         .equals(StatusLine.class))) {
-            if (sipStack.isLoggingEnabled()) {
-                sipStack.getStackLogger().logError("BAD MESSAGE!");
-                sipStack.getStackLogger().logError(message);
+            if (logger.isLoggingEnabled()) {
+                logger.logError("BAD MESSAGE!");
+                logger.logError(message);
             }
             throw ex;
         } else {
@@ -656,17 +655,17 @@ public class UDPMessageChannel extends MessageChannel implements
      *             If there is a problem with sending the message.
      */
     public void sendMessage(final SIPMessage sipMessage) throws IOException {
-        if (sipStack.isLoggingEnabled(LogLevels.TRACE_INFO)
+        if (logger.isLoggingEnabled(LogLevels.TRACE_INFO)
                 && this.sipStack.isLogStackTraceOnMessageSend()) {
             if (sipMessage instanceof SIPRequest
                     && ((SIPRequest) sipMessage).getRequestLine() != null) {
                 /*
                  * We dont want to log empty trace messages.
                  */
-                this.sipStack.getStackLogger().logStackTrace(
+                this.logger.logStackTrace(
                         StackLogger.TRACE_INFO);
             } else {
-                this.sipStack.getStackLogger().logStackTrace(
+                this.logger.logStackTrace(
                         StackLogger.TRACE_INFO);
             }
         }
@@ -694,11 +693,10 @@ public class UDPMessageChannel extends MessageChannel implements
                                     ((RawMessageChannel) channel)
                                             .processMessage((SIPMessage) sipMessage.clone());
                                 } catch (Exception ex) {
-                                    if (getSIPStack().getStackLogger()
+                                    if (logger
                                             .isLoggingEnabled(
                                                     ServerLogger.TRACE_ERROR)) {
-                                        getSIPStack()
-                                                .getStackLogger()
+                                        logger
                                                 .logError(
                                                         "Error self routing message cause by: ",
                                                         ex);
@@ -708,8 +706,8 @@ public class UDPMessageChannel extends MessageChannel implements
                         };
                         getSIPStack().getSelfRoutingThreadpoolExecutor()
                                 .execute(processMessageTask);
-                        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                            sipStack.getStackLogger().logDebug(
+                        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                            logger.logDebug(
                                     "Self routing message");
                         return;
                     }
@@ -724,17 +722,17 @@ public class UDPMessageChannel extends MessageChannel implements
         } catch (IOException ex) {
             throw ex;
         } catch (Exception ex) {
-            sipStack.getStackLogger().logError(
+            logger.logError(
                     "An exception occured while sending message", ex);
             throw new IOException("An exception occured while sending message");
         } finally {
-            if (sipStack.getStackLogger().isLoggingEnabled(
+            if (logger.isLoggingEnabled(
                     ServerLogger.TRACE_MESSAGES)
                     && !sipMessage.isNullRequest())
                 logMessage(sipMessage, peerAddress, peerPort, time);
-            else if (sipStack.getStackLogger().isLoggingEnabled(
+            else if (logger.isLoggingEnabled(
                     ServerLogger.TRACE_DEBUG))
-                sipStack.getStackLogger().logDebug("Sent EMPTY Message");
+                logger.logDebug("Sent EMPTY Message");
         }
     }
 
@@ -753,24 +751,24 @@ public class UDPMessageChannel extends MessageChannel implements
     protected void sendMessage(byte[] msg, InetAddress peerAddress,
             int peerPort, boolean reConnect) throws IOException {
         // Via is not included in the request so silently drop the reply.
-        if (sipStack.isLoggingEnabled(LogLevels.TRACE_INFO)
+        if (logger.isLoggingEnabled(LogLevels.TRACE_INFO)
                 && this.sipStack.isLogStackTraceOnMessageSend()) {
-            this.sipStack.getStackLogger()
+            this.logger
                     .logStackTrace(StackLogger.TRACE_INFO);
         }
         if (peerPort == -1) {
-            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                this.sipStack.getStackLogger().logDebug(
+            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                this.logger.logDebug(
                         getClass().getName() + ":sendMessage: Dropping reply!");
             }
             throw new IOException("Receiver port not set ");
         } else {
-            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                this.sipStack.getStackLogger().logDebug(
+            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                this.logger.logDebug(
                         "sendMessage " + peerAddress.getHostAddress() + "/"
                                 + peerPort + "\n" + "messageSize =  "
                                 + msg.length + " message = " + new String(msg));
-                this.sipStack.getStackLogger()
+                this.logger
                         .logDebug("*******************\n");
             }
 
@@ -826,14 +824,14 @@ public class UDPMessageChannel extends MessageChannel implements
             throws IOException {
         // Via is not included in the request so silently drop the reply.
         if (peerPort == -1) {
-            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                this.sipStack.getStackLogger().logDebug(
+            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                this.logger.logDebug(
                         getClass().getName() + ":sendMessage: Dropping reply!");
             }
             throw new IOException("Receiver port not set ");
         } else {
-            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                this.sipStack.getStackLogger().logDebug(
+            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                this.logger.logDebug(
                         ":sendMessage " + peerAddress.getHostAddress() + "/"
                                 + peerPort + "\n" + " messageSize = "
                                 + msg.length);
@@ -852,8 +850,8 @@ public class UDPMessageChannel extends MessageChannel implements
                     // bind to any interface and port.
                     sock = sipStack.getNetworkLayer().createDatagramSocket();
                 }
-                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                    this.sipStack.getStackLogger().logDebug(
+                if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                    this.logger.logDebug(
                             "sendMessage " + peerAddress.getHostAddress() + "/"
                                     + peerPort + "\n" + new String(msg));
                 }

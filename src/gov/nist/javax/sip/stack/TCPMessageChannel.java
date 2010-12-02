@@ -28,9 +28,11 @@
  ******************************************************************************/
 package gov.nist.javax.sip.stack;
 
+import gov.nist.core.CommonLogger;
 import gov.nist.core.InternalErrorHandler;
 import gov.nist.core.LogWriter;
 import gov.nist.core.ServerLogger;
+import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.header.CSeq;
 import gov.nist.javax.sip.header.CallID;
 import gov.nist.javax.sip.header.ContentLength;
@@ -78,11 +80,11 @@ import javax.sip.message.Response;
  * 
  * @author M. Ranganathan <br/>
  * 
- * @version 1.2 $Revision: 1.81 $ $Date: 2010-11-04 20:44:13 $
+ * @version 1.2 $Revision: 1.82 $ $Date: 2010-12-02 22:04:14 $
  */
 public class TCPMessageChannel extends MessageChannel implements
         SIPMessageListener, Runnable, RawMessageChannel {
-
+	private static StackLogger logger = CommonLogger.getLogger(TCPMessageChannel.class);
     private Socket mySock;
 
     private PipelinedMsgParser myParser;
@@ -142,10 +144,10 @@ public class TCPMessageChannel extends MessageChannel implements
     protected TCPMessageChannel(Socket sock, SIPTransactionStack sipStack,
             TCPMessageProcessor msgProcessor, String threadName) throws IOException {
 
-        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-            sipStack.getStackLogger().logDebug(
+        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+            logger.logDebug(
                     "creating new TCPMessageChannel ");
-            sipStack.getStackLogger().logStackTrace();
+            logger.logStackTrace();
         }
         mySock = sock;
         peerAddress = mySock.getInetAddress();
@@ -182,10 +184,10 @@ public class TCPMessageChannel extends MessageChannel implements
     protected TCPMessageChannel(InetAddress inetAddr, int port,
             SIPTransactionStack sipStack, TCPMessageProcessor messageProcessor)
             throws IOException {
-        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-            sipStack.getStackLogger().logDebug(
+        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+            logger.logDebug(
                     "creating new TCPMessageChannel ");
-            sipStack.getStackLogger().logStackTrace();
+            logger.logStackTrace();
         }
         this.peerAddress = inetAddr;
         this.peerPort = port;
@@ -217,12 +219,12 @@ public class TCPMessageChannel extends MessageChannel implements
                 mySock.close();
                 mySock = null;
             }
-            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                sipStack.getStackLogger().logDebug(
+            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                logger.logDebug(
                         "Closing message Channel " + this);
         } catch (IOException ex) {
-            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                sipStack.getStackLogger()
+            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                logger
                         .logDebug("Error closing socket " + ex);
         }
     }
@@ -276,8 +278,8 @@ public class TCPMessageChannel extends MessageChannel implements
      */
     private void sendMessage(byte[] msg, boolean isClient) throws IOException {
 
-    	if ( sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-    		sipStack.getStackLogger().logDebug("sendMessage isClient  = " + isClient);
+    	if ( logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+    		logger.logDebug("sendMessage isClient  = " + isClient);
     	}
         /*
          * Patch from kircuv@dev.java.net (Issue 119 ) This patch avoids the
@@ -300,8 +302,8 @@ public class TCPMessageChannel extends MessageChannel implements
         if (sock != mySock && sock != null) {
             try {
                 if (mySock != null) {
-                    if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                        sipStack.getStackLogger().logDebug(
+                    if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                        logger.logDebug(
                                 "Closing socket");
                     mySock.close();
                 }
@@ -329,8 +331,8 @@ public class TCPMessageChannel extends MessageChannel implements
      */
     public void sendMessage(final SIPMessage sipMessage) throws IOException {
     	
-    	if ( sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG) ) {
-    		sipStack.getStackLogger().logDebug("sendMessage:: " + sipMessage.getFirstLine() + " cseq method = " + sipMessage.getCSeq().getMethod()); 
+    	if ( logger.isLoggingEnabled(LogWriter.TRACE_DEBUG) ) {
+    		logger.logDebug("sendMessage:: " + sipMessage.getFirstLine() + " cseq method = " + sipMessage.getCSeq().getMethod()); 
     	}
     	
         for (MessageProcessor messageProcessor : getSIPStack()
@@ -346,10 +348,9 @@ public class TCPMessageChannel extends MessageChannel implements
                         try {
                             processMessage((SIPMessage) sipMessage.clone());
                         } catch (Exception ex) {
-                            if (getSIPStack().getStackLogger()
+                            if (logger
                                     .isLoggingEnabled(ServerLogger.TRACE_ERROR)) {
-                                getSIPStack()
-                                        .getStackLogger()
+                                logger
                                         .logError(
                                                 "Error self routing message cause by: ",
                                                 ex);
@@ -360,9 +361,9 @@ public class TCPMessageChannel extends MessageChannel implements
                 getSIPStack().getSelfRoutingThreadpoolExecutor().execute(
                         processMessageTask);
 
-                if (getSIPStack().getStackLogger().isLoggingEnabled(
+                if (logger.isLoggingEnabled(
                         LogWriter.TRACE_DEBUG))
-                    getSIPStack().getStackLogger().logDebug(
+                    logger.logDebug(
                             "Self routing message");
                 return;
             }
@@ -377,7 +378,7 @@ public class TCPMessageChannel extends MessageChannel implements
         // try to reconnect
         this.sendMessage(msg, sipMessage instanceof SIPRequest );
 
-        if (this.sipStack.getStackLogger().isLoggingEnabled(
+        if (this.logger.isLoggingEnabled(
                 ServerLogger.TRACE_MESSAGES))
             logMessage(sipMessage, peerAddress, peerPort, time);
     }
@@ -411,7 +412,7 @@ public class TCPMessageChannel extends MessageChannel implements
                     @Override
                     public void cleanUpBeforeCancel() {
                         try {
-                            sipStack.getStackLogger().logDebug("closing socket" );
+                            logger.logDebug("closing socket" );
                             mySock.close();
                         } catch (IOException ex) {
 
@@ -420,8 +421,8 @@ public class TCPMessageChannel extends MessageChannel implements
 
                     public void runTask() {
                         try {
-                            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                                sipStack.getStackLogger().logDebug(
+                            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                                logger.logDebug(
                                         "Closing socket");
                             mySock.close();
                         } catch (IOException ex) {
@@ -459,8 +460,8 @@ public class TCPMessageChannel extends MessageChannel implements
     public void handleException(ParseException ex, SIPMessage sipMessage,
             Class hdrClass, String header, String message)
             throws ParseException {
-        if (sipStack.isLoggingEnabled())
-            sipStack.getStackLogger().logException(ex);
+        if (logger.isLoggingEnabled())
+            logger.logException(ex);
         // Log the bad message for later reference.
         if ((hdrClass != null)
                 && (hdrClass.equals(From.class) || hdrClass.equals(To.class)
@@ -470,8 +471,8 @@ public class TCPMessageChannel extends MessageChannel implements
                         || hdrClass.equals(ContentLength.class)
                         || hdrClass.equals(RequestLine.class) || hdrClass
                         .equals(StatusLine.class))) {
-            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                sipStack.getStackLogger().logDebug(
+            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                logger.logDebug(
                         "Encountered Bad Message \n" + sipMessage.toString());
             }
 
@@ -482,22 +483,21 @@ public class TCPMessageChannel extends MessageChannel implements
 
                 String badReqRes = createBadReqRes(msgString, ex);
                 if (badReqRes != null) {
-                    if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                        sipStack.getStackLogger().logDebug(
+                    if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                        logger.logDebug(
                                 "Sending automatic 400 Bad Request:");
-                        sipStack.getStackLogger().logDebug(badReqRes);
+                        logger.logDebug(badReqRes);
                     }
                     try {
                         this.sendMessage(badReqRes.getBytes(), this
                                 .getPeerInetAddress(), this.getPeerPort(),
                                 false);
                     } catch (IOException e) {
-                        this.sipStack.getStackLogger().logException(e);
+                        this.logger.logException(e);
                     }
                 } else {
-                    if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                        sipStack
-                                .getStackLogger()
+                    if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                        logger
                                 .logDebug(
                                         "Could not formulate automatic 400 Bad Request");
                     }
@@ -515,9 +515,9 @@ public class TCPMessageChannel extends MessageChannel implements
         try {
             processMessage(sipMessage);
         } catch (Exception e) {
-            if (sipStack.getStackLogger().isLoggingEnabled(
+            if (logger.isLoggingEnabled(
                     ServerLog.TRACE_ERROR)) {
-                sipStack.getStackLogger().logError(
+                logger.logError(
                         "ERROR processing self routing", e);
             }
         }
@@ -541,9 +541,9 @@ public class TCPMessageChannel extends MessageChannel implements
                     || sipMessage.getCSeq() == null
                     || sipMessage.getViaHeaders() == null) {
                 String badmsg = sipMessage.encode();
-                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                    sipStack.getStackLogger().logDebug(">>> Dropped Bad Msg");
-                    sipStack.getStackLogger().logDebug(badmsg);
+                if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                    logger.logDebug(">>> Dropped Bad Msg");
+                    logger.logDebug(badmsg);
                 }
 
                 return;
@@ -587,8 +587,7 @@ public class TCPMessageChannel extends MessageChannel implements
                     // rport
                     v.setParameter(Via.RPORT, Integer.toString(this.peerPort));
                 } catch (java.text.ParseException ex) {
-                    InternalErrorHandler.handleException(ex, sipStack
-                            .getStackLogger());
+                    InternalErrorHandler.handleException(ex, logger);
                 }
                 // Use this for outgoing messages as well.
                 if (!this.isCached && mySock != null) { // self routing makes
@@ -617,14 +616,14 @@ public class TCPMessageChannel extends MessageChannel implements
                 // Create a new sever side request processor for this
                 // message and let it handle the rest.
 
-                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                    sipStack.getStackLogger().logDebug(
+                if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                    logger.logDebug(
                             "----Processing Message---");
                 }
 
                 // Check for reasonable size - reject message
                 // if it is too long.
-                if (this.sipStack.getStackLogger().isLoggingEnabled(
+                if (this.logger.isLoggingEnabled(
                         ServerLogger.TRACE_MESSAGES)) {
                     sipStack.serverLogger.logMessage(sipMessage, this
                             .getPeerHostPort().toString(), this
@@ -689,9 +688,8 @@ public class TCPMessageChannel extends MessageChannel implements
                         }
                     }
                 } else {
-                    if (sipStack.isLoggingEnabled())
-                        this.sipStack
-                                .getStackLogger()
+                    if (logger.isLoggingEnabled())
+                        logger
                                 .logWarning(
                                         "Dropping request -- could not acquire semaphore in 10 sec");
                 }
@@ -704,8 +702,8 @@ public class TCPMessageChannel extends MessageChannel implements
                 try {
                     sipResponse.checkHeaders();
                 } catch (ParseException ex) {
-                    if (sipStack.isLoggingEnabled())
-                        sipStack.getStackLogger().logError(
+                    if (logger.isLoggingEnabled())
+                        logger.logError(
                                 "Dropping Badly formatted response message >>> "
                                         + sipResponse);
                     return;
@@ -719,8 +717,8 @@ public class TCPMessageChannel extends MessageChannel implements
                                         : sipResponse.getContentLength()
                                                 .getContentLength()) > sipStack
                                 .getMaxMessageSize()) {
-                    if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                        this.sipStack.getStackLogger().logDebug(
+                    if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                        this.logger.logDebug(
                                 "Message size exceeded");
                     return;
 
@@ -732,8 +730,8 @@ public class TCPMessageChannel extends MessageChannel implements
                         if (sipServerResponse instanceof SIPClientTransaction
                                 && !((SIPClientTransaction) sipServerResponse)
                                         .checkFromTag(sipResponse)) {
-                            if (sipStack.isLoggingEnabled())
-                                sipStack.getStackLogger().logError(
+                            if (logger.isLoggingEnabled())
+                                logger.logError(
                                         "Dropping response message with invalid tag >>> "
                                                 + sipResponse);
                             return;
@@ -747,8 +745,7 @@ public class TCPMessageChannel extends MessageChannel implements
                             ((SIPTransaction) sipServerResponse).releaseSem();
                     }
                 } else {
-                    sipStack
-                            .getStackLogger()
+                    logger
                             .logWarning(
                                     "Application is blocked -- could not acquire semaphore -- dropping response");
                 }
@@ -798,8 +795,8 @@ public class TCPMessageChannel extends MessageChannel implements
                             if (mySock != null) { // self routing makes sock =
                                                   // ull
                                                   // https://jain-sip.dev.java.net/issues/show_bug.cgi?id=297
-                              if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                                    sipStack.getStackLogger().logDebug(
+                              if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                                    logger.logDebug(
                                             "Closing socket");
                                 mySock.close();
                             }
@@ -818,8 +815,8 @@ public class TCPMessageChannel extends MessageChannel implements
                     }
 
                     try {
-                        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                            sipStack.getStackLogger().logDebug(
+                        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                            logger.logDebug(
                                     "IOException  closing sock " + ex);
                         try {
                             if (sipStack.maxConnections != -1) {
@@ -832,8 +829,8 @@ public class TCPMessageChannel extends MessageChannel implements
                             if (mySock != null) { // self routing makes sock =
                                                   // null
                                                   // https://jain-sip.dev.java.net/issues/show_bug.cgi?id=297
-                                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                                    sipStack.getStackLogger().logDebug(
+                                if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                                    logger.logDebug(
                                             "Closing socket");
                                 mySock.close();
                             }
@@ -845,8 +842,7 @@ public class TCPMessageChannel extends MessageChannel implements
                     }
                     return;
                 } catch (Exception ex) {
-                    InternalErrorHandler.handleException(ex, sipStack
-                            .getStackLogger());
+                    InternalErrorHandler.handleException(ex, logger);
                 }
             }
         } finally {
