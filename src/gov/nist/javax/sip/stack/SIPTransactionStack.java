@@ -102,7 +102,7 @@ import javax.sip.message.Response;
  *
  * @author M. Ranganathan <br/>
  *
- * @version 1.2 $Revision: 1.178 $ $Date: 2010-12-02 15:48:40 $
+ * @version 1.2 $Revision: 1.179 $ $Date: 2010-12-02 21:11:54 $
  */
 public abstract class SIPTransactionStack implements
         SIPTransactionEventListener, SIPDialogEventListener {
@@ -1417,8 +1417,7 @@ public abstract class SIPTransactionStack implements
         }
 
         // Transaction to handle this request
-        SIPServerTransaction currentTransaction = (SIPServerTransaction) serverTransactionTable
-                .get(key);
+        SIPServerTransaction currentTransaction = (SIPServerTransaction) findTransaction(key, true);
 
         // Got to do this for bacasswards compatibility.
         if (currentTransaction == null
@@ -1549,8 +1548,7 @@ public abstract class SIPTransactionStack implements
         // Note that for RFC 3261 compliant operation, this lookup will
         // return a tx if one exists and hence no need to search through
         // the table.
-        currentTransaction = (SIPClientTransaction) clientTransactionTable
-                .get(key);
+        currentTransaction = (SIPClientTransaction) findTransaction(key, false);
 
         if (currentTransaction == null
                 || (!currentTransaction
