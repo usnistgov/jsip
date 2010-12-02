@@ -14,107 +14,118 @@ import java.util.Set;
 
 public class MergedSystemProperties extends Properties {
 
-	private Properties parent;
-	
-	public MergedSystemProperties(Properties props) {
-		parent = props;
-	}
-	
-	public void list(PrintStream out) {
-		parent.list(out);
-	}
+    private Properties parent;
 
-	
-	public void list(PrintWriter out) {
-		parent.list(out);
-	}
+    public MergedSystemProperties(Properties props) {
+        parent = props;
+    }
 
-	
-	public synchronized void load(InputStream inStream) throws IOException {
-		
-		parent.load(inStream);
-	}
+    public void list(PrintStream out) {
+        parent.list(out);
+    }
 
-	
-	public synchronized void load(Reader reader) throws IOException {
-		
-		throw new RuntimeException("Not implemented for Java 5 compatibility");
-	}
 
-	
-	public synchronized void loadFromXML(InputStream in) throws IOException,
-			InvalidPropertiesFormatException {
-		
-		parent.loadFromXML(in);
-	}
+    public void list(PrintWriter out) {
+        parent.list(out);
+    }
 
-	
-	public Enumeration<?> propertyNames() {
-		
-		return parent.propertyNames();
-	}
 
-	
-	public synchronized void save(OutputStream out, String comments) {
-		
-		parent.save(out, comments);
-	}
+    public synchronized void load(InputStream inStream) throws IOException {
 
-	
-	public synchronized Object setProperty(String key, String value) {
-		
-		return parent.setProperty(key, value);
-	}
+        parent.load(inStream);
+    }
 
-	
-	public void store(OutputStream out, String comments) throws IOException {
-		
-		parent.store(out, comments);
-	}
 
-	
-	public void store(Writer writer, String comments) throws IOException {
-		
-		throw new RuntimeException("Not implemented for Java 5 compatibility");
-	}
+    public synchronized void load(Reader reader) throws IOException {
 
-	
-	public synchronized void storeToXML(OutputStream os, String comment,
-			String encoding) throws IOException {
-		
-		parent.storeToXML(os, comment, encoding);
-	}
+        throw new RuntimeException("Not implemented for Java 5 compatibility");
+    }
 
-	
-	public synchronized void storeToXML(OutputStream os, String comment)
-			throws IOException {
-		
-		parent.storeToXML(os, comment);
-	}
 
-	
-	public Set<String> stringPropertyNames() {
-		
-		throw new RuntimeException("Not implemented for Java 5 compatibility");
-	}
+    public synchronized void loadFromXML(InputStream in) throws IOException,
+            InvalidPropertiesFormatException {
 
-	public String getProperty(String key, String defaultValue) {
-		if(System.getProperty(key) != null)
-			return System.getProperty(key);
-		return parent.getProperty(key, defaultValue);
-	}
+        parent.loadFromXML(in);
+    }
 
-	public String getProperty(String key) {
-		if(System.getProperty(key) != null)
-			return System.getProperty(key);
-		return parent.getProperty(key);
-	}
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -7922854860297151103L;
-	
-	
+    public Enumeration<?> propertyNames() {
 
+        return parent.propertyNames();
+    }
+
+
+    public synchronized void save(OutputStream out, String comments) {
+
+        parent.save(out, comments);
+    }
+
+
+    public synchronized Object setProperty(String key, String value) {
+
+        return parent.setProperty(key, value);
+    }
+
+
+    public void store(OutputStream out, String comments) throws IOException {
+
+        parent.store(out, comments);
+    }
+
+
+    public void store(Writer writer, String comments) throws IOException {
+
+        throw new RuntimeException("Not implemented for Java 5 compatibility");
+    }
+
+
+    public synchronized void storeToXML(OutputStream os, String comment,
+            String encoding) throws IOException {
+
+        parent.storeToXML(os, comment, encoding);
+    }
+
+
+    public synchronized void storeToXML(OutputStream os, String comment)
+            throws IOException {
+
+        parent.storeToXML(os, comment);
+    }
+
+
+    public Set<String> stringPropertyNames() {
+
+        throw new RuntimeException("Not implemented for Java 5 compatibility");
+    }
+
+    public String getProperty(String key, String defaultValue) {
+        if(System.getProperty(key) != null)
+            return System.getProperty(key);
+        return parent.getProperty(key, defaultValue);
+    }
+
+    public String getProperty(String key) {
+        if(System.getProperty(key) != null)
+            return System.getProperty(key);
+        return parent.getProperty(key);
+    }
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = -7922854860297151103L;
+
+
+    /**
+     * Determines whether <tt>key</tt> is already present here. .
+     *
+     * @param key the key that we are looking for.
+     *
+     * @return <tt>true</tt> <tt>key</tt> is a known property and <tt>false</tt>
+     * otherwise.
+     */
+    @Override
+    public boolean containsKey(Object key){
+        return parent.containsKey(key);
+    }
 }
