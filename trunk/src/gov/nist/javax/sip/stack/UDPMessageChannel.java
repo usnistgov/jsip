@@ -86,17 +86,17 @@ import javax.sip.message.Response;
  * is handed off via a SIP stack request for further processing. This stack
  * structure isolates the message handling logic from the mechanics of sending
  * and recieving messages (which could be either udp or tcp.
- * 
- * 
+ *
+ *
  * @author M. Ranganathan <br/>
- * 
- * 
- * 
- * @version 1.2 $Revision: 1.86 $ $Date: 2010-12-02 22:04:16 $
+ *
+ *
+ *
+ * @version 1.2 $Revision: 1.87 $ $Date: 2010-12-02 22:44:53 $
  */
 public class UDPMessageChannel extends MessageChannel implements
         ParseExceptionListener, Runnable, RawMessageChannel {
-	private static StackLogger logger = CommonLogger.getLogger(UDPMessageChannel.class);
+    private static StackLogger logger = CommonLogger.getLogger(UDPMessageChannel.class);
     /**
      * SIP Stack structure for this channel.
      */
@@ -167,7 +167,7 @@ public class UDPMessageChannel extends MessageChannel implements
      * Constructor - takes a datagram packet and a stack structure Extracts the
      * address of the other from the datagram packet and stashes away the
      * pointer to the passed stack structure.
-     * 
+     *
      * @param stack
      *            is the shared SIPStack structure
      * @param messageProcessor
@@ -199,7 +199,7 @@ public class UDPMessageChannel extends MessageChannel implements
     /**
      * Constructor. We create one of these in order to process an incoming
      * message.
-     * 
+     *
      * @param stack
      *            is the SIP sipStack.
      * @param messageProcessor
@@ -230,7 +230,7 @@ public class UDPMessageChannel extends MessageChannel implements
 
     /**
      * Constructor. We create one of these when we send out a message.
-     * 
+     *
      * @param targetAddr
      *            INET address of the place where we want to send messages.
      * @param port
@@ -309,7 +309,7 @@ public class UDPMessageChannel extends MessageChannel implements
 
     /**
      * Process an incoming datagram
-     * 
+     *
      * @param packet
      *            is the incoming datagram packet.
      */
@@ -354,10 +354,10 @@ public class UDPMessageChannel extends MessageChannel implements
                             .encodeAsBytes(this.getTransport());
                     this.sendMessage(resp,peerAddress,packet.getPort(),"UDP",false);
                     return;
-                   
+
                 }
             }
-           
+
         } catch (ParseException ex) {
             // myParser = null; // let go of the parser reference.
             if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
@@ -444,9 +444,9 @@ public class UDPMessageChannel extends MessageChannel implements
             }
             return;
         }
-        
+
         if(sipStack.sipEventInterceptor != null) {
-        	sipStack.sipEventInterceptor.beforeMessage(sipMessage);
+            sipStack.sipEventInterceptor.beforeMessage(sipMessage);
         }
         // For a request first via header tells where the message
         // is coming from.
@@ -491,18 +491,20 @@ public class UDPMessageChannel extends MessageChannel implements
 
         this.processMessage(sipMessage);
         if(sipStack.sipEventInterceptor != null) {
-        	sipStack.sipEventInterceptor.afterMessage(sipMessage);
+            sipStack.sipEventInterceptor.afterMessage(sipMessage);
         }
     }
 
     /**
      * Actually proces the parsed message.
-     * 
+     *
      * @param sipMessage
      */
     public void processMessage(SIPMessage sipMessage) {
         sipMessage.setRemoteAddress(this.peerAddress);
         sipMessage.setRemotePort(this.getPeerPort());
+        sipMessage.setLocalPort(this.getPort());
+        sipMessage.setLocalAddress(this.getMessageProcessor().getIpAddress());
 
         if (sipMessage instanceof SIPRequest) {
             SIPRequest sipRequest = (SIPRequest) sipMessage;
@@ -600,12 +602,12 @@ public class UDPMessageChannel extends MessageChannel implements
     /**
      * JvB: added method to check for known buggy clients (Windows Messenger) to
      * fix the port to which responses are sent
-     * 
+     *
      * checks for User-Agent: RTC/1.3.5470 (Messenger 5.1.0701)
-     * 
+     *
      * JvB 22/7/2006 better to take this out for the moment, it is only a
      * problem in rare cases (unregister)
-     * 
+     *
      * private final boolean isBuggyClient( SIPRequest r ) { UserAgent uah =
      * (UserAgent) r.getHeader( UserAgent.NAME ); if (uah!=null) {
      * java.util.ListIterator i = uah.getProduct(); if (i.hasNext()) { String p
@@ -615,7 +617,7 @@ public class UDPMessageChannel extends MessageChannel implements
 
     /**
      * Implementation of the ParseExceptionListener interface.
-     * 
+     *
      * @param ex
      *            Exception that is given to us by the parser.
      * @throws ParseException
@@ -648,7 +650,7 @@ public class UDPMessageChannel extends MessageChannel implements
     /**
      * Return a reply from a pre-constructed reply. This sends the message back
      * to the entity who caused us to create this channel in the first place.
-     * 
+     *
      * @param sipMessage
      *            Message string to send.
      * @throws IOException
@@ -719,6 +721,13 @@ public class UDPMessageChannel extends MessageChannel implements
             sendMessage(msg, peerAddress, peerPort, peerProtocol,
                     sipMessage instanceof SIPRequest);
 
+            // we didn't run into problems while sending so let's set ports and
+            // addresses before feeding the message to the loggers.
+            sipMessage.setRemoteAddress(peerAddress);
+            sipMessage.setRemotePort(peerPort);
+            sipMessage.setLocalPort(this.getPort());
+            sipMessage.setLocalAddress(this.getMessageProcessor().getIpAddress());
+
         } catch (IOException ex) {
             throw ex;
         } catch (Exception ex) {
@@ -738,7 +747,7 @@ public class UDPMessageChannel extends MessageChannel implements
 
     /**
      * Send a message to a specified receiver address.
-     * 
+     *
      * @param msg
      *            string to send.
      * @param peerAddress
@@ -807,7 +816,7 @@ public class UDPMessageChannel extends MessageChannel implements
 
     /**
      * Send a message to a specified receiver address.
-     * 
+     *
      * @param msg
      *            message string to send.
      * @param peerAddress
@@ -878,7 +887,7 @@ public class UDPMessageChannel extends MessageChannel implements
 
     /**
      * get the stack pointer.
-     * 
+     *
      * @return The sip stack for this channel.
      */
     public SIPTransactionStack getSIPStack() {
@@ -887,7 +896,7 @@ public class UDPMessageChannel extends MessageChannel implements
 
     /**
      * Return a transport string.
-     * 
+     *
      * @return the string "udp" in this case.
      */
     public String getTransport() {
@@ -896,7 +905,7 @@ public class UDPMessageChannel extends MessageChannel implements
 
     /**
      * get the stack address for the stack that received this message.
-     * 
+     *
      * @return The stack address for our sipStack.
      */
     public String getHost() {
@@ -905,7 +914,7 @@ public class UDPMessageChannel extends MessageChannel implements
 
     /**
      * get the port.
-     * 
+     *
      * @return Our port (on which we are getting datagram packets).
      */
     public int getPort() {
@@ -914,7 +923,7 @@ public class UDPMessageChannel extends MessageChannel implements
 
     /**
      * get the name (address) of the host that sent me the message
-     * 
+     *
      * @return The name of the sender (from the datagram packet).
      */
     public String getPeerName() {
@@ -923,7 +932,7 @@ public class UDPMessageChannel extends MessageChannel implements
 
     /**
      * get the address of the host that sent me the message
-     * 
+     *
      * @return The senders ip address.
      */
     public String getPeerAddress() {
@@ -936,7 +945,7 @@ public class UDPMessageChannel extends MessageChannel implements
 
     /**
      * Compare two UDP Message channels for equality.
-     * 
+     *
      * @param other
      *            The other message channel with which to compare oursleves.
      */
@@ -969,7 +978,7 @@ public class UDPMessageChannel extends MessageChannel implements
 
     /**
      * Get the logical originator of the message (from the top via header).
-     * 
+     *
      * @return topmost via header sentby field
      */
     public String getViaHost() {
@@ -978,7 +987,7 @@ public class UDPMessageChannel extends MessageChannel implements
 
     /**
      * Get the logical port of the message orginator (from the top via hdr).
-     * 
+     *
      * @return the via port from the topmost via header.
      */
     public int getViaPort() {
