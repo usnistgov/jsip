@@ -98,7 +98,7 @@ public class ReInviteTCPPostParserThreadPoolTest extends ScenarioHarness impleme
 
     public void testSendInvite() throws Exception {
         int threads = 32;
-        PipelinedMsgParser.setPostParseExcutorSize(threads);
+        PipelinedMsgParser.setPostParseExcutorSize(threads, 10000);
         ((SipStackImpl)getRiProtocolObjects().sipStack).setTcpPostParsingThreadPoolSize(threads);
         ((SipStackImpl)getTiProtocolObjects().sipStack).setTcpPostParsingThreadPoolSize(threads);
         getRiProtocolObjects().start();
@@ -115,7 +115,7 @@ public class ReInviteTCPPostParserThreadPoolTest extends ScenarioHarness impleme
     
     public void testSendInvite1Thread() throws Exception {
         int threads = 1;
-        PipelinedMsgParser.setPostParseExcutorSize(threads);
+        PipelinedMsgParser.setPostParseExcutorSize(threads, 10000);
         ((SipStackImpl)getRiProtocolObjects().sipStack).setTcpPostParsingThreadPoolSize(threads);
         ((SipStackImpl)getTiProtocolObjects().sipStack).setTcpPostParsingThreadPoolSize(threads);
         getRiProtocolObjects().start();
