@@ -71,7 +71,7 @@ import java.util.concurrent.TimeUnit;
  * accessed from the SIPMessage using the getContent and getContentBytes methods
  * provided by the SIPMessage class.
  *
- * @version 1.2 $Revision: 1.28.2.8 $ $Date: 2010-12-02 08:06:37 $
+ * @version 1.2 $Revision: 1.28.2.9 $ $Date: 2010-12-02 08:19:52 $
  *
  * @author M. Ranganathan
  *
@@ -500,7 +500,6 @@ public final class PipelinedMsgParser implements Runnable {
     
     public static class NamedThreadFactory implements ThreadFactory {
     	static long threadNumber = 0;
-		@Override
 		public Thread newThread(Runnable arg0) {
 			Thread thread = new Thread(arg0);
 			thread.setName("SIP-TCP-Core-PipelineThreadpool-" + threadNumber++%999999999);
@@ -586,6 +585,12 @@ public final class PipelinedMsgParser implements Runnable {
 }
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.28.2.8  2010/12/02 08:06:37  vralev
+ * Issue number:  346
+ * Obtained from: vralev
+ *
+ * Fix JDK 1.5 compatibility
+ *
  * Revision 1.28.2.7  2010/12/02 01:41:36  vralev
  * Issue number:  346
  * Obtained from: vralev
