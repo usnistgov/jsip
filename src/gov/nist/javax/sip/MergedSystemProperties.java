@@ -128,4 +128,8 @@ public class MergedSystemProperties extends Properties {
     public boolean containsKey(Object key){
         return parent.containsKey(key);
     }
+    
+    public String toString() {
+    	return super.toString() + parent.toString();
+    }
 }
