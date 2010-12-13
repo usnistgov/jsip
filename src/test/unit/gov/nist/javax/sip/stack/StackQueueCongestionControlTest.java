@@ -756,9 +756,7 @@ public class StackQueueCongestionControlTest extends TestCase {
             fail("We excpeted more than 0" + this.shootist.receivedResponses);
         }
         assertEquals(shootist.receivedResponses, shootme.sentResponses);
-        if(this.shootme.acks != 5) {
-            fail("We expect 5 ACKs because retransmissions are not filtered in loose dialog validation.");
-        }
+
     }
     public void testTCPHugeLoss() {
         this.shootme.init("tcp",1000);
