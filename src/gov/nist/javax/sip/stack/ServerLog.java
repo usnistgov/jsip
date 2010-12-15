@@ -29,6 +29,7 @@
 
 package gov.nist.javax.sip.stack;
 
+import gov.nist.core.CommonLogger;
 import gov.nist.core.LogWriter;
 import gov.nist.core.ServerLogger;
 import gov.nist.core.StackLogger;
@@ -45,15 +46,12 @@ import java.util.Properties;
 import javax.sip.SipStack;
 import javax.sip.header.TimeStampHeader;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-
 /**
  * Log file wrapper class. Log messages into the message trace file and also write the log into
  * the debug file if needed. This class keeps an XML formatted trace around for later access via
  * RMI. The trace can be viewed with a trace viewer (see tools.traceviewerapp).
  *
- * @version 1.2 $Revision: 1.41 $ $Date: 2010-06-08 20:30:32 $
+ * @version 1.2 $Revision: 1.42 $ $Date: 2010-12-15 11:43:02 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -106,26 +104,7 @@ public class ServerLog implements ServerLogger {
 
         if (logLevel != null) {
             if (logLevel.equals("LOG4J")) {
-                // if TRACE_LEVEL property is specified as
-                // "LOG4J" then, set the traceLevel based on
-                // the log4j effective log level.
-
-                // check whether a Log4j logger name has been
-                // specified. if not, use the stack name as the default
-                // logger name.
-                Logger logger = Logger.getLogger(configurationProperties.getProperty(
-                        "gov.nist.javax.sip.LOG4J_LOGGER_NAME", this.description));
-                Level level = logger.getEffectiveLevel();
-
-                if (level == Level.OFF) {
-                    this.setTraceLevel(0);
-                } else if (level.isGreaterOrEqual(Level.DEBUG)) {
-                    this.setTraceLevel(TRACE_DEBUG);
-                } else if (level.isGreaterOrEqual(Level.INFO)) {
-                    this.setTraceLevel(TRACE_MESSAGES);
-                } else if (level.isGreaterOrEqual(Level.WARN)) {
-                    this.setTraceLevel(TRACE_EXCEPTION);
-                }
+            	CommonLogger.useLegacyLogger = false;
             } else {
                 try {
                     int ll;
