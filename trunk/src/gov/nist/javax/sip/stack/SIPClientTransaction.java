@@ -1443,9 +1443,14 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
      *      gov.nist.javax.sip.stack.MessageChannel)
      */
     public void processResponse(SIPResponse sipResponse, MessageChannel incomingChannel) {
-        
-        boolean isRetransmission = !responsesReceived.add(Integer.valueOf(sipResponse.getStatusCode()));
-        sipResponse.setRetransmission(isRetransmission);
+                
+        int code = sipResponse.getStatusCode();
+		boolean isRetransmission = !responsesReceived.add(Integer.valueOf(code));
+        if(code == 183) {
+        	if(lastResponse != null && !sipResponse.toString().equals(lastResponse.toString())) {
+        		isRetransmission = false;
+        	}
+        }
         
         if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             logger.logDebug(
@@ -1470,7 +1475,6 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
 
         // JvB: Check all conditions required for creating a new Dialog
         if (dialog == null) {
-            int code = sipResponse.getStatusCode();
             if ((code > 100 && code < 300)
             /* skip 100 (may have a to tag */
             && (sipResponse.getToTag() != null || sipStack.isRfc2543Supported())

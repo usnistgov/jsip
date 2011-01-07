@@ -386,6 +386,8 @@ public abstract class SIPTransactionStack implements
 
     private boolean deliverTerminatedEventForAck = false;
 
+    protected ClientAuthType clientAuth = ClientAuthType.Default;
+    
     // ThreadPool when parsed SIP messages are processed. Affects the case when many TCP calls use single socket.
     private int tcpPostParsingThreadPoolSize = 0;
 
@@ -3024,5 +3026,19 @@ public abstract class SIPTransactionStack implements
 
     public int getEarlyDialogTimeout() {
         return this.earlyDialogTimeout;
+    }
+
+    /**
+     * @param clientAuth the clientAuth to set
+     */
+    public void setClientAuth(ClientAuthType clientAuth) {
+        this.clientAuth = clientAuth;
+    }
+
+    /**
+     * @return the clientAuth
+     */
+    public ClientAuthType getClientAuth() {
+        return clientAuth;
     }
 }

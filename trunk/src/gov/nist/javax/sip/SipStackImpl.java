@@ -40,6 +40,7 @@ import gov.nist.javax.sip.parser.MessageParserFactory;
 import gov.nist.javax.sip.parser.PipelinedMsgParser;
 import gov.nist.javax.sip.parser.StringMsgParser;
 import gov.nist.javax.sip.parser.StringMsgParserFactory;
+import gov.nist.javax.sip.stack.ClientAuthType;
 import gov.nist.javax.sip.stack.DefaultMessageLogFactory;
 import gov.nist.javax.sip.stack.DefaultRouter;
 import gov.nist.javax.sip.stack.MessageProcessor;
@@ -516,6 +517,12 @@ import javax.sip.message.Request;
  * of outbund TLS connections.
  * </li>
  * 
+ * <li><b>gov.nist.javax.sip.TLS_CLIENT_AUTH_TYPE = String </b> Valid values are Default (backward compatible with previous versions)
+ * , Enabled, Want or Disabled. Set to Enabled if you want the SSL stack to require a valid certificate chain from the client before 
+ * accepting a connection. Set to Want if you want the SSL stack to request a client Certificate, but not fail if one isn't presented. 
+ * A Disabled value will not require a certificate chain.
+ * </li>
+ * 
  * <li><b>javax.net.ssl.keyStore = fileName </b> <br/>
  * Default is <it>NULL</it>. If left undefined the keyStore and trustStore will
  * be left to the java runtime defaults. If defined, any TLS sockets created
@@ -894,6 +901,13 @@ public class SipStackImpl extends SIPTransactionStack implements
 					+ "- check that it is present on the classpath and that there is a no-args constructor defined",
 					ex);
 		}
+		
+		// Allow application to choose the tls client auth policy on the socket
+        String clientAuthType = configurationProperties.getProperty("gov.nist.javax.sip.TLS_CLIENT_AUTH_TYPE");
+        if (clientAuthType != null) {
+            super.clientAuth = ClientAuthType.valueOf(clientAuthType);
+            logger.logInfo("using " + clientAuthType + " tls auth policy");
+        }
 
 		// The following features are unique to the NIST implementation.
 
