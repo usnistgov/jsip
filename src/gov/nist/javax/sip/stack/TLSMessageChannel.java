@@ -42,19 +42,37 @@
  ******************************************************************************/
 package gov.nist.javax.sip.stack;
 
-import gov.nist.javax.sip.header.*;
-import gov.nist.javax.sip.message.*;
-import gov.nist.javax.sip.parser.*;
-import gov.nist.core.*;
+import gov.nist.core.CommonLogger;
+import gov.nist.core.InternalErrorHandler;
+import gov.nist.core.LogWriter;
+import gov.nist.core.ServerLogger;
+import gov.nist.core.StackLogger;
+import gov.nist.javax.sip.header.CSeq;
+import gov.nist.javax.sip.header.CallID;
+import gov.nist.javax.sip.header.ContentLength;
+import gov.nist.javax.sip.header.From;
+import gov.nist.javax.sip.header.RequestLine;
+import gov.nist.javax.sip.header.RetryAfter;
+import gov.nist.javax.sip.header.StatusLine;
+import gov.nist.javax.sip.header.To;
+import gov.nist.javax.sip.header.Via;
+import gov.nist.javax.sip.header.ViaList;
+import gov.nist.javax.sip.message.SIPMessage;
+import gov.nist.javax.sip.message.SIPRequest;
+import gov.nist.javax.sip.message.SIPResponse;
+import gov.nist.javax.sip.parser.Pipeline;
+import gov.nist.javax.sip.parser.PipelinedMsgParser;
+import gov.nist.javax.sip.parser.SIPMessageListener;
 
-import java.net.*;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.text.ParseException;
 
 import javax.net.ssl.HandshakeCompletedListener;
-import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLHandshakeException;
-
+import javax.net.ssl.SSLSocket;
 import javax.sip.address.Hop;
 import javax.sip.message.Response;
 
@@ -142,7 +160,12 @@ public final class TLSMessageChannel extends MessageChannel implements
         if (sock instanceof SSLSocket) {
             try {
                 SSLSocket sslSock = (SSLSocket) sock;
-                sslSock.setNeedClientAuth(true);
+                if(sipStack.getClientAuth() != ClientAuthType.Want && sipStack.getClientAuth() != ClientAuthType.Disabled) {
+                    sslSock.setNeedClientAuth(true);
+                }
+                if(logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+                    logger.logDebug("SSLServerSocket need client auth " + sslSock.getNeedClientAuth());
+                }
                 this.handshakeCompletedListener = new HandshakeCompletedListenerImpl(
                         this);
                 sslSock

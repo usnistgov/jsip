@@ -522,8 +522,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                             .raiseErrorEvent(SIPTransactionErrorEvent.TIMEOUT_ERROR);
                 }
             } else if ((transaction != null) && (!dialog.isAckSeen())) {
-                // Retransmit to 200 until ack receivedialog.
-                if (lastResponseStatusCode.intValue() == 200) {
+                // Retransmit to 2xx until ack receivedialog.
+                if (lastResponseStatusCode.intValue() / 100 == 2) {
                     try {
 
                         // resend the last response.
