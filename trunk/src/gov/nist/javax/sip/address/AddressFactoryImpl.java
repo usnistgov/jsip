@@ -45,7 +45,7 @@ import javax.sip.address.*;
  * Louis Pasteur University - Strasbourg - France<br/>
  *
  */
-public class AddressFactoryImpl implements javax.sip.address.AddressFactory {
+public class AddressFactoryImpl implements AddressFactoryEx {
     public static final Pattern SCHEME_PATTERN = Pattern.compile("\\p{Alpha}[[{\\p{Alpha}][\\p{Digit}][\\+][-][\\.]]*");
     
     /** Creates a new instance of AddressFactoryImpl
@@ -87,79 +87,6 @@ public class AddressFactoryImpl implements javax.sip.address.AddressFactory {
 
     }
 
-    /** create a sip uri.
-     *
-     *@param uri -- the uri to parse.
-     */
-    public javax.sip.address.SipURI createSipURI(String uri)
-    //  throws java.net.URISyntaxException {
-    throws ParseException {
-        if (uri == null)
-            throw new NullPointerException("null URI");
-        try {
-            StringMsgParser smp = new StringMsgParser();
-            SipUri sipUri = smp.parseSIPUrl(uri);
-            return (SipURI) sipUri;
-        } catch (ParseException ex) {
-            //  throw new java.net.URISyntaxException(uri, ex.getMessage());
-            throw new ParseException(ex.getMessage(), 0);
-        }
-
-    }
-
-    /** Create a SipURI
-     *
-     *@param user -- the user
-     *@param host -- the host.
-     */
-    public javax.sip.address.SipURI createSipURI(String user, String host)
-        throws ParseException {
-        if (host == null)
-            throw new NullPointerException("null host");
-
-        StringBuilder uriString = new StringBuilder("sip:");
-        if (user != null) {
-            uriString.append(user);
-            uriString.append("@");
-        }
-
-        //if host is an IPv6 string we should enclose it in sq brackets
-        if (host.indexOf(':') != host.lastIndexOf(':')
-            && host.trim().charAt(0) != '[')
-            host = '[' + host + ']';
-
-        uriString.append(host);
-
-        StringMsgParser smp = new StringMsgParser();
-        try {
-
-            SipUri sipUri = smp.parseSIPUrl(uriString.toString());
-            return sipUri;
-        } catch (ParseException ex) {
-            throw new ParseException(ex.getMessage(), 0);
-        }
-    }
-
-    /**
-     * Creates a TelURL based on given URI string. The scheme or '+' should
-     * not be included in the phoneNumber string argument.
-     *
-     * @param uri - the new string value of the phoneNumber.
-     * @throws URISyntaxException if the URI string is malformed.
-     */
-    public javax.sip.address.TelURL createTelURL(String uri)
-        throws ParseException {
-        if (uri == null)
-            throw new NullPointerException("null url");
-        String telUrl = "tel:" + uri;
-        try {
-            StringMsgParser smp = new StringMsgParser();
-            TelURLImpl timp = (TelURLImpl) smp.parseUrl(telUrl);
-            return (TelURL) timp;
-        } catch (ParseException ex) {
-            throw new ParseException(ex.getMessage(), 0);
-        }
-    }
 
     public javax.sip.address.Address createAddress(javax.sip.address.URI uri) {
         if (uri == null)
@@ -198,6 +125,84 @@ public class AddressFactoryImpl implements javax.sip.address.AddressFactory {
         }
     }
 
+
+    /** create a sip uri.
+     *
+     *@param uri -- the uri to parse.
+     */
+    public javax.sip.address.SipURI createSipURI(String uri) throws ParseException {
+        if (uri == null)
+            throw new NullPointerException("null URI");
+        try {
+            StringMsgParser smp = new StringMsgParser();
+            SipUri sipUri = smp.parseSIPUrl(uri);
+            return (SipURI) sipUri;
+        } catch (ParseException ex) {
+            throw new ParseException(ex.getMessage(), 0);
+        }
+
+    }
+
+    /** Create a SipURI
+     *
+     *@param user -- the user
+     *@param host -- the host.
+     */
+    public javax.sip.address.SipURI createSipURI(String user, String host) throws ParseException {
+        if (host == null)
+            throw new NullPointerException("null host");
+
+        StringBuilder uriString = new StringBuilder("sip:");
+        if (user != null) {
+            uriString.append(user);
+            uriString.append("@");
+        }
+
+        //if host is an IPv6 string we should enclose it in sq brackets
+        if (host.indexOf(':') != host.lastIndexOf(':')
+            && host.trim().charAt(0) != '[')
+            host = '[' + host + ']';
+
+        uriString.append(host);
+
+       
+        try {
+
+           return this.createSipURI(uriString.toString());
+        } catch (ParseException ex) {
+            throw new ParseException(ex.getMessage(), 0);
+        }
+    }
+
+    /**
+     * Creates a TelURL based on given URI string. The  '+' should
+     * not be included in the phoneNumber string argument. If scheme is not present, it will be added.
+     *
+     * @param uri - the new string value of the phoneNumber.
+     * @throws URISyntaxException if the URI string is malformed.
+     */
+    public javax.sip.address.TelURL createTelURL(String uri)
+        throws ParseException {
+        if (uri == null)
+            throw new NullPointerException("null url");
+        String telUrl = null;
+        if(uri.startsWith("tel:"))
+        {
+        	telUrl = uri;
+        }else
+        {
+        	telUrl = "tel:" + uri;
+        }
+        try {
+            StringMsgParser smp = new StringMsgParser();
+            TelURLImpl timp = (TelURLImpl) smp.parseUrl(telUrl);
+            return (TelURL) timp;
+        } catch (ParseException ex) {
+            throw new ParseException(ex.getMessage(), 0);
+        }
+    }
+    
+    
     /**
      * Creates a URI based on given URI string. The URI string is parsed in
      * order to create the new URI instance. Depending on the scheme the
@@ -215,12 +220,10 @@ public class AddressFactoryImpl implements javax.sip.address.AddressFactory {
             String scheme = urlParser.peekScheme();
             if (scheme == null)
                 throw new ParseException("bad scheme", 0);
-            if (scheme.equalsIgnoreCase("sip")) {
-                return (javax.sip.address.URI) urlParser.sipURL(true);
-            } else if (scheme.equalsIgnoreCase("sips")) {
-                return (javax.sip.address.URI) urlParser.sipURL(true);
+            if (scheme.equalsIgnoreCase("sip") || scheme.equalsIgnoreCase("sips")) {
+               return this.createSipURI(uri);
             } else if (scheme.equalsIgnoreCase("tel")) {
-                return (javax.sip.address.URI) urlParser.telURL(true);
+                return this.createTelURL(uri);
             }
             // Issue 316 : the scheme should match ALPHA *(ALPHA / DIGIT / "+" / "-" / "." )
             if(!SCHEME_PATTERN.matcher(scheme).matches()) {
