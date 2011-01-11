@@ -1446,7 +1446,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                 
         int code = sipResponse.getStatusCode();
 		boolean isRetransmission = !responsesReceived.add(Integer.valueOf(code));
-        if(code == 183) {
+        if(code == 183 && isRetransmission) {
         	if(lastResponse != null && !sipResponse.toString().equals(lastResponse.toString())) {
         		isRetransmission = false;
         	}
@@ -1456,7 +1456,8 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
             logger.logDebug(
                     "marking response as retransmission " + isRetransmission + " for ctx " + this);
         }
-        
+        sipResponse.setRetransmission(isRetransmission);
+                
         // If a dialog has already been created for this response,
         // pass it up.
         SIPDialog dialog = null;
