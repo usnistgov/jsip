@@ -745,6 +745,22 @@ public final class TLSMessageChannel extends MessageChannel implements
                         }
                         return;
                     }
+                 // Handling keepalive ping (double CRLF) as defined per RFC 5626 Section 4.4.1  
+                    if(nbytes == 4 && "\r\n\r\n".equals(new String(msg, 0, nbytes))) {
+                    	// sending pong (single CRLF)
+                    	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                            logger.logDebug("KeepAlive Double CRLF received, sending single CRLF as defined per RFC 5626 Section 4.4.1");
+                        }
+                    	mySock.getOutputStream().write("\r\n".getBytes("UTF-8"));
+                    	continue;
+                    }
+                    // Handling keepalive pong response (single CRLF) as defined in RFC 5626 Section 4.4.1  
+                    if(nbytes == 2 && "\r\n".equals(new String(msg, 0, nbytes))) {
+                    	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                            logger.logDebug("KeepAlive Single CRLF answer received");
+                        }
+                    	continue;
+                    }
                     hispipe.write(msg, 0, nbytes);
 
                 } catch (IOException ex) {
