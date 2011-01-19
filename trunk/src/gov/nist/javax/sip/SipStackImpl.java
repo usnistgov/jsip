@@ -928,7 +928,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 			} catch (Exception e) {
 				throw new PeerUnavailableException(
 						"can't find or instantiate NetworkLayer implementation: "
-								+ path);
+								+ path, e);
 			}
 		}
 
@@ -945,7 +945,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 			} catch (Exception e) {
 				throw new PeerUnavailableException(
 						"can't find or instantiate AddressResolver implementation: "
-								+ path);
+								+ path, e);
 			}
 		}
 
