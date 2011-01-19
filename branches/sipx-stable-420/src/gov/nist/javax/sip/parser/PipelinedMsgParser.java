@@ -563,16 +563,18 @@ public final class PipelinedMsgParser implements Runnable {
 
     public void close() {
         try {
-            this.rawInputStream.close();
+            this.rawInputStream.close();            
         } catch (IOException ex) {
             // Ignore.
         }
-        if(postParseExecutor!=null) {
+        cleanMessageOrderingMap();        
+    }
+    
+    public static void shutdownTcpThreadpool() {
+    	if(postParseExecutor!=null) {
             postParseExecutor.shutdown();
             postParseExecutor = null;
         }
-        cleanMessageOrderingMap();
-        
     }
     
     private void cleanMessageOrderingMap() {

@@ -1415,6 +1415,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 		if (this.eventScanner != null)
 			this.eventScanner.forceStop();
 		this.eventScanner = null;
+		PipelinedMsgParser.shutdownTcpThreadpool();
 
 	}
 
