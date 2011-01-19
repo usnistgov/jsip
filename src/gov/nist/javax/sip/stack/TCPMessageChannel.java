@@ -819,7 +819,9 @@ public class TCPMessageChannel extends MessageChannel implements
                     	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                             logger.logDebug("KeepAlive Double CRLF received, sending single CRLF as defined per RFC 5626 Section 4.4.1");
                         }
-                    	mySock.getOutputStream().write("\r\n".getBytes("UTF-8"));
+                    	OutputStream socketOutputStream = mySock.getOutputStream();
+                    	socketOutputStream.write("\r\n".getBytes("UTF-8"));
+                    	socketOutputStream.flush();
                     	continue;
                     }
                     // Handling keepalive pong response (single CRLF) as defined in RFC 5626 Section 4.4.1  
