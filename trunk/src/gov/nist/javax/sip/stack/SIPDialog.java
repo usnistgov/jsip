@@ -3450,7 +3450,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             }
         } finally {
             if (sipResponse.getCSeq().getMethod().equals(Request.INVITE)
-                    && transaction instanceof ClientTransaction) {
+                    && transaction instanceof ClientTransaction && this.getState() != DialogState.TERMINATED) {
                 this.acquireTimerTaskSem();
                 try {
                     if (this.getState() == DialogState.EARLY) {
