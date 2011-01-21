@@ -2697,9 +2697,10 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                     // state. To tag is MANDATORY for the response.
 
                     // Only do this if method equals initial request!
-
-                	sipStack.getStackLogger().logDebug("pendingRouteUpdateOn202Response : " + this.pendingRouteUpdateOn202Response);
-                    if (cseqMethod.equals(getMethod())
+                	if(sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                		sipStack.getStackLogger().logDebug("pendingRouteUpdateOn202Response : " + this.pendingRouteUpdateOn202Response);
+                	}
+                	if (cseqMethod.equals(getMethod())
                             && (sipResponse.getToTag() != null || sipStack.rfc2543Supported)
                             && (this.getState() != DialogState.CONFIRMED || 
                             		(this.getState() == DialogState.CONFIRMED 

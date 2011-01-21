@@ -120,7 +120,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
     protected TCPMessageChannel(Socket sock, SIPTransactionStack sipStack,
             TCPMessageProcessor msgProcessor) throws IOException {
 
-        if (sipStack.isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             sipStack.getStackLogger().logDebug("creating new TCPMessageChannel ");
             sipStack.getStackLogger().logStackTrace();
         }
@@ -154,7 +154,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
      */
     protected TCPMessageChannel(InetAddress inetAddr, int port, SIPTransactionStack sipStack,
             TCPMessageProcessor messageProcessor) throws IOException {
-        if (sipStack.isLoggingEnabled()) {
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             sipStack.getStackLogger().logDebug("creating new TCPMessageChannel ");
             sipStack.getStackLogger().logStackTrace();
         }
@@ -187,10 +187,10 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
                 mySock.close();
                 mySock = null;
             }
-            if (sipStack.isLoggingEnabled())
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                 sipStack.getStackLogger().logDebug("Closing message Channel " + this);
         } catch (IOException ex) {
-            if (sipStack.isLoggingEnabled())
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                 sipStack.getStackLogger().logDebug("Error closing socket " + ex);
         }
     }
@@ -404,7 +404,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
                         || hdrClass.equals(CSeq.class) || hdrClass.equals(Via.class)
                         || hdrClass.equals(CallID.class) || hdrClass.equals(RequestLine.class) || hdrClass
                         .equals(StatusLine.class))) {
-            if (sipStack.isLoggingEnabled()) {
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                 sipStack.getStackLogger().logDebug(
                         "Encountered Bad Message \n" + sipMessage.toString());
             }
@@ -416,7 +416,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
 
                 String badReqRes = createBadReqRes(msgString, ex);
                 if (badReqRes != null) {
-                    if (sipStack.isLoggingEnabled()) {
+                    if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                         sipStack.getStackLogger().logDebug("Sending automatic 400 Bad Request:");
                         sipStack.getStackLogger().logDebug(badReqRes);
                     }
@@ -427,7 +427,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
                         this.sipStack.getStackLogger().logException(e);
                     }
                 } else {
-                    if (sipStack.isLoggingEnabled()) {
+                    if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                         sipStack.getStackLogger().logDebug(
                                 "Could not formulate automatic 400 Bad Request");
                     }
@@ -466,7 +466,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
                     sipMessage.getTo() == null || sipMessage.getCallId() == null
                     || sipMessage.getCSeq() == null || sipMessage.getViaHeaders() == null) {
                 String badmsg = sipMessage.encode();
-                if (sipStack.isLoggingEnabled()) {
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                     sipStack.getStackLogger().logDebug(">>> Dropped Bad Msg");
                     sipStack.getStackLogger().logDebug(badmsg);
                 }
@@ -533,7 +533,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
                 // Create a new sever side request processor for this
                 // message and let it handle the rest.
 
-                if (sipStack.isLoggingEnabled()) {
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                     sipStack.getStackLogger().logDebug("----Processing Message---");
                 }
 
@@ -599,7 +599,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
                                 + (sipResponse.getContentLength() == null ? 0 : sipResponse
                                         .getContentLength().getContentLength()) > sipStack
                                 .getMaxMessageSize()) {
-                    if (sipStack.isLoggingEnabled())
+                    if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                         this.sipStack.getStackLogger().logDebug("Message size exceeded");
                     return;
 
@@ -688,7 +688,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
                     }
 
                     try {
-                        if (sipStack.isLoggingEnabled())
+                        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                             sipStack.getStackLogger().logDebug("IOException  closing sock " + ex);
                         try {
                             if (sipStack.maxConnections != -1) {

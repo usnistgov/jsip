@@ -559,7 +559,7 @@ public abstract class SIPTransactionStack implements
 	 * Re Initialize the stack instance.
 	 */
 	protected void reInit() {
-		if (stackLogger.isLoggingEnabled())
+		if (stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
 			stackLogger.logDebug("Re-initializing !");
 
 		// Array of message processors.
@@ -691,19 +691,19 @@ public abstract class SIPTransactionStack implements
 	public void putDialog(SIPDialog dialog) {
 		String dialogId = dialog.getDialogId();
 		if (dialogTable.containsKey(dialogId)) {
-			if (stackLogger.isLoggingEnabled()) {
+			if (stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 				stackLogger
 						.logDebug("putDialog: dialog already exists" + dialogId
 								+ " in table = " + dialogTable.get(dialogId));
 			}
 			return;
 		}
-		if (stackLogger.isLoggingEnabled()) {
+		if (stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 			stackLogger.logDebug("putDialog dialogId=" + dialogId
 					+ " dialog = " + dialog);
 		}
 		dialog.setStack(this);
-		if (stackLogger.isLoggingEnabled())
+		if (stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
 			stackLogger.logStackTrace();
 		dialogTable.put(dialogId, dialog);
 		if (dialog.getMergeId() != null )  {
@@ -862,7 +862,7 @@ public abstract class SIPTransactionStack implements
 	public SIPDialog getDialog(String dialogId) {
 
 		SIPDialog sipDialog = (SIPDialog) dialogTable.get(dialogId);
-		if (stackLogger.isLoggingEnabled()) {
+		if (stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 			stackLogger.logDebug("getDialog(" + dialogId + ") : returning "
 					+ sipDialog);
 		}
@@ -878,7 +878,7 @@ public abstract class SIPTransactionStack implements
 	 *            is the dialog Id to remove.
 	 */
 	public void removeDialog(String dialogId) {
-		if (stackLogger.isLoggingEnabled()) {
+		if (stackLogger.isLoggingEnabled(LogWriter.TRACE_WARN)) {
 			stackLogger.logWarning("Silently removing dialog from table");
 		}
 		dialogTable.remove(dialogId);
@@ -904,7 +904,7 @@ public abstract class SIPTransactionStack implements
 		SIPClientTransaction retval = null;
 		try {
 			Iterator it = clientTransactionTable.values().iterator();
-			if (stackLogger.isLoggingEnabled())
+			if (stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
 				stackLogger.logDebug("ct table size = "
 						+ clientTransactionTable.size());
 			String thisToTag = notifyMessage.getTo().getTag();
@@ -913,7 +913,7 @@ public abstract class SIPTransactionStack implements
 			}
 			Event eventHdr = (Event) notifyMessage.getHeader(EventHeader.NAME);
 			if (eventHdr == null) {
-				if (stackLogger.isLoggingEnabled()) {
+				if (stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 					stackLogger
 							.logDebug("event Header is null -- returning null");
 				}
@@ -932,7 +932,7 @@ public abstract class SIPTransactionStack implements
 				// dont include it.
 				if (hisEvent == null)
 					continue;
-				if (stackLogger.isLoggingEnabled()) {
+				if (stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 					stackLogger.logDebug("ct.fromTag = " + fromTag);
 					stackLogger.logDebug("thisToTag = " + thisToTag);
 					stackLogger.logDebug("hisEvent = " + hisEvent);
@@ -954,7 +954,7 @@ public abstract class SIPTransactionStack implements
 
 			return retval;
 		} finally {
-			if (stackLogger.isLoggingEnabled())
+			if (stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
 				stackLogger.logDebug("findSubscribeTransaction : returning "
 						+ retval);
 
@@ -1045,7 +1045,7 @@ public abstract class SIPTransactionStack implements
 					String key = sipMessage.getTransactionId();
 
 					retval = (SIPTransaction) serverTransactionTable.get(key);
-					if (stackLogger.isLoggingEnabled())
+					if (stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
 						getStackLogger()
 								.logDebug(
 										"serverTx: looking for key " + key
@@ -1075,7 +1075,7 @@ public abstract class SIPTransactionStack implements
 				Via via = sipMessage.getTopmostVia();
 				if (via.getBranch() != null) {
 					String key = sipMessage.getTransactionId();
-					if (stackLogger.isLoggingEnabled())
+					if (stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
 						getStackLogger().logDebug(
 								"clientTx: looking for key " + key);
 					retval = (SIPTransaction) clientTransactionTable.get(key);
@@ -1102,7 +1102,7 @@ public abstract class SIPTransactionStack implements
 
 			}
 		} finally {
-			if (this.getStackLogger().isLoggingEnabled()) {
+			if (stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 				this.getStackLogger().logDebug(
 						"findTransaction: returning  : " + retval);
 			}
@@ -1118,7 +1118,7 @@ public abstract class SIPTransactionStack implements
 	public SIPTransaction findCancelTransaction(SIPRequest cancelRequest,
 			boolean isServer) {
 
-		if (stackLogger.isLoggingEnabled()) {
+		if (stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 			stackLogger.logDebug("findCancelTransaction request= \n"
 					+ cancelRequest + "\nfindCancelRequest isServer="
 					+ isServer);
@@ -1150,7 +1150,7 @@ public abstract class SIPTransactionStack implements
 			}
 
 		}
-		if (stackLogger.isLoggingEnabled())
+		if (stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
 			stackLogger
 					.logDebug("Could not find transaction for cancel request");
 		return null;
@@ -1179,7 +1179,7 @@ public abstract class SIPTransactionStack implements
 	 */
 	public SIPServerTransaction findPendingTransaction(
 			SIPRequest requestReceived) {
-		if (this.stackLogger.isLoggingEnabled()) {
+		if (stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 			this.stackLogger.logDebug("looking for pending tx for :"
 					+ requestReceived.getTransactionId());
 		}
@@ -1240,7 +1240,7 @@ public abstract class SIPTransactionStack implements
 	 *            -- pending transaction to remove.
 	 */
 	public void removePendingTransaction(SIPServerTransaction tr) {
-		if (this.stackLogger.isLoggingEnabled()) {
+		if (stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 			this.stackLogger.logDebug("removePendingTx: "
 					+ tr.getTransactionId());
 		}
@@ -1256,7 +1256,7 @@ public abstract class SIPTransactionStack implements
 	 * 
 	 */
 	public void removeFromMergeTable(SIPServerTransaction tr) {
-		if (stackLogger.isLoggingEnabled()) {
+		if (stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 			this.stackLogger.logDebug("Removing tx from merge table ");
 		}
 		String key = ((SIPRequest) tr.getRequest()).getMergeId();
@@ -1377,7 +1377,7 @@ public abstract class SIPTransactionStack implements
 
 		// Set ths transaction's encapsulated request
 		// interface from the superclass
-		if (stackLogger.isLoggingEnabled()) {
+		if (stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 			stackLogger.logDebug("newSIPServerRequest( "
 					+ requestReceived.getMethod() + ":"
 					+ requestReceived.getTopmostVia().getBranch() + "):"
@@ -1501,7 +1501,7 @@ public abstract class SIPTransactionStack implements
 			if (sri != null) {
 				currentTransaction.setResponseInterface(sri);
 			} else {
-				if (this.stackLogger.isLoggingEnabled()) {
+				if (this.stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 					this.stackLogger
 							.logDebug("returning null - serverResponseInterface is null!");
 				}
@@ -1509,7 +1509,7 @@ public abstract class SIPTransactionStack implements
 				return null;
 			}
 		} else {
-			if (stackLogger.isLoggingEnabled())
+			if (stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
 				this.stackLogger.logDebug("Could not aquire semaphore !!");
 		}
 
