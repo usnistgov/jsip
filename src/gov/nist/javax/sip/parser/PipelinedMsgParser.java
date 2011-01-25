@@ -37,9 +37,9 @@ package gov.nist.javax.sip.parser;
  *
  */
 import gov.nist.core.CommonLogger;
-import gov.nist.core.Debug;
 import gov.nist.core.InternalErrorHandler;
 import gov.nist.core.LogLevels;
+import gov.nist.core.LogWriter;
 import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.header.ContentLength;
 import gov.nist.javax.sip.message.SIPMessage;
@@ -51,13 +51,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.util.Queue;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadFactory;
@@ -84,6 +81,7 @@ import java.util.concurrent.TimeUnit;
 public final class PipelinedMsgParser implements Runnable {
 	private static StackLogger logger = CommonLogger.getLogger(PipelinedMsgParser.class);
 
+	private static final String CRLF = "\r\n";
 
     /**
      * The message listener that is registered with this parser. (The message
@@ -209,6 +207,9 @@ public final class PipelinedMsgParser implements Runnable {
         int increment = 1024;
         int bufferSize = increment;
         byte[] lineBuffer = new byte[bufferSize];
+        // handles RFC 5626 CRLF keepalive mechanism
+        byte[] crlfBuffer = new byte[2];
+        int crlfCounter = 0;
         while (true) {
             char ch;
             int i = inputStream.read();
@@ -224,9 +225,14 @@ public final class PipelinedMsgParser implements Runnable {
             }
             if (ch != '\r')
                 lineBuffer[counter++] = (byte) (i&0xFF);
-           
+            else if (counter == 0)            	
+            	crlfBuffer[crlfCounter++] = (byte) '\r';
+                       
             if (ch == '\n') {
-                break;
+            	if(counter == 1 && crlfCounter > 0) {
+            		crlfBuffer[crlfCounter++] = (byte) '\n';            		
+            	} 
+            	break;            	
             }
             
             if( counter == bufferSize ) {
@@ -237,7 +243,12 @@ public final class PipelinedMsgParser implements Runnable {
                 
             }
         }
-        return new String(lineBuffer,0,counter,"UTF-8");
+        if(counter == 1 && crlfCounter > 0) {
+        	return new String(crlfBuffer,0,crlfCounter,"UTF-8");
+        } else {
+        	return new String(lineBuffer,0,counter,"UTF-8");
+        }
+        
     }
     
     public class Dispatch implements Runnable, QueuedMessageDispatchBase{
@@ -326,7 +337,7 @@ public final class PipelinedMsgParser implements Runnable {
 
                 String line1;
                 String line2 = null;
-
+                boolean isPreviousLineCRLF = false;
                 while (true) {
                     try {
                         line1 = readLine(inputStream);
@@ -336,7 +347,27 @@ public final class PipelinedMsgParser implements Runnable {
                             	logger.logDebug("Discarding blank line");
                             }
                             continue;
-                        } else
+                        } else if(CRLF.equals(line1)) {
+                        	if(isPreviousLineCRLF) {
+                        		// Handling keepalive ping (double CRLF) as defined per RFC 5626 Section 4.4.1
+                            	// sending pong (single CRLF)
+                            	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                                    logger.logDebug("KeepAlive Double CRLF received, sending single CRLF as defined per RFC 5626 Section 4.4.1");
+                                }
+                            	try {
+            						sipMessageListener.sendSingleCLRF();
+            					} catch (Exception e) {						
+            						logger.logError("A problem occured while trying to send a single CLRF in response to a double CLRF", e);
+            					}                	
+                            	continue;
+                        	} else {
+	                        	isPreviousLineCRLF = true;
+	                        	if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+	                            	logger.logDebug("Received CRLF");
+	                            }
+                        	}
+                        	continue;
+                        } else 
                             break;
                     } catch (IOException ex) {
                         if(postParseExecutor != null){
@@ -518,7 +549,7 @@ public final class PipelinedMsgParser implements Runnable {
         }
     }
     
-    private static ExecutorService postParseExecutor = null;
+	private static ExecutorService postParseExecutor = null;
     
     public static class NamedThreadFactory implements ThreadFactory {
     	static long threadNumber = 0;
