@@ -270,6 +270,9 @@ public class UDPMessageProcessor extends MessageProcessor {
           for (Object messageChannel : messageChannels) {
 			((MessageChannel)messageChannel).close();
           }
+          if(sipStack.stackCongenstionControlTimeout > 0 && congestionAuditor != null) {
+          	this.congestionAuditor.stop();
+          }
     }
 
     /**
