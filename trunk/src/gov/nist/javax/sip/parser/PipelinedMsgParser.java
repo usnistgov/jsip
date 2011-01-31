@@ -632,6 +632,13 @@ public final class PipelinedMsgParser implements Runnable {
             postParseExecutor.shutdown();
             postParseExecutor = null;
         }
+    	if(staticQueueAuditor != null) {
+    		try {
+    			staticQueueAuditor.stop();
+    		} catch (Exception e) {
+
+    		}
+    	}
     }
     
     private void cleanMessageOrderingMap() {
