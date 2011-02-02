@@ -56,16 +56,18 @@ public class BlockingQueueDispatchAuditor extends TimerTask {
 
 	public void run() {
 		try {
-			QueuedMessageDispatchBase runnable =(QueuedMessageDispatchBase) this.queue.peek();
 			int removed = 0;
-			while(runnable != null) {
-				QueuedMessageDispatchBase d = (QueuedMessageDispatchBase) runnable;
-				if(System.currentTimeMillis() - d.getReceptionTime() > timeout) {
-					queue.poll();
-					runnable = (QueuedMessageDispatchBase) this.queue.peek();
-					removed ++;
-				} else {
-					runnable = null;
+			synchronized(this.queue) { // We can afford to lock here because it will either run very quickly or the server is congested anyway
+				QueuedMessageDispatchBase runnable =(QueuedMessageDispatchBase) this.queue.peek();
+				while(runnable != null) {
+					QueuedMessageDispatchBase d = (QueuedMessageDispatchBase) runnable;
+					if(System.currentTimeMillis() - d.getReceptionTime() > timeout) {
+						queue.poll();
+						runnable = (QueuedMessageDispatchBase) this.queue.peek();
+						removed ++;
+					} else {
+						runnable = null;
+					}
 				}
 			}
 			if(removed>0) {
@@ -74,6 +76,7 @@ public class BlockingQueueDispatchAuditor extends TimerTask {
 					logger.logWarning("Removed stuck messages=" + removed +
 							" total rejected=" + totalReject + " stil in queue=" + this.queue.size());
 			}
+
 		} catch (Exception e) {
 			if(logger != null && logger.isLoggingEnabled(LogLevels.TRACE_WARN)) {
 				logger.logWarning("Problem reaping old requests. This is not a fatal error." + e);
