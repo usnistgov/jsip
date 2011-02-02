@@ -282,8 +282,15 @@ public class UDPMessageChannel extends MessageChannel implements
                                 return;
                         }
                     }
-                    DatagramQueuedMessageDispatch dispatch = (DatagramQueuedMessageDispatch) ((UDPMessageProcessor) messageProcessor).messageQueue
-                    .poll();
+                    DatagramQueuedMessageDispatch dispatch = null;
+                    try {
+                    	dispatch = (DatagramQueuedMessageDispatch) ((UDPMessageProcessor) messageProcessor).messageQueue
+                    	.poll();
+                    } catch (Exception e) {
+                    	if(sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_WARN)) {
+                    		sipStack.getStackLogger().logWarning("Error in polling the queue in dispath task, will continue with next message " + e);
+                    	}
+                    }
                     if(dispatch == null) continue;
                     packet = dispatch.packet;
 
