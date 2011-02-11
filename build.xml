@@ -331,9 +331,10 @@ c:/jakarta-ant/bin/ant all
                     <jar destfile="${unit_test_jar}" basedir="${classes}" includes="test/unit/**/*.class,test/torture/**/*" />
                 </target>
 
-                <target name="jain-sip-sdp-jar" depends="compilejain">
+                <target name="jain-sip-sdp-jar" depends="compilejain,svn-revision">
                     <copy file="TIMESTAMP" toDir="classes/" />
-                    <jar destfile="${jain-sip-sdp-jar}" basedir="${classes}" includes="TIMESTAMP,javax/**/*.class,gov/nist/**/*.class" >
+                    <copy file="svnversion.txt" toDir="classes/" />
+                    <jar destfile="${jain-sip-sdp-jar}" basedir="${classes}" includes="TIMESTAMP,svnversion.txt,javax/**/*.class,gov/nist/**/*.class" >
                         <manifest>
                             <attribute	name="Original-Jar-Name"
                                         value="${jain-sip-sdp-jar}"/>
@@ -634,7 +635,7 @@ c:/jakarta-ant/bin/ant all
                 </target>
 
                 <!-- Task to generate a vesion number -->
-                <target name="generate-version" depends="ant-tools" >
+                <target name="generate-version" depends="ant-tools,svn-revision" >
                                     <taskdef name="versioner" classname="net.java.jsip.ant.tasks.VersionerTask" classpath="classes"/>
                         <versioner cvsVersionFile="${ant.file.NIST-SIP}/../version.txt"  incrementCVSVersion="true"/>
                 </target>
@@ -801,4 +802,11 @@ c:/jakarta-ant/bin/ant all
                     <antcall target="clean-tasks" />
                 </target>
 
-            </project>
+
+              <target name="svn-revision">
+                 <exec executable="svnversion" spawn="false" dir="./" output="svnversion.txt">
+                 <arg line="."/>
+              </exec>
+              </target>
+
+</project>

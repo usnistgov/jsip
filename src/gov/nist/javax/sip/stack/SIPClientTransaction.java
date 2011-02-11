@@ -1622,7 +1622,8 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
         }
         if (this.defaultDialog == null && defaultDialogId == null) {
             this.defaultDialog = sipDialog;
-            if (isDialogCreatingTransaction() && this.getSIPStack().getMaxForkTime() != 0) {
+            // We only deal with Forked INVITEs.
+            if (isInviteTransaction() && this.getSIPStack().getMaxForkTime() != 0) {
                 this.getSIPStack().addForkedClientTransaction(this);
             }
         }
