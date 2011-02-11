@@ -1747,66 +1747,84 @@ public abstract class SIPTransactionStack implements
      */
     public void removeTransaction(SIPTransaction sipTransaction) {
         if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-            logger.logDebug("Removing Transaction = "
+            logger.logDebug("removeTransaction: Removing Transaction = "
                     + sipTransaction.getTransactionId() + " transaction = "
                     + sipTransaction);
         }
-        if (sipTransaction instanceof SIPServerTransaction) {
-            if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
-                logger.logStackTrace();
-            String key = sipTransaction.getTransactionId();
-            Object removed = serverTransactionTable.remove(key);
-            String method = sipTransaction.getMethod();
-            this
-                    .removePendingTransaction((SIPServerTransaction) sipTransaction);
-            this
-                    .removeTransactionPendingAck((SIPServerTransaction) sipTransaction);
-            if (method.equalsIgnoreCase(Request.INVITE)) {
-                this
-                        .removeFromMergeTable((SIPServerTransaction) sipTransaction);
-            }
-            // Send a notification to the listener.
-            SipProviderImpl sipProvider = (SipProviderImpl) sipTransaction
-                    .getSipProvider();
-            if (removed != null
-                    && sipTransaction.testAndSetTransactionTerminatedEvent()) {
-                TransactionTerminatedEvent event = new TransactionTerminatedEvent(
-                        sipProvider, (ServerTransaction) sipTransaction);
+        try {
+        	if (sipTransaction instanceof SIPServerTransaction) {
+        		if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+        			logger.logStackTrace();
+        		}
+        		String key = sipTransaction.getTransactionId();
+        		Object removed = serverTransactionTable.remove(key);
+        		String method = sipTransaction.getMethod();
+        		this
+        		.removePendingTransaction((SIPServerTransaction) sipTransaction);
+        		this
+        		.removeTransactionPendingAck((SIPServerTransaction) sipTransaction);
+        		if (method.equalsIgnoreCase(Request.INVITE)) {
+        			this
+        			.removeFromMergeTable((SIPServerTransaction) sipTransaction);
+        		}
+        		// Send a notification to the listener.
+        		SipProviderImpl sipProvider = (SipProviderImpl) sipTransaction
+        		.getSipProvider();
+        		if (removed != null
+        				&& sipTransaction.testAndSetTransactionTerminatedEvent()) {
+        			TransactionTerminatedEvent event = new TransactionTerminatedEvent(
+        					sipProvider, (ServerTransaction) sipTransaction);
 
-                sipProvider.handleEvent(event, sipTransaction);
+        			sipProvider.handleEvent(event, sipTransaction);
 
-            }
-        } else {
+        		}
+        	} else {
 
-            String key = sipTransaction.getTransactionId();
-            Object removed = clientTransactionTable.remove(key);
+        		String key = sipTransaction.getTransactionId();
+        		Object removed = clientTransactionTable.remove(key);
 
-            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                logger.logDebug("REMOVED client tx " + removed + " KEY = "
-                        + key);
-            }
-            if ( removed != null ) {
-                SIPClientTransaction clientTx = (SIPClientTransaction)removed;
-                final String forkId = clientTx.getForkId();
-                if (forkId != null && clientTx.isInviteTransaction()
-                        && this.maxForkTime != 0) {
-                    this.timer.schedule(new RemoveForkedTransactionTimerTask(
-                            forkId), this.maxForkTime * 1000);
-                    clientTx.stopExpiresTimer();
-                }
-            }
+        		if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+        			logger.logDebug("REMOVED client tx " + removed + " KEY = "
+        					+ key);
 
-            // Send a notification to the listener.
-            if (removed != null
-                    && sipTransaction.testAndSetTransactionTerminatedEvent()) {
-                SipProviderImpl sipProvider = (SipProviderImpl) sipTransaction
-                        .getSipProvider();
-                TransactionTerminatedEvent event = new TransactionTerminatedEvent(
-                        sipProvider, (ClientTransaction) sipTransaction);
 
-                sipProvider.handleEvent(event, sipTransaction);
-            }
+        		}
+        		if ( removed != null ) {
+        			SIPClientTransaction clientTx = (SIPClientTransaction)removed;
+        			final String forkId = clientTx.getForkId();
+        			if (forkId != null && clientTx.isInviteTransaction()
+        					&& this.maxForkTime != 0) {
+        				this.timer.schedule(new RemoveForkedTransactionTimerTask(
+        						forkId), this.maxForkTime * 1000);
+        				clientTx.stopExpiresTimer();
+        			}
+        		}
 
+        		// Send a notification to the listener.
+        		if (removed != null
+        				&& sipTransaction.testAndSetTransactionTerminatedEvent()) {
+        			SipProviderImpl sipProvider = (SipProviderImpl) sipTransaction
+        			.getSipProvider();
+        			TransactionTerminatedEvent event = new TransactionTerminatedEvent(
+        					sipProvider, (ClientTransaction) sipTransaction);
+
+        			sipProvider.handleEvent(event, sipTransaction);
+        		}
+
+        	}
+        } finally {
+        	if ( logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+        		logger.logDebug(String.format("removeTransaction: Table size : " +
+        				" clientTransactionTable %d " +
+        				" mergetTable %d " +
+        				" terminatedServerTransactionsPendingAck %d  " +
+        				" forkedClientTransactionTable %d " +
+        				" pendingTransactions %d " , 
+        				clientTransactionTable.size(), mergeTable.size(),
+        				terminatedServerTransactionsPendingAck.size(),
+        				forkedClientTransactionTable.size(),
+        				pendingTransactions.size()
+        		));
         }
     }
 
