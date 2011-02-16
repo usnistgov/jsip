@@ -253,6 +253,9 @@ public final class PipelinedMsgParser implements Runnable {
             // that could be processed in parallel                                    
             Semaphore semaphore = callIDOrderingStructure.getSemaphore();
             final Queue<SIPMessage> messagesForCallID = callIDOrderingStructure.getMessagesForCallID();
+            if(sipStack.sipEventInterceptor != null) {
+            	sipStack.sipEventInterceptor.beforeMessage(messagesForCallID.peek());
+            }
             try {                                                                                
                 semaphore.acquire();                                        
             } catch (InterruptedException e) {
@@ -286,6 +289,9 @@ public final class PipelinedMsgParser implements Runnable {
                     synchronized (messagesOrderingMap) {
                         messagesOrderingMap.notify();
                     }
+                }
+                if(sipStack.sipEventInterceptor != null) {
+                	sipStack.sipEventInterceptor.afterMessage(message);
                 }
             }
         }
@@ -449,7 +455,13 @@ public final class PipelinedMsgParser implements Runnable {
                              * If gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE is disabled
                              * we continue with the old logic here.
                              */
+                        	if(sipStack.sipEventInterceptor != null) {
+                            	sipStack.sipEventInterceptor.beforeMessage(sipMessage);
+                            }
                             sipMessageListener.processMessage(sipMessage);
+                            if(sipStack.sipEventInterceptor != null) {
+                            	sipStack.sipEventInterceptor.afterMessage(sipMessage);
+                            }
                         } else {
                             /**
                              * gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE is enabled so
