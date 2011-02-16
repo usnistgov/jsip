@@ -395,6 +395,7 @@ public abstract class SIPTransactionStack implements
 
 	// The time after which a "dialog timeout event" is delivered to a listener.
 	protected int dialogTimeoutFactor = 64;
+	public SIPEventInterceptor sipEventInterceptor;
 
 	// factory used to create MessageParser objects
 	protected MessageParserFactory messageParserFactory;

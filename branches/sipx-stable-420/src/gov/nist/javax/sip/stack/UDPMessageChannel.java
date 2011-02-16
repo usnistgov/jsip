@@ -425,6 +425,10 @@ public class UDPMessageChannel extends MessageChannel implements
             }
             return;
         }
+        
+        if(sipStack.sipEventInterceptor != null) {
+            sipStack.sipEventInterceptor.beforeMessage(sipMessage);
+        }
         // For a request first via header tells where the message
         // is coming from.
         // For response, just get the port from the packet.
@@ -467,7 +471,9 @@ public class UDPMessageChannel extends MessageChannel implements
         }
 
         this.processMessage(sipMessage);
-
+        if(sipStack.sipEventInterceptor != null) {
+            sipStack.sipEventInterceptor.afterMessage(sipMessage);
+        }
     }
 
     /**

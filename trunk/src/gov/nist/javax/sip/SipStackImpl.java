@@ -1278,25 +1278,22 @@ public class SipStackImpl extends SIPTransactionStack implements
 			try {
 				super.sipMessageValve = (SIPMessageValve) Class.forName(valveClassName).newInstance();
 				final SipStack thisStack = this;
-				new Thread() {
-					public void run() {
-						try {
-							Thread.sleep(100);
-							sipMessageValve.init(thisStack);
-						} catch (Exception e) {
-							logger
-							.logError("Error intializing SIPMessageValve", e);
-						}
-						
-					}
-				}.start();
+
+				try {
+					Thread.sleep(100);
+					sipMessageValve.init(thisStack);
+				} catch (Exception e) {
+					logger
+					.logError("Error intializing SIPMessageValve", e);
+				}
+
 			} catch (Exception e) {
 				logger
-					.logError(
-							"Bad configuration value for gov.nist.javax.sip.SIP_MESSAGE_VALVE", e);			
+				.logError(
+						"Bad configuration value for gov.nist.javax.sip.SIP_MESSAGE_VALVE", e);			
 			}
 		}
-		
+
 		String interceptorClassName = configurationProperties.getProperty("gov.nist.javax.sip.SIP_EVENT_INTERCEPTOR", null);
 		if(interceptorClassName != null && !interceptorClassName.equals("")) {
 			try {

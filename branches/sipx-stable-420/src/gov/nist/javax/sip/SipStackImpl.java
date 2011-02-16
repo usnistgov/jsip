@@ -44,6 +44,7 @@ import gov.nist.javax.sip.stack.DefaultRouter;
 import gov.nist.javax.sip.stack.MessageProcessor;
 import gov.nist.javax.sip.stack.MessageProcessorFactory;
 import gov.nist.javax.sip.stack.OIOMessageProcessorFactory;
+import gov.nist.javax.sip.stack.SIPEventInterceptor;
 import gov.nist.javax.sip.stack.SIPTransactionStack;
 
 import java.io.BufferedReader;
@@ -460,6 +461,18 @@ import javax.sip.message.Request;
  * dialog that does not receive an ACK receives a Timeout notification. Note that this is only relevant
  * if the registered SipListener is of type SipListenerExt
  * </li>
+ * 
+ * <li><b>gov.nist.javax.sip.SIP_EVENT_INTERCEPTOR</b> Default to null. The class name of your custom interceptor object.
+ * An instance of this object will be created at initialization of the stack. You must implement the interface
+ * gov.nist.javax.sip.stack.SIPEventInterceptor and handle the lifecycle callbacks. This interface is the solution for 
+ * https://jain-sip.dev.java.net/issues/show_bug.cgi?id=337 . It allows to wrap the JSIP pipeline and execute custom
+ *  analysis logic as SIP messages advance through the pipeline checkpoints. One example implementation of this interceptor
+ *  is <b>gov.nist.javax.sip.stack.CallAnalysisInterceptor</b>, which will periodically check for requests stuck in the
+ *  JAIN SIP threads and if some request is taking too long it will log the stack traces for all threads. The logging can
+ *  occur only on certain events, so it will not overwhelm the CPU. The overall performance penalty by using this class in
+ *  production under load is only 2% peak on average laptop machine. There is minimal locking inside. One known limitation
+ *  of this feature is that you must use  gov.nist.javax.sip.REENTRANT_LISTENER=true to ensure that the request will be
+ *  processed in the original thread completely for UDP.</li>
  * 
  *  <li><b>gov.nist.javax.sip.TLS_CLIENT_PROTOCOLS = String </b>
  *  Comma-separated list of protocols to use when creating outgoing TLS connections.
@@ -1180,6 +1193,24 @@ public class SipStackImpl extends SIPTransactionStack implements
 			getStackLogger()
 				.logError(
 						"Bad configuration value for gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", e);			
+		}
+		String interceptorClassName = configurationProperties.getProperty("gov.nist.javax.sip.SIP_EVENT_INTERCEPTOR", null);
+		if(interceptorClassName != null && !interceptorClassName.equals("")) {
+			try {
+				super.sipEventInterceptor = (SIPEventInterceptor) Class.forName(interceptorClassName).newInstance();
+				final SipStack thisStack = this;
+				
+				try {
+					sipEventInterceptor.init(thisStack);
+				} catch (Exception e) {
+					getStackLogger()
+					.logError("Error intializing SIPEventInterceptor", e);
+				}
+			} catch (Exception e) {
+				getStackLogger()
+					.logError(
+							"Bad configuration value for gov.nist.javax.sip.SIP_EVENT_INTERCEPTOR", e);			
+			}
 		}
 	}
 

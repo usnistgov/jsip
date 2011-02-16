@@ -1,5 +1,4 @@
 package gov.nist.javax.sip.stack;
-import gov.nist.core.CommonLogger;
 import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.SipStackImpl;
 
@@ -28,7 +27,7 @@ import java.util.concurrent.TimeUnit;
  *
  */
 public  class CallAnalyzer {
-	private static StackLogger logger = CommonLogger.getLogger(CallAnalyzer.class);
+	private static StackLogger logger;
 	
 	/*
 	 * This is a Thread -> Hashmap association, each hashmap can contain multiple metricts for the thread
@@ -46,6 +45,7 @@ public  class CallAnalyzer {
 	
 	public CallAnalyzer(SipStackImpl stack) {
 		this.stack = stack;
+		logger = stack.getStackLogger();
 	}
 	
 	public static class TImeMetricInfo {
