@@ -65,7 +65,7 @@ public  class CallAnalyzer {
 	 */
 	public void configure(MetricReference ref, MetricAnalysisConfiguration config) {
 		metricStatisticsMap.get(ref).config = config;
-		if(isAnalyssStarted(ref)) {
+		if(!isAnalysisStarted(ref)) {
 			startAnalysis(ref);
 		}
 	}
@@ -75,7 +75,7 @@ public  class CallAnalyzer {
 	 * @param ref
 	 * @return
 	 */
-	public boolean isAnalyssStarted(MetricReference ref) {
+	public boolean isAnalysisStarted(MetricReference ref) {
 		return metricStatisticsMap.get(ref).task != null;
 	}
 	
