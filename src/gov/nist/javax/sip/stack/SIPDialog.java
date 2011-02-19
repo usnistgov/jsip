@@ -374,6 +374,10 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
         public void terminate() {
             try {
+            	if ( logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+            		logger.logDebug("ReInviteSender::terminate: ctx = " + ctx);
+            	}
+            	
                 ctx.terminate();
                 Thread.currentThread().interrupt();
             } catch (ObjectInUseException e) {
@@ -383,6 +387,10 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
         public ReInviteSender(ClientTransaction ctx) {
             this.ctx = ctx;
+            if ( logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+            	logger.logDebug("ReInviteSender::ReInviteSender: ctx = " + ctx);
+            	logger.logStackTrace();
+            }
         }
 
         public void run() {
@@ -447,12 +455,13 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                         logger.logDebug("Interrupted sleep");
                     return;
                 }
-                if (SIPDialog.this.getState() != DialogState.TERMINATED && !dialogTimedOut ) {
+                if (SIPDialog.this.getState() != DialogState.TERMINATED && !dialogTimedOut && ctx.getState() != TransactionState.TERMINATED ) {
                     SIPDialog.this.sendRequest(ctx, true);
+                    if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) 
+                        logger.logDebug(
+                                "re-INVITE successfully sent");
                 }
-                if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                    logger.logDebug(
-                            "re-INVITE successfully sent");
+               
             } catch (Exception ex) {
                 logger.logError("Error sending re-INVITE",
                         ex);
@@ -3113,6 +3122,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             return;
         }
 
+        if ( logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+        	logger.logStackTrace();
+        }
         // this.lastResponse = sipResponse;
         try {
             this.lastResponseStatusCode = Integer.valueOf(statusCode);

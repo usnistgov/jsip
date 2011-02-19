@@ -1957,23 +1957,26 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
             // don't nullify since the transaction may be terminated
             // but the ack not received so the 200 retransmissions should continue
 //            lastResponseAsBytes = null;
-            if ((!sipStack.cacheServerConnections)
-                    && --getMessageChannel().useCount <= 0) {
-                // Close the encapsulated socket if stack is configured
-                close();
-            } else {
-                if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)
-                        && (!sipStack.cacheServerConnections)
-                        && isReliable()) {
-                    int useCount = getMessageChannel().useCount;
-                    logger.logDebug("Use Count = " + useCount);
-                }
-            }
+        
             // don't clean up because on sending 200 OK to CANCEL otherwise we try to start the transaction timer
             // but due to timer J it has already been cleaned up
 //            transactionTimerStarted = null;
         } else {
             sipStack.removeTransaction(this);
+        }
+        
+        // Uncache the server tx 
+        if ((!sipStack.cacheServerConnections)
+                && --getMessageChannel().useCount <= 0) {
+            // Close the encapsulated socket if stack is configured
+            close();
+        } else {
+            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)
+                    && (!sipStack.cacheServerConnections)
+                    && isReliable()) {
+                int useCount = getMessageChannel().useCount;
+                logger.logDebug("Use Count = " + useCount);
+            }
         }
 
     }
