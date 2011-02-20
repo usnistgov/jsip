@@ -32,6 +32,7 @@ import gov.nist.javax.sip.header.*;
 import gov.nist.javax.sip.message.*;
 import gov.nist.javax.sip.parser.*;
 import gov.nist.core.*;
+
 import java.net.*;
 import java.io.*;
 import java.text.ParseException;
@@ -186,6 +187,12 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
             if (mySock != null) {
                 mySock.close();
                 mySock = null;
+                // remove the "tcp:" part of the key to cleanup the ioHandler hashmap
+                String ioHandlerKey = key.substring(4);
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                    sipStack.getStackLogger().logDebug("Closing TCP socket " + ioHandlerKey);
+                // Issue 358 : remove socket and semaphore on close to avoid leaking
+                sipStack.ioHandler.removeSocket(ioHandlerKey);
             }
             if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                 sipStack.getStackLogger().logDebug("Closing message Channel " + this);
@@ -260,11 +267,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
         // this.uncache();
         // } else
         if (sock != mySock && sock != null) {
-            try {
-                if (mySock != null)
-                    mySock.close();
-            } catch (IOException ex) {
-            }
+            close();
             mySock = sock;
             this.myClientInputStream = mySock.getInputStream();
             this.myClientOutputStream = mySock.getOutputStream();
@@ -353,22 +356,13 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
                 sipStack.getTimer().schedule(new TimerTask() {
                     @Override
                     public boolean cancel() {
-                        try {
-                            mySock.close();
-                            super.cancel();
-                        } catch (IOException ex) {
-
-                        }
+                        close();
                         return true;
                     }
 
                     @Override
                     public void run() {
-                        try {
-                            mySock.close();
-                        } catch (IOException ex) {
-
-                        }
+                        close();
                     }
                 }, 8000);
             }
@@ -670,9 +664,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
                                 }
                             }
                             hispipe.close();
-                            if(mySock != null) {
-                          	  mySock.close();
-                            }
+                            close();
                         } catch (IOException ioex) {
                         }
                         return;
@@ -698,9 +690,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
                                     tcpMessageProcessor.notify();
                                 }
                             }
-                            if(mySock != null) {
-                            	mySock.close();
-                            }
+                            close();
                             hispipe.close();
                         } catch (IOException ioex) {
                         }

@@ -49,6 +49,7 @@ import gov.nist.core.*;
 import java.net.*;
 import java.io.*;
 import java.text.ParseException;
+import java.util.TimerTask;
 
 import javax.net.ssl.HandshakeCompletedListener;
 import javax.net.ssl.SSLHandshakeException;
@@ -200,8 +201,16 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
      */
     public void close() {
         try {
-            if (mySock != null)
+            if (mySock != null) {
                 mySock.close();
+                mySock = null;
+                // remove the "tls:" part of the key to cleanup the ioHandler hashmap
+                String ioHandlerKey = key.substring(4);
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                    sipStack.getStackLogger().logDebug("Closing TLS socket " + ioHandlerKey);
+                // Issue 358 : remove socket and semaphore on close to avoid leaking
+                sipStack.ioHandler.removeSocket(ioHandlerKey);
+            }
             if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                 sipStack.getStackLogger().logDebug("Closing message Channel " + this);
         } catch (IOException ex) {
@@ -263,11 +272,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
         // one in its place but dont do this if it is a datagram socket.
         // (could have replied via udp but received via tcp!).
         if (sock != mySock && sock != null) {
-            try {
-                if (mySock != null)
-                    mySock.close();
-            } catch (IOException ex) {
-            }
+            close();
             mySock = sock;
             this.myClientInputStream = mySock.getInputStream();
 
@@ -315,11 +320,22 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
         // Created a new socket so close the old one and s
         // Check for null (bug fix sent in by Christophe)
         if (sock != mySock && sock != null) {
-            try {
-                if (mySock != null)
-                    mySock.close();
-            } catch (IOException ex) {
-                /* ignore */
+        	if (mySock != null) {
+                /*
+                 * Delay the close of the socket for some time in case it is being used.
+                 */
+                sipStack.getTimer().schedule(new TimerTask() {
+                    @Override
+                    public boolean cancel() {
+                        close();
+                        return true;
+                    }
+
+                    @Override
+                    public void run() {
+                        close();
+                    }
+                }, 8000);
             }
             mySock = sock;
             this.myClientInputStream = mySock.getInputStream();
@@ -602,7 +618,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
                                 }
                             }
                             hispipe.close();
-                            mySock.close();
+                            close();
                         } catch (IOException ioex) {
                         }
                         return;
@@ -627,7 +643,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
                                     tlsMessageProcessor.notify();
                                 }
                             }
-                            mySock.close();
+                            close();
                             hispipe.close();
                         } catch (IOException ioex) {
                         }

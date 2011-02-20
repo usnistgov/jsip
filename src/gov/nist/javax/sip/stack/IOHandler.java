@@ -95,6 +95,9 @@ public class IOHandler {
 	}
 
 	protected void putSocket(String key, Socket sock) {
+		if (sipStack.getStackLogger().isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+            sipStack.getStackLogger().logDebug("adding socket for key " + key);
+        }
 		socketTable.put(key, sock);
 	}
 
@@ -106,6 +109,9 @@ public class IOHandler {
 	protected void removeSocket(String key) {
 		socketTable.remove(key);
 		socketCreationMap.remove(key);
+		if (sipStack.getStackLogger().isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+            sipStack.getStackLogger().logDebug("removed Socket and Semaphore for key " + key);
+        }
 	}
 
 	/**
@@ -229,6 +235,9 @@ public class IOHandler {
 						} catch (ConnectException e) {
 							sipStack.getStackLogger().logError("Problem connecting " +
 									  receiverAddress + " " + contactPort + " " + senderAddress);
+							// new connection is bad.
+							// remove from our table the socket and its semaphore
+							removeSocket(key);
 							throw e;
 						}
 						OutputStream outputStream = clientSock
@@ -246,16 +255,21 @@ public class IOHandler {
 							if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
 								sipStack.getStackLogger().logDebug(
 										"IOException occured retryCount "
-												+ retry_count);
-							// old connection is bad.
-							// remove from our table.
-							removeSocket(key);
+												+ retry_count);							
 							try {
 								clientSock.close();
 							} catch (Exception e) {
 							}
 							clientSock = null;
 							retry_count++;
+							if(retry_count >= max_retry) {
+								// old connection is bad.
+								// remove from our table the socket and its semaphore
+								removeSocket(key);
+							} else {
+								// don't remove the semaphore on retry
+								socketTable.remove(key);
+							}
 						}
 					}
 				}
@@ -430,7 +444,7 @@ public class IOHandler {
         try {
             boolean retval = creationSemaphore.tryAcquire(10, TimeUnit.SECONDS);
             if (!retval) {
-                throw new IOException("Could not acquire IO Semaphore'" + key
+            	throw new IOException("Could not acquire IO Semaphore'" + key
                         + "' after 10 seconds -- giving up ");
             }
         } catch (InterruptedException e) {
