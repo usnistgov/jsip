@@ -99,6 +99,9 @@ public class IOHandler {
     }
 
     protected void putSocket(String key, Socket sock) {
+    	if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+            logger.logDebug("adding socket for key " + key);
+        }
         socketTable.put(key, sock);
     }
 
@@ -110,6 +113,9 @@ public class IOHandler {
     protected void removeSocket(String key) {
         socketTable.remove(key);
         socketCreationMap.remove(key);
+        if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+            logger.logDebug("removed Socket and Semaphore for key " + key);
+        }
     }
 
     /**
@@ -318,14 +324,7 @@ public class IOHandler {
                                     .isLoggingEnabled(LogWriter.TRACE_ERROR))
                                 logger.logInfo(
                                         "IOException occured retryCount "
-                                                + retry_count);
-                            if (logger
-                                    .isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                                logger.logDebug(
-                                        "Removing and Closing socket");
-                            // old connection is bad.
-                            // remove from our table.
-                            removeSocket(key);
+                                                + retry_count);                            
                             try {
                                 clientSock.close();
                             } catch (Exception e) {
@@ -334,8 +333,17 @@ public class IOHandler {
                             retry_count++;
                             // This is a server tx trying to send a response.
                             if ( !isClient ) {
+   								removeSocket(key);
                                 throw ex;
                             }
+                            if(retry_count >= max_retry) {
+								// old connection is bad.
+								// remove from our table the socket and its semaphore
+								removeSocket(key);
+							} else {
+								// don't remove the semaphore on retry
+								socketTable.remove(key);
+							}
                         }
                     }
                 }

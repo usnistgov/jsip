@@ -218,6 +218,12 @@ public class TCPMessageChannel extends MessageChannel implements
             if (mySock != null) {
                 mySock.close();
                 mySock = null;
+                // remove the "tcp:" part of the key to cleanup the ioHandler hashmap
+                String ioHandlerKey = key.substring(4);
+                if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                    logger.logDebug("Closing TCP socket " + ioHandlerKey);
+                // Issue 358 : remove socket and semaphore on close to avoid leaking
+                sipStack.ioHandler.removeSocket(ioHandlerKey);
             }
             if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                 logger.logDebug(
@@ -300,15 +306,7 @@ public class TCPMessageChannel extends MessageChannel implements
         // this.uncache();
         // } else
         if (sock != mySock && sock != null) {
-            try {
-                if (mySock != null) {
-                    if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                        logger.logDebug(
-                                "Closing socket");
-                    mySock.close();
-                }
-            } catch (IOException ex) {
-            }
+            close();
             mySock = sock;
             this.myClientInputStream = mySock.getInputStream();
             this.myClientOutputStream = mySock.getOutputStream();
@@ -418,23 +416,11 @@ public class TCPMessageChannel extends MessageChannel implements
                 sipStack.getTimer().schedule(new SIPStackTimerTask() {
                     @Override
                     public void cleanUpBeforeCancel() {
-                        try {
-                            logger.logDebug("closing socket" );
-                            mySock.close();
-                        } catch (IOException ex) {
-
-                        }
+                    	close();
                     }
 
                     public void runTask() {
-                        try {
-                            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                                logger.logDebug(
-                                        "Closing socket");
-                            mySock.close();
-                        } catch (IOException ex) {
-
-                        }
+                        close();
                     }
                 }, 8000);
             }
@@ -500,7 +486,7 @@ public class TCPMessageChannel extends MessageChannel implements
                                 .getPeerInetAddress(), this.getPeerPort(),
                                 false);
                     } catch (IOException e) {
-                        this.logger.logException(e);
+                        logger.logException(e);
                     }
                 } else {
                     if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
@@ -727,7 +713,7 @@ public class TCPMessageChannel extends MessageChannel implements
                                                 .getContentLength()) > sipStack
                                 .getMaxMessageSize()) {
                     if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                        this.logger.logDebug(
+                        logger.logDebug(
                                 "Message size exceeded");
                     return;
 
@@ -801,14 +787,7 @@ public class TCPMessageChannel extends MessageChannel implements
                                 }
                             }
                             hispipe.close();
-                            if (mySock != null) { // self routing makes sock =
-                                                  // ull
-                                                  // https://jain-sip.dev.java.net/issues/show_bug.cgi?id=297
-                              if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                                    logger.logDebug(
-                                            "Closing socket");
-                                mySock.close();
-                            }
+                            close();
                         } catch (IOException ioex) {
                         }
                         return;
@@ -836,14 +815,7 @@ public class TCPMessageChannel extends MessageChannel implements
                                     tcpMessageProcessor.notify();
                                 }
                             }
-                            if (mySock != null) { // self routing makes sock =
-                                                  // null
-                                                  // https://jain-sip.dev.java.net/issues/show_bug.cgi?id=297
-                                if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                                    logger.logDebug(
-                                            "Closing socket");
-                                mySock.close();
-                            }
+                            close();
                             hispipe.close();
                         } catch (IOException ioex) {
                         }
