@@ -667,14 +667,14 @@ c:/jakarta-ant/bin/ant all
                     <mkdir dir="${dist}/jain-sip-tck" />
                     <mkdir dir="${dist}/jain-sip-src" />
                     <mkdir dir="${dist}/jain-sip-all" />
-                    <copy file="${jain-sip-javadoc-tar}" todir="${dist}/jain-sip-javadoc"  />
-                    <copy file="${jain-sip-src-tar}" todir="${dist}/jain-sip-src"  />
+                    <!--copy file="${jain-sip-javadoc-tar}" todir="${dist}/jain-sip-javadoc"  />
+                    <copy file="${jain-sip-src-tar}" todir="${dist}/jain-sip-src"  /-->
                     <copy file="${jain-sip-api-jar}" todir="${dist}/jain-sip-api"/>
                     <copy file="${jain-sip-ri-jar}" todir="${dist}/jain-sip-ri"/>
                     <copy file="${jain-sip-sdp-jar}" todir="${dist}/jain-sip-sdp"/>
                     <copy file="${sdp_jar}" todir="${dist}/jain-sdp"/>
                     <copy file="${jain-sip-tck-jar}" todir ="${dist}/jain-sip-tck" />
-                    <copy file="${jain-sip-all-tar}"   todir="${dist}/jain-sip-all" />
+                    <!--copy file="${jain-sip-all-tar}"   todir="${dist}/jain-sip-all" /-->
                     <copy file="README-DISTRIBUTION"  todir="${dist}"/>
 
                 </target>

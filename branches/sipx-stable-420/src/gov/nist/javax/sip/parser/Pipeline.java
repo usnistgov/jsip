@@ -193,4 +193,11 @@ public class Pipeline extends InputStream {
         }
     }
 
+	/**
+	 * @return the isClosed
+	 */
+	public boolean isClosed() {
+		return isClosed;
+	}
+
 }
