@@ -196,7 +196,6 @@ public class TcpMultiThreadDeadlockTest extends TestCase {
             	try {
             		Response okResponse = messageFactory.createResponse(180,
             				request);
-            		okResponse.addHeader(headerFactory.createHeader("Seq", q+""));
             		FromHeader from = (FromHeader) okResponse.getHeader(FromHeader.NAME);
             		from.removeParameter("tag");
             		Address address = addressFactory.createAddress("Shootme <sip:"
@@ -276,9 +275,6 @@ public class TcpMultiThreadDeadlockTest extends TestCase {
             properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
                     "shootmelog.txt");
             properties.setProperty("gov.nist.javax.sip.AUTOMATIC_DIALOG_ERROR_HANDLING", "false");
-            properties.setProperty("gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE", "100");
-            properties.setProperty("gov.nist.javax.sip.REENTRANT_LISTENER", "true");
-            
             properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
 
             try {
@@ -394,8 +390,6 @@ public class TcpMultiThreadDeadlockTest extends TestCase {
 
 int q=0;
 boolean inUse = false;
-int lastSeq =0;
-String fail;
         public void processResponse(ResponseEvent responseReceivedEvent) {
         	try {
         		if(inUse!=false) {
@@ -403,26 +397,7 @@ String fail;
         			throw new RuntimeException();
         		}
         		inUse = true;
-        		if ( responseReceivedEvent.getResponse().getStatusCode() == 180) {
-        			String se = responseReceivedEvent.getResponse().getHeader("Seq").toString();
-        			int seq = new Integer(se.substring("Seq:".length()).trim());
-        			
-        			try {
-						//Thread.sleep(5);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-        			if(seq<lastSeq) {
-        				fail = "seq>lastSeq " + seq + " vs " + lastSeq;
-        				System.out.println("seq>lastSeq " + seq + " vs " + lastSeq);
-        				return;
-        			}
-        			lastSeq = seq;
-        			
-        		}
-        		if(fail != null) return;
-        		if(q%100==0) System.out.println("Receive " + q + " lastSeq ="+lastSeq);
+        		if(q%100==0) System.out.println("Receive " + q);
         		q++;
         		if ( responseReceivedEvent.getResponse().getStatusCode() == Response.OK) {
 
@@ -463,8 +438,8 @@ String fail;
             // If you want to try TCP transport change the following to
             String transport = "tcp";
             String peerHostPort = "127.0.0.1:5070";
-            properties.setProperty("javax.sip.OUTBOUND_PROXY", peerHostPort + "/"
-                    + transport);
+            //properties.setProperty("javax.sip.OUTBOUND_PROXY", peerHostPort + "/"
+            //        + transport);
             // If you want to use UDP then uncomment this.
             properties.setProperty("javax.sip.STACK_NAME", "shootist");
 
@@ -485,10 +460,9 @@ String fail;
             // You need 16 (or TRACE) for logging traces. 32 (or DEBUG) for debug + traces.
             // Your code will limp at 32 but it is best for debugging.
             properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "0");
-            properties.setProperty("gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE", "100");
+            properties.setProperty("gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE", "10");
             properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
             properties.setProperty("gov.nist.javax.sip.AUTOMATIC_DIALOG_ERROR_HANDLING","false");
-            properties.setProperty("gov.nist.javax.sip.REENTRANT_LISTENER", "true");
 
             try {
                 // Create SipStack object

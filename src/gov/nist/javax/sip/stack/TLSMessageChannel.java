@@ -200,23 +200,32 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
      * Close the message channel.
      */
     public void close() {
-        try {
-            if (mySock != null) {
-                mySock.close();
-                mySock = null;
-                // remove the "tls:" part of the key to cleanup the ioHandler hashmap
-                String ioHandlerKey = key.substring(4);
+        isRunning = false;
+    	// we need to close everything because the socket may be closed by the other end
+    	// like in LB scenarios sending OPTIONS and killing the socket after it gets the response    	
+        if (mySock != null) {
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                sipStack.getStackLogger().logDebug("Closing socket " + key);
+        	try {
+	            mySock.close();
+        	} catch (IOException ex) {
                 if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                    sipStack.getStackLogger().logDebug("Closing TLS socket " + ioHandlerKey);
-                // Issue 358 : remove socket and semaphore on close to avoid leaking
-                sipStack.ioHandler.removeSocket(ioHandlerKey);
+                    sipStack.getStackLogger().logDebug("Error closing socket " + ex);
             }
-            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                sipStack.getStackLogger().logDebug("Closing message Channel " + this);
-        } catch (IOException ex) {
-            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                sipStack.getStackLogger().logDebug("Error closing socket " + ex);
         }
+        if(myParser != null) {
+        	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                sipStack.getStackLogger().logDebug("Closing my parser " + myParser);
+            myParser.close();            
+        }                                      
+        // remove the "tls:" part of the key to cleanup the ioHandler hashmap
+        String ioHandlerKey = key.substring(4);
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+            sipStack.getStackLogger().logDebug("Closing TLS socket " + ioHandlerKey);
+        // Issue 358 : remove socket and semaphore on close to avoid leaking
+        sipStack.ioHandler.removeSocket(ioHandlerKey);
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+            sipStack.getStackLogger().logDebug("Closing message Channel " + this);             
     }
 
     /**
@@ -659,7 +668,10 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
             this.isRunning = false;
             this.tlsMessageProcessor.remove(this);
             this.tlsMessageProcessor.useCount--;
-            this.myParser.close();
+            // parser could be null if the socket was closed by the remote end already
+            if(myParser != null) {
+            	myParser.close();
+            }
         }
 
     }
