@@ -181,7 +181,7 @@ class EventScanner implements Runnable {
                     // lingering to catch retransmitted INVITEs)
                     if (sipRequest.getMethod().equals(Request.ACK)
                             && tx.isInviteTransaction() &&
-                            ( tx.getLastResponse().getStatusCode()/100 == 2 ||
+                            (tx.getLastResponse() != null && tx.getLastResponse().getStatusCode()/100 == 2 ||
                                 sipStack.isNon2XXAckPassedToListener())) {
 
                         if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))

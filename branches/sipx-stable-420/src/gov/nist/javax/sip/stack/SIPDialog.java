@@ -508,7 +508,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             	dialogDeleteIfNoAckSentTask = null;
                 if ( !SIPDialog.this.isBackToBackUserAgent) {
                 	if (sipStack.isLoggingEnabled())
-                		sipStack.getStackLogger().logError("ACK Was not sent. killing dialog");
+                		sipStack.getStackLogger().logError("ACK Was not sent. killing dialog " + dialogId);
                 	if ( ((SipProviderImpl)sipProvider).getSipListener() instanceof SipListenerExt ){
                 	    raiseErrorEvent(SIPDialogErrorEvent.DIALOG_ACK_NOT_SENT_TIMEOUT);
                 	} else {
@@ -516,7 +516,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 	}
                 } else {
                 	if (sipStack.isLoggingEnabled()) 
-                		sipStack.getStackLogger().logError("ACK Was not sent. Sending BYE");
+                		sipStack.getStackLogger().logError("ACK Was not sent. Sending BYE for dialog " + dialogId);
                 	   if ( ((SipProviderImpl)sipProvider).getSipListener() instanceof SipListenerExt ){    
                 	       raiseErrorEvent(SIPDialogErrorEvent.DIALOG_ACK_NOT_SENT_TIMEOUT);
                 	   } else {
@@ -533,7 +533,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                             ReasonHeader reasonHeader = new Reason();
                             reasonHeader.setProtocol("SIP");
                             reasonHeader.setCause(1025);
-                            reasonHeader.setText("Timed out waiting to send ACK");
+                            reasonHeader.setText("Timed out waiting to send ACK for dialog " + dialogId);
                             byeRequest.addHeader(reasonHeader);
                             ClientTransaction byeCtx = SIPDialog.this.getSipProvider().getNewClientTransaction(byeRequest);
                             SIPDialog.this.sendRequest(byeCtx);
@@ -1496,7 +1496,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     	dialog.firstTransactionId = transaction.getBranchId();
     	dialog.firstTransactionMethod = transaction.getMethod();
     	if ( transaction instanceof SIPServerTransaction && dialog.firstTransactionMethod.equals(Request.INVITE) ) {
+    		sipStack.removeMergeDialog(firstTransactionMergeId);
     		dialog.firstTransactionMergeId = ((SIPRequest) transaction.getRequest()).getMergeId();
+    		sipStack.putMergeDialog(this);
     	}
     	
         if (dialog.isServer()) {
