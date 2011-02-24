@@ -742,10 +742,8 @@ public abstract class SIPTransactionStack implements
         if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
             logger.logStackTrace();
         dialogTable.put(dialogId, dialog);
-        if (dialog.getMergeId() != null )  {
-                this.serverDialogMergeTestTable.put(dialog.getMergeId(), dialog);
-
-        }
+        putMergeDialog(dialog);
+        
         return dialog;
     }
 
@@ -873,11 +871,7 @@ public abstract class SIPTransactionStack implements
             this.dialogTable.remove(earlyId);
         }
 
-        String mergeId = dialog.getMergeId();
-
-        if (mergeId != null) {
-            this.serverDialogMergeTestTable.remove(mergeId);
-        }
+        removeMergeDialog(dialog.getMergeId());
 
         if (id != null) {
 
@@ -930,6 +924,30 @@ public abstract class SIPTransactionStack implements
 
     }
 
+    protected void removeMergeDialog(String mergeId) {
+		if(mergeId != null) {
+			if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+				logger.logDebug("Tyring to remove Dialog from serverDialogMerge table with Merge Dialog Id " + mergeId);
+			}
+			SIPDialog sipDialog = serverDialogMergeTestTable.remove(mergeId);		
+			if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG) && sipDialog != null) {
+				logger.logDebug("removed Dialog " + sipDialog + " from serverDialogMerge table with Merge Dialog Id " + mergeId);
+			}
+		}
+	}
+	
+	protected void putMergeDialog(SIPDialog sipDialog) {
+		if(sipDialog != null) {
+			String mergeId = sipDialog.getMergeId();
+			if(mergeId != null) {
+				serverDialogMergeTestTable.put(mergeId, sipDialog);
+				if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+					logger.logDebug("put Dialog " + sipDialog + " in serverDialogMerge table with Merge Dialog Id " + mergeId);
+				}
+			}
+		}
+	}
+    
     /**
      * Return the dialog for a given dialog ID. If compatibility is enabled then
      * we do not assume the presence of tags and hence need to add a flag to
