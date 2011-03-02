@@ -169,12 +169,8 @@ public class Lexer extends LexerCore {
         this.currentLexerName = lexerName;
         if (lexer == null) {
         	ConcurrentHashMap<String, Integer> newLexer  = new ConcurrentHashMap<String, Integer>();
-        	lexer = lexerTables.putIfAbsent(lexerName, newLexer);
-            if (lexer == null) {
-                // put succeeded, use new value
-                lexer = newLexer;                    
-            }
-            currentLexer = lexer;
+            // Temporarily set newLexer as current, so addKeyword populate it
+            currentLexer = newLexer;
 //          addLexer(lexerName);
             if (lexerName.equals("method_keywordLexer")) {
                 addKeyword(TokenNames.REGISTER, TokenTypes.REGISTER);
@@ -399,6 +395,15 @@ public class Lexer extends LexerCore {
                 addKeyword(TokenNames.SIP.toUpperCase(), TokenTypes.SIP);
                 addKeyword(TokenNames.SIPS.toUpperCase(), TokenTypes.SIPS);
             }
+
+            // Now newLexer is completely initialized, let's check if somebody
+            // have put lexer in table
+            lexer = lexerTables.putIfAbsent(lexerName, newLexer);
+            if (lexer == null) {
+                // put succeeded, use new value
+                lexer = newLexer;                    
+            }
+            currentLexer = lexer;
         } else {
         	currentLexer = lexer;
         }
