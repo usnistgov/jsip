@@ -398,7 +398,16 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 long timeToWait = 0;
                 long startTime = System.currentTimeMillis();
                 boolean dialogTimedOut = false;
-                
+
+                // If we have an INVITE transaction, make sure that it is TERMINATED
+                // before sending a re-INVITE
+                while (SIPDialog.this.lastTransaction != null &&
+                			SIPDialog.this.lastTransaction instanceof SIPServerTransaction && 
+                			SIPDialog.this.lastTransaction.isInviteTransaction() &&
+                		    SIPDialog.this.lastTransaction.getState() != TransactionState.TERMINATED)
+                {
+                	Thread.sleep(100);
+                }
 
                 if (!SIPDialog.this.takeAckSem()) {
                     /*
