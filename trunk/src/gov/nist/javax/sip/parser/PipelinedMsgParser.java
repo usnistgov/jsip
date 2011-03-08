@@ -97,6 +97,7 @@ public final class PipelinedMsgParser implements Runnable {
     private SIPTransactionStack sipStack;
     private MessageParser smp = null;
     private ConcurrentHashMap<String, CallIDOrderingStructure> messagesOrderingMap = new ConcurrentHashMap<String, CallIDOrderingStructure>();
+    boolean isRunning = false;
     
     /**
      * default constructor.
@@ -307,6 +308,9 @@ public final class PipelinedMsgParser implements Runnable {
                 	sipStack.sipEventInterceptor.afterMessage(message);
                 }
             }
+            if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+            	logger.logDebug("dispatch task done on " + message + " threadname " + mythread.getName());
+            }
         }
 		public long getReceptionTime() {
 			return time;
@@ -326,7 +330,8 @@ public final class PipelinedMsgParser implements Runnable {
         // I cannot use buffered reader here because we may need to switch
         // encodings to read the message body.
         try {
-            while (true) {
+            isRunning = true;
+            while (isRunning) {
                 this.sizeCounter = this.maxMessageSize;
                 // this.messageSize = 0;
                 StringBuilder inputBuffer = new StringBuilder();
@@ -370,17 +375,26 @@ public final class PipelinedMsgParser implements Runnable {
                         } else 
                             break;
                     } catch (IOException ex) {
-                        if(postParseExecutor != null){
+                        // we only wait if the thread is still in a running state and hasn't been close from somewhere else
+                    	// or we are leaking because the thread is waiting forever
+                    	if(postParseExecutor != null && isRunning){
+                    		if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                                logger.logDebug("waiting for messagesOrderingMap " + this + " threadname " + mythread.getName());
                             synchronized (messagesOrderingMap) {
                                 try {
                                     messagesOrderingMap.wait();
                                 } catch (InterruptedException e) {}                                
-                            }                             
+                            }  
+                            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                                logger.logDebug("got notified for messagesOrderingMap " + this + " threadname " + mythread.getName());                            
+                        }
+                        this.rawInputStream.stopTimer();
+                        if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+                        	logger.logDebug("thread ending for threadname " + mythread.getName());
                         }
                         if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                         	logger.logStackTrace(LogLevels.TRACE_DEBUG);
-                        }
-                        this.rawInputStream.stopTimer();
+                        }                        
                         return;
                     }
                 }
@@ -399,17 +413,26 @@ public final class PipelinedMsgParser implements Runnable {
                         if (line2.trim().equals(""))
                             break;
                     } catch (IOException ex) {
-                        if(postParseExecutor != null){
+                        // we only wait if the thread is still in a running state and hasn't been close from somewhere else
+                    	// or we are leaking because the thread is waiting forever
+                    	if(postParseExecutor != null && isRunning){
+                    		if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                                logger.logDebug("waiting for messagesOrderingMap " + this + " threadname " + mythread.getName());
                             synchronized (messagesOrderingMap) {
                                 try {
                                     messagesOrderingMap.wait();
                                 } catch (InterruptedException e) {}                                
-                            }          
-                        } 
+                            }  
+                            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                                logger.logDebug("got notified for messagesOrderingMap " + this + " threadname " + mythread.getName());                            
+                        }
                         this.rawInputStream.stopTimer();
+                        if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+                        	logger.logDebug("thread ending for threadname " + mythread.getName());
+                        }
                         if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                         	logger.logStackTrace(LogLevels.TRACE_DEBUG);
-                        }
+                        }                        
                         return;
                     }
                 }
@@ -529,7 +552,6 @@ public final class PipelinedMsgParser implements Runnable {
                             // that could be processed in parallel
                             callIDOrderingStructure.getMessagesForCallID().offer(sipMessage);                                                                                   
                             
-      
                             postParseExecutor.execute(new Dispatch(callIDOrderingStructure, callId)); // run in executor thread
                         }
                     } catch (Exception ex) {
@@ -542,7 +564,9 @@ public final class PipelinedMsgParser implements Runnable {
         } finally {
             try {
                 cleanMessageOrderingMap();
-                inputStream.close();
+                if(!inputStream.isClosed()) {
+            		inputStream.close();
+            	}
             } catch (IOException e) {
                 InternalErrorHandler.handleException(e);
             }
@@ -619,12 +643,25 @@ public final class PipelinedMsgParser implements Runnable {
     }
 
     public void close() {
+        isRunning = false;
+    	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+            logger.logDebug("Closing pipelinedmsgparser " + this + " threadname " + mythread.getName());
         try {
             this.rawInputStream.close();            
         } catch (IOException ex) {
+        	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                logger.logDebug("Couldn't close the rawInputStream " + this + " threadname " + mythread.getName() + " already closed ? " + rawInputStream.isClosed());
             // Ignore.
-        }
-        cleanMessageOrderingMap();        
+        }                
+        if(postParseExecutor != null){
+        	cleanMessageOrderingMap();
+        	synchronized (mythread) {
+            	mythread.notifyAll();
+            	//interrupting because there is a race condition on the messagesOrderingMap.wait() that
+            	// eventually leads to thread leaking and OutOfMemory
+            	mythread.interrupt();
+    		} 
+        }         
     }
     
     public static void shutdownTcpThreadpool() {
@@ -647,6 +684,11 @@ public final class PipelinedMsgParser implements Runnable {
             callIDOrderingStructure.getMessagesForCallID().clear();
         }
         messagesOrderingMap.clear();
+        synchronized (messagesOrderingMap) {
+            messagesOrderingMap.notifyAll();
+        }
+    	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+            logger.logDebug("cleaned the messagesOrderingMap " + this + " threadname " + mythread.getName());
     }
 }
 /*

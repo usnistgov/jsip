@@ -2005,10 +2005,7 @@ public abstract class SIPTransactionStack implements
      */
     public void stopStack() {
         // Prevent NPE on two concurrent stops
-        this.toExit = true;
-
-        if (this.timer != null)
-            this.timer.stop();
+        this.toExit = true;        
 
         // JvB: set it to null, SIPDialog tries to schedule things after stop
         this.pendingTransactions.clear();
@@ -2028,6 +2025,8 @@ public abstract class SIPTransactionStack implements
         this.ioHandler.closeAll();
         // Let the processing complete.
 
+        if (this.timer != null)
+            this.timer.stop();
         try {
             Thread.sleep(1000);
         } catch (InterruptedException ex) {
