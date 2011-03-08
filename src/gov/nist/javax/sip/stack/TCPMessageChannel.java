@@ -160,6 +160,7 @@ public class TCPMessageChannel extends MessageChannel implements
         // Stash away a pointer to our sipStack structure.
         this.sipStack = sipStack;
         this.peerPort = mySock.getPort();
+        this.key = MessageChannel.getKey(peerAddress, peerPort, "TCP");
 
         this.tcpMessageProcessor = msgProcessor;
         this.myPort = this.tcpMessageProcessor.getPort();
@@ -214,25 +215,52 @@ public class TCPMessageChannel extends MessageChannel implements
      * Close the message channel.
      */
     public void close() {
-        try {
-            if (mySock != null) {
-                mySock.close();
-                mySock = null;
+        /*
+         * Delay the close of the socket for some time in case it is being used.
+         */
+        sipStack.getTimer().schedule(new SIPStackTimerTask() {
+			
+			@Override
+			public void runTask() {
+				isRunning = false;
+            	// we need to close everything because the socket may be closed by the other end
+            	// like in LB scenarios sending OPTIONS and killing the socket after it gets the response    	
+                if (mySock != null) {
+                	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                        logger.logDebug("Closing socket " + key);
+                	try {
+        	            mySock.close();
+                	} catch (IOException ex) {
+                        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                            logger.logDebug("Error closing socket " + ex);
+                    }
+                }        
+                if(myParser != null) {
+                	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                        logger.logDebug("Closing my parser " + myParser);
+                    myParser.close();            
+                }  
+                // no need to close myClientInputStream since myParser.close() above will do it
+                if(myClientOutputStream != null) {
+                	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                        logger.logDebug("Closing client output stream " + myClientOutputStream);
+                	try {
+                		myClientOutputStream.close();
+                	} catch (IOException ex) {
+                        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                            logger.logDebug("Error closing client output stream" + ex);
+                    }
+                }                     
                 // remove the "tcp:" part of the key to cleanup the ioHandler hashmap
                 String ioHandlerKey = key.substring(4);
                 if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                     logger.logDebug("Closing TCP socket " + ioHandlerKey);
                 // Issue 358 : remove socket and semaphore on close to avoid leaking
                 sipStack.ioHandler.removeSocket(ioHandlerKey);
+                if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                    logger.logDebug("Closing message Channel " + this);       
             }
-            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                logger.logDebug(
-                        "Closing message Channel " + this);
-        } catch (IOException ex) {
-            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                logger
-                        .logDebug("Error closing socket " + ex);
-        }
+		}, 8000);    	 
     }
 
     /**
@@ -831,7 +859,10 @@ public class TCPMessageChannel extends MessageChannel implements
             this.isRunning = false;
             this.tcpMessageProcessor.remove(this);
             this.tcpMessageProcessor.useCount--;
-            myParser.close();
+            // parser could be null if the socket was closed by the remote end already
+            if(myParser != null) {
+            	myParser.close();
+            }
         }
 
     }
@@ -923,7 +954,7 @@ public class TCPMessageChannel extends MessageChannel implements
      * @see gov.nist.javax.sip.parser.SIPMessageListener#sendSingleCLRF()
      */
 	public void sendSingleCLRF() throws Exception {
-		if(mySock != null) {
+		if(mySock != null && !mySock.isClosed()) {
 			mySock.getOutputStream().write("\r\n".getBytes("UTF-8"));
 		}
 	}
