@@ -908,7 +908,7 @@ public final class TLSMessageChannel extends MessageChannel implements
      * @see gov.nist.javax.sip.parser.SIPMessageListener#sendSingleCLRF()
      */
 	public void sendSingleCLRF() throws Exception {
-		if(mySock != null) {
+		if(mySock != null && !mySock.isClosed()) {
 			mySock.getOutputStream().write("\r\n".getBytes("UTF-8"));
 		}
 	}
