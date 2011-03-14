@@ -398,15 +398,22 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 long timeToWait = 0;
                 long startTime = System.currentTimeMillis();
                 boolean dialogTimedOut = false;
+                boolean busyWait = false;
 
                 // If we have an INVITE transaction, make sure that it is TERMINATED
-                // before sending a re-INVITE
+                // before sending a re-INVITE.. Not the cleanest solution but it works.
                 while (SIPDialog.this.lastTransaction != null &&
                 			SIPDialog.this.lastTransaction instanceof SIPServerTransaction && 
                 			SIPDialog.this.lastTransaction.isInviteTransaction() &&
                 		    SIPDialog.this.lastTransaction.getState() != TransactionState.TERMINATED)
                 {
-                	Thread.sleep(100);
+                	Thread.sleep(50);
+                	busyWait = true;
+                }
+                
+                // Wait a bit to grab the ack semaphore just in case the OK got sent.
+                if (busyWait) {
+                	Thread.sleep(50);
                 }
 
                 if (!SIPDialog.this.takeAckSem()) {
