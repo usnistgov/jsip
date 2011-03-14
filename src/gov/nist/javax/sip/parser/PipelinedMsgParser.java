@@ -159,9 +159,6 @@ public final class PipelinedMsgParser implements Runnable {
      *            An input stream to read messages from.
      */
 
-    public PipelinedMsgParser(SIPTransactionStack sipStack, Pipeline in) {
-        this(sipStack, null, in, false, 0);
-    }
 
     /**
      * Start reading and processing input.
@@ -274,7 +271,7 @@ public final class PipelinedMsgParser implements Runnable {
             	sipStack.getStackLogger().logError("Error occured processing message", e);    
                 // We do not break the TCP connection because other calls use the same socket here
             } finally {                                        
-                if(callIDOrderingStructure.getMessagesForCallID().size() <= 0) {
+                if(messagesForCallID.isEmpty()) {
                     messagesOrderingMap.remove(callId);
                     if (sipStack.getStackLogger().isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
                     	sipStack.getStackLogger().logDebug("CallIDOrderingStructure removed for message " + callId);
@@ -645,10 +642,11 @@ public final class PipelinedMsgParser implements Runnable {
     }
     
     private void cleanMessageOrderingMap() {
-    	for (CallIDOrderingStructure callIDOrderingStructure: messagesOrderingMap.values()) {
-			callIDOrderingStructure.getSemaphore().release();
-			callIDOrderingStructure.getMessagesForCallID().clear();
-		}
+    	// not needed and can cause NPE on close if race condition
+//    	for (CallIDOrderingStructure callIDOrderingStructure: messagesOrderingMap.values()) {
+//			callIDOrderingStructure.getSemaphore().release();
+//			callIDOrderingStructure.getMessagesForCallID().clear();
+//		}
     	messagesOrderingMap.clear();
     	synchronized (messagesOrderingMap) {
             messagesOrderingMap.notifyAll();
