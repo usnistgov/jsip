@@ -40,6 +40,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -232,13 +233,13 @@ public class IOHandler {
 						try{
 						clientSock = sipStack.getNetworkLayer().createSocket(
 								receiverAddress, contactPort, senderAddress);
-						} catch (ConnectException e) {
+						} catch (SocketException e) { // We must catch the timeout exceptions here, any SocketException not just ConnectException
 							sipStack.getStackLogger().logError("Problem connecting " +
 									  receiverAddress + " " + contactPort + " " + senderAddress);
 							// new connection is bad.
 							// remove from our table the socket and its semaphore
 							removeSocket(key);
-							throw e;
+							throw new SocketException(e.getClass() + " " + e.getMessage() + " " + e.getCause());
 						}
 						OutputStream outputStream = clientSock
 								.getOutputStream();
