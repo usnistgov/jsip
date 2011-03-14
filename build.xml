@@ -331,7 +331,7 @@ c:/jakarta-ant/bin/ant all
                     <jar destfile="${unit_test_jar}" basedir="${classes}" includes="test/unit/**/*.class,test/torture/**/*" />
                 </target>
 
-                <target name="jain-sip-sdp-jar" depends="compilejain,svn-revision,generate-version">
+                <target name="jain-sip-sdp-jar" depends="compilejain,generate-version">
                     <copy file="TIMESTAMP" toDir="classes/" />
                     <copy file="version.txt" toDir="classes/" />
                     <jar destfile="${jain-sip-sdp-jar}" basedir="${classes}" includes="TIMESTAMP,version.txt,javax/**/*.class,gov/nist/**/*.class" >
