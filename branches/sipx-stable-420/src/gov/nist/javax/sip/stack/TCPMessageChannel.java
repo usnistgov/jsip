@@ -189,50 +189,43 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
      * Close the message channel.
      */
     public void close() {   
-    	 /*
-         * Delay the close of the socket for some time in case it is being used.
-         */
-        sipStack.getTimer().schedule(new TimerTask() {
-            public void run() {
-            	isRunning = false;
-            	// we need to close everything because the socket may be closed by the other end
-            	// like in LB scenarios sending OPTIONS and killing the socket after it gets the response    	
-                if (mySock != null) {
-                	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                        sipStack.getStackLogger().logDebug("Closing socket " + key);
-                	try {
-        	            mySock.close();
-                	} catch (IOException ex) {
-                        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                            sipStack.getStackLogger().logDebug("Error closing socket " + ex);
-                    }
-                }        
-                if(myParser != null) {
-                	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                        sipStack.getStackLogger().logDebug("Closing my parser " + myParser);
-                    myParser.close();            
-                }  
-                // no need to close myClientInputStream since myParser.close() above will do it
-                if(myClientOutputStream != null) {
-                	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                        sipStack.getStackLogger().logDebug("Closing client output stream " + myClientOutputStream);
-                	try {
-                		myClientOutputStream.close();
-                	} catch (IOException ex) {
-                        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                            sipStack.getStackLogger().logDebug("Error closing client output stream" + ex);
-                    }
-                }                     
-                // remove the "tcp:" part of the key to cleanup the ioHandler hashmap
-                String ioHandlerKey = key.substring(4);
-                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                    sipStack.getStackLogger().logDebug("Closing TCP socket " + ioHandlerKey);
-                // Issue 358 : remove socket and semaphore on close to avoid leaking
-                sipStack.ioHandler.removeSocket(ioHandlerKey);
-                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                    sipStack.getStackLogger().logDebug("Closing message Channel " + this);       
-            }
-        }, 8000);    	 
+    	isRunning = false;
+    	// we need to close everything because the socket may be closed by the other end
+    	// like in LB scenarios sending OPTIONS and killing the socket after it gets the response    	
+    	if (mySock != null) {
+    		if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+    			sipStack.getStackLogger().logDebug("Closing socket " + key);
+    		try {
+    			mySock.close();
+    		} catch (IOException ex) {
+    			if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+    				sipStack.getStackLogger().logDebug("Error closing socket " + ex);
+    		}
+    	}        
+    	if(myParser != null) {
+    		if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+    			sipStack.getStackLogger().logDebug("Closing my parser " + myParser);
+    		myParser.close();            
+    	}  
+    	// no need to close myClientInputStream since myParser.close() above will do it
+    	if(myClientOutputStream != null) {
+    		if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+    			sipStack.getStackLogger().logDebug("Closing client output stream " + myClientOutputStream);
+    		try {
+    			myClientOutputStream.close();
+    		} catch (IOException ex) {
+    			if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+    				sipStack.getStackLogger().logDebug("Error closing client output stream" + ex);
+    		}
+    	}                     
+    	// remove the "tcp:" part of the key to cleanup the ioHandler hashmap
+    	String ioHandlerKey = key.substring(4);
+    	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+    		sipStack.getStackLogger().logDebug("Closing TCP socket " + ioHandlerKey);
+    	// Issue 358 : remove socket and semaphore on close to avoid leaking
+    	sipStack.ioHandler.removeSocket(ioHandlerKey);
+    	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+    		sipStack.getStackLogger().logDebug("Closing message Channel " + this);       
     }
 
     /**
