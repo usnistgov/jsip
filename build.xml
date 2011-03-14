@@ -331,10 +331,10 @@ c:/jakarta-ant/bin/ant all
                     <jar destfile="${unit_test_jar}" basedir="${classes}" includes="test/unit/**/*.class,test/torture/**/*" />
                 </target>
 
-                <target name="jain-sip-sdp-jar" depends="compilejain,svn-revision">
+                <target name="jain-sip-sdp-jar" depends="compilejain,svn-revision,generate-version">
                     <copy file="TIMESTAMP" toDir="classes/" />
-                    <copy file="svnversion.txt" toDir="classes/" />
-                    <jar destfile="${jain-sip-sdp-jar}" basedir="${classes}" includes="TIMESTAMP,svnversion.txt,javax/**/*.class,gov/nist/**/*.class" >
+                    <copy file="version.txt" toDir="classes/" />
+                    <jar destfile="${jain-sip-sdp-jar}" basedir="${classes}" includes="TIMESTAMP,version.txt,javax/**/*.class,gov/nist/**/*.class" >
                         <manifest>
                             <attribute	name="Original-Jar-Name"
                                         value="${jain-sip-sdp-jar}"/>
@@ -634,11 +634,6 @@ c:/jakarta-ant/bin/ant all
                     <fail if="testing.failed" />
                 </target>
 
-                <!-- Task to generate a vesion number -->
-                <target name="generate-version" depends="ant-tools,svn-revision" >
-                                    <taskdef name="versioner" classname="net.java.jsip.ant.tasks.VersionerTask" classpath="classes"/>
-                        <versioner cvsVersionFile="${ant.file.NIST-SIP}/../version.txt"  incrementCVSVersion="true"/>
-                </target>
 
                 <!-- Generate a tar file -->
 
@@ -682,7 +677,7 @@ c:/jakarta-ant/bin/ant all
 
                 <!-- This is the build verification test run by cruise control. -->
 
-                <target name="cc-buildloop" depends="dist,runtck,runtckcallflows,parsertest,unittest" />
+                <target name="cc-buildloop" depends="dist,runtck,runtckcallflows,parsertest,unittest,svn-revision,generate-version" />
 
 
                 <!-- compile to traces viewer jar -->
@@ -789,6 +784,10 @@ c:/jakarta-ant/bin/ant all
                     <!-- cvs -d :pserver:user:paswrd@cvs.dev.java.net:/cvs commit -m "Test commit" version.txt -->
                     <cvs cvsRoot=":pserver:${user.name}:${password}@cvs.dev.java.net:/cvs" command="commit -m 'versions'  version.txt ant-version.properties" />
                 </target>
+                <!-- Task to generate a vesion number -->
+                <target name="generate-version" depends="ant-tools,svn-revision" >
+                                    <taskdef name="versioner" classname="net.java.jsip.ant.tasks.VersionerTask" classpath="classes"/>
+                        <versioner cvsVersionFile="${ant.file.NIST-SIP}/../version.txt"  incrementCVSVersion="true"/>
                 <target name="perform-m2-release" depends="ant-tools" description="Performs m2 deployment" >
                     <antcall target="update-from-cvs" />
                                         <taskdef name="versioner" classname="net.java.jsip.ant.tasks.VersionerTask" classpath="classes"/>
@@ -801,10 +800,11 @@ c:/jakarta-ant/bin/ant all
                     <antcall target="update-cvs" />
                     <antcall target="clean-tasks" />
                 </target>
+                </target>
 
 
               <target name="svn-revision">
-                 <exec executable="svnversion" spawn="false" dir="./" output="svnversion.txt">
+                 <exec executable="svnversion" spawn="false" dir="./" output="version.txt">
                  <arg line="."/>
               </exec>
               </target>
