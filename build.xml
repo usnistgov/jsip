@@ -788,6 +788,7 @@ c:/jakarta-ant/bin/ant all
                 <target name="generate-version" depends="ant-tools,svn-revision" >
                                     <taskdef name="versioner" classname="net.java.jsip.ant.tasks.VersionerTask" classpath="classes"/>
                         <versioner cvsVersionFile="${ant.file.NIST-SIP}/../version.txt"  incrementCVSVersion="true"/>
+                </target>
                 <target name="perform-m2-release" depends="ant-tools" description="Performs m2 deployment" >
                     <antcall target="update-from-cvs" />
                                         <taskdef name="versioner" classname="net.java.jsip.ant.tasks.VersionerTask" classpath="classes"/>
@@ -799,7 +800,6 @@ c:/jakarta-ant/bin/ant all
                     <antcall target="exec-m2" />
                     <antcall target="update-cvs" />
                     <antcall target="clean-tasks" />
-                </target>
                 </target>
 
 
