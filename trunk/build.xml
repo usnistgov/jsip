@@ -779,14 +779,14 @@ c:/jakarta-ant/bin/ant all
                         </commandline>
                     </cvs>
                 </target>
-                <target name="update-cvs" >
-                    <!-- Here we update version.txt so local is the same as cvs -->
-                    <!-- cvs -d :pserver:user:paswrd@cvs.dev.java.net:/cvs commit -m "Test commit" version.txt -->
-                    <cvs cvsRoot=":pserver:${user.name}:${password}@cvs.dev.java.net:/cvs" command="commit -m 'versions'  version.txt ant-version.properties" />
-                </target>
                 <!-- Task to generate a vesion number -->
-                <target name="generate-version" depends="ant-tools,svn-revision" >
-                                    <taskdef name="versioner" classname="net.java.jsip.ant.tasks.VersionerTask" classpath="classes"/>
+                <target name="generate-timestamp" >
+                    <tstamp />
+                    <echo file="TIMESTAMP" message="Date = ${DSTAMP} Time = ${TSTAMP}" />
+                </target>
+
+                <target name="generate-version" depends="ant-tools,svn-revision,generate-timestamp" >
+                        <taskdef name="versioner" classname="net.java.jsip.ant.tasks.VersionerTask" classpath="classes"/>
                         <versioner cvsVersionFile="${ant.file.NIST-SIP}/../version.txt"  incrementCVSVersion="false"/>
                 </target>
                 <target name="perform-m2-release" depends="ant-tools" description="Performs m2 deployment" >
