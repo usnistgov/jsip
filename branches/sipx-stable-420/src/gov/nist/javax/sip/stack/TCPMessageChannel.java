@@ -553,6 +553,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
                 Hop hop = sipStack.addressResolver.resolveAddress(v.getHop());
                 this.peerProtocol = v.getTransport();
                 this.peerPortAdvertisedInHeaders = hop.getPort();
+                if(this.peerPortAdvertisedInHeaders <=0) this.peerPortAdvertisedInHeaders = 5060;
                 try {
                 	if(mySock != null) { // selfrouting makes socket = null
                 		this.peerAddress = mySock.getInetAddress();
