@@ -95,8 +95,7 @@
 					<exclude>gov/nist/javax/sip/stack/sctp/**</exclude>
 				</excludes>
 			</resource>
-		</resources>
-		<finalName>${project.artifactId}-${project.version}-${buildNumber}</finalName>
+		</resources>		
 	</build>
 	<dependencies>
 		<dependency>
