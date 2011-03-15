@@ -85,7 +85,6 @@
 			</excludes>
 		</resource>
 	</resources>
-	<finalName>${project.artifactId}-${project.version}-${buildNumber}</finalName>
   </build>
   <dependencies>
     <dependency>
