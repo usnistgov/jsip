@@ -1,0 +1,823 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=us-ascii">
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content="Microsoft Word 11">
+<meta name=Originator content="Microsoft Word 11">
+<link rel=File-List href="32proposed-changes_files/filelist.xml">
+<title>JSR 32 - JAIN SIP Specification</title>
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>Phelim O'Doherty</o:Author>
+  <o:LastAuthor>Phelim O'Doherty</o:LastAuthor>
+  <o:Revision>9</o:Revision>
+  <o:TotalTime>45</o:TotalTime>
+  <o:Created>2005-12-20T19:10:00Z</o:Created>
+  <o:LastSaved>2005-12-20T19:55:00Z</o:LastSaved>
+  <o:Pages>1</o:Pages>
+  <o:Words>780</o:Words>
+  <o:Characters>4451</o:Characters>
+  <o:Company>BEA Systems</o:Company>
+  <o:Lines>37</o:Lines>
+  <o:Paragraphs>10</o:Paragraphs>
+  <o:CharactersWithSpaces>5221</o:CharactersWithSpaces>
+  <o:Version>11.6408</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:SpellingState>Clean</w:SpellingState>
+  <w:GrammarState>Clean</w:GrammarState>
+  <w:ValidateAgainstSchemas/>
+  <w:SaveIfXMLInvalid>false</w:SaveIfXMLInvalid>
+  <w:IgnoreMixedContent>false</w:IgnoreMixedContent>
+  <w:AlwaysShowPlaceholderText>false</w:AlwaysShowPlaceholderText>
+  <w:BrowserLevel>MicrosoftInternetExplorer4</w:BrowserLevel>
+ </w:WordDocument>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:LatentStyles DefLockedState="false" LatentStyleCount="156">
+ </w:LatentStyles>
+</xml><![endif]-->
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;
+	mso-font-charset:2;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:0 268435456 0 0 -2147483648 0;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-parent:"";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+h2
+	{mso-margin-top-alt:auto;
+	margin-right:0cm;
+	mso-margin-bottom-alt:auto;
+	margin-left:0cm;
+	mso-pagination:widow-orphan;
+	mso-outline-level:2;
+	font-size:18.0pt;
+	font-family:"Times New Roman";
+	font-weight:bold;}
+h3
+	{mso-style-next:Normal;
+	margin-top:12.0pt;
+	margin-right:0cm;
+	margin-bottom:3.0pt;
+	margin-left:0cm;
+	mso-pagination:widow-orphan;
+	page-break-after:avoid;
+	mso-outline-level:3;
+	font-size:13.0pt;
+	font-family:Arial;
+	font-weight:bold;}
+h4
+	{mso-style-next:Normal;
+	margin-top:12.0pt;
+	margin-right:0cm;
+	margin-bottom:3.0pt;
+	margin-left:0cm;
+	mso-pagination:widow-orphan;
+	page-break-after:avoid;
+	mso-outline-level:4;
+	font-size:14.0pt;
+	font-family:"Times New Roman";
+	font-weight:bold;}
+p
+	{mso-margin-top-alt:auto;
+	margin-right:0cm;
+	mso-margin-bottom-alt:auto;
+	margin-left:0cm;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+span.SpellE
+	{mso-style-name:"";
+	mso-spl-e:yes;}
+span.GramE
+	{mso-style-name:"";
+	mso-gram-e:yes;}
+@page Section1
+	{size:595.3pt 841.9pt;
+	margin:72.0pt 90.0pt 72.0pt 90.0pt;
+	mso-header-margin:35.4pt;
+	mso-footer-margin:35.4pt;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+ /* List Definitions */
+ @list l0
+	{mso-list-id:132450727;
+	mso-list-template-ids:-298672614;}
+@list l0:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l1
+	{mso-list-id:180320242;
+	mso-list-template-ids:-1776615724;}
+@list l1:level1
+	{mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l2
+	{mso-list-id:440691634;
+	mso-list-template-ids:-1203067958;}
+@list l2:level1
+	{mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l3
+	{mso-list-id:446242700;
+	mso-list-template-ids:-906980042;}
+@list l3:level1
+	{mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l4
+	{mso-list-id:553195323;
+	mso-list-template-ids:-236059970;}
+@list l4:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l5
+	{mso-list-id:553203724;
+	mso-list-template-ids:-819556730;}
+@list l5:level1
+	{mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l6
+	{mso-list-id:592053779;
+	mso-list-template-ids:1970717150;}
+@list l6:level1
+	{mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l7
+	{mso-list-id:672805055;
+	mso-list-template-ids:1952749928;}
+@list l7:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l8
+	{mso-list-id:673260155;
+	mso-list-template-ids:-104330784;}
+@list l8:level1
+	{mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l9
+	{mso-list-id:751660084;
+	mso-list-template-ids:-1865356502;}
+@list l9:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l10
+	{mso-list-id:824516157;
+	mso-list-template-ids:-1712259998;}
+@list l10:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l10:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:72.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:"Courier New";
+	mso-bidi-font-family:"Times New Roman";}
+@list l11
+	{mso-list-id:827284207;
+	mso-list-template-ids:1921052958;}
+@list l11:level1
+	{mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l12
+	{mso-list-id:868614359;
+	mso-list-template-ids:-403898484;}
+@list l12:level1
+	{mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l13
+	{mso-list-id:1005354749;
+	mso-list-template-ids:699149938;}
+@list l13:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l13:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:72.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:"Courier New";
+	mso-bidi-font-family:"Times New Roman";}
+@list l14
+	{mso-list-id:1021470282;
+	mso-list-template-ids:-412612942;}
+@list l14:level1
+	{mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l15
+	{mso-list-id:1159073461;
+	mso-list-template-ids:-386628518;}
+@list l15:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l16
+	{mso-list-id:1240485598;
+	mso-list-template-ids:-509966366;}
+@list l16:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l17
+	{mso-list-id:1246110215;
+	mso-list-template-ids:1265421198;}
+@list l17:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l18
+	{mso-list-id:1355498907;
+	mso-list-template-ids:909963164;}
+@list l18:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l19
+	{mso-list-id:1368218246;
+	mso-list-template-ids:116271880;}
+@list l19:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:"Courier New";
+	mso-bidi-font-family:"Times New Roman";}
+@list l20
+	{mso-list-id:1378778984;
+	mso-list-template-ids:-126218408;}
+@list l20:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l21
+	{mso-list-id:1397431585;
+	mso-list-template-ids:2131131964;}
+@list l21:level1
+	{mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l22
+	{mso-list-id:1414739869;
+	mso-list-template-ids:-2061837850;}
+@list l22:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l23
+	{mso-list-id:1428572806;
+	mso-list-template-ids:1605686098;}
+@list l23:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l24
+	{mso-list-id:1547988152;
+	mso-list-template-ids:1313234154;}
+@list l24:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l25
+	{mso-list-id:1579168271;
+	mso-list-template-ids:1329634734;}
+@list l25:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l25:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:72.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:"Courier New";
+	mso-bidi-font-family:"Times New Roman";}
+@list l26
+	{mso-list-id:1726684083;
+	mso-list-template-ids:-1340841364;}
+@list l26:level1
+	{mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l27
+	{mso-list-id:1755006129;
+	mso-list-template-ids:389708718;}
+@list l27:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l28
+	{mso-list-id:1758595457;
+	mso-list-template-ids:2018032818;}
+@list l28:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l29
+	{mso-list-id:1818839238;
+	mso-list-template-ids:1296192736;}
+@list l29:level1
+	{mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l30
+	{mso-list-id:1947888178;
+	mso-list-template-ids:-1806373880;}
+@list l30:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l31
+	{mso-list-id:2013296186;
+	mso-list-template-ids:-1115658238;}
+@list l31:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+@list l32
+	{mso-list-id:2035304606;
+	mso-list-template-ids:261278576;}
+@list l32:level1
+	{mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;}
+@list l33
+	{mso-list-id:2128699570;
+	mso-list-template-ids:-1054306408;}
+@list l33:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:36.0pt;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+ol
+	{margin-bottom:0cm;}
+ul
+	{margin-bottom:0cm;}
+-->
+</style>
+<!--[if gte mso 10]>
+<style>
+ /* Style Definitions */
+ table.MsoNormalTable
+	{mso-style-name:"Table Normal";
+	mso-tstyle-rowband-size:0;
+	mso-tstyle-colband-size:0;
+	mso-style-noshow:yes;
+	mso-style-parent:"";
+	mso-padding-alt:0cm 5.4pt 0cm 5.4pt;
+	mso-para-margin:0cm;
+	mso-para-margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Times New Roman";
+	mso-ansi-language:#0400;
+	mso-fareast-language:#0400;
+	mso-bidi-language:#0400;}
+</style>
+<![endif]-->
+<meta name=description content="Change Log for JAIN SIPv1.1">
+<!--[if gte mso 9]><xml>
+ <o:shapedefaults v:ext="edit" spidmax="2050"/>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <o:shapelayout v:ext="edit">
+  <o:idmap v:ext="edit" data="1"/>
+ </o:shapelayout></xml><![endif]-->
+</head>
+
+<body lang=EN-GB style='tab-interval:36.0pt'>
+
+<div class=Section1>
+
+<h2>JSR 32 - JSIP v1.1 Specification<br>
+Final Change Log</h2>
+
+<p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span
+style='font-size:13.5pt'>Author</span></b><span style='font-size:13.5pt'>: </span>Phelim
+O'Doherty (Sun), <span class=SpellE>Ranganathan</span> <span class=SpellE>Mudumbai</span>
+(NIST)</p>
+
+<table class=MsoNormalTable border=1 cellpadding=0 style='mso-cellspacing:1.5pt'>
+ <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes'>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal align=center style='text-align:center'><b>ACCEPTED CHANGES<o:p></o:p></b></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:1'>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><b><span style='font-size:14.0pt'>General:</span></b><span
+  style='font-size:14.0pt'><o:p></o:p></span></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'>Decoupled the transaction layer from the Dialog layer. <br>
+  Added support for RFC3903 and RFC3581.<o:p></o:p></p> <p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto'><b
+  style='mso-bidi-font-weight:normal'><span style='font-size:14.0pt'>Package <span
+  class=SpellE>javax.sip</span><o:p></o:p></span></b></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>SipProvider</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Updated architecture in SIP Provider on enhanced <span class=SpellE>ListeningPoint/SipProvider</span>
+  Model. Change the 1-to-1 relationship between <span class=SpellE>SipProvider</span>
+  and <span class=SpellE>ListeningPoint</span>, to 1-to-N.<span
+  style='mso-spacerun:yes'>&nbsp; </span><br>
+  Deprecated <span class=SpellE>getListeningPoint</span> and replaced with <span
+  class=SpellE>getListeningPoints</span> method.<br>
+  Deprecated <span class=SpellE>setListeningPoint</span> method with <span
+  class=SpellE>addListeningPoint</span> method.<br>
+  Added method to <span class=SpellE>getListeningPoint</span> for a specific
+  transport.<br>
+  Added <span class=SpellE>removeListeningPoint</span> method.<br>
+  Added <span class=SpellE>getNewDialog</span> method for a specific
+  transaction.<br>
+  Clarified <span class=SpellE>addListener</span> method.<b style='mso-bidi-font-weight:
+  normal'><o:p></o:p></b></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>SipStack</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Added new AUTOMATIC_DIALOG_SUPPORT <span class=SpellE>config</span>
+  parameter to the <span class=SpellE>SipStack</span> properties documentation.<br>
+  Added new FORKABLE_EVENTS <span class=SpellE>config</span> parameter to the <span
+  class=SpellE>SipStack</span> properties documentation.<br>
+  Added new USE_ROUTER_FOR_ALL_URIS <span class=SpellE>config</span> parameter
+  to the <span class=SpellE>SipStack</span> properties documentation.<br>
+  Deprecated IP_ADDRESS <span class=SpellE>config</span> parameter in the <span
+  class=SpellE>SipStack</span> properties documentation.<br>
+  Added <span class=SpellE>createListeningPoint</span> method to <span
+  class=SpellE>SipStack</span> with IP address, Port and Transport.<br>
+  Deprecated <span class=SpellE>createListeningPoint</span> method with port
+  and transport arguments.<br>
+  Add start and stop stack methods.<o:p></o:p></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>SipListener</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Added capability to process <span class=SpellE>IOException</span>, <span
+  class=SpellE>TransactionTerminated</span>, and <span class=SpellE>DialogTerminated</span>
+  events.<o:p></o:p></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>SipFactory</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Clarified model for stack creation. <span class=SpellE>IPAddress</span>
+  is no longer a mandatory property for stack creation. IP Address should be
+  configured via the enhanced <span class=SpellE>ListeningPoint</span>
+  architecture. Multiple SipStack instances permitted per vendor implementation. For backwards compatibility IP Address configuration properties
+  is still supported.<b style='mso-bidi-font-weight:normal'><o:p></o:p></b></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>ListeningPoint</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Added new <span class=SpellE>getIPAddress</span> method. Assigning IP
+  Address to the <span class=SpellE>ListeningPoint</span> enables the stack to
+  support multi-homed hosts.<b style='mso-bidi-font-weight:normal'><br>
+  </b>Added new <span class=SpellE>getSentBy</span> and <span class=SpellE>setSentBy</span>
+  methods.<o:p></o:p></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'>Dialog<br>
+  </b>Clarified <span class=SpellE>getState</span> method - removed use of term
+  pseudo dialogs and highlighted null.<b style='mso-bidi-font-weight:normal'><br>
+  </b>Deprecated <span class=SpellE>getFirstTransaction</span> method to avoid
+  stack having to track additional state.<b style='mso-bidi-font-weight:normal'><br>
+  </b>Added <span class=SpellE>createReliableProvisionalResponse</span> and <span
+  class=SpellE>sendReliableProvisionalResponse</span> methods.<b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Added <span class=SpellE>createAck</span> and <span class=SpellE>createPrack</span>
+  methods.<b style='mso-bidi-font-weight:normal'><br>
+  </b>Added <span class=SpellE>terminateOnBye</span> method.<b
+  style='mso-bidi-font-weight:normal'><o:p></o:p></b></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>DialogState</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Deprecated COMPLETED state.<b style='mso-bidi-font-weight:normal'><br>
+  </b>Added equals and <span class=SpellE>hashcode</span> methods.<b
+  style='mso-bidi-font-weight:normal'><o:p></o:p></b></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>TransactionState</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Added equals and <span class=SpellE>hashcode</span> methods.<b
+  style='mso-bidi-font-weight:normal'><o:p></o:p></b></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>ResponseEvent</b></span><b
+  style='mso-bidi-font-weight:normal'> <br>
+  </b>Added <span class=SpellE>getDialog</span> method.<b style='mso-bidi-font-weight:
+  normal'><o:p></o:p></b></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>RequestEvent</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Added <span class=SpellE>getDialog</span> method.<b style='mso-bidi-font-weight:
+  normal'><o:p></o:p></b></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>Transaction</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Added terminate method.<b style='mso-bidi-font-weight:normal'><br>
+  </b>Added <span class=SpellE>getApplicationData</span> and <span
+  class=SpellE>setApplicationData</span> methods.<br>
+  </b>Clarified <span class=SpellE>getDialog</span> method behaviour.<br>
+  Added equal and <span class=SpellE>hashcode</span> methods.<b
+  style='mso-bidi-font-weight:normal'><o:p></o:p></b></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>ClientTransaction</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Deprecated <span class=SpellE>createAck</span> method.<b
+  style='mso-bidi-font-weight:normal'><o:p></o:p></b></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>ServerTransaction</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Added <span class=SpellE>enableRetransmissionAlerts</span> method.<b
+  style='mso-bidi-font-weight:normal'><o:p></o:p></b></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'>New Classes<br>
+  </b>Added new <span class=SpellE>IOExceptionEvent</span>, <span class=SpellE>DialogTerminatedEvent</span>
+  and <span class=SpellE>TransactionTerminatedEvent</span>.<o:p></o:p></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'>New Exceptions<br>
+  </b><span class=SpellE>DialogDoesNotExistException</span>, <span
+  class=SpellE>ProviderDoesNotExistException</span> and <span class=SpellE>TransportAlreadySupportedException</span>.<b
+  style='mso-bidi-font-weight:normal'><o:p></o:p></b></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto'><b
+  style='mso-bidi-font-weight:normal'><span style='font-size:14.0pt'>Package <span
+  class=SpellE>javax.sip.address</span><o:p></o:p></span></b></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>SipURI</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Didn't add equals method already overridden in Address.<br>
+  Allowable null in <span class=SpellE>getUser</span> method.<o:p></o:p></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>TelURL</b></span><b
+  style='mso-bidi-font-weight:normal'> <br>
+  </b>Added <span class=SpellE>setPhoneContext</span> and <span class=SpellE>getPhoneContext</span>
+  methods.<b style='mso-bidi-font-weight:normal'><o:p></o:p></b></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'>Address<br>
+  </b>Added <span class=SpellE>hashcode</span> and clone methods.<o:p></o:p></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'>Router<br>
+  </b>Updated general description of Router functionality.<b style='mso-bidi-font-weight:
+  normal'><br>
+  </b>Deprecated <span class=SpellE>getNextHops</span> method and replaced with
+  <span class=SpellE>getNextHop</span> method.<b style='mso-bidi-font-weight:
+  normal'><o:p></o:p></b></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto'><b
+  style='mso-bidi-font-weight:normal'><span style='font-size:14.0pt'>Package <span
+  class=SpellE>javax.sip.header</span><o:p></o:p></span></b></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>HeaderFactory</b></span><br>
+  Updated <span class=SpellE>createToHeader</span> method to allow <i
+  style='mso-bidi-font-style:normal'>null</i> tag parameter.<br>
+  Added <span class=SpellE>createSIPIfMatchHeader</span> and <span
+  class=SpellE>createSIPETagHeader</span> methods.<o:p></o:p></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'>Header<br>
+  </b>Added <span class=SpellE>hashcode</span> method.<b style='mso-bidi-font-weight:
+  normal'><o:p></o:p></b></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>ViaHeader</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Added <span class=SpellE>getRPort</span> and <span class=SpellE>setRPort</span>
+  methods.<b style='mso-bidi-font-weight:normal'><o:p></o:p></b></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>WWWAuthenticateHeader</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Deprecated <span class=SpellE>getURI</span> and <span class=SpellE>setURI</span>
+  methods as they don't exist on this header.<b style='mso-bidi-font-weight:
+  normal'><o:p></o:p></b></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'>New <span
+  class=SpellE>Headers</span><br>
+  </b><span class=SpellE>SIPETagHeader</span> and <span class=SpellE>SIPIfMatchHeader</span>
+  for RFC 3909<b style='mso-bidi-font-weight:normal'><o:p></o:p></b></p><p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto'><b
+  style='mso-bidi-font-weight:normal'><span lang=FR style='font-size:14.0pt;
+  mso-ansi-language:FR'>Package <span class=SpellE>javax.sip.message</span><o:p></o:p></span></b></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'>Message<br>
+  </b>Added <span class=SpellE>removeFirst</span>, <span class=SpellE>addFirst</span>,
+  <span class=SpellE>removeLast</span> and <span class=SpellE>addLast</span>
+  methods.<b style='mso-bidi-font-weight:normal'><br>
+  </b>Added <span class=SpellE>hashcode</span> method.<br>
+  <span style='mso-bidi-font-weight:bold'>Clarified <span class=SpellE><span
+  class=GramE>getUnrecognizedHeaders</span></span><span class=GramE>(</span>)
+  method behaviour clarified.<br>
+  Clarified Clone behaviour of message bodies.</span><o:p></o:p></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>MessageFactory</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Added <span class=SpellE>createResponse</span> method from a String
+  argument.<br>
+  <span style='mso-bidi-font-weight:bold'>Clarified <span class=SpellE><span
+  class=GramE>createRequest</span></span><span class=GramE>(</span>String)</IT>
+  method behaviour.</span> </p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'>Request<br>
+  </b>Added PUBLISH request type.<o:p></o:p></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'>Response<br>
+  </b>Added CONDITIONAL_REQUEST_FAILED response code.<br>
+  Added equals method to all mandatory headers.<o:p></o:p></p><p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><span class=SpellE><b style='mso-bidi-font-weight:normal'>ContactHeader</b></span><b
+  style='mso-bidi-font-weight:normal'><br>
+  </b>Added <span class=SpellE>setWildCard</span> and <span class=SpellE>isWilcard</span>
+  methods.<b style='mso-bidi-font-weight:normal'><br>
+  </b>Updated <span class=SpellE>getExpires</span> method.<b style='mso-bidi-font-weight:
+  normal'><o:p></o:p></b></p>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b style='mso-bidi-font-weight:normal'><o:p>&nbsp;</o:p></b></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:2'>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal align=center style='text-align:center'><b>REJECTED CHANGES
+  - Not deemed necessary by Spec leads<o:p></o:p></b></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:3'>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal style='margin-bottom:12.0pt'><o:p>&nbsp;</o:p></p>
+  <h3>Package <span class=SpellE>javax.sip</span><o:p></o:p></h3>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'>Limit the architecture to have a single <span
+  class=SpellE>SipProvider</span> in the architecture.&nbsp; Multiple <span
+  class=SpellE>SipProviders</span> were supported in JSIPv1.1 to enable
+  messaging over different transports. This can still be achieved by limiting a
+  single <span class=SpellE>SipProvider</span> in the system and mandating that
+  the <span class=SpellE>SipProvider</span> uses the same transport for sending
+  responses that was used for sending the outbound request.<o:p></o:p></p>
+  <h4 style='margin-left:18.0pt'><span class=SpellE><span style='font-size:
+  12.0pt'><IT></IT>SipProvider</span></span><span style='font-size:12.0pt'><br>
+  </span><span style='font-size:12.0pt;font-weight:normal;mso-bidi-font-weight:
+  bold'>Add new method <span class=SpellE><span class=GramE>getNewClientDialog</span></span><span
+  class=GramE>(</span>Response).<br>
+  Add new method <span class=SpellE><span class=GramE>getNewServerDialog</span></span><span
+  class=GramE>(</span>Response).<br>
+  Deprecate <span class=SpellE><span class=GramE>setListeningPoint</span></span><span
+  class=GramE>(</span>) and <span class=SpellE>getListeningPoint</span>()
+  methods<br>
+  Documentation clarification on refined architecture object model.<br
+  style='mso-special-character:line-break'>
+  <![if !supportLineBreakNewLine]><br style='mso-special-character:line-break'>
+  <![endif]></span><span style='font-size:12.0pt'><o:p></o:p></span></h4>
+  <h4 style='margin-left:18.0pt'><span class=SpellE><span style='font-size:
+  12.0pt'>Dialog</span></span><span style='font-size:12.0pt'><br>
+  </span><span class=SpellE><span class=GramE><span style='font-size:12.0pt;
+  font-weight:normal;mso-bidi-font-weight:bold'>sendAck</span></span></span><span
+  class=GramE><span style='font-size:12.0pt;font-weight:normal;mso-bidi-font-weight:
+  bold'>(</span></span><span style='font-size:12.0pt;font-weight:normal;
+  mso-bidi-font-weight:bold'>) method behaviour clarified. <o:p></o:p></span></h4>
+  <h4 style='margin-left:18.0pt'><span class=SpellE><span class=GramE><span
+  style='font-size:12.0pt'>SipStack</span></span></span><span class=GramE><span
+  style='font-size:12.0pt'><br>
+  </span><span style='font-size:12.0pt;font-weight:normal;mso-bidi-font-weight:
+  bold'>Add new NETWORK_LAYER_PATH property.</span></span><span
+  style='font-size:12.0pt;font-weight:normal;mso-bidi-font-weight:bold'><br>
+  Deprecate <span class=SpellE><span class=GramE>createSipProvider</span></span><span
+  class=GramE>(</span><span class=SpellE>ListeningPoint</span>) method.<br>
+  Add new <span class=SpellE><span class=GramE>createSipProvider</span></span><span
+  class=GramE>(</span>) method.</span><br style='mso-special-character:line-break'>
+  <![if !supportLineBreakNewLine]><br style='mso-special-character:line-break'>
+  <![endif]><span style='font-size:12.0pt'><o:p></o:p></span></h4>
+  <h3>Package <span class=SpellE>javax.sip.address</span><o:p></o:p></h3>
+  <p class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+  margin-left:18.0pt'><b>New Classes<br>
+  </b><span style='mso-bidi-font-weight:bold'>Add new interface <span
+  class=SpellE>NetworkLayer.java</span></span><br style='mso-special-character:
+  line-break'>
+  <![if !supportLineBreakNewLine]><br style='mso-special-character:line-break'>
+  <![endif]><o:p></o:p></p>
+  <h4><span style='font-size:12.0pt'><o:p>&nbsp;</o:p></span></h4>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:4'>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal align=center style='text-align:center'><b>DEFERRED CHANGES<o:p></o:p></b></p>
+  </td>
+ </tr>
+ <tr style='mso-yfti-irow:5;mso-yfti-lastrow:yes'>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><o:p>&nbsp;</o:p></p>
+  </td>
+ </tr>
+</table>
+
+<p class=MsoNormal><o:p>&nbsp;</o:p></p>
+
+</div>
+
+</body>
+
+</html>

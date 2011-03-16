@@ -1,0 +1,59 @@
+<project basedir="." default="referee">
+	<property name="root" value="../../../" />
+	<property file="${root}/ant-build-config.properties" />
+	<property name="classes" value="${root}/classes" />
+	<property name="srcroot" value="${root}/src" />
+	<property name="log4j_jar" value="${root}/lib/${log4j}" />
+	<path id="project.class.path">
+		<pathelement location="${classes}" />
+		<pathelement location="${log4j_jar}" />
+	</path>
+	<target name="make">
+		<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" source="${javac.source}" 
+			nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" 
+			srcdir="${srcroot}" includes="examples/refer/**/*.java" 
+			classpathref="project.class.path" destdir="${classes}">
+		</javac>
+	</target>
+	<target name="referee" depends="make" description="build and run the example Referee.">
+		<delete file="refereedebug.txt" failonError="0"/>
+		<delete file="refereelog.txt" failonError="0"/>
+		<java classname="examples.refer.Referee" classpathref="project.class.path" fork="true">
+		  <jvmarg value="-Djava.util.logging.config.file=logging.properties"/>
+		</java>
+	</target>
+
+	<target name="referer" depends="make" description="run the example Referer.">
+		<delete file="refererdebug.txt" failonerror="false" />
+		<delete file="refereroutputlog.txt" failonerror="false"/>
+		<delete file="refererlog.txt" failonerror="false"/>
+		<java classname="examples.refer.Referer" fork="true" classpathref="project.class.path" >
+			<arg value="5070"/>
+		</java>
+	</target>
+	
+	<target name="referTarget" depends="make" description="run the example Refer target.">
+		<java classname="examples.shootist.Shootme" fork="true" classpathref="project.class.path">
+		 <jvmarg value="-ea"/>
+		</java>
+	</target>
+	
+	<target name="refererlog" description="Show the  log">
+		<java classname="tools.tracesviewer.TracesViewer" fork="true">
+			<arg name="-server_file" value="refererlog.txt" />
+		</java>
+	</target>
+	<target name="refereelog" description="Show the  log">
+		<java classname="tools.tracesviewer.TracesViewer" fork="true">
+			<arg name="-server_file" value="refereelog.txt" />
+		</java>
+	</target>
+	<target name="clean" description="clean the logs">
+		<delete failonerror="false" >
+			<fileset dir="." includes="*debug*.txt" />
+			<fileset dir="." includes="*log*.txt" />
+		</delete>
+	</target>
+
+
+</project>

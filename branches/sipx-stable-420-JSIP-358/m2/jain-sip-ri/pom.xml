@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>javax.sip</groupId>
+    <version>1.2</version>
+    <artifactId>jain-sip</artifactId>
+  </parent>
+
+  <artifactId>jain-sip-ri</artifactId>
+  <version>1.2.148.9-SNAPSHOT</version>
+  
+  <packaging>jar</packaging>
+  <name>jain-sip-ri</name>
+  <url>http://jain-sip.dev.java.net</url>
+  <build>
+	<sourceDirectory>../../src</sourceDirectory>
+	<plugins>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-compiler-plugin</artifactId>
+			<configuration>
+				<source>1.5</source>
+				<target>1.5</target>
+				<includes>
+					<include>gov/nist/javax/sip/**</include>
+					<include>gov/nist/javax/sdp/**</include>
+					<include>gov/nist/core/**</include>
+					<include>javax/sdp/**</include>
+				</includes>
+				<excludes>
+					<exclude>gov/nist/javax/sip/stack/sctp/**</exclude>
+				</excludes>
+			</configuration>
+		</plugin>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-source-plugin</artifactId>
+			<executions>
+				<execution>
+					<id>attach-sources</id>
+					<phase>verify</phase>
+					<goals>
+						<goal>jar</goal>
+					</goals>
+				</execution>
+			</executions>
+		</plugin>
+	</plugins>
+	<resources>
+		<resource>
+			<directory>target</directory>
+			<includes>
+				<include>gov/nist/javax/sip/**</include>
+				<include>gov/nist/javax/sdp/**</include>
+				<include>gov/nist/core/**</include>
+				<include>javax/sdp/**</include>
+			</includes>
+			<excludes>
+				<exclude>**/*.java</exclude>
+				<exclude>gov/nist/javax/sip/stack/sctp/**</exclude>
+			</excludes>
+		</resource>
+	</resources>
+
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.14</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.sip</groupId>
+      <artifactId>jain-sip-api</artifactId>
+      <version>1.2</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+</project>
