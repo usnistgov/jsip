@@ -26,6 +26,7 @@
 package gov.nist.core.net;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -33,6 +34,7 @@ import java.net.MulticastSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 
 /* Added by Daniel J. Martinez Manzano <dani@dif.um.es> */
 import javax.net.ssl.SSLSocket;
@@ -116,10 +118,26 @@ public class DefaultNetworkLayer implements NetworkLayer {
 
     public Socket createSocket(InetAddress address, int port,
             InetAddress myAddress) throws IOException {
-        if (myAddress != null)
-            return new Socket(address, port, myAddress, 0);
-        else
-            return new Socket(address, port);
+        if (myAddress != null) {
+        	Socket sock = new Socket();
+        	sock.bind(new InetSocketAddress("0.0.0.0", 0));
+        	try {
+	        	sock.connect(new InetSocketAddress(address, port), 8000);
+	        } catch (SocketTimeoutException e) {
+	        	throw new ConnectException("Socket timeout error (8sec)" + address + ":" + port);
+	        }
+        	return sock;
+        }
+        else {
+        	Socket sock =  new Socket();
+        	try {
+        		sock.bind(new InetSocketAddress("0.0.0.0", 0));
+        		sock.connect(new InetSocketAddress(address, port), 8000);
+        	} catch (SocketTimeoutException e) {
+        		throw new ConnectException("Socket timeout error (8sec)" + address + ":" + port);
+        	}
+        	return sock;
+        }
     }
 
     /**
