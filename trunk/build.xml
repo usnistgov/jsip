@@ -130,19 +130,20 @@ c:/jakarta-ant/bin/ant all
         </delete>
     </target>
     <!-- Clean everything -->
-    <target name="clean" depends="cleanlogs">
+    <target name="clean" depends="cleanlogs,cleantars">
         <delete dir="${classes}" quiet="true" failonerror="false" />
         <delete dir="${retrowoven}" quiet="true" failonerror="false" />
         <delete file="./tracesviewer.jar" failonerror="false" />
         <delete dir='javadoc' quiet="true" failonerror="false" />
         <delete dir='javadoc-jain' quiet="true" failonerror="false" />
         <delete dir="${dist}" quiet="true" failonerror="false" />
+    </target>
+    <target name="cleantars" >
         <delete failonerror="0">
             <fileset file="*.jar"/>
             <fileset file="*.tar.gz"/>
         </delete>
     </target>
-
     <target name="check_java_version">
 		  <!-- JvB: Check for Java 1.5 -->
 		  <available classname="java.lang.ProcessBuilder" property="jdk15.available" />
@@ -637,20 +638,20 @@ c:/jakarta-ant/bin/ant all
 
                 <!-- Generate a tar file -->
 
-                <target name="srctar"  >
+                <target name="srctar" depends="init"  >
                     <tar compression="gzip" basedir="../" destfile="${jain-sip-src-tar}"
-                    includes="jain-sip/**/*/"
-                                excludes="jain-sip/www/**/*,jain-sip/javax/**/*,jain-sip/repo/**/*,jain-sip/ant-tasks/lib/**/*,jain-sip/test-reports/**/*,jain-sip/classes/**/*,jain-sip/javadoc/**/*,jain-sip/*.jar,jain-sip/lib/**/*,jain-sip/tckoutput.txt,jain-sip/*.gz,jain-sip/poms/**/*" />
+                    includes="${top}/**/*/"
+                                excludes="${top}/www/**/*,${top}/javax/**/*,${top}/repo/**/*,${top}/ant-tasks/lib/**/*,${top}/test-reports/**/*,${top}/classes/**/*,${top}/javadoc/**/*,${top}/*.jar,${top}/lib/**/*,${top}/tckoutput.txt,${top}/*.gz,${top}/poms/**/*" />
                 </target>
-                <target name="javadoctar" depends="javadoc"  >
+                <target name="javadoctar" depends="init,javadoc"  >
                     <touch file="${jain-sip-javadoc-tar}" />
                     <tar compression="gzip" basedir="../" destfile="${jain-sip-javadoc-tar}"
-                    includes="jain-sip/javadoc/**/*" />
+                    includes="${top}/javadoc/**/*" />
                 </target>
-                <target name="alltar"  >
+                <target name="alltar" depends="init"  >
                     <tar compression="gzip" basedir="../" destfile="${jain-sip-all-tar}"
-                    includes="jain-sip/**/*/"
-                    excludes="jain-sip/*.tar.gz" />
+                    includes="${top}/**/*/"
+                    excludes="${top}/*.tar.gz" />
                 </target>
 
                 <!-- builds the distribution -->

@@ -144,7 +144,7 @@ public class VersionerTask extends Task {
         	super.getProject().setProperty("svnversion", Integer.toString(localVersion));
 
         	
-        	getProject().setProperty("jain-sip-ri-ja",
+        	getProject().setProperty("jain-sip-ri-jar",
 					"jain-sip-ri-1.2." + localVersion + ".jar");
 			getProject().setProperty("jain-sip-sdp-jar",
 					"jain-sip-sdp-1.2." + localVersion + ".jar");
@@ -169,6 +169,9 @@ public class VersionerTask extends Task {
 					"jain-sip-sctp-1.2." + localVersion + ".jar");
 			getProject().setProperty("unit_test_jar",
 					"jain-sip-unit-test-1.2." + localVersion + ".jar");
+			
+			String cwd = System.getProperty("user.dir");
+			getProject().setProperty("top",new File(cwd).getName());
         		
         	
         	
