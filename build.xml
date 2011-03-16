@@ -73,7 +73,6 @@ c:/jakarta-ant/bin/ant all
     <property file="ant-build-config.properties" />
     <!-- set global properties for this build -->
     <property name="root" value="." />
-    <property file="ant-version.properties" />
 
     <property name="href.nist.homepage" value="http://www-x.antd.nist.gov/" />
     <property name="href.uncopyright" value="../uncopyright.html" />
@@ -153,7 +152,7 @@ c:/jakarta-ant/bin/ant all
 	  </target>
 
     <!-- Create ${classes} -->
-    <target name="init" depends="generate-timestamp">
+    <target name="init" depends="generate-version">
         <mkdir dir="${classes}" />
     </target>
 
@@ -250,7 +249,8 @@ c:/jakarta-ant/bin/ant all
 
                 </target>
                 <!-- Ant tools -->
-                <target name="ant-tools" depends="init">
+                <target name="ant-tools" >
+                    <mkdir dir="${classes}" />
                     <jain-javac srcdir="ant-tasks/src" includes="net/java/jsip/ant/**/*.java">
                         <classpath>
                             <pathelement location="${jdom_jar}" />
