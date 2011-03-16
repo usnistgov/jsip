@@ -111,7 +111,7 @@ c:/jakarta-ant/bin/ant all
 
     <target name="all" depends="make,compileexamples,compiletools,javadoc,javadoc-jain" />
 
-    <target name="make" depends="clean,compileapi,compileri,compilesdp,jain-sip-sdp-jar" />
+    <target name="make" depends="compileapi,compileri,compilesdp,jain-sip-sdp-jar" />
 
 
     <target name="cleanlogs">
@@ -356,7 +356,7 @@ c:/jakarta-ant/bin/ant all
                 </target>
 
                 <!-- Compile the tck, always with debug on -->
-                <target name="compiletck" depends="clean,init,compileri,compilesctp">
+                <target name="compiletck" depends="init,compileri,compilesctp">
                     <mkdir dir="${classes}" />
                     <jain-javac>
                         <include name="test/tck/**/*.java" />
@@ -642,7 +642,8 @@ c:/jakarta-ant/bin/ant all
                     includes="jain-sip/**/*/"
                                 excludes="jain-sip/www/**/*,jain-sip/javax/**/*,jain-sip/repo/**/*,jain-sip/ant-tasks/lib/**/*,jain-sip/test-reports/**/*,jain-sip/classes/**/*,jain-sip/javadoc/**/*,jain-sip/*.jar,jain-sip/lib/**/*,jain-sip/tckoutput.txt,jain-sip/*.gz,jain-sip/poms/**/*" />
                 </target>
-                <target name="javadoctar"  >
+                <target name="javadoctar" depends="javadoc"  >
+                    <touch file="${jain-sip-javadoc-tar}" />
                     <tar compression="gzip" basedir="../" destfile="${jain-sip-javadoc-tar}"
                     includes="jain-sip/javadoc/**/*" />
                 </target>
@@ -653,7 +654,7 @@ c:/jakarta-ant/bin/ant all
                 </target>
 
                 <!-- builds the distribution -->
-                <target name="dist" depends="make,compiletck,javadoc,javadoctar,alltar,srctar">
+                <target name="dist" depends="make,compiletck,javadoctar,alltar,srctar">
                     <mkdir dir="${dist}" />
                     <mkdir dir="${dist}/jain-sdp" />
                     <mkdir dir="${dist}/jain-sip-javadoc" />
