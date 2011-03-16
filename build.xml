@@ -259,7 +259,7 @@ c:/jakarta-ant/bin/ant all
                     </jain-javac>
                 </target>
                 <!-- Compile and build jars -->
-                <target name="compileri" depends="clean,init,compileapi">
+                <target name="compileri" depends="init,compileapi">
                     <jain-javac includes="gov/nist/core/**/*.java, gov/nist/javax/sip/**/*.java"
                                 excludes="gov/nist/javax/sip/stack/sctp/**/*.java">
                         <classpath>
