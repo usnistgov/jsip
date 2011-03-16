@@ -153,7 +153,7 @@ c:/jakarta-ant/bin/ant all
 	  </target>
 
     <!-- Create ${classes} -->
-    <target name="init">
+    <target name="init" depends="generate-timestamp">
         <mkdir dir="${classes}" />
     </target>
 
