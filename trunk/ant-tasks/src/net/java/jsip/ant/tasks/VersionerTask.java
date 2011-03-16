@@ -135,14 +135,14 @@ public class VersionerTask extends Task {
 
             } catch (Exception e) {
                 log("Failed to fetch version from file!!");
-                throw new BuildException(e);
+                localVersion = this.version;
             } finally {
                 if (br != null)
                     try {
 
                         br.close();
                     } catch (Exception e) {
-                        throw new BuildException(e);
+                        localVersion = this.version;
                     }
             }
 
