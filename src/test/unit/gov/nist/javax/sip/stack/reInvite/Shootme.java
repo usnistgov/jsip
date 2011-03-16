@@ -242,7 +242,7 @@ public class Shootme  implements SipListener {
 
         logger.info("Response received with client transaction id "
                 + tid + ":\n" + response);
-        try { 
+        try {
             if (response.getStatusCode() == Response.OK
                     && ((CSeqHeader) response.getHeader(CSeqHeader.NAME))
                             .getMethod().equals(Request.INVITE)) {
@@ -295,7 +295,7 @@ public class Shootme  implements SipListener {
 
     public static void main(String args[]) throws Exception {
         logger.addAppender( new ConsoleAppender(new SimpleLayout()));
-        ProtocolObjects protocolObjects = new ProtocolObjects("shootme", "gov.nist","udp",true,false, false);
+        ProtocolObjects protocolObjects = new ProtocolObjects("shootme", "gov.nist","udp",true,false);
 
         Shootme shootme = new Shootme(protocolObjects);
         shootme.createSipProvider().addSipListener(shootme);

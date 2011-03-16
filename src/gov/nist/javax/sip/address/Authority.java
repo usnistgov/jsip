@@ -32,7 +32,7 @@ import gov.nist.core.*;
 /**
  * Authority part of a URI structure. Section 3.2.2 RFC2396
  *
- * @version 1.2 $Revision: 1.11 $ $Date: 2010-05-06 14:08:06 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2009-12-16 14:48:33 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -56,10 +56,10 @@ public class Authority extends NetObject {
      * @return encoded string (does the same thing as toString)
      */
     public String encode() {
-        return encode(new StringBuilder()).toString();
+        return encode(new StringBuffer()).toString();
     }
 
-    public StringBuilder encode(StringBuilder buffer) {
+    public StringBuffer encode(StringBuffer buffer) {
         if (userInfo != null) {
             userInfo.encode(buffer);
             buffer.append(AT);

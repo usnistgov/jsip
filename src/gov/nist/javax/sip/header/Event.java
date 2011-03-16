@@ -34,7 +34,7 @@ import java.text.ParseException;
 /**
 * Event SIP Header.
 *
-*@version 1.2 $Revision: 1.8 $ $Date: 2010-05-06 14:07:48 $
+*@version 1.2 $Revision: 1.7 $ $Date: 2007-06-28 15:08:42 $
 *@since 1.1
 *
 *@author M. Ranganathan   <br/>
@@ -108,10 +108,10 @@ public class Event extends ParametersHeader implements EventHeader {
      * @return String
      */
     public String encodeBody() {
-        return encodeBody(new StringBuilder()).toString();
+        return encodeBody(new StringBuffer()).toString();
     }
 
-    protected StringBuilder encodeBody(StringBuilder buffer) {
+    protected StringBuffer encodeBody(StringBuffer buffer) {
         if (eventType != null)
             buffer.append(eventType);
 

@@ -45,7 +45,7 @@ import gov.nist.javax.sip.address.*;
 
 /** Implementation of the JAIN SIP  HeaderFactory
 *
-* @version 1.2 $Revision: 1.23 $ $Date: 2010-05-06 14:07:51 $
+* @version 1.2 $Revision: 1.22 $ $Date: 2010-01-12 18:58:48 $
 * @since 1.1
 *
 *@author M. Ranganathan   <br/>
@@ -1205,7 +1205,7 @@ public class HeaderFactoryImpl implements HeaderFactory , HeaderFactoryExt {
         if (headerName == null)
             throw new NullPointerException("header name is null");
         String hdrText =
-            new StringBuilder()
+            new StringBuffer()
                 .append(headerName)
                 .append(":")
                 .append(headerValue)
@@ -1698,6 +1698,8 @@ public class HeaderFactoryImpl implements HeaderFactory , HeaderFactoryExt {
         stripAddressScopeZones
             = Boolean.getBoolean("gov.nist.core.STRIP_ADDR_SCOPES");
     }
+
+
 
 
 

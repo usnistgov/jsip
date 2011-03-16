@@ -169,7 +169,6 @@ public class VersionerTask extends Task {
                     bw.write("jain-sip-tck-jar=jain-sip-tck-1.2."+(localVersion + 1) + ".jar\n");
                     bw.write("sdp_jar=jain-sdp-1.0."+(localVersion + 1) + ".jar\n");
                     bw.write("sdp-src-jar=jain-sdp-src-1.0."+(localVersion + 1) + ".jar\n");
-                    bw.write("jain-sip-src-jar=jain-sip-src-1.2." + +(localVersion + 1) + ".jar\n");
                     
                     bw.write("jain-sip-sctp-jar=jain-sip-sctp-1.2."+(localVersion + 1) + ".jar\n");
                     bw.write("unit_test_jar=jain-sip-unit-test-1.2." + (localVersion+1) + ".jar\n");

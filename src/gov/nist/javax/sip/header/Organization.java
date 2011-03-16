@@ -35,7 +35,7 @@ import javax.sip.header.*;
 /**
  * Organization SIP Header.
  *
- * @version 1.2 $Revision: 1.6 $ $Date: 2010-05-06 14:07:49 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2009-07-17 18:57:32 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
@@ -59,8 +59,8 @@ public class Organization extends SIPHeader implements OrganizationHeader {
      * Return encoding of value of the header.
      * @return String
      */
-    public StringBuilder encodeBody(StringBuilder buffer) {
-        return buffer.append(organization);
+    public String encodeBody() {
+        return organization;
     }
 
     /**
@@ -92,9 +92,6 @@ public class Organization extends SIPHeader implements OrganizationHeader {
 }
 /*
  * $Log: not supported by cvs2svn $
- * Revision 1.5  2009/07/17 18:57:32  emcho
- * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
- *
  * Revision 1.4  2006/07/13 09:01:15  mranga
  * Issue number:
  * Obtained from:

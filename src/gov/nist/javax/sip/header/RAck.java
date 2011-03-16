@@ -34,7 +34,7 @@ import java.text.ParseException;
 /**
  * RAck SIP Header implementation
  *
- * @version 1.2 $Revision: 1.8 $ $Date: 2010-05-06 14:07:54 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2009-07-17 18:57:34 $
  *
  * @author M. Ranganathan <br/>
  *
@@ -63,11 +63,11 @@ public class RAck extends SIPHeader implements javax.sip.header.RAckHeader {
      * headerValue.
      *
      */
-    public StringBuilder encodeBody(StringBuilder buffer) {
+    protected String encodeBody() {
         // Bug reported by Bruno Konik - was encoded in
         // the wrong order.
-        return buffer.append(rSeqNumber).append(SP).append(
-                cSeqNumber).append(SP).append(method);
+        return new StringBuffer().append(rSeqNumber).append(SP).append(
+                cSeqNumber).append(SP).append(method).toString();
 
     }
 

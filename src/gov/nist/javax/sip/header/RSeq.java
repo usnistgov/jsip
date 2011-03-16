@@ -29,7 +29,7 @@ import javax.sip.InvalidArgumentException;
 
 /**
  *
- * @version 1.2 $Revision: 1.8 $ $Date: 2010-05-06 14:07:55 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2009-10-18 13:46:35 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -59,8 +59,8 @@ public class RSeq extends SIPHeader implements javax.sip.header.RSeqHeader {
     /** Encode the body of this header (the stuff that follows headerName).
      * A.K.A headerValue.
      */
-    public StringBuilder encodeBody(StringBuilder retval) {
-        return retval.append(Long.toString(this.sequenceNumber));
+    protected String encodeBody() {
+        return Long.toString(this.sequenceNumber);
     }
 
     public long getSeqNumber() {

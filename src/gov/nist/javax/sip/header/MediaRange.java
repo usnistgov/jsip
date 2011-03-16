@@ -36,7 +36,7 @@ package gov.nist.javax.sip.header;
 *   Media Range
 * @see Accept
 * @since 0.9
-* @version 1.2 $Revision: 1.7 $ $Date: 2010-05-06 14:07:55 $
+* @version 1.2 $Revision: 1.6 $ $Date: 2009-07-17 18:57:32 $
 * <pre>
 * Revisions:
 *
@@ -106,10 +106,10 @@ public class MediaRange extends SIPObject {
      * @return String
      */
     public String encode() {
-        return encode(new StringBuilder()).toString();
+        return encode(new StringBuffer()).toString();
     }
 
-    public StringBuilder encode(StringBuilder buffer) {
+    public StringBuffer encode(StringBuffer buffer) {
         return buffer.append(type)
                 .append(SLASH)
                 .append(subtype);

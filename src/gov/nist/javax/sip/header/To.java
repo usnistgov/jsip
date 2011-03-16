@@ -38,7 +38,7 @@ import java.text.ParseException;
 /**
  * To SIP Header.
  *
- * @version 1.2 $Revision: 1.12 $ $Date: 2010-05-06 14:07:51 $
+ * @version 1.2 $Revision: 1.11 $ $Date: 2009-07-17 18:57:39 $
  *
  * @author M. Ranganathan <br/>
  * @author Olivier Deruelle <br/>
@@ -87,10 +87,10 @@ public final class To extends AddressParametersHeader implements
      * @return String
      */
     protected String encodeBody() {
-        return encodeBody(new StringBuilder()).toString();
+        return encodeBody(new StringBuffer()).toString();
     }
 
-    protected StringBuilder encodeBody(StringBuilder buffer) {
+    protected StringBuffer encodeBody(StringBuffer buffer) {
         if (address != null) {
             if (address.getAddressType() == AddressImpl.ADDRESS_SPEC) {
                 buffer.append(LESS_THAN);

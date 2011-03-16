@@ -62,17 +62,13 @@ public class Host extends GenericObject {
      * determines whether or not the parser should be stripping them (as
      * opposed simply being blunt and throwing an exception).
      */
-    private static boolean stripAddressScopeZones = false;
+    private boolean stripAddressScopeZones = false;
 
     private static final long serialVersionUID = -7233564517978323344L;
     protected static final int HOSTNAME = 1;
     protected static final int IPV4ADDRESS = 2;
     protected static final int IPV6ADDRESS = 3;
 
-    static {
-    	stripAddressScopeZones = Boolean.getBoolean("gov.nist.core.STRIP_ADDR_SCOPES");
-    }
-    
     /** hostName field
      */
     protected String hostname;
@@ -88,13 +84,19 @@ public class Host extends GenericObject {
      */
     public Host() {
         addressType = HOSTNAME;
+
+        stripAddressScopeZones
+            = Boolean.getBoolean("gov.nist.core.STRIP_ADDR_SCOPES");
     }
 
     /** Constructor given host name or IP address.
      */
     public Host(String hostName) throws IllegalArgumentException {
         if (hostName == null)
-            throw new IllegalArgumentException("null host name");        
+            throw new IllegalArgumentException("null host name");
+
+        stripAddressScopeZones
+            = Boolean.getBoolean("gov.nist.core.STRIP_ADDR_SCOPES");
 
         setHost(hostName, IPV4ADDRESS);
     }
@@ -104,6 +106,9 @@ public class Host extends GenericObject {
      * @param addrType int to set
      */
     public Host(String name, int addrType) {
+        stripAddressScopeZones
+            = Boolean.getBoolean("gov.nist.core.STRIP_ADDR_SCOPES");
+
         setHost(name, addrType);
     }
 
@@ -112,10 +117,10 @@ public class Host extends GenericObject {
      * @return String
      */
     public String encode() {
-        return encode(new StringBuilder()).toString();
+        return encode(new StringBuffer()).toString();
     }
 
-    public StringBuilder encode(StringBuilder buffer) {
+    public StringBuffer encode(StringBuffer buffer) {
         if (addressType == IPV6ADDRESS && !isIPv6Reference(hostname)) {
             buffer.append('[').append(hostname).append(']');
         } else {

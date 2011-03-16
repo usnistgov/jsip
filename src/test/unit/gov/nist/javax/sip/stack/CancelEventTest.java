@@ -217,7 +217,7 @@ public class CancelEventTest extends  ScenarioHarness {
             logger.info("dialog = " + transaction.getDialog());
             logger.info("dialogState = " + transaction.getDialog().getState());
             logger.info("Transaction Time out");
-            fail("Timeout Shouldnt happen on UAC side!!!");
+            fail("Timeout Shouldnt happen on UAS side!!!");
         }
 
         private void sendCancel() {
@@ -431,8 +431,6 @@ public class CancelEventTest extends  ScenarioHarness {
 
         HeaderFactory headerFactory;
 
-		private boolean dialogOnCancelTx = true;
-
         Shootme () {
             SipFactory sipFactory = null;
             String stackname = "shootme";
@@ -572,9 +570,6 @@ public class CancelEventTest extends  ScenarioHarness {
                     inviteTid.sendResponse(response);
                 }
                 cancelOk = true;
-                if(serverTransactionId.getDialog() == null) {
-                	dialogOnCancelTx = false;
-                }
             } catch (Exception ex) {
                 // logger.error(ex);
                 ex.printStackTrace();
@@ -647,13 +642,8 @@ public class CancelEventTest extends  ScenarioHarness {
         }
 
         public boolean conditionMet() {
-             System.out.println("cancelOK = " + cancelOk);
-             System.out.println("cancelTerm = " + cancelTxTerm);
-             System.out.println("inviteTxTerm = " + inviteTxTerm);
-             System.out.println("dialogTerminated = " + dialogTerminated);
-             System.out.println("dialogOnCancelTx = " + dialogOnCancelTx);
 
-             return cancelOk && cancelTxTerm && inviteTxTerm && dialogTerminated && dialogOnCancelTx;
+            return cancelOk && cancelTxTerm && inviteTxTerm && dialogTerminated;
         }
 
         public String[] conditionsState() {
@@ -695,7 +685,6 @@ public class CancelEventTest extends  ScenarioHarness {
         shootist.sendInvite();
         Thread.sleep(40000);
         assertTrue ( shootist.conditionMet());
-        assertTrue ( shootme.conditionMet());
     }
 
     public void tearDown() {

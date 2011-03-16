@@ -98,13 +98,13 @@ public abstract class ParserCore {
     }
 
     protected  void dbg_enter(String rule) {
-        StringBuilder stringBuilder = new StringBuilder();
+        StringBuffer stringBuffer = new StringBuffer();
         for (int i = 0; i < nesting_level ; i++)
-            stringBuilder.append(">");
+            stringBuffer.append(">");
 
         if (debug)  {
             System.out.println(
-                stringBuilder + rule +
+                stringBuffer + rule +
                 "\nlexer buffer = \n" +
                 lexer.getRest());
         }
@@ -112,13 +112,13 @@ public abstract class ParserCore {
     }
 
     protected void dbg_leave(String rule) {
-        StringBuilder stringBuilder = new StringBuilder();
+        StringBuffer stringBuffer = new StringBuffer();
         for (int i = 0; i < nesting_level ; i++)
-            stringBuilder.append("<");
+            stringBuffer.append("<");
 
         if (debug)  {
             System.out.println(
-                stringBuilder +
+                stringBuffer +
                 rule +
                 "\nlexer buffer = \n" +
                 lexer.getRest());

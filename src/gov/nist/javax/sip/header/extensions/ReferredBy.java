@@ -49,30 +49,26 @@ public final class ReferredBy
      * Encode the header content into a String.
      * @return String
      */
-    public StringBuilder encodeBody(StringBuilder retval) {
+    protected String encodeBody() {
         if (address == null)
             return null;
-//        String retval = "";
+        String retval = "";
         if (address.getAddressType() == AddressImpl.ADDRESS_SPEC) {
-            retval.append(LESS_THAN);
+            retval += LESS_THAN;
         }
-        address.encode(retval);
+        retval += address.encode();
         if (address.getAddressType() == AddressImpl.ADDRESS_SPEC) {
-            retval.append(GREATER_THAN);
+            retval += GREATER_THAN;
         }
 
         if (!parameters.isEmpty()) {
-            retval.append(SEMICOLON); 
-            parameters.encode(retval);
+            retval += SEMICOLON + parameters.encode();
         }
         return retval;
     }
 }
 /*
  * $Log: not supported by cvs2svn $
- * Revision 1.3  2009/07/17 18:57:42  emcho
- * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
- *
  * Revision 1.2  2006/10/27 20:58:31  mranga
  * Issue number:
  * Obtained from:

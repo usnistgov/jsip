@@ -33,7 +33,7 @@ import javax.sip.InvalidArgumentException;
 /**
  * MaxForwards SIPHeader
  *
- * @version 1.2 $Revision: 1.9 $ $Date: 2010-05-06 14:07:50 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2009-07-17 18:57:32 $
  *
  * @author M. Ranganathan   <br/>
  * @author Olivier Deruelle <br/>
@@ -85,10 +85,10 @@ public class MaxForwards extends SIPHeader implements MaxForwardsHeader {
          *
          */
     public String encodeBody() {
-        return encodeBody(new StringBuilder()).toString();
+        return encodeBody(new StringBuffer()).toString();
     }
 
-    protected StringBuilder encodeBody(StringBuilder buffer) {
+    protected StringBuffer encodeBody(StringBuffer buffer) {
         return buffer.append(maxForwards);
     }
 

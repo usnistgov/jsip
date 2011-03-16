@@ -135,9 +135,7 @@ public class ReInviteTest extends ScenarioHarness implements SipListener {
     }
 
     public void processResponse(ResponseEvent responseEvent) {
-        if ( getSipListener(responseEvent) != null ) {
-            getSipListener(responseEvent).processResponse(responseEvent);
-        }
+        getSipListener(responseEvent).processResponse(responseEvent);
 
     }
 

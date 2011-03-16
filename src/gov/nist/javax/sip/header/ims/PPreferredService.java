@@ -47,8 +47,8 @@ public class PPreferredService extends SIPHeader implements PPreferredServiceHea
     }
 
     @Override
-    protected StringBuilder encodeBody(StringBuilder retval) {
-//        StringBuilder retval = new StringBuilder();
+    protected String encodeBody() {
+        StringBuffer retval = new StringBuffer();
 
          retval.append(ParameterNamesIms.SERVICE_ID);
 
@@ -66,7 +66,7 @@ public class PPreferredService extends SIPHeader implements PPreferredServiceHea
                 retval.append(this.getApplicationIdentifiers());
             }
 
-        return retval;
+        return retval.toString();
     }
 
     public void setValue(String value) throws ParseException {

@@ -31,10 +31,7 @@ import gov.nist.javax.sip.message.*;
 import javax.sip.message.*;
 import javax.sip.*;
 
-import gov.nist.core.CommonLogger;
-import gov.nist.core.LogLevels;
 import gov.nist.core.LogWriter;
-import gov.nist.core.StackLogger;
 import gov.nist.core.ThreadAuditor;
 
 /* bug fixes SIPQuest communications and Shu-Lin Chen. */
@@ -42,22 +39,20 @@ import gov.nist.core.ThreadAuditor;
 /**
  * Event Scanner to deliver events to the Listener.
  *
- * @version 1.2 $Revision: 1.47 $ $Date: 2010-12-02 22:04:18 $
+ * @version 1.2 $Revision: 1.41.2.1 $ $Date: 2010-11-23 19:23:11 $
  *
  * @author M. Ranganathan <br/>
  *
  *
  */
 class EventScanner implements Runnable {
-	
-	private static StackLogger logger = CommonLogger.getLogger(EventScanner.class);
 
     private boolean isStopped;
 
     private int refCount;
 
     // SIPquest: Fix for deadlocks
-    private LinkedList pendingEvents;
+    private LinkedList pendingEvents = new LinkedList();
 
     private int[] eventMutex = { 0 };
 
@@ -85,8 +80,8 @@ class EventScanner implements Runnable {
     }
 
     public void addEvent(EventWrapper eventWrapper) {
-    	if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
-    		logger.logDebug("addEvent " + eventWrapper);
+    	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+    		sipStack.getStackLogger().logDebug("addEvent " + eventWrapper);
         synchronized (this.eventMutex) {
 
             pendingEvents.add(eventWrapper);
@@ -133,8 +128,8 @@ class EventScanner implements Runnable {
 
     public void deliverEvent(EventWrapper eventWrapper) {
         EventObject sipEvent = eventWrapper.sipEvent;
-        if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
-            logger.logDebug(
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+            sipStack.getStackLogger().logDebug(
                     "sipEvent = " + sipEvent + "source = "
                             + sipEvent.getSource());
         SipListener sipListener = null;
@@ -152,8 +147,8 @@ class EventScanner implements Runnable {
                 SIPRequest sipRequest = (SIPRequest) ((RequestEvent) sipEvent)
                         .getRequest();
 
-                if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
-                    logger.logDebug(
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                    sipStack.getStackLogger().logDebug(
                             "deliverEvent : "
                                     + sipRequest.getFirstLine()
                                     + " transaction "
@@ -186,22 +181,23 @@ class EventScanner implements Runnable {
                     // lingering to catch retransmitted INVITEs)
                     if (sipRequest.getMethod().equals(Request.ACK)
                             && tx.isInviteTransaction() &&
-                            ( tx.getLastResponseStatusCode() / 100 == 2 ||
+                            (tx.getLastResponse() != null && tx.getLastResponse().getStatusCode()/100 == 2 ||
                                 sipStack.isNon2XXAckPassedToListener())) {
 
-                        if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
-                            logger
+                        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                            sipStack
+                                    .getStackLogger()
                                     .logDebug(
                                             "Detected broken client sending ACK with same branch! Passing...");
                     } else {
-                        if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
-                            logger.logDebug(
+                        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                            sipStack.getStackLogger().logDebug(
                                     "transaction already exists! " + tx);
                         return;
                     }
-                } else if (sipStack.findPendingTransaction(sipRequest.getTransactionId()) != null) {
-                    if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
-                        logger.logDebug(
+                } else if (sipStack.findPendingTransaction(sipRequest) != null) {
+                    if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                        sipStack.getStackLogger().logDebug(
                                 "transaction already exists!!");
 
                     return;
@@ -218,19 +214,19 @@ class EventScanner implements Runnable {
                 // Change made by SIPquest
                 try {
 
-                    if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
-                        logger
+                    if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                        sipStack.getStackLogger()
                                 .logDebug(
                                         "Calling listener "
                                                 + sipRequest.getFirstLine());
-                        logger.logDebug(
+                        sipStack.getStackLogger().logDebug(
                                 "Calling listener " + eventWrapper.transaction);
                     }
                     if (sipListener != null)
                         sipListener.processRequest((RequestEvent) sipEvent);
 
-                    if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
-                        logger.logDebug(
+                    if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                        sipStack.getStackLogger().logDebug(
                                 "Done processing Message "
                                         + sipRequest.getFirstLine());
                     }
@@ -246,11 +242,11 @@ class EventScanner implements Runnable {
                     // We cannot let this thread die under any
                     // circumstances. Protect ourselves by logging
                     // errors to the console but continue.
-                    logger.logException(ex);
+                    sipStack.getStackLogger().logException(ex);
                 }
             } finally {
-                if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
-                    logger.logDebug(
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                    sipStack.getStackLogger().logDebug(
                             "Done processing Message "
                                     + ((SIPRequest) (((RequestEvent) sipEvent)
                                             .getRequest())).getFirstLine());
@@ -265,14 +261,14 @@ class EventScanner implements Runnable {
                 if (eventWrapper.transaction != null)
                     sipStack
                             .removePendingTransaction((SIPServerTransaction) eventWrapper.transaction);
-                if (eventWrapper.transaction.getMethod()
+                if (eventWrapper.transaction.getOriginalRequest().getMethod()
                         .equals(Request.ACK)) {
                     // Set the tx state to terminated so it is removed from the
                     // stack
                     // if the user configured to get notification on ACK
                     // termination
                     eventWrapper.transaction
-                            .setState(TransactionState._TERMINATED);
+                            .setState(TransactionState.TERMINATED);
                 }
             }
 
@@ -283,9 +279,10 @@ class EventScanner implements Runnable {
                         .getResponse();
                 SIPDialog sipDialog = ((SIPDialog) responseEvent.getDialog());
                 try {
-                    if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
-                        logger.logDebug(
-                                "Calling listener " + sipListener + " for "
+                    if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+
+                        sipStack.getStackLogger().logDebug(
+                                "Calling listener for "
                                         + sipResponse.getFirstLine());
                     }
                     if (sipListener != null) {
@@ -305,8 +302,8 @@ class EventScanner implements Runnable {
                             .getState().equals(DialogState.TERMINATED)))
                             && (sipResponse.getStatusCode() == Response.CALL_OR_TRANSACTION_DOES_NOT_EXIST || sipResponse
                                     .getStatusCode() == Response.REQUEST_TIMEOUT)) {
-                        if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
-                            logger.logDebug(
+                        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                            sipStack.getStackLogger().logDebug(
                                     "Removing dialog on 408 or 481 response");
                         }
                         sipDialog.doDeferredDelete();
@@ -333,8 +330,8 @@ class EventScanner implements Runnable {
                             .equals(Request.INVITE)
                             && sipDialog != null
                             && sipResponse.getStatusCode() == 200) {
-                        if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
-                            logger.logDebug(
+                        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                            sipStack.getStackLogger().logDebug(
                                     "Warning! unacknowledged dialog. " + sipDialog.getState());
                         }
                         /*
@@ -346,16 +343,16 @@ class EventScanner implements Runnable {
                     // We cannot let this thread die under any
                     // circumstances. Protect ourselves by logging
                     // errors to the console but continue.
-                    logger.logException(ex);
+                    sipStack.getStackLogger().logException(ex);
                 }
                 // The original request is not needed except for INVITE
                 // transactions -- null the pointers to the transactions so
                 // that state may be released.
                 SIPClientTransaction ct = (SIPClientTransaction) eventWrapper.transaction;
                 if (ct != null
-                        && TransactionState._COMPLETED == ct.getInternalState()
-//                        && ct.getOriginalRequest() != null
-                        && !ct.getMethod().equals(
+                        && TransactionState.COMPLETED == ct.getState()
+                        && ct.getOriginalRequest() != null
+                        && !ct.getOriginalRequest().getMethod().equals(
                                 Request.INVITE)) {
                     // reduce the state to minimum
                     // This assumes that the application will not need
@@ -381,7 +378,7 @@ class EventScanner implements Runnable {
                 // We cannot let this thread die under any
                 // circumstances. Protect ourselves by logging
                 // errors to the console but continue.
-                logger.logException(ex);
+                sipStack.getStackLogger().logException(ex);
             }
 
         } else if (sipEvent instanceof DialogTimeoutEvent) {
@@ -389,16 +386,12 @@ class EventScanner implements Runnable {
                 // Check for null as listener could be removed.
                 if (sipListener != null && sipListener instanceof SipListenerExt) {
                     ((SipListenerExt)sipListener).processDialogTimeout((DialogTimeoutEvent) sipEvent);                    
-                } else {
-                    if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                        logger.logDebug("DialogTimeoutEvent not delivered" );
-                    }
                 }
             } catch (Exception ex) {
                 // We cannot let this thread die under any
                 // circumstances. Protect ourselves by logging
                 // errors to the console but continue.
-                logger.logException(ex);
+                sipStack.getStackLogger().logException(ex);
             }
 
         } else if (sipEvent instanceof IOExceptionEvent) {
@@ -406,18 +399,18 @@ class EventScanner implements Runnable {
                 if (sipListener != null)
                     sipListener.processIOException((IOExceptionEvent) sipEvent);
             } catch (Exception ex) {
-                logger.logException(ex);
+                sipStack.getStackLogger().logException(ex);
             }
         } else if (sipEvent instanceof TransactionTerminatedEvent) {
             try {
-                if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
-                    logger.logDebug(
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                    sipStack.getStackLogger().logDebug(
                             "About to deliver transactionTerminatedEvent");
-                    logger.logDebug(
+                    sipStack.getStackLogger().logDebug(
                             "tx = "
                                     + ((TransactionTerminatedEvent) sipEvent)
                                             .getClientTransaction());
-                    logger.logDebug(
+                    sipStack.getStackLogger().logDebug(
                             "tx = "
                                     + ((TransactionTerminatedEvent) sipEvent)
                                             .getServerTransaction());
@@ -428,12 +421,13 @@ class EventScanner implements Runnable {
                             .processTransactionTerminated((TransactionTerminatedEvent) sipEvent);
             } catch (AbstractMethodError ame) {
                 // JvB: for backwards compatibility, accept this
-            	if (logger.isLoggingEnabled())
-            		logger
+            	if (sipStack.isLoggingEnabled())
+            		sipStack
+                        .getStackLogger()
                         .logWarning(
                                 "Unable to call sipListener.processTransactionTerminated");
             } catch (Exception ex) {
-                logger.logException(ex);
+                sipStack.getStackLogger().logException(ex);
             }
         } else if (sipEvent instanceof DialogTerminatedEvent) {
             try {
@@ -442,15 +436,15 @@ class EventScanner implements Runnable {
                             .processDialogTerminated((DialogTerminatedEvent) sipEvent);
             } catch (AbstractMethodError ame) {
                 // JvB: for backwards compatibility, accept this
-            	if (logger.isLoggingEnabled())
-            		logger.logWarning(
+            	if (sipStack.isLoggingEnabled())
+            		sipStack.getStackLogger().logWarning(
                         "Unable to call sipListener.processDialogTerminated");
             } catch (Exception ex) {
-                logger.logException(ex);
+                sipStack.getStackLogger().logException(ex);
             }
         } else {
 
-            logger.logFatalError("bad event" + sipEvent);
+            sipStack.getStackLogger().logFatalError("bad event" + sipEvent);
         }
 
     }
@@ -477,8 +471,8 @@ class EventScanner implements Runnable {
                         // haven't
                         // been stopped. If we have, then let the thread die.
                         if (this.isStopped) {
-                            if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
-                                logger.logDebug(
+                            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                                sipStack.getStackLogger().logDebug(
                                         "Stopped event scanner!!");
                             return;
                         }
@@ -493,8 +487,8 @@ class EventScanner implements Runnable {
                             eventMutex.wait(threadHandle.getPingIntervalInMillisecs());
                         } catch (InterruptedException ex) {
                             // Let the thread die a normal death
-                        	if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
-                        		logger.logDebug("Interrupted!");
+                        	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                        		sipStack.getStackLogger().logDebug("Interrupted!");
                             return;
                         }
                     }
@@ -510,25 +504,25 @@ class EventScanner implements Runnable {
                 ListIterator iterator = eventsToDeliver.listIterator();
                 while (iterator.hasNext()) {
                     eventWrapper = (EventWrapper) iterator.next();
-                    if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
-                        logger.logDebug(
+                    if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                        sipStack.getStackLogger().logDebug(
                                 "Processing " + eventWrapper + "nevents "
                                         + eventsToDeliver.size());
                     }
                     try {
                         deliverEvent(eventWrapper);
                     } catch (Exception e) {
-                        if (logger.isLoggingEnabled()) {
-                            logger.logError(
+                        if (sipStack.isLoggingEnabled()) {
+                            sipStack.getStackLogger().logError(
                                     "Unexpected exception caught while delivering event -- carrying on bravely", e);
                         }
                     }
                 }
             } // end While
         } finally {
-            if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+            if (sipStack.isLoggingEnabled()) {
                 if (!this.isStopped) {
-                    logger.logFatalError("Event scanner exited abnormally");
+                    sipStack.getStackLogger().logFatalError("Event scanner exited abnormally");
                 }
             }
         }

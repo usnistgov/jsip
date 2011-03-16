@@ -38,7 +38,7 @@ import javax.sip.address.*;
  *
  * @since 1.1
  *
- * @version 1.2 $Revision: 1.9 $ $Date: 2010-05-06 14:07:50 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2009-07-17 18:57:25 $
  *
  *
  */
@@ -67,9 +67,8 @@ public final class AlertInfo
      * Return value encoding in canonical form.
      * @return The value of the header in canonical encoding.
      */
-    @Override
-    protected StringBuilder encodeBody(StringBuilder encoding) {
-//        StringBuilder encoding = new StringBuilder();
+    protected String encodeBody() {
+        StringBuffer encoding = new StringBuffer();
         if (uri != null) {
             encoding.append(LESS_THAN).append(uri.encode()).append(GREATER_THAN);
         } else if (string != null) {
@@ -78,7 +77,7 @@ public final class AlertInfo
         if (!parameters.isEmpty()) {
             encoding.append(SEMICOLON).append(parameters.encode());
         }
-        return encoding;
+        return encoding.toString();
     }
 
     /**

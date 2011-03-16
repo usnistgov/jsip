@@ -202,7 +202,7 @@ public class MediaField extends SDPField implements Media {
     }
 
     private String encodeFormats() {
-    StringBuilder retval = new StringBuilder(3 * formats.size ());
+    StringBuffer retval = new StringBuffer(3 * formats.size ());
         for (int i = 0; i < formats.size(); i++) {
             retval.append(formats.elementAt(i));
             if (i < formats.size() - 1)

@@ -32,7 +32,7 @@ package gov.nist.javax.sip.header;
  * A generic extension header for the stack.
  * The input text of the header gets recorded here.
  *
- * @version 1.2 $Revision: 1.6 $ $Date: 2010-05-06 14:07:46 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2009-07-17 18:57:30 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
@@ -91,7 +91,7 @@ public class ExtensionHeaderImpl
             } catch (Exception ex) {
                 return null;
             }
-            StringBuilder buffer = new StringBuilder(encodedHdr);
+            StringBuffer buffer = new StringBuffer(encodedHdr);
             while (buffer.length() > 0 && buffer.charAt(0) != ':') {
                 buffer.deleteCharAt(0);
             }
@@ -111,13 +111,6 @@ public class ExtensionHeaderImpl
             .append(this.value)
             .append(NEWLINE)
             .toString();
-    }
-    
-    /**
-     * Return the canonical encoding of this header.
-     */
-    public StringBuilder encodeBody(StringBuilder buffer) {
-        return buffer.append(this.encodeBody());          
     }
 
     /**

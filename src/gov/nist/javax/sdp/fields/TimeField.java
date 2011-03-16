@@ -162,7 +162,7 @@ public class TimeField extends SDPField implements Time {
      * @since v1.0
      */
     public String encode() {
-        return new StringBuilder()
+        return new StringBuffer()
             .append(TIME_FIELD)
             .append(startTime)
             .append(Separators.SP)

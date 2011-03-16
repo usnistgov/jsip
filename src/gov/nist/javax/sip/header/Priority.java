@@ -29,15 +29,13 @@
 package gov.nist.javax.sip.header;
 
 import javax.sip.header.*;
-
-import java.nio.Buffer;
 import java.text.ParseException;
 
 /**
  * the Priority header.
  *
  * @author Olivier Deruelle <br/>
- * @version 1.2 $Revision: 1.7 $ $Date: 2010-05-06 14:07:53 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2009-07-17 18:57:33 $
  *
  *
  *
@@ -78,8 +76,8 @@ public class Priority extends SIPHeader implements PriorityHeader {
      * Encode into canonical form.
      * @return String
      */
-    public StringBuilder encodeBody(StringBuilder buffer) {
-        return buffer.append(priority);
+    public String encodeBody() {
+        return priority;
     }
 
     /**

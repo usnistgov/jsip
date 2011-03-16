@@ -614,7 +614,7 @@ public class LooseDialogValidationTest extends TestCase {
         this.shootme.init();
         this.shootist.init();
         try {
-            Thread.sleep(10000);
+            Thread.sleep(7000);
         } catch (Exception ex) {
 
         }

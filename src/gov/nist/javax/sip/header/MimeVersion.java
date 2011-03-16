@@ -34,7 +34,7 @@ import javax.sip.header.*;
 /**
  * MimeVersion SIP Header.
  *
- * @version 1.2 $Revision: 1.7 $ $Date: 2010-05-06 14:07:52 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2009-10-18 13:46:35 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
@@ -120,23 +120,15 @@ public class MimeVersion extends SIPHeader implements MimeVersionHeader {
      * Return canonical form.
      * @return String
      */
-    public StringBuilder encodeBody(StringBuilder buffer) {
-        return buffer.append(Integer.toString(majorVersion))
-            .append(DOT)
-            .append(Integer.toString(minorVersion));
+    public String encodeBody() {
+        return Integer.toString(majorVersion)
+            + DOT
+            + Integer.toString(minorVersion);
     }
 
 }
 /*
  * $Log: not supported by cvs2svn $
- * Revision 1.6  2009/10/18 13:46:35  deruelle_jean
- * FindBugs Fixes (Category Performance Warnings)
- *
- * Issue number:
- * Obtained from:
- * Submitted by: Jean Deruelle
- * Reviewed by:
- *
  * Revision 1.5  2009/07/17 18:57:32  emcho
  * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
  *

@@ -34,7 +34,7 @@ import java.text.ParseException;
 /**
  * InReplyTo SIP Header.
  *
- * @version 1.2 $Revision: 1.7 $ $Date: 2010-05-06 14:07:54 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2009-07-17 18:57:31 $
  *
  * @author M. Ranganathan   <br/>
  * @author Olivier Deruelle <br/>
@@ -96,8 +96,8 @@ public class InReplyTo extends SIPHeader implements InReplyToHeader {
          * Generate canonical form of the header.
          * @return String
          */
-    public StringBuilder encodeBody(StringBuilder retval) {
-        return callId.encode(retval);
+    public String encodeBody() {
+        return callId.encode();
     }
 
     public Object clone() {

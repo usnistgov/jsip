@@ -35,7 +35,7 @@ import javax.sip.header.Header;
 
 /**
  * A generic extension header list.
- * @version 1.2 $Revision: 1.9 $ $Date: 2010-05-06 14:07:49 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2009-07-17 18:57:30 $
  * @since 1.1
  */
 public class ExtensionHeaderList extends SIPHeaderList<ExtensionHeaderImpl> {
@@ -60,7 +60,7 @@ public class ExtensionHeaderList extends SIPHeaderList<ExtensionHeaderImpl> {
 
 
     public String encode() {
-        StringBuilder retval = new StringBuilder();
+        StringBuffer retval = new StringBuffer();
         ListIterator<ExtensionHeaderImpl> it = this.listIterator();
         while(it.hasNext()) {
            ExtensionHeaderImpl eh = (ExtensionHeaderImpl) it.next();

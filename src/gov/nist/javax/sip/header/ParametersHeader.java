@@ -45,12 +45,12 @@ import javax.sip.header.Parameters;
  * @author M. Ranganathan   <br/>
  *
  *
- * @version 1.2 $Revision: 1.17 $ $Date: 2010-07-28 08:39:26 $
+ * @version 1.2 $Revision: 1.15 $ $Date: 2010-01-12 00:05:27 $
  *
  */
 public abstract class ParametersHeader
     extends SIPHeader
-    implements javax.sip.header.Parameters, ParametersExt, Serializable {
+    implements javax.sip.header.Parameters, Serializable {
     protected NameValueList parameters;
     
     protected DuplicateNameValueList duplicates;
@@ -72,21 +72,16 @@ public abstract class ParametersHeader
         this.duplicates = new DuplicateNameValueList();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see javax.sip.header.Parameters#getParameter(java.lang.String)
+    /**
+     * Returns the value of the named parameter, or null if it is not set. A
+     * zero-length String indicates flag parameter.
+     *
+     * @param name name of parameter to retrieve
+     * @return the value of specified parameter
      */
+
     public String getParameter(String name) {
         return this.parameters.getParameter(name);
-
-    }
-    
-    /*
-     * (non-Javadoc)
-     * @see gov.nist.javax.sip.header.ParametersExt#getParameter(java.lang.String, boolean)
-     */
-    public String getParameter(String name, boolean stripQuotes) {
-        return this.parameters.getParameter(name, stripQuotes);
 
     }
 
@@ -616,6 +611,6 @@ public abstract class ParametersHeader
     
     
     // ----------- Abstract methods --------------
-    protected abstract StringBuilder encodeBody(StringBuilder buffer);
+    protected abstract String encodeBody();
 
 }

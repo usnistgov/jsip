@@ -44,7 +44,7 @@ import java.text.ParseException;
  *
  * @see ViaList
  *
- * @version 1.2 $Revision: 1.19 $ $Date: 2010-08-13 10:31:54 $
+ * @version 1.2 $Revision: 1.17 $ $Date: 2009-10-18 13:46:33 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -251,10 +251,10 @@ public class Via
      * A.K.A headerValue.
      */
     protected String encodeBody() {
-        return encodeBody(new StringBuilder()).toString();
+        return encodeBody(new StringBuffer()).toString();
     }
 
-    protected StringBuilder encodeBody(StringBuilder buffer) {
+    protected StringBuffer encodeBody(StringBuffer buffer) {
         sentProtocol.encode(buffer);
         buffer.append(SP);
         sentBy.encode(buffer);
@@ -324,9 +324,8 @@ public class Via
      * Set the RPort flag parameter
      */
     public void setRPort(){
-        // Fix for Issue 309 by jorabin
         try {
-            this.setParameter(Via.RPORT,null);
+            this.setParameter(Via.RPORT,"");
         } catch (ParseException e) {
             e.printStackTrace();    // should not occur
         }

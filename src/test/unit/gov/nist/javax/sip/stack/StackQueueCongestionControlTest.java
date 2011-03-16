@@ -273,7 +273,7 @@ public class StackQueueCongestionControlTest extends TestCase {
             properties.setProperty("javax.sip.STACK_NAME", "shootme");
             // You need 16 for logging traces. 32 for debug + traces.
             // Your code will limp at 32 but it is best for debugging.
-            properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "0");
+            properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
             properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
                     "shootmedebug.txt");
             properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
@@ -425,7 +425,6 @@ public class StackQueueCongestionControlTest extends TestCase {
         	}
 
         }
-        
 
         public void processTimeout(javax.sip.TimeoutEvent timeoutEvent) {
 
@@ -461,12 +460,12 @@ public class StackQueueCongestionControlTest extends TestCase {
                     "shootistlog.txt");
 
             // Drop the client connection after we are done with the transaction.
-            properties.setProperty("gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS",
-                    "false");
+//            properties.setProperty("gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS",
+//                    "false");
             // Set to 0 (or NONE) in your production code for max speed.
             // You need 16 (or TRACE) for logging traces. 32 (or DEBUG) for debug + traces.
             // Your code will limp at 32 but it is best for debugging.
-            properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "0");
+            properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
             if(threads!=null) {
             	properties.setProperty("gov.nist.javax.sip.THREAD_POOL_SIZE", threads);
                 properties.setProperty("gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE", threads);
@@ -729,7 +728,7 @@ public class StackQueueCongestionControlTest extends TestCase {
     }
     
     public void testTCPNoThreadpool() {
-        this.shootme.init("tcp",100);
+        this.shootme.init("tcp",1000);
         this.shootist.init(null, "1", 1, "tcp");
         try {
             Thread.sleep(4000);
@@ -756,7 +755,9 @@ public class StackQueueCongestionControlTest extends TestCase {
             fail("We excpeted more than 0" + this.shootist.receivedResponses);
         }
         assertEquals(shootist.receivedResponses, shootme.sentResponses);
-
+        if(this.shootme.acks != 5) {
+            fail("We expect 5 ACKs because retransmissions are not filtered in loose dialog validation.");
+        }
     }
     public void testTCPHugeLoss() {
         this.shootme.init("tcp",1000);
@@ -771,11 +772,6 @@ public class StackQueueCongestionControlTest extends TestCase {
         }
         assertTrue(shootist.receivedResponses<shootme.sentResponses/2);
        
-    }
-    public void plusTest() {
-    	long a = 1;
-    	while(a>0) a+=a;
-    	System.out.println(a);
     }
 
 }

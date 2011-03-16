@@ -33,7 +33,7 @@ import java.text.ParseException;
 /**
  *  Protocol name and version.
  *
- * @version 1.2 $Revision: 1.9 $ $Date: 2010-05-06 14:07:52 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2009-07-17 18:57:33 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -64,10 +64,10 @@ public class Protocol extends SIPObject {
      * @return String
      */
     public String encode() {
-        return encode(new StringBuilder()).toString();
+        return encode(new StringBuffer()).toString();
     }
 
-    public StringBuilder encode(StringBuilder buffer) {
+    public StringBuffer encode(StringBuffer buffer) {
         buffer.append(protocolName.toUpperCase())
                 .append(SLASH)
                 .append(protocolVersion)
@@ -151,11 +151,8 @@ public class Protocol extends SIPObject {
 }
 /*
  * $Log: not supported by cvs2svn $
- * Revision 1.8  2009/07/17 18:57:33  emcho
- * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
- *
  * Revision 1.7  2007/02/12 15:19:23  belangery
- * Changed the encode() and encodeBody() methods of SIP headers and basic classes to make them use the same StringBuilder instance during the encoding phase.
+ * Changed the encode() and encodeBody() methods of SIP headers and basic classes to make them use the same StringBuffer instance during the encoding phase.
  *
  * Revision 1.6  2006/07/13 09:01:24  mranga
  * Issue number:

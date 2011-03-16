@@ -66,12 +66,12 @@ public class MultipartMimeContentImpl implements MultipartMimeContent {
      */
     @Override
     public String toString() {
-        StringBuilder StringBuilder = new StringBuilder();
+        StringBuffer stringBuffer = new StringBuffer();
 
         for (Content content : this.contentList) {
-            StringBuilder.append(content.toString());
+            stringBuffer.append(content.toString());
         }
-        return StringBuilder.toString();
+        return stringBuffer.toString();
 
     }
 
@@ -103,7 +103,7 @@ public class MultipartMimeContentImpl implements MultipartMimeContent {
                 if (nextPart == null) {
                     return;
                 }
-                StringBuilder strbuf = new StringBuilder(nextPart);
+                StringBuffer strbuf = new StringBuffer(nextPart);
                 while (strbuf.length() > 0
                         && (strbuf.charAt(0) == '\r' || strbuf.charAt(0) == '\n'))
                     strbuf.deleteCharAt(0);

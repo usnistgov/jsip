@@ -36,7 +36,7 @@ import javax.sip.header.*;
  * the UserAgent SIPObject.
  *
  * @author Olivier Deruelle <br/>
- * @version 1.2 $Revision: 1.9 $ $Date: 2010-05-06 14:07:53 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2009-07-17 18:57:40 $
  *
  *
  *
@@ -56,15 +56,15 @@ public class UserAgent extends SIPHeader implements UserAgentHeader {
      * pmusgrave - put a space between products (preserves format of header)
      * @return String
      */
-    private StringBuilder encodeProduct(StringBuilder tokens) {
-//        StringBuilder tokens = new StringBuilder();
+    private String encodeProduct() {
+        StringBuffer tokens = new StringBuffer();
         ListIterator it = productTokens.listIterator();
 
         while (it.hasNext()) {
             tokens.append((String) it.next());
 
         }
-        return tokens;
+        return tokens.toString();
     }
 
     /** set the productToken field
@@ -85,8 +85,8 @@ public class UserAgent extends SIPHeader implements UserAgentHeader {
     /** Encode only the body of this header.
     *@return encoded value of the header.
     */
-    public StringBuilder encodeBody(StringBuilder buffer) {
-        return encodeProduct(buffer);
+    public String encodeBody() {
+        return encodeProduct();
     }
 
     /**
@@ -127,9 +127,6 @@ public class UserAgent extends SIPHeader implements UserAgentHeader {
 }
 /*
  * $Log: not supported by cvs2svn $
- * Revision 1.8  2009/07/17 18:57:40  emcho
- * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
- *
  * Revision 1.7  2008/07/30 14:36:06  mranga
  * Issue number:
  * Obtained from:

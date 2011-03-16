@@ -35,7 +35,7 @@ import java.text.ParseException;
 /**
  *SubscriptionState header
  *
- * @version 1.2 $Revision: 1.8 $ $Date: 2010-05-06 14:07:47 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2009-07-17 18:57:39 $
  *
  * @author Olivier Deruelle <br/>
  *
@@ -164,10 +164,10 @@ public class SubscriptionState
      * @return the string encoded header body.
      */
     public String encodeBody() {
-        return encodeBody(new StringBuilder()).toString();
+        return encodeBody(new StringBuffer()).toString();
     }
 
-    protected StringBuilder encodeBody(StringBuilder buffer) {
+    protected StringBuffer encodeBody(StringBuffer buffer) {
         if (state != null)
             buffer.append(state);
         if (reasonCode != null)

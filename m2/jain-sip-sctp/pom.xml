@@ -9,7 +9,7 @@
   </parent>
 
   <artifactId>jain-sip-sctp</artifactId>
-  <version>1.2.X-SNAPSHOT</version>
+  <version>1.2.122-SNAPSHOT</version>
   
   <packaging>jar</packaging>
   <name>jain-sip-sctp</name>
@@ -41,38 +41,6 @@
 				</execution>
 			</executions>			
 		</plugin>
-		<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>buildnumber-maven-plugin</artifactId>
-				<version>1.0-beta-4</version>
-				<executions>
-					<execution>
-						<phase>validate</phase>
-						<goals>
-							<goal>create</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<doCheck>false</doCheck>
-					<doUpdate>false</doUpdate>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.1</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-						</manifest>
-						<manifestEntries>
-							<Implementation-Build>${buildNumber}</Implementation-Build>
-						</manifestEntries>
-					</archive>
-				</configuration>
-			</plugin>
 	</plugins>
 	<resources>
 		<resource>
