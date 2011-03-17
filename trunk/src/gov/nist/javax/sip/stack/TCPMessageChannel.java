@@ -342,7 +342,7 @@ public class TCPMessageChannel extends MessageChannel implements
         // } else
         if (sock != mySock && sock != null) {
         	if(mySock != null && logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                 logger.logError(
+                 logger.logDebug(
                          "Old socket different than new socket");
                  logger.logStackTrace();
                  
@@ -458,18 +458,20 @@ public class TCPMessageChannel extends MessageChannel implements
                 retry, this);
         if (sock != mySock && sock != null) {
             if (mySock != null) {
-            	logger.logError(
-                         "Old socket different than new socket");
-                 logger.logStackTrace();
-                 
-	             logger.logDebug(
-	                	 "Old socket local ip address " + mySock.getLocalSocketAddress());
-	             logger.logDebug(
-	            		 "Old socket remote ip address " + mySock.getRemoteSocketAddress());                         
-                 logger.logDebug(
-                		 "New socket local ip address " + sock.getLocalSocketAddress());
-                 logger.logDebug(
-                		 "New socket remote ip address " + sock.getRemoteSocketAddress());
+            	if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+	            	logger.logDebug(
+	                         "Old socket different than new socket");
+	                 logger.logStackTrace();
+	                 
+		             logger.logDebug(
+		                	 "Old socket local ip address " + mySock.getLocalSocketAddress());
+		             logger.logDebug(
+		            		 "Old socket remote ip address " + mySock.getRemoteSocketAddress());                         
+	                 logger.logDebug(
+	                		 "New socket local ip address " + sock.getLocalSocketAddress());
+	                 logger.logDebug(
+	                		 "New socket remote ip address " + sock.getRemoteSocketAddress());
+            	}
                 /*
                  * Delay the close of the socket for some time in case it is
                  * being used.
