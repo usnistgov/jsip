@@ -231,11 +231,11 @@ public class IOHandler {
 						// address (i.e. that of the stack). In version 1.2
 						// the IP address is on a per listening point basis.
 						try{
-						clientSock = sipStack.getNetworkLayer().createSocket(
+							clientSock = sipStack.getNetworkLayer().createSocket(
 								receiverAddress, contactPort, senderAddress);
 						} catch (SocketException e) { // We must catch the timeout exceptions here, any SocketException not just ConnectException
 							sipStack.getStackLogger().logError("Problem connecting " +
-									  receiverAddress + " " + contactPort + " " + senderAddress);
+									  receiverAddress + " " + contactPort + " " + senderAddress + " for message " + new String(bytes, "UTF-8"));
 							// new connection is bad.
 							// remove from our table the socket and its semaphore
 							removeSocket(key);
