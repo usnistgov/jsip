@@ -239,41 +239,48 @@ public final class TLSMessageChannel extends MessageChannel implements
      * Close the message channel.
      */
     public void close() {
-    	/*
-         * Delay the close of the socket for some time in case it is being used.
-         */
-        sipStack.getTimer().schedule(new SIPStackTimerTask() {
-			
-			@Override
-			public void runTask() {
-				isRunning = false;
-            	// we need to close everything because the socket may be closed by the other end
-            	// like in LB scenarios sending OPTIONS and killing the socket after it gets the response    	
-                if (mySock != null) {
-                	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                        logger.logDebug("Closing socket " + key);
-                	try {
-        	            mySock.close();
-                	} catch (IOException ex) {
-                        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                            logger.logDebug("Error closing socket " + ex);
-                    }
-                }        
-                if(myParser != null) {
-                	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                        logger.logDebug("Closing my parser " + myParser);
-                    myParser.close();            
-                }                                    
-                // remove the "tls:" part of the key to cleanup the ioHandler hashmap
-                String ioHandlerKey = key.substring(4);
+    	close(true);
+    }
+
+    /**
+     * Close the message channel.
+     */
+    public void close(boolean removeSocket) {  
+    	
+		isRunning = false;
+    	// we need to close everything because the socket may be closed by the other end
+    	// like in LB scenarios sending OPTIONS and killing the socket after it gets the response    	
+        if (mySock != null) {
+        	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                logger.logDebug("Closing socket " + key);
+        	try {
+	            mySock.close();
+        	} catch (IOException ex) {
                 if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                    logger.logDebug("Closing TLS socket " + ioHandlerKey);
-                // Issue 358 : remove socket and semaphore on close to avoid leaking
-                sipStack.ioHandler.removeSocket(ioHandlerKey);
-                if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                    logger.logDebug("Closing message Channel " + this);       
+                    logger.logDebug("Error closing socket " + ex);
             }
-		}, 8000);    	        
+        }        
+        if(myParser != null) {
+        	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                logger.logDebug("Closing my parser " + myParser);
+            myParser.close();            
+        }           
+        if(removeSocket) {    
+	        // remove the "tls:" part of the key to cleanup the ioHandler hashmap
+	        String ioHandlerKey = key.substring(4);
+	        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+	            logger.logDebug("Closing TLS socket " + ioHandlerKey);
+	        // Issue 358 : remove socket and semaphore on close to avoid leaking
+	        sipStack.ioHandler.removeSocket(ioHandlerKey);
+	        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+	            logger.logDebug("Closing message Channel " + this);
+        } else {
+    		if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+    			String ioHandlerKey = key.substring(4);
+	    		logger.logDebug("not removing socket key from the cached map since it has already been updated by the iohandler.sendBytes " + ioHandlerKey);
+    		}
+    	}
+        		    	        
     }
 
     /**
@@ -331,7 +338,21 @@ public final class TLSMessageChannel extends MessageChannel implements
         // one in its place but dont do this if it is a datagram socket.
         // (could have replied via udp but received via tcp!).
         if (sock != mySock && sock != null) {
-            close();
+        	if(mySock != null && logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                logger.logDebug(
+                        "Old socket different than new socket");
+                logger.logStackTrace();
+                
+	             logger.logDebug(
+	                	 "Old socket local ip address " + mySock.getLocalSocketAddress());
+	             logger.logDebug(
+	            		 "Old socket remote ip address " + mySock.getRemoteSocketAddress());                         
+                logger.logDebug(
+               		 "New socket local ip address " + sock.getLocalSocketAddress());
+                logger.logDebug(
+               		 "New socket remote ip address " + sock.getRemoteSocketAddress());
+           }
+            close(false);
             mySock = sock;
             this.myClientInputStream = mySock.getInputStream();
 
@@ -395,6 +416,20 @@ public final class TLSMessageChannel extends MessageChannel implements
         // Check for null (bug fix sent in by Christophe)
         if (sock != mySock && sock != null) {          
             if (mySock != null) {
+            	if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+	            	logger.logDebug(
+	                         "Old socket different than new socket");
+	                 logger.logStackTrace();
+	                 
+		             logger.logDebug(
+		                	 "Old socket local ip address " + mySock.getLocalSocketAddress());
+		             logger.logDebug(
+		            		 "Old socket remote ip address " + mySock.getRemoteSocketAddress());                         
+	                 logger.logDebug(
+	                		 "New socket local ip address " + sock.getLocalSocketAddress());
+	                 logger.logDebug(
+	                		 "New socket remote ip address " + sock.getRemoteSocketAddress());
+            	}
                 /*
                  * Delay the close of the socket for some time in case it is being used.
                  */
@@ -402,13 +437,13 @@ public final class TLSMessageChannel extends MessageChannel implements
 
                 	@Override
                 	public void cleanUpBeforeCancel() {
-                		close();
+                		close(false);
                 		super.cleanUpBeforeCancel();
                 	}
 
                     @Override
                     public void runTask() {
-                        close();
+                        close(false);
                     }
                 }, 8000);
             }           
