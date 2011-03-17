@@ -184,11 +184,18 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
     public boolean isReliable() {
         return true;
     }
+    
+    /**
+     * Close the message channel.
+     */
+    public void close() {
+    	close(true);
+    }
 
     /**
      * Close the message channel.
      */
-    public void close() {   
+    public void close(boolean removeSocket) {   
     	isRunning = false;
     	// we need to close everything because the socket may be closed by the other end
     	// like in LB scenarios sending OPTIONS and killing the socket after it gets the response    	
@@ -217,15 +224,22 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
     			if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
     				sipStack.getStackLogger().logDebug("Error closing client output stream" + ex);
     		}
-    	}                     
-    	// remove the "tcp:" part of the key to cleanup the ioHandler hashmap
-    	String ioHandlerKey = key.substring(4);
-    	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-    		sipStack.getStackLogger().logDebug("Closing TCP socket " + ioHandlerKey);
-    	// Issue 358 : remove socket and semaphore on close to avoid leaking
-    	sipStack.ioHandler.removeSocket(ioHandlerKey);
-    	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-    		sipStack.getStackLogger().logDebug("Closing message Channel " + this);       
+    	}              
+    	if(removeSocket) {
+	    	// remove the "tcp:" part of the key to cleanup the ioHandler hashmap
+	    	String ioHandlerKey = key.substring(4);
+	    	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+	    		sipStack.getStackLogger().logDebug("Closing TCP socket " + ioHandlerKey);
+	    	// Issue 358 : remove socket and semaphore on close to avoid leaking
+	    	sipStack.ioHandler.removeSocket(ioHandlerKey);
+	    	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+	    		sipStack.getStackLogger().logDebug("Closing message Channel " + this);
+    	} else {
+    		if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+    			String ioHandlerKey = key.substring(4);
+	    		sipStack.getStackLogger().logDebug("not removing socket key from the cached map since it has already been updated by the iohandler.sendBytes " + ioHandlerKey);
+    		}
+    	}
     }
 
     /**
@@ -310,22 +324,20 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
         // this.uncache();
         // } else
         if (sock != mySock && sock != null) {
-        	 if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                 sipStack.getStackLogger().logError(
+        	 if (mySock != null && sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                 sipStack.getStackLogger().logDebug(
                          "Old socket different than new socket");
                  sipStack.getStackLogger().logStackTrace();
-                 if(mySock != null) {	
-	                 sipStack.getStackLogger().logDebug(
-	                		 "Old socket local ip address " + mySock.getLocalSocketAddress());
-	                 sipStack.getStackLogger().logDebug(
-	                		 "Old socket remote ip address " + mySock.getRemoteSocketAddress());        
-                 }
+                 sipStack.getStackLogger().logDebug(
+                		 "Old socket local ip address " + mySock.getLocalSocketAddress());
+	             sipStack.getStackLogger().logDebug(
+                		 "Old socket remote ip address " + mySock.getRemoteSocketAddress());                         
                  sipStack.getStackLogger().logDebug(
                 		 "New socket local ip address " + sock.getLocalSocketAddress());
                  sipStack.getStackLogger().logDebug(
                 		 "New socket remote ip address " + sock.getRemoteSocketAddress());
             }
-            close();
+            close(false);
             mySock = sock;
             this.myClientInputStream = mySock.getInputStream();
             this.myClientOutputStream = mySock.getOutputStream();
@@ -406,38 +418,32 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
             throw new IllegalArgumentException("Null argument");
          Socket sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor.getIpAddress(),
                 receiverAddress, receiverPort, "TCP", message, retry, this);
-        if (sock != mySock && sock != null) {
-        	 if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                 sipStack.getStackLogger().logDebug(
+        if (sock != mySock && sock != null) {        	        	
+            if (mySock != null) {
+            	sipStack.getStackLogger().logDebug(
                          "Old socket different than new socket");
                  sipStack.getStackLogger().logStackTrace();
-                 if(mySock != null) {	                 
-	                 sipStack.getStackLogger().logDebug(
-	                		 "Old socket local ip address " + mySock.getLocalSocketAddress());
-	                 sipStack.getStackLogger().logDebug(
-	                		 "Old socket remote ip address " + mySock.getRemoteSocketAddress());
-
-                 }
+                 sipStack.getStackLogger().logDebug(
+                		 "Old socket local ip address " + mySock.getLocalSocketAddress());
+	             sipStack.getStackLogger().logDebug(
+                		 "Old socket remote ip address " + mySock.getRemoteSocketAddress());                         
                  sipStack.getStackLogger().logDebug(
                 		 "New socket local ip address " + sock.getLocalSocketAddress());
                  sipStack.getStackLogger().logDebug(
                 		 "New socket remote ip address " + sock.getRemoteSocketAddress());
-            }
-        	
-            if (mySock != null) {
                 /*
                  * Delay the close of the socket for some time in case it is being used.
                  */
                 sipStack.getTimer().schedule(new TimerTask() {
                     @Override
                     public boolean cancel() {
-                        close();
+                        close(false);
                         return true;
                     }
 
                     @Override
                     public void run() {
-                        close();
+                        close(false);
                     }
                 }, 8000);
             }
@@ -717,15 +723,7 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
         hispipe = new Pipeline(myClientInputStream, sipStack.readTimeout,
                 ((SIPTransactionStack) sipStack).getTimer());
         // Create a pipelined message parser to read and parse
-        // messages that we write out to him.
-        if(myParser != null) {
-        	if (sipStack.isLoggingEnabled(LogWriter.TRACE_ERROR)) {
-                sipStack.getStackLogger().logError(
-                        "myParser is not null, we are overwriting it, making sure we close the parser");                        
-        	}
-        	myParser.close();
-        	myParser = null;
-        }
+        // messages that we write out to him.       
         myParser = new PipelinedMsgParser(sipStack, this, hispipe, this.sipStack.getMaxMessageSize());
         // Start running the parser thread.
         myParser.processInput();

@@ -343,13 +343,13 @@ public final class PipelinedMsgParser implements Runnable {
                     	if(postParseExecutor != null && isRunning){
                     		if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                                 sipStack.getStackLogger().logDebug("waiting for messagesOrderingMap " + this + " threadname " + mythread.getName());
-                            synchronized (messagesOrderingMap) {
+                    		synchronized (messagesOrderingMap) {
                                 try {
-                                    messagesOrderingMap.wait();
+                                    messagesOrderingMap.wait(64000);
                                 } catch (InterruptedException e) {}                                
-                            }                             
+                            }          
                             if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                                sipStack.getStackLogger().logDebug("got notified for messagesOrderingMap " + this + " threadname " + mythread.getName());
+                                sipStack.getStackLogger().logDebug("got notified or the wait timed out after 64s for messagesOrderingMap " + this + " threadname " + mythread.getName());
                         }
                     	this.rawInputStream.stopTimer();
                     	if (sipStack.getStackLogger().isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
@@ -379,11 +379,11 @@ public final class PipelinedMsgParser implements Runnable {
                                 sipStack.getStackLogger().logDebug("waiting for messagesOrderingMap " + this + " threadname " + mythread.getName());
                             synchronized (messagesOrderingMap) {
                                 try {
-                                    messagesOrderingMap.wait();
+                                    messagesOrderingMap.wait(64000);
                                 } catch (InterruptedException e) {}                                
                             }          
                             if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                                sipStack.getStackLogger().logDebug("got notified for messagesOrderingMap " + this + " threadname " + mythread.getName());
+                                sipStack.getStackLogger().logDebug("got notified or the wait timed out after 64s for messagesOrderingMap " + this + " threadname " + mythread.getName());
                         } 
                         this.rawInputStream.stopTimer();
                         if (sipStack.getStackLogger().isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
