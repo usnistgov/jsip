@@ -591,7 +591,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         @Override
         public void cleanUpBeforeCancel() {
             transaction = null;
-            lastAckSent = null;
+           // lastAckSent = null;
             cleanUpOnAck();
             super.cleanUpBeforeCancel();
         }
@@ -1432,13 +1432,13 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     public void setState(int state) {
         if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             logger.logDebug(
-                    "Setting dialog state for " + this + "newState = " + state);
+                    "SIPDialog::setState:Setting dialog state for " + this + "newState = " + state);
             logger.logStackTrace();
             if (state != NULL_STATE && state != this.dialogState)
                 if (logger.isLoggingEnabled()) {
-                    logger.logDebug(
+                    logger.logDebug("SIPDialog::setState:" +	
                             this + "  old dialog state is " + this.getState());
-                    logger.logDebug(
+                    logger.logDebug("SIPDialog::setState:" +
                             this + "  New dialog state is "
                                     + DialogState.getObject(state));
                 }
@@ -2514,7 +2514,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
         if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
             logger.logDebug(
-                    "dialog.sendRequest " + " dialog = " + this
+                    "SIPDialog::sendRequest:dialog.sendRequest " + " dialog = " + this
                             + "\ndialogRequest = \n" + dialogRequest);        
 
         if (dialogRequest.getMethod().equals(Request.ACK)
@@ -2543,7 +2543,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 logger
                         .logError("CallID " + this.getCallId());
                 logger.logError(
-                        "RequestCallID = "
+                        "SIPDialog::sendRequest:RequestCallID = "
                                 + dialogRequest.getCallId().getCallId());
                 logger.logError("dialog =  " + this);
             }
@@ -2573,7 +2573,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 && !to.getTag().equals(this.getRemoteTag())) {
             if (logger.isLoggingEnabled())
                 this.logger.logWarning(
-                        "To header tag mismatch expecting "
+                        "SIPDialog::sendRequest:To header tag mismatch expecting "
                                 + this.getRemoteTag());
         }
         /*
@@ -2604,7 +2604,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         Hop hop = ((SIPClientTransaction) clientTransactionId).getNextHop();
         if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             logger.logDebug(
-                    "Using hop = " + hop.getHost() + " : " + hop.getPort());
+                    "SIPDialog::sendRequest:Using hop = " + hop.getHost() + " : " + hop.getPort());
         }
 
         try {
@@ -2625,7 +2625,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 oldChannel.useCount--;
                 if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                     logger.logDebug(
-                            "oldChannel: useCount " + oldChannel.useCount);
+                            "SIPDialog::sendRequest:oldChannel: useCount " + oldChannel.useCount);
 
             }
 
@@ -2667,7 +2667,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
                 if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                     logger.logDebug(
-                            "using message channel " + messageChannel);
+                            "SIPDialog::sendRequest:using message channel " + messageChannel);
 
                 }
 
@@ -2757,6 +2757,10 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 }
             }
             this.sendAck(getLastAckSent(), false);
+        } else {
+        	if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)){
+        		logger.logDebug("SIPDialog::resendAck:lastAck sent is NULL hence not resending ACK");
+        	}
         }
 
     }
@@ -4175,8 +4179,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             eventHeader = null;
             firstTransactionId = null;
             firstTransactionMethod = null;            
-            // Cannot clear up the last Ack Sent.
-            lastAckSent = null;
+            // Cannot clear up the last Ack Sent. until DIALOG is terminated.
+          
             // lastAckReceivedCSeqNumber = null;
             lastResponseDialogId = null;         
             lastResponseMethod = null;
