@@ -898,7 +898,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
     }
 
     /**
-     * Send a response message through this transactionand onto the client. The response drives
+     * Send a response message through this transaction and onto the client. The response drives
      * the state machine.
      *
      * @param messageToSend Response to process and send.
