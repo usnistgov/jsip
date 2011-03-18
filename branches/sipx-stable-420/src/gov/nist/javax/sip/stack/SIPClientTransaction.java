@@ -47,13 +47,11 @@ import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.message.SIPResponse;
 
 import java.io.IOException;
-import java.security.cert.X509Certificate;
 import java.text.ParseException;
 import java.util.ListIterator;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.sip.Dialog;
 import javax.sip.DialogState;
 import javax.sip.InvalidArgumentException;
@@ -1363,6 +1361,11 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
      */
     public void terminate() throws ObjectInUseException {
         this.setState(TransactionState.TERMINATED);
+        if(!transactionTimerStarted.get()) {
+    		// if no transaction timer was started just remove the tx without firing a transaction terminated event
+        	testAndSetTransactionTerminatedEvent();
+        	sipStack.removeTransaction(this);
+        }
 
     }
 

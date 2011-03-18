@@ -39,7 +39,7 @@ import gov.nist.javax.sip.header.ViaList;
 import gov.nist.javax.sip.message.SIPMessage;
 import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.message.SIPResponse;
-import gov.nist.javax.sip.stack.SIPDialog.DialogTimerTask;
+import gov.nist.javax.sip.stack.SIPTransaction.LingerTimer;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -196,6 +196,8 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
     private boolean retransmissionAlertEnabled;
 
     private RetransmissionAlertTimerTask retransmissionAlertTimerTask;
+    
+    private ListenerExecutionMaxTimer listenerExecutionMaxTimer;
 
     protected boolean isAckSeen;
 
@@ -305,13 +307,22 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
         protected void runTask() {
             try {
-                if (serverTransaction.getState() == null) {
+               	listenerExecutionMaxTimer = null;
+            	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                    sipStack.getStackLogger().logDebug("Fired ListenerExecutionMaxTimer for stx " + serverTransaction.getTransactionId() + " state " + serverTransaction.getState());
+                if (serverTransaction.getState() == null || 
+                		serverTransaction.getState().equals(TransactionState.CALLING) || 
+                		serverTransaction.getState().equals(TransactionState.TRYING) ||
+                		// may have been forcefully TERMINATED through terminate() method but if the tx timer never got scheduled
+                		// it wouldn't be reaped
+                		serverTransaction.getState().equals(TransactionState.TERMINATED)) {
+                	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                        sipStack.getStackLogger().logDebug("ListenerExecutionMaxTimer : terminating and removing stx " + serverTransaction.getTransactionId());
                     serverTransaction.terminate();
                     SIPTransactionStack sipStack = serverTransaction.getSIPStack();
-                    sipStack.removePendingTransaction(serverTransaction);
-                    sipStack.removeTransaction(serverTransaction);
-
+	                sipStack.removeTransaction(serverTransaction);
                 }
+                
             } catch (Exception ex) {
                 sipStack.getStackLogger().logError("unexpected exception", ex);
             }
@@ -366,13 +377,16 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
         protected void runTask() {
             // If the transaction has terminated,
-            if (isTerminated()) {
+            if (isTerminated()) {            	
                 // Keep the transaction hanging around in the transaction table
                 // to catch the incoming ACK -- this is needed for tcp only.
                 // Note that the transaction record is actually removed in
                 // the connection linger timer.
                 try {
                     this.cancel();
+                    if(listenerExecutionMaxTimer != null) {
+                		listenerExecutionMaxTimer.cancel();
+                	}
                 } catch (IllegalStateException ex) {
                     if (!sipStack.isAlive())
                         return;
@@ -510,7 +524,8 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
         super(sipStack, newChannelToUse);
 
         if (sipStack.maxListenerResponseTime != -1) {
-            sipStack.getTimer().schedule(new ListenerExecutionMaxTimer(),
+        	listenerExecutionMaxTimer = new ListenerExecutionMaxTimer();
+            sipStack.getTimer().schedule(listenerExecutionMaxTimer,
                     sipStack.maxListenerResponseTime * 1000);
         }
 
@@ -1541,7 +1556,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
      *
      * @see javax.sip.Transaction#terminate()
      */
-    public void terminate() throws ObjectInUseException {
+    public void terminate() throws ObjectInUseException {    	
         this.setState(TransactionState.TERMINATED);
         if (this.retransmissionAlertTimerTask != null) {
             this.retransmissionAlertTimerTask.cancel();
@@ -1551,6 +1566,11 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
             }
             this.retransmissionAlertTimerTask = null;
 
+        }
+        if(!transactionTimerStarted.get()) {
+    		// if no transaction timer was started just remove the tx without firing a transaction terminated event
+        	testAndSetTransactionTerminatedEvent();
+        	sipStack.removeTransaction(this);
         }
 
     }
