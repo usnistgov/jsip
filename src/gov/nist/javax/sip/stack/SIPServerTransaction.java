@@ -1,5 +1,5 @@
 /*
-g * Conditions Of Use
+ * Conditions Of Use
  *
  * This software was developed by employees of the National Institute of
  * Standards and Technology (NIST), an agency of the Federal Government.
@@ -149,7 +149,7 @@ import javax.sip.message.Response;
  *                                                   |                     |send response      |
  *                                                   |  Request            V                   |
  *                                                   |  send response+-----------+             |
- *                                                      |      +--------|           |             |
+ *                                                   |      +--------|           |             |
  *                                                   |      |        | Completed |&lt;------------+
  *                                                   |      +-------&gt;|           |
  *                                                   +&lt;--------------|           |
@@ -167,7 +167,7 @@ import javax.sip.message.Response;
  *
  *
  *
- *sendResponse
+ *
  *
  * </pre>
  *
@@ -208,6 +208,8 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
     private boolean retransmissionAlertEnabled;
 
     private RetransmissionAlertTimerTask retransmissionAlertTimerTask;
+    
+    private ListenerExecutionMaxTimer listenerExecutionMaxTimer;
 
     protected boolean isAckSeen;
 
@@ -328,12 +330,18 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
         public void runTask() {
             try {
-                if (serverTransaction.getInternalState() < 0) {
+            	listenerExecutionMaxTimer = null;
+            	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                    logger.logDebug("Fired ListenerExecutionMaxTimer for stx " + serverTransaction.getTransactionId() + " state " + serverTransaction.getState());
+                if (serverTransaction.getInternalState() <= 1  ||
+                		// may have been forcefully TERMINATED through terminate() method but if the tx timer never got scheduled
+                		// it wouldn't be reaped
+                		serverTransaction.getInternalState() >= 5) {
+                	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                        logger.logDebug("ListenerExecutionMaxTimer : terminating and removing stx " + serverTransaction.getTransactionId());
                     serverTransaction.terminate();
                     SIPTransactionStack sipStack = serverTransaction.getSIPStack();
-                    sipStack.removePendingTransaction(serverTransaction);
-                    sipStack.removeTransaction(serverTransaction);
-
+	                sipStack.removeTransaction(serverTransaction);
                 }
             } catch (Exception ex) {
                 logger.logError("unexpected exception", ex);
@@ -396,6 +404,9 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                 // the connection linger timer.
                 try {
                        sipStack.getTimer().cancel(this);
+                       if(listenerExecutionMaxTimer != null) {
+                    	   sipStack.getTimer().cancel(listenerExecutionMaxTimer);
+                       }
                 } catch (IllegalStateException ex) {
                     if (!sipStack.isAlive())
                         return;
@@ -1713,7 +1724,11 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
             this.retransmissionAlertTimerTask = null;
 
         }
-
+        if(!transactionTimerStarted.get()) {
+    		// if no transaction timer was started just remove the tx without firing a transaction terminated event
+        	testAndSetTransactionTerminatedEvent();
+        	sipStack.removeTransaction(this);
+        }
     }
 
     protected void sendReliableProvisionalResponse(Response relResponse) throws SipException {

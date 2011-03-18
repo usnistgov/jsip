@@ -1396,7 +1396,11 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
      */
     public void terminate() throws ObjectInUseException {
         this.setState(TransactionState._TERMINATED);
-     
+        if(!transactionTimerStarted.get()) {
+    		// if no transaction timer was started just remove the tx without firing a transaction terminated event
+        	testAndSetTransactionTerminatedEvent();
+        	sipStack.removeTransaction(this);
+        }
     }
     
     /**
