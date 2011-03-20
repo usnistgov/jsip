@@ -3989,6 +3989,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      */
     private void setLastAckSent(SIPRequest lastAckSent) {
         this.lastAckSent = lastAckSent;
+        this.lastAckSent.setTransaction(null); // null out the associated Tx (release memory)
     }
 
     /**

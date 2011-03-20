@@ -24,25 +24,36 @@ import javax.net.ssl.HandshakeCompletedListener;
 public class HandshakeCompletedListenerImpl implements HandshakeCompletedListener {
 
     private HandshakeCompletedEvent handshakeCompletedEvent;
-    private TLSMessageChannel tlsMessageChannel;
-    
-    
+    private Object eventWaitObject = new Object();
+
     public HandshakeCompletedListenerImpl(TLSMessageChannel tlsMessageChannel) {
-        this.tlsMessageChannel = tlsMessageChannel;
         tlsMessageChannel.setHandshakeCompletedListener(this);
     }
 
-    
     public void handshakeCompleted(HandshakeCompletedEvent handshakeCompletedEvent) {
-       this.handshakeCompletedEvent = handshakeCompletedEvent;
+        this.handshakeCompletedEvent = handshakeCompletedEvent;
+        synchronized (eventWaitObject) {
+            eventWaitObject.notify();
+        }
     }
 
     /**
-     * @return the handshakeCompletedEvent
+     * Gets the event indicating that the SSL handshake has completed. The
+     * method waits until the event has been obtained by the listener or a
+     * timeout of 5 seconds has elapsed.
+     * 
+     * @return the handshakeCompletedEvent or null when the timeout elapsed
      */
     public HandshakeCompletedEvent getHandshakeCompletedEvent() {
+        try {
+            synchronized (eventWaitObject) {
+                if (handshakeCompletedEvent == null)
+                    eventWaitObject.wait(5000);
+            }
+        }
+        catch (InterruptedException e) {
+            // we don't care
+        }
         return handshakeCompletedEvent;
     }
-    
-
 }
