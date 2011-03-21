@@ -388,7 +388,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         public ReInviteSender(ClientTransaction ctx) {
             this.ctx = ctx;
             if ( logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-            	logger.logDebug("ReInviteSender::ReInviteSender: ctx = " + ctx);
+            	logger.logDebug("ReInviteSender::ReInviteSender: ctx = " + ctx );
             	logger.logStackTrace();
             }
         }
@@ -402,6 +402,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
                 // If we have an INVITE transaction, make sure that it is TERMINATED
                 // before sending a re-INVITE.. Not the cleanest solution but it works.
+                if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                	logger.logDebug("SIPDialog::reInviteSender: dialog = " + ctx.getDialog()  + " lastTransaction = " + lastTransaction + " lastTransactionState " + lastTransaction.getState());
+                }
                 while (SIPDialog.this.lastTransaction != null &&
                 			SIPDialog.this.lastTransaction instanceof SIPServerTransaction && 
                 			SIPDialog.this.lastTransaction.isInviteTransaction() &&
@@ -1875,6 +1878,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                     "isBackToBackUserAgent = " + this.isBackToBackUserAgent);
         }
         if (transaction.isInviteTransaction()) {
+        	if ( logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+        		 logger.logDebug("SIPDialog::setLastTransaction:dialog= " + SIPDialog.this + " lastTransaction = " + transaction);
+        	}
             this.lastTransaction = transaction;
         }
 
@@ -2498,9 +2504,13 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         if (clientTransactionId == null)
             throw new NullPointerException("null parameter");
         
+        
         if ((!allowInterleaving)
                 && clientTransactionId.getRequest().getMethod().equals(
                         Request.INVITE)) {
+        	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+        		logger.logDebug("SIPDialog::sendRequest " + this + " clientTransaction = " + clientTransactionId);
+        	}
             sipStack.getReinviteExecutor().execute(
                     (new ReInviteSender(clientTransactionId)));
             return;
@@ -3906,11 +3916,11 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                  */
               	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                     logger.logDebug(
-                               " INVITE transaction not found  -- Discarding ACK");
+                               " INVITE transaction not found");
               	if ( this.isBackToBackUserAgent() ) {
               		this.releaseAckSem();
               	}
-              	return false;
+              	return true;
                
             }
         }
