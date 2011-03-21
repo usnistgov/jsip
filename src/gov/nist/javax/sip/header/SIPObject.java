@@ -39,7 +39,7 @@ import java.lang.reflect.Modifier;
  * specializes the gov.nist.sip.header.GenericObject class for SIPHeader
  * related objects.
  *
- * @version 1.2 $Revision: 1.11 $ $Date: 2010-05-06 14:07:48 $
+ * @version 1.2 $Revision: 1.10 $ $Date: 2009-07-17 18:57:38 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -68,10 +68,10 @@ public abstract class SIPObject extends GenericObject {
      */
     public abstract String encode();
 
-    /** Encode the header into the given StringBuilder.
+    /** Encode the header into the given StringBuffer.
      * Default implemation calls encode().
      */
-    public StringBuilder encode(StringBuilder buffer) {
+    public StringBuffer encode(StringBuffer buffer) {
         return buffer.append(encode());
     }
 

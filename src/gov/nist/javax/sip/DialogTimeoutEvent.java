@@ -33,7 +33,7 @@ import javax.sip.Dialog;
  */
 public class DialogTimeoutEvent extends EventObject {
 	private static final long serialVersionUID = -2514000059989311925L;
-	public enum Reason {AckNotReceived, AckNotSent,ReInviteTimeout,EarlyStateTimeout,CannotAcquireAckSemaphoreForOk};	    
+	public enum Reason {AckNotReceived, AckNotSent,ReInviteTimeout,CannotAcquireAckSemaphoreForOk};	    
 	/**
      * Constructs a DialogTerminatedEvent to indicate a dialog
      * timeout.

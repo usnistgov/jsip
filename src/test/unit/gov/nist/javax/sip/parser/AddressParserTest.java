@@ -28,13 +28,11 @@ import gov.nist.javax.sip.address.AddressImpl;
 import gov.nist.javax.sip.parser.AddressParser;
 
 import java.text.ParseException;
-import java.util.regex.Pattern;
 
 import javax.sip.PeerUnavailableException;
 import javax.sip.SipFactory;
 import javax.sip.address.Address;
 import javax.sip.address.AddressFactory;
-import javax.sip.address.URI;
 
 /**
  *
@@ -78,6 +76,5 @@ public class AddressParserTest extends ParserTestCase {
             e.printStackTrace();
             fail(this.getClass().getName());
         }
-
     }
 }

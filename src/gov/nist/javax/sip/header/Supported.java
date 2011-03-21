@@ -34,7 +34,7 @@ import javax.sip.header.*;
 /**
  * Supported SIP Header.
  *
- * @version 1.2 $Revision: 1.6 $ $Date: 2010-05-06 14:07:51 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2009-07-17 18:57:39 $
  *
  * @author M. Ranganathan   <br/>
  * @author Olivier Deruelle <br/>
@@ -85,8 +85,8 @@ public class Supported extends SIPHeader implements SupportedHeader {
      * Just the encoded body of the header.
      * @return the string encoded header body.
      */
-    public StringBuilder encodeBody(StringBuilder retval) {
-        return optionTag != null ? retval.append(optionTag) : retval.append("");
+    public String encodeBody() {
+        return optionTag != null ? optionTag : "";
     }
 
     /**
@@ -116,9 +116,6 @@ public class Supported extends SIPHeader implements SupportedHeader {
 }
 /*
  * $Log: not supported by cvs2svn $
- * Revision 1.5  2009/07/17 18:57:39  emcho
- * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
- *
  * Revision 1.4  2006/07/13 09:01:27  mranga
  * Issue number:
  * Obtained from:

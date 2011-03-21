@@ -6,8 +6,6 @@
 
 package javax.sdp;
 
-import gov.nist.core.Separators;
-
 /** The SdpException defines a general exception for the SDP classes to throw when they encounter a difficulty.
  *
  * @author deruelle
@@ -38,7 +36,7 @@ public class SdpException extends Exception {
      */    
     public SdpException(String message,
     Throwable rootCause){
-        super(rootCause.getMessage()+ Separators.SEMICOLON +message);
+        super(rootCause.getMessage()+";"+message);
     }
     
     /** Constructs a new SdpException as a result of a system exception and uses

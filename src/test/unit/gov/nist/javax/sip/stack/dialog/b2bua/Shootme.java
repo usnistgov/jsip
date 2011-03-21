@@ -342,7 +342,7 @@ public class Shootme   implements SipListener {
         this.delay = delay;
         this.sendRinging = sendRinging;
 
-        ProtocolObjects sipObjects = new ProtocolObjects("shootme","gov.nist","udp",true,false, false);
+        ProtocolObjects sipObjects = new ProtocolObjects("shootme","gov.nist","udp",true,false);
         addressFactory = sipObjects.addressFactory;
         messageFactory = sipObjects.messageFactory;
         headerFactory = sipObjects.headerFactory;

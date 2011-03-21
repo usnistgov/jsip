@@ -70,8 +70,6 @@ public class DialogIdentityTest extends TestCase {
 
         private Dialog dialog;
 
-        private boolean setToTagOn180;
-
         public static final boolean callerSendsBye = true;
 
         class MyTimerTask extends TimerTask {
@@ -93,10 +91,6 @@ public class DialogIdentityTest extends TestCase {
                 + ">>>> is your class path set to the root?";
 
 
-
-        public Shootme(boolean b) {
-            this.setToTagOn180 = b;
-        }
 
         public void processRequest(RequestEvent requestEvent) {
             Request request = requestEvent.getRequest();
@@ -174,10 +168,6 @@ public class DialogIdentityTest extends TestCase {
                 // System.out.println("shootme: " + request);
                 Response response = messageFactory.createResponse(Response.RINGING,
                         request);
-                if(setToTagOn180) {
-                    ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
-                    toHeader.setTag("4321"); // Application is supposed to set.
-                }
                 ServerTransaction st = requestEvent.getServerTransaction();
 
                 if (st == null) {
@@ -744,7 +734,7 @@ public class DialogIdentityTest extends TestCase {
 
             Shootist shootist = new Shootist();
 
-            Shootme shootme = new Shootme(false);
+            Shootme shootme = new Shootme();
             shootme.init();
 
             shootist.init();
@@ -753,20 +743,8 @@ public class DialogIdentityTest extends TestCase {
 
             shootist.stop();
             shootme.stop();
+
+
+
     }
-    
-    public void testDialogIdentity180HasToTag() throws Exception {
-
-        Shootist shootist = new Shootist();
-
-        Shootme shootme = new Shootme(true);
-        shootme.init();
-
-        shootist.init();
-
-        Thread.sleep(10000);
-
-        shootist.stop();
-        shootme.stop();
-}
 }

@@ -31,7 +31,6 @@
 package gov.nist.javax.sdp.fields;
 
 
-import java.io.Serializable;
 import java.util.Vector;
 import javax.sdp.SdpException;
 import javax.sdp.SdpParseException;
@@ -48,11 +47,11 @@ import gov.nist.core.NameValue;
  * <p>3GPP TS 24.299, </p>
  * IETF RFC3312 + RFC4032 (Precondition Mechanism).
  *
- *  Serialization fix contributed by aregr@dev.java.net
- *
  * @author Miguel Freitas (IT) PT-Inovacao
  */
-public class PreconditionFields implements Serializable
+
+
+public class PreconditionFields
 {
 
     // Media Description attributes for precondition

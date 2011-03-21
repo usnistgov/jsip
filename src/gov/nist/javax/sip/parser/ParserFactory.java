@@ -24,115 +24,22 @@
 *
 */
 package gov.nist.javax.sip.parser;
-import gov.nist.core.InternalErrorHandler;
-import gov.nist.javax.sip.header.SIPHeaderNamesCache;
-import gov.nist.javax.sip.header.extensions.Join;
-import gov.nist.javax.sip.header.extensions.MinSE;
-import gov.nist.javax.sip.header.extensions.References;
-import gov.nist.javax.sip.header.extensions.ReferredBy;
-import gov.nist.javax.sip.header.extensions.Replaces;
-import gov.nist.javax.sip.header.extensions.SessionExpires;
-import gov.nist.javax.sip.header.ims.PAccessNetworkInfoHeader;
-import gov.nist.javax.sip.header.ims.PAssertedIdentityHeader;
-import gov.nist.javax.sip.header.ims.PAssociatedURIHeader;
-import gov.nist.javax.sip.header.ims.PCalledPartyIDHeader;
-import gov.nist.javax.sip.header.ims.PChargingFunctionAddressesHeader;
-import gov.nist.javax.sip.header.ims.PChargingVectorHeader;
-import gov.nist.javax.sip.header.ims.PMediaAuthorizationHeader;
-import gov.nist.javax.sip.header.ims.PPreferredIdentityHeader;
-import gov.nist.javax.sip.header.ims.PVisitedNetworkIDHeader;
-import gov.nist.javax.sip.header.ims.PathHeader;
-import gov.nist.javax.sip.header.ims.PrivacyHeader;
-import gov.nist.javax.sip.header.ims.SecurityClientHeader;
-import gov.nist.javax.sip.header.ims.SecurityServerHeader;
-import gov.nist.javax.sip.header.ims.SecurityVerifyHeader;
-import gov.nist.javax.sip.header.ims.ServiceRouteHeader;
-import gov.nist.javax.sip.parser.extensions.JoinParser;
-import gov.nist.javax.sip.parser.extensions.MinSEParser;
-import gov.nist.javax.sip.parser.extensions.ReferencesParser;
-import gov.nist.javax.sip.parser.extensions.ReferredByParser;
-import gov.nist.javax.sip.parser.extensions.ReplacesParser;
-import gov.nist.javax.sip.parser.extensions.SessionExpiresParser;
-import gov.nist.javax.sip.parser.ims.PAccessNetworkInfoParser;
-import gov.nist.javax.sip.parser.ims.PAssertedIdentityParser;
-import gov.nist.javax.sip.parser.ims.PAssociatedURIParser;
-import gov.nist.javax.sip.parser.ims.PCalledPartyIDParser;
-import gov.nist.javax.sip.parser.ims.PChargingFunctionAddressesParser;
-import gov.nist.javax.sip.parser.ims.PChargingVectorParser;
-import gov.nist.javax.sip.parser.ims.PMediaAuthorizationParser;
-import gov.nist.javax.sip.parser.ims.PPreferredIdentityParser;
-import gov.nist.javax.sip.parser.ims.PVisitedNetworkIDParser;
-import gov.nist.javax.sip.parser.ims.PathParser;
-import gov.nist.javax.sip.parser.ims.PrivacyParser;
-import gov.nist.javax.sip.parser.ims.SecurityClientParser;
-import gov.nist.javax.sip.parser.ims.SecurityServerParser;
-import gov.nist.javax.sip.parser.ims.SecurityVerifyParser;
-import gov.nist.javax.sip.parser.ims.ServiceRouteParser;
-
-import java.lang.reflect.Constructor;
+import gov.nist.javax.sip.parser.ims.*;
+import gov.nist.javax.sip.header.ims.*;
+import java.util.Hashtable;
+import java.lang.reflect.*;
+import javax.sip.header.*;
 import java.text.ParseException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.sip.header.AcceptEncodingHeader;
-import javax.sip.header.AcceptHeader;
-import javax.sip.header.AcceptLanguageHeader;
-import javax.sip.header.AlertInfoHeader;
-import javax.sip.header.AllowEventsHeader;
-import javax.sip.header.AllowHeader;
-import javax.sip.header.AuthenticationInfoHeader;
-import javax.sip.header.AuthorizationHeader;
-import javax.sip.header.CSeqHeader;
-import javax.sip.header.CallIdHeader;
-import javax.sip.header.CallInfoHeader;
-import javax.sip.header.ContactHeader;
-import javax.sip.header.ContentDispositionHeader;
-import javax.sip.header.ContentEncodingHeader;
-import javax.sip.header.ContentLanguageHeader;
-import javax.sip.header.ContentLengthHeader;
-import javax.sip.header.ContentTypeHeader;
-import javax.sip.header.DateHeader;
-import javax.sip.header.ErrorInfoHeader;
-import javax.sip.header.EventHeader;
-import javax.sip.header.ExpiresHeader;
-import javax.sip.header.FromHeader;
-import javax.sip.header.InReplyToHeader;
-import javax.sip.header.MaxForwardsHeader;
-import javax.sip.header.MimeVersionHeader;
-import javax.sip.header.MinExpiresHeader;
-import javax.sip.header.OrganizationHeader;
-import javax.sip.header.PriorityHeader;
-import javax.sip.header.ProxyAuthenticateHeader;
-import javax.sip.header.ProxyAuthorizationHeader;
-import javax.sip.header.ProxyRequireHeader;
-import javax.sip.header.RAckHeader;
-import javax.sip.header.RSeqHeader;
-import javax.sip.header.ReasonHeader;
-import javax.sip.header.RecordRouteHeader;
-import javax.sip.header.ReferToHeader;
-import javax.sip.header.ReplyToHeader;
-import javax.sip.header.RequireHeader;
-import javax.sip.header.RetryAfterHeader;
-import javax.sip.header.RouteHeader;
-import javax.sip.header.SIPETagHeader;
-import javax.sip.header.SIPIfMatchHeader;
-import javax.sip.header.ServerHeader;
-import javax.sip.header.SubjectHeader;
-import javax.sip.header.SubscriptionStateHeader;
-import javax.sip.header.SupportedHeader;
-import javax.sip.header.TimeStampHeader;
-import javax.sip.header.ToHeader;
-import javax.sip.header.UnsupportedHeader;
-import javax.sip.header.UserAgentHeader;
-import javax.sip.header.ViaHeader;
-import javax.sip.header.WWWAuthenticateHeader;
-import javax.sip.header.WarningHeader;
+import gov.nist.core.*;
+import gov.nist.javax.sip.header.extensions.*;
+import gov.nist.javax.sip.header.SIPHeaderNamesCache;
+import gov.nist.javax.sip.parser.extensions.*;
 
 /**
  * A factory class that does a name lookup on a registered parser and
  * returns a header parser for the given name.
  *
- * @version 1.2 $Revision: 1.18 $ $Date: 2010-05-06 14:07:44 $
+ * @version 1.2 $Revision: 1.17 $ $Date: 2010-01-12 00:05:25 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -140,14 +47,14 @@ import javax.sip.header.WarningHeader;
  *
  */
 public class ParserFactory {
-	//jeand : moving to concurrent structures to avoid blocking witnessed during profiling
-    private static Map<String,Class<? extends HeaderParser>> parserTable;
+
+    private static Hashtable<String,Class<? extends HeaderParser>> parserTable;
     private static Class[] constructorArgs;
-    private static ConcurrentHashMap<Class, Constructor> parserConstructorCache;
+    private static Hashtable parserConstructorCache;
 
     static {
-        parserTable = new ConcurrentHashMap<String,Class<? extends HeaderParser>>(90);
-        parserConstructorCache = new ConcurrentHashMap<Class, Constructor>();
+        parserTable = new Hashtable<String,Class<? extends HeaderParser>>();
+        parserConstructorCache = new Hashtable();
         constructorArgs = new Class[1];
         constructorArgs[0] = String.class;
         parserTable.put(ReplyToHeader.NAME.toLowerCase(), ReplyToParser.class);
@@ -387,7 +294,7 @@ public class ParserFactory {
                 Constructor cons = (Constructor) parserConstructorCache.get(parserClass);
                 if (cons == null) {
                     cons = parserClass.getConstructor(constructorArgs);
-                    parserConstructorCache.putIfAbsent(parserClass, cons);
+                    parserConstructorCache.put(parserClass, cons);
                 }
                 Object[] args = new Object[1];
                 args[0] = line;
@@ -408,9 +315,6 @@ public class ParserFactory {
 }
 /*
  * $Log: not supported by cvs2svn $
- * Revision 1.17  2010/01/12 00:05:25  mranga
- * Add support for References header draft-worley-references-05
- *
  * Revision 1.16  2009/07/17 18:58:01  emcho
  * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
  *

@@ -36,7 +36,7 @@ import java.text.ParseException;
 /**
  * ErrorInfo SIP Header.
  *
- * @version 1.2 $Revision: 1.7 $ $Date: 2010-05-06 14:07:50 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2009-07-17 18:57:30 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
@@ -74,16 +74,14 @@ public final class ErrorInfo
      * Encode into canonical form.
      * @return String
      */
-    public StringBuilder encodeBody(StringBuilder retval) {
-//        StringBuilder retval =
-            retval.append(LESS_THAN);
-            errorInfo.encode(retval);
-            retval.append(GREATER_THAN);
+    public String encodeBody() {
+        StringBuffer retval =
+            new StringBuffer(LESS_THAN).append(errorInfo.toString()).append(
+                GREATER_THAN);
         if (!parameters.isEmpty()) {
-            retval.append(SEMICOLON);
-            parameters.encode(retval);
+            retval.append(SEMICOLON).append(parameters.encode());
         }
-        return retval;
+        return retval.toString();
     }
 
     /**

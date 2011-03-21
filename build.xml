@@ -73,6 +73,7 @@ c:/jakarta-ant/bin/ant all
     <property file="ant-build-config.properties" />
     <!-- set global properties for this build -->
     <property name="root" value="." />
+    <property file="ant-version.properties" />
 
     <property name="href.nist.homepage" value="http://www-x.antd.nist.gov/" />
     <property name="href.uncopyright" value="../uncopyright.html" />
@@ -110,7 +111,7 @@ c:/jakarta-ant/bin/ant all
 
     <target name="all" depends="make,compileexamples,compiletools,javadoc,javadoc-jain" />
 
-    <target name="make" depends="compileapi,compileri,compilesdp,jain-sip-sdp-jar" />
+    <target name="make" depends="clean,compileapi,compileri,compilesdp,jain-sip-sdp-jar" />
 
 
     <target name="cleanlogs">
@@ -130,20 +131,19 @@ c:/jakarta-ant/bin/ant all
         </delete>
     </target>
     <!-- Clean everything -->
-    <target name="clean" depends="cleanlogs,cleantars">
+    <target name="clean" depends="cleanlogs">
         <delete dir="${classes}" quiet="true" failonerror="false" />
         <delete dir="${retrowoven}" quiet="true" failonerror="false" />
         <delete file="./tracesviewer.jar" failonerror="false" />
         <delete dir='javadoc' quiet="true" failonerror="false" />
         <delete dir='javadoc-jain' quiet="true" failonerror="false" />
         <delete dir="${dist}" quiet="true" failonerror="false" />
-    </target>
-    <target name="cleantars" >
         <delete failonerror="0">
             <fileset file="*.jar"/>
             <fileset file="*.tar.gz"/>
         </delete>
     </target>
+
     <target name="check_java_version">
 		  <!-- JvB: Check for Java 1.5 -->
 		  <available classname="java.lang.ProcessBuilder" property="jdk15.available" />
@@ -153,7 +153,7 @@ c:/jakarta-ant/bin/ant all
 	  </target>
 
     <!-- Create ${classes} -->
-    <target name="init" depends="generate-version">
+    <target name="init">
         <mkdir dir="${classes}" />
     </target>
 
@@ -250,8 +250,7 @@ c:/jakarta-ant/bin/ant all
 
                 </target>
                 <!-- Ant tools -->
-                <target name="ant-tools" >
-                    <mkdir dir="${classes}" />
+                <target name="ant-tools" depends="init">
                     <jain-javac srcdir="ant-tasks/src" includes="net/java/jsip/ant/**/*.java">
                         <classpath>
                             <pathelement location="${jdom_jar}" />
@@ -260,7 +259,7 @@ c:/jakarta-ant/bin/ant all
                     </jain-javac>
                 </target>
                 <!-- Compile and build jars -->
-                <target name="compileri" depends="init,compileapi">
+                <target name="compileri" depends="clean,init,compileapi">
                     <jain-javac includes="gov/nist/core/**/*.java, gov/nist/javax/sip/**/*.java"
                                 excludes="gov/nist/javax/sip/stack/sctp/**/*.java">
                         <classpath>
@@ -275,11 +274,11 @@ c:/jakarta-ant/bin/ant all
                                         value="${jain-sip-ri-jar}"/>
                         </manifest>
                     </jar>
-                    <jar destfile="${jain-sip-src-jar}" basedir="${srcroot}" includes="TIMESTAMP,gov/nist/**/*.java"
+                    <jar destfile="${jain-sip-ri-src-jar}" basedir="${srcroot}" includes="TIMESTAMP,gov/nist/**/*.java"
                                                                             excludes="gov/nist/javax/sip/stack/sctp/**/*.java">
                         <manifest>
                             <attribute	name="Original-Jar-Name"
-                                        value="${jain-sip-src-jar}"/>
+                                        value="${jain-sip-ri-src-jar}"/>
                         </manifest>
                     </jar>
                 </target>
@@ -332,10 +331,9 @@ c:/jakarta-ant/bin/ant all
                     <jar destfile="${unit_test_jar}" basedir="${classes}" includes="test/unit/**/*.class,test/torture/**/*" />
                 </target>
 
-                <target name="jain-sip-sdp-jar" depends="compilejain,generate-version">
+                <target name="jain-sip-sdp-jar" depends="compilejain">
                     <copy file="TIMESTAMP" toDir="classes/" />
-                    <copy file="version.txt" toDir="classes/" />
-                    <jar destfile="${jain-sip-sdp-jar}" basedir="${classes}" includes="TIMESTAMP,version.txt,javax/**/*.class,gov/nist/**/*.class" >
+                    <jar destfile="${jain-sip-sdp-jar}" basedir="${classes}" includes="TIMESTAMP,javax/**/*.class,gov/nist/**/*.class" >
                         <manifest>
                             <attribute	name="Original-Jar-Name"
                                         value="${jain-sip-sdp-jar}"/>
@@ -357,7 +355,7 @@ c:/jakarta-ant/bin/ant all
                 </target>
 
                 <!-- Compile the tck, always with debug on -->
-                <target name="compiletck" depends="init,compileri,compilesctp">
+                <target name="compiletck" depends="clean,init,compileri,compilesctp">
                     <mkdir dir="${classes}" />
                     <jain-javac>
                         <include name="test/tck/**/*.java" />
@@ -635,27 +633,31 @@ c:/jakarta-ant/bin/ant all
                     <fail if="testing.failed" />
                 </target>
 
+                <!-- Task to generate a vesion number -->
+                <target name="generate-version" depends="ant-tools" >
+                                    <taskdef name="versioner" classname="net.java.jsip.ant.tasks.VersionerTask" classpath="classes"/>
+                        <versioner cvsVersionFile="${ant.file.NIST-SIP}/../version.txt"  incrementCVSVersion="true"/>
+                </target>
 
                 <!-- Generate a tar file -->
 
-                <target name="srctar" depends="init"  >
+                <target name="srctar"  >
                     <tar compression="gzip" basedir="../" destfile="${jain-sip-src-tar}"
-                    includes="${top}/**/*/"
-                                excludes="${top}/www/**/*,${top}/javax/**/*,${top}/repo/**/*,${top}/ant-tasks/lib/**/*,${top}/test-reports/**/*,${top}/classes/**/*,${top}/javadoc/**/*,${top}/*.jar,${top}/lib/**/*,${top}/tckoutput.txt,${top}/*.gz,${top}/poms/**/*" />
+                    includes="jain-sip/**/*/"
+                                excludes="jain-sip/www/**/*,jain-sip/javax/**/*,jain-sip/repo/**/*,jain-sip/ant-tasks/lib/**/*,jain-sip/test-reports/**/*,jain-sip/classes/**/*,jain-sip/javadoc/**/*,jain-sip/*.jar,jain-sip/lib/**/*,jain-sip/tckoutput.txt,jain-sip/*.gz,jain-sip/poms/**/*" />
                 </target>
-                <target name="javadoctar" depends="init,javadoc"  >
-                    <touch file="${jain-sip-javadoc-tar}" />
+                <target name="javadoctar"  >
                     <tar compression="gzip" basedir="../" destfile="${jain-sip-javadoc-tar}"
-                    includes="${top}/javadoc/**/*" />
+                    includes="jain-sip/javadoc/**/*" />
                 </target>
-                <target name="alltar" depends="init"  >
+                <target name="alltar"  >
                     <tar compression="gzip" basedir="../" destfile="${jain-sip-all-tar}"
-                    includes="${top}/**/*/"
-                    excludes="${top}/*.tar.gz" />
+                    includes="jain-sip/**/*/"
+                    excludes="jain-sip/*.tar.gz" />
                 </target>
 
                 <!-- builds the distribution -->
-                <target name="dist" depends="make,compiletck,javadoctar,alltar,srctar">
+                <target name="dist" depends="make,compiletck,javadoc,javadoctar,alltar,srctar">
                     <mkdir dir="${dist}" />
                     <mkdir dir="${dist}/jain-sdp" />
                     <mkdir dir="${dist}/jain-sip-javadoc" />
@@ -665,21 +667,21 @@ c:/jakarta-ant/bin/ant all
                     <mkdir dir="${dist}/jain-sip-tck" />
                     <mkdir dir="${dist}/jain-sip-src" />
                     <mkdir dir="${dist}/jain-sip-all" />
-                    <copy file="${jain-sip-javadoc-tar}" todir="${dist}/jain-sip-javadoc"  />
-                    <copy file="${jain-sip-src-tar}" todir="${dist}/jain-sip-src"  />
+                    <!--copy file="${jain-sip-javadoc-tar}" todir="${dist}/jain-sip-javadoc"  />
+                    <copy file="${jain-sip-src-tar}" todir="${dist}/jain-sip-src"  /-->
                     <copy file="${jain-sip-api-jar}" todir="${dist}/jain-sip-api"/>
                     <copy file="${jain-sip-ri-jar}" todir="${dist}/jain-sip-ri"/>
                     <copy file="${jain-sip-sdp-jar}" todir="${dist}/jain-sip-sdp"/>
                     <copy file="${sdp_jar}" todir="${dist}/jain-sdp"/>
                     <copy file="${jain-sip-tck-jar}" todir ="${dist}/jain-sip-tck" />
-                    <copy file="${jain-sip-all-tar}"   todir="${dist}/jain-sip-all" />
+                    <!--copy file="${jain-sip-all-tar}"   todir="${dist}/jain-sip-all" /-->
                     <copy file="README-DISTRIBUTION"  todir="${dist}"/>
 
                 </target>
 
                 <!-- This is the build verification test run by cruise control. -->
 
-                <target name="cc-buildloop" depends="generate-version,dist,runtck,runtckcallflows,parsertest,unittest" />
+                <target name="cc-buildloop" depends="dist,runtck,runtckcallflows,parsertest,unittest" />
 
 
                 <!-- compile to traces viewer jar -->
@@ -781,16 +783,10 @@ c:/jakarta-ant/bin/ant all
                         </commandline>
                     </cvs>
                 </target>
-                <!-- Task to generate a vesion number -->
-                <target name="generate-timestamp" >
-                    <tstamp />
-                    <echo file="TIMESTAMP" message="Date = ${DSTAMP} Time = ${TSTAMP}" />
-                </target>
-
-                <target name="generate-version" depends="ant-tools,svn-revision,generate-timestamp" >
-    			<property file="ant-version.properties" />
-                        <taskdef name="versioner" classname="net.java.jsip.ant.tasks.VersionerTask" classpath="classes"/>
-                        <versioner cvsVersionFile="${ant.file.NIST-SIP}/../version.txt"  incrementCVSVersion="false"/>
+                <target name="update-cvs" >
+                    <!-- Here we update version.txt so local is the same as cvs -->
+                    <!-- cvs -d :pserver:user:paswrd@cvs.dev.java.net:/cvs commit -m "Test commit" version.txt -->
+                    <cvs cvsRoot=":pserver:${user.name}:${password}@cvs.dev.java.net:/cvs" command="commit -m 'versions'  version.txt ant-version.properties" />
                 </target>
                 <target name="perform-m2-release" depends="ant-tools" description="Performs m2 deployment" >
                     <antcall target="update-from-cvs" />
@@ -805,11 +801,4 @@ c:/jakarta-ant/bin/ant all
                     <antcall target="clean-tasks" />
                 </target>
 
-
-              <target name="svn-revision">
-                 <exec executable="svnversion" spawn="false" dir="./" output="version.txt">
-                 <arg line="."/>
-              </exec>
-              </target>
-
-</project>
+            </project>

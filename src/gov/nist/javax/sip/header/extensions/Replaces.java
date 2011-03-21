@@ -2,7 +2,6 @@
 * Product of NIST/ITL Advanced Networking Technologies Division (ANTD).        *
 *******************************************************************************/
 package gov.nist.javax.sip.header.extensions;
-import java.nio.Buffer;
 import java.text.ParseException;
 import gov.nist.javax.sip.header.*;
 
@@ -57,16 +56,15 @@ public class Replaces
      * Encode the body part of this header (i.e. leave out the hdrName).
      * @return String encoded body part of the header.
      */
-    public StringBuilder encodeBody(StringBuilder retval) {
+    public String encodeBody() {
         if (callId == null)
-            return retval;
+            return null;
         else {
-            retval.append(callId);
+            String retVal = callId;
             if (!parameters.isEmpty()) {
-                retval.append(SEMICOLON);
-                parameters.encode(retval);
+                retVal += SEMICOLON + parameters.encode();
             }
-            return retval;
+            return retVal;
         }
     }
 
@@ -188,9 +186,6 @@ public class Replaces
 }
 /*
  * $Log: not supported by cvs2svn $
- * Revision 1.3  2009/07/17 18:57:42  emcho
- * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
- *
  * Revision 1.2  2006/10/27 20:58:31  mranga
  * Issue number:
  * Obtained from:

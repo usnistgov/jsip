@@ -1,8 +1,8 @@
 /**
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  * Unpublished - rights reserved under the Copyright Laws of the United States.
- * Copyright ï¿½ 2003 Sun Microsystems, Inc. All rights reserved.
- * Copyright ï¿½ 2005 BEA Systems, Inc. All rights reserved.
+ * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
+ * Copyright © 2005 BEA Systems, Inc. All rights reserved.
  *
  * Use is subject to license terms.
  *
@@ -147,7 +147,6 @@ public interface Transaction extends Serializable{
      * a final Response has been received by one branch.
      *
      * @return the Request message that created this transaction. 
-     * 
      */
     public Request getRequest(); 
     

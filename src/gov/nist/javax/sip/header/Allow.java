@@ -32,7 +32,7 @@ import java.text.ParseException;
  * Allow SIPHeader.
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.7 $ $Date: 2010-05-06 14:07:47 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2009-07-17 18:57:26 $
  * @since 1.1
  *
  *
@@ -84,8 +84,7 @@ public final class Allow extends
     /** Return body encoded in canonical form.
      * @return body encoded as a string.
      */
-    @Override
-    protected StringBuilder encodeBody(StringBuilder buffer) {
-        return buffer.append(method);
+    protected String encodeBody() {
+        return method;
     }
 }

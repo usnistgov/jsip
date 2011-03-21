@@ -1,9 +1,6 @@
 package test.unit.gov.nist.javax.sip.address;
 
-import java.text.ParseException;
-
 import javax.sip.address.SipURI;
-import javax.sip.address.URI;
 
 /**
  * Tests from RFC3261 §19.1.4 URI Comparison
@@ -31,12 +28,6 @@ public class JainSipUriTest extends junit.framework.TestCase {
             {"sip:carol@chicago.com", "sip:carol@chicago.com?Subject=next%20meeting"},
             {"sip:carol@chicago.com;security=off", "sip:carol@chicago.com;security=on"}
     };
-    
-    static String[] goodURIs = {"sip:darth-vader@darkstar.org", "tel:+122222222", "sips:yoda@dark-star.org", "urn:service:sos", 
-    	"ftp://ftp.is.co.za/rfc/rfc1808.txt","http://www.ietf.org/rfc/rfc2396.txt","ldap://[2001:db8::7]/c=GB?objectClass?one","mailto:John.Doe@example.com",
-    	"news:comp.infosystems.www.servers.unix","tel:+1-816-555-1212","telnet://192.0.2.16:80/","urn:oasis:names:specification:docbook:dtd:xml:4.1.2"};
-    
-    static String[] badURIs = {"darth-vader@darkstar.org", "tel@:+122222222", "darth-vader@127.0.0.1:5080" };
 
     private javax.sip.SipFactory sipFactory;
 
@@ -46,15 +37,9 @@ public class JainSipUriTest extends junit.framework.TestCase {
     }
 
     private SipURI sipUri(String uri) throws Exception {
-        return (SipURI) uri(uri);
+        return (SipURI) sipFactory.createAddressFactory().createURI(uri);
     }
 
-    
-    private URI uri(String uri) throws Exception {
-        return sipFactory.createAddressFactory().createURI(uri);
-    }
-
-    
     public void testEqual() throws Exception {
         for (int i = 0; i < equal.length; i++) {
             SipURI uri1 = sipUri(equal[i][0]);
@@ -70,23 +55,6 @@ public class JainSipUriTest extends junit.framework.TestCase {
             SipURI uri2 = sipUri(different[i][1]);
             assertFalse(uri1 + " is the same as " + uri2, uri1.equals(uri2));
             assertFalse(uri2 + " is the same as " + uri1, uri2.equals(uri1));
-        }
-    }
-    
-    public void testGoodURIs() throws Exception {
-        for (int i = 0; i < goodURIs.length; i++) {
-        	URI uri = uri(goodURIs[i]);
-        }
-    }
-    
-    public void testBadURIs() throws Exception {
-        for (int i = 0; i < badURIs.length; i++) {
-        	try {
-        		URI uri = uri(badURIs[i]);
-        		fail(uri + " should throw parse exception");
-        	} catch (ParseException e) {
-        		 // ok
-        	}
         }
     }
 }

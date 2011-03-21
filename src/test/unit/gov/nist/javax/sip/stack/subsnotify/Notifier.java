@@ -1,6 +1,5 @@
 package test.unit.gov.nist.javax.sip.stack.subsnotify;
 
-import gov.nist.javax.sip.ResponseEventExt;
 import gov.nist.javax.sip.message.ResponseExt;
 
 import javax.sip.*;
@@ -9,8 +8,6 @@ import javax.sip.header.*;
 import javax.sip.message.*;
 
 import java.util.*;
-
-import junit.framework.TestCase;
 
 import org.apache.log4j.*;
 
@@ -42,8 +39,6 @@ public class Notifier implements SipListener {
     private static Logger logger = Logger.getLogger(Notifier.class) ;
 
     protected int notifyCount = 0;
-
-    private boolean handleSubscribe = true;
 
 
 
@@ -84,113 +79,114 @@ public class Notifier implements SipListener {
         try {
              logger.info("notifier:  " + request);
             logger.info("notifier : dialog = " + requestEvent.getDialog());
-            if(handleSubscribe) {
-                EventHeader eventHeader = (EventHeader) request.getHeader(EventHeader.NAME);
-                if ( eventHeader == null) {
-                    logger.info("Cannot find event header.... dropping request.");
-                    return;
-                }
-    
-                // Always create a ServerTransaction, best as early as possible in the code
-                Response response = null;
-                ServerTransaction st = requestEvent.getServerTransaction();
-                if (st == null) {
-                    st = sipProvider.getNewServerTransaction(request);
-                }
-    
-                // Check if it is an initial SUBSCRIBE or a refresh / unsubscribe
-                toTag = Integer.toHexString( (int) (Math.random() * Integer.MAX_VALUE) );
-                response = messageFactory.createResponse(202, request);
-                ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
-                toHeader.setTag(toTag);
-                // Sanity check: to header should not ahve a tag. Else the dialog
-                   
-                   
-                
-    
-                // Both 2xx response to SUBSCRIBE and NOTIFY need a Contact
-                Address address = addressFactory.createAddress("Notifier <sip:127.0.0.1>");
-                ((SipURI)address.getURI()).setPort( udpProvider.getListeningPoint("udp").getPort() );
-                ContactHeader contactHeader = headerFactory.createContactHeader(address);
-                response.addHeader(contactHeader);
-    
-                // Expires header is mandatory in 2xx responses to SUBSCRIBE
-                ExpiresHeader expires = (ExpiresHeader) request.getHeader( ExpiresHeader.NAME );
-                if (expires==null) {
-                    expires = headerFactory.createExpiresHeader(30);// rather short
-                }
-                response.addHeader( expires );
-    
-             
-                /*
-                 * NOTIFY requests MUST contain a "Subscription-State" header with a
-                 * value of "active", "pending", or "terminated". The "active" value
-                 * indicates that the subscription has been accepted and has been
-                 * authorized (in most cases; see section 5.2.). The "pending" value
-                 * indicates that the subscription has been received, but that
-                 * policy information is insufficient to accept or deny the
-                 * subscription at this time. The "terminated" value indicates that
-                 * the subscription is not active.
-                 */
-    
-                Dialog dialog = sipProvider.getNewDialog(st);
-                
-                Address toAddress = ((ResponseExt)response).getFromHeader().getAddress();
-                String toTag = ((ResponseExt)response).getFromHeader().getTag();
-                Address fromAddress = ((ResponseExt) response).getToHeader().getAddress();
-                String fromTag = ((ResponseExt) response).getToHeader().getTag();
-                FromHeader fromHeader = headerFactory.createFromHeader(fromAddress, fromTag);
-                toHeader = headerFactory.createToHeader(toAddress, toTag);
-                // Create a new Cseq header
-                CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(1L,
-                        Request.NOTIFY);
-                ArrayList viaHeaders = new ArrayList();
-                String transport = "udp";
-                int port = sipProvider.getListeningPoint(transport).getPort();
-                ViaHeader viaHeader = headerFactory.createViaHeader("127.0.0.1",
-                        port, transport, null);
-    
-                // add via headers
-                viaHeaders.add(viaHeader);
-                
-                MaxForwardsHeader maxForwards = headerFactory.createMaxForwardsHeader(70);
-                SipURI requestURI = addressFactory.createSipURI(null, "127.0.0.1");
-                requestURI.setPort(5060);
-                
-                CallIdHeader callIdHeader = ((ResponseExt)response).getCallIdHeader();
-    
-                // Create the request.
-                Request notifyRequest = messageFactory.createRequest(requestURI,
-                        Request.NOTIFY, callIdHeader, cSeqHeader, fromHeader,
-                        toHeader, viaHeaders, maxForwards);
-          
-                
-              
-                // Mark the contact header, to check that the remote contact is updated
-                ((SipURI)contactHeader.getAddress().getURI()).setParameter("id","not");
-    
-                // Initial state is pending, second time we assume terminated (Expires==0)
-                SubscriptionStateHeader sstate = headerFactory.createSubscriptionStateHeader(
-                        SubscriptionStateHeader.PENDING  );
-    
-                // Need a reason for terminated
-                if ( sstate.getState().equalsIgnoreCase("terminated") ) {
-                    sstate.setReasonCode( "deactivated" );
-                }
-    
-                notifyRequest.addHeader(sstate);
-                notifyRequest.setHeader(eventHeader);
-                notifyRequest.setHeader(contactHeader);
-                // notifyRequest.setHeader(routeHeader);
-                ClientTransaction ct = udpProvider.getNewClientTransaction(notifyRequest);
-    
-                ct.sendRequest();
-                logger.info("NOTIFY Branch ID " +
-                    ((ViaHeader)request.getHeader(ViaHeader.NAME)).getParameter("branch"));
-                logger.info("notifier: got an Subscribe sending OK");
-                
-                 st.sendResponse(response);
+            EventHeader eventHeader = (EventHeader) request.getHeader(EventHeader.NAME);
+            if ( eventHeader == null) {
+                logger.info("Cannot find event header.... dropping request.");
+                return;
             }
+
+            // Always create a ServerTransaction, best as early as possible in the code
+            Response response = null;
+            ServerTransaction st = requestEvent.getServerTransaction();
+            if (st == null) {
+                st = sipProvider.getNewServerTransaction(request);
+            }
+
+            // Check if it is an initial SUBSCRIBE or a refresh / unsubscribe
+            toTag = Integer.toHexString( (int) (Math.random() * Integer.MAX_VALUE) );
+            response = messageFactory.createResponse(202, request);
+            ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
+            toHeader.setTag(toTag);
+            // Sanity check: to header should not ahve a tag. Else the dialog
+               
+               
+            
+
+            // Both 2xx response to SUBSCRIBE and NOTIFY need a Contact
+            Address address = addressFactory.createAddress("Notifier <sip:127.0.0.1>");
+            ((SipURI)address.getURI()).setPort( udpProvider.getListeningPoint("udp").getPort() );
+            ContactHeader contactHeader = headerFactory.createContactHeader(address);
+            response.addHeader(contactHeader);
+
+            // Expires header is mandatory in 2xx responses to SUBSCRIBE
+            ExpiresHeader expires = (ExpiresHeader) request.getHeader( ExpiresHeader.NAME );
+            if (expires==null) {
+                expires = headerFactory.createExpiresHeader(30);// rather short
+            }
+            response.addHeader( expires );
+
+         
+            /*
+             * NOTIFY requests MUST contain a "Subscription-State" header with a
+             * value of "active", "pending", or "terminated". The "active" value
+             * indicates that the subscription has been accepted and has been
+             * authorized (in most cases; see section 5.2.). The "pending" value
+             * indicates that the subscription has been received, but that
+             * policy information is insufficient to accept or deny the
+             * subscription at this time. The "terminated" value indicates that
+             * the subscription is not active.
+             */
+
+            Dialog dialog = sipProvider.getNewDialog(st);
+            
+            Address toAddress = ((ResponseExt)response).getFromHeader().getAddress();
+            String toTag = ((ResponseExt)response).getFromHeader().getTag();
+            Address fromAddress = ((ResponseExt) response).getToHeader().getAddress();
+            String fromTag = ((ResponseExt) response).getToHeader().getTag();
+            FromHeader fromHeader = headerFactory.createFromHeader(fromAddress, fromTag);
+            toHeader = headerFactory.createToHeader(toAddress, toTag);
+            // Create a new Cseq header
+            CSeqHeader cSeqHeader = headerFactory.createCSeqHeader(1L,
+                    Request.NOTIFY);
+            ArrayList viaHeaders = new ArrayList();
+            String transport = "udp";
+            int port = sipProvider.getListeningPoint(transport).getPort();
+            ViaHeader viaHeader = headerFactory.createViaHeader("127.0.0.1",
+                    port, transport, null);
+
+            // add via headers
+            viaHeaders.add(viaHeader);
+            
+            MaxForwardsHeader maxForwards = headerFactory.createMaxForwardsHeader(70);
+            SipURI requestURI = addressFactory.createSipURI(null, "127.0.0.1");
+            requestURI.setPort(5060);
+            
+            CallIdHeader callIdHeader = ((ResponseExt)response).getCallIdHeader();
+
+            // Create the request.
+            Request notifyRequest = messageFactory.createRequest(requestURI,
+                    Request.NOTIFY, callIdHeader, cSeqHeader, fromHeader,
+                    toHeader, viaHeaders, maxForwards);
+      
+            
+          
+            // Mark the contact header, to check that the remote contact is updated
+            ((SipURI)contactHeader.getAddress().getURI()).setParameter("id","not");
+
+            // Initial state is pending, second time we assume terminated (Expires==0)
+            SubscriptionStateHeader sstate = headerFactory.createSubscriptionStateHeader(
+                    SubscriptionStateHeader.PENDING  );
+
+            // Need a reason for terminated
+            if ( sstate.getState().equalsIgnoreCase("terminated") ) {
+                sstate.setReasonCode( "deactivated" );
+            }
+
+            notifyRequest.addHeader(sstate);
+            notifyRequest.setHeader(eventHeader);
+            notifyRequest.setHeader(contactHeader);
+            // notifyRequest.setHeader(routeHeader);
+            ClientTransaction ct = udpProvider.getNewClientTransaction(notifyRequest);
+
+            ct.sendRequest();
+            logger.info("NOTIFY Branch ID " +
+                ((ViaHeader)request.getHeader(ViaHeader.NAME)).getParameter("branch"));
+            logger.info("notifier: got an Subscribe sending OK");
+            
+             st.sendResponse(response);
+             
+               
+          
         } catch (Throwable ex) {
             ex.printStackTrace();
             // System.exit(0);
@@ -201,12 +197,6 @@ public class Notifier implements SipListener {
         Response response = (Response) responseReceivedEvent.getResponse();
         Transaction tid = responseReceivedEvent.getClientTransaction();
 
-        if(tid == null) {
-            TestCase.assertTrue("retrans flag should be true", ((ResponseEventExt)responseReceivedEvent).isRetransmission());
-        } else {
-            TestCase.assertFalse("retrans flag should be false", ((ResponseEventExt)responseReceivedEvent).isRetransmission());
-        }
-        
         if ( response.getStatusCode() !=  200 ) {
             this.notifyCount --;
         } else {
@@ -328,9 +318,5 @@ public class Notifier implements SipListener {
 		this.sipStack.stop();
 		
 	}
-
-    public void setHandleSubscribe(boolean b) {
-        handleSubscribe = b;
-    }
 
 }

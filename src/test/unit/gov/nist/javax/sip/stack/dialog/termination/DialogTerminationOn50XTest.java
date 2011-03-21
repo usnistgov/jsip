@@ -89,8 +89,8 @@ public class DialogTerminationOn50XTest extends ScenarioHarness implements SipLi
                 return;
             }
             if (i != 600) {
-//                doTearDown(false);
-//                doSetUp();
+                doTearDown(false);
+                doSetUp();
             }
 
         }

@@ -58,9 +58,9 @@ public class PChargingVector extends gov.nist.javax.sip.header.ParametersHeader
      *
      * @see gov.nist.javax.sip.header.ParametersHeader#encodeBody()
      */
-    public StringBuilder encodeBody(StringBuilder encoding) {
+    protected String encodeBody() {
 
-//        StringBuilder encoding = new StringBuilder();
+        StringBuffer encoding = new StringBuffer();
         /*
          * no need to check for the presence of icid-value. According to the
          * spec above this is a mandatory field. if it does not exist, then we
@@ -88,7 +88,7 @@ public class PChargingVector extends gov.nist.javax.sip.header.ParametersHeader
             encoding.append(SEMICOLON).append(ParameterNamesIms.ORIG_IOI)
                     .append(EQUALS).append(getOriginatingIOI());
 
-        return encoding;
+        return encoding.toString();
     }
 
     /**

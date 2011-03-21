@@ -300,9 +300,9 @@ public class TestHarness extends TestCase {
         if (me == him) {
             logSuccess("assertEquals : " + reason);
         } else if (me == null && him != null) {
-            logFailure("assertEquals failed:" + reason );
+            logFailure("assertEquals failed");
         } else if (me != null && him == null) {
-            logFailure("assertEquals failed:" + reason );
+            logFailure("assertEquals failed");
         } else if (!me.equals(him)) {
             logFailure(reason);
         }
@@ -443,13 +443,14 @@ public class TestHarness extends TestCase {
     }
 
     public void logTestCompleted() {
-    	TestCase.assertTrue( testPassed );
+
         logger.info(this.getName() + " Completed");
+
     }
 
     public void logTestCompleted(String info) {
-      TestCase.assertTrue( testPassed );
         logger.info(this.getName() + ":" + info +" Completed");
+
     }
 
 

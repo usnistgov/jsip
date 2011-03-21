@@ -36,7 +36,7 @@ public class Lexer extends LexerCore {
     }
 
     public static String getFieldName(String line) {
-        int i = line.indexOf(Separators.EQUALS);
+        int i = line.indexOf("=");
         if (i == -1)
             return null;
         else
@@ -45,9 +45,6 @@ public class Lexer extends LexerCore {
 }
 /*
  * $Log: not supported by cvs2svn $
- * Revision 1.5  2009/07/17 18:57:16  emcho
- * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
- *
  * Revision 1.4  2006/07/13 09:02:41  mranga
  * Issue number:
  * Obtained from:

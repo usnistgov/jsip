@@ -1,13 +1,14 @@
 /*
  * @author:     Brett Buckingham
- * @author:     Last modified by: $Author: deruelle_jean $
- * @version:    $Date: 2010-05-06 14:08:11 $ $Revision: 1.4 $
+ * @author:     Last modified by: $Author: emcho $
+ * @version:    $Date: 2009-07-17 18:58:14 $ $Revision: 1.3 $
  *
  * This source code has been contributed to the public domain.
  */
 
 package gov.nist.javax.sip.stack;
 
+import java.util.TimerTask;
 
 /**
  * A subclass of TimerTask which runs TimerTask code within a try/catch block to
@@ -17,21 +18,18 @@ package gov.nist.javax.sip.stack;
  * @author Brett Buckingham
  *
  */
-public abstract class SIPStackTimerTask {
-	// the underlying timer task that was scheduled in the Stack SIP timer
-	Object timerTask = null; 
-    // Implements code to be run when the SIPStackTimerTask is executed.
-    public abstract void runTask();
-    
-    public void cleanUpBeforeCancel() {
-    	
-    }
-    
-	public void setSipTimerTask(Object timer) {
-		timerTask = timer;
-	}
+public abstract class SIPStackTimerTask extends TimerTask {
+    // / Implements code to be run when the SIPStackTimerTask is executed.
+    protected abstract void runTask();
 
-	public Object getSipTimerTask() {
-		return timerTask;
-	}
+    // / The run() method is final to ensure that all subclasses inherit the
+    // exception handling.
+    public final void run() {
+        try {
+            runTask();
+        } catch (Throwable e) {
+            System.out.println("SIP stack timer task failed due to exception:");
+            e.printStackTrace();
+        }
+    }
 }

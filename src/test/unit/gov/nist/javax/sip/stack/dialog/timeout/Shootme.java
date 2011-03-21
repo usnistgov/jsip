@@ -18,7 +18,6 @@ package test.unit.gov.nist.javax.sip.stack.dialog.timeout;
 import gov.nist.javax.sip.DialogTimeoutEvent;
 import gov.nist.javax.sip.SipListenerExt;
 import gov.nist.javax.sip.DialogTimeoutEvent.Reason;
-import gov.nist.javax.sip.stack.SIPDialog;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -83,7 +82,6 @@ public class Shootme implements SipListenerExt {
                 if(!protocolObjects.autoDialog) {
                 	((SipProvider)requestEvent.getSource()).getNewDialog(st);
                 }
-                st.getDialog().setApplicationData("some junk");
                 
                 // System.out.println("got a server tranasaction " + st);
                 st.sendResponse(response); // send 180(RING)
@@ -184,15 +182,13 @@ public class Shootme implements SipListenerExt {
         }
     }
 
-    public void processDialogTerminated(DialogTerminatedEvent dialogTerminatedEvent) {        
+    public void processDialogTerminated(DialogTerminatedEvent dialogTerminatedEvent) {
     	if(!protocolObjects.autoDialog && !receiveBye) {
     		stateIsOk = false;
     		DialogTimeoutTest.fail("This shouldn't be called since a dialogtimeout event should be passed to the application instead!");
     	} else {
     		stateIsOk = true;
     	}
-    	TimerTask timerTask = new CheckAppData(dialogTerminatedEvent.getDialog());
-        new Timer().schedule(timerTask, 15000);
     }
 
     public void processInfo(RequestEvent requestEvent) {
@@ -290,7 +286,6 @@ public class Shootme implements SipListenerExt {
             if (response.getStatusCode() == Response.OK && ((CSeqHeader) response.getHeader(CSeqHeader.NAME)).getMethod().equals(Request.INVITE)) {
 
                 Dialog dialog = tid.getDialog();
-                
                 Request request = tid.getRequest();
                 dialog.sendAck(request);
             }
@@ -321,21 +316,15 @@ public class Shootme implements SipListenerExt {
     }
     
     public void processDialogTimeout(DialogTimeoutEvent timeoutEvent) {
-        System.out.println("processDialogTerminated " + timeoutEvent.getDialog());
-        
-        DialogTimeoutEvent dialogAckTimeoutEvent = (DialogTimeoutEvent)timeoutEvent;
-        Dialog timeoutDialog = dialogAckTimeoutEvent.getDialog();
-        if(timeoutDialog == null){
-            DialogTimeoutTest.fail(
+    	DialogTimeoutEvent dialogAckTimeoutEvent = (DialogTimeoutEvent)timeoutEvent;
+		Dialog timeoutDialog = dialogAckTimeoutEvent.getDialog();
+		if(timeoutDialog == null){
+			DialogTimeoutTest.fail(
                     "Shootist: Exception on timeout, dialog shouldn't be null");
-            stateIsOk = false;
-            return;
-        }        
-        if(dialogAckTimeoutEvent.getReason() == Reason.AckNotReceived) {
-            stateIsOk = true;
-        }
-        TimerTask timerTask = new CheckAppData(timeoutDialog);
-        new Timer().schedule(timerTask, 9000);
+		}
+		if(dialogAckTimeoutEvent.getReason() == Reason.AckNotReceived) {
+			stateIsOk = true;
+		}
 	}
 
     public void processTransactionTerminated(TransactionTerminatedEvent transactionTerminatedEvent) {
@@ -361,19 +350,4 @@ public class Shootme implements SipListenerExt {
 		return receiveBye;
 	}
 
-	class CheckAppData extends TimerTask {
-	    Dialog dialog;
-	    
-	    public CheckAppData(Dialog dialog) {
-            this.dialog = dialog;
-        }
-	    
-        public void run() {             
-            System.out.println("Checking app data " + dialog.getApplicationData());
-            if(dialog.getApplicationData() == null || !dialog.getApplicationData().equals("some junk")) {
-                stateIsOk = false;
-                DialogTimeoutTest.fail("application data should never be null except if nullified by the application !");
-            }            
-        }
-	}
 }

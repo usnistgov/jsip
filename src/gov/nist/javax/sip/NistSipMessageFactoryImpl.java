@@ -29,9 +29,7 @@
 
 package gov.nist.javax.sip;
 
-import gov.nist.core.CommonLogger;
-import gov.nist.core.LogLevels;
-import gov.nist.core.StackLogger;
+import gov.nist.core.LogWriter;
 import gov.nist.javax.sip.stack.*;
 import gov.nist.javax.sip.message.*;
 import javax.sip.*;
@@ -45,14 +43,14 @@ import javax.sip.*;
  * messageChannel, the NIST-SIP stack calls the SIPStackMessageFactory
  * implementation that has been registered with it to process the request.)
  * 
- * @version 1.2 $Revision: 1.18 $ $Date: 2010-12-02 22:04:19 $
+ * @version 1.2 $Revision: 1.15.2.1 $ $Date: 2010-11-23 19:23:11 $
  * 
  * @author M. Ranganathan <br/>
  * 
  *  
  */
 class NistSipMessageFactoryImpl implements StackMessageFactory {
-	private static StackLogger logger = CommonLogger.getLogger(NistSipMessageFactoryImpl.class);
+
     private SIPTransactionStack sipStack;
 
     /**
@@ -83,8 +81,8 @@ class NistSipMessageFactoryImpl implements StackMessageFactory {
                 .getListeningPoint();
         if (retval.listeningPoint == null)
             return null;
-        if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
-            logger.logDebug(
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+            sipStack.getStackLogger().logDebug(
                     "Returning request interface for "
                             + sipRequest.getFirstLine() + " " + retval
                             + " messageChannel = " + messageChannel);
@@ -107,8 +105,8 @@ class NistSipMessageFactoryImpl implements StackMessageFactory {
         // Tr is null if a transaction is not mapped.
         SIPTransaction tr = (SIPTransaction) ((SIPTransactionStack) theStack)
                 .findTransaction(sipResponse, false);
-        if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
-            logger.logDebug(
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+            sipStack.getStackLogger().logDebug(
                     "Found Transaction " + tr + " for " + sipResponse);
 
         if (tr != null) {
@@ -116,16 +114,16 @@ class NistSipMessageFactoryImpl implements StackMessageFactory {
             // If the state has not yet been assigned then this is a
             // spurious response. This was moved up from the transaction
             // layer for efficiency.
-            if (tr.getInternalState() < 0) {
-                if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
-                    logger.logDebug(
+            if (tr.getState() == null) {
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                    sipStack.getStackLogger().logDebug(
                             "Dropping response - null transaction state");
                 return null;
                 // Ignore 1xx
-            } else if (TransactionState._COMPLETED == tr.getInternalState()
+            } else if (TransactionState.COMPLETED == tr.getState()
                     && sipResponse.getStatusCode() / 100 == 1) {
-                if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
-                    logger.logDebug(
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                    sipStack.getStackLogger().logDebug(
                             "Dropping response - late arriving "
                                     + sipResponse.getStatusCode());
                 return null;

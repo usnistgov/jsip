@@ -32,7 +32,7 @@ import java.text.ParseException;
 /**
  * Parser for UserAgent header.
  *
- * @version 1.2 $Revision: 1.16 $ $Date: 2010-05-06 14:07:44 $
+ * @version 1.2 $Revision: 1.15 $ $Date: 2009-07-17 18:58:07 $
  *
  * @author Olivier Deruelle  <br/>
  * @author M. Ranganathan  <br/>
@@ -100,7 +100,7 @@ public class UserAgentParser extends HeaderParser {
                     String product = this.lexer.byteStringNoSlash();
                     if ( product == null ) throw createParseException("Expected product string");
 
-                    StringBuilder productSb = new StringBuilder(product);
+                    StringBuffer productSb = new StringBuffer(product);
                     // do we possibily have the optional product-version?
                     if (this.lexer.peekNextToken().getTokenType() == TokenTypes.SLASH) {
                         // yes

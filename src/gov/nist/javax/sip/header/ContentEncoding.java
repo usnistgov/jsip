@@ -74,7 +74,7 @@ import java.text.ParseException;
  *
  * @author M. Ranganathan   <br/>
  * @author Olivier Deruelle <br/>
- * @version 1.2 $Revision: 1.6 $ $Date: 2010-05-06 14:07:53 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2009-07-17 18:57:29 $
  * @since 1.1
  */
 public class ContentEncoding
@@ -110,8 +110,8 @@ public class ContentEncoding
      * Canonical encoding of body of the header.
      * @return  encoded body of the header.
      */
-    public StringBuilder encodeBody(StringBuilder buffer) {
-        return buffer.append(contentEncoding);
+    public String encodeBody() {
+        return contentEncoding;
     }
 
     /**

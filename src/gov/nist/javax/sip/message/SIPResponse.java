@@ -29,22 +29,39 @@
 package gov.nist.javax.sip.message;
 
 import gov.nist.core.InternalErrorHandler;
+import gov.nist.javax.sip.Utils;
+import gov.nist.javax.sip.address.SipUri;
 import gov.nist.javax.sip.header.CSeq;
 import gov.nist.javax.sip.header.CallID;
+import gov.nist.javax.sip.header.ContactList;
+import gov.nist.javax.sip.header.ContentLength;
+import gov.nist.javax.sip.header.ContentType;
 import gov.nist.javax.sip.header.From;
+import gov.nist.javax.sip.header.MaxForwards;
+import gov.nist.javax.sip.header.ReasonList;
+import gov.nist.javax.sip.header.RecordRouteList;
+import gov.nist.javax.sip.header.RequireList;
+import gov.nist.javax.sip.header.SIPHeader;
 import gov.nist.javax.sip.header.StatusLine;
 import gov.nist.javax.sip.header.To;
 import gov.nist.javax.sip.header.Via;
+import gov.nist.javax.sip.header.ViaList;
+import gov.nist.javax.sip.header.extensions.SessionExpires;
 
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
+import java.util.Iterator;
 import java.util.LinkedList;
+
+import javax.sip.header.ReasonHeader;
+import javax.sip.header.ServerHeader;
+import javax.sip.message.Request;
 
 
 /**
  * SIP Response structure.
  *
- * @version 1.2 $Revision: 1.35 $ $Date: 2010-09-14 14:39:39 $
+ * @version 1.2 $Revision: 1.31 $ $Date: 2010-03-15 17:01:22 $
  * @since 1.1
  *
  * @author M. Ranganathan   <br/>
@@ -55,7 +72,6 @@ public class SIPResponse
     extends SIPMessage
     implements javax.sip.message.Response, ResponseExt {
     protected StatusLine statusLine;
-    private boolean isRetransmission = true;
    
     public static String getReasonPhrase(int rc) {
         String retval = null;
@@ -431,15 +447,13 @@ public class SIPResponse
     *@return The string except for the body.
     */
 
-    public StringBuilder encodeMessage(StringBuilder retval) {
-//        String retval;
-        if (statusLine != null) {
-            statusLine.encode(retval);
-            super.encodeSIPHeaders(retval);
-        } else {
-            retval = super.encodeSIPHeaders(retval);
-        }
-        return retval;
+    public String encodeMessage() {
+        String retval;
+        if (statusLine != null)
+            retval = statusLine.encode() + super.encodeSIPHeaders();
+        else
+            retval = super.encodeSIPHeaders();
+        return retval ;
     }
 
 
@@ -533,6 +547,102 @@ public class SIPResponse
         return retval;
     }
 
+
+
+    /** Get a dialog identifier.
+     * Generates a string that can be used as a dialog identifier.
+     *
+     * @param isServer is set to true if this is the UAS
+     * and set to false if this is the UAC
+     */
+    public String getDialogId(boolean isServer) {
+        CallID cid = (CallID) this.getCallId();
+        From from = (From) this.getFrom();
+        To to = (To) this.getTo();
+        StringBuffer retval = new StringBuffer(cid.getCallId());
+        if (!isServer) {
+            //retval.append(COLON).append(from.getUserAtHostPort());
+            if (from.getTag() != null) {
+                retval.append(COLON);
+                retval.append(from.getTag());
+            }
+            //retval.append(COLON).append(to.getUserAtHostPort());
+            if (to.getTag() != null) {
+                retval.append(COLON);
+                retval.append(to.getTag());
+            }
+        } else {
+            //retval.append(COLON).append(to.getUserAtHostPort());
+            if (to.getTag() != null) {
+                retval.append(COLON);
+                retval.append(to.getTag());
+            }
+            //retval.append(COLON).append(from.getUserAtHostPort());
+            if (from.getTag() != null) {
+                retval.append(COLON);
+                retval.append(from.getTag());
+            }
+        }
+        return retval.toString().toLowerCase();
+    }
+
+    public String getDialogId(boolean isServer, String toTag) {
+        CallID cid = (CallID) this.getCallId();
+        From from = (From) this.getFrom();
+        StringBuffer retval = new StringBuffer(cid.getCallId());
+        if (!isServer) {
+            //retval.append(COLON).append(from.getUserAtHostPort());
+            if (from.getTag() != null) {
+                retval.append(COLON);
+                retval.append(from.getTag());
+            }
+            //retval.append(COLON).append(to.getUserAtHostPort());
+            if (toTag != null) {
+                retval.append(COLON);
+                retval.append(toTag);
+            }
+        } else {
+            //retval.append(COLON).append(to.getUserAtHostPort());
+            if (toTag != null) {
+                retval.append(COLON);
+                retval.append(toTag);
+            }
+            //retval.append(COLON).append(from.getUserAtHostPort());
+            if (from.getTag() != null) {
+                retval.append(COLON);
+                retval.append(from.getTag());
+            }
+        }
+        return retval.toString().toLowerCase();
+    }
+
+    /**
+     * Sets the Via branch for CANCEL or ACK requests
+     *
+     * @param via
+     * @param method
+     * @throws ParseException
+     */
+    private final void setBranch( Via via, String method ) {
+        String branch;
+        if (method.equals( Request.ACK ) ) {
+            if (statusLine.getStatusCode() >= 300 ) {
+                branch = getTopmostVia().getBranch();   // non-2xx ACK uses same branch
+            } else {
+                branch = Utils.getInstance().generateBranchId();    // 2xx ACK gets new branch
+            }
+        } else if (method.equals( Request.CANCEL )) {
+            branch = getTopmostVia().getBranch();   // CANCEL uses same branch
+        } else return;
+
+        try {
+            via.setBranch( branch );
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     /**
      * Get the encoded first line.
      *
@@ -558,25 +668,70 @@ public class SIPResponse
         if (statusLine == null) return  "";
         else return statusLine.encode() + super.encode();
     }
+
+    /**
+     * Generate a request from a response.
+     *
+     * @param requestURI -- the request URI to assign to the request.
+     * @param via -- the Via header to assign to the request
+     * @param cseq -- the CSeq header to assign to the request
+     * @param from -- the From header to assign to the request
+     * @param to -- the To header to assign to the request
+     * @return -- the newly generated sip request.
+     */
+    public SIPRequest createRequest(SipUri requestURI, Via via, CSeq cseq, From from, To to) {
+        SIPRequest newRequest = new SIPRequest();
+        String method = cseq.getMethod();
+
+        newRequest.setMethod(method);
+        newRequest.setRequestURI(requestURI);
+        this.setBranch( via, method );
+        newRequest.setHeader(via);
+        newRequest.setHeader(cseq);
+        Iterator headerIterator = getHeaders();
+        while (headerIterator.hasNext()) {
+            SIPHeader nextHeader = (SIPHeader) headerIterator.next();
+            // Some headers do not belong in a Request ....
+            if (SIPMessage.isResponseHeader(nextHeader)
+                || nextHeader instanceof ViaList
+                || nextHeader instanceof CSeq
+                || nextHeader instanceof ContentType
+                || nextHeader instanceof ContentLength
+                || nextHeader instanceof RecordRouteList
+                || nextHeader instanceof RequireList
+                || nextHeader instanceof ContactList    // JvB: added
+                || nextHeader instanceof ContentLength
+                || nextHeader instanceof ServerHeader
+                || nextHeader instanceof ReasonHeader
+                || nextHeader instanceof SessionExpires
+                || nextHeader instanceof ReasonList) {
+                continue;
+            }
+            if (nextHeader instanceof To)
+                nextHeader = (SIPHeader) to;
+            else if (nextHeader instanceof From)
+                nextHeader = (SIPHeader) from;
+            try {
+                newRequest.attachHeader(nextHeader, false);
+            } catch (SIPDuplicateHeaderException e) {
+                //Should not happen!
+                e.printStackTrace();
+            }
+        }
+
+        try {
+          // JvB: all requests need a Max-Forwards
+          newRequest.attachHeader( new MaxForwards(70), false);
+        } catch (Exception d) {
+
+        }
+
+        if (MessageFactoryImpl.getDefaultUserAgentHeader() != null ) {
+            newRequest.setHeader(MessageFactoryImpl.getDefaultUserAgentHeader());
+        }
+        return newRequest;
+
+    }
+   
     
-    @Override
-    public void cleanUp() {
-//    	statusLine = null;
-    	super.cleanUp();
-    }
-
-    /**
-     * @param isRetransmission the isRetransmission to set
-     */
-    public void setRetransmission(boolean isRetransmission) {
-        
-        this.isRetransmission = isRetransmission;
-    }
-
-    /**
-     * @return the isRetransmission
-     */
-    public boolean isRetransmission() {
-        return isRetransmission;
-    }
 }

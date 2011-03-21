@@ -27,12 +27,9 @@ package gov.nist.javax.sip.parser;
 
 import gov.nist.core.InternalErrorHandler;
 import gov.nist.javax.sip.stack.SIPStackTimerTask;
-import gov.nist.javax.sip.stack.timers.SipTimer;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.LinkedList;
-import java.util.NoSuchElementException;
+import java.io.*;
+import java.util.*;
 
 /**
  * Input class for the pipelined parser. Buffer all bytes read from the socket
@@ -50,13 +47,13 @@ public class Pipeline extends InputStream {
 
     private boolean isClosed;
 
-    private SipTimer timer;
+    private Timer timer;
 
     private InputStream pipe;
 
     private int readTimeout;
 
-    private SIPStackTimerTask myTimerTask;
+    private TimerTask myTimerTask;
 
     class MyTimer extends SIPStackTimerTask {
         Pipeline pipeline;
@@ -67,11 +64,9 @@ public class Pipeline extends InputStream {
             this.pipeline = pipeline;
         }
 
-        public void runTask() {
-            if (this.isCancelled) {
-                this.pipeline = null;
+        protected void runTask() {
+            if (this.isCancelled)
                 return;
-            }
 
             try {
                 pipeline.close();
@@ -80,13 +75,12 @@ public class Pipeline extends InputStream {
             }
         }
 
-        @Override
-        public void cleanUpBeforeCancel() {
-        	this.isCancelled = true;
-        	this.pipeline = null;
-        	super.cleanUpBeforeCancel();
+        public boolean cancel() {
+            boolean retval = super.cancel();
+            this.isCancelled = true;
+            return retval;
         }
-        
+
     }
 
     class Buffer {
@@ -121,10 +115,10 @@ public class Pipeline extends InputStream {
         if (this.readTimeout == -1)
             return;
         if (this.myTimerTask != null)
-        	this.timer.cancel(myTimerTask);            
+            this.myTimerTask.cancel();
     }
 
-    public Pipeline(InputStream pipe, int readTimeout, SipTimer timer) {
+    public Pipeline(InputStream pipe, int readTimeout, Timer timer) {
         // pipe is the Socket stream
         // this is recorded here to implement a timeout.
         this.timer = timer;
@@ -181,7 +175,7 @@ public class Pipeline extends InputStream {
                 // wait till something is posted.
                 while (this.buffList.isEmpty()) {
                     this.buffList.wait();
-                    // jeand : Issue 314 : return -1 only is the buffer is empty
+                    // jeand : Issue 314 : return -1 only if the buffer is empty 
                     if (this.buffList.isEmpty() && this.isClosed)
                         return -1;
                 }

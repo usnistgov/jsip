@@ -6,7 +6,7 @@
  *
  * Use is subject to license terms.
  *
- * This distribution may include materials developed by third parties.
+ * This distribution may include materials developed by third parties. 
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
@@ -16,7 +16,7 @@
  *
  *  HISTORY
  *  Version   Date      Author              Comments
- *  1.1     13/12/2002  Phelim O'Doherty    Initial version, extension header to
+ *  1.1     13/12/2002  Phelim O'Doherty    Initial version, extension header to 
  *                                          support RFC3265
  *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
@@ -26,33 +26,33 @@ import javax.sip.InvalidArgumentException;
 import java.text.ParseException;
 
 /**
-  * This interface represents the Subscription State header, as
- * defined by <a href = "http://www.ietf.org/rfc/rfc3265.txt">RFC3265</a>, this
+  * This interface represents the Subscription State header, as 
+ * defined by <a href = "http://www.ietf.org/rfc/rfc3265.txt">RFC3265</a>, this 
  * header is not part of RFC3261.
- * <p>
- * NOTIFY requests MUST contain SubscriptionState headers which indicate the
+ * <p> 
+ * NOTIFY requests MUST contain SubscriptionState headers which indicate the 
  * status of the subscription. The subscription states are:
  * <ul>
- * <li> active - If the SubscriptionState header value is "active", it means
- * that the subscription has been accepted and (in general) has been authorized.
- * If the header also contains an "expires" parameter, the subscriber SHOULD
- * take it as the authoritative subscription duration and adjust accordingly.
+ * <li> active - If the SubscriptionState header value is "active", it means 
+ * that the subscription has been accepted and (in general) has been authorized.  
+ * If the header also contains an "expires" parameter, the subscriber SHOULD 
+ * take it as the authoritative subscription duration and adjust accordingly. 
  * The "retry-after" and "reason" parameters have no semantics for "active".
- * <li> pending - If the SubscriptionState value is "pending", the
- * subscription has been received by the notifier, but there is insufficient
- * policy information to grant or deny the subscription yet. If the header also
- * contains an "expires" parameter, the subscriber SHOULD take it as the
- * authoritative subscription duration and adjust accordingly. No further
- * action is necessary on the part of the subscriber. The "retry-after" and
+ * <li> pending - If the SubscriptionState value is "pending", the 
+ * subscription has been received by the notifier, but there is insufficient 
+ * policy information to grant or deny the subscription yet. If the header also 
+ * contains an "expires" parameter, the subscriber SHOULD take it as the 
+ * authoritative subscription duration and adjust accordingly. No further 
+ * action is necessary on the part of the subscriber. The "retry-after" and 
  * "reason" parameters have no semantics for "pending".
- * <li> terminated - If the SubscriptionState value is "terminated", the
- * subscriber should consider the subscription terminated. The "expires"
+ * <li> terminated - If the SubscriptionState value is "terminated", the 
+ * subscriber should consider the subscription terminated. The "expires" 
  * parameter has no semantics for "terminated". If a reason code is present, the
- * client should behave as described in the reason code defined in this Header.
- * If no reason code or an unknown reason code is present, the client MAY
- * attempt to re-subscribe at any time (unless a "retry-after" parameter is
+ * client should behave as described in the reason code defined in this Header. 
+ * If no reason code or an unknown reason code is present, the client MAY 
+ * attempt to re-subscribe at any time (unless a "retry-after" parameter is 
  * present, in which case the client SHOULD NOT attempt re-subscription until
- * after the number of seconds specified by the "retry-after" parameter).
+ * after the number of seconds specified by the "retry-after" parameter). 
  * </ul>
  *
  * @author BEA Systems, NIST
@@ -60,9 +60,9 @@ import java.text.ParseException;
  */
 
 public interface SubscriptionStateHeader extends Parameters, Header {
-
+    
     /**
-     * Sets the relative expires value of the SubscriptionStateHeader. The
+     * Sets the relative expires value of the SubscriptionStateHeader. The 
      * expires value MUST be greater than zero and MUST be less than 2**31.
      *
      * @param expires - the new expires value of this SubscriptionStateHeader.
@@ -76,8 +76,8 @@ public interface SubscriptionStateHeader extends Parameters, Header {
      *
      * @return the expires value of the SubscriptionStateHeader.
      */
-    public int getExpires();
-
+    public int getExpires();    
+    
     /**
      * Sets the retry after value of the SubscriptionStateHeader. The retry after value
      * MUST be greater than zero and MUST be less than 2**31.
@@ -111,7 +111,7 @@ public interface SubscriptionStateHeader extends Parameters, Header {
      * unexpectedly while parsing the reason code.
      */
     public void setReasonCode(String reasonCode) throws ParseException;
-
+    
     /**
      * Gets the state of SubscriptionStateHeader.
      *
@@ -126,87 +126,87 @@ public interface SubscriptionStateHeader extends Parameters, Header {
      * @throws ParseException which signals that an error has been reached
      * unexpectedly while parsing the state.
      */
-    public void setState(String state) throws ParseException;
-
+    public void setState(String state) throws ParseException;    
+    
 
     /**
      * Name of SubscriptionStateHeader
      */
     public final static String NAME = "Subscription-State";
 
-//Reason Code Constants
-
+//Reason Code Constants    
+    
     /**
      * Reason Code: The reason why the subscription was terminated is Unknown.
      */
-    public final static String UNKNOWN = "unknown";
-
+    public final static String UNKNOWN = "Unknown";
+    
     /**
-     * Reason Code: The subscription has been terminated, but the subscriber SHOULD retry
-     * immediately with a new subscription. One primary use of such a status
-     * code is to allow migration of subscriptions between nodes. The
+     * Reason Code: The subscription has been terminated, but the subscriber SHOULD retry 
+     * immediately with a new subscription. One primary use of such a status 
+     * code is to allow migration of subscriptions between nodes. The 
      * "retry-after" parameter has no semantics for "deactivated".
      */
-    public final static String DEACTIVATED = "deactivated";
-
+    public final static String DEACTIVATED = "Deactivated";
+    
     /**
-     * Reason Code: The subscription has been terminated, but the client SHOULD retry at
-     * some later time. If a "retry-after" parameter is also present, the client
-     * SHOULD wait at least the number of seconds specified by that parameter
+     * Reason Code: The subscription has been terminated, but the client SHOULD retry at 
+     * some later time. If a "retry-after" parameter is also present, the client 
+     * SHOULD wait at least the number of seconds specified by that parameter 
      * before attempting to re-subscribe.
      */
-    public final static String PROBATION = "probation";
-
+    public final static String PROBATION = "Probation";
+    
     /**
-     * Reason Code: The subscription has been terminated due to change in authorization
-     * policy. Clients SHOULD NOT attempt to re-subscribe. The "retry-after"
+     * Reason Code: The subscription has been terminated due to change in authorization 
+     * policy. Clients SHOULD NOT attempt to re-subscribe. The "retry-after" 
      * parameter has no semantics for "rejected".
      */
-    public final static String REJECTED = "rejected";
-
+    public final static String REJECTED = "Rejected";
+    
     /**
-     * Reason Code: The subscription has been terminated because it was not refreshed before
-     * it expired. Clients MAY re-subscribe immediately. The "retry-after"
+     * Reason Code: The subscription has been terminated because it was not refreshed before 
+     * it expired. Clients MAY re-subscribe immediately. The "retry-after" 
      * parameter has no semantics for "timeout".
      */
-    public final static String TIMEOUT = "timeout";
-
+    public final static String TIMEOUT = "Timeout";
+    
     /**
-     * Reason Code: The subscription has been terminated because the notifier could not
-     * obtain authorization in a timely fashion. If a "retry-after" parameter
-     * is also present, the client SHOULD wait at least the number of seconds
-     * specified by that parameter before attempting to re-subscribe; otherwise,
-     * the client MAY retry immediately, but will likely get put back into
+     * Reason Code: The subscription has been terminated because the notifier could not 
+     * obtain authorization in a timely fashion. If a "retry-after" parameter 
+     * is also present, the client SHOULD wait at least the number of seconds 
+     * specified by that parameter before attempting to re-subscribe; otherwise, 
+     * the client MAY retry immediately, but will likely get put back into 
      * pending state.
      */
-    public final static String GIVE_UP = "giveup";
-
+    public final static String GIVE_UP = "Give-Up";
+    
     /**
-     * Reason Code: The subscription has been terminated because the resource state which was
-     * being monitored no longer exists. Clients SHOULD NOT attempt to
+     * Reason Code: The subscription has been terminated because the resource state which was 
+     * being monitored no longer exists. Clients SHOULD NOT attempt to 
      * re-subscribe. The "retry-after" parameter has no semantics for "noresource".
      */
-    public final static String NO_RESOURCE = "noresource";
-
-// State constants
-
+    public final static String NO_RESOURCE = "No-Resource";
+ 
+// State constants    
+    
     /**
-     * State: The subscription has been accepted and (in general) has been
+     * State: The subscription has been accepted and (in general) has been 
      * authorized.
      */
-    public final static String ACTIVE = "active";
-
+    public final static String ACTIVE = "Active";
+    
     /**
-     * State: The subscription has been terminated, if a reason code is present,
+     * State: The subscription has been terminated, if a reason code is present, 
      * the client should behave as described in the reason code.
      */
-    public final static String TERMINATED = "terminated";
-
+    public final static String TERMINATED = "Terminated";
+    
     /**
-     * State: The subscription has been received by the notifier, but there is
+     * State: The subscription has been received by the notifier, but there is 
      * insufficient policy information to grant or deny the subscription yet.
      */
-    public final static String PENDING = "pending";
-
+    public final static String PENDING = "Pending";
+    
 }
 

@@ -51,7 +51,7 @@ import javax.sip.header.HeaderFactory;
  *
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.24 $ $Date: 2010-05-06 14:08:05 $
+ * @version 1.2 $Revision: 1.23 $ $Date: 2010-01-20 10:12:03 $
  *
  *
  *
@@ -235,10 +235,10 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI , Sip
      * @return String
      */
     public String encode() {
-        return encode(new StringBuilder()).toString();
+        return encode(new StringBuffer()).toString();
     }
 
-    public StringBuilder encode(StringBuilder buffer) {
+    public StringBuffer encode(StringBuffer buffer) {
         buffer.append(scheme).append(COLON);
         if (authority != null)
             authority.encode(buffer);
@@ -274,11 +274,11 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI , Sip
             user = authority.getUserInfo().getUser();
 
         String host = authority.getHost().encode();
-        StringBuilder s = null;
+        StringBuffer s = null;
         if (user.equals("")) {
-            s = new StringBuilder();
+            s = new StringBuffer();
         } else {
-            s = new StringBuilder(user).append(AT);
+            s = new StringBuffer(user).append(AT);
         }
         return s.append(host).toString();
     }
@@ -295,11 +295,11 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI , Sip
         String host = authority.getHost().encode();
         int port = authority.getPort();
         // If port not set assign the default.
-        StringBuilder s = null;
+        StringBuffer s = null;
         if (user.equals("")) {
-            s = new StringBuilder();
+            s = new StringBuffer();
         } else {
-            s = new StringBuilder(user).append(AT);
+            s = new StringBuffer(user).append(AT);
         }
         if (port != -1) {
             return s.append(host).append(COLON).append(port).toString();

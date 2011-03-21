@@ -33,7 +33,7 @@ import java.text.ParseException;
 /**
  * the Unsupported header.
  *
- * @version 1.2 $Revision: 1.6 $ $Date: 2010-05-06 14:07:49 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2009-07-17 18:57:40 $
  * @author Olivier Deruelle <br/>
  *
  *
@@ -69,8 +69,8 @@ public class Unsupported
      * Return a canonical value.
      * @return String.
      */
-    public StringBuilder encodeBody(StringBuilder retval) {
-        return retval.append(optionTag);
+    public String encodeBody() {
+        return optionTag;
     }
 
     /** get the option tag field
@@ -94,9 +94,6 @@ public class Unsupported
 }
 /*
  * $Log: not supported by cvs2svn $
- * Revision 1.5  2009/07/17 18:57:40  emcho
- * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
- *
  * Revision 1.4  2006/07/13 09:01:34  mranga
  * Issue number:
  * Obtained from:

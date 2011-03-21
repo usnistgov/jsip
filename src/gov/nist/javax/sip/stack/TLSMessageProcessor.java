@@ -40,39 +40,33 @@
  ******************************************************************************/
 package gov.nist.javax.sip.stack;
 
-import gov.nist.core.CommonLogger;
 import gov.nist.core.HostPort;
-import gov.nist.core.LogLevels;
 import gov.nist.core.LogWriter;
-import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.SipStackImpl;
 
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLSocket;
+
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
-
-import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLServerSocket;
 
 /**
  * Sit in a loop waiting for incoming tls connections and start a new thread to handle each new
  * connection. This is the active object that creates new TLS MessageChannels (one for each new
  * accept socket).
  * 
- * @version 1.2 $Revision: 1.29 $ $Date: 2010-12-02 22:04:13 $
+ * @version 1.2 $Revision: 1.25.2.2 $ $Date: 2010-11-23 19:23:14 $
  * 
  * @author M. Ranganathan <br/>
  * 
  */
 public class TLSMessageProcessor extends MessageProcessor {
-	private static StackLogger logger = CommonLogger.getLogger(TLSMessageProcessor.class);
+
     protected int nConnections;
 
     private boolean isRunning;
@@ -112,32 +106,14 @@ public class TLSMessageProcessor extends MessageProcessor {
 
         this.sock = sipStack.getNetworkLayer().createSSLServerSocket(this.getPort(), 0,
                 this.getIpAddress());
-        if(sipStack.getClientAuth() == ClientAuthType.Want || sipStack.getClientAuth() == ClientAuthType.Default) {
-            // we set it to true in Default case as well to keep backward compatibility and default behavior            
-            ((SSLServerSocket) this.sock).setWantClientAuth(true);            
-        } else {
-            ((SSLServerSocket) this.sock).setWantClientAuth(false);
-        }
-        if(sipStack.getClientAuth() == ClientAuthType.Enabled) {
-            ((SSLServerSocket) this.sock).setNeedClientAuth(true);            
-        } else {
-            ((SSLServerSocket) this.sock).setNeedClientAuth(false);
-        }            
+        ((SSLServerSocket) this.sock).setNeedClientAuth(false);
         ((SSLServerSocket) this.sock).setUseClientMode(false);
+        ((SSLServerSocket) this.sock).setWantClientAuth(true);
         String []enabledCiphers = ((SipStackImpl)sipStack).getEnabledCipherSuites();
-        ((SSLServerSocket) this.sock).setEnabledCipherSuites(enabledCiphers);        
-        if(sipStack.getClientAuth() == ClientAuthType.Want || sipStack.getClientAuth() == ClientAuthType.Default) {
-            // we set it to true in Default case as well to keep backward compatibility and default behavior            
-            ((SSLServerSocket) this.sock).setWantClientAuth(true);            
-        } else {
-            ((SSLServerSocket) this.sock).setWantClientAuth(false);
-        }     
+        ((SSLServerSocket) this.sock).setEnabledCipherSuites(enabledCiphers);
+        ((SSLServerSocket)this.sock).setWantClientAuth(true);
 
-        if(logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-            logger.logDebug("SSLServerSocket want client auth " + ((SSLServerSocket) this.sock).getWantClientAuth());
-            logger.logDebug("SSLServerSocket need client auth " + ((SSLServerSocket) this.sock).getNeedClientAuth());
-        }
-        
+
         this.isRunning = true;
         thread.start();
 
@@ -147,7 +123,7 @@ public class TLSMessageProcessor extends MessageProcessor {
      * Run method for the thread that gets created for each accept socket.
      */
     public void run() {
-        // Accept new connectins on our socket.
+        // Accept new connections on our socket.
         while (this.isRunning) {
             try {
             	 
@@ -170,39 +146,39 @@ public class TLSMessageProcessor extends MessageProcessor {
                     }
                     this.nConnections++;
                 }
-                if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                    logger.logDebug(" waiting to accept new connection!");
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                    sipStack.getStackLogger().logDebug(" waiting to accept new connection!");
                 }
                 
                 Socket newsock = sock.accept();
                
-                if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                    logger.logDebug("Accepting new connection!");
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                    sipStack.getStackLogger().logDebug("Accepting new connection!");
                 }
 
                 
                // Note that for an incoming message channel, the
                // thread is already running
 
-                incomingTlsMessageChannels.add(new TLSMessageChannel(newsock, sipStack, this, "TLSMessageChannelThread-" + nConnections));
+                incomingTlsMessageChannels.add(new TLSMessageChannel(newsock, sipStack, this));
             } catch (SocketException ex) {
                 if ( this.isRunning ) {
-                  logger.logError(
+                  sipStack.getStackLogger().logError(
                     "Fatal - SocketException occured while Accepting connection", ex);
                   this.isRunning = false;
                   break;
                 }
             } catch (SSLException ex) {
                 this.isRunning = false;
-                logger.logError(
-                        "Fatal - SSSLException occured while Accepting connection", ex);
+                sipStack.getStackLogger().logError(
+                        "Fatal - SSLException occured while Accepting connection", ex);
                 break;
             } catch (IOException ex) {
                 // Problem accepting connection.
-                logger.logError("Problem Accepting Connection", ex);
+                sipStack.getStackLogger().logError("Problem Accepting Connection", ex);
                 continue;
             } catch (Exception ex) {
-                logger.logError("Unexpected Exception!", ex);
+                sipStack.getStackLogger().logError("Unexpected Exception!", ex);
             }
         }
     }
@@ -247,8 +223,8 @@ public class TLSMessageProcessor extends MessageProcessor {
     protected synchronized void remove(TLSMessageChannel tlsMessageChannel) {
 
         String key = tlsMessageChannel.getKey();
-        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-            logger.logDebug(Thread.currentThread() + " removing " + key);
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+            sipStack.getStackLogger().logDebug(Thread.currentThread() + " removing " + key);
         }
 
         /** May have been removed already */
@@ -268,9 +244,9 @@ public class TLSMessageProcessor extends MessageProcessor {
                     targetHostPort.getPort(), sipStack, this);
             this.tlsMessageChannels.put(key, retval);
             retval.isCached = true;
-            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                logger.logDebug("key " + key);
-                logger.logDebug("Creating " + retval);
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                sipStack.getStackLogger().logDebug("key " + key);
+                sipStack.getStackLogger().logDebug("Creating " + retval);
             }
             return retval;
         }
@@ -280,12 +256,12 @@ public class TLSMessageProcessor extends MessageProcessor {
         String key = messageChannel.getKey();
         TLSMessageChannel currentChannel = (TLSMessageChannel) tlsMessageChannels.get(key);
         if (currentChannel != null) {
-            if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
-                logger.logDebug("Closing " + key);
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                sipStack.getStackLogger().logDebug("Closing " + key);
             currentChannel.close();
         }
-        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-            logger.logDebug("Caching " + key);
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+            sipStack.getStackLogger().logDebug("Caching " + key);
         this.tlsMessageChannels.put(key, messageChannel);
 
     }
@@ -300,9 +276,9 @@ public class TLSMessageProcessor extends MessageProcessor {
                 TLSMessageChannel retval = new TLSMessageChannel(host, port, sipStack, this);
                 this.tlsMessageChannels.put(key, retval);
                 retval.isCached = true;
-                if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                    logger.logDebug("key " + key);
-                    logger.logDebug("Creating " + retval);
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                    sipStack.getStackLogger().logDebug("key " + key);
+                    sipStack.getStackLogger().logDebug("Creating " + retval);
                 }
                 return retval;
             }
