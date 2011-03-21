@@ -42,6 +42,7 @@ import gov.nist.javax.sip.header.Via;
 import gov.nist.javax.sip.message.SIPMessage;
 import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.message.SIPResponse;
+import gov.nist.javax.sip.stack.IllegalTransactionStateException.Reason;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -1376,14 +1377,14 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
         try {
             sipResponse.checkHeaders();
         } catch (ParseException ex) {
-            throw new SipException(ex.getMessage());
+        	throw new IllegalTransactionStateException(ex.getMessage(), Reason.MissingRequiredHeader);
         }
 
         // check for meaningful response.
         final String responseMethod = sipResponse.getCSeq().getMethod();
         if (!responseMethod.equals(this.getMethod())) {
-            throw new SipException(
-                    "CSeq method does not match Request method of request that created the tx.");
+            throw new IllegalTransactionStateException(
+                    "CSeq method does not match Request method of request that created the tx.", Reason.UnmatchingCSeq);
         }
 
         /*
@@ -1395,7 +1396,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
         if (this.getMethod().equals(Request.SUBSCRIBE) && statusCode / 100 == 2) {
 
             if (response.getHeader(ExpiresHeader.NAME) == null) {
-                throw new SipException("Expires header is mandatory in 2xx response of SUBSCRIBE");
+                throw new IllegalTransactionStateException("Expires header is mandatory in 2xx response of SUBSCRIBE", Reason.ExpiresHeaderMandatory);
             } else {
                 Expires requestExpires = (Expires) this.getOriginalRequest().getExpires();
                 Expires responseExpires = (Expires) response.getExpires();
@@ -1416,7 +1417,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
         if (statusCode == 200
                 && responseMethod.equals(Request.INVITE)
                 && sipResponse.getHeader(ContactHeader.NAME) == null)
-            throw new SipException("Contact Header is mandatory for the OK to the INVITE");
+            throw new IllegalTransactionStateException("Contact Header is mandatory for the OK to the INVITE", Reason.ContactHeaderMandatory);
 
         if (!this.isMessagePartOfTransaction((SIPMessage) response)) {
             throw new SipException("Response does not belong to this transaction.");
@@ -1442,12 +1443,12 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                     && contentTypeHeader.getContentSubType()
                             .equalsIgnoreCase(CONTENT_SUBTYPE_SDP)) {
                 if (!interlockProvisionalResponses ) {
-                    throw new SipException("cannot send response -- unacked povisional");
+                    throw new SipException("cannot send response -- unacked provisional");
                 } else {
                     try {
                        boolean acquired = this.provisionalResponseSem.tryAcquire(1,TimeUnit.SECONDS);
                        if (!acquired ) {
-                           throw new SipException("cannot send response -- unacked povisional");
+                           throw new SipException("cannot send response -- unacked provisional");
                        }
                     } catch (InterruptedException ex) {
                         logger.logError ("Interrupted acuqiring PRACK sem");
@@ -1558,12 +1559,12 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                 logger.logException(ex);
             this.setState(TransactionState._TERMINATED);
             raiseErrorEvent(SIPTransactionErrorEvent.TRANSPORT_ERROR);
-            throw new SipException(ex.getMessage());
+            throw new SipException(ex.getMessage(), ex);
         } catch (java.text.ParseException ex1) {
             if (logger.isLoggingEnabled())
                 logger.logException(ex1);
             this.setState(TransactionState._TERMINATED);
-            throw new SipException(ex1.getMessage());
+            throw new SipException(ex1.getMessage(), ex1);
         }
     }
 
