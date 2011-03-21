@@ -1,0 +1,804 @@
+<?xml version="1.0"?>
+<!--
+
+
+authors of build.xml: Initial: Olivier Deruelle deruelle@nist.gov
+Revisions and fixes by:
+
+                M. Ranganathan 		 <mranga@nist.gov>
+
+                Gordon Ledgard 		 <gledgard@iperiea.com>
+
+                Steven Lass    		 <slass@wcomnet.com>
+
+                Sverker Abrahamsson	 <sverker@abrahamsson.com>
+
+                Majdi Abuelbassal 	 <majdi.abuelbassal@bbumail.com>
+
+                Jean Deruelle		 <jeand@nist.gov>
+
+                Dan Muresan		 <muresan@gmail.com>
+
+                Jeroen van Bemmel <jbemmel@zonnet.nl>
+
+                Ivelin Ivanov <ivelin@mobicents.org>
+
+                Emil Ivov <emcho@sip-communicator.org>
+
+For using ANT:
+
+Ant is a platform independent build tool.
+Get the tool from www.apache.org and install. Set your path to the ant shell
+(batch) file.
+
+>From the command prompt, execute the following command:
+ant target
+
+
+
+
+
+Where avaliable targets are:
+
+        - ship -> Compiles all and wraps up this whole project into a tar file.
+
+        - all -> Builds everything: stack, tools, examples and docs.
+
+        - javadoc -> Builds java documentation.
+
+        - compiletools -> Compiles the tools directory.
+
+        - compileexamples -> Compiles the examples directory.
+
+        - compileri -> Compiles the reference implementation after cleaning and builds jars.
+
+        - compile -> complies the reference implementation but does clean or build jars.
+
+        - compilesdp -> Compiles the sdp
+
+        - compileapi -> Compiles the jainapi
+
+        - clean   -> cleans everything: All the built stuff and temp files.
+
+        - init	-> create the classes directory
+
+        - runtck -> Cleans, compile and run the tck.
+
+On my machine I run this as follows:
+c:/jakarta-ant/bin/ant all
+-->
+
+<project name="NIST-SIP" default="all">
+    <!-- Allow user to override defaults -->
+    <property file="ant-build-config.properties" />
+    <!-- set global properties for this build -->
+    <property name="root" value="." />
+    <property file="ant-version.properties" />
+
+    <property name="href.nist.homepage" value="http://www-x.antd.nist.gov/" />
+    <property name="href.uncopyright" value="../uncopyright.html" />
+    <property name="href.copyright" value="../copyright.html" />
+    <property name="href.mailto" value="mailto:users@jain-sip.dev.java.net" />
+    <property name="href.distribution" value="http://jain-sip.dev.java.net" />
+
+    <property name="classes" value="${root}/classes" />
+    <property name="retrowoven" value="${root}/retrowoven" />
+    <property name="docdir" value="${root}/javadoc" />
+    <property name="srcroot" value="${root}/src" />
+    <property name="dist" value="dist" />
+    <property name="jain-sip-api-jar" value="${root}/jain-sip-api-1.2.jar" />
+    <property name="jain-sip-api-src-jar" value="${root}/jain-sip-api-1.2-src.jar" />
+    <property name='j2se_api' value='http://java.sun.com/j2se/1.5/docs/api' />
+    <property name="junit_jar" value="${junit}" />
+    <property name="log4j_jar" value="${log4j}" />
+    <property name="jdom_jar" value="${jdom}"/>
+    <property name="ant_jar" value="${ant}"/>
+
+
+    <property environment="sys" />
+
+    <presetdef name="jain-javac">
+        <javac debug="${javac.debug}"
+            debuglevel="${javac.debuglevel}"
+            nowarn="${javac.nowarn}"
+            deprecation="${javac.deprecation}"
+            optimize="${javac.optimize}"
+            source="${javac.source}"
+            target="${javac.target}"
+            srcdir="${srcroot}"
+            destdir="${classes}" />
+    </presetdef>
+
+    <target name="all" depends="make,compileexamples,compiletools,javadoc,javadoc-jain" />
+
+    <target name="make" depends="clean,compileapi,compileri,compilesdp,jain-sip-sdp-jar" />
+
+
+    <target name="cleanlogs">
+        <delete failonerror="0">
+            <fileset file="*log.txt" />
+            <fileset file="tckoutput.txt" />
+            <fileset file="*debug*.txt" />
+            <fileset file="*Debug*.txt" />
+            <fileset file="*log*.txt" />
+            <fileset file="*Log*.txt" />
+            <fileset dir="./logs" />
+            <fileset dir="./test-reports" />
+            <fileset dir="./src" includes="**/*log*.txt" />
+            <fileset dir="./src" includes="**/*debug*.txt" />
+            <fileset dir="./src" includes="**/*log*.txt" />
+            <fileset dir="./src" includes="**/*debug*.txt" />
+        </delete>
+    </target>
+    <!-- Clean everything -->
+    <target name="clean" depends="cleanlogs">
+        <delete dir="${classes}" quiet="true" failonerror="false" />
+        <delete dir="${retrowoven}" quiet="true" failonerror="false" />
+        <delete file="./tracesviewer.jar" failonerror="false" />
+        <delete dir='javadoc' quiet="true" failonerror="false" />
+        <delete dir='javadoc-jain' quiet="true" failonerror="false" />
+        <delete dir="${dist}" quiet="true" failonerror="false" />
+        <delete failonerror="0">
+            <fileset file="*.jar"/>
+            <fileset file="*.tar.gz"/>
+        </delete>
+    </target>
+
+    <target name="check_java_version">
+		  <!-- JvB: Check for Java 1.5 -->
+		  <available classname="java.lang.ProcessBuilder" property="jdk15.available" />
+
+		  <!-- JvB: New: also check for Java 7, for SCTP support -->
+		  <available classname="java.security.cert.CertificateRevokedException" property="jdk7.available"/>
+	  </target>
+
+    <!-- Create ${classes} -->
+    <target name="init">
+        <mkdir dir="${classes}" />
+    </target>
+
+    <target name="cleandocs">
+        <delete dir="javadoc" />
+    </target>
+
+    <target name="javadoc">
+        <mkdir dir="${docdir}" />
+        <copy toDir="${docdir}">
+            <fileset dir="src/javax/sip" includes="**/*.html" />
+        </copy>
+
+        <javadoc packagenames="javax.sip.*,javax.sip.header.*,javax.sip.message.*,javax.sip.address.*,gov.nist.javax.sip.*,gov.nist.javax.sip.address.*,gov.nist.javax.sip.message.*,gov.nist.javax.sip.header.*,gov.nist.javas.sip.header.ims.*,gov.nist.javax.sip.stack.*,gov.nist.core.net.*,gov.nist.javax.sip.parser.*,javax.sdp.*,gov.nist.javax.sdp.*,gov.nist.javax.sdp.fields.*" sourcepath="${srcroot}" overview="${docdir}/overview.html" destdir="javadoc" use="true" splitindex="true" windowtitle="The JAIN-SIP-1.2 RI For the People !" doctitle="NIST-SIP: The Reference Implementation for JAIN-SIP 1.2" public="true" author="true" version="true" defaultexcludes="yes" additionalparam="-breakiterator">
+            <classpath>
+                <pathelement location="${log4j_jar}" />
+                <pathelement location="${jain-sip-api-jar}" />
+            </classpath>
+            <link href="${j2se_api}" />
+            <header>
+                <![CDATA[
+                    <b> NIST-SIP: The Reference Implementation for JAIN-SIP 1.2 </b>
+                ]]>
+            </header>
+        <bottom>
+            <![CDATA[
+                    <font size="-1">
+            <a href="${href.nist.homepage}"> A product of the NIST/ITL Advanced Networking Technologies Division. </a>
+            <br>
+                <a href="${href.uncopyright}"> See conditions of use. </a>
+                <br>
+                    <a href="${href.mailto}">Submit a bug report or feature request. </a>
+                    <br>
+                    </font>
+                ]]>
+            </bottom>
+            </javadoc>
+        </target>
+
+        <target name="javadoc-jain">
+
+            <mkdir dir='javadoc-jain' />
+
+            <javadoc packagenames="javax.sip.*,javax.sip.header.*,javax.sip.message.*,javax.sip.address.*,javax.sdp.*" sourcepath="${srcroot}" overview="${docdir}/overview.html" destdir="javadoc-jain" use="true" splitindex="true" windowtitle="JAIN-SIP-1.2 RI For the People !" doctitle="NIST SIP/SDP Parser and Stack (v1.3)" public="true" author="true" version="true" defaultexcludes="yes" additionalparam="-breakiterator">
+                <classpath>
+                    <pathelement location="${jain-sip-api-jar}" />
+                </classpath>
+                <link href="${j2se_api}" />
+                <header>
+                    <![CDATA[
+                    <b> JAIN-SIP 1.2 API </b>
+                ]]>
+            </header>
+            <bottom>
+                <![CDATA[
+                    <font size="-1">
+                <a href="NIST, BEA Systems, Sun Microsystems and others" </a>
+                    <br>
+                        <a href="${href.copyright}"> See conditions of use. </a>
+                        <br>
+                            <a href="${href.mailto}">Submit a bug report or feature request. </a>
+                            <br>
+                            </font>
+                ]]>
+            </bottom>
+                    </javadoc>
+                </target>
+
+                <!-- Compile the stack and libraries -->
+                <target name="compileapi" depends="init">
+                    <jain-javac includes="javax/sip/**/*.java" />
+                    <jar destfile="${jain-sip-api-jar}" basedir="${classes}" includes="javax/sip/**/*.class" >
+                        <manifest>
+                            <attribute	name="Original-Jar-Name"
+                                        value="${jain-sip-api-jar}"/>
+                        </manifest>
+                    </jar>
+                    <jar destfile="${jain-sip-api-src-jar}" basedir="${srcroot}" includes="TIMESTAMP,javax/sip/**/*.java">
+                        <manifest>
+                            <attribute	name="Original-Jar-Name"
+                                        value="${jain-sip-api-src-jar}"/>
+                        </manifest>
+                    </jar>
+
+                </target>
+                <!-- Compile but dont build any jars -->
+                <target name="compile" depends="init,compileapi">
+                    <jain-javac includes="gov/nist/core/**/*.java, gov/nist/javax/sip/**/*.java"
+                      excludes="gov/nist/javax/sip/stack/sctp/**/*.java">
+                        <classpath>
+                            <pathelement location="${log4j_jar}" />
+                        </classpath>
+                    </jain-javac>
+
+                </target>
+                <!-- Ant tools -->
+                <target name="ant-tools" depends="init">
+                    <jain-javac srcdir="ant-tasks/src" includes="net/java/jsip/ant/**/*.java">
+                        <classpath>
+                            <pathelement location="${jdom_jar}" />
+                            <pathelement location="${ant_jar}" />
+                        </classpath>
+                    </jain-javac>
+                </target>
+                <!-- Compile and build jars -->
+                <target name="compileri" depends="clean,init,compileapi">
+                    <jain-javac includes="gov/nist/core/**/*.java, gov/nist/javax/sip/**/*.java"
+                                excludes="gov/nist/javax/sip/stack/sctp/**/*.java">
+                        <classpath>
+                            <pathelement location="${log4j_jar}" />
+                        </classpath>
+                    </jain-javac>
+                    <copy file="TIMESTAMP" toDir="classes/" />
+                    <jar destfile="${jain-sip-ri-jar}" basedir="${classes}" includes="TIMESTAMP,gov/nist/**/*.class"
+                                                                            excludes="gov/nist/javax/sip/stack/sctp/**/*.class">
+                        <manifest>
+                            <attribute	name="Original-Jar-Name"
+                                        value="${jain-sip-ri-jar}"/>
+                        </manifest>
+                    </jar>
+                    <jar destfile="${jain-sip-ri-src-jar}" basedir="${srcroot}" includes="TIMESTAMP,gov/nist/**/*.java"
+                                                                            excludes="gov/nist/javax/sip/stack/sctp/**/*.java">
+                        <manifest>
+                            <attribute	name="Original-Jar-Name"
+                                        value="${jain-sip-ri-src-jar}"/>
+                        </manifest>
+                    </jar>
+                </target>
+
+                <target name="compilesdp" depends="init">
+                    <jain-javac includes="javax/sdp/**/*.java, gov/nist/javax/sdp/**/*.java">
+                        <classpath>
+                            <pathelement location="${log4j_jar}" />
+                        </classpath>
+                    </jain-javac>
+                    <jar destfile="${sdp_jar}" basedir="${classes}" includes="gov/nist/core/**/*.class,gov/nist/javax/sdp/**/*.class,javax/sdp/**/*.class" >
+                        <manifest>
+                            <attribute	name="Original-Jar-Name"
+                                        value="${sdp_jar}"/>
+                        </manifest>
+                    </jar>
+                    <jar destfile="${sdp-src-jar}" basedir="${srcroot}" includes="gov/nist/core/**/*.java,gov/nist/javax/sdp/**/*.java,javax/sdp/**/*.java" >
+                        <manifest>
+                            <attribute	name="Original-Jar-Name"
+                                        value="${sdp-src-jar}"/>
+                        </manifest>
+                    </jar>
+                </target>
+
+                <target name="compilesctp" depends="check_java_version" if="jdk7.available">
+                  <javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" 
+                	  nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" 
+                		optimize="${javac.optimize}" srcdir="${srcroot}" 
+                		source="1.7" target="1.7" 
+                		includes="gov/nist/javax/sip/stack/sctp/**/*.java" destdir="${classes}">
+                		<classpath>
+                		  <pathelement location="${classes}" />
+                			<pathelement location="${log4j_jar}" />
+                		</classpath>
+                	</javac>
+                	<jar destfile="${jain-sip-sctp-jar}" basedir="${classes}"  
+                	  includes="gov/nist/javax/sip/stack/sctp/**/*.class" />
+                </target>
+
+                <target name="compileunit" depends="init">
+                    <copy file="src/test/torture/torture.xml" toDir="classes/test/torture/" />
+                    <copy file="src/test/torture/torture.dtd" toDir="classes/test/torture/" />
+                    <jain-javac includes="test/unit/**/*.java,test/torture/**/*.java">
+                        <classpath>
+                            <pathelement location="${log4j_jar}" />
+                            <pathelement location="${junit_jar}" />
+                            <pathelement location='lib/sipxcommons.jar' />
+                        </classpath>
+                    </jain-javac>
+                    <jar destfile="${unit_test_jar}" basedir="${classes}" includes="test/unit/**/*.class,test/torture/**/*" />
+                </target>
+
+                <target name="jain-sip-sdp-jar" depends="compilejain">
+                    <copy file="TIMESTAMP" toDir="classes/" />
+                    <jar destfile="${jain-sip-sdp-jar}" basedir="${classes}" includes="TIMESTAMP,javax/**/*.class,gov/nist/**/*.class" >
+                        <manifest>
+                            <attribute	name="Original-Jar-Name"
+                                        value="${jain-sip-sdp-jar}"/>
+                        </manifest>
+                    </jar>
+                </target>
+
+                <target name='compilejain' depends='init,compile,compilesdp,compilesctp' />
+
+                <!-- Compile the examples -->
+                <target name="compileexamples" depends="init">
+                    <jain-javac includes="examples/**/*.java">
+                        <classpath>
+                            <pathelement location="${log4j_jar}" />
+                            <pathelement location="${junit_jar}" />
+                            <pathelement location="${jakarta_regexp_jar}" />
+                        </classpath>
+                    </jain-javac>
+                </target>
+
+                <!-- Compile the tck, always with debug on -->
+                <target name="compiletck" depends="clean,init,compileri,compilesctp">
+                    <mkdir dir="${classes}" />
+                    <jain-javac>
+                        <include name="test/tck/**/*.java" />
+                        <include name="test/rihelper/**/*.java" />
+                        <classpath>
+                            <pathelement location='${junit_jar}' />
+                            <pathelement location='${log4j_jar}' />
+                        </classpath>
+                    </jain-javac>
+                    <jar destfile="${jain-sip-tck-jar}" basedir="${classes}">
+                        <include name="test/tck/**/*.class" />
+                        <include name="test/rihelper/**/*.class" />
+                        <manifest>
+                            <attribute name="Built-By" value="${user.name}" />
+                            <attribute name="Main-Class" value="test.tck.Tck" />
+                        </manifest>
+                    </jar>
+                    <copy file="tck.properties" toDir="./classes" />
+                </target>
+
+
+
+                <!-- this uses the junit task of ant to run the tck in self test mode -->
+
+                <target name='runtck' depends="compiletck" description="Runs all TCK tests using the ant junit task.">
+                    <mkdir dir="test-reports" />
+                    <mkdir dir="logs" />
+
+                    <junit fork="yes" showoutput="yes" failureproperty="testing.failed">
+                        <classpath>
+                            <pathelement location="${jain-sip-api-jar}" />
+                            <pathelement location="${jain-sip-ri-jar}" />
+                            <pathelement location="${log4j_jar}" />
+                            <pathelement location="${jain-sip-tck-jar}" />
+                            <pathelement location='${junit_jar}' />
+                            <pathelement location='${log4j_jar}' />
+                            
+                            <pathelement location='${jain-sip-sctp-jar}'/> <!-- only for Java 7 -->
+
+                            <!-- add source path since this will pick up test.tck.gui.images -->
+                            <pathelement location='src' />
+
+                            <!-- add project root to the classpath in order to make tck.properties accessible. -->
+                            <pathelement location="${root}" />
+                        </classpath>
+                        <formatter type="xml" />
+
+                        <batchtest fork="yes" todir="test-reports" haltonfailure="no">
+                            <fileset dir="${srcroot}">
+                                <include name="test/tck/**/*Test.java" />
+                                <!-- TCP Tests excluded - its enough to test one transport for TCK compliance  -->
+                                <exclude name="**/Tcp*Test.java" />
+                                <exclude name="**/TCP*Test.java" />
+                                <!-- Tls Tests excluded for tck compliance  -->
+                                <exclude name="test/tck/msgflow/callflows/tls/*Test.java" />
+                                <exclude name="test/tck/msgflow/callflows/sctp/*Test.java" />
+                            </fileset>
+                        </batchtest>
+                    </junit>
+
+                    <echo>The test report can be found at ./test-reports/html/index.html</echo>
+                    <fail if="testing.failed" />
+                </target>
+                <!-- runs  tcp and tls. These are not included in regression.  -->
+                <target name='runtckcallflows' depends="compiletck" description="Runs all TCK tests using the ant junit task.">
+                    <mkdir dir="test-reports" />
+                    <mkdir dir="logs" />
+
+                    <junit fork="yes" showoutput="yes" failureproperty="testing.failed">
+                        <classpath>
+                            <pathelement location="${jain-sip-api-jar}" />
+                            <pathelement location="${jain-sip-ri-jar}" />
+                            <pathelement location="${log4j_jar}" />
+                            <pathelement location="${jain-sip-tck-jar}" />
+                            <pathelement location='${junit_jar}' />
+                            <pathelement location='${log4j_jar}' />
+
+                            <!-- add source path since this will pick up test.tck.gui.images -->
+                            <pathelement location='src' />
+
+                            <!-- add project root to the classpath in order to make tck.properties accessible. -->
+                            <pathelement location="${root}" />
+                        </classpath>
+                        <formatter type="xml" />
+
+                        <batchtest fork="yes" todir="test-reports" haltonfailure="no">
+                            <fileset dir="${srcroot}">
+                                <include name="test/tck/msgflow/callflows/**/*Test.java" />
+                                <exclude name="test/tck/msgflow/callflows/**/Udp*Test.java" />
+                            	<exclude name="test/tck/msgflow/callflows/sctp/**" />
+                                <!-- Tls Tests excluded for tck compliance  -->
+                                <exclude name="test/tck/msgflow/callflows/tls/*Test.java" />
+                                <exclude name="test/tck/msgflow/callflows/sctp/*Test.java" />
+                            </fileset>
+                        </batchtest>
+                    </junit>
+
+                    <echo>The test report can be found at ./test-reports/html/index.html</echo>
+                    <fail if="testing.failed" />
+                </target>
+
+
+                <!-- target for an individual unit test  -->
+                <target name='tlstests'  depends="compileunit" description="Runs unit tests not included in tck.">
+                    <mkdir dir="test-reports" />
+                    <delete failonerror="0">
+                        <fileset file="logs/*" />
+                    </delete>
+                    <mkdir dir="logs" />
+                    <copy file="src/test/unit/gov/nist/javax/sip/stack/tls/testkeys" toDir= "classes/test/unit/gov/nist/javax/sip/stack/tls" />
+                    <copy file="src/test/tck/msgflow/callflows/tls/testkeys" toDir="classes/test/tck/msgflow/callflows/tls" />
+
+                    <junit fork="yes" showoutput="yes" failureproperty="testing.failed">
+                        <classpath>
+                            <pathelement location="${classes}" />
+                            <pathelement location="${log4j_jar}" />
+                            <pathelement location='${junit_jar}' />
+                            <pathelement location='${log4j_jar}' />
+
+                            <!-- add source path since this will pick up test.tck.gui.images -->
+                            <pathelement location='src' />
+
+                            <!-- add project root to the classpath in order to make tck.properties accessible. -->
+                            <pathelement location="${root}" />
+                        </classpath>
+                        <formatter type="xml" />
+
+                        <batchtest fork="yes" todir="test-reports" haltonfailure="no">
+                            <fileset dir="${srcroot}">
+                                <include name="test/unit/gov/nist/javax/sip/stack/tls/*Test.java" />
+                                <include name="test/tck/msgflow/callflows/tls/*Test.java" />
+                            </fileset>
+                        </batchtest>
+                    </junit>
+
+                    <echo>The test report can be found at ./test-reports/html/index.html</echo>
+                    <fail if="testing.failed" />
+                </target>
+                <!-- target for an individual unit test  -->
+                <target name='unit2'  depends="compileunit" description="Runs unit tests not included in tck.">
+                    <mkdir dir="test-reports" />
+                    <delete failonerror="0">
+                        <fileset file="logs/*" />
+                    </delete>
+                    <mkdir dir="logs" />
+
+                    <junit fork="yes" showoutput="yes" failureproperty="testing.failed">
+                        <classpath>
+                            <pathelement location="${jain-sip-api-jar}" />
+                            <pathelement location="${jain-sip-ri-jar}" />
+                            <pathelement location="${log4j_jar}" />
+                            <pathelement location="${jain-sip-tck-jar}" />
+                            <pathelement location='${junit_jar}' />
+                            <pathelement location='${log4j_jar}' />
+                            <pathelement location='${unit_test_jar}' />
+
+                            <!-- add source path since this will pick up test.tck.gui.images -->
+                            <pathelement location='src' />
+
+                            <!-- add project root to the classpath in order to make tck.properties accessible. -->
+                            <pathelement location="${root}" />
+                        </classpath>
+                        <formatter type="xml" />
+
+                        <batchtest fork="yes" todir="test-reports" haltonfailure="no">
+                            <fileset dir="${srcroot}">
+                                <include name="test/unit/gov/nist/javax/sip/stack/reinvitechallenge/*Test.java" />
+                            </fileset>
+                        </batchtest>
+                    </junit>
+
+                    <echo>The test report can be found at ./test-reports/html/index.html</echo>
+                    <fail if="testing.failed" />
+                </target>
+
+                <target name='unittest'  depends="compileunit" description="Runs unit tests not included in tck.">
+                    <mkdir dir="test-reports" />
+                    <delete failonerror="0">
+                        <fileset file="logs/*" />
+                    </delete>
+                    <mkdir dir="logs" />
+
+                    <junit fork="yes" showoutput="yes" failureproperty="testing.failed">
+                        <classpath>
+                            <pathelement location="${jain-sip-api-jar}" />
+                            <pathelement location="${jain-sip-ri-jar}" />
+                            <pathelement location="${log4j_jar}" />
+                            <pathelement location="${jain-sip-tck-jar}" />
+                            <pathelement location='${junit_jar}' />
+                            <pathelement location='${log4j_jar}' />
+                            <pathelement location='${unit_test_jar}' />
+
+                            <!-- add source path since this will pick up test.tck.gui.images -->
+                            <pathelement location='src' />
+
+                            <!-- add project root to the classpath in order to make tck.properties accessible. -->
+                            <pathelement location="${root}" />
+                        </classpath>
+                        <formatter type="xml" />
+
+                        <batchtest fork="yes" todir="test-reports" haltonfailure="no">
+                            <fileset dir="${srcroot}">
+                                <include name="test/unit/gov/nist/javax/**/*Test.java" />
+                                <exclude name="test/unit/gov/nist/javax/sip/stack/NonRfc3261ForkedInviteTest.java" />
+                                <exclude name="test/unit/gov/nist/javax/sip/stack/SimpleDialogRecoveryTest.java" />
+                                <exclude name="test/unit/gov/nist/javax/sip/stack/tls/*Test.java" />
+                            </fileset>
+                        </batchtest>
+                    </junit>
+
+                    <echo>The test report can be found at ./test-reports/html/index.html</echo>
+                    <fail if="testing.failed" />
+                </target>
+
+
+
+                <!-- target for running the parser tests -->
+                <target name='torture' depends="compileunit" description="Runs all unit tests using the ant junit task.">
+                    <mkdir dir="test-reports" />
+                    <mkdir dir="logs" />
+                    <copy file="src/test/torture/torture.xml" toDir="classes/test/torture/" />
+                    <copy file="src/test/torture/torture.dtd" toDir="classes/test/torture/" />
+
+                    <junit fork="yes" showoutput="yes" failureproperty="testing.failed">
+                        <classpath>
+                            <pathelement location="${jain-sip-sdp-jar}" />
+                            <pathelement location="${jain-sip-ri-jar}" />
+                            <pathelement location="${log4j_jar}" />
+                            <pathelement location='${junit_jar}' />
+                            <pathelement location='${log4j_jar}' />
+                            <pathelement location='${unit_test_jar}' />
+
+                            <!-- add project root to the classpath in order to make tck.properties accessible. -->
+                            <pathelement location="${root}" />
+                        </classpath>
+                        <formatter type="xml" />
+
+                        <batchtest fork="yes" todir="test-reports" haltonfailure="no">
+                            <fileset dir="${srcroot}">
+                                <include name="test/torture/TortureTest.java" />
+                            </fileset>
+                        </batchtest>
+                    </junit>
+
+                    <echo>The test report can be found at ./test-reports/html/index.html</echo>
+                    <fail if="testing.failed" />
+                </target>
+                <target name='parsertest' depends='compileunit' description="Runs all unit tests using the ant junit task.">
+                    <mkdir dir="test-reports" />
+                    <mkdir dir="logs" />
+
+                    <junit fork="yes" showoutput="yes" failureproperty="testing.failed">
+                        <classpath>
+                            <pathelement location="${jain-sip-sdp-jar}" />
+                            <pathelement location="${jain-sip-ri-jar}" />
+                            <pathelement location="${log4j_jar}" />
+                            <pathelement location='${junit_jar}' />
+                            <pathelement location='${log4j_jar}' />
+                            <pathelement location='${unit_test_jar}' />
+
+                            <!-- add project root to the classpath in order to make tck.properties accessible. -->
+                            <pathelement location="${root}" />
+                        </classpath>
+                        <formatter type="xml" />
+
+                        <batchtest fork="yes" todir="test-reports" haltonfailure="no">
+                            <fileset dir="${srcroot}">
+                                <include name="test/torture/TortureTest.java" />
+                                <include name="test/unit/**/*ParserTest.java" />
+                            </fileset>
+                        </batchtest>
+                    </junit>
+
+                    <echo>The test report can be found at ./test-reports/html/index.html</echo>
+                    <fail if="testing.failed" />
+                </target>
+
+                <!-- Task to generate a vesion number -->
+                <target name="generate-version" depends="ant-tools" >
+                                    <taskdef name="versioner" classname="net.java.jsip.ant.tasks.VersionerTask" classpath="classes"/>
+                        <versioner cvsVersionFile="${ant.file.NIST-SIP}/../version.txt"  incrementCVSVersion="true"/>
+                </target>
+
+                <!-- Generate a tar file -->
+
+                <target name="srctar"  >
+                    <tar compression="gzip" basedir="../" destfile="${jain-sip-src-tar}"
+                    includes="jain-sip/**/*/"
+                                excludes="jain-sip/www/**/*,jain-sip/javax/**/*,jain-sip/repo/**/*,jain-sip/ant-tasks/lib/**/*,jain-sip/test-reports/**/*,jain-sip/classes/**/*,jain-sip/javadoc/**/*,jain-sip/*.jar,jain-sip/lib/**/*,jain-sip/tckoutput.txt,jain-sip/*.gz,jain-sip/poms/**/*" />
+                </target>
+                <target name="javadoctar"  >
+                    <tar compression="gzip" basedir="../" destfile="${jain-sip-javadoc-tar}"
+                    includes="jain-sip/javadoc/**/*" />
+                </target>
+                <target name="alltar"  >
+                    <tar compression="gzip" basedir="../" destfile="${jain-sip-all-tar}"
+                    includes="jain-sip/**/*/"
+                    excludes="jain-sip/*.tar.gz" />
+                </target>
+
+                <!-- builds the distribution -->
+                <target name="dist" depends="make,compiletck,javadoc,javadoctar,alltar,srctar">
+                    <mkdir dir="${dist}" />
+                    <mkdir dir="${dist}/jain-sdp" />
+                    <mkdir dir="${dist}/jain-sip-javadoc" />
+                    <mkdir dir="${dist}/jain-sip-sdp"/>
+                    <mkdir dir="${dist}/jain-sip-api"/>
+                    <mkdir dir="${dist}/jain-sip-ri"/>
+                    <mkdir dir="${dist}/jain-sip-tck" />
+                    <mkdir dir="${dist}/jain-sip-src" />
+                    <mkdir dir="${dist}/jain-sip-all" />
+                    <!--copy file="${jain-sip-javadoc-tar}" todir="${dist}/jain-sip-javadoc"  />
+                    <copy file="${jain-sip-src-tar}" todir="${dist}/jain-sip-src"  /-->
+                    <copy file="${jain-sip-api-jar}" todir="${dist}/jain-sip-api"/>
+                    <copy file="${jain-sip-ri-jar}" todir="${dist}/jain-sip-ri"/>
+                    <copy file="${jain-sip-sdp-jar}" todir="${dist}/jain-sip-sdp"/>
+                    <copy file="${sdp_jar}" todir="${dist}/jain-sdp"/>
+                    <copy file="${jain-sip-tck-jar}" todir ="${dist}/jain-sip-tck" />
+                    <!--copy file="${jain-sip-all-tar}"   todir="${dist}/jain-sip-all" /-->
+                    <copy file="README-DISTRIBUTION"  todir="${dist}"/>
+
+                </target>
+
+                <!-- This is the build verification test run by cruise control. -->
+
+                <target name="cc-buildloop" depends="dist,runtck,runtckcallflows,parsertest,unittest" />
+
+
+                <!-- compile to traces viewer jar -->
+                <target name="viewerjar">
+                    <copy todir="${classes}/tools/tracesviewer/images">
+                        <fileset dir="${srcroot}/tools/tracesviewer/images" />
+                    </copy>
+                    <jar compress="false" destfile="tracesviewer.jar">
+                        <fileset dir="${classes}">
+                            <include name="tools/tracesviewer/**/*.*" />
+                        </fileset>
+                        <manifest>
+                            <attribute name="Built-By" value="${user.name}" />
+                            <attribute name="Main-Class" value="tools.tracesviewer.TracesViewer" />
+                        </manifest>
+                    </jar>
+                </target>
+
+                <!-- Compile the tools -->
+                <target name="compiletools" depends="init">
+                    <jain-javac includes="tools/tracesviewer/**/*.java">
+                        <classpath>
+                            <pathelement location="${classes}" />
+                        </classpath>
+                    </jain-javac>
+                    <copy todir="${classes}/tools/tracesviewer/images">
+                        <fileset dir="${srcroot}/tools/tracesviewer/images" />
+                    </copy>
+                    <jain-javac includes="tools/sniffer/**/*.java">
+                        <classpath>
+                            <pathelement location="${classes}" />
+                        </classpath>
+                    </jain-javac>
+                </target>
+
+                <!-- Push the jar to maven -->
+                <target name="push-to-maven-prepare">
+                    <taskdef resource="maven-repository-importer.properties">
+                        <classpath>
+                            <pathelement path="tools/maven-repository-importer-1.2.jar" />
+                        </classpath>
+                    </taskdef>
+                    <delete dir="build/maven-repo" />
+                    <!-- clean it -->
+                    <maven-repository-importer destdir="build/maven-repo" version="1.2">
+                        <artifact jar="jain-sip-api-1.2.jar" pom="poms/api-pom.xml" />
+                        <artifact jar="jain-sip-ri-1.2.jar" pom="poms/ri-pom.xml" />
+                    </maven-repository-importer>
+                </target>
+
+                <target name="push-to-maven" depends="push-to-maven-prepare">
+                    <!-- import to CVS-->
+                    <tstamp />
+                    <echo>importing to CVS...</echo>
+                    <cvs dest="build/maven-repo">
+                        <commandline>
+                            <argument value="-d:pserver:${user.name}@cvs.dev.java.net:/cvs" />
+                            <argument line="-z9 import -ko -W *.jar -kb -m" />
+                            <argument value="deploying new jars to the java.net maven repository" />
+                            <argument value="jain-sip/repo" />
+                            <argument line="deployment-to-maven-repository t${DSTAMP}${TSTAMP}" />
+                        </commandline>
+                    </cvs>
+                </target>
+
+
+                <import file="ant-tasks/build.xml" />
+
+                <target name="test">
+                    <echo>SHELL ${sys.MAKE_MODE}</echo>
+
+                </target>
+
+
+                <target name="init-m2-exec">
+                    <echo>To perform m2 release You have to follow insitrction from: https://maven2-repository.dev.java.net/ and have access as m2 submiter.</echo>
+                    <sleep seconds="4"/>
+                    <condition property="executable" value="mvn.bat">
+                        <os family="windows" />
+                    </condition>
+
+                    <property name="executable" value="mvn" />
+                </target>
+                <target name="exec-m2" depends="init-m2-exec">
+                    <exec executable="${executable}">
+                        <arg value="-f" />
+                        <arg value="${ant.file.NIST-SIP}/../m2/pom.xml" />
+                        <arg value="deploy" />
+                        <arg value="clean" />
+                    </exec>
+                </target>
+                <target name="update-from-cvs">
+                    <!-- Here we update version.txt file to what version may reside in cvs: overide local value to repo!! -->
+                    <!-- cvs -d :pserver:user:passwrd@cvs.dev.java.net:/cvs update version.txt -C -->
+                    <cvs>
+                        <commandline>
+                            <argument value="-d:pserver:${user.name}@cvs.dev.java.net:/cvs" />
+                            <argument line="-z9 update -C version.txt" />
+                        </commandline>
+                    </cvs>
+                </target>
+                <target name="update-cvs" >
+                    <!-- Here we update version.txt so local is the same as cvs -->
+                    <!-- cvs -d :pserver:user:paswrd@cvs.dev.java.net:/cvs commit -m "Test commit" version.txt -->
+                    <cvs cvsRoot=":pserver:${user.name}:${password}@cvs.dev.java.net:/cvs" command="commit -m 'versions'  version.txt ant-version.properties" />
+                </target>
+                <target name="perform-m2-release" depends="ant-tools" description="Performs m2 deployment" >
+                    <antcall target="update-from-cvs" />
+                                        <taskdef name="versioner" classname="net.java.jsip.ant.tasks.VersionerTask" classpath="classes"/>
+                    <versioner cvsversionfile="${ant.file.NIST-SIP}/../version.txt" incrementcvsversion="false" parent="true" pomfile="${ant.file.NIST-SIP}/../m2/jain-sip-api/pom.xml" />
+                    <versioner cvsversionfile="${ant.file.NIST-SIP}/../version.txt" incrementcvsversion="false" parent="true" pomfile="${ant.file.NIST-SIP}/../m2/jain-sip-ri/pom.xml" />
+                    <versioner cvsversionfile="${ant.file.NIST-SIP}/../version.txt" incrementcvsversion="false" parent="true" pomfile="${ant.file.NIST-SIP}/../m2/nist-sdp/pom.xml" />
+                    <versioner cvsversionfile="${ant.file.NIST-SIP}/../version.txt" incrementcvsversion="false" parent="false" pomfile="${ant.file.NIST-SIP}/../m2/pom.xml" />
+
+                    <antcall target="exec-m2" />
+                    <antcall target="update-cvs" />
+                    <antcall target="clean-tasks" />
+                </target>
+
+            </project>
