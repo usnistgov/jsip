@@ -48,6 +48,7 @@ import gov.nist.javax.sip.header.Via;
 import gov.nist.javax.sip.message.SIPMessage;
 import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.message.SIPResponse;
+import gov.nist.javax.sip.stack.IllegalTransactionStateException.Reason;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -944,7 +945,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
         SIPRequest sipRequest = this.getOriginalRequest();
 
         if (this.getInternalState() >= 0)
-            throw new SipException("Request already sent");
+            throw new IllegalTransactionStateException("Request already sent", Reason.RequestAlreadySent);
 
         if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             logger.logDebug("sendRequest() " + sipRequest);
@@ -955,7 +956,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
         } catch (ParseException ex) {
         	if (logger.isLoggingEnabled())
         		logger.logError("missing required header");
-            throw new SipException(ex.getMessage());
+        	throw new IllegalTransactionStateException(ex.getMessage(), Reason.MissingRequiredHeader);
         }
 
         if (getMethod().equals(Request.SUBSCRIBE)
