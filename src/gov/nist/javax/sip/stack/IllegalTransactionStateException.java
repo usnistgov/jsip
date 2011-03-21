@@ -74,7 +74,7 @@ public class IllegalTransactionStateException extends SipException {
      * 
      * @return the reason of this exception
      */
-    public Reason getreason() {
+    public Reason getReason() {
           return(reason);
     }
 
