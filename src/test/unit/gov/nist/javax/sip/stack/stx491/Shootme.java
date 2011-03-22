@@ -284,7 +284,7 @@ public class Shootme  implements SipListener {
     }
 
     public void checkState() {
-       ReInviteTest.assertTrue("Should see request pending" , this.requestPendingSeen);
+       ReInviteTest.assertTrue("Should NOT see request pending" , !this.requestPendingSeen);
     }
     /*
      * (non-Javadoc)

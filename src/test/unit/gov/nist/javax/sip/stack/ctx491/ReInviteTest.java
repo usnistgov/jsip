@@ -74,7 +74,7 @@ public class ReInviteTest extends ScenarioHarness implements SipListener {
     }
 
     public ReInviteTest() {
-        super("reinvitetest", true);
+        super(ReInviteTest.class.getName(), true);
     }
 
     public void setUp() {
