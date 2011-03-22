@@ -148,9 +148,9 @@ public class ReInviteBusyTest extends TestCase {
             // and are not necessarily part of any other jain-sip
             // implementation.
             properties.setProperty("gov.nist.javax.sip.DEBUG_LOG", logFileDirectory
-                    + stackname + "debuglog.txt");
+                    + ReInviteBusyTest.class.getName() + "-debuglog.txt");
             properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
-                    logFileDirectory + stackname + "log.txt");
+                    logFileDirectory + "ReInviteBusyTest-" + "log.txt");
 
             properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT",
                     (autoDialog ? "on" : "off"));
@@ -262,7 +262,7 @@ public class ReInviteBusyTest extends TestCase {
 
         private int reInviteCount;
 
-        private boolean isToTagInTryingReInvitePresent = false;
+        private boolean isToTagInTryingReInvitePresent = true;
 
         class ApplicationData {
             protected int ackCount;
@@ -449,8 +449,9 @@ public class ReInviteBusyTest extends TestCase {
                     Dialog dialog = tid.getDialog();
                     logger.info("Dalog State = " + dialog.getState());
                     String toTag = ((ResponseExt)response).getToHeader().getTag(); 
-                    if(DialogState.CONFIRMED.equals(dialog.getState()) && toTag != null && response.getStatusCode() == Response.TRYING) {
-                        this.isToTagInTryingReInvitePresent  = true;
+                    // Note that TRYING is an optional response.
+                    if(DialogState.CONFIRMED.equals(dialog.getState()) && toTag == null && response.getStatusCode() == Response.TRYING) {
+                        this.isToTagInTryingReInvitePresent  = false;
                         logger.info("to tag for trying in re INVITE is present " + toTag);
                     }
                 }

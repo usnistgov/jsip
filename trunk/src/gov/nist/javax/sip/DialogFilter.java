@@ -921,8 +921,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             if (dialog != null
                     && transaction != null
                     && lastTransaction != null
-                    && sipRequest.getCSeq().getSeqNumber() > dialog
-                            .getRemoteSeqNumber()
+                    && sipRequest.getCSeq().getSeqNumber() > lastTransaction.getCSeq()
                     && lastTransaction instanceof SIPServerTransaction
                     && sipProvider.isDialogErrorsAutomaticallyHandled()
                     && dialog.isSequnceNumberValidation()
@@ -965,7 +964,30 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                 return;
             }
 
-            
+            if ( dialog != null
+                    && lastTransaction != null
+                    && sipProvider.isDialogErrorsAutomaticallyHandled()
+                    && lastTransaction.isInviteTransaction()
+                    && lastTransaction instanceof ServerTransaction
+                    && sipRequest.getCSeq().getSeqNumber() > lastTransaction.getCSeq()
+                    // Handle Pseudo State Trying on Server Transaction
+                    && (lastTransaction.getInternalState() == TransactionState._PROCEEDING
+                                    || lastTransaction.getInternalState() == TransactionState._TRYING)) {
+                // Note that the completed state will be reached when we have
+                // sent an error response and the terminated state will be reached when we
+                // have sent an OK response. We do not need to wait till the ACK to be seen.
+                if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+                    logger
+                            .logDebug(
+                                    "Sending 491 response. Last transaction is in PROCEEDING state.");
+                    logger.logDebug(
+                            "last Transaction state = " + lastTransaction
+                                    + " state " + lastTransaction.getState());
+                }
+                this.sendRequestPendingResponse(sipRequest, transaction);
+                return;
+
+            }
         }
 
         // Sequence numbers are supposed to be incremented
