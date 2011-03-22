@@ -434,7 +434,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                     if (sipProvider.getSipListener() != null
                             && sipProvider.getSipListener() instanceof SipListenerExt) {
                         dialogTimedOut = true;
-                        raiseErrorEvent(SIPDialogErrorEvent.DIALOG_REINVITE_TIMEOUT);
+                        raiseErrorEvent(SIPDialogErrorEvent.DIALOG_REINVITE_TIMEOUT,(SIPClientTransaction)ctx);
                     } else {
                         Request byeRequest = SIPDialog.this
                                 .createRequest(Request.BYE);
@@ -829,7 +829,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
      * 
      * @param dialogTimeoutError
      */
-    private void raiseErrorEvent(int dialogTimeoutError) {
+    private void raiseErrorEvent(int dialogTimeoutError, SIPClientTransaction clientTransaction) {
         // Error event to send to all listeners
         SIPDialogErrorEvent newErrorEvent;
         // Iterator through the list of listeners
@@ -839,6 +839,11 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
         // Create the error event
         newErrorEvent = new SIPDialogErrorEvent(this, dialogTimeoutError);
+        
+        
+        // The client transaction can be retrieved by the application timeout handler
+        // when a re-INVITE is being sent.
+        newErrorEvent.setClientTransaction(clientTransaction);
 
         // Loop through all listeners of this transaction
         synchronized (eventListeners) {
@@ -866,6 +871,15 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
         // we stop the timer in any case
         stopTimer();
+    }
+    
+    /**
+     * Raise a dialog timeout if an ACK has not been sent or received
+     * 
+     * @param dialogTimeoutError
+     */
+    private void raiseErrorEvent(int dialogTimeoutError) {
+    	raiseErrorEvent(dialogTimeoutError,null);
     }
 
     /**
@@ -1492,14 +1506,14 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 && lastResponseStatusCode == Response.OK) {
             if (logger.isLoggingEnabled(
                     LogWriter.TRACE_DEBUG)) {
-                logger.logDebug(
+                logger.logDebug("SIPDialog::isAckSeen:"+
                         this + "lastAckReceived is null -- returning false");
             }
             return false;
         } else if (lastResponseMethod == null) {
             if (logger.isLoggingEnabled(
                     LogWriter.TRACE_DEBUG)) {
-                logger.logDebug(
+                logger.logDebug("SIPDialog::isAckSeen:"+
                         this + "lastResponse is null -- returning false");
             }
             return false;
@@ -1507,13 +1521,15 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 && lastResponseStatusCode / 100 > 2) {
             if (logger.isLoggingEnabled(
                     LogWriter.TRACE_DEBUG)) {
-                logger.logDebug(
+                logger.logDebug("SIPDialog::isAckSeen:"+
                         this + "lastResponse statusCode "
                                 + lastResponseStatusCode);
             }
             return true;
         } else {
-
+        	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+        		logger.logDebug("SIPDialog::isAckSeen:lastAckReceivedCSeqNumber = " + lastAckReceivedCSeqNumber + " remoteCSeqNumber = " + this.getRemoteSeqNumber());
+        	}
             return this.lastAckReceivedCSeqNumber != null
                     && this.lastAckReceivedCSeqNumber >= this
                             .getRemoteSeqNumber();
@@ -3455,36 +3471,35 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                             this.setDialogId(sipResponse.getDialogId(true));
                             sipStack.putDialog(this);
                         }
-                        /*
-                         * We put the dialog into the table. We must wait for
-                         * ACK before re-INVITE is sent.
-                         */
-
-                        if (transaction.getInternalState() != TransactionState._TERMINATED
-                                && sipResponse.getStatusCode() == Response.OK
-                                && lastResponseMethod.equals(Request.INVITE)
-                                && this.isBackToBackUserAgent) {
-                            // 
-                            // Acquire the flag for re-INVITE so that we cannot
-                            // re-INVITE before
-                            // ACK is received.
-                            //
-                            if (!this.takeAckSem()) {
-                                if (logger
-                                        .isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                                    logger
-                                            .logDebug(
-                                                    "Delete dialog -- cannot acquire ackSem");
-                                }
-                                this
-                                        .raiseErrorEvent(SIPDialogErrorEvent.DIALOG_ERROR_INTERNAL_COULD_NOT_TAKE_ACK_SEM);
-                                logger
-                                        .logError(
-                                                "IntenalError : Ack Sem already acquired ");
-                                return;
-                            }
-
-                        }
+                        
+/*
+ *                       if (transaction.getInternalState() != TransactionState._TERMINATED
+ *                               && sipResponse.getStatusCode() == Response.OK
+ *                               && lastResponseMethod.equals(Request.INVITE)
+ *                               && this.isBackToBackUserAgent) {
+ *                           // 
+ *                           // Acquire the flag for re-INVITE so that we cannot
+ *                           // re-INVITE before
+ *                           // ACK is received. TODO -- really check why this
+ *                       	// stuff was in there to start with.
+ *                           //
+ *                           if (false && !this.takeAckSem()) {
+ *                               if (logger
+ *                                       .isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+ *                                   logger
+ *                                           .logDebug(
+ *                                                   "Delete dialog -- cannot acquire ackSem");
+ *                               }
+ *                               this
+ *                                       .raiseErrorEvent(SIPDialogErrorEvent.DIALOG_ERROR_INTERNAL_COULD_NOT_TAKE_ACK_SEM);
+ *                               logger
+ *                                       .logError(
+ *                                               "IntenalError : Ack Sem already acquired ");
+ *                               return;
+ *                           }
+ *
+ *                       }
+*/
 
 
                     }
@@ -3873,7 +3888,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
             if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                 logger.logDebug(
-                        "ACK already seen by dialog -- dropping Ack"
+                        "SIPDialog::handleAck: ACK already seen by dialog -- dropping Ack"
                                 + " retransmission");
             }
             acquireTimerTaskSem();
@@ -3889,11 +3904,13 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         } else if (this.getState() == DialogState.TERMINATED) {
             if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                 logger.logDebug(
-                        "Dialog is terminated -- dropping ACK");
+                        "SIPDialog::handleAck: Dialog is terminated -- dropping ACK");
             return false;
 
         } else {
-
+        	  if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+        		  logger.logDebug("SIPDialog::handleAck: lastResponseCSeqNumber = " + lastResponseCSeqNumber + " ackTxCSeq " + ackTransaction.getCSeq());
+        	  }
              if (lastResponseStatusCode != null
                     && lastResponseStatusCode.intValue() / 100 == 2
                     && lastResponseMethod.equals(Request.INVITE)
@@ -3906,7 +3923,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 ackReceived(ackTransaction.getCSeq());
                 if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                     logger.logDebug(
-                            "ACK for 2XX response --- sending to TU ");
+                            "SIPDialog::handleACK: ACK for 2XX response --- sending to TU ");
                 return true;
 
             } else {
@@ -3914,13 +3931,14 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                  * This happens when the ACK is re-transmitted and arrives too
                  * late to be processed.
                  */
+            	
               	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                     logger.logDebug(
                                " INVITE transaction not found");
               	if ( this.isBackToBackUserAgent() ) {
               		this.releaseAckSem();
               	}
-              	return true;
+              	return false;
                
             }
         }

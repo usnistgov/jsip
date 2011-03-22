@@ -997,6 +997,8 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
                     "Dialog TimeoutError occured on " + sipDialog);
         }
         DialogTimeoutEvent ev = new DialogTimeoutEvent(this, sipDialog, reason);
+        ev.setClientTransaction(dialogErrorEvent.getClientTransaction());
+        
         // Handling transport error like timeout
         this.handleEvent(ev, null);
     }
