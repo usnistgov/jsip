@@ -469,8 +469,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                                         transaction);
                         return;
                     }
-                } else if (lastTransaction != null
-                        && lastTransaction instanceof SIPClientTransaction) {
+                } else if (lastTransaction instanceof SIPClientTransaction) {
                     if (lastTransactionMethod.equals(Request.INVITE)
                             && lastTransaction.getInternalState() != TransactionState._TERMINATED
                             && lastTransaction.getInternalState() != TransactionState._COMPLETED) {
@@ -955,44 +954,18 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     && lastTransaction != null
                     && lastTransaction.isInviteTransaction()
                     && lastTransaction instanceof ClientTransaction
-                    && lastTransaction.getLastResponse() != null
-                    && lastTransaction.getLastResponse().getStatusCode() == 200
-                    && !dialog.isAckSent(lastTransaction.getLastResponse()
-                            .getCSeq().getSeqNumber())) {
+                    && lastTransaction.getState() != TransactionState.COMPLETED 
+                    && lastTransaction.getState() != TransactionState.TERMINATED)
+                     {
                 if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
-                    logger
-                            .logDebug(
-                                    "Sending 491 response for client Dialog ACK not sent.");
+                	logger.logDebug("DialogFilter::processRequest:lastTransaction.getState(): " + lastTransaction.getState() +       
+                                    " Sending 491 response for clientTx.");
                 }
                 this.sendRequestPendingResponse(sipRequest, transaction);
                 return;
             }
 
-            if (dialog != null
-                    && lastTransaction != null
-                    && sipProvider.isDialogErrorsAutomaticallyHandled()
-                    && lastTransaction.isInviteTransaction()
-                    && lastTransaction instanceof ServerTransaction
-                    // Handle Pseudo State Trying on Server Transaction
-                    && (lastTransaction.getInternalState() == TransactionState._PROCEEDING
-                                    || lastTransaction.getInternalState() == TransactionState._TRYING)) {
-                // Note that the completed state will be reached when we have
-                // sent an error
-                // response and the terminated state will be reached when we
-                // have sent an OK
-                // response. We do not need to wait till the ACK to be seen.
-                if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
-                    logger
-                            .logDebug(
-                                    "Sending 491 response. Last transaction is in PROCEEDING state.");
-                    logger.logDebug(
-                            "last Transaction state = " + lastTransaction
-                                    + " state " + lastTransaction.getState());
-                }
-                this.sendRequestPendingResponse(sipRequest, transaction);
-                return;
-
-            }
+            
         }
 
         // Sequence numbers are supposed to be incremented
