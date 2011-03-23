@@ -884,11 +884,11 @@ public class ReInviteBusyTest extends TestCase {
             super.setUp();
             // String stackname, String pathname, String transport,
             // boolean autoDialog
-            this.shootistProtocolObjs = new ProtocolObjects("shootist", "gov.nist", "udp", true,false);
+            this.shootistProtocolObjs = new ProtocolObjects("shootist", "gov.nist", "udp", true,true);
             shootist = new Shootist(shootistProtocolObjs);
             SipProvider shootistProvider = shootist.createSipProvider();
 
-            this.shootmeProtocolObjs = new ProtocolObjects("shootme", "gov.nist", "udp", true,false);
+            this.shootmeProtocolObjs = new ProtocolObjects("shootme", "gov.nist", "udp", true,true);
             shootme = new Shootme(shootmeProtocolObjs);
             SipProvider shootmeProvider = shootme.createSipProvider();
             
