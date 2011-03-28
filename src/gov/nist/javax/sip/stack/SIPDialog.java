@@ -1183,6 +1183,15 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             throw new SipException(ex.getMessage());
         }
 
+        boolean releaseAckSem = false;
+        long cseqNo = ((SIPRequest) request).getCSeq().getSeqNumber();
+        if (!this.isAckSent(cseqNo)) {
+            releaseAckSem = true;
+        }
+        // we clone the request that we store to make sure that if getNextHop modifies the request
+        // we store it as it was passed to the method originally
+        this.setLastAckSent((SIPRequest)ackRequest.clone());
+        
         Hop hop = sipStack.getNextHop(ackRequest);
         // Hop hop = defaultRouter.getNextHop(ackRequest);
         if (hop == null)
@@ -1199,14 +1208,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             InetAddress inetAddress = InetAddress.getByName(hop.getHost());
             MessageChannel messageChannel = lp.getMessageProcessor()
                     .createMessageChannel(inetAddress, hop.getPort());
-            boolean releaseAckSem = false;
-            long cseqNo = ((SIPRequest) request).getCSeq().getSeqNumber();
-            if (!this.isAckSent(cseqNo)) {
-                releaseAckSem = true;
-            }
-
-            this.setLastAckSent(ackRequest);
-            messageChannel.sendMessage(ackRequest);
+                        messageChannel.sendMessage(ackRequest);
+                        
             // Sent atleast one ACK.
             this.isAcknowledged = true;
             this.highestSequenceNumberAcknowledged = Math.max(
