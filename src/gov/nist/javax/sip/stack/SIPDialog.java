@@ -46,6 +46,7 @@ import gov.nist.javax.sip.header.Authorization;
 import gov.nist.javax.sip.header.CSeq;
 import gov.nist.javax.sip.header.Contact;
 import gov.nist.javax.sip.header.ContactList;
+import gov.nist.javax.sip.header.Event;
 import gov.nist.javax.sip.header.From;
 import gov.nist.javax.sip.header.MaxForwards;
 import gov.nist.javax.sip.header.RAck;
@@ -327,6 +328,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 	private int ackSemTakenFor;
 	private Set<String> responsesReceivedInForkingCase = new HashSet<String>(0);
 
+	
     // //////////////////////////////////////////////////////
     // Inner classes
     // //////////////////////////////////////////////////////
@@ -1902,6 +1904,16 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         	}
             this.lastTransaction = transaction;
         }
+        
+        try {
+        	if (transaction.getRequest().getMethod().equals(Request.REFER) && transaction instanceof SIPServerTransaction) {
+        		long lastReferCSeq = ((SIPRequest) lastTransaction.getRequest()).getCSeq().getSeqNumber();
+        		this.eventHeader = new Event();
+        		this.eventHeader.setEventId(Long.toString(lastReferCSeq));
+        	}
+        } catch (Exception ex) {
+        	logger.logFatalError("Unexpected exception in REFER processing");
+        }
 
         if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             logger.logDebug(
@@ -2390,10 +2402,14 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         }
 
         if (method.equals(Request.SUBSCRIBE)) {
-
             if (eventHeader != null)
                 sipRequest.addHeader(eventHeader);
-
+        }
+        
+        if (method.equals(Request.NOTIFY)) {
+        	if (eventHeader != null ) {
+        		sipRequest.addHeader(eventHeader);
+        	}
         }
 
         /*
@@ -2425,7 +2441,10 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         }
 
         // get the route list from the dialog.
+        
         this.updateRequest(sipRequest);
+        
+      
 
         return sipRequest;
 
