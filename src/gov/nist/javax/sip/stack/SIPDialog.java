@@ -1915,6 +1915,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                  */
         		long lastReferCSeq = ((SIPRequest) lastTransaction.getRequest()).getCSeq().getSeqNumber();
         		this.eventHeader = new Event();
+        		this.eventHeader.setEventType("refer");
         		this.eventHeader.setEventId(Long.toString(lastReferCSeq));
         	}
         } catch (Exception ex) {
