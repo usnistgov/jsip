@@ -1907,6 +1907,12 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         
         try {
         	if (transaction.getRequest().getMethod().equals(Request.REFER) && transaction instanceof SIPServerTransaction) {
+        		/*
+                 * RFC-3515 Section - 2.4.6, if there are multiple REFER transactions in a dialog then the 
+                 * NOTIFY MUST include an id parameter in the Event header containing the sequence number 
+                 * (the number from the CSeq header field value) of the REFER this NOTIFY is associated with. 
+                 * This id parameter MAY be included in NOTIFYs to the first REFER a UA receives in a given dialog 
+                 */
         		long lastReferCSeq = ((SIPRequest) lastTransaction.getRequest()).getCSeq().getSeqNumber();
         		this.eventHeader = new Event();
         		this.eventHeader.setEventId(Long.toString(lastReferCSeq));
@@ -2402,10 +2408,15 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         }
 
         if (method.equals(Request.SUBSCRIBE)) {
-            if (eventHeader != null)
+            if (eventHeader != null) 
                 sipRequest.addHeader(eventHeader);
         }
-        
+        /*
+         * RFC-3515 Section - 2.4.6, if there are multiple REFER transactions in a dialog then the 
+         * NOTIFY MUST include an id parameter in the Event header containing the sequence number 
+         * (the number from the CSeq header field value) of the REFER this NOTIFY is associated with. 
+         * This id parameter MAY be included in NOTIFYs to the first REFER a UA receives in a given dialog 
+         */
         if (method.equals(Request.NOTIFY)) {
         	if (eventHeader != null ) {
         		sipRequest.addHeader(eventHeader);
