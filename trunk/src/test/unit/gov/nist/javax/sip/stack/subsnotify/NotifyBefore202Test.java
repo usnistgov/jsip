@@ -15,11 +15,16 @@ public class NotifyBefore202Test  extends TestCase {
 	
 	public void testSendSubscribe() {
 		subscriber.sendSubscribe();
-	
 	}
 	
-	public void tearDown() throws Exception {
-		Thread.sleep(4000);
+	public void testInDialogSubscribe() throws InterruptedException {
+		subscriber.setInDialogSubcribe(true);
+		subscriber.sendSubscribe();
+		Thread.sleep(15000);
+		assertTrue(subscriber.checkState());
+	}
+	
+	public void tearDown() throws Exception {		
 		subscriber.tearDown();
 		notifier.tearDown();
 	}
