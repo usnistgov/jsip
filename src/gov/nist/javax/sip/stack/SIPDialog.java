@@ -4120,9 +4120,10 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
     public void setPendingRouteUpdateOn202Response(SIPRequest sipRequest) {
         this.pendingRouteUpdateOn202Response = true;
-        String toTag = sipRequest.getToHeader().getTag();
-        if (toTag != null) {
-            this.setRemoteTag(toTag);
+        // Issue 374 : patch from ivan dubrov : get the from tag instead of to tag
+        String fromTag = sipRequest.getFromHeader().getTag();
+        if (fromTag != null) {
+            this.setRemoteTag(fromTag);
         }
 
     }
