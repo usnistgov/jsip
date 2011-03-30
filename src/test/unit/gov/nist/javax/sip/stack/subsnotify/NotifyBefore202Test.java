@@ -17,6 +17,9 @@ public class NotifyBefore202Test  extends TestCase {
 		subscriber.sendSubscribe();
 	}
 	
+	/*
+	 * Non Regression test for issue http://java.net/jira/browse/JSIP-374
+	 */
 	public void testInDialogSubscribe() throws InterruptedException {
 		subscriber.setInDialogSubcribe(true);
 		subscriber.sendSubscribe();
