@@ -1913,9 +1913,12 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                  * (the number from the CSeq header field value) of the REFER this NOTIFY is associated with. 
                  * This id parameter MAY be included in NOTIFYs to the first REFER a UA receives in a given dialog 
                  */
-        		long lastReferCSeq = ((SIPRequest) lastTransaction.getRequest()).getCSeq().getSeqNumber();
+        		long lastReferCSeq = ((SIPRequest) transaction.getRequest()).getCSeq().getSeqNumber();
         		this.eventHeader = new Event();
         		this.eventHeader.setEventType("refer");
+        		if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+        			logger.logDebug("SIPDialog::setLastTransaction:lastReferCSeq = " + lastReferCSeq);
+        		}
         		this.eventHeader.setEventId(Long.toString(lastReferCSeq));
         	}
         } catch (Exception ex) {
