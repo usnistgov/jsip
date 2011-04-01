@@ -1451,7 +1451,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                 
         int code = sipResponse.getStatusCode();
 		boolean isRetransmission = !responsesReceived.add(Integer.valueOf(code));
-        if(code == 183 && isRetransmission) {
+        if(code > 100 && code < 200 && isRetransmission) {
         	if(lastResponse != null && !sipResponse.toString().equals(lastResponse.toString())) {
         		isRetransmission = false;
         	}
