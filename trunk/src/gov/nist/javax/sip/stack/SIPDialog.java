@@ -3013,9 +3013,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         // out of order ACK sending. Old ACKs seqno's can always be ACKed.
         if (lastInviteOkReceived < cseqno) {
             if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                this.logger.logDebug(
+                logger.logDebug(
                         "WARNING : Attempt to crete ACK without OK " + this);
-                this.logger.logDebug(
+                logger.logDebug(
                         "LAST RESPONSE = " + this.getLastResponseStatusCode());
             }
             throw new SipException(
@@ -3083,6 +3083,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             // from the
             // original request
             Via via = this.lastResponseTopMostVia;
+            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                logger.logDebug("lastResponseTopMostVia " + lastResponseTopMostVia);
+            }
             via.removeParameters();
             if (originalRequest != null
                     && originalRequest.getTopmostVia() != null) {
@@ -3096,7 +3099,11 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             }
             via.setBranch(Utils.getInstance().generateBranchId()); // new branch
             vias.add(via);
+            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                logger.logDebug("Adding via to the ACK we are creating : " + via + " lastResponseTopMostVia " + lastResponseTopMostVia);
+            }     
             sipRequest.setVia(vias);
+            
             From from = new From();
             from.setAddress(this.getLocalParty());
             from.setTag(this.myTag);
@@ -3209,7 +3216,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         // this.lastResponse = sipResponse;
         try {
             this.lastResponseStatusCode = Integer.valueOf(statusCode);
-            this.lastResponseTopMostVia = sipResponse.getTopmostVia();
+            // Issue 378 : http://java.net/jira/browse/JSIP-378
+            // Cloning the via header to avoid race condition and be modified
+            this.lastResponseTopMostVia = (Via) sipResponse.getTopmostVia().clone();
             this.lastResponseMethod = sipResponse.getCSeqHeader().getMethod();
             this.lastResponseCSeqNumber = sipResponse.getCSeq().getSeqNumber();
             if (sipResponse.getToTag() != null ) {
@@ -3228,7 +3237,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 logger.logDebug(
                         "sipDialog: setLastResponse:" + this
                                 + " lastResponse = "
-                                + this.lastResponseStatusCode);
+                                + this.lastResponseStatusCode 
+                                + " response " + sipResponse.toString()
+                                + " topMostViaHeader " + lastResponseTopMostVia);
             }
             if (this.getState() == DialogState.TERMINATED) {
                 if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
