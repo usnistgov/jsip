@@ -222,6 +222,8 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
     private static boolean interlockProvisionalResponses = true;
 
     private Semaphore provisionalResponseSem = new Semaphore(1);
+    
+    private Semaphore terminationSemaphore = new Semaphore(0);
 
     // jeand we nullify the last response fast to save on mem and help GC, but we keep only the information needed
     private byte[] lastResponseAsBytes;
@@ -1603,6 +1605,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
             // Set a time after which the connection
             // is closed.
             this.collectionTime = TIMER_J;
+            this.terminationSemaphore.release();
         }
 
         super.setState(newState);
@@ -2068,6 +2071,15 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
      */
     public long getPendingReliableRSeqNumber() {
         return pendingReliableRSeqNumber;
+    }
+    
+    public void waitForTermination() {
+    	
+    	try {
+			this.terminationSemaphore.acquire();
+		} catch (InterruptedException e) {
+			
+		}
     }
 
 
