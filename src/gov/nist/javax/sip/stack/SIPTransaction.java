@@ -1357,7 +1357,7 @@ public abstract class SIPTransaction extends MessageChannel implements
 
     /**
      * Extract identities from certificates exchanged over TLS, based on guidelines
-     * from draft-ietf-sip-domain-certs-04.
+     * from rfc5922.
      * @return list of authenticated identities
      */
     public List<String> extractCertIdentities() throws SSLPeerUnverifiedException {
@@ -1388,7 +1388,6 @@ public abstract class SIPTransaction extends MessageChannel implements
                         logger.logDebug("found subjAltNames: " + subjAltNames);
                     }
                     // First look for a URI in the subjectAltName field
-                    // as per draft-ietf-sip-domain-certs-04
                     for (List< ? > altName : subjAltNames) {
                         // 0th position is the alt name type
                         // 1st position is the alt name data
@@ -1396,6 +1395,12 @@ public abstract class SIPTransaction extends MessageChannel implements
                             SipURI altNameUri;
                             try {
                                 altNameUri = new AddressFactoryImpl().createSipURI((String) altName.get(1));
+                                // only sip URIs are allowed
+                                if(!"sip".equals(altNameUri.getScheme()))
+                                    continue;
+                                // user certificates are not allowed
+                                if(altNameUri.getUser() != null)
+                                    continue;
                                 String altHostName = altNameUri.getHost();
                                 if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                                     logger.logDebug(
