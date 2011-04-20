@@ -407,19 +407,16 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                 	logger.logDebug("SIPDialog::reInviteSender: dialog = " + ctx.getDialog()  + " lastTransaction = " + lastTransaction + " lastTransactionState " + lastTransaction.getState());
                 }
-                while (SIPDialog.this.lastTransaction != null &&
+                if (SIPDialog.this.lastTransaction != null &&
                 			SIPDialog.this.lastTransaction instanceof SIPServerTransaction && 
                 			SIPDialog.this.lastTransaction.isInviteTransaction() &&
                 		    SIPDialog.this.lastTransaction.getState() != TransactionState.TERMINATED)
                 {
+                	((SIPServerTransaction)SIPDialog.this.lastTransaction).waitForTermination();
                 	Thread.sleep(50);
-                	busyWait = true;
                 }
                 
-                // Wait a bit to grab the ack semaphore just in case the OK got sent.
-                if (busyWait) {
-                	Thread.sleep(50);
-                }
+               
 
                 if (!SIPDialog.this.takeAckSem()) {
                     /*
@@ -4011,6 +4008,10 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         }
     }
 
+    boolean isBlockedForReInvite() {
+    	return this.ackSem.availablePermits() == 0;
+    }
+    
     boolean takeAckSem() {
         if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             logger.logDebug("[takeAckSem " + this + " sem=" + this.ackSem);
