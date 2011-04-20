@@ -805,9 +805,29 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                     // What to do here ?? kill the dialog?
                 }
             }
-
-            this.semRelease();
-            return;
+            if(dialog == null) {
+            	// http://java.net/jira/browse/JSIP-377
+            	// The client transaction MUST be destroyed the instant it enters the
+            	// "Terminated" state.  This is actually necessary to guarantee correct
+            	// operation.  The reason is that 2xx responses to an INVITE are treated
+            	// differently; each one is forwarded by proxies
+            	
+                // for proxy, it happens that there is a race condition while the tx is getting removed and TERMINATED
+            	// where some responses are still able to be handled by it so we let responses for proxies pass up to the application
+            	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                    logger.logDebug("Client Transaction " + this + " branch id " + getBranch() + " doesn't have any dialog and is in TERMINATED state");
+            	if (respondTo != null) {
+            		if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                        logger.logDebug("passing response up to the application");
+                    respondTo.processResponse(transactionResponse, this, dialog);
+                } else {
+                    this.semRelease();
+                    return;
+                }
+            } else {
+            	this.semRelease();
+            	return;
+            }
         } else if (TransactionState._CALLING == this.getInternalState()) {
             if (statusCode / 100 == 2) {
 
