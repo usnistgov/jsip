@@ -282,17 +282,10 @@ public class Referee implements SipListener {
         Response response = (Response) responseReceivedEvent.getResponse();
         Transaction tid = responseReceivedEvent.getClientTransaction();
 
-        if(tid != null) {
-	        logger.info("Response received with client transaction id "
-	                + tid + ":\n" + response.getStatusCode() +
-	                " cseq = " + response.getHeader(CSeqHeader.NAME) + 
-	                " dialog " + tid.getDialog());
-        } else {
-        	logger.info("Response received with client transaction id "
-	                + tid + ":\n" + response.getStatusCode() +
-	                " cseq = " + response.getHeader(CSeqHeader.NAME) + 
-	                " dialog " + responseReceivedEvent.getDialog());
-        }
+        logger.info("Response received with client transaction id "
+                + tid + ":\n" + response.getStatusCode() +
+                " cseq = " + response.getHeader(CSeqHeader.NAME) + 
+                " dialog " + tid.getDialog());
 
         CSeqHeader cseq = (CSeqHeader) response.getHeader( CSeqHeader.NAME );
         if (cseq.getMethod().equals(Request.INVITE)) {
@@ -303,7 +296,7 @@ public class Referee implements SipListener {
                 TestHarness.fail("Failed to send notify, because of " + e1.getMessage());
             }
 
-            if (response.getStatusCode() == 200 ) {
+            if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
                 try {
                     Request ack = tid.getDialog().createAck( cseq.getSeqNumber() );
                     tid.getDialog().sendAck( ack );

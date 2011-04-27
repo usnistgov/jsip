@@ -46,22 +46,14 @@ public class SIPDialogErrorEvent extends EventObject {
     public static final int DIALOG_REINVITE_TIMEOUT = 3;
     
     /*
-     * Dialog in early state for too long.
-     */
-    public static final int EARLY_STATE_TIMEOUT = 4;
-    
-    /*
      * This event Id indicates that some internal error happened and the ACK semaphore could not be acquired.
      */
-    public static final int DIALOG_ERROR_INTERNAL_COULD_NOT_TAKE_ACK_SEM = 5;
+    public static final int DIALOG_ERROR_INTERNAL_COULD_NOT_TAKE_ACK_SEM = 4;
     
 
     // ID of this error event
     private int errorID;
 
-	private SIPClientTransaction clientTransaction;
-    
-    
     /**
      * Creates a dialog error event.
      *
@@ -87,15 +79,9 @@ public class SIPDialogErrorEvent extends EventObject {
     		this.errorID = DIALOG_REINVITE_TIMEOUT;
     	} else if (reason == DialogTimeoutEvent.Reason.CannotAcquireAckSemaphoreForOk) {
     		this.errorID = DIALOG_ERROR_INTERNAL_COULD_NOT_TAKE_ACK_SEM;
-    	} else if ( reason == DialogTimeoutEvent.Reason.EarlyStateTimeout) {
-    	    this.errorID = EARLY_STATE_TIMEOUT;
     	}
     }
 
-    public SIPDialogErrorEvent (SIPDialog sourceDialog, SIPClientTransaction clientTransaction, DialogTimeoutEvent.Reason reason) {
-    	this(sourceDialog,reason);
-    	this.clientTransaction = clientTransaction;
-    }
     /**
      * Returns the ID of the error.
      *
@@ -104,13 +90,4 @@ public class SIPDialogErrorEvent extends EventObject {
     public int getErrorID() {
         return errorID;
     }
-    
-    
-    public SIPClientTransaction getClientTransaction() {
-    	return this.clientTransaction;
-    }
-
-	public void setClientTransaction(SIPClientTransaction clientTransaction) {
-		this.clientTransaction = clientTransaction;
-	}
 }

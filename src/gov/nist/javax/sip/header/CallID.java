@@ -34,7 +34,7 @@ import java.text.ParseException;
  * Call ID SIPHeader.
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.8 $ $Date: 2010-05-06 14:07:54 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2009-07-17 18:57:27 $
  * @since 1.1
  */
 public class CallID
@@ -79,10 +79,10 @@ public class CallID
      *@return String encoded body part of the header.
      */
     public String encodeBody() {
-        return encodeBody(new StringBuilder()).toString();
+        return encodeBody(new StringBuffer()).toString();
     }
 
-    protected StringBuilder encodeBody(StringBuilder buffer) {
+    protected StringBuffer encodeBody(StringBuffer buffer) {
         if (callIdentifier != null)
             callIdentifier.encode(buffer);
 

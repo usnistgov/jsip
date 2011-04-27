@@ -78,7 +78,7 @@ public class ZoneField
     * Encode this structure into a canonical form.
     */
     public String encode() {
-        StringBuilder retval = new StringBuilder(ZONE_FIELD);
+        StringBuffer retval = new StringBuffer(ZONE_FIELD);
         ListIterator li = zoneAdjustments.listIterator();
         int num = 0;
         while (li.hasNext()) {

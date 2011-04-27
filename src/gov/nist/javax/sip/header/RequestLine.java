@@ -35,7 +35,7 @@ import gov.nist.javax.sip.address.*;
 /**
  * RequestLine of SIP Request.
  *
- * @version 1.2 $Revision: 1.9 $ $Date: 2010-05-06 14:07:49 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2009-09-15 02:55:27 $
  * @author M. Ranganathan
  */
 public class RequestLine extends SIPObject implements SipRequestLine {
@@ -70,10 +70,10 @@ public class RequestLine extends SIPObject implements SipRequestLine {
      * @return requestLine encoded as a string.
      */
     public String encode() {
-        return encode(new StringBuilder()).toString();
+        return encode(new StringBuffer()).toString();
     }
 
-    public StringBuilder encode(StringBuilder buffer) {
+    public StringBuffer encode(StringBuffer buffer) {
         if (method != null) {
             buffer.append(method);
             buffer.append(SP);
@@ -213,17 +213,11 @@ public class RequestLine extends SIPObject implements SipRequestLine {
 }
 /*
  * $Log: not supported by cvs2svn $
- * Revision 1.8  2009/09/15 02:55:27  mranga
- * Issue number:  222
- * Add HeaderFactoryExt.createStatusLine(String) and HeaderFactoryExt.createRequestLine(String)
- * Allows users to easily parse SipFrag bodies (for example NOTIFY bodies
- * during call transfer).
- *
  * Revision 1.7  2009/07/17 18:57:36  emcho
  * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
  *
  * Revision 1.6  2007/02/12 15:19:23  belangery
- * Changed the encode() and encodeBody() methods of SIP headers and basic classes to make them use the same StringBuilder instance during the encoding phase.
+ * Changed the encode() and encodeBody() methods of SIP headers and basic classes to make them use the same StringBuffer instance during the encoding phase.
  *
  * Revision 1.5  2006/07/13 09:01:26  mranga
  * Issue number:

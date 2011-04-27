@@ -25,8 +25,7 @@
  */
 package gov.nist.javax.sip;
 
-import gov.nist.core.CommonLogger;
-import gov.nist.core.LogLevels;
+import gov.nist.core.LogWriter;
 import gov.nist.core.ServerLogger;
 import gov.nist.core.StackLogger;
 import gov.nist.core.net.AddressResolver;
@@ -40,17 +39,13 @@ import gov.nist.javax.sip.parser.MessageParserFactory;
 import gov.nist.javax.sip.parser.PipelinedMsgParser;
 import gov.nist.javax.sip.parser.StringMsgParser;
 import gov.nist.javax.sip.parser.StringMsgParserFactory;
-import gov.nist.javax.sip.stack.ClientAuthType;
 import gov.nist.javax.sip.stack.DefaultMessageLogFactory;
 import gov.nist.javax.sip.stack.DefaultRouter;
 import gov.nist.javax.sip.stack.MessageProcessor;
 import gov.nist.javax.sip.stack.MessageProcessorFactory;
 import gov.nist.javax.sip.stack.OIOMessageProcessorFactory;
 import gov.nist.javax.sip.stack.SIPEventInterceptor;
-import gov.nist.javax.sip.stack.SIPMessageValve;
 import gov.nist.javax.sip.stack.SIPTransactionStack;
-import gov.nist.javax.sip.stack.timers.DefaultSipTimer;
-import gov.nist.javax.sip.stack.timers.SipTimer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -59,10 +54,8 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
-import java.util.Collections;
 import java.util.Hashtable;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.concurrent.Semaphore;
@@ -87,12 +80,7 @@ import javax.sip.message.Request;
  * 
  * The JAIN-SIP stack is initialized by a set of properties (see the JAIN SIP
  * documentation for an explanation of these properties
- * {@link javax.sip.SipStack} ).
- * 
- * For NIST SIP stack all properties can also be passed as JVM system properties
- * from the command line as -D arguments.
- * 
- *  In addition to these, the following are
+ * {@link javax.sip.SipStack} ). In addition to these, the following are
  * meaningful properties for the NIST SIP stack (specify these in the property
  * array when you create the JAIN-SIP statck):
  * <ul>
@@ -451,10 +439,6 @@ import javax.sip.message.Request;
  * client transction in the ResponseEventExt and deliver that to the application.
  * The event handler can get the original transaction from this event. </li>
  * 
- * <li><b>gov.nist.javax.sip.EARLY_DIALOG_TIMEOUT_SECONDS=integer </b> Maximum time for which a dialog
- * can remain in early state. This is defaulted to 3 minutes ( 180 seconds).
- * </li>
- * 
  * <li><b>gov.nist.javax.sip.MESSAGE_PARSER_FACTORY =  name of the class implementing gov.nist.javax.sip.parser.MessageParserFactory</b>
  * This factory allows pluggable implementations of the MessageParser that will take care of parsing the incoming messages.
  * By example one could plug a lazy parser through this factory.</li>
@@ -463,18 +447,10 @@ import javax.sip.message.Request;
  * This factory allows pluggable implementations of the MessageProcessor that will take care of incoming messages.
  * By example one could plug a NIO Processor through this factory.</li>
  * 
- * <li><b>gov.nist.javax.sip.TIMER_CLASS_NAME =  name of the class implementing gov.nist.javax.sip.stack.timers.SipTimer</b> interface
- * This allows pluggable implementations of the Timer that will take care of scheduling the various SIP Timers.
- * By example one could plug a regular timer, a scheduled thread pool executor.</li>
  * 
  * <li><b>gov.nist.javax.sip.DELIVER_RETRANSMITTED_ACK_TO_LISTENER=boolean</b> A testing property
  * that allows application to see the ACK for retransmitted 200 OK requests. <b>Note that this is for test
  * purposes only</b></li>
- * 
- * * <li><b>gov.nist.javax.sip.AGGRESSIVE_CLEANUP=boolean</b> A property that will cleanup Dialog, and Transaction structures
- * agrressively to improve memroy usage and performance (up to 50% gain). However one needs to be careful in its code
- * on how and when it accesses transaction and dialog data since it cleans up aggressively when transactions changes state
- * to COMPLETED or TERMINATED and for Dialog once the ACK is received/sent</li>
  * 
  * <li><b>gov.nist.javax.sip.MIN_KEEPALIVE_TIME_SECONDS = integer</b> Minimum time between keep alive
  * pings (CRLF CRLF) from clients. If pings arrive with less than this frequency they will be replied
@@ -484,14 +460,6 @@ import javax.sip.message.Request;
  * <li><b>gov.nist.javax.sip.DIALOG_TIMEOUT_FACTOR= integer</b> Default to 64. The number of ticks before a
  * dialog that does not receive an ACK receives a Timeout notification. Note that this is only relevant
  * if the registered SipListener is of type SipListenerExt
- * </li>
- * 
- * <li><b>gov.nist.javax.sip.SIP_MESSAGE_VALVE= String</b> Default to null. The class name of your custom valve component.
- * An instance of this class will be created and the SIPMessageValve.processRequest/Response() methods will be called for every message
- * before any long-lived SIP Stack resources are allocated (no transactions, no dialogs). From within the processRequest callback
- * implementation you can drop messages, send a response statelessly or otherwise transform/pre-process the message before it reaches
- * the next steps of the pipeline. Similarly from processResponse() you can manipulate a response or drop it silently, but dropping
- * responses is not recommended, because the transaction already exists when the request for the response was sent.
  * </li>
  * 
  * <li><b>gov.nist.javax.sip.SIP_EVENT_INTERCEPTOR</b> Default to null. The class name of your custom interceptor object.
@@ -517,12 +485,6 @@ import javax.sip.message.Request;
  * of outbund TLS connections.
  * </li>
  * 
- * <li><b>gov.nist.javax.sip.TLS_CLIENT_AUTH_TYPE = String </b> Valid values are Default (backward compatible with previous versions)
- * , Enabled, Want or Disabled. Set to Enabled if you want the SSL stack to require a valid certificate chain from the client before 
- * accepting a connection. Set to Want if you want the SSL stack to request a client Certificate, but not fail if one isn't presented. 
- * A Disabled value will not require a certificate chain.
- * </li>
- * 
  * <li><b>javax.net.ssl.keyStore = fileName </b> <br/>
  * Default is <it>NULL</it>. If left undefined the keyStore and trustStore will
  * be left to the java runtime defaults. If defined, any TLS sockets created
@@ -546,7 +508,7 @@ import javax.sip.message.Request;
  * should only use the extensions that are defined in this class. </b>
  * 
  * 
- * @version 1.2 $Revision: 1.143 $ $Date: 2010-12-02 22:04:18 $
+ * @version 1.2 $Revision: 1.125.2.4 $ $Date: 2010-12-02 01:41:37 $
  * 
  * @author M. Ranganathan <br/>
  * 
@@ -556,21 +518,21 @@ import javax.sip.message.Request;
  */
 public class SipStackImpl extends SIPTransactionStack implements
 		javax.sip.SipStack, SipStackExt {
-	private static StackLogger logger = CommonLogger.getLogger(SipStackImpl.class);
+
 	private EventScanner eventScanner;
 
-	protected Hashtable<String, ListeningPointImpl> listeningPoints;
+	private Hashtable<String, ListeningPointImpl> listeningPoints;
 
-	protected List<SipProviderImpl> sipProviders;
+	private LinkedList<SipProviderImpl> sipProviders;
 
 	/**
 	 * Max datagram size.
 	 */
-	public static final Integer MAX_DATAGRAM_SIZE = 64 * 1024;
+	public static final Integer MAX_DATAGRAM_SIZE = 8 * 1024;
 
 	// Flag to indicate that the listener is re-entrant and hence
 	// Use this flag with caution.
-	private boolean reEntrantListener;
+	boolean reEntrantListener;
 
 	SipListener sipListener;
 	TlsSecurityPolicy tlsSecurityPolicy;
@@ -598,8 +560,9 @@ public class SipStackImpl extends SIPTransactionStack implements
 			"SSLv2Hello",
 			"TLSv1"
 	};
-
+	
 	private Properties configurationProperties;
+
 	/**
 	 * Creates a new instance of SipStackImpl.
 	 */
@@ -611,7 +574,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 		super.setMessageFactory(msgFactory);
 		this.eventScanner = new EventScanner(this);
 		this.listeningPoints = new Hashtable<String, ListeningPointImpl>();
-		this.sipProviders = Collections.synchronizedList(new LinkedList<SipProviderImpl>());
+		this.sipProviders = new LinkedList<SipProviderImpl>();
 
 	}
 
@@ -622,23 +585,9 @@ public class SipStackImpl extends SIPTransactionStack implements
 		super.reInit();
 		this.eventScanner = new EventScanner(this);
 		this.listeningPoints = new Hashtable<String, ListeningPointImpl>();
-		this.sipProviders = Collections.synchronizedList(new LinkedList<SipProviderImpl>());
+		this.sipProviders = new LinkedList<SipProviderImpl>();
 		this.sipListener = null;
-		if(!getTimer().isStarted()) {			
-			String defaultTimerName = configurationProperties.getProperty("gov.nist.javax.sip.TIMER_CLASS_NAME",DefaultSipTimer.class.getName());
-			try {				
-				setTimer((SipTimer)Class.forName(defaultTimerName).newInstance());
-				getTimer().start(this, configurationProperties);
-				if (getThreadAuditor().isEnabled()) {
-		            // Start monitoring the timer thread
-		            getTimer().schedule(new PingTimer(null), 0);
-		        }
-			} catch (Exception e) {
-				logger
-					.logError(
-							"Bad configuration value for gov.nist.javax.sip.TIMER_CLASS_NAME", e);			
-			}
-		}
+
 	}
 
 	/**
@@ -662,7 +611,6 @@ public class SipStackImpl extends SIPTransactionStack implements
 	public SipStackImpl(Properties configurationProperties)
 			throws PeerUnavailableException {
 		this();
-		configurationProperties = new MergedSystemProperties(configurationProperties);
 		this.configurationProperties = configurationProperties;
 		String address = configurationProperties
 				.getProperty("javax.sip.IP_ADDRESS");
@@ -697,8 +645,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 						.getConstructor(constructorArgs);
 				Object[] args = new Object[0];
 				StackLogger stackLogger = (StackLogger) cons.newInstance(args);
-				CommonLogger.legacyLogger = stackLogger;
 				stackLogger.setStackProperties(configurationProperties);
+				super.setStackLogger(stackLogger);
 			} catch (InvocationTargetException ex1) {
 				throw new IllegalArgumentException(
 						"Cound not instantiate stack logger "
@@ -767,14 +715,14 @@ public class SipStackImpl extends SIPTransactionStack implements
 			Router router = (Router) cons.newInstance(args);
 			super.setRouter(router);
 		} catch (InvocationTargetException ex1) {
-			logger
+			getStackLogger()
 					.logError(
 							"could not instantiate router -- invocation target problem",
 							(Exception) ex1.getCause());
 			throw new PeerUnavailableException(
 					"Cound not instantiate router - check constructor", ex1);
 		} catch (Exception ex) {
-			logger.logError("could not instantiate router",
+			getStackLogger().logError("could not instantiate router",
 					(Exception) ex.getCause());
 			throw new PeerUnavailableException("Could not instantiate router",
 					ex);
@@ -830,7 +778,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 						configurationProperties
 								.getProperty("javax.net.ssl.keyStoreType"));
 			} catch (Exception e1) {
-				logger.logError(
+				getStackLogger().logError(
 						"could not instantiate SSL networking", e1);
 			}
 		}
@@ -884,7 +832,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 		String tlsPolicyPath = configurationProperties.getProperty("gov.nist.javax.sip.TLS_SECURITY_POLICY");
 		if (tlsPolicyPath == null) {
 			tlsPolicyPath = "gov.nist.javax.sip.stack.DefaultTlsSecurityPolicy";
-			logger.logWarning("using default tls security policy");
+			getStackLogger().logWarning("using default tls security policy");
 		}
 		try {
 			Class< ? > tlsPolicyClass = Class.forName(tlsPolicyPath);
@@ -901,13 +849,6 @@ public class SipStackImpl extends SIPTransactionStack implements
 					+ "- check that it is present on the classpath and that there is a no-args constructor defined",
 					ex);
 		}
-		
-		// Allow application to choose the tls client auth policy on the socket
-        String clientAuthType = configurationProperties.getProperty("gov.nist.javax.sip.TLS_CLIENT_AUTH_TYPE");
-        if (clientAuthType != null) {
-            super.clientAuth = ClientAuthType.valueOf(clientAuthType);
-            logger.logInfo("using " + clientAuthType + " tls auth policy");
-        }
 
 		// The following features are unique to the NIST implementation.
 
@@ -928,7 +869,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 			} catch (Exception e) {
 				throw new PeerUnavailableException(
 						"can't find or instantiate NetworkLayer implementation: "
-								+ path, e);
+								+ path);
 			}
 		}
 
@@ -945,7 +886,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 			} catch (Exception e) {
 				throw new PeerUnavailableException(
 						"can't find or instantiate AddressResolver implementation: "
-								+ path, e);
+								+ path);
 			}
 		}
 
@@ -955,8 +896,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 			try {
 				this.maxConnections = new Integer(maxConnections).intValue();
 			} catch (NumberFormatException ex) {
-				if (logger.isLoggingEnabled())
-					logger.logError(
+				if (isLoggingEnabled())
+					getStackLogger().logError(
 						"max connections - bad value " + ex.getMessage());
 			}
 		}
@@ -967,28 +908,29 @@ public class SipStackImpl extends SIPTransactionStack implements
 			try {
 				this.threadPoolSize = new Integer(threadPoolSize).intValue();
 			} catch (NumberFormatException ex) {
-				if (logger.isLoggingEnabled())
-					this.logger.logError(
+				if (isLoggingEnabled())
+					this.getStackLogger().logError(
 						"thread pool size - bad value " + ex.getMessage());
 			}
 		}
+		
 
-		int congetstionControlTimeout = Integer
-		.parseInt(configurationProperties.getProperty(
-				"gov.nist.javax.sip.CONGESTION_CONTROL_TIMEOUT",
-		"8000"));
-		super.stackCongenstionControlTimeout = congetstionControlTimeout;
-
+		int stackCongestionControlTimeout = Integer
+				.parseInt(configurationProperties.getProperty(
+						"gov.nist.javax.sip.CONGESTION_CONTROL_TIMEOUT",
+						"8000"));
+		super.stackCongestionControlTimeout = stackCongestionControlTimeout;
+		
 		String tcpTreadPoolSize = configurationProperties
 		.getProperty("gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE");
 		if (tcpTreadPoolSize != null) {
 			try {
 				int threads = new Integer(tcpTreadPoolSize).intValue();
 				super.setTcpPostParsingThreadPoolSize(threads);
-				PipelinedMsgParser.setPostParseExcutorSize(threads, congetstionControlTimeout);
+				PipelinedMsgParser.setPostParseExcutorSize(threads, stackCongestionControlTimeout);
 			} catch (NumberFormatException ex) {
-				if (logger.isLoggingEnabled())
-					this.logger.logError(
+				if (isLoggingEnabled())
+					this.getStackLogger().logError(
 							"TCP post-parse thread pool size - bad value " + tcpTreadPoolSize + " : " + ex.getMessage());
 			}
 		}
@@ -1002,8 +944,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 				this.serverTransactionTableLowaterMark = this.serverTransactionTableHighwaterMark * 80 / 100;
 				// Lowater is 80% of highwater
 			} catch (NumberFormatException ex) {
-				if (logger.isLoggingEnabled())
-					this.logger
+				if (isLoggingEnabled())
+					this.getStackLogger()
 						.logError(
 								"transaction table size - bad value "
 										+ ex.getMessage());
@@ -1023,8 +965,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 				this.clientTransactionTableLowaterMark = this.clientTransactionTableLowaterMark * 80 / 100;
 				// Lowater is 80% of highwater
 			} catch (NumberFormatException ex) {
-				if (logger.isLoggingEnabled())
-					this.logger
+				if (isLoggingEnabled())
+					this.getStackLogger()
 						.logError(
 								"transaction table size - bad value "
 										+ ex.getMessage());
@@ -1062,8 +1004,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 				}
 			} catch (NumberFormatException nfe) {
 				// Ignore.
-				if (logger.isLoggingEnabled())
-					logger.logError("Bad read timeout " + readTimeout);
+				if (isLoggingEnabled())
+					getStackLogger().logError("Bad read timeout " + readTimeout);
 			}
 		}
 
@@ -1073,7 +1015,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 				.getProperty("gov.nist.javax.sip.STUN_SERVER");
 
 		if (stunAddr != null)
-			this.logger.logWarning(
+			this.getStackLogger().logWarning(
 					"Ignoring obsolete property "
 							+ "gov.nist.javax.sip.STUN_SERVER");
 
@@ -1090,8 +1032,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 				super.maxMessageSize = 0;
 			}
 		} catch (NumberFormatException ex) {
-			if (logger.isLoggingEnabled())
-				logger.logError(
+			if (isLoggingEnabled())
+				getStackLogger().logError(
 					"maxMessageSize - bad value " + ex.getMessage());
 		}
 
@@ -1109,8 +1051,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 				getThreadAuditor().setPingIntervalInMillisecs(
 						Long.valueOf(interval).longValue() / 2);
 			} catch (NumberFormatException ex) {
-				if (logger.isLoggingEnabled())
-					logger.logError(
+				if (isLoggingEnabled())
+					getStackLogger().logError(
 						"THREAD_AUDIT_INTERVAL_IN_MILLISECS - bad value ["
 								+ interval + "] " + ex.getMessage());
 			}
@@ -1139,8 +1081,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 				this.logRecordFactory = (LogRecordFactory) c
 						.newInstance(new Object[0]);
 			} catch (Exception ex) {
-				if (logger.isLoggingEnabled())
-					logger
+				if (isLoggingEnabled())
+					getStackLogger()
 						.logError(
 								"Bad configuration value for LOG_FACTORY -- using default logger");
 				this.logRecordFactory = new DefaultMessageLogFactory();
@@ -1181,8 +1123,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 		super.logStackTraceOnMessageSend = configurationProperties.getProperty(
 				"gov.nist.javax.sip.LOG_STACK_TRACE_ON_MESSAGE_SEND", "false")
 				.equalsIgnoreCase("true");
-		if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
-			logger.logDebug(
+		if (isLoggingEnabled(LogWriter.TRACE_DEBUG))
+			getStackLogger().logDebug(
 				"created Sip stack. Properties = " + configurationProperties);
 		InputStream in = getClass().getResourceAsStream("/TIMESTAMP");
 		if (in != null) {
@@ -1194,9 +1136,9 @@ public class SipStackImpl extends SIPTransactionStack implements
 				if (in != null) {
 					in.close();
 				}
-				logger.setBuildTimeStamp(buildTimeStamp);
+				getStackLogger().setBuildTimeStamp(buildTimeStamp);
 			} catch (IOException ex) {
-				logger.logError("Could not open build timestamp.");
+				getStackLogger().logError("Could not open build timestamp.");
 			}
 		}
 
@@ -1227,9 +1169,6 @@ public class SipStackImpl extends SIPTransactionStack implements
 		super.maxForkTime = Integer.parseInt(
 		        configurationProperties.getProperty("gov.nist.javax.sip.MAX_FORK_TIME_SECONDS","0"));
 		
-		super.earlyDialogTimeout = Integer.parseInt(
-                configurationProperties.getProperty("gov.nist.javax.sip.EARLY_DIALOG_TIMEOUT_SECONDS","180"));
-		
 		
 		super.minKeepAliveInterval = Integer.parseInt(configurationProperties.getProperty("gov.nist.javax.sip.MIN_KEEPALIVE_TIME_SECONDS","-1"));
 		
@@ -1242,7 +1181,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 		try {
 			super.messageParserFactory = (MessageParserFactory) Class.forName(messageParserFactoryName).newInstance();
 		} catch (Exception e) {
-			logger
+			getStackLogger()
 				.logError(
 						"Bad configuration value for gov.nist.javax.sip.MESSAGE_PARSER_FACTORY", e);			
 		}
@@ -1251,73 +1190,28 @@ public class SipStackImpl extends SIPTransactionStack implements
 		try {
 			super.messageProcessorFactory = (MessageProcessorFactory) Class.forName(messageProcessorFactoryName).newInstance();
 		} catch (Exception e) {
-			logger
+			getStackLogger()
 				.logError(
 						"Bad configuration value for gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", e);			
 		}
-		
-		String defaultTimerName = configurationProperties.getProperty("gov.nist.javax.sip.TIMER_CLASS_NAME",DefaultSipTimer.class.getName());
-		try {
-			setTimer((SipTimer)Class.forName(defaultTimerName).newInstance());
-			getTimer().start(this, configurationProperties);
-			if (getThreadAuditor().isEnabled()) {
-	            // Start monitoring the timer thread
-	            getTimer().schedule(new PingTimer(null), 0);
-	        }
-		} catch (Exception e) {
-			logger
-				.logError(
-						"Bad configuration value for gov.nist.javax.sip.TIMER_CLASS_NAME", e);			
-		}
-		super.aggressiveCleanup = Boolean.parseBoolean(configurationProperties
-				.getProperty("gov.nist.javax.sip.AGGRESSIVE_CLEANUP",
-						Boolean.FALSE.toString()));
-		
-		String valveClassName = configurationProperties.getProperty("gov.nist.javax.sip.SIP_MESSAGE_VALVE", null);
-		if(valveClassName != null && !valveClassName.equals("")) {
-			try {
-				super.sipMessageValve = (SIPMessageValve) Class.forName(valveClassName).newInstance();
-				final SipStack thisStack = this;
-
-				try {
-					Thread.sleep(100);
-					sipMessageValve.init(thisStack);
-				} catch (Exception e) {
-					logger
-					.logError("Error intializing SIPMessageValve", e);
-				}
-
-			} catch (Exception e) {
-				logger
-				.logError(
-						"Bad configuration value for gov.nist.javax.sip.SIP_MESSAGE_VALVE", e);			
-			}
-		}
-
 		String interceptorClassName = configurationProperties.getProperty("gov.nist.javax.sip.SIP_EVENT_INTERCEPTOR", null);
 		if(interceptorClassName != null && !interceptorClassName.equals("")) {
 			try {
 				super.sipEventInterceptor = (SIPEventInterceptor) Class.forName(interceptorClassName).newInstance();
 				final SipStack thisStack = this;
-				new Thread() {
-					public void run() {
-						try {
-							Thread.sleep(100);
-							sipEventInterceptor.init(thisStack);
-						} catch (Exception e) {
-							logger
-							.logError("Error intializing SIPEventInterceptor", e);
-						}
-						
-					}
-				}.start();
+				
+				try {
+					sipEventInterceptor.init(thisStack);
+				} catch (Exception e) {
+					getStackLogger()
+					.logError("Error intializing SIPEventInterceptor", e);
+				}
 			} catch (Exception e) {
-				logger
+				getStackLogger()
 					.logError(
 							"Bad configuration value for gov.nist.javax.sip.SIP_EVENT_INTERCEPTOR", e);			
 			}
 		}
-		
 	}
 
 	/*
@@ -1329,8 +1223,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 	public synchronized ListeningPoint createListeningPoint(String address,
 			int port, String transport) throws TransportNotSupportedException,
 			InvalidArgumentException {
-		if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
-			logger.logDebug(
+		if (isLoggingEnabled(LogWriter.TRACE_DEBUG))
+			getStackLogger().logDebug(
 				"createListeningPoint : address = " + address + " port = "
 						+ port + " transport = " + transport);
 
@@ -1365,8 +1259,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 				InetAddress inetAddr = InetAddress.getByName(address);
 				MessageProcessor messageProcessor = this
 						.createMessageProcessor(inetAddr, port, transport);
-				if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
-					this.logger.logDebug(
+				if (this.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+					this.getStackLogger().logDebug(
 							"Created Message Processor: " + address
 									+ " port = " + port + " transport = "
 									+ transport);
@@ -1379,8 +1273,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 				messageProcessor.start();
 				return (ListeningPoint) lip;
 			} catch (java.io.IOException ex) {
-				if (logger.isLoggingEnabled())
-					logger.logError(
+				if (isLoggingEnabled())
+					getStackLogger().logError(
 						"Invalid argument address = " + address + " port = "
 								+ port + " transport = " + transport);
 				throw new InvalidArgumentException(ex.getMessage(), ex);
@@ -1397,8 +1291,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 			throws ObjectInUseException {
 		if (listeningPoint == null)
 			throw new NullPointerException("null listeningPoint");
-		if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
-			this.logger.logDebug(
+		if (this.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+			this.getStackLogger().logDebug(
 					"createSipProvider: " + listeningPoint);
 		ListeningPointImpl listeningPointImpl = (ListeningPointImpl) listeningPoint;
 		if (listeningPointImpl.sipProvider != null)
@@ -1538,16 +1432,12 @@ public class SipStackImpl extends SIPTransactionStack implements
 	 * @see javax.sip.SipStack#stop()
 	 */
 	public void stop() {
-		if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
-			logger.logDebug("stopStack -- stoppping the stack");
-			logger.logStackTrace();
+		if (isLoggingEnabled()) {
+			getStackLogger().logDebug("stopStack -- stoppping the stack");
+			getStackLogger().logStackTrace();
 		}
 		this.stopStack();
-		if(super.sipMessageValve != null) 
-			super.sipMessageValve.destroy();
-		if(super.sipEventInterceptor != null) 
-			super.sipEventInterceptor.destroy();
-		this.sipProviders = Collections.synchronizedList(new LinkedList<SipProviderImpl>());
+		this.sipProviders = new LinkedList<SipProviderImpl>();
 		this.listeningPoints = new Hashtable<String, ListeningPointImpl>();
 		/*
 		 * Check for presence of an event scanner ( may happen if stack is
@@ -1615,8 +1505,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 	 */
 	@Deprecated
 	public void addLogAppender(org.apache.log4j.Appender appender) {
-		if (this.logger instanceof gov.nist.core.LogWriter) {
-			((gov.nist.core.LogWriter) this.logger).addAppender(appender);
+		if (this.getStackLogger() instanceof gov.nist.core.LogWriter) {
+			((gov.nist.core.LogWriter) this.getStackLogger()).addAppender(appender);
 		}
 	}
 
@@ -1629,8 +1519,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 	 */
 	@Deprecated
 	public org.apache.log4j.Logger getLogger() {
-		if (this.logger instanceof gov.nist.core.LogWriter) {
-			return ((gov.nist.core.LogWriter) this.logger).getLogger();
+		if (this.getStackLogger() instanceof gov.nist.core.LogWriter) {
+			return ((gov.nist.core.LogWriter) this.getStackLogger()).getLogger();
 		}
 		return null;
 	}
@@ -1771,21 +1661,12 @@ public class SipStackImpl extends SIPTransactionStack implements
         this.stackSemaphore.release();
     }
 
-	/**
+
+    /**
 	 * @return the configurationProperties
 	 */
 	public Properties getConfigurationProperties() {
 		return configurationProperties;
 	}
-	
-	/**
-	 * @return the reEntrantListener
-	 */
-	public boolean isReEntrantListener() {
-		return reEntrantListener;
-	}
-
-
-    
 
 }

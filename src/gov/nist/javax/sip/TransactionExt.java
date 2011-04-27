@@ -76,25 +76,6 @@ public interface TransactionExt extends Transaction {
    public List<String> extractCertIdentities() throws SSLPeerUnverifiedException;
 
    /**
-    * retrieve the value of release references to know if the stack performs optimizations
-    * on cleanup to save on memory
-    * @return release references value
-    * 
-    * @since 2.0
-    */
-   public boolean isReleaseReferences();
-   
-   /**
-    * If set to true it will release all references that it no longer needs. This will include the reference to the
-    * Request, Response, Dialogs, Any unused timers etc. This will significantly reduce memory
-    * consumption under high load
-    * @param releaseReferences 
-    * 
-    * @since 2.0
-    */
-   public void setReleaseReferences(boolean releaseReferences);     
-   
-   /**
     * Retrieve the value of Timer T2 (in ms)
     * @return T2 value (in ms)
     * 
@@ -137,4 +118,5 @@ public interface TransactionExt extends Transaction {
     * @since 2.0
     */
    public void setTimerD(int interval);
+
 }

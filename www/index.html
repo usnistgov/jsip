@@ -49,6 +49,7 @@ check out the project from java.net using cvs.
 <ul>
 <li> CVS address is dev.java.net
 <li> CVS Path is /cvs
+<li> Module name is jain-sip
 <li> CVS login and passsword is the same as your java.net login
 <li> Or if you prefer the command line:
 <pre>
@@ -58,10 +59,10 @@ cvs -d :pserver:your-java.net-user-id@dev.java.net:/cvs checkout jain-sip
 </ul>
 </ul>
 
+
 <div class="h2" id="links">
 <h2>Performance and Stability</h2>
 </div>
-
 
 <p>This project includes an extensive test suite that is run when ever a change is made to the CVS repository. 
 Visit the download link above to see the tests run by cruise control for each commit.
@@ -70,6 +71,15 @@ free operational scenarios.  Here are the results of long term stability
 testing (Pascal Maugeri: "Genaker VoIP API using JAIN-SIP v1.2.85"):
 <li> <a href="performance.html"> See Stability testing results.</a>
 
+<p>The stack performance measures in at 476 CAPS on a P5 dual core,
+3.2 GHZ using TCP for transport. Using P4 3.2 GHZ single core with
+hyperthreading and 2GB of RAM, a thruput of 267 CAPS has been reported.
+On a dual core 3.4 Mhz P5 with 1 Gig RAM a thruput of 476 CAPS has been
+reported.  Using UDP for transport, on a P4 single core, 2 GHZ machine
+with 1 Gb of RAM and with no hyperthreading a a performance of 82 CAPS
+was observed.  Using TCP for the same scenario, we measure in at 200
+CAPS. Load tests were performed using test in test/load/concurrency. No
+memory leaks were seen after 1000000 calls.  
 
 
 <div class="h2" id="links">
@@ -80,14 +90,12 @@ testing (Pascal Maugeri: "Genaker VoIP API using JAIN-SIP v1.2.85"):
 <div class="h2" id="links">
  <h2>Recent Developments</h2>
 </div>
+
 <p>
 <ul>
-<li> JAIN-SIP-2.0 specification work is under way. Please check out and contribute. 
-      See <a href="https://jain-sip.dev.java.net/servlets/ProjectDocumentList">JAIN-SIP 2.0 Proposed Draft Spec</a>
-<li> Significant performance enhancements. Many thanks to Jean Deruelle ( Redhat ).
-<li> SCTP support (experimental). Many thanks to Jeroen van Bemmel for adding this support.
-<li> HA support ( see mobicents project ) described here :
-http://jeanderuelle.blogspot.com/2010/08/introducing-jain-sip-ha-or-how-you-can.html
+<li> SCTP supporte added (experimental). Many thanks to Jeroen van Bemmel for adding this support.
+<li> Thread liveness monitoring features added.
+<li> IMS header support added.
 </ul>
 
 <div class="h2" id="related">
@@ -105,9 +113,7 @@ http://jeanderuelle.blogspot.com/2010/08/introducing-jain-sip-ha-or-how-you-can.
 <a href="http://igniterealtime.org">The openfire XMPP container uses JAIN-SIP for its SIP plugin. </a><br/>
 <a href="http://code.google.com/p/openjsip/">OpenJSip: A simple well documented JAIN-SIP proxy server.</a><br/>
 <a href="http://www.mulesoft.org/display/SIP/Home">A ESB Connector for SIP that is built on JAIN-SIP </a><br/>
-<a href="http://www.voicetechnology.com.br/produtos_basix.asp">Voicetechnology uses JAIN-SIP in a Hosted PBX product. Deployed in Brazil and Japan to provide Hosted PBX Services. </a><br/>
-<a href="http://code.google.com/p/jain-sip-rfc3263-router/">RFC 3263 Router for JAIN-SIP</a><br/>
-<a href="http://mitester.mobax.net/"> A SIP tester that uses JAIN-SIP </a>
+<a href="http://www.voicetechnology.com.br/produtos_basix.asp">Voicetechnology uses JAIN-SIP in a Hosted PBX product. Deployed in Brazil and Japan to provide Hosted PBX Services. </a>
 <p/>
 
 <div class="h2" id="contribute">

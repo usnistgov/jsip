@@ -36,7 +36,7 @@ import java.util.*;
 /**
  * Supported SIP Header.
  *
- * @version 1.2 $Revision: 1.6 $ $Date: 2010-05-06 14:07:49 $
+ * @version 1.2 $Revision: 1.5 $ $Date: 2009-07-17 18:57:38 $
  *
  * @author M. Ranganathan   <br/>
  * @author Olivier Deruelle <br/>
@@ -58,8 +58,8 @@ public class Server extends SIPHeader implements ServerHeader {
      * Return canonical form.
      * @return String
      */
-    private StringBuilder encodeProduct(StringBuilder tokens) {
-//        StringBuilder tokens = new StringBuilder();
+    private String encodeProduct() {
+        StringBuffer tokens = new StringBuffer();
         ListIterator it = productTokens.listIterator();
 
         while (it.hasNext()) {
@@ -69,7 +69,7 @@ public class Server extends SIPHeader implements ServerHeader {
             else
                 break;
         }
-        return tokens;
+        return tokens.toString();
     }
 
     /** set the productToken field
@@ -90,8 +90,8 @@ public class Server extends SIPHeader implements ServerHeader {
     /** Encode only the body of this header.
     *@return encoded value of the header.
     */
-    public StringBuilder encodeBody(StringBuilder retval) {
-        return encodeProduct(retval);
+    public String encodeBody() {
+        return encodeProduct();
     }
 
     /**
@@ -124,9 +124,6 @@ public class Server extends SIPHeader implements ServerHeader {
 }
 /*
  * $Log: not supported by cvs2svn $
- * Revision 1.5  2009/07/17 18:57:38  emcho
- * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
- *
  * Revision 1.4  2006/07/13 09:01:04  mranga
  * Issue number:
  * Obtained from:

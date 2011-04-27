@@ -40,7 +40,7 @@ import javax.sip.address.*;
  *
  *
  *
- *@version 1.2 $Revision: 1.14 $ $Date: 2010-07-27 10:55:29 $
+ *@version 1.2 $Revision: 1.11.2.2 $ $Date: 2010-07-27 10:55:23 $
  *
  */
 public final class AddressImpl
@@ -161,11 +161,11 @@ public final class AddressImpl
      * @return String canonical encoded version of this address.
      */
     public String encode() {
-        return encode(new StringBuilder()).toString();
+        return encode(new StringBuffer()).toString();
     }
 
-    public StringBuilder encode(StringBuilder buffer) {
-        if (this.addressType == WILD_CARD) {
+    public StringBuffer encode(StringBuffer buffer) {
+    	if (this.addressType == WILD_CARD) {
             buffer.append('*');
         }
         else {
@@ -175,7 +175,7 @@ public final class AddressImpl
                         .append(DOUBLE_QUOTE)
                         .append(SP);
             }
-            if (address != null) {                               
+            if (address != null) {                
                 if (addressType == NAME_ADDR || displayName != null)
                     buffer.append(LESS_THAN);
                 address.encode(buffer);

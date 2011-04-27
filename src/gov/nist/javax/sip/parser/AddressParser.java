@@ -30,7 +30,7 @@ import java.text.ParseException;
 
 /** Parser for addresses.
  *
- * @version 1.2 $Revision: 1.12 $ $Date: 2010-05-06 14:07:44 $
+ * @version 1.2 $Revision: 1.11 $ $Date: 2009-10-22 10:26:27 $
  * @author M. Ranganathan
  *
  *
@@ -133,15 +133,11 @@ public class AddressParser extends Parser {
 }
 /*
  * $Log: not supported by cvs2svn $
- * Revision 1.11  2009/10/22 10:26:27  jbemmel
- * Fix for issue #230, restructured the code such that parsing for any address appearing without '<' '>'
- * stops at ';', then parameters are assigned to the header as expected
- *
  * Revision 1.10  2009/07/17 18:57:57  emcho
  * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
  *
  * Revision 1.9  2007/02/12 15:19:26  belangery
- * Changed the encode() and encodeBody() methods of SIP headers and basic classes to make them use the same StringBuilder instance during the encoding phase.
+ * Changed the encode() and encodeBody() methods of SIP headers and basic classes to make them use the same StringBuffer instance during the encoding phase.
  *
  * Revision 1.8  2007/02/06 16:40:02  belangery
  * Introduced simple code optimizations.

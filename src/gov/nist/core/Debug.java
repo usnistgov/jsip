@@ -45,8 +45,7 @@ public class Debug {
 
     public static void println(String s) {
         if ((parserDebug || debug )&& stackLogger != null )
-            if ( stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                stackLogger.logDebug(s + "\n");
+            stackLogger.logDebug(s + "\n");
     }
     public static void printStackTrace(Exception ex) {
         if ((parserDebug || debug ) && stackLogger != null) {
@@ -56,8 +55,7 @@ public class Debug {
 
     public static void logError(String message, Exception ex) {
       if ((parserDebug || debug) &&  stackLogger != null ) {
-          if ( stackLogger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-              stackLogger.logError(message,ex);
+          stackLogger.logError(message,ex);
       }
     }
 

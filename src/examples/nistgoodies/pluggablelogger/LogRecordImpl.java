@@ -61,7 +61,7 @@ public class LogRecordImpl implements LogRecord {
 
 
     public String toString() {
-        StringBuilder sbuf = new StringBuilder();
+        StringBuffer sbuf = new StringBuffer();
         sbuf.append("------------  Message BEGIN ----------- \n");
         sbuf.append("timeStamp = " + this.timeStamp + "\n");
         sbuf.append(this.message);

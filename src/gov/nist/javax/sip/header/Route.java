@@ -35,7 +35,7 @@ import javax.sip.header.RouteHeader;
 /**
  * Route  SIPHeader Object
  *
- * @version 1.2 $Revision: 1.7 $ $Date: 2010-05-06 14:07:52 $
+ * @version 1.2 $Revision: 1.6 $ $Date: 2009-07-17 18:57:36 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -84,10 +84,10 @@ public class Route
      *@return a canonical encoding of the header.
      */
     public String encodeBody() {
-        return encodeBody(new StringBuilder()).toString();
+        return encodeBody(new StringBuffer()).toString();
     }
 
-    protected StringBuilder encodeBody(StringBuilder buffer) {
+    protected StringBuffer encodeBody(StringBuffer buffer) {
         boolean addrFlag = address.getAddressType() == AddressImpl.NAME_ADDR;
         if (!addrFlag) {
             buffer.append('<');

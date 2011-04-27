@@ -34,11 +34,9 @@ import javax.sip.address.SipURI;
 import javax.sip.header.ContactHeader;
 import javax.sip.header.ViaHeader;
 
-import gov.nist.core.CommonLogger;
 import gov.nist.core.Host;
 import gov.nist.core.HostPort;
 import gov.nist.core.InternalErrorHandler;
-import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.address.AddressImpl;
 import gov.nist.javax.sip.address.SipUri;
 import gov.nist.javax.sip.header.Contact;
@@ -49,7 +47,7 @@ import gov.nist.javax.sip.stack.*;
 /**
  * Implementation of the ListeningPoint interface
  *
- * @version 1.2 $Revision: 1.18 $ $Date: 2010-12-02 22:04:18 $
+ * @version 1.2 $Revision: 1.15 $ $Date: 2009-11-19 05:26:58 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -57,7 +55,7 @@ import gov.nist.javax.sip.stack.*;
  *
  */
 public class ListeningPointImpl implements javax.sip.ListeningPoint, gov.nist.javax.sip.ListeningPointExt {
-	private static StackLogger logger = CommonLogger.getLogger(ListeningPointImpl.class);
+
 
     protected String transport;
 
@@ -91,7 +89,7 @@ public class ListeningPointImpl implements javax.sip.ListeningPoint, gov.nist.ja
      * @return a string that is used as a key
      */
     public static String makeKey(String host, int port, String transport) {
-        return new StringBuilder(host)
+        return new StringBuffer(host)
             .append(":")
             .append(port)
             .append("/")
@@ -112,14 +110,14 @@ public class ListeningPointImpl implements javax.sip.ListeningPoint, gov.nist.ja
      * Set the sip provider for this structure.
      * @param sipProvider provider to set
      */
-    public void setSipProvider(SipProviderImpl sipProviderImpl) {
+    protected void setSipProvider(SipProviderImpl sipProviderImpl) {
         this.sipProvider = sipProviderImpl;
     }
 
     /**
      * Remove the sip provider from this listening point.
      */
-    public void removeSipProvider() {
+    protected void removeSipProvider() {
         this.sipProvider = null;
     }
 
@@ -239,7 +237,7 @@ public class ListeningPointImpl implements javax.sip.ListeningPoint, gov.nist.ja
             
             return contact;
         } catch (Exception ex) {
-            InternalErrorHandler.handleException("Unexpected exception",logger);
+            InternalErrorHandler.handleException("Unexpected exception",sipStack.getStackLogger());
             return null;
         }
     }

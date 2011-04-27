@@ -188,7 +188,7 @@ public class RepeatField extends SDPField implements javax.sdp.RepeatTime {
     }
 
     public String encode() {
-        StringBuilder retval = new StringBuilder();
+        StringBuffer retval = new StringBuffer();
     retval.append(REPEAT_FIELD)
       .append(repeatInterval.encode())
             .append(Separators.SP)

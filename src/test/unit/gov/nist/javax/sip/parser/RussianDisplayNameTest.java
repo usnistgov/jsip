@@ -63,7 +63,7 @@ public class RussianDisplayNameTest extends TestCase {
 		
 			StringMsgParser smp = new StringMsgParser();
 	
-			SIPMessage message = smp.parseSIPMessage(messageToParse.getBytes("UTF-8"), true, false, null);
+			SIPMessage message = smp.parseSIPMessage(messageToParse.getBytes("UTF-8"));
 			
 			System.out.println("Message = " + message);
 			
@@ -71,7 +71,7 @@ public class RussianDisplayNameTest extends TestCase {
 			
 		    smp = new StringMsgParser();
 			
-		    message = smp.parseSIPMessage(bytes, true, false, null);
+		    message = smp.parseSIPMessage(bytes);
 		    System.out.println("Message = " + message);
 		    char[] mybytes = new char[2];
 		    byte[] sipMessageBytes = new byte[binaryMessage.length()];
@@ -85,13 +85,13 @@ public class RussianDisplayNameTest extends TestCase {
 		    	
 		    }
 		    smp = new StringMsgParser();
-		    SIPMessage reparsed = smp.parseSIPMessage(sipMessageBytes, true, false, null);
+		    SIPMessage reparsed = smp.parseSIPMessage(sipMessageBytes);
 		    
 		    System.out.println("Reparsed = " + reparsed);
 		    
 		    bytes = message.encodeAsBytes("UDP");
 		    smp = new StringMsgParser();
-		    reparsed = smp.parseSIPMessage(bytes, true, false, null);
+		    reparsed = smp.parseSIPMessage(bytes);
 		    
 		    System.out.println("Reparsed = " + reparsed);
 	

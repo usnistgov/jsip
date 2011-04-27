@@ -19,10 +19,6 @@
 */
 package test.unit.gov.nist.javax.sip.stack.ctx491;
 
-import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import gov.nist.javax.sip.DialogExt;
 
 import javax.sip.*;
@@ -31,7 +27,6 @@ import javax.sip.header.*;
 import javax.sip.message.*;
 
 import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.apache.log4j.helpers.NullEnumeration;
@@ -56,19 +51,17 @@ public class Shootme  implements SipListener {
     public static final int myPort = 5070;
 
     private ServerTransaction inviteTid;
-    
-    Timer timer = new Timer();
 
 
     private static Logger logger = Logger.getLogger(Shootme.class);
 
     static{
-    	try {
-			logger.addAppender(new FileAppender(new SimpleLayout(),"logs/" + Shootme.class.getName() + "debuglog.txt"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        if (logger.getAllAppenders().equals(NullEnumeration.getInstance())) {
+
+            logger.addAppender(new ConsoleAppender(new SimpleLayout()));
+
+
+        }
     }
 
     private Dialog dialog;
@@ -162,42 +155,14 @@ public class Shootme  implements SipListener {
                 logger.info("Dialog state " + dialog.getState());
             }
             st.sendResponse(response);
-            
-            TimerTask ttask = new TimerTask() {
-				private ServerTransaction st;
-				private Request request;
-				@Override
-				public void run() {
-					// TODO Auto-generated method stub
-					try {
-						Address address = protocolObjects.addressFactory.createAddress("Shootme <sip:"
-								+ myAddress + ":" + myPort + ">");
-						ContactHeader contactHeader = protocolObjects.headerFactory
-						.createContactHeader(address);
-						Response response = protocolObjects.messageFactory.createResponse(200, request);
-						ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
-						toHeader.setTag("4321");
-						// Application is supposed to set.
-						response.addHeader(contactHeader);
-						st.sendResponse(response);
-					} catch (Exception ex) {
-						logger.error("Unexepcted exception ", ex);
-						ReInviteTest.fail("Unexpected exception");
-					}
-				}
-
-				public TimerTask setServerTransaction(ServerTransaction st) {
-					this.st = st;
-					this.request = st.getRequest();
-					return this;
-				}
-            	
-            }.setServerTransaction(st);
-            timer.schedule(ttask,500);
-           
+            response = protocolObjects.messageFactory.createResponse(200, request);
+            toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
+            toHeader.setTag("4321");
+            // Application is supposed to set.
+            response.addHeader(contactHeader);
+            st.sendResponse(response);
             logger.info("TxState after sendResponse = " + st.getState());
             this.inviteTid = st;
-              
         } catch (Exception ex) {
             String s = "unexpected exception";
 
@@ -297,7 +262,7 @@ public class Shootme  implements SipListener {
 
     public static void main(String args[]) throws Exception {
         logger.addAppender( new ConsoleAppender(new SimpleLayout()));
-        ProtocolObjects protocolObjects = new ProtocolObjects("shootme", "gov.nist","udp",true,false, false);
+        ProtocolObjects protocolObjects = new ProtocolObjects("shootme", "gov.nist","udp",true,false);
 
         Shootme shootme = new Shootme(protocolObjects);
         shootme.createSipProvider().addSipListener(shootme);

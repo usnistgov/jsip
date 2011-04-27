@@ -38,7 +38,7 @@ public class ProtocolObjects {
 	
 
     public ProtocolObjects(String stackname, String pathname, String transport,
-            boolean autoDialog, boolean isBackToBackUserAgent, boolean isReentrant) {
+            boolean autoDialog, boolean isBackToBackUserAgent) {
 
     	this.autoDialog = autoDialog;
         this.transport = transport;
@@ -74,7 +74,8 @@ public class ProtocolObjects {
         properties.setProperty("gov.nist.javax.sip.IS_BACK_TO_BACK_USER_AGENT", Boolean.toString(isBackToBackUserAgent));
         
         properties.setProperty("gov.nist.javax.sip.DELIVER_RETRANSMITTED_ACK_TO_LISTENER", "true");
-        properties.setProperty("gov.nist.javax.sip.REENTRANT_LISTENER", "" + isReentrant);
+
+
 
         // Set to 0 in your production code for max speed.
         // You need 16 for logging traces. 32 for debug + traces.

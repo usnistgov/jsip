@@ -34,7 +34,7 @@ import javax.sip.header.*;
 /**
 * Date Header.
 *
-*@version 1.2 $Revision: 1.7 $ $Date: 2010-05-06 14:07:46 $
+*@version 1.2 $Revision: 1.6 $ $Date: 2009-07-17 18:57:37 $
 *
 *@author M. Ranganathan   <br/>
 *@author Olivier Deruelle <br/>
@@ -60,8 +60,8 @@ public class SIPDateHeader extends SIPHeader implements DateHeader {
     /** Encode the header into a String.
      * @return String
      */
-    public StringBuilder encodeBody(StringBuilder retval) {
-        return date.encode(retval);
+    public String encodeBody() {
+        return date.encode();
     }
 
     /**
@@ -104,9 +104,6 @@ public class SIPDateHeader extends SIPHeader implements DateHeader {
 }
 /*
  * $Log: not supported by cvs2svn $
- * Revision 1.6  2009/07/17 18:57:37  emcho
- * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
- *
  * Revision 1.5  2006/07/13 09:01:23  mranga
  * Issue number:
  * Obtained from:

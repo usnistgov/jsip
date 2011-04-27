@@ -28,14 +28,15 @@
  *******************************************************************************/
 package gov.nist.core;
 
+import java.util.concurrent.*;
+
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Implements a simple NameValue association with a quick lookup function (via a
@@ -58,26 +59,21 @@ public class NameValueList implements Serializable, Cloneable, Map<String,NameVa
     private Map<String,NameValue> hmap;
 
     private String separator;
-    
-    private boolean sync = false;
 
     /**
      * default constructor.
      */
     public NameValueList() {
-        this.separator = Separators.SEMICOLON;
-        //jeand : lazy loading of the map to save on mem consumption
-//        this.hmap = new LinkedHashMap<String,NameValue>(0);
+        this.separator = ";";
+        this.hmap = new LinkedHashMap<String,NameValue>();
     }
 
     public NameValueList(boolean sync) {
-        this.separator = Separators.SEMICOLON;
-        this.sync = sync;
-        //jeand : lazy loading of the map to save on mem consumption
-//        if (sync)
-//            this.hmap = new ConcurrentHashMap<String,NameValue>(0);
-//        else
-//            this.hmap = new LinkedHashMap<String,NameValue>(0);
+        this.separator = ";";
+        if (sync)
+            this.hmap = new ConcurrentHashMap<String,NameValue>();
+        else
+            this.hmap = new LinkedHashMap<String,NameValue>();
     }
 
     public void setSeparator(String separator) {
@@ -91,12 +87,12 @@ public class NameValueList implements Serializable, Cloneable, Map<String,NameVa
      * @since v1.0
      */
     public String encode() {
-        return encode(new StringBuilder()).toString();
+        return encode(new StringBuffer()).toString();
     }
 
-    public StringBuilder encode(StringBuilder buffer) {
-        if (!this.isEmpty()) {
-            Iterator<NameValue> iterator = this.iterator();
+    public StringBuffer encode(StringBuffer buffer) {
+        if (!hmap.isEmpty()) {
+            Iterator<NameValue> iterator = hmap.values().iterator();
             if (iterator.hasNext()) {
                 while (true) {
                     Object obj = iterator.next();
@@ -125,7 +121,7 @@ public class NameValueList implements Serializable, Cloneable, Map<String,NameVa
      */
 
     public void set(NameValue nv) {
-        this.put(nv.getName().toLowerCase(), nv);
+        this.hmap.put(nv.getName().toLowerCase(), nv);
     }
 
     /**
@@ -133,7 +129,7 @@ public class NameValueList implements Serializable, Cloneable, Map<String,NameVa
      */
     public void set(String name, Object value) {
         NameValue nameValue = new NameValue(name, value);
-        this.put(name.toLowerCase(), nameValue);
+        hmap.put(name.toLowerCase(), nameValue);
 
     }
 
@@ -153,15 +149,15 @@ public class NameValueList implements Serializable, Cloneable, Map<String,NameVa
         }
         NameValueList other = (NameValueList) otherObject;
 
-        if (this.size() != this.size()) {
+        if (hmap.size() != other.hmap.size()) {
             return false;
         }
-	        Iterator<String> li = this.getNames();
-	
+        Iterator<String> li = this.hmap.keySet().iterator();
+
         while (li.hasNext()) {
             String key = (String) li.next();
             NameValue nv1 = this.getNameValue(key);
-            NameValue nv2 = (NameValue) other.get(key);
+            NameValue nv2 = (NameValue) other.hmap.get(key);
             if (nv2 == null)
                 return false;
             else if (!nv2.equals(nv1))
@@ -174,16 +170,9 @@ public class NameValueList implements Serializable, Cloneable, Map<String,NameVa
      * Do a lookup on a given name and return value associated with it.
      */
     public Object getValue(String name) {
-        return getValue(name, true);
-    }
-    
-    /**
-     * Do a lookup on a given name and return value associated with it.
-     */
-    public Object getValue(String name, boolean stripQuotes) {
         NameValue nv = this.getNameValue(name.toLowerCase());
         if (nv != null)
-            return nv.getValueAsObject(stripQuotes);
+            return nv.getValueAsObject();
         else
             return null;
     }
@@ -194,10 +183,7 @@ public class NameValueList implements Serializable, Cloneable, Map<String,NameVa
      * @since 1.0
      */
     public NameValue getNameValue(String name) {
-    	if(hmap == null) {
-    		return null;
-    	}
-        return (NameValue) hmap.get(name.toLowerCase());
+        return (NameValue) this.hmap.get(name.toLowerCase());
     }
 
     /**
@@ -207,7 +193,7 @@ public class NameValueList implements Serializable, Cloneable, Map<String,NameVa
      * @since 1.0
      */
     public boolean hasNameValue(String name) {
-        return this.containsKey(name.toLowerCase());
+        return hmap.containsKey(name.toLowerCase());
     }
 
     /**
@@ -217,8 +203,8 @@ public class NameValueList implements Serializable, Cloneable, Map<String,NameVa
      */
     public boolean delete(String name) {
         String lcName = name.toLowerCase();
-        if (this.containsKey(lcName)) {
-            this.remove(lcName);
+        if (this.hmap.containsKey(lcName)) {
+            this.hmap.remove(lcName);
             return true;
         } else {
             return false;
@@ -229,11 +215,9 @@ public class NameValueList implements Serializable, Cloneable, Map<String,NameVa
     public Object clone() {
         NameValueList retval = new NameValueList();
         retval.setSeparator(this.separator);
-        if(hmap != null) {
-	        Iterator<NameValue> it = this.iterator();
-	        while (it.hasNext()) {
-	            retval.set((NameValue) ((NameValue) it.next()).clone());
-	        }
+        Iterator<NameValue> it = this.hmap.values().iterator();
+        while (it.hasNext()) {
+            retval.set((NameValue) ((NameValue) it.next()).clone());
         }
         return retval;
     }
@@ -242,19 +226,13 @@ public class NameValueList implements Serializable, Cloneable, Map<String,NameVa
      * Return the size of the embedded map
      */
     public int size() {
-    	if(hmap == null) {
-    		return 0;
-    	}
-        return hmap.size();
+        return this.hmap.size();
     }
 
     /**
      * Return true if empty.
      */
     public boolean isEmpty() {
-    	if(hmap == null) {
-    		return true;
-    	}
         return hmap.isEmpty();
     }
 
@@ -264,7 +242,7 @@ public class NameValueList implements Serializable, Cloneable, Map<String,NameVa
      * @return the iterator.
      */
     public Iterator<NameValue> iterator() {
-        return this.getMap().values().iterator();
+        return this.hmap.values().iterator();
     }
 
     /**
@@ -273,7 +251,7 @@ public class NameValueList implements Serializable, Cloneable, Map<String,NameVa
      * @return a list iterator that has the names of the parameters.
      */
     public Iterator<String> getNames() {
-        return this.getMap().keySet().iterator();
+        return this.hmap.keySet().iterator();
 
     }
 
@@ -283,16 +261,7 @@ public class NameValueList implements Serializable, Cloneable, Map<String,NameVa
      * @return the parameter as a string.
      */
     public String getParameter(String name) {
-        return getParameter(name, true);
-    }
-    
-    /**
-     * Get the parameter as a String.
-     *
-     * @return the parameter as a string.
-     */
-    public String getParameter(String name, boolean stripQuotes) {
-        Object val = this.getValue(name, stripQuotes);
+        Object val = this.getValue(name);
         if (val == null)
             return null;
         if (val instanceof GenericObject)
@@ -307,9 +276,7 @@ public class NameValueList implements Serializable, Cloneable, Map<String,NameVa
      */
 
     public void clear() {
-    	if(hmap != null) {
-    		hmap.clear();
-    	}
+        this.hmap.clear();
     }
 
     /*
@@ -317,10 +284,7 @@ public class NameValueList implements Serializable, Cloneable, Map<String,NameVa
      * @see java.util.Map#containsKey(java.lang.Object)
      */
     public boolean containsKey(Object key) {
-    	if(hmap == null) {
-    		return false;
-    	}
-        return hmap.containsKey(key.toString().toLowerCase());
+        return this.hmap.containsKey(key.toString().toLowerCase());
     }
 
     /*
@@ -328,10 +292,7 @@ public class NameValueList implements Serializable, Cloneable, Map<String,NameVa
      * @see java.util.Map#containsValue(java.lang.Object)
      */
     public boolean containsValue(Object value) {
-    	if(hmap == null) {
-    		return false;
-    	}
-        return hmap.containsValue(value);
+        return this.hmap.containsValue(value);
     }
 
     /*
@@ -339,10 +300,7 @@ public class NameValueList implements Serializable, Cloneable, Map<String,NameVa
      * @see java.util.Map#entrySet()
      */
     public Set<java.util.Map.Entry<String, NameValue>> entrySet() {
-    	if(hmap == null) {
-    		return new HashSet<Entry<String,NameValue>>();
-    	}
-        return hmap.entrySet();
+        return this.hmap.entrySet();
     }
 
     /*
@@ -350,10 +308,7 @@ public class NameValueList implements Serializable, Cloneable, Map<String,NameVa
      * @see java.util.Map#get(java.lang.Object)
      */
     public NameValue get(Object key) {
-    	if(hmap == null) {
-    		return null;
-    	}
-        return hmap.get(key.toString().toLowerCase());
+        return this.hmap.get(key.toString().toLowerCase());
     }
 
     /*
@@ -361,10 +316,7 @@ public class NameValueList implements Serializable, Cloneable, Map<String,NameVa
      * @see java.util.Map#keySet()
      */
     public Set<String> keySet() {
-    	if(hmap == null) {
-    		return new HashSet<String>();
-    	}
-        return hmap.keySet();
+        return this.hmap.keySet();
     }
 
     /*
@@ -372,11 +324,11 @@ public class NameValueList implements Serializable, Cloneable, Map<String,NameVa
      * @see java.util.Map#put(java.lang.Object, java.lang.Object)
      */
     public NameValue put(String name, NameValue nameValue) {
-        return this.getMap().put(name, nameValue);
+        return this.hmap.put(name, nameValue);
     }
 
     public void putAll(Map<? extends String, ? extends NameValue> map) {
-        this.getMap().putAll(map);
+        this.hmap.putAll(map);
     }
 
     /*
@@ -384,36 +336,19 @@ public class NameValueList implements Serializable, Cloneable, Map<String,NameVa
      * @see java.util.Map#remove(java.lang.Object)
      */
     public NameValue remove(Object key) {
-    	if(hmap == null) {
-    		return null;
-    	}
-        return this.getMap().remove(key.toString().toLowerCase());
+        return this.hmap.remove(key.toString().toLowerCase());
     }
 
     /*
      * (non-Javadoc)
      * @see java.util.Map#values()
      */
-    public Collection<NameValue> values() {    	
-        return this.getMap().values();
+    public Collection<NameValue> values() {
+        return this.hmap.values();
     }
     
     @Override
     public int hashCode() {
-        return this.getMap().keySet().hashCode();
+        return this.hmap.keySet().hashCode();
     }
-
-	/**
-	 * @return the hmap
-	 */
-    protected Map<String,NameValue> getMap() {
-		if(this.hmap == null) {
-			if (sync) {
-				this.hmap = new ConcurrentHashMap<String,NameValue>(0);
-			} else {
-				this.hmap = new LinkedHashMap<String,NameValue>(0);
-			}
-		}
-		return hmap;
-	}
 }

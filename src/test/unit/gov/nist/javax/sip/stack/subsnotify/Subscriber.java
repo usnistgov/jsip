@@ -1,6 +1,5 @@
 package test.unit.gov.nist.javax.sip.stack.subsnotify;
 
-import gov.nist.javax.sip.ResponseEventExt;
 import gov.nist.javax.sip.stack.SIPTransactionStack;
 
 import javax.sip.*;
@@ -48,7 +47,6 @@ public class Subscriber implements SipListener {
 
     private Dialog subscriberDialog;
 
-    private boolean inDialogSubcribe;
 
     private static Logger logger = Logger.getLogger(Subscriber.class);
 
@@ -69,8 +67,6 @@ public class Subscriber implements SipListener {
 
 	private Dialog notifyDialog;
 
-	boolean dialogSameAsNotify;
-	
     protected static final String usageString = "java "
             + "examples.subsnotify.Subscriber \n"
             + ">>>> is your class path set to the root?";
@@ -141,10 +137,7 @@ public class Subscriber implements SipListener {
             } else {
                 logger.info("Subscriber: state now " + state);
             }
-            
-            if(!state.equalsIgnoreCase(SubscriptionStateHeader.TERMINATED) && isInDialogSubcribe()) {
-            	new Timer().schedule(new InDialogSubscriber((SipURI)((ContactHeader)notify.getHeader(ContactHeader.NAME)).getAddress().getURI()), 10000);
-            }
+
         } catch (Exception ex) {
             ex.printStackTrace();
             logger.error("Unexpected exception",ex);
@@ -153,56 +146,24 @@ public class Subscriber implements SipListener {
         }
     }
 
-    public class InDialogSubscriber extends TimerTask {
-
-    	SipURI sipURI;
-    	
-		public InDialogSubscriber(SipURI uri) {
-			sipURI = uri;
-		}
-
-		@Override
-		public void run() {
-			Request subscribe;
-			try {
-				subscribe = subscriberDialog.createRequest(Request.SUBSCRIBE);
-				subscribe.addHeader(headerFactory.createExpiresHeader(0));
-				subscribe.setRequestURI(sipURI);
-				// Create an event header for the subscription.
-	            EventHeader eventHeader = headerFactory.createEventHeader("foo");
-	            eventHeader.setEventId("foo");
-	            subscribe.addHeader(eventHeader);
-				ClientTransaction clientTransaction = sipProvider.getNewClientTransaction(subscribe);
-				logger.info("Sending Unsubscribe " + subscribe + " on " + clientTransaction + " and dialog " + subscriberDialog);
-				subscriberDialog.sendRequest(clientTransaction);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-		}
-    	
-    }
-    
-    public void processResponse(ResponseEvent responseReceivedEvent) {        
+    public void processResponse(ResponseEvent responseReceivedEvent) {
+        logger.info("Got a response");
         Response response = (Response) responseReceivedEvent.getResponse();
-        logger.info("Got a response " + response);
         Transaction tid = responseReceivedEvent.getClientTransaction();
 
         logger.info("Response received with client transaction id " + tid
                 + ":\n" + response.getStatusCode()  );
         if (tid == null) {
-            TestCase.assertTrue("retrans flag should be true", ((ResponseEventExt)responseReceivedEvent).isRetransmission());
             logger.info("Stray response -- dropping ");
             return;
         }
-        TestCase.assertFalse("retrans flag should be false", ((ResponseEventExt)responseReceivedEvent).isRetransmission());
         logger.info("transaction state is " + tid.getState());
         logger.info("Dialog = " + tid.getDialog());
         if ( tid.getDialog () != null )
         logger.info("Dialog State is " + tid.getDialog().getState());
         
         NotifyBefore202Test.assertEquals("Dialog should be same as NOTIFY dialog", this.notifyDialog,tid.getDialog());
-        dialogSameAsNotify = true;
+
     }
 
     public void createProvider() throws Exception {
@@ -335,14 +296,12 @@ public class Subscriber implements SipListener {
         Properties properties = new Properties();
 
         properties.setProperty("javax.sip.USE_ROUTER_FOR_ALL_URIS", "false");
-        
-        properties.setProperty("gov.nist.javax.sip.AGGRESSIVE_CLEANUP", "true");
 
         properties.setProperty("javax.sip.STACK_NAME", "subscriber");
         properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
-                "logs/subscriberdebug.txt");
+                "subscriberdebug.txt");
         properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
-                "logs/subscriberlog.txt");
+                "subscriberlog.txt");
 
         properties.setProperty("javax.sip.FORKABLE_EVENTS", "foo");
 
@@ -381,37 +340,10 @@ public class Subscriber implements SipListener {
     public void processTimeout(javax.sip.TimeoutEvent timeoutEvent) {
 
         logger.info("Transaction Time out");
-        logger.info("before sleep Transaction request " + timeoutEvent.getClientTransaction().getRequest());
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        logger.info("After sleep Transaction request " + timeoutEvent.getClientTransaction().getRequest());
-        
     }
 
 	public void tearDown() {
 		this.sipStack.stop();
 		
-	}
-
-	/**
-	 * @param inDialogSubcribe the inDialogSubcribe to set
-	 */
-	public void setInDialogSubcribe(boolean inDialogSubcribe) {
-		this.inDialogSubcribe = inDialogSubcribe;
-	}
-
-	/**
-	 * @return the inDialogSubcribe
-	 */
-	public boolean isInDialogSubcribe() {
-		return inDialogSubcribe;
-	}
-
-	public boolean checkState() {
-		return dialogSameAsNotify;
 	}
 }

@@ -356,13 +356,13 @@ public class Torture extends DefaultHandler implements ParseExceptionListener,
             stringParser = new StringMsgParser();
             // stringParser.disableInputTracking();
 
-//            stringParser.setParseExceptionListener(this);
+            stringParser.setParseExceptionListener(this);
             SIPMessage sipMessage = null;
             SIPHeader sipHeader = null;
             SipUri sipURL = null;
             try {
                 if (testMessageType.equals(MESSAGE)) {
-                    sipMessage = stringParser.parseSIPMessage(testMessage.getBytes(), true, false, (ParseExceptionListener) this);
+                    sipMessage = stringParser.parseSIPMessage(testMessage);
                     encodedMessage = sipMessage.encode();
                 } else if (testMessageType.equals(SIP_HEADER)) {
                     sipHeader = stringParser.parseSIPHeader(testMessage);

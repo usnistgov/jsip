@@ -50,15 +50,13 @@ import java.util.*;
  * connection. This is the active object that creates new TCP MessageChannels (one for each new
  * accept socket).
  * 
- * @version 1.2 $Revision: 1.35 $ $Date: 2010-12-02 22:04:13 $
+ * @version 1.2 $Revision: 1.31.2.1 $ $Date: 2010-11-23 19:23:14 $
  * 
  * @author M. Ranganathan <br/>
  * 
  * 
  */
 public class TCPMessageProcessor extends MessageProcessor {
-	
-	private static StackLogger logger = CommonLogger.getLogger(TCPMessageProcessor.class);
 
     protected int nConnections;
 
@@ -134,19 +132,19 @@ public class TCPMessageProcessor extends MessageProcessor {
                 }
 
                 Socket newsock = sock.accept();
-                if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                    logger.logDebug("Accepting new connection!");
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                    getSIPStack().getStackLogger().logDebug("Accepting new connection!");
                 }
                 // Note that for an incoming message channel, the
                 // thread is already running
                
-                incomingTcpMessageChannels.add(new TCPMessageChannel(newsock, sipStack, this, "TCPMessageChannelThread-" + nConnections));
+                incomingTcpMessageChannels.add(new TCPMessageChannel(newsock, sipStack, this));
             } catch (SocketException ex) {
                 this.isRunning = false;
             } catch (IOException ex) {
                 // Problem accepting connection.
-                if (logger.isLoggingEnabled())
-                    logger.logException(ex);
+                if (sipStack.isLoggingEnabled())
+                    getSIPStack().getStackLogger().logException(ex);
                 continue;
             } catch (Exception ex) {
                 InternalErrorHandler.handleException(ex);
@@ -202,8 +200,8 @@ public class TCPMessageProcessor extends MessageProcessor {
     protected synchronized void remove(TCPMessageChannel tcpMessageChannel) {
 
         String key = tcpMessageChannel.getKey();
-        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-            logger.logDebug(Thread.currentThread() + " removing " + key);
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+            sipStack.getStackLogger().logDebug(Thread.currentThread() + " removing " + key);
         }
 
         /** May have been removed already */
@@ -224,9 +222,9 @@ public class TCPMessageProcessor extends MessageProcessor {
                     targetHostPort.getPort(), sipStack, this);
             this.tcpMessageChannels.put(key, retval);
             retval.isCached = true;
-            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                logger.logDebug("key " + key);
-                logger.logDebug("Creating " + retval);
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                sipStack.getStackLogger().logDebug("key " + key);
+                sipStack.getStackLogger().logDebug("Creating " + retval);
             }
             return retval;
         }
@@ -236,12 +234,12 @@ public class TCPMessageProcessor extends MessageProcessor {
         String key = messageChannel.getKey();
         TCPMessageChannel currentChannel = (TCPMessageChannel) tcpMessageChannels.get(key);
         if (currentChannel != null) {
-            if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
-                logger.logDebug("Closing " + key);
+            if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                sipStack.getStackLogger().logDebug("Closing " + key);
             currentChannel.close();
         }
-        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-            logger.logDebug("Caching " + key);
+        if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+            sipStack.getStackLogger().logDebug("Caching " + key);
         this.tcpMessageChannels.put(key, messageChannel);
 
     }
@@ -256,9 +254,9 @@ public class TCPMessageProcessor extends MessageProcessor {
                 TCPMessageChannel retval = new TCPMessageChannel(host, port, sipStack, this);
                 this.tcpMessageChannels.put(key, retval);
                 retval.isCached = true;
-                if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                    logger.logDebug("key " + key);
-                    logger.logDebug("Creating " + retval);
+                if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                    sipStack.getStackLogger().logDebug("key " + key);
+                    sipStack.getStackLogger().logDebug("Creating " + retval);
                 }
                 return retval;
             }

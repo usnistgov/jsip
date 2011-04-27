@@ -24,7 +24,7 @@ import org.jdom.output.XMLOutputter;
 public class VersionerTask extends Task {
 
     protected File cvsVersionFile = null;
-    protected int version = 1111;
+    protected int version = -1;
     protected File pomFile = null;
     protected File toVersion = null;
     protected boolean incrementCVSVersion = false;
@@ -33,6 +33,10 @@ public class VersionerTask extends Task {
 
     private boolean doPom = false;
     private boolean doToVersion = false;
+
+    private String timeStampFileName = "TIMESTAMP";
+
+    private String antprops = "ant-version.properties";
 
 
     public void setMainVersionParts(int mainVersionParts) {
@@ -117,64 +121,70 @@ public class VersionerTask extends Task {
 
         super.execute();
 
-        int localVersion = 1111;
+        int localVersion = -1;
         if (cvsVersionFile != null) {
-        	//ObjectInputStream ois = null;
-        	BufferedReader br=null;
-        	try {
-        		//ois = new ObjectInputStream(new FileInputStream(cvsVersionFile));
+            //ObjectInputStream ois = null;
+            BufferedReader br=null;
+            try {
+                //ois = new ObjectInputStream(new FileInputStream(cvsVersionFile));
 
-        		String versionValue=null;
-        		br=new BufferedReader(new FileReader(cvsVersionFile));
-        		versionValue=br.readLine();
-        		localVersion = Math.abs(Integer.valueOf(versionValue));
+                String versionValue=null;
+                br=new BufferedReader(new FileReader(cvsVersionFile));
+                versionValue=br.readLine();
+                localVersion = Math.abs(Integer.valueOf(versionValue));
 
-        	} catch (Exception e) {
-        		log("Failed to fetch version from file!!");
-        		localVersion = this.version;
-        	} finally {
-        		if (br != null)
-        			try {
+            } catch (Exception e) {
+                log("Failed to fetch version from file!!");
+                throw new BuildException(e);
+            } finally {
+                if (br != null)
+                    try {
 
-        				br.close();
-        			} catch (Exception e) {
-        				localVersion = this.version;
-        			}
-        	}
-        	super.getProject().setProperty("svnversion", Integer.toString(localVersion));
+                        br.close();
+                    } catch (Exception e) {
+                        throw new BuildException(e);
+                    }
+            }
 
-        	
-        	getProject().setProperty("jain-sip-ri-jar",
-					"jain-sip-ri-1.2." + localVersion + ".jar");
-			getProject().setProperty("jain-sip-sdp-jar",
-					"jain-sip-sdp-1.2." + localVersion + ".jar");
-			getProject().setProperty("jain-sip-src-tar",
-					"jain-sip-src-1.2." + localVersion + ".tar.gz");
+            if (incrementCVSVersion) {
+                cvsVersionFile.delete();
+                try {
+                    cvsVersionFile.createNewFile();
+                    //ObjectOutputStream oos = new ObjectOutputStream(
+                    //      new FileOutputStream(cvsVersionFile));
+                    //oos.writeUTF(""+localVersion + 1);
+                    BufferedWriter bw=new BufferedWriter(new FileWriter(cvsVersionFile));
+                    bw.write(""+(localVersion + 1));
+                    bw.flush();
+                    bw.close();
+                    File antPropertiesFile = new File( this.antprops);
+                    antPropertiesFile.createNewFile();
+                    bw=new BufferedWriter(new FileWriter(antPropertiesFile));
+                    bw.write("jain-sip-ri-jar=jain-sip-ri-1.2."+(localVersion + 1) + ".jar\n");
+                    bw.write("jain-sip-sdp-jar=jain-sip-sdp-1.2."+(localVersion + 1) + ".jar\n");
+                    bw.write("jain-sip-src-tar=jain-sip-src-1.2."+(localVersion + 1) + ".tar.gz\n");
+                    bw.write("jain-sip-javadoc-tar=jain-sip-javadoc-1.2."+(localVersion + 1) + ".tar.gz\n");
 
-			getProject().setProperty("jain-sip-javadoc-tar",
-					"jain-sip-javadoc-1.2." + localVersion + ".tar.gz");
+                    bw.write("jain-sip-all-tar=jain-sip-1.2." +(localVersion + 1) + ".tar.gz\n");
+                    bw.write("jain-sip-tck-jar=jain-sip-tck-1.2."+(localVersion + 1) + ".jar\n");
+                    bw.write("sdp_jar=jain-sdp-1.0."+(localVersion + 1) + ".jar\n");
+                    bw.write("sdp-src-jar=jain-sdp-src-1.0."+(localVersion + 1) + ".jar\n");
+                    
+                    bw.write("jain-sip-sctp-jar=jain-sip-sctp-1.2."+(localVersion + 1) + ".jar\n");
+                    bw.write("unit_test_jar=jain-sip-unit-test-1.2." + (localVersion+1) + ".jar\n");
+                    bw.flush();
+                    bw.close();
+                    bw=new BufferedWriter(new FileWriter(this.timeStampFileName));
+                    Date date = new Date ( System.currentTimeMillis());
+                    bw.write(date.toString());
+                    bw.close();
+                } catch (IOException e) {
+                    log("Failed to increment version in file. See stack trace:",e,0);
+                    e.printStackTrace();
+                }
 
-			getProject().setProperty("jain-sip-all-tar",
-					"jain-sip-1.2." + localVersion + ".tar.gz");
-			getProject().setProperty("jain-sip-tck-jar",
-					"jain-sip-tck-1.2." + localVersion + ".jar");
-			getProject().setProperty("sdp_jar",
-					"jain-sdp-1.0." + localVersion + ".jar");
-			getProject().setProperty("sdp-src-jar",
-					"jain-sdp-src-1.0." + localVersion + ".jar");
-			getProject().setProperty("jain-sip-src-jar",
-					"jain-sip-src-1.2." + localVersion + ".jar");
+            }
 
-			getProject().setProperty("jain-sip-sctp-jar",
-					"jain-sip-sctp-1.2." + localVersion + ".jar");
-			getProject().setProperty("unit_test_jar",
-					"jain-sip-unit-test-1.2." + localVersion + ".jar");
-			
-			String cwd = System.getProperty("user.dir");
-			getProject().setProperty("top",new File(cwd).getName());
-        		
-        	
-        	
         } else {
             localVersion = this.version;
         }

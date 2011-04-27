@@ -45,7 +45,7 @@ import java.text.ParseException;
 /**
  * Definition of the Reason SIP Header.
  *
- * @version 1.2 $Revision: 1.9 $ $Date: 2010-05-06 14:07:53 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2009-10-18 13:46:34 $
  *
  * @author M. Ranganathan   <br/>
  *
@@ -139,26 +139,17 @@ public class Reason
      * Encode the body of this header (the stuff that follows headerName).
      * A.K.A headerValue.
      */
-    public StringBuilder encodeBody(StringBuilder buffer) {        
-        buffer.append(protocol);
-        if (parameters != null && !parameters.isEmpty()) {
-            buffer = buffer.append(SEMICOLON);
-            buffer = parameters.encode(buffer);
-        }
-        return buffer;
+    protected String encodeBody() {
+        StringBuffer s = new StringBuffer();
+        s.append(protocol);
+        if (parameters != null && !parameters.isEmpty())
+            s.append(SEMICOLON).append(parameters.encode());
+        return s.toString();
     }
 
 }
 /*
  * $Log: not supported by cvs2svn $
- * Revision 1.8  2009/10/18 13:46:34  deruelle_jean
- * FindBugs Fixes (Category Performance Warnings)
- *
- * Issue number:
- * Obtained from:
- * Submitted by: Jean Deruelle
- * Reviewed by:
- *
  * Revision 1.7  2009/07/17 18:57:35  emcho
  * Converts indentation tabs to spaces so that we have a uniform indentation policy in the whole project.
  *

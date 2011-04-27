@@ -42,7 +42,7 @@ import gov.nist.javax.sip.parser.*;
 /**
  * Message Factory implementation
  *
- * @version 1.2 $Revision: 1.24 $ $Date: 2010-05-06 14:08:03 $
+ * @version 1.2 $Revision: 1.23 $ $Date: 2009-09-08 01:58:40 $
  * @since 1.1
  *
  * @author M. Ranganathan <br/>
@@ -697,7 +697,7 @@ public class MessageFactoryImpl implements MessageFactory, MessageFactoryExt {
         }
 
         StringMsgParser smp = new StringMsgParser();
-//        smp.setStrict(this.strict);
+        smp.setStrict(this.strict);
 
         /*
          * This allows you to catch parse exceptions and create invalid messages
@@ -729,11 +729,10 @@ public class MessageFactoryImpl implements MessageFactory, MessageFactoryExt {
 
         };
 
-        ParseExceptionListener exHandler = null;
         if (this.testing)
-            exHandler = parseExceptionListener;
+            smp.setParseExceptionListener(parseExceptionListener);
 
-        SIPMessage sipMessage = smp.parseSIPMessage(requestString.getBytes(), true, this.strict, exHandler);
+        SIPMessage sipMessage = smp.parseSIPMessage(requestString);
 
         if (!(sipMessage instanceof SIPRequest))
             throw new ParseException(requestString, 0);
@@ -756,7 +755,7 @@ public class MessageFactoryImpl implements MessageFactory, MessageFactoryExt {
 
         StringMsgParser smp = new StringMsgParser();
 
-        SIPMessage sipMessage = smp.parseSIPMessage(responseString.getBytes(), true, false, null);
+        SIPMessage sipMessage = smp.parseSIPMessage(responseString);
 
         if (!(sipMessage instanceof SIPResponse))
             throw new ParseException(responseString, 0);

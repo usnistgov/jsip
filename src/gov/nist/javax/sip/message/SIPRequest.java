@@ -28,47 +28,24 @@
  *******************************************************************************/
 package gov.nist.javax.sip.message;
 
-import gov.nist.core.InternalErrorHandler;
-import gov.nist.javax.sip.address.GenericURI;
-import gov.nist.javax.sip.address.SipUri;
-import gov.nist.javax.sip.header.CSeq;
-import gov.nist.javax.sip.header.RecordRouteList;
-import gov.nist.javax.sip.header.RequestLine;
-import gov.nist.javax.sip.header.SIPHeader;
-import gov.nist.javax.sip.header.SIPHeaderList;
-import gov.nist.javax.sip.header.To;
-import gov.nist.javax.sip.header.Via;
-import gov.nist.javax.sip.header.ViaList;
-import gov.nist.javax.sip.stack.SIPTransactionStack;
+import gov.nist.javax.sip.address.*;
+import gov.nist.core.*;
 
-import java.io.UnsupportedEncodingException;
-import java.text.ParseException;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.sip.SipException;
+import java.io.UnsupportedEncodingException;
+import java.util.Iterator;
 import javax.sip.address.URI;
-import javax.sip.header.CSeqHeader;
-import javax.sip.header.CallIdHeader;
-import javax.sip.header.ContactHeader;
-import javax.sip.header.ContentTypeHeader;
-import javax.sip.header.EventHeader;
-import javax.sip.header.ExpiresHeader;
-import javax.sip.header.FromHeader;
-import javax.sip.header.Header;
-import javax.sip.header.MaxForwardsHeader;
-import javax.sip.header.ProxyAuthorizationHeader;
-import javax.sip.header.RecordRouteHeader;
-import javax.sip.header.RouteHeader;
-import javax.sip.header.ServerHeader;
-import javax.sip.header.SubscriptionStateHeader;
-import javax.sip.header.TimeStampHeader;
-import javax.sip.header.ToHeader;
-import javax.sip.header.ViaHeader;
-import javax.sip.message.Request;
+import javax.sip.message.*;
+
+import java.text.ParseException;
+import javax.sip.*;
+import javax.sip.header.*;
+
+import gov.nist.javax.sip.header.*;
+import gov.nist.javax.sip.stack.SIPTransactionStack;
 
 /*
  * Acknowledgements: Mark Bednarek made a few fixes to this code. Jeff Keyser added two methods
@@ -84,7 +61,7 @@ import javax.sip.message.Request;
 /**
  * The SIP Request structure.
  * 
- * @version 1.2 $Revision: 1.57 $ $Date: 2010-09-17 20:06:57 $
+ * @version 1.2 $Revision: 1.53 $ $Date: 2010-03-15 17:01:24 $
  * @since 1.1
  * 
  * @author M. Ranganathan <br/>
@@ -103,7 +80,7 @@ public class SIPRequest extends SIPMessage implements javax.sip.message.Request,
 
     private transient Object transactionPointer;
 
-    protected RequestLine requestLine;
+    private RequestLine requestLine;
 
     private transient Object messageChannel;
     
@@ -122,12 +99,8 @@ public class SIPRequest extends SIPMessage implements javax.sip.message.Request,
     /*
      * A table that maps a name string to its cannonical constant. This is used to speed up
      * parsing of messages .equals reduces to == if we use the constant value.
-     * 
-     * jeand : Setting the capacity to save on memory since the capacity here will never change
      */
-    private static final Map<String, String> nameTable = new ConcurrentHashMap<String, String>(15);
-    
-    protected static final Set<String> headersToIncludeInResponse = new HashSet<String>(0);
+    private static final Hashtable<String, String> nameTable = new Hashtable<String, String>();
 
     private static void putName(String name) {
         nameTable.put(name, name);
@@ -156,13 +129,6 @@ public class SIPRequest extends SIPMessage implements javax.sip.message.Request,
         putName(Request.SUBSCRIBE);
         putName(Request.UPDATE);
 
-        headersToIncludeInResponse.add(FromHeader.NAME.toLowerCase());
-        headersToIncludeInResponse.add(ToHeader.NAME.toLowerCase());
-        headersToIncludeInResponse.add(ViaHeader.NAME.toLowerCase());
-        headersToIncludeInResponse.add(RecordRouteHeader.NAME.toLowerCase());
-        headersToIncludeInResponse.add(CallIdHeader.NAME.toLowerCase());
-        headersToIncludeInResponse.add(CSeqHeader.NAME.toLowerCase());
-        headersToIncludeInResponse.add(TimeStampHeader.NAME.toLowerCase());        
     }
 
     /**
@@ -304,7 +270,9 @@ public class SIPRequest extends SIPMessage implements javax.sip.message.Request,
          * header field MUST contain a SIPS URI as well.
          */
         final String method = requestLine.getMethod();
-        if (SIPTransactionStack.isDialogCreated(method)) {
+        if (method.equals(Request.INVITE)
+                || method.equals(Request.SUBSCRIBE)
+                || method.equals(Request.REFER)) {
             if (this.getContactHeader() == null) {
                 // Make sure this is not a target refresh. If this is a target
                 // refresh its ok not to have a contact header. Otherwise
@@ -327,11 +295,12 @@ public class SIPRequest extends SIPMessage implements javax.sip.message.Request,
         /*
          * Contact header is mandatory for a SIP INVITE request.
          */
-        /* emmartins: dupe logic, see above
-         if (this.getContactHeader() == null
-                && SIPTransactionStack.isDialogCreated(method)) {
+        if (this.getContactHeader() == null
+                && (this.getMethod().equals(Request.INVITE)
+                        || this.getMethod().equals(Request.REFER) || this.getMethod().equals(
+                        Request.SUBSCRIBE))) {
             throw new ParseException("Contact Header is Mandatory for a SIP INVITE", 0);
-        }*/
+        }
 
         if (requestLine != null && method != null
                 && getCSeq().getMethod() != null
@@ -478,15 +447,15 @@ public class SIPRequest extends SIPMessage implements javax.sip.message.Request,
     /**
      * Encode only the headers and not the content.
      */
-    public StringBuilder encodeMessage(StringBuilder retval) {    	       
+    public String encodeMessage() {
+        String retval;
         if (requestLine != null) {
             this.setRequestLineDefaults();
-            requestLine.encode(retval);
-            encodeSIPHeaders(retval);
+            retval = requestLine.encode() + super.encodeSIPHeaders();
         } else if (this.isNullRequest()) {
-            retval.append("\r\n\r\n");
+            retval = "\r\n\r\n";
         } else
-            retval = encodeSIPHeaders(retval);
+            retval = super.encodeSIPHeaders();
         return retval;
 
     }
@@ -571,6 +540,76 @@ public class SIPRequest extends SIPMessage implements javax.sip.message.Request,
     }
 
     /**
+     * Get a dialog identifier. Generates a string that can be used as a dialog identifier.
+     * 
+     * @param isServer is set to true if this is the UAS and set to false if this is the UAC
+     */
+    public String getDialogId(boolean isServer) {
+        CallID cid = (CallID) this.getCallId();
+        StringBuffer retval = new StringBuffer(cid.getCallId());
+        From from = (From) this.getFrom();
+        To to = (To) this.getTo();
+        if (!isServer) {
+            // retval.append(COLON).append(from.getUserAtHostPort());
+            if (from.getTag() != null) {
+                retval.append(COLON);
+                retval.append(from.getTag());
+            }
+            // retval.append(COLON).append(to.getUserAtHostPort());
+            if (to.getTag() != null) {
+                retval.append(COLON);
+                retval.append(to.getTag());
+            }
+        } else {
+            // retval.append(COLON).append(to.getUserAtHostPort());
+            if (to.getTag() != null) {
+                retval.append(COLON);
+                retval.append(to.getTag());
+            }
+            // retval.append(COLON).append(from.getUserAtHostPort());
+            if (from.getTag() != null) {
+                retval.append(COLON);
+                retval.append(from.getTag());
+            }
+        }
+        return retval.toString().toLowerCase();
+
+    }
+
+    /**
+     * Get a dialog id given the remote tag.
+     */
+    public String getDialogId(boolean isServer, String toTag) {
+        From from = (From) this.getFrom();
+        CallID cid = (CallID) this.getCallId();
+        StringBuffer retval = new StringBuffer(cid.getCallId());
+        if (!isServer) {
+            // retval.append(COLON).append(from.getUserAtHostPort());
+            if (from.getTag() != null) {
+                retval.append(COLON);
+                retval.append(from.getTag());
+            }
+            // retval.append(COLON).append(to.getUserAtHostPort());
+            if (toTag != null) {
+                retval.append(COLON);
+                retval.append(toTag);
+            }
+        } else {
+            // retval.append(COLON).append(to.getUserAtHostPort());
+            if (toTag != null) {
+                retval.append(COLON);
+                retval.append(toTag);
+            }
+            // retval.append(COLON).append(from.getUserAtHostPort());
+            if (from.getTag() != null) {
+                retval.append(COLON);
+                retval.append(from.getTag());
+            }
+        }
+        return retval.toString().toLowerCase();
+    }
+
+    /**
      * Encode this into a byte array. This is used when the body has been set as a binary array
      * and you want to encode the body as a byte array for transmission.
      * 
@@ -641,8 +680,8 @@ public class SIPRequest extends SIPMessage implements javax.sip.message.Request,
 
     public SIPResponse createResponse(int statusCode, String reasonPhrase) {
         SIPResponse newResponse;
-//        Iterator headerIterator;
-//        SIPHeader nextHeader;
+        Iterator headerIterator;
+        SIPHeader nextHeader;
 
         newResponse = new SIPResponse();
         try {
@@ -654,55 +693,35 @@ public class SIPRequest extends SIPMessage implements javax.sip.message.Request,
             newResponse.setReasonPhrase(reasonPhrase);
         else
             newResponse.setReasonPhrase(SIPResponse.getReasonPhrase(statusCode));
-        
-//        headerIterator = getHeaders();
-//        while (headerIterator.hasNext()) {
-//            nextHeader = (SIPHeader) headerIterator.next();
-//            if (nextHeader instanceof From
-//                    || nextHeader instanceof To
-//                    || nextHeader instanceof ViaList
-//                    || nextHeader instanceof CallID
-//                    || (nextHeader instanceof RecordRouteList && mustCopyRR(statusCode))
-//                    || nextHeader instanceof CSeq
-//                    // We just copy TimeStamp for all headers (not just 100).
-//                    || nextHeader instanceof TimeStamp) {
-//
-//                try {
-//
-//                    newResponse.attachHeader((SIPHeader) nextHeader.clone(), false);
-//                } catch (SIPDuplicateHeaderException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-        
-        // no need to iterate through all headers to create the response since we know which headers
-        // we only want to keep and helps the lazy parsing to avoid going through all headers
-        for(String headerName : headersToIncludeInResponse) {                	
-        	SIPHeader nextHeader = headerTable.get(headerName);
-        	if(nextHeader != null) {
-        		if(!(nextHeader instanceof RecordRouteList) || (nextHeader instanceof RecordRouteList && mustCopyRR(statusCode))) {
-        			try {
-        				newResponse.attachHeader((SIPHeader) nextHeader.clone(), false);
-        			} catch (SIPDuplicateHeaderException e) {
-                      e.printStackTrace();
-                  }
-        		}
-        	}
+        headerIterator = getHeaders();
+        while (headerIterator.hasNext()) {
+            nextHeader = (SIPHeader) headerIterator.next();
+            if (nextHeader instanceof From
+                    || nextHeader instanceof To
+                    || nextHeader instanceof ViaList
+                    || nextHeader instanceof CallID
+                    || (nextHeader instanceof RecordRouteList && mustCopyRR(statusCode))
+                    || nextHeader instanceof CSeq
+                    // We just copy TimeStamp for all headers (not just 100).
+                    || nextHeader instanceof TimeStamp) {
+
+                try {
+
+                    newResponse.attachHeader((SIPHeader) nextHeader.clone(), false);
+                } catch (SIPDuplicateHeaderException e) {
+                    e.printStackTrace();
+                }
+            }
         }
-        
         if (MessageFactoryImpl.getDefaultServerHeader() != null) {
             newResponse.setHeader(MessageFactoryImpl.getDefaultServerHeader());
 
         }
-        // Commented out for Issue 305 : 
-        // tag parameter in the To header in 100 Trying response for re-INVITE 
-        // is needed
-        // Fix by Tomasz Zieleniewski
-//        if (newResponse.getStatusCode() == 100) {
-//            // Trying is never supposed to have the tag parameter set.
-//            newResponse.getTo().removeParameter("tag");
-//        }
+        if (newResponse.getStatusCode() == 100) {
+            // Trying is never supposed to have the tag parameter set.
+            newResponse.getTo().removeParameter("tag");
+
+        }
         ServerHeader server = MessageFactoryImpl.getDefaultServerHeader();
         if (server != null) {
             newResponse.setHeader(server);
@@ -790,55 +809,75 @@ public class SIPRequest extends SIPMessage implements javax.sip.message.Request,
      * @return A SIPRequest with an ACK method.
      */
     public SIPRequest createAckRequest(To responseToHeader) {
-//    	SIPRequest newRequest;
-//        Iterator headerIterator;
-//        SIPHeader nextHeader;
+        SIPRequest newRequest;
+        Iterator headerIterator;
+        SIPHeader nextHeader;
 
-    	// cloning instead of iterating through headers so that lazy parsers don't have to parse the messages fully
-    	// to create ACK requests
-        SIPRequest newRequest = (SIPRequest) this.clone();
-//        newRequest = new SIPRequest();
-//        newRequest.setRequestLine((RequestLine) this.requestLine.clone());
+        newRequest = new SIPRequest();
+        newRequest.setRequestLine((RequestLine) this.requestLine.clone());
         newRequest.setMethod(Request.ACK);
-        // Ack and cancel do not get ROUTE headers.
-        // Route header for ACK is assigned by the
-        // Dialog if necessary.
-        newRequest.removeHeader(RouteHeader.NAME);
-        // Remove proxy auth header.
-        // Assigned by the Dialog if necessary.
-        newRequest.removeHeader(ProxyAuthorizationHeader.NAME);
-        // Adding content is responsibility of user.
-        newRequest.removeContent();
-        // Content type header is removed since
-        // content length is 0.
-        newRequest.removeHeader(ContentTypeHeader.NAME);
-        // The CSeq header field in the
-        // ACK MUST contain the same value for the
-        // sequence number as was present in the
-        // original request, but the method parameter
-        // MUST be equal to "ACK".
-        try{
-        	newRequest.getCSeq().setMethod(Request.ACK);
-        } catch (ParseException e) {
+        headerIterator = getHeaders();
+        while (headerIterator.hasNext()) {
+            nextHeader = (SIPHeader) headerIterator.next();
+            if (nextHeader instanceof RouteList) {
+                // Ack and cancel do not get ROUTE headers.
+                // Route header for ACK is assigned by the
+                // Dialog if necessary.
+                continue;
+            } else if (nextHeader instanceof ProxyAuthorization) {
+                // Remove proxy auth header.
+                // Assigned by the Dialog if necessary.
+                continue;
+            } else if (nextHeader instanceof ContentLength) {
+                // Adding content is responsibility of user.
+                nextHeader = (SIPHeader) nextHeader.clone();
+                try {
+                    ((ContentLength) nextHeader).setContentLength(0);
+                } catch (InvalidArgumentException e) {
+                }
+            } else if (nextHeader instanceof ContentType) {
+                // Content type header is removed since
+                // content length is 0.
+                continue;
+            } else if (nextHeader instanceof CSeq) {
+                // The CSeq header field in the
+                // ACK MUST contain the same value for the
+                // sequence number as was present in the
+                // original request, but the method parameter
+                // MUST be equal to "ACK".
+                CSeq cseq = (CSeq) nextHeader.clone();
+                try {
+                    cseq.setMethod(Request.ACK);
+                } catch (ParseException e) {
+                }
+                nextHeader = cseq;
+            } else if (nextHeader instanceof To) {
+                if (responseToHeader != null) {
+                    nextHeader = responseToHeader;
+                } else {
+                    nextHeader = (SIPHeader) nextHeader.clone();
+                }
+            } else if (nextHeader instanceof ContactList || nextHeader instanceof Expires) {
+                // CONTACT header does not apply for ACK requests.
+                continue;
+            } else if (nextHeader instanceof ViaList) {
+                // Bug reported by Gianluca Martinello
+                // The ACK MUST contain a single Via header field,
+                // and this MUST be equal to the top Via header
+                // field of the original
+                // request.
+
+                nextHeader = (SIPHeader) ((ViaList) nextHeader).getFirst().clone();
+            } else {
+                nextHeader = (SIPHeader) nextHeader.clone();
+            }
+
+            try {
+                newRequest.attachHeader(nextHeader, false);
+            } catch (SIPDuplicateHeaderException e) {
+                e.printStackTrace();
+            }
         }
-        if (responseToHeader != null) {
-            newRequest.setTo(responseToHeader);
-        }
-        // CONTACT header does not apply for ACK requests.
-        newRequest.removeHeader(ContactHeader.NAME);
-        newRequest.removeHeader(ExpiresHeader.NAME);
-        ViaList via = newRequest.getViaHeaders();
-        // Bug reported by Gianluca Martinello
-        // The ACK MUST contain a single Via header field,
-        // and this MUST be equal to the top Via header
-        // field of the original
-        // request.
-        if(via != null && via.size() > 1) {
-        	for(int i = 2; i < via.size(); i++) {
-        		via.remove(i);
-        	}
-        }
-        
         if (MessageFactoryImpl.getDefaultUserAgentHeader() != null) {
             newRequest.setHeader(MessageFactoryImpl.getDefaultUserAgentHeader());
 
@@ -899,7 +938,132 @@ public class SIPRequest extends SIPMessage implements javax.sip.message.Request,
         return newRequest;
     }
 
-     /**
+    /**
+     * Create a new default SIPRequest from the original request. Warning: the newly created
+     * SIPRequest, shares the headers of this request but we generate any new headers that we need
+     * to modify so the original request is umodified. However, if you modify the shared headers
+     * after this request is created, then the newly created request will also be modified. If you
+     * want to modify the original request without affecting the returned Request make sure you
+     * clone it before calling this method.
+     * 
+     * Only required headers are copied.
+     * <ul>
+     * <li> Contact headers are not included in the newly created request. Setting the appropriate
+     * sequence number is the responsibility of the caller. </li>
+     * <li> RouteList is not copied for ACK and CANCEL </li>
+     * <li> Note that we DO NOT copy the body of the argument into the returned header. We do not
+     * copy the content type header from the original request either. These have to be added
+     * seperately and the content length has to be correctly set if necessary the content length
+     * is set to 0 in the returned header. </li>
+     * <li>Contact List is not copied from the original request.</li>
+     * <li>RecordRoute List is not included from original request. </li>
+     * <li>Via header is not included from the original request. </li>
+     * </ul>
+     * 
+     * @param requestLine is the new request line.
+     * 
+     * @param switchHeaders is a boolean flag that causes to and from headers to switch (set this
+     *        to true if you are the server of the transaction and are generating a BYE request).
+     *        If the headers are switched, we generate new From and To headers otherwise we just
+     *        use the incoming headers.
+     * 
+     * @return a new Default SIP Request which has the requestLine specified.
+     * 
+     */
+    public SIPRequest createSIPRequest(RequestLine requestLine, boolean switchHeaders) {
+        SIPRequest newRequest = new SIPRequest();
+        newRequest.requestLine = requestLine;
+        Iterator<SIPHeader> headerIterator = this.getHeaders();
+        while (headerIterator.hasNext()) {
+            SIPHeader nextHeader = (SIPHeader) headerIterator.next();
+            // For BYE and cancel set the CSeq header to the
+            // appropriate method.
+            if (nextHeader instanceof CSeq) {
+                CSeq newCseq = (CSeq) nextHeader.clone();
+                nextHeader = newCseq;
+                try {
+                    newCseq.setMethod(requestLine.getMethod());
+                } catch (ParseException e) {
+                }
+            } else if (nextHeader instanceof ViaList) {
+                Via via = (Via) (((ViaList) nextHeader).getFirst().clone());
+                via.removeParameter("branch");
+                nextHeader = via;
+                // Cancel and ACK preserve the branch ID.
+            } else if (nextHeader instanceof To) {
+                To to = (To) nextHeader;
+                if (switchHeaders) {
+                    nextHeader = new From(to);
+                    ((From) nextHeader).removeTag();
+                } else {
+                    nextHeader = (SIPHeader) to.clone();
+                    ((To) nextHeader).removeTag();
+                }
+            } else if (nextHeader instanceof From) {
+                From from = (From) nextHeader;
+                if (switchHeaders) {
+                    nextHeader = new To(from);
+                    ((To) nextHeader).removeTag();
+                } else {
+                    nextHeader = (SIPHeader) from.clone();
+                    ((From) nextHeader).removeTag();
+                }
+            } else if (nextHeader instanceof ContentLength) {
+                ContentLength cl = (ContentLength) nextHeader.clone();
+                try {
+                    cl.setContentLength(0);
+                } catch (InvalidArgumentException e) {
+                }
+                nextHeader = cl;
+            } else if (!(nextHeader instanceof CallID) && !(nextHeader instanceof MaxForwards)) {
+                // Route is kept by dialog.
+                // RR is added by the caller.
+                // Contact is added by the Caller
+                // Any extension headers must be added
+                // by the caller.
+                continue;
+            }
+            try {
+                newRequest.attachHeader(nextHeader, false);
+            } catch (SIPDuplicateHeaderException e) {
+                e.printStackTrace();
+            }
+        }
+        if (MessageFactoryImpl.getDefaultUserAgentHeader() != null) {
+            newRequest.setHeader(MessageFactoryImpl.getDefaultUserAgentHeader());
+
+        }
+        return newRequest;
+
+    }
+
+    /**
+     * Create a BYE request from this request.
+     * 
+     * @param switchHeaders is a boolean flag that causes from and isServerTransaction to headers
+     *        to be swapped. Set this to true if you are the server of the dialog and are
+     *        generating a BYE request for the dialog.
+     * @return a new default BYE request.
+     */
+    public SIPRequest createBYERequest(boolean switchHeaders) {
+        RequestLine requestLine = (RequestLine) this.requestLine.clone();
+        requestLine.setMethod("BYE");
+        return this.createSIPRequest(requestLine, switchHeaders);
+    }
+
+    /**
+     * Create an ACK request from this request. This is suitable for generating an ACK for an
+     * INVITE client transaction.
+     * 
+     * @return an ACK request that is generated from this request.
+     */
+    public SIPRequest createACKRequest() {
+        RequestLine requestLine = (RequestLine) this.requestLine.clone();
+        requestLine.setMethod(Request.ACK);
+        return this.createSIPRequest(requestLine, false);
+    }
+
+    /**
      * Get the host from the topmost via header.
      * 
      * @return the string representation of the host from the topmost via header.
@@ -1016,7 +1180,7 @@ public class SIPRequest extends SIPMessage implements javax.sip.message.Request,
         String requestUri = this.getRequestURI().toString();
 
         if (fromTag != null) {
-            return new StringBuilder().append(requestUri).append(":").append(fromTag).append(":").append(cseq).append(":")
+            return new StringBuffer().append(requestUri).append(":").append(fromTag).append(":").append(cseq).append(":")
                     .append(callId).toString();
         } else
             return null;
@@ -1036,9 +1200,9 @@ public class SIPRequest extends SIPMessage implements javax.sip.message.Request,
     public Object getInviteTransaction() {
         return inviteTransaction;
     }
+
+   
+   
     
-    @Override
-    public void cleanUp() {
-    	super.cleanUp();
-    }
+
 }

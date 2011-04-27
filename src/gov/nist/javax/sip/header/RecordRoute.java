@@ -34,7 +34,7 @@ import gov.nist.javax.sip.address.*;
  * The Request-Route header is added to a request by any proxy that insists on
  * being in the path of subsequent requests for the same call leg.
  *
- *@version 1.2 $Revision: 1.7 $ $Date: 2010-05-06 14:07:48 $
+ *@version 1.2 $Revision: 1.6 $ $Date: 2009-07-17 18:57:35 $
  *
  *@author M. Ranganathan   <br/>
  *
@@ -71,10 +71,10 @@ public class RecordRoute
      *@return String containing the canonicaly encoded header.
      */
     public String encodeBody() {
-        return encodeBody(new StringBuilder()).toString();
+        return encodeBody(new StringBuffer()).toString();
     }
 
-    protected StringBuilder encodeBody(StringBuilder buffer) {
+    protected StringBuffer encodeBody(StringBuffer buffer) {
         if (address.getAddressType() == AddressImpl.ADDRESS_SPEC) {
             buffer.append(LESS_THAN);
         }

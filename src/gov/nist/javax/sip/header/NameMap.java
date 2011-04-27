@@ -24,39 +24,20 @@
 *
 */
 package gov.nist.javax.sip.header;
-import gov.nist.core.PackageNames;
-import gov.nist.javax.sip.header.ims.PAccessNetworkInfo;
-import gov.nist.javax.sip.header.ims.PAccessNetworkInfoHeader;
-import gov.nist.javax.sip.header.ims.PAssertedIdentity;
-import gov.nist.javax.sip.header.ims.PAssertedIdentityHeader;
-import gov.nist.javax.sip.header.ims.PAssociatedURI;
-import gov.nist.javax.sip.header.ims.PAssociatedURIHeader;
-import gov.nist.javax.sip.header.ims.PCalledPartyID;
-import gov.nist.javax.sip.header.ims.PCalledPartyIDHeader;
-import gov.nist.javax.sip.header.ims.PChargingFunctionAddresses;
-import gov.nist.javax.sip.header.ims.PChargingFunctionAddressesHeader;
-import gov.nist.javax.sip.header.ims.PChargingVector;
-import gov.nist.javax.sip.header.ims.PChargingVectorHeader;
-import gov.nist.javax.sip.header.ims.PMediaAuthorization;
-import gov.nist.javax.sip.header.ims.PMediaAuthorizationHeader;
-import gov.nist.javax.sip.header.ims.PPreferredIdentity;
-import gov.nist.javax.sip.header.ims.PVisitedNetworkID;
-import gov.nist.javax.sip.header.ims.Path;
-import gov.nist.javax.sip.header.ims.Privacy;
-import gov.nist.javax.sip.header.ims.ServiceRoute;
+import gov.nist.core.*;
+import gov.nist.javax.sip.header.ims.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Hashtable;
 
 /**
  * A mapping class that returns the SIPHeader for a given header name.
  * Add new classes to this map if you are implementing new header types if
  * you want some of the introspection based methods to work.
- * @version 1.2 $Revision: 1.12 $ $Date: 2010-05-06 14:07:52 $
+ * @version 1.2 $Revision: 1.11 $ $Date: 2009-07-17 18:57:32 $
  * @since 1.1
  */
 public class NameMap implements SIPHeaderNames, PackageNames {
-    static Map<String, String> nameMap;
+    static Hashtable nameMap;
     static {
         initializeNameMap();
     }
@@ -94,7 +75,7 @@ public class NameMap implements SIPHeaderNames, PackageNames {
     }
 
     private static void initializeNameMap() {
-        nameMap = new HashMap<String, String>(63);
+        nameMap = new Hashtable();
         putNameMap(MinExpires.NAME, MinExpires.class.getName()); // 1
 
         putNameMap(ErrorInfo.NAME, ErrorInfo.class.getName()); // 2

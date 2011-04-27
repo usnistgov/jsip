@@ -1,16 +1,12 @@
 package gov.nist.javax.sip.clientauthutils;
 
-import gov.nist.javax.sip.stack.SIPStackTimerTask;
-import gov.nist.javax.sip.stack.timers.SipTimer;
-
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.sip.header.AuthorizationHeader;
+import javax.sip.*;
+import javax.sip.header.*;
+import javax.sip.address.*;
+import javax.sip.message.*;
 
 /**
  * A cache of authorization headers to be used for subsequent processing when we
@@ -28,18 +24,19 @@ class CredentialsCache {
      */
     private ConcurrentHashMap<String, List<AuthorizationHeader>> authorizationHeaders =
             new ConcurrentHashMap<String, List<AuthorizationHeader>>();
-    private SipTimer timer;
+    private Timer timer;
 
-    class TimeoutTask extends SIPStackTimerTask {
+    class TimeoutTask extends TimerTask {
         String callId;
         String userName;
 
-        public TimeoutTask(String userName, String callId) {
-            this.callId = callId;
+        public TimeoutTask(String userName, String proxyDomain) {
+            this.callId = proxyDomain;
             this.userName = userName;
         }
 
-        public void runTask() {
+        @Override
+        public void run() {
             authorizationHeaders.remove(callId);
 
         }
@@ -48,7 +45,7 @@ class CredentialsCache {
 
 
 
-    CredentialsCache (SipTimer timer) {
+    CredentialsCache (Timer timer) {
         this.timer = timer;
     }
 

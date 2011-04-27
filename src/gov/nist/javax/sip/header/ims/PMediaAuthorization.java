@@ -110,8 +110,9 @@ public class PMediaAuthorization
      * Encode header
      * @return the header content
      */
-    public StringBuilder encodeBody(StringBuilder encoding) {
-        return encoding.append(token);
+    protected String encodeBody()
+    {
+        return token;
     }
 
 

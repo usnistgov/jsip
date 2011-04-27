@@ -16,7 +16,6 @@
 package test.unit.gov.nist.javax.sip.stack.dialog.timeout;
 
 import gov.nist.javax.sip.DialogTimeoutEvent;
-import gov.nist.javax.sip.stack.SIPDialog;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -82,8 +81,6 @@ public class ShootmeNotImplementingListener implements SipListener {
                 if(!protocolObjects.autoDialog) {
                 	((SipProvider)requestEvent.getSource()).getNewDialog(st);
                 }
-                st.getDialog().setApplicationData("some junk");
-                
                 // System.out.println("got a server tranasaction " + st);
                 st.sendResponse(response); // send 180(RING)
                 response = messageFactory.createResponse(200, request);
@@ -183,8 +180,6 @@ public class ShootmeNotImplementingListener implements SipListener {
     }
 
     public void processDialogTerminated(DialogTerminatedEvent dialogTerminatedEvent) {
-        TimerTask timerTask = new CheckAppData(dialogTerminatedEvent.getDialog());
-        new Timer().schedule(timerTask, 9000);
 //        Dialog dialog = dialogTerminatedEvent.getDialog();
 //
 //        System.out.println("Dialog Terminated Event " + dialog.getDialogId());
@@ -348,19 +343,4 @@ public class ShootmeNotImplementingListener implements SipListener {
 		return stateIsOk;
 	}
 
-	class CheckAppData extends TimerTask {
-        Dialog dialog;
-        
-        public CheckAppData(Dialog dialog) {
-            this.dialog = dialog;
-        }
-        
-        public void run() {             
-            System.out.println("Checking app data " + dialog.getApplicationData());
-            if(dialog.getApplicationData() == null || !dialog.getApplicationData().equals("some junk")) {
-                stateIsOk = false;
-                DialogTimeoutTest.fail("application data should never be null except if nullified by the application !");
-            }            
-        }
-    }
 }

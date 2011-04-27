@@ -86,17 +86,17 @@ public class PChargingFunctionAddresses
     /* (non-Javadoc)
      * @see gov.nist.javax.sip.header.ParametersHeader#encodeBody()
      */
-    public StringBuilder encodeBody(StringBuilder encoding) {
+    protected String encodeBody() {
 
-//        StringBuilder encoding = new StringBuilder();
+        StringBuffer encoding = new StringBuffer();
 
         // issued by Miguel Freitas
         if (!duplicates.isEmpty())
         {
-            duplicates.encode(encoding);
+            encoding.append(duplicates.encode());
         }
 
-        return encoding;
+        return encoding.toString();
 
     }
 

@@ -297,7 +297,7 @@ public class Shootme implements SipListener {
     public static void main(String args[]) throws Exception {
         logger.addAppender(new ConsoleAppender(new SimpleLayout()));
         ProtocolObjects protocolObjects = new ProtocolObjects("shootme",
-                "gov.nist", "udp", true,false, false);
+                "gov.nist", "udp", true,false);
 
         Shootme shootme = new Shootme(protocolObjects);
         shootme.createSipProvider().addSipListener(shootme);

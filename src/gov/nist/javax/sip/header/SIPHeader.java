@@ -32,7 +32,7 @@ package gov.nist.javax.sip.header;
  * Root class from which all SIPHeader objects are subclassed.
  *
  * @author M. Ranganathan   <br/>
- * @version 1.2 $Revision: 1.9 $ $Date: 2010-05-06 14:07:52 $
+ * @version 1.2 $Revision: 1.8 $ $Date: 2010-03-06 04:12:11 $
  *
  *
  */
@@ -51,7 +51,7 @@ public abstract class SIPHeader
      * @param hname String to set
      */
     protected SIPHeader(String hname) {
-        headerName = hname.intern();
+        headerName = hname;
     }
 
     /** Default constructor
@@ -89,7 +89,7 @@ public abstract class SIPHeader
     * the headerName:
     */
     public String getHeaderValue() {
-      return encodeBody(new StringBuilder()).toString();
+      return encodeBody();
     }
 
     /** Return false if this is not a header list
@@ -103,10 +103,10 @@ public abstract class SIPHeader
     /** Encode this header into canonical form.
     */
     public String encode() {
-        return encode(new StringBuilder()).toString();
+        return encode(new StringBuffer()).toString();
     }
 
-    public StringBuilder encode(StringBuilder buffer) {
+    public StringBuffer encode(StringBuffer buffer) {
         buffer.append(this.headerName).append(COLON).append(SP);
         this.encodeBody(buffer);
         buffer.append(NEWLINE);
@@ -116,15 +116,14 @@ public abstract class SIPHeader
     /** Encode the body of this header (the stuff that follows headerName).
     * A.K.A headerValue.
     */
-    protected abstract StringBuilder encodeBody(StringBuilder buffer);
-        
+    protected abstract String encodeBody();
 
-//    /** Encode the body of this header in the given buffer.
-//     * Default implementation calls encodeBody();
-//     */
-//    protected StringBuilder encodeBody(StringBuilder buffer) {
-//        return buffer.append(encodeBody());
-//    }
+    /** Encode the body of this header in the given buffer.
+     * Default implementation calls encodeBody();
+     */
+    protected StringBuffer encodeBody(StringBuffer buffer) {
+        return buffer.append(encodeBody());
+    }
 
     /** Alias for getHeaderValue.
      */

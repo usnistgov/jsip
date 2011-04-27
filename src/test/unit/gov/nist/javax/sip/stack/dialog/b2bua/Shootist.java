@@ -143,7 +143,7 @@ public class Shootist implements SipListener {
 
         this.port = myPort;
 
-        ProtocolObjects sipObjects = new ProtocolObjects("shootist","gov.nist","udp",true,false, false);
+        ProtocolObjects sipObjects = new ProtocolObjects("shootist","gov.nist","udp",true,false);
         addressFactory = sipObjects.addressFactory;
         messageFactory = sipObjects.messageFactory;
         headerFactory = sipObjects.headerFactory;

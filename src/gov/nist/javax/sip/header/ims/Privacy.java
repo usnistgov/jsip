@@ -81,8 +81,9 @@ public class Privacy
      * Encode into a canonical string.
      * @return String.
      */
-    public StringBuilder encodeBody(StringBuilder buffer) {
-        return buffer.append(this.privacy);
+    public String encodeBody()
+    {
+        return this.privacy;
     }
 
 

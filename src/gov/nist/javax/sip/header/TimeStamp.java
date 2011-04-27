@@ -35,7 +35,7 @@ import javax.sip.header.*;
 /**
  * TimeStamp SIP Header.
  *
- * @version 1.2 $Revision: 1.8 $ $Date: 2010-05-06 14:07:46 $
+ * @version 1.2 $Revision: 1.7 $ $Date: 2009-10-18 13:46:31 $
  *
  * @author M. Ranganathan <br/>
  * @author Olivier Deruelle <br/>
@@ -95,17 +95,17 @@ public class TimeStamp extends SIPHeader implements TimeStampHeader {
      *
      * @return String
      */
-    public StringBuilder encodeBody(StringBuilder retval) {        
-//        StringBuilder retval = new StringBuilder();
+    public String encodeBody() {
+        StringBuffer retval = new StringBuffer();
         String s1 = getTimeStampAsString();
         String s2 = getDelayAsString();
         if (s1.equals("") && s2.equals(""))
-            return retval.append("");
+            return "";
         if (!s1.equals(""))
             retval.append(s1);
         if (!s2.equals(""))
             retval.append(" ").append(s2);
-        return retval;
+        return retval.toString();
 
     }
 

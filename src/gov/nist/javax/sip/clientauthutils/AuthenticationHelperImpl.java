@@ -17,9 +17,6 @@ package gov.nist.javax.sip.clientauthutils;
  * proposed a way to fix them (his proposition was taken into account).
  */
 
-import gov.nist.core.CommonLogger;
-import gov.nist.core.LogWriter;
-import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.address.SipUri;
 import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.stack.SIPClientTransaction;
@@ -63,7 +60,7 @@ import javax.sip.message.Response;
  */
 
 public class AuthenticationHelperImpl implements AuthenticationHelper {
-	private static StackLogger logger = CommonLogger.getLogger(AuthenticationHelperImpl.class);
+
     /**
      * Credentials cached so far.
      */
@@ -128,10 +125,9 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
             ClientTransaction challengedTransaction, SipProvider transactionCreator, int cacheTime)
             throws SipException, NullPointerException {
         try {
-          
-            if ( logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                 logger.logDebug("handleChallenge: " + challenge);
-           
+            if (sipStack.isLoggingEnabled()) {
+                sipStack.getStackLogger().logDebug("handleChallenge: " + challenge);
+            }
 
             SIPRequest challengedRequest = ((SIPRequest) challengedTransaction.getRequest());
 
@@ -230,11 +226,6 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
                 if ( this.accountManager instanceof SecureAccountManager ) {
                     UserCredentialHash credHash =
                         ((SecureAccountManager)this.accountManager).getCredentialHash(challengedTransaction,realm);
-                    if ( credHash == null ) {
-                        logger.logDebug("Could not find creds");
-                        throw new SipException(
-                        "Cannot find user creds for the given user name and realm");
-                    }
                     URI uri = reoriginatedRequest.getRequestURI();
                     sipDomain = credHash.getSipDomain();
                     authorization = this.getAuthorization(reoriginatedRequest
@@ -243,13 +234,11 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
                             reoriginatedRequest.getRawContent()), authHeader, credHash);
                 } else {
                     UserCredentials userCreds = ((AccountManager) this.accountManager).getCredentials(challengedTransaction, realm);
-                    
-                     if (userCreds == null) {
+                    sipDomain = userCreds.getSipDomain();
+                    if (userCreds == null)
                          throw new SipException(
                             "Cannot find user creds for the given user name and realm");
-                     }
-                     sipDomain = userCreds.getSipDomain();
-                     
+
                     // we haven't yet authenticated this realm since we were
                     // started.
 
@@ -258,32 +247,26 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
                                 (reoriginatedRequest.getContent() == null) ? "" : new String(
                                 reoriginatedRequest.getRawContent()), authHeader, userCreds);
                 }
-                
-                if ( logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                    logger.logDebug(
-                            "Created authorization header: " + authorization.toString());
-                }
-              
+                if (sipStack.isLoggingEnabled())
+                	sipStack.getStackLogger().logDebug(
+                        "Created authorization header: " + authorization.toString());
 
-                if (cacheTime != 0) {
-                    String callId = challengedRequest.getCallId().getCallId();
-                    cachedCredentials.cacheAuthorizationHeader(callId,
+                if (cacheTime != 0)
+                    cachedCredentials.cacheAuthorizationHeader(sipDomain,
                             authorization, cacheTime);
-                }
+
                 reoriginatedRequest.addHeader(authorization);
             }
 
-           
-            if ( logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                logger.logDebug(
+            if (sipStack.isLoggingEnabled()) {
+                sipStack.getStackLogger().logDebug(
                         "Returning authorization transaction." + retryTran);
             }
-          
             return retryTran;
         } catch (SipException ex) {
             throw ex;
         } catch (Exception ex) {
-            logger.logError("Unexpected exception ", ex);
+            sipStack.getStackLogger().logError("Unexpected exception ", ex);
             throw new SipException("Unexpected exception ", ex);
         }
     }
@@ -319,7 +302,7 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
                 userCredentials.getUserName(), authHeader.getRealm(), userCredentials
                         .getPassword(), authHeader.getNonce(), nc_value, // JvB added
                 cnonce, // JvB added
-                method, uri, requestBody, qop,logger);// jvb changed
+                method, uri, requestBody, qop,sipStack.getStackLogger());// jvb changed
 
         AuthorizationHeader authorization = null;
         try {
@@ -385,7 +368,7 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
         response = MessageDigestAlgorithm.calculateResponse(authHeader.getAlgorithm(),
               userCredentials.getHashUserDomainPassword(), authHeader.getNonce(), nc_value, // JvB added
                 cnonce, // JvB added
-                method, uri, requestBody, qop,logger);// jvb changed
+                method, uri, requestBody, qop,sipStack.getStackLogger());// jvb changed
 
         AuthorizationHeader authorization = null;
         try {
@@ -453,8 +436,8 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
         Collection<AuthorizationHeader> authHeaders = this.cachedCredentials
                 .getCachedAuthorizationHeaders(callId);
         if (authHeaders == null) {
-        	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) 
-        		logger.logDebug(
+        	if (sipStack.isLoggingEnabled())
+        		sipStack.getStackLogger().logDebug(
                     "Could not find authentication headers for " + callId);
             return;
         }
