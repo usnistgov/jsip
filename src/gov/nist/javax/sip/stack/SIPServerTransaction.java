@@ -1443,12 +1443,12 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                 sipStack.getStackLogger().logException(ex);
             this.setState(TransactionState.TERMINATED);
             raiseErrorEvent(SIPTransactionErrorEvent.TRANSPORT_ERROR);
-            throw new SipException(ex.getMessage());
+            throw new SipException(ex.getMessage(), ex);
         } catch (java.text.ParseException ex1) {
             if (sipStack.isLoggingEnabled())
                 sipStack.getStackLogger().logException(ex1);
             this.setState(TransactionState.TERMINATED);
-            throw new SipException(ex1.getMessage());
+            throw new SipException(ex1.getMessage(), ex1);
         }
     }
 

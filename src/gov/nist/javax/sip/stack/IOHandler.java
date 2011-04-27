@@ -34,7 +34,6 @@ import gov.nist.javax.sip.SipStackImpl;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.ConnectException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -42,7 +41,6 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.util.Enumeration;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -239,7 +237,8 @@ public class IOHandler {
 							// new connection is bad.
 							// remove from our table the socket and its semaphore
 							removeSocket(key);
-							throw new SocketException(e.getClass() + " " + e.getMessage() + " " + e.getCause());
+							throw new SocketException(e.getClass() + " " + e.getMessage() + " " + e.getCause() + " Problem connecting " +
+									  receiverAddress + " " + contactPort + " " + senderAddress + " for message " + new String(bytes, "UTF-8"));
 						}
 						OutputStream outputStream = clientSock
 								.getOutputStream();
@@ -253,8 +252,8 @@ public class IOHandler {
 							writeChunks(outputStream, bytes, length);
 							break;
 						} catch (IOException ex) {
-							if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-								sipStack.getStackLogger().logDebug(
+							if (sipStack.isLoggingEnabled(LogWriter.TRACE_WARN))
+								sipStack.getStackLogger().logWarning(
 										"IOException occured retryCount "
 												+ retry_count);							
 							try {
