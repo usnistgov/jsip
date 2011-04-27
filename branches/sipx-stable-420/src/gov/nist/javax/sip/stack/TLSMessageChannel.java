@@ -96,6 +96,9 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
     private InetAddress peerAddress;
 
     private int peerPort;
+    
+    // This is the port that we will find in the headers of the messages from the peer
+    protected int peerPortAdvertisedInHeaders = -1;
 
     private String peerProtocol;
 
@@ -288,36 +291,76 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
      * @param retry
      */
     private void sendMessage(byte[] msg, boolean retry) throws IOException {
-        Socket sock = this.sipStack.ioHandler.sendBytes(
+    	Socket sock = null;
+        IOException problem = null;
+        try {
+        	sock = this.sipStack.ioHandler.sendBytes(
                 this.getMessageProcessor().getIpAddress(), this.peerAddress, this.peerPort,
                 this.peerProtocol, msg, retry,this);
+        } catch (IOException any) {
+        	problem = any;
+        	this.sipStack.getStackLogger().logWarning("Failed to connect " + this.peerAddress + ":" + this.peerPort +" but trying the advertised port=" + this.peerPortAdvertisedInHeaders + " if it's different than the port we just failed on");
+        }
+        if(sock == null) { // If we couldn't connect to the host, try the advertised port as failsafe
+        	if(this.peerPort != this.peerPortAdvertisedInHeaders && peerPortAdvertisedInHeaders > 0) { // no point in trying same port
+                sipStack.getStackLogger().logWarning("Couldn't connect to peerAddress = " + peerAddress + " peerPort = " + peerPort + " key = " + key +  " retrying on peerPortAdvertisedInHeaders " + peerPortAdvertisedInHeaders);
+                
+//                    MessageChannel backupChannel = this.sipStack.createRawMessageChannel(
+//                    		this.messageProcessor.getIpAddress().getHostAddress(), 
+//                    		this.messageProcessor.getPort(), 
+//                    		new HopImpl(peerAddress.getHostAddress(), peerPortAdvertisedInHeaders, "TCP"));
+//                    backupChannel.sendMessage(msg, peerAddress, peerPortAdvertisedInHeaders, retry);
+                
+        		sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor.getIpAddress(),
+                    this.peerAddress, this.peerPortAdvertisedInHeaders, this.peerProtocol, msg, retry, this);        		
+        		this.peerPort = this.peerPortAdvertisedInHeaders;
+        		this.key = MessageChannel.getKey(peerAddress, peerPort, "TLS");
+                sipStack.getStackLogger().logWarning("retry suceeded to peerAddress = " + peerAddress + " peerPortAdvertisedInHeaders = " + peerPortAdvertisedInHeaders + " key = " + key);
+        	} else {
+        		throw problem; // throw the original excpetion we had from the first attempt
+        	}
+        }
         // Created a new socket so close the old one and stick the new
         // one in its place but dont do this if it is a datagram socket.
         // (could have replied via udp but received via tcp!).
         if (sock != mySock && sock != null) {
-        	if (mySock != null && sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                sipStack.getStackLogger().logError(
-                        "Old socket different than new socket");
-                sipStack.getStackLogger().logStackTrace();
-                sipStack.getStackLogger().logDebug(
-               		 "Old socket local ip address " + mySock.getLocalSocketAddress());
-	             sipStack.getStackLogger().logDebug(
-               		 "Old socket remote ip address " + mySock.getRemoteSocketAddress());                         
-                sipStack.getStackLogger().logDebug(
-               		 "New socket local ip address " + sock.getLocalSocketAddress());
-                sipStack.getStackLogger().logDebug(
-               		 "New socket remote ip address " + sock.getRemoteSocketAddress());
-        	}
-            close(false);
-            mySock = sock;
-            this.myClientInputStream = mySock.getInputStream();
-
-            Thread thread = new Thread(this);
-            thread.setDaemon(true);
-            thread.setName("TLSMessageChannelThread");
-            thread.start();
+        	if (mySock != null) {
+	       		 if(sipStack.isLoggingEnabled(LogWriter.TRACE_WARN)) {
+	       			 sipStack.getStackLogger().logWarning(
+	                    		 "Old socket different than new socket on channel " + key);
+			             sipStack.getStackLogger().logStackTrace();
+			             sipStack.getStackLogger().logWarning(
+			            		 "Old socket local ip address " + mySock.getLocalSocketAddress());
+			             sipStack.getStackLogger().logWarning(
+			            		 "Old socket remote ip address " + mySock.getRemoteSocketAddress());                         
+			             sipStack.getStackLogger().logWarning(
+			            		 "New socket local ip address " + sock.getLocalSocketAddress());
+			             sipStack.getStackLogger().logWarning(
+			            		 "New socket remote ip address " + sock.getRemoteSocketAddress());
+	       		 }
+	       		 close(false);
+	       	}    
+	       	if(problem == null) {
+	       		if (mySock != null) {
+		       		if(sipStack.isLoggingEnabled(LogWriter.TRACE_WARN)) {
+		       			sipStack.getStackLogger().logWarning(
+		               		 "There was no exception for the retry mechanism so creating a new thread based on the new socket for incoming " + key);
+		       		}
+	       		}
+	            mySock = sock;
+	            this.myClientInputStream = mySock.getInputStream();
+	            Thread thread = new Thread(this);
+	            thread.setDaemon(true);
+	            thread.setName("TLSMessageChannelThread");
+	            thread.start();
+	       	} else {
+	       		if(sipStack.isLoggingEnabled(LogWriter.TRACE_WARN)) {
+	       			sipStack.getStackLogger().logWarning(
+	       					"There was an exception for the retry mechanism so not creating a new thread based on the new socket for incoming " + key);
+	       		}
+	       		mySock = sock;
+	       	}
         }
-
     }
 
     /**
@@ -327,11 +370,67 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
      * @param sipMessage Message to send.
      * @throws IOException If there is an error sending the message
      */
-    public void sendMessage(SIPMessage sipMessage) throws IOException {
+    public void sendMessage(final SIPMessage sipMessage) throws IOException {
+    	
+    	for (MessageProcessor messageProcessor : getSIPStack().getMessageProcessors()) {
+        	if (getSIPStack().getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG)){
+        		getSIPStack().getStackLogger().logDebug("messageProcessor=" + messageProcessor + 
+        				", addr=" + messageProcessor.getIpAddress().getHostAddress() +
+        				", peeraddr= " + this.getPeerAddress() + 
+        				", mpTransport=" + messageProcessor.getTransport() +
+        				", mpPort=" + messageProcessor.getPort() +
+        				", peerport=" + this.getPeerPort() +
+        				", peertrnsport=" + this.getPeerProtocol() + " EL\n");
+        	}
+
+            if (messageProcessor.getIpAddress().getHostAddress().equals(this.getPeerAddress())
+                    && messageProcessor.getPort() == this.getPeerPort()
+                    && messageProcessor.getTransport().equalsIgnoreCase(this.getPeerProtocol())) {
+                	Runnable processMessageTask = new Runnable() {
+						
+						public void run() {
+							try {
+								processMessage((SIPMessage) sipMessage.clone());
+							} catch (Exception ex) {
+								if (getSIPStack().getStackLogger().isLoggingEnabled(ServerLogger.TRACE_ERROR)) {
+					        		getSIPStack().getStackLogger().logError("Error self routing message cause by: ", ex);
+					        	}
+							}
+						}
+					};
+					getSIPStack().getSelfRoutingThreadpoolExecutor().execute(processMessageTask);
+                    
+                    if (getSIPStack().getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                    	getSIPStack().getStackLogger().logDebug("Self routing message");
+                    return;
+             }
+
+        }
+    	
         byte[] msg = sipMessage.encodeAsBytes(this.getTransport());
 
         long time = System.currentTimeMillis();
 
+        // need to store the peerPortAdvertisedInHeaders in case the response has an rport (ephemeral) that failed to retry on the regular via port
+        // for responses, no need to store anything for subsequent requests.
+        if(peerPortAdvertisedInHeaders <= 0) {
+        	if(sipMessage instanceof SIPResponse) {
+        		SIPResponse sipResponse = (SIPResponse) sipMessage; 
+        		Via via = sipResponse.getTopmostVia();
+        		if(via.getRPort() > 0) {
+	            	if(via.getPort() <=0) {    
+	            		// if port is 0 we assume the default port for TCP
+	            		this.peerPortAdvertisedInHeaders = 5060;
+	            	} else {
+	            		this.peerPortAdvertisedInHeaders = via.getPort();
+	            	}
+	            	if(sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+	                	sipStack.getStackLogger().logDebug("1.Storing peerPortAdvertisedInHeaders = " + peerPortAdvertisedInHeaders + " for via port = " + via.getPort() + " via rport = " + via.getRPort() + " and peer port = " + peerPort + " for this channel " + this + " key " + key);
+	                }	 
+        		}
+        	}
+        }
+        
         this.sendMessage(msg, sipMessage instanceof SIPRequest);
 
         if (this.sipStack.getStackLogger().isLoggingEnabled(ServerLogger.TRACE_MESSAGES))
@@ -350,52 +449,109 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
             boolean retry) throws IOException {
         if (message == null || receiverAddress == null)
             throw new IllegalArgumentException("Null argument");
-        Socket sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor.getIpAddress(),
+        
+        if(peerPortAdvertisedInHeaders <= 0) {
+//        	if(sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+            	sipStack.getStackLogger().logWarning("receiver port = " + receiverPort + " for this channel " + this + " key " + key);
+//            }        	
+        	if(receiverPort <=0) {    
+        		// if port is 0 we assume the default port for TCP
+        		this.peerPortAdvertisedInHeaders = 5060;
+        	} else {
+        		this.peerPortAdvertisedInHeaders = receiverPort;
+        	}
+//        	if(sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+            	sipStack.getStackLogger().logWarning("2.Storing peerPortAdvertisedInHeaders = " + peerPortAdvertisedInHeaders + " for this channel " + this + " key " + key);
+//            }	        
+        }
+        
+        Socket sock = null;
+        IOException problem = null;
+        try {
+        	sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor.getIpAddress(),
                 receiverAddress, receiverPort, "TLS", message, retry, this);
+        } catch (IOException any) {
+        	problem = any;
+        	this.sipStack.getStackLogger().logWarning("Failed to connect " + this.peerAddress + ":" + receiverPort +" but trying the advertised port=" + this.peerPortAdvertisedInHeaders + " if it's different than the port we just failed on");
+        }
+        if(sock == null) { // If we couldn't connect to the host, try the advertised port as failsafe
+        	if(receiverPort != this.peerPortAdvertisedInHeaders && peerPortAdvertisedInHeaders > 0) { // no point in trying same port
+                sipStack.getStackLogger().logWarning("Couldn't connect to receiverAddress = " + receiverAddress + " receiverPort = " + receiverPort + " key = " + key +  " retrying on peerPortAdvertisedInHeaders " + peerPortAdvertisedInHeaders);
+                
+//                MessageChannel backupChannel = this.sipStack.createRawMessageChannel(
+//                		this.messageProcessor.getIpAddress().getHostAddress(), 
+//                		this.messageProcessor.getPort(), 
+//                		new HopImpl(receiverAddress.getHostAddress(), peerPortAdvertisedInHeaders, "TCP"));
+//                backupChannel.sendMessage(message, receiverAddress, peerPortAdvertisedInHeaders, retry);
+                
+        		sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor.getIpAddress(),
+                    receiverAddress, this.peerPortAdvertisedInHeaders, "TLS", message, retry, this);
+        		this.peerPort = this.peerPortAdvertisedInHeaders;
+        		this.key = MessageChannel.getKey(peerAddress, peerPortAdvertisedInHeaders, "TLS");
+                
+                sipStack.getStackLogger().logWarning("retry suceeded to receiverAddress = " + receiverAddress + " peerPortAdvertisedInHeaders = " + peerPortAdvertisedInHeaders + " key = " + key);
+        	} else {
+        		throw problem; // throw the original excpetion we had from the first attempt
+        	}
+        }
         //
         // Created a new socket so close the old one and s
         // Check for null (bug fix sent in by Christophe)
-        if (sock != mySock && sock != null) {
-        	if (mySock != null) {
-        		if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                    sipStack.getStackLogger().logDebug(
-                            "Old socket different than new socket");
-                    sipStack.getStackLogger().logStackTrace();
-                    sipStack.getStackLogger().logDebug(
-                   		 "Old socket local ip address " + mySock.getLocalSocketAddress());
-   	             sipStack.getStackLogger().logDebug(
-                   		 "Old socket remote ip address " + mySock.getRemoteSocketAddress());                         
-                    sipStack.getStackLogger().logDebug(
-                   		 "New socket local ip address " + sock.getLocalSocketAddress());
-                    sipStack.getStackLogger().logDebug(
-                   		 "New socket remote ip address " + sock.getRemoteSocketAddress());
-               }
-                /*
-                 * Delay the close of the socket for some time in case it is being used.
-                 */
-                sipStack.getTimer().schedule(new TimerTask() {
-                    @Override
-                    public boolean cancel() {
-                        close(false);
-                        return true;
-                    }
-
-                    @Override
-                    public void run() {
-                        close(false);
-                    }
-                }, 8000);
+        if (sock != mySock && sock != null) {        	        	
+            if (mySock != null) {
+            	if(sipStack.isLoggingEnabled(LogWriter.TRACE_WARN)) {
+       			 	 sipStack.getStackLogger().logWarning(
+                    		 "Old socket different than new socket on channel " + key);
+		             sipStack.getStackLogger().logStackTrace();
+		             sipStack.getStackLogger().logWarning(
+		            		 "Old socket local ip address " + mySock.getLocalSocketAddress());
+		             sipStack.getStackLogger().logWarning(
+		            		 "Old socket remote ip address " + mySock.getRemoteSocketAddress());                         
+		             sipStack.getStackLogger().logWarning(
+		            		 "New socket local ip address " + sock.getLocalSocketAddress());
+		             sipStack.getStackLogger().logWarning(
+		            		 "New socket remote ip address " + sock.getRemoteSocketAddress());
+       		 	}
+//                /*
+//                 * Delay the close of the socket for some time in case it is being used.
+//                 */
+//                sipStack.getTimer().schedule(new TimerTask() {
+//                    @Override
+//                    public boolean cancel() {
+//                        close(false);
+//                        return true;
+//                    }
+//
+//                    @Override
+//                    public void run() {
+//                        close(false);
+//                    }
+//                }, 8000);
+            	// we can't delay the close otherwise it will close the previous socket we just set
+            	close(false);
             }
-            mySock = sock;
-            this.myClientInputStream = mySock.getInputStream();
-
-            // start a new reader on this end of the pipe.
-            Thread mythread = new Thread(this);
-            mythread.setDaemon(true);
-            mythread.setName("TLSMessageChannelThread");
-            mythread.start();
+            if(problem == null) {
+            	if (mySock != null) {
+            		if(sipStack.isLoggingEnabled(LogWriter.TRACE_WARN)) {
+	            		sipStack.getStackLogger().logWarning(
+	                		 "There was no exception for the retry mechanism so creating a new thread based on the new socket for incoming " + key);
+            		}
+            	}
+	            mySock = sock;
+	            this.myClientInputStream = mySock.getInputStream();
+	            // start a new reader on this end of the pipe.
+	            Thread mythread = new Thread(this);
+	            mythread.setDaemon(true);
+	            mythread.setName("TLSMessageChannelThread");
+	            mythread.start();
+            } else {
+            	if(sipStack.isLoggingEnabled(LogWriter.TRACE_WARN)) {
+            		sipStack.getStackLogger().logWarning(
+            			"There was an exception for the retry mechanism so not creating a new thread based on the new socket for incoming " + key);
+            	}
+            	mySock = sock;
+            }
         }
-
     }
 
     /**
@@ -481,6 +637,21 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
                 // the peer address and tag it appropriately.
                 Hop hop = sipStack.addressResolver.resolveAddress(v.getHop());
                 this.peerProtocol = v.getTransport();
+                if(peerPortAdvertisedInHeaders <= 0) {
+                	int hopPort = v.getPort();
+//                	if(sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                    	sipStack.getStackLogger().logWarning("hop port = " + hopPort + " for request " + sipMessage + " for this channel " + this + " key " + key);
+//                    }                	
+                	if(hopPort <= 0) {    
+                		// if port is 0 we assume the default port for TCP
+                		this.peerPortAdvertisedInHeaders = 5060;
+                	} else {
+                		this.peerPortAdvertisedInHeaders = hopPort;
+                	}
+//                	if(sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                    	sipStack.getStackLogger().logWarning("3.Storing peerPortAdvertisedInHeaders = " + peerPortAdvertisedInHeaders + " for this channel " + this + " key " + key);
+//                    }
+                }     
                 try {
                     this.peerAddress = mySock.getInetAddress();
                     // Check to see if the received parameter matches
