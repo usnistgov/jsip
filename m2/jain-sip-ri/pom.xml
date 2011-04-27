@@ -9,7 +9,7 @@
   </parent>
 
   <artifactId>jain-sip-ri</artifactId>
-  <version>1.2.148.10</version>
+  <version>1.2.148.11-SNAPSHOT</version>
   
   <packaging>jar</packaging>
   <name>jain-sip-ri</name>
