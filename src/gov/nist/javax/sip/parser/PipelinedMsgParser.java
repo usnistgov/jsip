@@ -358,7 +358,11 @@ public final class PipelinedMsgParser implements Runnable {
                             	// sending pong (single CRLF)
                             	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                                     logger.logDebug("KeepAlive Double CRLF received, sending single CRLF as defined per RFC 5626 Section 4.4.1");
+                                    logger.logDebug("~~~ setting isPreviousLineCRLF=false");
                                 }
+
+                                isPreviousLineCRLF = false;
+
                             	try {
             						sipMessageListener.sendSingleCLRF();
             					} catch (Exception e) {						
