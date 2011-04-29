@@ -455,6 +455,9 @@ import javax.sip.message.Request;
  * can remain in early state. This is defaulted to 3 minutes ( 180 seconds).
  * </li>
  * 
+ * <li><b>gov.nist.javax.sip.THREAD_PRIORITY=integer </b> Control the priority of the threads started by the stack.
+ * </li> 
+ * 
  * <li><b>gov.nist.javax.sip.MESSAGE_PARSER_FACTORY =  name of the class implementing gov.nist.javax.sip.parser.MessageParserFactory</b>
  * This factory allows pluggable implementations of the MessageParser that will take care of parsing the incoming messages.
  * By example one could plug a lazy parser through this factory.</li>
