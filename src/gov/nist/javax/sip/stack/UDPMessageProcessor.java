@@ -186,7 +186,7 @@ public class UDPMessageProcessor extends MessageProcessor {
         // Issue #32 on java.net
         thread.setName("UDPMessageProcessorThread");
         // Issue #184
-        thread.setPriority(Thread.MAX_PRIORITY);
+        thread.setPriority(sipStack.getThreadPriority());
         thread.start();
     }
 
