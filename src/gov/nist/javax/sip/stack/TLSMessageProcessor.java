@@ -107,7 +107,7 @@ public class TLSMessageProcessor extends MessageProcessor {
         Thread thread = new Thread(this);
         thread.setName("TLSMessageProcessorThread");
         // ISSUE 184
-        thread.setPriority(Thread.MAX_PRIORITY);
+        thread.setPriority(sipStack.getThreadPriority());
         thread.setDaemon(true);
 
         this.sock = sipStack.getNetworkLayer().createSSLServerSocket(this.getPort(), 0,

@@ -742,6 +742,9 @@ public class SipStackImpl extends SIPTransactionStack implements
 						ex);
 			}
 
+		super.setThreadPriority(Integer.parseInt(
+			        configurationProperties.getProperty("gov.nist.javax.sip.THREAD_PRIORITY","" + Thread.MAX_PRIORITY)));
+			
 		// Default router -- use this for routing SIP URIs.
 		// Our router does not do DNS lookups.
 		this.outboundProxy = configurationProperties
@@ -1228,8 +1231,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 		        configurationProperties.getProperty("gov.nist.javax.sip.MAX_FORK_TIME_SECONDS","0"));
 		
 		super.earlyDialogTimeout = Integer.parseInt(
-                configurationProperties.getProperty("gov.nist.javax.sip.EARLY_DIALOG_TIMEOUT_SECONDS","180"));
-		
+                configurationProperties.getProperty("gov.nist.javax.sip.EARLY_DIALOG_TIMEOUT_SECONDS","180"));				
 		
 		super.minKeepAliveInterval = Integer.parseInt(configurationProperties.getProperty("gov.nist.javax.sip.MIN_KEEPALIVE_TIME_SECONDS","-1"));
 		
