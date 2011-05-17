@@ -543,6 +543,8 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
         retval.callIdHeader = null;
         retval.contentLengthHeader = null;
         retval.maxForwardsHeader = null;
+        retval.forkId = null;
+        retval.applicationData = null;       
         if (this.headers != null) {
             retval.headers = new ConcurrentLinkedQueue<SIPHeader>();
             for (Iterator<SIPHeader> iter = headers.iterator(); iter.hasNext();) {

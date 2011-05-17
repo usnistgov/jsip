@@ -1428,7 +1428,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     if(forked.getDefaultDialog() != null && !dialog.equals(forked.getDefaultDialog())) {
                         if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                             logger.logDebug(
-                                    "forked dialog " + dialog + " original tx " + forked + " original dialog " + forked.getDefaultDialog());
+                            		"forkedId= " + response.getForkId() + " forked dialog " + dialog + " original tx " + forked + " original dialog " + forked.getDefaultDialog());
                         }
                         sipEvent.setOriginalTransaction(forked);
                         sipEvent.setForkedResponse(true);
@@ -1455,7 +1455,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                 if(forked.getDefaultDialog() != null && !dialog.equals(forked.getDefaultDialog())) {
                     if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                         logger.logDebug(
-                                "forked dialog " + dialog + " original tx " + forked + " original dialog " + forked.getDefaultDialog());
+                                "forkedId= " + response.getForkId() + " forked dialog " + dialog + " original tx " + forked + " original dialog " + forked.getDefaultDialog());
                     }
                     responseEvent.setOriginalTransaction(forked);
                     responseEvent.setForkedResponse(true);
@@ -1693,7 +1693,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
         }
         if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
             logger.logDebug(
-                    "sending response to TU for processing ");        
+                    "sending response " + sipResponse.toString() + " to TU for processing ");        
 
         ResponseEventExt responseEvent = new ResponseEventExt(sipProvider,
                 (ClientTransactionExt) transaction, sipDialog,
@@ -1711,7 +1711,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                 if(originalTx.getDefaultDialog() != null && !sipDialog.equals(originalTx.getDefaultDialog())) {
                     if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                         logger.logDebug(
-                                "forked dialog " + sipDialog + " original tx " + originalTx + " original dialog " + originalTx.getDefaultDialog());
+                        		"forkedId= " + sipResponse.getForkId() + " forked dialog " + sipDialog + " original tx " + originalTx + " original dialog " + originalTx.getDefaultDialog());
                     }
                     responseEvent.setOriginalTransaction(originalTx);
                     responseEvent.setForkedResponse(true);
