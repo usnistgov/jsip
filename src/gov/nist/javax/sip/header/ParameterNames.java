@@ -67,6 +67,12 @@ public interface ParameterNames {
 
     public static final String NONCE = "nonce";
 
+    public static final String SRAND = "srand";
+
+    public static final String SNUM = "snum";
+
+    public static final String TARGET_NAME = "targetname";
+
     // Issue reported by larryb
     public static final String NONCE_COUNT = "nc";
 
