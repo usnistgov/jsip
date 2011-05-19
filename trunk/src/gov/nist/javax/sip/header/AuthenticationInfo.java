@@ -44,6 +44,12 @@ public final class AuthenticationInfo
      */
     private static final long serialVersionUID = -4371927900917127057L;
 
+    /**
+     * Authentication scheme, some implemenentations require it to be set (NTLM)
+     */
+    private String scheme;
+
+
     /** Default contstructor.
      */
     public AuthenticationInfo() {
@@ -59,6 +65,8 @@ public final class AuthenticationInfo
      */
 
     protected StringBuilder encodeBody(StringBuilder buffer) {
+        if (scheme != null)
+            buffer.append(scheme).append(' ');
         return parameters.encode(buffer);
 
     }
@@ -136,6 +144,35 @@ public final class AuthenticationInfo
         return this.getParameter(ParameterNames.RESPONSE_AUTH);
     }
 
+
+    /** Returns the "snum" value of this AuthenticationInfoHeader.
+     * @return the String representing the snum information.
+     */
+    public String getSNum() {
+        return this.getParameter(ParameterNames.SNUM);
+    }
+
+    /** Returns the "srand" value of this AuthenticationInfoHeader.
+     * @return the String representing the srand information.
+     */
+    public String getSRand() {
+        return this.getParameter(ParameterNames.SRAND);
+    }
+
+    /** Returns the "targetname" value of this AuthenticationInfoHeader.
+     * @return the String representing the targetname information.
+     */
+    public String getTargetName() {
+        return this.getParameter(ParameterNames.TARGET_NAME);
+    }
+
+    /** Returns the authentication scheme of this AuthenticationInfoHeader.
+     * @return the String representing the scheme information or null if scheme wasn't set explicitly.
+     */
+    public String getScheme() {
+        return scheme;
+    }
+
     /** Sets the CNonce of the AuthenticationInfoHeader to the <var>cNonce</var>
      * parameter value.
      *
@@ -204,6 +241,50 @@ public final class AuthenticationInfo
         this.setParameter(ParameterNames.RESPONSE_AUTH, response);
     }
 
+    /** Sets the SNum of the AuthenticationInfoHeader to the <var>sNum</var>
+     * parameter value.
+     *
+     * @param sNum - the new sNum String of this AuthenticationInfoHeader.
+     * @throws ParseException which signals that an error has been reached
+     * unexpectedly while parsing the sNum value.
+     */
+    public void setSNum(String sNum) throws ParseException {
+        this.setParameter(ParameterNames.SNUM, sNum);
+    }
+
+    /** Sets the SRand of the AuthenticationInfoHeader to the <var>sRand</var>
+     * parameter value.
+     *
+     * @param sRand - the new sRand String of this AuthenticationInfoHeader.
+     * @throws ParseException which signals that an error has been reached
+     * unexpectedly while parsing the sRand value.
+     */
+    public void setSRand(String sRand) throws ParseException {
+        this.setParameter(ParameterNames.SRAND, sRand);
+    }
+
+    /** Sets the TargetName of the AuthenticationInfoHeader to the <var>targetName</var>
+     * parameter value.
+     *
+     * @param targetName - the new targetName String of this AuthenticationInfoHeader.
+     * @throws ParseException which signals that an error has been reached
+     * unexpectedly while parsing the targetName value.
+     */
+    public void setTargetName(String targetName) throws ParseException {
+        this.setParameter(ParameterNames.TARGET_NAME, targetName);
+    }
+
+    /** Sets authentication scheme name of the AuthenticationInfoHeader to the <var>scheme</var>
+     * parameter value.
+     *
+     * @param scheme - the new scheme String of this AuthenticationInfoHeader.
+     * @throws ParseException which signals that an error has been reached
+     * unexpectedly while parsing the targetName value.
+     */
+    public void setScheme(String scheme) throws ParseException {
+        this.scheme = scheme;
+    }
+
     public void setParameter(String name, String value) throws ParseException {
         if (name == null)
             throw new NullPointerException("null name");
@@ -219,7 +300,10 @@ public final class AuthenticationInfo
                 || name.equalsIgnoreCase(ParameterNames.USERNAME)
                 || name.equalsIgnoreCase(ParameterNames.DOMAIN)
                 || name.equalsIgnoreCase(ParameterNames.NEXT_NONCE)
-                || name.equalsIgnoreCase(ParameterNames.RESPONSE_AUTH)) {
+                || name.equalsIgnoreCase(ParameterNames.RESPONSE_AUTH)
+                || name.equalsIgnoreCase(ParameterNames.SRAND)
+                || name.equalsIgnoreCase(ParameterNames.SNUM)
+                || name.equalsIgnoreCase(ParameterNames.TARGET_NAME)) {
                 if (value == null)
                     throw new NullPointerException("null value");
                 if (value.startsWith(Separators.DOUBLE_QUOTE))

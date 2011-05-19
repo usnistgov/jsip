@@ -33,7 +33,10 @@ public class AuthenticationInfoParserTest extends ParserTestCase {
     public void testParser() {
             String r[] = {
                     "Authentication-Info: nextnonce=\"47364c23432d2e131a5fb210812c\"\n",
-                    "Authentication-Info: nextnonce=\"47364c23432d2e131a5fb210812c\",rspauth=\"hello\"\n" };
+                    "Authentication-Info: nextnonce=\"47364c23432d2e131a5fb210812c\",rspauth=\"hello\"\n",
+                    "Authentication-Info: NTLM opaque=\"O\",snum=\"N\",srand=\"*\",realm=\"R\",targetname=\"T\"," +
+                            "rspauth=\"hello\"\n",
+            };
 
              super.testParser(AuthenticationInfoParser.class,r);
 
