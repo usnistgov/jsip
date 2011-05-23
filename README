@@ -77,26 +77,12 @@ http://download.java.net/communications/jain-sip/nightly/
 
 
 ----------------------------------------------------------------------------
-CVS Access
+SVN Access
 ----------
 
-The "stable" cvs reposiotory is located on java.net. To download from CVS
-(higly recommended), visit 
+https://svn.java.net/svn/jsip~svn/
 
-http://jain-sip.dev.java.net/
-
-
-
-And follow the instructions there. 
-
-
-You can browse the source code online here:
-
-http://jain-sip.dev.java.net/source/browse/jain-sip/
-
-
-Note that you need to be logged in to java.net in order to acces the source 
-from cvs.
+Please sign up as a java.net user in order to get svn access.
 
 
 ----------------------------------------------------------------------------
