@@ -2026,6 +2026,11 @@ public abstract class SIPTransactionStack implements
         synchronized (this.clientTransactionTable) {
             clientTransactionTable.notifyAll();
         }
+        
+        if(selfRoutingThreadpoolExecutor != null && selfRoutingThreadpoolExecutor instanceof ExecutorService) {
+        	((ExecutorService)selfRoutingThreadpoolExecutor).shutdown();
+        }
+        selfRoutingThreadpoolExecutor = null;
 
         // Threads must periodically check this flag.
         MessageProcessor[] processorList;
@@ -2933,6 +2938,14 @@ public abstract class SIPTransactionStack implements
             SIPClientTransaction clientTransaction) {
         String forkId = ((SIPRequest)clientTransaction.getRequest()).getForkId();
         clientTransaction.setForkId(forkId);
+        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+        	logger.logStackTrace();
+            logger.logDebug(
+                    "Adding forked client transaction : " + clientTransaction + " branch=" + clientTransaction.getBranch() + 
+                    " forkId = " + forkId + "  sipDialog = " + clientTransaction.getDefaultDialog() + 
+                    " sipDialogId= " + clientTransaction.getDefaultDialog().getDialogId());
+    	}
+
         this.forkedClientTransactionTable.put(forkId, clientTransaction);
     }
 
