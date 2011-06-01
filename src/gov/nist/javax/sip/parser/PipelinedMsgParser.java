@@ -287,7 +287,7 @@ public final class PipelinedMsgParser implements Runnable {
             	logger.logError("Error occured processing message", e);    
                 // We do not break the TCP connection because other calls use the same socket here
             } finally {                                        
-                if(messagesForCallID.size() <= 0) {
+                if(callIDOrderingStructure.getMessagesForCallID().size() <= 0) {
                     messagesOrderingMap.remove(callId);
                     if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
                     	logger.logDebug("CallIDOrderingStructure removed for message " + callId);
@@ -358,11 +358,7 @@ public final class PipelinedMsgParser implements Runnable {
                             	// sending pong (single CRLF)
                             	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                                     logger.logDebug("KeepAlive Double CRLF received, sending single CRLF as defined per RFC 5626 Section 4.4.1");
-                                    logger.logDebug("~~~ setting isPreviousLineCRLF=false");
                                 }
-
-                                isPreviousLineCRLF = false;
-
                             	try {
             						sipMessageListener.sendSingleCLRF();
             					} catch (Exception e) {						
@@ -386,7 +382,7 @@ public final class PipelinedMsgParser implements Runnable {
                                 logger.logDebug("waiting for messagesOrderingMap " + this + " threadname " + mythread.getName());
                             synchronized (messagesOrderingMap) {
                                 try {
-                                    messagesOrderingMap.wait(64000);
+                                    messagesOrderingMap.wait();
                                 } catch (InterruptedException e) {}                                
                             }  
                             if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
@@ -424,7 +420,7 @@ public final class PipelinedMsgParser implements Runnable {
                                 logger.logDebug("waiting for messagesOrderingMap " + this + " threadname " + mythread.getName());
                             synchronized (messagesOrderingMap) {
                                 try {
-                                    messagesOrderingMap.wait(64000);
+                                    messagesOrderingMap.wait();
                                 } catch (InterruptedException e) {}                                
                             }  
                             if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
@@ -682,12 +678,11 @@ public final class PipelinedMsgParser implements Runnable {
     	}
     }
     
-    private void cleanMessageOrderingMap() {        
-    	// not needed and can cause NPE on close if race condition
-//    	for (CallIDOrderingStructure callIDOrderingStructure: messagesOrderingMap.values()) {
-//			callIDOrderingStructure.getSemaphore().release();
-//			callIDOrderingStructure.getMessagesForCallID().clear();
-//		}
+    private void cleanMessageOrderingMap() {
+        for (CallIDOrderingStructure callIDOrderingStructure: messagesOrderingMap.values()) {
+            callIDOrderingStructure.getSemaphore().release();
+            callIDOrderingStructure.getMessagesForCallID().clear();
+        }
         messagesOrderingMap.clear();
         synchronized (messagesOrderingMap) {
             messagesOrderingMap.notifyAll();

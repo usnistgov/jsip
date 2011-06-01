@@ -1,5 +1,5 @@
 /*
- * Conditions Of Use
+g * Conditions Of Use
  *
  * This software was developed by employees of the National Institute of
  * Standards and Technology (NIST), an agency of the Federal Government.
@@ -42,7 +42,6 @@ import gov.nist.javax.sip.header.Via;
 import gov.nist.javax.sip.message.SIPMessage;
 import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.message.SIPResponse;
-import gov.nist.javax.sip.stack.IllegalTransactionStateException.Reason;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -150,7 +149,7 @@ import javax.sip.message.Response;
  *                                                   |                     |send response      |
  *                                                   |  Request            V                   |
  *                                                   |  send response+-----------+             |
- *                                                   |      +--------|           |             |
+ *                                                      |      +--------|           |             |
  *                                                   |      |        | Completed |&lt;------------+
  *                                                   |      +-------&gt;|           |
  *                                                   +&lt;--------------|           |
@@ -168,7 +167,7 @@ import javax.sip.message.Response;
  *
  *
  *
- *
+ *sendResponse
  *
  * </pre>
  *
@@ -209,8 +208,6 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
     private boolean retransmissionAlertEnabled;
 
     private RetransmissionAlertTimerTask retransmissionAlertTimerTask;
-    
-    private ListenerExecutionMaxTimer listenerExecutionMaxTimer;
 
     protected boolean isAckSeen;
 
@@ -222,8 +219,6 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
     private static boolean interlockProvisionalResponses = true;
 
     private Semaphore provisionalResponseSem = new Semaphore(1);
-    
-    private Semaphore terminationSemaphore = new Semaphore(0);
 
     // jeand we nullify the last response fast to save on mem and help GC, but we keep only the information needed
     private byte[] lastResponseAsBytes;
@@ -333,18 +328,12 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
         public void runTask() {
             try {
-            	listenerExecutionMaxTimer = null;
-            	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                    logger.logDebug("Fired ListenerExecutionMaxTimer for stx " + serverTransaction.getTransactionId() + " state " + serverTransaction.getState());
-                if (serverTransaction.getInternalState() <= 1  ||
-                		// may have been forcefully TERMINATED through terminate() method but if the tx timer never got scheduled
-                		// it wouldn't be reaped
-                		serverTransaction.getInternalState() >= 5) {
-                	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                        logger.logDebug("ListenerExecutionMaxTimer : terminating and removing stx " + serverTransaction.getTransactionId());
+                if (serverTransaction.getInternalState() < 0) {
                     serverTransaction.terminate();
                     SIPTransactionStack sipStack = serverTransaction.getSIPStack();
-	                sipStack.removeTransaction(serverTransaction);
+                    sipStack.removePendingTransaction(serverTransaction);
+                    sipStack.removeTransaction(serverTransaction);
+
                 }
             } catch (Exception ex) {
                 logger.logError("unexpected exception", ex);
@@ -407,9 +396,6 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                 // the connection linger timer.
                 try {
                        sipStack.getTimer().cancel(this);
-                       if(listenerExecutionMaxTimer != null) {
-                    	   sipStack.getTimer().cancel(listenerExecutionMaxTimer);
-                       }
                 } catch (IllegalStateException ex) {
                     if (!sipStack.isAlive())
                         return;
@@ -912,7 +898,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
     }
 
     /**
-     * Send a response message through this transaction and onto the client. The response drives
+     * Send a response message through this transactionand onto the client. The response drives
      * the state machine.
      *
      * @param messageToSend Response to process and send.
@@ -1379,14 +1365,14 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
         try {
             sipResponse.checkHeaders();
         } catch (ParseException ex) {
-        	throw new IllegalTransactionStateException(ex.getMessage(), Reason.MissingRequiredHeader);
+            throw new SipException(ex.getMessage());
         }
 
         // check for meaningful response.
         final String responseMethod = sipResponse.getCSeq().getMethod();
         if (!responseMethod.equals(this.getMethod())) {
-            throw new IllegalTransactionStateException(
-                    "CSeq method does not match Request method of request that created the tx.", Reason.UnmatchingCSeq);
+            throw new SipException(
+                    "CSeq method does not match Request method of request that created the tx.");
         }
 
         /*
@@ -1398,7 +1384,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
         if (this.getMethod().equals(Request.SUBSCRIBE) && statusCode / 100 == 2) {
 
             if (response.getHeader(ExpiresHeader.NAME) == null) {
-                throw new IllegalTransactionStateException("Expires header is mandatory in 2xx response of SUBSCRIBE", Reason.ExpiresHeaderMandatory);
+                throw new SipException("Expires header is mandatory in 2xx response of SUBSCRIBE");
             } else {
                 Expires requestExpires = (Expires) this.getOriginalRequest().getExpires();
                 Expires responseExpires = (Expires) response.getExpires();
@@ -1419,7 +1405,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
         if (statusCode == 200
                 && responseMethod.equals(Request.INVITE)
                 && sipResponse.getHeader(ContactHeader.NAME) == null)
-            throw new IllegalTransactionStateException("Contact Header is mandatory for the OK to the INVITE", Reason.ContactHeaderMandatory);
+            throw new SipException("Contact Header is mandatory for the OK to the INVITE");
 
         if (!this.isMessagePartOfTransaction((SIPMessage) response)) {
             throw new SipException("Response does not belong to this transaction.");
@@ -1445,12 +1431,12 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                     && contentTypeHeader.getContentSubType()
                             .equalsIgnoreCase(CONTENT_SUBTYPE_SDP)) {
                 if (!interlockProvisionalResponses ) {
-                    throw new SipException("cannot send response -- unacked provisional");
+                    throw new SipException("cannot send response -- unacked povisional");
                 } else {
                     try {
                        boolean acquired = this.provisionalResponseSem.tryAcquire(1,TimeUnit.SECONDS);
                        if (!acquired ) {
-                           throw new SipException("cannot send response -- unacked provisional");
+                           throw new SipException("cannot send response -- unacked povisional");
                        }
                     } catch (InterruptedException ex) {
                         logger.logError ("Interrupted acuqiring PRACK sem");
@@ -1561,12 +1547,12 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                 logger.logException(ex);
             this.setState(TransactionState._TERMINATED);
             raiseErrorEvent(SIPTransactionErrorEvent.TRANSPORT_ERROR);
-            throw new SipException(ex.getMessage(), ex);
+            throw new SipException(ex.getMessage());
         } catch (java.text.ParseException ex1) {
             if (logger.isLoggingEnabled())
                 logger.logException(ex1);
             this.setState(TransactionState._TERMINATED);
-            throw new SipException(ex1.getMessage(), ex1);
+            throw new SipException(ex1.getMessage());
         }
     }
 
@@ -1605,7 +1591,6 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
             // Set a time after which the connection
             // is closed.
             this.collectionTime = TIMER_J;
-            this.terminationSemaphore.release();
         }
 
         super.setState(newState);
@@ -1728,11 +1713,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
             this.retransmissionAlertTimerTask = null;
 
         }
-        if(!transactionTimerStarted.get()) {
-    		// if no transaction timer was started just remove the tx without firing a transaction terminated event
-        	testAndSetTransactionTerminatedEvent();
-        	sipStack.removeTransaction(this);
-        }
+
     }
 
     protected void sendReliableProvisionalResponse(Response relResponse) throws SipException {
@@ -2071,15 +2052,6 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
      */
     public long getPendingReliableRSeqNumber() {
         return pendingReliableRSeqNumber;
-    }
-    
-    public void waitForTermination() {
-    	
-    	try {
-			this.terminationSemaphore.acquire();
-		} catch (InterruptedException e) {
-			
-		}
     }
 
 

@@ -19,7 +19,6 @@ import gov.nist.javax.sip.stack.SIPDialog;
 
 import java.util.EventObject;
 
-import javax.sip.ClientTransaction;
 import javax.sip.Dialog;
 
 /**
@@ -48,16 +47,6 @@ public class DialogTimeoutEvent extends EventObject {
          m_reason = reason;
       
     }
-     
-     /**
-      * Set the re-INVITE client transaction. 
-      * This method will be used by Implementations (not applications).
-      * 
-      * @since v1.2
-      */
-     public void setClientTransaction(ClientTransaction clientTransaction) {
-    	 this.m_reInviteTransaction = clientTransaction;
-     }
 
 	/**
      * Gets the Dialog associated with the event. This 
@@ -79,20 +68,9 @@ public class DialogTimeoutEvent extends EventObject {
     public Reason getReason() {
     	return m_reason;
     }
-    
-    /**
-     * Get the re-INVITE client transaction that 
-     * could not be sent.
-     * 
-     * @return the re-INVITE client transaction that could not be sent.
-     */
-    public ClientTransaction getClientTransaction() {
-    	return m_reInviteTransaction;
-    }
      
     // internal variables
     private Dialog m_dialog = null;    
     private Reason m_reason = null;
-    private ClientTransaction m_reInviteTransaction = null;
 }
 

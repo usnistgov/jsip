@@ -215,59 +215,52 @@ public class TCPMessageChannel extends MessageChannel implements
      * Close the message channel.
      */
     public void close() {
-    	close(true);
-    }
-
-    /**
-     * Close the message channel.
-     */
-    public void close(boolean removeSocket) {  
-        isRunning = false;
-    	// we need to close everything because the socket may be closed by the other end
-    	// like in LB scenarios sending OPTIONS and killing the socket after it gets the response    	
-        if (mySock != null) {
-        	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                logger.logDebug("Closing socket " + key);
-        	try {
-	            mySock.close();
-	            mySock = null;
-        	} catch (IOException ex) {
+        /*
+         * Delay the close of the socket for some time in case it is being used.
+         */
+        sipStack.getTimer().schedule(new SIPStackTimerTask() {
+			
+			@Override
+			public void runTask() {
+				isRunning = false;
+            	// we need to close everything because the socket may be closed by the other end
+            	// like in LB scenarios sending OPTIONS and killing the socket after it gets the response    	
+                if (mySock != null) {
+                	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                        logger.logDebug("Closing socket " + key);
+                	try {
+        	            mySock.close();
+                	} catch (IOException ex) {
+                        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                            logger.logDebug("Error closing socket " + ex);
+                    }
+                }        
+                if(myParser != null) {
+                	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                        logger.logDebug("Closing my parser " + myParser);
+                    myParser.close();            
+                }  
+                // no need to close myClientInputStream since myParser.close() above will do it
+                if(myClientOutputStream != null) {
+                	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                        logger.logDebug("Closing client output stream " + myClientOutputStream);
+                	try {
+                		myClientOutputStream.close();
+                	} catch (IOException ex) {
+                        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                            logger.logDebug("Error closing client output stream" + ex);
+                    }
+                }                     
+                // remove the "tcp:" part of the key to cleanup the ioHandler hashmap
+                String ioHandlerKey = key.substring(4);
                 if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                    logger.logDebug("Error closing socket " + ex);
-            }
-        }        
-        if(myParser != null) {
-        	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                logger.logDebug("Closing my parser " + myParser);
-            myParser.close();            
-        }  
-        // no need to close myClientInputStream since myParser.close() above will do it
-        if(myClientOutputStream != null) {
-        	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                logger.logDebug("Closing client output stream " + myClientOutputStream);
-        	try {
-        		myClientOutputStream.close();
-        	} catch (IOException ex) {
+                    logger.logDebug("Closing TCP socket " + ioHandlerKey);
+                // Issue 358 : remove socket and semaphore on close to avoid leaking
+                sipStack.ioHandler.removeSocket(ioHandlerKey);
                 if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                    logger.logDebug("Error closing client output stream" + ex);
+                    logger.logDebug("Closing message Channel " + this);       
             }
-        }   
-        if(removeSocket) {                  
-	        // remove the "tcp:" part of the key to cleanup the ioHandler hashmap
-	        String ioHandlerKey = key.substring(4);
-	        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-	            logger.logDebug("Closing TCP socket " + ioHandlerKey);
-	        // Issue 358 : remove socket and semaphore on close to avoid leaking
-	        sipStack.ioHandler.removeSocket(ioHandlerKey);
-	        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-	            logger.logDebug("Closing message Channel " + this);       
-	    } else {
-    		if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-    			String ioHandlerKey = key.substring(4);
-	    		logger.logDebug("not removing socket key from the cached map since it has already been updated by the iohandler.sendBytes " + ioHandlerKey);
-    		}
-    	}
-    
+		}, 8000);    	 
     }
 
     /**
@@ -341,21 +334,7 @@ public class TCPMessageChannel extends MessageChannel implements
         // this.uncache();
         // } else
         if (sock != mySock && sock != null) {
-        	if(mySock != null && logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                 logger.logDebug(
-                         "Old socket different than new socket");
-                 logger.logStackTrace();
-                 
-	             logger.logDebug(
-	                	 "Old socket local ip address " + mySock.getLocalSocketAddress());
-	             logger.logDebug(
-	            		 "Old socket remote ip address " + mySock.getRemoteSocketAddress());                         
-                 logger.logDebug(
-                		 "New socket local ip address " + sock.getLocalSocketAddress());
-                 logger.logDebug(
-                		 "New socket remote ip address " + sock.getRemoteSocketAddress());
-            }
-            close(false);
+            close();
             mySock = sock;
             this.myClientInputStream = mySock.getInputStream();
             this.myClientOutputStream = mySock.getOutputStream();
@@ -432,7 +411,7 @@ public class TCPMessageChannel extends MessageChannel implements
         sipMessage.setLocalAddress(this.getMessageProcessor().getIpAddress());
         sipMessage.setLocalPort(this.getPort());
 
-        if (logger.isLoggingEnabled(
+        if (this.logger.isLoggingEnabled(
                 ServerLogger.TRACE_MESSAGES))
             logMessage(sipMessage, peerAddress, peerPort, time);
     }
@@ -458,20 +437,6 @@ public class TCPMessageChannel extends MessageChannel implements
                 retry, this);
         if (sock != mySock && sock != null) {
             if (mySock != null) {
-            	if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-	            	logger.logDebug(
-	                         "Old socket different than new socket");
-	                 logger.logStackTrace();
-	                 
-		             logger.logDebug(
-		                	 "Old socket local ip address " + mySock.getLocalSocketAddress());
-		             logger.logDebug(
-		            		 "Old socket remote ip address " + mySock.getRemoteSocketAddress());                         
-	                 logger.logDebug(
-	                		 "New socket local ip address " + sock.getLocalSocketAddress());
-	                 logger.logDebug(
-	                		 "New socket remote ip address " + sock.getRemoteSocketAddress());
-            	}
                 /*
                  * Delay the close of the socket for some time in case it is
                  * being used.
@@ -479,11 +444,11 @@ public class TCPMessageChannel extends MessageChannel implements
                 sipStack.getTimer().schedule(new SIPStackTimerTask() {
                     @Override
                     public void cleanUpBeforeCancel() {
-                    	close(false);
+                    	close();
                     }
 
                     public void runTask() {
-                        close(false);
+                        close();
                     }
                 }, 8000);
             }
@@ -681,7 +646,7 @@ public class TCPMessageChannel extends MessageChannel implements
 
                 // Check for reasonable size - reject message
                 // if it is too long.
-                if (logger.isLoggingEnabled(
+                if (this.logger.isLoggingEnabled(
                         ServerLogger.TRACE_MESSAGES)) {
                     sipStack.serverLogger.logMessage(sipMessage, this
                             .getPeerHostPort().toString(), this

@@ -93,7 +93,7 @@ public class TCPMessageProcessor extends MessageProcessor {
     public void start() throws IOException {
         Thread thread = new Thread(this);
         thread.setName("TCPMessageProcessorThread");
-        thread.setPriority(sipStack.getThreadPriority());
+        thread.setPriority(Thread.MAX_PRIORITY);
         thread.setDaemon(true);
         this.sock = sipStack.getNetworkLayer().createServerSocket(getPort(), 0, getIpAddress());
         if (getIpAddress().getHostAddress().equals(IN_ADDR_ANY)

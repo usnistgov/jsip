@@ -412,8 +412,6 @@ public abstract class SIPTransactionStack implements
 
     protected static Executor selfRoutingThreadpoolExecutor;
 
-    private int threadPriority = Thread.MAX_PRIORITY;
-    
     private static class SameThreadExecutor implements Executor {
 
         public void execute(Runnable command) {
@@ -427,16 +425,7 @@ public abstract class SIPTransactionStack implements
             if(this.threadPoolSize<=0) {
                 selfRoutingThreadpoolExecutor = new SameThreadExecutor();
             } else {
-                selfRoutingThreadpoolExecutor = Executors.newFixedThreadPool(this.threadPoolSize, new ThreadFactory() {
-                    private int threadCount = 0;
-
-                    public Thread newThread(Runnable pRunnable) {
-                    	Thread thread = new Thread(pRunnable, String.format("%s-%d",
-                                        "SelfRoutingThread", threadCount++));
-                    	thread.setPriority(threadPriority);
-                    	return thread;
-                    }
-                });
+                selfRoutingThreadpoolExecutor = Executors.newFixedThreadPool(this.threadPoolSize);
             }
         }
         return selfRoutingThreadpoolExecutor;
@@ -2026,11 +2015,6 @@ public abstract class SIPTransactionStack implements
         synchronized (this.clientTransactionTable) {
             clientTransactionTable.notifyAll();
         }
-        
-        if(selfRoutingThreadpoolExecutor != null && selfRoutingThreadpoolExecutor instanceof ExecutorService) {
-        	((ExecutorService)selfRoutingThreadpoolExecutor).shutdown();
-        }
-        selfRoutingThreadpoolExecutor = null;
 
         // Threads must periodically check this flag.
         MessageProcessor[] processorList;
@@ -2938,14 +2922,6 @@ public abstract class SIPTransactionStack implements
             SIPClientTransaction clientTransaction) {
         String forkId = ((SIPRequest)clientTransaction.getRequest()).getForkId();
         clientTransaction.setForkId(forkId);
-        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-        	logger.logStackTrace();
-            logger.logDebug(
-                    "Adding forked client transaction : " + clientTransaction + " branch=" + clientTransaction.getBranch() + 
-                    " forkId = " + forkId + "  sipDialog = " + clientTransaction.getDefaultDialog() + 
-                    " sipDialogId= " + clientTransaction.getDefaultDialog().getDialogId());
-    	}
-
         this.forkedClientTransactionTable.put(forkId, clientTransaction);
     }
 
@@ -3100,25 +3076,4 @@ public abstract class SIPTransactionStack implements
     public ClientAuthType getClientAuth() {
         return clientAuth;
     }
-
-	/**
-	 * @param threadPriority the threadPriority to set
-	 */
-	public void setThreadPriority(int threadPriority) {
-		if(threadPriority < Thread.MIN_PRIORITY)
-			throw new IllegalArgumentException("The Stack Thread Priority shouldn't be lower than Thread.MIN_PRIORITY");
-		if(threadPriority > Thread.MAX_PRIORITY)
-			throw new IllegalArgumentException("The Stack Thread Priority shouldn't be higher than Thread.MAX_PRIORITY");
-		if(logger.isLoggingEnabled(StackLogger.TRACE_INFO)) {
-			logger.logInfo("Setting Stack Thread priority to " + threadPriority);
-		}
-		this.threadPriority = threadPriority;
-	}
-
-	/**
-	 * @return the threadPriority
-	 */
-	public int getThreadPriority() {
-		return threadPriority;
-	}
 }

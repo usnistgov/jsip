@@ -1,7 +1,6 @@
 package test.unit.gov.nist.javax.sip.stack.subsnotify;
 
 import gov.nist.javax.sip.ResponseEventExt;
-import gov.nist.javax.sip.message.MessageExt;
 import gov.nist.javax.sip.message.ResponseExt;
 
 import javax.sip.*;
@@ -98,14 +97,16 @@ public class Notifier implements SipListener {
                 if (st == null) {
                     st = sipProvider.getNewServerTransaction(request);
                 }
+    
+                // Check if it is an initial SUBSCRIBE or a refresh / unsubscribe
+                toTag = Integer.toHexString( (int) (Math.random() * Integer.MAX_VALUE) );
                 response = messageFactory.createResponse(202, request);
                 ToHeader toHeader = (ToHeader) response.getHeader(ToHeader.NAME);
-                // Check if it is an initial SUBSCRIBE or a refresh / unsubscribe
-                if(((MessageExt)request).getToHeader().getTag() == null) {
-	                toTag = Integer.toHexString( (int) (Math.random() * Integer.MAX_VALUE) );                
-	                toHeader.setTag(toTag);
-	                // Sanity check: to header should not ahve a tag. Else the dialog
-                }
+                toHeader.setTag(toTag);
+                // Sanity check: to header should not ahve a tag. Else the dialog
+                   
+                   
+                
     
                 // Both 2xx response to SUBSCRIBE and NOTIFY need a Contact
                 Address address = addressFactory.createAddress("Notifier <sip:127.0.0.1>");
@@ -171,13 +172,9 @@ public class Notifier implements SipListener {
                 // Initial state is pending, second time we assume terminated (Expires==0)
                 SubscriptionStateHeader sstate = headerFactory.createSubscriptionStateHeader(
                         SubscriptionStateHeader.PENDING  );
-                if(expires.getExpires() == 0) {
-                	sstate = headerFactory.createSubscriptionStateHeader(
-                            SubscriptionStateHeader.TERMINATED);
-                }
     
                 // Need a reason for terminated
-                if ( sstate.getState().equalsIgnoreCase(SubscriptionStateHeader.TERMINATED) ) {
+                if ( sstate.getState().equalsIgnoreCase("terminated") ) {
                     sstate.setReasonCode( "deactivated" );
                 }
     
@@ -190,9 +187,7 @@ public class Notifier implements SipListener {
                 ct.sendRequest();
                 logger.info("NOTIFY Branch ID " +
                     ((ViaHeader)request.getHeader(ViaHeader.NAME)).getParameter("branch"));
-                logger.info("notifier: got an Subscribe sending OK " + response);
-                
-                Thread.sleep(1000);
+                logger.info("notifier: got an Subscribe sending OK");
                 
                  st.sendResponse(response);
             }
@@ -248,9 +243,9 @@ public class Notifier implements SipListener {
         // Your code will limp at 32 but it is best for debugging.
         properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
         properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
-                "logs/notifierdebug_"+port+".txt");
+                "notifierdebug_"+port+".txt");
         properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
-                "logs/notifierlog_"+port+".txt");
+                "notifierlog_"+port+".txt");
         
         properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
 

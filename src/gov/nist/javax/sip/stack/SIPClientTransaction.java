@@ -48,7 +48,6 @@ import gov.nist.javax.sip.header.Via;
 import gov.nist.javax.sip.message.SIPMessage;
 import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.message.SIPResponse;
-import gov.nist.javax.sip.stack.IllegalTransactionStateException.Reason;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -805,29 +804,9 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                     // What to do here ?? kill the dialog?
                 }
             }
-            if(dialog == null) {
-            	// http://java.net/jira/browse/JSIP-377
-            	// The client transaction MUST be destroyed the instant it enters the
-            	// "Terminated" state.  This is actually necessary to guarantee correct
-            	// operation.  The reason is that 2xx responses to an INVITE are treated
-            	// differently; each one is forwarded by proxies
-            	
-                // for proxy, it happens that there is a race condition while the tx is getting removed and TERMINATED
-            	// where some responses are still able to be handled by it so we let responses for proxies pass up to the application
-            	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                    logger.logDebug("Client Transaction " + this + " branch id " + getBranch() + " doesn't have any dialog and is in TERMINATED state");
-            	if (respondTo != null) {
-            		if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                        logger.logDebug("passing response up to the application");
-                    respondTo.processResponse(transactionResponse, this, dialog);
-                } else {
-                    this.semRelease();
-                    return;
-                }
-            } else {
-            	this.semRelease();
-            	return;
-            }
+
+            this.semRelease();
+            return;
         } else if (TransactionState._CALLING == this.getInternalState()) {
             if (statusCode / 100 == 2) {
 
@@ -965,7 +944,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
         SIPRequest sipRequest = this.getOriginalRequest();
 
         if (this.getInternalState() >= 0)
-            throw new IllegalTransactionStateException("Request already sent", Reason.RequestAlreadySent);
+            throw new SipException("Request already sent");
 
         if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             logger.logDebug("sendRequest() " + sipRequest);
@@ -976,7 +955,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
         } catch (ParseException ex) {
         	if (logger.isLoggingEnabled())
         		logger.logError("missing required header");
-        	throw new IllegalTransactionStateException(ex.getMessage(), Reason.MissingRequiredHeader);
+            throw new SipException(ex.getMessage());
         }
 
         if (getMethod().equals(Request.SUBSCRIBE)
@@ -1417,11 +1396,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
      */
     public void terminate() throws ObjectInUseException {
         this.setState(TransactionState._TERMINATED);
-        if(!transactionTimerStarted.get()) {
-    		// if no transaction timer was started just remove the tx without firing a transaction terminated event
-        	testAndSetTransactionTerminatedEvent();
-        	sipStack.removeTransaction(this);
-        }
+     
     }
     
     /**
@@ -1471,7 +1446,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                 
         int code = sipResponse.getStatusCode();
 		boolean isRetransmission = !responsesReceived.add(Integer.valueOf(code));
-        if(code > 100 && code < 200 && isRetransmission) {
+        if(code == 183 && isRetransmission) {
         	if(lastResponse != null && !sipResponse.toString().equals(lastResponse.toString())) {
         		isRetransmission = false;
         	}
