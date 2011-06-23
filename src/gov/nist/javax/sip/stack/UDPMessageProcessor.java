@@ -186,7 +186,7 @@ public class UDPMessageProcessor extends MessageProcessor {
         // Issue #32 on java.net
         thread.setName("UDPMessageProcessorThread");
         // Issue #184
-        thread.setPriority(sipStack.getThreadPriority());
+        thread.setPriority(Thread.MAX_PRIORITY);
         thread.start();
     }
 
@@ -269,9 +269,6 @@ public class UDPMessageProcessor extends MessageProcessor {
           // closing the channels
           for (Object messageChannel : messageChannels) {
 			((MessageChannel)messageChannel).close();
-          }
-          if(sipStack.stackCongenstionControlTimeout > 0 && congestionAuditor != null) {
-          	this.congestionAuditor.stop();
           }
     }
 

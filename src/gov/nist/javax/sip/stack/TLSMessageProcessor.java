@@ -47,19 +47,16 @@ import gov.nist.core.LogWriter;
 import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.SipStackImpl;
 
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLSocket;
+
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
-
-import javax.net.ssl.SSLException;
-import javax.net.ssl.SSLServerSocket;
 
 /**
  * Sit in a loop waiting for incoming tls connections and start a new thread to handle each new
@@ -107,37 +104,19 @@ public class TLSMessageProcessor extends MessageProcessor {
         Thread thread = new Thread(this);
         thread.setName("TLSMessageProcessorThread");
         // ISSUE 184
-        thread.setPriority(sipStack.getThreadPriority());
+        thread.setPriority(Thread.MAX_PRIORITY);
         thread.setDaemon(true);
 
         this.sock = sipStack.getNetworkLayer().createSSLServerSocket(this.getPort(), 0,
                 this.getIpAddress());
-        if(sipStack.getClientAuth() == ClientAuthType.Want || sipStack.getClientAuth() == ClientAuthType.Default) {
-            // we set it to true in Default case as well to keep backward compatibility and default behavior            
-            ((SSLServerSocket) this.sock).setWantClientAuth(true);            
-        } else {
-            ((SSLServerSocket) this.sock).setWantClientAuth(false);
-        }
-        if(sipStack.getClientAuth() == ClientAuthType.Enabled) {
-            ((SSLServerSocket) this.sock).setNeedClientAuth(true);            
-        } else {
-            ((SSLServerSocket) this.sock).setNeedClientAuth(false);
-        }            
+        ((SSLServerSocket) this.sock).setNeedClientAuth(false);
         ((SSLServerSocket) this.sock).setUseClientMode(false);
+        ((SSLServerSocket) this.sock).setWantClientAuth(true);
         String []enabledCiphers = ((SipStackImpl)sipStack).getEnabledCipherSuites();
-        ((SSLServerSocket) this.sock).setEnabledCipherSuites(enabledCiphers);        
-        if(sipStack.getClientAuth() == ClientAuthType.Want || sipStack.getClientAuth() == ClientAuthType.Default) {
-            // we set it to true in Default case as well to keep backward compatibility and default behavior            
-            ((SSLServerSocket) this.sock).setWantClientAuth(true);            
-        } else {
-            ((SSLServerSocket) this.sock).setWantClientAuth(false);
-        }     
+        ((SSLServerSocket) this.sock).setEnabledCipherSuites(enabledCiphers);
+        ((SSLServerSocket)this.sock).setWantClientAuth(true);
 
-        if(logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-            logger.logDebug("SSLServerSocket want client auth " + ((SSLServerSocket) this.sock).getWantClientAuth());
-            logger.logDebug("SSLServerSocket need client auth " + ((SSLServerSocket) this.sock).getNeedClientAuth());
-        }
-        
+
         this.isRunning = true;
         thread.start();
 

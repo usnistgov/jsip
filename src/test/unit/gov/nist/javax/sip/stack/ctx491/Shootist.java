@@ -36,8 +36,6 @@ import org.apache.log4j.helpers.NullEnumeration;
 import test.tck.TestHarness;
 import test.tck.msgflow.callflows.ProtocolObjects;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 import junit.framework.TestCase;
@@ -83,12 +81,11 @@ public class Shootist implements SipListener {
     private static Logger logger = Logger.getLogger(Shootist.class);
 
     static {
-    	try {
-			logger.addAppender(new FileAppender(new SimpleLayout(), "logs/"+ Shootist.class.getName() + "debuglog.txt"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        if (logger.getAllAppenders().equals(NullEnumeration.getInstance())) {
+
+            logger.addAppender(new ConsoleAppender(new SimpleLayout()));
+
+        }
     }
 
     private ProtocolObjects protocolObjects;
@@ -193,7 +190,7 @@ public class Shootist implements SipListener {
         Response response = (Response) responseReceivedEvent.getResponse();
         Transaction tid = responseReceivedEvent.getClientTransaction();
 
-        logger.info("Response received with client transaction id " + tid + " rc = "
+        logger.info("Response received with client transaction id " + tid + ":\n"
                 + response.getStatusCode());
         if (tid == null) {
             logger.info("Stray response -- dropping ");
@@ -234,13 +231,8 @@ public class Shootist implements SipListener {
 
                 ct = provider.getNewClientTransaction(inviteRequest);
                 dialog.sendRequest(ct);
-                // Do not wait for the OK to send another INVITE. This will create the 
-                // Request PENDING.
-                Request newRequest = dialog.createRequest(Request.INVITE);
-                newRequest.addHeader(contactHeader);
-                newRequest.addHeader(mf);
-                ct = provider.getNewClientTransaction(newRequest);
-                dialog.sendRequest(ct);
+             
+
             } else if (response.getStatusCode() == Response.OK
                     && ((CSeqHeader) response.getHeader(CSeqHeader.NAME)).getMethod().equals(
                             Request.BYE)) {

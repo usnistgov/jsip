@@ -42,37 +42,19 @@
  ******************************************************************************/
 package gov.nist.javax.sip.stack;
 
-import gov.nist.core.CommonLogger;
-import gov.nist.core.InternalErrorHandler;
-import gov.nist.core.LogWriter;
-import gov.nist.core.ServerLogger;
-import gov.nist.core.StackLogger;
-import gov.nist.javax.sip.header.CSeq;
-import gov.nist.javax.sip.header.CallID;
-import gov.nist.javax.sip.header.ContentLength;
-import gov.nist.javax.sip.header.From;
-import gov.nist.javax.sip.header.RequestLine;
-import gov.nist.javax.sip.header.RetryAfter;
-import gov.nist.javax.sip.header.StatusLine;
-import gov.nist.javax.sip.header.To;
-import gov.nist.javax.sip.header.Via;
-import gov.nist.javax.sip.header.ViaList;
-import gov.nist.javax.sip.message.SIPMessage;
-import gov.nist.javax.sip.message.SIPRequest;
-import gov.nist.javax.sip.message.SIPResponse;
-import gov.nist.javax.sip.parser.Pipeline;
-import gov.nist.javax.sip.parser.PipelinedMsgParser;
-import gov.nist.javax.sip.parser.SIPMessageListener;
+import gov.nist.javax.sip.header.*;
+import gov.nist.javax.sip.message.*;
+import gov.nist.javax.sip.parser.*;
+import gov.nist.core.*;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.Socket;
+import java.net.*;
+import java.io.*;
 import java.text.ParseException;
 
 import javax.net.ssl.HandshakeCompletedListener;
-import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLHandshakeException;
+
 import javax.sip.address.Hop;
 import javax.sip.message.Response;
 
@@ -160,12 +142,7 @@ public final class TLSMessageChannel extends MessageChannel implements
         if (sock instanceof SSLSocket) {
             try {
                 SSLSocket sslSock = (SSLSocket) sock;
-                if(sipStack.getClientAuth() != ClientAuthType.Want && sipStack.getClientAuth() != ClientAuthType.Disabled) {
-                    sslSock.setNeedClientAuth(true);
-                }
-                if(logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-                    logger.logDebug("SSLServerSocket need client auth " + sslSock.getNeedClientAuth());
-                }
+                sslSock.setNeedClientAuth(true);
                 this.handshakeCompletedListener = new HandshakeCompletedListenerImpl(
                         this);
                 sslSock
@@ -189,7 +166,6 @@ public final class TLSMessageChannel extends MessageChannel implements
         this.tlsMessageProcessor = msgProcessor;
         this.myPort = this.tlsMessageProcessor.getPort();
         this.peerPort = mySock.getPort();
-        this.key = MessageChannel.getKey(peerAddress, peerPort, "TLS");
         // Bug report by Vishwashanti Raj Kadiayl
         super.messageProcessor = msgProcessor;
         // Can drop this after response is sent potentially.
@@ -239,48 +215,18 @@ public final class TLSMessageChannel extends MessageChannel implements
      * Close the message channel.
      */
     public void close() {
-    	close(true);
-    }
-
-    /**
-     * Close the message channel.
-     */
-    public void close(boolean removeSocket) {  
-    	
-		isRunning = false;
-    	// we need to close everything because the socket may be closed by the other end
-    	// like in LB scenarios sending OPTIONS and killing the socket after it gets the response    	
-        if (mySock != null) {
-        	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                logger.logDebug("Closing socket " + key);
-        	try {
-	            mySock.close();
-        	} catch (IOException ex) {
-                if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                    logger.logDebug("Error closing socket " + ex);
+        try {
+            if (mySock != null) {
+                mySock.close();
             }
-        }        
-        if(myParser != null) {
-        	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                logger.logDebug("Closing my parser " + myParser);
-            myParser.close();            
-        }           
-        if(removeSocket) {    
-	        // remove the "tls:" part of the key to cleanup the ioHandler hashmap
-	        String ioHandlerKey = key.substring(4);
-	        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-	            logger.logDebug("Closing TLS socket " + ioHandlerKey);
-	        // Issue 358 : remove socket and semaphore on close to avoid leaking
-	        sipStack.ioHandler.removeSocket(ioHandlerKey);
-	        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-	            logger.logDebug("Closing message Channel " + this);
-        } else {
-    		if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-    			String ioHandlerKey = key.substring(4);
-	    		logger.logDebug("not removing socket key from the cached map since it has already been updated by the iohandler.sendBytes " + ioHandlerKey);
-    		}
-    	}
-        		    	        
+            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                logger.logDebug(
+                        "Closing message Channel " + this);
+        } catch (IOException ex) {
+            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                logger
+                        .logDebug("Error closing socket " + ex);
+        }
     }
 
     /**
@@ -338,21 +284,15 @@ public final class TLSMessageChannel extends MessageChannel implements
         // one in its place but dont do this if it is a datagram socket.
         // (could have replied via udp but received via tcp!).
         if (sock != mySock && sock != null) {
-        	if(mySock != null && logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                logger.logDebug(
-                        "Old socket different than new socket");
-                logger.logStackTrace();
-                
-	             logger.logDebug(
-	                	 "Old socket local ip address " + mySock.getLocalSocketAddress());
-	             logger.logDebug(
-	            		 "Old socket remote ip address " + mySock.getRemoteSocketAddress());                         
-                logger.logDebug(
-               		 "New socket local ip address " + sock.getLocalSocketAddress());
-                logger.logDebug(
-               		 "New socket remote ip address " + sock.getRemoteSocketAddress());
-           }
-            close(false);
+            try {
+                if (mySock != null) {
+                    if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                        logger.logDebug(
+                                "Closing socket");
+                    mySock.close();
+                }
+            } catch (IOException ex) {
+            }
             mySock = sock;
             this.myClientInputStream = mySock.getInputStream();
 
@@ -414,39 +354,17 @@ public final class TLSMessageChannel extends MessageChannel implements
         //
         // Created a new socket so close the old one and s
         // Check for null (bug fix sent in by Christophe)
-        if (sock != mySock && sock != null) {          
-            if (mySock != null) {
-            	if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-	            	logger.logDebug(
-	                         "Old socket different than new socket");
-	                 logger.logStackTrace();
-	                 
-		             logger.logDebug(
-		                	 "Old socket local ip address " + mySock.getLocalSocketAddress());
-		             logger.logDebug(
-		            		 "Old socket remote ip address " + mySock.getRemoteSocketAddress());                         
-	                 logger.logDebug(
-	                		 "New socket local ip address " + sock.getLocalSocketAddress());
-	                 logger.logDebug(
-	                		 "New socket remote ip address " + sock.getRemoteSocketAddress());
-            	}
-                /*
-                 * Delay the close of the socket for some time in case it is being used.
-                 */
-                sipStack.getTimer().schedule(new SIPStackTimerTask() {						
-
-                	@Override
-                	public void cleanUpBeforeCancel() {
-                		close(false);
-                		super.cleanUpBeforeCancel();
-                	}
-
-                    @Override
-                    public void runTask() {
-                        close(false);
-                    }
-                }, 8000);
-            }           
+        if (sock != mySock && sock != null) {
+            try {
+                if (mySock != null) {
+                    if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                        logger.logDebug(
+                                "Closing socket");
+                    mySock.close();
+                }
+            } catch (IOException ex) {
+                /* ignore */
+            }
             mySock = sock;
             this.myClientInputStream = mySock.getInputStream();
 
@@ -505,7 +423,7 @@ public final class TLSMessageChannel extends MessageChannel implements
                                 .getPeerInetAddress(), this.getPeerPort(),
                                 false);
                     } catch (IOException e) {
-                        logger.logException(e);
+                        this.logger.logException(e);
                     }
                 } else {
                     if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
@@ -612,7 +530,7 @@ public final class TLSMessageChannel extends MessageChannel implements
                     logger.logDebug(
                             "----Processing Message---");
                 }
-                if (logger.isLoggingEnabled(
+                if (this.logger.isLoggingEnabled(
                         ServerLogger.TRACE_MESSAGES)) {
 
                     sipStack.serverLogger.logMessage(sipMessage, this
@@ -718,7 +636,7 @@ public final class TLSMessageChannel extends MessageChannel implements
                                                 .getContentLength()) > sipStack
                                 .getMaxMessageSize()) {
                     if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                        logger.logDebug(
+                        this.logger.logDebug(
                                 "Message size exceeded");
                     return;
 
@@ -794,11 +712,16 @@ public final class TLSMessageChannel extends MessageChannel implements
                                 }
                             }
                             hispipe.close();
-                            close();
+                            if(mySock != null) {
+                                if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                                    logger.logDebug(
+                                            "Closing socket");
+                                mySock.close();
+                            }
                         } catch (IOException ioex) {
                         }
                         return;
-                    }                    
+                    }
                     hispipe.write(msg, 0, nbytes);
 
                 } catch (IOException ex) {
@@ -820,7 +743,12 @@ public final class TLSMessageChannel extends MessageChannel implements
                                     tlsMessageProcessor.notify();
                                 }
                             }
-                            close();
+                            if(mySock != null) {
+                                if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                                    logger.logDebug(
+                                            "Closing socket");
+                                mySock.close();
+                            }
                             hispipe.close();
                         } catch (IOException ioex) {
                         }
@@ -836,10 +764,7 @@ public final class TLSMessageChannel extends MessageChannel implements
             this.isRunning = false;
             this.tlsMessageProcessor.remove(this);
             this.tlsMessageProcessor.useCount--;
-            // parser could be null if the socket was closed by the remote end already
-            if(myParser != null) {
-            	this.myParser.close();
-            }
+            this.myParser.close();
         }
 
     }
@@ -938,13 +863,4 @@ public final class TLSMessageChannel extends MessageChannel implements
         return (HandshakeCompletedListenerImpl) handshakeCompletedListener;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see gov.nist.javax.sip.parser.SIPMessageListener#sendSingleCLRF()
-     */
-	public void sendSingleCLRF() throws Exception {
-		if(mySock != null && !mySock.isClosed()) {
-			mySock.getOutputStream().write("\r\n".getBytes("UTF-8"));
-		}
-	}
 }

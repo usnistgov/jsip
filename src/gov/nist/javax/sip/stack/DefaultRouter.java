@@ -287,7 +287,7 @@ public class DefaultRouter implements Router {
      */
 
 
-    protected final Hop createHop(SipURI sipUri, Request request) {
+    private final Hop createHop(SipURI sipUri, Request request) {
         // always use TLS when secure
         String transport = sipUri.isSecure() ? SIPConstants.TLS : sipUri
                 .getTransportParam();

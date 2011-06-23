@@ -148,9 +148,9 @@ public class ReInviteBusyTest extends TestCase {
             // and are not necessarily part of any other jain-sip
             // implementation.
             properties.setProperty("gov.nist.javax.sip.DEBUG_LOG", logFileDirectory
-                    + ReInviteBusyTest.class.getName() + "-debuglog.txt");
+                    + stackname + "debuglog.txt");
             properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
-                    logFileDirectory + "ReInviteBusyTest-" + "log.txt");
+                    logFileDirectory + stackname + "log.txt");
 
             properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT",
                     (autoDialog ? "on" : "off"));
@@ -262,7 +262,7 @@ public class ReInviteBusyTest extends TestCase {
 
         private int reInviteCount;
 
-        private boolean isToTagInTryingReInvitePresent = true;
+        private boolean isToTagInTryingReInvitePresent = false;
 
         class ApplicationData {
             protected int ackCount;
@@ -449,9 +449,8 @@ public class ReInviteBusyTest extends TestCase {
                     Dialog dialog = tid.getDialog();
                     logger.info("Dalog State = " + dialog.getState());
                     String toTag = ((ResponseExt)response).getToHeader().getTag(); 
-                    // Note that TRYING is an optional response.
-                    if(DialogState.CONFIRMED.equals(dialog.getState()) && toTag == null && response.getStatusCode() == Response.TRYING) {
-                        this.isToTagInTryingReInvitePresent  = false;
+                    if(DialogState.CONFIRMED.equals(dialog.getState()) && toTag != null && response.getStatusCode() == Response.TRYING) {
+                        this.isToTagInTryingReInvitePresent  = true;
                         logger.info("to tag for trying in re INVITE is present " + toTag);
                     }
                 }
@@ -884,11 +883,11 @@ public class ReInviteBusyTest extends TestCase {
             super.setUp();
             // String stackname, String pathname, String transport,
             // boolean autoDialog
-            this.shootistProtocolObjs = new ProtocolObjects("shootist", "gov.nist", "udp", true,true);
+            this.shootistProtocolObjs = new ProtocolObjects("shootist", "gov.nist", "udp", true,false);
             shootist = new Shootist(shootistProtocolObjs);
             SipProvider shootistProvider = shootist.createSipProvider();
 
-            this.shootmeProtocolObjs = new ProtocolObjects("shootme", "gov.nist", "udp", true,true);
+            this.shootmeProtocolObjs = new ProtocolObjects("shootme", "gov.nist", "udp", true,false);
             shootme = new Shootme(shootmeProtocolObjs);
             SipProvider shootmeProvider = shootme.createSipProvider();
             

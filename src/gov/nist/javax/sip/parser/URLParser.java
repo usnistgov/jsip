@@ -673,7 +673,11 @@ public class URLParser extends Parser {
     }
 
     public String peekScheme() throws ParseException {
-        return lexer.getString(':');
+        Token[] tokens = lexer.peekNextToken(1);
+        if (tokens.length == 0)
+            return null;
+        String scheme = ((Token) tokens[0]).getTokenValue();
+        return scheme;
     }
 
     /**

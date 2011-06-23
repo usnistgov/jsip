@@ -469,7 +469,8 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                                         transaction);
                         return;
                     }
-                } else if (lastTransaction instanceof SIPClientTransaction) {
+                } else if (lastTransaction != null
+                        && lastTransaction instanceof SIPClientTransaction) {
                     if (lastTransactionMethod.equals(Request.INVITE)
                             && lastTransaction.getInternalState() != TransactionState._TERMINATED
                             && lastTransaction.getInternalState() != TransactionState._COMPLETED) {
@@ -921,7 +922,8 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             if (dialog != null
                     && transaction != null
                     && lastTransaction != null
-                    && sipRequest.getCSeq().getSeqNumber() > lastTransaction.getCSeq()
+                    && sipRequest.getCSeq().getSeqNumber() > dialog
+                            .getRemoteSeqNumber()
                     && lastTransaction instanceof SIPServerTransaction
                     && sipProvider.isDialogErrorsAutomaticallyHandled()
                     && dialog.isSequnceNumberValidation()
@@ -953,29 +955,32 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     && lastTransaction != null
                     && lastTransaction.isInviteTransaction()
                     && lastTransaction instanceof ClientTransaction
-                    && lastTransaction.getState() != TransactionState.COMPLETED 
-                    && lastTransaction.getState() != TransactionState.TERMINATED)
-                     {
+                    && lastTransaction.getLastResponse() != null
+                    && lastTransaction.getLastResponse().getStatusCode() == 200
+                    && !dialog.isAckSent(lastTransaction.getLastResponse()
+                            .getCSeq().getSeqNumber())) {
                 if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
-                	logger.logDebug("DialogFilter::processRequest:lastTransaction.getState(): " + lastTransaction.getState() +       
-                                    " Sending 491 response for clientTx.");
+                    logger
+                            .logDebug(
+                                    "Sending 491 response for client Dialog ACK not sent.");
                 }
                 this.sendRequestPendingResponse(sipRequest, transaction);
                 return;
             }
 
-            if ( dialog != null
+            if (dialog != null
                     && lastTransaction != null
                     && sipProvider.isDialogErrorsAutomaticallyHandled()
                     && lastTransaction.isInviteTransaction()
                     && lastTransaction instanceof ServerTransaction
-                    && sipRequest.getCSeq().getSeqNumber() > lastTransaction.getCSeq()
                     // Handle Pseudo State Trying on Server Transaction
                     && (lastTransaction.getInternalState() == TransactionState._PROCEEDING
                                     || lastTransaction.getInternalState() == TransactionState._TRYING)) {
                 // Note that the completed state will be reached when we have
-                // sent an error response and the terminated state will be reached when we
-                // have sent an OK response. We do not need to wait till the ACK to be seen.
+                // sent an error
+                // response and the terminated state will be reached when we
+                // have sent an OK
+                // response. We do not need to wait till the ACK to be seen.
                 if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                     logger
                             .logDebug(
@@ -1428,7 +1433,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     if(forked.getDefaultDialog() != null && !dialog.equals(forked.getDefaultDialog())) {
                         if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                             logger.logDebug(
-                            		"forkedId= " + response.getForkId() + " forked dialog " + dialog + " original tx " + forked + " original dialog " + forked.getDefaultDialog());
+                                    "forked dialog " + dialog + " original tx " + forked + " original dialog " + forked.getDefaultDialog());
                         }
                         sipEvent.setOriginalTransaction(forked);
                         sipEvent.setForkedResponse(true);
@@ -1455,7 +1460,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                 if(forked.getDefaultDialog() != null && !dialog.equals(forked.getDefaultDialog())) {
                     if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                         logger.logDebug(
-                                "forkedId= " + response.getForkId() + " forked dialog " + dialog + " original tx " + forked + " original dialog " + forked.getDefaultDialog());
+                                "forked dialog " + dialog + " original tx " + forked + " original dialog " + forked.getDefaultDialog());
                     }
                     responseEvent.setOriginalTransaction(forked);
                     responseEvent.setForkedResponse(true);
@@ -1693,7 +1698,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
         }
         if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
             logger.logDebug(
-                    "sending response " + sipResponse.toString() + " to TU for processing ");        
+                    "sending response to TU for processing ");        
 
         ResponseEventExt responseEvent = new ResponseEventExt(sipProvider,
                 (ClientTransactionExt) transaction, sipDialog,
@@ -1711,7 +1716,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                 if(originalTx.getDefaultDialog() != null && !sipDialog.equals(originalTx.getDefaultDialog())) {
                     if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                         logger.logDebug(
-                        		"forkedId= " + sipResponse.getForkId() + " forked dialog " + sipDialog + " original tx " + originalTx + " original dialog " + originalTx.getDefaultDialog());
+                                "forked dialog " + sipDialog + " original tx " + originalTx + " original dialog " + originalTx.getDefaultDialog());
                     }
                     responseEvent.setOriginalTransaction(originalTx);
                     responseEvent.setForkedResponse(true);

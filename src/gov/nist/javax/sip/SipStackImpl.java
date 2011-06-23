@@ -40,7 +40,6 @@ import gov.nist.javax.sip.parser.MessageParserFactory;
 import gov.nist.javax.sip.parser.PipelinedMsgParser;
 import gov.nist.javax.sip.parser.StringMsgParser;
 import gov.nist.javax.sip.parser.StringMsgParserFactory;
-import gov.nist.javax.sip.stack.ClientAuthType;
 import gov.nist.javax.sip.stack.DefaultMessageLogFactory;
 import gov.nist.javax.sip.stack.DefaultRouter;
 import gov.nist.javax.sip.stack.MessageProcessor;
@@ -455,9 +454,6 @@ import javax.sip.message.Request;
  * can remain in early state. This is defaulted to 3 minutes ( 180 seconds).
  * </li>
  * 
- * <li><b>gov.nist.javax.sip.THREAD_PRIORITY=integer </b> Control the priority of the threads started by the stack.
- * </li> 
- * 
  * <li><b>gov.nist.javax.sip.MESSAGE_PARSER_FACTORY =  name of the class implementing gov.nist.javax.sip.parser.MessageParserFactory</b>
  * This factory allows pluggable implementations of the MessageParser that will take care of parsing the incoming messages.
  * By example one could plug a lazy parser through this factory.</li>
@@ -518,12 +514,6 @@ import javax.sip.message.Request;
  * <li><b>gov.nist.javax.sip.TLS_SECURITY_POLICY = String </b> The fully qualified path
  * name of a TLS Security Policy implementation that is consulted for certificate verification
  * of outbund TLS connections.
- * </li>
- * 
- * <li><b>gov.nist.javax.sip.TLS_CLIENT_AUTH_TYPE = String </b> Valid values are Default (backward compatible with previous versions)
- * , Enabled, Want or Disabled. Set to Enabled if you want the SSL stack to require a valid certificate chain from the client before 
- * accepting a connection. Set to Want if you want the SSL stack to request a client Certificate, but not fail if one isn't presented. 
- * A Disabled value will not require a certificate chain.
  * </li>
  * 
  * <li><b>javax.net.ssl.keyStore = fileName </b> <br/>
@@ -745,9 +735,6 @@ public class SipStackImpl extends SIPTransactionStack implements
 						ex);
 			}
 
-		super.setThreadPriority(Integer.parseInt(
-			        configurationProperties.getProperty("gov.nist.javax.sip.THREAD_PRIORITY","" + Thread.MAX_PRIORITY)));
-			
 		// Default router -- use this for routing SIP URIs.
 		// Our router does not do DNS lookups.
 		this.outboundProxy = configurationProperties
@@ -907,13 +894,6 @@ public class SipStackImpl extends SIPTransactionStack implements
 					+ "- check that it is present on the classpath and that there is a no-args constructor defined",
 					ex);
 		}
-		
-		// Allow application to choose the tls client auth policy on the socket
-        String clientAuthType = configurationProperties.getProperty("gov.nist.javax.sip.TLS_CLIENT_AUTH_TYPE");
-        if (clientAuthType != null) {
-            super.clientAuth = ClientAuthType.valueOf(clientAuthType);
-            logger.logInfo("using " + clientAuthType + " tls auth policy");
-        }
 
 		// The following features are unique to the NIST implementation.
 
@@ -934,7 +914,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 			} catch (Exception e) {
 				throw new PeerUnavailableException(
 						"can't find or instantiate NetworkLayer implementation: "
-								+ path, e);
+								+ path);
 			}
 		}
 
@@ -951,7 +931,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 			} catch (Exception e) {
 				throw new PeerUnavailableException(
 						"can't find or instantiate AddressResolver implementation: "
-								+ path, e);
+								+ path);
 			}
 		}
 
@@ -1234,7 +1214,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 		        configurationProperties.getProperty("gov.nist.javax.sip.MAX_FORK_TIME_SECONDS","0"));
 		
 		super.earlyDialogTimeout = Integer.parseInt(
-                configurationProperties.getProperty("gov.nist.javax.sip.EARLY_DIALOG_TIMEOUT_SECONDS","180"));				
+                configurationProperties.getProperty("gov.nist.javax.sip.EARLY_DIALOG_TIMEOUT_SECONDS","180"));
+		
 		
 		super.minKeepAliveInterval = Integer.parseInt(configurationProperties.getProperty("gov.nist.javax.sip.MIN_KEEPALIVE_TIME_SECONDS","-1"));
 		
@@ -1283,22 +1264,25 @@ public class SipStackImpl extends SIPTransactionStack implements
 			try {
 				super.sipMessageValve = (SIPMessageValve) Class.forName(valveClassName).newInstance();
 				final SipStack thisStack = this;
-
-				try {
-					Thread.sleep(100);
-					sipMessageValve.init(thisStack);
-				} catch (Exception e) {
-					logger
-					.logError("Error intializing SIPMessageValve", e);
-				}
-
+				new Thread() {
+					public void run() {
+						try {
+							Thread.sleep(100);
+							sipMessageValve.init(thisStack);
+						} catch (Exception e) {
+							logger
+							.logError("Error intializing SIPMessageValve", e);
+						}
+						
+					}
+				}.start();
 			} catch (Exception e) {
 				logger
-				.logError(
-						"Bad configuration value for gov.nist.javax.sip.SIP_MESSAGE_VALVE", e);			
+					.logError(
+							"Bad configuration value for gov.nist.javax.sip.SIP_MESSAGE_VALVE", e);			
 			}
 		}
-
+		
 		String interceptorClassName = configurationProperties.getProperty("gov.nist.javax.sip.SIP_EVENT_INTERCEPTOR", null);
 		if(interceptorClassName != null && !interceptorClassName.equals("")) {
 			try {
@@ -1561,7 +1545,6 @@ public class SipStackImpl extends SIPTransactionStack implements
 		if (this.eventScanner != null)
 			this.eventScanner.forceStop();
 		this.eventScanner = null;
-		PipelinedMsgParser.shutdownTcpThreadpool();
 
 	}
 

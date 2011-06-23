@@ -15,19 +15,11 @@ public class NotifyBefore202Test  extends TestCase {
 	
 	public void testSendSubscribe() {
 		subscriber.sendSubscribe();
+	
 	}
 	
-	/*
-	 * Non Regression test for issue http://java.net/jira/browse/JSIP-374
-	 */
-	public void testInDialogSubscribe() throws InterruptedException {
-		subscriber.setInDialogSubcribe(true);
-		subscriber.sendSubscribe();
-		Thread.sleep(15000);
-		assertTrue(subscriber.checkState());
-	}
-	
-	public void tearDown() throws Exception {		
+	public void tearDown() throws Exception {
+		Thread.sleep(4000);
 		subscriber.tearDown();
 		notifier.tearDown();
 	}

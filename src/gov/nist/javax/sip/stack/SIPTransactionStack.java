@@ -386,8 +386,6 @@ public abstract class SIPTransactionStack implements
 
     private boolean deliverTerminatedEventForAck = false;
 
-    protected ClientAuthType clientAuth = ClientAuthType.Default;
-    
     // ThreadPool when parsed SIP messages are processed. Affects the case when many TCP calls use single socket.
     private int tcpPostParsingThreadPoolSize = 0;
 
@@ -412,8 +410,6 @@ public abstract class SIPTransactionStack implements
 
     protected static Executor selfRoutingThreadpoolExecutor;
 
-    private int threadPriority = Thread.MAX_PRIORITY;
-    
     private static class SameThreadExecutor implements Executor {
 
         public void execute(Runnable command) {
@@ -427,16 +423,7 @@ public abstract class SIPTransactionStack implements
             if(this.threadPoolSize<=0) {
                 selfRoutingThreadpoolExecutor = new SameThreadExecutor();
             } else {
-                selfRoutingThreadpoolExecutor = Executors.newFixedThreadPool(this.threadPoolSize, new ThreadFactory() {
-                    private int threadCount = 0;
-
-                    public Thread newThread(Runnable pRunnable) {
-                    	Thread thread = new Thread(pRunnable, String.format("%s-%d",
-                                        "SelfRoutingThread", threadCount++));
-                    	thread.setPriority(threadPriority);
-                    	return thread;
-                    }
-                });
+                selfRoutingThreadpoolExecutor = Executors.newFixedThreadPool(this.threadPoolSize);
             }
         }
         return selfRoutingThreadpoolExecutor;
@@ -753,8 +740,10 @@ public abstract class SIPTransactionStack implements
         if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
             logger.logStackTrace();
         dialogTable.put(dialogId, dialog);
-        putMergeDialog(dialog);
-        
+        if (dialog.getMergeId() != null )  {
+                this.serverDialogMergeTestTable.put(dialog.getMergeId(), dialog);
+
+        }
         return dialog;
     }
 
@@ -882,7 +871,11 @@ public abstract class SIPTransactionStack implements
             this.dialogTable.remove(earlyId);
         }
 
-        removeMergeDialog(dialog.getMergeId());
+        String mergeId = dialog.getMergeId();
+
+        if (mergeId != null) {
+            this.serverDialogMergeTestTable.remove(mergeId);
+        }
 
         if (id != null) {
 
@@ -935,30 +928,6 @@ public abstract class SIPTransactionStack implements
 
     }
 
-    protected void removeMergeDialog(String mergeId) {
-		if(mergeId != null) {
-			if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-				logger.logDebug("Tyring to remove Dialog from serverDialogMerge table with Merge Dialog Id " + mergeId);
-			}
-			SIPDialog sipDialog = serverDialogMergeTestTable.remove(mergeId);		
-			if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG) && sipDialog != null) {
-				logger.logDebug("removed Dialog " + sipDialog + " from serverDialogMerge table with Merge Dialog Id " + mergeId);
-			}
-		}
-	}
-	
-	protected void putMergeDialog(SIPDialog sipDialog) {
-		if(sipDialog != null) {
-			String mergeId = sipDialog.getMergeId();
-			if(mergeId != null) {
-				serverDialogMergeTestTable.put(mergeId, sipDialog);
-				if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-					logger.logDebug("put Dialog " + sipDialog + " in serverDialogMerge table with Merge Dialog Id " + mergeId);
-				}
-			}
-		}
-	}
-    
     /**
      * Return the dialog for a given dialog ID. If compatibility is enabled then
      * we do not assume the presence of tags and hence need to add a flag to
@@ -1776,84 +1745,66 @@ public abstract class SIPTransactionStack implements
      */
     public void removeTransaction(SIPTransaction sipTransaction) {
         if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-            logger.logDebug("removeTransaction: Removing Transaction = "
+            logger.logDebug("Removing Transaction = "
                     + sipTransaction.getTransactionId() + " transaction = "
                     + sipTransaction);
         }
-        try {
-        	if (sipTransaction instanceof SIPServerTransaction) {
-        		if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
-        			logger.logStackTrace();
-        		}
-        		String key = sipTransaction.getTransactionId();
-        		Object removed = serverTransactionTable.remove(key);
-        		String method = sipTransaction.getMethod();
-        		this
-        		.removePendingTransaction((SIPServerTransaction) sipTransaction);
-        		this
-        		.removeTransactionPendingAck((SIPServerTransaction) sipTransaction);
-        		if (method.equalsIgnoreCase(Request.INVITE)) {
-        			this
-        			.removeFromMergeTable((SIPServerTransaction) sipTransaction);
-        		}
-        		// Send a notification to the listener.
-        		SipProviderImpl sipProvider = (SipProviderImpl) sipTransaction
-        		.getSipProvider();
-        		if (removed != null
-        				&& sipTransaction.testAndSetTransactionTerminatedEvent()) {
-        			TransactionTerminatedEvent event = new TransactionTerminatedEvent(
-        					sipProvider, (ServerTransaction) sipTransaction);
+        if (sipTransaction instanceof SIPServerTransaction) {
+            if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
+                logger.logStackTrace();
+            String key = sipTransaction.getTransactionId();
+            Object removed = serverTransactionTable.remove(key);
+            String method = sipTransaction.getMethod();
+            this
+                    .removePendingTransaction((SIPServerTransaction) sipTransaction);
+            this
+                    .removeTransactionPendingAck((SIPServerTransaction) sipTransaction);
+            if (method.equalsIgnoreCase(Request.INVITE)) {
+                this
+                        .removeFromMergeTable((SIPServerTransaction) sipTransaction);
+            }
+            // Send a notification to the listener.
+            SipProviderImpl sipProvider = (SipProviderImpl) sipTransaction
+                    .getSipProvider();
+            if (removed != null
+                    && sipTransaction.testAndSetTransactionTerminatedEvent()) {
+                TransactionTerminatedEvent event = new TransactionTerminatedEvent(
+                        sipProvider, (ServerTransaction) sipTransaction);
 
-        			sipProvider.handleEvent(event, sipTransaction);
+                sipProvider.handleEvent(event, sipTransaction);
 
-        		}
-        	} else {
+            }
+        } else {
 
-        		String key = sipTransaction.getTransactionId();
-        		Object removed = clientTransactionTable.remove(key);
+            String key = sipTransaction.getTransactionId();
+            Object removed = clientTransactionTable.remove(key);
 
-        		if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-        			logger.logDebug("REMOVED client tx " + removed + " KEY = "
-        					+ key);
+            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                logger.logDebug("REMOVED client tx " + removed + " KEY = "
+                        + key);
+            }
+            if ( removed != null ) {
+                SIPClientTransaction clientTx = (SIPClientTransaction)removed;
+                final String forkId = clientTx.getForkId();
+                if (forkId != null && clientTx.isInviteTransaction()
+                        && this.maxForkTime != 0) {
+                    this.timer.schedule(new RemoveForkedTransactionTimerTask(
+                            forkId), this.maxForkTime * 1000);
+                    clientTx.stopExpiresTimer();
+                }
+            }
 
+            // Send a notification to the listener.
+            if (removed != null
+                    && sipTransaction.testAndSetTransactionTerminatedEvent()) {
+                SipProviderImpl sipProvider = (SipProviderImpl) sipTransaction
+                        .getSipProvider();
+                TransactionTerminatedEvent event = new TransactionTerminatedEvent(
+                        sipProvider, (ClientTransaction) sipTransaction);
 
-        		}
-        		if ( removed != null ) {
-        			SIPClientTransaction clientTx = (SIPClientTransaction)removed;
-        			final String forkId = clientTx.getForkId();
-        			if (forkId != null && clientTx.isInviteTransaction()
-        					&& this.maxForkTime != 0) {
-        				this.timer.schedule(new RemoveForkedTransactionTimerTask(
-        						forkId), this.maxForkTime * 1000);
-        				clientTx.stopExpiresTimer();
-        			}
-        		}
+                sipProvider.handleEvent(event, sipTransaction);
+            }
 
-        		// Send a notification to the listener.
-        		if (removed != null
-        				&& sipTransaction.testAndSetTransactionTerminatedEvent()) {
-        			SipProviderImpl sipProvider = (SipProviderImpl) sipTransaction
-        			.getSipProvider();
-        			TransactionTerminatedEvent event = new TransactionTerminatedEvent(
-        					sipProvider, (ClientTransaction) sipTransaction);
-
-        			sipProvider.handleEvent(event, sipTransaction);
-        		}
-
-        	}
-        } finally {
-        	if ( logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-        		logger.logDebug(String.format("removeTransaction: Table size : " +
-        				" clientTransactionTable %d " +
-        				" mergetTable %d " +
-        				" terminatedServerTransactionsPendingAck %d  " +
-        				" forkedClientTransactionTable %d " +
-        				" pendingTransactions %d " , 
-        				clientTransactionTable.size(), mergeTable.size(),
-        				terminatedServerTransactionsPendingAck.size(),
-        				forkedClientTransactionTable.size(),
-        				pendingTransactions.size()
-        		));
         }
     }
 
@@ -2016,7 +1967,10 @@ public abstract class SIPTransactionStack implements
      */
     public void stopStack() {
         // Prevent NPE on two concurrent stops
-        this.toExit = true;        
+        this.toExit = true;
+
+        if (this.timer != null)
+            this.timer.stop();
 
         // JvB: set it to null, SIPDialog tries to schedule things after stop
         this.pendingTransactions.clear();
@@ -2026,11 +1980,6 @@ public abstract class SIPTransactionStack implements
         synchronized (this.clientTransactionTable) {
             clientTransactionTable.notifyAll();
         }
-        
-        if(selfRoutingThreadpoolExecutor != null && selfRoutingThreadpoolExecutor instanceof ExecutorService) {
-        	((ExecutorService)selfRoutingThreadpoolExecutor).shutdown();
-        }
-        selfRoutingThreadpoolExecutor = null;
 
         // Threads must periodically check this flag.
         MessageProcessor[] processorList;
@@ -2041,8 +1990,6 @@ public abstract class SIPTransactionStack implements
         this.ioHandler.closeAll();
         // Let the processing complete.
 
-        if (this.timer != null)
-            this.timer.stop();
         try {
             Thread.sleep(1000);
         } catch (InterruptedException ex) {
@@ -2938,14 +2885,6 @@ public abstract class SIPTransactionStack implements
             SIPClientTransaction clientTransaction) {
         String forkId = ((SIPRequest)clientTransaction.getRequest()).getForkId();
         clientTransaction.setForkId(forkId);
-        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-        	logger.logStackTrace();
-            logger.logDebug(
-                    "Adding forked client transaction : " + clientTransaction + " branch=" + clientTransaction.getBranch() + 
-                    " forkId = " + forkId + "  sipDialog = " + clientTransaction.getDefaultDialog() + 
-                    " sipDialogId= " + clientTransaction.getDefaultDialog().getDialogId());
-    	}
-
         this.forkedClientTransactionTable.put(forkId, clientTransaction);
     }
 
@@ -3086,39 +3025,4 @@ public abstract class SIPTransactionStack implements
     public int getEarlyDialogTimeout() {
         return this.earlyDialogTimeout;
     }
-
-    /**
-     * @param clientAuth the clientAuth to set
-     */
-    public void setClientAuth(ClientAuthType clientAuth) {
-        this.clientAuth = clientAuth;
-    }
-
-    /**
-     * @return the clientAuth
-     */
-    public ClientAuthType getClientAuth() {
-        return clientAuth;
-    }
-
-	/**
-	 * @param threadPriority the threadPriority to set
-	 */
-	public void setThreadPriority(int threadPriority) {
-		if(threadPriority < Thread.MIN_PRIORITY)
-			throw new IllegalArgumentException("The Stack Thread Priority shouldn't be lower than Thread.MIN_PRIORITY");
-		if(threadPriority > Thread.MAX_PRIORITY)
-			throw new IllegalArgumentException("The Stack Thread Priority shouldn't be higher than Thread.MAX_PRIORITY");
-		if(logger.isLoggingEnabled(StackLogger.TRACE_INFO)) {
-			logger.logInfo("Setting Stack Thread priority to " + threadPriority);
-		}
-		this.threadPriority = threadPriority;
-	}
-
-	/**
-	 * @return the threadPriority
-	 */
-	public int getThreadPriority() {
-		return threadPriority;
-	}
 }

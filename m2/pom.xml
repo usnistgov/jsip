@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<!-- this is not a complete pom -->
 	<modelVersion>4.0.0</modelVersion>
@@ -17,15 +16,38 @@
 	</modules>
 
 	<profiles>
-		<profile>
-			<activation>
-				<jdk>1.7</jdk>
-			</activation>
-			<modules>
-				<module>jain-sip-sctp</module>
-			</modules>
-		</profile>
+	  <profile>
+		<activation>
+			<jdk>1.7</jdk>
+		</activation>
+	  	<modules>
+			<module>jain-sip-sctp</module>
+		</modules>
+	  </profile>
 	</profiles>
+
+	<!-- THIS WORKS :D -->
+	<!-- 
+		<distributionManagement>
+		<repository>
+		<id>local-file-test</id>
+		<name>Java.net Repository for Maven</name>
+		<layout>default</layout>
+		<url>file://d:/java/tmp/m2-repo</url>
+		</repository>
+		</distributionManagement>
+		
+		
+		<build>
+		<extensions>
+		<extension>
+		<groupId>org.apache.maven.wagon</groupId>
+		<artifactId>wagon-file</artifactId>
+		<version>1.0-beta-2</version>
+		</extension>
+		</extensions>
+		</build>
+	-->
 
 	<!-- repositories -->
 	<repositories>
@@ -36,51 +58,67 @@
 			<layout>default</layout>
 		</repository>
 		<repository>
-			<id>jboss-public-repository-group</id>
-			<name>JBoss Public Maven Repository Group</name>
-			<url>https://repository.jboss.org/nexus/content/groups/public/</url>
-			<layout>default</layout>
-			<releases>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-			</snapshots>
-		</repository>
+          <id>jboss-public-repository-group</id>
+          <name>JBoss Public Maven Repository Group</name>
+          <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+          <layout>default</layout>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+          </snapshots>
+        </repository>
 		<repository>
-			<id>backup.repository.jboss.org</id>
-			<name>JBoss Repository Backup</name>
-			<url>http://anonsvn.jboss.org/repos/repository.jboss.org/maven2/</url>
+            <id>backup.repository.jboss.org</id>
+            <name>JBoss Repository Backup</name>
+            <url>http://anonsvn.jboss.org/repos/repository.jboss.org/maven2/</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
-		</repository>
+        </repository>		
 	</repositories>
 
-	<distributionManagement>
+	<build>
+		<!--extensions>
+			<extension>
+				<groupId>org.jvnet.wagon-svn</groupId>
+				<artifactId>wagon-svn</artifactId>
+				<version>1.8</version>
+			</extension>
+		</extensions-->
+	</build>
+
+<distributionManagement>
+    <repository>
+      <id>jboss-releases-repository</id>
+      <name>JBoss Releases Repository</name>
+      <url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</url>
+    </repository>
+    <snapshotRepository>
+      <id>jboss-snapshots-repository</id>
+      <name>JBoss Snapshots Repository</name>
+      <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+	<!--distributionManagement>
+
 		<repository>
-			<id>jboss-releases-repository</id>
-			<name>JBoss Releases Repository</name>
-			<url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</url>
+			<id>maven2-repository.dev.java.net</id>
+			<name>Java.net Repository for Maven</name>
+			<url>svn:https://svn.dev.java.net/svn/maven2-repository/trunk/www/repository/</url>
+			<layout>default</layout>
+
 		</repository>
-		<snapshotRepository>
-			<id>jboss-snapshots-repository</id>
-			<name>JBoss Snapshots Repository</name>
-			<url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
-		</snapshotRepository>
-	</distributionManagement>
+	</distributionManagement-->
 
 
-	<scm>
-		<connection>scm:svn:https://svn.java.net/svn/jsip~svn</connection>
-		<developerConnection>scm:svn:https://svn.java.net/svn/jsip~svn</developerConnection>
-		<url>https://svn.java.net/svn/jsip~svn</url>
-	</scm>
 
 
 </project>

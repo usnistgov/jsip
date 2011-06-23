@@ -59,9 +59,6 @@ public class SIPDialogErrorEvent extends EventObject {
     // ID of this error event
     private int errorID;
 
-	private SIPClientTransaction clientTransaction;
-    
-    
     /**
      * Creates a dialog error event.
      *
@@ -92,10 +89,6 @@ public class SIPDialogErrorEvent extends EventObject {
     	}
     }
 
-    public SIPDialogErrorEvent (SIPDialog sourceDialog, SIPClientTransaction clientTransaction, DialogTimeoutEvent.Reason reason) {
-    	this(sourceDialog,reason);
-    	this.clientTransaction = clientTransaction;
-    }
     /**
      * Returns the ID of the error.
      *
@@ -104,13 +97,4 @@ public class SIPDialogErrorEvent extends EventObject {
     public int getErrorID() {
         return errorID;
     }
-    
-    
-    public SIPClientTransaction getClientTransaction() {
-    	return this.clientTransaction;
-    }
-
-	public void setClientTransaction(SIPClientTransaction clientTransaction) {
-		this.clientTransaction = clientTransaction;
-	}
 }

@@ -76,10 +76,6 @@ public class AuthenticationInfoParser extends ParametersParser {
             this.lexer.SPorHT();
 
             NameValue nv = super.nameValue();
-            if ("".equals(nv.getValue()) && !nv.isValueQuoted()) {
-                authenticationInfo.setScheme(nv.getKey());
-                nv = super.nameValue();
-            }
             authenticationInfo.setParameter(nv);
             this.lexer.SPorHT();
             while (lexer.lookAhead(0) == ',') {

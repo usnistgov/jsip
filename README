@@ -51,13 +51,9 @@ Look in test-reports  to see the results of your run.
 Extensions
 ----------
 
-IMS Headers, headers in gov.nist.javax.sip.extension and all the classes
-that are suffixed with "Ext" in their name can be used without concern as
-they will be included in the next generation of the API. These will not 
-change as a rule.
-
-You should refrain from using any other internal classes. These are subject
-to change without notice.
+IMS Headers, headers in gov.nist.javax.sip.extension and all the classes that are
+suffixed with Ext in their name can be used without concern as they will be included
+in the next generation of the API.
 
 ----------------------------------------------------------------------------
 Running the examples
@@ -69,18 +65,38 @@ are provided in each example directory to run the examples.
 How to get Source Code Refreshes
 --------------------------------
 
-Cruise Control Snapshot
------------------------
-http://hudson.jboss.org/hudson/view/Mobicents/job/jain-sip/
+CVS Snapshot
+------------
+
+For those who cannot access CVS thanks to draconian IT administrative
+policies, here is a HTTP url where a cruise control snapshot is grabbed
+from the stable CVS repository and dumped:
+
+http://download.java.net/communications/jain-sip/nightly/
+
 
 
 ----------------------------------------------------------------------------
-SVN Access
+CVS Access
 ----------
 
-https://svn.java.net/svn/jsip~svn/
+The "stable" cvs reposiotory is located on java.net. To download from CVS
+(higly recommended), visit 
 
-Please sign up as a java.net user in order to get svn access.
+http://jain-sip.dev.java.net/
+
+
+
+And follow the instructions there. 
+
+
+You can browse the source code online here:
+
+http://jain-sip.dev.java.net/source/browse/jain-sip/
+
+
+Note that you need to be logged in to java.net in order to acces the source 
+from cvs.
 
 
 ----------------------------------------------------------------------------
