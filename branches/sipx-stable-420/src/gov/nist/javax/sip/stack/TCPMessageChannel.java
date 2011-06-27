@@ -610,24 +610,25 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
             String msgString = sipMessage.toString();
             if (!msgString.startsWith("SIP/") && !msgString.startsWith("ACK ")) {
 
-                String badReqRes = createBadReqRes(msgString, ex);
-                if (badReqRes != null) {
-                    if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                        sipStack.getStackLogger().logDebug("Sending automatic 400 Bad Request:");
-                        sipStack.getStackLogger().logDebug(badReqRes);
-                    }
-                    try {
-                        this.sendMessage(badReqRes.getBytes(), this.getPeerInetAddress(), this
-                                .getPeerPort(), false);
-                    } catch (IOException e) {
-                        this.sipStack.getStackLogger().logException(e);
-                    }
-                } else {
-                    if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                        sipStack.getStackLogger().logDebug(
-                                "Could not formulate automatic 400 Bad Request");
-                    }
-                }
+            	if(mySock != null)
+            	{
+	            		
+	            	 if (sipStack.isLoggingEnabled(LogWriter.TRACE_ERROR)) {
+	            		 sipStack.getStackLogger().logError("Malformed mandatory headers: closing socket! :" + mySock.toString());
+	            	 }
+	                
+	            	try
+	            	{
+	            		mySock.close();
+	            		
+	            	} catch(IOException ie)
+	            	{
+	            		if (sipStack.isLoggingEnabled(LogWriter.TRACE_ERROR)) {
+	            			sipStack.getStackLogger().logError("Exception while closing socket! :" + mySock.toString() + ":" + ie.toString());
+	            		}
+	            		
+	            	}
+            	}
             }
 
             throw ex;
