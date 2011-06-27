@@ -498,6 +498,8 @@ public class TCPMessageChannel extends MessageChannel implements SIPMessageListe
         } catch (IOException any) {
         	problem = any;
         	this.sipStack.getStackLogger().logWarning("Failed to connect " + this.peerAddress + ":" + receiverPort +" but trying the advertised port=" + this.peerPortAdvertisedInHeaders + " if it's different than the port we just failed on");
+        	this.sipStack.getStackLogger().logError("Error is ", any);
+
         }
         if(sock == null) { // If we couldn't connect to the host, try the advertised port as failsafe
         	if(receiverPort != this.peerPortAdvertisedInHeaders && peerPortAdvertisedInHeaders > 0) { // no point in trying same port
