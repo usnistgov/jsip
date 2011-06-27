@@ -75,12 +75,11 @@ public class AlertInfoParser extends ParametersParser {
             headerName(TokenTypes.ALERT_INFO);
 
             while (lexer.lookAhead(0) != '\n') {
-                AlertInfo alertInfo = new AlertInfo();
-                alertInfo.setHeaderName(SIPHeaderNames.ALERT_INFO);
-                URLParser urlParser;
-                GenericURI uri;
-
                 do {
+                	AlertInfo alertInfo = new AlertInfo();
+                    alertInfo.setHeaderName(SIPHeaderNames.ALERT_INFO);
+                    URLParser urlParser;
+                    GenericURI uri;
 	                this.lexer.SPorHT();
 	                if (this.lexer.lookAhead(0) == '<') {
 	                    this.lexer.match('<');
