@@ -300,6 +300,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
         } catch (IOException any) {
         	problem = any;
         	this.sipStack.getStackLogger().logWarning("Failed to connect " + this.peerAddress + ":" + this.peerPort +" but trying the advertised port=" + this.peerPortAdvertisedInHeaders + " if it's different than the port we just failed on");
+        	this.sipStack.getStackLogger().logError("Error is ", any);
         }
         if(sock == null) { // If we couldn't connect to the host, try the advertised port as failsafe
         	if(this.peerPort != this.peerPortAdvertisedInHeaders && peerPortAdvertisedInHeaders > 0) { // no point in trying same port
@@ -472,7 +473,13 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
                 receiverAddress, receiverPort, "TLS", message, retry, this);
         } catch (IOException any) {
         	problem = any;
-        	this.sipStack.getStackLogger().logWarning("Failed to connect " + this.peerAddress + ":" + receiverPort +" but trying the advertised port=" + this.peerPortAdvertisedInHeaders + " if it's different than the port we just failed on");
+        	this.sipStack.getStackLogger().logWarning("Failed to connect "
+        			+ this.peerAddress + ":" + receiverPort +
+        			" but trying the advertised port=" + 
+        			this.peerPortAdvertisedInHeaders + 
+        			" if it's different than the port we just failed on, rcv addr=" +
+        			receiverAddress + ", port=" + receiverPort);
+        	this.sipStack.getStackLogger().logError("Error is ", any);
         }
         if(sock == null) { // If we couldn't connect to the host, try the advertised port as failsafe
         	if(receiverPort != this.peerPortAdvertisedInHeaders && peerPortAdvertisedInHeaders > 0) { // no point in trying same port
@@ -603,6 +610,17 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
             sipMessage.addUnparsed(header);
         }
     }
+    
+    public void processMessage(SIPMessage sipMessage, InetAddress address) {
+    	this.peerAddress = address;
+    	try {
+			processMessage(sipMessage);
+		} catch (Exception e) {
+			if(sipStack.getStackLogger().isLoggingEnabled(ServerLog.TRACE_ERROR)) {
+				sipStack.getStackLogger().logError("ERROR processing self routing", e);
+			}
+		}
+    }
 
     /**
      * Gets invoked by the parser as a callback on successful message parsing (i.e. no parser
@@ -653,7 +671,9 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
 //                    }
                 }     
                 try {
-                    this.peerAddress = mySock.getInetAddress();
+                	if(mySock != null) {
+                		this.peerAddress = mySock.getInetAddress();
+                	}
                     // Check to see if the received parameter matches
                     // JvB: dont do this. It is both costly and incorrect
                     // Must set received also when it is a FQDN, regardless whether
@@ -672,7 +692,7 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
                     InternalErrorHandler.handleException(ex);
                 }
                 // Use this for outgoing messages as well.
-                if (!this.isCached) {
+                if (!this.isCached && mySock != null) {
                     ((TLSMessageProcessor) this.messageProcessor).cacheMessageChannel(this);
                     this.isCached = true;
                     String key = IOHandler.makeKey(mySock.getInetAddress(), this.peerPort);
