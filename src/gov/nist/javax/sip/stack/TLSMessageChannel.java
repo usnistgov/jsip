@@ -452,18 +452,18 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
             throw new IllegalArgumentException("Null argument");
         
         if(peerPortAdvertisedInHeaders <= 0) {
-//        	if(sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-            	sipStack.getStackLogger().logWarning("receiver port = " + receiverPort + " for this channel " + this + " key " + key);
-//            }        	
+        	if(sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+            	sipStack.getStackLogger().logDebug("receiver port = " + receiverPort + " for this channel " + this + " key " + key);
+            }        	
         	if(receiverPort <=0) {    
         		// if port is 0 we assume the default port for TCP
         		this.peerPortAdvertisedInHeaders = 5060;
         	} else {
         		this.peerPortAdvertisedInHeaders = receiverPort;
         	}
-//        	if(sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-            	sipStack.getStackLogger().logWarning("2.Storing peerPortAdvertisedInHeaders = " + peerPortAdvertisedInHeaders + " for this channel " + this + " key " + key);
-//            }	        
+        	if(sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+            	sipStack.getStackLogger().logDebug("2.Storing peerPortAdvertisedInHeaders = " + peerPortAdvertisedInHeaders + " for this channel " + this + " key " + key);
+            }	        
         }
         
         Socket sock = null;
