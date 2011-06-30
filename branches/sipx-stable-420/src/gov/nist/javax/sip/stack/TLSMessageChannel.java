@@ -657,18 +657,18 @@ public final class TLSMessageChannel extends MessageChannel implements SIPMessag
                 this.peerProtocol = v.getTransport();
                 if(peerPortAdvertisedInHeaders <= 0) {
                 	int hopPort = v.getPort();
-//                	if(sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                    	sipStack.getStackLogger().logWarning("hop port = " + hopPort + " for request " + sipMessage + " for this channel " + this + " key " + key);
-//                    }                	
+                	if(sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                    	sipStack.getStackLogger().logDebug("hop port = " + hopPort + " for request " + sipMessage + " for this channel " + this + " key " + key);
+                    }                	
                 	if(hopPort <= 0) {    
                 		// if port is 0 we assume the default port for TCP
                 		this.peerPortAdvertisedInHeaders = 5060;
                 	} else {
                 		this.peerPortAdvertisedInHeaders = hopPort;
                 	}
-//                	if(sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                    	sipStack.getStackLogger().logWarning("3.Storing peerPortAdvertisedInHeaders = " + peerPortAdvertisedInHeaders + " for this channel " + this + " key " + key);
-//                    }
+                	if(sipStack.getStackLogger().isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                    	sipStack.getStackLogger().logDebug("3.Storing peerPortAdvertisedInHeaders = " + peerPortAdvertisedInHeaders + " for this channel " + this + " key " + key);
+                    }
                 }     
                 try {
                 	if(mySock != null) {
