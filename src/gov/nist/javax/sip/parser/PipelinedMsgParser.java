@@ -406,13 +406,15 @@ public final class PipelinedMsgParser implements Runnable {
                 inputBuffer.append(line1);
                 // Guard against bad guys.
                 this.rawInputStream.startTimer();
-
+                int bytesRead = 0;
                 if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                 	logger.logDebug("Reading Input stream.");
                 }
                 while (true) {
                     try {
                         line2 = readLine(inputStream);
+                        bytesRead += line2.length();
+                        if(maxMessageSize>0 && bytesRead> (maxMessageSize/2) ) throw new IOException("Pre-content-length headers size exceeded. The size of the message of the headers prior to Content-Length is too large. This must be an invalid message. Limit is MAX_MESSAGE_SIZE/2=" + maxMessageSize/2);
                         inputBuffer.append(line2);
                         if (line2.trim().equals(""))
                             break;
@@ -466,8 +468,12 @@ public final class PipelinedMsgParser implements Runnable {
                 if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                 	logger.logDebug("Completed parsing message");
                 }
+                String clString = sipMessage.getHeaderAsFormattedString(ContentLength.NAME);
+                if(clString.length()>30) throw new RuntimeException("Bad content lenght header " + clString);
                 ContentLength cl = (ContentLength) sipMessage
                         .getContentLength();
+                
+             
                 int contentLength = 0;
                 if (cl != null) {
                     contentLength = cl.getContentLength();
@@ -478,6 +484,8 @@ public final class PipelinedMsgParser implements Runnable {
                 if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                 	logger.logDebug("Content length = " + contentLength);
                 }
+                
+                if(maxMessageSize > 0 && contentLength > maxMessageSize) throw new RuntimeException("Max content size Exceeded! :" + contentLength + " allowed max size is " + maxMessageSize);
 
                 if (contentLength == 0) {
                     sipMessage.removeContent();
