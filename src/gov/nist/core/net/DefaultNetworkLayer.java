@@ -26,6 +26,7 @@
 package gov.nist.core.net;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -33,6 +34,7 @@ import java.net.MulticastSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 
 /* Added by Daniel J. Martinez Manzano <dani@dif.um.es> */
 import javax.net.ssl.SSLSocket;
@@ -103,23 +105,42 @@ public class DefaultNetworkLayer implements NetworkLayer {
 
     /* Added by Daniel J. Martinez Manzano <dani@dif.um.es> */
     public SSLSocket createSSLSocket(InetAddress address, int port)
-            throws IOException {
-        return (SSLSocket) sslSocketFactory.createSocket(address, port);
+    	throws IOException {
+    	SSLSocket sock = (SSLSocket) sslSocketFactory.createSocket();
+    	try {
+    		sock.connect(new InetSocketAddress(address, port), 8000);
+    	} catch (SocketTimeoutException e) {
+    		throw new ConnectException("Socket timeout error (8sec)" + address + ":" + port);
+    	}
+    	return sock;
     }
 
     /* Added by Daniel J. Martinez Manzano <dani@dif.um.es> */
     public SSLSocket createSSLSocket(InetAddress address, int port,
             InetAddress myAddress) throws IOException {
-        return (SSLSocket) sslSocketFactory.createSocket(address, port,
-                myAddress, 0);
+    	return createSSLSocket(address, port);
     }
 
     public Socket createSocket(InetAddress address, int port,
             InetAddress myAddress) throws IOException {
-        if (myAddress != null)
-            return new Socket(address, port, myAddress, 0);
-        else
-            return new Socket(address, port);
+    	if (myAddress != null) {
+        	Socket sock = new Socket();
+        	try {
+	        	sock.connect(new InetSocketAddress(address, port), 8000);
+	        } catch (SocketTimeoutException e) {
+	        	throw new ConnectException("Socket timeout error (8sec)" + address + ":" + port);
+	        }
+        	return sock;
+        }
+        else {
+        	Socket sock =  new Socket();
+        	try {
+        		sock.connect(new InetSocketAddress(address, port), 8000);
+        	} catch (SocketTimeoutException e) {
+        		throw new ConnectException("Socket timeout error (8sec)" + address + ":" + port);
+        	}
+        	return sock;
+        }
     }
 
     /**
@@ -149,7 +170,7 @@ public class DefaultNetworkLayer implements NetworkLayer {
             //myAddress is null (i.e. any)  but we have a port number
             Socket sock = new Socket();
             sock.bind(new InetSocketAddress(port));
-            sock.connect(new InetSocketAddress(address, port));
+            sock.connect(new InetSocketAddress(address, port), 8000);
             return sock;
         }
         else

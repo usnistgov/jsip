@@ -41,6 +41,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
@@ -306,8 +307,18 @@ public class IOHandler {
                         // in version 1.1 all listening points have the same IP
                         // address (i.e. that of the stack). In version 1.2
                         // the IP address is on a per listening point basis.
-                        clientSock = sipStack.getNetworkLayer().createSocket(
-                                receiverAddress, contactPort, senderAddress);
+                        try {
+                        	clientSock = sipStack.getNetworkLayer().createSocket(
+                        			receiverAddress, contactPort, senderAddress);
+                        } catch (SocketException e) { // We must catch the socket timeout exceptions here, any SocketException not just ConnectException
+                        	logger.logError("Problem connecting " +
+                        			receiverAddress + " " + contactPort + " " + senderAddress + " for message " + new String(bytes, "UTF-8"));
+                        	// new connection is bad.
+                        	// remove from our table the socket and its semaphore
+                        	removeSocket(key);
+                        	throw new SocketException(e.getClass() + " " + e.getMessage() + " " + e.getCause() + " Problem connecting " +
+                        			receiverAddress + " " + contactPort + " " + senderAddress + " for message " + new String(bytes, "UTF-8"));
+                        }
                         OutputStream outputStream = clientSock
                                 .getOutputStream();
                         writeChunks(outputStream, bytes, length);
