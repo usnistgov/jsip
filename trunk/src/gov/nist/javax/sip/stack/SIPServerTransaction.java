@@ -333,18 +333,19 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
 
         public void runTask() {
             try {
-            	listenerExecutionMaxTimer = null;
+               	listenerExecutionMaxTimer = null;
             	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                     logger.logDebug("Fired ListenerExecutionMaxTimer for stx " + serverTransaction.getTransactionId() + " state " + serverTransaction.getState());
-                if (serverTransaction.getInternalState() <= 1  ||
-                		// may have been forcefully TERMINATED through terminate() method but if the tx timer never got scheduled
+            	if (serverTransaction.getState().getValue() < 0 
+            			|| serverTransaction.getState().equals(TransactionState.PROCEEDING)
+            			// may have been forcefully TERMINATED through terminate() method but if the tx timer never got scheduled
                 		// it wouldn't be reaped
-                		serverTransaction.getInternalState() >= 5) {
-                	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                        logger.logDebug("ListenerExecutionMaxTimer : terminating and removing stx " + serverTransaction.getTransactionId());
+                		|| serverTransaction.getInternalState() >= 5) {
                     serverTransaction.terminate();
                     SIPTransactionStack sipStack = serverTransaction.getSIPStack();
-	                sipStack.removeTransaction(serverTransaction);
+                    sipStack.removePendingTransaction(serverTransaction);
+                    sipStack.removeTransaction(serverTransaction);
+
                 }
             } catch (Exception ex) {
                 logger.logError("unexpected exception", ex);
