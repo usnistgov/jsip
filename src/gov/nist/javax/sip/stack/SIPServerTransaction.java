@@ -311,7 +311,10 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
             	if (sipStack.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                     sipStack.getStackLogger().logDebug("Fired ListenerExecutionMaxTimer for stx " + serverTransaction.getTransactionId() + " state " + serverTransaction.getState());
             	if (serverTransaction.getState().getValue() < 0 
-            			|| serverTransaction.getState().equals(TransactionState.PROCEEDING)) {
+            			|| serverTransaction.getState().equals(TransactionState.PROCEEDING)
+            			// may have been forcefully TERMINATED through terminate() method but if the tx timer never got scheduled
+                		// it wouldn't be reaped
+                		|| serverTransaction.getState().getValue() >= 5) {
                     serverTransaction.terminate();
                     SIPTransactionStack sipStack = serverTransaction.getSIPStack();
                     sipStack.removePendingTransaction(serverTransaction);
