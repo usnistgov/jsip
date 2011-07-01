@@ -811,8 +811,9 @@ public abstract class SIPTransaction extends MessageChannel implements
             							((TCPMessageChannel) channel)
             							.processMessage((SIPMessage) messageToSend.clone(), getPeerInetAddress());
             						} catch (Exception ex) {
+
             							if (logger.isLoggingEnabled(ServerLogger.TRACE_ERROR)) {
-            								logger.logError("Error self routing message cause by: ", ex);
+            								logger.logError("Error self routing TCP message cause by: ", ex);
             							}
             						}
             					}
@@ -820,10 +821,38 @@ public abstract class SIPTransaction extends MessageChannel implements
             				getSIPStack().getSelfRoutingThreadpoolExecutor().execute(processMessageTask);
 
             			} catch (Exception e) {
-            				logger.logError("Error passing message in self routing", e);
+
+            				logger.logError("Error passing message in self routing TCP", e);
+
             			}
             			if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
-                        	logger.logDebug("Self routing message");
+                        	logger.logDebug("Self routing message TCP");
+
+                        return;
+                    }
+            		if (channel instanceof TLSMessageChannel) {
+            			try {
+
+            				Runnable processMessageTask = new Runnable() {
+
+            					public void run() {
+            						try {
+            							((TLSMessageChannel) channel)
+            							.processMessage((SIPMessage) messageToSend.clone(), getPeerInetAddress());
+            						} catch (Exception ex) {
+            							if (logger.isLoggingEnabled(ServerLogger.TRACE_ERROR)) {
+            								logger.logError("Error self routing TLS message cause by: ", ex);
+            							}
+            						}
+            					}
+            				};
+            				getSIPStack().getSelfRoutingThreadpoolExecutor().execute(processMessageTask);
+
+            			} catch (Exception e) {
+            				logger.logError("Error passing message in TLS self routing", e);
+            			}
+            			if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                        	logger.logDebug("Self routing message TLS");
                         return;
                     }
                     if (channel instanceof RawMessageChannel) {
