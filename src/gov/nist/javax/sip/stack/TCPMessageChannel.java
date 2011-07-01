@@ -109,6 +109,9 @@ public class TCPMessageChannel extends MessageChannel implements
     protected int myPort;
 
     protected InetAddress peerAddress;
+    
+    // This is the port that we will find in the headers of the messages from the peer
+    protected int peerPortAdvertisedInHeaders = -1;
 
     protected int peerPort;
 
@@ -323,16 +326,42 @@ public class TCPMessageChannel extends MessageChannel implements
             logger.logDebug("sendMessage isClient  = " + isClient);
         }
         /*
-         * Patch from kircuv@dev.java.net (Issue 119 ) This patch avoids the
-         * case where two TCPMessageChannels are now pointing to the same
-         * socket.getInputStream().
-         *
+         /*
+         * Patch from kircuv@dev.java.net (Issue 119 ) This patch avoids the case where two
+         * TCPMessageChannels are now pointing to the same socket.getInputStream().
+         * 
          * JvB 22/5 removed
          */
-
-        Socket sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor
-                .getIpAddress(), this.peerAddress, this.peerPort,
-                this.peerProtocol, msg, isClient, this);
+       // Socket s = this.sipStack.ioHandler.getSocket(IOHandler.makeKey(
+       // this.peerAddress, this.peerPort));
+        Socket sock = null;
+        IOException problem = null;
+        try {
+        	sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor.getIpAddress(),
+                this.peerAddress, this.peerPort, this.peerProtocol, msg, isClient, this);
+        } catch (IOException any) {
+        	problem = any;
+        	logger.logWarning("Failed to connect " + this.peerAddress + ":" + this.peerPort +" but trying the advertised port=" + this.peerPortAdvertisedInHeaders + " if it's different than the port we just failed on");
+        }
+        if(sock == null) { // If we couldn't connect to the host, try the advertised port as failsafe
+        	if(this.peerPort != this.peerPortAdvertisedInHeaders && peerPortAdvertisedInHeaders > 0) { // no point in trying same port
+                logger.logWarning("Couldn't connect to peerAddress = " + peerAddress + " peerPort = " + peerPort + " key = " + key +  " retrying on peerPortAdvertisedInHeaders " + peerPortAdvertisedInHeaders);
+                
+//                MessageChannel backupChannel = this.sipStack.createRawMessageChannel(
+//                		this.messageProcessor.getIpAddress().getHostAddress(), 
+//                		this.messageProcessor.getPort(), 
+//                		new HopImpl(peerAddress.getHostAddress(), peerPortAdvertisedInHeaders, "TCP"));
+//                backupChannel.sendMessage(msg, peerAddress, peerPortAdvertisedInHeaders, retry);
+                
+        		sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor.getIpAddress(),
+                    this.peerAddress, this.peerPortAdvertisedInHeaders, this.peerProtocol, msg, isClient, this);        		
+        		this.peerPort = this.peerPortAdvertisedInHeaders;
+        		this.key = MessageChannel.getKey(peerAddress, peerPort, "TCP");
+                logger.logWarning("retry suceeded to peerAddress = " + peerAddress + " peerPortAdvertisedInHeaders = " + peerPortAdvertisedInHeaders + " key = " + key);
+        	} else {
+        		throw problem; // throw the original excpetion we had from the first attempt
+        	}
+        }
 
         // Created a new socket so close the old one and stick the new
         // one in its place but dont do this if it is a datagram socket.
@@ -420,6 +449,26 @@ public class TCPMessageChannel extends MessageChannel implements
         byte[] msg = sipMessage.encodeAsBytes(this.getTransport());
 
         long time = System.currentTimeMillis();
+        
+        // need to store the peerPortAdvertisedInHeaders in case the response has an rport (ephemeral) that failed to retry on the regular via port
+        // for responses, no need to store anything for subsequent requests.
+        if(peerPortAdvertisedInHeaders <= 0) {
+        	if(sipMessage instanceof SIPResponse) {
+        		SIPResponse sipResponse = (SIPResponse) sipMessage; 
+        		Via via = sipResponse.getTopmostVia();
+        		if(via.getRPort() > 0) {
+	            	if(via.getPort() <=0) {    
+	            		// if port is 0 we assume the default port for TCP
+	            		this.peerPortAdvertisedInHeaders = 5060;
+	            	} else {
+	            		this.peerPortAdvertisedInHeaders = via.getPort();
+	            	}
+	            	if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+	                	logger.logDebug("1.Storing peerPortAdvertisedInHeaders = " + peerPortAdvertisedInHeaders + " for via port = " + via.getPort() + " via rport = " + via.getRPort() + " and peer port = " + peerPort + " for this channel " + this + " key " + key);
+	                }	 
+        		}
+        	}
+        }
 
         // JvB: also retry for responses, if the connection is gone we should
         // try to reconnect
@@ -453,10 +502,55 @@ public class TCPMessageChannel extends MessageChannel implements
             int receiverPort, boolean retry) throws IOException {
         if (message == null || receiverAddress == null)
             throw new IllegalArgumentException("Null argument");
-        Socket sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor
-                .getIpAddress(), receiverAddress, receiverPort, "TCP", message,
-                retry, this);
-        if (sock != mySock && sock != null) {
+        
+        if(peerPortAdvertisedInHeaders <= 0) {
+        	if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+            	logger.logDebug("receiver port = " + receiverPort + " for this channel " + this + " key " + key);
+            }        	
+        	if(receiverPort <=0) {    
+        		// if port is 0 we assume the default port for TCP
+        		this.peerPortAdvertisedInHeaders = 5060;
+        	} else {
+        		this.peerPortAdvertisedInHeaders = receiverPort;
+        	}
+        	if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+            	logger.logDebug("2.Storing peerPortAdvertisedInHeaders = " + peerPortAdvertisedInHeaders + " for this channel " + this + " key " + key);
+            }	        
+        }
+        
+        Socket sock = null;
+        IOException problem = null;
+        try {
+        	sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor.getIpAddress(),
+                    receiverAddress, receiverPort, "TCP", message, retry, this);
+        } catch (IOException any) {
+        	problem = any;
+        	logger.logWarning("Failed to connect " + this.peerAddress + ":" + receiverPort +" but trying the advertised port=" + this.peerPortAdvertisedInHeaders + " if it's different than the port we just failed on");
+        	logger.logError("Error is ", any);
+
+        }
+        if(sock == null) { // If we couldn't connect to the host, try the advertised port as failsafe
+        	if(receiverPort != this.peerPortAdvertisedInHeaders && peerPortAdvertisedInHeaders > 0) { // no point in trying same port
+                sipStack.getStackLogger().logWarning("Couldn't connect to receiverAddress = " + receiverAddress + " receiverPort = " + receiverPort + " key = " + key +  " retrying on peerPortAdvertisedInHeaders " + peerPortAdvertisedInHeaders);
+                
+//                MessageChannel backupChannel = this.sipStack.createRawMessageChannel(
+//                		this.messageProcessor.getIpAddress().getHostAddress(), 
+//                		this.messageProcessor.getPort(), 
+//                		new HopImpl(receiverAddress.getHostAddress(), peerPortAdvertisedInHeaders, "TCP"));
+//                backupChannel.sendMessage(message, receiverAddress, peerPortAdvertisedInHeaders, retry);
+                
+        		sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor.getIpAddress(),
+                    receiverAddress, this.peerPortAdvertisedInHeaders, "TCP", message, retry, this);
+        		this.peerPort = this.peerPortAdvertisedInHeaders;
+        		this.key = MessageChannel.getKey(peerAddress, peerPortAdvertisedInHeaders, "TCP");
+                
+                sipStack.getStackLogger().logWarning("retry suceeded to receiverAddress = " + receiverAddress + " peerPortAdvertisedInHeaders = " + peerPortAdvertisedInHeaders + " key = " + key);
+        	} else {
+        		throw problem; // throw the original excpetion we had from the first attempt
+        	}
+        }
+      
+        if (sock != mySock && sock != null) {        	        	
             if (mySock != null) {
             	if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 	            	logger.logDebug(
@@ -536,28 +630,24 @@ public class TCPMessageChannel extends MessageChannel implements
             // Currently only UDP, @todo also other transports
             String msgString = sipMessage.toString();
             if (!msgString.startsWith("SIP/") && !msgString.startsWith("ACK ")) {
-
-                String badReqRes = createBadReqRes(msgString, ex);
-                if (badReqRes != null) {
-                    if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                        logger.logDebug(
-                                "Sending automatic 400 Bad Request:");
-                        logger.logDebug(badReqRes);
-                    }
-                    try {
-                        this.sendMessage(badReqRes.getBytes(), this
-                                .getPeerInetAddress(), this.getPeerPort(),
-                                false);
-                    } catch (IOException e) {
-                        logger.logException(e);
-                    }
-                } else {
-                    if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                        logger
-                                .logDebug(
-                                        "Could not formulate automatic 400 Bad Request");
-                    }
-                }
+            	if(mySock != null)
+            	{
+	            	 if (logger.isLoggingEnabled(LogWriter.TRACE_ERROR)) {
+	            		 logger.logError("Malformed mandatory headers: closing socket! :" + mySock.toString());
+	            	 }
+	                
+	            	try
+	            	{
+	            		mySock.close();
+	            		
+	            	} catch(IOException ie)
+	            	{
+	            		if (logger.isLoggingEnabled(LogWriter.TRACE_ERROR)) {
+	            			logger.logError("Exception while closing socket! :" + mySock.toString() + ":" + ie.toString());
+	            		}
+	            		
+	            	}
+            	}
             }
 
             throw ex;
@@ -618,6 +708,21 @@ public class TCPMessageChannel extends MessageChannel implements
                 Via v = (Via) viaList.getFirst();
                 Hop hop = sipStack.addressResolver.resolveAddress(v.getHop());
                 this.peerProtocol = v.getTransport();
+                if(peerPortAdvertisedInHeaders <= 0) {
+                	int hopPort = v.getPort();
+                	if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                    	logger.logDebug("hop port = " + hopPort + " for request " + sipMessage + " for this channel " + this + " key " + key);
+                    }                	
+                	if(hopPort <= 0) {    
+                		// if port is 0 we assume the default port for TCP
+                		this.peerPortAdvertisedInHeaders = 5060;
+                	} else {
+                		this.peerPortAdvertisedInHeaders = hopPort;
+                	}
+                	if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                    	logger.logDebug("3.Storing peerPortAdvertisedInHeaders = " + peerPortAdvertisedInHeaders + " for this channel " + this + " key " + key);
+                    }
+                }      
                 try {
                     if (mySock != null) { // selfrouting makes socket = null
                                           // https://jain-sip.dev.java.net/issues/show_bug.cgi?id=297
