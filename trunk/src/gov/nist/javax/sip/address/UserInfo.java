@@ -148,6 +148,7 @@ public final class UserInfo extends NetObject {
      * @param user String to set
      */
     public void setUser(String user) {
+    	if(user == null || "".equals(user)) return;
         this.user = user;
         // BUG Fix submitted by Lamine Brahimi
         // add this (taken form sip_messageParser)
