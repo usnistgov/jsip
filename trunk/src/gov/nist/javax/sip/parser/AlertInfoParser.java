@@ -73,14 +73,14 @@ public class AlertInfoParser extends ParametersParser {
 
         try {
             headerName(TokenTypes.ALERT_INFO);
-
-            while (lexer.lookAhead(0) != '\n') {
-                AlertInfo alertInfo = new AlertInfo();
-                alertInfo.setHeaderName(SIPHeaderNames.ALERT_INFO);
-                URLParser urlParser;
-                GenericURI uri;
-
+            int lineCount = 0;
+            //Allow only 20 lines in alert-info.
+            while ( (lexer.lookAhead(0) != '\n') && (lineCount < 20) ) {
                 do {
+                	AlertInfo alertInfo = new AlertInfo();
+                    alertInfo.setHeaderName(SIPHeaderNames.ALERT_INFO);
+                    URLParser urlParser;
+                    GenericURI uri;
 	                this.lexer.SPorHT();
 	                if (this.lexer.lookAhead(0) == '<') {
 	                    this.lexer.match('<');
@@ -105,7 +105,8 @@ public class AlertInfoParser extends ParametersParser {
 	                	this.lexer.match(',');
 	                } else break;
                 } while (true);
-            }
+                lineCount++;
+             }
             return list;
         } finally {
             if (debug)
