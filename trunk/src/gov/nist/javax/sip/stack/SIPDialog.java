@@ -3019,7 +3019,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                         "LAST RESPONSE = " + this.getLastResponseStatusCode());
             }
             throw new SipException(
-                    "Dialog not yet established -- no OK response!");
+            		"Dialog not yet established -- no OK response! lastInviteOkReceived=" + 
+            		                    lastInviteOkReceived + " cseqno=" + cseqno);
         }
 
         try {
@@ -3218,9 +3219,11 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             this.lastResponseStatusCode = Integer.valueOf(statusCode);
             // Issue 378 : http://java.net/jira/browse/JSIP-378
             // Cloning the via header to avoid race condition and be modified
-            this.lastResponseTopMostVia = (Via) sipResponse.getTopmostVia().clone();
-            this.lastResponseMethod = sipResponse.getCSeqHeader().getMethod();
-            this.lastResponseCSeqNumber = sipResponse.getCSeq().getSeqNumber();
+            this.lastResponseTopMostVia = (Via) sipResponse.getTopmostVia().clone();            
+            String cseqMethod = sipResponse.getCSeqHeader().getMethod();
+            this.lastResponseMethod = cseqMethod;
+            long responseCSeqNumber = sipResponse.getCSeq().getSeqNumber();
+            this.lastResponseCSeqNumber = responseCSeqNumber;
             if (sipResponse.getToTag() != null ) {
                 this.lastResponseToTag = sipResponse.getToTag();
             }
@@ -3249,18 +3252,18 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 }
                 // Capture the OK response for later use in createAck
                 // This is handy for late arriving OK's that we want to ACK.
-                if (lastResponseMethod.equals(Request.INVITE)
+                if (cseqMethod.equals(Request.INVITE)
                         && statusCode == 200) {
 
                     this.lastInviteOkReceived = Math.max(
-                            lastResponseCSeqNumber, this.lastInviteOkReceived);
+                    		responseCSeqNumber, this.lastInviteOkReceived);
                 }
                 return;
             }
             if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                 logger.logStackTrace();
                 logger.logDebug(
-                        "cseqMethod = " + lastResponseMethod);
+                        "cseqMethod = " + cseqMethod);
                 logger.logDebug(
                         "dialogState = " + this.getState());
                 logger.logDebug(
@@ -3275,7 +3278,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             // note that the transaction can be null for forked
             // responses.
             if (transaction == null || transaction instanceof ClientTransaction) {
-                if (SIPTransactionStack.isDialogCreated(lastResponseMethod)) {
+                if (SIPTransactionStack.isDialogCreated(cseqMethod)) {
                     // Make a final tag assignment.
                     if (getState() == null && (statusCode / 100 == 1)) {
                         /*
@@ -3300,7 +3303,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                          * tag can change as a result of the forking. The remote
                          * target can also change as a result of the forking.
                          */
-                        if (lastResponseMethod.equals(getMethod())
+                        if (cseqMethod.equals(getMethod())
                                 && transaction != null
                                 && (sipResponse.getToTag() != null || sipStack.rfc2543Supported)) {
                             setRemoteTag(sipResponse.getToTag());
@@ -3321,11 +3324,11 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                                             "pendingRouteUpdateOn202Response : "
                                                     + this.pendingRouteUpdateOn202Response);
                         }
-                        if (lastResponseMethod.equals(getMethod())
+                        if (cseqMethod.equals(getMethod())
                                 && (sipResponse.getToTag() != null || sipStack.rfc2543Supported)
                                 && (this.getState() != DialogState.CONFIRMED || (this
                                         .getState() == DialogState.CONFIRMED
-                                        && lastResponseMethod
+                                        && cseqMethod
                                                 .equals(Request.SUBSCRIBE)
                                         && this.pendingRouteUpdateOn202Response && sipResponse
                                         .getStatusCode() == Response.ACCEPTED))) {
@@ -3350,7 +3353,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                              * resubscribe.
                              */
 
-                            if (lastResponseMethod.equals(Request.SUBSCRIBE)
+                            if (cseqMethod.equals(Request.SUBSCRIBE)
                                     && sipResponse.getStatusCode() == Response.ACCEPTED
                                     && this.pendingRouteUpdateOn202Response) {
                                 setRemoteTag(sipResponse.getToTag());
@@ -3360,15 +3363,14 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                         }
 
                         // Capture the OK response for later use in createAck
-                        if (lastResponseMethod.equals(Request.INVITE)) {
-                            this.lastInviteOkReceived = Math.max(sipResponse
-                                    .getCSeq().getSeqNumber(),
+                        if (cseqMethod.equals(Request.INVITE)) {
+                            this.lastInviteOkReceived = Math.max(responseCSeqNumber,
                                     this.lastInviteOkReceived);
                         }
 
                     } else if (statusCode >= 300
                             && statusCode <= 699
-                            && (getState() == null || (lastResponseMethod
+                            && (getState() == null || (cseqMethod
                                     .equals(getMethod()) && getState()
                                     .getValue() == SIPDialog.EARLY_STATE))) {
                         /*
@@ -3417,7 +3419,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                         }
                     }
 
-                } else if (lastResponseMethod.equals(Request.NOTIFY)
+                } else if (cseqMethod.equals(Request.NOTIFY)
                         && (this.getMethod().equals(Request.SUBSCRIBE) || this
                                 .getMethod().equals(Request.REFER))
                         && sipResponse.getStatusCode() / 100 == 2
@@ -3427,7 +3429,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                     sipStack.putDialog(this);
                     this.setState(SIPDialog.CONFIRMED_STATE);
 
-                } else if (lastResponseMethod.equals(Request.BYE)
+                } else if (cseqMethod.equals(Request.BYE)
                         && statusCode / 100 == 2 && isTerminatedOnBye()) {
                     // Dialog will be terminated when the transction is
                     // terminated.
@@ -3436,7 +3438,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             } else {
                 // Processing Server Dialog.
 
-                if (lastResponseMethod.equals(Request.BYE)
+                if (cseqMethod.equals(Request.BYE)
                         && statusCode / 100 == 2 && this.isTerminatedOnBye()) {
                     /*
                      * Only transition to terminated state when 200 OK is
@@ -3449,8 +3451,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
                     if (getLocalTag() == null
                             && sipResponse.getTo().getTag() != null
-                            && SIPTransactionStack.isDialogCreated(lastResponseMethod)
-                            && lastResponseMethod.equals(getMethod())) {
+                            && SIPTransactionStack.isDialogCreated(cseqMethod)
+                            && cseqMethod.equals(getMethod())) {
                         setLocalTag(sipResponse.getTo().getTag());
                         doPutDialog = true;
                     }
@@ -3477,8 +3479,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                             // see
                             // https://jain-sip.dev.java.net/servlets/ReadMsg?list=users&msgNo=797
                             if (statusCode == 489
-                                    && (lastResponseMethod
-                                            .equals(Request.NOTIFY) || lastResponseMethod
+                                    && (cseqMethod
+                                            .equals(Request.NOTIFY) || cseqMethod
                                             .equals(Request.SUBSCRIBE))) {
                                 if (logger
                                         .isLoggingEnabled(LogWriter.TRACE_DEBUG))
@@ -3505,9 +3507,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                          * state should move to CONFIRMED
                          */
                         if (this.dialogState <= SIPDialog.EARLY_STATE
-                                && (lastResponseMethod.equals(Request.INVITE)
-                                        || lastResponseMethod
-                                                .equals(Request.SUBSCRIBE) || lastResponseMethod
+                                && (cseqMethod.equals(Request.INVITE)
+                                        || cseqMethod
+                                                .equals(Request.SUBSCRIBE) || cseqMethod
                                         .equals(Request.REFER))) {
                             this.setState(SIPDialog.CONFIRMED_STATE);
                         }
@@ -3954,12 +3956,12 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
         } else {
         	  if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-        		  logger.logDebug("SIPDialog::handleAck: lastResponseCSeqNumber = " + lastResponseCSeqNumber + " ackTxCSeq " + ackTransaction.getCSeq());
+        		  logger.logDebug("SIPDialog::handleAck: lastResponseCSeqNumber = " + lastInviteOkReceived + " ackTxCSeq " + ackTransaction.getCSeq());
         	  }
              if (lastResponseStatusCode != null
                     && lastResponseStatusCode.intValue() / 100 == 2
                     && lastResponseMethod.equals(Request.INVITE)
-                    && lastResponseCSeqNumber == ackTransaction.getCSeq()) {
+                    && lastInviteOkReceived == ackTransaction.getCSeq()) {
 
                 ackTransaction.setDialog(this, lastResponseDialogId);
                 /*
