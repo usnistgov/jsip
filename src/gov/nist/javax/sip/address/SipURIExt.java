@@ -58,6 +58,6 @@ public interface SipURIExt extends SipURI {
      *
      * @since 2.0
      */
-    public void setLrParam(String value);
+    public void setLrParam();
 
 }
