@@ -1020,7 +1020,16 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI , Sip
      * @return true if the "lr" parameter is set, false otherwise.
      */
     public boolean hasLrParam() {
-        return uriParms.getNameValue("lr") != null;
+        return uriParms.getNameValue(LR) != null;
+    }
+    
+    /**
+     * Sets the <code>gr</code> parameter.
+     *
+     * Not part on the interface since gruu is not part of the base RFC3261.
+     */
+    public void setLrParam(String value) {
+            this.uriParms.put(LR, new NameValue(LR, null, true));
     }
 
   
