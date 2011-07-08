@@ -43,5 +43,21 @@ public interface SipURIExt extends SipURI {
      * @since 2.0
      */
     public void setGrParam(String value);
+    
+    /**
+     * Returns whether the <code>lr</code> parameter is set.
+     *
+     * @since 2.0
+     */
+    public boolean hasLrParam();
+
+    /**
+     * Sets the <code>lr</code> parameter.
+     *
+     * @param value -- the lr param value.
+     *
+     * @since 2.0
+     */
+    public void setLrParam(String value);
 
 }
