@@ -3961,7 +3961,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
              if (lastResponseStatusCode != null
                     && lastResponseStatusCode.intValue() / 100 == 2
                     && lastResponseMethod.equals(Request.INVITE)
-                    && lastInviteOkReceived == ackTransaction.getCSeq()) {
+                    && lastResponseCSeqNumber == ackTransaction.getCSeq()) {
 
                 ackTransaction.setDialog(this, lastResponseDialogId);
                 /*
