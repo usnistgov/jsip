@@ -1,0 +1,111 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<TITLE>NIST SIP SIP SIGNALING TRACE VIEWER</TITLE>
+</HEAD>
+<BODY text="#000000" BACKGROUND="images/back.gif">
+<CENTER><H1><font color="#0000FF"><i>NIST-SIP traces viewer</i></font></H1></CENTER>
+ 
+<P><font size="5"><u><b>What's this ?</b></u></font></P>
+
+<P>This contains the code for a simple graphical user interface for
+visualizing SIP signaling traces
+</font>
+</P>
+
+<H2><u><b>Start the application</b></u></H2>
+    <P> You have to start the application from the command line:
+    either from the command line using ant: 
+<ul>
+<li>
+    <font color = red > ant viewer
+   </font>
+</li>
+<li>
+   or the using makefile
+   When viewing server log traces from a file use the
+   command (assuming the class paths are properly set). 
+   <br/>
+   <font color = red > java tools.tracesviewer.TracesViewer -server_file serverlogfile
+   </font>
+   <br/>
+   You can generate this log from the stack using the following property:
+   <it>gov.nist.javax.sip.SERVER_LOG</it>. Set this property to serverlogfile
+   and feed the generated trace to the tracesviewer. 
+   Additionally, the <it>gov.nist.javax.sip.TRACE_LEVEL</it> should be 16 or higher.
+</li>
+<li>
+   When viewing server log traces from a file use the
+   command (assuming the class paths are properly set). <br/>
+   <font color = red > java tools.tracesviewer.TracesViewer -debug_file debugLogfile
+   </font>
+   <br/>
+   You can generate this log from the stack using the following property:
+   <it>gov.nist.javax.sip.DEBUG_LOG</it>. 
+   Set this property to debugLogfile and feed the generated 
+   trace to the tracesviewer as above.
+   Additionally, the <it>gov.nist.javax.sip.TRACE_LEVEL</it> 
+   property should be 32 for debugging to be enabled. 
+   A lot of debug information is generated so your application will 
+   slow down when debug logs are being gathered. The Trace Viewer allows
+   you to browse the debug log and message trace using the same UI when 
+   this option is used.
+</li>
+<li> To obtain the trace file from a stack that has exported its trace file
+via RMI invoke the tool as follows:
+   <font  color="red"> make viewer  </font><br>
+ or using the "runinit.sh" script on a Linux machine.
+    <P> Usage:
+        (if classpath correctly set)
+      <font  color="red">  java tools.tracesviewer.TracesViewer -rmihost rmihost -rmiport rmiport -stackId stackId</font><br>
+        <br>
+        - "rmihost" is the host name/address for the RMI registry
+        <br>
+        - "rmiport" (optional) is the port for the rmi registry. Usually 
+	not required if you are running from the default port of 1099.
+        <br>
+        - "stackId" is an identifier for the stack (i.e. the JAIN SIP Stack
+	Name).
+        <br>
+        The values are defaulted to rmihost == 127.0.0.1
+         rmiport ==  1099. StackId is mandatory. It is the stack name property
+	of JAIN-SIP.
+        <br>
+</li>
+</ul>
+If everything is running OK, you will see a window with the retrieved traces,
+paired and color coded by transaction identifier and organized by call ID.
+<center>
+<img src="images/visualizer-pic.jpg" >
+</center>
+<H2>
+    <font  color="red">
+        <b>
+                Important: 
+        </b>
+    </font>
+</H2>
+<P> 
+    Problems with the trace viewer:
+</P> 
+<P>
+    - When the traces are refreshed, sometimes, you must resize the
+    window to update the scroll bars and you will be able to see all
+    the SIP messages.
+
+</P> 
+
+
+
+
+<CENTER>
+<P>Author: 
+<A HREF="mailto:deruelle@nist.gov">Swing version written by Olivier Deruelle</A> 
+<A HREF="mailto:chazeau@antd.nist.gov">Based on a the AWT version developed by Christophe Chazeau</A> 
+<A HREF="mailto:mranga@nist.gov">M. Ranganathan re-did some of the parsing and sorting stuff in the original.</A> 
+</CENTER>
+ 
+</BODY>
+</HTML>
+
+
