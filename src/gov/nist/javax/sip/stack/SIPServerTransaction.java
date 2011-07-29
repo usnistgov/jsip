@@ -336,17 +336,18 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                	listenerExecutionMaxTimer = null;
             	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                     logger.logDebug("Fired ListenerExecutionMaxTimer for stx " + serverTransaction.getTransactionId() + " state " + serverTransaction.getState());
-            	if (serverTransaction.getState().getValue() < 0 
+            	// Since http://java.net/jira/browse/JSIP-224 we just kill the server transaction unconditionally after timeout
+            	/*if (serverTransaction.getState().getValue() < 0 
             			|| serverTransaction.getState().equals(TransactionState.PROCEEDING)
             			// may have been forcefully TERMINATED through terminate() method but if the tx timer never got scheduled
                 		// it wouldn't be reaped
-                		|| serverTransaction.getInternalState() >= 5) {
+                		|| serverTransaction.getInternalState() >= 5) {*/
                     serverTransaction.terminate();
                     SIPTransactionStack sipStack = serverTransaction.getSIPStack();
                     sipStack.removePendingTransaction(serverTransaction);
                     sipStack.removeTransaction(serverTransaction);
 
-                }
+                //}
             } catch (Exception ex) {
                 logger.logError("unexpected exception", ex);
             }
