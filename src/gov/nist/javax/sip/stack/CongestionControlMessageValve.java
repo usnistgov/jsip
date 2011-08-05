@@ -49,6 +49,10 @@ public class CongestionControlMessageValve implements SIPMessageValve{
 		
 		if(!undropableMethod) {
 			if(serverTransactionTableHighwaterMark <= sipStack.getServerTransactionTableSize()) {
+				// Allow directly any subsequent requests
+				if(request.getToTag() != null) {
+					return true;
+				}
 				if(dropResponseStatus>0) {
 					SIPResponse response = request.createResponse(dropResponseStatus);
 					try {
