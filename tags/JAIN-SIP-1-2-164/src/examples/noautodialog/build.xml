@@ -1,0 +1,64 @@
+<project basedir="." default="shootme" >
+	<property name="root" value="../../../" />
+	<property file="${root}/ant-build-config.properties" />
+        <property name = "classes" value="${root}/classes" />
+        <property name = "srcroot" value ="${root}/src" />
+        <property name = "log4j_jar" value="${root}/lib/${log4j}" />
+	<path id="project.class.path" >
+		<pathelement location="${classes}"/>
+		<pathelement location="${log4j_jar}"/>
+	</path>
+        <target name="make" >
+		<javac debug="${javac.debug}" 
+			debuglevel="${javac.debuglevel}" 
+			source="${javac.source}" 
+			nowarn="${javac.nowarn}" 
+			deprecation="${javac.deprecation}" 
+			optimize="${javac.optimize}" 
+			srcdir="${srcroot}" 
+			includes="examples/noautodialog/**/*.java" 
+			classpathref="project.class.path"
+			destdir= "${classes}">
+		</javac>
+     </target>
+     <target name="shootme" depends="make"
+		description="build and run the  example UAS.">
+		<delete file="shootmedebug.txt" />
+		<delete file="shootmelog.txt" />
+        	<java 
+			classname="examples.noautodialog.Shootme"
+			classpathref="project.class.path"
+			fork="true" >
+        	</java>
+    </target>
+
+    <target name="clean"  >
+	<delete file="shootistdebug.txt" />
+	<delete file="shootistlog.txt" />
+	<delete file="shootistlog.txt" />
+	<delete file="shootmelog.txt" />
+    </target>
+
+    <target name="shootist" 
+	depends = "make"
+	description="run the example UAC.">
+	<delete file="shootistdebug.txt" />
+	<delete file="shootistlog.txt" />
+        <java  classname="examples.noautodialog.Shootist" 
+		fork="true"
+		classpathref="project.class.path"
+	/>
+     </target>
+    <target name="shootistlog" description= "Show the  log" >
+        <java classname="tools.tracesviewer.TracesViewer" fork="true">
+	  <arg name="-server_file" value="shootistlog.txt" />
+	</java>
+     </target>
+    <target name="shootmelog" description= "Show the  log" >
+        <java classname="tools.tracesviewer.TracesViewer" fork="true">
+	  <arg name="-server_file" value="shootmelog.txt" />
+	</java>
+     </target>
+	
+
+</project>

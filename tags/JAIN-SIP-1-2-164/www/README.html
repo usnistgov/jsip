@@ -1,0 +1,513 @@
+
+<h2> Key contributors </h2>
+
+Substantial contributions made by the following people:
+
+<ul>
+<li> Jeroen Van Bemmel (Lucent) contributed key ideas for JSIP 1.2
+and helped fix several bugs in the RI and answered questions on the 
+mailing list. 
+
+<li> Sarit Galanos (Radvision) contributed key design ideas for JSIP 1.2.
+
+<li> Olivier Deruelle wrote a lot of the code for V 1.1 when he 
+was a guest researcher at NIST </li>
+
+<li> Emil Ivov contributed the TCK for the Transaction and Dialog layer for
+version 1.1 that served as the basis for the v 1.2 TCK.  Emil presented
+a convincing use case for JSIP 1.2 to support multiple stacks in a
+JVM. </li>
+
+<li>Jeroen van Bemmel contributed significant effort to bring the TCK up to 
+   version 1.2. Jeroen validated the TCK against another implementation. </li>
+
+<li> Ben Evans (Open Cloud) contributed several ideas to the design
+of JAIN-SIP 1.2 and participated enthusiastically in mailing list
+discussions. </li>
+
+<li> Jeff Keyser  Contributed the initial version of the Transaction layer 
+to NIST-SIP 1.1 that served as the basis for NIST-SIP 1.2. 
+Jeff also suggested the architecture for MessageProcessors and 
+extensiblity that is a part of the implementation architecture.
+</li>
+</ul>
+
+<hline/>
+
+
+<h2> Acknowledgements </h2>
+
+<ul>
+<li>
+Marc Bednarek and Christophe Chazeau were guest researchers at NIST when
+NIST-SIP 1.0 and NIST-SIP 1.1 were in development. Their contributions
+are acknowledged.
+<li>
+The JAIN-SIP 1.1 API design is largely based on the NIST implementation
+experiences of JAIN-SIP 1.0. The help of Chris Harris from DynamicSoft
+(Spec Lead for JAIN-SIP 1.0) in understanding JAIN-SIP 1.0 is hereby
+acknowledged. Implementing JAIN-SIP-1.0 was a great learning experience.
+Hopefully our hindsight is good.
+</ul>
+
+<p> Design contributions to JAIN SIP 1.1 API were made by:
+
+<ul>
+
+<li> Jeroen van Bemmel (Lucent) suggested several key ideas.
+
+<li>
+Ben Evans from Open Cloud contributed several ideas to the design
+of JAIN-SIP 1.2 and participated enthusiastically in mailing list
+discussions. </li>
+<li> Brian O'Neill and Josh Burger (currently at BaseVoice).
+
+<li> Dave Ferry and Ben Evans  from  Open Cloud inc. 
+
+<li> Brad Templeton suggested that Dialog.sendBye be changed to the more 
+generally useful Dialog.sendRequest. 
+
+
+<li>
+Emil Ivov, Brad Templeton and others requested a method to create a cancel
+and Ack request for a client transaction and consequently 
+ClientTransaction.createCancel  was added to the API.
+
+</ul>
+<hline/>
+<p>
+Bug Reports and enhancements for NIST-SIP were contributed 
+by the following people:
+
+<ul>
+<li> Brad Templeton noticed bugs in the Transaction/Dialog layer
+   Brad suggested that Dialog.sendBye be changed to a more general
+   Dialog.sendRequest Brad templeton noticed that the stack was
+   sending out a Trying immediately and thereby not giving the application
+   a chance to do so.
+
+<li> Emil Ivov Contributed IPV6 Support. Emil Cotributed the Video Softphone
+    under GPL Licensing. (See acknowledgement above) later moved to 
+    its own java.net project (see sip-communicator.dev.java.net). 
+    Emil noticed spec documentation bugs. 
+    Emil uncovered bugs in the transaction layer
+    implementation for several corner cases. Emil and Iain Macdonnell from 
+    Sun reported a problem with SDP parsing. Emil discovered a bug in the
+    Server transaction implementation. Emil contributed comprehensive 
+    state machine unit tests of the Transaction layer to the TCK. Emil
+    set up the build automation cruise control scripts.
+
+<li> Andreas Bystr�m reported bugs in set/get methods for Authentication 
+    headers (quotes were missing). Andreas reported bugs in the 
+    SDP implementation. Andreas helped to unit test call flows.  Andreas
+    found documentation bugs and reported problems and incompleteness with
+    the TCK.  Andreas noticed problems with Acking 487. Ack should be sent
+    before the TU gets called. Andreas noted that CANCEL should not 
+    contain content. Andreas noted that a dialog can change from client to
+    server in the middle of the dialog (for example client sends a re-invite
+    and puts caller on hold -- see sipping service examples draft). The
+    RI was not allowing this. This was fixed and tested by Andreas.
+
+<li> Antonis Karydas reported bugs in the implementation of the JAIN transaction
+    model. Server transactions were being created with non-null TID
+    on reciept of invites. Antonis reported that To/From headers should
+    not be restricted only to use SIP urls. Antonis reported that 
+    route sets were not properly maintained in the DialogImpl. Antonis
+    reported that the DefaultRouterImplementation should be able to handle
+    NON-SIP URLs. Antonis fixed a bug in Dialog.sendRequest() and 
+    Dialog.createRequest(). Antonis reported several bugs in the strategy
+    being used for dealing with ACKs for 4xx responses. Antonis reported
+    a problem in handling Server transaction timeouts and posted a fix
+    for this problem. Antonis reported a problem in content length for
+    generation of responses. Antonis reported a problem with closely 
+    spaced ACKs for CANCELed Server Transactions. Antonis reported that
+    CANCEL after OK was not properly handled (stack should respond OK
+    to cancel and not bother application.
+
+<li> Beichuang reported bugs in the IM Client and presence server. BC also
+    noted that extension methods were not working (Dialogs were not being 
+    created).
+
+<li> Steve Crossley reported bugs in the parser and setting local/remote party
+     of dialog layer. Steve contributed a fix to the next hop determination
+     in the Dialog code that could allow it to deal with legacy systems.
+     Steve noticed that the short form of Refer-To was not supported in
+     the parser. Steve noticed that null pointers were being generated
+     when SessionDescriptionImpl was being cloned with null fields.
+     Steve reported that content length was being set to 0 when the
+     content of the SIP message is specified as an Object.
+
+<li> Viswashanti Raj Kadiyala reported a bug and contributed a bug fix
+     in the initialization of the tcp message channel. Shanti also
+     reported a bug and contributed a bug fix for reciever tagging for
+     Via headers.
+
+<li> Andrew Prokop reported a bug in cloning of Authentication headers.
+
+<li> Bob Johnson noticed documentation bugs.
+
+<li> Mark Smith noticed that there were bugs in the handling of lr in the proxy.
+
+<li> Tiago Dias (Altitude software) noticed that there was a bug with 
+	subscribe/notify processing in the proxy. Tiago noticed that
+	Notify processing in the proxy (presence extension) 
+        was not returning final response immediately and contributed
+	a bug fix for the proxy that rectified the problem.
+
+<li> Roberto Tealdi reported a problem in instantiating multiple
+	stacks in multi-homed hosts. 
+
+<li> Laurent Schwitzer noticed that events were being dropped (not delivered
+	to application) when request and response were closely spaced
+	in time. Laurent noticed that the recieved parameter was not
+	handling ipv6 address types.
+
+<li> Stuart Woodsford (British Telecom) noticed a bug in the parsing of host 
+	names when there are more than 3 components in the host name.
+
+<li> Brian J. Collins discovered bugs in the implementation of SdpFactory.
+
+<li> Dekeyzer Dmitri  noted that PRACK was not updating the Dialog 
+      state and therefore route sets were not being applied appropriately.
+
+<li> Willem Romijn AT&T corrected the payload type constant for H.263 codecs
+	in SdpConstants.java
+
+<li> Peter Parnes noted a bug in handling null messages. Null messages
+could be sent to keep alive firewall NAT mappings. Peter tested
+the stack on a dual multiprocessor hyperthreaded machine and
+uncovered some race conditions in the transaction state machine
+implementation that were later fixed.
+
+<li> Christophe at yahoo.fr noticed a bug in the transaction state
+machine when the retransmission filter is enabled. Christophe noted a
+bug in IOHandler when an IO Exception occurs while transmitting via TCP.
+Christophe noted a stack bug when IOException occurs (timer tick needs
+to be updated). Christophe tested the stack for Exception conditions
+under TCP Transport and uncovered some bugs in retransmission filter
+implementation under these conditions.  Christophe noted that the stack
+was trying to retry connections for sending responses. This is against
+the SIP RFC (request/response should use the same connection) and it
+was fixed.
+
+
+<li> Gareth Deli noticed a bug in TCP transport. 
+
+<li> Ben Evans (Open Cloud)
+     noticed a transaction state machine implementation error
+     in SIPServerTransaction. 
+     Ben Evans reported numerous TCK related problems.
+
+<li> Zvalli at dev.java.net reported bugs in the parsing of warning headers and
+     found a bug when there was a whitespace separating the header name
+     and the : following it.
+
+
+<li> Sverker Abrahamsson reformatted everything to conform to the java
+    style guide and eliminated many annoying javadoc problems.
+
+
+<li> Bruno Konik torture tested the parser and unearthed some
+     problems with the parsing of SIP urls and methods. 
+     These problems were fixed. Bruno contributed the torture test
+     cases from the IETF torture test case draft-ietf-sipping-torture-tests.txt
+     that are included in the torture test (tests/torture) directory.
+     Bruno noted that the Rack header was encoded in the wrong way.
+     Bruno noted that SIPDate header was encoded in the wrong way (should
+     use 24 hour date format).
+
+<li> Wanrong Lin noted that the spec called for a dummy dialog to be created
+	even if there is no possibility of a transaction being assigned to
+	a dialog. This was fixed - now a static dummy dialog is assigned to a
+	transaction that has no possibility of being assigned to any dialog.
+
+<li> Mafasumi Watanabe noted that setting message content as a string should
+	compute content length after converting to byte rather than directly
+	take length() to allow for double byte character set.
+
+<li> Emmanuel Proulx noticed a bug when trying to send large amounts of 
+	data via TCP transport that was caused by a race condition in
+	the coded that caches threads and connections. 
+	A new configuration parameter gov.nist.javax.sip.MAX_MESSAGE_SIZE 
+	was added to limit the max size of messages.
+
+<li>Venkatesh from CMU noticed that there were threads hanging around
+even after all stack resources had been released. This was corrected
+by adding a stack finalization method that exits all threads. The stack
+now runs happily as an applet.
+
+
+<li> Dave Stuart (SIPQuest Communications) discovered a deadlock with
+the stack and submitted a bug fix for this. Dave also discovered an
+error with ParametersHeader in converting String to boolean.
+
+
+<li> Thomas Froment submitted a bug fix for parsing of
+host:port as discovered in the CERT tests (there could be one or more
+spaces between host and port). Thomas suggested that the main scanner
+thread be eliminated from the SIPTransaction Stack and Timers be used
+Thomas Fromet and Pierre De Rop  suggested a fast lookup path be
+added for looking up Transactions. An auxilliary hash table for quick
+lookup was added based on their suggestions. Thomas contributed
+a bug fix for sending responses in server transactions. The maddr
+parameter was being ignored.
+
+<li>Alex Rootham from Blue Slice noticed that out of sequence messages
+directed to a Dialog should be responded to with a 500 (Internal Server
+Error) by a UAS.  This is decidedly strange but the spec does say so. This
+support was added to the dialog layer of the stack.
+
+<li>Bruce Evangelder from Soleo communications found a race condition
+with the UDP message processor.
+
+
+<li>Mike Andrews contributed the idea of a configurable network layer. This
+can be used to better integrate with a container and provide management
+and other functionality.
+
+<li> Matt Keller noticed a bug where the ACK for 300-699 responses was being
+sent to the wrong destination because the contact header in the last response
+was being ignored. Mat sent in a bug fix for this problem. </li>
+
+<li> Bill Roome (AT&T research) noted that Applications may want to see
+the route header. The stack was previously stripping it. 
+A configuration parameter was added to pass the route header up to 
+the application. Bill reported a null pointer exception bug and fixed
+some make file bugs. This design flaw has been rationalized in version
+1.2 of the JSIP API. </li>
+
+<li> Stefan Marx found a bug in the SipUriImpl.getHeaderNames function. </li>
+
+<li> John Martin from RockSteady noticed some uncessary synchronization
+in the MessageHandler that was removed.  </li>
+
+<li> Xavi Ferro from Vida Software helped debug a memory leak when 4xx 
+responses are sent in response to dialog creating requests.
+
+<li> Daniel Martinez contributed TLS support. </li>
+
+<li> Hagai Sela added support for symmetric NAT (rport parameter handling
+ in via header). Hagai Reported a bug where ACK was not seen by application
+on re-invite.  Hagai noticed a bug in computation of next hop 
+for strict routers when the request is sent through 
+Dialog.sendRequest(transaction). This resulted
+in the route being stripped twice. Hagai contributed a bug fix in the
+Dialog implementation for route management for strict routers.
+Hagai contributed a bug fix for the Default router (for the case
+of handling strict routing ). Hagai reported a bug in the updating of
+route set for established dialogs. (Only Remote target should be updated
+and not route set).
+</li>
+
+<li> Rob Daugherty (Lucent) detected a bug in handling of TCP messages
+and contributed a fix for this. </li>
+
+<li>Jeff Adams ( Polycomm.com ) submitted a patch for the sniffer tool.
+Jeff submitted a patch for setting the timer on the Transaction Timer. </li>
+
+<li> Pierre Sandstrom submitted a bug fix for the Trace Viewer to fix a 
+problem where some messages were not showing up in the viewer. </li>
+
+<li> S. R. Jeyashankher from Lucent Submitted a bug fix
+for error conditions where one cannot bind to local port </li>
+
+<li>Greg DuPertuis found a bug in the generation of unique branch IDs and
+submitted a fix for it </li>
+
+<li>Shu-Lin Chen from the Communications Research Institute (Canada) submitted
+a bug fix for timeout post processing. </li>
+
+<li> Banibrata Dutta submitted suggestions for code cleanup </li>
+
+<li> Robert Rosen submitted a fix for a race condition in generating new 
+CallIDs and with switching lexers.  
+
+<li>Daniel Machin Vazquez-Illa submitted a bug fix for the Dialog State 
+Machine on processing 3XX-6XX class responses in Server Transactions. 
+Daniel noticed that the remote sequence number for server dialog needed
+to be updated even on unsuccessful server transaction processing.
+</li>
+
+<li>Mario Mantak posted a bug fix for a missing short form header name
+for the Event header </li>
+
+<li> Jordan Schidlowski of MDCI fixed a bug that pegs the CPU when
+pending requests are directed towards a transaction under some heavy
+load conditions. </li>
+
+<li> Dan Muresan submitted changes that speed up cloning of requests
+that did not need to use reflection for cloning. </li>
+
+<li> Jeff Heynie submitted a bug fix for the URL parser </li>
+
+<li> Attila submitted a fix for a race condition in ACK processing </li>
+
+<li> Frank Reif submitted a bug fix for a race condition in 
+SIPServerTransaction </li>
+
+<li> Ivelin Ivanov <ivelin.ivanov@mobicents.org> ported
+some examples to tck test cases </li>
+
+<li>Yanick Belanger noticed a memory leak in NOTIFY client transaction
+which was fixed. Yankick also made some performance enhancements to the
+parser. Yanick noted a bug in random generation of call IDs and  branch IDs. 
+Yakick contributed code to support offloading of TLS requests.
+Yanick contributed performance enhancements and cleanup to StringMsgParser.
+Yanick contributed performance ehnancements to the Message and header 
+factories.
+Yanick measured the performance on contemporary high speed processors 
+and reported these results.
+</li>
+
+<li> Kathleen McCallum contributed the Third Party Call Control (tpcc) example
+and the authentication example. </li> 
+
+<li> Jose Miguel Frietas, Nuno Silva ( PT INOVAO - EST DEPARTMENT ) and 
+Alexandre Miguel Silva Santos ( Aveiro University - Portugal) contributed
+parsers and headers for IMS. These are included in the Implementation
+of the Factory interfaces but are not yet part of the JSIP standard. </li>
+
+<li>Lebing Xie fixed bugs in the contributed IMS headers. </li>
+
+<li>Ricardo Borba (Natural Convergence) reported bugs in the Dialog
+implementation and also in the UDP Message processor. Ricardo contributed
+a patch for UDPMessageProcessor.java. Ricardo made several contibutions
+related to hardening the stack and guarding it against application
+programming errors:
+
+<ul>
+<li> Fixed Session Description to allow it to take a null session name.
+<li> Fixed Sdp parser to handle mixed \r , \n and \r\n
+<li> Fixed case sensitivity issue with content type and content subtype.
+<li> Added a Safe timer task. If an exception occurs in the timer the stack does not exit.
+<li> EventScanner.java : Fixed exception handling so that exceptions in the listener dont exit the stack.
+<li> SessionDescriptorImpl is now a deep copy
+<li> Added listener thread (liveness) auditing facitlity
+<li> Added Transaction table (leak) auditng facility.
+</ul>
+
+These will be of particular importance to you if you are building robust server applications. Examples have been provided for these new facilities.
+
+</li>
+
+<li>Brett Buckingham (Natural Convergence) submitted a patch for a
+reliable timer that does not cause the stack to die when a cancelled
+timer is cancelled during stack stop and restart. Brett contributed
+a fix for RFC2543 CANCEL handling.</li>
+
+<li>Peter Musgrave (Newheights Networks) contributed code for 
+RFC 3892 (Refer method ) and Session Timer (RFC 4028) headers 
+and parsers for the same.  </li>
+
+<li>Hai Phan noticed that responding with a From tag different from the
+original request From tag with automatic dialog support enabled, resulted
+in memory leak due to Dialogs getting allocated despite invalid
+Responses.
+</li>
+
+<li> John Barton noticed an
+ issue with PRACK being dropped under heavy load. This issue has been fixed.
+</li>
+
+<li> Peter Li <lishihwei@gmail.com> sent in a bug fix for parsing of IPV6
+addresses.
+</li>
+
+<li>Ryan Mitchell Noticed that the ACK for 3xx responses should not use
+the contact header for constructing the Request URI. Using the contact header
+will direct the ACK to thw new location. This was fixed in the RI.
+</li>
+
+<li>Anil H noticed a problem with retransmission of ACK in the case of 
+RE-INVITE processing. He contributed a bug fix which was applied to the RI.
+</li>
+
+<li>Nabeel Mohammed submitted a patch for dealing with RFC 2543 backwards 
+compatibility in CANCEL requests. This was applied to the RI. </li>
+
+<li> Jens Tinfors submitted patches for SIPDialog.equals and SIPDialog.createFromNOTIFY. </li>
+
+<li> Raghav Ramesh (BT) noticed an issue with CANCELing INVITES for a load balanced appliction </li>
+
+<li> Roger M. Persson submitted a bug fix for closing message channels on stop. </li>
+
+<li> Sebastien Mazy contributed a patch that allows storing application data in SIPMessage-s. </li>
+
+<li> Aayush Bhatnagar (Rancore Technologies) 
+contributed a patch for header definitions and parsers
+for several IMS Headers. These headers complete the IMS Package </li>
+<li>Hauke D<haukex@zero-g.net> Noticed a bug having to do with premature Dialog deletion </li>
+<li>Simon Shieh ( Nortel Networks ) noticed a bug in the caching of TCP connections. </li>
+<li>Subramanian Thamaraisamy (Cisco} reported and contributed <a href="http://java.net/jira/browse/JSIP-387">DoS attacks against JAIN SIP</a> . </li>
+</ul>
+
+<hline/>
+
+<p> Following is a list of people who contributed bugs reports and fixes to
+NIST-SIP 1.1 (which implemented the JAIN SIP 1.0 interefaces). Many of
+these fixes carry over to NIST-SIP 1.2 and hence their contributions
+are acknowledged in rough chronological order of first contribution.
+Acknowledgements  for contributions are listed below and in the code
+where their contributions appear:
+
+<ul>
+
+<li> Chris Mills 
+<li> Maria Yndefors
+<li> Stefan Foekel
+<li> Jakob Schlyter  
+<li> Ganesh Jayadevan 
+<li> Steven Lass 	
+<li> Kim Kirby 
+<li> Andre Pharand
+<li> Christophe Lafaille
+<li> Gordon Ledgard 	
+<li> Robert Billingslea 
+<li> Juan Fco. Martin
+<li> Ahmet Uyar 
+<li> Prasanna Kumar
+<li> Lamine Brahimi
+<li> Nadeem Anwar
+<li> Andreas Bystr�m
+<li> Yann Duponchel	
+<li> Thai Dang Vu
+<li> Will Scullin
+<li> Jeff Keyser 
+<li> Robert M. Smith 
+<li> S. Nageswara Rao
+<li> Niklas Uhrberg 
+<li> Eero Vaarnas 
+<li> Laurent Schweizer 
+<li> M.P. Ardhanareeswaran
+<li> Stephen Jones 
+<li> Espen Skjaeran 
+<li> Scott Holben 
+<li> Salva Rey Calatayd 
+<li> Tsun-Chieh Chiang 
+<li> Dan Timoney 
+<li> Majdi Abuelbassal
+<li> Srinivas Maganti
+<li> R.W. Johnson 
+<li> Emil Ivov
+</ul>
+
+<hline/>
+
+<p> This code was developed in the Internetworking Technogies Group (ITG),
+Advanced Networking Technogies Division (ANTD), the National Institute of
+Standards and Technology (NIST).
+
+<ul>
+<li>
+Group Manager: Doug Montgomery <dougm@antd.nist.gov>
+
+<li>
+Division Chief: David Su <david.su@nist.gov>
+
+<a> <a href="http://w3.antd.nist.gov/"> http://w3.antd.nist.gov </a>
+
+</ul>
+
+
+
+
