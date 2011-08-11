@@ -11,7 +11,7 @@
 	</parent>
 
 	<artifactId>jain-sip-ri</artifactId>
-	<version>1.2.X-SNAPSHOT</version>
+	<version>1.2.164</version>
 
 	<packaging>jar</packaging>
 	<name>jain-sip-ri</name>
