@@ -1,8 +1,4 @@
-
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>javax.sip</groupId>
@@ -11,7 +7,7 @@
 	</parent>
 
 	<artifactId>jain-sip-ri</artifactId>
-	<version>1.2.X-SNAPSHOT</version>
+	<version>1.2.164</version>
 
 	<packaging>jar</packaging>
 	<name>jain-sip-ri</name>
@@ -113,4 +109,10 @@
 		</dependency>
 	</dependencies>
 
+
+  <scm>
+    <connection>scm:svn:https://svn.java.net/svn/jsip~svn/tags/JAIN-SIP-1-2-164</connection>
+    <developerConnection>scm:svn:https://svn.java.net/svn/jsip~svn/tags/JAIN-SIP-1-2-164</developerConnection>
+    <url>https://svn.java.net/svn/jsip~svn/tags/JAIN-SIP-1-2-164</url>
+  </scm>
 </project>
