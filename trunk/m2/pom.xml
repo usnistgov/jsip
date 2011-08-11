@@ -75,6 +75,16 @@
 		</snapshotRepository>
 	</distributionManagement>
 
+	<build>	
+		<plugins>	
+			<plugin>
+		  		<artifactId>maven-release-plugin</artifactId>
+		  		<configuration>
+		   			<tagBase>https://svn.java.net/svn/jsip~svn/tags/</tagBase>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 	<scm>
 		<connection>scm:svn:https://svn.java.net/svn/jsip~svn</connection>
