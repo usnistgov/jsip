@@ -289,8 +289,19 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
         // Be kind and assign a via header for this provider if the user is
         // sloppy
         if (sipRequest.getTopmostVia() == null) {
+        	String transport = null;
+        	try {
+				transport = sipStack.getNextHop(sipRequest).getTransport();
+			} catch (SipException e) {
+				throw new TransactionUnavailableException ("Cannot create client transaction for the next hop transport ", e);
+			}
+        	if(transport == null) transport = "udp";
             ListeningPointImpl lp = (ListeningPointImpl) this
-                    .getListeningPoint("udp");
+                    .getListeningPoint(transport);
+            if(lp == null) {
+            	// last resort, instead of failing try to route anywhere
+            	lp = (ListeningPointImpl) this.getListeningPoints()[0];
+            }
             Via via = lp.getViaHeader();
             request.setHeader(via);
         }
