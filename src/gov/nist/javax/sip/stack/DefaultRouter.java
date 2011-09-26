@@ -293,7 +293,9 @@ public class DefaultRouter implements Router {
         if (transport == null) {
             //@see issue 131
             ViaHeader via = (ViaHeader) request.getHeader(ViaHeader.NAME);
-            transport = via.getTransport();
+            if(via != null) {
+            	transport = via.getTransport();
+            }
         }
 
         // sipUri.removeParameter("transport");
