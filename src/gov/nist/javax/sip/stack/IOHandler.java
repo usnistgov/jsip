@@ -332,8 +332,8 @@ public class IOHandler {
                             break;
                         } catch (IOException ex) {
                             if (logger
-                                    .isLoggingEnabled(LogWriter.TRACE_ERROR))
-                                logger.logInfo(
+                                    .isLoggingEnabled(LogWriter.TRACE_WARN))
+                                logger.logWarning(
                                         "IOException occured retryCount "
                                                 + retry_count);                            
                             try {
