@@ -313,12 +313,9 @@ public class SIPRequest extends SIPMessage implements javax.sip.message.Request,
                     throw new ParseException(prefix + ContactHeader.NAME, 0);
             }
 
-            if (requestLine.getUri() instanceof SipUri) {
-                String scheme = ((SipUri) requestLine.getUri()).getScheme();
-                if ("sips".equalsIgnoreCase(scheme)) {
-                    RecordRouteHeader rrh = (RecordRouteHeader) getHeader(RecordRouteHeader.NAME);
-                    /*
-                     * If RRH is not null, then this is proxy so the UAC behavior RFC 8.1.1.8 doesn't apply, contact doesnt matter when there is RRH
+            /*
+          	 * Vladimir Ralev : Removing this check to handle proxy with JSIP.
+             * For proxy the contact is not relevent, so the UAC behavior RFC 8.1.1.8 doesn't apply, we remove this check so double-record-routing proxies will work
 ....
 CSeq: 1 INVITE
 From: <sip:proxy-tls@sip-servlets.com>;tag=5326009
@@ -336,7 +333,12 @@ Caused by: java.text.ParseException: Scheme for contact should be sips:sip:proxy
 	at gov.nist.javax.sip.message.SIPRequest.checkHeaders(SIPRequest.java:321)
 	at gov.nist.javax.sip.SipProviderImpl.getNewClientTransaction(SipProviderImpl.java:302)
 	... 23 more
-                     */
+                     
+            if (requestLine.getUri() instanceof SipUri) {
+                String scheme = ((SipUri) requestLine.getUri()).getScheme();
+                if ("sips".equalsIgnoreCase(scheme)) {
+                    RecordRouteHeader rrh = (RecordRouteHeader) getHeader(RecordRouteHeader.NAME);
+ 
                     if(rrh == null) { // If RRH is not null, then this is proxy so RFC 8.1.1.8 doesn't apply, contact doesnt matter when there is RRH
                     	SipUri sipUri = (SipUri) this.getContactHeader().getAddress().getURI();
                     	if (!sipUri.getScheme().equals("sips")) {
@@ -344,7 +346,7 @@ Caused by: java.text.ParseException: Scheme for contact should be sips:sip:proxy
                     	}
                     }
                 }
-            }
+            } */
         }
 
         /*
