@@ -1,0 +1,196 @@
+<html>
+<head><title>JAVA API for SIP Signaling </title></head>
+<BODY>
+<br/>
+<div class="h2" id="getsource">
+<h2>Contents</h2>
+</div>
+<p>
+This project publishes the Reference Implementation, Technology
+Compatibility Kit, examples and tools for JAIN-SIP-1.2 (JSR-32
+maintenance release)  and an SDP library that conforms to the public
+release of  JSR 141 (JAIN-SDP) interfaces.  JAIN-SIP is a low level Java
+API speicification for SIP Signaling. The intended users of this project
+are SIP developers.
+
+<p>This project publishes a full implementation of the RFC 3261
+Specification and as well as suppport for several SIP RFCs.
+
+<p>You can embed the JAIN-SIP stack in an applet, HTTP servlet or an
+application. JAIN-SIP can be used in SIP Proxy Servers (stateful and
+statelss) and in  SIP User Agents.  JAIN-SIP has been used to build a
+Session Border Controller, a few Softphones, a Resource Adapter for the
+JAVA Service Logic Execution Environment, a SIP Servlet Implementation
+and in a few Test tools.
+
+<p>The JAIN-SIP Reference implementation is a product of the Advanced
+Networking Technologies Division at the National Institute of Standards
+and Technology (NIST). The JAIN SIP RI, TCK and tools published by this
+project are in the public domain.  
+
+<br/>
+<div class="h2" id="getsource">
+<h2>Artifacts and Downloads</h2>
+</div>
+
+<a href=http://hudson.jboss.org/hudson/job/jain-sip/lastSuccessfulBuild/artifact/javadoc/index.html><b>Javadoc</b></a> <br/>
+
+<a href=http://hudson.jboss.org/hudson/view/Mobicents/job/jain-sip/><b>Click here to get the latest cruise control build snapshot.</b> </a> 
+<p>
+<b> The best way to keep up to date with the latest source is to use cvs. 
+To access cvs you need to join the project as an observer. For code checkin you need to be a developer.</b> <br/>
+<p>
+<ul>
+<li>
+You need to join java.net first before you apply to the project for 
+an observer role.  After your requested role is approved
+check out the project from java.net using cvs.
+<li> To check out the project from java.net use CVS :
+<ul>
+<li> CVS address is dev.java.net
+<li> CVS Path is /cvs
+<li> CVS login and passsword is the same as your java.net login
+<li> Or if you prefer the command line:
+<pre>
+cvs -d :pserver:your-java.net-user-id@dev.java.net:/cvs login 
+cvs -d :pserver:your-java.net-user-id@dev.java.net:/cvs checkout jain-sip
+</pre>
+</ul>
+</ul>
+
+<div class="h2" id="links">
+<h2>Performance and Stability</h2>
+</div>
+
+
+<p>This project includes an extensive test suite that is run when ever a change is made to the CVS repository. 
+Visit the download link above to see the tests run by cruise control for each commit.
+JAIN-SIP has been leak tested under both error conditions and error
+free operational scenarios.  Here are the results of long term stability
+testing (Pascal Maugeri: "Genaker VoIP API using JAIN-SIP v1.2.85"):
+<li> <a href="performance.html"> See Stability testing results.</a>
+
+
+
+<div class="h2" id="links">
+<h2>Getting Started</h2>
+</div>
+<p> <a href= "http://www.oracle.com/technology/pub/articles/dev2arch/2007/10/introduction-jain-sip.html" > A nice getting started article. </a>
+
+<div class="h2" id="links">
+ <h2>Recent Developments</h2>
+</div>
+<p>
+<ul>
+<li> JAIN-SIP-2.0 specification work is under way. Please check out and contribute. 
+      See <a href="https://jain-sip.dev.java.net/servlets/ProjectDocumentList">JAIN-SIP 2.0 Proposed Draft Spec</a>
+<li> Significant performance enhancements. Many thanks to Jean Deruelle ( Redhat ).
+<li> SCTP support (experimental). Many thanks to Jeroen van Bemmel for adding this support.
+<li> HA support ( see mobicents project ) described here :
+http://jeanderuelle.blogspot.com/2010/08/introducing-jain-sip-ha-or-how-you-can.html
+</ul>
+
+<div class="h2" id="related">
+<h2>Related Projects</h2>
+</div>
+<p/>Some other active projects that use JAIN-SIP: <br/>
+<p><a href="http://sip-for-me.dev.java.net">SIP-FOR-ME: SIP is not just for you. Its for ME too! A usable subset of this project has been "ported" to j2me. </a><br/>
+<a href="http://jain-sip-applet-phone.dev.java.net"> JAIN-SIP-APPLET-PHONE: Its an Applet! No its a Phone! No its jain-sip-applet-phone!!</a> <br/>
+<a href="http://sip-communicator.dev.java.net">SIP Communicator: A very cool multiprotocol communicator. </a><br/>
+<a href="http://www.cafesip.org/projects.html">Cafe-SIP: An open source project that builds SIP tools and the Jiplet container.</a> <br/>
+<a href="http://echarts.org/KitCATScreencast/kitcat.htm"> KIT-KAT: A cool testing tool from AT&T that uses JAIN-SIP </a><br/>
+<a href="http://www.sipfoundry.org">The SipXecs open source PBX uses JAIN-SIP.</a> <br/>
+<a href="http://www.mobicents.org">The Mobicents JAIN-SLEE Container uses JAIN-SIP for its resource adapter. </a> <br/>
+<a href="http://www.mobicents.org/products_sip_servlets.html"> SIP Servlets implementation on JAIN-SIP ( with extensions ) </a> <br/>
+<a href="http://igniterealtime.org">The openfire XMPP container uses JAIN-SIP for its SIP plugin. </a><br/>
+<a href="http://code.google.com/p/openjsip/">OpenJSip: A simple well documented JAIN-SIP proxy server.</a><br/>
+<a href="http://www.mulesoft.org/display/SIP/Home">A ESB Connector for SIP that is built on JAIN-SIP </a><br/>
+<a href="http://www.voicetechnology.com.br/produtos_basix.asp">Voicetechnology uses JAIN-SIP in a Hosted PBX product. Deployed in Brazil and Japan to provide Hosted PBX Services. </a><br/>
+<a href="http://code.google.com/p/jain-sip-rfc3263-router/">RFC 3263 Router for JAIN-SIP</a><br/>
+<a href="http://mitester.mobax.net/"> A SIP tester that uses JAIN-SIP </a>
+<p/>
+
+<div class="h2" id="contribute">
+<h2>Please Contribute</h2>
+</div>
+
+<p> You can contribute to this project by :
+
+<ul>
+<li> Using it in your product or project and providing feedback 
+for the next version of JSIP.
+<li> Fixing Bugs : export a 
+diff listing from cvs, open an issue for the bug on java.net
+and attach your suggested solution there.
+You can discuss your bug on the NIST-SIP
+mailing list or the JAIN-SIP project user list. 
+<li>Reporting Bugs : To report a bug provide a small self-contained
+example that illustrates the bug. You can pattern the test case usually
+along the lines of examples/simplecallsetup.  Having a test case handy
+speeds up the bug fix. Your test case will be included in the project
+as a test case.  Please enter an issue in the java.net issue tracker so
+other users can know about the issue and its status. Please attach your
+test case or bug description with debug log file there.
+
+<li> Contributing Extensions and enhancements (i.e. support for SIP
+extension RFCs and drafts that are not covered by JAIN-SIP): For this
+you need to discuss your planned contribution with the project owners
+and sign up as a developer. <b> Note that there are no content developer
+roles for this project. Please discuss your planned contribution with
+the owners before applying for a developer role.  You may be requested
+to submit contributions as patches for some time before developer role
+is granted.  </b>
+
+<li> Contributing code snippets and examples to be included 
+with the distribution. </li>
+
+<li> Contributing test cases to be included in the distribuiton. </li>
+</ul>
+
+Your contributions will be acknowledged individually in the code (as a 
+comment) and in  <a href="README.html"> the acknowledgement page.</a>
+Please run the ant <it> runtck </it> target
+before submitting patches and make sure your bug fix does 
+not break something else.  Please follow coding guidelines. If you are 
+using eclipse, codefmt.xml is the style file to use.
+
+
+<p><b>Note that all contributions to the gov/nist hierarchy are in the public
+domain. </b> 
+
+<p><b> You are encouraged to subscribe to the jain-sip 
+user mailing list for project announcements.  </b>
+
+
+<div class="h2" id="credits">
+ <h2>Credits</h2>
+</div>
+<ul>
+<li> Architecture / API design (JAIN-SIP Spec Leads):
+   M. Ranganathan (NIST / Nortel) and Phelim O'Doherty (Oracle)
+   with substantial input from early adopters. <br/>
+   Special mention: Jeroen van Bemmel (Lucent), Sarit Gallanos (Radvision)
+   and Ben Evans (Open Cloud).
+
+</li>
+<li> Implementation Lead: M. Ranganathan  </li>
+<li> Implementation Team:
+       Version 1.1: M. Ranganathan and Olivier Deruelle <br/>
+       Version 1.2: M. Ranganathan and Jeroen van Bemmel (review and bug fixes) </li>
+
+<li> TCK : Version 1.1 : Emil  Ivov  (Louis Pasteur University) and M. Ranganathan (NIST). <br/>
+Version 1.2 : M. Ranganathan and Jeroen van Bemmel
+<li> Cruise Control Builds: Luis Barriero (Redhat Mobicents QA).
+</li>
+<li> <a href="README.html"> Substantial input from Users and Early Adopters is acknowledged.</a>
+</li>
+</ul>
+
+<hr/>
+
+<!-- BEGIN MASTHEAD -->
+<center>  
+<img src="images/nist-banner-bottom.jpg" /> 
+</center>
+</BODY>
+</html>
