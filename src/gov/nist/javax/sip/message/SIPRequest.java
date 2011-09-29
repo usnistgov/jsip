@@ -316,9 +316,32 @@ public class SIPRequest extends SIPMessage implements javax.sip.message.Request,
             if (requestLine.getUri() instanceof SipUri) {
                 String scheme = ((SipUri) requestLine.getUri()).getScheme();
                 if ("sips".equalsIgnoreCase(scheme)) {
-                    SipUri sipUri = (SipUri) this.getContactHeader().getAddress().getURI();
-                    if (!sipUri.getScheme().equals("sips")) {
-                        throw new ParseException("Scheme for contact should be sips:" + sipUri, 0);
+                    RecordRouteHeader rrh = (RecordRouteHeader) getHeader(RecordRouteHeader.NAME);
+                    /*
+                     * If RRH is not null, then this is proxy so the UAC behavior RFC 8.1.1.8 doesn't apply, contact doesnt matter when there is RRH
+....
+CSeq: 1 INVITE
+From: <sip:proxy-tls@sip-servlets.com>;tag=5326009
+To: <sip:receiver@sip-servlets.com>
+Via: SIP/2.0/TLS 127.0.0.1:5071;branch=z9hG4bKd72cf250-04fc-49a8-bde1-2b9728ab0dc1_8a474751_1317304087784710000
+Via: SIP/2.0/TCP 127.0.0.1:5080;branch=z9hG4bK-343139-25f9b919076ced8b4c20506d35036178;rport=60554
+Max-Forwards: 69
+REM: RRRREM
+Contact: <sip:proxy-tls@127.0.0.1:5080>
+Record-Route: <sip:127.0.0.1:5071;transport=tls;appname=8a474751;proxy=true;app_id=d72cf250-04fc-49a8-bde1-2b9728ab0dc1;lr>
+Record-Route: <sip:127.0.0.1:5070;transport=tcp;appname=8a474751;proxy=true;app_id=d72cf250-04fc-49a8-bde1-2b9728ab0dc1;lr>
+Content-Length: 0
+
+Caused by: java.text.ParseException: Scheme for contact should be sips:sip:proxy-tls@127.0.0.1:5080
+	at gov.nist.javax.sip.message.SIPRequest.checkHeaders(SIPRequest.java:321)
+	at gov.nist.javax.sip.SipProviderImpl.getNewClientTransaction(SipProviderImpl.java:302)
+	... 23 more
+                     */
+                    if(rrh == null) { // If RRH is not null, then this is proxy so RFC 8.1.1.8 doesn't apply, contact doesnt matter when there is RRH
+                    	SipUri sipUri = (SipUri) this.getContactHeader().getAddress().getURI();
+                    	if (!sipUri.getScheme().equals("sips")) {
+                    		throw new ParseException("Scheme for contact should be sips:" + sipUri, 0);
+                    	}
                     }
                 }
             }
