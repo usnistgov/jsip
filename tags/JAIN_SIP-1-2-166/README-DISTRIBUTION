@@ -1,0 +1,14 @@
+
+Here is how the distribution jar files are orgainized:
+
+jain-sip-api      : contains the API
+jain-sip-all      : contains everything prebuilt
+jain-sip-src      : contains only the source files
+jain-sip-javadoc  : contains only the javadoc
+jain-sip-ri       : contains the JSR 32 Reference Implementation.
+jain-sip-sdp      : contains the sip with SDP implementation. This includes the JSR 32 RI.
+jain-sip-tck      : contains the TCK 
+
+The Version number in version.txt is the svn version number for the source.
+Each jar file that is version dependendent is stamped with the svn version 
+number.
