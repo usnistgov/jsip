@@ -413,7 +413,15 @@ public abstract class SIPTransactionStack implements
     protected static Executor selfRoutingThreadpoolExecutor;
 
     private int threadPriority = Thread.MAX_PRIORITY;
-    
+
+    /**
+     *  Keepalive support and cleanup for client-initiated connections as per RFC 5626.
+     *
+     *  Based on the maximum CRLF keep-alive period of 840 seconds, per http://tools.ietf.org/html/rfc5626#section-4.4.1.
+     *  a value < 0 means that the RFC 5626 will not be triggered, as a default we don't enable it not to change existing apps behavior.
+     */
+    protected int reliableConnectionKeepAliveTimeout = -1;
+
     private static class SameThreadExecutor implements Executor {
 
         public void execute(Runnable command) {
@@ -3121,4 +3129,90 @@ public abstract class SIPTransactionStack implements
 	public int getThreadPriority() {
 		return threadPriority;
 	}
+
+    public int getReliableConnectionKeepAliveTimeout() {
+        return reliableConnectionKeepAliveTimeout;
+    }
+
+    public void setReliableConnectionKeepAliveTimeout(int reliableConnectionKeepAliveTimeout) {
+//        if (reliableConnectionKeepAliveTimeout < 0){
+//            throw new IllegalArgumentException("The Stack reliableConnectionKeepAliveTimeout can not be negative. reliableConnectionKeepAliveTimeoutCandidate = " + reliableConnectionKeepAliveTimeout);
+//
+//        } else 
+        if (reliableConnectionKeepAliveTimeout == 0){
+
+            if (logger.isLoggingEnabled(LogWriter.TRACE_INFO)) {
+                logger.logInfo("Default value (840000 ms) will be used for reliableConnectionKeepAliveTimeout stack property");
+            }
+            reliableConnectionKeepAliveTimeout = 840000;
+        }
+        if (logger.isLoggingEnabled(LogWriter.TRACE_INFO)) {
+            logger.logInfo("value " + reliableConnectionKeepAliveTimeout + " will be used for reliableConnectionKeepAliveTimeout stack property");
+        }
+        this.reliableConnectionKeepAliveTimeout = reliableConnectionKeepAliveTimeout;
+    }
+
+    private MessageProcessor findMessageProcessor(String myAddress, int myPort, String transport) {
+        for (MessageProcessor processor : getMessageProcessors()) {
+            if (processor.getTransport().equalsIgnoreCase(transport)
+                    && processor.getSavedIpAddress().equals(myAddress)
+                    && processor.getPort() == myPort) {
+                return processor;
+            }
+        }
+        return null;
+    }
+
+    /**
+    * Find suitable MessageProcessor and calls it's {@link MessageProcessor#setKeepAliveTimeout(String, int, long)} method passing
+    * peerAddress and peerPort as arguments.
+    *
+    * @param myAddress - server ip address
+    * @param myPort - server port
+    * @param transport - transport
+    * @param peerAddress - peerAddress
+    * @param peerPort - peerPort
+    * @return result of invocation of {@link MessageProcessor#setKeepAliveTimeout(String, int, long)} if MessageProcessor was found
+    */
+    public boolean setKeepAliveTimeout(String myAddress, int myPort, String transport, String peerAddress,
+                                       int peerPort, long keepAliveTimeout) {
+
+        MessageProcessor processor = findMessageProcessor(myAddress, myPort, transport);
+
+        if (processor == null || !(processor instanceof ConnectionOrientedMessageProcessor)) {
+            return false;
+        }
+
+        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+            logger.logDebug("~~~ Trying to find MessageChannel and set new KeepAliveTimeout( myAddress=" + myAddress + ", myPort=" + myPort
+                    + ", transport=" + transport + ", peerAddress=" + peerAddress + ", peerPort=" + peerPort
+                    + ", keepAliveTimeout=" + keepAliveTimeout + "), MessageProcessor=" + processor);
+        }
+        return  ((ConnectionOrientedMessageProcessor)processor).setKeepAliveTimeout(peerAddress, peerPort, keepAliveTimeout);
+
+    }
+
+    /**
+     * Find suitable MessageProcessor and calls it's {@link MessageProcessor#closeReliableConnection(String, int)}
+     * method passing peerAddress and peerPort as arguments.
+     *
+     * @param myAddress - server ip address
+     * @param myPort - server port
+     * @param transport - transport
+     * @param peerAddress - peerAddress
+     * @param peerPort - peerPort
+     */
+    public void closeReliableConnection(String myAddress, int myPort, String transport, String peerAddress, int peerPort) {
+
+        MessageProcessor processor = findMessageProcessor(myAddress, myPort, transport);
+
+        if (processor != null && processor instanceof ConnectionOrientedMessageProcessor) {
+            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                logger.logDebug("~~~ closeReliableConnection( myAddress=" + myAddress + ", myPort=" + myPort
+                        + ", transport=" + transport + ", peerAddress=" + peerAddress + ", peerPort=" + peerPort
+                        + "), MessageProcessor=" + processor);
+            }
+            ((ConnectionOrientedMessageProcessor)processor).closeReliableConnection(peerAddress, peerPort);
+        }
+    }
 }

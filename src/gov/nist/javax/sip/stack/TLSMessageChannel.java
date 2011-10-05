@@ -43,29 +43,19 @@
 package gov.nist.javax.sip.stack;
 
 import gov.nist.core.CommonLogger;
-import gov.nist.core.InternalErrorHandler;
 import gov.nist.core.LogWriter;
-import gov.nist.core.ServerLogger;
 import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.header.CSeq;
 import gov.nist.javax.sip.header.CallID;
 import gov.nist.javax.sip.header.ContentLength;
 import gov.nist.javax.sip.header.From;
 import gov.nist.javax.sip.header.RequestLine;
-import gov.nist.javax.sip.header.RetryAfter;
 import gov.nist.javax.sip.header.StatusLine;
 import gov.nist.javax.sip.header.To;
 import gov.nist.javax.sip.header.Via;
-import gov.nist.javax.sip.header.ViaList;
 import gov.nist.javax.sip.message.SIPMessage;
-import gov.nist.javax.sip.message.SIPRequest;
-import gov.nist.javax.sip.message.SIPResponse;
-import gov.nist.javax.sip.parser.Pipeline;
-import gov.nist.javax.sip.parser.PipelinedMsgParser;
-import gov.nist.javax.sip.parser.SIPMessageListener;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.text.ParseException;
@@ -73,8 +63,6 @@ import java.text.ParseException;
 import javax.net.ssl.HandshakeCompletedListener;
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLSocket;
-import javax.sip.address.Hop;
-import javax.sip.message.Response;
 
 /**
  * This is sipStack for TLS connections. This abstracts a stream of parsed
@@ -92,47 +80,11 @@ import javax.sip.message.Response;
  *
  * @version 1.2 $Revision: 1.43 $ $Date: 2010-12-02 22:44:53 $
  */
-public final class TLSMessageChannel extends MessageChannel implements
-        SIPMessageListener, Runnable, RawMessageChannel {
-    private static StackLogger logger = CommonLogger.getLogger(TLSMessageChannel.class);
-    private Socket mySock;
-
-    private PipelinedMsgParser myParser;
-
-    private InputStream myClientInputStream; // just to pass to thread.
-
-    private String key;
-
-    protected boolean isCached;
-
-    protected boolean isRunning = true;
-
-    private Thread mythread;
-
-    private String myAddress;
-
-    private int myPort;
-
-    private InetAddress peerAddress;
-
-    private int peerPort;
-    
-    // This is the port that we will find in the headers of the messages from the peer
-    protected int peerPortAdvertisedInHeaders = -1;
-
-    private String peerProtocol;
-
-    // Incremented whenever a transaction gets assigned
-    // to the message channel and decremented when
-    // a transaction gets freed from the message channel.
-    // protected int useCount = 0;
-
-    private TLSMessageProcessor tlsMessageProcessor;
-
-    private SIPTransactionStack sipStack;
+public final class TLSMessageChannel extends ConnectionOrientedMessageChannel {
+    private static StackLogger logger = CommonLogger.getLogger(TLSMessageChannel.class);            
 
     private HandshakeCompletedListener handshakeCompletedListener;
-
+   
     /**
      * Constructor - gets called from the SIPStack class with a socket on
      * accepting a new client. All the processing of the message is done here
@@ -153,6 +105,8 @@ public final class TLSMessageChannel extends MessageChannel implements
 
     protected TLSMessageChannel(Socket sock, SIPTransactionStack sipStack,
             TLSMessageProcessor msgProcessor, String threadName) throws IOException {
+    	
+    	super(sipStack);
         if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             logger.logDebug(
                     "creating new TLSMessageChannel (incoming)");
@@ -186,11 +140,8 @@ public final class TLSMessageChannel extends MessageChannel implements
         mythread = new Thread(this);
         mythread.setDaemon(true);
         mythread.setName(threadName);
-        // Stash away a pointer to our sipStack structure.
-        this.sipStack = sipStack;
 
-        this.tlsMessageProcessor = msgProcessor;
-        this.myPort = this.tlsMessageProcessor.getPort();
+        this.myPort = msgProcessor.getPort();
         this.peerPort = mySock.getPort();
         this.key = MessageChannel.getKey(peerAddress, peerPort, "TLS");
         // Bug report by Vishwashanti Raj Kadiayl
@@ -214,6 +165,8 @@ public final class TLSMessageChannel extends MessageChannel implements
     protected TLSMessageChannel(InetAddress inetAddr, int port,
             SIPTransactionStack sipStack, TLSMessageProcessor messageProcessor)
             throws IOException {
+    	
+    	super(sipStack);
         if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             logger.logDebug(
                     "creating new TLSMessageChannel (outgoing)");
@@ -224,32 +177,16 @@ public final class TLSMessageChannel extends MessageChannel implements
         this.myPort = messageProcessor.getPort();
         this.peerProtocol = "TLS";
         this.sipStack = sipStack;
-        this.tlsMessageProcessor = messageProcessor;
         this.myAddress = messageProcessor.getIpAddress().getHostAddress();
         this.key = MessageChannel.getKey(peerAddress, peerPort, "TLS");
         super.messageProcessor = messageProcessor;
 
-    }
-
-    /**
-     * Returns "true" as this is a reliable transport.
-     */
-    public boolean isReliable() {
-        return true;
-    }
-
-    /**
-     * Close the message channel.
-     */
-    public void close() {
-    	close(true);
-    }
+    }   
 
     /**
      * Close the message channel.
      */
     public void close(boolean removeSocket) {  
-    	
 		isRunning = false;
     	// we need to close everything because the socket may be closed by the other end
     	// like in LB scenarios sending OPTIONS and killing the socket after it gets the response    	
@@ -275,8 +212,13 @@ public final class TLSMessageChannel extends MessageChannel implements
 	            logger.logDebug("Closing TLS socket " + ioHandlerKey);
 	        // Issue 358 : remove socket and semaphore on close to avoid leaking
 	        sipStack.ioHandler.removeSocket(ioHandlerKey);
-	        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-	            logger.logDebug("Closing message Channel " + this);
+
+            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                logger.logDebug("Closing message Channel (key = " + key +")" + this);
+            }
+
+            cancelPingKeepAliveTimeoutTaskIfStarted();
+
         } else {
     		if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
     			String ioHandlerKey = key.substring(4);
@@ -284,16 +226,7 @@ public final class TLSMessageChannel extends MessageChannel implements
     		}
     	}
         		    	        
-    }
-
-    /**
-     * Get my SIP Stack.
-     *
-     * @return The SIP Stack for this message channel.
-     */
-    public SIPTransactionStack getSIPStack() {
-        return sipStack;
-    }
+    }    
 
     /**
      * get the transport string.
@@ -301,29 +234,8 @@ public final class TLSMessageChannel extends MessageChannel implements
      * @return "tcp" in this case.
      */
     public String getTransport() {
-        return "tls";
-    }
-
-    /**
-     * get the address of the client that sent the data to us.
-     *
-     * @return Address of the client that sent us data that resulted in this
-     *         channel being created.
-     */
-    public String getPeerAddress() {
-        if (peerAddress != null) {
-            return peerAddress.getHostAddress();
-        } else
-            return getHost();
-    }
-
-    protected InetAddress getPeerInetAddress() {
-        return peerAddress;
-    }
-
-    public String getPeerProtocol() {
-        return this.peerProtocol;
-    }
+        return "TLS";
+    }    
 
     /**
      * Send message to whoever is connected to us. Uses the topmost via address
@@ -333,8 +245,20 @@ public final class TLSMessageChannel extends MessageChannel implements
      *            is the message to send.
      * @param retry
      */
-    private void sendMessage(byte[] msg, boolean retry) throws IOException {
+    protected void sendMessage(byte[] msg, boolean retry) throws IOException {
 
+    	if ( logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+             logger.logDebug("sendMessage isClient  = " + retry);
+        }
+    	/*
+        /*
+        * Patch from kircuv@dev.java.net (Issue 119 ) This patch avoids the case where two
+        * TCPMessageChannels are now pointing to the same socket.getInputStream().
+        * 
+        * JvB 22/5 removed
+        */
+      // Socket s = this.sipStack.ioHandler.getSocket(IOHandler.makeKey(
+      // this.peerAddress, this.peerPort));
     	Socket sock = null;
         IOException problem = null;
         try {
@@ -393,54 +317,6 @@ public final class TLSMessageChannel extends MessageChannel implements
             thread.start();
         }
 
-    }
-
-    /**
-     * Return a formatted message to the client. We try to re-connect with the
-     * peer on the other end if possible.
-     *
-     * @param sipMessage
-     *            Message to send.
-     * @throws IOException
-     *             If there is an error sending the message
-     */
-    public void sendMessage(SIPMessage sipMessage) throws IOException {
-        byte[] msg = sipMessage.encodeAsBytes(this.getTransport());
-
-        long time = System.currentTimeMillis();
-        
-     // need to store the peerPortAdvertisedInHeaders in case the response has an rport (ephemeral) that failed to retry on the regular via port
-        // for responses, no need to store anything for subsequent requests.
-        if(peerPortAdvertisedInHeaders <= 0) {
-        	if(sipMessage instanceof SIPResponse) {
-        		SIPResponse sipResponse = (SIPResponse) sipMessage; 
-        		Via via = sipResponse.getTopmostVia();
-        		if(via.getRPort() > 0) {
-	            	if(via.getPort() <=0) {    
-	            		// if port is 0 we assume the default port for TCP
-	            		this.peerPortAdvertisedInHeaders = 5060;
-	            	} else {
-	            		this.peerPortAdvertisedInHeaders = via.getPort();
-	            	}
-	            	if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-	                	logger.logDebug("1.Storing peerPortAdvertisedInHeaders = " + peerPortAdvertisedInHeaders + " for via port = " + via.getPort() + " via rport = " + via.getRPort() + " and peer port = " + peerPort + " for this channel " + this + " key " + key);
-	                }	 
-        		}
-        	}
-        }
-
-        this.sendMessage(msg, sipMessage instanceof SIPRequest);
-
-        // we didn't run into any problems while sending the message so let's
-        // now set ports and addresses before feeding it to the logger.
-        sipMessage.setRemoteAddress(this.peerAddress);
-        sipMessage.setRemotePort(this.peerPort);
-        sipMessage.setLocalAddress(this.getMessageProcessor().getIpAddress());
-        sipMessage.setLocalPort(this.getPort());
-
-        if (logger.isLoggingEnabled(
-                ServerLogger.TRACE_MESSAGES))
-            logMessage(sipMessage, peerAddress, peerPort, time);
     }
 
     /**
@@ -618,364 +494,7 @@ public final class TLSMessageChannel extends MessageChannel implements
         } else {
             sipMessage.addUnparsed(header);
         }
-    }
-    
-    public void processMessage(SIPMessage sipMessage, InetAddress address) {
-    	this.peerAddress = address;
-    	try {
-			processMessage(sipMessage);
-		} catch (Exception e) {
-			if(logger.isLoggingEnabled(ServerLog.TRACE_ERROR)) {
-				logger.logError("ERROR processing self routing", e);
-			}
-		}
-    }
-
-    /**
-     * Gets invoked by the parser as a callback on successful message parsing
-     * (i.e. no parser errors).
-     *
-     * @param sipMessage
-     *            Message to process (this calls the application for processing
-     *            the message).
-     *
-     *            Jvb: note that this code is identical to TCPMessageChannel,
-     *            refactor some day
-     */
-    public void processMessage(SIPMessage sipMessage) throws Exception {
-        try {
-            sipMessage.setRemoteAddress(this.peerAddress);
-            sipMessage.setRemotePort(this.getPeerPort());
-            sipMessage.setLocalAddress(this.getMessageProcessor().getIpAddress());
-            sipMessage.setLocalPort(this.getPort());
-
-            if (sipMessage.getFrom() == null || sipMessage.getTo() == null
-                    || sipMessage.getCallId() == null
-                    || sipMessage.getCSeq() == null
-                    || sipMessage.getViaHeaders() == null) {
-                String badmsg = sipMessage.encode();
-                if (logger.isLoggingEnabled()) {
-                    logger.logError("bad message " + badmsg);
-                    logger.logError(">>> Dropped Bad Msg");
-                }
-                return;
-            }
-
-            ViaList viaList = sipMessage.getViaHeaders();
-            // For a request
-            // first via header tells where the message is coming from.
-            // For response, this has already been recorded in the outgoing
-            // message.
-
-            if (sipMessage instanceof SIPRequest) {
-                Via v = (Via) viaList.getFirst();
-                // the peer address and tag it appropriately.
-                Hop hop = sipStack.addressResolver.resolveAddress(v.getHop());
-                this.peerProtocol = v.getTransport();
-                if(peerPortAdvertisedInHeaders <= 0) {
-                	int hopPort = v.getPort();
-                	if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                    	logger.logDebug("hop port = " + hopPort + " for request " + sipMessage + " for this channel " + this + " key " + key);
-                    }                	
-                	if(hopPort <= 0) {    
-                		// if port is 0 we assume the default port for TCP
-                		this.peerPortAdvertisedInHeaders = 5060;
-                	} else {
-                		this.peerPortAdvertisedInHeaders = hopPort;
-                	}
-                	if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                    	logger.logDebug("3.Storing peerPortAdvertisedInHeaders = " + peerPortAdvertisedInHeaders + " for this channel " + this + " key " + key);
-                    }
-                }
-                try {
-                	if(mySock != null) {
-                		this.peerAddress = mySock.getInetAddress();
-                	}
-                    // Check to see if the received parameter matches
-                    // JvB: dont do this. It is both costly and incorrect
-                    // Must set received also when it is a FQDN, regardless
-                    // whether
-                    // it resolves to the correct IP address
-                    // InetAddress sentByAddress =
-                    // InetAddress.getByName(hop.getHost());
-                    // JvB: if sender added 'rport', must always set received
-                    if (v.hasParameter(Via.RPORT)
-                            || !hop.getHost().equals(
-                                    this.peerAddress.getHostAddress())) {
-                        v.setParameter(Via.RECEIVED, this.peerAddress
-                                .getHostAddress());
-                    }
-                    // @@@ hagai
-                    // JvB: technically, may only do this when Via already
-                    // contains
-                    // rport
-                    v.setParameter(Via.RPORT, Integer.toString(this.peerPort));
-                } catch (java.text.ParseException ex) {
-                    InternalErrorHandler.handleException(ex);
-                }
-                // Use this for outgoing messages as well.
-                if (!this.isCached && mySock != null) {
-                    ((TLSMessageProcessor) this.messageProcessor)
-                            .cacheMessageChannel(this);
-                    this.isCached = true;
-                    String key = IOHandler.makeKey(mySock.getInetAddress(),
-                            this.peerPort);
-                    sipStack.ioHandler.putSocket(key, mySock);
-                }
-            }
-
-            // Foreach part of the request header, fetch it and process it
-
-            long receptionTime = System.currentTimeMillis();
-            //
-
-            if (sipMessage instanceof SIPRequest) {
-                // This is a request - process the request.
-                SIPRequest sipRequest = (SIPRequest) sipMessage;
-                // Create a new sever side request processor for this
-                // message and let it handle the rest.
-
-                if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                    logger.logDebug(
-                            "----Processing Message---");
-                }
-                if (logger.isLoggingEnabled(
-                        ServerLogger.TRACE_MESSAGES)) {
-
-                    sipStack.serverLogger.logMessage(sipMessage, this
-                            .getPeerHostPort().toString(),
-                            this.messageProcessor.getIpAddress()
-                                    .getHostAddress()
-                                    + ":" + this.messageProcessor.getPort(),
-                            false, receptionTime);
-
-                }
-                // Check for reasonable size - reject message
-                // if it is too long.
-                if (sipStack.getMaxMessageSize() > 0
-                        && sipRequest.getSize()
-                                + (sipRequest.getContentLength() == null ? 0
-                                        : sipRequest.getContentLength()
-                                                .getContentLength()) > sipStack
-                                .getMaxMessageSize()) {
-                    SIPResponse sipResponse = sipRequest
-                            .createResponse(SIPResponse.MESSAGE_TOO_LARGE);
-                    byte[] resp = sipResponse
-                            .encodeAsBytes(this.getTransport());
-                    this.sendMessage(resp, false);
-                    throw new Exception("Message size exceeded");
-                }
-
-                String sipVersion = ((SIPRequest) sipMessage).getRequestLine()
-                        .getSipVersion();
-                if (!sipVersion.equals("SIP/2.0")) {
-                    SIPResponse versionNotSupported = ((SIPRequest) sipMessage)
-                            .createResponse(Response.VERSION_NOT_SUPPORTED,
-                                    "Bad SIP version " + sipVersion);
-                    this.sendMessage(versionNotSupported.encodeAsBytes(this
-                            .getTransport()), false);
-                    throw new Exception("Bad version ");
-                }
-
-                String method = ((SIPRequest) sipMessage).getMethod();
-                String cseqMethod = ((SIPRequest) sipMessage).getCSeqHeader()
-                        .getMethod();
-
-                if (!method.equalsIgnoreCase(cseqMethod)) {
-                    SIPResponse sipResponse = sipRequest
-                    .createResponse(SIPResponse.BAD_REQUEST);
-                    byte[] resp = sipResponse
-                            .encodeAsBytes(this.getTransport());
-                    this.sendMessage(resp, false);
-                    throw new Exception("Bad CSeq method");
-                }
-
-                // Stack could not create a new server request interface.
-                // maybe not enough resources.
-                ServerRequestInterface sipServerRequest = sipStack
-                        .newSIPServerRequest(sipRequest, this);
-                if (sipServerRequest != null) {
-                    try {
-                        sipServerRequest.processRequest(sipRequest, this);
-                    } finally {
-                        if (sipServerRequest instanceof SIPTransaction) {
-                            SIPServerTransaction sipServerTx = (SIPServerTransaction) sipServerRequest;
-                            if (!sipServerTx.passToListener())
-                                ((SIPTransaction) sipServerRequest)
-                                        .releaseSem();
-                        }
-                    }
-                } else {
-                    SIPResponse response = sipRequest
-                            .createResponse(Response.SERVICE_UNAVAILABLE);
-
-                    RetryAfter retryAfter = new RetryAfter();
-
-                    // Be a good citizen and send a decent response code back.
-                    try {
-                        retryAfter.setRetryAfter((int) (10 * (Math.random())));
-                        response.setHeader(retryAfter);
-                        this.sendMessage(response);
-                    } catch (Exception e) {
-                        // IGNore
-                    }
-                    if (logger.isLoggingEnabled())
-                        logger
-                                .logWarning(
-                                        "Dropping message -- could not acquire semaphore");
-                }
-            } else {
-                SIPResponse sipResponse = (SIPResponse) sipMessage;
-                try {
-                    sipResponse.checkHeaders();
-                } catch (ParseException ex) {
-                    if (logger.isLoggingEnabled())
-                        logger.logError(
-                                "Dropping Badly formatted response message >>> "
-                                        + sipResponse);
-                    return;
-                }
-                // This is a response message - process it.
-                // Check the size of the response.
-                // If it is too large dump it silently.
-                if (sipStack.getMaxMessageSize() > 0
-                        && sipResponse.getSize()
-                                + (sipResponse.getContentLength() == null ? 0
-                                        : sipResponse.getContentLength()
-                                                .getContentLength()) > sipStack
-                                .getMaxMessageSize()) {
-                    if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                        logger.logDebug(
-                                "Message size exceeded");
-                    return;
-
-                }
-
-                ServerResponseInterface sipServerResponse = sipStack
-                        .newSIPServerResponse(sipResponse, this);
-                if (sipServerResponse != null) {
-                    try {
-                        if (sipServerResponse instanceof SIPClientTransaction
-                                && !((SIPClientTransaction) sipServerResponse)
-                                        .checkFromTag(sipResponse)) {
-                            if (logger.isLoggingEnabled())
-                                logger.logError(
-                                        "Dropping response message with invalid tag >>> "
-                                                + sipResponse);
-                            return;
-                        }
-
-                        sipServerResponse.processResponse(sipResponse, this);
-                    } finally {
-                        if (sipServerResponse instanceof SIPTransaction
-                                && !((SIPTransaction) sipServerResponse)
-                                        .passToListener()) {
-                            // Note that the semaphore is released in event
-                            // scanner if the
-                            // request is actually processed by the Listener.
-                            ((SIPTransaction) sipServerResponse).releaseSem();
-                        }
-                    }
-                } else {
-                    logger.logWarning(
-                            "Could not get semaphore... dropping response");
-                }
-            }
-        } finally {
-        }
-    }
-
-    /**
-     * This gets invoked when thread.start is called from the constructor.
-     * Implements a message loop - reading the tcp connection and processing
-     * messages until we are done or the other end has closed.
-     */
-    public void run() {
-        Pipeline hispipe = null;
-        // Create a pipeline to connect to our message parser.
-        hispipe = new Pipeline(myClientInputStream, sipStack.readTimeout,
-                ((SIPTransactionStack) sipStack).getTimer());
-        // Create a pipelined message parser to read and parse
-        // messages that we write out to him.
-        myParser = new PipelinedMsgParser(sipStack, this, hispipe,
-                this.sipStack.getMaxMessageSize());
-        // Start running the parser thread.
-        myParser.processInput();
-        // bug fix by Emmanuel Proulx
-        int bufferSize = 4096;
-        this.tlsMessageProcessor.useCount++;
-        this.isRunning = true;
-        try {
-            while (true) {
-                try {
-                    byte[] msg = new byte[bufferSize];
-                    int nbytes = myClientInputStream.read(msg, 0, bufferSize);
-                    // no more bytes to read...
-                    if (nbytes == -1) {
-                        hispipe.write("\r\n\r\n".getBytes("UTF-8"));
-                        try {
-                            if (sipStack.maxConnections != -1) {
-                                synchronized (tlsMessageProcessor) {
-                                    tlsMessageProcessor.nConnections--;
-                                    tlsMessageProcessor.notify();
-                                }
-                            }
-                            hispipe.close();
-                            close();
-                        } catch (IOException ioex) {
-                        }
-                        return;
-                    }                    
-                    hispipe.write(msg, 0, nbytes);
-
-                } catch (IOException ex) {
-                    // Terminate the message.
-                    try {
-                        hispipe.write("\r\n\r\n".getBytes("UTF-8"));
-                    } catch (Exception e) {
-                        // InternalErrorHandler.handleException(e);
-                    }
-
-                    try {
-                        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                            logger.logDebug(
-                                    "IOException  closing sock " + ex);
-                        try {
-                            if (sipStack.maxConnections != -1) {
-                                synchronized (tlsMessageProcessor) {
-                                    tlsMessageProcessor.nConnections--;
-                                    tlsMessageProcessor.notify();
-                                }
-                            }
-                            close();
-                            hispipe.close();
-                        } catch (IOException ioex) {
-                        }
-                    } catch (Exception ex1) {
-                        // Do nothing.
-                    }
-                    return;
-                } catch (Exception ex) {
-                    InternalErrorHandler.handleException(ex);
-                }
-            }
-        } finally {
-            this.isRunning = false;
-            this.tlsMessageProcessor.remove(this);
-            this.tlsMessageProcessor.useCount--;
-            // parser could be null if the socket was closed by the remote end already
-            if(myParser != null) {
-            	this.myParser.close();
-            }
-        }
-
-    }
-
-    protected void uncache() {
-        if (isCached && !isRunning) {
-            this.tlsMessageProcessor.remove(this);
-        }
-    }
+    }       
 
     /**
      * Equals predicate.
@@ -998,55 +517,6 @@ public final class TLSMessageChannel extends MessageChannel implements
     }
 
     /**
-     * Get an identifying key. This key is used to cache the connection and
-     * re-use it if necessary.
-     */
-    public String getKey() {
-        if (this.key != null) {
-            return this.key;
-        } else {
-            this.key = MessageChannel.getKey(this.peerAddress, this.peerPort,
-                    "TLS");
-            return this.key;
-        }
-    }
-
-    /**
-     * Get the host to assign to outgoing messages.
-     *
-     * @return the host to assign to the via header.
-     */
-    public String getViaHost() {
-        return myAddress;
-    }
-
-    /**
-     * Get the port for outgoing messages sent from the channel.
-     *
-     * @return the port to assign to the via header.
-     */
-    public int getViaPort() {
-        return myPort;
-    }
-
-    /**
-     * Get the port of the peer to whom we are sending messages.
-     *
-     * @return the peer port.
-     */
-    public int getPeerPort() {
-        return peerPort;
-    }
-
-    public int getPeerPacketSourcePort() {
-        return this.peerPort;
-    }
-
-    public InetAddress getPeerPacketSourceAddress() {
-        return this.peerAddress;
-    }
-
-    /**
      * TLS Is a secure protocol.
      */
     public boolean isSecure() {
@@ -1063,15 +533,5 @@ public final class TLSMessageChannel extends MessageChannel implements
      */
     public HandshakeCompletedListenerImpl getHandshakeCompletedListener() {
         return (HandshakeCompletedListenerImpl) handshakeCompletedListener;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see gov.nist.javax.sip.parser.SIPMessageListener#sendSingleCLRF()
-     */
-	public void sendSingleCLRF() throws Exception {
-		if(mySock != null && !mySock.isClosed()) {
-			mySock.getOutputStream().write("\r\n".getBytes("UTF-8"));
-		}
-	}
+    }    
 }
