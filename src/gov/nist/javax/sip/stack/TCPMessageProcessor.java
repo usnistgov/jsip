@@ -28,14 +28,19 @@
  ******************************************************************************/
 package gov.nist.javax.sip.stack;
 
-import java.net.Socket;
-import java.net.ServerSocket;
-import java.io.IOException;
-import java.net.SocketException;
-import gov.nist.core.*;
+import gov.nist.core.CommonLogger;
+import gov.nist.core.HostPort;
+import gov.nist.core.InternalErrorHandler;
+import gov.nist.core.LogWriter;
+import gov.nist.core.StackLogger;
 
-import java.net.*;
-import java.util.*;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.Collection;
+import java.util.Iterator;
 
 /*
  * Acknowledgement: Jeff Keyser suggested that a Stop mechanism be added to this. Niklas Uhrberg
@@ -56,21 +61,9 @@ import java.util.*;
  * 
  * 
  */
-public class TCPMessageProcessor extends MessageProcessor {
+public class TCPMessageProcessor extends ConnectionOrientedMessageProcessor {
 	
 	private static StackLogger logger = CommonLogger.getLogger(TCPMessageProcessor.class);
-
-    protected int nConnections;
-
-    private boolean isRunning;
-
-    private Hashtable tcpMessageChannels;
-
-    private ArrayList<TCPMessageChannel> incomingTcpMessageChannels;
-
-    private ServerSocket sock;
-
-    protected int useCount;
 
     /**
      * Constructor.
@@ -80,11 +73,6 @@ public class TCPMessageProcessor extends MessageProcessor {
      */
     protected TCPMessageProcessor(InetAddress ipAddress, SIPTransactionStack sipStack, int port) {
         super(ipAddress, port, "tcp",sipStack);
-
-        this.sipStack = sipStack;
-
-        this.tcpMessageChannels = new Hashtable();
-        this.incomingTcpMessageChannels = new ArrayList<TCPMessageChannel>();
     }
 
     /**
@@ -139,8 +127,9 @@ public class TCPMessageProcessor extends MessageProcessor {
                 }
                 // Note that for an incoming message channel, the
                 // thread is already running
-               
-                incomingTcpMessageChannels.add(new TCPMessageChannel(newsock, sipStack, this, "TCPMessageChannelThread-" + nConnections));
+
+                TCPMessageChannel newChannel = new TCPMessageChannel(newsock, sipStack, this, "TCPMessageChannelThread-" + nConnections);
+                incomingMessageChannels.put(newChannel.getKey(), newChannel);
             } catch (SocketException ex) {
                 this.isRunning = false;
             } catch (IOException ex) {
@@ -164,15 +153,6 @@ public class TCPMessageProcessor extends MessageProcessor {
     }
 
     /**
-     * Returns the stack.
-     * 
-     * @return my sip stack.
-     */
-    public SIPTransactionStack getSIPStack() {
-        return sipStack;
-    }
-
-    /**
      * Stop the message processor. Feature suggested by Jeff Keyser.
      */
     public synchronized void stop() {
@@ -184,45 +164,30 @@ public class TCPMessageProcessor extends MessageProcessor {
             e.printStackTrace();
         }
 
-        Collection en = tcpMessageChannels.values();
+        Collection en = messageChannels.values();
         for (Iterator it = en.iterator(); it.hasNext();) {
             TCPMessageChannel next = (TCPMessageChannel) it.next();
             next.close();
         }
         // RRPN: fix
-        for (Iterator incomingMCIterator = incomingTcpMessageChannels.iterator(); incomingMCIterator
+        for (Iterator incomingMCIterator = incomingMessageChannels.values().iterator(); incomingMCIterator
                 .hasNext();) {
             TCPMessageChannel next = (TCPMessageChannel) incomingMCIterator.next();
             next.close();
         }
 
         this.notify();
-    }
-
-    protected synchronized void remove(TCPMessageChannel tcpMessageChannel) {
-
-        String key = tcpMessageChannel.getKey();
-        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-            logger.logDebug(Thread.currentThread() + " removing " + key);
-        }
-
-        /** May have been removed already */
-        if (tcpMessageChannels.get(key) == tcpMessageChannel) {
-            this.tcpMessageChannels.remove(key);
-        }
-
-        incomingTcpMessageChannels.remove(tcpMessageChannel);
-    }
+    }    
 
     public synchronized MessageChannel createMessageChannel(HostPort targetHostPort)
             throws IOException {
         String key = MessageChannel.getKey(targetHostPort, "TCP");
-        if (tcpMessageChannels.get(key) != null) {
-            return (TCPMessageChannel) this.tcpMessageChannels.get(key);
+        if (messageChannels.get(key) != null) {
+            return (TCPMessageChannel) this.messageChannels.get(key);
         } else {
             TCPMessageChannel retval = new TCPMessageChannel(targetHostPort.getInetAddress(),
                     targetHostPort.getPort(), sipStack, this);
-            this.tcpMessageChannels.put(key, retval);
+            this.messageChannels.put(key, retval);
             retval.isCached = true;
             if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                 logger.logDebug("key " + key);
@@ -230,31 +195,17 @@ public class TCPMessageProcessor extends MessageProcessor {
             }
             return retval;
         }
-    }
-
-    protected synchronized void cacheMessageChannel(TCPMessageChannel messageChannel) {
-        String key = messageChannel.getKey();
-        TCPMessageChannel currentChannel = (TCPMessageChannel) tcpMessageChannels.get(key);
-        if (currentChannel != null) {
-            if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
-                logger.logDebug("Closing " + key);
-            currentChannel.close();
-        }
-        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-            logger.logDebug("Caching " + key);
-        this.tcpMessageChannels.put(key, messageChannel);
-
-    }
+    }    
 
     public synchronized MessageChannel createMessageChannel(InetAddress host, int port)
             throws IOException {
         try {
             String key = MessageChannel.getKey(host, port, "TCP");
-            if (tcpMessageChannels.get(key) != null) {
-                return (TCPMessageChannel) this.tcpMessageChannels.get(key);
+            if (messageChannels.get(key) != null) {
+                return (TCPMessageChannel) this.messageChannels.get(key);
             } else {
                 TCPMessageChannel retval = new TCPMessageChannel(host, port, sipStack, this);
-                this.tcpMessageChannels.put(key, retval);
+                this.messageChannels.put(key, retval);
                 retval.isCached = true;
                 if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                     logger.logDebug("key " + key);
@@ -265,17 +216,6 @@ public class TCPMessageProcessor extends MessageProcessor {
         } catch (UnknownHostException ex) {
             throw new IOException(ex.getMessage());
         }
-    }
-
-    /**
-     * TCP can handle an unlimited number of bytes.
-     */
-    public int getMaximumMessageSize() {
-        return Integer.MAX_VALUE;
-    }
-
-    public boolean inUse() {
-        return this.useCount != 0;
     }
 
     /**

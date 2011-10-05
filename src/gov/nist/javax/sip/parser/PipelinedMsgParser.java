@@ -44,6 +44,7 @@ import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.header.ContentLength;
 import gov.nist.javax.sip.message.SIPMessage;
 import gov.nist.javax.sip.stack.BlockingQueueDispatchAuditor;
+import gov.nist.javax.sip.stack.ConnectionOrientedMessageChannel;
 import gov.nist.javax.sip.stack.QueuedMessageDispatchBase;
 import gov.nist.javax.sip.stack.SIPTransactionStack;
 
@@ -374,6 +375,10 @@ public final class PipelinedMsgParser implements Runnable {
 	                        	if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
 	                            	logger.logDebug("Received CRLF");
 	                            }
+	                        	if(sipMessageListener != null && 
+	                        			sipMessageListener instanceof ConnectionOrientedMessageChannel) {
+	                        		((ConnectionOrientedMessageChannel)sipMessageListener).cancelPingKeepAliveTimeoutTaskIfStarted();
+	                        	}
                         	}
                         	continue;
                         } else 

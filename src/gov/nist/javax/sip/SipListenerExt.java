@@ -46,4 +46,14 @@ public interface SipListenerExt extends SipListener {
      * @param timeoutEvent - the timeoutEvent received indicating the dialog timed out.
      */
     public void processDialogTimeout(DialogTimeoutEvent timeoutEvent);
+    
+    /**
+     * Processes a keepalive Timeout of an underlying TCP based {@link MessageChannel} handled by this
+     * SipListener. This Event notifies the application that a keepalive double crlf was not received 
+     * on the channel after the expîred amount of time defined by stack property gov.nist.javax.sip.RELIABLE_CONNECTION_KEEP_ALIVE_TIMEOUT. 
+     * The KeepAliveTimeoutEvent encapsulates the local and peer hosts, ports and transport. 
+     * 
+     * @param ioExceptionEventExt - the timeoutEvent received indicating that a keep alive timed out on a given channel.
+     */
+//    public void processIOException(IOExceptionEventExt ioExceptionEventExt);
 }
