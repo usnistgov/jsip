@@ -525,6 +525,10 @@ import javax.sip.message.Request;
  * accepting a connection. Set to Want if you want the SSL stack to request a client Certificate, but not fail if one isn't presented. 
  * A Disabled value will not require a certificate chain.
  * </li>
+ *
+ *<li><b>gov.nist.javax.sip.RELIABLE_CONNECTION_KEEP_ALIVE_TIMEOUT</b> Value in seconds which wis used as default keepalive timeout
+ * (See also http://tools.ietf.org/html/rfc5626#section-4.4.1)</li>
+ *
  * 
  * <li><b>javax.net.ssl.keyStore = fileName </b> <br/>
  * Default is <it>NULL</it>. If left undefined the keyStore and trustStore will
@@ -547,8 +551,8 @@ import javax.sip.message.Request;
  * <b> Note that the stack supports the extensions that are defined in
  * SipStackExt. These will be supported in the next release of JAIN-SIP. You
  * should only use the extensions that are defined in this class. </b>
- * 
- * 
+ *
+ *
  * @version 1.2 $Revision: 1.143 $ $Date: 2010-12-02 22:04:18 $
  * 
  * @author M. Ranganathan <br/>
@@ -744,6 +748,9 @@ public class SipStackImpl extends SIPTransactionStack implements
 								+ "- check that it is present on the classpath and that there is a no-args constructor defined",
 						ex);
 			}
+
+		super.setReliableConnectionKeepAliveTimeout(1000 * Integer.parseInt(
+			        configurationProperties.getProperty("gov.nist.javax.sip.RELIABLE_CONNECTION_KEEP_ALIVE_TIMEOUT", "-1")));
 
 		super.setThreadPriority(Integer.parseInt(
 			        configurationProperties.getProperty("gov.nist.javax.sip.THREAD_PRIORITY","" + Thread.MAX_PRIORITY)));

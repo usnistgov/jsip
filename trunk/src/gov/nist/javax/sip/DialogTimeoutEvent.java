@@ -15,8 +15,6 @@
  */
 package gov.nist.javax.sip;
 
-import gov.nist.javax.sip.stack.SIPDialog;
-
 import java.util.EventObject;
 
 import javax.sip.ClientTransaction;
