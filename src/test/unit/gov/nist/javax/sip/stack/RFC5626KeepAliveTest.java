@@ -336,7 +336,7 @@ public class RFC5626KeepAliveTest extends ScenarioHarness implements SipListener
 	                    ((ListeningPointExt)shootist.listeningPoint).sendHeartbeat( Shootme.myAddress, Shootme.myPort);
 	                    keepAliveSent++;
 	                } catch (Exception e) {
-	                    e.printStackTrace();
+//	                    e.printStackTrace();
 	                    this.cancel();
 //	                    fail();
 	                }
