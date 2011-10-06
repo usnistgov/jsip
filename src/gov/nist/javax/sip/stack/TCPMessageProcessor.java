@@ -129,6 +129,8 @@ public class TCPMessageProcessor extends ConnectionOrientedMessageProcessor {
                 // thread is already running
 
                 TCPMessageChannel newChannel = new TCPMessageChannel(newsock, sipStack, this, "TCPMessageChannelThread-" + nConnections);
+                if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                    logger.logDebug(Thread.currentThread() + " adding incoming channel " + newChannel.getKey() + " for processor " + getIpAddress()+ ":" + getPort() + "/" + getTransport());
                 incomingMessageChannels.put(newChannel.getKey(), newChannel);
             } catch (SocketException ex) {
                 this.isRunning = false;

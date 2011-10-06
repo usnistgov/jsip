@@ -51,8 +51,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.text.ParseException;
 import java.util.Iterator;
+import java.util.concurrent.Semaphore;
 
-import javax.sip.IOExceptionEvent;
 import javax.sip.SipListener;
 import javax.sip.address.Hop;
 import javax.sip.message.Response;
@@ -98,12 +98,16 @@ public abstract class ConnectionOrientedMessageChannel extends MessageChannel im
 	private volatile long lastKeepAliveReceivedTime;
 
     private SIPStackTimerTask pingKeepAliveTimeoutTask;
-
-    private long keepAliveTimeout;
+    private Semaphore keepAliveSemaphore;
+    
+    private long keepAliveTimeout;    
     
     public ConnectionOrientedMessageChannel(SIPTransactionStack sipStack) {
     	this.sipStack = sipStack;
     	this.keepAliveTimeout = sipStack.getReliableConnectionKeepAliveTimeout();
+    	if(keepAliveTimeout > 0) {
+    		keepAliveSemaphore = new Semaphore(1);
+    	}
 	}
     
     /**
@@ -688,12 +692,22 @@ public abstract class ConnectionOrientedMessageChannel extends MessageChannel im
     }
 
     public void cancelPingKeepAliveTimeoutTaskIfStarted() {
-    	if(pingKeepAliveTimeoutTask != null) {
-	    	synchronized (pingKeepAliveTimeoutTask) {
-	    		if (pingKeepAliveTimeoutTask != null) {
-	                sipStack.getTimer().cancel(pingKeepAliveTimeoutTask);
+    	if(pingKeepAliveTimeoutTask != null && pingKeepAliveTimeoutTask.getSipTimerTask() != null) {
+    		try {
+				keepAliveSemaphore.acquire();
+			} catch (InterruptedException e) {
+				logger.logError("Couldn't acquire keepAliveSemaphore");
+				return;
+			}
+	    	try {
+	    		if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+	                logger.logDebug("~~~ cancelPingKeepAliveTimeoutTaskIfStarted for MessageChannel(key=" + key + "), clientAddress=" + peerAddress
+	                        +  ", clientPort=" + peerPort+ ", timeout="+ keepAliveTimeout + ")");
 	            }
-	    	}    
+	    		sipStack.getTimer().cancel(pingKeepAliveTimeoutTask);
+	    	} finally {
+	    		keepAliveSemaphore.release();
+	    	}
     	}
     }
 
@@ -711,6 +725,9 @@ public abstract class ConnectionOrientedMessageChannel extends MessageChannel im
         }
 
         this.keepAliveTimeout = keepAliveTimeout;
+        if(keepAliveSemaphore == null) {
+        	keepAliveSemaphore = new Semaphore(1);
+        }
 
         boolean isKeepAliveTimeoutTaskScheduled = pingKeepAliveTimeoutTask != null;
         if (isKeepAliveTimeoutTaskScheduled && keepAliveTimeout > 0){
@@ -723,40 +740,61 @@ public abstract class ConnectionOrientedMessageChannel extends MessageChannel im
     }
 
     public void rescheduleKeepAliveTimeout(long newKeepAliveTimeout) {
-
-        cancelPingKeepAliveTimeoutTaskIfStarted();
-
-        long now = System.currentTimeMillis();
-        long lastKeepAliveReceivedTimeOrNow = lastKeepAliveReceivedTime == 0 ? now : lastKeepAliveReceivedTime;
-
-        long newScheduledTime =  lastKeepAliveReceivedTimeOrNow + newKeepAliveTimeout;
+//        long now = System.currentTimeMillis();
+//        long lastKeepAliveReceivedTimeOrNow = lastKeepAliveReceivedTime == 0 ? now : lastKeepAliveReceivedTime;
+//
+//        long newScheduledTime =  lastKeepAliveReceivedTimeOrNow + newKeepAliveTimeout;
 
         StringBuilder methodLog = new StringBuilder();
 
         if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-            methodLog.append("~~~ rescheduleKeepAliveTimeout: newKeepAliveTimeout=");
+            methodLog.append("~~~ rescheduleKeepAliveTimeout for MessageChannel(key=" + key + "), clientAddress=" + peerAddress
+                    +  ", clientPort=" + peerPort+ ", timeout="+ keepAliveTimeout + "): newKeepAliveTimeout=");
             if (newKeepAliveTimeout == Long.MAX_VALUE) {
                 methodLog.append("Long.MAX_VALUE");
             } else {
                 methodLog.append(newKeepAliveTimeout);
             }
-            methodLog.append(", lastKeepAliveReceivedTimeOrNow=");
-            methodLog.append(lastKeepAliveReceivedTimeOrNow);
-            methodLog.append(", newScheduledTime=");
-            methodLog.append(newScheduledTime);
+//            methodLog.append(", lastKeepAliveReceivedTimeOrNow=");
+//            methodLog.append(lastKeepAliveReceivedTimeOrNow);
+//            methodLog.append(", newScheduledTime=");
+//            methodLog.append(newScheduledTime);
         }
 
-        long delay = newScheduledTime > now ? newScheduledTime - now : 1;
-        pingKeepAliveTimeoutTask = new KeepAliveTimeoutTimerTask();                	
-        synchronized (pingKeepAliveTimeoutTask) {
-	        sipStack.getTimer().schedule(pingKeepAliveTimeoutTask, delay);
-        }
-        
-        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-            methodLog.append(", scheduling pingKeepAliveTimeoutTask to execute after ");
-            methodLog.append(delay / 1000);
-            methodLog.append(" seconds");
-            logger.logDebug(methodLog.toString());
+//        long delay = newScheduledTime > now ? newScheduledTime - now : 1;
+        try {
+			keepAliveSemaphore.acquire();
+		} catch (InterruptedException e) {
+			logger.logWarning("Couldn't acquire keepAliveSemaphore");
+			return;
+		}
+		try{
+	        if(pingKeepAliveTimeoutTask == null) {
+	        	pingKeepAliveTimeoutTask = new KeepAliveTimeoutTimerTask();	  	        	
+	        	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+	                methodLog.append(", scheduling pingKeepAliveTimeoutTask to execute after ");
+	                methodLog.append(keepAliveTimeout / 1000);
+	                methodLog.append(" seconds");
+	                logger.logDebug(methodLog.toString());
+	            }
+	    	    sipStack.getTimer().schedule(pingKeepAliveTimeoutTask, keepAliveTimeout);
+	        } else {
+	        	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+	                logger.logDebug("~~~ cancelPingKeepAliveTimeout for MessageChannel(key=" + key + "), clientAddress=" + peerAddress
+	                        +  ", clientPort=" + peerPort+ ", timeout="+ keepAliveTimeout + ")");
+	        	}
+        		sipStack.getTimer().cancel(pingKeepAliveTimeoutTask);        	
+        		pingKeepAliveTimeoutTask = new KeepAliveTimeoutTimerTask();
+        		if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+	                methodLog.append(", scheduling pingKeepAliveTimeoutTask to execute after ");
+	                methodLog.append(keepAliveTimeout / 1000);
+	                methodLog.append(" seconds");
+	                logger.logDebug(methodLog.toString());
+	            }
+        		sipStack.getTimer().schedule(pingKeepAliveTimeoutTask, keepAliveTimeout);
+	        }
+		} finally {
+        	keepAliveSemaphore.release();
         }
     }
     class KeepAliveTimeoutTimerTask extends SIPStackTimerTask {
