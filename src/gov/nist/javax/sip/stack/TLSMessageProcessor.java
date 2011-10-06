@@ -166,6 +166,8 @@ public class TLSMessageProcessor extends ConnectionOrientedMessageProcessor {
                // thread is already running
 
                 TLSMessageChannel newChannel = new TLSMessageChannel(newsock, sipStack, this, "TLSMessageChannelThread-" + nConnections);
+                if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+                    logger.logDebug(Thread.currentThread() + " adding incoming channel " + newChannel.getKey());
                 incomingMessageChannels.put(newChannel.getKey(), newChannel);
 
             } catch (SocketException ex) {
