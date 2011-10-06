@@ -3202,7 +3202,7 @@ public abstract class SIPTransactionStack implements
      * @param peerAddress - peerAddress
      * @param peerPort - peerPort
      */
-    public void closeReliableConnection(String myAddress, int myPort, String transport, String peerAddress, int peerPort) {
+    public boolean closeReliableConnection(String myAddress, int myPort, String transport, String peerAddress, int peerPort) {
 
         MessageProcessor processor = findMessageProcessor(myAddress, myPort, transport);
 
@@ -3212,7 +3212,8 @@ public abstract class SIPTransactionStack implements
                         + ", transport=" + transport + ", peerAddress=" + peerAddress + ", peerPort=" + peerPort
                         + "), MessageProcessor=" + processor);
             }
-            ((ConnectionOrientedMessageProcessor)processor).closeReliableConnection(peerAddress, peerPort);
+            return ((ConnectionOrientedMessageProcessor)processor).closeReliableConnection(peerAddress, peerPort);
         }
+        return false;
     }
 }
