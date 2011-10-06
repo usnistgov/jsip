@@ -747,12 +747,11 @@ public abstract class ConnectionOrientedMessageChannel extends MessageChannel im
         }
 
         long delay = newScheduledTime > now ? newScheduledTime - now : 1;
-        if(pingKeepAliveTimeoutTask != null) {
-	        synchronized (pingKeepAliveTimeoutTask) {
-		        pingKeepAliveTimeoutTask = new KeepAliveTimeoutTimerTask();
-		        sipStack.getTimer().schedule(pingKeepAliveTimeoutTask, delay);
-	        }
+        pingKeepAliveTimeoutTask = new KeepAliveTimeoutTimerTask();                	
+        synchronized (pingKeepAliveTimeoutTask) {
+	        sipStack.getTimer().schedule(pingKeepAliveTimeoutTask, delay);
         }
+        
         if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             methodLog.append(", scheduling pingKeepAliveTimeoutTask to execute after ");
             methodLog.append(delay / 1000);
