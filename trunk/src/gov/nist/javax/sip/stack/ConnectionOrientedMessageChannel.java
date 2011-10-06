@@ -688,12 +688,16 @@ public abstract class ConnectionOrientedMessageChannel extends MessageChannel im
     }
 
     public void cancelPingKeepAliveTimeoutTaskIfStarted() {
-        if (pingKeepAliveTimeoutTask != null) {
-            sipStack.getTimer().cancel(pingKeepAliveTimeoutTask);
-        }
+    	if(pingKeepAliveTimeoutTask != null) {
+	    	synchronized (pingKeepAliveTimeoutTask) {
+	    		if (pingKeepAliveTimeoutTask != null) {
+	                sipStack.getTimer().cancel(pingKeepAliveTimeoutTask);
+	            }
+	    	}    
+    	}
     }
 
-    public synchronized void setKeepAliveTimeout(long keepAliveTimeout) {
+    public void setKeepAliveTimeout(long keepAliveTimeout) {
         if (keepAliveTimeout < 0){
             cancelPingKeepAliveTimeoutTaskIfStarted();
         }
@@ -743,10 +747,12 @@ public abstract class ConnectionOrientedMessageChannel extends MessageChannel im
         }
 
         long delay = newScheduledTime > now ? newScheduledTime - now : 1;
-
-        pingKeepAliveTimeoutTask = new KeepAliveTimeoutTimerTask();
-        sipStack.getTimer().schedule(pingKeepAliveTimeoutTask, delay);
-
+        if(pingKeepAliveTimeoutTask != null) {
+	        synchronized (pingKeepAliveTimeoutTask) {
+		        pingKeepAliveTimeoutTask = new KeepAliveTimeoutTimerTask();
+		        sipStack.getTimer().schedule(pingKeepAliveTimeoutTask, delay);
+	        }
+        }
         if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             methodLog.append(", scheduling pingKeepAliveTimeoutTask to execute after ");
             methodLog.append(delay / 1000);
