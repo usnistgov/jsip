@@ -294,7 +294,6 @@ public class RFC5626KeepAliveTest extends ScenarioHarness implements SipListener
         }
 
 
-		@Override
 		public void processDialogTimeout(DialogTimeoutEvent timeoutEvent) {
 			// TODO Auto-generated method stub
 			
@@ -618,8 +617,6 @@ public class RFC5626KeepAliveTest extends ScenarioHarness implements SipListener
 
         }
 
-
-		@Override
 		public void processDialogTimeout(DialogTimeoutEvent timeoutEvent) {
 			// TODO Auto-generated method stub
 			
@@ -818,7 +815,6 @@ public class RFC5626KeepAliveTest extends ScenarioHarness implements SipListener
         return listener;
     }
 
-	@Override
 	public void processDialogTimeout(DialogTimeoutEvent timeoutEvent) {
 		getSipListener(timeoutEvent).processDialogTimeout(timeoutEvent);
 		
