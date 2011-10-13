@@ -590,7 +590,7 @@ public class IOHandler {
                                     "Handshake passed");
                         }
                         writeChunks(outputStream, bytes, length);
-                        putSocket(key, clientSock);
+                        putSocket(key, sslsock);
                         return sslsock;
                     } else {
                         if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
