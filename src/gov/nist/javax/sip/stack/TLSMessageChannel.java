@@ -293,29 +293,43 @@ public final class TLSMessageChannel extends ConnectionOrientedMessageChannel {
         // one in its place but dont do this if it is a datagram socket.
         // (could have replied via udp but received via tcp!).
         if (sock != mySock && sock != null) {
-        	if(mySock != null && logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                logger.logDebug(
-                        "Old socket different than new socket");
-                logger.logStackTrace();
-                
-	             logger.logDebug(
-	                	 "Old socket local ip address " + mySock.getLocalSocketAddress());
-	             logger.logDebug(
-	            		 "Old socket remote ip address " + mySock.getRemoteSocketAddress());                         
-                logger.logDebug(
-               		 "New socket local ip address " + sock.getLocalSocketAddress());
-                logger.logDebug(
-               		 "New socket remote ip address " + sock.getRemoteSocketAddress());
-           }
-            close(false);
-            mySock = sock;
-            this.myClientInputStream = mySock.getInputStream();
-
-            Thread thread = new Thread(this);
-            thread.setDaemon(true);
-            thread.setName("TLSMessageChannelThread");
-            thread.start();
-        }
+          	 if (mySock != null) {
+          		 if(logger.isLoggingEnabled(LogWriter.TRACE_WARN)) {
+          			 logger.logWarning(
+                       		 "Old socket different than new socket on channel " + key);
+   		             logger.logStackTrace();
+   		             logger.logWarning(
+   		            		 "Old socket local ip address " + mySock.getLocalSocketAddress());
+   		             logger.logWarning(
+   		            		 "Old socket remote ip address " + mySock.getRemoteSocketAddress());                         
+   		             logger.logWarning(
+   		            		 "New socket local ip address " + sock.getLocalSocketAddress());
+   		             logger.logWarning(
+   		            		 "New socket remote ip address " + sock.getRemoteSocketAddress());
+          		 }
+          		 close(false);
+          	}    
+          	if(problem == null) {
+          		if(mySock != null) {
+   	        		if(logger.isLoggingEnabled(LogWriter.TRACE_WARN)) {
+   	        			logger.logWarning(
+   	                		 "There was no exception for the retry mechanism so creating a new thread based on the new socket for incoming " + key);
+   	        		}
+          		}
+   	            mySock = sock;
+   	            this.myClientInputStream = mySock.getInputStream();
+   	            Thread thread = new Thread(this);
+   	            thread.setDaemon(true);
+   	            thread.setName("TCPMessageChannelThread");
+   	            thread.start();
+          	} else {
+          		if(logger.isLoggingEnabled(LogWriter.TRACE_WARN)) {
+          			logger.logWarning(
+          					"There was an exception for the retry mechanism so not creating a new thread based on the new socket for incoming " + key);
+          		}
+          		mySock = sock;
+          	}
+          }
 
     }
 
@@ -389,47 +403,60 @@ public final class TLSMessageChannel extends ConnectionOrientedMessageChannel {
         //
         // Created a new socket so close the old one and s
         // Check for null (bug fix sent in by Christophe)
-        if (sock != mySock && sock != null) {          
+        if (sock != mySock && sock != null) {        	        	
             if (mySock != null) {
-            	if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-	            	logger.logDebug(
-	                         "Old socket different than new socket");
-	                 logger.logStackTrace();
-	                 
-		             logger.logDebug(
-		                	 "Old socket local ip address " + mySock.getLocalSocketAddress());
-		             logger.logDebug(
+            	if(logger.isLoggingEnabled(LogWriter.TRACE_WARN)) {
+       			 	 logger.logWarning(
+                    		 "Old socket different than new socket on channel " + key);
+		             logger.logStackTrace();
+		             logger.logWarning(
+		            		 "Old socket local ip address " + mySock.getLocalSocketAddress());
+		             logger.logWarning(
 		            		 "Old socket remote ip address " + mySock.getRemoteSocketAddress());                         
-	                 logger.logDebug(
-	                		 "New socket local ip address " + sock.getLocalSocketAddress());
-	                 logger.logDebug(
-	                		 "New socket remote ip address " + sock.getRemoteSocketAddress());
+		             logger.logWarning(
+		            		 "New socket local ip address " + sock.getLocalSocketAddress());
+		             logger.logWarning(
+		            		 "New socket remote ip address " + sock.getRemoteSocketAddress());
+       		 	}
+//                /*
+//                 * Delay the close of the socket for some time in case it is being used.
+//                 */
+//                sipStack.getTimer().schedule(new TimerTask() {
+//                    @Override
+//                    public boolean cancel() {
+//                        close(false);
+//                        return true;
+//                    }
+//
+//                    @Override
+//                    public void run() {
+//                        close(false);
+//                    }
+//                }, 8000);
+            	// we can't delay the close otherwise it will close the previous socket we just set
+            	close(false);
+            }
+            if(problem == null) {
+            	if (mySock != null) {
+            		if(logger.isLoggingEnabled(LogWriter.TRACE_WARN)) {
+            			logger.logWarning(
+            					"There was no exception for the retry mechanism so creating a new thread based on the new socket for incoming " + key);
+            		}
             	}
-                /*
-                 * Delay the close of the socket for some time in case it is being used.
-                 */
-                sipStack.getTimer().schedule(new SIPStackTimerTask() {						
-
-                	@Override
-                	public void cleanUpBeforeCancel() {
-                		close(false);
-                		super.cleanUpBeforeCancel();
-                	}
-
-                    @Override
-                    public void runTask() {
-                        close(false);
-                    }
-                }, 8000);
-            }           
-            mySock = sock;
-            this.myClientInputStream = mySock.getInputStream();
-
-            // start a new reader on this end of the pipe.
-            Thread mythread = new Thread(this);
-            mythread.setDaemon(true);
-            mythread.setName("TLSMessageChannelThread");
-            mythread.start();
+	            mySock = sock;
+	            this.myClientInputStream = mySock.getInputStream();
+	            // start a new reader on this end of the pipe.
+	            Thread mythread = new Thread(this);
+	            mythread.setDaemon(true);
+	            mythread.setName("TCPMessageChannelThread");
+	            mythread.start();
+            } else {
+            	if(logger.isLoggingEnabled(LogWriter.TRACE_WARN)) {
+            		logger.logWarning(
+            			"There was an exception for the retry mechanism so not creating a new thread based on the new socket for incoming " + key);
+            	}
+            	mySock = sock;
+            }
         }
 
     }
