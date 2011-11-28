@@ -250,16 +250,7 @@ public final class TLSMessageChannel extends ConnectionOrientedMessageChannel {
     	if ( logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
              logger.logDebug("sendMessage isClient  = " + retry);
         }
-    	/*
-        /*
-        * Patch from kircuv@dev.java.net (Issue 119 ) This patch avoids the case where two
-        * TCPMessageChannels are now pointing to the same socket.getInputStream().
-        * 
-        * JvB 22/5 removed
-        */
-      // Socket s = this.sipStack.ioHandler.getSocket(IOHandler.makeKey(
-      // this.peerAddress, this.peerPort));
-    	Socket sock = null;
+    	  Socket sock = null;
         IOException problem = null;
         try {
         	sock = this.sipStack.ioHandler.sendBytes(
@@ -273,13 +264,6 @@ public final class TLSMessageChannel extends ConnectionOrientedMessageChannel {
         if(sock == null) { // If we couldn't connect to the host, try the advertised port as failsafe
         	if(this.peerPort != this.peerPortAdvertisedInHeaders && peerPortAdvertisedInHeaders > 0) { // no point in trying same port
                 logger.logWarning("Couldn't connect to peerAddress = " + peerAddress + " peerPort = " + peerPort + " key = " + key +  " retrying on peerPortAdvertisedInHeaders " + peerPortAdvertisedInHeaders);
-                
-//                    MessageChannel backupChannel = this.sipStack.createRawMessageChannel(
-//                    		this.messageProcessor.getIpAddress().getHostAddress(), 
-//                    		this.messageProcessor.getPort(), 
-//                    		new HopImpl(peerAddress.getHostAddress(), peerPortAdvertisedInHeaders, "TCP"));
-//                    backupChannel.sendMessage(msg, peerAddress, peerPortAdvertisedInHeaders, retry);
-                
         		sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor.getIpAddress(),
                     this.peerAddress, this.peerPortAdvertisedInHeaders, this.peerProtocol, msg, retry, this);        		
         		this.peerPort = this.peerPortAdvertisedInHeaders;
@@ -382,14 +366,7 @@ public final class TLSMessageChannel extends ConnectionOrientedMessageChannel {
         }
         if(sock == null) { // If we couldn't connect to the host, try the advertised port as failsafe
         	if(receiverPort != this.peerPortAdvertisedInHeaders && peerPortAdvertisedInHeaders > 0) { // no point in trying same port
-                logger.logWarning("Couldn't connect to receiverAddress = " + receiverAddress + " receiverPort = " + receiverPort + " key = " + key +  " retrying on peerPortAdvertisedInHeaders " + peerPortAdvertisedInHeaders);
-                
-//                MessageChannel backupChannel = this.sipStack.createRawMessageChannel(
-//                		this.messageProcessor.getIpAddress().getHostAddress(), 
-//                		this.messageProcessor.getPort(), 
-//                		new HopImpl(receiverAddress.getHostAddress(), peerPortAdvertisedInHeaders, "TCP"));
-//                backupChannel.sendMessage(message, receiverAddress, peerPortAdvertisedInHeaders, retry);
-                
+            logger.logWarning("Couldn't connect to receiverAddress = " + receiverAddress + " receiverPort = " + receiverPort + " key = " + key +  " retrying on peerPortAdvertisedInHeaders " + peerPortAdvertisedInHeaders);
         		sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor.getIpAddress(),
                     receiverAddress, this.peerPortAdvertisedInHeaders, "TLS", message, retry, this);
         		this.peerPort = this.peerPortAdvertisedInHeaders;
@@ -418,21 +395,6 @@ public final class TLSMessageChannel extends ConnectionOrientedMessageChannel {
 		             logger.logWarning(
 		            		 "New socket remote ip address " + sock.getRemoteSocketAddress());
        		 	}
-//                /*
-//                 * Delay the close of the socket for some time in case it is being used.
-//                 */
-//                sipStack.getTimer().schedule(new TimerTask() {
-//                    @Override
-//                    public boolean cancel() {
-//                        close(false);
-//                        return true;
-//                    }
-//
-//                    @Override
-//                    public void run() {
-//                        close(false);
-//                    }
-//                }, 8000);
             	// we can't delay the close otherwise it will close the previous socket we just set
             	close(false);
             }

@@ -31,6 +31,7 @@ package gov.nist.javax.sip.header.ims;
 
 import java.text.ParseException;
 
+import javax.sip.SipException;
 import javax.sip.header.ExtensionHeader;
 
 import gov.nist.javax.sip.header.ims.PChargingVectorHeader;
@@ -67,26 +68,19 @@ public class PChargingVector extends gov.nist.javax.sip.header.ParametersHeader
          * should throw an exception
          *
          * JvB 26/5: fix for issue #159, check for quotes around icid value
+         * 
+         * Aayush: 29th November 2011 : Added fix for P-Charging-Vector header's parameters to accept quoted string values.
          */
-        gov.nist.core.NameValue nv = getNameValue( ParameterNamesIms.ICID_VALUE );
-        nv.encode( encoding );
-
-        //the remaining parameters are optional.
-        // check for their presence, then add the parameter if it exists.
-        if (parameters.containsKey(ParameterNamesIms.ICID_GENERATED_AT))
-            encoding.append(SEMICOLON).append(
-                    ParameterNamesIms.ICID_GENERATED_AT).append(EQUALS).append(
-                    getICIDGeneratedAt());
-
-        if (parameters.containsKey(ParameterNamesIms.TERM_IOI))
-
-            encoding.append(SEMICOLON).append(ParameterNamesIms.TERM_IOI)
-                    .append(EQUALS).append(getTerminatingIOI());
-
-        if (parameters.containsKey(ParameterNamesIms.ORIG_IOI))
-
-            encoding.append(SEMICOLON).append(ParameterNamesIms.ORIG_IOI)
-                    .append(EQUALS).append(getOriginatingIOI());
+       gov.nist.core.NameValue nv = getNameValue( ParameterNamesIms.ICID_VALUE );
+       		if(nv!=null)
+        this.parameters.encode(encoding);
+			else
+				try {
+					throw new SipException("icid-value is mandatory");
+				} catch (SipException e) {
+					e.printStackTrace();
+					
+				}
 
         return encoding;
     }
@@ -183,7 +177,7 @@ public class PChargingVector extends gov.nist.javax.sip.header.ParametersHeader
         if (origIOI == null || origIOI.length() == 0) {
             removeParameter(ParameterNamesIms.ORIG_IOI);
         } else
-            setParameter(ParameterNamesIms.ORIG_IOI, origIOI);
+            this.parameters.set(ParameterNamesIms.ORIG_IOI, origIOI);
 
     }
 
@@ -214,7 +208,7 @@ public class PChargingVector extends gov.nist.javax.sip.header.ParametersHeader
         if (termIOI == null || termIOI.length() == 0) {
             removeParameter(ParameterNamesIms.TERM_IOI);
         } else
-            setParameter(ParameterNamesIms.TERM_IOI, termIOI);
+        	this.parameters.set(ParameterNamesIms.TERM_IOI, termIOI);
 
     }
 
