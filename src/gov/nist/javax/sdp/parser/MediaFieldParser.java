@@ -83,20 +83,18 @@ public class MediaFieldParser extends SDPParser {
                     Integer.parseInt(portsNumber.getTokenValue()));
                 this.lexer.SPorHT();
             }
-
+            // proto = token *("/" token)
             lexer.match(Lexer.ID);
             Token token = lexer.getNextToken();
-            this.lexer.SPorHT();
             String transport = token.getTokenValue();
-            if (lexer.lookAhead(0) == '/') {
+            while (lexer.lookAhead(0) == '/') {
                 lexer.consume(1);
                 lexer.match(Lexer.ID);
                 Token transportTemp = lexer.getNextToken();
                 transport = transport + "/" + transportTemp.getTokenValue();
-                this.lexer.SPorHT();
             }
-
             mediaField.setProto(transport);
+            this.lexer.SPorHT();
 
             // The formats list:
             Vector formatList = new Vector();
