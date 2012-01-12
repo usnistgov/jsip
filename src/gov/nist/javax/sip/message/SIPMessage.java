@@ -114,7 +114,12 @@ import javax.sip.message.Request;
  *
  */
 /**
- * This is the main SIP Message structure.
+ * This is the main SIP Message structure. 
+ * <b>
+ * This is an implementation class.
+ * WARNING do not directly use the methods of this class in your application.
+ * Use the methods of the interfaces implemented by this class.
+ * </b>
  *
  * @see StringMsgParser
  * @see PipelinedMsgParser
