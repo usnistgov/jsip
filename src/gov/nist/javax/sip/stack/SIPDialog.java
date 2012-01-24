@@ -4339,4 +4339,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                     "marking response as retransmission " + isRetransmission + " for dialog " + this);
         }
     }
+
+   @Override
+   public int hashCode() {
+      return this.callIdHeader.getCallId().hashCode();
+   }
 }
