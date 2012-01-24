@@ -205,7 +205,9 @@ public class Shootme   implements SipListener {
 
             this.inviteSeen = true;
 
-            timer.schedule(new MyTimerTask(requestEvent,st,toTag), this.okDelay);
+            if ( okDelay > 0 ) {
+                timer.schedule(new MyTimerTask(requestEvent,st,toTag), this.okDelay);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
             System.exit(0);
