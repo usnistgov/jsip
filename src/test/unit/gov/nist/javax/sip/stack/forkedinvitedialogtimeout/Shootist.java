@@ -348,9 +348,7 @@ public class Shootist implements SipListenerExt {
                 "Should see the original (default) dialog in the forked set",
                 this.forkedDialogs.contains(this.originalDialog));
         } 
-        TestCase.assertTrue("Timeout Event was seen", this.timeoutEventSeen);
-        TestCase.assertTrue(((SipStackImpl)sipStack).getDialogs(DialogState.EARLY).isEmpty());
-       
+        TestCase.assertTrue("Timeout Event was seen", this.timeoutEventSeen);       
     }
 
     public void processTimeout(javax.sip.TimeoutEvent timeoutEvent) {
