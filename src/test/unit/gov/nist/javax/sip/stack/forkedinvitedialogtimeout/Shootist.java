@@ -132,7 +132,9 @@ public class Shootist implements SipListenerExt {
 
     private boolean forkFirst;
 
-    private boolean timeoutEventSeen;       
+    private boolean timeoutEventSeen;
+
+    private HashSet<Dialog> dialogTerminatedEvents = new HashSet<Dialog>();       
 
     class SendBye extends TimerTask {
 
@@ -272,6 +274,11 @@ public class Shootist implements SipListenerExt {
                             logger.info("Waiting to Send ACK");
                             logger.info("Sending " + ackRequest);
                             dialog.sendAck(ackRequest);
+                            Thread.sleep(100);
+                            Request bye = dialog.createRequest(Request.BYE);
+                            ClientTransaction ctx = sipProvider.getNewClientTransaction(bye);
+                            
+                            dialog.sendRequest(ctx);
                             
                           
                         } else {
@@ -338,17 +345,18 @@ public class Shootist implements SipListenerExt {
 
     }
 
-    public void checkState() {
+    public void checkStateForDialogTimeoutEvent() {
         TestCase.assertEquals("Should see " + this.counter + " distinct early dialogs",
                         counter, this.forkedEarlyDialogs.size());
         TestCase.assertEquals("Should see " + this.counter + " distinct dialogs",
-                counter,this.forkedDialogs.size());
+                1,this.forkedDialogs.size());
         if(!createDialogAfterRequest) {
             TestCase.assertTrue(
                 "Should see the original (default) dialog in the forked set",
                 this.forkedDialogs.contains(this.originalDialog));
         } 
-        TestCase.assertTrue("Timeout Event was seen", this.timeoutEventSeen);       
+        TestCase.assertTrue("Timeout Event must be seen", this.timeoutEventSeen); 
+        TestCase.assertEquals("Need two dialog terminated events", this.dialogTerminatedEvents.size(), 2);
     }
 
     public void processTimeout(javax.sip.TimeoutEvent timeoutEvent) {
@@ -531,6 +539,8 @@ public class Shootist implements SipListenerExt {
     public void processDialogTerminated(
             DialogTerminatedEvent dialogTerminatedEvent) {
         logger.info("dialog Id " + dialogTerminatedEvent.getDialog().getDialogId());
+        TestCase.assertTrue("Only want one DTE per dialog",!this.dialogTerminatedEvents.contains(dialogTerminatedEvent.getDialog()));
+        this.dialogTerminatedEvents.add(dialogTerminatedEvent.getDialog());
         if(this.timedOutDialog.contains((Dialog)dialogTerminatedEvent.getDialog() )) {
             terminatedDialogWasOneOfCancelled= true;
         }
@@ -573,7 +583,13 @@ public class Shootist implements SipListenerExt {
 
         logger.info("Got a DialogTimeoutEvent " + timeoutEvent.getDialog());
         this.timeoutEventSeen = true;
+        if (timedOutDialog.size() > 0 ) {
         TestCase.assertTrue ("Should find timeout dialog in cancelSet", 
                 this.timedOutDialog.contains(timeoutEvent.getDialog()));
+        } else {
+            TestCase.assertTrue ("Should find timeout dialog in cancelSet", 
+                    this.forkedEarlyDialogs.contains(timeoutEvent.getDialog()));
+       
+        }
     }
 }
