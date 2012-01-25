@@ -578,7 +578,6 @@ public class Shootist implements SipListenerExt {
         }
     }
 
-    @Override
     public void processDialogTimeout(DialogTimeoutEvent timeoutEvent) {
 
         logger.info("Got a DialogTimeoutEvent " + timeoutEvent.getDialog());
