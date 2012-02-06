@@ -1,0 +1,17 @@
+<body>
+	Tests for whether the DialogTimedOutEvent is delivered to the application under the following scenarios:
+	<br/>
+	Scenario 1
+	<ul>
+	<li/>INVITE is sent by UAC and forked through a forking proxy to a pair of UAS.
+	<li/>One UAS returns OK. The UAC ACKs the OK and sends BYE.
+	<li/>Another UAS returns OK. The UAC does not ACK the OK.
+	</ul>
+<br/>
+    Scenario 2
+	<ul>
+		<li> Inivte sent by UAC through forking proxy to two target UAS</li>
+		<li> One UAS returns RINGING and then OK</li>
+		<li> Another returns RINGING but no OK</li>
+	</ul>
+</body>
