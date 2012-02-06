@@ -71,42 +71,42 @@ public class InviteTest extends TestCase {
             shootist = new Shootist(6050, 5070, "on", true);
             SipProvider shootistProvider = shootist.createSipProvider();
             shootistProvider.addSipListener(shootist);
-                
-                Shootme shootmeUa = new Shootme(5080,true,4000, 4000 );
-                SipProvider shootmeProvider = shootmeUa.createProvider();
-                shootmeProvider.addSipListener(shootmeUa);
-                this.shootme.add(shootmeUa);
-    
-                shootmeUa = new Shootme(5081,true,5000, 4000 );
-                shootmeProvider = shootmeUa.createProvider();
-                shootmeProvider.addSipListener(shootmeUa);
-                this.shootme.add(shootmeUa);
-    
-         
-    
-            this.proxy = new Proxy(5070,forkCount);
+
+            Shootme shootmeUa = new Shootme(5080, true, 4000, 4000);
+            SipProvider shootmeProvider = shootmeUa.createProvider();
+            shootmeProvider.addSipListener(shootmeUa);
+            this.shootme.add(shootmeUa);
+
+            shootmeUa = new Shootme(5081, true, 5000, 4000);
+            shootmeProvider = shootmeUa.createProvider();
+            shootmeProvider.addSipListener(shootmeUa);
+            this.shootme.add(shootmeUa);
+
+            this.proxy = new Proxy(5070, forkCount);
             SipProvider provider = proxy.createSipProvider();
             provider.addSipListener(proxy);
             logger.debug("setup completed");
-            
+
             this.shootist.sendInvite(forkCount);
-            
+
             Thread.sleep(69000);
             this.shootist.checkStateForDialogTimeoutEvent();
             int ackCount = 0;
-            for ( Shootme shootme: this.shootme) {
-                 shootme.checkState();
-                 if ( shootme.isAckSeen()) {
-                     ackCount ++;
-                 }
+            for (Shootme shootme : this.shootme) {
+                shootme.checkState();
+                if (shootme.isAckSeen()) {
+                    ackCount++;
+                }
             }
-            assertEquals("ACK count must be exactly 1", 1,ackCount);
+            assertEquals("ACK count must be exactly 1", 1, ackCount);
         } finally {
             this.shootist.stop();
-            for ( Shootme shootme: this.shootme) {
+            for (Shootme shootme : this.shootme) {
                 shootme.stop();
             }
-            this.proxy.stop();
+            if (this.proxy != null) {
+                this.proxy.stop();
+            }
         }
     }
 
@@ -122,6 +122,7 @@ public class InviteTest extends TestCase {
             shootmeProvider.addSipListener(shootmeUa);
             this.shootme.add(shootmeUa);
 
+            // Never send an OK. Just send RINGING.
             shootmeUa = new Shootme(5081, true, 5000, -1);
             shootmeProvider = shootmeUa.createProvider();
             shootmeProvider.addSipListener(shootmeUa);
@@ -149,7 +150,9 @@ public class InviteTest extends TestCase {
             for (Shootme shootme : this.shootme) {
                 shootme.stop();
             }
-            this.proxy.stop();
+            if ( this.proxy != null ) {
+                this.proxy.stop();
+            }
         }
     }
 }

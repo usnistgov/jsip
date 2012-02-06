@@ -156,7 +156,7 @@ public class Shootme   implements SipListener {
         SipProvider sipProvider = (SipProvider) requestEvent.getSource();
         Request request = requestEvent.getRequest();
         try {
-            logger.info("shootme: got an Invite sending Trying");
+            logger.info("shootme: " + this.myPort + " got an Invite sending Trying");
             // logger.info("shootme: " + request);
 
             ServerTransaction st = requestEvent.getServerTransaction();
@@ -168,25 +168,9 @@ public class Shootme   implements SipListener {
 
             logger.info("getNewServerTransaction : " + st);
 
-            String txId = ((ViaHeader)request.getHeader(ViaHeader.NAME)).getBranch();
-            this.serverTxTable.put(txId, st);
-
-            // Create the 100 Trying response.
-//            Response response = messageFactory.createResponse(Response.TRYING,
-//                    request);
-//                ListeningPoint lp = sipProvider.getListeningPoint(transport);
-//            int myPort = lp.getPort();
-//
+      
             Address address = addressFactory.createAddress("Shootme <sip:"
                     + myAddress + ":" + myPort + ">");
-//
-//            // Add a random sleep to stagger the two OK's for the benifit of implementations
-//            // that may not be too good about handling re-entrancy.
-//            int timeToSleep = (int) ( Math.random() * 1000);
-//
-//            Thread.sleep(timeToSleep);
-//
-//            st.sendResponse(response);
 
             Response ringingResponse = messageFactory.createResponse(Response.RINGING,
                     request);
@@ -372,7 +356,7 @@ public class Shootme   implements SipListener {
     public void checkState() {
         TestCase.assertTrue("Should see invite", inviteSeen);
 
-        TestCase.assertTrue("Should see BYE",byeSeen );
+        TestCase.assertTrue("Should see BYE", (!ackSeen) || byeSeen );
 
     }
 
