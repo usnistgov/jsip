@@ -718,13 +718,18 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
             }
             MessageChannel messageChannel = null;
             if (this.listeningPoints.containsKey(hop.getTransport()
-                    .toUpperCase()))
+                    .toUpperCase())) {
                 messageChannel = sipStack.createRawMessageChannel(
                         this.getListeningPoint(hop.getTransport()).getIPAddress(),
                         this.getListeningPoint(hop.getTransport()).getPort(), hop);
+            }
+            
             if (messageChannel != null) {
                 messageChannel.sendMessage((SIPMessage) sipRequest,hop);
             } else {
+                if ( logger.isLoggingEnabled(LogLevels.TRACE_DEBUG) ) {
+                    logger.logDebug("Could not create a message channel for " + hop.toString() + " listeningPoints = " + this.listeningPoints);
+                }
                 throw new SipException(
                         "Could not create a message channel for "
                                 + hop.toString());
