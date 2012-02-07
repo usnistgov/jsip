@@ -923,21 +923,18 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
                 ListIterator li = recordRouteList.listIterator(recordRouteList
                         .size());
-                boolean addRoute = true;
                 while (li.hasPrevious()) {
                     RecordRoute rr = (RecordRoute) li.previous();
 
-                    if (addRoute) {
-                        Route route = new Route();
-                        AddressImpl address = ((AddressImpl) ((AddressImpl) rr
-                                .getAddress()).clone());
+                    Route route = new Route();
+                    AddressImpl address = ((AddressImpl) ((AddressImpl) rr
+                            .getAddress()).clone());
 
-                        route.setAddress(address);
-                        route.setParameters((NameValueList) rr.getParameters()
-                                .clone());
+                    route.setAddress(address);
+                    route.setParameters((NameValueList) rr.getParameters()
+                            .clone());
 
-                        this.routeList.add(route);
-                    }
+                    this.routeList.add(route);
                 }
             } else {
                 // This is a server dialog. The top most record route
@@ -946,19 +943,17 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 // incoming request.
                 this.routeList = new RouteList();
                 ListIterator li = recordRouteList.listIterator();
-                boolean addRoute = true;
                 while (li.hasNext()) {
                     RecordRoute rr = (RecordRoute) li.next();
 
-                    if (addRoute) {
-                        Route route = new Route();
-                        AddressImpl address = ((AddressImpl) ((AddressImpl) rr
-                                .getAddress()).clone());
-                        route.setAddress(address);
-                        route.setParameters((NameValueList) rr.getParameters()
-                                .clone());
-                        routeList.add(route);
-                    }
+                    Route route = new Route();
+                    AddressImpl address = ((AddressImpl) ((AddressImpl) rr
+                            .getAddress()).clone());
+                    route.setAddress(address);
+                    route.setParameters((NameValueList) rr.getParameters()
+                            .clone());
+                    routeList.add(route);
+
                 }
             }
         } finally {
@@ -1387,7 +1382,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         this.nextSeqno = this.getRemoteSeqNumber() + 1;
 
         if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-            this.logger.logDebug(
+            logger.logDebug(
                     "Request Consumed -- next consumable Request Seqno = "
                             + this.nextSeqno);
         }
@@ -3004,8 +2999,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             throw new SipException("Cannot create ACK - no remote Target!");
         }
 
-        if (this.logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-            this.logger.logDebug(
+        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+            logger.logDebug(
                     "createAck " + this + " cseqno " + cseqno);
         }
 
@@ -3055,19 +3050,40 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                     }
                 }
             }
+            
+            
+            if ( logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+                logger.logDebug("uri4transport =  " + uri4transport);
+            }
+            
             if (lp == null) {
-                if (logger.isLoggingEnabled()) {
-                    logger.logError(
-                            "remoteTargetURI "
-                                    + this.getRemoteTarget().getURI());
-                    logger.logError(
-                            "uri4transport = " + uri4transport);
-                    logger.logError(
-                            "No LP found for transport=" + transport);
+                if ( ! uri4transport.isSecure()) {
+                    // If transport is not secure, and we cannot find an appropriate transport, try any supported transport to send out the ACK.
+                    if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+                        logger.logDebug(
+                                "No Listening point for " + uri4transport + " Using last response topmost" ); 
+                    }
+                    // We are not on a secure connection and we don't support the transport required 
+                    lp = (ListeningPointImpl) sipProvider.getListeningPoint(this.lastResponseTopMostVia.getTransport());
                 }
-                throw new SipException(
-                        "Cannot create ACK - no ListeningPoint for transport towards next hop found:"
-                                + transport);
+                
+              
+                
+                if ( lp== null) {
+                    if (logger.isLoggingEnabled(LogLevels.TRACE_ERROR)) {
+                        logger.logError(
+                                "remoteTargetURI "
+                                + this.getRemoteTarget().getURI());
+                        logger.logError(
+                                "uri4transport = " + uri4transport);
+                        logger.logError(
+                                "No LP found for transport=" + transport);
+                    }
+                    throw new SipException(
+                            "Cannot create ACK - no ListeningPoint for transport towards next hop found:"
+                            + transport);
+                }
+
             }
             SIPRequest sipRequest = new SIPRequest();
             sipRequest.setMethod(Request.ACK);

@@ -175,12 +175,11 @@ public class Shootme   implements SipListener {
             Response ringingResponse = messageFactory.createResponse(Response.RINGING,
                     request);
             ContactHeader contactHeader = headerFactory.createContactHeader(address);
-            ringingResponse.addHeader(contactHeader);
+            ringingResponse.setHeader(contactHeader);
             ToHeader toHeader = (ToHeader) ringingResponse.getHeader(ToHeader.NAME);
             String toTag =  "shootme-" + myPort + "-" + new Integer(new Random().nextInt()).toString();             
             toHeader.setTag(toTag);
             if ( sendRinging ) {
-                ringingResponse.addHeader(contactHeader);
                 Thread.sleep(this.ringingDelay / 2);
                 st.sendResponse(ringingResponse);
             }
