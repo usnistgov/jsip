@@ -37,6 +37,8 @@ import gov.nist.javax.sip.header.AcceptList;
 import gov.nist.javax.sip.header.AlertInfo;
 import gov.nist.javax.sip.header.AlertInfoList;
 import gov.nist.javax.sip.header.Allow;
+import gov.nist.javax.sip.header.AllowEvents;
+import gov.nist.javax.sip.header.AllowEventsList;
 import gov.nist.javax.sip.header.AllowList;
 import gov.nist.javax.sip.header.Authorization;
 import gov.nist.javax.sip.header.AuthorizationList;
@@ -166,6 +168,9 @@ public class ListMap {
         headerListTable.put(Authorization.class, AuthorizationList.class);
 
         headerListTable.put(Allow.class, AllowList.class);
+        
+        // http://java.net/jira/browse/JSIP-410
+        headerListTable.put(AllowEvents.class, AllowEventsList.class);
 
         headerListTable.put(RecordRoute.class, RecordRouteList.class);
 
