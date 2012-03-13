@@ -245,7 +245,7 @@ public final class TLSMessageChannel extends ConnectionOrientedMessageChannel {
      *            is the message to send.
      * @param retry
      */
-    protected void sendMessage(byte[] msg, boolean retry) throws IOException {
+    protected synchronized void sendMessage(byte[] msg, boolean retry) throws IOException {
 
     	if ( logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
              logger.logDebug("sendMessage isClient  = " + retry);
@@ -329,7 +329,7 @@ public final class TLSMessageChannel extends ConnectionOrientedMessageChannel {
      * @throws IOException
      *             If there is a problem connecting or sending.
      */
-    public void sendMessage(byte message[], InetAddress receiverAddress,
+    public synchronized void sendMessage(byte message[], InetAddress receiverAddress,
             int receiverPort, boolean retry) throws IOException {
         if (message == null || receiverAddress == null)
             throw new IllegalArgumentException("Null argument");
