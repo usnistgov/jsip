@@ -227,20 +227,12 @@ public class TCPMessageChannel extends ConnectionOrientedMessageChannel {
      *            is the message to send.
      * @param isClient
      */
-    protected void sendMessage(byte[] msg, boolean isClient) throws IOException {
+    protected  synchronized void sendMessage(byte[] msg, boolean isClient) throws IOException {
 
         if ( logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             logger.logDebug("sendMessage isClient  = " + isClient);
         }
-        /*
-         /*
-         * Patch from kircuv@dev.java.net (Issue 119 ) This patch avoids the case where two
-         * TCPMessageChannels are now pointing to the same socket.getInputStream().
-         * 
-         * JvB 22/5 removed
-         */
-       // Socket s = this.sipStack.ioHandler.getSocket(IOHandler.makeKey(
-       // this.peerAddress, this.peerPort));
+       
         Socket sock = null;
         IOException problem = null;
         try {
@@ -252,20 +244,20 @@ public class TCPMessageChannel extends ConnectionOrientedMessageChannel {
         }
         if(sock == null) { // If we couldn't connect to the host, try the advertised port as failsafe
         	if(this.peerPort != this.peerPortAdvertisedInHeaders && peerPortAdvertisedInHeaders > 0) { // no point in trying same port
-                logger.logWarning("Couldn't connect to peerAddress = " + peerAddress + " peerPort = " + peerPort + " key = " + key +  " retrying on peerPortAdvertisedInHeaders " + peerPortAdvertisedInHeaders);
-                
-//                MessageChannel backupChannel = this.sipStack.createRawMessageChannel(
-//                		this.messageProcessor.getIpAddress().getHostAddress(), 
-//                		this.messageProcessor.getPort(), 
-//                		new HopImpl(peerAddress.getHostAddress(), peerPortAdvertisedInHeaders, "TCP"));
-//                backupChannel.sendMessage(msg, peerAddress, peerPortAdvertisedInHeaders, retry);
-                
+                if (logger.isLoggingEnabled(LogWriter.TRACE_WARN)) {
+                    logger.logWarning("Couldn't connect to peerAddress = " + peerAddress + " peerPort = " + peerPort
+                            + " key = " + key + " retrying on peerPortAdvertisedInHeaders "
+                            + peerPortAdvertisedInHeaders);
+                }
         		sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor.getIpAddress(),
                     this.peerAddress, this.peerPortAdvertisedInHeaders, this.peerProtocol, msg, isClient, this);        		
         		this.peerPort = this.peerPortAdvertisedInHeaders;
         		this.key = MessageChannel.getKey(peerAddress, peerPort, "TCP");
-                logger.logWarning("retry suceeded to peerAddress = " + peerAddress + " peerPortAdvertisedInHeaders = " + peerPortAdvertisedInHeaders + " key = " + key);
-        	} else {
+        		if (logger.isLoggingEnabled(LogWriter.TRACE_WARN)) {
+                    logger.logWarning("retry suceeded to peerAddress = " + peerAddress
+                            + " peerPortAdvertisedInHeaders = " + peerPortAdvertisedInHeaders + " key = " + key);
+                }
+           } else {
         		throw problem; // throw the original excpetion we had from the first attempt
         	}
         }
@@ -330,7 +322,7 @@ public class TCPMessageChannel extends ConnectionOrientedMessageChannel {
      * @throws IOException
      *             If there is a problem connecting or sending.
      */
-    public void sendMessage(byte message[], InetAddress receiverAddress,
+    public synchronized void sendMessage(byte message[], InetAddress receiverAddress,
             int receiverPort, boolean retry) throws IOException {
         if (message == null || receiverAddress == null)
             throw new IllegalArgumentException("Null argument");
@@ -363,21 +355,20 @@ public class TCPMessageChannel extends ConnectionOrientedMessageChannel {
         }
         if(sock == null) { // If we couldn't connect to the host, try the advertised port as failsafe
         	if(receiverPort != this.peerPortAdvertisedInHeaders && peerPortAdvertisedInHeaders > 0) { // no point in trying same port
-                logger.logWarning("Couldn't connect to receiverAddress = " + receiverAddress + " receiverPort = " + receiverPort + " key = " + key +  " retrying on peerPortAdvertisedInHeaders " + peerPortAdvertisedInHeaders);
-                
-//                MessageChannel backupChannel = this.sipStack.createRawMessageChannel(
-//                		this.messageProcessor.getIpAddress().getHostAddress(), 
-//                		this.messageProcessor.getPort(), 
-//                		new HopImpl(receiverAddress.getHostAddress(), peerPortAdvertisedInHeaders, "TCP"));
-//                backupChannel.sendMessage(message, receiverAddress, peerPortAdvertisedInHeaders, retry);
-                
-        		sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor.getIpAddress(),
+                if (logger.isLoggingEnabled(LogWriter.TRACE_WARN)) {
+                    logger.logWarning("Couldn't connect to receiverAddress = " + receiverAddress
+                            + " receiverPort = " + receiverPort + " key = " + key
+                            + " retrying on peerPortAdvertisedInHeaders " + peerPortAdvertisedInHeaders);
+                }
+                sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor.getIpAddress(),
                     receiverAddress, this.peerPortAdvertisedInHeaders, "TCP", message, retry, this);
         		this.peerPort = this.peerPortAdvertisedInHeaders;
         		this.key = MessageChannel.getKey(peerAddress, peerPortAdvertisedInHeaders, "TCP");
-                
-                logger.logWarning("retry suceeded to receiverAddress = " + receiverAddress + " peerPortAdvertisedInHeaders = " + peerPortAdvertisedInHeaders + " key = " + key);
-        	} else {
+                if (logger.isLoggingEnabled(LogWriter.TRACE_WARN)) {
+                    logger.logWarning("retry suceeded to receiverAddress = " + receiverAddress
+                            + " peerPortAdvertisedInHeaders = " + peerPortAdvertisedInHeaders + " key = " + key);
+                }
+           } else {
         		throw problem; // throw the original excpetion we had from the first attempt
         	}
         }
@@ -397,22 +388,6 @@ public class TCPMessageChannel extends ConnectionOrientedMessageChannel {
 		             logger.logWarning(
 		            		 "New socket remote ip address " + sock.getRemoteSocketAddress());
        		 	}
-//                /*
-//                 * Delay the close of the socket for some time in case it is being used.
-//                 */
-//                sipStack.getTimer().schedule(new TimerTask() {
-//                    @Override
-//                    public boolean cancel() {
-//                        close(false);
-//                        return true;
-//                    }
-//
-//                    @Override
-//                    public void run() {
-//                        close(false);
-//                    }
-//                }, 8000);
-            	// we can't delay the close otherwise it will close the previous socket we just set
             	close(false);
             }
             if(problem == null) {
