@@ -34,6 +34,7 @@ import java.text.ParseException;
 
 /** Parser for SDP Announce messages.
  */
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class SDPAnnounceParser extends ParserCore {
 
     protected Lexer lexer;
@@ -50,7 +51,7 @@ public class SDPAnnounceParser extends ParserCore {
     *@param message  string containing the sdp announce message.
     *
     */
-    public SDPAnnounceParser(String message) {
+	public SDPAnnounceParser(String message) {
         int start = 0;
         String line = null;
         // Return trivially if there is no sdp announce message
@@ -65,15 +66,15 @@ public class SDPAnnounceParser extends ParserCore {
             int lfPos = sdpAnnounce.indexOf("\n", start);
             int crPos = sdpAnnounce.indexOf("\r", start);
 
-            if (lfPos > 0 && crPos < 0) {
+            if (lfPos >= 0 && crPos < 0) {
                 // there are only "\n" separators
                 line = sdpAnnounce.substring(start, lfPos);
                 start = lfPos + 1;
-            } else if (lfPos < 0 && crPos > 0) {
+            } else if (lfPos < 0 && crPos >= 0) {
                 //bug fix: there are only "\r" separators
                 line = sdpAnnounce.substring(start, crPos);
                 start = crPos + 1;
-            } else if (lfPos > 0 && crPos > 0) {
+            } else if (lfPos >= 0 && crPos >= 0) {
                 // there are "\r\n" or "\n\r" (if exists) separators
                 if (lfPos > crPos) {
                     // assume "\r\n" for now
