@@ -247,10 +247,10 @@ public class Shootme implements SipListener {
         properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
         properties.setProperty(
             "gov.nist.javax.sip.DEBUG_LOG",
-            "shootmedebug.txt");
+            "logs/shootmedebug.txt");
         properties.setProperty(
             "gov.nist.javax.sip.SERVER_LOG",
-            "shootmelog.txt");
+            "logs/shootmelog.txt");
         // Guard against starvation.
         properties.setProperty(
             "gov.nist.javax.sip.READ_TIMEOUT", "1000");
