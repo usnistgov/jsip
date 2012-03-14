@@ -131,6 +131,7 @@ public class TLSMessageProcessor extends ConnectionOrientedMessageProcessor {
     public void run() {
         // Accept new connectins on our socket.
         while (this.isRunning) {
+        	Socket newsock = null; 
             try {
             	 
                 synchronized (this) {
@@ -156,26 +157,18 @@ public class TLSMessageProcessor extends ConnectionOrientedMessageProcessor {
                     logger.logDebug(" waiting to accept new connection!");
                 }
                 
-                Socket newsock = sock.accept();
+                newsock = sock.accept();
                
                 if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                     logger.logDebug("Accepting new connection!");
                 }
 
-               // Note that for an incoming message channel, the
-               // thread is already running
-
-                TLSMessageChannel newChannel = new TLSMessageChannel(newsock, sipStack, this, "TLSMessageChannelThread-" + nConnections);
-                if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                    logger.logDebug(Thread.currentThread() + " adding incoming channel " + newChannel.getKey());
-                incomingMessageChannels.put(newChannel.getKey(), newChannel);
-
             } catch (SocketException ex) {
                 if ( this.isRunning ) {
                   logger.logError(
                     "Fatal - SocketException occured while Accepting connection", ex);
-                  this.isRunning = false;
-                  break;
+                  	this.isRunning = false;
+                  	break;
                 }
             } catch (SSLException ex) {
                 this.isRunning = false;
@@ -185,9 +178,25 @@ public class TLSMessageProcessor extends ConnectionOrientedMessageProcessor {
             } catch (IOException ex) {
                 // Problem accepting connection.
                 logger.logError("Problem Accepting Connection", ex);
-                continue;
+				continue;
             } catch (Exception ex) {
                 logger.logError("Unexpected Exception!", ex);
+                continue;
+            }
+            
+            // Note that for an incoming message channel, the
+            // thread is already running
+            if(isRunning) {
+	            try {
+	            	// lyolik: even if SocketException is thrown (could be a result of bad handshake, 
+	            	// it's not a reason to stop execution
+		            TLSMessageChannel newChannel = new TLSMessageChannel(newsock, sipStack, this, "TLSMessageChannelThread-" + nConnections);
+		            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+		                 logger.logDebug(Thread.currentThread() + " adding incoming channel " + newChannel.getKey());
+		            incomingMessageChannels.put(newChannel.getKey(), newChannel);
+	            } catch (Exception ex) {
+	                logger.logError("A problem occured while Accepting connection", ex);
+	            }
             }
         }
     }   
