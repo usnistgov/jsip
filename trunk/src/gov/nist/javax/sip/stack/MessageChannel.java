@@ -310,14 +310,14 @@ public abstract class MessageChannel {
      * generate a key given the inet address port and transport.
      */
     public static String getKey(InetAddress inetAddr, int port, String transport) {
-        return (transport + ":" + inetAddr.getHostAddress().replaceAll("[]", "") + ":" + port).toLowerCase();
+        return (transport + ":" + inetAddr.getHostAddress().replaceAll("[[]]", "") + ":" + port).toLowerCase();
     }
 
     /**
      * Generate a key given host and port.
      */
     public static String getKey(HostPort hostPort, String transport) {
-        return (transport + ":" + hostPort.getHost().getHostname().replaceAll("[]", "") + ":" + hostPort.getPort())
+        return (transport + ":" + hostPort.getHost().getHostname().replaceAll("[[]]", "") + ":" + hostPort.getPort())
                 .toLowerCase();
     }
 
