@@ -115,22 +115,18 @@ public final class TLSMessageChannel extends ConnectionOrientedMessageChannel {
 
         mySock = (SSLSocket) sock;
         if (sock instanceof SSLSocket) {
-            try {
-                SSLSocket sslSock = (SSLSocket) sock;
-                if(sipStack.getClientAuth() != ClientAuthType.Want && sipStack.getClientAuth() != ClientAuthType.Disabled) {
-                    sslSock.setNeedClientAuth(true);
-                }
-                if(logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-                    logger.logDebug("SSLServerSocket need client auth " + sslSock.getNeedClientAuth());
-                }
-                this.handshakeCompletedListener = new HandshakeCompletedListenerImpl(
-                        this);
-                sslSock
-                        .addHandshakeCompletedListener(this.handshakeCompletedListener);
-                sslSock.startHandshake();
-            } catch (SSLHandshakeException ex) {
-                throw new IOException(ex.getMessage());
+            SSLSocket sslSock = (SSLSocket) sock;
+            if(sipStack.getClientAuth() != ClientAuthType.Want && sipStack.getClientAuth() != ClientAuthType.Disabled) {
+                sslSock.setNeedClientAuth(true);
             }
+            if(logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+                logger.logDebug("SSLServerSocket need client auth " + sslSock.getNeedClientAuth());
+            }
+            this.handshakeCompletedListener = new HandshakeCompletedListenerImpl(
+                    this);
+            sslSock
+                    .addHandshakeCompletedListener(this.handshakeCompletedListener);
+            sslSock.startHandshake();
         }
 
         peerAddress = mySock.getInetAddress();

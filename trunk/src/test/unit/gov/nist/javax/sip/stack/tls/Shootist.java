@@ -175,10 +175,10 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
                     "1048576");
         properties.setProperty(
             "gov.nist.javax.sip.DEBUG_LOG",
-            "shootistdebug.txt");
+            "logs/shootistdebug.txt");
         properties.setProperty(
             "gov.nist.javax.sip.SERVER_LOG",
-            "shootistlog.txt");
+            "logs/shootistlog.txt");
 
         properties.setProperty("gov.nist.javax.sip.TLS_SECURITY_POLICY",
                 this.getClass().getName());
@@ -210,7 +210,7 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
             Shootist listener = this;
 
             tlsListeningPoint = sipStack.createListeningPoint
-                                ("127.0.0.1", port, "tls");
+                                ("127.0.0.1", port, transport);
             tlsProvider = sipStack.createSipProvider(tlsListeningPoint);
             tlsProvider.addSipListener(listener);
 
@@ -298,7 +298,7 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
             SipURI contactURI = addressFactory.createSipURI(fromName, host);
             //contactURI.setSecure( true );
             contactURI.setPort(port);
-            contactURI.setTransportParam("tls");
+            contactURI.setTransportParam(transport);
 
             Address contactAddress = addressFactory.createAddress(contactURI);
 
@@ -340,7 +340,7 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
             
             SipURI routeUri = (SipURI) requestURI.clone();
             routeUri.setLrParam();
-            routeUri.setTransportParam("tls");
+            routeUri.setTransportParam(transport);
             Address peerAddress = addressFactory.createAddress(requestURI);
            
             
