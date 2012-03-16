@@ -421,6 +421,8 @@ public abstract class SIPTransactionStack implements
      *  a value < 0 means that the RFC 5626 will not be triggered, as a default we don't enable it not to change existing apps behavior.
      */
     protected int reliableConnectionKeepAliveTimeout = -1;
+    
+    private long sslHandshakeTimeout = -1;
 
     private static class SameThreadExecutor implements Executor {
 
@@ -3216,4 +3218,18 @@ public abstract class SIPTransactionStack implements
         }
         return false;
     }
+
+	/**
+	 * @return the sslHandshakeTimeout
+	 */
+	public long getSslHandshakeTimeout() {
+		return sslHandshakeTimeout;
+	}
+
+	/**
+	 * @param sslHandshakeTimeout the sslHandshakeTimeout to set
+	 */
+	public void setSslHandshakeTimeout(long sslHandshakeTimeout) {
+		this.sslHandshakeTimeout = sslHandshakeTimeout;
+	}
 }

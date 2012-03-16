@@ -34,22 +34,15 @@ import gov.nist.core.LogWriter;
 import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.SipStackImpl;
 
+import javax.net.ssl.SSLHandshakeException;
+import javax.net.ssl.SSLSocket;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.SocketAddress;
-import java.net.SocketException;
+import java.net.*;
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-
-import javax.net.ssl.HandshakeCompletedListener;
-import javax.net.ssl.SSLHandshakeException;
-import javax.net.ssl.SSLSocket;
 
 /*
  * TLS support Added by Daniel J.Martinez Manzano <dani@dif.um.es>
@@ -215,12 +208,14 @@ public class IOHandler {
                         "port = " + dstPort);
             }
 
-            HandshakeCompletedListener listner
-                    = new HandshakeCompletedListenerImpl(channel);
+            HandshakeCompletedListenerImpl listner
+                    = new HandshakeCompletedListenerImpl(channel, sslsock);
 
             channel.setHandshakeCompletedListener(listner);
             sslsock.addHandshakeCompletedListener(listner);
             sslsock.setEnabledProtocols(sipStack.getEnabledProtocols());
+
+            listner.startHandshakeWatchdog();
             sslsock.startHandshake();
 
             if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
@@ -493,13 +488,14 @@ public class IOHandler {
                             logger.logDebug(
                                     "port = " + contactPort);
                         }
-                        HandshakeCompletedListener listner = new HandshakeCompletedListenerImpl(
-                                (TLSMessageChannel) messageChannel);
+                        HandshakeCompletedListenerImpl listner = new HandshakeCompletedListenerImpl((TLSMessageChannel)messageChannel, clientSock);
                         ((TLSMessageChannel) messageChannel)
                                 .setHandshakeCompletedListener(listner);
                         sslsock.addHandshakeCompletedListener(listner);
                         sslsock.setEnabledProtocols(sipStack
                                 .getEnabledProtocols());
+
+                        listner.startHandshakeWatchdog();
                         sslsock.startHandshake();
                         if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                             this.logger.logDebug(
@@ -577,13 +573,15 @@ public class IOHandler {
                                 receiverAddress, contactPort, senderAddress);
                         OutputStream outputStream = sslsock
                                 .getOutputStream();
-                        HandshakeCompletedListener listner = new HandshakeCompletedListenerImpl(
-                                (TLSMessageChannel) messageChannel);
+                        HandshakeCompletedListenerImpl listner = new HandshakeCompletedListenerImpl((TLSMessageChannel)messageChannel, 
+                                sslsock);
                         ((TLSMessageChannel) messageChannel)
                                 .setHandshakeCompletedListener(listner);
                         sslsock.addHandshakeCompletedListener(listner);
                         sslsock.setEnabledProtocols(sipStack
                                 .getEnabledProtocols());
+
+                        listner.startHandshakeWatchdog();
                         sslsock.startHandshake();
                         if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                             this.logger.logDebug(

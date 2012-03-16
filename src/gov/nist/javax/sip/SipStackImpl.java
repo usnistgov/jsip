@@ -526,8 +526,11 @@ import javax.sip.message.Request;
  * A Disabled value will not require a certificate chain.
  * </li>
  *
- *<li><b>gov.nist.javax.sip.RELIABLE_CONNECTION_KEEP_ALIVE_TIMEOUT</b> Value in seconds which wis used as default keepalive timeout
+ *<li><b>gov.nist.javax.sip.RELIABLE_CONNECTION_KEEP_ALIVE_TIMEOUT</b> Value in seconds which is used as default keepalive timeout
  * (See also http://tools.ietf.org/html/rfc5626#section-4.4.1)</li>
+ * 
+ * <li><b>gov.nist.javax.sip.SSL_HANDSHAKE_TIMEOUT</b> Value in seconds which is used as default timeout for performing the SSL Handshake
+ * This prevents bad clients of connecting without sending any data to block the server</li>
  *
  * 
  * <li><b>javax.net.ssl.keyStore = fileName </b> <br/>
@@ -751,6 +754,10 @@ public class SipStackImpl extends SIPTransactionStack implements
 
 		super.setReliableConnectionKeepAliveTimeout(1000 * Integer.parseInt(
 			        configurationProperties.getProperty("gov.nist.javax.sip.RELIABLE_CONNECTION_KEEP_ALIVE_TIMEOUT", "-1")));
+		
+		// http://java.net/jira/browse/JSIP-415 Prevent Bad Client or Attacker (DoS) to block the TLSMessageProcessor or TLSMessageChannel
+		super.setSslHandshakeTimeout(Long.parseLong(
+		        configurationProperties.getProperty("gov.nist.javax.sip.SSL_HANDSHAKE_TIMEOUT", "-1")));
 
 		super.setThreadPriority(Integer.parseInt(
 			        configurationProperties.getProperty("gov.nist.javax.sip.THREAD_PRIORITY","" + Thread.MAX_PRIORITY)));

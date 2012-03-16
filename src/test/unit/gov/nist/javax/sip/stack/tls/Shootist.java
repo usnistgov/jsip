@@ -179,6 +179,8 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
         properties.setProperty(
             "gov.nist.javax.sip.SERVER_LOG",
             "logs/shootistlog.txt");
+        properties.setProperty(
+                "gov.nist.javax.sip.SSL_HANDSHAKE_TIMEOUT", "10000");
 
         properties.setProperty("gov.nist.javax.sip.TLS_SECURITY_POLICY",
                 this.getClass().getName());
@@ -427,4 +429,15 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
 	public void stop() {
 		this.sipStack.stop();
 	}
+	
+	public static void main(String args[]) throws Exception {
+		// setup TLS properties
+        System.setProperty( "javax.net.ssl.keyStore",  TlsTest.class.getResource("testkeys").getPath() );
+        System.setProperty( "javax.net.ssl.trustStore", TlsTest.class.getResource("testkeys").getPath() );
+        System.setProperty( "javax.net.ssl.keyStorePassword", "passphrase" );
+        System.setProperty( "javax.net.ssl.keyStoreType", "jks" );
+        Shootist shootist = new Shootist();
+        shootist.init();
+	}
+	
 }

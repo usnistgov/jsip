@@ -6,6 +6,7 @@ import javax.sip.address.*;
 import javax.sip.header.*;
 import javax.sip.message.*;
 
+import java.net.Socket;
 import java.security.cert.Certificate;
 import java.util.*;
 
@@ -254,7 +255,10 @@ public class Shootme implements SipListener {
         // Guard against starvation.
         properties.setProperty(
             "gov.nist.javax.sip.READ_TIMEOUT", "1000");
-  
+        properties.setProperty(
+                "gov.nist.javax.sip.SSL_HANDSHAKE_TIMEOUT", "10000");
+        String transport = "tls";
+        
         try {
             // Create SipStack object
             sipStack = sipFactory.createSipStack(properties);
@@ -274,7 +278,7 @@ public class Shootme implements SipListener {
             headerFactory = sipFactory.createHeaderFactory();
             addressFactory = sipFactory.createAddressFactory();
             messageFactory = sipFactory.createMessageFactory();
-            ListeningPoint lpTLS = sipStack.createListeningPoint("127.0.0.1", myPort, "tls");
+            ListeningPoint lpTLS = sipStack.createListeningPoint("127.0.0.1", myPort, transport);
 
             Shootme listener = this;
 
@@ -309,4 +313,14 @@ public class Shootme implements SipListener {
 		this.sipStack.stop();
 	}
 
+	public static void main(String args[]) throws Exception {
+		// setup TLS properties
+        System.setProperty( "javax.net.ssl.keyStore",  TlsTest.class.getResource("testkeys").getPath() );
+        System.setProperty( "javax.net.ssl.trustStore", TlsTest.class.getResource("testkeys").getPath() );
+        System.setProperty( "javax.net.ssl.keyStorePassword", "passphrase" );
+        System.setProperty( "javax.net.ssl.keyStoreType", "jks" );
+        Shootme shootme = new Shootme();
+        shootme.init();
+	}
+	
 }
