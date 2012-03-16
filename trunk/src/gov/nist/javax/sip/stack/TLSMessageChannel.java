@@ -71,7 +71,7 @@ import java.text.ParseException;
  *
  * @version 1.2 $Revision: 1.43 $ $Date: 2010-12-02 22:44:53 $
  */
-public final class TLSMessageChannel extends ConnectionOrientedMessageChannel {
+public class TLSMessageChannel extends ConnectionOrientedMessageChannel {
     private static StackLogger logger = CommonLogger.getLogger(TLSMessageChannel.class);            
 
     private HandshakeCompletedListener handshakeCompletedListener;
@@ -518,6 +518,7 @@ public final class TLSMessageChannel extends ConnectionOrientedMessageChannel {
 				sslSock.startHandshake();
 			} catch (IOException e) {
 				logger.logError("A problem occured while Accepting connection", e);
+				return;
 			}
         }
     	super.run();
