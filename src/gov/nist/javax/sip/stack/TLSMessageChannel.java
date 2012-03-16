@@ -45,24 +45,15 @@ package gov.nist.javax.sip.stack;
 import gov.nist.core.CommonLogger;
 import gov.nist.core.LogWriter;
 import gov.nist.core.StackLogger;
-import gov.nist.javax.sip.header.CSeq;
-import gov.nist.javax.sip.header.CallID;
-import gov.nist.javax.sip.header.ContentLength;
-import gov.nist.javax.sip.header.From;
-import gov.nist.javax.sip.header.RequestLine;
-import gov.nist.javax.sip.header.StatusLine;
-import gov.nist.javax.sip.header.To;
-import gov.nist.javax.sip.header.Via;
+import gov.nist.javax.sip.header.*;
 import gov.nist.javax.sip.message.SIPMessage;
 
+import javax.net.ssl.HandshakeCompletedListener;
+import javax.net.ssl.SSLSocket;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.text.ParseException;
-
-import javax.net.ssl.HandshakeCompletedListener;
-import javax.net.ssl.SSLHandshakeException;
-import javax.net.ssl.SSLSocket;
 
 /**
  * This is sipStack for TLS connections. This abstracts a stream of parsed
@@ -114,20 +105,6 @@ public final class TLSMessageChannel extends ConnectionOrientedMessageChannel {
         }
 
         mySock = (SSLSocket) sock;
-        if (sock instanceof SSLSocket) {
-            SSLSocket sslSock = (SSLSocket) sock;
-            if(sipStack.getClientAuth() != ClientAuthType.Want && sipStack.getClientAuth() != ClientAuthType.Disabled) {
-                sslSock.setNeedClientAuth(true);
-            }
-            if(logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-                logger.logDebug("SSLServerSocket need client auth " + sslSock.getNeedClientAuth());
-            }
-            this.handshakeCompletedListener = new HandshakeCompletedListenerImpl(
-                    this);
-            sslSock
-                    .addHandshakeCompletedListener(this.handshakeCompletedListener);
-            sslSock.startHandshake();
-        }
 
         peerAddress = mySock.getInetAddress();
         myAddress = msgProcessor.getIpAddress().getHostAddress();
@@ -518,5 +495,31 @@ public final class TLSMessageChannel extends ConnectionOrientedMessageChannel {
      */
     public HandshakeCompletedListenerImpl getHandshakeCompletedListener() {
         return (HandshakeCompletedListenerImpl) handshakeCompletedListener;
-    }    
+    }  
+    
+    @Override
+    public void run() {
+    	// http://java.net/jira/browse/JSIP-415 
+    	// moved from constructor to the TCPMessageChannel thread to avoid blocking the Processor if the handshake is stuck because of a bad client
+    	if (mySock!= null && mySock instanceof SSLSocket) {
+            SSLSocket sslSock = (SSLSocket) mySock;
+            if(sipStack.getClientAuth() != ClientAuthType.Want && sipStack.getClientAuth() != ClientAuthType.Disabled) {
+                sslSock.setNeedClientAuth(true);
+            }
+            if(logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+                logger.logDebug("SSLServerSocket need client auth " + sslSock.getNeedClientAuth());
+            }
+
+            HandshakeCompletedListenerImpl listener = new HandshakeCompletedListenerImpl(this, sslSock);
+            this.handshakeCompletedListener = listener;
+            sslSock.addHandshakeCompletedListener(this.handshakeCompletedListener);
+            listener.startHandshakeWatchdog();
+            try {
+				sslSock.startHandshake();
+			} catch (IOException e) {
+				logger.logError("A problem occured while Accepting connection", e);
+			}
+        }
+    	super.run();
+    }
 }

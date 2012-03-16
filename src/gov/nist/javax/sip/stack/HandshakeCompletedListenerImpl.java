@@ -18,19 +18,37 @@
  */
 package gov.nist.javax.sip.stack;
 
+import gov.nist.core.CommonLogger;
+import gov.nist.core.StackLogger;
+
+import java.io.IOException;
+import java.net.Socket;
+
 import javax.net.ssl.HandshakeCompletedEvent;
 import javax.net.ssl.HandshakeCompletedListener;
 
 public class HandshakeCompletedListenerImpl implements HandshakeCompletedListener {
-
+	private static StackLogger logger = CommonLogger.getLogger(HandshakeCompletedListenerImpl.class);          
+	
     private HandshakeCompletedEvent handshakeCompletedEvent;
-    private Object eventWaitObject = new Object();
+    private final Object eventWaitObject = new Object();
 
-    public HandshakeCompletedListenerImpl(TLSMessageChannel tlsMessageChannel) {
+    private HandshakeWatchdog watchdog;
+    private SIPTransactionStack sipStack;
+
+    public HandshakeCompletedListenerImpl(TLSMessageChannel tlsMessageChannel, Socket socket) {
         tlsMessageChannel.setHandshakeCompletedListener(this);
+        sipStack = tlsMessageChannel.getSIPStack();
+        if(sipStack.getSslHandshakeTimeout() > 0) {
+        	this.watchdog = new HandshakeWatchdog(socket);        	
+        }
     }
 
     public void handshakeCompleted(HandshakeCompletedEvent handshakeCompletedEvent) {
+        if (this.watchdog != null) {
+            sipStack.getTimer().cancel(watchdog);
+            this.watchdog = null;
+        }
         this.handshakeCompletedEvent = handshakeCompletedEvent;
         synchronized (eventWaitObject) {
             eventWaitObject.notify();
@@ -55,5 +73,33 @@ public class HandshakeCompletedListenerImpl implements HandshakeCompletedListene
             // we don't care
         }
         return handshakeCompletedEvent;
+    }
+
+    public void startHandshakeWatchdog() {
+        if (this.watchdog != null) {
+        	logger.logInfo("starting watchdog for socket " + watchdog.socket + " on sslhandshake " + sipStack.getSslHandshakeTimeout());
+        	sipStack.getTimer().schedule(watchdog, sipStack.getSslHandshakeTimeout());
+        }
+    }
+
+    
+    class HandshakeWatchdog extends SIPStackTimerTask {
+    	Socket  socket;
+    	 
+    	private HandshakeWatchdog(Socket socket) {
+    		this.socket = socket;
+    	}
+    	
+		@Override
+		public void runTask() {
+			logger.logInfo("closing socket " + socket + " on sslhandshaketimeout");
+			 try {
+                 socket.close();
+             } catch (IOException ex) {
+                 logger.logInfo("couldn't close socket on sslhandshaketimeout");
+             }
+			 logger.logInfo("socket closed " + socket + " on sslhandshaketimeout");
+		}
+    	
     }
 }
