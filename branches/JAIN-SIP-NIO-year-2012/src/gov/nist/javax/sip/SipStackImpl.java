@@ -38,6 +38,7 @@ import gov.nist.javax.sip.clientauthutils.AuthenticationHelperImpl;
 import gov.nist.javax.sip.clientauthutils.SecureAccountManager;
 import gov.nist.javax.sip.parser.MessageParserFactory;
 import gov.nist.javax.sip.parser.PipelinedMsgParser;
+import gov.nist.javax.sip.parser.PostParseExecutorServices;
 import gov.nist.javax.sip.parser.StringMsgParser;
 import gov.nist.javax.sip.parser.StringMsgParserFactory;
 import gov.nist.javax.sip.stack.ClientAuthType;
@@ -45,6 +46,7 @@ import gov.nist.javax.sip.stack.DefaultMessageLogFactory;
 import gov.nist.javax.sip.stack.DefaultRouter;
 import gov.nist.javax.sip.stack.MessageProcessor;
 import gov.nist.javax.sip.stack.MessageProcessorFactory;
+import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
 import gov.nist.javax.sip.stack.OIOMessageProcessorFactory;
 import gov.nist.javax.sip.stack.SIPEventInterceptor;
 import gov.nist.javax.sip.stack.SIPMessageValve;
@@ -527,12 +529,12 @@ import javax.sip.message.Request;
  * </li>
  *
  *<li><b>gov.nist.javax.sip.RELIABLE_CONNECTION_KEEP_ALIVE_TIMEOUT</b> Value in seconds which is used as default keepalive timeout
- * (See also http://tools.ietf.org/html/rfc5626#section-4.4.1)</li>
+ * (See also http://tools.ietf.org/html/rfc5626#section-4.4.1). Defaults to "infiinity" seconds (i.e. timeout event not delivered).</li>
  * 
  * <li><b>gov.nist.javax.sip.SSL_HANDSHAKE_TIMEOUT</b> Value in seconds which is used as default timeout for performing the SSL Handshake
  * This prevents bad clients of connecting without sending any data to block the server</li>
  *
- * 
+ *
  * <li><b>javax.net.ssl.keyStore = fileName </b> <br/>
  * Default is <it>NULL</it>. If left undefined the keyStore and trustStore will
  * be left to the java runtime defaults. If defined, any TLS sockets created
@@ -1005,7 +1007,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 			try {
 				int threads = new Integer(tcpTreadPoolSize).intValue();
 				super.setTcpPostParsingThreadPoolSize(threads);
-				PipelinedMsgParser.setPostParseExcutorSize(threads, congetstionControlTimeout);
+				PostParseExecutorServices.setPostParseExcutorSize(threads, congetstionControlTimeout);
 			} catch (NumberFormatException ex) {
 				if (logger.isLoggingEnabled())
 					this.logger.logError(
@@ -1266,7 +1268,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 						"Bad configuration value for gov.nist.javax.sip.MESSAGE_PARSER_FACTORY", e);			
 		}
 		
-		String messageProcessorFactoryName = configurationProperties.getProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY",OIOMessageProcessorFactory.class.getName());
+		String messageProcessorFactoryName = configurationProperties.getProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY",NioMessageProcessorFactory.class.getName());
 		try {
 			super.messageProcessorFactory = (MessageProcessorFactory) Class.forName(messageProcessorFactoryName).newInstance();
 		} catch (Exception e) {
@@ -1337,6 +1339,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 			}
 		}
 		
+		super.useNio = Boolean.parseBoolean( configurationProperties.getProperty("gov.nist.javax.sip.USE_NIO","true"));
+		
 	}
 
 	/*
@@ -1385,7 +1389,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 				MessageProcessor messageProcessor = this
 						.createMessageProcessor(inetAddr, port, transport);
 				if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
-					this.logger.logDebug(
+					logger.logDebug(
 							"Created Message Processor: " + address
 									+ " port = " + port + " transport = "
 									+ transport);
@@ -1575,7 +1579,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 		if (this.eventScanner != null)
 			this.eventScanner.forceStop();
 		this.eventScanner = null;
-		PipelinedMsgParser.shutdownTcpThreadpool();
+		PostParseExecutorServices.shutdownThreadpool();
 
 	}
 

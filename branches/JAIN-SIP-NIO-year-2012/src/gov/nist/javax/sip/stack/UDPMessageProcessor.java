@@ -68,7 +68,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * thread pooling be added to limit the number of threads and improve
  * performance.
  */
-public class UDPMessageProcessor extends MessageProcessor {
+public class UDPMessageProcessor extends MessageProcessor implements Runnable {
 	
 	private static StackLogger logger = CommonLogger.getLogger(UDPMessageProcessor.class);
     /**

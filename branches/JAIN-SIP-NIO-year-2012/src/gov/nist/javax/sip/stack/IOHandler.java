@@ -106,7 +106,10 @@ public class IOHandler {
 
     protected void removeSocket(String key) {
         socketTable.remove(key);
-        socketCreationMap.remove(key);
+        if ( socketCreationMap.get(key) != null ) {
+        	socketCreationMap.get(key).release();
+        	socketCreationMap.remove(key);
+        }
         if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
             logger.logDebug("removed Socket and Semaphore for key " + key);
         }

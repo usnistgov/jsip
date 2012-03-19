@@ -22,8 +22,8 @@
 		<java classname="performance.uas.Shootme" classpathref="project.class.path" fork="true">
 			<jvmarg value="-XX:PermSize=256M"/>
 			<jvmarg value="-XX:MaxPermSize=512M"/>
-			<jvmarg value="-Xms2048M"/>
-			<jvmarg value="-Xmx2048M"/>
+			<jvmarg value="-Xms1048M"/>
+			<jvmarg value="-Xmx1048M"/>
 			<jvmarg value="-XX:+UseConcMarkSweepGC"/>
 			<jvmarg value="-XX:+CMSIncrementalMode"/>
 			<arg value="-Dcom.sun.management.jmxremote"/>

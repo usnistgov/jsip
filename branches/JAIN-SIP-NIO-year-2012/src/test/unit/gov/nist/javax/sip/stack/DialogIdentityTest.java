@@ -2,6 +2,7 @@ package test.unit.gov.nist.javax.sip.stack;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.ListIterator;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -36,6 +37,7 @@ import javax.sip.header.FromHeader;
 import javax.sip.header.Header;
 import javax.sip.header.HeaderFactory;
 import javax.sip.header.MaxForwardsHeader;
+import javax.sip.header.RouteHeader;
 import javax.sip.header.ToHeader;
 import javax.sip.header.ViaHeader;
 import javax.sip.message.MessageFactory;
@@ -74,16 +76,16 @@ public class DialogIdentityTest extends TestCase {
 
         public static final boolean callerSendsBye = true;
 
-        class MyTimerTask extends TimerTask {
+        class ByeTimer extends TimerTask {
             Shootme shootme;
 
-            public MyTimerTask(Shootme shootme) {
+            public ByeTimer(Shootme shootme) {
                 this.shootme = shootme;
 
             }
 
             public void run() {
-                shootme.sendInviteOK();
+                shootme.sendBye();
             }
 
         }
@@ -169,6 +171,20 @@ public class DialogIdentityTest extends TestCase {
                 ServerTransaction serverTransaction) {
             SipProvider sipProvider = (SipProvider) requestEvent.getSource();
             Request request = requestEvent.getRequest();
+    		ListIterator li = request.getHeaders("Route");
+    		if(li == null || !li.hasNext()) {
+    			//logger.info("No route headers in that invite. It must be means for someone else");
+    			return;
+    		}
+    		li.next(); // skip the first Route which is pointing to us here, we need the second
+    		if(!li.hasNext()) {
+    			//logger.info("No route headers in that invite. It must be means for someone else");
+    			return;
+    		}
+    		RouteHeader route = (RouteHeader) li.next();
+    		Shootist shootist = new Shootist();
+    		
+    		shootist.makeCall("mockserver", "testingSystem", route);
             try {
                 System.out.println("shootme: got an Invite sending Trying");
                 // System.out.println("shootme: " + request);
@@ -201,11 +217,11 @@ public class DialogIdentityTest extends TestCase {
                 // Defer sending the OK to simulate the phone ringing.
                 // Answered in 1 second ( this guy is fast at taking calls)
                 this.inviteRequest = request;
-
-                new Timer().schedule(new MyTimerTask(this), 1000);
+                sendInviteOK();
+                new Timer().schedule(new ByeTimer(this), 5000);
             } catch (Exception ex) {
                 ex.printStackTrace();
-                System.exit(0);
+                //System.exit(0);
             }
         }
 
@@ -221,6 +237,17 @@ public class DialogIdentityTest extends TestCase {
             } catch (SipException ex) {
                 ex.printStackTrace();
             } catch (InvalidArgumentException ex) {
+                ex.printStackTrace();
+            }
+        }
+        
+        private void sendBye() {
+            try {
+                Request request = dialog.createRequest("BYE");
+                SipProvider provider = (SipProvider) sipStack.getSipProviders().next();
+                ClientTransaction ct = provider.getNewClientTransaction(request);
+                dialog.sendRequest(ct);
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
@@ -301,6 +328,7 @@ public class DialogIdentityTest extends TestCase {
                     "shootmedebug.txt");
             properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
                     "shootmelog.txt");
+
 
             try {
                 // Create SipStack object
@@ -478,9 +506,9 @@ public class DialogIdentityTest extends TestCase {
                 return;
             }
             // If the caller is supposed to send the bye
-            if ( Shootme.callerSendsBye && !byeTaskRunning) {
+            if (!byeTaskRunning) {
                 byeTaskRunning = true;
-                new Timer().schedule(new ByeTask(dialog), 4000) ;
+                new Timer().schedule(new ByeTask(dialog), 5000) ;
             }
             System.out.println("transaction state is " + tid.getState());
             System.out.println("Dialog = " + tid.getDialog());
@@ -496,9 +524,6 @@ public class DialogIdentityTest extends TestCase {
                         Request ackRequest = dialog.createAck(cseq.getSeqNumber());
                         System.out.println("Sending ACK");
                         dialog.sendAck(ackRequest);
-
-                        // JvB: test REFER, reported bug in tag handling
-                        dialog.sendRequest(  sipProvider.getNewClientTransaction( dialog.createRequest("REFER") ));
 
                     } else if (cseq.getMethod().equals(Request.CANCEL)) {
                         if (dialog.getState() == DialogState.CONFIRMED) {
@@ -538,8 +563,10 @@ public class DialogIdentityTest extends TestCase {
                 ex.printStackTrace();
             }
         }
+        
+        public void init() {}
 
-        public void init() {
+        public void makeCall(String from, String to, RouteHeader route) {
             SipFactory sipFactory = null;
             sipStack = null;
             sipFactory = SipFactory.getInstance();
@@ -547,9 +574,9 @@ public class DialogIdentityTest extends TestCase {
             Properties properties = new Properties();
             // If you want to try TCP transport change the following to
             String transport = "udp";
-            String peerHostPort = "127.0.0.1:5070";
-            properties.setProperty("javax.sip.OUTBOUND_PROXY", peerHostPort + "/"
-                    + transport);
+            String peerHostPort = to;
+            //properties.setProperty("javax.sip.OUTBOUND_PROXY", peerHostPort + "/"
+            //        + transport);
             // If you want to use UDP then uncomment this.
             properties.setProperty("javax.sip.STACK_NAME", "shootist");
 
@@ -588,17 +615,17 @@ public class DialogIdentityTest extends TestCase {
                 headerFactory = sipFactory.createHeaderFactory();
                 addressFactory = sipFactory.createAddressFactory();
                 messageFactory = sipFactory.createMessageFactory();
-                udpListeningPoint = sipStack.createListeningPoint("127.0.0.1", 5060, "udp");
+                udpListeningPoint = sipStack.createListeningPoint("127.0.0.1", 5099, "udp");
                 sipProvider = sipStack.createSipProvider(udpListeningPoint);
                 Shootist listener = this;
                 sipProvider.addSipListener(listener);
 
-                String fromName = "BigGuy";
+                String fromName = from;
                 String fromSipAddress = "here.com";
                 String fromDisplayName = "The Master Blaster";
 
                 String toSipAddress = "there.com";
-                String toUser = "LittleGuy";
+                String toUser = to;
                 String toDisplayName = "The Little Blister";
 
                 // create >From Header
@@ -608,7 +635,7 @@ public class DialogIdentityTest extends TestCase {
                 Address fromNameAddress = addressFactory.createAddress(fromAddress);
                 fromNameAddress.setDisplayName(fromDisplayName);
                 FromHeader fromHeader = headerFactory.createFromHeader(
-                        fromNameAddress, "12345");
+                        fromNameAddress, "473722");
 
                 // create To Header
                 SipURI toAddress = addressFactory
@@ -671,6 +698,8 @@ public class DialogIdentityTest extends TestCase {
 
                 contactHeader = headerFactory.createContactHeader(contactAddress);
                 request.addHeader(contactHeader);
+                
+                request.addLast(route);
 
                 // You can add extension headers of your own making
                 // to the outgoing SIP request.
@@ -742,16 +771,12 @@ public class DialogIdentityTest extends TestCase {
 
     public void testDialogIdentity() throws Exception {
 
-            Shootist shootist = new Shootist();
-
             Shootme shootme = new Shootme(false);
             shootme.init();
 
-            shootist.init();
 
-            Thread.sleep(10000);
+            Thread.sleep(1000000);
 
-            shootist.stop();
             shootme.stop();
     }
     

@@ -61,7 +61,7 @@ import java.util.Iterator;
  * 
  * 
  */
-public class TCPMessageProcessor extends ConnectionOrientedMessageProcessor {
+public class TCPMessageProcessor extends ConnectionOrientedMessageProcessor implements Runnable {
 	
 	private static StackLogger logger = CommonLogger.getLogger(TCPMessageProcessor.class);
 

@@ -31,11 +31,13 @@ package gov.nist.javax.sip;
 import gov.nist.core.CommonLogger;
 import gov.nist.core.InternalErrorHandler;
 import gov.nist.core.LogLevels;
+import gov.nist.core.LogWriter;
 import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.DialogTimeoutEvent.Reason;
 import gov.nist.javax.sip.address.RouterExt;
 import gov.nist.javax.sip.header.CallID;
 import gov.nist.javax.sip.header.Via;
+import gov.nist.javax.sip.message.RequestExt;
 import gov.nist.javax.sip.message.SIPMessage;
 import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.message.SIPResponse;
@@ -277,186 +279,204 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
      */
     public ClientTransaction getNewClientTransaction(Request request)
             throws TransactionUnavailableException {
-        if (request == null)
-            throw new NullPointerException("null request");
-        if (!sipStack.isAlive())
-            throw new TransactionUnavailableException("Stack is stopped");
 
-        SIPRequest sipRequest = (SIPRequest) request;
-        if (sipRequest.getTransaction() != null)
-            throw new TransactionUnavailableException(
-                    "Transaction already assigned to request");
-        if ( sipRequest.getMethod().equals(Request.ACK)) {
-            throw new TransactionUnavailableException ("Cannot create client transaction for  " + Request.ACK);
-        }
-        // Be kind and assign a via header for this provider if the user is
-        // sloppy
-        if (sipRequest.getTopmostVia() == null) {
-        	String transport = null;
-        	try {
-				transport = sipStack.getNextHop(sipRequest).getTransport();
-			} catch (SipException e) {
-				throw new TransactionUnavailableException ("Cannot create client transaction for the next hop transport ", e);
+		logger.logDebug("SipProviderImpl::getNewClientTransaction "
+				+ ((RequestExt) request).getFirstLine());
+		try {
+			if (request == null)
+				throw new NullPointerException("null request");
+			if (!sipStack.isAlive())
+				throw new TransactionUnavailableException("Stack is stopped");
+
+			SIPRequest sipRequest = (SIPRequest) request;
+			if (sipRequest.getTransaction() != null)
+				throw new TransactionUnavailableException(
+						"Transaction already assigned to request");
+			if (sipRequest.getMethod().equals(Request.ACK)) {
+				throw new TransactionUnavailableException(
+						"Cannot create client transaction for  " + Request.ACK);
 			}
-        	if(transport == null) transport = "udp";
-        	ListeningPointImpl lp = (ListeningPointImpl) this
-                    .getListeningPoint(transport);
-            if(lp == null) {
-            	// last resort, instead of failing try to route anywhere
-            	lp = (ListeningPointImpl) this.getListeningPoints()[0];
-            }
-            Via via = lp.getViaHeader();
-            request.setHeader(via);
-        }
-        // Give the request a quick check to see if all headers are assigned.
-        try {
-            sipRequest.checkHeaders();
-        } catch (ParseException ex) {
-            throw new TransactionUnavailableException(ex.getMessage(), ex);
-        }
+			// Be kind and assign a via header for this provider if the user is
+			// sloppy
+			if (sipRequest.getTopmostVia() == null) {
+				String transport = null;
+				try {
+					transport = sipStack.getNextHop(sipRequest).getTransport();
+				} catch (SipException e) {
+					throw new TransactionUnavailableException(
+							"Cannot create client transaction for the next hop transport ",
+							e);
+				}
+				if (transport == null)
+					transport = "udp";
+				ListeningPointImpl lp = (ListeningPointImpl) this
+						.getListeningPoint(transport);
+				if (lp == null) {
+					// last resort, instead of failing try to route anywhere
+					lp = (ListeningPointImpl) this.getListeningPoints()[0];
+				}
+				Via via = lp.getViaHeader();
+				request.setHeader(via);
+			}
+			// Give the request a quick check to see if all headers are
+			// assigned.
+			try {
+				sipRequest.checkHeaders();
+			} catch (ParseException ex) {
+				throw new TransactionUnavailableException(ex.getMessage(), ex);
+			}
 
-        /*
-         * User decided to give us his own via header branch. Lets see if it
-         * results in a clash. If so reject the request.
-         */
-        if (sipRequest.getTopmostVia().getBranch() != null
-                && sipRequest.getTopmostVia().getBranch().startsWith(
-                        SIPConstants.BRANCH_MAGIC_COOKIE)
-                && sipStack.findTransaction((SIPRequest) request, false) != null) {
-            throw new TransactionUnavailableException(
-                    "Transaction already exists!");
-        }
+			/*
+			 * User decided to give us his own via header branch. Lets see if it
+			 * results in a clash. If so reject the request.
+			 */
+			if (sipRequest.getTopmostVia().getBranch() != null
+					&& sipRequest.getTopmostVia().getBranch().startsWith(
+							SIPConstants.BRANCH_MAGIC_COOKIE)
+					&& sipStack.findTransaction((SIPRequest) request, false) != null) {
+				throw new TransactionUnavailableException(
+						"Transaction already exists!");
+			}
 
+			if (request.getMethod().equalsIgnoreCase(Request.CANCEL)) {
+				SIPClientTransaction ct = (SIPClientTransaction) sipStack
+						.findCancelTransaction((SIPRequest) request, false);
+				if (ct != null) {
+					ClientTransaction retval = sipStack
+							.createClientTransaction((SIPRequest) request, ct
+									.getMessageChannel());
 
+					((SIPTransaction) retval).addEventListener(this);
+					sipStack.addTransaction((SIPClientTransaction) retval);
+					if (ct.getDialog() != null) {
+						((SIPClientTransaction) retval).setDialog(
+								(SIPDialog) ct.getDialog(), sipRequest
+										.getDialogId(false));
 
+					}
+					return retval;
+				}
 
-        if (request.getMethod().equalsIgnoreCase(Request.CANCEL)) {
-            SIPClientTransaction ct = (SIPClientTransaction) sipStack
-                    .findCancelTransaction((SIPRequest) request, false);
-            if (ct != null) {
-                ClientTransaction retval = sipStack.createClientTransaction(
-                        (SIPRequest) request, ct.getMessageChannel());
+			}
+			if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
+				logger.logDebug("could not find existing transaction for "
+						+ ((SIPRequest) request).getFirstLine()
+						+ " creating a new one ");
 
-                ((SIPTransaction) retval).addEventListener(this);
-                sipStack.addTransaction((SIPClientTransaction) retval);
-                if (ct.getDialog() != null) {
-                    ((SIPClientTransaction) retval).setDialog((SIPDialog) ct
-                            .getDialog(), sipRequest.getDialogId(false));
+			// Could not find a dialog or the route is not set in dialog.
 
-                }
-                return retval;
-            }
+			Hop hop = null;
+			try {
+				hop = sipStack.getNextHop((SIPRequest) request);
+				if (hop == null)
+					throw new TransactionUnavailableException(
+							"Cannot resolve next hop -- transaction unavailable");
+			} catch (SipException ex) {
+				throw new TransactionUnavailableException(
+						"Cannot resolve next hop -- transaction unavailable",
+						ex);
+			}
+			String transport = hop.getTransport();
+			ListeningPointImpl listeningPoint = (ListeningPointImpl) this
+					.getListeningPoint(transport);
 
-        }
-        if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
-            logger.logDebug(
-                    "could not find existing transaction for "
-                            + ((SIPRequest) request).getFirstLine()
-                            + " creating a new one ");
+			String dialogId = sipRequest.getDialogId(false);
+			SIPDialog dialog = sipStack.getDialog(dialogId);
+			if (dialog != null && dialog.getState() == DialogState.TERMINATED) {
 
-        // Could not find a dialog or the route is not set in dialog.
+				// throw new TransactionUnavailableException
+				// ("Found a terminated dialog -- possible re-use of old tag
+				// parameters");
+				sipStack.removeDialog(dialog);
 
-        Hop hop = null;
-        try {
-            hop = sipStack.getNextHop((SIPRequest) request);
-            if (hop == null)
-                throw new TransactionUnavailableException(
-                        "Cannot resolve next hop -- transaction unavailable");
-        } catch (SipException ex) {
-            throw new TransactionUnavailableException(
-                    "Cannot resolve next hop -- transaction unavailable", ex);
-        }
-        String transport = hop.getTransport();
-        ListeningPointImpl listeningPoint = (ListeningPointImpl) this
-                .getListeningPoint(transport);
+			}
 
-        String dialogId = sipRequest.getDialogId(false);
-        SIPDialog dialog = sipStack.getDialog(dialogId);
-        if (dialog != null && dialog.getState() == DialogState.TERMINATED) {
+			// An out of dialog route was found. Assign this to the
+			// client transaction.
 
-            // throw new TransactionUnavailableException
-            // ("Found a terminated dialog -- possible re-use of old tag
-            // parameters");
-            sipStack.removeDialog(dialog);
+			try {
+				// Set the brannch id before you ask for a tx.
+				// If the user has set his own branch Id and the
+				// branch id starts with a valid prefix, then take it.
+				// otherwise, generate one. If branch ID checking has
+				// been requested, set the branch ID.
+				String branchId = null;
+				if (sipRequest.getTopmostVia().getBranch() == null
+						|| !sipRequest.getTopmostVia().getBranch().startsWith(
+								SIPConstants.BRANCH_MAGIC_COOKIE)
+						|| sipStack.checkBranchId()) {
+					branchId = Utils.getInstance().generateBranchId();
 
-        }
+					sipRequest.getTopmostVia().setBranch(branchId);
+				}
+				Via topmostVia = sipRequest.getTopmostVia();
 
-        // An out of dialog route was found. Assign this to the
-        // client transaction.
+				// set port and transport if user hasn't already done this.
+				if (topmostVia.getTransport() == null)
+					topmostVia.setTransport(transport);
 
-        try {
-            // Set the brannch id before you ask for a tx.
-            // If the user has set his own branch Id and the
-            // branch id starts with a valid prefix, then take it.
-            // otherwise, generate one. If branch ID checking has 
-            // been requested, set the branch ID.
-            String branchId = null;
-            if (sipRequest.getTopmostVia().getBranch() == null
-                    || !sipRequest.getTopmostVia().getBranch().startsWith(
-                            SIPConstants.BRANCH_MAGIC_COOKIE)
-                            || sipStack.checkBranchId() ) {
-                branchId = Utils.getInstance().generateBranchId();
+				if (topmostVia.getPort() == -1)
+					topmostVia.setPort(listeningPoint.getPort());
+				branchId = sipRequest.getTopmostVia().getBranch();
 
-                sipRequest.getTopmostVia().setBranch(branchId);
-            }
-            Via topmostVia = sipRequest.getTopmostVia();
+				SIPClientTransaction ct = (SIPClientTransaction) sipStack
+						.createMessageChannel(sipRequest, listeningPoint
+								.getMessageProcessor(), hop);
+				if (ct == null) {
+					throw new TransactionUnavailableException(
+							"Cound not create tx");
+				} else {
+					if ( logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+						logger.logDebug("Created Client Tx " + ct);
+					}
+					
+				}
+				ct.setNextHop(hop);
+				ct.setOriginalRequest(sipRequest);
+				ct.setBranch(branchId);
+				// if the stack supports dialogs then
+				if (SIPTransactionStack.isDialogCreated(request.getMethod())) {
+					// create a new dialog to contain this transaction
+					// provided this is necessary.
+					// This could be a re-invite
+					// in which case the dialog is re-used.
+					// (but noticed by Brad Templeton)
+					if (dialog != null)
+						ct.setDialog(dialog, sipRequest.getDialogId(false));
+					else if (this.isAutomaticDialogSupportEnabled()) {
+						SIPDialog sipDialog = sipStack.createDialog(ct);
+						ct.setDialog(sipDialog, sipRequest.getDialogId(false));
+					}
+				} else {
+					if (dialog != null) {
+						ct.setDialog(dialog, sipRequest.getDialogId(false));
+					}
 
-            //set port and transport if user hasn't already done this.
-            if(topmostVia.getTransport() == null)
-                topmostVia.setTransport(transport);
+				}
 
-            if(topmostVia.getPort() == -1)
-                topmostVia.setPort(listeningPoint.getPort());
-            branchId = sipRequest.getTopmostVia().getBranch();
+				// The provider is the event listener for all transactions.
+				ct.addEventListener(this);
+				return (ClientTransaction) ct;
+			} catch (IOException ex) {
 
-            SIPClientTransaction ct = (SIPClientTransaction) sipStack
-                    .createMessageChannel(sipRequest, listeningPoint
-                            .getMessageProcessor(), hop);
-            if (ct == null)
-                throw new TransactionUnavailableException("Cound not create tx");
-            ct.setNextHop(hop);
-            ct.setOriginalRequest(sipRequest);
-            ct.setBranch(branchId);
-            // if the stack supports dialogs then
-            if (SIPTransactionStack.isDialogCreated(request.getMethod())) {
-                // create a new dialog to contain this transaction
-                // provided this is necessary.
-                // This could be a re-invite
-                // in which case the dialog is re-used.
-                // (but noticed by Brad Templeton)
-                if (dialog != null)
-                    ct.setDialog(dialog, sipRequest.getDialogId(false));
-                else if (this.isAutomaticDialogSupportEnabled()) {
-                    SIPDialog sipDialog = sipStack.createDialog(ct);
-                    ct.setDialog(sipDialog, sipRequest.getDialogId(false));
-                }
-            } else {
-                if (dialog != null) {
-                    ct.setDialog(dialog, sipRequest.getDialogId(false));
-                }
+				throw new TransactionUnavailableException(
+						"Could not resolve next hop or listening point unavailable! ",
+						ex);
 
-            }
+			} catch (java.text.ParseException ex) {
+				InternalErrorHandler.handleException(ex);
+				throw new TransactionUnavailableException(
+						"Unexpected Exception FIXME! ", ex);
+			} catch (InvalidArgumentException ex) {
+				InternalErrorHandler.handleException(ex);
+				throw new TransactionUnavailableException(
+						"Unexpected Exception FIXME! ", ex);
+			}
+		} finally {
+			logger.logDebug("SipProviderImpl::getNewClientTransaction: exit");
+		}
 
-            // The provider is the event listener for all transactions.
-            ct.addEventListener(this);
-            return (ClientTransaction) ct;
-        } catch (IOException ex) {
-
-            throw new TransactionUnavailableException(
-                    "Could not resolve next hop or listening point unavailable! ",
-                    ex);
-
-        } catch (java.text.ParseException ex) {
-            InternalErrorHandler.handleException(ex);
-            throw new TransactionUnavailableException(
-                    "Unexpected Exception FIXME! ", ex);
-        } catch (InvalidArgumentException ex) {
-            InternalErrorHandler.handleException(ex);
-            throw new TransactionUnavailableException(
-                    "Unexpected Exception FIXME! ", ex);
-        }
-
-    }
+	}
 
     /*
      * (non-Javadoc)
