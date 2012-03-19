@@ -424,7 +424,7 @@ public abstract class ConnectionOrientedMessageChannel extends MessageChannel im
                     byte[] resp = sipResponse
                             .encodeAsBytes(this.getTransport());
                     this.sendMessage(resp, false);
-                    throw new Exception("Bad CSeq method");
+                    throw new Exception("Bad CSeq method" + sipMessage + " method " + method);
                 }
 
                 // Stack could not create a new server request interface.
@@ -527,6 +527,9 @@ public abstract class ConnectionOrientedMessageChannel extends MessageChannel im
         }
     }
     
+    
+  
+
     /**
      * This gets invoked when thread.start is called from the constructor.
      * Implements a message loop - reading the tcp connection and processing
@@ -587,7 +590,6 @@ public abstract class ConnectionOrientedMessageChannel extends MessageChannel im
                             if (sipStack.maxConnections != -1) {
                                 synchronized (messageProcessor) {
                                 	((ConnectionOrientedMessageProcessor)this.messageProcessor).nConnections--;
-                                    // System.out.println("Notifying!");
                                 	messageProcessor.notify();
                                 }
                             }

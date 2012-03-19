@@ -209,7 +209,7 @@ public class Shootist implements SipListener {
         sipFactory.setPathName("gov.nist");
         Properties properties = new Properties();
         // If you want to try TCP transport change the following to
-        String transport = "udp";
+        String transport = "tcp";
         String peerHostPort = "127.0.0.1:5070";
         // String peerHostPort = "230.0.0.1:5070";
         properties.setProperty("javax.sip.OUTBOUND_PROXY", peerHostPort + "/"
@@ -252,8 +252,10 @@ public class Shootist implements SipListener {
             headerFactory = sipFactory.createHeaderFactory();
             addressFactory = sipFactory.createAddressFactory();
             messageFactory = sipFactory.createMessageFactory();
-            udpListeningPoint = sipStack.createListeningPoint("127.0.0.1", 5060, "udp");
+            udpListeningPoint = sipStack.createListeningPoint("127.0.0.1", 5060, "tcp");
+            System.out.println("listeningPoint = " + udpListeningPoint);
             sipProvider = sipStack.createSipProvider(udpListeningPoint);
+            System.out.println("SipProvider = " + sipProvider);
             Shootist listener = this;
             sipProvider.addSipListener(listener);
 
@@ -366,8 +368,11 @@ public class Shootist implements SipListener {
 
             // Create the client transaction.
             inviteTid = sipProvider.getNewClientTransaction(request);
+         
+            System.out.println("inviteTid = " + inviteTid);
 
             // send the request out.
+            
             inviteTid.sendRequest();
 
             dialog = inviteTid.getDialog();

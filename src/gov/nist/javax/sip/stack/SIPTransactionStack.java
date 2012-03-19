@@ -390,6 +390,8 @@ public abstract class SIPTransactionStack implements
     
     // ThreadPool when parsed SIP messages are processed. Affects the case when many TCP calls use single socket.
     private int tcpPostParsingThreadPoolSize = 0;
+    
+    protected  boolean useNio;
 
     // Minimum time between NAT kee alive pings from clients.
     // Any ping that exceeds this time will result in  CRLF CRLF going
@@ -1684,6 +1686,9 @@ public abstract class SIPTransactionStack implements
         targetHostPort.setHost(targetHost);
         targetHostPort.setPort(nextHop.getPort());
         MessageChannel mc = mp.createMessageChannel(targetHostPort);
+        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+			logger.logDebug("Created MessageChannel " + mc);
+		}
 
         // Superclass will return null if no message processor
         // available for the transport.
