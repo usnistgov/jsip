@@ -2,26 +2,32 @@ package test.unit.gov.nist.javax.sip.stack.tls;
 
 import junit.framework.TestCase;
 
-public class TlsTest extends TestCase {
+/**
+ * Non regression test for http://java.net/jira/browse/JSIP-417
+ *
+ */
+public class TlsTestDomainDash extends TestCase {
 	
 	private Shootist shootist;
 	private Shootme shootme;
 
 
 	public void setUp() {
-		// setup TLS properties
-        System.setProperty( "javax.net.ssl.keyStore",  TlsTest.class.getResource("testkeys").getPath() );
-        System.setProperty( "javax.net.ssl.trustStore", TlsTest.class.getResource("testkeys").getPath() );
-        System.setProperty( "javax.net.ssl.keyStorePassword", "passphrase" );
-        System.setProperty( "javax.net.ssl.keyStoreType", "jks" );
+		 // setup TLS properties
+	       System.setProperty( "javax.net.ssl.keyStore",  TlsTestDomainDash.class.getResource("fookeys").getPath() );
+	       System.setProperty( "javax.net.ssl.trustStore", TlsTestDomainDash.class.getResource("fookeys").getPath() );
+	       System.setProperty( "javax.net.ssl.keyStorePassword", "passphrase" );
+	       System.setProperty( "javax.net.ssl.keyStoreType", "jks" );
 	}
 	
 	public void testTls() {
+		
         this.shootist = new Shootist();
         this.shootme = new Shootme();
         this.shootme.init();
-		this.shootist.init("localhost");
+		this.shootist.init("foo-bar.com");
 	}
+	
 	
 	public void tearDown() {
 		try {
@@ -39,5 +45,6 @@ public class TlsTest extends TestCase {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
     }
 }

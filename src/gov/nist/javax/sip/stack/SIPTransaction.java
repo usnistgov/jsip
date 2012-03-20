@@ -25,12 +25,7 @@
  */
 package gov.nist.javax.sip.stack;
 
-import gov.nist.core.CommonLogger;
-import gov.nist.core.InternalErrorHandler;
-import gov.nist.core.LogLevels;
-import gov.nist.core.LogWriter;
-import gov.nist.core.ServerLogger;
-import gov.nist.core.StackLogger;
+import gov.nist.core.*;
 import gov.nist.javax.sip.SIPConstants;
 import gov.nist.javax.sip.SipProviderImpl;
 import gov.nist.javax.sip.SipStackImpl;
@@ -41,25 +36,6 @@ import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.message.SIPResponse;
 import gov.nist.javax.sip.stack.SIPClientTransaction.ExpiresTimerTask;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.security.cert.Certificate;
-import java.security.cert.CertificateParsingException;
-import java.security.cert.X509Certificate;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.sip.Dialog;
 import javax.sip.IOExceptionEvent;
@@ -67,6 +43,20 @@ import javax.sip.TransactionState;
 import javax.sip.address.SipURI;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateParsingException;
+import java.security.cert.X509Certificate;
+import java.text.ParseException;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /*
  * Modifications for TLS Support added by Daniel J. Martinez Manzano
@@ -87,6 +77,10 @@ import javax.sip.message.Response;
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
 	private static StackLogger logger = CommonLogger.getLogger(SIPTransaction.class);
+
+	// Contribution on http://java.net/jira/browse/JSIP-417 from Alexander Saveliev
+	private static final Pattern EXTRACT_CN = Pattern.compile(".*CN\\s*=\\s*([\\w*\\.\\-_]+).*");
+
     protected boolean toListener; // Flag to indicate that the listener gets
 
     // to see the event.
@@ -1467,7 +1461,6 @@ public abstract class SIPTransaction extends MessageChannel implements
                     String dname = x509cert.getSubjectDN().getName();
                     String cname = "";
                     try {
-                        Pattern EXTRACT_CN = Pattern.compile(".*CN\\s*=\\s*([\\w*\\.]+).*");
                         Matcher matcher = EXTRACT_CN.matcher(dname);
                         if (matcher.matches()) {
                             cname = matcher.group(1);
