@@ -94,7 +94,8 @@ public class NIOHandler {
     protected NIOHandler(SIPTransactionStack sipStack, NioTcpMessageProcessor messageProcessor) {
         this.sipStack = (SipStackImpl) sipStack;
         this.messageProcessor = messageProcessor;
-        timer.scheduleAtFixedRate(new SocketTimeoutAuditor(), 1000, 1000);
+        if(sipStack.nioSocketMaxIdleTime > 0) 
+        	timer.scheduleAtFixedRate(new SocketTimeoutAuditor(), 20000, 20000);
     }
 
     protected void putSocket(String key, SocketChannel sock) {
