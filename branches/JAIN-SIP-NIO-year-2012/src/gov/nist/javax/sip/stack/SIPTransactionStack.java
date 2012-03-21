@@ -406,7 +406,7 @@ public abstract class SIPTransactionStack implements
     // factory used to create MessageProcessor objects
     public MessageProcessorFactory messageProcessorFactory;
     
-    public int nioSocketMaxIdleTime;
+    public long nioSocketMaxIdleTime;
 
     protected boolean aggressiveCleanup = false;
 

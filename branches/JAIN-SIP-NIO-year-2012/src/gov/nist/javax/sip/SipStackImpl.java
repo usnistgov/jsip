@@ -1283,9 +1283,9 @@ public class SipStackImpl extends SIPTransactionStack implements
 						"Bad configuration value for gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", e);			
 		}
 		
-		String maxIdleTimeString = configurationProperties.getProperty("gov.nist.javax.sip.NIO_MAX_SOCKET_IDLE_TIME", "7200");
+		String maxIdleTimeString = configurationProperties.getProperty("gov.nist.javax.sip.NIO_MAX_SOCKET_IDLE_TIME", "7200000");
 		try {
-			super.nioSocketMaxIdleTime = Integer.parseInt(maxIdleTimeString);
+			super.nioSocketMaxIdleTime = Long.parseLong(maxIdleTimeString);
 		} catch (Exception e) {
 			logger
 				.logError(
