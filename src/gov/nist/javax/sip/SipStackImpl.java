@@ -340,7 +340,13 @@ import javax.sip.message.Request;
  * remain disabled. An example of how to use this property is in
  * src/examples/threadaudit.</li>
  * 
- * 
+ * <li><b>gov.nist.javax.sip.NIO_MAX_SOCKET_IDLE_TIME = long </b> <br/>
+ * Defines the number of milliseconds a NIO TCP socket will be kept alive after the
+ * last IO operation on that socket. This allows to clean up after high initial load
+ * of new calls that hang up or stay idle. Note that disconnecting the socket does't
+ * end the SIP call. A new socket will be established when needed for any existing calls
+ * by the SIP RFC spec.
+ * </li>
  * 
  * <li><b>gov.nist.javax.sip.COMPUTE_CONTENT_LENGTH_FROM_MESSAGE_BODY =
  * [true|false] </b> <br/>
@@ -1275,6 +1281,15 @@ public class SipStackImpl extends SIPTransactionStack implements
 			logger
 				.logError(
 						"Bad configuration value for gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", e);			
+		}
+		
+		String maxIdleTimeString = configurationProperties.getProperty("gov.nist.javax.sip.NIO_MAX_SOCKET_IDLE_TIME", "7200");
+		try {
+			super.nioSocketMaxIdleTime = Integer.parseInt(maxIdleTimeString);
+		} catch (Exception e) {
+			logger
+				.logError(
+						"Bad configuration value for gov.nist.javax.sip.NIO_MAX_SOCKET_IDLE_TIME=" + maxIdleTimeString, e);			
 		}
 		
 		String defaultTimerName = configurationProperties.getProperty("gov.nist.javax.sip.TIMER_CLASS_NAME",DefaultSipTimer.class.getName());

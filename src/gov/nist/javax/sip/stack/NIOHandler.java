@@ -40,6 +40,9 @@ import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.nio.channels.SocketChannel;
 import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
 /*
@@ -70,6 +73,8 @@ public class NIOHandler {
 
     // Added by Daniel J. Martinez Manzano <dani@dif.um.es>
     private static final String TLS = "tls";
+    
+    Timer timer = new Timer();
 
     // A cache of client sockets that can be re-used for
     // sending tcp messages.
@@ -89,26 +94,32 @@ public class NIOHandler {
     protected NIOHandler(SIPTransactionStack sipStack, NioTcpMessageProcessor messageProcessor) {
         this.sipStack = (SipStackImpl) sipStack;
         this.messageProcessor = messageProcessor;
+        timer.scheduleAtFixedRate(new SocketTimeoutAuditor(), 1000, 1000);
     }
 
     protected void putSocket(String key, SocketChannel sock) {
-    	if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-            logger.logDebug("adding socket for key " + key);
-        }
-        socketTable.put(key, sock);
+    	synchronized(socketTable) {
+    		if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+    			logger.logDebug("adding socket for key " + key);
+    		}
+    		socketTable.put(key, sock);
+    	}
     }
 
     protected SocketChannel getSocket(String key) {
+    	// no need to synchrnize here
         return (SocketChannel) socketTable.get(key);
 
     }
 
     protected void removeSocket(String key) {
-        socketTable.remove(key);
-        keyedSemaphore.remove(key);
-        if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-            logger.logDebug("removed Socket and Semaphore for key " + key);
-        }
+    	synchronized(socketTable) {
+    		socketTable.remove(key);
+    		keyedSemaphore.remove(key);
+    		if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+    			logger.logDebug("removed Socket and Semaphore for key " + key);
+    		}
+    	}
     }
 
     /**
@@ -359,6 +370,7 @@ public class NIOHandler {
                     .logDebug(
                             "Closing " + socketTable.size()
                                     + " sockets from IOHandler");
+        
         for (Enumeration<SocketChannel> values = socketTable.elements(); values
                 .hasMoreElements();) {
         	SocketChannel s = (SocketChannel) values.nextElement();
@@ -368,6 +380,47 @@ public class NIOHandler {
             }
         }
 
+    }
+    
+    public void stop() {
+    	try {
+        	timer.cancel();
+        	timer.purge();
+        } catch (Exception e) {
+        	
+        }
+    }
+    
+    private class SocketTimeoutAuditor extends TimerTask {
+    	public void run() {
+    		synchronized(socketTable) {
+    			try {
+    				HashSet<String> keysToRemove = new HashSet<String>();
+    				for(String key : socketTable.keySet()) {
+    					SocketChannel socketChannel = socketTable.get(key);
+    					NioTcpMessageChannel messageChannel = NioTcpMessageChannel.getMessageChannel(socketChannel);
+    					if(messageChannel == null) {
+    						keysToRemove.add(key);
+    					} else {
+    						if(System.currentTimeMillis() - messageChannel.getLastActivityTimestamp() > sipStack.nioSocketMaxIdleTime) {
+    							keysToRemove.add(key);
+    							if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+    								logger.logDebug("Will remove socket " + key + " lastActivity=" + messageChannel.getLastActivityTimestamp() + " current= " + System.currentTimeMillis());
+    							NioTcpMessageChannel.removeMessageChannel(socketChannel);
+    							messageChannel.close();
+    						}
+    					}
+    				}
+    				for(String key : keysToRemove) {
+    					socketTable.remove(key);
+    					if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+    						logger.logDebug("Removed socket " + key);
+    				}
+    			} catch (Exception anything) {
+
+    			}
+    		}
+    	}
     }
 
 }
