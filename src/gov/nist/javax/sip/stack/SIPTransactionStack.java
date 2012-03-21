@@ -333,6 +333,12 @@ public abstract class SIPTransactionStack implements
     // containers to defend against buggy clients (that do not
     // want to respond to requests).
     protected int maxListenerResponseTime;
+    
+    //http://java.net/jira/browse/JSIP-420
+    // Max time that an INVITE tx is allowed to live in the stack. Default is infinity
+    protected int maxTxLifetimeInvite;
+    // Max time that a Non INVITE tx is allowed to live in the stack. Default is infinity
+    protected int maxTxLifetimeNonInvite;
 
     // A flag that indicates whether or not RFC 2543 clients are fully
     // supported.
@@ -1790,13 +1796,14 @@ public abstract class SIPTransactionStack implements
                     + sipTransaction.getTransactionId() + " transaction = "
                     + sipTransaction);
         }
+        Object removed = null;
         try {
         	if (sipTransaction instanceof SIPServerTransaction) {
         		if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
         			logger.logStackTrace();
         		}
         		String key = sipTransaction.getTransactionId();
-        		Object removed = serverTransactionTable.remove(key);
+        		removed = serverTransactionTable.remove(key);
         		String method = sipTransaction.getMethod();
         		this
         		.removePendingTransaction((SIPServerTransaction) sipTransaction);
@@ -1820,7 +1827,7 @@ public abstract class SIPTransactionStack implements
         	} else {
 
         		String key = sipTransaction.getTransactionId();
-        		Object removed = clientTransactionTable.remove(key);
+        		removed = clientTransactionTable.remove(key);
 
         		if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
         			logger.logDebug("REMOVED client tx " + removed + " KEY = "
@@ -1852,14 +1859,21 @@ public abstract class SIPTransactionStack implements
 
         	}
         } finally {
+        	// http://java.net/jira/browse/JSIP-420
+        	if(removed != null) {
+            	((SIPTransaction)removed).cancelMaxTxLifeTimeTimer();
+            }
         	if ( logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
         		logger.logDebug(String.format("removeTransaction: Table size : " +
         				" clientTransactionTable %d " +
+        				" serverTransactionTable %d " +
         				" mergetTable %d " +
         				" terminatedServerTransactionsPendingAck %d  " +
         				" forkedClientTransactionTable %d " +
         				" pendingTransactions %d " , 
-        				clientTransactionTable.size(), mergeTable.size(),
+        				clientTransactionTable.size(),
+        				serverTransactionTable.size(),
+        				mergeTable.size(),
         				terminatedServerTransactionsPendingAck.size(),
         				forkedClientTransactionTable.size(),
         				pendingTransactions.size()
@@ -1891,6 +1905,7 @@ public abstract class SIPTransactionStack implements
      */
     private void addTransactionHash(SIPTransaction sipTransaction) {
         SIPRequest sipRequest = sipTransaction.getOriginalRequest();
+        SIPTransaction existingTx = null;
         if (sipTransaction instanceof SIPClientTransaction) {
             if (!this.unlimitedClientTransactionTableSize) {
                 if (this.activeClientTransactionCount.get() > clientTransactionTableHiwaterMark) {
@@ -1913,9 +1928,9 @@ public abstract class SIPTransactionStack implements
                 this.activeClientTransactionCount.incrementAndGet();
             }
             String key = sipRequest.getTransactionId();
-            clientTransactionTable.put(key,
+            existingTx = clientTransactionTable.putIfAbsent(key,
                     (SIPClientTransaction) sipTransaction);
-
+            
             if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                 logger
                         .logDebug(" putTransactionHash : " + " key = " + key);
@@ -1927,9 +1942,13 @@ public abstract class SIPTransactionStack implements
                 logger
                         .logDebug(" putTransactionHash : " + " key = " + key);
             }
-            serverTransactionTable.put(key,
+            existingTx = serverTransactionTable.putIfAbsent(key,
                     (SIPServerTransaction) sipTransaction);
 
+        }
+    	// http://java.net/jira/browse/JSIP-420
+        if(existingTx == null) {
+        	sipTransaction.scheduleMaxTxLifeTimeTimer();
         }
 
     }
@@ -1958,20 +1977,25 @@ public abstract class SIPTransactionStack implements
         SIPRequest sipRequest = sipTransaction.getOriginalRequest();
         if (sipRequest == null)
             return;
+        Object removed = null;
         if (sipTransaction instanceof SIPClientTransaction) {
             String key = sipTransaction.getTransactionId();
             if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                 logger.logStackTrace();
                 logger.logDebug("removing client Tx : " + key);
             }
-            clientTransactionTable.remove(key);
+            removed = clientTransactionTable.remove(key);
 
         } else if (sipTransaction instanceof SIPServerTransaction) {
             String key = sipTransaction.getTransactionId();
-            serverTransactionTable.remove(key);
+            removed = serverTransactionTable.remove(key);
             if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                 logger.logDebug("removing server Tx : " + key);
             }
+        }
+    	// http://java.net/jira/browse/JSIP-420
+        if(removed != null) {
+        	((SIPTransaction)removed).cancelMaxTxLifeTimeTimer();
         }
     }
 
@@ -3231,5 +3255,40 @@ public abstract class SIPTransactionStack implements
 	 */
 	public void setSslHandshakeTimeout(long sslHandshakeTimeout) {
 		this.sslHandshakeTimeout = sslHandshakeTimeout;
+	}
+
+	/**
+	 * @param earlyDialogTimeout the earlyDialogTimeout to set
+	 */
+	public void setEarlyDialogTimeout(int earlyDialogTimeout) {
+		this.earlyDialogTimeout = earlyDialogTimeout;
+	}
+
+	/**
+	 * @return the maxTxLifetimeInvite
+	 */
+	public int getMaxTxLifetimeInvite() {
+		return maxTxLifetimeInvite;
+	}
+
+	/**
+	 * @param maxTxLifetimeInvite the maxTxLifetimeInvite to set
+	 */
+	public void setMaxTxLifetimeInvite(int maxTxLifetimeInvite) {
+		this.maxTxLifetimeInvite = maxTxLifetimeInvite;
+	}
+
+	/**
+	 * @return the maxTxLifetimeNonInvite
+	 */
+	public int getMaxTxLifetimeNonInvite() {
+		return maxTxLifetimeNonInvite;
+	}
+
+	/**
+	 * @param maxTxLifetimeNonInvite the maxTxLifetimeNonInvite to set
+	 */
+	public void setMaxTxLifetimeNonInvite(int maxTxLifetimeNonInvite) {
+		this.maxTxLifetimeNonInvite = maxTxLifetimeNonInvite;
 	}
 }
