@@ -29,6 +29,7 @@
 package gov.nist.javax.sip.parser;
 
 import gov.nist.core.CommonLogger;
+import gov.nist.core.LogWriter;
 import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.message.SIPMessage;
 import gov.nist.javax.sip.stack.QueuedMessageDispatchBase;
@@ -263,7 +264,9 @@ public final class NioPipelineParser {
 					readingHeaderLines = false;
 					partialLineRead = false;
 					message.append(CRLF); // the parser needs CRLF at the end, otherwise fails TODO: Is that a bug?
-					System.out.println("CL " + contentLength);
+					if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+						logger.logDebug("Content Length parsed is " + contentLength);
+					}
 
 					contentReadSoFar = 0;
 					messageBody = new byte[contentLength];
@@ -315,10 +318,16 @@ public final class NioPipelineParser {
                 
                 PostParseExecutorServices.getPostParseExecutor().execute(new Dispatch(callIDOrderingStructure, callId)); // run in executor thread
 			} else {
+				SIPMessage sipMessage = null;
 				synchronized(smp) {
-					//SIPMessage sipMessage = smp.parseSIPMessage(msgLines, false, false, null);
+					try {
+						sipMessage = smp.parseSIPMessage(msgLines.getBytes(), false, false, null);
+						sipMessage.setMessageContent(msgBodyBytes);
+					} catch (ParseException e) {
+						logger.logError("Parsing problem", e);
+					}
 				}
-				//processSIPMessage(message);
+				processSIPMessage(sipMessage);
 			}
 		}
 

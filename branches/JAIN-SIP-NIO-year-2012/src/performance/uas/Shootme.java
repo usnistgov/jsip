@@ -209,7 +209,7 @@ public class Shootme implements SipListener {
         // Your code will limp at 32 but it is best for debugging.
         properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "LOG4J");
         Logger root = Logger.getRootLogger();
-        root.setLevel(Level.WARN);
+        root.setLevel(Level.DEBUG);
         root.addAppender(new ConsoleAppender(
             new PatternLayout(PatternLayout.TTCC_CONVERSION_PATTERN)));
         properties.setProperty("gov.nist.javax.sip.LOG_MESSAGE_CONTENT", "false");
@@ -223,7 +223,7 @@ public class Shootme implements SipListener {
         properties.setProperty("gov.nist.javax.sip.THREAD_POOL_SIZE", "4");
         properties.setProperty("gov.nist.javax.sip.RECEIVE_UDP_BUFFER_SIZE", "65536");
         properties.setProperty("gov.nist.javax.sip.SEND_UDP_BUFFER_SIZE", "65536");
-        properties.setProperty("gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE", "20");
+        properties.setProperty("gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE", "200");
         properties.setProperty("gov.nist.javax.sip.CONGESTION_CONTROL_ENABLED", "false");
 //      properties.setProperty("gov.nist.javax.sip.MESSAGE_PARSER_FACTORY", CharsMsgParserFactory.class.getName());
 //		properties.setProperty("gov.nist.javax.sip.TIMER_CLASS_NAME", ScheduledExecutorSipTimer.class.getName());

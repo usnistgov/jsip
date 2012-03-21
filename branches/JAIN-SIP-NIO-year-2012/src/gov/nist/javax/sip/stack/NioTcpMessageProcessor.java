@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * NIO implementation for TCP.
@@ -33,12 +34,18 @@ import java.util.Map;
 public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
     
     private Selector selector ;
-    private LinkedList<SocketChannel> pendingChannels = new LinkedList<SocketChannel>();
-    private int nioTcpMessageChannelCount;
-    private static final int MAX_MESSAGE_CHANNELS=1000000; // BUGBUG make configurable.
     private static StackLogger logger = CommonLogger.getLogger(NioTcpMessageProcessor.class);
     private Thread selectorThread;
-    private HashSet<SocketChannel> socketChannels = new HashSet<SocketChannel>();
+    protected NIOHandler nioHandler;
+
+    // Cache the change request here, the selector thread will read it when it wakes up and execute the request
+    private List<ChangeRequest> changeRequests = new LinkedList<ChangeRequest> ();
+
+    // Data send over a socket is cached here before hand, the selector thread will take it later for physical send
+    private Map<SocketChannel, List<ByteBuffer>> pendingData = 
+    		new WeakHashMap<SocketChannel, List<ByteBuffer>>();
+
+    
     public static class ChangeRequest {
     	public static final int REGISTER = 1;
     	public static final int CHANGEOPS = 2;
@@ -58,10 +65,6 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
     	}
     }
     
-    private List<ChangeRequest> changeRequests = new LinkedList<ChangeRequest> ();
-
-    private Map<SocketChannel, List<ByteBuffer>> pendingData = new HashMap<SocketChannel, List<ByteBuffer>>();
-
     private SocketChannel initiateConnection(InetSocketAddress address) throws IOException {
     	
     	// We use blocking outbound connect just because it's pure pain to deal with http://stackoverflow.com/questions/204186/java-nio-select-returns-without-selected-keys-why
@@ -116,7 +119,7 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
         public void read(SelectionKey selectionKey) {
         	 // read it.
             SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
-            final NioTcpMessageChannel nioTcpMessageChannel = NioTcpMessageChannel.get(socketChannel);
+            final NioTcpMessageChannel nioTcpMessageChannel = NioTcpMessageChannel.getMessageChannel(socketChannel);
             if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
             	logger.logDebug("Got something on nioTcpMessageChannel " + nioTcpMessageChannel + " socket " + socketChannel);
             if(nioTcpMessageChannel == null) {
@@ -136,7 +139,7 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
         	synchronized (pendingData) {
         		List<ByteBuffer> queue = pendingData.get(socketChannel);
         		if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-        			logger.logDebug("Queued items for writing" + queue.size());
+        			logger.logDebug("Queued items for writing " + queue.size());
         		while (!queue.isEmpty()) {
         			ByteBuffer buf = queue.get(0);
 
@@ -193,15 +196,13 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
         	 if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
         		 logger.logDebug("got a new connection! " + client);
 
-        	 if (nioTcpMessageChannelCount < MAX_MESSAGE_CHANNELS) {
-        		 NioTcpMessageChannel.create(NioTcpMessageProcessor.this, client);
-        		 nioTcpMessageChannelCount++;
-        		 if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-        			 logger.logDebug("Adding to selector " + client);
-        		 client.register(selector, SelectionKey.OP_READ);
-        	 } else {
-        		 pendingChannels.add(client);
-        	 }
+        	 // No need for MAX SOCKET CHANNELS check here because this can be configured at OS level
+        	 NioTcpMessageChannel.create(NioTcpMessageProcessor.this, client);
+        	 
+        	 if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+        		 logger.logDebug("Adding to selector " + client);
+        	 client.register(selector, SelectionKey.OP_READ);
+        	 
         }
         @Override
         public void run() {
@@ -318,7 +319,7 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
 
         }
     }
-    NIOHandler nioHandler;
+    
     public NioTcpMessageProcessor(InetAddress ipAddress,  SIPTransactionStack sipStack, int port) {
     	super(ipAddress, port, "TCP", sipStack);
     	nioHandler = new NIOHandler(sipStack, this);
@@ -337,7 +338,6 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
     			NioTcpMessageChannel retval = new NioTcpMessageChannel(targetHostPort.getInetAddress(),
     					targetHostPort.getPort(), sipStack, this);
     			
-    			this.socketChannels.add(retval.getSocketChannel());
     			
     		//	retval.getSocketChannel().register(selector, SelectionKey.OP_READ);
     			synchronized(messageChannels) {
@@ -366,9 +366,7 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
             return (NioTcpMessageChannel) this.messageChannels.get(key);
         } else {
             NioTcpMessageChannel retval = new NioTcpMessageChannel(targetHost, port, sipStack, this);
-            synchronized(socketChannels) {
-            	this.socketChannels.add(retval.getSocketChannel());
-            }
+            
             selector.wakeup();
  //           retval.getSocketChannel().register(selector, SelectionKey.OP_READ);
             this.messageChannels.put(key, retval);
@@ -407,19 +405,10 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
         selectorThread.setName("NioSelector-" + selectorThread.getName());
     }
 
-    public void checkPending() throws IOException {
-        nioTcpMessageChannelCount --;
-        if (pendingChannels.isEmpty()) {
-            return;
-        } else {
-            SocketChannel sc = pendingChannels.remove();
-            sc.register(selector, SelectionKey.OP_READ);
-            selector.wakeup();
-        }
-    }
     @Override
     public void stop() {
         try {
+        	nioHandler.stop();
             for (SelectionKey selectionKey : selector.keys() ) {
                 selectionKey.channel().close();
             }
