@@ -557,6 +557,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
             sipStack.getTimer().schedule(new ListenerExecutionMaxTimer(),
                     sipStack.maxListenerResponseTime * 1000);
         }
+        
         // Only one outstanding request for a given server tx.
 
         if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {

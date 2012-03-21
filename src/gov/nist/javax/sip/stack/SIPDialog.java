@@ -4358,6 +4358,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
    @Override
    public int hashCode() {
-      return this.callIdHeader.getCallId().hashCode();
+      return getCallId().getCallId().hashCode();
    }
 }
