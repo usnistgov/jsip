@@ -8,17 +8,14 @@ import gov.nist.core.StackLogger;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 import java.nio.channels.CancelledKeyException;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.nio.*;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -407,15 +404,17 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
 
     @Override
     public void stop() {
-        try {
-        	nioHandler.stop();
-            for (SelectionKey selectionKey : selector.keys() ) {
-                selectionKey.channel().close();
-            }
-            selector.close();
-        } catch (Exception ex) {
-            logger.logError("Probelm closing channel " , ex);
-        }
+    	try {
+    		nioHandler.stop();
+    		if(selector.isOpen()) {
+    			for (SelectionKey selectionKey : selector.keys() ) {
+    				selectionKey.channel().close();
+    			}
+    			selector.close();
+    		}
+    	} catch (Exception ex) {
+    		logger.logError("Probelm closing channel " , ex);
+    	}
     }
 
 }
