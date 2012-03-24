@@ -27,10 +27,10 @@ import java.util.HashMap;
 public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 	private static StackLogger logger = CommonLogger
 			.getLogger(NioTcpMessageChannel.class);
-	private static HashMap<SocketChannel, NioTcpMessageChannel> channelMap = new HashMap<SocketChannel, NioTcpMessageChannel>();
+	protected static HashMap<SocketChannel, NioTcpMessageChannel> channelMap = new HashMap<SocketChannel, NioTcpMessageChannel>();
 
-	private SocketChannel socketChannel;
-	private long lastActivityTimeStamp;
+	protected SocketChannel socketChannel;
+	protected long lastActivityTimeStamp;
 	NioPipelineParser nioParser = null;
 
 	public static NioTcpMessageChannel create(
@@ -60,19 +60,26 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 		channelMap.remove(socketChannel);
 	}
 	
-
 	public void readChannel() {
 		logger.logDebug("NioTcpMessageChannel::readChannel");
 		int bufferSize = 4096;
 		byte[] msg = new byte[bufferSize];
-		((ConnectionOrientedMessageProcessor) this.messageProcessor).useCount++;
 		this.isRunning = true;
 		try {
 			ByteBuffer byteBuffer  = ByteBuffer.wrap(msg);
 			int nbytes = this.socketChannel.read(byteBuffer);
+			byteBuffer.flip();
+			msg = new byte[byteBuffer.remaining()];
+			byteBuffer.get(msg);
+			nbytes = msg.length;
+			byteBuffer.clear();
 			if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 				logger.logDebug("Read " + nbytes + " from socketChannel");
 			}
+			
+			// This prevents us from getting stuck in a selector thread spinloop when socket is constantly ready for reading but there are no bytes.
+			if(nbytes == 0) throw new IOException("The socket is giving us empty TCP packets. " +
+					"This is usually an indication we are stuck and it is better to disconnect?");
 			
 			// TODO: This happens on weird conditions when a dead socket suddenly resurrects but we already have another socket
 			if (nbytes == -1) {
@@ -88,12 +95,11 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 				this.isRunning = false;
 				((ConnectionOrientedMessageProcessor) this.messageProcessor)
 						.remove(this);
-				((ConnectionOrientedMessageProcessor) this.messageProcessor).useCount--;
 				return;
 			}
 			byte[] bytes = new byte[nbytes];
 			System.arraycopy(msg, 0, bytes, 0, nbytes);
-			nioParser.addBytes(bytes);
+			addBytes(bytes);
 			lastActivityTimeStamp = System.currentTimeMillis();
 
 		} catch (IOException ex) {
@@ -113,7 +119,6 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 				this.isRunning = false;
 				((ConnectionOrientedMessageProcessor) this.messageProcessor)
 				.remove(this);
-				((ConnectionOrientedMessageProcessor) this.messageProcessor).useCount--;
 				
 			} catch (Exception ex1) {
 				// Do nothing.
@@ -124,8 +129,12 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 		}
 
 	}
+	
+	protected void addBytes(byte[] bytes) throws Exception {
+		nioParser.addBytes(bytes);
+	}
 
-	private NioTcpMessageChannel(NioTcpMessageProcessor nioTcpMessageProcessor,
+	protected NioTcpMessageChannel(NioTcpMessageProcessor nioTcpMessageProcessor,
 			SocketChannel socketChannel) throws IOException {
 		super(nioTcpMessageProcessor.getSIPStack());
 		super.myClientInputStream = socketChannel.socket().getInputStream();

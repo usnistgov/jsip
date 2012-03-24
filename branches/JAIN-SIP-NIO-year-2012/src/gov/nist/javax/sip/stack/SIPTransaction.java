@@ -1380,7 +1380,12 @@ public abstract class SIPTransaction extends MessageChannel implements
             else if ( ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getHandshakeCompletedEvent() == null)
                 return null;
             else return ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getHandshakeCompletedEvent().getPeerCertificates();
-        } else throw new UnsupportedOperationException("Not a TLS channel");
+        } else if(this.getMessageChannel() instanceof NioTlsMessageChannel) {
+        	return ((NioTlsMessageChannel) this.getMessageChannel()).sslStateMachine.sslEngine.getSession().getPeerCertificates();
+        } 
+        else
+        	throw new UnsupportedOperationException("Not a TLS channel");
+        
 
     }
 

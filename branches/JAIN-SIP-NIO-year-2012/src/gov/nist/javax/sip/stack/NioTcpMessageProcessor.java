@@ -30,9 +30,9 @@ import java.util.WeakHashMap;
  */
 public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
     
-    private Selector selector ;
+    protected Selector selector ;
     private static StackLogger logger = CommonLogger.getLogger(NioTcpMessageProcessor.class);
-    private Thread selectorThread;
+    protected Thread selectorThread;
     protected NIOHandler nioHandler;
 
     // Cache the change request here, the selector thread will read it when it wakes up and execute the request
@@ -194,7 +194,8 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
         		 logger.logDebug("got a new connection! " + client);
 
         	 // No need for MAX SOCKET CHANNELS check here because this can be configured at OS level
-        	 NioTcpMessageChannel.create(NioTcpMessageProcessor.this, client);
+        	 
+        	 createMessageChannel(NioTcpMessageProcessor.this, client);
         	 
         	 if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
         		 logger.logDebug("Adding to selector " + client);
@@ -317,6 +318,10 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
         }
     }
     
+    public NioTcpMessageChannel createMessageChannel(NioTcpMessageProcessor nioTcpMessageProcessor, SocketChannel client) throws IOException {
+    	return NioTcpMessageChannel.create(NioTcpMessageProcessor.this, client);
+    }
+    
     public NioTcpMessageProcessor(InetAddress ipAddress,  SIPTransactionStack sipStack, int port) {
     	super(ipAddress, port, "TCP", sipStack);
     	nioHandler = new NIOHandler(sipStack, this);
@@ -397,9 +402,13 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
         InetSocketAddress isa  = new InetSocketAddress(super.getIpAddress(), super.getPort());
         ssc.socket().bind(isa);
         ssc.register(selector, SelectionKey.OP_ACCEPT);
-        selectorThread = new Thread( new ProcessorTask());
+        selectorThread = new Thread(createProcessorTask());
         selectorThread.start();
         selectorThread.setName("NioSelector-" + selectorThread.getName());
+    }
+    
+    protected ProcessorTask createProcessorTask() {
+    	return new ProcessorTask();
     }
 
     @Override

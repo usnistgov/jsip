@@ -22,7 +22,7 @@ public class NioMessageProcessorFactory implements MessageProcessorFactory {
                 // this.tcpFlag = true;
                 return nioTcpMessageProcessor;
             } else if (transport.equalsIgnoreCase(ListeningPoint.TLS)) {
-                TLSMessageProcessor tlsMessageProcessor = new TLSMessageProcessor(
+                NioTlsMessageProcessor tlsMessageProcessor = new NioTlsMessageProcessor(
                         ipAddress, sipStack, port);         
                 // this.tlsFlag = true;
                 return tlsMessageProcessor;

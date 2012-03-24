@@ -175,7 +175,7 @@ public class NIOHandler {
                 && sipStack.isLogStackTraceOnMessageSend()) {
             logger.logStackTrace(StackLogger.TRACE_INFO);
         }
-        if (transport.compareToIgnoreCase(TCP) == 0) {
+        if (transport.compareToIgnoreCase(TCP) == 0 || transport.compareToIgnoreCase(TLS) == 0) {
             String key = makeKey(receiverAddress, contactPort);
             // This should be in a synchronized block ( reported by
             // Jayashenkhar ( lucent ).
