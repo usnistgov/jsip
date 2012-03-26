@@ -58,7 +58,7 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel{
 
         sslStateMachine.sslEngine.setUseClientMode(clientMode);
         String auth = (String) ((SipStackImpl)super.sipStack).
-        		getConfigurationProperties().get("gov.nist.javax.sip.TLS_CLIENT_AUTH_TYPE");
+        		getConfigurationProperties().getProperty("gov.nist.javax.sip.TLS_CLIENT_AUTH_TYPE");
         if(auth == null) {
         	auth = "Enabled";
         }
@@ -75,7 +75,7 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel{
         }
 
         String clientProtocols = (String) ((SipStackImpl)super.sipStack)
-        		.getConfigurationProperties().get("gov.nist.javax.sip.TLS_CLIENT_PROTOCOLS");
+        		.getConfigurationProperties().getProperty("gov.nist.javax.sip.TLS_CLIENT_PROTOCOLS");
         if(clientProtocols != null) {
         	sslStateMachine.sslEngine.setEnabledProtocols(clientProtocols.split(","));
         }
@@ -158,6 +158,9 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel{
 	
 	@Override
 	protected void addBytes(byte[] bytes) throws Exception {
+		if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+			logger.logDebug("Adding TLS bytes for decryption " + bytes.length);
+		}
 		ByteBuffer buffer = ByteBuffer.wrap(bytes);
 		sslStateMachine.unwrap(buffer);
 	}
