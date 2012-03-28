@@ -25,6 +25,32 @@
 				<module>jain-sip-sctp</module>
 			</modules>
 		</profile>
+		<profile>
+		      <id>release-sign-artifacts</id>
+		      <activation>
+			<property>
+			  <name>performRelease</name>
+			  <value>true</value>
+			</property>
+		      </activation>
+		      <build>
+			<plugins>
+			  <plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-gpg-plugin</artifactId>
+			    <executions>
+			      <execution>
+				<id>sign-artifacts</id>
+				<phase>verify</phase>
+				<goals>
+				  <goal>sign</goal>
+				</goals>
+			      </execution>
+			    </executions>
+			  </plugin>
+			</plugins>
+		      </build>
+		    </profile>
 	</profiles>
 
 	<!-- repositories -->
@@ -67,19 +93,15 @@
 	<build>	
 		<plugins>	
 			<plugin>
-		  		<artifactId>maven-release-plugin</artifactId>
-		  		<configuration>
-		   			<tagBase>https://svn.java.net/svn/jsip~svn/tags/</tagBase>
-				</configuration>
+		  		<artifactId>maven-release-plugin</artifactId>		  		
 			</plugin>
 		</plugins>
 	</build>
 
 	<scm>
-		<connection>scm:svn:https://svn.java.net/svn/jsip~svn</connection>
-		<developerConnection>scm:svn:https://svn.java.net/svn/jsip~svn</developerConnection>
-		<url>https://svn.java.net/svn/jsip~svn</url>
+		<connection>scm:git:https://code.google.com/p/jain-sip/</connection>
+		<developerConnection>scm:git:https://code.google.com/p/jain-sip/</developerConnection>
+		<url>https://code.google.com/p/jain-sip/</url>
 	</scm>
-
 
 </project>
