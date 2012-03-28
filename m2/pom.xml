@@ -9,7 +9,7 @@
 	<packaging>pom</packaging>
 	<version>1.2</version>
 	<name>jain-sip</name>
-	<url>http://jain-sip.dev.java.net</url>
+	<url>http://code.google.com/p/jain-sip/</url>
 
 	<modules>
 		<module>jain-sip-api</module>
@@ -36,44 +36,33 @@
 			<layout>default</layout>
 		</repository>
 		<repository>
-			<id>jboss-public-repository-group</id>
-			<name>JBoss Public Maven Repository Group</name>
-			<url>https://repository.jboss.org/nexus/content/groups/public/</url>
-			<layout>default</layout>
-			<releases>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>backup.repository.jboss.org</id>
-			<name>JBoss Repository Backup</name>
-			<url>http://anonsvn.jboss.org/repos/repository.jboss.org/maven2/</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
+			  <id>mobicents-public-repository-group</id>
+			  <name>Mobicens Public Maven Repository Group</name>
+			  <url>https://oss.sonatype.org/content/groups/public</url>
+			  <layout>default</layout>
+			  <releases>
+			    <enabled>true</enabled>
+			    <updatePolicy>never</updatePolicy>
+			  </releases>
+			  <snapshots>
+			    <enabled>true</enabled>
+			    <updatePolicy>never</updatePolicy>
+			  </snapshots>
 		</repository>
 	</repositories>
 
 	<distributionManagement>
-		<repository>
-			<id>jboss-releases-repository</id>
-			<name>JBoss Releases Repository</name>
-			<url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</url>
-		</repository>
-		<snapshotRepository>
-			<id>jboss-snapshots-repository</id>
-			<name>JBoss Snapshots Repository</name>
-			<url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
-		</snapshotRepository>
-	</distributionManagement>
+	    <repository>
+	      <id>mobicents-releases-repository</id>
+	      <name>Mobicents Releases Repository</name>
+	      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+	    </repository>
+	    <snapshotRepository>
+	      <id>mobicents-snapshots-repository</id>
+	      <name>Mobicents Snapshots Repository</name>
+	      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+	    </snapshotRepository>
+  	</distributionManagement>
 
 	<build>	
 		<plugins>	
