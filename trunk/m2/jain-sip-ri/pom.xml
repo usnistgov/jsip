@@ -8,6 +8,7 @@
 		<groupId>javax.sip</groupId>
 		<version>1.2</version>
 		<artifactId>jain-sip</artifactId>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>jain-sip-ri</artifactId>
