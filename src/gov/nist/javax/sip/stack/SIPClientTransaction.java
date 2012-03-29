@@ -52,7 +52,6 @@ import gov.nist.javax.sip.stack.IllegalTransactionStateException.Reason;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.HashSet;
 import java.util.ListIterator;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -231,7 +230,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
 	private Object transactionTimerLock = new Object();
 	private AtomicBoolean timerKStarted = new AtomicBoolean(false);
 	private boolean transactionTimerCancelled = false;
-	private Set<Integer> responsesReceived = new HashSet<Integer>(2);
+	private Set<Integer> responsesReceived = new CopyOnWriteArraySet<Integer>();
 	
 
     public class TransactionTimer extends SIPStackTimerTask {
