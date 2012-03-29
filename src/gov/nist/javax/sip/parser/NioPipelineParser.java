@@ -145,6 +145,11 @@ public final class NioPipelineParser {
             // that could be processed in parallel                                    
             Semaphore semaphore = callIDOrderingStructure.getSemaphore();
             final Queue<UnparsedMessage> messagesForCallID = callIDOrderingStructure.getMessagesForCallID();
+            try {                                                                                
+                semaphore.acquire();                                        
+            } catch (InterruptedException e) {
+                logger.logError("Semaphore acquisition for callId " + callId + " interrupted", e);
+            }
             SIPMessage parsedSIPMessage = null;
             synchronized(smp) {
 				UnparsedMessage unparsedMessage = messagesForCallID.peek();
@@ -162,11 +167,7 @@ public final class NioPipelineParser {
             if(sipStack.sipEventInterceptor != null) {
             	sipStack.sipEventInterceptor.beforeMessage(parsedSIPMessage);
             }
-            try {                                                                                
-                semaphore.acquire();                                        
-            } catch (InterruptedException e) {
-                logger.logError("Semaphore acquisition for callId " + callId + " interrupted", e);
-            }
+            
             // once acquired we get the first message to process
             messagesForCallID.poll();
             SIPMessage message = parsedSIPMessage;
