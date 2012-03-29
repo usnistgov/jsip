@@ -186,15 +186,15 @@ public class SSLStateMachine {
 						+ pendingOutboundBuffers.size() + " src=" + src + " dst=" + dst);
 			}
 			if(result.getStatus().equals(Status.BUFFER_OVERFLOW)) {
-				if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-					logger.logDebug("Buffer overflow , must prepare the buffer again");
+				if(logger.isLoggingEnabled(LogWriter.TRACE_WARN)) {
+					logger.logWarning("Buffer overflow , must prepare the buffer again. Check for continious overflow here?");
 				}
 				dst = channel.prepareAppDataBuffer();
 				continue;
 			}
 			if(result.getStatus().equals(Status.BUFFER_UNDERFLOW)) {
 				if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-					logger.logDebug("Buffer underflow, wait for the nexty inbound chunk of data to feed the SSL engine");
+					logger.logDebug("Buffer underflow, wait for the next inbound chunk of data to feed the SSL engine");
 				}
 				break;
 			}

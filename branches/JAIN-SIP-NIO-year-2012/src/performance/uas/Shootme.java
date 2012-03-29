@@ -62,7 +62,7 @@ public class Shootme implements SipListener {
 
     private static final int myPort = 5080;
     
-    private static String TRANSPORT = "tls";
+    private static String TRANSPORT = "tcp";
 
     protected static final String usageString = "java "
             + Shootme.class.getCanonicalName() + " \n"
