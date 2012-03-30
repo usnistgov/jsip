@@ -91,13 +91,13 @@
     <dependency>
       <groupId>javax.sip</groupId>
       <artifactId>jain-sip-api</artifactId>
-      <version>1.2</version>
+      <version>1.2.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.sip</groupId>
       <artifactId>jain-sip-ri</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
