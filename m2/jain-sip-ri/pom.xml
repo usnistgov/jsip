@@ -11,8 +11,8 @@
 
 	<artifactId>jain-sip-ri</artifactId>
 	<version>1.2.X-SNAPSHOT</version>
-
 	<packaging>jar</packaging>
+
 	<name>jain-sip-ri</name>
 	<url>http://code.google.com/p/jain-sip/</url>
 	<build>
