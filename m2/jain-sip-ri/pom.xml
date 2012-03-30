@@ -4,13 +4,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>javax.sip</groupId>
-		<version>1.2.0</version>
+		<version>1.2.1-SNAPSHOT</version>
 		<artifactId>jain-sip</artifactId>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>jain-sip-ri</artifactId>
-	<version>1.2.168</version>
+	<version>1.2.X-SNAPSHOT</version>
 
 	<packaging>jar</packaging>
 	<name>jain-sip-ri</name>
@@ -109,7 +109,7 @@
 		<dependency>
 			<groupId>javax.sip</groupId>
 			<artifactId>jain-sip-api</artifactId>
-			<version>1.2.0</version>
+			<version>1.2.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
