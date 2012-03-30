@@ -128,4 +128,9 @@
 		</dependency>
 	</dependencies>
 
+	<scm>
+		<connection>scm:git:https://code.google.com/p/jain-sip/</connection>
+		<developerConnection>scm:git:https://code.google.com/p/jain-sip/</developerConnection>
+		<url>https://code.google.com/p/jain-sip/</url>
+	</scm>
 </project>
