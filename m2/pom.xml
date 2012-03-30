@@ -7,7 +7,51 @@
 	<packaging>pom</packaging>
 	<version>1.2.1-SNAPSHOT</version>
 	<name>jain-sip</name>
+	<description>JAIN SIP Parent pom</description>
 	<url>http://code.google.com/p/jain-sip/</url>
+
+	<developers>
+		<developer>
+			<id>jean.deruelle</id>
+			<name>Jean Deruelle</name>
+			<email>jean.deruelle@gmail.com</email>
+			<organization>TeleStax</organization>
+			<organizationUrl>http://www.telestax.com/</organizationUrl>
+			<roles>
+				<role>Active Developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+		<developer>
+			<id>vralev</id>
+			<name>Vladimir Ralev</name>
+			<email>vladimir.ralev@gmail.com</email>
+			<organization>TeleStax</organization>
+			<organizationUrl>http://www.telestax.com/</organizationUrl>
+			<roles>
+				<role>Active Developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+		<developer>
+			<id>ranga</id>
+			<name>ranga</name>
+			<email>mranga@gmail.com</email>
+			<organization>NIST</organization>
+			<organizationUrl>http://www.nist.gov/</organizationUrl>
+			<roles>
+				<role>Project Lead</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>		
+	</developers>
+	<licenses>
+		<license>
+			<name>Public Domain</name>
+			<url>http://www.gnu.org/licenses/license-list.html#PublicDomain</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
 	<modules>
 		<module>jain-sip-api</module>
