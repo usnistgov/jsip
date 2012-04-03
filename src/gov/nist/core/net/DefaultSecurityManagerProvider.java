@@ -39,6 +39,11 @@ public class DefaultSecurityManagerProvider implements SecurityManagerProvider {
             passphraseString = System.getProperty("javax.net.ssl.keyStorePassword");
         if (keyStoreType == null)
             keyStoreType = System.getProperty("javax.net.ssl.keyStoreType");
+        
+        if(keyStoreType == null)  {
+        	logger.logDebug("Security manager not specified, TLS settings will be inactive");
+        	return;
+        }
 
         KeyStore ks = KeyStore.getInstance(keyStoreType);
         KeyStore ts = KeyStore.getInstance(keyStoreType);
