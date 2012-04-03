@@ -416,9 +416,6 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
     	try {
     		nioHandler.stop();
     		if(selector.isOpen()) {
-    			for (SelectionKey selectionKey : selector.keys() ) {
-    				selectionKey.channel().close();
-    			}
     			selector.close();
     		}
     	} catch (Exception ex) {
