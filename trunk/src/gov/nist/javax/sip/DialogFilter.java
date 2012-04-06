@@ -244,6 +244,38 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
         }
 
     }
+    
+    /**
+     * Send back a LOOP Detected Response.
+     * 
+     * @param sipRequest
+     * @param transaction
+     * 
+     */
+    private void sendTryingResponse(SIPRequest sipRequest,
+            SIPServerTransaction transaction) {
+        SIPResponse sipResponse = sipRequest
+                .createResponse(Response.TRYING);
+        if (transaction.getState() != TransactionState.TERMINATED) {
+
+            ServerHeader serverHeader = MessageFactoryImpl
+                    .getDefaultServerHeader();
+            if (serverHeader != null) {
+                sipResponse.setHeader(serverHeader);
+            }
+            try {
+                transaction.sendResponse(sipResponse);
+                transaction.releaseSem();
+            } catch (Exception ex) {
+                logger.logError(
+                        "Problem sending error response", ex);
+                transaction.releaseSem();
+                sipStack.removeTransaction(transaction);
+
+            }
+        }
+
+    }
 
     /**
      * Send back an error Response.
@@ -739,17 +771,16 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                                     + dialog.getRemoteSeqNumber() + " "
                                     + sipRequest.getCSeq().getSeqNumber());
 
-                if (dialog.getRemoteSeqNumber() >= sipRequest.getCSeq()
-                        .getSeqNumber()
-                        && transaction.getInternalState() == TransactionState._TRYING) {
-
+                if (dialog.getRemoteSeqNumber() > sipRequest.getCSeq()
+                        .getSeqNumber()) {
                     this.sendServerInternalErrorResponse(sipRequest,
                             transaction);
-
+                } else if (transaction.getInternalState() == TransactionState._PROCEEDING) {
+                       this.sendTryingResponse(sipRequest,
+                            transaction);
                 }
                 // If the stack knows about the tx, then remove it.
-                if (transaction != null)
-                    sipStack.removeTransaction(transaction);
+                sipStack.removeTransaction(transaction);
                 return;
 
             } else if (dialog == null
