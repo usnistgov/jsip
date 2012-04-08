@@ -249,10 +249,17 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
         			if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
         				logger.logDebug("Before select");
         			}
-        			selector.select();
-        			if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-        				logger.logDebug("After select");
-        			}
+                    if(!selector.isOpen()) {
+                        if(logger.isLoggingEnabled(LogWriter.TRACE_INFO)) {
+                            logger.logInfo("Selector is closed ");
+                        }
+                        return;
+                    } else {
+                        selector.select();
+                        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                            logger.logDebug("After select");
+                        }
+                    }
         		} catch (IOException e) {
         			logger.logError("problem in select", e);
         			break;
@@ -260,12 +267,6 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
         			if(logger.isLoggingEnabled(LogWriter.TRACE_INFO)) {
         				logger.logInfo("Looks like remote side closed a connection");
         			}
-        		}
-        		if(!selector.isOpen()) {
-        			if(logger.isLoggingEnabled(LogWriter.TRACE_INFO)) {
-        				logger.logInfo("Selector is closed ");
-        			}
-        			return;
         		}
         		if (selector.selectedKeys() == null ) {
         			if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
@@ -282,24 +283,25 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
         					if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
         						logger.logDebug("We got selkey " + selectionKey);
         					}
-        					if (selectionKey.isAcceptable()) {
+                            if (!selectionKey.isValid()) {
+                                if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                                    logger.logDebug("Invalid key found " + selectionKey);
+                                }
+                            } else if (selectionKey.isAcceptable()) {
         						if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
         							logger.logDebug("Accept " + selectionKey);
         						}
         						accept(selectionKey);
-        						continue;
         					} else if (selectionKey.isReadable()) {
         						if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
         							logger.logDebug("Read " + selectionKey);
         						}
         						read(selectionKey);
-        						continue;
         					} else if (selectionKey.isWritable()) {
         						if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
         							logger.logDebug("Write " + selectionKey);
         						}
         						write(selectionKey);
-        						continue;
         					} else if(selectionKey.isConnectable()) {
         						if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
         							logger.logDebug("Connect " + selectionKey);
@@ -406,7 +408,7 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
         channel.register(selector, SelectionKey.OP_ACCEPT);
         selectorThread = new Thread(createProcessorTask());
         selectorThread.start();
-        selectorThread.setName("NioSelector-" + selectorThread.getName());
+        selectorThread.setName("NioSelector-" + getTransport() + '-' + getIpAddress().getHostAddress() + '/' + getPort());
     }
     
     protected ProcessorTask createProcessorTask() {
@@ -421,7 +423,7 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
     			selector.close();
     		}
     	} catch (Exception ex) {
-    		logger.logError("Probelm closing channel " , ex);
+    		logger.logError("Problem closing channel " , ex);
     	}
         try {
             channel.close();
