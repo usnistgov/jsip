@@ -269,7 +269,7 @@ public class TcpMultiThreadDeadlockTest extends TestCase {
             properties.setProperty("javax.sip.STACK_NAME", "shootme");
             // You need 16 for logging traces. 32 for debug + traces.
             // Your code will limp at 32 but it is best for debugging.
-            properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "0");
+            properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "16");
             properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
                     "shootmedebug.txt");
             properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
@@ -459,7 +459,7 @@ boolean inUse = false;
             // Set to 0 (or NONE) in your production code for max speed.
             // You need 16 (or TRACE) for logging traces. 32 (or DEBUG) for debug + traces.
             // Your code will limp at 32 but it is best for debugging.
-            properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "0");
+            properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "16");
             properties.setProperty("gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE", "10");
             properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
             properties.setProperty("gov.nist.javax.sip.AUTOMATIC_DIALOG_ERROR_HANDLING","false");
@@ -656,7 +656,7 @@ boolean inUse = false;
         this.shootme.init();
         this.shootist.init();
         try {
-            Thread.sleep(10000);
+            Thread.sleep(15000);
         } catch (Exception ex) {
 
         }
