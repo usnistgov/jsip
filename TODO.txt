@@ -1,6 +1,8 @@
 
 Notes for the next version:
 
+1.
+
 1. Add AddressFactory.createAddress() ( no args ).
 
 2. Intoduce AddressParametersHeader interface (SIP Servlets implementation support).
