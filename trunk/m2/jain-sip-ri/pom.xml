@@ -128,6 +128,30 @@
 		</dependency>
 	</dependencies>
 
+	<!-- repositories -->
+	<repositories>
+		<repository>
+			<id>maven2-repository.dev.java.net</id>
+			<name>Java.net Repository for Maven</name>
+			<url>http://download.java.net/maven/2/</url>
+			<layout>default</layout>
+		</repository>
+		<repository>
+			  <id>mobicents-public-repository-group</id>
+			  <name>Mobicens Public Maven Repository Group</name>
+			  <url>https://oss.sonatype.org/content/groups/public</url>
+			  <layout>default</layout>
+			  <releases>
+			    <enabled>true</enabled>
+			    <updatePolicy>never</updatePolicy>
+			  </releases>
+			  <snapshots>
+			    <enabled>true</enabled>
+			    <updatePolicy>never</updatePolicy>
+			  </snapshots>
+		</repository>
+	</repositories>	
+
 	<scm>
 		<connection>scm:git:https://code.google.com/p/jain-sip/</connection>
 		<developerConnection>scm:git:https://code.google.com/p/jain-sip/</developerConnection>
