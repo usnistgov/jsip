@@ -192,7 +192,9 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 	@Override
 	protected void close(boolean b) {
 		try {
-			socketChannel.close();
+			if(socketChannel != null) {
+				socketChannel.close();
+			}
 		} catch (IOException e) {
 			logger.logError("Problem occured while closing");
 		}
