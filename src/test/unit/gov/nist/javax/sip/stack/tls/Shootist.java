@@ -1,17 +1,46 @@
 package test.unit.gov.nist.javax.sip.stack.tls;
 import gov.nist.javax.sip.ClientTransactionExt;
 import gov.nist.javax.sip.TlsSecurityPolicy;
-import gov.nist.javax.sip.stack.SIPTransaction;
+import gov.nist.javax.sip.header.HeaderExt;
+
+import java.security.cert.Certificate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
-import javax.sip.*;
-import javax.sip.address.*;
-import javax.sip.header.*;
-import javax.sip.message.*;
-
-import java.io.IOException;
-import java.security.cert.Certificate;
-import java.util.*;
+import javax.sip.ClientTransaction;
+import javax.sip.Dialog;
+import javax.sip.DialogTerminatedEvent;
+import javax.sip.IOExceptionEvent;
+import javax.sip.ListeningPoint;
+import javax.sip.PeerUnavailableException;
+import javax.sip.RequestEvent;
+import javax.sip.ResponseEvent;
+import javax.sip.ServerTransaction;
+import javax.sip.SipFactory;
+import javax.sip.SipListener;
+import javax.sip.SipProvider;
+import javax.sip.SipStack;
+import javax.sip.Transaction;
+import javax.sip.TransactionTerminatedEvent;
+import javax.sip.address.Address;
+import javax.sip.address.AddressFactory;
+import javax.sip.address.SipURI;
+import javax.sip.header.CSeqHeader;
+import javax.sip.header.CallIdHeader;
+import javax.sip.header.ContactHeader;
+import javax.sip.header.ContentTypeHeader;
+import javax.sip.header.FromHeader;
+import javax.sip.header.Header;
+import javax.sip.header.HeaderFactory;
+import javax.sip.header.MaxForwardsHeader;
+import javax.sip.header.RouteHeader;
+import javax.sip.header.ToHeader;
+import javax.sip.header.ViaHeader;
+import javax.sip.message.MessageFactory;
+import javax.sip.message.Request;
+import javax.sip.message.Response;
 
 
 
@@ -34,6 +63,7 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
     private ContactHeader contactHeader;
     private ListeningPoint tlsListeningPoint;
     private int counter;
+    private String domain;
 
     protected ClientTransaction inviteTid;
 	private boolean byeSeen;
@@ -148,7 +178,8 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
         System.out.println("Transaction Time out" );
     }
 
-    public void init() {
+    public void init(String domain) {
+    	this.domain = domain;
         SipFactory sipFactory = null;
         sipStack = null;
         sipFactory = SipFactory.getInstance();
@@ -313,7 +344,7 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
 
             // Add the extension header.
             Header extensionHeader =
-                headerFactory.createHeader("My-Header", "my header value");
+                headerFactory.createHeader("Certificate-Check", domain);
             request.addHeader(extensionHeader);
 
             String sdpData =
@@ -407,18 +438,24 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
         // the destination IP address should match one of the certIdentities
         boolean foundPeerIdentity = false;
         String expectedIpAddress = ((SipURI)transaction.getRequest().getRequestURI()).getHost();
+        String certificateDomain = ((HeaderExt)transaction.getRequest().getHeader("Certificate-Check")).getValue();
         for (String identity : certIdentities) {
+        	 System.out.println("identity " + identity);
             // identities must be resolved to dotted quads before comparing: this is faked here
-            String peerIpAddress = "10.10.10.0";
-            if (identity.equals("localhost")) {
-                peerIpAddress = "127.0.0.1";
-            }
-            if (expectedIpAddress.equals(peerIpAddress)) {
+//            String peerIpAddress = "10.10.10.0";
+//            if (identity.equals("localhost")) {
+//                peerIpAddress = "127.0.0.1";
+//            } else 
+            if (identity.equalsIgnoreCase(certificateDomain)) {
+//                peerIpAddress = domain;
                 foundPeerIdentity = true;
             }
+//            if (expectedIpAddress.equals(peerIpAddress)) {
+//                foundPeerIdentity = true;
+//            }
         }
         if (!foundPeerIdentity) {
-            throw new SecurityException("Certificate identity does not match requested domain");
+            throw new SecurityException("Certificate identity does not match requested domain " + certificateDomain);
         }
     }
     
@@ -437,7 +474,7 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
         System.setProperty( "javax.net.ssl.keyStorePassword", "passphrase" );
         System.setProperty( "javax.net.ssl.keyStoreType", "jks" );
         Shootist shootist = new Shootist();
-        shootist.init();
+        shootist.init("localhost");
 	}
 	
 }

@@ -1,13 +1,11 @@
 
 Notes for the next version:
 
-1. Add support for IMS headers.
+1. Add AddressFactory.createAddress() ( no args ).
 
-2. Add AddressFactory.createAddress() ( no args ).
+2. Intoduce AddressParametersHeader interface (SIP Servlets implementation support).
 
-3. Intoduce AddressParametersHeader interface (SIP Servlets implementation support).
-
-4. Respose.getStatusLine() returns the status line of the response ( useful
+3. Respose.getStatusLine() returns the status line of the response ( useful
    for REFER NOTIFICATIONS ).
    
 Note that all the Extension classes (ending with Ext ) can be used as they will be included 

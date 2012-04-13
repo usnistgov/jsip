@@ -1,20 +1,68 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<!-- this is not a complete pom -->
 	<modelVersion>4.0.0</modelVersion>
+
 	<groupId>javax.sip</groupId>
 	<artifactId>jain-sip</artifactId>
+	<version>1.2.1-SNAPSHOT</version>
+
 	<packaging>pom</packaging>
-	<version>1.2</version>
+
 	<name>jain-sip</name>
-	<url>http://jain-sip.dev.java.net</url>
+	<description>JAIN SIP Parent pom</description>
+	<url>http://code.google.com/p/jain-sip/</url>
+
+	<developers>
+		<developer>
+			<id>jean.deruelle</id>
+			<name>Jean Deruelle</name>
+			<email>jean.deruelle@gmail.com</email>
+			<organization>TeleStax</organization>
+			<organizationUrl>http://www.telestax.com/</organizationUrl>
+			<roles>
+				<role>Active Developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+		<developer>
+			<id>vralev</id>
+			<name>Vladimir Ralev</name>
+			<email>vladimir.ralev@gmail.com</email>
+			<organization>TeleStax</organization>
+			<organizationUrl>http://www.telestax.com/</organizationUrl>
+			<roles>
+				<role>Active Developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+		<developer>
+			<id>ranga</id>
+			<name>ranga</name>
+			<email>mranga@gmail.com</email>
+			<organization>NIST</organization>
+			<organizationUrl>http://www.nist.gov/</organizationUrl>
+			<roles>
+				<role>Project Lead</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>		
+	</developers>
+	<licenses>
+		<license>
+			<name>Public Domain</name>
+			<url>http://www.gnu.org/licenses/license-list.html#PublicDomain</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
 	<modules>
 		<module>jain-sip-api</module>
 		<module>jain-sip-ri</module>
 	</modules>
+
+	<properties>
+		<project.build.sourceEncoding>ISO-8859-1</project.build.sourceEncoding>
+	</properties>
 
 	<profiles>
 		<profile>
@@ -25,6 +73,32 @@
 				<module>jain-sip-sctp</module>
 			</modules>
 		</profile>
+		<profile>
+		      <id>release-sign-artifacts</id>
+		      <activation>
+			<property>
+			  <name>performRelease</name>
+			  <value>true</value>
+			</property>
+		      </activation>
+		      <build>
+			<plugins>
+			  <plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-gpg-plugin</artifactId>
+			    <executions>
+			      <execution>
+				<id>sign-artifacts</id>
+				<phase>install</phase>
+				<goals>
+				  <goal>sign</goal>
+				</goals>
+			      </execution>
+			    </executions>
+			  </plugin>
+			</plugins>
+		      </build>
+		    </profile>
 	</profiles>
 
 	<!-- repositories -->
@@ -36,61 +110,47 @@
 			<layout>default</layout>
 		</repository>
 		<repository>
-			<id>jboss-public-repository-group</id>
-			<name>JBoss Public Maven Repository Group</name>
-			<url>https://repository.jboss.org/nexus/content/groups/public/</url>
-			<layout>default</layout>
-			<releases>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>backup.repository.jboss.org</id>
-			<name>JBoss Repository Backup</name>
-			<url>http://anonsvn.jboss.org/repos/repository.jboss.org/maven2/</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
+			  <id>mobicents-public-repository-group</id>
+			  <name>Mobicens Public Maven Repository Group</name>
+			  <url>https://oss.sonatype.org/content/groups/public</url>
+			  <layout>default</layout>
+			  <releases>
+			    <enabled>true</enabled>
+			    <updatePolicy>never</updatePolicy>
+			  </releases>
+			  <snapshots>
+			    <enabled>true</enabled>
+			    <updatePolicy>never</updatePolicy>
+			  </snapshots>
 		</repository>
 	</repositories>
 
 	<distributionManagement>
-		<repository>
-			<id>jboss-releases-repository</id>
-			<name>JBoss Releases Repository</name>
-			<url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</url>
-		</repository>
-		<snapshotRepository>
-			<id>jboss-snapshots-repository</id>
-			<name>JBoss Snapshots Repository</name>
-			<url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
-		</snapshotRepository>
-	</distributionManagement>
+	    <repository>
+	      <id>mobicents-releases-repository</id>
+	      <name>Mobicents Releases Repository</name>
+	      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+	    </repository>
+	    <snapshotRepository>
+	      <id>mobicents-snapshots-repository</id>
+	      <name>Mobicents Snapshots Repository</name>
+	      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+	    </snapshotRepository>
+  	</distributionManagement>
 
 	<build>	
 		<plugins>	
 			<plugin>
 		  		<artifactId>maven-release-plugin</artifactId>
-		  		<configuration>
-		   			<tagBase>https://svn.java.net/svn/jsip~svn/tags/</tagBase>
-				</configuration>
+				<version>2.2.2</version>		  		
 			</plugin>
 		</plugins>
 	</build>
 
 	<scm>
-		<connection>scm:svn:https://svn.java.net/svn/jsip~svn</connection>
-		<developerConnection>scm:svn:https://svn.java.net/svn/jsip~svn</developerConnection>
-		<url>https://svn.java.net/svn/jsip~svn</url>
+		<connection>scm:git:https://code.google.com/p/jain-sip/</connection>
+		<developerConnection>scm:git:https://code.google.com/p/jain-sip/</developerConnection>
+		<url>https://code.google.com/p/jain-sip/</url>
 	</scm>
-
 
 </project>

@@ -910,7 +910,7 @@ public class ReInviteBusyTest extends TestCase {
 
     public void tearDown() {
         try {
-            Thread.sleep(4000);
+            Thread.sleep(10000);
             this.shootist.checkState();
             this.shootme.checkState();
             shootmeProtocolObjs.destroy();

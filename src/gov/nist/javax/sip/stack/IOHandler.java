@@ -220,7 +220,7 @@ public class IOHandler {
 
             listner.startHandshakeWatchdog();
             sslsock.startHandshake();
-
+            channel.setHandshakeCompleted(true);
             if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                 this.logger.logDebug(
                         "Handshake passed");
@@ -500,6 +500,7 @@ public class IOHandler {
 
                         listner.startHandshakeWatchdog();
                         sslsock.startHandshake();
+                        ((TLSMessageChannel)messageChannel).setHandshakeCompleted(true);
                         if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                             this.logger.logDebug(
                                     "Handshake passed");
@@ -586,6 +587,7 @@ public class IOHandler {
 
                         listner.startHandshakeWatchdog();
                         sslsock.startHandshake();
+                        ((TLSMessageChannel)messageChannel).setHandshakeCompleted(true);
                         if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                             this.logger.logDebug(
                                     "Handshake passed");

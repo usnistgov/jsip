@@ -23,7 +23,7 @@ public class Shootme implements SipListener {
     private static MessageFactory messageFactory;
     private static HeaderFactory headerFactory;
     private static SipStack sipStack;
-    private static final String myAddress = "127.0.0.1";
+    private static final String myAddress = "foo-bar.com";
     private static final int myPort    = 5071;
 
     protected ServerTransaction inviteTid;

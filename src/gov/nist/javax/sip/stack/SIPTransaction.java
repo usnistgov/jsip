@@ -87,6 +87,10 @@ import javax.sip.message.Response;
 public abstract class SIPTransaction extends MessageChannel implements
         javax.sip.Transaction, gov.nist.javax.sip.TransactionExt {
 	private static StackLogger logger = CommonLogger.getLogger(SIPTransaction.class);
+
+	// Contribution on http://java.net/jira/browse/JSIP-417 from Alexander Saveliev
+	private static final Pattern EXTRACT_CN = Pattern.compile(".*CN\\s*=\\s*([\\w*\\.\\-_]+).*");
+
     protected boolean toListener; // Flag to indicate that the listener gets
 
     // to see the event.
@@ -248,6 +252,8 @@ public abstract class SIPTransaction extends MessageChannel implements
     private String forkId = null;
     
     public ExpiresTimerTask expiresTimerTask;
+	// http://java.net/jira/browse/JSIP-420
+    private MaxTxLifeTimeListener maxTxLifeTimeListener;
 
     public String getBranchId() {
         return this.branch;
@@ -339,6 +345,33 @@ public abstract class SIPTransaction extends MessageChannel implements
 
         public void runTask() {
             cleanUp();
+        }
+    }
+    
+    /**
+     * http://java.net/jira/browse/JSIP-420
+     * This timer task will terminate the transaction after a configurable time
+     *
+     */
+    class MaxTxLifeTimeListener extends SIPStackTimerTask {
+        SIPTransaction sipTransaction = SIPTransaction.this;
+    
+        public void runTask() {
+            try {               	
+            	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                    logger.logDebug("Fired MaxTxLifeTimeListener for tx " +  sipTransaction + " , tx id "+ sipTransaction.getTransactionId() + " , state " + sipTransaction.getState());
+            	}
+            	
+        		raiseErrorEvent(SIPTransactionErrorEvent.TIMEOUT_ERROR);
+        	
+        		 SIPStackTimerTask myTimer = new LingerTimer();
+                 sipStack.getTimer().schedule(myTimer,
+                     SIPTransactionStack.CONNECTION_LINGER_TIME * 1000);
+                 maxTxLifeTimeListener = null;
+                 
+            } catch (Exception ex) {
+                logger.logError("unexpected exception", ex);
+            }
         }
     }
 
@@ -1472,7 +1505,6 @@ public abstract class SIPTransaction extends MessageChannel implements
                     String dname = x509cert.getSubjectDN().getName();
                     String cname = "";
                     try {
-                        Pattern EXTRACT_CN = Pattern.compile(".*CN\\s*=\\s*([\\w*\\.]+).*");
                         Matcher matcher = EXTRACT_CN.matcher(dname);
                         if (matcher.matches()) {
                             cname = matcher.group(1);
@@ -1602,5 +1634,35 @@ public abstract class SIPTransaction extends MessageChannel implements
      */
     public String getForkId() {
 		return forkId;
+	}
+    
+    protected void scheduleMaxTxLifeTimeTimer() {
+    	if (maxTxLifeTimeListener == null && this.getMethod().equalsIgnoreCase(Request.INVITE) && sipStack.getMaxTxLifetimeInvite() > 0) {
+        	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                logger.logDebug("Scheduling MaxTxLifeTimeListener for tx " +  this + " , tx id "+ this.getTransactionId() + " , state " + this.getState());
+        	}
+        	maxTxLifeTimeListener = new MaxTxLifeTimeListener();
+            sipStack.getTimer().schedule(maxTxLifeTimeListener,
+                    sipStack.getMaxTxLifetimeInvite() * 1000);
+        }
+        
+        if (maxTxLifeTimeListener == null && !this.getMethod().equalsIgnoreCase(Request.INVITE) && sipStack.getMaxTxLifetimeNonInvite() > 0) {
+        	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                logger.logDebug("Scheduling MaxTxLifeTimeListener for tx " +  this + " , tx id "+ this.getTransactionId() + " , state " + this.getState());
+        	}
+        	maxTxLifeTimeListener = new MaxTxLifeTimeListener();
+            sipStack.getTimer().schedule(maxTxLifeTimeListener,
+                    sipStack.getMaxTxLifetimeNonInvite() * 1000);
+        }
+    }
+
+	public void cancelMaxTxLifeTimeTimer() {
+		if(maxTxLifeTimeListener != null) {
+			if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                logger.logDebug("Cancelling MaxTxLifeTimeListener for tx " +  this + " , tx id "+ this.getTransactionId() + " , state " + this.getState());
+        	}
+			sipStack.getTimer().cancel(maxTxLifeTimeListener);
+			maxTxLifeTimeListener = null;
+		}
 	}
 }

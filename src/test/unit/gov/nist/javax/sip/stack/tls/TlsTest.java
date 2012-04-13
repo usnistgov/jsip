@@ -14,7 +14,6 @@ public class TlsTest extends TestCase {
 
 
 	public void setUp() {
-		
         Logger root = Logger.getRootLogger();
         root.setLevel(Level.DEBUG);
         root.addAppender(new ConsoleAppender(
@@ -24,9 +23,6 @@ public class TlsTest extends TestCase {
         System.setProperty( "javax.net.ssl.trustStore", TlsTest.class.getResource("testkeys").getPath() );
         System.setProperty( "javax.net.ssl.keyStorePassword", "passphrase" );
         System.setProperty( "javax.net.ssl.keyStoreType", "jks" );
-        this.shootist = new Shootist();
-        this.shootme = new Shootme();
-        this.shootme.init();
 	}
 	
 	public void testTls() {
@@ -40,7 +36,7 @@ public class TlsTest extends TestCase {
 	}
 	
 	public void tearDown() {
-        try {
+		try {
             Thread.sleep(2000);
             this.shootme.stop();
             this.shootist.stop();
@@ -55,6 +51,5 @@ public class TlsTest extends TestCase {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-
     }
 }

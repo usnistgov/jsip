@@ -75,6 +75,7 @@ public class TLSMessageChannel extends ConnectionOrientedMessageChannel {
     private static StackLogger logger = CommonLogger.getLogger(TLSMessageChannel.class);            
 
     private HandshakeCompletedListener handshakeCompletedListener;
+	private boolean handshakeCompleted = false;
    
     /**
      * Constructor - gets called from the SIPStack class with a socket on
@@ -105,6 +106,15 @@ public class TLSMessageChannel extends ConnectionOrientedMessageChannel {
         }
 
         mySock = (SSLSocket) sock;
+        if (sock instanceof SSLSocket) {
+            SSLSocket sslSock = (SSLSocket) sock;
+            if(sipStack.getClientAuth() != ClientAuthType.Want && sipStack.getClientAuth() != ClientAuthType.Disabled) {
+                sslSock.setNeedClientAuth(true);
+            }
+            if(logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+                logger.logDebug("SSLServerSocket need client auth " + sslSock.getNeedClientAuth());
+            }
+        }
 
         peerAddress = mySock.getInetAddress();
         myAddress = msgProcessor.getIpAddress().getHostAddress();
@@ -501,26 +511,34 @@ public class TLSMessageChannel extends ConnectionOrientedMessageChannel {
     public void run() {
     	// http://java.net/jira/browse/JSIP-415 
     	// moved from constructor to the TCPMessageChannel thread to avoid blocking the Processor if the handshake is stuck because of a bad client
-    	if (mySock!= null && mySock instanceof SSLSocket) {
-            SSLSocket sslSock = (SSLSocket) mySock;
-            if(sipStack.getClientAuth() != ClientAuthType.Want && sipStack.getClientAuth() != ClientAuthType.Disabled) {
-                sslSock.setNeedClientAuth(true);
-            }
-            if(logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-                logger.logDebug("SSLServerSocket need client auth " + sslSock.getNeedClientAuth());
-            }
-
-            HandshakeCompletedListenerImpl listener = new HandshakeCompletedListenerImpl(this, sslSock);
+    	if (mySock!= null && mySock instanceof SSLSocket && !handshakeCompleted) {
+    		SSLSocket sslSock = (SSLSocket) mySock;
+    		HandshakeCompletedListenerImpl listener = new HandshakeCompletedListenerImpl(this, sslSock);
             this.handshakeCompletedListener = listener;
             sslSock.addHandshakeCompletedListener(this.handshakeCompletedListener);
-            listener.startHandshakeWatchdog();
-            try {
+            listener.startHandshakeWatchdog();			
+			try {
 				sslSock.startHandshake();
+				handshakeCompleted = true;
 			} catch (IOException e) {
 				logger.logError("A problem occured while Accepting connection", e);
 				return;
-			}
+			}			
         }
     	super.run();
     }
+
+	/**
+	 * @return the handshakeCompleted
+	 */
+	public boolean isHandshakeCompleted() {
+		return handshakeCompleted;
+	}
+
+	/**
+	 * @param handshakeCompleted the handshakeCompleted to set
+	 */
+	public void setHandshakeCompleted(boolean handshakeCompleted) {
+		this.handshakeCompleted = handshakeCompleted;
+	}
 }
