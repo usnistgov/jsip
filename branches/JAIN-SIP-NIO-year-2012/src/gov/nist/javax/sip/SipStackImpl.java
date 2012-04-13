@@ -263,6 +263,24 @@ import java.util.concurrent.TimeUnit;
  * responds, the stack will hang on to a reference for the transaction and
  * result in a memory leak.
  * 
+ * <li><b>gov.nist.javax.sip.MAX_TX_LIFETIME_INVITE = Integer </b> <br/>
+ * Defaults -1 : infinite. Typical can be dependent on early dialog timeout by example 3 minutes could be a good default
+ * Max time (seconds) an INVITE transaction is supposed to live in the stack. 
+ * This is to avoid any leaks in whatever state the transaction can be in even if the application misbehaved 
+ * When the max time is reached, a timeout event will fire up to the application 
+ * listener so that the application can take action and then will be removed from 
+ * the stack after the typical lingering period of 8s in the stack  
+ * 
+ * <li><b>gov.nist.javax.sip.MAX_TX_LIFETIME_NON_INVITE = Integer </b> <br/>
+ * Defaults -1 : infinite. Typical is dependent on T1 by example 2 * T1 could be a good default
+ * Max time (seconds) a non INVITE transaction is supposed to live in the stack. 
+ * This is to avoid any leaks in whatever state the transaction can be in even if the application misbehaved 
+ * When the max time is reached, a timeout event will fire up to the application 
+ * listener so that the application can take action and then will be removed from 
+ * the stack after the typical lingering period of 8s in the stack. There is a 
+ * specific property as a non INVITE property is short live as compared to INVITE
+ * and so can be collected ore eagerly to save up on memory usage 
+ * 
  * <li><b>gov.nist.javax.sip.DELIVER_TERMINATED_EVENT_FOR_ACK = [true|false]</b>
  * <br/>
  * Default is <it>false</it>. ACK Server Transaction is a Pseuedo-transaction.
@@ -861,7 +879,31 @@ public class SipStackImpl extends SIPTransactionStack implements
 			super.maxListenerResponseTime = -1;
 		}
 
+		if (configurationProperties
+				.getProperty("gov.nist.javax.sip.MAX_TX_LIFETIME_INVITE") != null) {
+			super.maxTxLifetimeInvite = Integer
+					.parseInt(configurationProperties
+							.getProperty("gov.nist.javax.sip.MAX_TX_LIFETIME_INVITE"));
+			if (super.getMaxTxLifetimeInvite() <= 0)
+				throw new PeerUnavailableException(
+						"Bad configuration parameter gov.nist.javax.sip.MAX_TX_LIFETIME_INVITE : should be positive");
+		} else {
+			super.maxTxLifetimeInvite = -1;
+		}
 		
+    	// http://java.net/jira/browse/JSIP-420
+		if (configurationProperties
+				.getProperty("gov.nist.javax.sip.MAX_TX_LIFETIME_NON_INVITE") != null) {
+			super.maxTxLifetimeNonInvite = Integer
+					.parseInt(configurationProperties
+							.getProperty("gov.nist.javax.sip.MAX_TX_LIFETIME_NON_INVITE"));
+			if (super.getMaxTxLifetimeNonInvite() <= 0)
+				throw new PeerUnavailableException(
+						"Bad configuration parameter gov.nist.javax.sip.MAX_TX_LIFETIME_NON_INVITE : should be positive");
+		} else {
+			super.maxTxLifetimeNonInvite = -1;
+		}
+		 
 
 		this.setDeliverTerminatedEventForAck(configurationProperties
 				.getProperty(

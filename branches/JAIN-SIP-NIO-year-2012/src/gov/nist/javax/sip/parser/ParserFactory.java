@@ -34,12 +34,17 @@ import gov.nist.javax.sip.header.extensions.Replaces;
 import gov.nist.javax.sip.header.extensions.SessionExpires;
 import gov.nist.javax.sip.header.ims.PAccessNetworkInfoHeader;
 import gov.nist.javax.sip.header.ims.PAssertedIdentityHeader;
+import gov.nist.javax.sip.header.ims.PAssertedServiceHeader;
 import gov.nist.javax.sip.header.ims.PAssociatedURIHeader;
 import gov.nist.javax.sip.header.ims.PCalledPartyIDHeader;
 import gov.nist.javax.sip.header.ims.PChargingFunctionAddressesHeader;
 import gov.nist.javax.sip.header.ims.PChargingVectorHeader;
 import gov.nist.javax.sip.header.ims.PMediaAuthorizationHeader;
 import gov.nist.javax.sip.header.ims.PPreferredIdentityHeader;
+import gov.nist.javax.sip.header.ims.PPreferredServiceHeader;
+import gov.nist.javax.sip.header.ims.PProfileKeyHeader;
+import gov.nist.javax.sip.header.ims.PServedUserHeader;
+import gov.nist.javax.sip.header.ims.PUserDatabaseHeader;
 import gov.nist.javax.sip.header.ims.PVisitedNetworkIDHeader;
 import gov.nist.javax.sip.header.ims.PathHeader;
 import gov.nist.javax.sip.header.ims.PrivacyHeader;
@@ -55,12 +60,17 @@ import gov.nist.javax.sip.parser.extensions.ReplacesParser;
 import gov.nist.javax.sip.parser.extensions.SessionExpiresParser;
 import gov.nist.javax.sip.parser.ims.PAccessNetworkInfoParser;
 import gov.nist.javax.sip.parser.ims.PAssertedIdentityParser;
+import gov.nist.javax.sip.parser.ims.PAssertedServiceParser;
 import gov.nist.javax.sip.parser.ims.PAssociatedURIParser;
 import gov.nist.javax.sip.parser.ims.PCalledPartyIDParser;
 import gov.nist.javax.sip.parser.ims.PChargingFunctionAddressesParser;
 import gov.nist.javax.sip.parser.ims.PChargingVectorParser;
 import gov.nist.javax.sip.parser.ims.PMediaAuthorizationParser;
 import gov.nist.javax.sip.parser.ims.PPreferredIdentityParser;
+import gov.nist.javax.sip.parser.ims.PPreferredServiceParser;
+import gov.nist.javax.sip.parser.ims.PProfileKeyParser;
+import gov.nist.javax.sip.parser.ims.PServedUserParser;
+import gov.nist.javax.sip.parser.ims.PUserDatabaseParser;
 import gov.nist.javax.sip.parser.ims.PVisitedNetworkIDParser;
 import gov.nist.javax.sip.parser.ims.PathParser;
 import gov.nist.javax.sip.parser.ims.PrivacyParser;
@@ -342,6 +352,14 @@ public class ParserFactory {
         parserTable.put(PrivacyHeader.NAME.toLowerCase(), PrivacyParser.class);
         parserTable.put(ServiceRouteHeader.NAME.toLowerCase(), ServiceRouteParser.class);
         parserTable.put(PVisitedNetworkIDHeader.NAME.toLowerCase(), PVisitedNetworkIDParser.class);
+        
+        // added for more P-header extensions for IMS :
+        parserTable.put(PServedUserHeader.NAME.toLowerCase(), PServedUserParser.class);
+        parserTable.put(PPreferredServiceHeader.NAME.toLowerCase(), PPreferredServiceParser.class);
+        parserTable.put(PAssertedServiceHeader.NAME.toLowerCase(), PAssertedServiceParser.class);
+        parserTable.put(PProfileKeyHeader.NAME.toLowerCase(), PProfileKeyParser.class);
+        parserTable.put(PUserDatabaseHeader.NAME.toLowerCase(), PUserDatabaseParser.class);
+        
 
         parserTable.put(PAssociatedURIHeader.NAME.toLowerCase(), PAssociatedURIParser.class);
         parserTable.put(PCalledPartyIDHeader.NAME.toLowerCase(), PCalledPartyIDParser.class);
@@ -369,6 +387,7 @@ public class ParserFactory {
         
         //http://tools.ietf.org/html/draft-worley-references-05
         parserTable.put(References.NAME.toLowerCase(), ReferencesParser.class);
+        
     }
 
     /**

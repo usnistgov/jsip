@@ -3535,36 +3535,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                             sipStack.putDialog(this);
                         }
                         
-/*
- *                       if (transaction.getInternalState() != TransactionState._TERMINATED
- *                               && sipResponse.getStatusCode() == Response.OK
- *                               && lastResponseMethod.equals(Request.INVITE)
- *                               && this.isBackToBackUserAgent) {
- *                           // 
- *                           // Acquire the flag for re-INVITE so that we cannot
- *                           // re-INVITE before
- *                           // ACK is received. TODO -- really check why this
- *                       	// stuff was in there to start with.
- *                           //
- *                           if (false && !this.takeAckSem()) {
- *                               if (logger
- *                                       .isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
- *                                   logger
- *                                           .logDebug(
- *                                                   "Delete dialog -- cannot acquire ackSem");
- *                               }
- *                               this
- *                                       .raiseErrorEvent(SIPDialogErrorEvent.DIALOG_ERROR_INTERNAL_COULD_NOT_TAKE_ACK_SEM);
- *                               logger
- *                                       .logError(
- *                                               "IntenalError : Ack Sem already acquired ");
- *                               return;
- *                           }
- *
- *                       }
-*/
-
-
                     }
                 }
 
@@ -4358,6 +4328,10 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
    @Override
    public int hashCode() {
-      return this.callIdHeader.getCallId().hashCode();
+       if ( callIdHeader == null) {
+           return 0;
+       } else {
+           return getCallId().getCallId().hashCode();
+       }
    }
 }

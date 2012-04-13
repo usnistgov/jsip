@@ -4,8 +4,9 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>javax.sip</groupId>
-    <version>1.2</version>
+    <version>1.2.0</version>
     <artifactId>jain-sip</artifactId>
+   <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>jain-sip-sctp</artifactId>
@@ -13,7 +14,7 @@
   
   <packaging>jar</packaging>
   <name>jain-sip-sctp</name>
-  <url>http://jain-sip.dev.java.net</url>  
+  <url>http://code.google.com/p/jain-sip/</url>  
     <build>
 	<sourceDirectory>../../src</sourceDirectory>
 	<plugins>
@@ -44,7 +45,7 @@
 		<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>buildnumber-maven-plugin</artifactId>
-				<version>1.0-beta-4</version>
+				<version>1.0</version>
 				<executions>
 					<execution>
 						<phase>validate</phase>
@@ -61,7 +62,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.1</version>
+				<version>2.4</version>
 				<configuration>
 					<archive>
 						<manifest>
@@ -72,6 +73,20 @@
 						</manifestEntries>
 					</archive>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.8.1</version>
+				<executions>
+				        <execution>
+				            <id>attach-javadocs</id>
+				            <phase>verify</phase>
+				            <goals>
+				                <goal>jar</goal>
+				            </goals>
+				        </execution>
+				    </executions>
 			</plugin>
 	</plugins>
 	<resources>
@@ -90,13 +105,13 @@
     <dependency>
       <groupId>javax.sip</groupId>
       <artifactId>jain-sip-api</artifactId>
-      <version>1.2</version>
+      <version>1.2.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.sip</groupId>
       <artifactId>jain-sip-ri</artifactId>
-      <version>${pom.version}</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
