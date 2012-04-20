@@ -106,25 +106,12 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
      * A set of listening points associated with the provider At most one LP per
      * transport
      */
-    private ConcurrentHashMap listeningPoints;
+    private ConcurrentHashMap<String,ListeningPoint> listeningPoints;
 
     private EventScanner eventScanner;
 
-    private String address;
-
-    private int port;
-
     private boolean automaticDialogSupportEnabled ; 
-    /**
-     * A string containing the 0.0.0.0 IPv4 ANY address.
-     */
-    private String IN_ADDR_ANY = "0.0.0.0";
-
-    /**
-     * A string containing the ::0 IPv6 ANY address.
-     */
-    private String IN6_ADDR_ANY = "::0";
-
+    
     private boolean dialogErrorsAutomaticallyHandled = true;
     
     private SipProviderImpl() {
@@ -202,7 +189,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
         this.eventScanner = sipStack.getEventScanner(); // for quick access.
         this.sipStack = sipStack;
         this.eventScanner.incrementRefcount();
-        this.listeningPoints = new ConcurrentHashMap<String,ListeningPointImpl>();
+        this.listeningPoints = new ConcurrentHashMap<String,ListeningPoint>();
         this.automaticDialogSupportEnabled = this.sipStack
                 .isAutomaticDialogSupportEnabled();
         this.dialogErrorsAutomaticallyHandled = this.sipStack.isAutomaticDialogErrorHandlingEnabled();
@@ -783,7 +770,7 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
         if (port == -1) {
             port = via.getPort();
             if (port == -1) {
-                if (transport.equalsIgnoreCase("TLS"))
+                if (transport.equalsIgnoreCase("TLS")||transport.equalsIgnoreCase("SCTP-TLS"))
                     port = 5061;
                 else
                     port = 5060;
@@ -825,8 +812,8 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
         ListeningPointImpl lp = (ListeningPointImpl) listeningPoint;
         lp.sipProvider = this;
         String transport = lp.getTransport().toUpperCase();
-        this.address = listeningPoint.getIPAddress();
-        this.port = listeningPoint.getPort();
+        // this.address = listeningPoint.getIPAddress();
+        // this.port = listeningPoint.getPort();
         // This is the first listening point.
         this.listeningPoints.clear();
         this.listeningPoints.put(transport, listeningPoint);
@@ -1044,18 +1031,8 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
             throw new ObjectInUseException(
                     "Listening point assigned to another provider");
         String transport = lp.getTransport().toUpperCase();
-        if (this.listeningPoints.isEmpty()) {
-            // first one -- record the IP address/port of the LP
-
-            this.address = listeningPoint.getIPAddress();
-            this.port = listeningPoint.getPort();
-        } else {
-            if ((!this.address.equals(listeningPoint.getIPAddress()))
-                    || this.port != listeningPoint.getPort())
-                throw new ObjectInUseException(
-                        "Provider already has different IP Address associated");
-
-        }
+        
+        
         if (this.listeningPoints.containsKey(transport)
                 && this.listeningPoints.get(transport) != listeningPoint)
             throw new ObjectInUseException(
