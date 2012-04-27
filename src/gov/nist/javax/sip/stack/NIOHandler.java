@@ -424,6 +424,12 @@ public class NIOHandler {
     // UAC case with rapid outbound socket creation might end up overwriting the assigned socket
     public synchronized SocketChannel createOrReuseSocket(InetAddress inetAddress, int port) throws IOException {
     	SocketChannel channel = getSocket(NIOHandler.makeKey(inetAddress, port));
+    	if(channel != null && !channel.isConnected()) {
+    		if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+				logger.logDebug("Channel disconnected " + channel);
+    		
+    		channel = null;
+    	}
 		if(channel == null) { // this is where the threads will race
 			SocketAddress sockAddr = new InetSocketAddress(inetAddress, port);
 			channel = messageProcessor.blockingConnect((InetSocketAddress) sockAddr, 10000);

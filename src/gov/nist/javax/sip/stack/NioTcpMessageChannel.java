@@ -146,8 +146,9 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 			// messages that we write out to him.
 			nioParser = new NioPipelineParser(sipStack, this,
 					this.sipStack.getMaxMessageSize());
-			this.peerProtocol = "TCP";
+			this.peerProtocol = getTransport();
 			lastActivityTimeStamp = System.currentTimeMillis();
+			super.key = MessageChannel.getKey(peerAddress, peerPort, getTransport());
 		} finally {
 			if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 				logger.logDebug("Done creating NioTcpMessageChannel " + this);
@@ -175,7 +176,7 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 					this.sipStack.getMaxMessageSize());
 			putMessageChannel(socketChannel, this);
 			lastActivityTimeStamp = System.currentTimeMillis();
-			//super.key = MessageChannel.getKey(peerAddress, peerPort, getTransport());
+			super.key = MessageChannel.getKey(peerAddress, peerPort, getTransport());
 			
 		} finally {
 			if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
