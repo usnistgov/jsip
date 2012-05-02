@@ -390,6 +390,13 @@ public class ParserFactory {
         
     }
 
+    /** 
+    * This method is added to support parser extensibility.
+    */
+    public static void addToParserTable(String headerName, Class<? extends HeaderParser> parserClass) {
+       parserTable.put(headerName.toLowerCase(), parserClass);
+    }
+
     /**
      * create a parser for a header. This is the parser factory.
      */
