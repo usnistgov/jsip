@@ -794,21 +794,13 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                 // then it is the application's responsibility to
                 // take care of this error condition possibly.
 
-                SIPResponse response = sipRequest
-                        .createResponse(Response.CALL_OR_TRANSACTION_DOES_NOT_EXIST);
-                response.setReasonPhrase("Dialog Not Found");
-
                 if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
                     logger
                             .logDebug(
                                     "dropping request -- automatic dialog "
                                             + "support enabled and dialog does not exist!");
-                try {
-                    transaction.sendResponse(response);
-                } catch (SipException ex) {
-                    logger.logError(
-                            "Error in sending response", ex);
-                }
+                this.sendCallOrTransactionDoesNotExistResponse(sipRequest, transaction);
+                
                 // If the stack knows about the tx, then remove it.
                 if (transaction != null) {
                     sipStack.removeTransaction(transaction);
