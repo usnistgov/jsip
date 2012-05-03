@@ -28,10 +28,15 @@
  *******************************************************************************/
 package gov.nist.javax.sip.message;
 
-import java.text.ParseException;
+import gov.nist.core.Separators;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.sip.header.ContentDispositionHeader;
 import javax.sip.header.ContentTypeHeader;
+import javax.sip.header.Header;
 
 /**
  * Implementation of multipart content type.
@@ -43,97 +48,96 @@ import javax.sip.header.ContentTypeHeader;
  */
 
 public class ContentImpl implements Content {
-   
-   
-    /*
-     * The content type header for this chunk of content.
-     */
-   
-    private Object content;
 
-    private String boundary;
-    
-    private ContentTypeHeader contentTypeHeader;
-    
-    private ContentDispositionHeader contentDispositionHeader;
+  /*
+   * The content type header for this chunk of content.
+   */
 
-    
+  private Object content;
 
-    public ContentImpl( String content, String boundary ) {
-        this.content = content;
-    
-        this.boundary = boundary;
+  private ContentTypeHeader contentTypeHeader;
+
+  private ContentDispositionHeader contentDispositionHeader;
+
+  private List<Header> extensionHeaders = new ArrayList<Header>();
+
+  public ContentImpl(String content) {
+    this.content = content;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see gov.nist.javax.sip.message.ContentExt#setContent(java.lang.String)
+   */
+  public void setContent(Object content) {
+    this.content = content;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see gov.nist.javax.sip.message.ContentExt#getContentTypeHeader()
+   */
+  public ContentTypeHeader getContentTypeHeader() {
+    return contentTypeHeader;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see gov.nist.javax.sip.message.Content#getContent()
+   */
+  public Object getContent() {
+    return this.content;
+  }
+
+  /**
+   * @see Content#toString()
+   */
+  public String toString() {
+    StringBuilder result = new StringBuilder();
+    if (contentTypeHeader != null) {
+      result.append(contentTypeHeader.toString());
     }
 
-    
-
-    /* (non-Javadoc)
-     * @see gov.nist.javax.sip.message.ContentExt#setContent(java.lang.String)
-     */
-    public void setContent(Object content) {
-        this.content = content;
+    if (contentDispositionHeader != null) {
+      result.append(contentDispositionHeader.toString());
     }
-
-    /* (non-Javadoc)
-     * @see gov.nist.javax.sip.message.ContentExt#getContentTypeHeader()
-     */
-    public ContentTypeHeader getContentTypeHeader() {
-        return contentTypeHeader;
+    for (Header header : extensionHeaders) {
+      result.append(header);
     }
+    result.append(Separators.NEWLINE);
+    result.append(content.toString());
+    return result.toString();
+  }
 
-    /*
-     * (non-Javadoc)
-     * @see gov.nist.javax.sip.message.Content#getContent()
-     */
-    public Object getContent() {
-        return this.content;
-    }
-    
+  /**
+   * @param contentDispositionHeader the contentDispositionHeader to set
+   */
+  public void setContentDispositionHeader(ContentDispositionHeader contentDispositionHeader) {
+    this.contentDispositionHeader = contentDispositionHeader;
+  }
 
-    /* (non-Javadoc)
-     * @see gov.nist.javax.sip.message.ContentExt#toString()
-     */
-    public String toString() {
-        // This is not part of a multipart message.
-        if (boundary == null) {
-            return content.toString();
-        } else {
-           if ( this.contentDispositionHeader != null ) {
-            return "--" + boundary + "\r\n" + getContentTypeHeader() + 
-                    this.getContentDispositionHeader().toString() + "\r\n"
-                    + content.toString();
-           } else {
-               return "--" + boundary + "\r\n" + getContentTypeHeader() + "\r\n" +  content.toString();
-           }
-        }
-    }
+  /**
+   * @return the contentDispositionHeader
+   */
+  public ContentDispositionHeader getContentDispositionHeader() {
+    return contentDispositionHeader;
+  }
 
+  /**
+   * @param contentTypeHeader the contentTypeHeader to set
+   */
+  public void setContentTypeHeader(ContentTypeHeader contentTypeHeader) {
+    this.contentTypeHeader = contentTypeHeader;
+  }
 
+  public void addExtensionHeader(Header header) {
+    this.extensionHeaders.add(header);
+  }
 
-    /**
-     * @param contentDispositionHeader the contentDispositionHeader to set
-     */
-    public void setContentDispositionHeader(ContentDispositionHeader contentDispositionHeader) {
-        this.contentDispositionHeader = contentDispositionHeader;
-    }
-
-
-
-    /**
-     * @return the contentDispositionHeader
-     */
-    public ContentDispositionHeader getContentDispositionHeader() {
-        return contentDispositionHeader;
-    }
-
-
-
-    /**
-     * @param contentTypeHeader the contentTypeHeader to set
-     */
-    public void setContentTypeHeader(ContentTypeHeader contentTypeHeader) {
-        this.contentTypeHeader = contentTypeHeader;
-    }
-
-
+  public Iterator<Header> getExtensionHeaders() {
+    return extensionHeaders.iterator();
+  }
 }
