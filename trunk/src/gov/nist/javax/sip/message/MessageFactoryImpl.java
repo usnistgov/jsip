@@ -837,7 +837,7 @@ public class MessageFactoryImpl implements MessageFactory, MessageFactoryExt {
         MultipartMimeContentImpl retval = new MultipartMimeContentImpl(multipartMimeCth);
         for (int i = 0 ;  i < contentType.length; i++ ) {
             ContentTypeHeader cth = new ContentType(contentType[i],contentSubtype[i]);
-            ContentImpl contentImpl  = new ContentImpl(contentBody[i],boundary);
+            ContentImpl contentImpl  = new ContentImpl(contentBody[i]);
             contentImpl.setContentTypeHeader(cth);
             retval.add(contentImpl);
         }
