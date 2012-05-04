@@ -60,6 +60,7 @@ public class ParserTestSuite extends TestSuite {
         addTestSuite(MinExpiresParserTest.class);
         addTestSuite(OrganizationParserTest.class);
         addTestSuite(ReferToParserTest.class);
+        addTestSuite(SupportedParserTest.class);
         addTestSuite(URLParserTest.class);
         addTestSuite(ViaParserTest.class);
         addTestSuite(TimeStampParserTest.class);
