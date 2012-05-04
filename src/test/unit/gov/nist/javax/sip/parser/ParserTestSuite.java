@@ -34,6 +34,7 @@ public class ParserTestSuite extends TestSuite {
 
     public ParserTestSuite(String name) {
         super(name);
+        addTestSuite(AcceptParserTest.class);
         addTestSuite(AcceptLanguageParserTest.class);
         addTestSuite(AddressParserTest.class);
         addTestSuite(AllowEventsParserTest.class);
