@@ -49,13 +49,8 @@ public class FromParser extends AddressParametersParser {
     }
 
     public SIPHeader parse() throws ParseException {
-
         From from = new From();
-
-        this.lexer.match(TokenTypes.FROM);
-        this.lexer.SPorHT();
-        this.lexer.match(':');
-        this.lexer.SPorHT();
+        headerName( FROM );
         super.parse(from);
         this.lexer.match('\n');
         return from;

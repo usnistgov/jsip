@@ -34,8 +34,10 @@ public class AllowParserTest extends ParserTestCase {
 
     public void testParser() {
 
-        String r[] = { "Allow: INVITE, ACK, OPTIONS, CANCEL, BYE\n",
-                "Allow: INVITE\n" };
+        String r[] = { 
+        		"Allow: INVITE, ACK, OPTIONS, CANCEL, BYE\n",
+                "Allow: INVITE\n",
+                "Allow:\n" };
         super.testParser(AllowParser.class,r);
 
     }

@@ -55,18 +55,11 @@ public class CSeqParser extends HeaderParser {
     public SIPHeader parse() throws ParseException {
         try {
             CSeq c = new CSeq();
-
-            this.lexer.match(TokenTypes.CSEQ);
-            this.lexer.SPorHT();
-            this.lexer.match(':');
-            this.lexer.SPorHT();
+            headerName(CSEQ);
             String number = this.lexer.number();
             c.setSeqNumber(Long.parseLong(number));
             this.lexer.SPorHT();
             String m = SIPRequest.getCannonicalName( method() ).intern();
-            
-            
-            
             c.setMethod(m);
             this.lexer.SPorHT();
             this.lexer.match('\n');

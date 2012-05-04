@@ -67,14 +67,8 @@ public class OrganizationParser extends HeaderParser {
         Organization organization = new Organization();
         try {
             headerName(TokenTypes.ORGANIZATION);
-
-            organization.setHeaderName(SIPHeaderNames.ORGANIZATION);
-
-            this.lexer.SPorHT();
             String value = this.lexer.getRest();
-
             organization.setOrganization(value.trim());
-
             return organization;
         } finally {
             if (debug)

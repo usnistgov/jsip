@@ -91,7 +91,7 @@ public class AuthenticationInfoParser extends ParametersParser {
                 this.lexer.SPorHT();
             }
             this.lexer.SPorHT();
-            //this.lexer.match('\n');
+            this.lexer.match('\n');
 
             return authenticationInfo;
         } finally {
