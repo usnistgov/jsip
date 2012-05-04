@@ -9,27 +9,28 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class BlockingQueueDispatchAuditor extends TimerTask {
-	private Timer timer = new Timer();
-	private static StackLogger logger = CommonLogger.getLogger(BlockingQueueDispatchAuditor.class);
-    private long totalReject = 0;     
+  private Timer timer = null;
+  private static int timerThreadCount = 0;
+  private static StackLogger logger = CommonLogger.getLogger(BlockingQueueDispatchAuditor.class);
+    private long totalReject = 0;
     private boolean started = false;
     private Queue<? extends Runnable> queue;
     private int timeout = 8000;
     public BlockingQueueDispatchAuditor(Queue<? extends Runnable> queue) {
     	this.queue = queue;
     }
-    
+
     public void start(int interval) {
     	if(started) stop();
     	started = true;
-    	timer = new Timer();
+    	timer = new Timer("BlockingQueueDispatchAuditor-Timer-" + timerThreadCount++, true);
     	timer.scheduleAtFixedRate(this, interval, interval);
     }
-    
+
     public int getTimeout() {
     	return timeout;
     }
-    
+
     public void setTimeout(int timeout) {
     	this.timeout = timeout;
     }
