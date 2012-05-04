@@ -71,30 +71,23 @@ public class AllowParser extends HeaderParser {
             headerName(TokenTypes.ALLOW);
 
             Allow allow = new Allow();
-            allow.setHeaderName(SIPHeaderNames.ALLOW);
-
-            this.lexer.SPorHT();
-            this.lexer.match(TokenTypes.ID);
-            Token token = lexer.getNextToken();
-            allow.setMethod(token.getTokenValue());
-
             list.add(allow);
-            this.lexer.SPorHT();
-            while (lexer.lookAhead(0) == ',') {
-                this.lexer.match(',');
-                this.lexer.SPorHT();
-
-                allow = new Allow();
-                this.lexer.match(TokenTypes.ID);
-                token = lexer.getNextToken();
-                allow.setMethod(token.getTokenValue());
-
-                list.add(allow);
-                this.lexer.SPorHT();
+            if ( lexer.startsId() ) {
+	            Token token = this.lexer.match(TokenTypes.ID);
+	            allow.setMethod(token.getTokenValue());
+	            this.lexer.SPorHT();
+	            while (lexer.lookAhead(0) == ',') {
+	                this.lexer.match(',');
+	                this.lexer.SPorHT();
+	
+	                allow = new Allow();
+	                token = this.lexer.match(TokenTypes.ID);
+	                allow.setMethod(token.getTokenValue());	
+	                list.add(allow);
+	                this.lexer.SPorHT();
+	            }
             }
-            this.lexer.SPorHT();
             this.lexer.match('\n');
-
             return list;
         } finally {
             if (debug)

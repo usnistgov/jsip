@@ -287,7 +287,7 @@ public class LexerCore extends StringTokenizer {
             // Ignore
         }
     }
-
+    
     /**
      * JvB: utility function added to validate tokens
      *
