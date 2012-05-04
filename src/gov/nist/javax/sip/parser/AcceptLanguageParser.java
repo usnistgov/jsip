@@ -87,45 +87,42 @@ public class AcceptLanguageParser extends HeaderParser {
 
         try {
             headerName(TokenTypes.ACCEPT_LANGUAGE);
-
-            while (lexer.lookAhead(0) != '\n') {
-                AcceptLanguage acceptLanguage = new AcceptLanguage();
+            do {
+            	AcceptLanguage acceptLanguage = new AcceptLanguage();
                 acceptLanguage.setHeaderName(SIPHeaderNames.ACCEPT_LANGUAGE);
-                if (lexer.lookAhead(0) != ';') {
+                this.lexer.SPorHT();
+                if (lexer.startsId()) {
                     // Content-Coding:
-                    lexer.match(TokenTypes.ID);
-                    Token value = lexer.getNextToken();
-                    acceptLanguage.setLanguageRange(value.getTokenValue());
+                    Token value = lexer.match(TokenTypes.ID);	// e.g. "en-gb" or '*'
+                   	acceptLanguage.setLanguageRange(value.getTokenValue());
+                    this.lexer.SPorHT();
+	                while (lexer.lookAhead(0) == ';') {
+	                    this.lexer.match(';');
+	                    this.lexer.SPorHT();
+	                    this.lexer.match('q');
+	                    this.lexer.SPorHT();
+	                    this.lexer.match('=');
+	                    this.lexer.SPorHT();
+	                    lexer.match(TokenTypes.ID);
+	                    value = lexer.getNextToken();
+	                    try {
+	                        float fl = Float.parseFloat(value.getTokenValue());
+	                        acceptLanguage.setQValue(fl);
+	                    } catch (NumberFormatException ex) {
+	                        throw createParseException(ex.getMessage());
+	                    } catch (InvalidArgumentException ex) {
+	                        throw createParseException(ex.getMessage());
+	                    }
+	                    this.lexer.SPorHT();
+	                }
                 }
-
-                while (lexer.lookAhead(0) == ';') {
-                    this.lexer.match(';');
-                    this.lexer.SPorHT();
-                    this.lexer.match('q');
-                    this.lexer.SPorHT();
-                    this.lexer.match('=');
-                    this.lexer.SPorHT();
-                    lexer.match(TokenTypes.ID);
-                    Token value = lexer.getNextToken();
-                    try {
-                        float fl = Float.parseFloat(value.getTokenValue());
-                        acceptLanguage.setQValue(fl);
-                    } catch (NumberFormatException ex) {
-                        throw createParseException(ex.getMessage());
-                    } catch (InvalidArgumentException ex) {
-                        throw createParseException(ex.getMessage());
-                    }
-                    this.lexer.SPorHT();
-                }
-
                 acceptLanguageList.add(acceptLanguage);
-                if (lexer.lookAhead(0) == ',') {
+                if ( lexer.lookAhead(0) == ',' ) {
                     this.lexer.match(',');
                     this.lexer.SPorHT();
                 } else
-                    this.lexer.SPorHT();
-
-            }
+                    break;
+            } while (true);
         } finally {
             if (debug)
                 dbg_leave("AcceptLanguageParser.parse");
