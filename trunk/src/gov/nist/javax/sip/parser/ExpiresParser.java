@@ -70,10 +70,10 @@ public class ExpiresParser extends HeaderParser {
             lexer.match(':');
             lexer.SPorHT();
             String nextId = lexer.getNextId();
-            lexer.match('\n');
             try {
                 int delta = Integer.parseInt(nextId);
                 expires.setExpires(delta);
+                this.lexer.match('\n');
                 return expires;
             } catch (NumberFormatException ex) {
                 throw createParseException("bad integer format");

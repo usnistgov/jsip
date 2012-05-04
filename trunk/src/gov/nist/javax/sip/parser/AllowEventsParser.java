@@ -72,9 +72,6 @@ public class AllowEventsParser extends HeaderParser {
             headerName(TokenTypes.ALLOW_EVENTS);
 
             AllowEvents allowEvents = new AllowEvents();
-            allowEvents.setHeaderName(SIPHeaderNames.ALLOW_EVENTS);
-
-            this.lexer.SPorHT();
             this.lexer.match(TokenTypes.ID);
             Token token = lexer.getNextToken();
             allowEvents.setEventType(token.getTokenValue());

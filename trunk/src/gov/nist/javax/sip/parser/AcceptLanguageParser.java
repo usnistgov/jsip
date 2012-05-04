@@ -89,7 +89,7 @@ public class AcceptLanguageParser extends HeaderParser {
             headerName(TokenTypes.ACCEPT_LANGUAGE);
             do {
             	AcceptLanguage acceptLanguage = new AcceptLanguage();
-                acceptLanguage.setHeaderName(SIPHeaderNames.ACCEPT_LANGUAGE);
+                // acceptLanguage.setHeaderName(SIPHeaderNames.ACCEPT_LANGUAGE);
                 this.lexer.SPorHT();
                 if (lexer.startsId()) {
                     // Content-Coding:
