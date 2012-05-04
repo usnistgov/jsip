@@ -53,6 +53,7 @@ public class AcceptLanguageList extends SIPHeaderList<AcceptLanguage>  {
         super(AcceptLanguage.class, AcceptLanguageHeader.NAME);
     }
 
+    /*
     public AcceptLanguage getFirst() {
         AcceptLanguage retval = (AcceptLanguage) super.getFirst();
         if (retval != null)
@@ -68,4 +69,5 @@ public class AcceptLanguageList extends SIPHeaderList<AcceptLanguage>  {
         else
             return new AcceptLanguage();
     }
+    */
 }
