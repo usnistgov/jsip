@@ -74,6 +74,11 @@ public abstract class ParserTestCase extends TestCase {
                 HeaderParser hp = createParser(parserClass, headers[i]);
                 SIPHeader hdr = (SIPHeader) hp.parse();
 
+                if ( hdr instanceof SIPHeaderList<?> ) {
+                	SIPHeaderList<?> list = (SIPHeaderList<?>) hdr;
+                	assertNotNull( "Header should be added to list", list.getFirst() );
+                }
+                
                 hp = createParser(parserClass, ((SIPHeader) hdr.clone()).encode().trim() + "\n");
                 System.out.println("Encoded header = " + hdr.encode());
                 assertEquals(hdr, hp.parse());
