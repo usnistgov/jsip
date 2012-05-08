@@ -771,13 +771,13 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         this.setLastResponse(null, sipResponse);
         this.localSequenceNumber = sipResponse.getCSeq().getSeqNumber();
         this.originalLocalSequenceNumber = localSequenceNumber;
-        this.setLocalTag(sipResponse.getFrom().getTag());
-        this.setRemoteTag(sipResponse.getTo().getTag());
         this.localParty = sipResponse.getFrom().getAddress();
         this.remoteParty = sipResponse.getTo().getAddress();
         this.method = sipResponse.getCSeq().getMethod();
         this.callIdHeader = sipResponse.getCallId();
         this.serverTransactionFlag = false;
+        this.setLocalTag(sipResponse.getFrom().getTag());
+        this.setRemoteTag(sipResponse.getTo().getTag());
         if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             logger.logDebug("Creating a dialog : " + this);
             logger.logStackTrace();
