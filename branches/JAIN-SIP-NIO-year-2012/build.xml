@@ -620,6 +620,7 @@ c:/jakarta-ant/bin/ant all
 
                     <junit fork="yes" showoutput="yes" failureproperty="testing.failed">
                         <classpath>
+                            <pathelement location="${classes}" />
                             <pathelement location="${jain-sip-sdp-jar}" />
                             <pathelement location="${jain-sip-ri-jar}" />
                             <pathelement location="${log4j_jar}" />

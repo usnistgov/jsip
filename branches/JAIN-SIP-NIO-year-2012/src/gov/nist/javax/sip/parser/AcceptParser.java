@@ -75,16 +75,17 @@ public class AcceptParser extends ParametersParser {
             accept.setHeaderName(SIPHeaderNames.ACCEPT);
 
             this.lexer.SPorHT();
-            this.lexer.match(TokenTypes.ID);
-            Token token = lexer.getNextToken();
-            accept.setContentType(token.getTokenValue());
-            this.lexer.match('/');
-            this.lexer.match(TokenTypes.ID);
-            token = lexer.getNextToken();
-            accept.setContentSubType(token.getTokenValue());
-            this.lexer.SPorHT();
-
-            super.parse(accept);
+            if ( lexer.startsId() ) {	// allow can be empty
+	            this.lexer.match(TokenTypes.ID);
+	            Token token = lexer.getNextToken();
+	            accept.setContentType(token.getTokenValue());
+	            this.lexer.match('/');
+	            this.lexer.match(TokenTypes.ID);
+	            token = lexer.getNextToken();
+	            accept.setContentSubType(token.getTokenValue());
+	            this.lexer.SPorHT();	
+	            super.parse(accept);
+            }
             list.add(accept);
 
             while (lexer.lookAhead(0) == ',') {
@@ -92,18 +93,18 @@ public class AcceptParser extends ParametersParser {
                 this.lexer.SPorHT();
 
                 accept = new Accept();
-
-                this.lexer.match(TokenTypes.ID);
-                token = lexer.getNextToken();
-                accept.setContentType(token.getTokenValue());
-                this.lexer.match('/');
-                this.lexer.match(TokenTypes.ID);
-                token = lexer.getNextToken();
-                accept.setContentSubType(token.getTokenValue());
-                this.lexer.SPorHT();
-                super.parse(accept);
+                if ( lexer.startsId() ) {
+	                this.lexer.match(TokenTypes.ID);
+	                Token token = lexer.getNextToken();
+	                accept.setContentType(token.getTokenValue());
+	                this.lexer.match('/');
+	                this.lexer.match(TokenTypes.ID);
+	                token = lexer.getNextToken();
+	                accept.setContentSubType(token.getTokenValue());
+	                this.lexer.SPorHT();
+	                super.parse(accept);
+                }
                 list.add(accept);
-
             }
             return list;
         } finally {

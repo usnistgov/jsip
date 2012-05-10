@@ -46,7 +46,7 @@ public final class Allow extends
     private static final long serialVersionUID = -3105079479020693930L;
     /** method field
      */
-    protected String method;
+    protected String method = "";
 
     /** default constructor
      */

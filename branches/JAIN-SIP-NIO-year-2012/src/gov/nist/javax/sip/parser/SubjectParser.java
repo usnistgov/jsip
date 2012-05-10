@@ -68,9 +68,6 @@ public class SubjectParser extends HeaderParser {
 
         try {
             headerName(TokenTypes.SUBJECT);
-
-            this.lexer.SPorHT();
-
             String s = this.lexer.getRest();
             subject.setSubject(s.trim());
 
