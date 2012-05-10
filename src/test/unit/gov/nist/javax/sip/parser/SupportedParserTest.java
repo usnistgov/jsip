@@ -17,20 +17,33 @@
 *
 *
 */
+/*
+ * Created on Jul 31, 2004
+ *
+ *The JAIN-SIP Project
+ */
 package test.unit.gov.nist.javax.sip.parser;
 
-import gov.nist.javax.sip.parser.*;
+import gov.nist.javax.sip.parser.SupportedParser;
 
-public class AcceptLanguageParserTest extends ParserTestCase {
+/**
+ *
+ */
+public class SupportedParserTest extends ParserTestCase {
 
+    /* (non-Javadoc)
+     * @see test.unit.gov.nist.javax.sip.parser.ParserTestCase#testParser()
+     */
     public void testParser() {
-        String data[] = { "Accept-Language:  da   \n",
-                "Accept-Language: \n", 
-                "Accept-Language: ,\n",
-                "Accept-Language: da, en-gb;q=0.8\n",
-                "Accept-Language: *\n" };
-        super.testParser(AcceptLanguageParser.class,data);
+
+        String content[] = {
+            "Supported: 100rel\n",
+            "Supported:\n",
+            "k:sessiontimer \n"
+        };
+
+        super.testParser(SupportedParser.class,content);
+
     }
 
 }
-

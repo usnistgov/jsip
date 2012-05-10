@@ -34,6 +34,8 @@ public class ParserTestSuite extends TestSuite {
 
     public ParserTestSuite(String name) {
         super(name);
+        addTestSuite(AcceptParserTest.class);
+        addTestSuite(AcceptEncodingParserTest.class);
         addTestSuite(AcceptLanguageParserTest.class);
         addTestSuite(AddressParserTest.class);
         addTestSuite(AllowEventsParserTest.class);
@@ -60,6 +62,7 @@ public class ParserTestSuite extends TestSuite {
         addTestSuite(MinExpiresParserTest.class);
         addTestSuite(OrganizationParserTest.class);
         addTestSuite(ReferToParserTest.class);
+        addTestSuite(SupportedParserTest.class);
         addTestSuite(URLParserTest.class);
         addTestSuite(ViaParserTest.class);
         addTestSuite(TimeStampParserTest.class);
