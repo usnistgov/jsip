@@ -242,16 +242,18 @@ public class TCPMessageChannel extends ConnectionOrientedMessageChannel {
         	problem = any;
         	logger.logWarning("Failed to connect " + this.peerAddress + ":" + this.peerPort +" but trying the advertised port=" + this.peerPortAdvertisedInHeaders + " if it's different than the port we just failed on");
         }
-        if(sock == null) { // If we couldn't connect to the host, try the advertised port as failsafe
-        	if(this.peerPort != this.peerPortAdvertisedInHeaders && peerPortAdvertisedInHeaders > 0) { // no point in trying same port
+        if(sock == null) { // http://java.net/jira/browse/JSIP-362 If we couldn't connect to the host, try the advertised host and port as failsafe
+        	if(peerAddressAdvertisedInHeaders  != null && peerPortAdvertisedInHeaders > 0) { 
                 if (logger.isLoggingEnabled(LogWriter.TRACE_WARN)) {
                     logger.logWarning("Couldn't connect to peerAddress = " + peerAddress + " peerPort = " + peerPort
                             + " key = " + key + " retrying on peerPortAdvertisedInHeaders "
                             + peerPortAdvertisedInHeaders);
                 }
-        		sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor.getIpAddress(),
-                    this.peerAddress, this.peerPortAdvertisedInHeaders, this.peerProtocol, msg, isClient, this);        		
+        		InetAddress address = InetAddress.getByName(peerAddressAdvertisedInHeaders);
+                sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor.getIpAddress(),
+                		address, this.peerPortAdvertisedInHeaders, this.peerProtocol, msg, isClient, this);        		
         		this.peerPort = this.peerPortAdvertisedInHeaders;
+        		this.peerAddress = address;
         		this.key = MessageChannel.getKey(peerAddress, peerPort, "TCP");
         		if (logger.isLoggingEnabled(LogWriter.TRACE_WARN)) {
                     logger.logWarning("retry suceeded to peerAddress = " + peerAddress
@@ -353,20 +355,22 @@ public class TCPMessageChannel extends ConnectionOrientedMessageChannel {
         	logger.logError("Error is ", any);
 
         }
-        if(sock == null) { // If we couldn't connect to the host, try the advertised port as failsafe
-        	if(receiverPort != this.peerPortAdvertisedInHeaders && peerPortAdvertisedInHeaders > 0) { // no point in trying same port
+        if(sock == null) { // http://java.net/jira/browse/JSIP-362 If we couldn't connect to the host, try the advertised host:port as failsafe
+        	if(peerAddressAdvertisedInHeaders  != null && peerPortAdvertisedInHeaders > 0) { 
                 if (logger.isLoggingEnabled(LogWriter.TRACE_WARN)) {
                     logger.logWarning("Couldn't connect to receiverAddress = " + receiverAddress
                             + " receiverPort = " + receiverPort + " key = " + key
                             + " retrying on peerPortAdvertisedInHeaders " + peerPortAdvertisedInHeaders);
                 }
+        		InetAddress address = InetAddress.getByName(peerAddressAdvertisedInHeaders);
                 sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor.getIpAddress(),
-                    receiverAddress, this.peerPortAdvertisedInHeaders, "TCP", message, retry, this);
+                    address, this.peerPortAdvertisedInHeaders, "TCP", message, retry, this);
         		this.peerPort = this.peerPortAdvertisedInHeaders;
-        		this.key = MessageChannel.getKey(peerAddress, peerPortAdvertisedInHeaders, "TCP");
+        		this.peerAddress = address;
+        		this.key = MessageChannel.getKey(peerAddress, peerPort, "TCP");
                 if (logger.isLoggingEnabled(LogWriter.TRACE_WARN)) {
-                    logger.logWarning("retry suceeded to receiverAddress = " + receiverAddress
-                            + " peerPortAdvertisedInHeaders = " + peerPortAdvertisedInHeaders + " key = " + key);
+                    logger.logWarning("retry suceeded to peerAddress = " + peerAddress
+                            + " peerPort = " + peerPort + " key = " + key);
                 }
            } else {
         		throw problem; // throw the original excpetion we had from the first attempt
