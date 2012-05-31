@@ -88,9 +88,10 @@ public abstract class ConnectionOrientedMessageChannel extends MessageChannel im
 
     protected InetAddress peerAddress;
     
-    // This is the port that we will find in the headers of the messages from the peer
+    // This is the port and adress that we will find in the headers of the messages from the peer
     protected int peerPortAdvertisedInHeaders = -1;
-
+    protected String peerAddressAdvertisedInHeaders;
+    
     protected int peerPort;
 
     protected String peerProtocol;
@@ -316,6 +317,14 @@ public abstract class ConnectionOrientedMessageChannel extends MessageChannel im
                     	logger.logDebug("3.Storing peerPortAdvertisedInHeaders = " + peerPortAdvertisedInHeaders + " for this channel " + this + " key " + key);
                     }
                 }
+                // may be needed to reconnect, when diff than peer address
+                if(peerAddressAdvertisedInHeaders == null) {
+                	peerAddressAdvertisedInHeaders = hop.getHost();
+                	if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                    	logger.logDebug("3.Storing peerAddressAdvertisedInHeaders = " + peerAddressAdvertisedInHeaders + " for this channel " + this + " key " + key);
+                    }
+                }
+                
                 try {
                 	if (mySock != null) { // selfrouting makes socket = null
                         				 // https://jain-sip.dev.java.net/issues/show_bug.cgi?id=297

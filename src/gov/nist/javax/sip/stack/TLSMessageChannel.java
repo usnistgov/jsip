@@ -244,12 +244,14 @@ public class TLSMessageChannel extends ConnectionOrientedMessageChannel {
         	logger.logWarning("Failed to connect " + this.peerAddress + ":" + this.peerPort +" but trying the advertised port=" + this.peerPortAdvertisedInHeaders + " if it's different than the port we just failed on");
         	logger.logError("Error is ", any);
         }
-        if(sock == null) { // If we couldn't connect to the host, try the advertised port as failsafe
-        	if(this.peerPort != this.peerPortAdvertisedInHeaders && peerPortAdvertisedInHeaders > 0) { // no point in trying same port
+        if(sock == null) { // http://java.net/jira/browse/JSIP-362 If we couldn't connect to the host, try the advertised host:port as failsafe
+        	if(peerAddressAdvertisedInHeaders  != null && peerPortAdvertisedInHeaders > 0) { 
                 logger.logWarning("Couldn't connect to peerAddress = " + peerAddress + " peerPort = " + peerPort + " key = " + key +  " retrying on peerPortAdvertisedInHeaders " + peerPortAdvertisedInHeaders);
-        		sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor.getIpAddress(),
-                    this.peerAddress, this.peerPortAdvertisedInHeaders, this.peerProtocol, msg, retry, this);        		
+                InetAddress address = InetAddress.getByName(peerAddressAdvertisedInHeaders);
+                sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor.getIpAddress(),
+                    address, this.peerPortAdvertisedInHeaders, this.peerProtocol, msg, retry, this);        		
         		this.peerPort = this.peerPortAdvertisedInHeaders;
+        		this.peerAddress = address;
         		this.key = MessageChannel.getKey(peerAddress, peerPort, "TLS");
                 logger.logWarning("retry suceeded to peerAddress = " + peerAddress + " peerPortAdvertisedInHeaders = " + peerPortAdvertisedInHeaders + " key = " + key);
         	} else {
@@ -347,12 +349,14 @@ public class TLSMessageChannel extends ConnectionOrientedMessageChannel {
         			receiverAddress + ", port=" + receiverPort);
         	logger.logError("Error is ", any);
         }
-        if(sock == null) { // If we couldn't connect to the host, try the advertised port as failsafe
-        	if(receiverPort != this.peerPortAdvertisedInHeaders && peerPortAdvertisedInHeaders > 0) { // no point in trying same port
-            logger.logWarning("Couldn't connect to receiverAddress = " + receiverAddress + " receiverPort = " + receiverPort + " key = " + key +  " retrying on peerPortAdvertisedInHeaders " + peerPortAdvertisedInHeaders);
-        		sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor.getIpAddress(),
-                    receiverAddress, this.peerPortAdvertisedInHeaders, "TLS", message, retry, this);
+        if(sock == null) { // http://java.net/jira/browse/JSIP-362 If we couldn't connect to the host, try the advertised host:port as failsafe
+        	if(peerAddressAdvertisedInHeaders  != null && peerPortAdvertisedInHeaders > 0) {
+        		logger.logWarning("Couldn't connect to receiverAddress = " + receiverAddress + " receiverPort = " + receiverPort + " key = " + key +  " retrying on peerPortAdvertisedInHeaders " + peerPortAdvertisedInHeaders);
+        		InetAddress address = InetAddress.getByName(peerAddressAdvertisedInHeaders);
+            	sock = this.sipStack.ioHandler.sendBytes(this.messageProcessor.getIpAddress(),
+            			address, this.peerPortAdvertisedInHeaders, "TLS", message, retry, this);
         		this.peerPort = this.peerPortAdvertisedInHeaders;
+        		this.peerAddress = address;
         		this.key = MessageChannel.getKey(peerAddress, peerPortAdvertisedInHeaders, "TLS");
                 
                 logger.logWarning("retry suceeded to receiverAddress = " + receiverAddress + " peerPortAdvertisedInHeaders = " + peerPortAdvertisedInHeaders + " key = " + key);
