@@ -1988,7 +1988,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
         }
         
         // Uncache the server tx 
-        if ((!sipStack.cacheServerConnections)
+        if ((!sipStack.cacheServerConnections) && isReliable()
                 && --getMessageChannel().useCount <= 0) {
             // Close the encapsulated socket if stack is configured
             close();
