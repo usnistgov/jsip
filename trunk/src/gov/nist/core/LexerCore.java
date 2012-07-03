@@ -42,6 +42,7 @@ public class LexerCore extends StringTokenizer {
     public static final int START = 2048;
     public static final int END = START + 2048;
     // IMPORTANT -- This should be < END
+    public static final int ID_NO_WHITESPACE = END - 3;
     public static final int ID = END - 1;
     public static final int SAFE = END - 2;
     // Individial token classes.
@@ -157,6 +158,10 @@ public class LexerCore extends StringTokenizer {
         return ttoken();
     }
 
+    public String getNextIdNoWhiteSpace() {
+        return ttokenNoWhiteSpace();
+    }
+
     // call this after you call match
     public Token getNextToken() {
         return this.currentMatch;
@@ -223,6 +228,13 @@ public class LexerCore extends StringTokenizer {
                 this.currentMatch = new Token();
                 this.currentMatch.tokenValue = id;
                 this.currentMatch.tokenType = SAFE;
+            } else if (tok == ID_NO_WHITESPACE) {
+                if (!startsIdNoWhiteSpace())
+                    throw new ParseException(buffer + "\nID no white space expected", ptr);
+                String id = getNextIdNoWhiteSpace();
+                this.currentMatch = new Token();
+                this.currentMatch.tokenValue = id;
+                this.currentMatch.tokenType = ID_NO_WHITESPACE;
             } else {
                 String nexttok = getNextId();
                 Integer cur = (Integer) currentLexer.get(nexttok.toUpperCase());
@@ -328,6 +340,15 @@ public class LexerCore extends StringTokenizer {
         }
     }
 
+    public boolean startsIdNoWhiteSpace() {
+        try {
+            char nextChar = lookAhead(0);
+            return nextChar != ' ' && nextChar != '\t' && nextChar != '\n';
+        } catch (ParseException ex) {
+            return false;
+        }
+    }
+
     public boolean startsSafeToken() {
         try {
             char nextChar = lookAhead(0);
@@ -388,46 +409,22 @@ public class LexerCore extends StringTokenizer {
         }
     }
 
-    /* JvB: unreferenced
-    public String ttokenAllowSpace() {
+    public String ttokenNoWhiteSpace() {
         int startIdx = ptr;
         try {
             while (hasMoreChars()) {
                 char nextChar = lookAhead(0);
-                if (isAlphaDigit(nextChar)) {
-                    consume(1);
+                if ( nextChar == ' ' || nextChar == '\n' || nextChar == '\t' ) {
+			break;
+                } else {
+                     consume(1);
                 }
-                else {
-                    boolean isValidChar = false;
-                    switch (nextChar) {
-                        case '_':
-                        case '+':
-                        case '-':
-                        case '!':
-                        case '`':
-                        case '\'':
-                        case '~':
-                        case '%': // bug fix by Bruno Konik, JvB copied here
-                        case '.':
-                        case ' ':
-                        case '\t':
-                        case '*':
-                            isValidChar = true;
-                    }
-                    if (isValidChar) {
-                        consume(1);
-                    }
-                    else {
-                        break;
-                    }
-                }
-
             }
-            return buffer.substring(startIdx, ptr);
+            return String.valueOf(buffer, startIdx, ptr - startIdx);
         } catch (ParseException ex) {
             return null;
         }
-    }*/
+    }
 
     public String ttokenSafe() {
         int startIdx = ptr;
