@@ -49,7 +49,7 @@ public class OriginFieldParser extends SDPParser {
             lexer.match('=');
             lexer.SPorHT();
 
-            lexer.match(LexerCore.SAFE);
+            lexer.match(LexerCore.ID_NO_WHITESPACE);
             Token userName = lexer.getNextToken();
             originField.setUsername(userName.getTokenValue());
             this.lexer.SPorHT();
