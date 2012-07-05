@@ -26,7 +26,7 @@ public class TlsTest extends TestCase {
 	}
 	
 	public void testTls() {
-		this.shootist.init();
+		this.shootist.init("localhost");
 		try {
 			Thread.sleep(10000);
 		} catch (InterruptedException e) {
