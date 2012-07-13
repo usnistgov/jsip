@@ -612,6 +612,18 @@ public abstract class SIPTransactionStack implements
      */
     public SocketAddress getLocalAddressForTcpDst(InetAddress dst, int dstPort,
             InetAddress localAddress, int localPort) throws IOException {
+        if (getMessageProcessorFactory() instanceof NioMessageProcessorFactory) {
+            // First find the TLS message processor
+            MessageProcessor[] processors = getMessageProcessors();
+            for (MessageProcessor processor : processors){
+                if ("TCP".equals(processor.getTransport())) {
+                    NioTcpMessageChannel msgChannel =
+                            (NioTcpMessageChannel) processor.createMessageChannel(dst, dstPort);
+                    return msgChannel.socketChannel.socket().getLocalSocketAddress();
+                }
+            }
+            return null;
+        }
         return this.ioHandler.getLocalAddressForTcpDst(
                         dst, dstPort, localAddress, localPort);
     }
@@ -637,25 +649,25 @@ public abstract class SIPTransactionStack implements
              int dstPort, InetAddress localAddress) throws IOException {
 
         // First find the TLS message processor
-        TLSMessageProcessor tlsProcessor = null;
         MessageProcessor[] processors = getMessageProcessors();
         for (MessageProcessor processor : processors){
             if(processor instanceof TLSMessageProcessor){
-                tlsProcessor = (TLSMessageProcessor)processor;
-                break;
+                // Here we don't create the channel but if the channel is already
+                // existing will be returned
+                TLSMessageChannel msgChannel =
+                    (TLSMessageChannel) processor.createMessageChannel(dst, dstPort);
+
+                return this.ioHandler.getLocalAddressForTlsDst(
+                    dst, dstPort, localAddress, msgChannel);
+            } else if(processor instanceof NioTlsMessageProcessor) {
+                NioTlsMessageChannel msgChannel =
+                    (NioTlsMessageChannel) processor.createMessageChannel(dst, dstPort);
+                return msgChannel.socketChannel.socket().getLocalSocketAddress();
             }
         }
 
-        if(tlsProcessor == null)
-            return null;
+        return null;
 
-        // Here we don't create the channel but if the channel is already
-        // existing will be returned
-        TLSMessageChannel msgChannel =
-            (TLSMessageChannel)tlsProcessor.createMessageChannel(dst, dstPort);
-
-        return this.ioHandler.getLocalAddressForTlsDst(
-            dst, dstPort, localAddress, msgChannel);
      }
 
     /**
