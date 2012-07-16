@@ -2068,7 +2068,7 @@ public abstract class SIPTransactionStack implements
         for (int processorIndex = 0; processorIndex < processorList.length; processorIndex++) {
             removeMessageProcessor(processorList[processorIndex]);
         }
-        this.ioHandler.closeAll();
+        closeAllSockets();
         // Let the processing complete.
 
         if (this.timer != null)
@@ -2083,6 +2083,16 @@ public abstract class SIPTransactionStack implements
         this.dialogTable.clear();
         this.serverLogger.closeLogFile();
 
+    }
+    
+    public void closeAllSockets() {
+    	this.ioHandler.closeAll();
+    	for(MessageProcessor p : messageProcessors) {
+    		if(p instanceof NioTcpMessageProcessor) {
+    			NioTcpMessageProcessor niop = (NioTcpMessageProcessor)p;
+    			niop.nioHandler.closeAll();
+    		}
+    	}
     }
 
     /**
