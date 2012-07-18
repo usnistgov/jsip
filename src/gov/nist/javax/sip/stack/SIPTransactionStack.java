@@ -1388,9 +1388,11 @@ public abstract class SIPTransactionStack implements
      */
     public void removeFromMergeTable(SIPServerTransaction tr) {
         if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-            this.logger.logDebug("Removing tx from merge table ");
+            logger.logDebug("Removing tx from merge table ");
         }
-        String key = ((SIPRequest) tr.getRequest()).getMergeId();
+        // http://java.net/jira/browse/JSIP-429
+        // get the merge id from the tx instead of the request to avoid reparsing on aggressive cleanup
+        String key = tr.getMergeId();        
         if (key != null) {
             this.mergeTable.remove(key);
         }
