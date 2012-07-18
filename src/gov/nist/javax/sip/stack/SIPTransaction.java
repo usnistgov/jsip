@@ -250,6 +250,7 @@ public abstract class SIPTransaction extends MessageChannel implements
     
     // caching fork id
     private String forkId = null;
+    protected String mergeId = null;
     
     public ExpiresTimerTask expiresTimerTask;
 	// http://java.net/jira/browse/JSIP-420
@@ -493,7 +494,7 @@ public abstract class SIPTransaction extends MessageChannel implements
     public Request getRequest() {
         if(isReleaseReferences() && originalRequest == null && originalRequestBytes != null) {
             if(logger.isLoggingEnabled(StackLogger.TRACE_WARN)) {
-                logger.logWarning("reparsing original request " + originalRequestBytes + " since it was eagerly cleaned up, but beware this is not efficient with the aggressive flag set !");
+                logger.logWarning("reparsing original request " + originalRequestBytes + " since it was eagerly cleaned up, but beware this is not efficient with the aggressive flag set !");                
             }
             try {
                 originalRequest = (SIPRequest) sipStack.getMessageParserFactory().createMessageParser(sipStack).parseSIPMessage(originalRequestBytes, true, false, null);
@@ -1659,5 +1660,15 @@ public abstract class SIPTransaction extends MessageChannel implements
 			sipStack.getTimer().cancel(maxTxLifeTimeListener);
 			maxTxLifeTimeListener = null;
 		}
+	}
+
+	/**
+	 * @return the mergeId
+	 */
+	public String getMergeId() {
+		if(mergeId == null) {
+			return ((SIPRequest)getRequest()).getMergeId();
+		}
+		return mergeId;
 	}
 }
