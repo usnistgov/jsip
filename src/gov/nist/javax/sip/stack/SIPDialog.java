@@ -1767,7 +1767,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         if (transaction instanceof SIPServerTransaction
                 && dialog.firstTransactionMethod.equals(Request.INVITE)) {
         	sipStack.removeMergeDialog(firstTransactionMergeId);
-    		dialog.firstTransactionMergeId = ((SIPRequest) transaction.getRequest()).getMergeId();
+    		dialog.firstTransactionMergeId = transaction.getMergeId();
     		sipStack.putMergeDialog(this);            
         }
        

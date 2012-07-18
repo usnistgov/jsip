@@ -1942,7 +1942,7 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                         + getTransactionId());
             }
             // we keep the request in a byte array to be able to recreate it
-            // no matter what to keep API backward compatibility
+            // no matter what to keep API backward compatibility            
             if(originalRequest == null && originalRequestBytes != null) {
                 try {
                     originalRequest = (SIPRequest) sipStack.getMessageParserFactory().createMessageParser(sipStack).parseSIPMessage(originalRequestBytes, true, false, null);
@@ -1953,6 +1953,9 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
             } else if (originalRequest != null && originalRequestBytes == null) {
                 originalRequestBytes = originalRequest.encodeAsBytes(this.getTransport());
             }
+            // http://java.net/jira/browse/JSIP-429
+            // store the merge id from the tx to avoid reparsing of request on aggressive cleanup
+            super.mergeId =  ((SIPRequest)originalRequest).getMergeId();
             sipStack.removeTransaction(this);
             cleanUpOnTimer();
             // commented out because the application can hold on a ref to the tx
@@ -2022,6 +2025,9 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                 inviteTransaction = null;
             }
             if(originalRequest != null) {
+	            // http://java.net/jira/browse/JSIP-429
+	            // store the merge id from the tx to avoid reparsing of request on aggressive cleanup
+            	super.mergeId =  ((SIPRequest)originalRequest).getMergeId();
                 originalRequest.setTransaction(null);
                 originalRequest.setInviteTransaction(null);
                 if(!getMethod().equalsIgnoreCase(Request.INVITE)) {

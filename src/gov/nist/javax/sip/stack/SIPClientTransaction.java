@@ -1725,6 +1725,9 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
 		    	}
 	    	}
 	    	if(originalRequest != null) {
+	            // http://java.net/jira/browse/JSIP-429
+	            // store the merge id from the tx to avoid reparsing of request on aggressive cleanup
+	    		super.mergeId =  ((SIPRequest)originalRequest).getMergeId();
 		    	originalRequest.setTransaction(null);
 		    	originalRequest.setInviteTransaction(null);
 		    	originalRequest.cleanUp();
@@ -1762,11 +1765,14 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
 	    	if(defaultDialog != null) {
 	    		defaultDialogId = defaultDialog.getDialogId();
 	    		defaultDialog = null;
-	    	}
+	    	}	    	
 	    	// we keep the request in a byte array to be able to recreate it
             // no matter what to keep API backward compatibility
 	    	if(originalRequest != null && originalRequestBytes == null) {
 	    	    originalRequestBytes = originalRequest.encodeAsBytes(this.getTransport());
+	            // http://java.net/jira/browse/JSIP-429
+	            // store the merge id from the tx to avoid reparsing of request on aggressive cleanup
+	    	    super.mergeId =  ((SIPRequest)originalRequest).getMergeId();
 	    	}
 		    originalRequest = null;		    
 	    	cleanUpOnTimer();
