@@ -129,8 +129,7 @@ public class NIOHandler {
      * writes can occur from multiple threads. We write in chunks to allow the
      * other side to synchronize for large sized writes.
      */
-    private void writeChunks(SocketChannel channel, byte[] bytes, int length)
-            throws IOException {
+    private void writeChunks(SocketChannel channel, byte[] bytes, int length) {
         // Chunk size is 16K - this hack is for large
         // writes over slow connections.
         synchronized (channel) {
@@ -184,9 +183,15 @@ public class NIOHandler {
             SocketChannel clientSock = null;
             keyedSemaphore.enterIOCriticalSection(key);
 
+            boolean newSocket = false;
             try {
                 clientSock = getSocket(key);
                 while (retry_count < max_retry) {
+                	if(clientSock != null && (!clientSock.isConnected() || !clientSock.isOpen()) ) {
+                		removeSocket(key);
+                		clientSock = null;
+                		newSocket = true;
+                	}
                     if (clientSock == null) {
                         if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                             logger.logDebug(
@@ -202,52 +207,25 @@ public class NIOHandler {
                         // the IP address is on a per listening point basis.
                         try {
                         	clientSock = messageProcessor.blockingConnect(new InetSocketAddress(receiverAddress, contactPort), 10000);
+                        	newSocket = true;
                         	//sipStack.getNetworkLayer().createSocket(
                         	//		receiverAddress, contactPort, senderAddress); TODO: sender address needed
                         } catch (SocketException e) { // We must catch the socket timeout exceptions here, any SocketException not just ConnectException
                         	logger.logError("Problem connecting " +
-                        			receiverAddress + " " + contactPort + " " + senderAddress + " for message " + new String(bytes, "UTF-8"));
+                        			receiverAddress + " " + contactPort + " " + senderAddress + " for message " + (messageChannel.isSecure()?"<<<ENCRYPTED MESSAGE>>>":new String(bytes, "UTF-8")));
                         	// new connection is bad.
                         	// remove from our table the socket and its semaphore
                         	removeSocket(key);
                         	throw new SocketException(e.getClass() + " " + e.getMessage() + " " + e.getCause() + " Problem connecting " +
                         			receiverAddress + " " + contactPort + " " + senderAddress + " for message " + new String(bytes, "UTF-8"));
                         }
-                        writeChunks(clientSock, bytes, length);
                         putSocket(key, clientSock);
                         break;
                     } else {
-                        try {
-                            writeChunks(clientSock, bytes, length);
-                            break;
-                        } catch (IOException ex) {
-                            if (logger
-                                    .isLoggingEnabled(LogWriter.TRACE_WARN))
-                                logger.logWarning(
-                                        "IOException occured retryCount "
-                                                + retry_count);                            
-                            try {
-                                clientSock.close();
-                            } catch (Exception e) {
-                            }
-                            clientSock = null;
-                            retry_count++;
-                            // This is a server tx trying to send a response.
-                            if ( !isClient ) {
-   								removeSocket(key);
-                                throw ex;
-                            }
-                            if(retry_count >= max_retry) {
-								// old connection is bad.
-								// remove from our table the socket and its semaphore
-								removeSocket(key);
-							} else {
-								// don't remove the semaphore on retry
-								socketTable.remove(key);
-							}
-                        }
+                    	break;
                     }
                 }
+                
             } catch (IOException ex) {
                 if (logger.isLoggingEnabled(LogWriter.TRACE_ERROR)) {
                     logger.logError(
@@ -285,12 +263,12 @@ public class NIOHandler {
                 if (!isClient) {
                     receiverAddress = InetAddress.getByName(messageChannel
                             .getViaHost());
-                    contactPort = messageChannel.getViaPort();
-                    if (contactPort == -1)
+                    contactPort = messageChannel.peerPortAdvertisedInHeaders;
+                    if (contactPort <= 0)
                         contactPort = 5060;
 
                     key = makeKey(receiverAddress, messageChannel
-                            .getViaPort());
+                            .peerPortAdvertisedInHeaders);
                     clientSock = this.getSocket(key);
                     if (clientSock == null) {
                         if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
@@ -299,45 +277,36 @@ public class NIOHandler {
                                     " port = " + contactPort);
                         }
 						clientSock = messageProcessor.blockingConnect(new InetSocketAddress(receiverAddress, contactPort), 10000);
-						
-                        
-                        writeChunks(clientSock, bytes, length);
+						newSocket = true;
+						messageChannel.peerPort = contactPort;
                         putSocket(key, clientSock);
-                        return clientSock;
-                    } else {
-                        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                            logger.logDebug(
-                                    "sending to " + key );
-                        }
-                        try {
-                            writeChunks(clientSock, bytes, length);
-                            return clientSock;
-                        } catch (IOException ioe) {
-                            if (logger
-                                    .isLoggingEnabled(LogWriter.TRACE_ERROR))
-                                logger.logError(
-                                        "IOException occured  ", ioe);
-                            if (logger
-                                    .isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                                logger.logDebug(
-                                        "Removing and Closing socket");
-                            // old connection is bad.
-                            // remove from our table.
-                            removeSocket(key);
-                            try {
-                                clientSock.close();
-                            } catch (Exception e) {
-                            }
-                            clientSock = null;
-                            throw ioe;
-                        }
+                    } 
+                    
+                    if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                    	logger.logDebug(
+                    			"sending to " + key );
                     }
+                    
+                    
                 } else {
                     logger.logError("IOException occured at " , ex);
                     throw ex;
                 }
+                
+                return clientSock;
             } finally {
-                keyedSemaphore.leaveIOCriticalSection(key);
+            	try {
+            		if(clientSock != null) {
+            			if(newSocket && messageChannel instanceof NioTlsMessageChannel) {
+            				//messageChannel.onNewSocket();
+            			} else {
+            				writeChunks(clientSock, bytes, length);
+            			}
+            		}
+
+            	} finally {
+            		keyedSemaphore.leaveIOCriticalSection(key);
+            	}
             }
 
             if (clientSock == null) {

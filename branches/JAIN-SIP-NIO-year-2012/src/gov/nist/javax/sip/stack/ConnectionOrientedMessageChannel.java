@@ -302,7 +302,7 @@ public abstract class ConnectionOrientedMessageChannel extends MessageChannel im
                 // the peer address and tag it appropriately.
                 Hop hop = sipStack.addressResolver.resolveAddress(v.getHop());
                 this.peerProtocol = v.getTransport();
-                if(peerPortAdvertisedInHeaders <= 0) {
+                //if(peerPortAdvertisedInHeaders <= 0) {
                 	int hopPort = v.getPort();
                 	if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                     	logger.logDebug("hop port = " + hopPort + " for request " + sipMessage + " for this channel " + this + " key " + key);
@@ -316,7 +316,7 @@ public abstract class ConnectionOrientedMessageChannel extends MessageChannel im
                 	if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                     	logger.logDebug("3.Storing peerPortAdvertisedInHeaders = " + peerPortAdvertisedInHeaders + " for this channel " + this + " key " + key);
                     }
-                }
+                //}
                 // may be needed to reconnect, when diff than peer address
                 if(peerAddressAdvertisedInHeaders == null) {
                 	peerAddressAdvertisedInHeaders = hop.getHost();

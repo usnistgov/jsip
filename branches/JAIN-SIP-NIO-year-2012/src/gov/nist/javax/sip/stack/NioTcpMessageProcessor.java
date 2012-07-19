@@ -78,9 +78,10 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
     	return initiateConnection(address, timeout);
     }
         
-    public void send(SocketChannel socket, byte[] data) {
+    public void send(SocketChannel socket, byte[] data)  {
     	if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
     		logger.logDebug("Sending data " + data.length + " bytes on socket " + socket);
+    	
     	synchronized (this.changeRequests) {
     		this.changeRequests.add(new ChangeRequest(socket, ChangeRequest.CHANGEOPS, SelectionKey.OP_WRITE));
 
