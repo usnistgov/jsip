@@ -91,15 +91,24 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel{
 		return appFrameBuffer;
 	}
 	
+	public static class SSLReconnectedException extends IOException {
+		private static final long serialVersionUID = 1L;}
+	
 	@Override
-	protected void sendMessage(byte[] msg, final boolean isClient) throws IOException {
+	protected void sendMessage(final byte[] msg, final boolean isClient) throws IOException {
+		lastMessage = new byte[msg.length];
+		for(int q=0;q<msg.length;q++) lastMessage[q] = msg[q];
+		String s = new String(lastMessage);
+		//logger.logError(">>>>>>>>>>>>>>FFF>>>>>" + s);
 		ByteBuffer b = ByteBuffer.wrap(msg);
 		try {
 			sslStateMachine.wrap(b, encryptedFrameBuffer, new MessageSendCallback() {
 
 				@Override
 				public void doSend(byte[] bytes) throws IOException {
-					NioTlsMessageChannel.super.sendMessage(bytes, isClient);
+					
+						NioTlsMessageChannel.super.sendMessage(bytes, isClient);
+					
 				}
 			});
 		} catch (Exception e) {
@@ -109,12 +118,34 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel{
 	
 	public void sendEncryptedData(byte[] msg) throws IOException { 
 		// bypass the encryption for already encrypted data or TLS metadata
-		super.sendMessage(msg, false);
+		if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+			logger.logDebug("sendEncryptedData " + " this = " + this + " peerPort = " + peerPort + " addr = " + peerAddress);
+		}
+		lastActivityTimeStamp = System.currentTimeMillis();
+		
+		NIOHandler nioHandler = ((NioTcpMessageProcessor) messageProcessor).nioHandler;
+		if(this.socketChannel != null && this.socketChannel.isConnected() && this.socketChannel.isOpen()) {
+			nioHandler.putSocket(NIOHandler.makeKey(this.peerAddress, this.peerPort), this.socketChannel);
+		}
+		super.sendMessage(msg, this.peerAddress, this.peerPort, true);
 	}
-	
+	private byte[] lastMessage = null;
 	@Override
-	public void sendMessage(byte message[], final InetAddress receiverAddress,
+	public void sendMessage(final byte message[], final InetAddress receiverAddress,
 			final int receiverPort, final boolean retry) throws IOException {
+		lastMessage = new byte[message.length];
+		for(int q=0;q<message.length;q++) {
+
+			lastMessage[q] = message[q];
+			if(message[q]<0) {
+				int r = 0 ;
+				r++;r=r;
+			}
+		}
+		String s = new String(lastMessage); 
+
+		//logger.logError(">>>>>>>>>>>>>>FFF>>>>>" + s);
+		
 		ByteBuffer b = ByteBuffer.wrap(message);
 		try {
 			sslStateMachine.wrap(b, encryptedFrameBuffer, new MessageSendCallback() {
@@ -123,6 +154,7 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel{
 				public void doSend(byte[] bytes) throws IOException {
 					NioTlsMessageChannel.super.sendMessage(bytes,
 							receiverAddress, receiverPort, retry);
+					
 				}
 			});
 		} catch (IOException e) {
@@ -168,6 +200,25 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel{
 	@Override
 	public String getTransport() {
 		return "TLS";
+	}
+	
+	@Override
+	public void onNewSocket() {
+		super.onNewSocket();
+		logger.logError("NEW SOCKET", new RuntimeException());
+		try {
+			init(true);
+			createBuffers();
+			String s = new String(lastMessage, "UTF-8");
+			sendMessage(lastMessage, false);
+		} catch (Exception e) {
+			logger.logError("Cant reinit", e);
+		}
+	}
+	
+	@Override
+	public boolean isSecure() {
+		return true;
 	}
 
 }
