@@ -59,6 +59,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.text.ParseException;
 import java.util.Hashtable;
+import java.util.concurrent.TimeUnit;
 
 import javax.sip.address.Hop;
 import javax.sip.message.Response;
@@ -281,13 +282,25 @@ public class UDPMessageChannel extends MessageChannel implements
 
                 // Send a heartbeat to the thread auditor
                 threadHandle.ping();
+
                 try {
-                    packet = udpMessageProcessor.messageQueue.take().packet;
+	                DatagramQueuedMessageDispatch work = udpMessageProcessor.messageQueue.poll(threadHandle
+	                        .getPingIntervalInMillisecs(), TimeUnit.MILLISECONDS);
+
+	                if (!udpMessageProcessor.isRunning) {
+	                    return;
+	                }
+	                if (work == null) {
+	                	continue;
+	                } else {
+						packet = (DatagramPacket) (work.packet);	                	
+		                this.incomingPacket = packet;						
+	                }	                	
                 } catch (InterruptedException ex) {
-                    if (!udpMessageProcessor.isRunning)
-                        return;
-                }
-                this.incomingPacket = packet;
+					if (!udpMessageProcessor.isRunning) {
+						return;
+					}
+				}
             } else {
                 packet = this.incomingPacket;
             }
