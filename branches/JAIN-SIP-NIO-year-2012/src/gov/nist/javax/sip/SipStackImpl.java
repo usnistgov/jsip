@@ -340,6 +340,13 @@ import java.util.concurrent.TimeUnit;
  * by the SIP RFC spec.
  * </li>
  * 
+ * <li><b>gov.nist.javax.sip.stack.USE_DIRECT_BUFFERS = [true|false]</b> <br/>
+ * Default is <it>true</it> If set to <it>false</it>, the NIO stack won't use direct buffers.
+ * As Direct buffers reside outside of the heap memory, they can lead to unforeseen out of memory exceptions
+ * as seen in http://java.net/jira/browse/JSIP-430. This flag allows to use non direct buffers for better memory
+ * monitoring and management.
+ * </li>
+ * 
  * <li><b>gov.nist.javax.sip.COMPUTE_CONTENT_LENGTH_FROM_MESSAGE_BODY =
  * [true|false] </b> <br/>
  * Default is <it>false</it> If set to <it>true</it>, when you are creating a
@@ -766,6 +773,11 @@ public class SipStackImpl extends SIPTransactionStack implements
 		// Our router does not do DNS lookups.
 		this.outboundProxy = configurationProperties
 				.getProperty("javax.sip.OUTBOUND_PROXY");
+
+		// http://java.net/jira/browse/JSIP-430
+        ByteBufferFactory.getInstance().setUseDirect(Boolean.valueOf(
+                configurationProperties.getProperty("gov.nist.javax.sip.stack.USE_DIRECT_BUFFERS",
+                        Boolean.TRUE.toString())));
 
 		this.defaultRouter = new DefaultRouter(this, outboundProxy);
 
