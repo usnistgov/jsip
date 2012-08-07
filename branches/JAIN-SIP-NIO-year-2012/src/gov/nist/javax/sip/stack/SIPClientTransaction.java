@@ -1398,7 +1398,9 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
      */
     protected  void startTransactionTimer() {
         if (this.transactionTimerStarted.compareAndSet(false, true)) {        	
-	        if ( sipStack.getTimer() != null ) {
+	        if ( sipStack.getTimer() != null &&
+	        		// Fix for http://code.google.com/p/jain-sip/issues/detail?id=10
+	        		transactionTimerLock != null) {
 	        	synchronized (transactionTimerLock) {
 	        		if(!transactionTimerCancelled) {
 	        			transactionTimer = new TransactionTimer();
