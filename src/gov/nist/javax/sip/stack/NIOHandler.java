@@ -46,18 +46,13 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
-/*
- * TLS support Added by Daniel J.Martinez Manzano <dani@dif.um.es>
- *
- */
-
 /**
  * Low level Input output to a socket. Caches TCP connections and takes care of
  * re-connecting to the remote party if the other end drops the connection
  *
  * @version 1.2
  *
- * @author M. Ranganathan <br/>
+ * @author Vladimir Ralev <br/>
  *
  *
  */
@@ -69,11 +64,6 @@ public class NIOHandler {
     private SipStackImpl sipStack;
     
     private NioTcpMessageProcessor messageProcessor;
-
-    private static final String TCP = "tcp";
-
-    // Added by Daniel J. Martinez Manzano <dani@dif.um.es>
-    private static final String TLS = "tls";
     
     Timer timer = new Timer();
 
@@ -83,6 +73,7 @@ public class NIOHandler {
 
     
     KeyedSemaphore keyedSemaphore = new KeyedSemaphore();
+    
     protected static String makeKey(InetAddress addr, int port) {
         return addr.getHostAddress() + ":" + port;
 
@@ -172,164 +163,157 @@ public class NIOHandler {
 
         }
         if (logger.isLoggingEnabled(LogLevels.TRACE_INFO)
-                && sipStack.isLogStackTraceOnMessageSend()) {
-            logger.logStackTrace(StackLogger.TRACE_INFO);
+        		&& sipStack.isLogStackTraceOnMessageSend()) {
+        	logger.logStackTrace(StackLogger.TRACE_INFO);
         }
-        if (transport.compareToIgnoreCase(TCP) == 0 || transport.compareToIgnoreCase(TLS) == 0) {
-            String key = makeKey(receiverAddress, contactPort);
-            // This should be in a synchronized block ( reported by
-            // Jayashenkhar ( lucent ).
+        
+        String key = makeKey(receiverAddress, contactPort);
+        // This should be in a synchronized block ( reported by
+        // Jayashenkhar ( lucent ).
 
-            SocketChannel clientSock = null;
-            keyedSemaphore.enterIOCriticalSection(key);
+        SocketChannel clientSock = null;
+        keyedSemaphore.enterIOCriticalSection(key);
 
-            boolean newSocket = false;
-            try {
-                clientSock = getSocket(key);
-                while (retry_count < max_retry) {
-                	if(clientSock != null && (!clientSock.isConnected() || !clientSock.isOpen()) ) {
-                		removeSocket(key);
-                		clientSock = null;
-                		newSocket = true;
-                	}
-                    if (clientSock == null) {
-                        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                            logger.logDebug(
-                                    "inaddr = " + receiverAddress);
-                            logger.logDebug(
-                                    "port = " + contactPort);
-                        }
-                        // note that the IP Address for stack may not be
-                        // assigned.
-                        // sender address is the address of the listening point.
-                        // in version 1.1 all listening points have the same IP
-                        // address (i.e. that of the stack). In version 1.2
-                        // the IP address is on a per listening point basis.
-                        try {
-                        	clientSock = messageProcessor.blockingConnect(new InetSocketAddress(receiverAddress, contactPort), 10000);
-                        	newSocket = true;
-                        	//sipStack.getNetworkLayer().createSocket(
-                        	//		receiverAddress, contactPort, senderAddress); TODO: sender address needed
-                        } catch (SocketException e) { // We must catch the socket timeout exceptions here, any SocketException not just ConnectException
-                        	logger.logError("Problem connecting " +
-                        			receiverAddress + " " + contactPort + " " + senderAddress + " for message " + (messageChannel.isSecure()?"<<<ENCRYPTED MESSAGE>>>":new String(bytes, "UTF-8")));
-                        	// new connection is bad.
-                        	// remove from our table the socket and its semaphore
-                        	removeSocket(key);
-                        	throw new SocketException(e.getClass() + " " + e.getMessage() + " " + e.getCause() + " Problem connecting " +
-                        			receiverAddress + " " + contactPort + " " + senderAddress + " for message " + new String(bytes, "UTF-8"));
-                        }
-                        putSocket(key, clientSock);
-                        break;
-                    } else {
-                    	break;
-                    }
-                }
-                
-            } catch (IOException ex) {
-                if (logger.isLoggingEnabled(LogWriter.TRACE_ERROR)) {
-                    logger.logError(
-                            "Problem sending: sendBytes " + transport
-                                    + " inAddr "
-                                    + receiverAddress.getHostAddress()
-                                    + " port = " + contactPort +
-                            " remoteHost " + messageChannel.getPeerAddress() +
-                            " remotePort " + messageChannel.getPeerPort() +
-                            " peerPacketPort "
-                                    + messageChannel.getPeerPacketSourcePort() + " isClient " + isClient);
-                }
+        boolean newSocket = false;
+        try {
+        	clientSock = getSocket(key);
+        	while (retry_count < max_retry) {
+        		if(clientSock != null && (!clientSock.isConnected() || !clientSock.isOpen()) ) {
+        			removeSocket(key);
+        			clientSock = null;
+        			newSocket = true;
+        		}
+        		if (clientSock == null) {
+        			if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+        				logger.logDebug(
+        						"inaddr = " + receiverAddress);
+        				logger.logDebug(
+        						"port = " + contactPort);
+        			}
+        			// note that the IP Address for stack may not be
+        			// assigned.
+        			// sender address is the address of the listening point.
+        			// in version 1.1 all listening points have the same IP
+        			// address (i.e. that of the stack). In version 1.2
+        			// the IP address is on a per listening point basis.
+        			try {
+        				clientSock = messageProcessor.blockingConnect(new InetSocketAddress(receiverAddress, contactPort), 10000);
+        				newSocket = true;
+        				//sipStack.getNetworkLayer().createSocket(
+        				//		receiverAddress, contactPort, senderAddress); TODO: sender address needed
+        			} catch (SocketException e) { // We must catch the socket timeout exceptions here, any SocketException not just ConnectException
+        				logger.logError("Problem connecting " +
+        						receiverAddress + " " + contactPort + " " + senderAddress + " for message " + (messageChannel.isSecure()?"<<<ENCRYPTED MESSAGE>>>":new String(bytes, "UTF-8")));
+        				// new connection is bad.
+        				// remove from our table the socket and its semaphore
+        				removeSocket(key);
+        				throw new SocketException(e.getClass() + " " + e.getMessage() + " " + e.getCause() + " Problem connecting " +
+        						receiverAddress + " " + contactPort + " " + senderAddress + " for message " + new String(bytes, "UTF-8"));
+        			}
+        			putSocket(key, clientSock);
+        			break;
+        		} else {
+        			break;
+        		}
+        	}
 
-                removeSocket(key);
+        } catch (IOException ex) {
+        	if (logger.isLoggingEnabled(LogWriter.TRACE_ERROR)) {
+        		logger.logError(
+        				"Problem sending: sendBytes " + transport
+        				+ " inAddr "
+        				+ receiverAddress.getHostAddress()
+        				+ " port = " + contactPort +
+        				" remoteHost " + messageChannel.getPeerAddress() +
+        				" remotePort " + messageChannel.getPeerPort() +
+        				" peerPacketPort "
+        				+ messageChannel.getPeerPacketSourcePort() + " isClient " + isClient);
+        	}
 
-                /*
-                 * For TCP responses, the transmission of responses is
-                 * controlled by RFC 3261, section 18.2.2 :
-                 *
-                 * o If the "sent-protocol" is a reliable transport protocol
-                 * such as TCP or SCTP, or TLS over those, the response MUST be
-                 * sent using the existing connection to the source of the
-                 * original request that created the transaction, if that
-                 * connection is still open. This requires the server transport
-                 * to maintain an association between server transactions and
-                 * transport connections. If that connection is no longer open,
-                 * the server SHOULD open a connection to the IP address in the
-                 * "received" parameter, if present, using the port in the
-                 * "sent-by" value, or the default port for that transport, if
-                 * no port is specified. If that connection attempt fails, the
-                 * server SHOULD use the procedures in [4] for servers in order
-                 * to determine the IP address and port to open the connection
-                 * and send the response to.
-                 */
-                if (!isClient) {
-                    receiverAddress = InetAddress.getByName(messageChannel
-                            .getViaHost());
-                    contactPort = messageChannel.peerPortAdvertisedInHeaders;
-                    if (contactPort <= 0)
-                        contactPort = 5060;
+        	removeSocket(key);
 
-                    key = makeKey(receiverAddress, messageChannel
-                            .peerPortAdvertisedInHeaders);
-                    clientSock = this.getSocket(key);
-                    if (clientSock == null) {
-                        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                            logger.logDebug(
-                                    "inaddr = " + receiverAddress +
-                                    " port = " + contactPort);
-                        }
-						clientSock = messageProcessor.blockingConnect(new InetSocketAddress(receiverAddress, contactPort), 10000);
-						newSocket = true;
-						messageChannel.peerPort = contactPort;
-                        putSocket(key, clientSock);
-                    } 
-                    
-                    if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-                    	logger.logDebug(
-                    			"sending to " + key );
-                    }
-                    
-                    
-                } else {
-                    logger.logError("IOException occured at " , ex);
-                    throw ex;
-                }
-                
-                return clientSock;
-            } finally {
-            	try {
-            		if(clientSock != null) {
-            			if(newSocket && messageChannel instanceof NioTlsMessageChannel) {
-            				//messageChannel.onNewSocket();
-            			} else {
-            				writeChunks(clientSock, bytes, length);
-            			}
-            		}
+        	/*
+        	 * For TCP responses, the transmission of responses is
+        	 * controlled by RFC 3261, section 18.2.2 :
+        	 *
+        	 * o If the "sent-protocol" is a reliable transport protocol
+        	 * such as TCP or SCTP, or TLS over those, the response MUST be
+        	 * sent using the existing connection to the source of the
+        	 * original request that created the transaction, if that
+        	 * connection is still open. This requires the server transport
+        	 * to maintain an association between server transactions and
+        	 * transport connections. If that connection is no longer open,
+        	 * the server SHOULD open a connection to the IP address in the
+        	 * "received" parameter, if present, using the port in the
+        	 * "sent-by" value, or the default port for that transport, if
+        	 * no port is specified. If that connection attempt fails, the
+        	 * server SHOULD use the procedures in [4] for servers in order
+        	 * to determine the IP address and port to open the connection
+        	 * and send the response to.
+        	 */
+        	if (!isClient) {
+        		receiverAddress = InetAddress.getByName(messageChannel
+        				.peerAddressAdvertisedInHeaders);
+        		contactPort = messageChannel.peerPortAdvertisedInHeaders;
+        		if (contactPort <= 0)
+        			contactPort = 5060;
 
-            	} finally {
-            		keyedSemaphore.leaveIOCriticalSection(key);
-            	}
-            }
+        		key = makeKey(receiverAddress, contactPort);
+        		clientSock = this.getSocket(key);
+        		if (clientSock == null) {
+        			if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+        				logger.logDebug(
+        						"inaddr = " + receiverAddress +
+        						" port = " + contactPort);
+        			}
+        			clientSock = messageProcessor.blockingConnect(new InetSocketAddress(receiverAddress, contactPort), 10000);
+        			newSocket = true;
+        			messageChannel.peerPort = contactPort;
+        			putSocket(key, clientSock);
+        		} 
 
-            if (clientSock == null) {
+        		if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+        			logger.logDebug(
+        					"sending to " + key );
+        		}
 
-                if (logger.isLoggingEnabled(LogWriter.TRACE_ERROR)) {
-                    logger.logError(
-                            this.socketTable.toString());
-                    logger.logError(
-                            "Could not connect to " + receiverAddress + ":"
-                                    + contactPort);
-                }
 
-                throw new IOException("Could not connect to " + receiverAddress
-                        + ":" + contactPort);
-            } else {
-                return clientSock;
-            }
+        	} else {
+        		logger.logError("IOException occured at " , ex);
+        		throw ex;
+        	}
 
-            // Added by Daniel J. Martinez Manzano <dani@dif.um.es>
-            // Copied and modified from the former section for TCP
+        	return clientSock;
+        } finally {
+        	try {
+        		if(clientSock != null) {
+        			if(newSocket && messageChannel instanceof NioTlsMessageChannel) {
+        				//We dont write data when using TLS, the new socket needs to handshake first
+        			} else {
+        				writeChunks(clientSock, bytes, length);
+        			}
+        		}
+
+        	} finally {
+        		keyedSemaphore.leaveIOCriticalSection(key);
+        	}
         }
-        return null;
 
+        if (clientSock == null) {
+
+        	if (logger.isLoggingEnabled(LogWriter.TRACE_ERROR)) {
+        		logger.logError(
+        				this.socketTable.toString());
+        		logger.logError(
+        				"Could not connect to " + receiverAddress + ":"
+        						+ contactPort);
+        	}
+
+        	throw new IOException("Could not connect to " + receiverAddress
+        			+ ":" + contactPort);
+        } else {
+        	return clientSock;
+        }
     }
 
     /**
@@ -387,31 +371,33 @@ public class NIOHandler {
         }
     }
     
-    
-    // TODO: FIXME: It is absolutely essential to have this method synchrnized based on the makeKey(addr, port),
-    // it is not needed to sync per class instance like it's done now, this is just temporary fix
-    // UAC case with rapid outbound socket creation might end up overwriting the assigned socket
-    public synchronized SocketChannel createOrReuseSocket(InetAddress inetAddress, int port) throws IOException {
-    	SocketChannel channel = getSocket(NIOHandler.makeKey(inetAddress, port));
-    	if(channel != null && !channel.isConnected()) {
-    		if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-				logger.logDebug("Channel disconnected " + channel);
-    		channel = null;
+    public SocketChannel createOrReuseSocket(InetAddress inetAddress, int port) throws IOException {
+    	String key = NIOHandler.makeKey(inetAddress, port);
+    	keyedSemaphore.enterIOCriticalSection(key);
+    	try {
+    		SocketChannel channel = getSocket(key);
+    		if(channel != null && !channel.isConnected()) {
+    			if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+    				logger.logDebug("Channel disconnected " + channel);
+    			channel = null;
+    		}
+    		if(channel == null) { // this is where the threads will race
+    			SocketAddress sockAddr = new InetSocketAddress(inetAddress, port);
+    			channel = messageProcessor.blockingConnect((InetSocketAddress) sockAddr, 10000);
+    			if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+    				logger.logDebug("create channel = " + channel + "  " + inetAddress + " " + port);
+    			if(channel != null && channel.isConnected()) {
+    				putSocket(NIOHandler.makeKey(inetAddress, port), channel);
+    				if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+    					logger.logDebug("channel cached channel = " + channel);
+    			}
+    		} 
+    		return channel;
+    	} finally {
+    		keyedSemaphore.leaveIOCriticalSection(key);
     	}
-		if(channel == null) { // this is where the threads will race
-			SocketAddress sockAddr = new InetSocketAddress(inetAddress, port);
-			channel = messageProcessor.blockingConnect((InetSocketAddress) sockAddr, 10000);
-			if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-    								logger.logDebug("create channel = " + channel + "  " + inetAddress + " " + port);
-			if(channel != null && channel.isConnected()) {
-				putSocket(NIOHandler.makeKey(inetAddress, port), channel);
-				if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-    								logger.logDebug("channel cached channel = " + channel);
-			}
-		} 
-		return channel;
     }
-    
+
     private class SocketTimeoutAuditor extends TimerTask {
     	public void run() {
     		synchronized(socketTable) {

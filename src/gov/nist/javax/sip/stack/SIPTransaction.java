@@ -60,6 +60,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.sip.Dialog;
 import javax.sip.IOExceptionEvent;
@@ -1391,6 +1393,14 @@ public abstract class SIPTransaction extends MessageChannel implements
             else if ( ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getHandshakeCompletedEvent() == null)
                 return null;
             else return ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getHandshakeCompletedEvent().getCipherSuite();
+        } else if(this.getMessageChannel() instanceof NioTlsMessageChannel) {
+        	SSLEngine sslEngine = ((NioTlsMessageChannel) this.getMessageChannel()).sslStateMachine.sslEngine;
+        	if(sslEngine.getHandshakeStatus().equals(HandshakeStatus.FINISHED)) {
+        		String[] cs = sslEngine.getEnabledCipherSuites();
+        		return cs[0];
+        	} else {
+        		return null;
+        	}
         } else throw new UnsupportedOperationException("Not a TLS channel");
 
     }
@@ -1403,6 +1413,13 @@ public abstract class SIPTransaction extends MessageChannel implements
             else if ( ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getHandshakeCompletedEvent() == null)
                 return null;
             else return ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getHandshakeCompletedEvent().getLocalCertificates();
+        } else if (this.getMessageChannel() instanceof NioTlsMessageChannel) {
+        	SSLEngine sslEngine = ((NioTlsMessageChannel) this.getMessageChannel()).sslStateMachine.sslEngine;
+        	if(sslEngine.getHandshakeStatus().equals(HandshakeStatus.FINISHED)) {
+        		return ((NioTlsMessageChannel) this.getMessageChannel()).sslStateMachine.sslEngine.getSession().getLocalCertificates();
+        	} else {
+        		return null;
+        	}
         } else throw new UnsupportedOperationException("Not a TLS channel");
     }
 
@@ -1415,7 +1432,12 @@ public abstract class SIPTransaction extends MessageChannel implements
                 return null;
             else return ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getHandshakeCompletedEvent().getPeerCertificates();
         } else if(this.getMessageChannel() instanceof NioTlsMessageChannel) {
-        	return ((NioTlsMessageChannel) this.getMessageChannel()).sslStateMachine.sslEngine.getSession().getPeerCertificates();
+        	SSLEngine sslEngine = ((NioTlsMessageChannel) this.getMessageChannel()).sslStateMachine.sslEngine;
+        	if(sslEngine.getHandshakeStatus().equals(HandshakeStatus.FINISHED)) {
+        		return ((NioTlsMessageChannel) this.getMessageChannel()).sslStateMachine.sslEngine.getSession().getPeerCertificates();
+        	} else {
+        		return null;
+        	}
         } 
         else
         	throw new UnsupportedOperationException("Not a TLS channel");
