@@ -26,6 +26,7 @@
 package gov.nist.javax.sip.stack;
 
 import gov.nist.core.CommonLogger;
+import gov.nist.core.LogLevels;
 import gov.nist.core.LogWriter;
 import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.SipStackImpl;
@@ -226,15 +227,20 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel{
 	public String getTransport() {
 		return "TLS";
 	}
-	
+
 	@Override
 	public void onNewSocket() {
 		super.onNewSocket();
-		logger.logError("NEW SOCKET", new RuntimeException());
 		try {
+			if(logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+				String last = null;
+				if(lastMessage != null) {
+					last = new String(lastMessage, "UTF-8");
+				}
+				logger.logDebug("New socket for " + this + " last message = " + last);
+			}
 			init(true);
 			createBuffers();
-			String s = new String(lastMessage, "UTF-8");
 			sendMessage(lastMessage, false);
 		} catch (Exception e) {
 			logger.logError("Cant reinit", e);
