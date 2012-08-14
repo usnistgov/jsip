@@ -16,7 +16,10 @@ import java.security.cert.CertificateException;
 public class NioTlsMessageProcessor extends NioTcpMessageProcessor{
 
     private static StackLogger logger = CommonLogger.getLogger(NioTlsMessageProcessor.class);
-    SSLContext sslCtx;
+
+    SSLContext sslServerCtx;
+    SSLContext sslClientCtx;
+
 	public NioTlsMessageProcessor(InetAddress ipAddress,
 			SIPTransactionStack sipStack, int port) {
 		super(ipAddress, sipStack, port);
@@ -88,18 +91,25 @@ public class NioTlsMessageProcessor extends NioTcpMessageProcessor{
 
     }
 	public void init() throws Exception, CertificateException, FileNotFoundException, IOException {
-		if(sipStack.securityManagerProvider.getKeyManagers() == null ||
-				sipStack.securityManagerProvider.getTrustManagers() == null) {
+		if(sipStack.securityManagerProvider.getKeyManagers(false) == null ||
+				sipStack.securityManagerProvider.getTrustManagers(false) == null ||
+                sipStack.securityManagerProvider.getTrustManagers(true) == null) {
 			if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                 logger.logDebug("TLS initialization failed due to NULL security config");
             }
 			return; // The settings 
 		}
 			
-        sslCtx = SSLContext.getInstance("TLS");
-        sslCtx.init(sipStack.securityManagerProvider.getKeyManagers(), 
-                sipStack.securityManagerProvider.getTrustManagers(),
+        sslServerCtx = SSLContext.getInstance("TLS");
+        sslServerCtx.init(sipStack.securityManagerProvider.getKeyManagers(false), 
+                sipStack.securityManagerProvider.getTrustManagers(false),
                 null);
+
+        sslClientCtx = SSLContext.getInstance("TLS");
+        sslClientCtx.init(sipStack.securityManagerProvider.getKeyManagers(true),
+                sipStack.securityManagerProvider.getTrustManagers(true),
+                null);
+
     }
 
 }
