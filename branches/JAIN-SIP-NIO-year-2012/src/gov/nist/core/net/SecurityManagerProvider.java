@@ -41,7 +41,7 @@ public interface SecurityManagerProvider {
 
     void init(Properties properties) throws GeneralSecurityException, IOException;
 
-    KeyManager[] getKeyManagers();
+    KeyManager[] getKeyManagers(boolean client);
 
-    TrustManager[] getTrustManagers();
+    TrustManager[] getTrustManagers(boolean client);
 }
