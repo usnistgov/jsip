@@ -42,6 +42,9 @@ import java.net.SocketException;
 import java.nio.channels.SocketChannel;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Map.Entry;
+import java.util.LinkedList;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
@@ -111,6 +114,30 @@ public class NIOHandler {
     		keyedSemaphore.remove(key);
     		if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
     			logger.logDebug("removed Socket and Semaphore for key " + key);
+    		}
+    	}
+    }
+    
+    protected void removeSocket(SocketChannel channel) {
+    	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+			logger.logDebug("Trying to remove cached socketChannel without key"
+					+ this + " socketChannel = " + channel);
+		}
+    	LinkedList<String> keys = new LinkedList<String>();
+    	synchronized(socketTable) {
+    		Set<Entry<String, SocketChannel>> e = socketTable.entrySet();
+    		for(Entry<String, SocketChannel> entry : e ) {
+    			SocketChannel sc = entry.getValue();
+    			if(sc.equals(channel)) {
+    				keys.add(entry.getKey());
+    			}
+    		}
+    		for(String key : keys) {
+    			if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+    				logger.logDebug("Removing cached socketChannel without key"
+    						+ this + " socketChannel = " + channel + " key = " + key);
+    			}
+    			socketTable.remove(key);
     		}
     	}
     }
@@ -260,7 +287,7 @@ public class NIOHandler {
 
         		key = makeKey(receiverAddress, contactPort);
         		clientSock = this.getSocket(key);
-        		if (clientSock == null) {
+        		if (clientSock == null || !clientSock.isConnected() || !clientSock.isOpen()) {
         			if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
         				logger.logDebug(
         						"inaddr = " + receiverAddress +
@@ -373,10 +400,11 @@ public class NIOHandler {
     
     public SocketChannel createOrReuseSocket(InetAddress inetAddress, int port) throws IOException {
     	String key = NIOHandler.makeKey(inetAddress, port);
+    	SocketChannel channel = null;
     	keyedSemaphore.enterIOCriticalSection(key);
     	try {
-    		SocketChannel channel = getSocket(key);
-    		if(channel != null && !channel.isConnected()) {
+    		channel = getSocket(key);
+    		if(channel != null && (!channel.isConnected() || !channel.isOpen())) {
     			if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
     				logger.logDebug("Channel disconnected " + channel);
     			channel = null;
@@ -395,6 +423,8 @@ public class NIOHandler {
     		return channel;
     	} finally {
     		keyedSemaphore.leaveIOCriticalSection(key);
+    		if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+				logger.logDebug("Returning socket " + key + " channel = " + channel);
     	}
     }
 
@@ -412,7 +442,10 @@ public class NIOHandler {
     						if(System.currentTimeMillis() - messageChannel.getLastActivityTimestamp() > sipStack.nioSocketMaxIdleTime) {
     							keysToRemove.add(key);
     							if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-    								logger.logDebug("Will remove socket " + key + " lastActivity=" + messageChannel.getLastActivityTimestamp() + " current= " + System.currentTimeMillis());
+    								logger.logDebug("Will remove socket " + key + " lastActivity="
+    										+ messageChannel.getLastActivityTimestamp() + " current= " +
+    										System.currentTimeMillis() + " socketChannel = "
+    										+ socketChannel);
     							NioTcpMessageChannel.removeMessageChannel(socketChannel);
     							messageChannel.close();
     						}
