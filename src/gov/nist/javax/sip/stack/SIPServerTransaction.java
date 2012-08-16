@@ -1249,17 +1249,12 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
                         try {
                             SIPResponse lastReparsedResponse = (SIPResponse) sipStack.getMessageParserFactory().createMessageParser(sipStack).parseSIPMessage(lastResponseAsBytes, true, false, null);
 
-                            lastReparsedResponse.setRemoteAddress(
-                                this.getPeerInetAddress());
-                            lastReparsedResponse.setRemotePort
-                                    (this.getPeerPort());
-                            lastReparsedResponse.setLocalPort(
-                                    getMessageChannel().getPort());
-                            lastReparsedResponse.setLocalAddress(
-                                    getMessageChannel()
-                                        .getMessageProcessor().getIpAddress());
+                            lastReparsedResponse.setRemoteAddress(messageChannel.getPeerInetAddress());
+                            lastReparsedResponse.setRemotePort(messageChannel.getPeerPort());
+                            lastReparsedResponse.setLocalPort(messageChannel.getPort());
+                            lastReparsedResponse.setLocalAddress(messageChannel.getMessageProcessor().getIpAddress());
 
-                            getMessageChannel().logMessage(lastReparsedResponse, this.getPeerInetAddress(), this.getPeerPort(), System.currentTimeMillis());
+                            messageChannel.logMessage(lastReparsedResponse, messageChannel.getPeerInetAddress(), messageChannel.getPeerPort(), System.currentTimeMillis());
                         } catch (ParseException e) {
                             if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                                 logger.logDebug("couldn't reparse last response " + new String(lastResponseAsBytes));
