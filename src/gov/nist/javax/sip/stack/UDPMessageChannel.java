@@ -288,7 +288,7 @@ public class UDPMessageChannel extends MessageChannel implements
                 	// adding condition to avoid looping and taking too much CPU if the 
                 	// auditing is not enabled
                 	if (sipStack.getThreadAuditor().isEnabled()) {
-                		udpMessageProcessor.messageQueue.poll(threadHandle
+                		work = udpMessageProcessor.messageQueue.poll(threadHandle
 	                        .getPingIntervalInMillisecs(), TimeUnit.MILLISECONDS);
                 	} else {
                 		work = udpMessageProcessor.messageQueue.take();
