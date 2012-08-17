@@ -124,10 +124,11 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel{
 	
 	@Override
 	protected void sendMessage(final byte[] msg, final boolean isClient) throws IOException {
+		checkSocketState();
 		lastMessage = new byte[msg.length];
 		for(int q=0;q<msg.length;q++) lastMessage[q] = msg[q];
 		String s = new String(lastMessage);
-		//logger.logError(">>>>>>>>>>>>>>FFF>>>>>" + s);
+
 		ByteBuffer b = ByteBuffer.wrap(msg);
 		try {
 			sslStateMachine.wrap(b, encryptedFrameBuffer, new MessageSendCallback() {
@@ -163,16 +164,11 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel{
 			final int receiverPort, final boolean retry) throws IOException {
 		lastMessage = new byte[message.length];
 		for(int q=0;q<message.length;q++) {
-
 			lastMessage[q] = message[q];
-			if(message[q]<0) {
-				int r = 0 ;
-				r++;r=r;
-			}
 		}
 		String s = new String(lastMessage); 
 
-		//logger.logError(">>>>>>>>>>>>>>FFF>>>>>" + s);
+		checkSocketState();
 		
 		ByteBuffer b = ByteBuffer.wrap(message);
 		try {
@@ -248,7 +244,20 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel{
 			logger.logError("Cant reinit", e);
 		}
 	}
-	
+
+	private void checkSocketState() throws IOException {
+		if (socketChannel != null && (!socketChannel.isConnected() || !socketChannel.isOpen())) {
+			if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
+				logger.logDebug("Need to reset SSL engine for socket " + socketChannel);
+			try {
+				init(true);
+			} catch (Exception ex) {
+				logger.logError("Cannot reset SSL engine", ex);
+				throw new IOException(ex);
+			}
+		}
+	}
+
 	@Override
 	public boolean isSecure() {
 		return true;
