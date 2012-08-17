@@ -284,17 +284,22 @@ public class UDPMessageChannel extends MessageChannel implements
                 threadHandle.ping();
 
                 try {
-	                DatagramQueuedMessageDispatch work = udpMessageProcessor.messageQueue.poll(threadHandle
+                	DatagramQueuedMessageDispatch work = null;
+                	// adding condition to avoid looping and taking too much CPU if the 
+                	// auditing is not enabled
+                	if (sipStack.getThreadAuditor().isEnabled()) {
+                		udpMessageProcessor.messageQueue.poll(threadHandle
 	                        .getPingIntervalInMillisecs(), TimeUnit.MILLISECONDS);
-
+                	} else {
+                		work = udpMessageProcessor.messageQueue.take();
+                	}
 	                if (!udpMessageProcessor.isRunning) {
 	                    return;
 	                }
 	                if (work == null) {
 	                	continue;
 	                } else {
-						packet = (DatagramPacket) (work.packet);	                	
-		                this.incomingPacket = packet;						
+		                this.incomingPacket = work.packet;						
 	                }	                	
                 } catch (InterruptedException ex) {
 					if (!udpMessageProcessor.isRunning) {
