@@ -299,6 +299,7 @@ public class UDPMessageChannel extends MessageChannel implements
 	                if (work == null) {
 	                	continue;
 	                } else {
+	                	packet = work.packet;
 		                this.incomingPacket = work.packet;						
 	                }	                	
                 } catch (InterruptedException ex) {
