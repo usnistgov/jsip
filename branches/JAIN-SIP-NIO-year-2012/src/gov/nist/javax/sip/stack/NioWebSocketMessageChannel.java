@@ -168,27 +168,47 @@ public class NioWebSocketMessageChannel extends NioTcpMessageChannel{
     				hostPort.setHost(new Host(host));
     				hostPort.setPort(5060);
     				processor.assignChannelToDestination(hostPort, this);
-    				    			}
+    			}
     		}
-    	}
-    	ContactHeader contact = (ContactHeader)message.getHeader(ContactHeader.NAME);
-    	RecordRouteHeader rr = (RecordRouteHeader)message.getHeader(RecordRouteHeader.NAME);
-    	ViaHeader via = message.getTopmostViaHeader();
-    	if(rr == null) {
-    		if(contact != null) {
-    			rewriteUri((SipURI) contact.getAddress().getURI());
-    		}
+    		ContactHeader contact = (ContactHeader)message.getHeader(ContactHeader.NAME);
+        	RecordRouteHeader rr = (RecordRouteHeader)message.getHeader(RecordRouteHeader.NAME);
+        	ViaHeader via = message.getTopmostViaHeader();
+        	
+        	if(rr == null) {
+        		if(contact != null) {
+        			rewriteUri((SipURI) contact.getAddress().getURI());
+        		}
+        	} else {
+        		rewriteUri((SipURI) rr.getAddress().getURI()); // not needed but just in case some clients does it
+        	}
+        	
+        	String viaHost = via.getHost();
+        	if(viaHost.endsWith(".invalid")) {
+        		via.setHost(getPeerAddress());
+        		via.setPort(getPeerPort());
+        	}
     	} else {
-    		rewriteUri((SipURI) rr.getAddress().getURI());
+    		ContactHeader contact = (ContactHeader)message.getHeader(ContactHeader.NAME);
+        	RecordRouteHeader rr = (RecordRouteHeader)message.getHeader(RecordRouteHeader.NAME);
+        	if(rr == null) {
+        		if(contact != null) {
+        			rewriteUri((SipURI) contact.getAddress().getURI());
+        		}
+        	} else {
+        		//rewriteUri((SipURI) rr.getAddress().getURI());
+        		// Record-Routes come from servers. Only clients put invalid addresses so dont worry about those.
+        	}
     	}
-    	via.setHost(getPeerAddress());
-    	via.setPort(getPeerPort());
+    	
 		super.processMessage(message);
     }
 	
 	public void rewriteUri(SipURI uri) {
 		try {
-			uri.setHost(getPeerAddress());
+			String uriHost = uri.getHost();
+			if(uriHost.endsWith(".invalid")) {
+				uri.setHost(getPeerAddress());
+			}
 		} catch (ParseException e) {
 			logger.logError("Cant parse address", e);
 		}
