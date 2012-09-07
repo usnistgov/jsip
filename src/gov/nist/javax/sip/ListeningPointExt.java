@@ -8,6 +8,16 @@ import javax.sip.header.ViaHeader;
 
 public interface ListeningPointExt extends ListeningPoint {
 
+	/**
+     * WebSocket Transport constant: WS
+     */
+    public static final String WS = "WS";
+    
+    /**
+     * WebSocket secure Transport constant: WSS
+     */
+    public static final String WSS = "WSS";
+    
     /**
      * Create a contact for this listening point.
      *

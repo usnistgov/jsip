@@ -1,5 +1,7 @@
 package gov.nist.javax.sip.stack;
 
+import gov.nist.javax.sip.ListeningPointExt;
+
 import java.io.IOException;
 import java.net.InetAddress;
 
@@ -47,7 +49,7 @@ public class NioMessageProcessorFactory implements MessageProcessorFactory {
                     throw new IllegalArgumentException("Error initializing SCTP",
                             ie);
                 }
-            } else if (transport.equalsIgnoreCase(ListeningPoint.WS)) {
+            } else if (transport.equalsIgnoreCase(ListeningPointExt.WS)) {
 
             	 NioWebSocketMessageProcessor tlsMessageProcessor = new NioWebSocketMessageProcessor(
                          ipAddress, sipStack, port); 
