@@ -9,7 +9,7 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>jain-sip-ri</artifactId>
+	<artifactId>jain-sip-ri-nio</artifactId>
 	<version>1.2.X-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
