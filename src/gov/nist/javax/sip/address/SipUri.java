@@ -36,6 +36,8 @@ package gov.nist.javax.sip.address;
  *Jeroen van Bemmel ( additions for SCTP transport )
  */
 import gov.nist.core.*;
+import gov.nist.javax.sip.ListeningPointExt;
+
 import java.util.*;
 import java.text.ParseException;
 
@@ -984,7 +986,7 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI , Sip
     /** Sets the value of the "transport" parameter. This parameter specifies
      * which transport protocol to use for sending requests and responses to
      * this entity. The following values are defined: "udp", "tcp", "sctp",
-     * "tls", but other values may be used also. This method is equivalent to
+     * "tls", "ws", "wss" but other values may be used also. This method is equivalent to
      * setParameter("transport", transport). Transport parameter constants
      * are defined in the {@link javax.sip.ListeningPoint}.
      *
@@ -997,7 +999,9 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI , Sip
         if (transport.compareToIgnoreCase("UDP") == 0
             || transport.compareToIgnoreCase("TLS") == 0
             || transport.compareToIgnoreCase("TCP") == 0
-            || transport.compareToIgnoreCase("SCTP") == 0) {
+            || transport.compareToIgnoreCase("SCTP") == 0
+            || transport.compareToIgnoreCase(ListeningPointExt.WS) == 0
+            || transport.compareToIgnoreCase(ListeningPointExt.WSS) == 0) {
             NameValue nv = new NameValue(TRANSPORT, transport.toLowerCase());
             uriParms.set(nv);
         } else
