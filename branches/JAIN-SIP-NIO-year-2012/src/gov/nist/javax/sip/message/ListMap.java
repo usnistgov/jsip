@@ -228,6 +228,15 @@ public class ListMap {
             initializeListMap();
         return headerListTable.get(sipHdrClass) != null;
     }
+    
+    /**
+     * Mark a listable Header 
+     */
+    static public void addListHeader(Class<? extends SIPHeader> sipHeaderClass,
+                                     Class<? extends SIPHeaderList<? extends SIPHeader>> sipHeaderListClass)
+    {
+      headerListTable.put(sipHeaderClass, sipHeaderListClass);
+    }
 
     /**
      * Get the associated list class.
