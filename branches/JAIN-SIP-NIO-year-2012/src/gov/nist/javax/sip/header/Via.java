@@ -373,7 +373,7 @@ public class Via
      * Sets the value of the transport. This parameter specifies
      * which transport protocol to use for sending requests and responses to
      * this entity. The following values are defined: "udp", "tcp", "sctp",
-     * "tls", but other values may be used also.
+     * "tls", "ws", "wss" but other values may be used also.
      *
      * @param transport - new value for the transport parameter
      * @throws ParseException which signals that an error has been reached
