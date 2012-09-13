@@ -127,24 +127,33 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
 
         }
         
-        public void write(SelectionKey selectionKey) throws IOException {
+        public void write(SelectionKey selectionKey) {
           	SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
 
+          	final NioTcpMessageChannel nioTcpMessageChannel = NioTcpMessageChannel.getMessageChannel(socketChannel);
+            if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+            	logger.logDebug("Need to write something on nioTcpMessageChannel " + nioTcpMessageChannel + " socket " + socketChannel);
+            if(nioTcpMessageChannel == null) {
+            	if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+            		logger.logDebug("Dead socketChannel" + socketChannel + " socket " + socketChannel.socket().getInetAddress() + ":"+socketChannel.socket().getPort());
+            	selectionKey.cancel();
+            	return;
+            }
+          	
         	synchronized (pendingData) {
         		List<ByteBuffer> queue = pendingData.get(socketChannel);
         		if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
         			logger.logDebug("Queued items for writing " + queue.size());
         		while (!queue.isEmpty()) {
         			ByteBuffer buf = queue.get(0);
-
-        			if(!socketChannel.isOpen()) {
-        				//if the socket channel is closed we don't wirte data and
-        				// cancel the seclection key to make sure it is removed from the selectionKey set
-        				// on the next selection operation
-        				selectionKey.cancel();
-        				return;
-        			}
-        			socketChannel.write(buf);
+        			
+        			try {
+						socketChannel.write(buf);
+					} catch (IOException e) {
+						if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+		            		logger.logDebug("Dead socketChannel" + socketChannel + " socket " + socketChannel.socket().getInetAddress() + ":"+socketChannel.socket().getPort() + " : error message " + e.getMessage());
+						nioTcpMessageChannel.close();
+					}
 
         			int remain = buf.remaining();
         			
