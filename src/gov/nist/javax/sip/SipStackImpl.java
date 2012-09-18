@@ -1411,8 +1411,6 @@ public class SipStackImpl extends SIPTransactionStack implements
 			}
 		}
 		
-		super.useNio = Boolean.parseBoolean( configurationProperties.getProperty("gov.nist.javax.sip.USE_NIO","true"));
-		
 	}
 
 	/*
