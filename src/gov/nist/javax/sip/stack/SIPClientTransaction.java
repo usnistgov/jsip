@@ -1546,7 +1546,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                                          * one.
                                          */
                                         dialog = sipStack.createDialog(this, sipResponse);
-                                        dialog.setApplicationData(defaultDialog.getApplicationData());
+                                        dialog.setOriginalDialog(defaultDialog);
                                     }
                                 }
 

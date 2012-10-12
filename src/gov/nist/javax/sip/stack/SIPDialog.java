@@ -89,6 +89,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import javax.sip.ClientTransaction;
+import javax.sip.Dialog;
 import javax.sip.DialogDoesNotExistException;
 import javax.sip.DialogState;
 import javax.sip.IOExceptionEvent;
@@ -327,6 +328,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
 	private int ackSemTakenFor;
 	private Set<String> responsesReceivedInForkingCase = new HashSet<String>(0);
+
+  private SIPDialog originalDialog;
 
 	
     // //////////////////////////////////////////////////////
@@ -786,6 +789,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         addEventListener(sipStack);
         releaseReferences = sipStack.isAggressiveCleanup();
     }
+    
 
     // ///////////////////////////////////////////////////////////
     // Private methods
@@ -4334,4 +4338,23 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
            return getCallId().getCallId().hashCode();
        }
    }
+
+    /**
+     * In case of forking scenarios, set the original dialog that had been forked
+     * @param defaultDialog
+     */
+    public void setOriginalDialog(SIPDialog originalDialog) {
+      this.originalDialog = originalDialog;
+      
+    }
+    
+    @Override
+    public boolean isForked() {
+      return originalDialog != null;
+    }
+    
+    @Override
+    public Dialog getOriginalDialog() {
+      return originalDialog;
+    }
 }
