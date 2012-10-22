@@ -17,8 +17,6 @@ import gov.nist.javax.sip.parser.NioPipelineParser;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.text.ParseException;
@@ -104,7 +102,7 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 				if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
 					logger.logDebug("IOException  closing sock " + ex);
 				
-				close();
+				close(false);
 				
 				
 			} catch (Exception ex1) {
@@ -137,6 +135,10 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 			this.peerProtocol = getTransport();
 			lastActivityTimeStamp = System.currentTimeMillis();
 			super.key = MessageChannel.getKey(peerAddress, peerPort, getTransport());
+
+            myAddress = nioTcpMessageProcessor.getIpAddress().getHostAddress();
+            myPort = nioTcpMessageProcessor.getPort();
+
 		} finally {
 			if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 				logger.logDebug("Done creating NioTcpMessageChannel " + this + " socketChannel = " +socketChannel);
@@ -166,6 +168,10 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 			lastActivityTimeStamp = System.currentTimeMillis();
 			super.key = MessageChannel.getKey(peerAddress, peerPort, getTransport());
 
+            myAddress = nioTcpMessageProcessor.getIpAddress().getHostAddress();
+            myPort = nioTcpMessageProcessor.getPort();
+
+
 		} finally {
 			if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 				logger.logDebug("NioTcpMessageChannel::NioTcpMessageChannel: Done creating NioTcpMessageChannel "
@@ -179,7 +185,7 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 	}
 
 	@Override
-	protected void close(boolean b) {
+	protected void close(boolean stopKeepAliveTask) {
 		try {
 			if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 				logger.logDebug("Closing NioTcpMessageChannel "
@@ -196,7 +202,9 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 			this.isRunning = false;
 			((ConnectionOrientedMessageProcessor) this.messageProcessor).remove(this);
 			
-			cancelPingKeepAliveTimeoutTaskIfStarted();
+			if(stopKeepAliveTask) {
+				cancelPingKeepAliveTimeoutTaskIfStarted();
+			}
 		} catch (IOException e) {
 			logger.logError("Problem occured while closing", e);
 		}
