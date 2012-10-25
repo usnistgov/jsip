@@ -342,6 +342,9 @@ public class RFC5626KeepAliveTest extends ScenarioHarness implements SipListener
 	                    this.cancel();
 //	                    fail();
 	                }
+	                if(keepAliveSent > keepAliveToSend) {
+	                	((SIPTransactionStack)protocolObjects.sipStack).setKeepAliveTimeout(myAddress, myPort, transport, Shootme.myAddress, Shootme.myPort, -1);	
+	                }
             	} else {
             		this.cancel();
             	}
@@ -705,6 +708,7 @@ public class RFC5626KeepAliveTest extends ScenarioHarness implements SipListener
         shootistProvider.addSipListener(this);
         shootmeProvider.addSipListener(this);
                     
+        shootist.keepAliveToSend  = 100;
         shootist.sendInvite();
         
         try {
@@ -739,6 +743,7 @@ public class RFC5626KeepAliveTest extends ScenarioHarness implements SipListener
         providerTable.put(shootmeProvider, shootme);
         shootistProvider.addSipListener(this);
         shootmeProvider.addSipListener(this);
+        shootist.keepAliveToSend  = 100;
         shootist.sendInvite();        
 
         try {
