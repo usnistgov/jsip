@@ -822,18 +822,20 @@ public abstract class ConnectionOrientedMessageChannel extends MessageChannel im
                 logger.logDebug(
                         "~~~ Starting processing of KeepAliveTimeoutEvent( " + peerAddress.getHostAddress() + "," + peerPort + ")...");
             }
-//            close(true);
+            close(true);
             if(sipStack instanceof SipStackImpl) {
 	            for (Iterator<SipProviderImpl> it = ((SipStackImpl)sipStack).getSipProviders(); it.hasNext();) {
 	                SipProviderImpl nextProvider = (SipProviderImpl) it.next();
 	                SipListener sipListener= nextProvider.getSipListener();
-	                ListeningPoint listeningPoint = nextProvider.getListeningPoint();
-	            	if(sipListener!= null && sipListener instanceof SipListenerExt
-	            			// making sure that we don't notify each listening point but only the one on which the timeout happened  
-	            			&& listeningPoint.getIPAddress().equalsIgnoreCase(myAddress) && listeningPoint.getPort() == myPort && 
-	            				listeningPoint.getTransport().equals(getTransport())) {
-	            		((SipListenerExt)sipListener).processIOException(new IOExceptionEventExt(nextProvider, Reason.KeepAliveTimeout, myAddress, myPort,
-	            				peerAddress.getHostAddress(), peerPort, getTransport()));
+	                ListeningPoint[] listeningPoints = nextProvider.getListeningPoints();
+	                for(ListeningPoint listeningPoint : listeningPoints) {
+		            	if(sipListener!= null && sipListener instanceof SipListenerExt
+		            			// making sure that we don't notify each listening point but only the one on which the timeout happened  
+		            			&& listeningPoint.getIPAddress().equalsIgnoreCase(myAddress) && listeningPoint.getPort() == myPort && 
+		            				listeningPoint.getTransport().equals(getTransport())) {
+		            		((SipListenerExt)sipListener).processIOException(new IOExceptionEventExt(nextProvider, Reason.KeepAliveTimeout, myAddress, myPort,
+		            				peerAddress.getHostAddress(), peerPort, getTransport()));
+		                }
 	                }
 	            }  
             } else {
