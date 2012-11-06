@@ -554,7 +554,8 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
         super(sipStack, newChannelToUse);
 
         if (sipStack.maxListenerResponseTime != -1) {
-            sipStack.getTimer().schedule(new ListenerExecutionMaxTimer(),
+        	listenerExecutionMaxTimer = new ListenerExecutionMaxTimer();
+            sipStack.getTimer().schedule(listenerExecutionMaxTimer,
                     sipStack.maxListenerResponseTime * 1000);
         }
         
