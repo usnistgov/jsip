@@ -54,8 +54,13 @@ public class NioMessageProcessorFactory implements MessageProcessorFactory {
             	 NioWebSocketMessageProcessor tlsMessageProcessor = new NioWebSocketMessageProcessor(
                          ipAddress, sipStack, port); 
                  return tlsMessageProcessor;
+            } else if (transport.equalsIgnoreCase("WSS")) {
+
+            	NioTlsWebSocketMessageProcessor tlsMessageProcessor = new NioTlsWebSocketMessageProcessor(
+            			ipAddress, sipStack, port); 
+            	return tlsMessageProcessor;
             } else {
-                throw new IllegalArgumentException("bad transport");
+            	throw new IllegalArgumentException("bad transport");
             }
      }
 
