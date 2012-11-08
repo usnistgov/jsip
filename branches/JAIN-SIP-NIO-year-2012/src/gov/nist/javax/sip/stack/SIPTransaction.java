@@ -1395,7 +1395,17 @@ public abstract class SIPTransaction extends MessageChannel implements
             else return ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getHandshakeCompletedEvent().getCipherSuite();
         } else if(this.getMessageChannel() instanceof NioTlsMessageChannel) {
         	SSLEngine sslEngine = ((NioTlsMessageChannel) this.getMessageChannel()).sslStateMachine.sslEngine;
-        	if(sslEngine.getHandshakeStatus().equals(HandshakeStatus.FINISHED)) {
+        	if(sslEngine.getHandshakeStatus().equals(HandshakeStatus.FINISHED) ||
+        			sslEngine.getHandshakeStatus().equals(HandshakeStatus.NOT_HANDSHAKING)) {
+        		String[] cs = sslEngine.getEnabledCipherSuites();
+        		return cs[0];
+        	} else {
+        		return null;
+        	}
+        } else if(this.getMessageChannel() instanceof NioTlsWebSocketMessageChannel) {
+        	SSLEngine sslEngine = ((NioTlsWebSocketMessageChannel) this.getMessageChannel()).sslStateMachine.sslEngine;
+        	if(sslEngine.getHandshakeStatus().equals(HandshakeStatus.FINISHED) ||
+        			sslEngine.getHandshakeStatus().equals(HandshakeStatus.NOT_HANDSHAKING)) {
         		String[] cs = sslEngine.getEnabledCipherSuites();
         		return cs[0];
         	} else {
@@ -1415,8 +1425,17 @@ public abstract class SIPTransaction extends MessageChannel implements
             else return ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getHandshakeCompletedEvent().getLocalCertificates();
         } else if (this.getMessageChannel() instanceof NioTlsMessageChannel) {
         	SSLEngine sslEngine = ((NioTlsMessageChannel) this.getMessageChannel()).sslStateMachine.sslEngine;
-        	if(sslEngine.getHandshakeStatus().equals(HandshakeStatus.FINISHED)) {
+        	if(sslEngine.getHandshakeStatus().equals(HandshakeStatus.FINISHED) ||
+        			sslEngine.getHandshakeStatus().equals(HandshakeStatus.NOT_HANDSHAKING)) {
         		return ((NioTlsMessageChannel) this.getMessageChannel()).sslStateMachine.sslEngine.getSession().getLocalCertificates();
+        	} else {
+        		return null;
+        	}
+        } else if (this.getMessageChannel() instanceof NioTlsMessageChannel) {
+        	SSLEngine sslEngine = ((NioTlsWebSocketMessageChannel) this.getMessageChannel()).sslStateMachine.sslEngine;
+        	if(sslEngine.getHandshakeStatus().equals(HandshakeStatus.FINISHED) ||
+        			sslEngine.getHandshakeStatus().equals(HandshakeStatus.NOT_HANDSHAKING)) {
+        		return ((NioTlsWebSocketMessageChannel) this.getMessageChannel()).sslStateMachine.sslEngine.getSession().getLocalCertificates();
         	} else {
         		return null;
         	}
@@ -1433,8 +1452,17 @@ public abstract class SIPTransaction extends MessageChannel implements
             else return ((TLSMessageChannel) this.getMessageChannel()).getHandshakeCompletedListener().getHandshakeCompletedEvent().getPeerCertificates();
         } else if(this.getMessageChannel() instanceof NioTlsMessageChannel) {
         	SSLEngine sslEngine = ((NioTlsMessageChannel) this.getMessageChannel()).sslStateMachine.sslEngine;
-        	if(sslEngine.getHandshakeStatus().equals(HandshakeStatus.FINISHED)) {
+        	if(sslEngine.getHandshakeStatus().equals(HandshakeStatus.FINISHED) ||
+        			sslEngine.getHandshakeStatus().equals(HandshakeStatus.NOT_HANDSHAKING)) {
         		return ((NioTlsMessageChannel) this.getMessageChannel()).sslStateMachine.sslEngine.getSession().getPeerCertificates();
+        	} else {
+        		return null;
+        	}
+        } else if(this.getMessageChannel() instanceof NioTlsWebSocketMessageChannel) {
+        	SSLEngine sslEngine = ((NioTlsWebSocketMessageChannel) this.getMessageChannel()).sslStateMachine.sslEngine;
+        	if(sslEngine.getHandshakeStatus().equals(HandshakeStatus.FINISHED) ||
+        			sslEngine.getHandshakeStatus().equals(HandshakeStatus.NOT_HANDSHAKING)) {
+        		return ((NioTlsWebSocketMessageChannel) this.getMessageChannel()).sslStateMachine.sslEngine.getSession().getPeerCertificates();
         	} else {
         		return null;
         	}
