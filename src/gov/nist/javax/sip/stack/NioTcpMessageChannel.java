@@ -77,10 +77,12 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 			}
 			
 			// This prevents us from getting stuck in a selector thread spinloop when socket is constantly ready for reading but there are no bytes.
-			if(nbytes == 0) throw new IOException("The socket is giving us empty TCP packets. " +
+			if(nbytes == 0) 
+				throw new IOException("The socket is giving us empty TCP packets. " +
 					"This is usually an indication we are stuck and it is better to disconnect.");
 			
-			if(streamError) throw new IOException("Stream error msg len = -1 " +
+			if(streamError) 
+				throw new IOException("Stream error msg len = -1 " +
 					"This is usually an indication we are stuck and it is better to disconnect.");
 			
 			// Otherwise just add the bytes to queue
@@ -101,7 +103,6 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 			try {
 				if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 					logger.logDebug("IOException  closing sock " + ex + "myAddress:myport " + myAddress + ":" + myPort + ", remoteAddress:remotePort " + peerAddress + ":" + peerPort);
-					logger.logException(ex);
 				}
 				
 				close(false);
