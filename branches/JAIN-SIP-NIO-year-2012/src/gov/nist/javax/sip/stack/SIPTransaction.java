@@ -97,24 +97,24 @@ public abstract class SIPTransaction extends MessageChannel implements
 
     // to see the event.
 
-    protected int BASE_TIMER_INTERVAL = SIPTransactionStack.BASE_TIMER_INTERVAL;
+    protected int baseTimerInterval = SIPTransactionStack.BASE_TIMER_INTERVAL;
     /**
      * 5 sec Maximum duration a message will remain in the network
      */
-    protected int T4 = 5000 / BASE_TIMER_INTERVAL;
+    protected int T4 = 5000 / baseTimerInterval;
 
     /**
      * The maximum retransmit interval for non-INVITE requests and INVITE
      * responses
      */
-    protected int T2 = 4000 / BASE_TIMER_INTERVAL;
-    protected int TIMER_I = T4;
+    protected int T2 = 4000 / baseTimerInterval;
+    protected int timerI = T4;
 
-    protected int TIMER_K = T4;
+    protected int timerK = T4;
 
-    protected int TIMER_D = 32000 / BASE_TIMER_INTERVAL;
+    protected int timerD = 32000 / baseTimerInterval;
 
-    // protected static final int TIMER_C = 3 * 60 * 1000 / BASE_TIMER_INTERVAL;
+    // protected static final int TIMER_C = 3 * 60 * 1000 / baseTimerInterval;
 
     /**
      * One timer tick.
@@ -1048,7 +1048,7 @@ public abstract class SIPTransaction extends MessageChannel implements
      * @return the integer value of the retransmit timer in milliseconds.
      */
     public int getRetransmitTimer() {
-        return SIPTransactionStack.BASE_TIMER_INTERVAL;
+        return baseTimerInterval;
     }
 
     /**
@@ -1219,11 +1219,11 @@ public abstract class SIPTransaction extends MessageChannel implements
         if (this.transactionTimerStarted.get())
             throw new IllegalStateException(
                     "Transaction timer is already started");
-        BASE_TIMER_INTERVAL = retransmitTimer;
+        baseTimerInterval = retransmitTimer;
         // Commented out for Issue 303 since those timers are configured separately now  
-//      T4 = 5000 / BASE_TIMER_INTERVAL;
-//      T2 = 4000 / BASE_TIMER_INTERVAL;
-//      TIMER_D = 32000 / BASE_TIMER_INTERVAL;
+//      T4 = 5000 / baseTimerInterval;
+//      T2 = 4000 / baseTimerInterval;
+//      timerD = 32000 / baseTimerInterval;
 
     }
 
@@ -1622,7 +1622,7 @@ public abstract class SIPTransaction extends MessageChannel implements
      * @see gov.nist.javax.sip.TransactionExt#getTimerD()
      */
     public int getTimerD() {      
-        return TIMER_D;
+        return timerD;
     }
    
     /*
@@ -1649,7 +1649,7 @@ public abstract class SIPTransaction extends MessageChannel implements
         if(interval < 32000) {
             throw new IllegalArgumentException("To be RFC 3261 compliant, the value of Timer D should be at least 32s");
         }
-        TIMER_D = interval / BASE_TIMER_INTERVAL;
+        timerD = interval / baseTimerInterval;
     }
     
     /*
@@ -1657,7 +1657,7 @@ public abstract class SIPTransaction extends MessageChannel implements
      * @see gov.nist.javax.sip.TransactionExt#setTimerT2(int)
      */
     public void setTimerT2(int interval) {
-        T2 = interval / BASE_TIMER_INTERVAL; 
+        T2 = interval / baseTimerInterval; 
     }
 
     /*
@@ -1665,9 +1665,9 @@ public abstract class SIPTransaction extends MessageChannel implements
      * @see gov.nist.javax.sip.TransactionExt#setTimerT4(int)
      */
     public void setTimerT4(int interval) {
-        T4 = interval / BASE_TIMER_INTERVAL;
-        TIMER_I = T4;
-        TIMER_K = T4;
+        T4 = interval / baseTimerInterval;
+        timerI = T4;
+        timerK = T4;
     }
     
     

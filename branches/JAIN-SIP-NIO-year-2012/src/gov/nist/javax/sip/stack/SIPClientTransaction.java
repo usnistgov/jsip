@@ -634,7 +634,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
             } else if (200 <= statusCode && statusCode <= 699) {
                 if (!isReliable()) {                    
                     this.setState(TransactionState._COMPLETED);
-                    scheduleTimerK(TIMER_K);        
+                    scheduleTimerK(timerK);        
                 } else {                    
                     this.setState(TransactionState._TERMINATED);
                 }
@@ -662,7 +662,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                 disableTimeoutTimer();
                 if (!isReliable()) {                    
                     this.setState(TransactionState._COMPLETED);
-                    scheduleTimerK(TIMER_K);
+                    scheduleTimerK(timerK);
                 } else {                                        
                     this.setState(TransactionState._TERMINATED);
                 }
@@ -686,7 +686,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
         }
     }    
 
-    // avoid re-scheduling the transaction timer every 500ms while we know we have to wait for TIMER_K * 500 ms
+    // avoid re-scheduling the transaction timer every 500ms while we know we have to wait for timerK * 500 ms
 	private void scheduleTimerK(long time) {
 		if(transactionTimer != null &&  timerKStarted.compareAndSet(false, true)) {
 			synchronized (transactionTimerLock) {
@@ -707,7 +707,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                         }
                     };
                     if(time > 0) {
-                        sipStack.getTimer().schedule(task, time * BASE_TIMER_INTERVAL);
+                        sipStack.getTimer().schedule(task, time * baseTimerInterval);
                     } else {
                         task.runTask();
                     }
@@ -881,7 +881,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
 
                 if (!isReliable()) {                    
                     this.setState(TransactionState._COMPLETED);
-                    enableTimeoutTimer(TIMER_D);
+                    enableTimeoutTimer(timerD);
                 } else {                    
                     // Proceed immediately to the TERMINATED state.
                     this.setState(TransactionState._TERMINATED);
@@ -922,7 +922,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
                 // JvB: update state before passing to app
                 if (!isReliable()) {                    
                     this.setState(TransactionState._COMPLETED);
-                    this.enableTimeoutTimer(TIMER_D);
+                    this.enableTimeoutTimer(timerD);
                 } else {                    
                     this.setState(TransactionState._TERMINATED);
                 }
@@ -937,7 +937,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
 
                 // JvB: duplicate with line 874
                 // if (!isReliable()) {
-                // enableTimeoutTimer(TIMER_D);
+                // enableTimeoutTimer(timerD);
                 // }
             }
         } else if (TransactionState._COMPLETED == this.getInternalState()) {
@@ -1404,7 +1404,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
 	        	synchronized (transactionTimerLock) {
 	        		if(!transactionTimerCancelled) {
 	        			transactionTimer = new TransactionTimer();
-	        			sipStack.getTimer().scheduleWithFixedDelay(transactionTimer, BASE_TIMER_INTERVAL, BASE_TIMER_INTERVAL);
+	        			sipStack.getTimer().scheduleWithFixedDelay(transactionTimer, baseTimerInterval, baseTimerInterval);
 	        		}
 				}	        	
 	        }
