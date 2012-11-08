@@ -332,7 +332,7 @@ public class InviteClientTransactionsStateMachineTest extends
         }
         assertTrue(new Exception().getStackTrace()[0].toString(), true);
 
-        // Unfortunately we can't assert the TERMINATED state as TIMER_K TIMER_D
+        // Unfortunately we can't assert the TERMINATED state as timerK timerD
         // is not exported by JAIN SIP
 
     }
@@ -556,7 +556,7 @@ public class InviteClientTransactionsStateMachineTest extends
         }
         assertTrue(new Exception().getStackTrace()[0].toString(), true);
 
-        // Unfortunately we can't assert the TERMINATED state as TIMER_K TIMER_D
+        // Unfortunately we can't assert the TERMINATED state as timerK timerD
         // is not exported by JAIN SIP
     }
 
@@ -751,7 +751,7 @@ public class InviteClientTransactionsStateMachineTest extends
         }
         assertTrue(new Exception().getStackTrace()[0].toString(), true);
 
-        // Unfortunately we can't assert the TERMINATED state as TIMER_D
+        // Unfortunately we can't assert the TERMINATED state as timerD
         // is not exported by JAIN SIP
 
     }
