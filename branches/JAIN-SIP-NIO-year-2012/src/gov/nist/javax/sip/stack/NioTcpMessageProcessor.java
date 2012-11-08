@@ -309,6 +309,7 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
                                     logger.logDebug("Read " + selectionKey);
                                 }
                                 read(selectionKey);
+                                
                             } else if (selectionKey.isWritable()) {
                                 if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                                     logger.logDebug("Write " + selectionKey);
@@ -332,7 +333,7 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
                     }
                     return;
                 } catch (Exception ex) {
-        			logger.logError("Error", ex);
+        			logger.logError("Problem in the selector loop", ex);
         		}
         	}
         }

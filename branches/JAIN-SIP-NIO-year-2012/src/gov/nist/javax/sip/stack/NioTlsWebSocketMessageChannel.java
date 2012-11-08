@@ -48,8 +48,8 @@ public class NioTlsWebSocketMessageChannel extends NioWebSocketMessageChannel im
 	
 	SSLStateMachine sslStateMachine;
 
-	private ByteBuffer appFrameBuffer;
-	private ByteBuffer encryptedFrameBuffer;
+	private int appBufferMax;
+	private int netBufferMax;
 
 	public static NioTcpMessageChannel create(
 			NioTcpMessageProcessor nioTcpMessageProcessor,
@@ -98,13 +98,11 @@ public class NioTlsWebSocketMessageChannel extends NioWebSocketMessageChannel im
 	}
 	
 	public ByteBuffer prepareEncryptedDataBuffer() {
-		encryptedFrameBuffer.clear();
-		return encryptedFrameBuffer;
+		return ByteBufferFactory.getInstance().allocateDirect(netBufferMax);
 	}
 	
 	public ByteBuffer prepareAppDataBuffer() {
-		appFrameBuffer.clear();
-		return appFrameBuffer;
+		return ByteBufferFactory.getInstance().allocateDirect(appBufferMax);
 	}
 	
 	public static class SSLReconnectedException extends IOException {
@@ -119,7 +117,7 @@ public class NioTlsWebSocketMessageChannel extends NioWebSocketMessageChannel im
 
 		ByteBuffer b = ByteBuffer.wrap(msg);
 		try {
-			sslStateMachine.wrap(b, encryptedFrameBuffer, new MessageSendCallback() {
+			sslStateMachine.wrap(b, ByteBufferFactory.getInstance().allocateDirect(netBufferMax), new MessageSendCallback() {
 
 				@Override
 				public void doSend(byte[] bytes) throws IOException {
@@ -161,7 +159,7 @@ public class NioTlsWebSocketMessageChannel extends NioWebSocketMessageChannel im
 		
 		ByteBuffer b = ByteBuffer.wrap(message);
 		try {
-			sslStateMachine.wrap(b, encryptedFrameBuffer, new MessageSendCallback() {
+			sslStateMachine.wrap(b, ByteBufferFactory.getInstance().allocateDirect(netBufferMax), new MessageSendCallback() {
 				
 				@Override
 				public void doSend(byte[] bytes) throws IOException {
@@ -187,7 +185,7 @@ public class NioTlsWebSocketMessageChannel extends NioWebSocketMessageChannel im
 		
 		ByteBuffer b = ByteBuffer.wrap(message);
 		try {
-			sslStateMachine.wrap(b, encryptedFrameBuffer, new MessageSendCallback() {
+			sslStateMachine.wrap(b, ByteBufferFactory.getInstance().allocateDirect(netBufferMax), new MessageSendCallback() {
 				
 				@Override
 				public void doSend(byte[] bytes) throws IOException {
@@ -203,15 +201,12 @@ public class NioTlsWebSocketMessageChannel extends NioWebSocketMessageChannel im
 	 private void createBuffers() {
 
 	        SSLSession session = sslStateMachine.sslEngine.getSession();
-	        int appBufferMax = session.getApplicationBufferSize();
-	        int netBufferMax = session.getPacketBufferSize();
+	        appBufferMax = session.getApplicationBufferSize();
+	        netBufferMax = session.getPacketBufferSize();
 	        
 	        if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 	        	logger.logDebug("appBufferMax=" + appBufferMax + " netBufferMax=" + netBufferMax);
 	        }
-	        appFrameBuffer = ByteBufferFactory.getInstance().allocateDirect(2*appBufferMax + 50);
-
-	        encryptedFrameBuffer = ByteBufferFactory.getInstance().allocateDirect(netBufferMax);
 	    }
 	
 	public NioTlsWebSocketMessageChannel(InetAddress inetAddress, int port,
