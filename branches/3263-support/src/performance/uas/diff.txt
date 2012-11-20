@@ -1,0 +1,701 @@
+diff --git a/src/gov/nist/javax/sip/message/SIPMessage.java b/src/gov/nist/javax/sip/message/SIPMessage.java
+index 3ab19f1..6ed47ee 100755
+--- a/src/gov/nist/javax/sip/message/SIPMessage.java
++++ b/src/gov/nist/javax/sip/message/SIPMessage.java
+@@ -138,7 +138,7 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
+     /**
+      * unparsed headers
+      */
+-    private LinkedList<String> unrecognizedHeaders;
++    protected LinkedList<String> unrecognizedHeaders;
+ 
+     /**
+      * List of parsed headers (in the order they were added)
+@@ -171,7 +171,7 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
+     protected Object messageContentObject;
+ 
+     // Table of headers indexed by name.
+-    private Map<String, SIPHeader> nameTable;
++    protected Map<String, SIPHeader> headerTable;
+ 
+     /**
+      * The application data pointer. This is un-interpreted by the stack. This is provided as a
+@@ -179,7 +179,7 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
+      */
+     protected Object applicationData;
+ 
+-    private String forkId;
++    protected String forkId;
+ 
+     /**
+      * Return true if the header belongs only in a Request.
+@@ -476,7 +476,7 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
+      */
+     public Object clone() {
+         SIPMessage retval = (SIPMessage) super.clone();
+-        retval.nameTable = new ConcurrentHashMap<String, SIPHeader>();
++        retval.headerTable = new ConcurrentHashMap<String, SIPHeader>();
+         retval.fromHeader = null;
+         retval.toHeader = null;
+         retval.cSeqHeader = null;
+@@ -546,7 +546,7 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
+      */
+     public SIPMessage() {
+         this.headers = new ConcurrentLinkedQueue<SIPHeader>();
+-        nameTable = new ConcurrentHashMap<String, SIPHeader>();
++        headerTable = new ConcurrentHashMap<String, SIPHeader>();
+         try {
+             this.attachHeader(new ContentLength(0), false);
+         } catch (Exception ex) {
+@@ -658,8 +658,8 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
+ 
+         String headerNameLowerCase = SIPHeaderNamesCache.toLowerCase(h.getName());
+         if (replaceFlag) {
+-            nameTable.remove(headerNameLowerCase);
+-        } else if (nameTable.containsKey(headerNameLowerCase) && !(h instanceof SIPHeaderList)) {
++            headerTable.remove(headerNameLowerCase);
++        } else if (headerTable.containsKey(headerNameLowerCase) && !(h instanceof SIPHeaderList)) {
+             if (h instanceof ContentLength) {
+                 try {
+                     ContentLength cl = (ContentLength) h;
+@@ -684,19 +684,19 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
+             }
+         }
+ 
+-        if (!nameTable.containsKey(headerNameLowerCase)) {
+-            nameTable.put(headerNameLowerCase, h);
++        if (!headerTable.containsKey(headerNameLowerCase)) {
++            headerTable.put(headerNameLowerCase, h);
+             headers.add(h);
+         } else {
+             if (h instanceof SIPHeaderList) {
+-                SIPHeaderList< ? > hdrlist = (SIPHeaderList< ? >) nameTable
++                SIPHeaderList< ? > hdrlist = (SIPHeaderList< ? >) headerTable
+                         .get(headerNameLowerCase);
+                 if (hdrlist != null)
+                     hdrlist.concatenate((SIPHeaderList) h, top);
+                 else
+-                    nameTable.put(headerNameLowerCase, h);
++                    headerTable.put(headerNameLowerCase, h);
+             } else {
+-                nameTable.put(headerNameLowerCase, h);
++                headerTable.put(headerNameLowerCase, h);
+             }
+         }
+ 
+@@ -727,7 +727,7 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
+     public void removeHeader(String headerName, boolean top) {
+ 
+         String headerNameLowerCase = SIPHeaderNamesCache.toLowerCase(headerName);
+-        SIPHeader toRemove = (SIPHeader) nameTable.get(headerNameLowerCase);
++        SIPHeader toRemove = (SIPHeader) headerTable.get(headerNameLowerCase);
+         // nothing to do then we are done.
+         if (toRemove == null)
+             return;
+@@ -748,10 +748,10 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
+ 
+                 // JvB: also remove it from the nameTable! Else NPE in
+                 // DefaultRouter
+-                nameTable.remove(headerNameLowerCase);
++                headerTable.remove(headerNameLowerCase);
+             }
+         } else {
+-            this.nameTable.remove(headerNameLowerCase);
++            this.headerTable.remove(headerNameLowerCase);
+             if (toRemove instanceof From) {
+                 this.fromHeader = null;
+             } else if (toRemove instanceof To) {
+@@ -785,7 +785,7 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
+         if (headerName == null)
+             throw new NullPointerException("null arg");
+         String headerNameLowerCase = SIPHeaderNamesCache.toLowerCase(headerName);
+-        SIPHeader removed = (SIPHeader) nameTable.remove(headerNameLowerCase);
++        SIPHeader removed = (SIPHeader) headerTable.remove(headerNameLowerCase);
+         // nothing to do then we are done.
+         if (removed == null)
+             return;
+@@ -929,7 +929,7 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
+     private Header getHeaderLowerCase(String lowerCaseHeaderName) {
+         if (lowerCaseHeaderName == null)
+             throw new NullPointerException("bad name");
+-        SIPHeader sipHeader = (SIPHeader) nameTable.get(lowerCaseHeaderName);
++        SIPHeader sipHeader = (SIPHeader) headerTable.get(lowerCaseHeaderName);
+         if (sipHeader instanceof SIPHeaderList)
+             return (Header) ((SIPHeaderList) sipHeader).getFirst();
+         else
+@@ -1399,7 +1399,7 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
+     public ListIterator<SIPHeader> getHeaders(String headerName) {
+         if (headerName == null)
+             throw new NullPointerException("null headerName");
+-        SIPHeader sipHeader = (SIPHeader) nameTable.get(SIPHeaderNamesCache
++        SIPHeader sipHeader = (SIPHeader) headerTable.get(SIPHeaderNamesCache
+                 .toLowerCase(headerName));
+         // empty iterator
+         if (sipHeader == null)
+@@ -1420,15 +1420,15 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
+      */
+     public String getHeaderAsFormattedString(String name) {
+         String lowerCaseName = name.toLowerCase();
+-        if (this.nameTable.containsKey(lowerCaseName)) {
+-            return this.nameTable.get(lowerCaseName).toString();
++        if (this.headerTable.containsKey(lowerCaseName)) {
++            return this.headerTable.get(lowerCaseName).toString();
+         } else {
+             return this.getHeader(name).toString();
+         }
+     }
+ 
+     protected SIPHeader getSIPHeaderListLowerCase(String lowerCaseHeaderName) {
+-        return nameTable.get(lowerCaseHeaderName);
++        return headerTable.get(lowerCaseHeaderName);
+     }
+ 
+     /**
+@@ -1439,7 +1439,7 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
+      */
+     @SuppressWarnings("unchecked")
+     private List<SIPHeader> getHeaderList(String headerName) {
+-        SIPHeader sipHeader = (SIPHeader) nameTable.get(SIPHeaderNamesCache
++        SIPHeader sipHeader = (SIPHeader) headerTable.get(SIPHeaderNamesCache
+                 .toLowerCase(headerName));
+         if (sipHeader == null)
+             return null;
+@@ -1459,7 +1459,7 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
+      * @return true if the header is present in the message
+      */
+     public boolean hasHeader(String headerName) {
+-        return nameTable.containsKey(SIPHeaderNamesCache.toLowerCase(headerName));
++        return headerTable.containsKey(SIPHeaderNamesCache.toLowerCase(headerName));
+     }
+ 
+     /**
+@@ -1613,15 +1613,15 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
+             return false;
+         }
+         SIPMessage otherMessage = (SIPMessage) other;
+-        Collection<SIPHeader> values = this.nameTable.values();
++        Collection<SIPHeader> values = this.headerTable.values();
+         Iterator<SIPHeader> it = values.iterator();
+-        if (nameTable.size() != otherMessage.nameTable.size()) {
++        if (headerTable.size() != otherMessage.headerTable.size()) {
+             return false;
+         }
+ 
+         while (it.hasNext()) {
+             SIPHeader mine = (SIPHeader) it.next();
+-            SIPHeader his = (SIPHeader) (otherMessage.nameTable.get(SIPHeaderNamesCache
++            SIPHeader his = (SIPHeader) (otherMessage.headerTable.get(SIPHeaderNamesCache
+                     .toLowerCase(mine.getName())));
+             if (his == null) {
+                 return false;
+@@ -1918,32 +1918,32 @@ public abstract class SIPMessage extends MessageObject implements javax.sip.mess
+     public abstract String toString();
+     
+     public void cleanUp() {
+-    	applicationData = null;
+-    	callIdHeader = null;
+-    	contentEncodingCharset = null;
+-    	contentLengthHeader = null;
+-    	cSeqHeader = null;
+-    	forkId = null;
+-    	fromHeader = null;
+-    	if(headers != null) {
+-    		headers.clear();
+-    		headers = null;
+-    	}
+-    	matchExpression = null;
+-    	maxForwardsHeader = null;
+-    	messageContent = null;
+-    	messageContentBytes = null;
+-    	messageContentObject = null;
+-    	if(nameTable != null) {
+-    		nameTable.clear();
+-    		nameTable = null;
+-    	}
+-    	stringRepresentation = null;
+-    	toHeader = null;
+-    	if(unrecognizedHeaders != null) {
+-    		unrecognizedHeaders.clear();
+-    		unrecognizedHeaders = null;
+-    	}
++//    	applicationData = null;
++//    	callIdHeader = null;
++//    	contentEncodingCharset = null;
++//    	contentLengthHeader = null;
++//    	cSeqHeader = null;
++//    	forkId = null;
++//    	fromHeader = null;
++//    	if(headers != null) {
++//    		headers.clear();
++//    		headers = null;
++//    	}
++//    	matchExpression = null;
++//    	maxForwardsHeader = null;
++//    	messageContent = null;
++//    	messageContentBytes = null;
++//    	messageContentObject = null;
++//    	if(nameTable != null) {
++//    		nameTable.clear();
++//    		nameTable = null;
++//    	}
++//    	stringRepresentation = null;
++//    	toHeader = null;
++//    	if(unrecognizedHeaders != null) {
++//    		unrecognizedHeaders.clear();
++//    		unrecognizedHeaders = null;
++//    	}
+     }
+ 
+ 	/**
+diff --git a/src/gov/nist/javax/sip/message/SIPRequest.java b/src/gov/nist/javax/sip/message/SIPRequest.java
+index 9f2f092..300e96c 100755
+--- a/src/gov/nist/javax/sip/message/SIPRequest.java
++++ b/src/gov/nist/javax/sip/message/SIPRequest.java
+@@ -1231,4 +1231,9 @@ public class SIPRequest extends SIPMessage implements javax.sip.message.Request,
+     public Object getInviteTransaction() {
+         return inviteTransaction;
+     }
++    
++    @Override
++    public void cleanUp() {
++    	super.cleanUp();
++    }
+ }
+diff --git a/src/gov/nist/javax/sip/message/SIPResponse.java b/src/gov/nist/javax/sip/message/SIPResponse.java
+index 7100459..bc47c02 100755
+--- a/src/gov/nist/javax/sip/message/SIPResponse.java
++++ b/src/gov/nist/javax/sip/message/SIPResponse.java
+@@ -646,7 +646,7 @@ public class SIPResponse
+     
+     @Override
+     public void cleanUp() {
+-    	statusLine = null;
++//    	statusLine = null;
+     	super.cleanUp();
+     }
+ }
+diff --git a/src/gov/nist/javax/sip/parser/StringMsgParser.java b/src/gov/nist/javax/sip/parser/StringMsgParser.java
+index 3f00e3f..c15abfd 100755
+--- a/src/gov/nist/javax/sip/parser/StringMsgParser.java
++++ b/src/gov/nist/javax/sip/parser/StringMsgParser.java
+@@ -75,7 +75,7 @@ public class StringMsgParser implements MessageParser {
+     protected boolean readBody;
+     protected ParseExceptionListener parseExceptionListener;
+     protected String rawStringMessage;
+-    private boolean strict;
++    protected boolean strict;
+ 
+     protected static boolean computeContentLengthFromMessage = false;
+ 
+diff --git a/src/gov/nist/javax/sip/stack/SIPClientTransaction.java b/src/gov/nist/javax/sip/stack/SIPClientTransaction.java
+index 5d12325..ca7a2c3 100755
+--- a/src/gov/nist/javax/sip/stack/SIPClientTransaction.java
++++ b/src/gov/nist/javax/sip/stack/SIPClientTransaction.java
+@@ -1587,7 +1587,7 @@ public class SIPClientTransaction extends SIPTransaction implements ServerRespon
+     	// we release the ref to the dialog asap and just keep the id of the dialog to look it up in the dialog table
+     	if(defaultDialog != null) {
+ 	    	String dialogId = defaultDialog.getDialogId();
+-	    	// we nullify the ref only if it can be find in the dialog table (not always true, check challenge unittest of the testsuite)
++	    	// we nullify the ref only if it can be find in the dialog table (not always true if the dialog is in null state, check challenge unittest of the testsuite)
+ 	    	if(dialogId != null && sipStack.getDialog(dialogId) != null) {
+ 	    		defaultDialogId = dialogId;
+ 	    		defaultDialog = null;	    		
+diff --git a/src/gov/nist/javax/sip/stack/SIPDialog.java b/src/gov/nist/javax/sip/stack/SIPDialog.java
+index 3057675..0f7ec92 100755
+--- a/src/gov/nist/javax/sip/stack/SIPDialog.java
++++ b/src/gov/nist/javax/sip/stack/SIPDialog.java
+@@ -45,6 +45,7 @@ import gov.nist.javax.sip.header.ContactList;
+ import gov.nist.javax.sip.header.ContentLength;
+ import gov.nist.javax.sip.header.ContentType;
+ import gov.nist.javax.sip.header.From;
++import gov.nist.javax.sip.header.HeaderFactoryImpl;
+ import gov.nist.javax.sip.header.MaxForwards;
+ import gov.nist.javax.sip.header.RAck;
+ import gov.nist.javax.sip.header.RSeq;
+@@ -67,6 +68,12 @@ import gov.nist.javax.sip.message.SIPDuplicateHeaderException;
+ import gov.nist.javax.sip.message.SIPMessage;
+ import gov.nist.javax.sip.message.SIPRequest;
+ import gov.nist.javax.sip.message.SIPResponse;
++import gov.nist.javax.sip.parser.AddressParser;
++import gov.nist.javax.sip.parser.CallIDParser;
++import gov.nist.javax.sip.parser.ContactParser;
++import gov.nist.javax.sip.parser.HeaderParser;
++import gov.nist.javax.sip.parser.ParserFactory;
++import gov.nist.javax.sip.parser.RecordRouteParser;
+ 
+ import java.io.IOException;
+ import java.io.PrintWriter;
+@@ -157,11 +164,12 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
+     private transient Object applicationData; // Opaque pointer to application data.
+ 
+     private transient SIPRequest originalRequest;
++    private transient String originalRequestRecordRouteHeadersString;
+     private transient RecordRouteList originalRequestRecordRouteHeaders;
+ 
+     // Last response (JvB: either sent or received).
+ //    private SIPResponse lastResponse;
+-    protected Collection<SIPHeader> lastResponseHeaders;
++    protected Collection<String> lastResponseHeaders;
+     protected String lastResponseDialogId;
+     protected Via lastResponseTopMostVia;
+     protected Integer lastResponseStatusCode;
+@@ -213,10 +221,13 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
+     // Dialog.
+ 
+     protected javax.sip.address.Address localParty;
++    protected String localPartyStringified;
+ 
+     protected javax.sip.address.Address remoteParty;
++    private String remotePartyStringified;
+ 
+     protected CallIdHeader callIdHeader;
++    protected String callIdHeaderString;
+ 
+     public final static int NULL_STATE = -1;
+ 
+@@ -241,6 +252,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
+     // requests
+ 
+     private Address remoteTarget;
++    private String remoteTargetStringified;
+ 
+     private EventHeader eventHeader; // for Subscribe notify
+ 
+@@ -284,7 +296,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
+     protected String firstTransactionMergeId;
+     protected int firstTransactionPort = 5060;   
+     protected Contact contactHeader;
+-
++	protected String contactHeaderStringified;
+ 
+     // //////////////////////////////////////////////////////
+     // Inner classes
+@@ -570,7 +582,46 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
+         eventListeners = new CopyOnWriteArraySet<SIPDialogEventListener>();
+     }
+     
+-    public void cleanUp() {
++    protected void cleanUpOnAck() {
++    	if(originalRequest != null) {
++//    		originalRequestRecordRouteHeaders = originalRequest.getRecordRouteHeaders();
++    		if(originalRequestRecordRouteHeaders != null) {
++    			originalRequestRecordRouteHeadersString = originalRequestRecordRouteHeaders.toString();
++    		}
++    		originalRequestRecordRouteHeaders = null;
++            originalRequest = null;
++    	}
++        if(firstTransaction != null) {
++        	firstTransaction.getOriginalRequest().cleanUp();
++        	firstTransaction = null;
++        }
++        if(lastTransaction != null) {
++        	lastTransaction.getOriginalRequest().cleanUp();
++        	lastTransaction =  null;	
++        }
++        if(callIdHeader != null) {
++        	callIdHeaderString = callIdHeader.toString();
++        	callIdHeader = null;
++        }
++        if(contactHeader != null) {
++        	contactHeaderStringified = contactHeader.toString();
++        	contactHeader = null;
++        }
++        if(remoteTarget != null) {
++        	remoteTargetStringified = remoteTarget.toString();
++        	remoteTarget = null;
++        }
++        if(remoteParty != null) {
++        	remotePartyStringified = remoteParty.toString();
++        	remoteParty = null;
++        }
++        if(localParty != null) {
++        	localPartyStringified = localParty.toString();
++        	localParty = null;
++        }
++    }
++    
++    protected void cleanUp() {
+     	if(eventListeners != null) {
+         	eventListeners.clear();
+         }
+@@ -602,6 +653,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
+         if(originalRequestRecordRouteHeaders != null) {
+         	originalRequestRecordRouteHeaders.clear();
+         	originalRequestRecordRouteHeaders = null;
++        	originalRequestRecordRouteHeadersString = null;
+         }
+         remoteTarget = null;
+         if(routeList != null) {
+@@ -610,6 +662,18 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
+         }
+ 	}
+ 
++    protected RecordRouteList getOriginalRequestRecordRouteHeaders() {
++    	if(originalRequestRecordRouteHeaders == null && originalRequestRecordRouteHeadersString != null) {
++    		try {
++				originalRequestRecordRouteHeaders = (RecordRouteList) new RecordRouteParser(originalRequestRecordRouteHeadersString).parse();
++			} catch (ParseException e) {
++				sipStack.getStackLogger().logError("error reparsing the originalRequest RecordRoute Headers", e);
++			}
++			originalRequestRecordRouteHeadersString =  null;
++    	}
++    	return originalRequestRecordRouteHeaders;
++    }
++    
+ 	private void recordStackTrace() {
+       StringWriter stringWriter = new StringWriter();
+       PrintWriter writer = new PrintWriter(stringWriter);
+@@ -980,10 +1044,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
+      */
+     private void sendAck(Request request, boolean throwIOExceptionAsSipException)
+             throws SipException {
+-    	if(originalRequest != null) {
+-    		originalRequestRecordRouteHeaders = originalRequest.getRecordRouteHeaders();
+-            originalRequest = null;
+-    	}
++    	
+         SIPRequest ackRequest = (SIPRequest) request;
+         if (sipStack.isLoggingEnabled())
+             sipStack.getStackLogger().logDebug("sendAck" + this);
+@@ -1046,9 +1107,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
+ 
+             this.setLastAckSent(ackRequest);
+             messageChannel.sendMessage(ackRequest);
+-            // Sent atleast one ACK.
+-            firstTransaction = null;
+-            lastTransaction = null;
++            cleanUpOnAck();
+             this.isAcknowledged = true;
+             this.highestSequenceNumberAcknowledged = Math.max(this.highestSequenceNumberAcknowledged,
+                     ((SIPRequest)ackRequest).getCSeq().getSeqNumber());
+@@ -1117,10 +1176,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
+      * Mark that the dialog has seen an ACK.
+      */
+     void ackReceived(long cseqNumber) {
+-    	if(originalRequest != null) {
+-    		originalRequestRecordRouteHeaders = originalRequest.getRecordRouteHeaders();
+-            originalRequest = null;
+-    	}
+         // Suppress retransmission of the final response
+         if (this.isAckSeen()) {
+         	sipStack.getStackLogger().logDebug("Ack already seen for response -- dropping");
+@@ -1157,8 +1212,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
+         } else {
+         	sipStack.getStackLogger().logDebug("tr is null -- not updating the ack state" );
+         }
+-        firstTransaction = null;
+-        lastTransaction =  null;
++        cleanUpOnAck();
+     }
+ 
+     /**
+@@ -1890,6 +1944,14 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
+      * @see javax.sip.Dialog#getCallId()
+      */
+     public CallIdHeader getCallId() {
++    	if(callIdHeader == null && callIdHeaderString != null) {
++    		try {
++				this.callIdHeader = (CallIdHeader) new CallIDParser(callIdHeaderString).parse();
++			} catch (ParseException e) {
++				sipStack.getStackLogger().logError("error reparsing the call id header", e);
++			}
++			callIdHeaderString = null;
++    	}
+         return this.callIdHeader;
+     }
+ 
+@@ -1907,6 +1969,14 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
+      */
+ 
+     public javax.sip.address.Address getLocalParty() {
++    	if(localParty == null && localPartyStringified != null) {
++    		try {
++				this.localParty = (Address) new AddressParser(localPartyStringified).address(true);
++			} catch (ParseException e) {
++				sipStack.getStackLogger().logError("error reparsing the localParty", e);
++			}
++			localPartyStringified = null;
++    	}
+         return this.localParty;
+     }
+ 
+@@ -1929,6 +1999,14 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
+      */
+     public javax.sip.address.Address getRemoteParty() {
+ 
++    	if(remoteParty == null && remotePartyStringified != null) {
++    		try {
++				this.remoteParty = (Address) new AddressParser(remotePartyStringified).address(true);
++			} catch (ParseException e) {
++				sipStack.getStackLogger().logError("error reparsing the remoteParty", e);
++			}
++			remotePartyStringified = null;
++    	}
+         if (sipStack.isLoggingEnabled()) {
+             sipStack.getStackLogger().logDebug("gettingRemoteParty " + this.remoteParty);
+         }
+@@ -1942,7 +2020,14 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
+      * @see javax.sip.Dialog#getRemoteTarget()
+      */
+     public javax.sip.address.Address getRemoteTarget() {
+-
++    	if(remoteTarget == null && remoteTargetStringified != null) {
++    		try {
++				this.remoteTarget = (Address) new AddressParser(remoteTargetStringified).address(true);
++			} catch (ParseException e) {
++				sipStack.getStackLogger().logError("error reparsing the remoteTarget", e);
++			}
++			remoteTargetStringified = null;
++    	}
+         return this.remoteTarget;
+     }
+ 
+@@ -2152,9 +2237,17 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
+         newRequest.setHeader(cseq);
+         newRequest.setHeader(from);
+         newRequest.setHeader(to);
+-        Iterator<SIPHeader> headerIterator = lastResponseHeaders.iterator();
++        Iterator<String> headerIterator = lastResponseHeaders.iterator();
+         while (headerIterator.hasNext()) {
+-            SIPHeader nextHeader = (SIPHeader) headerIterator.next();
++            String nextHeaderString = (String) headerIterator.next();
++            SIPHeader nextHeader = null;
++            try {
++            	HeaderParser headerParser = ParserFactory.createParser(nextHeaderString + "\n");
++                nextHeader = headerParser.parse();
++            } catch (ParseException ex) {
++                throw new IllegalArgumentException("error reparsing the call id header", ex);
++            }
++
+ //            // Some headers do not belong in a Request ....
+ //            if (SIPMessage.isResponseHeader(nextHeader)
+ //                || nextHeader instanceof ViaList
+@@ -2794,7 +2887,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
+         if(lastResponseHeaders != null) {
+         	lastResponseHeaders.clear();        
+         }
+-        this.lastResponseHeaders = new CopyOnWriteArrayList<SIPHeader>();
++        this.lastResponseHeaders = new CopyOnWriteArrayList<String>();
+         Iterator<SIPHeader> headerIterator = sipResponse.getHeaders();
+         while (headerIterator.hasNext()) {
+             SIPHeader nextHeader = headerIterator.next();
+@@ -2816,7 +2909,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
+                 || nextHeader instanceof To) {
+                 continue;
+             }            
+-            lastResponseHeaders.add(nextHeader);
++            lastResponseHeaders.add(nextHeader.toString());
+         }
+         this.setAssigned();
+         // Adjust state of the Dialog state machine.
+@@ -2931,9 +3024,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
+                  * execute.
+                  */
+                 if ( this.getState() != DialogState.CONFIRMED && this.getState() != DialogState.TERMINATED ) {
+-                    if (originalRequestRecordRouteHeaders != null) {                        
+-                        if (originalRequestRecordRouteHeaders != null) {
+-                            ListIterator<RecordRoute> it = originalRequestRecordRouteHeaders.listIterator(originalRequestRecordRouteHeaders.size());
++                    if (getOriginalRequestRecordRouteHeaders() != null) {                        
++//                        if (originalRequestRecordRouteHeaders != null) {
++                            ListIterator<RecordRoute> it = getOriginalRequestRecordRouteHeaders().listIterator(getOriginalRequestRecordRouteHeaders().size());
+                             while (it.hasPrevious()) {
+                                 RecordRoute rr = (RecordRoute) it.previous();
+                                 Route route = (Route) routeList.getFirst();
+@@ -2942,7 +3035,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
+                                 } else
+                                     break;
+                             }
+-                        }
++//                        }
+                     }
+                 }
+ 
+@@ -3362,6 +3455,14 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
+      * @return contact header belonging to the dialog.
+      */
+     public Contact getMyContactHeader() {
++    	if(contactHeader == null && contactHeaderStringified != null) {
++    		try {
++				this.contactHeader = (Contact) new ContactParser(contactHeaderStringified).parse();
++			} catch (ParseException e) {
++				sipStack.getStackLogger().logError("error reparsing the contact header", e);
++			}
++			contactHeaderStringified = null;
++    	}
+     	return contactHeader;
+     }
+ 
+diff --git a/src/gov/nist/javax/sip/stack/SIPServerTransaction.java b/src/gov/nist/javax/sip/stack/SIPServerTransaction.java
+index c971b08..b345d0a 100755
+--- a/src/gov/nist/javax/sip/stack/SIPServerTransaction.java
++++ b/src/gov/nist/javax/sip/stack/SIPServerTransaction.java
+@@ -1840,8 +1840,8 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
+         cleanUpOnTimer();
+         // it should be available in the processTxTerminatedEvent, so we can nullify it only here
+     	if(originalRequest != null) {
+-    		originalRequestSentBy = originalRequest.getTopmostVia().getSentBy();
+-    		originalRequestFromTag = originalRequest.getFromTag();    		
++//    		originalRequestSentBy = originalRequest.getTopmostVia().getSentBy();
++//    		originalRequestFromTag = originalRequest.getFromTag();    		
+     		originalRequest = null;    		
+     	}   
+     	if(inviteTransaction != null) {    		
+@@ -1881,9 +1881,18 @@ public class SIPServerTransaction extends SIPTransaction implements ServerReques
+     		inviteTransaction.releaseSem();
+     		inviteTransaction = null;
+     	}
+-    	if(originalRequest !=null) {
++    	if(originalRequest != null) {
+     		originalRequest.setTransaction(null);
+     		originalRequest.setInviteTransaction(null);
++    		if(!originalRequest.getMethod().equalsIgnoreCase(Request.INVITE)) {
++    			if(originalRequestSentBy == null) {
++    				originalRequestSentBy = originalRequest.getTopmostVia().getSentBy();
++    			}
++    			if(originalRequestFromTag == null) {
++    				originalRequestFromTag = originalRequest.getFromTag();
++    			}
++    			originalRequest.cleanUp();
++    		}
+     	}
+     	if(lastResponse != null) {
+     		lastResponseAsBytes = lastResponse.encodeAsBytes(this.getTransport());
+diff --git a/src/performance/uas/Shootme.java b/src/performance/uas/Shootme.java
+index b899593..cbe8de6 100644
+--- a/src/performance/uas/Shootme.java
++++ b/src/performance/uas/Shootme.java
+@@ -1,6 +1,7 @@
+ package performance.uas;
+ 
+ import gov.nist.javax.sip.message.RequestExt;
++import gov.nist.javax.sip.parser.selective.SelectiveParserFactory;
+ 
+ import java.util.Properties;
+ import java.util.Timer;
+@@ -170,7 +171,6 @@ public class Shootme implements SipListener {
+             	serverTransactionId = ((SipProvider)requestEvent.getSource()).getNewServerTransaction(request);
+             }
+             serverTransactionId.sendResponse(response);
+-
+         } catch (Exception ex) {
+             ex.printStackTrace();
+             //System.exit(0);
+@@ -207,7 +207,7 @@ public class Shootme implements SipListener {
+         properties.setProperty("gov.nist.javax.sip.RECEIVE_UDP_BUFFER_SIZE", "65536");
+         properties.setProperty("gov.nist.javax.sip.SEND_UDP_BUFFER_SIZE", "65536");
+         properties.setProperty("gov.nist.javax.sip.CONGESTION_CONTROL_ENABLED", "false");
+-//        properties.setProperty("gov.nist.javax.sip.MESSAGE_PARSER_FACTORY", LazyMessageParserFactory.class.getName());
++        properties.setProperty("gov.nist.javax.sip.MESSAGE_PARSER_FACTORY", SelectiveParserFactory.class.getName());
+         try {
+             // Create SipStack object
+             sipStack = sipFactory.createSipStack(properties);
+@@ -251,7 +251,8 @@ public class Shootme implements SipListener {
+ 
+     public void processTransactionTerminated(
+             TransactionTerminatedEvent transactionTerminatedEvent) {
+-
++    	Request request = transactionTerminatedEvent.getServerTransaction().getRequest();
++//    	System.out.println(request);
+     }
+ 
+     public void processDialogTerminated(

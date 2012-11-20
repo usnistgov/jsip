@@ -1,0 +1,107 @@
+<project basedir="." default="notifier">
+	<property name="root" value="../../../" />
+	<property file="${root}/ant-build-config.properties" />
+	<property name="classes" value="${root}/classes" />
+	<property name="srcroot" value="${root}/src" />
+	<property name="log4j_jar" value="${root}/lib/${log4j}" />
+	<property name="junit_jar" value="${root}/lib/${junit}" />
+	<property name="package.prefix" value="examples.subsnotify" />
+	<path id="project.class.path">
+		<pathelement location="${classes}" />
+		<pathelement location="${log4j_jar}" />
+		<pathelement location="${junit_jar}" />
+	</path>
+	<target name="make">
+		<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" source="${javac.source}" 
+			nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}" 
+			srcdir="${srcroot}" includes="examples/subsnotify/**/*.java" 
+			classpathref="project.class.path" destdir="${classes}">
+		</javac>
+	</target>
+	<target name="notifier" depends="make" description="build and run the example Notifier.">
+		<delete file="notifierdebug_5070.txt" failonError="0"/>
+		<delete file="notifierlog_5070.txt" failonError="0"/>
+		<java classname="examples.subsnotify.Notifier" classpathref="project.class.path" fork="true">
+		</java>
+	</target>
+
+	<target name="notifier2" depends="make" description="build and run a second Notifier.">
+		<delete file="notifierdebug_5071.txt" failonError="0"/>
+		<delete file="notifierlog_5071.txt" failonError="0"/>
+		<java classname="examples.subsnotify.Notifier" classpathref="project.class.path" fork="true">
+			<arg value="5071"/>
+		</java>
+	</target>
+		
+	<target name="subscriber" depends="make" description="run the example Subscriber.">
+		<delete file="subscriberdebug.txt" failonerror="false" />
+		<delete file="subscriberoutputlog.txt" failonerror="false"/>
+		<delete file="subscriberlog.txt" failonerror="false"/>
+		<java classname="examples.subsnotify.Subscriber" fork="true" classpathref="project.class.path" >
+			<arg value="5070"/>
+		</java>
+	</target>
+
+	<target name="subscriber2" depends="make" description="run the subscriber but point it at the Forker" >
+		<delete file="subscriberdebug.txt" failonerror="false" />
+		<delete file="subscriberoutputlog.txt" failonerror="false"/>
+		<delete file="subscriberlog.txt" failonerror="false"/>
+		<java classname="examples.subsnotify.Subscriber" fork="true" classpathref="project.class.path" >
+			<arg value="5065"/>
+		</java>
+	</target>
+		
+	
+	<target name="forker" depends="make" description="run the example Forker.">
+		<delete file="forkeroutputlog.txt" />
+		<delete file="forkerdebug.txt" />
+		<delete file="forkerlog.txt" />
+		<java classname="examples.subsnotify.Forker" fork="true" classpathref="project.class.path" />
+	</target>
+	
+	<target name="subscriberlog" description="Show the subscriber log">
+		<java classname="tools.tracesviewer.TracesViewer" 
+		      classpathref="project.class.path" fork="true">
+			<arg value= "-server_file" />
+			<arg value= "subscriberlog.txt" />
+		</java>
+	</target>
+	<target name="notifierlog" description="Show the notifier log">
+		<java classname="tools.tracesviewer.TracesViewer" 
+		      classpathref="project.class.path" fork="true">
+			<arg value="-server_file" />
+			<arg value="notifierlog_5070.txt" />
+		</java>
+	</target>
+	<target name="notifierlog2" description="Show the notifier log">
+		<java classname="tools.tracesviewer.TracesViewer" 
+		      classpathref="project.class.path" fork="true">
+			<arg value="-server_file" />
+			<arg value="notifierlog_5071.txt" />
+		</java>
+	</target>
+	<target name="forkerlog" description="Show the proxy log">
+		<java classname="tools.tracesviewer.TracesViewer" 
+		      classpathref="project.class.path" fork="true">
+			<arg value="-server_file" />
+			<arg value="forkerlog.txt" />
+		</java>
+	</target>
+	<target name="clean" description="clean the logs">
+		<delete failonerror="false" >
+			<fileset dir="." includes="*debug*.txt" />
+			<fileset dir="." includes="*log*.txt" />
+		</delete>
+	</target>
+	<target name="notifier3" depends="make" description="build and run the  example UAc.">
+		<delete file="notifierdebug_5070.txt" failonError="0"/>
+		<delete file="notifierlog_5070.txt" failonError="0"/>
+		<exec dir="." executable="${java.home}/bin/java.exe" >
+		    <arg line="-classpath ${classes};${log4j_jar};${junit_jar}" />
+		    <arg line="-Xrunyjpagent:onexit=memory,dir=c:/ ${package.prefix}/Notifier" />
+		    <arg line="101" />
+		</exec>
+	</target>
+
+
+</project>
