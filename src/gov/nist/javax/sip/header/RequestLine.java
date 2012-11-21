@@ -188,20 +188,28 @@ public class RequestLine extends SIPObject implements SipRequestLine {
     * are set.
     */
     public boolean equals(Object other) {
-        boolean retval;
+        if (this == other)
+          return true;
         if (!other.getClass().equals(this.getClass())) {
             return false;
         }
         RequestLine that = (RequestLine) other;
-        try {
-            retval =
-                this.method.equals(that.method)
-                    && this.uri.equals(that.uri)
-                    && this.sipVersion.equals(that.sipVersion);
-        } catch (NullPointerException ex) {
-            retval = false;
-        }
-        return retval;
+        if (this.method == null) {
+          if (that.method != null)
+            return false;
+        } else if (!this.method.equals(that.method))
+          return false;
+        if (this.sipVersion == null) {
+          if (that.sipVersion != null)
+            return false;
+        } else if (!this.sipVersion.equals(that.sipVersion))
+          return false;
+        if (this.uri == null) {
+          if (that.uri != null)
+            return false;
+        } else if (!this.uri.equals(that.uri))
+          return false;
+        return true;
     }
 
     public Object clone() {
@@ -211,6 +219,8 @@ public class RequestLine extends SIPObject implements SipRequestLine {
         return retval;
     }
 }
+
+
 /*
  * $Log: not supported by cvs2svn $
  * Revision 1.8  2009/09/15 02:55:27  mranga

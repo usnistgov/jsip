@@ -65,21 +65,19 @@ class NistSipMessageFactoryImpl implements StackMessageFactory {
      *            is the MessageChannel abstraction for this SIPServerRequest.
      */
     public ServerRequestInterface newSIPServerRequest(SIPRequest sipRequest,
-            MessageChannel messageChannel) {
+                                                      SIPTransaction sipTransaction) {
 
-        if (messageChannel == null || sipRequest == null) {
+        if (sipTransaction == null || sipRequest == null) {
             throw new IllegalArgumentException("Null Arg!");
         }
 
-        SIPTransactionStack theStack = (SIPTransactionStack) messageChannel.getSIPStack();
+        SIPTransactionStack theStack = sipTransaction.getSIPStack();
         DialogFilter retval = new DialogFilter(
                 theStack);
-        if (messageChannel instanceof SIPTransaction) {
-            // If the transaction has already been created
-            // then set the transaction channel.
-            retval.transactionChannel = (SIPTransaction) messageChannel;
-        }
-        retval.listeningPoint = messageChannel.getMessageProcessor()
+        // If the transaction has already been created
+        // then set the transaction channel.
+        retval.transactionChannel = sipTransaction;
+        retval.listeningPoint = sipTransaction.getMessageProcessor()
                 .getListeningPoint();
         if (retval.listeningPoint == null)
             return null;
@@ -87,7 +85,7 @@ class NistSipMessageFactoryImpl implements StackMessageFactory {
             logger.logDebug(
                     "Returning request interface for "
                             + sipRequest.getFirstLine() + " " + retval
-                            + " messageChannel = " + messageChannel);
+                            + " sipTransaction = " + sipTransaction);
         return retval;
     }
 
@@ -100,13 +98,10 @@ class NistSipMessageFactoryImpl implements StackMessageFactory {
      * @param messageChannel
      *            is the MessageChannel abstraction for this SIPServerResponse
      */
-    public ServerResponseInterface newSIPServerResponse(
-            SIPResponse sipResponse, MessageChannel messageChannel) {
-        SIPTransactionStack theStack = (SIPTransactionStack) messageChannel
-                .getSIPStack();
+  public ServerResponseInterface newSIPServerResponse(
+            SIPResponse sipResponse, MessageChannel msgChannel) {
         // Tr is null if a transaction is not mapped.
-        SIPTransaction tr = (SIPTransaction) ((SIPTransactionStack) theStack)
-                .findTransaction(sipResponse, false);
+        SIPTransaction tr = sipStack.findTransaction(sipResponse, false);
         if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
             logger.logDebug(
                     "Found Transaction " + tr + " for " + sipResponse);
@@ -132,12 +127,11 @@ class NistSipMessageFactoryImpl implements StackMessageFactory {
             }
         }
 
-        DialogFilter retval = new DialogFilter(
-                sipStack);
+        DialogFilter retval = new DialogFilter(sipStack);
 
         retval.transactionChannel = tr;
 
-        retval.listeningPoint = messageChannel.getMessageProcessor()
+        retval.listeningPoint = msgChannel.getMessageProcessor()
                 .getListeningPoint();
         return retval;
     }
