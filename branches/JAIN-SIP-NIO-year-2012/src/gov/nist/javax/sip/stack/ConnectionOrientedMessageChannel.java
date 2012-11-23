@@ -123,10 +123,10 @@ public abstract class ConnectionOrientedMessageChannel extends MessageChannel im
      * Close the message channel.
      */
     public void close() {
-    	close(true);
+    	close(true, true);
     }
     
-    protected abstract void close(boolean b);
+    protected abstract void close(boolean removeSocket, boolean stopKeepAliveTask);
     
 	/**
      * Get my SIP Stack.
@@ -822,7 +822,7 @@ public abstract class ConnectionOrientedMessageChannel extends MessageChannel im
                 logger.logDebug(
                         "~~~ Starting processing of KeepAliveTimeoutEvent( " + peerAddress.getHostAddress() + "," + peerPort + ")...");
             }
-            close(true);
+            close(true, true);
             if(sipStack instanceof SipStackImpl) {
 	            for (Iterator<SipProviderImpl> it = ((SipStackImpl)sipStack).getSipProviders(); it.hasNext();) {
 	                SipProviderImpl nextProvider = (SipProviderImpl) it.next();
