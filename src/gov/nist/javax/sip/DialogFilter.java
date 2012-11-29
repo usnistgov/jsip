@@ -1209,7 +1209,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                                 .getHeader(EventHeader.NAME);
                         if (sipStack.isEventForked(event.getEventType())) {
 
-                            subscriptionDialog = SIPDialog.createFromNOTIFY(
+                            subscriptionDialog = sipStack.createDialog(
                                     pendingSubscribeClientTx, transaction);
 
                         }

@@ -58,6 +58,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.concurrent.TimeUnit;
 
@@ -317,7 +318,7 @@ public class UDPMessageChannel extends MessageChannel implements
             } catch (Exception e) {
 
                 logger.logError(
-                        "Error while processing incoming UDP packet", e);
+                        "Error while processing incoming UDP packet" + Arrays.toString(packet.getData()), e);
             }
 
             if (sipStack.threadPoolSize == -1) {

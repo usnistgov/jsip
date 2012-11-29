@@ -550,7 +550,6 @@ Caused by: java.text.ParseException: Scheme for contact should be sips:sip:proxy
         if (!this.getClass().equals(other.getClass()))
             return false;
         SIPRequest that = (SIPRequest) other;
-
         return requestLine.equals(that.requestLine) && super.equals(other);
     }
 
