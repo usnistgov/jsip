@@ -31,12 +31,12 @@ import  java.util.*;
 /**
  * @version 1.2 $Revision: 1.6 $ $Date: 2009-07-17 18:57:19 $
  */
-class EventWrapper {
+public class EventWrapper {
 
     protected EventObject sipEvent;
     protected SIPTransaction transaction;
 
-    EventWrapper(EventObject sipEvent, SIPTransaction transaction) {
+    public EventWrapper(EventObject sipEvent, SIPTransaction transaction) {
         this.sipEvent = sipEvent;
         this.transaction = transaction;
     }
