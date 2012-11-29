@@ -48,7 +48,7 @@ import gov.nist.core.ThreadAuditor;
  *
  *
  */
-class EventScanner implements Runnable {
+public class EventScanner implements Runnable {
 	
 	private static StackLogger logger = CommonLogger.getLogger(EventScanner.class);
 

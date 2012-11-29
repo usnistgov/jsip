@@ -880,6 +880,26 @@ public abstract class SIPTransactionStack implements
             SIPResponse sipResponse) {
         return new SIPDialog(sipProvider, sipResponse);
     }
+    
+    /**
+     * Creates a new dialog based on a received NOTIFY. The dialog state is
+     * initialized appropriately. The NOTIFY differs in the From tag
+     * 
+     * Made this a separate method to clearly distinguish what's happening here
+     * - this is a non-trivial case
+     * 
+     * @param subscribeTx
+     *            - the transaction started with the SUBSCRIBE that we sent
+     * @param notifyST
+     *            - the ServerTransaction created for an incoming NOTIFY
+     * @return -- a new dialog created from the subscribe original SUBSCRIBE
+     *         transaction.
+     * 
+     * 
+     */
+    public SIPDialog createDialog(SIPClientTransaction subscribeTx, SIPTransaction notifyST) {
+      return new SIPDialog(subscribeTx, notifyST);
+    }
 
     /**
      * Remove the dialog from the dialog table.
@@ -1422,11 +1442,11 @@ public abstract class SIPTransactionStack implements
      *            -- the server transaction to map.
      */
     public void mapTransaction(SIPServerTransaction transaction) {
-        if (transaction.isMapped)
+        if (transaction.isTransactionMapped())
             return;
         addTransactionHash(transaction);
         // transaction.startTransactionTimer();
-        transaction.isMapped = true;
+        transaction.setTransactionMapped(true);
     }
 
     /**
@@ -1495,8 +1515,7 @@ public abstract class SIPTransactionStack implements
                 if (currentTransaction != null) {
                     // Associate the tx with the received request.
                     requestReceived.setTransaction(currentTransaction);
-                    if (currentTransaction != null
-                            && currentTransaction.acquireSem())
+                    if (currentTransaction.acquireSem())
                         return currentTransaction;
                     else
                         return null;
@@ -1641,13 +1660,13 @@ public abstract class SIPTransactionStack implements
         // Set ths transaction's encapsulated response interface
         // from the superclass
         if (this.logger.isLoggingEnabled(StackLogger.TRACE_INFO)) {
-            currentTransaction.logResponse(responseReceived, System
+            currentTransaction.getMessageChannel().logResponse(responseReceived, System
                     .currentTimeMillis(), "before processing");
         }
 
         if (acquired) {
             ServerResponseInterface sri = sipMessageFactory
-                    .newSIPServerResponse(responseReceived, currentTransaction);
+                    .newSIPServerResponse(responseReceived, currentTransaction.getMessageChannel());
             if (sri != null) {
                 currentTransaction.setResponseInterface(sri);
             } else {
@@ -1680,8 +1699,6 @@ public abstract class SIPTransactionStack implements
      */
     public MessageChannel createMessageChannel(SIPRequest request,
             MessageProcessor mp, Hop nextHop) throws IOException {
-        // New client transaction to return
-        SIPTransaction returnChannel;
 
         // Create a new client transaction around the
         // superclass' message channel
@@ -1691,22 +1708,7 @@ public abstract class SIPTransactionStack implements
         HostPort targetHostPort = new HostPort();
         targetHostPort.setHost(targetHost);
         targetHostPort.setPort(nextHop.getPort());
-        MessageChannel mc = mp.createMessageChannel(targetHostPort);
-
-        // Superclass will return null if no message processor
-        // available for the transport.
-        if (mc == null)
-            return null;
-
-        returnChannel = createClientTransaction(request, mc);
-
-        ((SIPClientTransaction) returnChannel).setViaPort(nextHop.getPort());
-        ((SIPClientTransaction) returnChannel).setViaHost(nextHop.getHost());
-        addTransactionHash(returnChannel);
-        // clientTransactionTable.put(returnChannel.getTransactionId(),
-        // returnChannel);
-        // Add the transaction timer for the state machine.
-        // returnChannel.startTransactionTimer();
+        MessageChannel returnChannel = mp.createMessageChannel(targetHostPort);
         return returnChannel;
 
     }
@@ -1720,7 +1722,7 @@ public abstract class SIPTransactionStack implements
      */
     public SIPClientTransaction createClientTransaction(SIPRequest sipRequest,
             MessageChannel encapsulatedMessageChannel) {
-        SIPClientTransaction ct = new SIPClientTransaction(this,
+        SIPClientTransaction ct = new SIPClientTransactionImpl(this,
                 encapsulatedMessageChannel);
         ct.setOriginalRequest(sipRequest);
         return ct;
@@ -1739,7 +1741,7 @@ public abstract class SIPTransactionStack implements
         // unlimitedServerTransactionTableSize is true,
         // a new Server Transaction is created no matter what
         if (unlimitedServerTransactionTableSize) {
-            return new SIPServerTransaction(this, encapsulatedMessageChannel);
+            return new SIPServerTransactionImpl(this, encapsulatedMessageChannel);
         } else {
             float threshold = ((float) (serverTransactionTable.size() - serverTransactionTableLowaterMark))
                     / ((float) (serverTransactionTableHighwaterMark - serverTransactionTableLowaterMark));
@@ -1747,7 +1749,7 @@ public abstract class SIPTransactionStack implements
             if (decision) {
                 return null;
             } else {
-                return new SIPServerTransaction(this,
+                return new SIPServerTransactionImpl(this,
                         encapsulatedMessageChannel);
             }
 
@@ -2017,7 +2019,7 @@ public abstract class SIPTransactionStack implements
             transaction.setState(TransactionState._TERMINATED);
             if (transaction instanceof SIPServerTransaction) {
                 // let the reaper get him
-                ((SIPServerTransaction) transaction).collectionTime = 0;
+                ((SIPServerTransaction) transaction).setCollectionTime(0);
             }
             transaction.disableTimeoutTimer();
             transaction.disableRetransmissionTimer();
@@ -2688,13 +2690,13 @@ public abstract class SIPTransactionStack implements
         while (it.hasNext()) {
             SIPTransaction sipTransaction = (SIPTransaction) it.next();
             if (sipTransaction != null) {
-                if (sipTransaction.auditTag == 0) {
+                if (sipTransaction.getAuditTag() == 0) {
                     // First time we see this transaction. Mark it as audited.
-                    sipTransaction.auditTag = currentTime;
+                    sipTransaction.setAuditTag(currentTime);
                 } else {
                     // We've seen this transaction before. Check if his time's
                     // up.
-                    if (currentTime - sipTransaction.auditTag >= a_nLeakedTransactionTimer) {
+                    if (currentTime - sipTransaction.getAuditTag() >= a_nLeakedTransactionTimer) {
                         // Leaked transaction found
                         leakedTransactions++;
 
