@@ -272,7 +272,8 @@ public class IOHandler {
         int length = bytes.length;
         if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             logger.logDebug(
-                    "sendBytes " + transport + " inAddr "
+                    "sendBytes " + transport + " local inAddr "
+                    		+ senderAddress.getHostAddress() + " remote inAddr "
                             + receiverAddress.getHostAddress() + " port = "
                             + contactPort + " length = " + length + " isClient " + isClient );
 
@@ -316,6 +317,9 @@ public class IOHandler {
                         	removeSocket(key);
                         	throw new SocketException(e.getClass() + " " + e.getMessage() + " " + e.getCause() + " Problem connecting " +
                         			receiverAddress + " " + contactPort + " " + senderAddress + " for message " + new String(bytes, "UTF-8"));
+                        }
+                        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                        	logger.logDebug("local inaddr = " + clientSock.getLocalAddress().getHostAddress());
                         }
                         OutputStream outputStream = clientSock
                                 .getOutputStream();
