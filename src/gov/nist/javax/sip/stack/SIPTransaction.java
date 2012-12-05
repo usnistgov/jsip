@@ -1431,7 +1431,7 @@ public abstract class SIPTransaction extends MessageChannel implements
         	} else {
         		return null;
         	}
-        } else if (this.getMessageChannel() instanceof NioTlsMessageChannel) {
+        } else if (this.getMessageChannel() instanceof NioTlsWebSocketMessageChannel) {
         	SSLEngine sslEngine = ((NioTlsWebSocketMessageChannel) this.getMessageChannel()).sslStateMachine.sslEngine;
         	if(sslEngine.getHandshakeStatus().equals(HandshakeStatus.FINISHED) ||
         			sslEngine.getHandshakeStatus().equals(HandshakeStatus.NOT_HANDSHAKING)) {
