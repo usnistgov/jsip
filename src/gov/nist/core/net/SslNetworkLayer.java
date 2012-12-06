@@ -25,6 +25,12 @@
 */
 package gov.nist.core.net;
 
+import gov.nist.core.CommonLogger;
+import gov.nist.core.LogWriter;
+import gov.nist.core.StackLogger;
+import gov.nist.javax.sip.SipStackImpl;
+import gov.nist.javax.sip.stack.ClientAuthType;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -39,6 +45,7 @@ import java.net.SocketTimeoutException;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -46,7 +53,9 @@ import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
 /**
  * extended implementation of a network layer that allows to define a private java
@@ -59,11 +68,34 @@ import javax.net.ssl.TrustManagerFactory;
  */
 public class SslNetworkLayer implements NetworkLayer {
 
+	private static StackLogger logger = CommonLogger.getLogger(SslNetworkLayer.class);
+	
     private SSLSocketFactory sslSocketFactory;
 
     private SSLServerSocketFactory sslServerSocketFactory;
+    
+ // Create a trust manager that does not validate certificate chains
+    TrustManager[] trustAllCerts = new TrustManager[] { 
+      new X509TrustManager() {
+        public java.security.cert.X509Certificate[] getAcceptedIssuers() { 
+          return new X509Certificate[0]; 
+        }
+        public void checkClientTrusted(X509Certificate[] certs, String authType) {
+        	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                logger.logDebug(
+                        "checkClientTrusted : Not validating certs " + certs + " authType " + authType);
+            }
+        }
+        public void checkServerTrusted(X509Certificate[] certs, String authType) {
+        	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                logger.logDebug(
+                        "checkServerTrusted : Not validating certs " + certs + " authType " + authType);
+            }
+        }
+    }};
 
     public SslNetworkLayer(
+    		SipStackImpl sipStack,
             String trustStoreFile,
             String keyStoreFile,
             char[] keyStorePassword,
@@ -84,8 +116,20 @@ public class SslNetworkLayer implements NetworkLayer {
         trustStore.load(new FileInputStream(trustStoreFile), keyStorePassword);
         tmFactory.init(trustStore);
         kmFactory.init(keyStore, keyStorePassword);
-        sslContext.init(kmFactory.getKeyManagers(), tmFactory.getTrustManagers(), secureRandom);
-        sslServerSocketFactory = sslContext.getServerSocketFactory();
+        if(sipStack.getClientAuth() == ClientAuthType.DisabledAll) {
+        	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                logger.logDebug(
+                        "ClientAuth " + sipStack.getClientAuth()  +  " bypassing all cert validations");
+            }
+        	sslContext.init(null, trustAllCerts, secureRandom);
+        } else {
+        	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                logger.logDebug(
+                        "ClientAuth " + sipStack.getClientAuth());
+            }
+        	sslContext.init(kmFactory.getKeyManagers(), tmFactory.getTrustManagers(), secureRandom);
+        }
+        sslServerSocketFactory = sslContext.getServerSocketFactory();        
         sslSocketFactory = sslContext.getSocketFactory();
     }
 
@@ -220,4 +264,7 @@ public class SslNetworkLayer implements NetworkLayer {
 //        else
 //            return new Socket(address, port);
     }
+
+	@Override
+	public void setSipStack(SipStackImpl sipStackImpl) {}
 }

@@ -30,5 +30,5 @@ package gov.nist.javax.sip.stack;
  *
  */
 public enum ClientAuthType {
-    Enabled, Disabled, Want, Default;
+    Enabled, Disabled, DisabledAll, Want, Default;
 }
