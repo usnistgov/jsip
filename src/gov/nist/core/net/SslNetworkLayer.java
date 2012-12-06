@@ -28,12 +28,14 @@ package gov.nist.core.net;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.SecureRandom;
@@ -116,22 +118,49 @@ public class SslNetworkLayer implements NetworkLayer {
     /* Added by Daniel J. Martinez Manzano <dani@dif.um.es> */
     public SSLSocket createSSLSocket(InetAddress address, int port)
             throws IOException {
-        return (SSLSocket) sslSocketFactory.createSocket(address, port);
+    	return createSSLSocket(address, port, null);
     }
 
     /* Added by Daniel J. Martinez Manzano <dani@dif.um.es> */
     public SSLSocket createSSLSocket(InetAddress address, int port,
             InetAddress myAddress) throws IOException {
-        return (SSLSocket) sslSocketFactory.createSocket(address, port,
-                myAddress, 0);
+    	SSLSocket sock = (SSLSocket) sslSocketFactory.createSocket();
+    	if (myAddress != null) {
+	    	// trying to bind to the correct ipaddress (in case of multiple vip addresses by example)
+	    	// and let the JDK pick an ephemeral port
+	    	sock.bind(new InetSocketAddress(myAddress, 0));
+    	}
+    	try {
+    		sock.connect(new InetSocketAddress(address, port), 8000);
+    	} catch (SocketTimeoutException e) {
+    		throw new ConnectException("Socket timeout error (8sec)" + address + ":" + port);
+    	}
+    	return sock;
     }
 
     public Socket createSocket(InetAddress address, int port,
             InetAddress myAddress) throws IOException {
-        if (myAddress != null)
-            return new Socket(address, port, myAddress, 0);
-        else
-            return new Socket(address, port);
+    	if (myAddress != null) {
+        	Socket sock = new Socket();
+        	// trying to bind to the correct ipaddress (in case of multiple vip addresses by example)
+        	// and let the JDK pick an ephemeral port
+        	sock.bind(new InetSocketAddress(myAddress, 0));
+        	try {
+	        	sock.connect(new InetSocketAddress(address, port), 8000);
+	        } catch (SocketTimeoutException e) {
+	        	throw new ConnectException("Socket timeout error (8sec)" + address + ":" + port);
+	        }
+        	return sock;
+        }
+        else {
+        	Socket sock =  new Socket();
+        	try {
+        		sock.connect(new InetSocketAddress(address, port), 8000);
+        	} catch (SocketTimeoutException e) {
+        		throw new ConnectException("Socket timeout error (8sec)" + address + ":" + port);
+        	}
+        	return sock;
+        }
     }
 
     /**
@@ -154,17 +183,41 @@ public class SslNetworkLayer implements NetworkLayer {
                     InetAddress myAddress, int myPort)
         throws IOException
     {
-        if (myAddress != null)
-            return new Socket(address, port, myAddress, myPort);
-        else if (port != 0)
-        {
-            //myAddress is null (i.e. any)  but we have a port number
-            Socket sock = new Socket();
-            sock.bind(new InetSocketAddress(port));
-            sock.connect(new InetSocketAddress(address, port));
-            return sock;
+    	if (myAddress != null) {
+        	Socket sock = new Socket();
+        	// trying to bind to the correct ipaddress (in case of multiple vip addresses by example)
+        	// and let the JDK pick an ephemeral port    
+        	sock.bind(new InetSocketAddress(myAddress, 0));
+        	try {
+	        	sock.connect(new InetSocketAddress(address, port), 8000);
+	        } catch (SocketTimeoutException e) {
+	        	throw new ConnectException("Socket timeout error (8sec)" + address + ":" + port);
+	        }
+        	return sock;
         }
-        else
-            return new Socket(address, port);
+        else {
+        	Socket sock =  new Socket();
+        	if(myPort != 0) {
+        		sock.bind(new InetSocketAddress(port));
+        	}
+        	try {
+        		sock.connect(new InetSocketAddress(address, port), 8000);
+        	} catch (SocketTimeoutException e) {
+        		throw new ConnectException("Socket timeout error (8sec)" + address + ":" + port);
+        	}
+        	return sock;
+        }
+//        if (myAddress != null)
+//            return new Socket(address, port, myAddress, myPort);
+//        else if (port != 0)
+//        {
+//            //myAddress is null (i.e. any)  but we have a port number
+//            Socket sock = new Socket();
+//            sock.bind(new InetSocketAddress(port));
+//            sock.connect(new InetSocketAddress(address, port));
+//            return sock;
+//        }
+//        else
+//            return new Socket(address, port);
     }
 }
