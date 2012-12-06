@@ -108,7 +108,7 @@ public class TLSMessageChannel extends ConnectionOrientedMessageChannel {
         mySock = (SSLSocket) sock;
         if (sock instanceof SSLSocket) {
             SSLSocket sslSock = (SSLSocket) sock;
-            if(sipStack.getClientAuth() != ClientAuthType.Want && sipStack.getClientAuth() != ClientAuthType.Disabled) {
+            if(sipStack.getClientAuth() != ClientAuthType.Want && sipStack.getClientAuth() != ClientAuthType.Disabled && sipStack.getClientAuth() != ClientAuthType.DisabledAll) {
                 sslSock.setNeedClientAuth(true);
             }
             if(logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {

@@ -528,9 +528,9 @@ import java.util.concurrent.TimeUnit;
  * </li>
  * 
  * <li><b>gov.nist.javax.sip.TLS_CLIENT_AUTH_TYPE = String </b> Valid values are Default (backward compatible with previous versions)
- * , Enabled, Want or Disabled. Set to Enabled if you want the SSL stack to require a valid certificate chain from the client before 
+ * , Enabled, Want, Disabled or DisabledAll. Set to Enabled if you want the SSL stack to require a valid certificate chain from the client before 
  * accepting a connection. Set to Want if you want the SSL stack to request a client Certificate, but not fail if one isn't presented. 
- * A Disabled value will not require a certificate chain.
+ * A Disabled value will not require a certificate chain for the Server Connection. A DisabledAll will not require a certificate chain for both Server and Client Connections.
  * </li>
  *
  *<li><b>gov.nist.javax.sip.RELIABLE_CONNECTION_KEEP_ALIVE_TIMEOUT</b> Value in seconds which is used as default keepalive timeout
@@ -844,6 +844,14 @@ public class SipStackImpl extends SIPTransactionStack implements
 					this.addExtensionMethod(em);
 			}
 		}
+		
+		// Allow application to choose the tls client auth policy on the socket
+        String clientAuthType = configurationProperties.getProperty("gov.nist.javax.sip.TLS_CLIENT_AUTH_TYPE");
+        if (clientAuthType != null) {
+            super.clientAuth = ClientAuthType.valueOf(clientAuthType);
+            logger.logInfo("using " + clientAuthType + " tls auth policy");
+        }
+		
 		String keyStoreFile = configurationProperties
 				.getProperty("javax.net.ssl.keyStore");
 		String trustStoreFile = configurationProperties
@@ -855,7 +863,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 			String keyStorePassword = configurationProperties
 					.getProperty("javax.net.ssl.keyStorePassword");
 			try {
-				this.networkLayer = new SslNetworkLayer(trustStoreFile,
+				this.networkLayer = new SslNetworkLayer(this, trustStoreFile,
 						keyStoreFile,
 						keyStorePassword != null ?
 						    keyStorePassword.toCharArray() : null,
@@ -958,13 +966,6 @@ public class SipStackImpl extends SIPTransactionStack implements
 					ex);
 		}
 		
-		// Allow application to choose the tls client auth policy on the socket
-        String clientAuthType = configurationProperties.getProperty("gov.nist.javax.sip.TLS_CLIENT_AUTH_TYPE");
-        if (clientAuthType != null) {
-            super.clientAuth = ClientAuthType.valueOf(clientAuthType);
-            logger.logInfo("using " + clientAuthType + " tls auth policy");
-        }
-
 		// The following features are unique to the NIST implementation.
 
 		/*
@@ -981,6 +982,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 				Class<?> clazz = Class.forName(path);
 				Constructor<?> c = clazz.getConstructor(new Class[0]);
 				networkLayer = (NetworkLayer) c.newInstance(new Object[0]);
+				networkLayer.setSipStack(this);
 			} catch (Exception e) {
 				throw new PeerUnavailableException(
 						"can't find or instantiate NetworkLayer implementation: "
