@@ -100,7 +100,7 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 
 			try {
 				if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-					logger.logDebug("IOException  closing sock " + ex);
+					logger.logDebug("IOException  closing sock " + ex + "myAddress:myport " + myAddress + ":" + myPort + ", remoteAddress:remotePort " + peerAddress + ":" + peerPort);
 				
 				close(false);
 				
