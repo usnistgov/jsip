@@ -80,26 +80,13 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 			
 			// This prevents us from getting stuck in a selector thread spinloop when socket is constantly ready for reading but there are no bytes.
 			if(nbytes == 0) throw new IOException("The socket is giving us empty TCP packets. " +
-					"This is usually an indication we are stuck and it is better to disconnect?");
+					"This is usually an indication we are stuck and it is better to disconnect.");
 			
-			// TODO: This happens on weird conditions when a dead socket suddenly resurrects but we already have another socket
-			if (streamError) {
-				if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-					logger.logDebug("Stream error. We will clean up, but the call may continue on the other socket.");
-				}
-				nioParser.addBytes("\r\n\r\n".getBytes("UTF-8"));
-				try {
-					nioParser.close();
-					close();
-				} catch (Exception ioex) {
-				}
-				channelMap.remove(socketChannel);
-				//((NioTcpMessageProcessor)messageProcessor).nioHandler.removeSocket(key)
-				this.isRunning = false;
-				((ConnectionOrientedMessageProcessor) this.messageProcessor)
-						.remove(this);
-				return;
-			}
+			if(streamError) throw new IOException("Stream error msg len = -1 " +
+					"This is usually an indication we are stuck and it is better to disconnect.");
+			
+			// Otherwise just add the bytes to queue
+			
 			byte[] bytes = new byte[nbytes];
 			System.arraycopy(msg, 0, bytes, 0, nbytes);
 			addBytes(bytes);
@@ -118,13 +105,11 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 					logger.logDebug("IOException  closing sock " + ex);
 				
 				close();
-				nioParser.close();
-				this.isRunning = false;
-				((ConnectionOrientedMessageProcessor) this.messageProcessor)
-				.remove(this);
+				
 				
 			} catch (Exception ex1) {
-				// Do nothing.
+				if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+					logger.logDebug("Exception closing the socket " + ex1);
 			}
 		} catch (Exception ex) {
 			InternalErrorHandler.handleException(ex, logger);
@@ -154,7 +139,7 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 			super.key = MessageChannel.getKey(peerAddress, peerPort, getTransport());
 		} finally {
 			if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-				logger.logDebug("Done creating NioTcpMessageChannel " + this);
+				logger.logDebug("Done creating NioTcpMessageChannel " + this + " socketChannel = " +socketChannel);
 			}
 		}
 
@@ -170,7 +155,7 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 			messageProcessor = nioTcpMessageProcessor;
 			// Take a cached socket to the destination, if none create a new one and cache it
 			socketChannel = nioTcpMessageProcessor.nioHandler.createOrReuseSocket(
-				inetAddress, port);
+					inetAddress, port);
 			peerAddress = socketChannel.socket().getInetAddress();
 			peerPort = socketChannel.socket().getPort();
 			super.mySock = socketChannel.socket();
@@ -180,11 +165,11 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 			putMessageChannel(socketChannel, this);
 			lastActivityTimeStamp = System.currentTimeMillis();
 			super.key = MessageChannel.getKey(peerAddress, peerPort, getTransport());
-			
+
 		} finally {
 			if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-				logger
-						.logDebug("NioTcpMessageChannel::NioTcpMessageChannel: Done creating NioTcpMessageChannel " + this);
+				logger.logDebug("NioTcpMessageChannel::NioTcpMessageChannel: Done creating NioTcpMessageChannel "
+						+ this + " socketChannel = " + socketChannel);
 			}
 		}
 	}
@@ -196,11 +181,24 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 	@Override
 	protected void close(boolean b) {
 		try {
+			if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+				logger.logDebug("Closing NioTcpMessageChannel "
+						+ this + " socketChannel = " + socketChannel);
+			}
+			removeMessageChannel(socketChannel);
 			if(socketChannel != null) {
 				socketChannel.close();
 			}
+			if(nioParser != null) {
+				nioParser.close();
+			}
+			((NioTcpMessageProcessor) this.messageProcessor).nioHandler.removeSocket(socketChannel);
+			this.isRunning = false;
+			((ConnectionOrientedMessageProcessor) this.messageProcessor).remove(this);
+			
+			
 		} catch (IOException e) {
-			logger.logError("Problem occured while closing");
+			logger.logError("Problem occured while closing", e);
 		}
 
 	}

@@ -41,14 +41,16 @@ public class NioTlsMessageProcessor extends NioTcpMessageProcessor{
     	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
     		logger.logDebug("NioTlsMessageProcessor::createMessageChannel: " + targetHostPort);
     	}
+    	NioTlsMessageChannel retval = null;
     	try {
     		String key = MessageChannel.getKey(targetHostPort, "TLS");
+			
     		if (messageChannels.get(key) != null) {
-    			return this.messageChannels.get(key);
+    			retval = (NioTlsMessageChannel) this.messageChannels.get(key);
+    			return retval;
     		} else {
-    			NioTlsMessageChannel retval = new NioTlsMessageChannel(targetHostPort.getInetAddress(),
+    			retval = new NioTlsMessageChannel(targetHostPort.getInetAddress(),
     					targetHostPort.getPort(), sipStack, this);
-    			
     			
     		//	retval.getSocketChannel().register(selector, SelectionKey.OP_READ);
     			synchronized(messageChannels) {
@@ -65,7 +67,7 @@ public class NioTlsMessageProcessor extends NioTcpMessageProcessor{
     		}
     	} finally {
     		if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-    			logger.logDebug("MessageChannel::createMessageChannel - exit");
+    			logger.logDebug("MessageChannel::createMessageChannel - exit " + retval);
     		}
     	}
     }
