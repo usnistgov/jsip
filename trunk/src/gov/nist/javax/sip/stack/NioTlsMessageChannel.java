@@ -160,6 +160,7 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel{
 		if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 			logger.logDebug("Adding TLS bytes for decryption " + bytes.length);
 		}
+		if(bytes.length <= 0) return;
 		ByteBuffer buffer = ByteBuffer.wrap(bytes);
 		sslStateMachine.unwrap(buffer);
 	}
