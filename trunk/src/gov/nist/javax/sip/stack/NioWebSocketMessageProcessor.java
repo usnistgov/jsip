@@ -15,8 +15,6 @@ public class NioWebSocketMessageProcessor extends NioTcpMessageProcessor {
 
     private static StackLogger logger = CommonLogger.getLogger(NioWebSocketMessageProcessor.class);
     
-    public static HashMap<String, NioWebSocketMessageChannel> addressMap = new HashMap<String, NioWebSocketMessageChannel>();
-
 	public NioWebSocketMessageProcessor(InetAddress ipAddress,
 			SIPTransactionStack sipStack, int port) {
 		super(ipAddress, sipStack, port);
@@ -34,7 +32,7 @@ public class NioWebSocketMessageProcessor extends NioTcpMessageProcessor {
     		logger.logDebug(":createMessageChannel: " + targetHostPort);
     	}
     	try {
-    		String key = MessageChannel.getKey(targetHostPort, "WS");
+    		String key = MessageChannel.getKey(targetHostPort, transport);
     		if (messageChannels.get(key) != null) {
     			return this.messageChannels.get(key);
     		} else {
@@ -64,7 +62,7 @@ public class NioWebSocketMessageProcessor extends NioTcpMessageProcessor {
 
     @Override
     public MessageChannel createMessageChannel(InetAddress targetHost, int port) throws IOException {
-        String key = MessageChannel.getKey(targetHost, port, "WS");
+        String key = MessageChannel.getKey(targetHost, port, transport);
         if (messageChannels.get(key) != null) {
             return this.messageChannels.get(key);
         } else {

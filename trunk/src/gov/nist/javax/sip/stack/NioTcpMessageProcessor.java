@@ -54,6 +54,11 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
     	}
     }
     
+	public void assignChannelToDestination(HostPort targetHostPort, NioTcpMessageChannel channel) {
+		String key = MessageChannel.getKey(targetHostPort, transport);
+		this.messageChannels.put(key, channel);
+	}
+    
     private SocketChannel initiateConnection(InetSocketAddress address, int timeout) throws IOException {
     	
     	// We use blocking outbound connect just because it's pure pain to deal with http://stackoverflow.com/questions/204186/java-nio-select-returns-without-selected-keys-why
@@ -330,7 +335,7 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
     		logger.logDebug("NioTcpMessageProcessor::createMessageChannel: " + targetHostPort);
     	}
     	try {
-    		String key = MessageChannel.getKey(targetHostPort, "TCP");
+    		String key = MessageChannel.getKey(targetHostPort, transport);
     		if (messageChannels.get(key) != null) {
     			return this.messageChannels.get(key);
     		} else {
@@ -360,7 +365,7 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
 
     @Override
     public MessageChannel createMessageChannel(InetAddress targetHost, int port) throws IOException {
-        String key = MessageChannel.getKey(targetHost, port, "TCP");
+        String key = MessageChannel.getKey(targetHost, port, transport);
         if (messageChannels.get(key) != null) {
             return this.messageChannels.get(key);
         } else {
