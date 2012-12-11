@@ -832,7 +832,7 @@ public abstract class ConnectionOrientedMessageChannel extends MessageChannel im
 		            	if(sipListener!= null && sipListener instanceof SipListenerExt
 		            			// making sure that we don't notify each listening point but only the one on which the timeout happened  
 		            			&& listeningPoint.getIPAddress().equalsIgnoreCase(myAddress) && listeningPoint.getPort() == myPort && 
-		            				listeningPoint.getTransport().equals(getTransport())) {
+		            				listeningPoint.getTransport().equalsIgnoreCase(getTransport())) {
 		            		((SipListenerExt)sipListener).processIOException(new IOExceptionEventExt(nextProvider, Reason.KeepAliveTimeout, myAddress, myPort,
 		            				peerAddress.getHostAddress(), peerPort, getTransport()));
 		                }
