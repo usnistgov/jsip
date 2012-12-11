@@ -185,6 +185,7 @@ public class LooseDialogValidationTest extends TestCase {
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
+                return ;
             }
 
             try {
@@ -243,9 +244,9 @@ public class LooseDialogValidationTest extends TestCase {
             // Your code will limp at 32 but it is best for debugging.
             properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
             properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
-                    "shootmedebug.txt");
+                    "logs/shootmedebug.txt");
             properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
-                    "shootmelog.txt");
+                    "logs/shootmelog.txt");
             properties.setProperty("gov.nist.javax.sip.AUTOMATIC_DIALOG_ERROR_HANDLING", "false");
             properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
             properties.setProperty("gov.nist.javax.sip.AGGRESSIVE_CLEANUP", "true");
@@ -372,11 +373,21 @@ public class LooseDialogValidationTest extends TestCase {
                 Dialog d = responseReceivedEvent.getDialog();
                 try {
                     Request ack = d.createAck(1);
+                    // Added Thread.sleep to avoid regression on the test
+                    // as ACKs arriving at the same time may create race condition
+                    // where the ACK is removing from pending transactions by loose dialog validation 
+                    // but re created by the next ACK coming in line and thus the EventScanner
+                    // sipStack.findPendingTransaction(sipRequest.getTransactionId()) gives transaction already exists 
+                    // and the ACK is not passed to TU
                     sipProvider.sendRequest(ack);
+                    Thread.sleep(50);
                     sipProvider.sendRequest(ack);
+                    Thread.sleep(50);
                     sipProvider.sendRequest(ack);
+                    Thread.sleep(50);
                     sipProvider.sendRequest(ack);
-                    sipProvider.sendRequest(ack);
+                    Thread.sleep(50);
+                    sipProvider.sendRequest(ack);                                       
                 } catch (Exception e) {
                     e.printStackTrace();
                     fail("Error sending ACK");
@@ -414,9 +425,9 @@ public class LooseDialogValidationTest extends TestCase {
             // You can set a max message size for tcp transport to
             // guard against denial of service attack.
             properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
-                    "shootistdebug.txt");
+                    "logs/shootistdebug.txt");
             properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
-                    "shootistlog.txt");
+                    "logs/shootistlog.txt");
 
             // Drop the client connection after we are done with the transaction.
             properties.setProperty("gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS",
@@ -424,7 +435,7 @@ public class LooseDialogValidationTest extends TestCase {
             // Set to 0 (or NONE) in your production code for max speed.
             // You need 16 (or TRACE) for logging traces. 32 (or DEBUG) for debug + traces.
             // Your code will limp at 32 but it is best for debugging.
-            properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "DEBUG");
+            properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
             properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
             properties.setProperty("gov.nist.javax.sip.AUTOMATIC_DIALOG_ERROR_HANDLING","false");
 
