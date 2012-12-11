@@ -35,6 +35,8 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
     protected Thread selectorThread;
     protected NIOHandler nioHandler;
 
+    protected ServerSocketChannel channel;
+
     // Cache the change request here, the selector thread will read it when it wakes up and execute the request
     private List<ChangeRequest> changeRequests = new LinkedList<ChangeRequest> ();
 
@@ -397,11 +399,11 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
     @Override
     public void start() throws IOException {
         selector = Selector.open();
-        ServerSocketChannel ssc = ServerSocketChannel.open();
-        ssc.configureBlocking(false);
+        channel = ServerSocketChannel.open();
+        channel.configureBlocking(false);
         InetSocketAddress isa  = new InetSocketAddress(super.getIpAddress(), super.getPort());
-        ssc.socket().bind(isa);
-        ssc.register(selector, SelectionKey.OP_ACCEPT);
+        channel.socket().bind(isa);
+        channel.register(selector, SelectionKey.OP_ACCEPT);
         selectorThread = new Thread(createProcessorTask());
         selectorThread.start();
         selectorThread.setName("NioSelector-" + selectorThread.getName());
@@ -420,6 +422,11 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
     		}
     	} catch (Exception ex) {
     		logger.logError("Probelm closing channel " , ex);
+    	}
+        try {
+            channel.close();
+        } catch (Exception ex) {
+    		logger.logError("Problem closing channel " , ex);
     	}
     }
 
