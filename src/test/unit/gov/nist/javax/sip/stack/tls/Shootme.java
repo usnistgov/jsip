@@ -245,7 +245,8 @@ public class Shootme implements SipListener {
         properties.setProperty("javax.sip.STACK_NAME", "shootme");
         // You need  16 for logging traces. 32 for debug + traces.
         // Your code will limp at 32 but it is best for debugging.
-        properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
+        properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "LOG4J");
+        properties.setProperty("gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE", "20");
         properties.setProperty(
             "gov.nist.javax.sip.DEBUG_LOG",
             "logs/shootmedebug.txt");
