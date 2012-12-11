@@ -228,102 +228,14 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 			logger.logDebug("sendMessage isClient  = " + isClient + " this = " + this);
 		}
 		lastActivityTimeStamp = System.currentTimeMillis();
-		/*
-		 * /* Patch from kircuv@dev.java.net (Issue 119 ) This patch avoids the
-		 * case where two TCPMessageChannels are now pointing to the same
-		 * socket.getInputStream().
-		 * 
-		 * JvB 22/5 removed
-		 */
-		SocketChannel sock = null;
+		
 		NIOHandler nioHandler = ((NioTcpMessageProcessor) messageProcessor).nioHandler;
 		if(this.socketChannel != null && this.socketChannel.isConnected() && this.socketChannel.isOpen()) {
 			nioHandler.putSocket(NIOHandler.makeKey(this.peerAddress, this.peerPort), this.socketChannel);
 		}
-		IOException problem = null;
-		try {
-			sock = ((NioTcpMessageProcessor) messageProcessor).nioHandler.sendBytes(this.messageProcessor
-					.getIpAddress(), this.peerAddress, this.peerPort,
-					this.peerProtocol, msg, isClient, this);
-		} catch (IOException any) {
-			problem = any;
-			logger.logWarning("Failed to connect " + this.peerAddress + ":"
-					+ this.peerPort + " but trying the advertised port="
-					+ this.peerPortAdvertisedInHeaders
-					+ " if it's different than the port we just failed on");
-		}
-		if (sock == null) { // If we couldn't connect to the host, try the
-							// advertised port as failsafe
-			if (this.peerPort != this.peerPortAdvertisedInHeaders
-					&& peerPortAdvertisedInHeaders > 0) { // no point in trying
-															// same port
-				logger.logWarning("Couldn't connect to peerAddress = "
-						+ peerAddress + " peerPort = " + peerPort + " key = "
-						+ key + " retrying on peerPortAdvertisedInHeaders "
-						+ peerPortAdvertisedInHeaders);
-
-				sock = ((NioTcpMessageProcessor) messageProcessor).nioHandler.sendBytes(this.messageProcessor
-						.getIpAddress(), this.peerAddress,
-						this.peerPortAdvertisedInHeaders, this.peerProtocol,
-						msg, isClient, this);
-				this.peerPort = this.peerPortAdvertisedInHeaders;
-				this.key = MessageChannel.getKey(peerAddress, peerPort, "TCP");
-				logger.logWarning("retry suceeded to peerAddress = "
-						+ peerAddress + " peerPortAdvertisedInHeaders = "
-						+ peerPortAdvertisedInHeaders + " key = " + key);
-			} else {
-				throw problem; // throw the original excpetion we had from the
-								// first attempt
-			}
-		}
-
-		// Created a new socket so close the old one and stick the new
-		// one in its place but dont do this if it is a datagram socket.
-		// (could have replied via udp but received via tcp!).
-		// if (mySock == null && s != null) {
-		// this.uncache();
-		// } else
-		if (sock != socketChannel && sock != null) {
-			if (socketChannel != null) {
-				if (logger.isLoggingEnabled(LogWriter.TRACE_WARN)) {
-					logger
-							.logWarning("Old socket different than new socket on channel "
-									+ sock + " " + socketChannel);
-					logger.logStackTrace();
-					logger.logWarning("Old socket local ip address "
-							+ socketChannel.socket().getLocalSocketAddress());
-					logger.logWarning("Old socket remote ip address "
-							+ socketChannel.socket().getRemoteSocketAddress());
-					logger.logWarning("New socket local ip address "
-							+ sock.socket().getLocalSocketAddress());
-					logger.logWarning("New socket remote ip address "
-							+ sock.socket().getRemoteSocketAddress());
-				}
-				close(false);
-			}
-			if (problem == null) {
-				if (socketChannel != null) {
-					if (logger.isLoggingEnabled(LogWriter.TRACE_WARN)) {
-						logger
-								.logWarning("There was no exception for the retry mechanism so creating a new thread based on the new socket for incoming "
-										+ key);
-					}
-				}
-				socketChannel = sock;
-
-			} else {
-				if (logger.isLoggingEnabled(LogWriter.TRACE_WARN)) {
-					logger
-							.logWarning("There was an exception for the retry mechanism so not creating a new thread based on the new socket for incoming "
-									+ key);
-				}
-				socketChannel = sock;
-			}
-		}
-
+		sendTCPMessage(msg, this.peerAddress, this.peerPort, isClient);
 	}
 	
-
 	/**
 	 * Send a message to a specified address.
 	 * 
@@ -337,6 +249,22 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 	 *             If there is a problem connecting or sending.
 	 */
 	public void sendMessage(byte message[], InetAddress receiverAddress,
+			int receiverPort, boolean retry) throws IOException {
+		sendTCPMessage(message, receiverAddress, receiverPort, retry);
+	}
+	/**
+	 * Send a message to a specified address.
+	 * 
+	 * @param message
+	 *            Pre-formatted message to send.
+	 * @param receiverAddress
+	 *            Address to send it to.
+	 * @param receiverPort
+	 *            Receiver port.
+	 * @throws IOException
+	 *             If there is a problem connecting or sending.
+	 */
+	public void sendTCPMessage(byte message[], InetAddress receiverAddress,
 			int receiverPort, boolean retry) throws IOException {
 		if (message == null || receiverAddress == null) {
 			logger.logError("receiverAddress = " + receiverAddress);
@@ -361,48 +289,11 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 						+ this + " key " + key);
 			}
 		}
-
-		SocketChannel sock = null;
-		IOException problem = null;
-		try {
-			sock = ((NioTcpMessageProcessor) messageProcessor).nioHandler.sendBytes(this.messageProcessor
+		NIOHandler nioHandler = ((NioTcpMessageProcessor) messageProcessor).nioHandler;
+		
+		SocketChannel sock = nioHandler.sendBytes(this.messageProcessor
 					.getIpAddress(), receiverAddress, receiverPort, "TCP",
 					message, retry, this);
-		} catch (IOException any) {
-			problem = any;
-			logger.logWarning("Failed to connect " + this.peerAddress + ":"
-					+ receiverPort + " but trying the advertised port="
-					+ this.peerPortAdvertisedInHeaders
-					+ " if it's different than the port we just failed on");
-			logger.logError("Error is ", any);
-
-		}
-		if (sock == null) { // If we couldn't connect to the host, try the
-							// advertised port as failsafe
-			if (receiverPort != this.peerPortAdvertisedInHeaders
-					&& peerPortAdvertisedInHeaders > 0) { // no point in trying
-															// same port
-				logger.logWarning("Couldn't connect to receiverAddress = "
-						+ receiverAddress + " receiverPort = " + receiverPort
-						+ " key = " + key
-						+ " retrying on peerPortAdvertisedInHeaders "
-						+ peerPortAdvertisedInHeaders);
-				sock = ((NioTcpMessageProcessor) messageProcessor).nioHandler.sendBytes(this.messageProcessor
-						.getIpAddress(), receiverAddress,
-						this.peerPortAdvertisedInHeaders, "TCP", message,
-						retry, this);
-				this.peerPort = this.peerPortAdvertisedInHeaders;
-				this.key = MessageChannel.getKey(peerAddress,
-						peerPortAdvertisedInHeaders, "TCP");
-
-				logger.logWarning("retry suceeded to receiverAddress = "
-						+ receiverAddress + " peerPortAdvertisedInHeaders = "
-						+ peerPortAdvertisedInHeaders + " key = " + key);
-			} else {
-				throw problem; // throw the original excpetion we had from the
-								// first attempt
-			}
-		}
 
 		if (sock != socketChannel && sock != null) {
 			if (socketChannel != null) {
@@ -420,28 +311,30 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 					logger.logWarning("New socket remote ip address "
 							+ sock.socket().getRemoteSocketAddress());
 				}
-				close(false);
-			}
-			if (problem == null) {
-				if (socketChannel != null) {
-					if (logger.isLoggingEnabled(LogWriter.TRACE_WARN)) {
-						logger
-								.logWarning("There was no exception for the retry mechanism so we keep going "
-										+ key);
-					}
-				}
+				close(false); // we can call socketChannel.close() directly but we better use the inherited method
+				
 				socketChannel = sock;
-			} else {
+				putMessageChannel(socketChannel, this);
+				
+				onNewSocket();
+			}
+			
+			if (socketChannel != null) {
 				if (logger.isLoggingEnabled(LogWriter.TRACE_WARN)) {
 					logger
-							.logWarning("There was an exception for the retry mechanism so stop "
-									+ key);
+					.logWarning("There was no exception for the retry mechanism so we keep going "
+							+ key);
 				}
-				socketChannel = sock;
 			}
+			socketChannel = sock;
 		}
 
 	}
+
+	public void onNewSocket() {
+
+	}
+	
 
 	/**
 	 * Exception processor for exceptions detected from the parser. (This is
