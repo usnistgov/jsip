@@ -581,7 +581,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
 
                 } else {
                     if (!dialog.handleAck(transaction)) {
-                        if (!dialog.isSequnceNumberValidation()) {
+                        if (!dialog.isSequenceNumberValidation()) {
                             if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
                                 logger.logDebug(
                                         "Dialog exists with loose dialog validation "
@@ -947,7 +947,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
                     && sipRequest.getCSeq().getSeqNumber() > lastTransaction.getCSeq()
                     && lastTransaction instanceof SIPServerTransaction
                     && sipProvider.isDialogErrorsAutomaticallyHandled()
-                    && dialog.isSequnceNumberValidation()
+                    && dialog.isSequenceNumberValidation()
                     && lastTransaction.isInviteTransaction()
                     && lastTransaction.getInternalState() != TransactionState._COMPLETED
                     && lastTransaction.getInternalState() != TransactionState._TERMINATED
