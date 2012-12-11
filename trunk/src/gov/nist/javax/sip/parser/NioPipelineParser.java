@@ -48,11 +48,17 @@ import javax.sip.header.CallIdHeader;
 import javax.sip.header.ContentLengthHeader;
 
 /**
- * This is a FSM that can parse a single stream of messages with they bodies and then pass the sip message to the listeners.
+ * This is a FSM that can parse a single stream of messages with they bodies and 
+ * then pass the sip message to the listeners. It accumulates bytes until end of
+ * message is detected or some DoS trigger terminates it due to excessive amount
+ * of bytes per message or line.
+ * 
+ * Once parsed it will pass the message to the SIPMessageListener
  *
  * @see SIPMessageListener
+ * @author vladimirralev
  */
-public final class NioPipelineParser {
+public class NioPipelineParser {
 	
 	boolean currentStreamEnded = false;
 	boolean readingMessageBodyContents = false;
