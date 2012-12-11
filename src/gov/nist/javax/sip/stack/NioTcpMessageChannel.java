@@ -237,7 +237,7 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 		 */
 		SocketChannel sock = null;
 		NIOHandler nioHandler = ((NioTcpMessageProcessor) messageProcessor).nioHandler;
-		if(this.socketChannel != null && this.socketChannel.isConnected()) {
+		if(this.socketChannel != null && this.socketChannel.isConnected() && this.socketChannel.isOpen()) {
 			nioHandler.putSocket(NIOHandler.makeKey(this.peerAddress, this.peerPort), this.socketChannel);
 		}
 		IOException problem = null;
