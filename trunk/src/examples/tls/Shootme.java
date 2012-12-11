@@ -25,6 +25,7 @@ public class Shootme implements SipListener {
     private static final String myAddress = "127.0.0.1";
     private static final int myPort    = 5071;    
     protected ServerTransaction inviteTid;
+    String transport="tls";
 
     Dialog dialog;
 
@@ -108,7 +109,7 @@ public class Shootme implements SipListener {
             toHeader.setTag("4321"); // Application is supposed to set.
             Address address =
                 addressFactory.createAddress("Shootme <sip:" + myAddress+ ":" + myPort 
-                + ";transport=tls>" );
+                + ";transport=" + transport + ">" );
             ContactHeader contactHeader =
                 headerFactory.createContactHeader(address);
 
@@ -241,16 +242,21 @@ public class Shootme implements SipListener {
         properties.setProperty("javax.sip.STACK_NAME", "shootme");
         // You need  16 for logging traces. 32 for debug + traces.
         // Your code will limp at 32 but it is best for debugging.
+        properties.setProperty("javax.sip.STACK_NAME", "shootme");
+        // You need  16 for logging traces. 32 for debug + traces.
+        // Your code will limp at 32 but it is best for debugging.
         properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
         properties.setProperty(
             "gov.nist.javax.sip.DEBUG_LOG",
-            "shootmedebug.txt");
+            "logs/shootmedebug.txt");
         properties.setProperty(
             "gov.nist.javax.sip.SERVER_LOG",
-            "shootmelog.txt");
+            "logs/shootmelog.txt");
         // Guard against starvation.
         properties.setProperty(
             "gov.nist.javax.sip.READ_TIMEOUT", "1000");
+        // Test for ttp://code.google.com/p/jain-sip/issues/detail?id=18 NIO Message with no Call-ID throws NPE
+//        properties.setProperty("gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE", "10");
   
         try {
             // Create SipStack object
@@ -271,7 +277,7 @@ public class Shootme implements SipListener {
             headerFactory = sipFactory.createHeaderFactory();
             addressFactory = sipFactory.createAddressFactory();
             messageFactory = sipFactory.createMessageFactory();
-            ListeningPoint lpTLS = sipStack.createListeningPoint("127.0.0.1", myPort, "tls");
+            ListeningPoint lpTLS = sipStack.createListeningPoint("127.0.0.1", myPort, transport);
 
             Shootme listener = this;
 

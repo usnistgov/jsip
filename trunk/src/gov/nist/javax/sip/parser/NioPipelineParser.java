@@ -289,6 +289,11 @@ public class NioPipelineParser {
 			
 			if(PostParseExecutorServices.getPostParseExecutor() != null) {
 				final String callId = this.callId;
+				if(callId == null || callId.trim().length() < 1) {
+					// http://code.google.com/p/jain-sip/issues/detail?id=18
+					// NIO Message with no Call-ID throws NPE
+					throw new IOException("received message with no Call-ID");
+				}
                 // http://dmy999.com/article/34/correct-use-of-concurrenthashmap
                 CallIDOrderingStructure orderingStructure = messagesOrderingMap.get(callId);
                 if(orderingStructure == null) {
