@@ -11,6 +11,7 @@ import java.util.Queue;
 
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLEngineResult;
+import javax.net.ssl.SSLEngineResult.Status;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 
@@ -56,8 +57,10 @@ public class SSLStateMachine {
 		if(src != null) {
 			pendingOutboundBuffers.offer(new MessageSendItem(src, callback));
 		}
-		
+		int iter = 0;
 		loop:while(true) {
+			iter ++;
+			
 			MessageSendItem currentBuffer = pendingOutboundBuffers.peek();
 			
 			// If there is no queued operations break out of the loop
@@ -145,6 +148,9 @@ public class SSLStateMachine {
 
                 switch (result.getHandshakeStatus()) {
                 case FINISHED:
+                	if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+    					logger.logDebug("Handshake complete!");
+    				}
                     break;
                 case NEED_TASK:
                     runDelegatedTasks(result);
@@ -170,10 +176,27 @@ public class SSLStateMachine {
 
 	private synchronized void unwrap(ByteBuffer src, ByteBuffer dst) throws Exception {
 		loop:while(true) {
+			if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+				logger.logDebug("Unwrap src " + src + " dst " 
+						+ dst);
+			}
 			SSLEngineResult result = sslEngine.unwrap(src, dst);
 			if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 				logger.logDebug("Unwrap result " + result + " buffers size " 
-						+ pendingOutboundBuffers.size());
+						+ pendingOutboundBuffers.size() + " src=" + src + " dst=" + dst);
+			}
+			if(result.getStatus().equals(Status.BUFFER_OVERFLOW)) {
+				if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+					logger.logDebug("Buffer overflow , must prepare the buffer again");
+				}
+				dst = channel.prepareAppDataBuffer();
+				continue;
+			}
+			if(result.getStatus().equals(Status.BUFFER_UNDERFLOW)) {
+				if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+					logger.logDebug("Buffer underflow, wait for the nexty inbound chunk of data to feed the SSL engine");
+				}
+				break;
 			}
 			if(result.bytesProduced()>0) {
 				// There is actual application data in this chunk
@@ -185,6 +208,9 @@ public class SSLStateMachine {
 			}
 			switch(result.getHandshakeStatus()) {
 			case NEED_UNWRAP:
+				if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+					logger.logDebug("Unwrap has remaining: " + src.hasRemaining() + " buffer " + src);
+				}
 				if(src.hasRemaining()) {
 					break;
 				} else {
@@ -197,11 +223,21 @@ public class SSLStateMachine {
 				runDelegatedTasks(result);
 				break;
 			case FINISHED:
+				if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+					logger.logDebug("Handshaking just finnished, but has remaining. Will try to wrap the queues app items.");
+				}
 				wrapRemaining();
 				break loop;
 			case NOT_HANDSHAKING:
 				wrapRemaining();
-				break loop;
+				if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+					logger.logDebug("Not handshaking, but has remaining: " + src.hasRemaining() + " buffer " + src);
+				}
+				if(src.hasRemaining()) {
+					break;
+				} else {
+					break loop;
+				}
 			default:
 				break;
 			}

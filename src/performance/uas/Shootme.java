@@ -35,6 +35,8 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
+import test.unit.gov.nist.javax.sip.stack.tls.TlsTest;
+
 /**
  * This is the UAS application for performance testing
  *
@@ -60,7 +62,7 @@ public class Shootme implements SipListener {
 
     private static final int myPort = 5080;
     
-    private static String TRANSPORT = "tcp";
+    private static String TRANSPORT = "tls";
 
     protected static final String usageString = "java "
             + Shootme.class.getCanonicalName() + " \n"
@@ -202,6 +204,10 @@ public class Shootme implements SipListener {
     public void init() {        
         sipStack = null;
         sipFactory = SipFactory.getInstance();
+        System.setProperty( "javax.net.ssl.keyStore",  "/Users/vladimirralev/keystore.ImportKey" );
+        System.setProperty( "javax.net.ssl.trustStore", "/Users/vladimirralev/keystore.ImportKey" );
+        System.setProperty( "javax.net.ssl.keyStorePassword", "importkey" );
+        System.setProperty( "javax.net.ssl.keyStoreType", "jks" );
         sipFactory.setPathName("gov.nist");
         Properties properties = new Properties();
         properties.setProperty("javax.sip.STACK_NAME", "shootme");
@@ -209,7 +215,7 @@ public class Shootme implements SipListener {
         // Your code will limp at 32 but it is best for debugging.
         properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "LOG4J");
         Logger root = Logger.getRootLogger();
-        root.setLevel(Level.DEBUG);
+        root.setLevel(Level.WARN);
         root.addAppender(new ConsoleAppender(
             new PatternLayout(PatternLayout.TTCC_CONVERSION_PATTERN)));
         properties.setProperty("gov.nist.javax.sip.LOG_MESSAGE_CONTENT", "false");
@@ -218,13 +224,17 @@ public class Shootme implements SipListener {
                 "shootmedebug.txt");
         properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
         "shootmelog.txt");
+        properties.setProperty("gov.nist.javax.sip.TLS_CLIENT_PROTOCOLS",
+                "TLSv1");
         properties.setProperty("gov.nist.javax.sip.REENTRANT_LISTENER",
         "true");
         properties.setProperty("gov.nist.javax.sip.THREAD_POOL_SIZE", "4");
         properties.setProperty("gov.nist.javax.sip.RECEIVE_UDP_BUFFER_SIZE", "65536");
         properties.setProperty("gov.nist.javax.sip.SEND_UDP_BUFFER_SIZE", "65536");
-        properties.setProperty("gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE", "200");
+        properties.setProperty("gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE", "12");
         properties.setProperty("gov.nist.javax.sip.CONGESTION_CONTROL_ENABLED", "false");
+        properties.setProperty("gov.nist.javax.sip.TLS_CLIENT_AUTH_TYPE", "Disabled");
+        
 //      properties.setProperty("gov.nist.javax.sip.MESSAGE_PARSER_FACTORY", CharsMsgParserFactory.class.getName());
 //		properties.setProperty("gov.nist.javax.sip.TIMER_CLASS_NAME", ScheduledExecutorSipTimer.class.getName());
 //      properties.setProperty("gov.nist.javax.sip.TIMER_CLASS_NAME", HashWheelSipTimer.class.getName());
