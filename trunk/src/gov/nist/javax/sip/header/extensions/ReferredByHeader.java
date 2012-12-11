@@ -1,29 +1,27 @@
-/**
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- * Unpublished - rights reserved under the Copyright Laws of the United States.
- * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
+/*
+ * Conditions Of Use
  *
- * U.S. Government Rights - Commercial software. Government users are subject 
- * to the Sun Microsystems, Inc. standard license agreement and applicable 
- * provisions of the FAR and its supplements.
+ * This software was developed by employees of the National Institute of
+ * Standards and Technology (NIST), an agency of the Federal Government.
+ * Pursuant to title 15 Untied States Code Section 105, works of NIST
+ * employees are not subject to copyright protection in the United States
+ * and are considered to be in the public domain.  As a result, a formal
+ * license is not needed to use the software.
  *
- * Use is subject to license terms.
+ * This software is provided by NIST as a service and is expressly
+ * provided "AS IS."  NIST MAKES NO WARRANTY OF ANY KIND, EXPRESS, IMPLIED
+ * OR STATUTORY, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT
+ * AND DATA ACCURACY.  NIST does not warrant or make any representations
+ * regarding the use of the software or the results thereof, including but
+ * not limited to the correctness, accuracy, reliability or usefulness of
+ * the software.
  *
- * This distribution may include materials developed by third parties. Sun, 
- * Sun Microsystems, the Sun logo, Java, Jini and JAIN are trademarks or 
- * registered trademarks of Sun Microsystems, Inc. in the U.S. and other 
- * countries.
+ * Permission to use this software is contingent upon your acceptance
+ * of the terms of this agreement
  *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ * .
  *
- * Module Name   : JAIN SIP Specification
- * File Name     : ReferredByHeader.java
- * Author        : Peter Musgrave (modified code by Phelim O'Doherty - ReferToHeader)
- *
- *  HISTORY
- *  Version   Date      Author              Comments
- *  1.0     24/08/05  Peter Musgrave    Initial version, 
- *~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 package gov.nist.javax.sip.header.extensions;
 
