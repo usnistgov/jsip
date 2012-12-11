@@ -231,7 +231,7 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
         					switch(change.type) {
         					case ChangeRequest.CHANGEOPS:
         						SelectionKey key = change.socket.keyFor(selector);
-        						if(key == null) continue;
+        						if(key == null || !key.isValid()) continue;
         						key.interestOps(change.ops);
         						if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
         							logger.logDebug("Change opts " + change + " selector = " + selector + " key = " + key + " blocking=" + change.socket.isBlocking());

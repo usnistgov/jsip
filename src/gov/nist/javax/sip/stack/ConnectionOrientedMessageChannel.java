@@ -696,7 +696,7 @@ public abstract class ConnectionOrientedMessageChannel extends MessageChannel im
         lastKeepAliveReceivedTime = System.currentTimeMillis();
 
 		if(mySock != null && !mySock.isClosed()) {
-			mySock.getOutputStream().write("\r\n".getBytes("UTF-8"));
+			sendMessage("\r\n".getBytes("UTF-8"), false);
 		}
 
         synchronized (this) {
