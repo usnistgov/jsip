@@ -95,8 +95,8 @@ public class NioTlsMessageProcessor extends NioTcpMessageProcessor{
 
     }
 	public void init() throws Exception, CertificateException, FileNotFoundException, IOException {
-		String passphraseString = (String) ((SipStackImpl)super.sipStack).getConfigurationProperties().get("javax.net.ssl.keyStorePassword");
-        String keyStoreType = (String) ((SipStackImpl)super.sipStack).getConfigurationProperties().get("javax.net.ssl.keyStoreType");
+		String passphraseString = (String) ((SipStackImpl)super.sipStack).getConfigurationProperties().getProperty("javax.net.ssl.keyStorePassword");
+        String keyStoreType = (String) ((SipStackImpl)super.sipStack).getConfigurationProperties().getProperty("javax.net.ssl.keyStoreType");
         if(passphraseString == null) passphraseString = System.getProperty("javax.net.ssl.keyStorePassword");
         if(keyStoreType == null) keyStoreType = System.getProperty("javax.net.ssl.keyStoreType");
         
@@ -105,24 +105,30 @@ public class NioTlsMessageProcessor extends NioTcpMessageProcessor{
 
         char[] passphrase = passphraseString.toCharArray();
 
-        String keyStoreFilename = (String) ((SipStackImpl)super.sipStack).getConfigurationProperties().get("javax.net.ssl.keyStore");
-        String trustStoreFilename = (String) ((SipStackImpl)super.sipStack).getConfigurationProperties().get("javax.net.ssl.trustStore");
+        String keyStoreFilename = (String) ((SipStackImpl)super.sipStack).getConfigurationProperties().getProperty("javax.net.ssl.keyStore");
+        String trustStoreFilename = (String) ((SipStackImpl)super.sipStack).getConfigurationProperties().getProperty("javax.net.ssl.trustStore");
         
         if(keyStoreFilename == null) keyStoreFilename = System.getProperty("javax.net.ssl.keyStore");
         if(trustStoreFilename == null) trustStoreFilename = System.getProperty("javax.net.ssl.trustStore");
-        
-        ks.load(new FileInputStream(new File(keyStoreFilename)), passphrase);
-        ts.load(new FileInputStream(new File(trustStoreFilename)), passphrase);
 
-        KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-        kmf.init(ks, passphrase);
+        if(keyStoreFilename != null && trustStoreFilename != null) {
+        	ks.load(new FileInputStream(new File(keyStoreFilename)), passphrase);
+        	ts.load(new FileInputStream(new File(trustStoreFilename)), passphrase);
+          	KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+        	kmf.init(ks, passphrase);
 
-        TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
-        tmf.init(ts);
+        	TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+        	tmf.init(ts);
 
-        sslCtx = SSLContext.getInstance("TLS");
+        	sslCtx = SSLContext.getInstance("TLS");
 
-        sslCtx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+        	sslCtx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+        } else {
+        	logger.logWarning("TLS key and trust stores are not configured. javax.net.ssl.keyStore="
+        			+keyStoreFilename + " javax.net.ssl.trustStore=" + 
+        			trustStoreFilename);
+
+        }
 
 	}
 
