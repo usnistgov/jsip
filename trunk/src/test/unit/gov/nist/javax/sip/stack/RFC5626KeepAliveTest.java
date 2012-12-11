@@ -7,6 +7,7 @@ import gov.nist.javax.sip.ListeningPointExt;
 import gov.nist.javax.sip.ListeningPointImpl;
 import gov.nist.javax.sip.SipListenerExt;
 import gov.nist.javax.sip.SipStackImpl;
+import gov.nist.javax.sip.stack.ConnectionOrientedMessageChannel;
 import gov.nist.javax.sip.stack.ConnectionOrientedMessageProcessor;
 import gov.nist.javax.sip.stack.MessageProcessor;
 import gov.nist.javax.sip.stack.SIPTransactionStack;
@@ -104,16 +105,16 @@ public class RFC5626KeepAliveTest extends ScenarioHarness implements SipListener
             return (ConnectionOrientedMessageProcessor)((ListeningPointImpl) shootme.listeningPoint).getMessageProcessor();
         }
         
-        public TCPMessageChannel getTestChannel() {
+        public ConnectionOrientedMessageChannel getTestChannel() {
             try {
                 MessageProcessor processor = ((ListeningPointImpl) shootme.listeningPoint).getMessageProcessor();
                 Field field = ConnectionOrientedMessageProcessor.class.getDeclaredField("messageChannels");
                 field.setAccessible(true);
 
-                Map<String, TCPMessageChannel> tcpMessageChannels = (Map<String, TCPMessageChannel>) field.get(processor);
-                Iterator<TCPMessageChannel> itr = tcpMessageChannels.values().iterator();
+                Map<String, ConnectionOrientedMessageChannel> tcpMessageChannels = (Map<String, ConnectionOrientedMessageChannel>) field.get(processor);
+                Iterator<ConnectionOrientedMessageChannel> itr = tcpMessageChannels.values().iterator();
                 while (itr.hasNext()) {
-					TCPMessageChannel tcpMessageChannel = itr.next();
+                	ConnectionOrientedMessageChannel tcpMessageChannel = itr.next();
 					logger.info("tcpMessageChannel port " + tcpMessageChannel.getPort() + " peerPort " + tcpMessageChannel.getPeerPort());					
 				}
                 return tcpMessageChannels.values().iterator().next();
@@ -264,11 +265,11 @@ public class RFC5626KeepAliveTest extends ScenarioHarness implements SipListener
          * @see javax.sip.SipListener#processIOException(javax.sip.IOExceptionEvent)
          */
         public void processIOException(IOExceptionEvent exceptionEvent) {
-            logger.info("An IO Exception was detected : "
+            logger.info("Shootme An IO Exception was detected : "
                     + exceptionEvent.getHost());
             keepAliveTimeoutFired |= (exceptionEvent instanceof IOExceptionEventExt && ((IOExceptionEventExt)exceptionEvent).getReason() == Reason.KeepAliveTimeout);
 
-            logger.info("KeepAlive Time out " + keepAliveTimeoutFired);         
+            logger.info("Shootme KeepAlive Time out " + keepAliveTimeoutFired);         
         }
 
         /*
@@ -336,8 +337,10 @@ public class RFC5626KeepAliveTest extends ScenarioHarness implements SipListener
 	                    ((ListeningPointExt)shootist.listeningPoint).sendHeartbeat( Shootme.myAddress, Shootme.myPort);
 	                    keepAliveSent++;
 	                } catch (Exception e) {
-//	                    e.printStackTrace();
+	                	logger.info("keepAliveSender received Exception =" + e + " ,cancelling keepalivesender timer");
+	                    e.printStackTrace();
 	                    this.cancel();
+	                    keepAliveTimeoutFired = true;
 //	                    fail();
 	                }
             	} else {
@@ -589,10 +592,10 @@ public class RFC5626KeepAliveTest extends ScenarioHarness implements SipListener
          * @see javax.sip.SipListener#processIOException(javax.sip.IOExceptionEvent)
          */
         public void processIOException(IOExceptionEvent exceptionEvent) {
-            logger.info("IO Exception!");
+            logger.info("Shootist IO Exception ! ");
             keepAliveTimeoutFired |= (exceptionEvent instanceof IOExceptionEventExt && ((IOExceptionEventExt)exceptionEvent).getReason() == Reason.KeepAliveTimeout);
 
-            logger.info("KeepAlive Time out " + keepAliveTimeoutFired);              
+            logger.info("Shootist KeepAlive Time out " + keepAliveTimeoutFired);              
         }
 
         /*
@@ -712,6 +715,7 @@ public class RFC5626KeepAliveTest extends ScenarioHarness implements SipListener
         }
         assertFalse(this.shootist.keepAliveTimeoutFired);
         assertFalse(this.shootme.keepAliveTimeoutFired);
+        System.out.println("Destroying Shootme to provoke timeout on Shootist");
         getTiProtocolObjects().destroy();
         try {
             Thread.sleep(10000);
@@ -762,7 +766,7 @@ public class RFC5626KeepAliveTest extends ScenarioHarness implements SipListener
     }
 
     public void tearDown() {
-        try {
+        try {        	
             Thread.sleep(1000);            
             if (getTiProtocolObjects() != getRiProtocolObjects()) {
                 getRiProtocolObjects().destroy();
