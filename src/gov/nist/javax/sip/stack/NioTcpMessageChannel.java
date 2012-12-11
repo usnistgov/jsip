@@ -30,6 +30,7 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 	private static HashMap<SocketChannel, NioTcpMessageChannel> channelMap = new HashMap<SocketChannel, NioTcpMessageChannel>();
 
 	private SocketChannel socketChannel;
+	private long lastActivityTimeStamp;
 	NioPipelineParser nioParser = null;
 
 	public static NioTcpMessageChannel create(
@@ -46,13 +47,17 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 		return retval;
 	}
 
-	public static NioTcpMessageChannel get(SocketChannel socketChannel) {
+	public static NioTcpMessageChannel getMessageChannel(SocketChannel socketChannel) {
 		return channelMap.get(socketChannel);
 	}
 
-	public static void putNioTcpMessageChannel(SocketChannel socketChannel,
+	public static void putMessageChannel(SocketChannel socketChannel,
 			NioTcpMessageChannel nioTcpMessageChannel) {
 		channelMap.put(socketChannel, nioTcpMessageChannel);
+	}
+	
+	public static void removeMessageChannel(SocketChannel socketChannel) {
+		channelMap.remove(socketChannel);
 	}
 	
 
@@ -69,37 +74,27 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 				logger.logDebug("Read " + nbytes + " from socketChannel");
 			}
 			
-			// TODO: This happens on weird conditions when a dead socket suddently resurects but we already have another socket
+			// TODO: This happens on weird conditions when a dead socket suddenly resurrects but we already have another socket
 			if (nbytes == -1) {
 				
 				nioParser.addBytes("\r\n\r\n".getBytes("UTF-8"));
 				try {
-					if (sipStack.maxConnections != -1) {
-						synchronized (messageProcessor) {
-							((ConnectionOrientedMessageProcessor) this.messageProcessor).nConnections--;
-							messageProcessor.notify();
-						}
-					}
 					nioParser.close();
 					close();
 				} catch (Exception ioex) {
 				}
 				channelMap.remove(socketChannel);
+				//((NioTcpMessageProcessor)messageProcessor).nioHandler.removeSocket(key)
 				this.isRunning = false;
 				((ConnectionOrientedMessageProcessor) this.messageProcessor)
 						.remove(this);
 				((ConnectionOrientedMessageProcessor) this.messageProcessor).useCount--;
-				// parser could be null if the socket was closed by the remote
-				// end already
-				if (myParser != null) {
-					myParser.close();
-				}
-				((NioTcpMessageProcessor) messageProcessor).checkPending();
 				return;
 			}
 			byte[] bytes = new byte[nbytes];
 			System.arraycopy(msg, 0, bytes, 0, nbytes);
 			nioParser.addBytes(bytes);
+			lastActivityTimeStamp = System.currentTimeMillis();
 
 		} catch (IOException ex) {
 			// Terminate the message.
@@ -112,24 +107,14 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 			try {
 				if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
 					logger.logDebug("IOException  closing sock " + ex);
-
-				if (sipStack.maxConnections != -1) {
-					synchronized (messageProcessor) {
-						((ConnectionOrientedMessageProcessor) this.messageProcessor).nConnections--;
-						messageProcessor.notify();
-					}
-				}
+				
 				close();
 				nioParser.close();
 				this.isRunning = false;
 				((ConnectionOrientedMessageProcessor) this.messageProcessor)
 				.remove(this);
 				((ConnectionOrientedMessageProcessor) this.messageProcessor).useCount--;
-				// parser could be null if the socket was closed by the
-				// remote end already
-				if (myParser != null) {
-					myParser.close();
-				}
+				
 			} catch (Exception ex1) {
 				// Do nothing.
 			}
@@ -152,6 +137,7 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 			nioParser = new NioPipelineParser(sipStack, this,
 					this.sipStack.getMaxMessageSize());
 			this.peerProtocol = "TCP";
+			lastActivityTimeStamp = System.currentTimeMillis();
 		} finally {
 			if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 				logger.logDebug("Done creating NioTcpMessageChannel " + this);
@@ -175,7 +161,8 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 			peerProtocol = "TCP";
 			nioParser = new NioPipelineParser(sipStack, this,
 					this.sipStack.getMaxMessageSize());
-			putNioTcpMessageChannel(socketChannel, this);
+			putMessageChannel(socketChannel, this);
+			lastActivityTimeStamp = System.currentTimeMillis();
 			if(this.socketChannel != null && this.socketChannel.isConnected()) {
 				nioTcpMessageProcessor.nioHandler.putSocket(NIOHandler.makeKey(this.peerAddress, this.peerPort), this.socketChannel);
 			}
@@ -223,6 +210,7 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 		if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 			logger.logDebug("sendMessage isClient  = " + isClient + " this = " + this);
 		}
+		lastActivityTimeStamp = System.currentTimeMillis();
 		/*
 		 * /* Patch from kircuv@dev.java.net (Issue 119 ) This patch avoids the
 		 * case where two TCPMessageChannels are now pointing to the same
@@ -337,6 +325,7 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 			logger.logError("receiverAddress = " + receiverAddress);
 			throw new IllegalArgumentException("Null argument");
 		}
+		lastActivityTimeStamp = System.currentTimeMillis();
 
 		if (peerPortAdvertisedInHeaders <= 0) {
 			if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
@@ -524,6 +513,10 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 	 */
 	public boolean isSecure() {
 		return false;
+	}
+	
+	public long getLastActivityTimestamp() {
+		return lastActivityTimeStamp;
 	}
 
 }
