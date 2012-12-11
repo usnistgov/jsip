@@ -105,7 +105,7 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 					logger.logDebug("IOException  closing sock " + ex + "myAddress:myport " + myAddress + ":" + myPort + ", remoteAddress:remotePort " + peerAddress + ":" + peerPort);
 				}
 				
-				close(false);
+				close(true, false);
 				
 				
 			} catch (Exception ex1) {
@@ -188,7 +188,7 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 	}
 
 	@Override
-	protected void close(boolean stopKeepAliveTask) {
+	protected void close(boolean removeSocket, boolean stopKeepAliveTask) {
 		try {
 			if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 				logger.logDebug("Closing NioTcpMessageChannel "
@@ -201,10 +201,15 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 			if(nioParser != null) {
 				nioParser.close();
 			}
-			((NioTcpMessageProcessor) this.messageProcessor).nioHandler.removeSocket(socketChannel);
 			this.isRunning = false;
-			((ConnectionOrientedMessageProcessor) this.messageProcessor).remove(this);
-			
+			if(removeSocket) {
+				if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+					logger.logDebug("Removing NioTcpMessageChannel "
+							+ this + " socketChannel = " + socketChannel);
+				}
+				((NioTcpMessageProcessor) this.messageProcessor).nioHandler.removeSocket(socketChannel);
+				((ConnectionOrientedMessageProcessor) this.messageProcessor).remove(this);
+			}
 			if(stopKeepAliveTask) {
 				cancelPingKeepAliveTimeoutTaskIfStarted();
 			}
@@ -320,7 +325,7 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 					logger.logWarning("New socket remote ip address "
 							+ sock.socket().getRemoteSocketAddress());
 				}
-				close(false); // we can call socketChannel.close() directly but we better use the inherited method
+				close(false, false); // we can call socketChannel.close() directly but we better use the inherited method
 				
 				socketChannel = sock;
 				putMessageChannel(socketChannel, this);

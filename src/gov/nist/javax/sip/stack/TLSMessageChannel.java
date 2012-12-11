@@ -169,7 +169,7 @@ public class TLSMessageChannel extends ConnectionOrientedMessageChannel {
     /**
      * Close the message channel.
      */
-    public void close(boolean removeSocket) {  
+    public void close(boolean removeSocket, boolean stopKeepAliveTask) {  
 		isRunning = false;
     	// we need to close everything because the socket may be closed by the other end
     	// like in LB scenarios sending OPTIONS and killing the socket after it gets the response    	
@@ -276,7 +276,7 @@ public class TLSMessageChannel extends ConnectionOrientedMessageChannel {
    		             logger.logWarning(
    		            		 "New socket remote ip address " + sock.getRemoteSocketAddress());
           		 }
-          		 close(false);
+          		 close(false, false);
           	}    
           	if(problem == null) {
           		if(mySock != null) {
@@ -383,7 +383,7 @@ public class TLSMessageChannel extends ConnectionOrientedMessageChannel {
 		            		 "New socket remote ip address " + sock.getRemoteSocketAddress());
        		 	}
             	// we can't delay the close otherwise it will close the previous socket we just set
-            	close(false);
+            	close(false, false);
             }
             if(problem == null) {
             	if (mySock != null) {
