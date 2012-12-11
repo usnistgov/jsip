@@ -328,6 +328,10 @@ public abstract class ConnectionOrientedMessageChannel extends MessageChannel im
                 try {
                 	if (mySock != null) { // selfrouting makes socket = null
                         				 // https://jain-sip.dev.java.net/issues/show_bug.cgi?id=297
+                		if(!mySock.isConnected() || mySock.isClosed()) {
+                			logger.logWarning("Client closed the socket before we had a chance to process it. We stop. Socket is " + mySock);
+                			return;
+                		}
                 		this.peerAddress = mySock.getInetAddress();
                 	}
                     // Check to see if the received parameter matches
