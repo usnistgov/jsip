@@ -130,6 +130,7 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 
 	}
 	
+	// TLS will override here to add decryption
 	protected void addBytes(byte[] bytes) throws Exception {
 		nioParser.addBytes(bytes);
 	}
