@@ -250,7 +250,7 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel{
 			if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
 				logger.logDebug("Need to reset SSL engine for socket " + socketChannel);
 			try {
-				init(true);
+				init(sslStateMachine.sslEngine.getUseClientMode());
 			} catch (Exception ex) {
 				logger.logError("Cannot reset SSL engine", ex);
 				throw new IOException(ex);
