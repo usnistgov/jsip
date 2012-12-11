@@ -6,7 +6,6 @@ import java.util.Properties;
 import java.util.Random;
 
 import javax.sip.ClientTransaction;
-import javax.sip.Dialog;
 import javax.sip.DialogTerminatedEvent;
 import javax.sip.IOExceptionEvent;
 import javax.sip.InvalidArgumentException;
@@ -200,13 +199,6 @@ public class NoAutoDialogTest extends TestCase {
             System.out.println("PROCESS REQUEST ON SERVER");
             Request request = requestEvent.getRequest();
             SipProvider provider = (SipProvider) requestEvent.getSource();
-            Dialog dialog = null;
-            try {
-				dialog = provider.getNewDialog(requestEvent.getServerTransaction());
-            } catch (SipException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
             if (request.getMethod().equals(Request.INVITE)) {
                 try {
                     System.out.println("Received invite");
@@ -220,10 +212,6 @@ public class NoAutoDialogTest extends TestCase {
                     response = messageFactory.createResponse(180, request);
                     ((ToHeader) response.getHeader(ToHeader.NAME)).setTag("asdgaeyvewacyta"
                             + Math.random());
-                    inviteStx.sendResponse(response);
-                    
-                    response = messageFactory.createResponse(200, request);
-                    
                     inviteStx.sendResponse(response);
                     System.out.println("Sent 180:\n" + response);
                     i_sent180 = true;
@@ -353,20 +341,24 @@ public class NoAutoDialogTest extends TestCase {
 
         public void processResponse(ResponseEvent responseEvent) {
             Response response = responseEvent.getResponse();
-            Dialog dialog = responseEvent.getDialog();
             int code = response.getStatusCode();
             if (code == 180) {
                 try {
 
                     o_received180 = true;
-                    Request ack = dialog.createAck(1);
-                    dialog.sendAck(ack);
+                    Request cancel = responseEvent.getClientTransaction().createCancel();
+                    ClientTransaction cancelTX = provider.getNewClientTransaction(cancel);
+                    cancelTX.sendRequest();
+                    System.out.println("Send CANCEL:\n" + cancel);
                     o_sentCancel = true;
 
-                } catch (Exception e) {
+                } catch (SipException e) {
                     e.printStackTrace();
                     doFail(doMessage(e));
                 }
+            } else if (code == 200) {
+                System.out.println("Receive Cancel200");
+                o_receiver200Cancel = true;
             }
         }
 
