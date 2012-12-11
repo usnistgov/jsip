@@ -153,6 +153,8 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
 						if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
 		            		logger.logDebug("Dead socketChannel" + socketChannel + " socket " + socketChannel.socket().getInetAddress() + ":"+socketChannel.socket().getPort() + " : error message " + e.getMessage());
 						nioTcpMessageChannel.close();
+						// Shall we perform a retry mechanism in case the remote host connection was closed due to a TCP RST ?
+						return;
 					}
 
         			int remain = buf.remaining();

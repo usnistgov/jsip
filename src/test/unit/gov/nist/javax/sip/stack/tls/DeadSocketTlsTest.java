@@ -73,7 +73,7 @@ public class DeadSocketTlsTest extends TestCase {
 		this.shootist = new BadShootist();
 		this.shootme = new BadShootme();
 		shootist.setSocketDisconnectWorstCase(true);
-		shootme.setSocketDisconnectWorstCase(false);
+		shootme.setSocketDisconnectWorstCase(true);
 		this.shootme.init();
 	}
 
@@ -482,12 +482,6 @@ public class DeadSocketTlsTest extends TestCase {
 						System.out.println("remoteCerts = " + cert);
 					}
 				}
-				
-				Thread.sleep(2000);
-				if(socketDisconnectWorstCase)  {
-					((SIPTransactionStack)sipStack).closeAllSockets();
-					stop();
-				}
 			} catch (Exception ex) {
 				System.out.println(ex.getMessage());
 				ex.printStackTrace();
@@ -668,7 +662,6 @@ public class DeadSocketTlsTest extends TestCase {
 			}
 			this.inviteSeen = true;
 			try {
-				Thread.sleep(10000);
 				System.out.println("shootme: got an Invite sending OK");
 				//System.out.println("shootme:  " + request);
 				Response response = messageFactory.createResponse(180, request);
