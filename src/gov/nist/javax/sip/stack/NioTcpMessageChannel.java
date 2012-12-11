@@ -133,6 +133,7 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 			this.peerAddress = socketChannel.socket().getInetAddress();
 			this.peerPort = socketChannel.socket().getPort();
 			this.socketChannel = socketChannel;
+			super.mySock = socketChannel.socket();
 			// messages that we write out to him.
 			nioParser = new NioPipelineParser(sipStack, this,
 					this.sipStack.getMaxMessageSize());
@@ -158,6 +159,7 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 			socketChannel = nioTcpMessageProcessor.blockingConnect((InetSocketAddress) sockAddr, 10000);
 			peerAddress = socketChannel.socket().getInetAddress();
 			peerPort = socketChannel.socket().getPort();
+			super.mySock = socketChannel.socket();
 			peerProtocol = "TCP";
 			nioParser = new NioPipelineParser(sipStack, this,
 					this.sipStack.getMaxMessageSize());
