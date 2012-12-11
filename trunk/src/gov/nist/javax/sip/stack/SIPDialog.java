@@ -1498,7 +1498,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             	sipStack.getTimer().schedule(
                     this.dialogDeleteTask,
                     SIPTransaction.TIMER_H
-                            * SIPTransactionStack.BASE_TIMER_INTERVAL);
+                            * lastTransaction.baseTimerInterval);
             } else {
             	this.delete();
             }
@@ -2878,8 +2878,8 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 this.timerTask = new DialogTimerTask(transaction);
                 if ( sipStack.getTimer() != null && sipStack.getTimer().isStarted()) {
                 	sipStack.getTimer().scheduleWithFixedDelay(timerTask,
-                        SIPTransactionStack.BASE_TIMER_INTERVAL,
-                        SIPTransactionStack.BASE_TIMER_INTERVAL);
+                        transaction.baseTimerInterval,
+                        transaction.baseTimerInterval);
                 }
             }
         } finally {
@@ -4100,7 +4100,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             	sipStack.getTimer().schedule(
                     dialogDeleteIfNoAckSentTask,
                     sipStack.getAckTimeoutFactor()
-                            * SIPTransactionStack.BASE_TIMER_INTERVAL);
+                            * lastTransaction.baseTimerInterval);
             }
         }
     }
