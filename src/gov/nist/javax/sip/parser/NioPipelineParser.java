@@ -129,6 +129,10 @@ public final class NioPipelineParser {
 			this.lines = messageLines;
 			this.body = body;
 		}
+		
+		public String toString() {
+			return super.toString() + "\n" + lines;
+		}
 	}
     public class Dispatch implements Runnable, QueuedMessageDispatchBase{
     	CallIDOrderingStructure callIDOrderingStructure;
@@ -146,13 +150,19 @@ public final class NioPipelineParser {
             Semaphore semaphore = callIDOrderingStructure.getSemaphore();
             final Queue<UnparsedMessage> messagesForCallID = callIDOrderingStructure.getMessagesForCallID();
             try {                                                                                
-                semaphore.acquire();                                        
+                semaphore.acquire();  
+                if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+                	logger.logDebug("semaphore acquired for message " + callId);
+                }
             } catch (InterruptedException e) {
                 logger.logError("Semaphore acquisition for callId " + callId + " interrupted", e);
             }
             SIPMessage parsedSIPMessage = null;
             synchronized(smp) {
 				UnparsedMessage unparsedMessage = messagesForCallID.peek();
+				if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
+                	logger.logDebug( "\nUnparsed message before parser is:\n" + unparsedMessage);
+                }
 				try {
 					parsedSIPMessage = smp.parseSIPMessage(unparsedMessage.lines.getBytes(), false, false, null);
 					if(unparsedMessage.body.length > 0) {
@@ -171,9 +181,7 @@ public final class NioPipelineParser {
             // once acquired we get the first message to process
             messagesForCallID.poll();
             SIPMessage message = parsedSIPMessage;
-            if (logger.isLoggingEnabled(StackLogger.TRACE_DEBUG)) {
-            	logger.logDebug("semaphore acquired for message " + message);
-            }
+            
             
             try {
                 sipMessageListener.processMessage(message);
