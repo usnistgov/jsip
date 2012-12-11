@@ -51,6 +51,8 @@ public class NioWebSocketMessageChannel extends NioTcpMessageChannel{
 	private static StackLogger logger = CommonLogger
 			.getLogger(NioWebSocketMessageChannel.class);
 	
+	private WebSocketCodec codec = new WebSocketCodec(true, true);
+	
 	public static NioWebSocketMessageChannel create(
 			NioWebSocketMessageProcessor nioTcpMessageProcessor,
 			SocketChannel socketChannel) throws IOException {
@@ -127,9 +129,19 @@ public class NioWebSocketMessageChannel extends NioTcpMessageChannel{
 			byte[] response = new WebSocketHttpHandshake().createHttpResponse(s);
 			sendNonWebSocketMessage(response, false);
 		} else {
+			/*
+			int half = bytes.length/2;
+			int rest = bytes.length - half;
+			byte[] split1 = new byte[half];
+			byte[] split2 = new byte[rest];
+			System.arraycopy(bytes, 0, split1, 0, half);
+			System.arraycopy(bytes, half, split2, 0, rest);
+			ByteArrayInputStream bios1 = new ByteArrayInputStream(split1);
+			ByteArrayInputStream bios2 = new ByteArrayInputStream(split2);*/
 			ByteArrayInputStream bios = new ByteArrayInputStream(bytes);
-			WebSocketCodec codec = new WebSocketCodec(true, true);
+			
 			byte[] decodedMsg = codec.decode(bios);
+			if(decodedMsg == null) return; // not enough data
 			System.out.println(new String(decodedMsg));
 			nioParser.addBytes(decodedMsg);
 		}
