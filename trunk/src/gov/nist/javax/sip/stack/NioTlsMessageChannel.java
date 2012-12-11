@@ -48,15 +48,15 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel implements NioTls
 	
 	SSLStateMachine sslStateMachine;
 
-	private ByteBuffer appFrameBuffer;
-	private ByteBuffer encryptedFrameBuffer;
+	private int appBufferMax;
+	private int netBufferMax;
 
 	public static NioTcpMessageChannel create(
 			NioTcpMessageProcessor nioTcpMessageProcessor,
 			SocketChannel socketChannel) throws IOException {
 		NioTcpMessageChannel retval = channelMap.get(socketChannel);
 		if (retval == null) {
-			retval = new NioTlsWebSocketMessageChannel(nioTcpMessageProcessor,
+			retval = new NioTlsMessageChannel(nioTcpMessageProcessor,
 					socketChannel);
 			channelMap.put(socketChannel, retval);
 		}
@@ -110,13 +110,11 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel implements NioTls
 	}
 	
 	public ByteBuffer prepareEncryptedDataBuffer() {
-		encryptedFrameBuffer.clear();
-		return encryptedFrameBuffer;
+		return ByteBufferFactory.getInstance().allocateDirect(netBufferMax);
 	}
 	
 	public ByteBuffer prepareAppDataBuffer() {
-		appFrameBuffer.clear();
-		return appFrameBuffer;
+		return ByteBufferFactory.getInstance().allocateDirect(appBufferMax);
 	}
 	
 	public static class SSLReconnectedException extends IOException {
@@ -131,7 +129,7 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel implements NioTls
 
 		ByteBuffer b = ByteBuffer.wrap(msg);
 		try {
-			sslStateMachine.wrap(b, encryptedFrameBuffer, new MessageSendCallback() {
+			sslStateMachine.wrap(b, ByteBufferFactory.getInstance().allocateDirect(netBufferMax), new MessageSendCallback() {
 
 				@Override
 				public void doSend(byte[] bytes) throws IOException {
@@ -172,7 +170,7 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel implements NioTls
 		
 		ByteBuffer b = ByteBuffer.wrap(message);
 		try {
-			sslStateMachine.wrap(b, encryptedFrameBuffer, new MessageSendCallback() {
+			sslStateMachine.wrap(b, ByteBufferFactory.getInstance().allocateDirect(netBufferMax), new MessageSendCallback() {
 				
 				@Override
 				public void doSend(byte[] bytes) throws IOException {
@@ -188,15 +186,12 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel implements NioTls
 	 protected void createBuffers() {
 
 	        SSLSession session = sslStateMachine.sslEngine.getSession();
-	        int appBufferMax = session.getApplicationBufferSize();
-	        int netBufferMax = session.getPacketBufferSize();
+	        appBufferMax = session.getApplicationBufferSize();
+	        netBufferMax = session.getPacketBufferSize();
 	        
 	        if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 	        	logger.logDebug("appBufferMax=" + appBufferMax + " netBufferMax=" + netBufferMax);
 	        }
-	        appFrameBuffer = ByteBufferFactory.getInstance().allocateDirect(2*appBufferMax + 50);
-
-	        encryptedFrameBuffer = ByteBufferFactory.getInstance().allocateDirect(netBufferMax);
 	    }
 	
 	public NioTlsMessageChannel(InetAddress inetAddress, int port,
