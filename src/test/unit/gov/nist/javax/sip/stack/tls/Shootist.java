@@ -391,11 +391,15 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
             System.out.println("isSecure = " + ((ClientTransactionExt)listener.inviteTid).isSecure());
             if ( ((ClientTransactionExt)listener.inviteTid).isSecure() ) {
                 System.out.println("cipherSuite = " + ((ClientTransactionExt)listener.inviteTid).getCipherSuite());
-                for ( Certificate cert : ((ClientTransactionExt)listener.inviteTid).getLocalCertificates()) {
-                    System.out.println("localCert =" + cert);
+                if(((ClientTransactionExt)listener.inviteTid).getLocalCertificates() != null) {
+	                for ( Certificate cert : ((ClientTransactionExt)listener.inviteTid).getLocalCertificates()) {
+	                    System.out.println("localCert =" + cert);
+	                }
                 }
-                for ( Certificate cert : ((ClientTransactionExt)listener.inviteTid).getPeerCertificates()) {
-                    System.out.println("remoteCerts = " + cert);
+                if(((ClientTransactionExt)listener.inviteTid).getPeerCertificates() != null) {
+	                for ( Certificate cert : ((ClientTransactionExt)listener.inviteTid).getPeerCertificates()) {
+	                    System.out.println("remoteCerts = " + cert);
+	                }
                 }
             }
         } catch (Exception ex) {
