@@ -1442,7 +1442,8 @@ public class SipStackImpl extends SIPTransactionStack implements
 		if (!transport.equalsIgnoreCase("UDP")
 				&& !transport.equalsIgnoreCase("TLS")
 				&& !transport.equalsIgnoreCase("TCP")
-				&& !transport.equalsIgnoreCase("SCTP"))
+				&& !transport.equalsIgnoreCase("SCTP")
+				&& !transport.equalsIgnoreCase("WS"))
 			throw new TransportNotSupportedException("bad transport "
 					+ transport);
 

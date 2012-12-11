@@ -47,6 +47,11 @@ public class NioMessageProcessorFactory implements MessageProcessorFactory {
                     throw new IllegalArgumentException("Error initializing SCTP",
                             ie);
                 }
+            } else if (transport.equalsIgnoreCase(ListeningPoint.WS)) {
+
+            	 NioWebSocketMessageProcessor tlsMessageProcessor = new NioWebSocketMessageProcessor(
+                         ipAddress, sipStack, port); 
+                 return tlsMessageProcessor;
             } else {
                 throw new IllegalArgumentException("bad transport");
             }
