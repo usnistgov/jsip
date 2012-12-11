@@ -164,19 +164,19 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 				+ inetAddress.getHostAddress() + ":" + port);
 		try {
 			messageProcessor = nioTcpMessageProcessor;
-			SocketAddress sockAddr = new InetSocketAddress(inetAddress, port);
-			socketChannel = nioTcpMessageProcessor.blockingConnect((InetSocketAddress) sockAddr, 10000);
+			// Take a cached socket to the destination, if none create a new one and cache it
+			socketChannel = nioTcpMessageProcessor.nioHandler.createOrReuseSocket(
+				inetAddress, port);
 			peerAddress = socketChannel.socket().getInetAddress();
 			peerPort = socketChannel.socket().getPort();
 			super.mySock = socketChannel.socket();
-			peerProtocol = "TCP";
+			peerProtocol = getTransport();
 			nioParser = new NioPipelineParser(sipStack, this,
 					this.sipStack.getMaxMessageSize());
 			putMessageChannel(socketChannel, this);
 			lastActivityTimeStamp = System.currentTimeMillis();
-			if(this.socketChannel != null && this.socketChannel.isConnected()) {
-				nioTcpMessageProcessor.nioHandler.putSocket(NIOHandler.makeKey(this.peerAddress, this.peerPort), this.socketChannel);
-			}
+			super.key = MessageChannel.getKey(peerAddress, peerPort, getTransport());
+			
 		} finally {
 			if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 				logger

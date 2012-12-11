@@ -37,6 +37,7 @@ import gov.nist.javax.sip.SipStackImpl;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.SocketException;
 import java.nio.channels.SocketChannel;
 import java.util.Enumeration;
@@ -415,6 +416,26 @@ public class NIOHandler {
         } catch (Exception e) {
         	
         }
+    }
+    
+    
+    // TODO: FIXME: It is absolutely essential to have this method synchrnized based on the makeKey(addr, port),
+    // it is not needed to sync per class instance like it's done now, this is just temporary fix
+    // UAC case with rapid outbound socket creation might end up overwriting the assigned socket
+    public synchronized SocketChannel createOrReuseSocket(InetAddress inetAddress, int port) throws IOException {
+    	SocketChannel channel = getSocket(NIOHandler.makeKey(inetAddress, port));
+		if(channel == null) { // this is where the threads will race
+			SocketAddress sockAddr = new InetSocketAddress(inetAddress, port);
+			channel = messageProcessor.blockingConnect((InetSocketAddress) sockAddr, 10000);
+			if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+    								logger.logDebug("create channel = " + channel + "  " + inetAddress + " " + port);
+			if(channel != null && channel.isConnected()) {
+				putSocket(NIOHandler.makeKey(inetAddress, port), channel);
+				if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+    								logger.logDebug("channel cached channel = " + channel);
+			}
+		} 
+		return channel;
     }
     
     private class SocketTimeoutAuditor extends TimerTask {
