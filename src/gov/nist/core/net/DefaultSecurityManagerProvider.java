@@ -75,10 +75,12 @@ public class DefaultSecurityManagerProvider implements SecurityManagerProvider {
     }
 
     public KeyManager[] getKeyManagers() {
+    	if(keyManagerFactory == null) return null;
         return keyManagerFactory.getKeyManagers();
     }
 
     public TrustManager[] getTrustManagers() {
+    	if(trustManagerFactory == null) return null;
         return trustManagerFactory.getTrustManagers();
     }
 }
