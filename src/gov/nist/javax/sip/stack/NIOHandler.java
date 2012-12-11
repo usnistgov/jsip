@@ -427,7 +427,7 @@ public class NIOHandler {
     	if(channel != null && !channel.isConnected()) {
     		if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
 				logger.logDebug("Channel disconnected " + channel);
-    		
+    		logger.logError("HERE " + channel);
     		channel = null;
     	}
 		if(channel == null) { // this is where the threads will race
