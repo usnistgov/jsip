@@ -821,7 +821,7 @@ public abstract class ConnectionOrientedMessageChannel extends MessageChannel im
                 logger.logDebug(
                         "~~~ Starting processing of KeepAliveTimeoutEvent( " + peerAddress.getHostAddress() + "," + peerPort + ")...");
             }
-            close(true);
+//            close(true);
             if(sipStack instanceof SipStackImpl) {
 	            for (Iterator<SipProviderImpl> it = ((SipStackImpl)sipStack).getSipProviders(); it.hasNext();) {
 	                SipProviderImpl nextProvider = (SipProviderImpl) it.next();
