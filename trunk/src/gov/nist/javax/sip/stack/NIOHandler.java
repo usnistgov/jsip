@@ -387,6 +387,31 @@ public class NIOHandler {
     	try {
         	timer.cancel();
         	timer.purge();
+        	synchronized(socketTable) {
+        		HashSet<String> keysToRemove = new HashSet<String>();
+        		for(String key : socketTable.keySet()) {
+        			try {
+        				SocketChannel socketChannel = socketTable.get(key);
+        				NioTcpMessageChannel messageChannel = NioTcpMessageChannel.getMessageChannel(socketChannel);
+        				if(messageChannel == null) {
+        					keysToRemove.add(key);
+        				} else {
+        					keysToRemove.add(key);
+        					if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+        						logger.logDebug("stop() : Will remove socket " + key + " lastActivity=" + messageChannel.getLastActivityTimestamp() + " current= " + System.currentTimeMillis());
+        					NioTcpMessageChannel.removeMessageChannel(socketChannel);
+        					messageChannel.close();
+        				}
+        			} catch (Exception anything) {
+
+        			}
+        		}
+        		for(String key : keysToRemove) {
+        			socketTable.remove(key);
+        			if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+        				logger.logDebug("stop() : Removed socket " + key);
+        		}
+        	}
         } catch (Exception e) {
         	
         }
