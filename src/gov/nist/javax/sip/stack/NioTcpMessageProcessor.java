@@ -137,6 +137,13 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
         		while (!queue.isEmpty()) {
         			ByteBuffer buf = queue.get(0);
 
+        			if(!socketChannel.isOpen()) {
+        				//if the socket channel is closed we don't wirte data and
+        				// cancel the seclection key to make sure it is removed from the selectionKey set
+        				// on the next selection operation
+        				selectionKey.cancel();
+        				return;
+        			}
         			socketChannel.write(buf);
 
         			int remain = buf.remaining();
