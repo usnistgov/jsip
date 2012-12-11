@@ -227,5 +227,4 @@ public interface SIPClientTransaction extends ClientTransactionExt, SIPTransacti
    * @return the originalRequestFromTag
    */
   public abstract String getOriginalRequestScheme();
-
 }
