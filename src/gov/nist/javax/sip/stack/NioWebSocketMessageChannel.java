@@ -26,12 +26,25 @@
 package gov.nist.javax.sip.stack;
 
 import gov.nist.core.CommonLogger;
+import gov.nist.core.Host;
+import gov.nist.core.HostPort;
 import gov.nist.core.LogWriter;
 import gov.nist.core.StackLogger;
+import gov.nist.javax.sip.header.RecordRoute;
+import gov.nist.javax.sip.message.SIPMessage;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.channels.SocketChannel;
+import java.text.ParseException;
+
+import javax.sip.address.SipURI;
+import javax.sip.address.URI;
+import javax.sip.header.ContactHeader;
+import javax.sip.header.RecordRouteHeader;
+import javax.sip.header.ViaHeader;
+import javax.sip.message.Request;
 
 public class NioWebSocketMessageChannel extends NioTcpMessageChannel{
 
@@ -131,6 +144,55 @@ public class NioWebSocketMessageChannel extends NioTcpMessageChannel{
 	public void onNewSocket() {
 		super.onNewSocket();
 		
+	}
+	
+    /**
+     * Call back method. When the parser finshes parsing a message let the channel see it and decide
+     * if it want to create some address mappings (for Websocket or otherwise).
+     * 
+     * @param message
+     * @throws Exception 
+     */
+	@Override
+    public void processMessage(SIPMessage message) throws Exception {
+    	if(message instanceof Request) {
+    		Request request = (Request) message;
+    		if(request.getMethod().equals(Request.REGISTER)) {
+    			ContactHeader contact = (ContactHeader) request.getHeader(ContactHeader.NAME);
+    			URI uri = contact.getAddress().getURI();
+    			if(uri.isSipURI()) {
+    				SipURI sipUri = (SipURI) uri;
+    				String host = sipUri.getHost();
+    				NioTcpMessageProcessor processor = (NioTcpMessageProcessor) this.messageProcessor;
+    				HostPort hostPort = new HostPort();
+    				hostPort.setHost(new Host(host));
+    				hostPort.setPort(5060);
+    				processor.assignChannelToDestination(hostPort, this);
+    				    			}
+    		}
+    	}
+    	ContactHeader contact = (ContactHeader)message.getHeader(ContactHeader.NAME);
+    	RecordRouteHeader rr = (RecordRouteHeader)message.getHeader(RecordRouteHeader.NAME);
+    	ViaHeader via = message.getTopmostViaHeader();
+    	if(rr == null) {
+    		if(contact != null) {
+    			rewriteUri((SipURI) contact.getAddress().getURI());
+    		}
+    	} else {
+    		rewriteUri((SipURI) rr.getAddress().getURI());
+    	}
+    	via.setHost(getPeerAddress());
+    	via.setPort(getPeerPort());
+		super.processMessage(message);
+    }
+	
+	public void rewriteUri(SipURI uri) {
+		try {
+			uri.setHost(getPeerAddress());
+		} catch (ParseException e) {
+			logger.logError("Cant parse address", e);
+		}
+		uri.setPort(getPeerPort());
 	}
 
 }
