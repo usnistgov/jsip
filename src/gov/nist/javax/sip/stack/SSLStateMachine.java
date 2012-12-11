@@ -59,10 +59,10 @@ public class SSLStateMachine {
 	protected SSLEngine sslEngine;
 	protected Queue<MessageSendItem> pendingOutboundBuffers = 
 			new LinkedList<MessageSendItem>();
-	protected NioTlsMessageChannel channel;
+	protected NioTlsChannelInterface channel;
 	protected ByteBuffer tlsRecordBuffer;
 	
-	public SSLStateMachine(SSLEngine sslEngine, NioTlsMessageChannel channel) {
+	public SSLStateMachine(SSLEngine sslEngine, NioTlsChannelInterface channel) {
 		this.sslEngine = sslEngine;
 		this.channel = channel;
 	}
@@ -249,7 +249,12 @@ public class SSLStateMachine {
 				logger.logDebug("Unwrap src " + src + " dst " 
 						+ dst);
 			}
-			SSLEngineResult result = sslEngine.unwrap(src, dst);
+			SSLEngineResult result = null;
+			try {
+				result = sslEngine.unwrap(src, dst);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 				logger.logDebug("Unwrap result " + result + " buffers size " 
 						+ pendingOutboundBuffers.size() + " src=" + src + " dst=" + dst);
@@ -277,7 +282,7 @@ public class SSLStateMachine {
 				byte[] a = new byte[dst.remaining()];
 				dst.get(a);
 				// take it and feed the plain text to out chunk-by-chunk parser
-				channel.nioParser.addBytes(a);
+				channel.addPlaintextBytes(a);
 			}
 			switch(result.getHandshakeStatus()) {
 			case NEED_UNWRAP:
@@ -300,7 +305,11 @@ public class SSLStateMachine {
 					logger.logDebug("Handshaking just finnished, but has remaining. Will try to wrap the queues app items.");
 				}
 				wrapRemaining();
-				break loop;
+				if(src.hasRemaining()) {
+					break;
+				} else {
+					break loop;
+				}
 			case NOT_HANDSHAKING:
 				wrapRemaining();
 				if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
