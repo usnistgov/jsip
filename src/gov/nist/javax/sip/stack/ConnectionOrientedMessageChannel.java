@@ -457,26 +457,28 @@ public abstract class ConnectionOrientedMessageChannel extends MessageChannel im
                         }
                     }
                 } else {
-                    SIPResponse response = sipRequest
-                            .createResponse(Response.SERVICE_UNAVAILABLE);
+                	if(sipStack.sipMessageValve == null) { // Allow message valves to nullify messages without error
+                		SIPResponse response = sipRequest
+                				.createResponse(Response.SERVICE_UNAVAILABLE);
 
-                    RetryAfter retryAfter = new RetryAfter();
+                		RetryAfter retryAfter = new RetryAfter();
 
-                    // Be a good citizen and send a decent response code back.
-                    try {
-                        retryAfter.setRetryAfter((int) (10 * (Math.random())));
-                        response.setHeader(retryAfter);
-                        this.sendMessage(response);
-                    } catch (Exception e) {
-                        // IGNore
-                    }
-                    if (logger.isLoggingEnabled())
-                        logger
-                                .logWarning(
-                                        "Dropping message -- could not acquire semaphore");
+                		// Be a good citizen and send a decent response code back.
+                		try {
+                			retryAfter.setRetryAfter((int) (10 * (Math.random())));
+                			response.setHeader(retryAfter);
+                			this.sendMessage(response);
+                		} catch (Exception e) {
+                			// IGNore
+                		}
+                		if (logger.isLoggingEnabled())
+                			logger
+                			.logWarning(
+                					"Dropping message -- could not acquire semaphore");
+                	}
                 }
             } else {
-                SIPResponse sipResponse = (SIPResponse) sipMessage;
+            	SIPResponse sipResponse = (SIPResponse) sipMessage;
                 // JvB: dont do this
                 // if (sipResponse.getStatusCode() == 100)
                 // sipResponse.getTo().removeParameter("tag");
