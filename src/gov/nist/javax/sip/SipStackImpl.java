@@ -29,31 +29,23 @@ import gov.nist.core.CommonLogger;
 import gov.nist.core.LogLevels;
 import gov.nist.core.ServerLogger;
 import gov.nist.core.StackLogger;
-import gov.nist.core.net.AddressResolver;
-import gov.nist.core.net.NetworkLayer;
-import gov.nist.core.net.SslNetworkLayer;
+import gov.nist.core.net.*;
 import gov.nist.javax.sip.clientauthutils.AccountManager;
 import gov.nist.javax.sip.clientauthutils.AuthenticationHelper;
 import gov.nist.javax.sip.clientauthutils.AuthenticationHelperImpl;
 import gov.nist.javax.sip.clientauthutils.SecureAccountManager;
 import gov.nist.javax.sip.parser.MessageParserFactory;
-import gov.nist.javax.sip.parser.PipelinedMsgParser;
 import gov.nist.javax.sip.parser.PostParseExecutorServices;
 import gov.nist.javax.sip.parser.StringMsgParser;
 import gov.nist.javax.sip.parser.StringMsgParserFactory;
-import gov.nist.javax.sip.stack.ClientAuthType;
-import gov.nist.javax.sip.stack.DefaultMessageLogFactory;
-import gov.nist.javax.sip.stack.DefaultRouter;
-import gov.nist.javax.sip.stack.MessageProcessor;
-import gov.nist.javax.sip.stack.MessageProcessorFactory;
-import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
-import gov.nist.javax.sip.stack.OIOMessageProcessorFactory;
-import gov.nist.javax.sip.stack.SIPEventInterceptor;
-import gov.nist.javax.sip.stack.SIPMessageValve;
-import gov.nist.javax.sip.stack.SIPTransactionStack;
+import gov.nist.javax.sip.stack.*;
 import gov.nist.javax.sip.stack.timers.DefaultSipTimer;
 import gov.nist.javax.sip.stack.timers.SipTimer;
 
+import javax.sip.*;
+import javax.sip.address.Router;
+import javax.sip.header.HeaderFactory;
+import javax.sip.message.Request;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,28 +53,10 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
-import java.util.Collections;
-import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
-import java.util.StringTokenizer;
+import java.security.GeneralSecurityException;
+import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-
-import javax.sip.InvalidArgumentException;
-import javax.sip.ListeningPoint;
-import javax.sip.ObjectInUseException;
-import javax.sip.PeerUnavailableException;
-import javax.sip.ProviderDoesNotExistException;
-import javax.sip.SipException;
-import javax.sip.SipListener;
-import javax.sip.SipProvider;
-import javax.sip.SipStack;
-import javax.sip.TransportNotSupportedException;
-import javax.sip.address.Router;
-import javax.sip.header.HeaderFactory;
-import javax.sip.message.Request;
 
 /**
  * Implementation of SipStack.
@@ -1104,6 +1078,35 @@ public class SipStackImpl extends SIPTransactionStack implements
 		} else {
 			this.unlimitedClientTransactionTableSize = true;
 		}
+
+        /*
+         * gets the SecurityManagerProvider implementation, if any. Note that this is a
+         * NIST only feature.
+         */
+
+        final String SECURITY_MANAGER_PROVIDER_KEY = "gov.nist.javax.sip.SECURITY_MANAGER_PROVIDER";
+
+        if (configurationProperties.containsKey(SECURITY_MANAGER_PROVIDER_KEY)) {
+            String path = configurationProperties
+                    .getProperty(SECURITY_MANAGER_PROVIDER_KEY);
+            try {
+                Class<?> clazz = Class.forName(path);
+                Constructor<?> c = clazz.getConstructor(new Class[0]);
+                securityManagerProvider = (SecurityManagerProvider) c.newInstance(new Object[0]);
+            } catch (Exception e) {
+                throw new PeerUnavailableException(
+                        "can't find or instantiate SecurityManagerProvider implementation: "
+                                + path, e);
+            }
+        } else
+            securityManagerProvider = new DefaultSecurityManagerProvider();
+        try {
+            securityManagerProvider.init(configurationProperties);
+        } catch (GeneralSecurityException ex) {
+            throw new PeerUnavailableException("Cannot initialize security manager provider", ex);
+        } catch (IOException ex) {
+            throw new PeerUnavailableException("Cannot initialize security manager provider", ex);
+        }
 
 		super.cacheServerConnections = true;
 		String flag = configurationProperties

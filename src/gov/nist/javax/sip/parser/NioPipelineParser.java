@@ -186,7 +186,7 @@ public final class NioPipelineParser {
             try {
                 sipMessageListener.processMessage(message);
             } catch (Exception e) {
-            	logger.logError("Error occured processing message", e);    
+            	logger.logError("Error occured processing message " + message, e);    
                 // We do not break the TCP connection because other calls use the same socket here
             } finally {                                        
                 if(messagesForCallID.size() <= 0) {
