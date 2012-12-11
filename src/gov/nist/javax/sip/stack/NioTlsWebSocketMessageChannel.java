@@ -41,10 +41,10 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.security.cert.CertificateException;
 
-public class NioTlsMessageChannel extends NioTcpMessageChannel implements NioTlsChannelInterface{
+public class NioTlsWebSocketMessageChannel extends NioWebSocketMessageChannel implements NioTlsChannelInterface {
 
 	private static StackLogger logger = CommonLogger
-			.getLogger(NioTlsMessageChannel.class);
+			.getLogger(NioTlsWebSocketMessageChannel.class);
 	
 	SSLStateMachine sslStateMachine;
 
@@ -63,14 +63,14 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel implements NioTls
 		return retval;
 	}
 	
-	protected NioTlsMessageChannel(NioTcpMessageProcessor nioTcpMessageProcessor,
+	protected NioTlsWebSocketMessageChannel(NioTcpMessageProcessor nioTcpMessageProcessor,
 			SocketChannel socketChannel) throws IOException {
 		super(nioTcpMessageProcessor, socketChannel);
 
 		messageProcessor = nioTcpMessageProcessor;
 		myClientInputStream = socketChannel.socket().getInputStream();
 		try {
-			init(false);
+			this.init(false);
 			createBuffers();
 		}catch (Exception e) {
 			throw new IOException("Can't do TLS init", e);
@@ -78,28 +78,16 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel implements NioTls
 	}
 	
 	public void init(boolean clientMode) throws Exception, CertificateException, FileNotFoundException, IOException {
-        SSLContext ctx = clientMode ?
-                ((NioTlsMessageProcessor)messageProcessor).sslClientCtx :
-                ((NioTlsMessageProcessor)messageProcessor).sslServerCtx;
+        SSLContext ctx = 
+                ((NioTlsWebSocketMessageProcessor)messageProcessor).sslServerCtx;
 		sslStateMachine = new SSLStateMachine(ctx.createSSLEngine(), this);
 
-        sslStateMachine.sslEngine.setUseClientMode(clientMode);
+        sslStateMachine.sslEngine.setUseClientMode(false);
         String auth = ((SipStackImpl)super.sipStack).
         		getConfigurationProperties().getProperty("gov.nist.javax.sip.TLS_CLIENT_AUTH_TYPE");
-        if(auth == null) {
-        	auth = "Enabled";
-        }
-        if(auth.equals("Disabled")) {
-        	sslStateMachine.sslEngine.setNeedClientAuth(false);
-        	sslStateMachine.sslEngine.setWantClientAuth(false);
-        } else if(auth.equals("Enabled")) {
-        	sslStateMachine.sslEngine.setNeedClientAuth(true);
-        } else if(auth.equals("Want")) {
-        	sslStateMachine.sslEngine.setNeedClientAuth(false);
-        	sslStateMachine.sslEngine.setWantClientAuth(true);
-        } else {
-        	throw new RuntimeException("Invalid parameter for TLS authentication: " + auth);
-        }
+
+        sslStateMachine.sslEngine.setNeedClientAuth(false);
+        sslStateMachine.sslEngine.setWantClientAuth(false);
 
         String clientProtocols = ((SipStackImpl)super.sipStack)
         		.getConfigurationProperties().getProperty("gov.nist.javax.sip.TLS_CLIENT_PROTOCOLS");
@@ -136,7 +124,7 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel implements NioTls
 				@Override
 				public void doSend(byte[] bytes) throws IOException {
 					
-						NioTlsMessageChannel.super.sendMessage(bytes, isClient);
+						NioTlsWebSocketMessageChannel.super.sendMessage(bytes, isClient);
 					
 				}
 			});
@@ -156,7 +144,8 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel implements NioTls
 		if(this.socketChannel != null && this.socketChannel.isConnected() && this.socketChannel.isOpen()) {
 			nioHandler.putSocket(NIOHandler.makeKey(this.peerAddress, this.peerPort), this.socketChannel);
 		}
-		super.sendMessage(msg, this.peerAddress, this.peerPort, true);
+		super.sendNonWebSocketMessage(msg, false);
+		//super.sendMessage(msg, this.peerAddress, this.peerPort, true);
 	}
 	private byte[] lastMessage = null;
 	@Override
@@ -176,7 +165,7 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel implements NioTls
 				
 				@Override
 				public void doSend(byte[] bytes) throws IOException {
-					NioTlsMessageChannel.super.sendMessage(bytes,
+					NioTlsWebSocketMessageChannel.super.sendTCPMessage(bytes,
 							receiverAddress, receiverPort, retry);
 					
 				}
@@ -185,7 +174,33 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel implements NioTls
 			throw e;
 		}
 	}
-	 protected void createBuffers() {
+
+	public void sendHttpMessage(final byte message[], final InetAddress receiverAddress,
+			final int receiverPort, final boolean retry) throws IOException {
+		lastMessage = new byte[message.length];
+		for(int q=0;q<message.length;q++) {
+			lastMessage[q] = message[q];
+		}
+		String s = new String(lastMessage); 
+
+		checkSocketState();
+		
+		ByteBuffer b = ByteBuffer.wrap(message);
+		try {
+			sslStateMachine.wrap(b, encryptedFrameBuffer, new MessageSendCallback() {
+				
+				@Override
+				public void doSend(byte[] bytes) throws IOException {
+					NioTlsWebSocketMessageChannel.super.sendMessage(bytes,
+							receiverAddress, receiverPort, retry);
+					
+				}
+			});
+		} catch (IOException e) {
+			throw e;
+		}
+	}
+	 private void createBuffers() {
 
 	        SSLSession session = sslStateMachine.sslEngine.getSession();
 	        int appBufferMax = session.getApplicationBufferSize();
@@ -199,7 +214,7 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel implements NioTls
 	        encryptedFrameBuffer = ByteBufferFactory.getInstance().allocateDirect(netBufferMax);
 	    }
 	
-	public NioTlsMessageChannel(InetAddress inetAddress, int port,
+	public NioTlsWebSocketMessageChannel(InetAddress inetAddress, int port,
 			SIPTransactionStack sipStack,
 			NioTcpMessageProcessor nioTcpMessageProcessor) throws IOException {
 		super(inetAddress, port, sipStack, nioTcpMessageProcessor);
@@ -214,7 +229,7 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel implements NioTls
 	@Override
 	protected void addBytes(byte[] bytes) throws Exception {
 		if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-			logger.logDebug("Adding TLS bytes for decryption " + bytes.length);
+			logger.logDebug("Adding WSS bytes for decryption " + bytes.length);
 		}
 		if(bytes.length <= 0) return;
 		ByteBuffer buffer = ByteBuffer.wrap(bytes);
@@ -222,8 +237,23 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel implements NioTls
 	}
 	
 	@Override
+	protected void sendNonWebSocketMessage(byte[] msg, boolean isClient) throws IOException {
+
+		if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+			logger.logDebug("sendMessage isClient  = " + isClient + " this = " + this);
+		}
+		lastActivityTimeStamp = System.currentTimeMillis();
+		
+		NIOHandler nioHandler = ((NioTcpMessageProcessor) messageProcessor).nioHandler;
+		if(this.socketChannel != null && this.socketChannel.isConnected() && this.socketChannel.isOpen()) {
+			nioHandler.putSocket(NIOHandler.makeKey(this.peerAddress, this.peerPort), this.socketChannel);
+		}
+		sendMessage(msg, this.peerAddress, this.peerPort, isClient);
+	}
+	
+	@Override
 	public String getTransport() {
-		return "TLS";
+		return "WSS";
 	}
 
 	@Override
@@ -265,7 +295,7 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel implements NioTls
 
 	@Override
 	public void addPlaintextBytes(byte[] bytes) throws Exception {
-		nioParser.addBytes(bytes);
+		super.addBytes(bytes);
 	}
 
 }
