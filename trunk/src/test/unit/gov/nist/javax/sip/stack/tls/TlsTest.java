@@ -1,5 +1,10 @@
 package test.unit.gov.nist.javax.sip.stack.tls;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+
 import junit.framework.TestCase;
 
 public class TlsTest extends TestCase {
