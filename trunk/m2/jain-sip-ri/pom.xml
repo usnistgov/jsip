@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>jain-sip-ri</artifactId>
-	<version>1.2.X-NIO-SNAPSHOT</version>
+	<version>1.2.170-NIO</version>
 	<packaging>jar</packaging>
 
 	<name>jain-sip-ri</name>
