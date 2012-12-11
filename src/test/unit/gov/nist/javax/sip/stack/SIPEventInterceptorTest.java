@@ -83,7 +83,7 @@ public class SIPEventInterceptorTest extends TestCase{
 		}
 		
 		System.out.println("size:" + tp.getNumberOfThreads());
-		//Thread.sleep(5000);
+		Thread.sleep(5000);
 		ex.shutdown();
 		ex.awaitTermination(60, TimeUnit.SECONDS);
 		ex.shutdownNow();
