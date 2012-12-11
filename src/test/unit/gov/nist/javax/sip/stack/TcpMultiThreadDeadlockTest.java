@@ -39,6 +39,11 @@ import javax.sip.message.MessageFactory;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+
 import junit.framework.TestCase;
 
 /**
@@ -182,7 +187,7 @@ public class TcpMultiThreadDeadlockTest extends TestCase {
                 ServerTransaction serverTransaction) {
         
             SipProvider sipProvider = (SipProvider) requestEvent.getSource();
-  
+            
             Request request = requestEvent.getRequest();
             try {
                 serverTransaction = sipProvider.getNewServerTransaction(request);
@@ -261,6 +266,8 @@ public class TcpMultiThreadDeadlockTest extends TestCase {
         }
 
         public void init() {
+
+            
             SipFactory sipFactory = null;
             sipStack = null;
             sipFactory = SipFactory.getInstance();
@@ -269,13 +276,19 @@ public class TcpMultiThreadDeadlockTest extends TestCase {
             properties.setProperty("javax.sip.STACK_NAME", "shootme");
             // You need 16 for logging traces. 32 for debug + traces.
             // Your code will limp at 32 but it is best for debugging.
-            properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "16");
+            properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "LOG4J");
+            Logger root = Logger.getRootLogger();
+            root.setLevel(Level.WARN);
+            root.addAppender(new ConsoleAppender(
+                new PatternLayout(PatternLayout.TTCC_CONVERSION_PATTERN)));
             properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
                     "shootmedebug.txt");
             properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
                     "shootmelog.txt");
             properties.setProperty("gov.nist.javax.sip.AUTOMATIC_DIALOG_ERROR_HANDLING", "false");
             properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
+
+            properties.setProperty("gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE", "20");
 
             try {
                 // Create SipStack object
@@ -459,7 +472,7 @@ boolean inUse = false;
             // Set to 0 (or NONE) in your production code for max speed.
             // You need 16 (or TRACE) for logging traces. 32 (or DEBUG) for debug + traces.
             // Your code will limp at 32 but it is best for debugging.
-            properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "16");
+            properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "LOG4J");
             properties.setProperty("gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE", "10");
             properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
             properties.setProperty("gov.nist.javax.sip.AUTOMATIC_DIALOG_ERROR_HANDLING","false");

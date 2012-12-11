@@ -67,7 +67,7 @@ import javax.net.ssl.SSLServerSocket;
  * @author M. Ranganathan <br/>
  * 
  */
-public class TLSMessageProcessor extends ConnectionOrientedMessageProcessor {
+public class TLSMessageProcessor extends ConnectionOrientedMessageProcessor implements Runnable {
 	
 	private static StackLogger logger = CommonLogger.getLogger(TLSMessageProcessor.class);
     

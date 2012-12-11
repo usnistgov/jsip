@@ -30,6 +30,11 @@ import javax.sip.message.MessageFactory;
 import javax.sip.message.Request;
 import javax.sip.message.Response;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+
 /**
  * This is the UAS application for performance testing
  *
@@ -54,12 +59,14 @@ public class Shootme implements SipListener {
     private static final String myAddress = "127.0.0.1";
 
     private static final int myPort = 5080;
+    
+    private static String TRANSPORT = "tcp";
 
     protected static final String usageString = "java "
             + Shootme.class.getCanonicalName() + " \n"
             + ">>>> is your class path set to the root?";
 
-	private static final long BYE_DELAY = 60000;
+	private static final long BYE_DELAY = 5000;
 
 	private static final String TIMER_USER = "sipp-timer";
 
@@ -200,7 +207,11 @@ public class Shootme implements SipListener {
         properties.setProperty("javax.sip.STACK_NAME", "shootme");
         // You need 16 for logging traces. 32 for debug + traces.
         // Your code will limp at 32 but it is best for debugging.
-        properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "0");
+        properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "LOG4J");
+        Logger root = Logger.getRootLogger();
+        root.setLevel(Level.WARN);
+        root.addAppender(new ConsoleAppender(
+            new PatternLayout(PatternLayout.TTCC_CONVERSION_PATTERN)));
         properties.setProperty("gov.nist.javax.sip.LOG_MESSAGE_CONTENT", "false");
         properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");        
         properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
@@ -212,6 +223,7 @@ public class Shootme implements SipListener {
         properties.setProperty("gov.nist.javax.sip.THREAD_POOL_SIZE", "4");
         properties.setProperty("gov.nist.javax.sip.RECEIVE_UDP_BUFFER_SIZE", "65536");
         properties.setProperty("gov.nist.javax.sip.SEND_UDP_BUFFER_SIZE", "65536");
+        properties.setProperty("gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE", "20");
         properties.setProperty("gov.nist.javax.sip.CONGESTION_CONTROL_ENABLED", "false");
 //      properties.setProperty("gov.nist.javax.sip.MESSAGE_PARSER_FACTORY", CharsMsgParserFactory.class.getName());
 //		properties.setProperty("gov.nist.javax.sip.TIMER_CLASS_NAME", ScheduledExecutorSipTimer.class.getName());
@@ -235,7 +247,7 @@ public class Shootme implements SipListener {
             addressFactory = sipFactory.createAddressFactory();
             messageFactory = sipFactory.createMessageFactory();
             ListeningPoint lp = sipStack.createListeningPoint("127.0.0.1",
-                    myPort, "udp");
+                    myPort, TRANSPORT);
 
             Shootme listener = this;
 
