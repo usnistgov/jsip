@@ -765,7 +765,9 @@ public class DialogIdentityTest extends TestCase {
         }
 
         public void stop() {
-            this.sipStack.stop();
+        	if(sipStack != null) {
+        		this.sipStack.stop();
+        	}
         }
     }
 
@@ -775,7 +777,7 @@ public class DialogIdentityTest extends TestCase {
             shootme.init();
 
 
-            Thread.sleep(1000000);
+            Thread.sleep(10000);
 
             shootme.stop();
     }
@@ -793,5 +795,5 @@ public class DialogIdentityTest extends TestCase {
 
         shootist.stop();
         shootme.stop();
-}
+    }
 }
