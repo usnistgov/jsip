@@ -386,7 +386,7 @@ public final class PipelinedMsgParser implements Runnable {
                     } catch (IOException ex) {
                         // we only wait if the thread is still in a running state and hasn't been close from somewhere else
                     	// or we are leaking because the thread is waiting forever
-                    	if(postParseExecutor != null && isRunning){
+                    	if(PostParseExecutorServices.getPostParseExecutor() != null && isRunning){
                     		if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                                 logger.logDebug("waiting for messagesOrderingMap " + this + " threadname " + mythread.getName());
                             synchronized (messagesOrderingMap) {
@@ -426,7 +426,7 @@ public final class PipelinedMsgParser implements Runnable {
                     } catch (IOException ex) {
                         // we only wait if the thread is still in a running state and hasn't been close from somewhere else
                     	// or we are leaking because the thread is waiting forever
-                    	if(postParseExecutor != null && isRunning){
+                    	if(PostParseExecutorServices.getPostParseExecutor() != null && isRunning){
                     		if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                                 logger.logDebug("waiting for messagesOrderingMap " + this + " threadname " + mythread.getName());
                             synchronized (messagesOrderingMap) {
@@ -529,7 +529,7 @@ public final class PipelinedMsgParser implements Runnable {
                 // return error from there.
                 if (sipMessageListener != null) {
                     try {
-                        if(postParseExecutor == null) {
+                        if(PostParseExecutorServices.getPostParseExecutor() == null) {
                         	
                             /**
                              * If gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE is disabled
@@ -569,7 +569,7 @@ public final class PipelinedMsgParser implements Runnable {
                             // that could be processed in parallel
                             callIDOrderingStructure.getMessagesForCallID().offer(sipMessage);                                                                                   
                             
-                            postParseExecutor.execute(new Dispatch(callIDOrderingStructure, callId)); // run in executor thread
+                            PostParseExecutorServices.getPostParseExecutor().execute(new Dispatch(callIDOrderingStructure, callId)); // run in executor thread
                         }
                     } catch (Exception ex) {
                         // fatal error in processing - close the
@@ -588,46 +588,6 @@ public final class PipelinedMsgParser implements Runnable {
                 InternalErrorHandler.handleException(e);
             }
         }
-    }
-    
-	private static ExecutorService postParseExecutor = null;
-    
-    public static class NamedThreadFactory implements ThreadFactory {
-    	static long threadNumber = 0;
-		public Thread newThread(Runnable arg0) {
-			Thread thread = new Thread(arg0);
-			thread.setName("SIP-TCP-Core-PipelineThreadpool-" + threadNumber++%999999999);
-			return thread;
-		}
-    	
-    }
- 
-    public static BlockingQueue<Runnable> staticQueue;
-    public static BlockingQueueDispatchAuditor staticQueueAuditor;
-    public static void setPostParseExcutorSize(int threads, int queueTimeout){
-    	if(postParseExecutor != null) {
-    		postParseExecutor.shutdownNow();
-    	}
-    	if(staticQueueAuditor != null) {
-    		try {
-    			staticQueueAuditor.stop();
-    		} catch (Exception e) {
-
-    		}
-    	}
-    	if(threads<=0) {
-    		postParseExecutor = null;
-    	} else {
-    		staticQueue = new LinkedBlockingQueue<Runnable>();
-    		postParseExecutor = new ThreadPoolExecutor(threads, threads,
-    				0, TimeUnit.SECONDS, staticQueue,
-    				new NamedThreadFactory());
-
-    		staticQueueAuditor = new BlockingQueueDispatchAuditor(staticQueue);
-    		staticQueueAuditor.setTimeout(queueTimeout);
-    		staticQueueAuditor.start(2000);
-    	}
-
     }
 
     /**
@@ -670,7 +630,7 @@ public final class PipelinedMsgParser implements Runnable {
                 logger.logDebug("Couldn't close the rawInputStream " + this + " threadname " + mythread.getName() + " already closed ? " + rawInputStream.isClosed());
             // Ignore.
         }                
-        if(postParseExecutor != null){
+        if(PostParseExecutorServices.getPostParseExecutor() != null){
         	cleanMessageOrderingMap();
         	synchronized (mythread) {
             	mythread.notifyAll();
@@ -679,20 +639,6 @@ public final class PipelinedMsgParser implements Runnable {
             	mythread.interrupt();
     		} 
         }         
-    }
-    
-    public static void shutdownTcpThreadpool() {
-    	if(postParseExecutor!=null) {
-            postParseExecutor.shutdown();
-            postParseExecutor = null;
-        }
-    	if(staticQueueAuditor != null) {
-    		try {
-    			staticQueueAuditor.stop();
-    		} catch (Exception e) {
-
-    		}
-    	}
     }
     
     private void cleanMessageOrderingMap() {        

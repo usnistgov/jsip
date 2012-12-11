@@ -24,6 +24,7 @@ package test.unit.gov.nist.javax.sip.stack.no491;
 
 import gov.nist.javax.sip.SipStackImpl;
 import gov.nist.javax.sip.parser.PipelinedMsgParser;
+import gov.nist.javax.sip.parser.PostParseExecutorServices;
 
 import java.util.EventObject;
 
@@ -98,7 +99,7 @@ public class ReInviteTCPPostParserThreadPoolTest extends ScenarioHarness impleme
 
     public void testSendInvite() throws Exception {
         int threads = 32;
-        PipelinedMsgParser.setPostParseExcutorSize(threads, 10000);
+        PostParseExecutorServices.setPostParseExcutorSize(threads, 10000);
         ((SipStackImpl)getRiProtocolObjects().sipStack).setTcpPostParsingThreadPoolSize(threads);
         ((SipStackImpl)getTiProtocolObjects().sipStack).setTcpPostParsingThreadPoolSize(threads);
         getRiProtocolObjects().start();        

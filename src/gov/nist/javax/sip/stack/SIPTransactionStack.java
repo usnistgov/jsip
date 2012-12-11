@@ -396,6 +396,8 @@ public abstract class SIPTransactionStack implements
     
     // ThreadPool when parsed SIP messages are processed. Affects the case when many TCP calls use single socket.
     private int tcpPostParsingThreadPoolSize = 0;
+    
+    protected  boolean useNio;
 
     // Minimum time between NAT kee alive pings from clients.
     // Any ping that exceeds this time will result in  CRLF CRLF going
