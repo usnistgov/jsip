@@ -53,6 +53,7 @@ import java.text.ParseException;
 import java.util.Iterator;
 import java.util.concurrent.Semaphore;
 
+import javax.sip.ListeningPoint;
 import javax.sip.SipListener;
 import javax.sip.address.Hop;
 import javax.sip.message.Response;
@@ -826,16 +827,20 @@ public abstract class ConnectionOrientedMessageChannel extends MessageChannel im
 	            for (Iterator<SipProviderImpl> it = ((SipStackImpl)sipStack).getSipProviders(); it.hasNext();) {
 	                SipProviderImpl nextProvider = (SipProviderImpl) it.next();
 	                SipListener sipListener= nextProvider.getSipListener();
-	            	if(sipListener!= null && sipListener instanceof  SipListenerExt) {
+	                ListeningPoint listeningPoint = nextProvider.getListeningPoint();
+	            	if(sipListener!= null && sipListener instanceof SipListenerExt
+	            			// making sure that we don't notify each listening point but only the one on which the timeout happened  
+	            			&& listeningPoint.getIPAddress().equalsIgnoreCase(myAddress) && listeningPoint.getPort() == myPort && 
+	            				listeningPoint.getTransport().equals(getTransport())) {
 	            		((SipListenerExt)sipListener).processIOException(new IOExceptionEventExt(nextProvider, Reason.KeepAliveTimeout, myAddress, myPort,
-	            				peerAddress.getHostAddress(), peerPort, "TCP"));
+	            				peerAddress.getHostAddress(), peerPort, getTransport()));
 	                }
 	            }  
             } else {
 	            SipListener sipListener = sipStack.getSipListener();	            
-	            if(sipListener instanceof  SipListenerExt) {
+	            if(sipListener instanceof SipListenerExt) {
 	            	((SipListenerExt)sipListener).processIOException(new IOExceptionEventExt(this, Reason.KeepAliveTimeout, myAddress, myPort,
-	                    peerAddress.getHostAddress(), peerPort, "TCP"));
+	                    peerAddress.getHostAddress(), peerPort, getTransport()));
 	            }
             }
         }
