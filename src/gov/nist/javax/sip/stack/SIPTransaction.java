@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.List;
 
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.sip.Dialog;
 import javax.sip.Transaction;
