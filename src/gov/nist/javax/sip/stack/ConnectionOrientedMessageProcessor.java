@@ -49,9 +49,9 @@ public abstract class ConnectionOrientedMessageProcessor extends MessageProcesso
 
     protected boolean isRunning;
 
-    protected Map<String, ConnectionOrientedMessageChannel> messageChannels;
+    protected final Map<String, ConnectionOrientedMessageChannel> messageChannels;
 
-    protected Map<String, ConnectionOrientedMessageChannel> incomingMessageChannels;
+    protected final Map<String, ConnectionOrientedMessageChannel> incomingMessageChannels;
 
     protected ServerSocket sock;
 

@@ -6,14 +6,13 @@ import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.SipStackImpl;
 import gov.nist.javax.sip.stack.SSLStateMachine.MessageSendCallback;
 
+import javax.net.ssl.SSLSession;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.security.cert.CertificateException;
-
-import javax.net.ssl.SSLSession;
 
 public class NioTlsMessageChannel extends NioTcpMessageChannel{
 
@@ -57,7 +56,7 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel{
 				((NioTlsMessageProcessor)messageProcessor).sslCtx.createSSLEngine(), this);
 
         sslStateMachine.sslEngine.setUseClientMode(clientMode);
-        String auth = (String) ((SipStackImpl)super.sipStack).
+        String auth = ((SipStackImpl)super.sipStack).
         		getConfigurationProperties().getProperty("gov.nist.javax.sip.TLS_CLIENT_AUTH_TYPE");
         if(auth == null) {
         	auth = "Enabled";
@@ -74,7 +73,7 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel{
         	throw new RuntimeException("Invalid parameter for TLS authentication: " + auth);
         }
 
-        String clientProtocols = (String) ((SipStackImpl)super.sipStack)
+        String clientProtocols = ((SipStackImpl)super.sipStack)
         		.getConfigurationProperties().getProperty("gov.nist.javax.sip.TLS_CLIENT_PROTOCOLS");
         if(clientProtocols != null) {
         	sslStateMachine.sslEngine.setEnabledProtocols(clientProtocols.split(","));
