@@ -400,7 +400,7 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 		}
 
 		if (sock != socketChannel && sock != null) {
-			if (sock != null) {
+			if (socketChannel != null) {
 				if (logger.isLoggingEnabled(LogWriter.TRACE_WARN)) {
 					logger
 							.logWarning("[2] Old socket different than new socket on channel "
@@ -418,7 +418,7 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 				close(false);
 			}
 			if (problem == null) {
-				if (sock != null) {
+				if (socketChannel != null) {
 					if (logger.isLoggingEnabled(LogWriter.TRACE_WARN)) {
 						logger
 								.logWarning("There was no exception for the retry mechanism so we keep going "

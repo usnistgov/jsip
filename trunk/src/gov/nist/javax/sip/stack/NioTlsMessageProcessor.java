@@ -94,6 +94,14 @@ public class NioTlsMessageProcessor extends NioTcpMessageProcessor{
 
     }
 	public void init() throws Exception, CertificateException, FileNotFoundException, IOException {
+		if(sipStack.securityManagerProvider.getKeyManagers() == null ||
+				sipStack.securityManagerProvider.getTrustManagers() == null) {
+			if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                logger.logDebug("TLS initialization failed due to NULL security config");
+            }
+			return; // The settings 
+		}
+			
         sslCtx = SSLContext.getInstance("TLS");
         sslCtx.init(sipStack.securityManagerProvider.getKeyManagers(), 
                 sipStack.securityManagerProvider.getTrustManagers(),
