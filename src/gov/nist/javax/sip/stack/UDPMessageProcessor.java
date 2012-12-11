@@ -184,7 +184,7 @@ public class UDPMessageProcessor extends MessageProcessor implements Runnable {
         Thread thread = new Thread(this);
         thread.setDaemon(true);
         // Issue #32 on java.net
-        thread.setName("UDPMessageProcessorThread");
+        thread.setName("MessageProcessorThread-UDP-" + getIpAddress().getHostAddress() + '/' + getPort());
         // Issue #184
         thread.setPriority(sipStack.getThreadPriority());
         thread.start();

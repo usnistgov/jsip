@@ -80,7 +80,7 @@ public class TCPMessageProcessor extends ConnectionOrientedMessageProcessor impl
      */
     public void start() throws IOException {
         Thread thread = new Thread(this);
-        thread.setName("TCPMessageProcessorThread");
+        thread.setName("MessageProcessorThread-TCP-" + getIpAddress().getHostAddress() + '/' + getPort());
         thread.setPriority(sipStack.getThreadPriority());
         thread.setDaemon(true);
         this.sock = sipStack.getNetworkLayer().createServerSocket(getPort(), 0, getIpAddress());
