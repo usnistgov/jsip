@@ -5,18 +5,12 @@ import gov.nist.core.CommonLogger;
 import gov.nist.core.HostPort;
 import gov.nist.core.LogWriter;
 import gov.nist.core.StackLogger;
-import gov.nist.javax.sip.SipStackImpl;
 
-import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.channels.SocketChannel;
-import java.security.KeyStore;
 import java.security.cert.CertificateException;
 
 public class NioTlsMessageProcessor extends NioTcpMessageProcessor{
@@ -47,7 +41,7 @@ public class NioTlsMessageProcessor extends NioTcpMessageProcessor{
     	try {
     		String key = MessageChannel.getKey(targetHostPort, "TLS");
     		if (messageChannels.get(key) != null) {
-    			return (NioTlsMessageChannel) this.messageChannels.get(key);
+    			return this.messageChannels.get(key);
     		} else {
     			NioTlsMessageChannel retval = new NioTlsMessageChannel(targetHostPort.getInetAddress(),
     					targetHostPort.getPort(), sipStack, this);
@@ -77,7 +71,7 @@ public class NioTlsMessageProcessor extends NioTcpMessageProcessor{
     public MessageChannel createMessageChannel(InetAddress targetHost, int port) throws IOException {
         String key = MessageChannel.getKey(targetHost, port, "TLS");
         if (messageChannels.get(key) != null) {
-            return (NioTlsMessageChannel) this.messageChannels.get(key);
+            return this.messageChannels.get(key);
         } else {
             NioTlsMessageChannel retval = new NioTlsMessageChannel(targetHost, port, sipStack, this);
             
