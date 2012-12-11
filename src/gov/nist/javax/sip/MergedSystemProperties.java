@@ -109,6 +109,13 @@ public class MergedSystemProperties extends Properties {
             return System.getProperty(key);
         return parent.getProperty(key);
     }
+    
+    @Override
+    public Object get(Object key) {
+        if(System.getProperty(key.toString()) != null)
+            return System.getProperty(key.toString());
+        return parent.getProperty(key.toString());
+    }
 
     /**
      *
