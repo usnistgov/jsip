@@ -65,6 +65,54 @@ public class MultipartMimeParserTest extends TestCase {
                                          + "Content-Disposition: signal;handling=optional\r\n\r\n" + "011201\r\n" + "00:1b:ba:fd:3d:0f\r\n"
                                          + "--unique-boundary-1\r\n";
 
+  private static String contentString2 = 
+		  "--boundary1\n"
+		  + "Content-Type: application/sdp\n"
+		  + "\n"
+		  + "v=0\n"
+		  + "o=IWSPM 2266426 2266426 IN IP4 10.92.9.164\n"
+		  + "s=-\n"
+		  + "c=IN IP4 10.92.9.164\n"
+		  + "t=0 0\n"
+		  + "m=audio 31956 RTP/AVP 0 8 18 101\n"
+		  + "a=ptime:20\n"
+		  + "a=rtpmap:101 telephone-event/8000\n"
+		  + "a=fmtp:101 0-15\n"
+		  + "\n"
+		  + "--boundary1\n"
+		  + "Content-Type: application/pidf+xml\n"
+		  + "Content-ID: alice123@atlanta.example.com\n"
+		  + "\n"
+		  + "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+		  + "<presence xmlns=\"urn:ietf:params:xml:ns:pidf\"\n"
+				  + "  xmlns:gp=\"urn:ietf:params:xml:ns:pidf:geopriv10\"\n"
+						  + "  xmlns:gml=\"http://www.opengis.net/gml\" \n"
+								  + "   xmlns:cl=\"urn:ietf:params:xml:ns:pidf:geopriv10:civicAddr\"\n"
+										  + "entity=\"pres:alice@atlanta.example.com\">\n"
+										  + "<tuple id=\"sg89ae\">\n"
+										  + "<timestamp>2007-07-09T14:00:00Z</timestamp>\n"
+		   + "<status>\n"
+		    + "<gp:geopriv>\n"
+		  	+ "<gp:location-info>\n"
+		  	  + "<gml:location>\n"
+		  		+ "<gml:Point srsName=\"urn:ogc:def:crs:EPSG::4326\">\n"
+		  		+ "<gml:pos>33.001111 -96.68142</gml:pos>\n"
+		  		+ "</gml:Point>\n"
+		  	   + "</gml:location>\n"
+		  	+ "</gp:location-info>\n"
+		  	+ "<gp:usage-rules>\n"
+		  	  + "<gp:retransmission-allowed>no</gp:retransmission-allowed>\n"
+		  	  + "<gp:retention-expiry>2007-07-27T18:00:00Z</gp:retention-expiry>\n"
+		  	+ "</gp:usage-rules>\n"
+		  	+ "<gp:method>DHCP</gp:method>\n"
+		  	+ "<gp:provided-by>www.example.com</gp:provided-by>\n"
+		    + "</gp:geopriv>\n"
+		   + "</status>\n"
+		  + "</tuple>\n"
+		  + "</presence>\n"
+		  + "--boundary1--\n";
+
+  
   private static String messageString = "INVITE sip:user2@server2.com SIP/2.0\r\n"
                                         + "Via: SIP/2.0/UDP pc33.server1.com;branch=z9hG4bK776asdhds\r\n" + "Max-Forwards: 70\r\n"
                                         + "To: user2 <sip:user2@server2.com>\r\n"
@@ -159,8 +207,9 @@ public class MultipartMimeParserTest extends TestCase {
 
   public void testMultiPartMimeMarshallingAndUnMarshallingWithExtraHeaders() throws Exception {
     SIPRequest request = new SIPRequest();
-    InputStream in = getClass().getClassLoader().getResourceAsStream("test/unit/gov/nist/javax/sip/multipartmime/multipart-body.txt");
-    byte[] content = toByteArray(in);
+//    InputStream in = getClass().getClassLoader().getResourceAsStream("test/unit/gov/nist/javax/sip/multipartmime/multipart-body.txt");
+//    byte[] content = toByteArray(in);
+    byte[] content = contentString2.getBytes("UTF-8");
     ContentType contentType = new ContentType("multipart", "mixed");
     contentType.setParameter("boundary", "boundary1");
     request.setContent(content, contentType);
