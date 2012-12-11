@@ -1473,7 +1473,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             throw new RuntimeException("Illegal method");
 
         // For loose validation this function is delegated to the application
-        if (!this.isSequnceNumberValidation()) {
+        if (!this.isSequenceNumberValidation()) {
             return true;
         }
 
@@ -4145,7 +4145,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         this.reInviteFlag = reInviteFlag;
     }
 
-    public boolean isSequnceNumberValidation() {
+    public boolean isSequenceNumberValidation() {
         return this.sequenceNumberValidation;
     }
 
