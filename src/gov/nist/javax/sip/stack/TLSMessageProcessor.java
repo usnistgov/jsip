@@ -87,7 +87,7 @@ public class TLSMessageProcessor extends ConnectionOrientedMessageProcessor impl
      */
     public void start() throws IOException {
         Thread thread = new Thread(this);
-        thread.setName("TLSMessageProcessorThread");
+        thread.setName("MessageProcessorThread-TLS-" + getIpAddress().getHostAddress() + '/' + getPort());
         // ISSUE 184
         thread.setPriority(sipStack.getThreadPriority());
         thread.setDaemon(true);
