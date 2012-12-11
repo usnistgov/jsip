@@ -248,6 +248,11 @@ public class LooseDialogValidationTest extends TestCase {
                     "shootmelog.txt");
             properties.setProperty("gov.nist.javax.sip.AUTOMATIC_DIALOG_ERROR_HANDLING", "false");
             properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
+            properties.setProperty("gov.nist.javax.sip.AGGRESSIVE_CLEANUP", "true");
+            properties.setProperty("gov.nist.javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
+            properties.setProperty("gov.nist.javax.sip.REENTRANT_LISTENER", "true");
+            properties.setProperty("gov.nist.javax.sip.THREAD_POOL_SIZE", "8");
+            properties.setProperty("gov.nist.javax.sip.LOOSE_DIALOG_VALIDATION", "true");
 
             try {
                 // Create SipStack object

@@ -31,11 +31,13 @@ package gov.nist.javax.sip;
 import gov.nist.core.CommonLogger;
 import gov.nist.core.InternalErrorHandler;
 import gov.nist.core.LogLevels;
+import gov.nist.core.LogWriter;
 import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.DialogTimeoutEvent.Reason;
 import gov.nist.javax.sip.address.RouterExt;
 import gov.nist.javax.sip.header.CallID;
 import gov.nist.javax.sip.header.Via;
+import gov.nist.javax.sip.message.RequestExt;
 import gov.nist.javax.sip.message.SIPMessage;
 import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.message.SIPResponse;
@@ -453,7 +455,6 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
       SIPClientTransaction newClientTransaction = createClientTransaction(request, hop);
       sipStack.addTransaction(newClientTransaction);
       return newClientTransaction;
-
     }
 
     /*

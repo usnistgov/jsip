@@ -281,12 +281,12 @@ public class Shootme implements SipListener {
             addressFactory = sipFactory.createAddressFactory();
             messageFactory = sipFactory.createMessageFactory();
             ListeningPoint lp = sipStack.createListeningPoint("127.0.0.1",
-                    myPort, "udp");
+                    myPort, "tcp");
 
             Shootme listener = this;
 
             SipProvider sipProvider = sipStack.createSipProvider(lp);
-            System.out.println("udp provider " + sipProvider);
+            System.out.println("tcp provider " + sipProvider);
             sipProvider.addSipListener(listener);
 
         } catch (Exception ex) {

@@ -52,7 +52,7 @@ import javax.sip.InvalidArgumentException;
  * @author M. Ranganathan <br/>
  *
  */
-public abstract class MessageProcessor implements Runnable {
+public abstract class MessageProcessor  {
 	private static StackLogger logger = CommonLogger.getLogger(MessageProcessor.class);
     /**
      * A string containing the 0.0.0.0 IPv4 ANY address.
@@ -330,11 +330,7 @@ public abstract class MessageProcessor implements Runnable {
 
 
 
-    /**
-     * Run method.
-     */
-    public abstract void run();
-
+   
     /**
      * @return Returns the sentBySet.
      */
