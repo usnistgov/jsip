@@ -242,10 +242,12 @@ public class NioPipelineParser {
 			partialLine = ""; // Reset the partial line so next time we will concatenate empty string instead of the obsolete partial line that we just took care of
 			if(!line.equals(CRLF)) { // CRLF indicates END of message headers by RFC
 				message.append(line); // Collect the line so far in the message buffer (line by line)
-				if(line.startsWith(ContentLengthHeader.NAME)) { // naive Content-Length header parsing to figure out how much bytes of message body must be read after the SIP headers
+                String lineIgnoreCase = line.toLowerCase();
+                // contribution from Alexander Saveliev compare to lower case as RFC 3261 states (7.3.1 Header Field Format) states that header fields are case-insensitive
+				if(lineIgnoreCase.startsWith(ContentLengthHeader.NAME.toLowerCase())) { // naive Content-Length header parsing to figure out how much bytes of message body must be read after the SIP headers
 					contentLength = Integer.parseInt(line.substring(
 							ContentLengthHeader.NAME.length()+1).trim());
-				} else if(line.startsWith(CallIdHeader.NAME)) { // naive Content-Length header parsing to figure out how much bytes of message body must be read after the SIP headers
+				} else if(lineIgnoreCase.startsWith(CallIdHeader.NAME.toLowerCase())) { // naive Content-Length header parsing to figure out how much bytes of message body must be read after the SIP headers
 					callId = line.substring(
 							CallIdHeader.NAME.length()+1).trim();
 				}
