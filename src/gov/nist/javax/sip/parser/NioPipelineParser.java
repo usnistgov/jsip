@@ -60,50 +60,29 @@ import javax.sip.header.ContentLengthHeader;
  */
 public class NioPipelineParser {
 	
+	private static StackLogger logger = CommonLogger.getLogger(NioPipelineParser.class);
+
+	private static final String CRLF = "\r\n";
+
+    /**
+     * The message listener that is registered with this parser. (The message
+     * listener has methods that can process correct and erroneous messages.)
+     */
+    protected SIPMessageListener sipMessageListener;
+    private int maxMessageSize;
+    private int sizeCounter;
+    private SIPTransactionStack sipStack;
+    private MessageParser smp = null;
+    boolean isRunning = false;
 	boolean currentStreamEnded = false;
 	boolean readingMessageBodyContents = false;
 	boolean readingHeaderLines = true;
 	boolean partialLineRead = false; // if we didn't receive enough bytes for a full line we expect the line to end in the next batch of bytes
 	String partialLine = "";
 	String callId;
+	
 	private ConcurrentHashMap<String, CallIDOrderingStructure> messagesOrderingMap = new ConcurrentHashMap<String, CallIDOrderingStructure>();
 	   
-	String test = "BYE sip:127.0.0.1:5080;transport=tcp SIP/2.0\r\n"
-            + "Via: SIP/2.0/TCP 127.0.0.1:5060;rport=5060;branch=z9hG4bKd2c87858eb0a7a09becc7a115c608d27\r\n"
-            + "CSeq: 2 BYE\r\n"
-            + "Call-ID: 84a5c57fd263bcce6fec05edf20c5aba@127.0.0.1\r\n"
-            + "From: \"The Master Blaster\" <sip:BigGuy@here.com>;tag=12345\r\n"
-            + "To: \"The Little Blister\" <sip:LittleGuy@there.com>;tag=2955\r\n"
-            + "Max-Forwards: 70\r\n"
-            + "Route: \"proxy\" <sip:proxy@127.0.0.1:5070;transport=tcp;lr>\r\n"
-            + "Content-Length: 3\r\n" + "\r\n123\r\n\r\n"
-            
-            
-            +"BYE sip:127.0.0.1:5080;transport=tcp SIP/2.0\r\n"
-            + "Via: SIP/2.0/TCP 127.0.0.1:5060;rport=5060;branch=z9hG4bKd2c87858eb0a7a09becc7a115c608d27\r\n"
-            + "CSeq: 3 BYE\r\n"
-            + "Call-ID: 84a5c57fd263bcce6fec05edf20c5aba@127.0.0.1\r\n"
-            + "From: \"The Master Blaster\" <sip:BigGuy@here.com>;tag=12345\r\n"
-            + "To: \"The Little Blister\" <sip:LittleGuy@there.com>;tag=2955\r\n"
-            + "Max-Forwards: 70\r\n"
-            + "Route: \"proxy\" <sip:proxy@127.0.0.1:5070;transport=tcp;lr>\r\n"
-            + "Content-Length: 3\r\n" + "\r\n123";
-	
-	public void makeTest() {
-		String str1 = test.substring(0, 40);
-		String str2 = test.substring(40);
-		byte[] s1 = str1.getBytes();
-		byte[] s2 = str2.getBytes();
-		
-		try {
-			addBytes(s1);
-			addBytes(s2);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
 	class CallIDOrderingStructure {
         private Semaphore semaphore;
         private Queue<UnparsedMessage> messagesForCallID;
@@ -140,6 +119,7 @@ public class NioPipelineParser {
 			return super.toString() + "\n" + lines;
 		}
 	}
+	
     public class Dispatch implements Runnable, QueuedMessageDispatchBase{
     	CallIDOrderingStructure callIDOrderingStructure;
     	String callId;
@@ -227,10 +207,6 @@ public class NioPipelineParser {
 	
 	public void close() {
 		
-	}
-	public static void main(String[] agr) {
-		NioPipelineParser parser = new NioPipelineParser();
-		parser.makeTest();
 	}
 	
 	StringBuffer message = new StringBuffer();
@@ -355,26 +331,14 @@ public class NioPipelineParser {
 			logger.logError("Can't process message", e);
 		}
 	}
+	
 	public synchronized void addBytes(byte[] bytes)  throws Exception{
 		currentStreamEnded = false;
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
 		readStream(inputStream);
 	}
 
-	private static StackLogger logger = CommonLogger.getLogger(NioPipelineParser.class);
 
-	private static final String CRLF = "\r\n";
-
-    /**
-     * The message listener that is registered with this parser. (The message
-     * listener has methods that can process correct and erroneous messages.)
-     */
-    protected SIPMessageListener sipMessageListener;
-    private int maxMessageSize;
-    private int sizeCounter;
-    private SIPTransactionStack sipStack;
-    private MessageParser smp = null;
-    boolean isRunning = false;
     
     /**
      * default constructor.
@@ -399,7 +363,7 @@ public class NioPipelineParser {
              boolean debug, int maxMessageSize) {
         this();
         this.sipStack = sipStack;
-        smp = sipStack.getMessageParserFactory().createMessageParser(sipStack);
+        this.smp = sipStack.getMessageParserFactory().createMessageParser(sipStack);
         this.sipMessageListener = sipMessageListener;
         this.maxMessageSize = maxMessageSize;
         this.sizeCounter = this.maxMessageSize;
