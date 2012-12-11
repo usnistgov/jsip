@@ -127,7 +127,9 @@ public class WebSocketCodec {
 
             // Read frame payload length
             if (framePayloadLen1 == 126) {
-            	int value = is.read()<<8 + is.read();
+            	int byte1 = is.read();
+            	int byte2 = is.read();
+            	int value = (byte1<<8) | byte2;
                 framePayloadLength = value;
                 //This check fails with chrome!!!
 //                if (framePayloadLength < 126) {
@@ -161,19 +163,18 @@ public class WebSocketCodec {
             }
             state = State.PAYLOAD;
         case PAYLOAD:
-            // Sometimes, the payload may not be delivered in 1 nice packet
-            // We need to accumulate the data until we have it all
-            byte[] framePayload = new byte[66000];
-            int num = is.read(framePayload);
             
-
+        	payloadIndex += is.read(framePayload, payloadIndex, framePayload.length - payloadIndex);
+        	if(payloadIndex < framePayloadLength) return null; // wait for more data
+        	payloadIndex = 0;
             // Unmask data if needed
             if (maskedPayload) {
                 unmask(framePayload);
             }
             
-            byte[] msg = new byte[num];
-            System.arraycopy(framePayload, 0, msg, 0, num);
+            byte[] msg = new byte[(int) framePayloadLength];
+            System.arraycopy(framePayload, 0, msg, 0, (int) framePayloadLength);
+            state = State.FRAME_START;
             return msg;
         case CORRUPT:
             return null;
@@ -181,6 +182,11 @@ public class WebSocketCodec {
             throw new Error("Shouldn't reach here.");
         }
     }
+    
+    // Sometimes, the payload may not be delivered in 1 nice packet
+    // We need to accumulate the data until we have it all
+    byte[] framePayload = new byte[66000];
+    int payloadIndex = 0;
     
     protected static byte[] encode(byte[] msg, int rsv, boolean fin) throws Exception {
 
