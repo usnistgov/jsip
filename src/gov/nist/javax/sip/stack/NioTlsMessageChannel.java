@@ -33,6 +33,7 @@ import gov.nist.javax.sip.SipStackImpl;
 import gov.nist.javax.sip.stack.SSLStateMachine.MessageSendCallback;
 
 import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLContext;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -49,7 +50,7 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel{
 
 	private ByteBuffer appFrameBuffer;
 	private ByteBuffer encryptedFrameBuffer;
-	
+
 	public static NioTcpMessageChannel create(
 			NioTcpMessageProcessor nioTcpMessageProcessor,
 			SocketChannel socketChannel) throws IOException {
@@ -77,9 +78,10 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel{
 	}
 	
 	public void init(boolean clientMode) throws Exception, CertificateException, FileNotFoundException, IOException {
-        
-		sslStateMachine = new SSLStateMachine( 
-				((NioTlsMessageProcessor)messageProcessor).sslCtx.createSSLEngine(), this);
+        SSLContext ctx = clientMode ?
+                ((NioTlsMessageProcessor)messageProcessor).sslClientCtx :
+                ((NioTlsMessageProcessor)messageProcessor).sslServerCtx;
+		sslStateMachine = new SSLStateMachine(ctx.createSSLEngine(), this);
 
         sslStateMachine.sslEngine.setUseClientMode(clientMode);
         String auth = ((SipStackImpl)super.sipStack).
