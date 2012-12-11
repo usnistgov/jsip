@@ -36,7 +36,7 @@ public class SSLStateMachine {
 	protected Queue<MessageSendItem> pendingOutboundBuffers = 
 			new LinkedList<MessageSendItem>();
 	protected NioTlsMessageChannel channel;
-	
+	protected ByteBuffer tlsRecordBuffer;
 	
 	public SSLStateMachine(SSLEngine sslEngine, NioTlsMessageChannel channel) {
 		this.sslEngine = sslEngine;
@@ -174,8 +174,53 @@ public class SSLStateMachine {
 		unwrap(src, outputBuffer);
 	}
 
+	private void startBuffer(ByteBuffer src) {
+		if(tlsRecordBuffer == null) {
+			
+			// Begin buffering, if there is already a buffer the normalization will take of adding the bytes
+			tlsRecordBuffer = ByteBuffer.allocateDirect(33270); // max record size in other implementations
+			
+			// Append the current buffer
+			tlsRecordBuffer.put(src);
+			
+			// Prepare the buffer for reading
+			tlsRecordBuffer.flip();
+			
+			if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+				logger.logDebug("Allocated record buffer for reading " + tlsRecordBuffer + " for src = " + src);
+			}
+		}
+	}
+	private void clearBuffer() {
+		tlsRecordBuffer = null;
+		if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+			logger.logDebug("Buffer cleared");
+		}
+	}
+	private ByteBuffer normalizeTlsRecordBuffer(ByteBuffer src) {
+		if(tlsRecordBuffer == null) {
+			return src;
+		} else {
+			if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+				logger.logDebug("Normalize buffer " + src + " into record buffer " 
+						+ tlsRecordBuffer);
+			}
+			
+			// Reverse flip() to prepare the buffer to writing in append mode
+			tlsRecordBuffer.position(tlsRecordBuffer.limit());
+			tlsRecordBuffer.limit(tlsRecordBuffer.capacity());
+			
+			// Append data
+			tlsRecordBuffer.put(src);
+			
+			// And prepare it for reading again as if it came from the network
+			tlsRecordBuffer.flip();
+			return tlsRecordBuffer;
+		}
+	}
 	private synchronized void unwrap(ByteBuffer src, ByteBuffer dst) throws Exception {
 		loop:while(true) {
+			src = normalizeTlsRecordBuffer(src);
 			if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 				logger.logDebug("Unwrap src " + src + " dst " 
 						+ dst);
@@ -185,18 +230,22 @@ public class SSLStateMachine {
 				logger.logDebug("Unwrap result " + result + " buffers size " 
 						+ pendingOutboundBuffers.size() + " src=" + src + " dst=" + dst);
 			}
+			
+			if(result.getStatus().equals(Status.BUFFER_UNDERFLOW)) {
+				if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+					logger.logDebug("Buffer underflow, wait for the next inbound chunk of data to feed the SSL engine");
+				}
+				startBuffer(src);
+				break;
+			} else {
+				clearBuffer();
+			}
 			if(result.getStatus().equals(Status.BUFFER_OVERFLOW)) {
 				if(logger.isLoggingEnabled(LogWriter.TRACE_WARN)) {
 					logger.logWarning("Buffer overflow , must prepare the buffer again. Check for continious overflow here?");
 				}
 				dst = channel.prepareAppDataBuffer();
 				continue;
-			}
-			if(result.getStatus().equals(Status.BUFFER_UNDERFLOW)) {
-				if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-					logger.logDebug("Buffer underflow, wait for the next inbound chunk of data to feed the SSL engine");
-				}
-				break;
 			}
 			if(result.bytesProduced()>0) {
 				// There is actual application data in this chunk
