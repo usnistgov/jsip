@@ -199,16 +199,15 @@ public class TLSMessageChannel extends ConnectionOrientedMessageChannel {
             if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
                 logger.logDebug("Closing message Channel (key = " + key +")" + this);
             }
-
-            cancelPingKeepAliveTimeoutTaskIfStarted();
-
         } else {
     		if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
     			String ioHandlerKey = key.substring(4);
 	    		logger.logDebug("not removing socket key from the cached map since it has already been updated by the iohandler.sendBytes " + ioHandlerKey);
     		}
     	}
-        		    	        
+        if(stopKeepAliveTask) {
+			cancelPingKeepAliveTimeoutTaskIfStarted();
+		}	    	        
     }    
 
     /**
