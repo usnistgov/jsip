@@ -29,9 +29,11 @@
 package gov.nist.javax.sip.parser;
 
 import gov.nist.core.CommonLogger;
+import gov.nist.core.LogLevels;
 import gov.nist.core.LogWriter;
 import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.message.SIPMessage;
+import gov.nist.javax.sip.stack.ConnectionOrientedMessageChannel;
 import gov.nist.javax.sip.stack.QueuedMessageDispatchBase;
 import gov.nist.javax.sip.stack.SIPTransactionStack;
 
@@ -220,11 +222,12 @@ public class NioPipelineParser {
 	 *  and then read the message body (aka message content). For TCP the Content-Length must be 100% accurate.
 	 */
 	private void readStream(InputStream inputStream) throws IOException {
+		boolean isPreviousLineCRLF = false;
 		while(true) { // We read continiously from the bytes we receive and only break where there are no more bytes in the inputStream passed to us
 			if(currentStreamEnded) break; // The stream ends when we have read all bytes in the chunk NIO passed to us
 			else {
 				if(readingHeaderLines) {// We are in state to read header lines right now
-					readMessageSipHeaderLines(inputStream);
+					isPreviousLineCRLF = readMessageSipHeaderLines(inputStream, isPreviousLineCRLF);
 				}
 				if(readingMessageBodyContents) { // We've already read the headers an now we are reading the Contents of the SIP message (which doesn't generally have lines)
 					readMessageBody(inputStream);
@@ -233,7 +236,8 @@ public class NioPipelineParser {
 		}
 	}
 	
-	private void readMessageSipHeaderLines(InputStream inputStream) throws IOException {
+	private boolean readMessageSipHeaderLines(InputStream inputStream, boolean isPreviousLineCRLF) throws IOException {
+		boolean crlfReceived = false;
 		String line = readLine(inputStream); // This gives us a full line or if it didn't fit in the byte check it may give us part of the line
 		if(partialLineRead) {
 			partialLine = partialLine + line; // If we are reading partial line again we must concatenate it with the previous partial line to reconstruct the full line
@@ -251,7 +255,32 @@ public class NioPipelineParser {
 					callId = line.substring(
 							CallIdHeader.NAME.length()+1).trim();
 				}
-			} else {
+			} else {				
+				if(isPreviousLineCRLF) {
+            		// Handling keepalive ping (double CRLF) as defined per RFC 5626 Section 4.4.1
+                	// sending pong (single CRLF)
+                	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                        logger.logDebug("KeepAlive Double CRLF received, sending single CRLF as defined per RFC 5626 Section 4.4.1");
+                        logger.logDebug("~~~ setting isPreviousLineCRLF=false");
+                    }
+
+                	crlfReceived = false;
+
+                	try {
+						sipMessageListener.sendSingleCLRF();
+					} catch (Exception e) {						
+						logger.logError("A problem occured while trying to send a single CLRF in response to a double CLRF", e);
+					}                	                	
+            	} else {
+            		crlfReceived = true;
+                	if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+                    	logger.logDebug("Received CRLF");
+                    }
+                	if(sipMessageListener != null && 
+                			sipMessageListener instanceof ConnectionOrientedMessageChannel) {
+                		((ConnectionOrientedMessageChannel)sipMessageListener).cancelPingKeepAliveTimeoutTaskIfStarted();
+                	}
+            	}
 				if(message.length() > 0) { // if we havent read any headers yet we are between messages and ignore CRLFs
 					readingMessageBodyContents = true;
 					readingHeaderLines = false;
@@ -264,8 +293,9 @@ public class NioPipelineParser {
 					contentReadSoFar = 0;
 					messageBody = new byte[contentLength];
 				}
-			}
+			}			
 		}
+		return crlfReceived;
 	}
 
 	// This method must be called repeatedly until the inputStream returns -1 or some error conditions is triggered
