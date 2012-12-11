@@ -340,7 +340,6 @@ public class RFC5626KeepAliveTest extends ScenarioHarness implements SipListener
 	                	logger.info("keepAliveSender received Exception =" + e + " ,cancelling keepalivesender timer");
 	                    e.printStackTrace();
 	                    this.cancel();
-	                    keepAliveTimeoutFired = true;
 //	                    fail();
 	                }
             	} else {
