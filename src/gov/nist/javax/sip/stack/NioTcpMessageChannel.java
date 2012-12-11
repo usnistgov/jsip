@@ -71,6 +71,7 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 			byteBuffer.flip();
 			msg = new byte[byteBuffer.remaining()];
 			byteBuffer.get(msg);
+			boolean streamError = nbytes == -1;
 			nbytes = msg.length;
 			byteBuffer.clear();
 			if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
@@ -82,8 +83,10 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 					"This is usually an indication we are stuck and it is better to disconnect?");
 			
 			// TODO: This happens on weird conditions when a dead socket suddenly resurrects but we already have another socket
-			if (nbytes == -1) {
-				
+			if (streamError) {
+				if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+					logger.logDebug("Stream error. We will clean up, but the call may continue on the other socket.");
+				}
 				nioParser.addBytes("\r\n\r\n".getBytes("UTF-8"));
 				try {
 					nioParser.close();
