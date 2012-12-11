@@ -175,7 +175,7 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 					this.sipStack.getMaxMessageSize());
 			putMessageChannel(socketChannel, this);
 			lastActivityTimeStamp = System.currentTimeMillis();
-			super.key = MessageChannel.getKey(peerAddress, peerPort, getTransport());
+			//super.key = MessageChannel.getKey(peerAddress, peerPort, getTransport());
 			
 		} finally {
 			if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
