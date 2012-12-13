@@ -1,5 +1,7 @@
 package test.unit.gov.nist.javax.sip.stack;
 
+import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
+
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Timer;
@@ -127,7 +129,9 @@ public class DeliverUnsolicitedNotifyTest extends TestCase implements
 
         properties.setProperty("gov.nist.javax.sip.DELIVER_UNSOLICITED_NOTIFY",
                 "true");
-
+        if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
+        	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
+        }
         try {
             this.port = 6050;
             this.transport = "udp";

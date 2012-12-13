@@ -8,6 +8,7 @@ import gov.nist.javax.sip.SipProviderExt;
 import gov.nist.javax.sip.SipStackExt;
 import gov.nist.javax.sip.header.HeaderFactoryExt;
 import gov.nist.javax.sip.message.MessageFactoryExt;
+import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
 
 import javax.sip.ClientTransaction;
 import javax.sip.Dialog;
@@ -396,7 +397,10 @@ public class CtxExpiredTest extends TestCase {
             properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
             properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
                     "shootistdebug.txt");
-
+            if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
+            	logger.info("\nNIO Enabled\n");
+            	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
+            }
           
             this.shootistStack = (SipStackExt) sipFactory
                     .createSipStack(properties);
@@ -410,6 +414,10 @@ public class CtxExpiredTest extends TestCase {
             properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
             properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
                     "shootmedebug.txt");
+            if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
+            	logger.info("\nNIO Enabled\n");
+            	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
+            }
             this.shootmeStack = (SipStackExt) sipFactory
                     .createSipStack(properties);
             this.shootme = new Shootme(shootmeStack);

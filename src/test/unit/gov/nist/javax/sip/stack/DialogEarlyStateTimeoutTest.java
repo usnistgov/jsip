@@ -7,6 +7,7 @@ import gov.nist.javax.sip.SipProviderExt;
 import gov.nist.javax.sip.SipStackExt;
 import gov.nist.javax.sip.header.HeaderFactoryExt;
 import gov.nist.javax.sip.message.MessageFactoryExt;
+import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
 
 import java.util.ArrayList;
 import java.util.Properties;
@@ -424,7 +425,10 @@ public class DialogEarlyStateTimeoutTest extends TestCase {
 
             properties.setProperty(
                     "gov.nist.javax.sip.EARLY_DIALOG_TIMEOUT_SECONDS", "30");
-
+            if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
+            	logger.info("\nNIO Enabled\n");
+            	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
+            }
             this.shootistStack = (SipStackExt) sipFactory
                     .createSipStack(properties);
             this.shootist = new Shootist(shootistStack);
@@ -439,6 +443,10 @@ public class DialogEarlyStateTimeoutTest extends TestCase {
                     "shootmedebug.txt");
             properties.setProperty(
                     "gov.nist.javax.sip.EARLY_DIALOG_TIMEOUT_SECONDS", "30");
+            if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
+            	logger.info("\nNIO Enabled\n");
+            	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
+            }
             this.shootmeStack = (SipStackExt) sipFactory
                     .createSipStack(properties);
             this.shootme = new Shootme(shootmeStack);

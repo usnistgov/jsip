@@ -1,6 +1,7 @@
 package test.tck;
 
 import gov.nist.javax.sip.address.AddressFactoryImpl;
+import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -487,7 +488,10 @@ public class TestHarness extends TestCase {
         // For testing sending of stateless null keepalive messages.
         //@see test.tck.msgflow.SipProviderTest.testSendNullRequest
         properties.setProperty("javax.sip.OUTBOUND_PROXY", LOCAL_ADDRESS + ":" + TI_PORT + "/udp");
-
+        if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
+        	logger.info("\nNIO Enabled\n");
+        	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
+        }
 
         return properties;
     }
@@ -517,7 +521,10 @@ public class TestHarness extends TestCase {
         // For testing sending of stateless null keepalive messages.
         //@see test.tck.msgflow.SipProviderTest.testSendNullRequest
         properties.setProperty("javax.sip.OUTBOUND_PROXY", LOCAL_ADDRESS + ":" + RI_PORT + "/udp");
-
+        if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
+        	logger.info("\nNIO Enabled\n");
+        	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
+        }
         return properties;
     }
 

@@ -1,5 +1,7 @@
 package test.unit.gov.nist.javax.sip.stack;
 
+import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
+
 import java.util.ArrayList;
 import java.util.Properties;
 
@@ -163,7 +165,9 @@ public class RejectOutOfSequenceMessageTest extends TestCase {
                     "shootmedebug.txt");
             properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
                     "shootmelog.txt");
-
+            if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
+            	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
+            }
             try {
                 // Create SipStack object
                 sipStack = sipFactory.createSipStack(properties);
@@ -343,7 +347,9 @@ public class RejectOutOfSequenceMessageTest extends TestCase {
             // You need 16 (or TRACE) for logging traces. 32 (or DEBUG) for debug + traces.
             // Your code will limp at 32 but it is best for debugging.
             properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "DEBUG");
-
+            if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
+            	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
+            }
             try {
                 // Create SipStack object
                 sipStack = sipFactory.createSipStack(properties);
