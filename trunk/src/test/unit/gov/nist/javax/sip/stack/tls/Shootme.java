@@ -1,5 +1,6 @@
     package test.unit.gov.nist.javax.sip.stack.tls;
 import gov.nist.javax.sip.TransactionExt;
+import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
 
 import javax.sip.*;
 import javax.sip.address.*;
@@ -259,7 +260,9 @@ public class Shootme implements SipListener {
         properties.setProperty(
                 "gov.nist.javax.sip.SSL_HANDSHAKE_TIMEOUT", "10000");
         String transport = "tls";
-        
+        if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
+        	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
+        }
         try {
             // Create SipStack object
             sipStack = sipFactory.createSipStack(properties);

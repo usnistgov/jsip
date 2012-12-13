@@ -1,6 +1,7 @@
 package test.unit.gov.nist.javax.sip.stack.timeoutontermineted;
 
 import gov.nist.javax.sip.SipStackImpl;
+import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
 
 import java.util.Properties;
 
@@ -46,7 +47,9 @@ public class SipObjects {
         String logFile = "logs/" + stackname + ".txt";
 
         properties.setProperty("gov.nist.javax.sip.DEBUG_LOG", logFile);
-
+        if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
+        	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
+        }
         try {
             // Create SipStack object
             sipStack = sipFactory.createSipStack(properties);

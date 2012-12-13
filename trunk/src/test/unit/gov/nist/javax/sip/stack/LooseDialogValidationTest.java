@@ -2,6 +2,7 @@ package test.unit.gov.nist.javax.sip.stack;
 
 import gov.nist.javax.sip.DialogExt;
 import gov.nist.javax.sip.SipProviderExt;
+import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
 
 import java.util.ArrayList;
 import java.util.Properties;
@@ -254,7 +255,9 @@ public class LooseDialogValidationTest extends TestCase {
             properties.setProperty("gov.nist.javax.sip.REENTRANT_LISTENER", "true");
             properties.setProperty("gov.nist.javax.sip.THREAD_POOL_SIZE", "8");
             properties.setProperty("gov.nist.javax.sip.LOOSE_DIALOG_VALIDATION", "true");
-
+            if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
+            	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
+            }
             try {
                 // Create SipStack object
                 sipStack = sipFactory.createSipStack(properties);
@@ -438,7 +441,9 @@ public class LooseDialogValidationTest extends TestCase {
             properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
             properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
             properties.setProperty("gov.nist.javax.sip.AUTOMATIC_DIALOG_ERROR_HANDLING","false");
-
+            if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
+            	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
+            }
             try {
                 // Create SipStack object
                 sipStack = sipFactory.createSipStack(properties);

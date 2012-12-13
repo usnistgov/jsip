@@ -2,6 +2,7 @@ package test.unit.gov.nist.javax.sip.stack;
 
 import gov.nist.javax.sip.DialogExt;
 import gov.nist.javax.sip.SipProviderExt;
+import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
 
 import java.util.ArrayList;
 import java.util.Properties;
@@ -289,7 +290,9 @@ public class TcpMultiThreadDeadlockTest extends TestCase {
             properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
 
             properties.setProperty("gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE", "20");
-
+            if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
+            	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
+            }
             try {
                 // Create SipStack object
                 sipStack = sipFactory.createSipStack(properties);
@@ -476,7 +479,9 @@ boolean inUse = false;
             properties.setProperty("gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE", "10");
             properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
             properties.setProperty("gov.nist.javax.sip.AUTOMATIC_DIALOG_ERROR_HANDLING","false");
-
+            if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
+            	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
+            }
             try {
                 // Create SipStack object
                 sipStack = sipFactory.createSipStack(properties);

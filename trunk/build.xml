@@ -109,6 +109,10 @@ c:/jakarta-ant/bin/ant all
             destdir="${classes}" />
     </presetdef>
 
+	<condition property="enableNIO" value="true">
+        <isset property="nioEnabled" />
+    </condition>
+	
     <target name="all" depends="make,compileexamples,compiletools,javadoc,javadoc-jain" />
 
     <target name="make" depends="compileapi,compileri,compilesdp,jain-sip-sdp-jar" />
@@ -388,7 +392,8 @@ c:/jakarta-ant/bin/ant all
                     <mkdir dir="test-reports" />
                     <mkdir dir="logs" />
 
-                    <junit fork="yes" showoutput="yes" failureproperty="testing.failed">
+                    <junit fork="yes" showoutput="yes" failureproperty="testing.failed">                    	
+                    	<sysproperty key="enableNIO" value="${enableNIO}"/>
                         <classpath>
                             <pathelement location="${jain-sip-api-jar}" />
                             <pathelement location="${jain-sip-ri-jar}" />
@@ -436,6 +441,7 @@ c:/jakarta-ant/bin/ant all
                     <mkdir dir="logs" />
 
                     <junit fork="yes" showoutput="yes" failureproperty="testing.failed">
+                    	<sysproperty key="enableNIO" value="${enableNIO}"/>
                         <classpath>
                             <pathelement location="${jain-sip-api-jar}" />
                             <pathelement location="${jain-sip-ri-jar}" />
@@ -571,6 +577,7 @@ c:/jakarta-ant/bin/ant all
                     <mkdir dir="logs" />
 
                     <junit fork="yes" showoutput="yes" failureproperty="testing.failed">
+                    	<sysproperty key="enableNIO" value="${enableNIO}"/>
                         <classpath>
                             <pathelement location="${jain-sip-api-jar}" />
                             <pathelement location="${jain-sip-ri-jar}" />
@@ -655,6 +662,7 @@ c:/jakarta-ant/bin/ant all
                     <mkdir dir="logs" />
 
                     <junit fork="yes" showoutput="yes" failureproperty="testing.failed">
+                    	<sysproperty key="enableNIO" value="${enableNIO}"/>
                         <classpath>
                             <pathelement location="${jain-sip-sdp-jar}" />
                             <pathelement location="${jain-sip-ri-jar}" />

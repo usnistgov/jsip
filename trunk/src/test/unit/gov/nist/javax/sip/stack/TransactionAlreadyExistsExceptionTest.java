@@ -1,6 +1,7 @@
 package test.unit.gov.nist.javax.sip.stack;
 
 import gov.nist.javax.sip.message.MessageFactoryImpl;
+import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
 
 import java.text.ParseException;
 import java.util.Properties;
@@ -147,7 +148,9 @@ public class TransactionAlreadyExistsExceptionTest extends TestCase {
             properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
             properties.setProperty("gov.nist.javax.sip.DEBUG_LOG", "shootmedebug.txt");
             properties.setProperty("gov.nist.javax.sip.SERVER_LOG", "shootmelog.txt");
-
+            if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
+            	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
+            }
             try {
                 // Create SipStack object
                 sipStack = sipFactory.createSipStack(properties);
@@ -290,7 +293,9 @@ public class TransactionAlreadyExistsExceptionTest extends TestCase {
             // debug + traces.
             // Your code will limp at 32 but it is best for debugging.
             properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "DEBUG");
-
+            if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
+            	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
+            }
             try {
                 // Create SipStack object
                 sipStack = sipFactory.createSipStack(properties);

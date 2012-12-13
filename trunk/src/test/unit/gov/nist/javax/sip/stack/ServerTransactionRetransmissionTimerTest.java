@@ -1,6 +1,7 @@
 package test.unit.gov.nist.javax.sip.stack;
 
 import gov.nist.javax.sip.ResponseEventExt;
+import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
 
 import javax.sip.*;
 import javax.sip.address.*;
@@ -277,7 +278,10 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
             // debug + traces.
             // Your code will limp at 32 but it is best for debugging.
             properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
-
+            if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
+            	logger.info("\nNIO Enabled\n");
+            	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
+            }
             try {
                 // Create SipStack object
                 sipStack = sipFactory.createSipStack(properties);
@@ -689,7 +693,10 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
                     "shootmedebug.txt");
             properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
                     "shootmelog.txt");
-
+            if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
+            	logger.info("\nNIO Enabled\n");
+            	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
+            }
             try {
                 // Create SipStack object
                 sipStack = sipFactory.createSipStack(properties);

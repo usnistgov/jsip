@@ -3,6 +3,7 @@ package test.unit.gov.nist.javax.sip.stack.subsnotify;
 import gov.nist.javax.sip.ResponseEventExt;
 import gov.nist.javax.sip.message.MessageExt;
 import gov.nist.javax.sip.message.ResponseExt;
+import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
 
 import javax.sip.*;
 import javax.sip.address.*;
@@ -253,7 +254,10 @@ public class Notifier implements SipListener {
                 "logs/notifierlog_"+port+".txt");
         
         properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
-
+        if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
+        	logger.info("\nNIO Enabled\n");
+        	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
+        }
         try {
             // Create SipStack object
             sipStack = sipFactory.createSipStack(properties);
