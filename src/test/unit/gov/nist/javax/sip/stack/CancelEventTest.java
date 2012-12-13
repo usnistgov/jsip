@@ -1,5 +1,7 @@
 package test.unit.gov.nist.javax.sip.stack;
 
+import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
+
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Random;
@@ -126,6 +128,11 @@ public class CancelEventTest extends  ScenarioHarness {
             properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL",
                     new Integer(logLevel).toString());
 
+            if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
+            	logger.info("\nNIO Enabled\n");
+            	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
+            }
+            
             try {
                 // Create SipStack object
                 sipStack = sipFactory.createSipStack(properties);
@@ -459,6 +466,11 @@ public class CancelEventTest extends  ScenarioHarness {
             properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL",
                     new Integer(logLevel).toString());
 
+            if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
+            	logger.info("\nNIO Enabled\n");
+            	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
+            }
+            
             try {
                 // Create SipStack object
                 sipStack = sipFactory.createSipStack(properties);

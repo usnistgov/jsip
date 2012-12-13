@@ -1,6 +1,7 @@
 package test.unit.gov.nist.javax.sip.stack.subsnotify;
 
 import gov.nist.javax.sip.ResponseEventExt;
+import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
 import gov.nist.javax.sip.stack.SIPTransactionStack;
 
 import javax.sip.*;
@@ -350,7 +351,10 @@ public class Subscriber implements SipListener {
         // You need 16 for logging traces. 32 for debug + traces.
         // Your code will limp at 32 but it is best for debugging.
         properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
-
+        if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
+        	logger.info("\nNIO Enabled\n");
+        	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
+        }
         sipStack = sipFactory.createSipStack(properties);
         logger.info("createSipStack " + sipStack);
         headerFactory = sipFactory.createHeaderFactory();

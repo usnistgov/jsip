@@ -1,5 +1,7 @@
 package test.tck.msgflow.callflows;
 
+import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Properties;
@@ -13,11 +15,14 @@ import javax.sip.address.AddressFactory;
 import javax.sip.header.HeaderFactory;
 import javax.sip.message.MessageFactory;
 
+import org.apache.log4j.Logger;
+
 /**
  * @author M. Ranganathan
  *
  */
 public class ProtocolObjects {
+	public static Logger logger = Logger.getLogger(ProtocolObjects.class);
     public final AddressFactory addressFactory;
 
     public final MessageFactory messageFactory;
@@ -75,7 +80,10 @@ public class ProtocolObjects {
         
         properties.setProperty("gov.nist.javax.sip.DELIVER_RETRANSMITTED_ACK_TO_LISTENER", "true");
         properties.setProperty("gov.nist.javax.sip.REENTRANT_LISTENER", "" + isReentrant);
-
+        if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
+        	logger.info("\nNIO Enabled\n");
+        	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
+        }
         // Set to 0 in your production code for max speed.
         // You need 16 for logging traces. 32 for debug + traces.
         // Your code will limp at 32 but it is best for debugging.

@@ -3,6 +3,7 @@ package test.unit.gov.nist.javax.sip.stack;
 import gov.nist.javax.sip.DialogExt;
 import gov.nist.javax.sip.stack.CallAnalysisInterceptor;
 import gov.nist.javax.sip.stack.CallAnalyzer;
+import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
 import gov.nist.javax.sip.stack.CallAnalyzer.MetricAnalysisConfiguration;
 import gov.nist.javax.sip.stack.CallAnalyzer.MetricReference;
 
@@ -294,7 +295,9 @@ public class SIPEventInterceptorTest extends TestCase{
             properties.setProperty("gov.nist.javax.sip.AUTOMATIC_DIALOG_ERROR_HANDLING", "false");
             properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
             properties.setProperty("gov.nist.javax.sip.SIP_EVENT_INTERCEPTOR", CallAnalysisInterceptor.class.getName());
-
+            if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
+            	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
+            }
             try {
                 // Create SipStack object
                 sipStack = sipFactory.createSipStack(properties);
@@ -465,7 +468,9 @@ public class SIPEventInterceptorTest extends TestCase{
             properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
             properties.setProperty("gov.nist.javax.sip.AUTOMATIC_DIALOG_ERROR_HANDLING","false");
             properties.setProperty("gov.nist.javax.sip.SIP_EVENT_INTERCEPTOR", CallAnalysisInterceptor.class.getName());
-
+            if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
+            	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
+            }
             try {
                 // Create SipStack object
                 sipStack = sipFactory.createSipStack(properties);
