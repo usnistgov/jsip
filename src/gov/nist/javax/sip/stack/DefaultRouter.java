@@ -297,6 +297,9 @@ public class DefaultRouter implements Router {
             if(via != null) {
             	transport = via.getTransport();
             }
+            if(transport == null) {
+            	transport = ListeningPoint.UDP;
+            }
         }
 
         // sipUri.removeParameter("transport");
