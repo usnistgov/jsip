@@ -130,11 +130,6 @@ public abstract class SIPTransactionImpl implements SIPTransaction {
     // Audit tag used by the SIP Stack audit
     protected long auditTag = 0;
 
-    /**
-     * Maximum number of ticks between retransmissions.
-     */
-    protected static final int MAXIMUM_RETRANSMISSION_TICK_COUNT = 8;
-
     // Parent stack for this transaction
     protected transient SIPTransactionStack sipStack;
 
@@ -602,7 +597,7 @@ public abstract class SIPTransactionImpl implements SIPTransaction {
         } else {
             // non-INVITE transactions and 3xx-6xx responses are capped at T2
             retransmissionTimerTicksLeft = Math.min(tickCount,
-                    MAXIMUM_RETRANSMISSION_TICK_COUNT);
+                    getTimerT2());
         }
         retransmissionTimerLastTickCount = retransmissionTimerTicksLeft;
     }

@@ -608,7 +608,7 @@ public class SIPClientTransactionImpl extends SIPTransactionImpl implements SIPC
     if (TransactionState._TRYING == this.getInternalState()) {
       if (statusCode / 100 == 1) {
         this.setState(TransactionState._PROCEEDING);
-        enableRetransmissionTimer(MAXIMUM_RETRANSMISSION_TICK_COUNT);
+        enableRetransmissionTimer(getTimerT2());
         enableTimeoutTimer(TIMER_F);
         // According to RFC, the TU has to be informed on
         // this transition.
