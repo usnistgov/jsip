@@ -51,10 +51,10 @@ public class NioTlsWebSocketMessageChannel extends NioWebSocketMessageChannel im
 	private int appBufferMax;
 	private int netBufferMax;
 
-	public static NioTcpMessageChannel create(
-			NioTcpMessageProcessor nioTcpMessageProcessor,
+	public static NioTlsWebSocketMessageChannel create(
+			NioTlsWebSocketMessageProcessor nioTcpMessageProcessor,
 			SocketChannel socketChannel) throws IOException {
-		NioTcpMessageChannel retval = channelMap.get(socketChannel);
+		NioTlsWebSocketMessageChannel retval = (NioTlsWebSocketMessageChannel) channelMap.get(socketChannel);
 		if (retval == null) {
 			retval = new NioTlsWebSocketMessageChannel(nioTcpMessageProcessor,
 					socketChannel);
