@@ -58,7 +58,7 @@ public class NioTlsWebSocketMessageProcessor extends NioWebSocketMessageProcesso
 	
 	@Override
 	public NioTcpMessageChannel createMessageChannel(NioTcpMessageProcessor nioTcpMessageProcessor, SocketChannel client) throws IOException {
-    	return NioTlsMessageChannel.create(NioTlsWebSocketMessageProcessor.this, client);
+		return NioTlsWebSocketMessageChannel.create(NioTlsWebSocketMessageProcessor.this, client);		
     }
 	
     @Override
