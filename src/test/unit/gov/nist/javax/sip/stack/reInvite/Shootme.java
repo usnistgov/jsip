@@ -68,6 +68,8 @@ public class Shootme  implements SipListener {
 
     private boolean okRecieved;
 
+	public boolean isTargetRefresh;
+
     class ApplicationData {
         protected int ackCount;
     }
@@ -155,6 +157,13 @@ public class Shootme  implements SipListener {
                 // this is a re-invite.
                 logger.info("This is a RE INVITE ");
                 ReInviteTest.assertSame("Dialog mismatch ", st.getDialog(),this.dialog);
+                if(isTargetRefresh) {
+                	// http://java.net/jira/browse/JSIP-444 Check Honor Target Refresh on Response
+                	address = protocolObjects.addressFactory.createAddress("ShootmeTargetRefresh <sip:shootmeTargetRefresh@"
+                            + myAddress + ":" + myPort + ">");
+                    contactHeader = protocolObjects.headerFactory
+                            .createContactHeader(address);
+                }
             }
 
             // Thread.sleep(5000);

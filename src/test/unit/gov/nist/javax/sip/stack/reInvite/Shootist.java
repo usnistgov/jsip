@@ -95,6 +95,8 @@ public class Shootist  implements SipListener {
 
     private Dialog dialog;
 
+	public boolean isTargetRefresh;
+
 
 
 
@@ -252,6 +254,16 @@ public class Shootist  implements SipListener {
                     }
                 } else {
                     this.okReceived = true;
+                    if(isTargetRefresh) {
+                    	// http://java.net/jira/browse/JSIP-444 Check Honor Target Refresh on Response
+                    	ContactHeader contactHeader = (ContactHeader) response.getHeader(ContactHeader.NAME);
+                    	if(!contactHeader.getAddress().getDisplayName().contains("TargetRefresh") && !((SipURI)contactHeader.getAddress().getURI()).getUser().contains("TargetRefresh")) {
+                    		ReInviteTest.fail("TargetRefresh not present in the contact");                    		
+                    	}
+                    	if(!dialog.getRemoteTarget().equals(contactHeader.getAddress())) {
+                    		ReInviteTest.fail("TargetRefresh not the same as the target refreshed contact : dialog remteTarget " + dialog.getRemoteTarget() + " contact refresh " + contactHeader.getAddress());
+                    	}
+                    }
                 }
 
             } else if (response.getStatusCode() == Response.OK
