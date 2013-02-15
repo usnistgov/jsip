@@ -3404,7 +3404,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                         if (cseqMethod.equals(Request.INVITE)) {
                             this.lastInviteOkReceived = Math.max(responseCSeqNumber,
                                     this.lastInviteOkReceived);
-                            if(getState().getValue() == SIPDialog.CONFIRMED_STATE) {
+                            if(getState() != null && getState().getValue() == SIPDialog.CONFIRMED_STATE) {
                             	// http://java.net/jira/browse/JSIP-444 Honor Target Refresh on Response
                             	// Contribution from francoisjoseph levee (Orange Labs)
                             	doTargetRefresh(sipResponse);
@@ -4102,10 +4102,14 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             // Delete the transaction after the max ack timeout.
             dialogDeleteIfNoAckSentTask = new DialogDeleteIfNoAckSentTask(seqno);
             if (sipStack.getTimer() != null && sipStack.getTimer().isStarted()) {
+            	int delay = SIPTransactionStack.BASE_TIMER_INTERVAL;
+            	if(lastTransaction != null) {
+            		delay = lastTransaction.getBaseTimerInterval();
+            	}
             	sipStack.getTimer().schedule(
                     dialogDeleteIfNoAckSentTask,
                     sipStack.getAckTimeoutFactor()
-                            * lastTransaction.getBaseTimerInterval());
+                            * delay);
             }
         }
     }
