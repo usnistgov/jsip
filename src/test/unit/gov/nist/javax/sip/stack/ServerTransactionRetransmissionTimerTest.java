@@ -1,21 +1,56 @@
 package test.unit.gov.nist.javax.sip.stack;
 
 import gov.nist.javax.sip.ResponseEventExt;
+import gov.nist.javax.sip.SipStackImpl;
+import gov.nist.javax.sip.message.SIPResponse;
 import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
 
-import javax.sip.*;
-import javax.sip.address.*;
-import javax.sip.header.*;
-import javax.sip.message.*;
+import java.util.ArrayList;
+import java.util.Properties;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import javax.sip.ClientTransaction;
+import javax.sip.Dialog;
+import javax.sip.DialogState;
+import javax.sip.DialogTerminatedEvent;
+import javax.sip.IOExceptionEvent;
+import javax.sip.ListeningPoint;
+import javax.sip.ObjectInUseException;
+import javax.sip.PeerUnavailableException;
+import javax.sip.RequestEvent;
+import javax.sip.ResponseEvent;
+import javax.sip.ServerTransaction;
+import javax.sip.SipException;
+import javax.sip.SipFactory;
+import javax.sip.SipListener;
+import javax.sip.SipProvider;
+import javax.sip.SipStack;
+import javax.sip.Transaction;
+import javax.sip.TransactionState;
+import javax.sip.TransactionTerminatedEvent;
+import javax.sip.address.Address;
+import javax.sip.address.AddressFactory;
+import javax.sip.address.SipURI;
+import javax.sip.header.CSeqHeader;
+import javax.sip.header.CallIdHeader;
+import javax.sip.header.ContactHeader;
+import javax.sip.header.ContentTypeHeader;
+import javax.sip.header.FromHeader;
+import javax.sip.header.Header;
+import javax.sip.header.HeaderFactory;
+import javax.sip.header.MaxForwardsHeader;
+import javax.sip.header.ToHeader;
+import javax.sip.header.ViaHeader;
+import javax.sip.message.MessageFactory;
+import javax.sip.message.Request;
+import javax.sip.message.Response;
+
+import junit.framework.TestCase;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-
-import java.text.ParseException;
-import java.util.*;
-
-import junit.framework.TestCase;
 
 public class ServerTransactionRetransmissionTimerTest extends TestCase {
     public static final boolean callerSendsBye = true;
@@ -467,7 +502,7 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
 
         private HeaderFactory headerFactory;
 
-        private SipStack sipStack;
+        private SipStack sipStack=null;
 
         private static final String myAddress = "127.0.0.1";
 
@@ -480,6 +515,11 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
         private Request inviteRequest;
 
         private Dialog dialog;
+
+		public boolean enableRetransmitAlerts;
+		
+		ListeningPoint lp = null;
+		SipProvider sipProvider = null;
 
 
         class MyTimerTask extends TimerTask {
@@ -547,7 +587,9 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
                 ServerTransaction serverTransaction) {
             try {
                 logger.info("shootme: got an ACK! ");
-                logger.info("Dialog State = " + dialog.getState());
+                if(!enableRetransmitAlerts) {
+                	logger.info("Dialog State = " + dialog.getState());
+                }
                 SipProvider provider = (SipProvider) requestEvent.getSource();
                 if (!callerSendsBye) {
                     Request byeRequest = dialog.createRequest(Request.BYE);
@@ -578,8 +620,14 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
 
                 if (st == null) {
                     st = sipProvider.getNewServerTransaction(request);
+                    if(enableRetransmitAlerts) {
+                    	st.enableRetransmissionAlerts();
+                    }
                 }
                 dialog = st.getDialog();
+//                if(enableRetransmitAlerts) {
+//                	dialog = sipProvider.getNewDialog(st);
+//                }
 
                 st.sendResponse(response);
 
@@ -601,7 +649,7 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
 
                 new Timer().schedule(new MyTimerTask(this), 1000);
             } catch (Exception ex) {
-                logger.error("Unexpected exception");
+                logger.error("Unexpected exception", ex);
                 fail("Unexpected exception");
             }
         }
@@ -609,11 +657,15 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
         private void sendInviteOK() {
             try {
                 if (inviteTid.getState() != TransactionState.COMPLETED) {
-                    logger.info("shootme: Dialog state before 200: "
+                	if(!enableRetransmitAlerts) {
+                		logger.info("shootme: Dialog state before 200: "
                             + inviteTid.getDialog().getState());
+                	}
                     inviteTid.sendResponse(okResponse);
-                    logger.info("shootme: Dialog state after 200: "
+                    if(!enableRetransmitAlerts) {
+                    	logger.info("shootme: Dialog state after 200: "
                             + inviteTid.getDialog().getState());
+                    }
                 }
             } catch (Exception ex) {
                 logger.error("Unexpected exception",ex);
@@ -679,23 +731,26 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
             logger.info("Shootme: Transaction Time out : " + transaction);
         }
 
-        public void init() {
+        public void init(String name) {
             SipFactory sipFactory = null;
             sipStack = null;
             sipFactory = SipFactory.getInstance();
             sipFactory.setPathName("gov.nist");
             Properties properties = new Properties();
-            properties.setProperty("javax.sip.STACK_NAME", "shootme");
+            properties.setProperty("javax.sip.STACK_NAME", name);
             // You need 16 for logging traces. 32 for debug + traces.
             // Your code will limp at 32 but it is best for debugging.
             properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
             properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
-                    "shootmedebug.txt");
+                    "logs/stxretransmission_shootmedebug.txt");
             properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
-                    "shootmelog.txt");
+                    "logs/stxretransmission_shootmelog.txt");
             if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
             	logger.info("\nNIO Enabled\n");
             	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
+            }
+            if(enableRetransmitAlerts) {
+            	properties.setProperty("javax.sip.AUTOMATIC_DIALOG_SUPPORT", "off");
             }
             try {
                 // Create SipStack object
@@ -717,12 +772,12 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
                 headerFactory = sipFactory.createHeaderFactory();
                 addressFactory = sipFactory.createAddressFactory();
                 messageFactory = sipFactory.createMessageFactory();
-                ListeningPoint lp = sipStack.createListeningPoint("127.0.0.1",
+                lp = sipStack.createListeningPoint("127.0.0.1",
                         myPort, "udp");
 
                 Shootme listener = this;
 
-                SipProvider sipProvider = sipStack.createSipProvider(lp);
+                sipProvider = sipStack.createSipProvider(lp);
                 logger.info("udp provider " + sipProvider);
                 sipProvider.addSipListener(listener);
 
@@ -732,7 +787,22 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
 
         }
 
-        public void terminate() {
+        public void terminate() {        	
+        	sipProvider.removeSipListener(this);
+            while (true) {
+                try {                	
+                	sipStack.deleteListeningPoint(lp);
+                    // This will close down the stack and exit all threads                    
+                    sipStack.deleteSipProvider(sipProvider);
+                    break;
+                } catch (ObjectInUseException ex) {
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        continue;
+                    }
+                }
+            }
             this.sipStack.stop();
         }
 
@@ -777,7 +847,7 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
     }
 
     public void testRetransmit() {
-        this.shootme.init();
+        this.shootme.init("shootme_retransmit");
         this.shootist.init();
         try {
             Thread.sleep(60000);
@@ -787,7 +857,7 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
     }
     
     public void testRetransmitNoAckSent() {
-        this.shootme.init();
+        this.shootme.init("shootme_retransmit_ack_sent");
         this.shootist.sendAck = false;
         this.shootist.init();
         try {
@@ -795,6 +865,19 @@ public class ServerTransactionRetransmissionTimerTest extends TestCase {
         } catch (Exception ex) {
 
         }
+    }
+    
+    // Non Regression Test for Issue http://java.net/jira/browse/JSIP-443
+    public void testEnableRetransmitionAlertsLeaks() {
+    	this.shootme.enableRetransmitAlerts = true;
+        this.shootme.init("shootme_retransmit_alerts");        
+        this.shootist.init();
+        try {
+            Thread.sleep(60000);
+        } catch (Exception ex) {
+
+        }
+        assertNull(((SipStackImpl)this.shootme.sipStack).getRetransmissionAlertTransaction(((SIPResponse)this.shootme.okResponse).getDialogId(true)));
     }
 
 }

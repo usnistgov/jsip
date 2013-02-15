@@ -248,6 +248,9 @@ public class SIPServerTransactionImpl extends SIPTransactionImpl implements SIPS
 
             this.ticks = SIPTransactionImpl.T1;
             this.ticksLeft = this.ticks;
+            // Fix from http://java.net/jira/browse/JSIP-443
+            // by mitchell.c.ackerman
+            this.dialogId = dialogId;
         }
 
         public void runTask() {
