@@ -100,6 +100,13 @@ public class ReInviteTest extends ScenarioHarness implements SipListener {
     public void testSendInvite() {
         this.shootist.sendInvite();
     }
+    
+	// http://java.net/jira/browse/JSIP-444 Check Honor Target Refresh on Response
+    public void testTargetRefresh() {
+    	this.shootme.isTargetRefresh = true;
+    	this.shootist.isTargetRefresh = true;
+        this.shootist.sendInvite();
+    }
 
     public void tearDown() {
         try {
