@@ -363,6 +363,12 @@ public class Shootist implements SipListener, TlsSecurityPolicy {
                     + "a=rtpmap:4 G723/8000\r\n"
                     + "a=rtpmap:18 G729A/8000\r\n"
                     + "a=ptime:20\r\n";
+            
+            // Make large body to force TLS fragmentation
+            for(int q=0;q<7;q++) {
+            	sdpData += sdpData;
+            }
+            
             byte[]  contents = sdpData.getBytes();
             //byte[]  contents = sdpBuff.toString().getBytes();
 
