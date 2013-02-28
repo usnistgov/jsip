@@ -193,7 +193,7 @@ public class TcpSingleThreadDeadlockTest extends TestCase {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            for(int q = 0; q<6000; q++) {
+            for(int q = 0; q<1000; q++) {
             	try {
             		Response okResponse = messageFactory.createResponse(180,
             				request);

@@ -694,7 +694,7 @@ public class StackQueueCongestionControlTest extends TestCase {
     }
 
     public void testTCPZeroLostMessages() {
-        this.shootme.init("tcp",2000);
+        this.shootme.init("tcp",1000);
         this.shootist.init("10", "10000", 2, "tcp");
         try {
             Thread.sleep(10000);
