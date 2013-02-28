@@ -96,14 +96,15 @@ public class SIPEventInterceptorTest extends TestCase{
 		System.gc();Thread.sleep(1000);
 		System.out.println("size:" + tp.getNumberOfThreads());
 		RuntimeMXBean RuntimemxBean = ManagementFactory.getRuntimeMXBean();
+		
 		List<String> arguments = RuntimemxBean.getInputArguments();
 		for(String arg : arguments) {
 			System.out.println(arg);
 		}
 		
-		//System.out.println("Properties " + p.toString());
 		assertTrue(Math.abs(tp.getMetricStats(sec).averageTime - stuck)<10); // wrong avg time
 		assertEquals(0, tp.getNumberOfThreads()); // Memory leaking
+		System.out.println("Active threads " + tp.getNumberOfThreads());
 	}
 	
     public class Shootme implements SipListener {
