@@ -9,6 +9,7 @@ import java.io.ObjectOutputStream;
 import java.util.Vector;
 
 import javax.sdp.Attribute;
+import javax.sdp.Connection;
 import javax.sdp.MediaDescription;
 
 import junit.framework.TestCase;
@@ -40,6 +41,51 @@ public class SdpParserTest extends TestCase {
                 + "a=sendonly\r\n" + "m=audio 2222 RTP/AVP 0 101\r\n"
                 + "a=rtpmap:0 PCMU/8000\r\n" + "a=rtpmap:101 telephone-event/8000\r\n"
     };
+    
+    String rtcSdp = "v=0\n" + 
+    		"o=- 3212632920 2 IN IP4 127.0.0.1\n" + 
+    		"s=plivo\n" + 
+    		"t=0 0\n" + 
+    		"a=group:BUNDLE audio video\n" + 
+    		"m=audio 49665 RTP/SAVPF 103 104 0 8 106 105 13 126\n" + 
+    		"c=IN IP4 192.168.3.1\n" + 
+    		"a=rtcp:49665 IN IP4 93.63.22.6\n" + 
+    		"a=candidate:1668076467 1 udp 2113937151 192.168.1.4 54624 typ host generation 0\n" + 
+    		"a=candidate:1668076467 2 udp 2113937151 192.168.1.4 54624 typ host generation 0\n" + 
+    		"a=candidate:3794064647 1 udp 1677729535 93.63.22.6 49665 typ srflx generation 0\n" + 
+    		"a=candidate:3794064647 2 udp 1677729535 93.63.22.6 49665 typ srflx generation 0\n" + 
+    		"a=candidate:770649923 1 tcp 1509957375 192.168.1.4 64263 typ host generation 0\n" + 
+    		"a=candidate:770649923 2 tcp 1509957375 192.168.1.4 64263 typ host generation 0\n" + 
+    		"a=ice-ufrag:DWtY72g0C9JhcJtl\n" + 
+    		"a=ice-pwd:GGGqAh3oxbFT3NfUYvAWcAH4\n" + 
+    		"a=ice-options:google-ice\n" + 
+    		"a=sendrecv\n" + 
+    		"a=mid:audio\n" + 
+    		"a=rtcp-mux\n" + 
+    		"a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:i3ZhWGTXvX8vxKxtht+lCLsT/nhuyM2rgDQFInTx\n" + 
+    		"a=rtpmap:103 ISAC/16000\n" + 
+    		"a=rtpmap:104 ISAC/32000\n" + 
+    		"a=rtpmap:0 PCMU/8000\n" + 
+    		"a=rtpmap:8 PCMA/8000\n" + 
+    		"a=rtpmap:106 CN/32000\n" + 
+    		"a=rtpmap:105 CN/16000\n" + 
+    		"a=rtpmap:13 CN/8000\n" + 
+    		"a=rtpmap:126 telephone-event/8000\n" + 
+    		"a=ssrc:2399224977 cname:Wq4cj1yaLwKIQPRA\n" + 
+    		"a=ssrc:2399224977 mslabel:SeAfUDCzSeGWhdcVyHTVIt9HBI2acjoawxkI\n" + 
+    		"a=ssrc:2399224977 label:SeAfUDCzSeGWhdcVyHTVIt9HBI2acjoawxkI00\n";
+    
+    public void testWebRtcSdpParser() throws Exception {
+            SDPAnnounceParser parser = new SDPAnnounceParser(rtcSdp);
+            SessionDescriptionImpl sessiondescription = parser.parse();
+            sessiondescription.getAttribute("crypto:1");
+            String nt = sessiondescription.getConnection()==null?null:sessiondescription.getConnection().getNetworkType();
+            MediaDescription md = (MediaDescription) sessiondescription.getMediaDescriptions(false).get(0);
+            nt = md.getConnection().getNetworkType();
+            assertNotNull(nt);
+            assertNotNull(md);
+
+    }
 
     public void testSdpParser() throws Exception {
         for (String sdpdata : sdpData) {
@@ -63,6 +109,7 @@ public class SdpParserTest extends TestCase {
 
             System.out.println("sessionDescription1 " + sessiondescription1);
 
+            assertNotNull(sessiondescription1);
             // Unfortunately equals is not yet implemented.
             // assertEquals("Equality check",
             // sessiondescription,sessiondescription1);
