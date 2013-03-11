@@ -293,6 +293,9 @@ public class Referee implements SipListener {
 	                " cseq = " + response.getHeader(CSeqHeader.NAME) + 
 	                " dialog " + responseReceivedEvent.getDialog());
         }
+        
+        // Filter retransmissions for slow machines
+        if(tid == null) return;
 
         CSeqHeader cseq = (CSeqHeader) response.getHeader( CSeqHeader.NAME );
         if (cseq.getMethod().equals(Request.INVITE)) {
