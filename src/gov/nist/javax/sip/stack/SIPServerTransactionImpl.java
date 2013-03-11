@@ -203,8 +203,6 @@ public class SIPServerTransactionImpl extends SIPTransactionImpl implements SIPS
     private boolean retransmissionAlertEnabled;
 
     private RetransmissionAlertTimerTask retransmissionAlertTimerTask;
-    
-    private ListenerExecutionMaxTimer listenerExecutionMaxTimer;
 
     protected boolean isAckSeen;
 
@@ -317,42 +315,6 @@ public class SIPServerTransactionImpl extends SIPTransactionImpl implements SIPS
     }
 
     /**
-     * This timer task will terminate the transaction if the listener does not respond in a
-     * pre-determined time period. This helps prevent buggy listeners (who fail to respond) from
-     * causing memory leaks. This allows a container to protect itself from buggy code ( that
-     * fails to respond to a server transaction).
-     *
-     */
-    class ListenerExecutionMaxTimer extends SIPStackTimerTask {
-        SIPServerTransaction serverTransaction = SIPServerTransactionImpl.this;
-
-        ListenerExecutionMaxTimer() {
-        }
-
-        public void runTask() {
-            try {
-               	listenerExecutionMaxTimer = null;
-            	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-                    logger.logDebug("Fired ListenerExecutionMaxTimer for stx " + serverTransaction.getTransactionId() + " state " + serverTransaction.getState());
-            	// Since http://java.net/jira/browse/JSIP-224 we just kill the server transaction unconditionally after timeout
-            	/*if (serverTransaction.getState().getValue() < 0 
-            			|| serverTransaction.getState().equals(TransactionState.PROCEEDING)
-            			// may have been forcefully TERMINATED through terminate() method but if the tx timer never got scheduled
-                		// it wouldn't be reaped
-                		|| serverTransaction.getInternalState() >= 5) {*/
-                    serverTransaction.terminate();
-                    SIPTransactionStack sipStack = serverTransaction.getSIPStack();
-                    sipStack.removePendingTransaction(serverTransaction);
-                    sipStack.removeTransaction(serverTransaction);
-
-                //}
-            } catch (Exception ex) {
-                logger.logError("unexpected exception", ex);
-            }
-        }
-    }
-
-    /**
      * This timer task is for INVITE server transactions. It will send a trying in 200 ms. if the
      * TU does not do so.
      *
@@ -407,9 +369,6 @@ public class SIPServerTransactionImpl extends SIPTransactionImpl implements SIPS
                 // the connection linger timer.
                 try {
                        sipStack.getTimer().cancel(this);
-                       if(listenerExecutionMaxTimer != null) {
-                    	   sipStack.getTimer().cancel(listenerExecutionMaxTimer);
-                       }
                 } catch (IllegalStateException ex) {
                     if (!sipStack.isAlive())
                         return;
@@ -550,12 +509,6 @@ public class SIPServerTransactionImpl extends SIPTransactionImpl implements SIPS
     protected SIPServerTransactionImpl(SIPTransactionStack sipStack, MessageChannel newChannelToUse) {
 
         super(sipStack, newChannelToUse);
-
-        if (sipStack.maxListenerResponseTime != -1) {
-            listenerExecutionMaxTimer = new ListenerExecutionMaxTimer();
-            sipStack.getTimer().schedule(listenerExecutionMaxTimer, sipStack.maxListenerResponseTime * 1000);
-        }
-
         
         // Only one outstanding request for a given server tx.
 

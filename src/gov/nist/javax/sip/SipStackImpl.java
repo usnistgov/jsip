@@ -257,11 +257,12 @@ import java.util.concurrent.TimeUnit;
  * uses this flag for example.</li>
  * 
  * <li><b>gov.nist.javax.sip.MAX_LISTENER_RESPONSE_TIME = Integer </b> <br/>
- * Max time (seconds) before sending a response to a server transaction. If a
- * response is not sent within this time period, the transaction will be deleted
- * by the stack. Default time is "infinity" - i.e. if the listener never
+ * Max time (seconds) to wait on the transaction lock used to serialize message delivery.
+ *  Default time is "infinity" - i.e. if the listener never
  * responds, the stack will hang on to a reference for the transaction and
- * result in a memory leak.
+ * result in a unusable thread stuck waiting for the lock to be released. A good value
+ * for this property is the lifespan of the transaction or the expected blocking delay in
+ * the listener.
  * 
  * <li><b>gov.nist.javax.sip.MAX_TX_LIFETIME_INVITE = Integer </b> <br/>
  * Defaults -1 : infinite. Typical can be dependent on early dialog timeout by example 3 minutes could be a good default
