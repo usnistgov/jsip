@@ -539,6 +539,9 @@ import java.util.concurrent.TimeUnit;
  * 
  * <li><b>gov.nist.javax.sip.SSL_HANDSHAKE_TIMEOUT</b> Value in seconds which is used as default timeout for performing the SSL Handshake
  * This prevents bad clients of connecting without sending any data to block the server</li>
+ * 
+ * <li><b>gov.nist.javax.sip.SSL_RENEGOTIATION_ENABLED = [true|false]</b> Default value is <b>true</b>. Allow or disallow SSL renegotiation to resolve potential DoS problem - 
+ * <a href="http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2011-1473">reference</a> and <a href="http://www.ietf.org/mail-archive/web/tls/current/msg07553.html">another reference</a>. The safe option is to disable it.</li>
  *
  *
  * <li><b>javax.net.ssl.keyStore = fileName </b> <br/>
@@ -1413,6 +1416,12 @@ public class SipStackImpl extends SIPTransactionStack implements
 							"Bad configuration value for gov.nist.javax.sip.SIP_EVENT_INTERCEPTOR", e);			
 			}
 		}
+		
+		boolean sslRenegotiationEnabled = Boolean.parseBoolean(configurationProperties.getProperty(
+				"gov.nist.javax.sip.SSL_RENEGOTIATION_ENABLED",
+				"true"));
+		
+		setSslRenegotiationEnabled(sslRenegotiationEnabled);
 		
 	}
 
