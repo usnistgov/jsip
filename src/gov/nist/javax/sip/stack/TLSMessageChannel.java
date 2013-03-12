@@ -523,6 +523,16 @@ public class TLSMessageChannel extends ConnectionOrientedMessageChannel {
 			try {
 				sslSock.startHandshake();
 				handshakeCompleted = true;
+				if(!getSIPStack().isSslRenegotiationEnabled()) {
+					/* 
+					 * disable TLS re-negotiations to avoid DOS attack
+					 *  http://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2011-1473 
+					 *  http://www.ietf.org/mail-archive/web/tls/current/msg07553.html
+					 *  http://192.9.162.55/javase/javaseforbusiness/docs/TLSReadme.html 
+					 *  */ 
+					sslSock.getSession().invalidate(); 
+					sslSock.setEnableSessionCreation(false);
+				}
 			} catch (IOException e) {
 				logger.logError("A problem occured while Accepting connection", e);
 				return;
