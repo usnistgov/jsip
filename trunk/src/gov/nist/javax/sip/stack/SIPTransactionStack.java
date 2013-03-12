@@ -408,6 +408,8 @@ public abstract class SIPTransactionStack implements
     protected int reliableConnectionKeepAliveTimeout = -1;
     
     private long sslHandshakeTimeout = -1;
+    
+    private boolean sslRenegotiationEnabled = false;
 
     private static class SameThreadExecutor implements Executor {
 
@@ -3295,5 +3297,13 @@ public abstract class SIPTransactionStack implements
 	 */
 	public void setMaxTxLifetimeNonInvite(int maxTxLifetimeNonInvite) {
 		this.maxTxLifetimeNonInvite = maxTxLifetimeNonInvite;
+	}
+	
+	public boolean isSslRenegotiationEnabled() {
+		return sslRenegotiationEnabled;
+	}
+
+	public void setSslRenegotiationEnabled(boolean sslRenegotiationEnabled) {
+		this.sslRenegotiationEnabled = sslRenegotiationEnabled;
 	}
 }
