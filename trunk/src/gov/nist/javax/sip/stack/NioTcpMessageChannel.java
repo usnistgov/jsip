@@ -355,7 +355,7 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 				socketChannel = sock;
 				putMessageChannel(socketChannel, this);
 				
-				onNewSocket();
+				onNewSocket(message);
 			}
 			
 			if (socketChannel != null) {
@@ -370,7 +370,7 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 
 	}
 
-	public void onNewSocket() {
+	public void onNewSocket(byte[] message) {
 
 	}
 	

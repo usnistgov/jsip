@@ -111,9 +111,6 @@ public class NioTlsWebSocketMessageChannel extends NioWebSocketMessageChannel im
 	@Override
 	protected void sendMessage(final byte[] msg, final boolean isClient) throws IOException {
 		checkSocketState();
-		lastMessage = new byte[msg.length];
-		for(int q=0;q<msg.length;q++) lastMessage[q] = msg[q];
-		String s = new String(lastMessage);
 
 		ByteBuffer b = ByteBuffer.wrap(msg);
 		try {
@@ -145,16 +142,9 @@ public class NioTlsWebSocketMessageChannel extends NioWebSocketMessageChannel im
 		super.sendNonWebSocketMessage(msg, false);
 		//super.sendMessage(msg, this.peerAddress, this.peerPort, true);
 	}
-	private byte[] lastMessage = null;
 	@Override
 	public void sendMessage(final byte message[], final InetAddress receiverAddress,
 			final int receiverPort, final boolean retry) throws IOException {
-		lastMessage = new byte[message.length];
-		for(int q=0;q<message.length;q++) {
-			lastMessage[q] = message[q];
-		}
-		String s = new String(lastMessage); 
-
 		checkSocketState();
 		
 		ByteBuffer b = ByteBuffer.wrap(message);
@@ -175,12 +165,6 @@ public class NioTlsWebSocketMessageChannel extends NioWebSocketMessageChannel im
 
 	public void sendHttpMessage(final byte message[], final InetAddress receiverAddress,
 			final int receiverPort, final boolean retry) throws IOException {
-		lastMessage = new byte[message.length];
-		for(int q=0;q<message.length;q++) {
-			lastMessage[q] = message[q];
-		}
-		String s = new String(lastMessage); 
-
 		checkSocketState();
 		
 		ByteBuffer b = ByteBuffer.wrap(message);
@@ -252,19 +236,19 @@ public class NioTlsWebSocketMessageChannel extends NioWebSocketMessageChannel im
 	}
 
 	@Override
-	public void onNewSocket() {
-		super.onNewSocket();
+	public void onNewSocket(byte[] message) {
+		super.onNewSocket(message);
 		try {
 			if(logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
 				String last = null;
-				if(lastMessage != null) {
-					last = new String(lastMessage, "UTF-8");
+				if(message != null) {
+					last = new String(message, "UTF-8");
 				}
 				logger.logDebug("New socket for " + this + " last message = " + last);
 			}
 			init(true);
 			createBuffers();
-			sendMessage(lastMessage, false);
+			sendMessage(message, false);
 		} catch (Exception e) {
 			logger.logError("Cant reinit", e);
 		}
