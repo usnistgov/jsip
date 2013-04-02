@@ -156,8 +156,8 @@ public class NioWebSocketMessageChannel extends NioTcpMessageChannel{
 	}
 
 	@Override
-	public void onNewSocket() {
-		super.onNewSocket();
+	public void onNewSocket(byte[] message) {
+		super.onNewSocket(message);
 		
 	}
 	
