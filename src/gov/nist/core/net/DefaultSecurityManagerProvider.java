@@ -1,6 +1,7 @@
 package gov.nist.core.net;
 
 import gov.nist.core.CommonLogger;
+import gov.nist.core.LogWriter;
 import gov.nist.core.StackLogger;
 
 import javax.net.ssl.KeyManager;
@@ -12,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
+import java.security.Security;
 import java.util.Properties;
 
 /**
@@ -19,6 +21,7 @@ import java.util.Properties;
  * properties or system -D settings.
  * 
  * @author Alexader Saveliev (Avistar)
+ * @author Jose M Recio (josemrecio@gmail.com)
  *
  */
 public class DefaultSecurityManagerProvider implements SecurityManagerProvider {
@@ -33,54 +36,75 @@ public class DefaultSecurityManagerProvider implements SecurityManagerProvider {
 
     public void init(Properties properties)
             throws GeneralSecurityException, IOException {
-        String passphraseString = properties.getProperty("javax.net.ssl.keyStorePassword");
+        // required, could use default keyStore, but it is better practice to explicitly specify
+        final String keyStoreFilename = properties.getProperty("javax.net.ssl.keyStore");
+        // required
+        final String keyStorePassword = properties.getProperty("javax.net.ssl.keyStorePassword");
+        // optional, uses default if not specified 
         String keyStoreType = properties.getProperty("javax.net.ssl.keyStoreType");
-        if (passphraseString == null)
-            passphraseString = System.getProperty("javax.net.ssl.keyStorePassword");
-        if (keyStoreType == null)
-            keyStoreType = System.getProperty("javax.net.ssl.keyStoreType");
-        
-        if(keyStoreType == null)  {
-        	logger.logDebug("Security manager not specified, TLS settings will be inactive");
-        	return;
+        if (keyStoreType == null) {
+            keyStoreType = KeyStore.getDefaultType();
+            logger.logWarning("Using default keystore type " + keyStoreType);
+        }
+        if (keyStoreFilename == null || keyStorePassword == null) {
+            logger.logWarning("TLS settings will be inactive - TLS key store can not be configured."
+                    + " keyStoreType=" +  keyStoreType
+                    + " javax.net.ssl.keyStore=" + keyStoreFilename
+                    + " javax.net.ssl.keyStorePassword=" + (keyStorePassword == null? null: "***"));
+            return;
         }
 
-        KeyStore ks = KeyStore.getInstance(keyStoreType);
-        KeyStore ts = KeyStore.getInstance(keyStoreType);
+        // required, could use default trustStore, but it is better practice to explicitly specify
+        final String trustStoreFilename = properties.getProperty("javax.net.ssl.trustStore");
+        // optional, if not specified using keyStorePassword
+        String trustStorePassword = properties.getProperty("javax.net.ssl.trustStorePassword");
+        if(trustStorePassword == null) {
+        	logger.logInfo("javax.net.ssl.trustStorePassword is null, using the password passed through javax.net.ssl.keyStorePassword");
+        	trustStorePassword = keyStorePassword;
+        }
+        // optional, uses default if not specified 
+        String trustStoreType = properties.getProperty("javax.net.ssl.trustStoreType");
+        if (trustStoreType == null) {
+            trustStoreType = KeyStore.getDefaultType();
+            logger.logWarning("Using default truststore type " + trustStoreType);
+        }
+        if (trustStoreFilename == null || trustStorePassword == null) {
+            logger.logWarning("TLS settings will be inactive - TLS trust store can not be configured."
+                    + " trustStoreType=" +  trustStoreType
+                    + " javax.net.ssl.trustStore=" +  trustStoreFilename
+                    + " javax.net.ssl.trustStorePassword=" + (trustStorePassword == null? null: "***"));
+            return;
+        }
 
-        char[] passphrase = passphraseString.toCharArray();
-
-        String keyStoreFilename = properties.getProperty("javax.net.ssl.keyStore");
-        String trustStoreFilename = properties.getProperty("javax.net.ssl.trustStore");
-
-        if (keyStoreFilename == null)
-            keyStoreFilename = System.getProperty("javax.net.ssl.keyStore");
-        if (trustStoreFilename == null)
-            trustStoreFilename = System.getProperty("javax.net.ssl.trustStore");
-
-        if (keyStoreFilename != null && trustStoreFilename != null) {
-            ks.load(new FileInputStream(new File(keyStoreFilename)), passphrase);
-            ts.load(new FileInputStream(new File(trustStoreFilename)), passphrase);
-            keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
-            keyManagerFactory.init(ks, passphrase);
-
-            trustManagerFactory = TrustManagerFactory.getInstance("SunX509");
-            trustManagerFactory.init(ts);
-        } else {
-            logger.logWarning("TLS key and trust stores are not configured. javax.net.ssl.keyStore="
-                    + keyStoreFilename + " javax.net.ssl.trustStore=" +
-                    trustStoreFilename);
-
+        String algorithm = Security.getProperty("ssl.KeyManagerFactory.algorithm");
+        if (algorithm == null) {
+            algorithm = "SunX509";
+        }
+        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+            logger.logDebug("SecurityManagerProvider " + this.getClass().getCanonicalName() + " will use algorithm " + algorithm);
+        }
+        
+        final KeyStore ks = KeyStore.getInstance(keyStoreType);
+        ks.load(new FileInputStream(new File(keyStoreFilename)), keyStorePassword.toCharArray());
+        keyManagerFactory = KeyManagerFactory.getInstance(algorithm);
+        keyManagerFactory.init(ks, keyStorePassword.toCharArray());
+        
+        final KeyStore ts = KeyStore.getInstance(trustStoreType);
+        ts.load(new FileInputStream(new File(trustStoreFilename)), trustStorePassword.toCharArray());
+        trustManagerFactory = TrustManagerFactory.getInstance(algorithm);
+        trustManagerFactory.init(ts);
+        if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+            logger.logDebug("TLS settings OK. SecurityManagerProvider " + this.getClass().getCanonicalName() + " initialized.");
         }
     }
 
     public KeyManager[] getKeyManagers(boolean client) {
-    	if(keyManagerFactory == null) return null;
+        if(keyManagerFactory == null) return null;
         return keyManagerFactory.getKeyManagers();
     }
 
     public TrustManager[] getTrustManagers(boolean client) {
-    	if(trustManagerFactory == null) return null;
+        if(trustManagerFactory == null) return null;
         return trustManagerFactory.getTrustManagers();
     }
 }
