@@ -282,9 +282,9 @@ public class Shootme implements SipListener {
             headerFactory = sipFactory.createHeaderFactory();
             addressFactory = sipFactory.createAddressFactory();
             messageFactory = sipFactory.createMessageFactory();
-            ListeningPoint lpTLS = sipStack.createListeningPoint("127.0.0.1", myPort, transport);
-
             Shootme listener = this;
+            
+            ListeningPoint lpTLS = sipStack.createListeningPoint("127.0.0.1", myPort, transport);
 
             SipProvider sipProvider = sipStack.createSipProvider(lpTLS);
             System.out.println("tls provider " + sipProvider);
