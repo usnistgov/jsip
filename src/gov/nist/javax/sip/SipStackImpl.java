@@ -1251,12 +1251,22 @@ public class SipStackImpl extends SIPTransactionStack implements
 				"gov.nist.javax.sip.TLS_CLIENT_PROTOCOLS");
 		if (tlsClientProtocols != null)
 		{
-			StringTokenizer st = new StringTokenizer(tlsClientProtocols, " ,");
+			// http://java.net/jira/browse/JSIP-451 - josemrecio
+			// accepts protocol list enclosed in "" and separated by spaces and/or commas 
+			StringTokenizer st = new StringTokenizer(tlsClientProtocols, "\" ,");
 			String[] protocols = new String[st.countTokens()];
 			
+			if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG))
+	            logger.logDebug(
+	                "TLS Client Protocols = ");
 			int i=0;
 			while (st.hasMoreTokens()) {
-				protocols[i++] = st.nextToken();
+				protocols[i] = st.nextToken();
+				if (logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+	                logger.logDebug(
+	                    "TLS Client Protocol = " + protocols[i]);
+				}
+				i++;
 			}
 			this.enabledProtocols = protocols;
 		}

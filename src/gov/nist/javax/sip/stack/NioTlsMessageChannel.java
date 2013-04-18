@@ -101,11 +101,8 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel implements NioTls
         	throw new RuntimeException("Invalid parameter for TLS authentication: " + auth);
         }
 
-        String clientProtocols = ((SipStackImpl)super.sipStack)
-        		.getConfigurationProperties().getProperty("gov.nist.javax.sip.TLS_CLIENT_PROTOCOLS");
-        if(clientProtocols != null) {
-        	sslStateMachine.sslEngine.setEnabledProtocols(clientProtocols.split(","));
-        }
+        // http://java.net/jira/browse/JSIP-451 - josemrecio
+    	sslStateMachine.sslEngine.setEnabledProtocols(((SipStackImpl)sipStack).getEnabledProtocols());
 
 	}
 	
