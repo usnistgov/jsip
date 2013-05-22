@@ -1128,11 +1128,6 @@ public abstract class SIPTransactionImpl implements SIPTransaction {
 
         }
 
-        // JvB: Need to pass the CANCEL to the listener! Retransmitted INVITEs
-        // set it to false
-        if (transactionMatches) {
-            this.setPassToListener();
-        }
         return transactionMatches;
     }
 

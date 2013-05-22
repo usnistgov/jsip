@@ -913,6 +913,9 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
             // INVITE was handled statefully so the CANCEL must also be
             // statefully handled.
             if (st != null) {
+                // JvB: Need to pass the CANCEL to the listener! Retransmitted INVITEs
+                // set it to false
+                st.setPassToListener();
                 try {
                     if (transaction != null) {
                         sipStack.addTransaction(transaction);
