@@ -786,6 +786,9 @@ public class SIPServerTransactionImpl extends SIPTransactionImpl implements SIPS
                         requestOf.processRequest(transactionRequest, encapsulatedChannel);
                     else
                         this.semRelease();
+		} else {
+			// none of the above? well release the lock anyhow!
+			this.semRelease();
                 }
                 if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                     logger.logDebug("completed processing retransmitted request : "
@@ -840,6 +843,9 @@ public class SIPServerTransactionImpl extends SIPTransactionImpl implements SIPS
                         // Transaction is already terminated
                         // just ignore the IOException.
                     }
+		} else {
+			// none of the above? well release the lock anyhow!
+			 this.semRelease();
                 }
                 if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                     logger.logDebug("Dropping request " + getRealState());
