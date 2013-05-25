@@ -5,6 +5,11 @@ import javax.sip.address.*;
 import javax.sip.header.*;
 import javax.sip.message.*;
 
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+
 import java.text.ParseException;
 import java.util.*;
 
@@ -247,6 +252,15 @@ public class Shootme implements SipListener {
     }
 
     public void init() {
+    	
+    	ConsoleAppender console = new ConsoleAppender(); //create appender
+    	  //configure the appender
+    	  String PATTERN = "%d [%p|%c|%C{1}] %m%n";
+    	  console.setLayout(new PatternLayout(PATTERN)); 
+    	  console.setThreshold(Level.DEBUG);
+    	  console.activateOptions();
+    	  //add appender to any Logger (here is root)
+    	  Logger.getRootLogger().addAppender(console);
         SipFactory sipFactory = null;
         sipStack = null;
         sipFactory = SipFactory.getInstance();
@@ -255,7 +269,7 @@ public class Shootme implements SipListener {
         properties.setProperty("javax.sip.STACK_NAME", "shootme");
         // You need 16 for logging traces. 32 for debug + traces.
         // Your code will limp at 32 but it is best for debugging.
-        properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "32");
+        properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "LOG4J");
         properties.setProperty("gov.nist.javax.sip.DEBUG_LOG",
                 "shootmedebug.txt");
         properties.setProperty("gov.nist.javax.sip.SERVER_LOG",
@@ -281,12 +295,12 @@ public class Shootme implements SipListener {
             addressFactory = sipFactory.createAddressFactory();
             messageFactory = sipFactory.createMessageFactory();
             ListeningPoint lp = sipStack.createListeningPoint("127.0.0.1",
-                    myPort, "tcp");
+                    myPort, "udp");
 
             Shootme listener = this;
 
             SipProvider sipProvider = sipStack.createSipProvider(lp);
-            System.out.println("tcp provider " + sipProvider);
+            System.out.println("udp provider " + sipProvider);
             sipProvider.addSipListener(listener);
 
         } catch (Exception ex) {
