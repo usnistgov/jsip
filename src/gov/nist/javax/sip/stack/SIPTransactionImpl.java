@@ -633,6 +633,7 @@ public abstract class SIPTransactionImpl implements SIPTransaction {
      */
     @Override
     public void disableTimeoutTimer() {
+    	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) logger.logDebug("disableTimeoutTimer " + this);
         timeoutTimerTicksLeft = -1;
     }
     
@@ -647,7 +648,17 @@ public abstract class SIPTransactionImpl implements SIPTransaction {
         if (timeoutTimerTicksLeft != -1) {
             // Count down the timer, and if it has run out,
             if (--timeoutTimerTicksLeft == 0) {
-                // Fire the timeout timer
+                /*
+                 *  Fire the timeout timer, this is timer H, if you allow timeoutTimerTicksLeft to go 
+                 *  to -1 it will never timeout. It will skip this condition and move on to retransmitting
+                 *  forever.
+                 *  
+            	 *  If we don't set the state to terminated here and we havent received ACK then the method
+            	 *  fireTimeoutTimer() will have no effect because it waits for the ACK. TimerH for provisional
+            	 *  responses is handled in similar way.
+            	 *  
+            	 */
+                setState(TransactionState._TERMINATED);
                 fireTimeoutTimer();
             }
         }
