@@ -246,7 +246,7 @@ class DialogFilter implements ServerRequestInterface, ServerResponseInterface {
     }
     
     /**
-     * Send back a LOOP Detected Response.
+     * Send back a Trying Response.
      * 
      * @param sipRequest
      * @param transaction

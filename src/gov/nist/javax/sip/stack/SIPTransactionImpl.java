@@ -542,11 +542,17 @@ public abstract class SIPTransactionImpl implements SIPTransaction {
             if (newState != TransactionState._TERMINATED)
                 newState = TransactionState._CONFIRMED;
         }
-        if (currentState != TransactionState._TERMINATED)
+        if (currentState != TransactionState._TERMINATED) {
             currentState = newState;
+        }
         else
             newState = currentState;
         // END OF PATCH
+        
+        if(newState == TransactionState._COMPLETED) {
+        	enableTimeoutTimer(TIMER_H); // timer H must be started around now
+        }
+        
         if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
             logger.logDebug("Transaction:setState " + newState
                     + " " + this + " branchID = " + this.getBranch()
@@ -648,17 +654,6 @@ public abstract class SIPTransactionImpl implements SIPTransaction {
         if (timeoutTimerTicksLeft != -1) {
             // Count down the timer, and if it has run out,
             if (--timeoutTimerTicksLeft == 0) {
-                /*
-                 *  Fire the timeout timer, this is timer H, if you allow timeoutTimerTicksLeft to go 
-                 *  to -1 it will never timeout. It will skip this condition and move on to retransmitting
-                 *  forever.
-                 *  
-            	 *  If we don't set the state to terminated here and we havent received ACK then the method
-            	 *  fireTimeoutTimer() will have no effect because it waits for the ACK. TimerH for provisional
-            	 *  responses is handled in similar way.
-            	 *  
-            	 */
-                setState(TransactionState._TERMINATED);
                 fireTimeoutTimer();
             }
         }
