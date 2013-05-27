@@ -1253,9 +1253,8 @@ public class SIPServerTransactionImpl extends SIPTransactionImpl implements SIPS
 
         if (isInviteTransaction() && sipStack.removeTransactionPendingAck(this) ) {
             if ( logger.isLoggingEnabled(LogWriter.TRACE_DEBUG) ) {
-                logger.logDebug("Found tx pending ACK - returning");
+                logger.logDebug("Found tx pending ACK - timer H has kicked");
             }
-            return;
 
         }
         SIPDialog dialog = (SIPDialog) getDialog();
