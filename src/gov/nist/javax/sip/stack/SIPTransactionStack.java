@@ -1358,6 +1358,9 @@ public abstract class SIPTransactionStack implements
             if (mergedTransaction != null
                     && !mergedTransaction
                             .isMessagePartOfTransaction(sipRequest)) {
+            	if(logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+            		logger.logDebug("Mathcing merged transaction for merge id " + mergeId + " with "+ mergedTransaction);
+            	}
                 return true;
             }else {
                 /*
@@ -1368,6 +1371,9 @@ public abstract class SIPTransactionStack implements
                         .get(mergeId);
                 if (serverDialog != null && serverDialog.firstTransactionIsServerTransaction
                         && serverDialog.getState() == DialogState.CONFIRMED) {
+                	if(logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+                		logger.logDebug("Mathcing merged dialog for merge id " + mergeId + " with "+ serverDialog);
+                	}
                     return true;
                 }
             }
