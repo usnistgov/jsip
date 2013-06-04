@@ -204,14 +204,8 @@ public class NioWebSocketMessageChannel extends NioTcpMessageChannel{
         	}
     	} else {
     		ContactHeader contact = (ContactHeader)message.getHeader(ContactHeader.NAME);
-        	RecordRouteHeader rr = (RecordRouteHeader)message.getHeader(RecordRouteHeader.NAME);
-        	if(rr == null) {
-        		if(contact != null) {
-        			rewriteUri((SipURI) contact.getAddress().getURI());
-        		}
-        	} else {
-        		//rewriteUri((SipURI) rr.getAddress().getURI());
-        		// Record-Routes come from servers. Only clients put invalid addresses so dont worry about those.
+        	if(contact != null) {
+        		rewriteUri((SipURI) contact.getAddress().getURI());
         	}
     	}
     	
