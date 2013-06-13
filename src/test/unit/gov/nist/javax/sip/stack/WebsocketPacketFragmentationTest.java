@@ -4,8 +4,13 @@ import java.io.ByteArrayInputStream;
 
 import gov.nist.javax.sip.stack.WebSocketCodec;
 import junit.framework.TestCase;
-
-public class FragmentationTest extends TestCase {
+/**
+ * Feed masked websocket frames into the websocket codec to recover from different situations
+ * 
+ * @author vladimirralev
+ *
+ */
+public class WebsocketPacketFragmentationTest extends TestCase {
 	byte [] raw1 = new byte[] {-127};
 
 	byte [] raw2 = new byte[] {-2, 1, };
@@ -20,9 +25,11 @@ public class FragmentationTest extends TestCase {
 	
 	byte[] raw52 = new byte[] {-127, -2, 1, -103, 42, 114, 40, -82, 120, 55, 111, -25, 121, 38, 109, -4, 10, 1, 65, -34, 16, 28, 71, -36, 71, 19, 68, -19, 70, 27, 77, -64, 94, 67, 8, -3, 99, 34, 7, -100, 4, 66, 37, -92, 105, 19, 68, -62, 7, 59, 108, -108, 10, 67, 27, -103, 27, 66, 16, -99, 31, 71, 17, -99, 26, 71, 37, -92, 105, 33, 77, -33, 16, 82, 25, -114, 120, 55, 111, -25, 121, 38, 109, -4, 39, 120, 110, -36, 69, 31, 18, -114, 22, 1, 65, -34, 16, 28, 71, -36, 71, 19, 68, -19, 70, 27, 77, -64, 94, 67, 104, -37, 68, 22, 77, -56, 67, 28, 77, -54, 20, 73, 92, -49, 77, 79, 25, -99, 29, 67, 24, -106, 25, 71, 29, -105, 25, 64, 25, -93, 32, 38, 71, -108, 10, 78, 91, -57, 90, 72, 70, -63, 88, 31, 73, -62, 105, 30, 65, -53, 68, 6, 25, -18, 95, 28, 76, -53, 76, 27, 70, -53, 78, 76, 37, -92, 124, 27, 73, -108, 10, 33, 97, -2, 5, 64, 6, -98, 5, 37, 123, -114, 73, 62, 103, -44, 88, 19, 69, -8, 27, 63, 75, -105, 4, 27, 70, -40, 75, 30, 65, -54, 17, 16, 90, -49, 68, 17, 64, -109, 80, 75, 64, -23, 30, 16, 99, -125, 25, 74, 27, -106, 7, 75, 25, -53, 76, 22, 17, -97, 30, 69, 75, -97, 73, 19, 74, -106, 73, 65, 26, -51, 29, 23, 27, -53, 26, 69, 76, -103, 25, 20, 29, -99, 79, 73, 90, -34, 69, 0, 92, -93, 32, 63, 73, -42, 7, 52, 71, -36, 93, 19, 90, -54, 89, 72, 8, -103, 26, 127, 34, -5, 89, 23, 90, -125, 107, 21, 77, -64, 94, 72, 8, -64, 69, 0, 69, -49, 70, 49, 68, -57, 79, 28, 92, -97, 39, 120, 109, -42, 90, 27, 90, -53, 89, 72, 8, -99, 28, 66, 37, -92, 105, 29, 70, -38, 75, 17, 92, -108, 10, 78, 91, -57, 90, 72, 70, -63, 88, 31, 73, -62, 105, 30, 65, -53, 68, 6, 25, -18, 73, 62, 103, -44, 88, 19, 69, -8, 27, 63, 75, -105, 4, 27, 70, -40, 75, 30, 65, -54, 17, 6, 90, -49, 68, 1, 88, -63, 88, 6, 21, -39, 89, 76, 37, -92, 105, 29, 70, -38, 79, 28, 92, -125, 102, 23, 70, -55, 94, 26, 18, -114, 26, 127, 34, -93, 32,
 			-127, -2, 1, -103, 42, 114, 40, -82, 120, 55, 111, -25, 121, 38, 109, -4, 10, 1, 65, -34, 16, 28, 71, -36, 71, 19, 68, -19, 70, 27, 77, -64, 94, 67, 8, -3, 99, 34, 7, -100, 4, 66, 37, -92, 105, 19, 68, -62, 7, 59, 108, -108, 10, 67, 27, -103, 27, 66, 16, -99, 31, 71, 17, -99, 26, 71, 37, -92, 105, 33, 77, -33, 16, 82, 25, -114, 120, 55, 111, -25, 121, 38, 109, -4, 39, 120, 110, -36, 69, 31, 18, -114, 22, 1, 65, -34, 16, 28, 71, -36, 71, 19, 68, -19, 70, 27, 77, -64, 94, 67, 104, -37, 68, 22, 77, -56, 67, 28, 77, -54, 20, 73, 92, -49, 77, 79, 25, -99, 29, 67, 24, -106, 25, 71, 29, -105, 25, 64, 25, -93, 32, 38, 71, -108, 10, 78, 91, -57, 90, 72, 70, -63, 88, 31, 73, -62, 105, 30, 65, -53, 68, 6, 25, -18, 95, 28, 76, -53, 76, 27, 70, -53, 78, 76, 37, -92, 124, 27, 73, -108, 10, 33, 97, -2, 5, 64, 6, -98, 5, 37, 123, -114, 73, 62, 103, -44, 88, 19, 69, -8, 27, 63, 75, -105, 4, 27, 70, -40, 75, 30, 65, -54, 17, 16, 90, -49, 68, 17, 64, -109, 80, 75, 64, -23, 30, 16, 99, -125, 25, 74, 27, -106, 7, 75, 25, -53, 76, 22, 17, -97, 30, 69, 75, -97, 73, 19, 74, -106, 73, 65, 26, -51, 29, 23, 27, -53, 26, 69, 76, -103, 25, 20, 29, -99, 79, 73, 90, -34, 69, 0, 92, -93, 32, 63, 73, -42, 7, 52, 71, -36, 93, 19, 90, -54, 89, 72, 8, -103, 26, 127, 34, -5, 89, 23, 90, -125, 107, 21, 77, -64, 94, 72, 8, -64, 69, 0, 69, -49, 70, 49, 68, -57, 79, 28, 92, -97, 39, 120, 109, -42, 90, 27, 90, -53, 89, 72, 8, -99, 28, 66, 37, -92, 105, 29, 70, -38, 75, 17, 92, -108, 10, 78, 91, -57, 90, 72, 70, -63, 88, 31, 73, -62, 105, 30, 65, -53, 68, 6, 25, -18, 73, 62, 103, -44, 88, 19, 69, -8, 27, 63, 75, -105, 4, 27, 70, -40, 75, 30, 65, -54, 17, 6, 90, -49, 68, 1, 88, -63, 88, 6, 21, -39, 89, 76, 37, -92, 105, 29, 70, -38, 79, 28, 92, -125, 102, 23, 70, -55, 94, 26, 18, -114, 26, 127, 34, -93, 32};
-	
-
-	
+	/**
+	 * Edge-case fragmentation of single frame
+	 * 
+	 * @throws Exception
+	 */
 	public void testWebsocketCodecFragmentationInAllSectionsWithOverflow() throws Exception {
 		ByteArrayInputStream bais1 = new ByteArrayInputStream(raw1);
 		ByteArrayInputStream bais2 = new ByteArrayInputStream(raw2);
@@ -38,13 +45,19 @@ public class FragmentationTest extends TestCase {
 		String s = new String(codec.decode(bais4));
 		System.out.println(s);
 		assertNotNull(s);
+		assertTrue(s.startsWith("REGISTER"));
 		assertNull(codec.decode(bais5));
 		assertNull(codec.decode(bais6));
 		s = new String(codec.decode(bais7));
 		System.out.println(s);
 		assertNotNull(s);
+		assertTrue(s.startsWith("REGISTER"));
 	}
 	
+	/**
+	 * Perfectly aligned frames one after another
+	 * @throws Exception
+	 */
 	public void testByteOverflowMetadata() throws Exception {
 		ByteArrayInputStream bais1 = new ByteArrayInputStream(raw5);
 		ByteArrayInputStream bais2 = new ByteArrayInputStream(raw5);
@@ -52,10 +65,29 @@ public class FragmentationTest extends TestCase {
 		WebSocketCodec codec = new WebSocketCodec(true, false);
 		String s = new String(codec.decode(bais1));
 		System.out.println(s);
+		assertTrue(s.startsWith("REGISTER"));
 		s = new String(codec.decode(bais2));
 		System.out.println(s);
 		s = new String(codec.decode(bais3));
 		System.out.println(s);
 		assertNotNull(s);
+		assertTrue(s.startsWith("REGISTER"));
+	}
+	/**
+	 * Two messages in single frame
+	 * @throws Exception
+	 */
+	public void testMoreThanOneMessageInTheFrame() throws Exception {
+		ByteArrayInputStream bais1 = new ByteArrayInputStream(raw52);
+		WebSocketCodec codec = new WebSocketCodec(true, false);
+		String s = new String(codec.decode(bais1));
+		assertNotNull(s);
+		assertTrue(s.startsWith("REGISTER"));
+		System.out.println(s);
+		s = new String(codec.decode(new ByteArrayInputStream(new byte[]{})));
+		System.out.println(s);
+		assertNotNull(s);
+		assertTrue(s.startsWith("REGISTER"));
+		
 	}
 }
