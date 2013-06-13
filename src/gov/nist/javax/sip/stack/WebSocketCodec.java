@@ -28,7 +28,6 @@ package gov.nist.javax.sip.stack;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 
 import gov.nist.core.CommonLogger;
 import gov.nist.core.LogLevels;
@@ -92,7 +91,7 @@ public class WebSocketCodec {
 			throws Exception {
 		int bytesRead = is.read(buffer, writeIndex, buffer.length - writeIndex);
 		
-		if(bytesRead == -1) throw new IOException("Stream ended");
+		if(bytesRead < 0) throw new IOException("Stream ended");
 		
 		// Update the count in the buffer
 		writeIndex += bytesRead;
@@ -108,7 +107,7 @@ public class WebSocketCodec {
 			return null;
 		}
 
-		byte b = (byte) readNextByte();
+		byte b = readNextByte();
 		frameFinalFlag = (b & 0x80) != 0;
 		frameRsv = (b & 0x70) >> 4;
 		frameOpcode = b & 0x0F;
@@ -118,7 +117,7 @@ public class WebSocketCodec {
 		}
 
 		// MASK, PAYLOAD LEN 1
-		b = (byte) readNextByte();
+		b = readNextByte();
 		boolean frameMasked = (b & 0x80) != 0;
 		int framePayloadLen1 = b & 0x7F;
 
@@ -137,23 +136,27 @@ public class WebSocketCodec {
 		try {
 			// Read frame payload length
 			if (framePayloadLen1 == 126) {
-				int byte1 = readNextByte();
-				int byte2 = readNextByte();
+				int byte1 = 0xff & readNextByte();
+				int byte2 = 0xff & readNextByte();
 				int value = (byte1<<8) | byte2;
 				framePayloadLength = value;
 			} else if (framePayloadLen1 == 127) {
 				long value = 0;
 				for(int q=0;q<8;q++) {
-					value &= readNextByte()<<(7-q);
+					value &= (0xff&readNextByte())<<(7-q);
 				}
 				framePayloadLength = value;
 
 				if (framePayloadLength < 65536) {
-					protocolViolation("invalid data frame length (not using minimal length encoding)");
+					protocolViolation("invalid data frame length (not using minimal length encoding): " + framePayloadLength);
 					return null;
 				}
 			} else {
 				framePayloadLength = framePayloadLen1;
+			}
+			
+			if(framePayloadLength < 0) {
+				protocolViolation("Negative payload size: " + framePayloadLength);
 			}
 
 			if(logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
@@ -162,8 +165,8 @@ public class WebSocketCodec {
 
 			// Analyze the mask
 			if (maskedPayload) {
-				for(int q=0;q<4;q++)
-					maskingKey[q] = (byte) readNextByte();
+				for(int q=0; q<4 ;q++)
+					maskingKey[q] = readNextByte();
 			}
 		}
 		catch (IllegalStateException e) {
@@ -177,12 +180,10 @@ public class WebSocketCodec {
 
 		// Check if we have enough data at all
 		if(writeIndex < totalPacketLength) {
-			if(writeIndex<2) {
-				if(logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
-					logger.logDebug("Abort decode. Write index is at " + writeIndex + " and totalPacketLength is " + totalPacketLength);
-				}
-				return null; // wait for more data
+			if(logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+				logger.logDebug("Abort decode. Write index is at " + writeIndex + " and totalPacketLength is " + totalPacketLength);
 			}
+			return null; // wait for more data
 		}
 
 		// Unmask data if needed and only if the condition above is true
@@ -196,9 +197,13 @@ public class WebSocketCodec {
 		
 		// Now move the pending data to the begining of the buffer so we can continue having good stream
 		for(int q=1; q<writeIndex - totalPacketLength; q++) {
-			buffer[q] = buffer[(int)totalPacketLength+q];
+			buffer[q] = buffer[(int)totalPacketLength + q];
 		}
-		writeIndex -= totalPacketLength + 1;
+		writeIndex -= totalPacketLength;
+		
+		if(logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
+			logger.logDebug("writeIndex = " + writeIndex + " " + totalPacketLength);
+		}
 		
 		// All done, we are ready to be called again
 		return plainTextBytes;
@@ -250,8 +255,8 @@ public class WebSocketCodec {
 	}
 
 	private void unmask(byte[] frame, int startIndex) {
-		for (int i = startIndex; i < frame.length; i++) {
-			frame[i] = (byte) (frame[i] ^ maskingKey[i % 4]);
+		for (int i = 0; i < frame.length-startIndex; i++) {
+			frame[startIndex+i] = (byte) (frame[startIndex+i] ^ maskingKey[i % 4]);
 		}
 	}
 
