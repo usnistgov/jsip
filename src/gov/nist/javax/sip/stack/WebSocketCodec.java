@@ -91,7 +91,7 @@ public class WebSocketCodec {
 			throws Exception {
 		int bytesRead = is.read(buffer, writeIndex, buffer.length - writeIndex);
 		
-		if(bytesRead < 0) throw new IOException("Stream ended");
+		if(bytesRead < 0) bytesRead = 0;
 		
 		// Update the count in the buffer
 		writeIndex += bytesRead;
@@ -188,7 +188,7 @@ public class WebSocketCodec {
 
 		// Unmask data if needed and only if the condition above is true
 		if (maskedPayload) {
-			unmask(buffer, payloadStartIndex);
+			unmask(buffer, payloadStartIndex, (int) (payloadStartIndex + framePayloadLength));
 		}
 
 		// Finally isolate the unmasked payload, the bytes are plaintext here
@@ -254,8 +254,8 @@ public class WebSocketCodec {
 
 	}
 
-	private void unmask(byte[] frame, int startIndex) {
-		for (int i = 0; i < frame.length-startIndex; i++) {
+	private void unmask(byte[] frame, int startIndex, int endIndex) {
+		for (int i = 0; i < endIndex-startIndex; i++) {
 			frame[startIndex+i] = (byte) (frame[startIndex+i] ^ maskingKey[i % 4]);
 		}
 	}
