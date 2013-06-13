@@ -217,7 +217,7 @@ public class NioPipelineParser {
 	int contentReadSoFar = 0;
 	
 	/*
-	 *  This is where we receive the bytes from the stream and we analyze the rough message structure.
+	 *  This is where we receive the bytes from the stream and we analyze the through message structure.
 	 *  For TCP the key things to identify are message lines for the headers, parse the Content-Length header
 	 *  and then read the message body (aka message content). For TCP the Content-Length must be 100% accurate.
 	 */
