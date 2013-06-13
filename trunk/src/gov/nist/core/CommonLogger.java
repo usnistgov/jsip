@@ -24,6 +24,9 @@ public class CommonLogger implements StackLogger{
 	
 	private StackLogger logger() {
 		if(useLegacyLogger) {
+			if(legacyLogger == null) {
+				return new CommonLoggerLog4j(Logger.getLogger(name));
+			}
 			return legacyLogger;
 		} else {
 			if(otherLogger == null) {
