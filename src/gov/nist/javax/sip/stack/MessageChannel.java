@@ -319,8 +319,12 @@ public abstract class MessageChannel {
      */
     public static String getKey(HostPort hostPort, String transport) {
     	// http://java.net/jira/browse/JSIP-413 Concurrency issue within MessageChannel.java when using IPv6 addresses
-        return (transport + ":" + hostPort.getHost().getHostname().replaceAll("[\\[\\]]", "") + ":" + hostPort.getPort())
-                .toLowerCase();
+    	String ipAddress = hostPort.getHost().getIpAddress();
+    	if (ipAddress == null) {
+    		ipAddress = hostPort.getHost().getHostname();
+    	}
+    	return (transport + ":" + ipAddress.replaceAll("[\\[\\]]", "") + ":" + hostPort.getPort())
+    			.toLowerCase();
     }
 
     /**
