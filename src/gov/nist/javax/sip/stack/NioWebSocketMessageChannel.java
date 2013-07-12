@@ -144,9 +144,15 @@ public class NioWebSocketMessageChannel extends NioTcpMessageChannel{
 			}
 		} else if(!readingHttp) {
 			ByteArrayInputStream bios = new ByteArrayInputStream(bytes);
-			byte[] decodedMsg = codec.decode(bios);
-			if(decodedMsg == null) return; // not enough data
-			nioParser.addBytes(decodedMsg);
+			byte[] decodedMsg = null;
+			do {
+				decodedMsg = codec.decode(bios);
+				if(decodedMsg == null) {
+					return; // the codec can't parse a full websocket frame, we will try again when have more data
+				}
+				nioParser.addBytes(decodedMsg);
+			} while (decodedMsg != null);
+			
 		}
 	}
 	
