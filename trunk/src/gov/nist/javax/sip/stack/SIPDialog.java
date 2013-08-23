@@ -3404,7 +3404,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                         if (cseqMethod.equals(Request.INVITE)) {
                             this.lastInviteOkReceived = Math.max(responseCSeqNumber,
                                     this.lastInviteOkReceived);
-                            if(getState() != null && getState().getValue() == SIPDialog.CONFIRMED_STATE) {
+                            if(getState() != null && getState().getValue() == SIPDialog.CONFIRMED_STATE && transaction != null) {
                             	// http://java.net/jira/browse/JSIP-444 Honor Target Refresh on Response
                             	// Contribution from francoisjoseph levee (Orange Labs)
                             	doTargetRefresh(sipResponse);
