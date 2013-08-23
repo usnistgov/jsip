@@ -271,9 +271,14 @@ public class StringMsgParser implements MessageParser {
         try {
             headerParser = ParserFactory.createParser(header + "\n");
         } catch (ParseException ex) {
-            parseExceptionListener.handleException(ex, message, null,
-                    header, null);
-            return;
+            // https://java.net/jira/browse/JSIP-456
+     	    if (parseExceptionListener != null) {
+            	parseExceptionListener.handleException(ex, message, null,
+            	        header, null);
+            	return;
+	    } else {
+                throw ex;
+	    }
         }
 
         try {
