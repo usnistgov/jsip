@@ -188,6 +188,8 @@ public class RequestLine extends SIPObject implements SipRequestLine {
     * are set.
     */
     public boolean equals(Object other) {
+    	if(other == null) 
+    		return false;
         if (this == other)
           return true;
         if (!other.getClass().equals(this.getClass())) {
