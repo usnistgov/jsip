@@ -151,6 +151,7 @@ public class NioWebSocketMessageChannel extends NioTcpMessageChannel{
 					return; // the codec can't parse a full websocket frame, we will try again when have more data
 				}
 				nioParser.addBytes(decodedMsg);
+				logger.logDebug("Nio websocket bytes were added " + decodedMsg.length);
 			} while (decodedMsg != null);
 			
 		}
