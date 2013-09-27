@@ -535,7 +535,26 @@ public class TLSMessageChannel extends ConnectionOrientedMessageChannel {
 				}
 			} catch (IOException e) {
 				logger.logError("A problem occured while Accepting connection", e);
-				return;
+				// https://code.google.com/p/jain-sip/issues/detail?id=14 clean up
+                sslSock.removeHandshakeCompletedListener(handshakeCompletedListener);
+                handshakeCompletedListener = null;
+                try {
+                        myClientInputStream.close();
+                } catch (IOException e1) {
+                        // ignore
+                } finally {
+                        myClientInputStream = null;
+                }
+
+                try {
+                        mySock.close();
+                } catch (IOException e1) {
+                        // ignore
+                } finally {
+                        mySock = null;
+                }
+
+                return;
 			}			
         }
     	super.run();
