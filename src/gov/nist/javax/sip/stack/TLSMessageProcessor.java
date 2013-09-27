@@ -193,7 +193,10 @@ public class TLSMessageProcessor extends ConnectionOrientedMessageProcessor impl
 		            TLSMessageChannel newChannel = new TLSMessageChannel(newsock, sipStack, this, "TLSMessageChannelThread-" + nConnections);
 		            if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
 		                 logger.logDebug(Thread.currentThread() + " adding incoming channel " + newChannel.getKey());
-		            incomingMessageChannels.put(newChannel.getKey(), newChannel);
+		            // https://code.google.com/p/jain-sip/issues/detail?id=14 add it only if the handshake has been completed successfully
+		            if(newChannel.isHandshakeCompleted()) {
+		                incomingMessageChannels.put(newChannel.getKey(), newChannel);
+		            }
 	            } catch (Exception ex) {
 	                logger.logError("A problem occured while Accepting connection", ex);
 	            }
