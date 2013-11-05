@@ -996,16 +996,16 @@ public class SipUri extends GenericURI implements javax.sip.address.SipURI , Sip
     public void setTransportParam(String transport) throws ParseException {
         if (transport == null)
             throw new NullPointerException("null arg");
-        if (transport.compareToIgnoreCase("UDP") == 0
+        /*if (transport.compareToIgnoreCase("UDP") == 0
             || transport.compareToIgnoreCase("TLS") == 0
             || transport.compareToIgnoreCase("TCP") == 0
             || transport.compareToIgnoreCase("SCTP") == 0
             || transport.compareToIgnoreCase(ListeningPointExt.WS) == 0
-            || transport.compareToIgnoreCase(ListeningPointExt.WSS) == 0) {
+            || transport.compareToIgnoreCase(ListeningPointExt.WSS) == 0) {*/
             NameValue nv = new NameValue(TRANSPORT, transport.toLowerCase());
             uriParms.set(nv);
-        } else
-            throw new ParseException("bad transport " + transport, 0);
+        /*} else
+            throw new ParseException("bad transport " + transport, 0);*/
     }
 
     /** Returns the user part of this SipURI, or null if it is not set.
