@@ -139,12 +139,12 @@ public final class HopImpl extends Object implements javax.sip.address.Hop, Seri
             throw new IllegalArgumentException("Bad IPv6 reference spec");
         }
 
-        if (transport.compareToIgnoreCase("UDP") != 0
+        /*if (transport.compareToIgnoreCase("UDP") != 0
             && transport.compareToIgnoreCase("TLS") != 0
             && transport.compareToIgnoreCase("TCP") != 0) {
             System.err.println("Bad transport string " + transport);
             throw new IllegalArgumentException(hop);
-        }
+        }*/
     }
 
     /**
