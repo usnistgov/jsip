@@ -366,6 +366,15 @@ public class SipProviderImpl implements javax.sip.SipProvider, gov.nist.javax.si
 			String transport = hop.getTransport();
 			ListeningPointImpl listeningPoint = (ListeningPointImpl) this
 					.getListeningPoint(transport);
+			
+			if(listeningPoint == null) {
+				String lps = "";
+				for(ListeningPoint lp : this.getListeningPoints()) {
+					lps += lp.getIPAddress() + lp.getTransport() + ", ";
+				}
+				logger.logError("No listening point for transport " + transport + " lps = " + lps);
+
+			}
 
 			String dialogId = sipRequest.getDialogId(false);
 			SIPDialog dialog = sipStack.getDialog(dialogId);

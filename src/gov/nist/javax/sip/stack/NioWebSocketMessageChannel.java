@@ -31,7 +31,9 @@ import gov.nist.core.HostPort;
 import gov.nist.core.LogWriter;
 import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.header.RecordRoute;
+import gov.nist.javax.sip.header.SIPHeader;
 import gov.nist.javax.sip.message.SIPMessage;
+import gov.nist.javax.sip.parser.StringMsgParser;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -42,6 +44,7 @@ import java.text.ParseException;
 import javax.sip.address.SipURI;
 import javax.sip.address.URI;
 import javax.sip.header.ContactHeader;
+import javax.sip.header.HeaderFactory;
 import javax.sip.header.RecordRouteHeader;
 import javax.sip.header.ViaHeader;
 import javax.sip.message.Request;
@@ -144,9 +147,15 @@ public class NioWebSocketMessageChannel extends NioTcpMessageChannel{
 			}
 		} else if(!readingHttp) {
 			ByteArrayInputStream bios = new ByteArrayInputStream(bytes);
-			byte[] decodedMsg = codec.decode(bios);
-			if(decodedMsg == null) return; // not enough data
-			nioParser.addBytes(decodedMsg);
+			byte[] decodedMsg = null;
+			do {
+				decodedMsg = codec.decode(bios);
+				if(decodedMsg == null) {
+					return; // the codec can't parse a full websocket frame, we will try again when have more data
+				}
+				nioParser.addBytes(decodedMsg);
+			} while (decodedMsg != null);
+			
 		}
 	}
 	
@@ -213,6 +222,17 @@ public class NioWebSocketMessageChannel extends NioTcpMessageChannel{
         		//rewriteUri((SipURI) rr.getAddress().getURI());
         		// Record-Routes come from servers. Only clients put invalid addresses so dont worry about those.
         	}
+    	}
+
+    	String[] lines = this.httpInput.split("\\r?\\n");
+    	for(String line : lines) {
+    		line = line.trim();
+    		//logger.logError("LINE si " + line);
+    		if(line.contains(": ")) {
+    			StringMsgParser smp = new StringMsgParser();
+    			SIPHeader sipHeader = smp.parseSIPHeader(line.trim());
+    			message.addHeader(sipHeader);
+    		}
     	}
     	
 		super.processMessage(message);
