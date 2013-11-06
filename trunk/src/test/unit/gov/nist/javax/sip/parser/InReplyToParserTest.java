@@ -36,7 +36,7 @@ public class InReplyToParserTest extends ParserTestCase {
      */
     public void testParser() {
 
-        String p[] = {
+        String p[] = { "In-Reply-To: 2d809fa3f4ad434c760f23bc130d062b@::6555:2418:5736:aee4:a00:8, henxdhwhw445wdgh107020000@::2425:2418:5736:aee7:a00:8\n",
                 "In-Reply-To: 70710@saturn.bell-tel.com, 17320@saturn.bell-tel.com\n",
                 "In-Reply-To: 70710 \n"
                 };
