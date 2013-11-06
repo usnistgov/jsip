@@ -79,7 +79,7 @@ public class InReplyToParser extends HeaderParser {
                 Token token = lexer.getNextToken();
                 if (lexer.lookAhead(0) == '@') {
                     this.lexer.match('@');
-                    this.lexer.match(TokenTypes.ID);
+                    this.lexer.match(TokenTypes.SAFE);
                     Token secToken = lexer.getNextToken();
                     inReplyTo.setCallId(
                         token.getTokenValue() + "@" + secToken.getTokenValue());
@@ -101,7 +101,7 @@ public class InReplyToParser extends HeaderParser {
                     token = lexer.getNextToken();
                     if (lexer.lookAhead(0) == '@') {
                         this.lexer.match('@');
-                        this.lexer.match(TokenTypes.ID);
+                        this.lexer.match(TokenTypes.SAFE);
                         Token secToken = lexer.getNextToken();
                         inReplyTo.setCallId(
                             token.getTokenValue()
