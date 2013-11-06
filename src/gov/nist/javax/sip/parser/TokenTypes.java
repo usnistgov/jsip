@@ -170,6 +170,7 @@ public interface TokenTypes {
     public static final int ALPHA = LexerCore.ALPHA;
     public static final int DIGIT = LexerCore.DIGIT;
     public static final int ID = LexerCore.ID;
+    public static final int SAFE = LexerCore.SAFE;
     public static final int WHITESPACE = LexerCore.WHITESPACE;
     public static final int BACKSLASH = LexerCore.BACKSLASH;
     public static final int QUOTE = LexerCore.QUOTE;
