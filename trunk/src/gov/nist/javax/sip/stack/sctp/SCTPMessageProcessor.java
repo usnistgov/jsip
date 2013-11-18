@@ -23,7 +23,7 @@ import gov.nist.javax.sip.stack.SIPTransactionStack;
  * 
  * @author Jeroen van Bemmel
  */
-public final class SCTPMessageProcessor extends MessageProcessor {
+public final class SCTPMessageProcessor extends MessageProcessor implements Runnable {
 
 	private SctpServerChannel sctpServerChannel;
 	private Selector selector;
