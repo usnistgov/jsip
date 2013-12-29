@@ -99,6 +99,7 @@ public class SslNetworkLayer implements NetworkLayer {
             String trustStoreFile,
             String keyStoreFile,
             char[] keyStorePassword,
+            char[] trustStorePassword,
             String keyStoreType) throws GeneralSecurityException, FileNotFoundException, IOException
     {
         SSLContext sslContext;
@@ -113,7 +114,7 @@ public class SslNetworkLayer implements NetworkLayer {
         KeyStore trustStore = KeyStore.getInstance(
              keyStoreType != null ? keyStoreType : KeyStore.getDefaultType());
         keyStore.load(new FileInputStream(keyStoreFile), keyStorePassword);
-        trustStore.load(new FileInputStream(trustStoreFile), keyStorePassword);
+        trustStore.load(new FileInputStream(trustStoreFile), trustStorePassword);
         tmFactory.init(trustStore);
         kmFactory.init(keyStore, keyStorePassword);
         if(sipStack.getClientAuth() == ClientAuthType.DisabledAll) {
