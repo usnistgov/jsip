@@ -552,7 +552,9 @@ import java.util.concurrent.TimeUnit;
  * to access the keyStore using the following property: <br>
  * <code>
  * properties.setProperty("javax.net.ssl.keyStorePassword", "&lt;password&gt;");
+ * properties.setProperty("javax.net.ssl.trustStorePassword", "&lt;password&gt;");
  * </code> <br>
+ * If not trustStorePassword is provided then the keyStorePassword will be used for both.
  * The trust store can be changed, to a separate file with the following
  * setting: <br>
  * <code>
@@ -866,11 +868,15 @@ public class SipStackImpl extends SIPTransactionStack implements
 			}
 			String keyStorePassword = configurationProperties
 					.getProperty("javax.net.ssl.keyStorePassword");
+			String trustStorePassword = configurationProperties
+					.getProperty("javax.net.ssl.trustStorePassword", keyStorePassword);
 			try {
 				this.networkLayer = new SslNetworkLayer(this, trustStoreFile,
 						keyStoreFile,
 						keyStorePassword != null ?
 						    keyStorePassword.toCharArray() : null,
+						trustStorePassword != null ?
+								    trustStorePassword.toCharArray() : null,
 						configurationProperties
 								.getProperty("javax.net.ssl.keyStoreType"));
 			} catch (Exception e1) {
