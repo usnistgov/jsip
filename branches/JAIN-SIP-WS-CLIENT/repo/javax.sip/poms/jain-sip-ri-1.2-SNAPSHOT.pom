@@ -1,0 +1,23 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>javax.sip</groupId>
+  <artifactId>jain-sip-ri</artifactId>
+  <version>1.2-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <name>JAIN-SIP Refence Implementation</name>
+
+  <url>https://jain-sip.dev.java.net/</url>
+
+  <organization>
+    <name>NIST</name>
+    <url>http://www.nist.gov/</url>
+  </organization>
+
+  <licenses>
+    <license>
+      <name>PUBLIC DOMAIN</name>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+</project>
+

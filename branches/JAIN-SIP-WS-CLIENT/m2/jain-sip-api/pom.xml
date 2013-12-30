@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <!-- this is not a complete pom -->
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>javax.sip</groupId>
+    <version>1.2.0</version>
+    <artifactId>jain-sip</artifactId>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>jain-sip-api</artifactId>
+  <packaging>jar</packaging>
+  <name>jain-sip-api</name>
+  <url>http://code.google.com/p/jain-sip/</url>
+   <build>
+	<sourceDirectory>../../src/javax/</sourceDirectory>
+	<plugins>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-compiler-plugin</artifactId>
+			<version>2.3.2</version>
+			<configuration>
+				<source>1.6</source>
+				<target>1.6</target>
+				<includes>
+					<include>**/sip/**</include>
+				</includes>
+			</configuration>
+		</plugin>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-source-plugin</artifactId>
+			<version>2.1.2</version>
+			<executions>
+				<execution>
+					<id>attach-sources</id>
+					<phase>verify</phase>
+					<goals>
+						<goal>jar</goal>
+					</goals>
+				</execution>
+			</executions>
+		</plugin>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-javadoc-plugin</artifactId>
+			<version>2.8.1</version>
+			<configuration>
+			          <sourcepath>${basedir}/../../src/javax/sip</sourcepath>
+				  <excludePackageNames>javax.sdp.*</excludePackageNames>
+			</configuration>
+			<executions>
+		                <execution>
+		                    <id>attach-javadocs</id>
+		                    <phase>verify</phase>
+		                    <goals>
+		                        <goal>jar</goal>
+		                    </goals>
+		                </execution>
+		            </executions>
+		</plugin>
+	</plugins>
+	<resources>
+		<resource>
+			<directory>target/javax/</directory>
+			<includes>
+				<include>sip/**</include>
+			</includes>
+			<excludes>
+				<exclude>**/*.java</exclude>
+			</excludes>
+		</resource>
+	</resources>	
+   </build>
+
+</project>

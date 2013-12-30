@@ -1,0 +1,79 @@
+<project basedir="." default="shootme">
+	<property name="root" value="../../../" />
+	<property file="${root}/ant-build-config.properties" />
+	<property name="classes" value="${root}/classes" />
+	<property name="srcroot" value="${root}/src" />
+	<property name="log4j_jar" value="${root}/${log4j}" />
+	<property name="junit_jar" value="${root}/${junit}" />
+	<property name="netty_jar" value="${root}/${netty}" />
+	<path id="project.class.path">
+		<pathelement location="${classes}" />
+		<pathelement location="${log4j_jar}" />
+		<pathelement location="${junit_jar}" />
+		<pathelement location="${netty_jar}" />
+	</path>
+	<target name="make">
+		<javac debug="true" source="${javac.source}" deprecation="${javac.deprecation}" debuglevel="${javac.debuglevel}" srcdir="${srcroot}" includes="performance/uas/**/*.java" classpathref="project.class.path" destdir="${classes}">
+		</javac>
+	</target>
+	<target name="shootme" depends="make" description="build and run the  example UAS.">
+		<delete file="shootmedebug.txt" />
+		<delete file="shootmelog.txt" />
+		<java classname="performance.uas.Shootme" classpathref="project.class.path" fork="true">
+			<jvmarg value="-XX:PermSize=256M"/>
+			<jvmarg value="-XX:MaxPermSize=512M"/>
+			<jvmarg value="-Xms1048M"/>
+			<jvmarg value="-Xmx1048M"/>
+			<jvmarg value="-XX:+UseConcMarkSweepGC"/>
+			<jvmarg value="-XX:+CMSIncrementalMode"/>
+			<arg value="-Dcom.sun.management.jmxremote"/>
+			<arg value="-Dcom.sun.management.jmxremote.local.only=false"/>
+			<arg value="-agentlib:yjpagent"/>
+		</java>
+	</target>
+	
+	<target name="shootme-no-dialog" depends="make" description="build and run the example UAS.">
+		<delete file="shootmedebug.txt" />
+		<delete file="shootmelog.txt" />
+		<java classname="performance.uas.ShootmeDialogStateless" classpathref="project.class.path" fork="true">
+			<arg value="-agentlib:yjpagent"/>
+			<jvmarg value="-XX:PermSize=128M"/>
+			<jvmarg value="-XX:MaxPermSize=256M"/>
+			<jvmarg value="-Xms2048M"/>
+			<jvmarg value="-Xmx2048M"/>
+			<jvmarg value="-XX:+UseConcMarkSweepGC"/>
+			<jvmarg value="-XX:+CMSIncrementalMode"/>
+			<arg value="-Dcom.sun.management.jmxremote"/>
+			<arg value="-Dcom.sun.management.jmxremote.local.only=false"/>
+		</java>
+	</target>
+	
+	<target name="shootme-no-dialog-no-tx" depends="make" description="build and run the example UAS.">
+		<delete file="shootmedebug.txt" />
+		<delete file="shootmelog.txt" />
+		<java classname="performance.uas.ShootmeDialogAndTxStateless" classpathref="project.class.path" fork="true">
+			<jvmarg value="-XX:PermSize=256M"/>
+			<jvmarg value="-XX:MaxPermSize=512M"/>
+			<jvmarg value="-Xms2048M"/>
+			<jvmarg value="-Xmx2048M"/>
+			<jvmarg value="-XX:+UseConcMarkSweepGC"/>
+			<jvmarg value="-XX:+CMSIncrementalMode"/>
+			<arg value="-Dcom.sun.management.jmxremote"/>
+			<arg value="-Dcom.sun.management.jmxremote.local.only=false"/>
+			<arg value="-agentlib:yjpagent"/>
+		</java>
+	</target>
+	
+	<target name="shootmelog" description="Show the  log">
+		<java classname="tools.tracesviewer.TracesViewer" fork="true">
+			<arg value="-server_file" />
+			<arg value="shootmelog.txt" />
+		</java>
+	</target>
+	<target name="clean" description="clean the logs">
+		<delete fileset="*debug.txt" />
+		<delete fileset="*log.txt" />
+	</target>
+
+
+</project>
