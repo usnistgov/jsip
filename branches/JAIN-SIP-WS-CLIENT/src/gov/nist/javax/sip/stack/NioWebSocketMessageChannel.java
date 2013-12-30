@@ -32,6 +32,7 @@ import gov.nist.core.LogWriter;
 import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.header.RecordRoute;
 import gov.nist.javax.sip.message.SIPMessage;
+import gov.nist.javax.sip.message.SIPRequest;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -53,8 +54,12 @@ public class NioWebSocketMessageChannel extends NioTcpMessageChannel{
 	
 	private WebSocketCodec codec = new WebSocketCodec(true, true);
 	
-	boolean readingHttp = true;
-	String httpInput = "";
+	protected String httpMethod = "GET";
+	protected String httpHostHeader;
+	protected String httpLocation;
+	
+	protected boolean readingHttp = true;
+	protected String httpInput = "";
 	
 	public static NioWebSocketMessageChannel create(
 			NioWebSocketMessageProcessor nioTcpMessageProcessor,
@@ -104,7 +109,7 @@ public class NioWebSocketMessageChannel extends NioTcpMessageChannel{
 		super.sendTCPMessage(msg, this.peerAddress, this.peerPort, isClient);
 	}
 
-	private byte[] wrapBufferIntoWebSocketFrame(byte[] buffer) {
+	public static byte[] wrapBufferIntoWebSocketFrame(byte[] buffer) {
 		try {
 			return WebSocketCodec.encode(buffer, 0, true);
 		} catch (Exception e) {
@@ -139,8 +144,12 @@ public class NioWebSocketMessageChannel extends NioTcpMessageChannel{
 			httpInput += s;
 			if(s.endsWith("\r\n") || s.endsWith("\n")) {
 				readingHttp = false;
-				byte[] response = new WebSocketHttpHandshake().createHttpResponse(s);
-				sendNonWebSocketMessage(response, false);
+				if(!httpInput.startsWith("HTTP")) {
+					byte[] response = new WebSocketHttpHandshake().createHttpResponse(s);
+					sendNonWebSocketMessage(response, false);
+				} else {
+					logger.logDebug("HTTP Response. We are websocket client.\n" + httpInput);
+				}
 			}
 		} else if(!readingHttp) {
 			ByteArrayInputStream bios = new ByteArrayInputStream(bytes);
@@ -229,6 +238,18 @@ public class NioWebSocketMessageChannel extends NioTcpMessageChannel{
 			logger.logError("Cant parse address", e);
 		}
 		uri.setPort(getPeerPort());
+	}
+	
+	@Override
+	public void sendMessage(SIPMessage sipMessage, InetAddress receiverAddress, int receiverPort) throws IOException {
+		if(sipMessage instanceof SIPRequest) {
+			SIPRequest request = (SIPRequest) sipMessage;
+			SipURI requestUri = (SipURI) request.getRequestURI();
+			this.httpHostHeader = requestUri.getHeader("Host");
+			this.httpLocation = requestUri.getHeader("Location");
+			this.httpMethod = requestUri.getMethodParam();
+		}
+		super.sendMessage(sipMessage, receiverAddress, receiverPort);
 	}
 
 }

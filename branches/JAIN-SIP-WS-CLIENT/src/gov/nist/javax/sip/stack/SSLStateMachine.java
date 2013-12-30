@@ -81,9 +81,10 @@ public class SSLStateMachine {
 		if(src != null) {
 			pendingOutboundBuffers.offer(new MessageSendItem(src, callback));
 		}
-		int iter = 0;
-		loop:while(true) {
-			iter ++;
+		
+		loop:
+		while(true) {
+
 			
 			MessageSendItem currentBuffer = pendingOutboundBuffers.peek();
 			
