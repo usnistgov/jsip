@@ -127,8 +127,8 @@ public class WebSocketCodec {
 		}
 
 		if (maskedPayload && !frameMasked) {
-			protocolViolation("unmasked client to server frame");
-			return null;
+			//protocolViolation("unmasked client to server frame");
+			//return null;
 		}
 
 		protocolChecks();
@@ -164,7 +164,7 @@ public class WebSocketCodec {
 			}
 
 			// Analyze the mask
-			if (maskedPayload) {
+			if (frameMasked) {
 				for(int q=0; q<4 ;q++)
 					maskingKey[q] = readNextByte();
 			}
@@ -187,7 +187,7 @@ public class WebSocketCodec {
 		}
 
 		// Unmask data if needed and only if the condition above is true
-		if (maskedPayload) {
+		if (frameMasked) {
 			unmask(buffer, payloadStartIndex, (int) (payloadStartIndex + framePayloadLength));
 		}
 
@@ -211,7 +211,8 @@ public class WebSocketCodec {
 
 	protected static byte[] encode(byte[] msg, int rsv, boolean fin) throws Exception {
 
-		boolean maskPayload = false;
+		boolean maskPayload = true;
+		
 		ByteArrayOutputStream frame = new ByteArrayOutputStream();
 
 		byte opcode;
@@ -248,15 +249,21 @@ public class WebSocketCodec {
 				frame.write((0xFF)&(length>>q));
 			}
 		}
-
+		byte[] mask = new byte[] {1,1,1,1};
+		frame.write(mask);
+		applyMask(msg, 0, msg.length, mask);
 		frame.write(msg);
 		return frame.toByteArray();
 
 	}
 
 	private void unmask(byte[] frame, int startIndex, int endIndex) {
+		applyMask(frame, startIndex, endIndex, maskingKey);
+	}
+	
+	public static void applyMask(byte[] frame, int startIndex, int endIndex, byte[] mask) {
 		for (int i = 0; i < endIndex-startIndex; i++) {
-			frame[startIndex+i] = (byte) (frame[startIndex+i] ^ maskingKey[i % 4]);
+			frame[startIndex+i] = (byte) (frame[startIndex+i] ^ mask[i % 4]);
 		}
 	}
 

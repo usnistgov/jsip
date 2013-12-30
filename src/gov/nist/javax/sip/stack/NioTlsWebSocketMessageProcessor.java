@@ -69,15 +69,15 @@ public class NioTlsWebSocketMessageProcessor extends NioWebSocketMessageProcesso
     	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
     		logger.logDebug("NioTlsWebSocketMessageProcessor::createMessageChannel: " + targetHostPort);
     	}
-    	NioTlsMessageChannel retval = null;
+    	NioTlsWebSocketMessageChannel retval = null;
     	try {
     		String key = MessageChannel.getKey(targetHostPort, "WSS");
 			
     		if (messageChannels.get(key) != null) {
-    			retval = (NioTlsMessageChannel) this.messageChannels.get(key);
+    			retval = (NioTlsWebSocketMessageChannel) this.messageChannels.get(key);
     			return retval;
     		} else {
-    			retval = new NioTlsMessageChannel(targetHostPort.getInetAddress(),
+    			retval = new NioTlsWebSocketMessageChannel(targetHostPort.getInetAddress(),
     					targetHostPort.getPort(), sipStack, this);
     			
     		//	retval.getSocketChannel().register(selector, SelectionKey.OP_READ);
