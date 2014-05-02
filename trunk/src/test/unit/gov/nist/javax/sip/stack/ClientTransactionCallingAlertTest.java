@@ -4,6 +4,7 @@ import gov.nist.javax.sip.ClientTransactionExt;
 import gov.nist.javax.sip.stack.NioMessageProcessorFactory;
 
 import java.util.ArrayList;
+import java.util.ListIterator;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -38,6 +39,7 @@ import javax.sip.header.FromHeader;
 import javax.sip.header.Header;
 import javax.sip.header.HeaderFactory;
 import javax.sip.header.MaxForwardsHeader;
+import javax.sip.header.ReasonHeader;
 import javax.sip.header.ToHeader;
 import javax.sip.header.ViaHeader;
 import javax.sip.message.MessageFactory;
@@ -352,7 +354,21 @@ public class ClientTransactionCallingAlertTest extends TestCase {
                 Header callInfoHeader = headerFactory.createHeader("Call-Info",
                         "<http://www.antd.nist.gov>");
                 request.addHeader(callInfoHeader);
-
+                
+                // Non regression test for https://java.net/jira/browse/JSIP-460
+                ReasonHeader reasonHeader = headerFactory.createReasonHeader("SIP", 200, "Call Completed Elsewhere");
+                request.addHeader(reasonHeader);
+                reasonHeader = headerFactory.createReasonHeader("Q.850", 16, "Terminated");
+                request.addHeader(reasonHeader);
+                
+                ListIterator<Header> listIt = request.getHeaders(ReasonHeader.NAME);
+                int i = 0;
+                while (listIt.hasNext()) {
+                    listIt.next();
+                    i++;
+                }
+                assertEquals(2, i);
+                
                 // Create the client transaction.
                 inviteTid = sipProvider.getNewClientTransaction(request);
                 

@@ -62,6 +62,8 @@ import gov.nist.javax.sip.header.ProxyAuthorization;
 import gov.nist.javax.sip.header.ProxyAuthorizationList;
 import gov.nist.javax.sip.header.ProxyRequire;
 import gov.nist.javax.sip.header.ProxyRequireList;
+import gov.nist.javax.sip.header.Reason;
+import gov.nist.javax.sip.header.ReasonList;
 import gov.nist.javax.sip.header.RecordRoute;
 import gov.nist.javax.sip.header.RecordRouteList;
 import gov.nist.javax.sip.header.Require;
@@ -203,6 +205,9 @@ public class ListMap {
         headerListTable.put(SecurityVerify.class, SecurityVerifyList.class);
 
         headerListTable.put(PAssertedIdentity.class, PAssertedIdentityList.class);
+        
+        // https://java.net/jira/browse/JSIP-460
+        headerListTable.put(Reason.class, ReasonList.class);
 
         initialized = true;
 
