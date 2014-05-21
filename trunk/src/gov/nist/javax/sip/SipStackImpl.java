@@ -870,6 +870,14 @@ public class SipStackImpl extends SIPTransactionStack implements
 					.getProperty("javax.net.ssl.keyStorePassword");
 			String trustStorePassword = configurationProperties
 					.getProperty("javax.net.ssl.trustStorePassword", keyStorePassword);
+
+			String keyStoreType = configurationProperties
+					.getProperty("javax.net.ssl.keyStoreType");
+			String trustStoreType = configurationProperties
+					.getProperty("javax.net.ssl.trustStoreType");
+			
+			if(trustStoreType == null) trustStoreType = keyStoreType;
+			
 			try {
 				this.networkLayer = new SslNetworkLayer(this, trustStoreFile,
 						keyStoreFile,
@@ -877,8 +885,7 @@ public class SipStackImpl extends SIPTransactionStack implements
 						    keyStorePassword.toCharArray() : null,
 						trustStorePassword != null ?
 								    trustStorePassword.toCharArray() : null,
-						configurationProperties
-								.getProperty("javax.net.ssl.keyStoreType"));
+						keyStoreType, trustStoreType);
 			} catch (Exception e1) {
 				logger.logError(
 						"could not instantiate SSL networking", e1);

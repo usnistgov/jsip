@@ -100,7 +100,7 @@ public class SslNetworkLayer implements NetworkLayer {
             String keyStoreFile,
             char[] keyStorePassword,
             char[] trustStorePassword,
-            String keyStoreType) throws GeneralSecurityException, FileNotFoundException, IOException
+            String keyStoreType, String trustStoreType) throws GeneralSecurityException, FileNotFoundException, IOException
     {
         SSLContext sslContext;
         sslContext = SSLContext.getInstance("TLS");
@@ -112,7 +112,7 @@ public class SslNetworkLayer implements NetworkLayer {
         KeyStore keyStore = KeyStore.getInstance(
              keyStoreType != null ? keyStoreType : KeyStore.getDefaultType());
         KeyStore trustStore = KeyStore.getInstance(
-             keyStoreType != null ? keyStoreType : KeyStore.getDefaultType());
+        		trustStoreType != null ? trustStoreType : KeyStore.getDefaultType());
         keyStore.load(new FileInputStream(keyStoreFile), keyStorePassword);
         trustStore.load(new FileInputStream(trustStoreFile), trustStorePassword);
         tmFactory.init(trustStore);
