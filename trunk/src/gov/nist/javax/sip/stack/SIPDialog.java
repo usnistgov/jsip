@@ -1699,6 +1699,13 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
                 || this.dialogState == TERMINATED_STATE) {
             return;
         }
+        
+        // put the contact header from the incoming request into
+        // the route set. JvB: some duplication here, ref. doTargetRefresh
+        ContactList contactList = sipRequest.getContactHeaders();
+        if (contactList != null) {
+            this.setRemoteTarget((ContactHeader) contactList.getFirst());
+        }
 
         // Fix for issue #225: mustn't learn Route set from mid-dialog requests
         if (sipRequest.getToTag() != null)
@@ -1715,12 +1722,6 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             this.routeList = new RouteList();
         }
 
-        // put the contact header from the incoming request into
-        // the route set. JvB: some duplication here, ref. doTargetRefresh
-        ContactList contactList = sipRequest.getContactHeaders();
-        if (contactList != null) {
-            this.setRemoteTarget((ContactHeader) contactList.getFirst());
-        }
     }
 
     /**
