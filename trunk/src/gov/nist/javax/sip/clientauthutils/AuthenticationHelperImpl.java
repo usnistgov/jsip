@@ -21,6 +21,7 @@ import gov.nist.core.CommonLogger;
 import gov.nist.core.LogWriter;
 import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.address.SipUri;
+import gov.nist.javax.sip.header.SIPHeader;
 import gov.nist.javax.sip.message.SIPRequest;
 import gov.nist.javax.sip.stack.SIPClientTransaction;
 import gov.nist.javax.sip.stack.SIPTransactionStack;
@@ -151,18 +152,16 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
                  * the route set could change between the original request and the 
                  * in-dialog challenge.
                  */
-                reoriginatedRequest =
-                    challengedTransaction.getDialog().createRequest(challengedRequest.getMethod());
-                Iterator<String> headerNames = challengedRequest.getHeaderNames();
-                while (headerNames.hasNext()) {
-                    String headerName = headerNames.next();
-                    if ( reoriginatedRequest.getHeader(headerName) != null) {
-                        ListIterator<Header> iterator = reoriginatedRequest.getHeaders(headerName);
-                        while (iterator.hasNext()) {
-                            reoriginatedRequest.addHeader(iterator.next());
-                        }
-                    }
-                }
+            	reoriginatedRequest =
+            			challengedTransaction.getDialog().createRequest(challengedRequest.getMethod());
+            	Iterator<String> headerNames = challengedRequest.getHeaderNames();
+            	while (headerNames.hasNext()) {
+            		String headerName = headerNames.next();
+            		if ( reoriginatedRequest.getHeader(headerName) == null) {
+            			ListIterator<SIPHeader> iterator = challengedRequest.getHeaders(headerName);
+            			while (iterator.hasNext()) { reoriginatedRequest.addHeader(iterator.next()); }
+            		}
+            	}
             }
 
 
