@@ -82,19 +82,21 @@ public class DefaultSecurityManagerProvider implements SecurityManagerProvider {
             logger.logDebug("SecurityManagerProvider " + this.getClass().getCanonicalName() + " will use algorithm " + algorithm);
         }
         
+        keyManagerFactory = KeyManagerFactory.getInstance(algorithm);
         if(keyStoreFilename != null) {
         	final KeyStore ks = KeyStore.getInstance(keyStoreType);
         	ks.load(new FileInputStream(new File(keyStoreFilename)), keyStorePassword.toCharArray());
-        	keyManagerFactory = KeyManagerFactory.getInstance(algorithm);
+        	
         	keyManagerFactory.init(ks, keyStorePassword.toCharArray());
         } else {
-        	keyManagerFactory.init(null);
+        	keyManagerFactory.init(null, null);
         }
 
+        trustManagerFactory = TrustManagerFactory.getInstance(algorithm);
         if(trustStoreFilename != null) {
         	final KeyStore ts = KeyStore.getInstance(trustStoreType);
         	ts.load(new FileInputStream(new File(trustStoreFilename)), trustStorePassword.toCharArray());
-        	trustManagerFactory = TrustManagerFactory.getInstance(algorithm);
+        	
         	trustManagerFactory.init((KeyStore) ts);
         } else {
         	trustManagerFactory.init((KeyStore)null);
