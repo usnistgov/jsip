@@ -355,6 +355,7 @@ public class NioPipelineParser {
 						logger.logError("Parsing problem", e);
 					}
 				}
+				this.contentLength = 0;
 				processSIPMessage(sipMessage);
 			}
 		}
