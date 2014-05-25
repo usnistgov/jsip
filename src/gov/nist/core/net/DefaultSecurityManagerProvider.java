@@ -47,11 +47,10 @@ public class DefaultSecurityManagerProvider implements SecurityManagerProvider {
             logger.logWarning("Using default keystore type " + keyStoreType);
         }
         if (keyStoreFilename == null || keyStorePassword == null) {
-            logger.logWarning("TLS settings will be inactive - TLS key store can not be configured."
+            logger.logWarning("TLS server settings will be inactive - TLS key store will use JVM defaults"
                     + " keyStoreType=" +  keyStoreType
                     + " javax.net.ssl.keyStore=" + keyStoreFilename
                     + " javax.net.ssl.keyStorePassword=" + (keyStorePassword == null? null: "***"));
-            return;
         }
 
         // required, could use default trustStore, but it is better practice to explicitly specify
@@ -69,11 +68,10 @@ public class DefaultSecurityManagerProvider implements SecurityManagerProvider {
             logger.logWarning("Using default truststore type " + trustStoreType);
         }
         if (trustStoreFilename == null || trustStorePassword == null) {
-            logger.logWarning("TLS settings will be inactive - TLS trust store can not be configured."
+            logger.logWarning("TLS trust settings will be inactive - TLS trust store will use JVM defaults."
                     + " trustStoreType=" +  trustStoreType
                     + " javax.net.ssl.trustStore=" +  trustStoreFilename
                     + " javax.net.ssl.trustStorePassword=" + (trustStorePassword == null? null: "***"));
-            return;
         }
 
         String algorithm = Security.getProperty("ssl.KeyManagerFactory.algorithm");
@@ -84,17 +82,25 @@ public class DefaultSecurityManagerProvider implements SecurityManagerProvider {
             logger.logDebug("SecurityManagerProvider " + this.getClass().getCanonicalName() + " will use algorithm " + algorithm);
         }
         
-        final KeyStore ks = KeyStore.getInstance(keyStoreType);
-        ks.load(new FileInputStream(new File(keyStoreFilename)), keyStorePassword.toCharArray());
-        keyManagerFactory = KeyManagerFactory.getInstance(algorithm);
-        keyManagerFactory.init(ks, keyStorePassword.toCharArray());
-        
-        final KeyStore ts = KeyStore.getInstance(trustStoreType);
-        ts.load(new FileInputStream(new File(trustStoreFilename)), trustStorePassword.toCharArray());
-        trustManagerFactory = TrustManagerFactory.getInstance(algorithm);
-        trustManagerFactory.init(ts);
+        if(keyStoreFilename != null) {
+        	final KeyStore ks = KeyStore.getInstance(keyStoreType);
+        	ks.load(new FileInputStream(new File(keyStoreFilename)), keyStorePassword.toCharArray());
+        	keyManagerFactory = KeyManagerFactory.getInstance(algorithm);
+        	keyManagerFactory.init(ks, keyStorePassword.toCharArray());
+        } else {
+        	keyManagerFactory.init(null);
+        }
+
+        if(trustStoreFilename != null) {
+        	final KeyStore ts = KeyStore.getInstance(trustStoreType);
+        	ts.load(new FileInputStream(new File(trustStoreFilename)), trustStorePassword.toCharArray());
+        	trustManagerFactory = TrustManagerFactory.getInstance(algorithm);
+        	trustManagerFactory.init((KeyStore) ts);
+        } else {
+        	trustManagerFactory.init((KeyStore)null);
+        }
         if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
-            logger.logDebug("TLS settings OK. SecurityManagerProvider " + this.getClass().getCanonicalName() + " initialized.");
+        	logger.logDebug("TLS settings OK. SecurityManagerProvider " + this.getClass().getCanonicalName() + " initialized.");
         }
     }
 
