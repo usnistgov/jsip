@@ -733,7 +733,7 @@ public abstract class SIPTransactionStack implements
             if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
                 logger.logDebug("NOTIFY Supported Natively");
         } else {
-            dialogCreatingMethods.add(extensionMethod.trim().toUpperCase());
+            dialogCreatingMethods.add(Utils.toUpperCase(extensionMethod.trim()));
         }
     }
 

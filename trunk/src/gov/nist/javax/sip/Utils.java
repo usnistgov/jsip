@@ -34,7 +34,7 @@ import gov.nist.javax.sip.header.Via;
 import gov.nist.javax.sip.message.SIPResponse;
 
 import java.security.MessageDigest;
-import java.util.HashSet;
+import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -133,6 +133,19 @@ public class Utils implements UtilsExt {
                 retval += newString.charAt(i);
         }
         return retval;
+    }
+
+    /**
+     * Converts the characters in this String to upper case.
+     * @param str the String to convert. Using english as default
+     * as header strings are in English.
+     * Resolves a bug in parsing and uppercase when default locale is set
+     * to Turkish.
+     * @return  the String, converted to uppercase.
+     */
+    public static String toUpperCase(String str)
+    {
+        return str.toUpperCase(Locale.ENGLISH);
     }
 
     /**

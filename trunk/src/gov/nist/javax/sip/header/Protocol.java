@@ -28,6 +28,8 @@
 *******************************************************************************/
 package gov.nist.javax.sip.header;
 
+import gov.nist.javax.sip.*;
+
 import java.text.ParseException;
 
 /**
@@ -68,11 +70,11 @@ public class Protocol extends SIPObject {
     }
 
     public StringBuilder encode(StringBuilder buffer) {
-        buffer.append(protocolName.toUpperCase())
-                .append(SLASH)
-                .append(protocolVersion)
-                .append(SLASH)
-                .append(transport.toUpperCase());
+        buffer.append(Utils.toUpperCase(protocolName))
+            .append(SLASH)
+            .append(protocolVersion)
+            .append(SLASH)
+            .append(transport.toUpperCase());
 
         return buffer;
     }

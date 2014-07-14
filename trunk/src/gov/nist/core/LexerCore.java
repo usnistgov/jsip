@@ -25,6 +25,8 @@
 */
 package gov.nist.core;
 
+import gov.nist.javax.sip.*;
+
 import java.text.ParseException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -97,6 +99,7 @@ public class LexerCore extends StringTokenizer {
     }
 
     protected void addKeyword(String name, int value) {
+        name = Utils.toUpperCase(name);
         // System.out.println("addKeyword " + name + " value = " + value);
         // new Exception().printStackTrace();
         Integer val = Integer.valueOf(value);
@@ -182,7 +185,7 @@ public class LexerCore extends StringTokenizer {
             if (startsId()) {
                 String id = ttoken();
                 tok.tokenValue = id;
-                String idUppercase = id.toUpperCase();
+                String idUppercase = Utils.toUpperCase(id);
                 if (currentLexer.containsKey(idUppercase)) {
                     Integer type = (Integer) currentLexer.get(idUppercase);
                     tok.tokenType = type.intValue();
@@ -237,7 +240,7 @@ public class LexerCore extends StringTokenizer {
                 this.currentMatch.tokenType = ID_NO_WHITESPACE;
             } else {
                 String nexttok = getNextId();
-                Integer cur = (Integer) currentLexer.get(nexttok.toUpperCase());
+                Integer cur = currentLexer.get(Utils.toUpperCase(nexttok));
 
                 if (cur == null || cur.intValue() != tok)
                     throw new ParseException(
