@@ -178,8 +178,8 @@ public class Lexer extends LexerCore {
                 addKeyword(TokenNames.OPTIONS, TokenTypes.OPTIONS);
                 addKeyword(TokenNames.BYE, TokenTypes.BYE);
                 addKeyword(TokenNames.INVITE, TokenTypes.INVITE);
-                addKeyword(TokenNames.SIP.toUpperCase(), TokenTypes.SIP);
-                addKeyword(TokenNames.SIPS.toUpperCase(), TokenTypes.SIPS);
+                addKeyword(TokenNames.SIP, TokenTypes.SIP);
+                addKeyword(TokenNames.SIPS, TokenTypes.SIPS);
                 addKeyword(TokenNames.SUBSCRIBE, TokenTypes.SUBSCRIBE);
                 addKeyword(TokenNames.NOTIFY, TokenTypes.NOTIFY);
                 addKeyword(TokenNames.MESSAGE, TokenTypes.MESSAGE);
@@ -188,212 +188,211 @@ public class Lexer extends LexerCore {
                 addKeyword(TokenNames.PUBLISH, TokenTypes.PUBLISH);
 
             } else if (lexerName.equals("command_keywordLexer")) {
-                addKeyword(ErrorInfoHeader.NAME.toUpperCase(),
+                addKeyword(ErrorInfoHeader.NAME,
                         TokenTypes.ERROR_INFO);
-                addKeyword(AllowEventsHeader.NAME.toUpperCase(),
+                addKeyword(AllowEventsHeader.NAME,
                         TokenTypes.ALLOW_EVENTS);
-                addKeyword(AuthenticationInfoHeader.NAME.toUpperCase(),
+                addKeyword(AuthenticationInfoHeader.NAME,
                         TokenTypes.AUTHENTICATION_INFO);
-                addKeyword(EventHeader.NAME.toUpperCase(), TokenTypes.EVENT);
-                addKeyword(MinExpiresHeader.NAME.toUpperCase(),
+                addKeyword(EventHeader.NAME, TokenTypes.EVENT);
+                addKeyword(MinExpiresHeader.NAME,
                         TokenTypes.MIN_EXPIRES);
-                addKeyword(RSeqHeader.NAME.toUpperCase(), TokenTypes.RSEQ);
-                addKeyword(RAckHeader.NAME.toUpperCase(), TokenTypes.RACK);
-                addKeyword(ReasonHeader.NAME.toUpperCase(),
+                addKeyword(RSeqHeader.NAME, TokenTypes.RSEQ);
+                addKeyword(RAckHeader.NAME, TokenTypes.RACK);
+                addKeyword(ReasonHeader.NAME,
                         TokenTypes.REASON);
-                addKeyword(ReplyToHeader.NAME.toUpperCase(),
+                addKeyword(ReplyToHeader.NAME,
                         TokenTypes.REPLY_TO);
-                addKeyword(SubscriptionStateHeader.NAME.toUpperCase(),
+                addKeyword(SubscriptionStateHeader.NAME,
                         TokenTypes.SUBSCRIPTION_STATE);
-                addKeyword(TimeStampHeader.NAME.toUpperCase(),
+                addKeyword(TimeStampHeader.NAME,
                         TokenTypes.TIMESTAMP);
-                addKeyword(InReplyToHeader.NAME.toUpperCase(),
+                addKeyword(InReplyToHeader.NAME,
                         TokenTypes.IN_REPLY_TO);
-                addKeyword(MimeVersionHeader.NAME.toUpperCase(),
+                addKeyword(MimeVersionHeader.NAME,
                         TokenTypes.MIME_VERSION);
-                addKeyword(AlertInfoHeader.NAME.toUpperCase(),
+                addKeyword(AlertInfoHeader.NAME,
                         TokenTypes.ALERT_INFO);
-                addKeyword(FromHeader.NAME.toUpperCase(), TokenTypes.FROM);
-                addKeyword(ToHeader.NAME.toUpperCase(), TokenTypes.TO);
-                addKeyword(ReferToHeader.NAME.toUpperCase(),
+                addKeyword(FromHeader.NAME, TokenTypes.FROM);
+                addKeyword(ToHeader.NAME, TokenTypes.TO);
+                addKeyword(ReferToHeader.NAME,
                         TokenTypes.REFER_TO);
-                addKeyword(ViaHeader.NAME.toUpperCase(), TokenTypes.VIA);
-                addKeyword(UserAgentHeader.NAME.toUpperCase(),
+                addKeyword(ViaHeader.NAME, TokenTypes.VIA);
+                addKeyword(UserAgentHeader.NAME,
                         TokenTypes.USER_AGENT);
-                addKeyword(ServerHeader.NAME.toUpperCase(),
+                addKeyword(ServerHeader.NAME,
                         TokenTypes.SERVER);
-                addKeyword(AcceptEncodingHeader.NAME.toUpperCase(),
+                addKeyword(AcceptEncodingHeader.NAME,
                         TokenTypes.ACCEPT_ENCODING);
-                addKeyword(AcceptHeader.NAME.toUpperCase(),
+                addKeyword(AcceptHeader.NAME,
                         TokenTypes.ACCEPT);
-                addKeyword(AllowHeader.NAME.toUpperCase(), TokenTypes.ALLOW);
-                addKeyword(RouteHeader.NAME.toUpperCase(), TokenTypes.ROUTE);
-                addKeyword(AuthorizationHeader.NAME.toUpperCase(),
+                addKeyword(AllowHeader.NAME, TokenTypes.ALLOW);
+                addKeyword(RouteHeader.NAME, TokenTypes.ROUTE);
+                addKeyword(AuthorizationHeader.NAME,
                         TokenTypes.AUTHORIZATION);
-                addKeyword(ProxyAuthorizationHeader.NAME.toUpperCase(),
+                addKeyword(ProxyAuthorizationHeader.NAME,
                         TokenTypes.PROXY_AUTHORIZATION);
-                addKeyword(RetryAfterHeader.NAME.toUpperCase(),
+                addKeyword(RetryAfterHeader.NAME,
                         TokenTypes.RETRY_AFTER);
-                addKeyword(ProxyRequireHeader.NAME.toUpperCase(),
+                addKeyword(ProxyRequireHeader.NAME,
                         TokenTypes.PROXY_REQUIRE);
-                addKeyword(ContentLanguageHeader.NAME.toUpperCase(),
+                addKeyword(ContentLanguageHeader.NAME,
                         TokenTypes.CONTENT_LANGUAGE);
-                addKeyword(UnsupportedHeader.NAME.toUpperCase(),
+                addKeyword(UnsupportedHeader.NAME,
                         TokenTypes.UNSUPPORTED);
-                addKeyword(SupportedHeader.NAME.toUpperCase(),
+                addKeyword(SupportedHeader.NAME,
                         TokenTypes.SUPPORTED);
-                addKeyword(WarningHeader.NAME.toUpperCase(),
+                addKeyword(WarningHeader.NAME,
                         TokenTypes.WARNING);
-                addKeyword(MaxForwardsHeader.NAME.toUpperCase(),
+                addKeyword(MaxForwardsHeader.NAME,
                         TokenTypes.MAX_FORWARDS);
-                addKeyword(DateHeader.NAME.toUpperCase(), TokenTypes.DATE);
-                addKeyword(PriorityHeader.NAME.toUpperCase(),
+                addKeyword(DateHeader.NAME, TokenTypes.DATE);
+                addKeyword(PriorityHeader.NAME,
                         TokenTypes.PRIORITY);
-                addKeyword(ProxyAuthenticateHeader.NAME.toUpperCase(),
+                addKeyword(ProxyAuthenticateHeader.NAME,
                         TokenTypes.PROXY_AUTHENTICATE);
-                addKeyword(ContentEncodingHeader.NAME.toUpperCase(),
+                addKeyword(ContentEncodingHeader.NAME,
                         TokenTypes.CONTENT_ENCODING);
-                addKeyword(ContentLengthHeader.NAME.toUpperCase(),
+                addKeyword(ContentLengthHeader.NAME,
                         TokenTypes.CONTENT_LENGTH);
-                addKeyword(SubjectHeader.NAME.toUpperCase(),
+                addKeyword(SubjectHeader.NAME,
                         TokenTypes.SUBJECT);
-                addKeyword(ContentTypeHeader.NAME.toUpperCase(),
+                addKeyword(ContentTypeHeader.NAME,
                         TokenTypes.CONTENT_TYPE);
-                addKeyword(ContactHeader.NAME.toUpperCase(),
+                addKeyword(ContactHeader.NAME,
                         TokenTypes.CONTACT);
-                addKeyword(CallIdHeader.NAME.toUpperCase(),
+                addKeyword(CallIdHeader.NAME,
                         TokenTypes.CALL_ID);
-                addKeyword(RequireHeader.NAME.toUpperCase(),
+                addKeyword(RequireHeader.NAME,
                         TokenTypes.REQUIRE);
-                addKeyword(ExpiresHeader.NAME.toUpperCase(),
+                addKeyword(ExpiresHeader.NAME,
                         TokenTypes.EXPIRES);
-                addKeyword(RecordRouteHeader.NAME.toUpperCase(),
+                addKeyword(RecordRouteHeader.NAME,
                         TokenTypes.RECORD_ROUTE);
-                addKeyword(OrganizationHeader.NAME.toUpperCase(),
+                addKeyword(OrganizationHeader.NAME,
                         TokenTypes.ORGANIZATION);
-                addKeyword(CSeqHeader.NAME.toUpperCase(), TokenTypes.CSEQ);
-                addKeyword(AcceptLanguageHeader.NAME.toUpperCase(),
+                addKeyword(CSeqHeader.NAME, TokenTypes.CSEQ);
+                addKeyword(AcceptLanguageHeader.NAME,
                         TokenTypes.ACCEPT_LANGUAGE);
-                addKeyword(WWWAuthenticateHeader.NAME.toUpperCase(),
+                addKeyword(WWWAuthenticateHeader.NAME,
                         TokenTypes.WWW_AUTHENTICATE);
-                addKeyword(CallInfoHeader.NAME.toUpperCase(),
+                addKeyword(CallInfoHeader.NAME,
                         TokenTypes.CALL_INFO);
-                addKeyword(ContentDispositionHeader.NAME.toUpperCase(),
+                addKeyword(ContentDispositionHeader.NAME,
                         TokenTypes.CONTENT_DISPOSITION);
                 // And now the dreaded short forms....
-                addKeyword(TokenNames.K.toUpperCase(), TokenTypes.SUPPORTED);
-                addKeyword(TokenNames.C.toUpperCase(),
+                addKeyword(TokenNames.K, TokenTypes.SUPPORTED);
+                addKeyword(TokenNames.C,
                         TokenTypes.CONTENT_TYPE);
-                addKeyword(TokenNames.E.toUpperCase(),
+                addKeyword(TokenNames.E,
                         TokenTypes.CONTENT_ENCODING);
-                addKeyword(TokenNames.F.toUpperCase(), TokenTypes.FROM);
-                addKeyword(TokenNames.I.toUpperCase(), TokenTypes.CALL_ID);
-                addKeyword(TokenNames.M.toUpperCase(), TokenTypes.CONTACT);
-                addKeyword(TokenNames.L.toUpperCase(),
+                addKeyword(TokenNames.F, TokenTypes.FROM);
+                addKeyword(TokenNames.I, TokenTypes.CALL_ID);
+                addKeyword(TokenNames.M, TokenTypes.CONTACT);
+                addKeyword(TokenNames.L,
                         TokenTypes.CONTENT_LENGTH);
-                addKeyword(TokenNames.S.toUpperCase(), TokenTypes.SUBJECT);
-                addKeyword(TokenNames.T.toUpperCase(), TokenTypes.TO);
-                addKeyword(TokenNames.U.toUpperCase(),
+                addKeyword(TokenNames.S, TokenTypes.SUBJECT);
+                addKeyword(TokenNames.T, TokenTypes.TO);
+                addKeyword(TokenNames.U,
                         TokenTypes.ALLOW_EVENTS); // JvB: added
-                addKeyword(TokenNames.V.toUpperCase(), TokenTypes.VIA);
-                addKeyword(TokenNames.R.toUpperCase(), TokenTypes.REFER_TO);
-                addKeyword(TokenNames.O.toUpperCase(), TokenTypes.EVENT); // Bug
+                addKeyword(TokenNames.V, TokenTypes.VIA);
+                addKeyword(TokenNames.R, TokenTypes.REFER_TO);
+                addKeyword(TokenNames.O, TokenTypes.EVENT); // Bug
                                                                             // fix
                                                                             // by
                                                                             // Mario
                                                                             // Mantak
-                addKeyword(TokenNames.X.toUpperCase(), TokenTypes.SESSIONEXPIRES_TO); // Bug fix by Jozef Saniga
+                addKeyword(TokenNames.X, TokenTypes.SESSIONEXPIRES_TO); // Bug fix by Jozef Saniga
                 
                 // JvB: added to support RFC3903
-                addKeyword(SIPETagHeader.NAME.toUpperCase(),
+                addKeyword(SIPETagHeader.NAME,
                         TokenTypes.SIP_ETAG);
-                addKeyword(SIPIfMatchHeader.NAME.toUpperCase(),
+                addKeyword(SIPIfMatchHeader.NAME,
                         TokenTypes.SIP_IF_MATCH);
 
                 // pmusgrave: Add RFC4028 and ReferredBy
-                addKeyword(SessionExpiresHeader.NAME.toUpperCase(),
+                addKeyword(SessionExpiresHeader.NAME,
                         TokenTypes.SESSIONEXPIRES_TO);
-                addKeyword(MinSEHeader.NAME.toUpperCase(),
+                addKeyword(MinSEHeader.NAME,
                         TokenTypes.MINSE_TO);
-                addKeyword(ReferredByHeader.NAME.toUpperCase(),
+                addKeyword(ReferredByHeader.NAME,
                         TokenTypes.REFERREDBY_TO);
 
                 // pmusgrave RFC3891
-                addKeyword(ReplacesHeader.NAME.toUpperCase(),
+                addKeyword(ReplacesHeader.NAME,
                         TokenTypes.REPLACES_TO);
                 //jean deruelle RFC3911
-                addKeyword(JoinHeader.NAME.toUpperCase(),
+                addKeyword(JoinHeader.NAME,
                         TokenTypes.JOIN_TO);
 
                 // IMS Headers
-                addKeyword(PathHeader.NAME.toUpperCase(), TokenTypes.PATH);
-                addKeyword(ServiceRouteHeader.NAME.toUpperCase(),
+                addKeyword(PathHeader.NAME, TokenTypes.PATH);
+                addKeyword(ServiceRouteHeader.NAME,
                         TokenTypes.SERVICE_ROUTE);
-                addKeyword(PAssertedIdentityHeader.NAME.toUpperCase(),
+                addKeyword(PAssertedIdentityHeader.NAME,
                         TokenTypes.P_ASSERTED_IDENTITY);
-                addKeyword(PPreferredIdentityHeader.NAME.toUpperCase(),
+                addKeyword(PPreferredIdentityHeader.NAME,
                         TokenTypes.P_PREFERRED_IDENTITY);
-                addKeyword(PrivacyHeader.NAME.toUpperCase(),
+                addKeyword(PrivacyHeader.NAME,
                         TokenTypes.PRIVACY);
 
                 // issued by Miguel Freitas
-                addKeyword(PCalledPartyIDHeader.NAME.toUpperCase(),
+                addKeyword(PCalledPartyIDHeader.NAME,
                         TokenTypes.P_CALLED_PARTY_ID);
-                addKeyword(PAssociatedURIHeader.NAME.toUpperCase(),
+                addKeyword(PAssociatedURIHeader.NAME,
                         TokenTypes.P_ASSOCIATED_URI);
-                addKeyword(PVisitedNetworkIDHeader.NAME.toUpperCase(),
+                addKeyword(PVisitedNetworkIDHeader.NAME,
                         TokenTypes.P_VISITED_NETWORK_ID);
-                addKeyword(PChargingFunctionAddressesHeader.NAME
-                        .toUpperCase(),
+                addKeyword(PChargingFunctionAddressesHeader.NAME,
                         TokenTypes.P_CHARGING_FUNCTION_ADDRESSES);
-                addKeyword(PChargingVectorHeader.NAME.toUpperCase(),
+                addKeyword(PChargingVectorHeader.NAME,
                         TokenTypes.P_VECTOR_CHARGING);
-                addKeyword(PAccessNetworkInfoHeader.NAME.toUpperCase(),
+                addKeyword(PAccessNetworkInfoHeader.NAME,
                         TokenTypes.P_ACCESS_NETWORK_INFO);
-                addKeyword(PMediaAuthorizationHeader.NAME.toUpperCase(),
+                addKeyword(PMediaAuthorizationHeader.NAME,
                         TokenTypes.P_MEDIA_AUTHORIZATION);
 
-                addKeyword(SecurityServerHeader.NAME.toUpperCase(),
+                addKeyword(SecurityServerHeader.NAME,
                         TokenTypes.SECURITY_SERVER);
-                addKeyword(SecurityVerifyHeader.NAME.toUpperCase(),
+                addKeyword(SecurityVerifyHeader.NAME,
                         TokenTypes.SECURITY_VERIFY);
-                addKeyword(SecurityClientHeader.NAME.toUpperCase(),
+                addKeyword(SecurityClientHeader.NAME,
                         TokenTypes.SECURITY_CLIENT);
 
                 // added by aayush@rancore
-                addKeyword(PUserDatabaseHeader.NAME.toUpperCase(),
+                addKeyword(PUserDatabaseHeader.NAME,
                         TokenTypes.P_USER_DATABASE);
 
                 // added by aayush@rancore
-                addKeyword(PProfileKeyHeader.NAME.toUpperCase(),
+                addKeyword(PProfileKeyHeader.NAME,
                         TokenTypes.P_PROFILE_KEY);
 
                 // added by aayush@rancore
-                addKeyword(PServedUserHeader.NAME.toUpperCase(),
+                addKeyword(PServedUserHeader.NAME,
                         TokenTypes.P_SERVED_USER);
 
                 // added by aayush@rancore
-                addKeyword(PPreferredServiceHeader.NAME.toUpperCase(),
+                addKeyword(PPreferredServiceHeader.NAME,
                         TokenTypes.P_PREFERRED_SERVICE);
 
                 // added by aayush@rancore
-                addKeyword(PAssertedServiceHeader.NAME.toUpperCase(),
+                addKeyword(PAssertedServiceHeader.NAME,
                         TokenTypes.P_ASSERTED_SERVICE);
                 
                 // added References header
-                addKeyword(ReferencesHeader.NAME.toUpperCase(),TokenTypes.REFERENCES);
+                addKeyword(ReferencesHeader.NAME,TokenTypes.REFERENCES);
 
                 // end //
 
 
             } else if (lexerName.equals("status_lineLexer")) {
-                addKeyword(TokenNames.SIP.toUpperCase(), TokenTypes.SIP);
+                addKeyword(TokenNames.SIP, TokenTypes.SIP);
             } else if (lexerName.equals("request_lineLexer")) {
-                addKeyword(TokenNames.SIP.toUpperCase(), TokenTypes.SIP);
+                addKeyword(TokenNames.SIP, TokenTypes.SIP);
             } else if (lexerName.equals("sip_urlLexer")) {
-                addKeyword(TokenNames.TEL.toUpperCase(), TokenTypes.TEL);
-                addKeyword(TokenNames.SIP.toUpperCase(), TokenTypes.SIP);
-                addKeyword(TokenNames.SIPS.toUpperCase(), TokenTypes.SIPS);
+                addKeyword(TokenNames.TEL, TokenTypes.TEL);
+                addKeyword(TokenNames.SIP, TokenTypes.SIP);
+                addKeyword(TokenNames.SIPS, TokenTypes.SIPS);
             }
 
             // Now newLexer is completely initialized, let's check if somebody
