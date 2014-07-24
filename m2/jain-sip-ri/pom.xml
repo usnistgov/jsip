@@ -88,6 +88,17 @@
 				<serverId>mobicents-releases-repository</serverId>
 				<nexusUrl>https://oss.sonatype.org/</nexusUrl>
 			      </configuration>
+			      <executions>
+				<execution>
+				    <id>deploy-to-sonatype</id>
+				    <phase>deploy</phase>
+				    <goals>
+					<goal>deploy</goal>
+					<goal>close</goal>
+					<goal>release</goal>
+				    </goals>
+				</execution>
+			    </executions>
 			</plugin>
 		</plugins>
 		<resources>
