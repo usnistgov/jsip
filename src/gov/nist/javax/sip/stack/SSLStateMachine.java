@@ -270,8 +270,8 @@ public class SSLStateMachine {
 				clearBuffer();
 			}
 			if(result.getStatus().equals(Status.BUFFER_OVERFLOW)) {
-				if(logger.isLoggingEnabled(LogWriter.TRACE_WARN)) {
-					logger.logWarning("Buffer overflow , must prepare the buffer again. Check for continious overflow here?");
+				if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+					logger.logDebug("Buffer overflow , must prepare the buffer again. Check for continious overflow here?");
 				}
 				dst = channel.prepareAppDataBuffer();
 				continue;
