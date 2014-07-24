@@ -93,6 +93,8 @@
 				    <id>deploy-to-sonatype</id>
 				    <phase>deploy</phase>
 				    <goals>
+					<goal>deploy</goal>
+					<!--goal>close</goal-->
 					<goal>release</goal>
 				    </goals>
 				</execution>
