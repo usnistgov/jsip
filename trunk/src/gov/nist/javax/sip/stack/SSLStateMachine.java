@@ -253,7 +253,12 @@ public class SSLStateMachine {
 			try {
 				result = sslEngine.unwrap(src, dst);
 			} catch (Exception e) {
-				e.printStackTrace();
+				// https://java.net/jira/browse/JSIP-464 
+				// Make sure to throw the exception so the result variable is not null below which makes the stack hang
+				if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+					logger.logDebug("An Exception occured while trying to unwrap the message " + e);
+				}
+				throw e;
 			}
 			if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 				logger.logDebug("Unwrap result " + result + " buffers size " 

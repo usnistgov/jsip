@@ -237,32 +237,41 @@ public class Shootme implements SipListener {
         TlsTest.fail("Tx timed out");
     }
 
+	
     public void init() {
+    	init(null);
+    }
+    
+    public void init(Properties props) {
         SipFactory sipFactory = null;
         sipStack = null;
         sipFactory = SipFactory.getInstance();
         sipFactory.setPathName("gov.nist");
         Properties properties = new Properties();
-        properties.setProperty("javax.sip.STACK_NAME", "shootme");
-        // You need  16 for logging traces. 32 for debug + traces.
-        // Your code will limp at 32 but it is best for debugging.
-        properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "LOG4J");
-        properties.setProperty("gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE", "20");
-        properties.setProperty(
-            "gov.nist.javax.sip.DEBUG_LOG",
-            "logs/shootmedebug.txt");
-        properties.setProperty(
-            "gov.nist.javax.sip.SERVER_LOG",
-            "logs/shootmelog.txt");
-        // Guard against starvation.
-        properties.setProperty(
-            "gov.nist.javax.sip.READ_TIMEOUT", "1000");
-        properties.setProperty(
-                "gov.nist.javax.sip.SSL_HANDSHAKE_TIMEOUT", "10000");
         String transport = "tls";
-        if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
-        	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
-        }
+        if(props != null) {
+        	properties = props;
+        } else {
+	        properties.setProperty("javax.sip.STACK_NAME", "shootme");
+	        // You need  16 for logging traces. 32 for debug + traces.
+	        // Your code will limp at 32 but it is best for debugging.
+	        properties.setProperty("gov.nist.javax.sip.TRACE_LEVEL", "LOG4J");
+	        properties.setProperty("gov.nist.javax.sip.TCP_POST_PARSING_THREAD_POOL_SIZE", "20");
+	        properties.setProperty(
+	            "gov.nist.javax.sip.DEBUG_LOG",
+	            "logs/shootmedebug.txt");
+	        properties.setProperty(
+	            "gov.nist.javax.sip.SERVER_LOG",
+	            "logs/shootmelog.txt");
+	        // Guard against starvation.
+	        properties.setProperty(
+	            "gov.nist.javax.sip.READ_TIMEOUT", "1000");
+	        properties.setProperty(
+	                "gov.nist.javax.sip.SSL_HANDSHAKE_TIMEOUT", "10000");
+	        if(System.getProperty("enableNIO") != null && System.getProperty("enableNIO").equalsIgnoreCase("true")) {
+	        	properties.setProperty("gov.nist.javax.sip.MESSAGE_PROCESSOR_FACTORY", NioMessageProcessorFactory.class.getName());
+	        }
+        }	
         try {
             // Create SipStack object
             sipStack = sipFactory.createSipStack(properties);

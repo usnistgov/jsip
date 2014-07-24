@@ -47,6 +47,8 @@ import java.nio.channels.SocketChannel;
 import java.text.ParseException;
 import java.util.HashMap;
 
+import javax.net.ssl.SSLException;
+
 public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 	private static StackLogger logger = CommonLogger
 			.getLogger(NioTcpMessageChannel.class);
@@ -117,12 +119,14 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 			addBytes(bytes);
 			lastActivityTimeStamp = System.currentTimeMillis();
 
-		} catch (IOException ex) {
+		} catch (Exception ex) { // https://java.net/jira/browse/JSIP-464 make sure to close connections on all exceptions to avoid the stack to hang
 			// Terminate the message.
-			try {
-				nioParser.addBytes("\r\n\r\n".getBytes("UTF-8"));
-			} catch (Exception e) {
-				// InternalErrorHandler.handleException(e);
+			if(ex instanceof IOException && !(ex instanceof SSLException)) {
+				try {
+					nioParser.addBytes("\r\n\r\n".getBytes("UTF-8"));
+				} catch (Exception e) {
+					// InternalErrorHandler.handleException(e);
+				}
 			}
 
 			try {
@@ -137,9 +141,10 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 				if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
 					logger.logDebug("Exception closing the socket " + ex1);
 			}
-		} catch (Exception ex) {
-			InternalErrorHandler.handleException(ex, logger);
-		}
+		} 
+//		catch (Exception ex) {
+//			InternalErrorHandler.handleException(ex, logger);
+//		}
 
 	}
 	
