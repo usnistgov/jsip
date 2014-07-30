@@ -165,9 +165,9 @@ public class NioTcpMessageChannel extends ConnectionOrientedMessageChannel {
 			// messages that we write out to him.
 			nioParser = new NioPipelineParser(sipStack, this,
 					this.sipStack.getMaxMessageSize());
-			this.peerProtocol = getTransport();
+			this.peerProtocol = nioTcpMessageProcessor.transport;
 			lastActivityTimeStamp = System.currentTimeMillis();
-			super.key = MessageChannel.getKey(peerAddress, peerPort, getTransport());
+			super.key = MessageChannel.getKey(peerAddress, peerPort, nioTcpMessageProcessor.transport);
 
             myAddress = nioTcpMessageProcessor.getIpAddress().getHostAddress();
             myPort = nioTcpMessageProcessor.getPort();
