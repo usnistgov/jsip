@@ -26,6 +26,7 @@
 package gov.nist.javax.sip.stack;
 
 import gov.nist.javax.sip.ListeningPointExt;
+import gov.nist.javax.sip.SipStackImpl;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -75,15 +76,31 @@ public class NioMessageProcessorFactory implements MessageProcessorFactory {
                             ie);
                 }
             } else if (transport.equalsIgnoreCase(ListeningPointExt.WS)) {
-
-            	 NioWebSocketMessageProcessor tlsMessageProcessor = new NioWebSocketMessageProcessor(
-                         ipAddress, sipStack, port); 
-                 return tlsMessageProcessor;
+            	if("true".equals(((SipStackImpl)sipStack).getConfigurationProperties().getProperty("gov.nist.javax.sip.USE_TLS_GATEWAY"))) {
+            		MessageProcessor mp = new NioTlsWebSocketMessageProcessor(
+                            ipAddress, sipStack, port);
+            		mp.transport = "WS";
+            		return mp;
+            	} else {
+            		MessageProcessor mp = new NioWebSocketMessageProcessor(
+                            ipAddress, sipStack, port);
+            		mp.transport = "WS";
+            		return mp;
+            	}
+            	 
             } else if (transport.equalsIgnoreCase("WSS")) {
 
-            	NioTlsWebSocketMessageProcessor tlsMessageProcessor = new NioTlsWebSocketMessageProcessor(
-            			ipAddress, sipStack, port); 
-            	return tlsMessageProcessor;
+            	if("true".equals(((SipStackImpl)sipStack).getConfigurationProperties().getProperty("gov.nist.javax.sip.USE_TLS_GATEWAY"))) {
+            		MessageProcessor mp = new NioWebSocketMessageProcessor(
+                            ipAddress, sipStack, port);
+            		mp.transport = "WSS";
+            		return mp;
+            	} else {
+            		MessageProcessor mp = new NioTlsWebSocketMessageProcessor(
+                            ipAddress, sipStack, port);
+            		mp.transport = "WSS";
+            		return mp;
+            	}
             } else {
             	throw new IllegalArgumentException("bad transport");
             }
