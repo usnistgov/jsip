@@ -34,7 +34,6 @@ import gov.nist.core.StackLogger;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.channels.SocketChannel;
-import java.util.HashMap;
 
 public class NioWebSocketMessageProcessor extends NioTcpMessageProcessor {
 
@@ -43,7 +42,7 @@ public class NioWebSocketMessageProcessor extends NioTcpMessageProcessor {
 	public NioWebSocketMessageProcessor(InetAddress ipAddress,
 			SIPTransactionStack sipStack, int port) {
 		super(ipAddress, sipStack, port);
-		transport = "WS";
+		transport = "WS"; // by default its WS, can be overriden if there is TLS acclereator
 	}
 	
 	@Override
