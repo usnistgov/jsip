@@ -32,6 +32,7 @@ import gov.nist.core.LogWriter;
 import gov.nist.core.StackLogger;
 import gov.nist.javax.sip.header.RecordRoute;
 import gov.nist.javax.sip.message.SIPMessage;
+import gov.nist.javax.sip.message.SIPRequest;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -46,6 +47,7 @@ import javax.sip.header.RecordRouteHeader;
 import javax.sip.header.ViaHeader;
 import javax.sip.message.Request;
 
+
 public class NioWebSocketMessageChannel extends NioTcpMessageChannel{
 
 	private static StackLogger logger = CommonLogger
@@ -55,6 +57,11 @@ public class NioWebSocketMessageChannel extends NioTcpMessageChannel{
 	
 	boolean readingHttp = true;
 	String httpInput = "";
+	boolean client;
+	boolean httpClientRequestSent;
+	String httpHostHeader;
+	String httpMethod;
+	String httpLocation;
 	
 	public static NioWebSocketMessageChannel create(
 			NioWebSocketMessageProcessor nioTcpMessageProcessor,
@@ -104,9 +111,10 @@ public class NioWebSocketMessageChannel extends NioTcpMessageChannel{
 		super.sendTCPMessage(msg, this.peerAddress, this.peerPort, isClient);
 	}
 
-	private byte[] wrapBufferIntoWebSocketFrame(byte[] buffer) {
+	
+	public static byte[] wrapBufferIntoWebSocketFrame(byte[] buffer, boolean client) {
 		try {
-			return WebSocketCodec.encode(buffer, 0, true);
+			return WebSocketCodec.encode(buffer, 0, true, client);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -116,7 +124,7 @@ public class NioWebSocketMessageChannel extends NioTcpMessageChannel{
 
 	public void sendWrapped(byte message[], InetAddress receiverAddress,
 			int receiverPort, boolean retry) throws IOException {
-		message = wrapBufferIntoWebSocketFrame(message);
+		message = wrapBufferIntoWebSocketFrame(message, client);
 		super.sendTCPMessage(message, receiverAddress, receiverPort, retry);
 	}
 	
@@ -126,22 +134,71 @@ public class NioWebSocketMessageChannel extends NioTcpMessageChannel{
 		sendWrapped(message, receiverAddress, receiverPort, retry);
 	}
 
+	@Override
+	public void sendMessage(SIPMessage sipMessage, InetAddress receiverAddress, int receiverPort)
+            throws IOException {
+		if(sipMessage instanceof SIPRequest) {
+			if(client && !httpClientRequestSent) {
+				httpClientRequestSent = true;
+				SIPRequest request = (SIPRequest) sipMessage;
+				SipURI requestUri = (SipURI) request.getRequestURI();
+				this.httpHostHeader = requestUri.getHeader("Host");
+				this.httpLocation = requestUri.getHeader("Location");
+				this.httpMethod = requestUri.getMethodParam();
+				String http = this.httpMethod + " " + this.httpLocation + " HTTP/1.1\r\n" + 
+						"Host: " + this.httpHostHeader + "\r\n" + 
+						"Upgrade: websocket\r\n" + 
+						"Connection: Upgrade\r\n" + 
+						"Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\n" + 
+						"Sec-WebSocket-Protocol: sip\r\n" + 
+						"Sec-WebSocket-Version: 13\r\n\r\n";
+				super.sendTCPMessage(http.getBytes(), receiverAddress, receiverPort, false);
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		super.sendMessage(sipMessage, receiverAddress, receiverPort);
+    }
+	
 	public NioWebSocketMessageChannel(InetAddress inetAddress, int port,
 			SIPTransactionStack sipStack,
 			NioTcpMessageProcessor nioTcpMessageProcessor) throws IOException {
 		super(inetAddress, port, sipStack, nioTcpMessageProcessor);
+		client = true;
+		this.codec = new WebSocketCodec(false, true);
 	}
 	
 	@Override
 	protected void addBytes(byte[] bytes) throws Exception {
 		String s = new String(bytes);
+		
 		if(readingHttp) {
+			byte[] remaining = null;
+			for(int q=0;q<bytes.length-3;q++) {
+				if(bytes[q]=='\r' && bytes[q+1] =='\n' && bytes[q+2]=='\r' && bytes[q+3] =='\n') {
+					s = s.substring(0, q+4);
+					remaining = new byte[bytes.length - q - 4];
+					for(int w=0;w<remaining.length;w++) {
+						remaining[w] = bytes[q+4+w];
+					}
+				}
+			}
 			httpInput += s;
 			if(s.endsWith("\r\n") || s.endsWith("\n")) {
 				readingHttp = false;
-				byte[] response = new WebSocketHttpHandshake().createHttpResponse(s);
-				sendNonWebSocketMessage(response, false);
+				if(!httpInput.startsWith("HTTP")) {
+					byte[] response = new WebSocketHttpHandshake().createHttpResponse(s);
+					sendNonWebSocketMessage(response, false);
+				} else {
+					logger.logDebug("HTTP Response. We are websocket client.\n" + httpInput);
+				}
 			}
+			if(remaining != null) addBytes(remaining);
+			return;
 		} else if(!readingHttp) {
 			ByteArrayInputStream bios = new ByteArrayInputStream(bytes);
 			byte[] decodedMsg = null;
@@ -159,7 +216,7 @@ public class NioWebSocketMessageChannel extends NioTcpMessageChannel{
 	
 	@Override
 	public String getTransport() {
-		return "WS";
+		return this.messageProcessor.transport;
 	}
 
 	@Override

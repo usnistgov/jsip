@@ -48,7 +48,7 @@ public class NioTlsWebSocketMessageProcessor extends NioWebSocketMessageProcesso
 	public NioTlsWebSocketMessageProcessor(InetAddress ipAddress,
 			SIPTransactionStack sipStack, int port) {
 		super(ipAddress, sipStack, port);
-		transport = "WSS";
+		transport = "WSS"; // by default it's WSS, can be overriden by TLS accelerator
 		try {
 			init();
 		} catch (Exception e) {
@@ -69,15 +69,15 @@ public class NioTlsWebSocketMessageProcessor extends NioWebSocketMessageProcesso
     	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
     		logger.logDebug("NioTlsWebSocketMessageProcessor::createMessageChannel: " + targetHostPort);
     	}
-    	NioTlsMessageChannel retval = null;
+    	NioTlsWebSocketMessageChannel retval = null;
     	try {
-    		String key = MessageChannel.getKey(targetHostPort, "WSS");
+    		String key = MessageChannel.getKey(targetHostPort, transport);
 			
     		if (messageChannels.get(key) != null) {
-    			retval = (NioTlsMessageChannel) this.messageChannels.get(key);
+    			retval = (NioTlsWebSocketMessageChannel) this.messageChannels.get(key);
     			return retval;
     		} else {
-    			retval = new NioTlsMessageChannel(targetHostPort.getInetAddress(),
+    			retval = new NioTlsWebSocketMessageChannel(targetHostPort.getInetAddress(),
     					targetHostPort.getPort(), sipStack, this);
     			
     		//	retval.getSocketChannel().register(selector, SelectionKey.OP_READ);
@@ -102,11 +102,11 @@ public class NioTlsWebSocketMessageProcessor extends NioWebSocketMessageProcesso
 
     @Override
     public MessageChannel createMessageChannel(InetAddress targetHost, int port) throws IOException {
-        String key = MessageChannel.getKey(targetHost, port, "WSS");
+        String key = MessageChannel.getKey(targetHost, port, transport);
         if (messageChannels.get(key) != null) {
             return this.messageChannels.get(key);
         } else {
-            NioTlsMessageChannel retval = new NioTlsMessageChannel(targetHost, port, sipStack, this);
+        	NioTlsWebSocketMessageChannel retval = new NioTlsWebSocketMessageChannel(targetHost, port, sipStack, this);
             
             selector.wakeup();
  //           retval.getSocketChannel().register(selector, SelectionKey.OP_READ);
