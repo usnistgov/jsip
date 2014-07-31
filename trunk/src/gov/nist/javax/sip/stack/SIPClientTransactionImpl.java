@@ -1037,7 +1037,8 @@ public class SIPClientTransactionImpl extends SIPTransactionImpl implements SIPC
           && expiresTimerTask == null)
       {
         this.expiresTimerTask = new ExpiresTimerTask();
-        sipStack.getTimer().schedule(expiresTimerTask, expiresTime * 1000);
+        // josemrecio - https://java.net/jira/browse/JSIP-467
+        sipStack.getTimer().schedule(expiresTimerTask, Long.valueOf(expiresTime) * 1000L);
 
       }
       this.sendMessage(sipRequest);
