@@ -368,7 +368,8 @@ public class ClientTransactionCallingAlertTest extends TestCase {
                     i++;
                 }
                 assertEquals(2, i);
-                
+                // non regression test for https://java.net/jira/browse/JSIP-467
+                request.setExpires(headerFactory.createExpiresHeader(3600000));
                 // Create the client transaction.
                 inviteTid = sipProvider.getNewClientTransaction(request);
                 
