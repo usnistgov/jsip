@@ -94,6 +94,7 @@ c:/jakarta-ant/bin/ant all
     <property name="ant_jar" value="${ant}"/>
     <property name="fail.build.on.tests.not.passing" value="true"/>
 
+    <property name="source.encoding" value="ISO-8859-1" />
 
     <property environment="sys" />
 
@@ -114,6 +115,8 @@ c:/jakarta-ant/bin/ant all
     </condition>
 	
     <target name="all" depends="make,compileexamples,compiletools,javadoc,javadoc-jain" />
+
+    <target name="all-android" depends="make,compileexamples,compiletools,javadoc,javadoc-jain,android-copy,android-replace,android-jar-sip-stack" />
 
     <target name="make" depends="compileapi,compileri,compilesdp,jain-sip-sdp-jar" />
 
@@ -871,5 +874,62 @@ c:/jakarta-ant/bin/ant all
                  <arg line="."/>
               </exec>
               </target>
+
+		<target name="android-copy">
+	<echo>Copying source for android</echo>
+		<copy encoding="${source.encoding}" outputencoding="${source.encoding}" todir="src/android/com/telestax/core">
+			<fileset dir="src/gov/nist/core"/>
+		</copy>
+		<copy encoding="${source.encoding}" outputencoding="${source.encoding}" todir="src/android/com/telestax/core/net">
+			<fileset dir="src/gov/nist/core/net"/>
+		</copy>
+		<copy encoding="${source.encoding}" outputencoding="${source.encoding}" todir="src/android/com/telestax/javax/sdp">
+			<fileset dir="src/gov/nist/javax/sdp"/>
+		</copy>
+		<copy encoding="${source.encoding}" outputencoding="${source.encoding}" todir="src/android/com/telestax/javax/sip">
+			<fileset dir="src/gov/nist/javax/sip"/>
+		</copy>
+		<copy encoding="${source.encoding}" outputencoding="${source.encoding}" todir="src/android/javax">
+			<fileset dir="src/javax"/>
+		</copy>
+
+	</target>
+	<target name="android-replace">
+	<echo>Modifying source for android</echo>
+		<replace dir="src/android/com/" value="com.telestax.core">
+			<replacetoken>gov.nist.core</replacetoken>
+		</replace>
+		<replace dir="src/android/com/" value="com.telestax.core.net">
+			<replacetoken>gov.nist.core.net</replacetoken>
+		</replace>
+		<replace dir="src/android" value="com.telestax.javax.sdp">
+			<replacetoken>gov.nist.javax.sdp</replacetoken>
+		</replace>
+		<replace dir="src/android" value="com.telestax.javax.sip">
+			<replacetoken>gov.nist.javax.sip</replacetoken>
+		</replace>
+		<replace dir="src/android/javax/" value="com.telestax">
+			<replacetoken>gov.nist.javax</replacetoken>
+		</replace>
+		<replace dir="src/android/javax/" value="com.telestax.core">
+			<replacetoken>gov.nist.core</replacetoken>
+		</replace>
+	</target>
+
+	<target name="android-jar-sip-stack" depends="check_java_version" if="jdk7.available">
+	<echo>Building SIP Library for android</echo>
+		<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" 
+                	  nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" 
+                		optimize="${javac.optimize}" srcdir="${srcroot}" 
+                		source="1.7" target="1.7" encoding="${source.encoding}"  
+                		includes="android/**/*.java," destdir="${classes}">
+			<classpath>
+				<pathelement location="${classes}" />
+				<pathelement location="${log4j_jar}" />
+			</classpath>
+		</javac>
+		<jar destfile="dist/android/android-sip-stack.jar" basedir="${classes}"  
+                	  includes="javax/**/*.class,com/telestax/**/*.class" />
+	</target>
 
 </project>
