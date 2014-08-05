@@ -677,7 +677,8 @@ public class ReInviteInfoAckOverlapTest extends TestCase {
                 		Request info = dialog.createRequest(Request.INFO);
                 		ClientTransaction infoct = this.provider.getNewClientTransaction(info);
                 		infoct.sendRequest();
-                		Thread.sleep(100);
+                		logger.info("Sent INFO");
+                		Thread.sleep(500);
                 		Request ackRequest = dialog.createAck(cseq.getSeqNumber());
                 		logger.info("Ack request to send = " + ackRequest);
                 		logger.info("Sending ACK");
