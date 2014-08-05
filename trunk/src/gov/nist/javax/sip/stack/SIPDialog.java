@@ -177,6 +177,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
     private Via lastResponseTopMostVia;
     protected Integer lastResponseStatusCode;
     protected long lastResponseCSeqNumber;
+    protected long lastInviteResponseCSeqNumber;
     protected String lastResponseMethod;
     protected String lastResponseFromTag;
     protected String lastResponseToTag;
@@ -3263,6 +3264,9 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
             this.lastResponseMethod = cseqMethod;
             long responseCSeqNumber = sipResponse.getCSeq().getSeqNumber();
             this.lastResponseCSeqNumber = responseCSeqNumber;
+            if(Request.INVITE.equals(cseqMethod)) {
+            	this.lastInviteResponseCSeqNumber = responseCSeqNumber;
+            }
             if (sipResponse.getToTag() != null ) {
                 this.lastResponseToTag = sipResponse.getToTag();
             }
@@ -3974,8 +3978,7 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
         	  }
              if (lastResponseStatusCode != null
                     && lastResponseStatusCode.intValue() / 100 == 2
-                    && lastResponseMethod.equals(Request.INVITE)
-                    && lastResponseCSeqNumber == ackTransaction.getCSeq()) {
+                    && lastInviteResponseCSeqNumber == ackTransaction.getCSeq()) {
 
                 ackTransaction.setDialog(this, lastResponseDialogId);
                 /*
