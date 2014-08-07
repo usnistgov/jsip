@@ -2767,8 +2767,13 @@ public class SIPDialog implements javax.sip.Dialog, DialogExt {
 
         try {
             // Increment before setting!!
-            localSequenceNumber++;
-            dialogRequest.getCSeq().setSeqNumber(getLocalSeqNumber());
+        	long cseqNumber = dialogRequest.getCSeq() == null?localSequenceNumber:dialogRequest.getCSeq().getSeqNumber();
+        	if(cseqNumber > localSequenceNumber) {
+        		localSequenceNumber = cseqNumber;
+        	} else {
+        		localSequenceNumber++;
+        	}
+        	dialogRequest.getCSeq().setSeqNumber(getLocalSeqNumber());
         } catch (InvalidArgumentException ex) {
             logger.logFatalError(ex.getMessage());
         }
