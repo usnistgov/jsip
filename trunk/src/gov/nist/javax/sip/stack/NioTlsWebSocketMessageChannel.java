@@ -125,9 +125,7 @@ public class NioTlsWebSocketMessageChannel extends NioWebSocketMessageChannel im
 
 				@Override
 				public void doSend(byte[] bytes) throws IOException {
-					
-						NioTlsWebSocketMessageChannel.super.sendNonWebSocketMessage(bytes, isClient);
-					
+					NioTlsWebSocketMessageChannel.super.sendNonWebSocketMessage(bytes, isClient);
 				}
 			});
 		} catch (Exception e) {
@@ -154,7 +152,7 @@ public class NioTlsWebSocketMessageChannel extends NioWebSocketMessageChannel im
 			final int receiverPort, final boolean retry) throws IOException {
 		checkSocketState();
 		
-		ByteBuffer b = ByteBuffer.wrap(message);
+		ByteBuffer b = ByteBuffer.wrap(NioWebSocketMessageChannel.wrapBufferIntoWebSocketFrame(message, client));
 		try {
 			sslStateMachine.wrap(b, ByteBufferFactory.getInstance().allocateDirect(netBufferMax), new MessageSendCallback() {
 				
@@ -279,20 +277,35 @@ public class NioTlsWebSocketMessageChannel extends NioWebSocketMessageChannel im
 	}
 	
 	@Override
-	protected void sendNonWebSocketMessage(byte[] msg, boolean isClient) throws IOException {
+	protected void sendNonWebSocketMessage(byte[] msg, final boolean isClient) throws IOException {
 
 		if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
 			logger.logDebug("sendMessage isClient  = " + isClient + " this = " + this);
 		}
 		lastActivityTimeStamp = System.currentTimeMillis();
-		
+
 		NIOHandler nioHandler = ((NioTcpMessageProcessor) messageProcessor).nioHandler;
 		if(this.socketChannel != null && this.socketChannel.isConnected() && this.socketChannel.isOpen()) {
 			nioHandler.putSocket(NIOHandler.makeKey(this.peerAddress, this.peerPort), this.socketChannel);
 		}
-		sendMessage(msg, this.peerAddress, this.peerPort, isClient);
+		checkSocketState();
+
+		ByteBuffer b = ByteBuffer.wrap(msg);
+		try {
+			sslStateMachine.wrap(b, ByteBufferFactory.getInstance().allocateDirect(netBufferMax), new MessageSendCallback() {
+
+				@Override
+				public void doSend(byte[] bytes) throws IOException {
+					NioTlsWebSocketMessageChannel.super.sendTCPMessage(bytes,
+							peerAddress, peerPort, isClient);
+
+				}
+			});
+		} catch (IOException e) {
+			throw e;
+		}
 	}
-	
+
 	@Override
 	public String getTransport() {
 		return this.messageProcessor.transport;
