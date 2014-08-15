@@ -410,6 +410,8 @@ public abstract class SIPTransactionStack implements
     private long sslHandshakeTimeout = -1;
     
     private boolean sslRenegotiationEnabled = false;
+    
+    protected SocketTimeoutAuditor socketTimeoutAuditor = null;
 
     private static class SameThreadExecutor implements Executor {
 
