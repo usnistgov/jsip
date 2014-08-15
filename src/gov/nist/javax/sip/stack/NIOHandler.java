@@ -90,7 +90,8 @@ public class NIOHandler {
         this.sipStack = (SipStackImpl) sipStack;
         this.messageProcessor = messageProcessor;
         if(sipStack.nioSocketMaxIdleTime > 0) 
-        	timer.scheduleAtFixedRate(new SocketTimeoutAuditor(), 20000, 20000);
+        	// https://java.net/jira/browse/JSIP-471 use property from the stack instead of hard coded 20s
+        	timer.scheduleAtFixedRate(new SocketTimeoutAuditor(), sipStack.nioSocketMaxIdleTime, sipStack.nioSocketMaxIdleTime);
     }
 
     protected void putSocket(String key, SocketChannel sock) {
@@ -430,36 +431,25 @@ public class NIOHandler {
 
     private class SocketTimeoutAuditor extends TimerTask {
     	public void run() {
-    		synchronized(socketTable) {
-    			try {
-    				HashSet<String> keysToRemove = new HashSet<String>();
-    				for(String key : socketTable.keySet()) {
-    					SocketChannel socketChannel = socketTable.get(key);
-    					NioTcpMessageChannel messageChannel = NioTcpMessageChannel.getMessageChannel(socketChannel);
-    					if(messageChannel == null) {
-    						keysToRemove.add(key);
-    					} else {
-    						if(System.currentTimeMillis() - messageChannel.getLastActivityTimestamp() > sipStack.nioSocketMaxIdleTime) {
-    							keysToRemove.add(key);
-    							if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-    								logger.logDebug("Will remove socket " + key + " lastActivity="
-    										+ messageChannel.getLastActivityTimestamp() + " current= " +
-    										System.currentTimeMillis() + " socketChannel = "
-    										+ socketChannel);
-    							NioTcpMessageChannel.removeMessageChannel(socketChannel);
-    							messageChannel.close();
-    						}
-    					}
-    				}
-    				for(String key : keysToRemove) {
-    					socketTable.remove(key);
-    					if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
-    						logger.logDebug("Removed socket " + key);
-    				}
-    			} catch (Exception anything) {
+			try {
+				// Reworked the method for https://java.net/jira/browse/JSIP-471
+				HashSet<String> keysToRemove = new HashSet<String>();
+				for(Entry<SocketChannel, NioTcpMessageChannel> entry : NioTcpMessageChannel.channelMap.entrySet()) {
+					SocketChannel socketChannel = entry.getKey();
+					NioTcpMessageChannel messageChannel = entry.getValue();
+					if(System.currentTimeMillis() - messageChannel.getLastActivityTimestamp() > sipStack.nioSocketMaxIdleTime) {
+						keysToRemove.add(messageChannel.key);
+						if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
+							logger.logDebug("Will remove socket " + messageChannel.key + " lastActivity="
+									+ messageChannel.getLastActivityTimestamp() + " current= " +
+									System.currentTimeMillis() + " socketChannel = "
+									+ socketChannel);
+						messageChannel.close();
+					}
+				}
+			} catch (Exception anything) {
 
-    			}
-    		}
+			}
     	}
     }
 
