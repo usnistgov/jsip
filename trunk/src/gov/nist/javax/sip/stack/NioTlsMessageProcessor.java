@@ -32,16 +32,40 @@ import gov.nist.core.LogWriter;
 import gov.nist.core.StackLogger;
 
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.channels.SocketChannel;
 import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 public class NioTlsMessageProcessor extends NioTcpMessageProcessor{
 
     private static StackLogger logger = CommonLogger.getLogger(NioTlsMessageProcessor.class);
 
+    // Create a trust manager that does not validate certificate chains
+    TrustManager[] trustAllCerts = new TrustManager[] { 
+      new X509TrustManager() {
+        public java.security.cert.X509Certificate[] getAcceptedIssuers() { 
+          return new X509Certificate[0]; 
+        }
+        public void checkClientTrusted(X509Certificate[] certs, String authType) {
+        	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                logger.logDebug(
+                        "checkClientTrusted : Not validating certs " + certs + " authType " + authType);
+            }
+        }
+        public void checkServerTrusted(X509Certificate[] certs, String authType) {
+        	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                logger.logDebug(
+                        "checkServerTrusted : Not validating certs " + certs + " authType " + authType);
+            }
+        }
+    }};
+    
     SSLContext sslServerCtx;
     SSLContext sslClientCtx;
 
@@ -128,15 +152,28 @@ public class NioTlsMessageProcessor extends NioTcpMessageProcessor{
 		}
 			
         sslServerCtx = SSLContext.getInstance("TLS");
-        sslServerCtx.init(sipStack.securityManagerProvider.getKeyManagers(false), 
-                sipStack.securityManagerProvider.getTrustManagers(false),
-                null);
-
         sslClientCtx = SSLContext.getInstance("TLS");
-        sslClientCtx.init(sipStack.securityManagerProvider.getKeyManagers(true),
-                sipStack.securityManagerProvider.getTrustManagers(true),
-                null);
+        
+        if(sipStack.getClientAuth() == ClientAuthType.DisabledAll) {
+        	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                logger.logDebug(
+                        "ClientAuth " + sipStack.getClientAuth()  +  " bypassing all cert validations");
+            }
+        	sslServerCtx.init(sipStack.securityManagerProvider.getKeyManagers(false), trustAllCerts, null);
+        	sslClientCtx.init(sipStack.securityManagerProvider.getKeyManagers(true), trustAllCerts, null);
+        } else {
+        	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+                logger.logDebug(
+                        "ClientAuth " + sipStack.getClientAuth());
+            }
+        	 sslServerCtx.init(sipStack.securityManagerProvider.getKeyManagers(false), 
+                     sipStack.securityManagerProvider.getTrustManagers(false),
+                     null);
+        	 sslClientCtx.init(sipStack.securityManagerProvider.getKeyManagers(true),
+                     sipStack.securityManagerProvider.getTrustManagers(true),
+                     null);
 
+        }
     }
 
 }

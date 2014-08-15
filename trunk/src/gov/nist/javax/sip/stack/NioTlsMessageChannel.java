@@ -89,7 +89,7 @@ public class NioTlsMessageChannel extends NioTcpMessageChannel implements NioTls
         if(auth == null) {
         	auth = "Enabled";
         }
-        if(auth.equals("Disabled")) {
+        if(auth.equals("Disabled") || auth.equals("DisabledAll")) {
         	sslStateMachine.sslEngine.setNeedClientAuth(false);
         	sslStateMachine.sslEngine.setWantClientAuth(false);
         } else if(auth.equals("Enabled")) {
