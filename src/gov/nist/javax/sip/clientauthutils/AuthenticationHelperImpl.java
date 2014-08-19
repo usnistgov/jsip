@@ -128,6 +128,18 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
     public ClientTransaction handleChallenge(Response challenge,
             ClientTransaction challengedTransaction, SipProvider transactionCreator, int cacheTime)
             throws SipException, NullPointerException {
+        return handleChallenge(challenge, challengedTransaction, transactionCreator, cacheTime, false);
+    }
+    
+    /*
+     * (non-Javadoc)
+     *
+     * @see gov.nist.javax.sip.clientauthutils.AuthenticationHelper#handleChallenge(javax.sip.message.Response,
+     *      javax.sip.ClientTransaction, javax.sip.SipProvider)
+     */
+    public ClientTransaction handleChallenge(Response challenge,
+            ClientTransaction challengedTransaction, SipProvider transactionCreator, int cacheTime, boolean looseRouting)
+            throws SipException, NullPointerException {
         try {
           
             if ( logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
@@ -210,7 +222,7 @@ public class AuthenticationHelperImpl implements AuthenticationHelper {
             /* Resolve this to the next hop based on the previous lookup. If we are not using
              * lose routing (RFC2543) then just attach hop as a maddr param.
              */
-            if ( challengedRequest.getRouteHeaders() == null ) {
+            if (!looseRouting && challengedRequest.getRouteHeaders() == null ) {
                 Hop hop   = ((SIPClientTransaction) challengedTransaction).getNextHop();
                 SipURI sipUri = (SipURI) reoriginatedRequest.getRequestURI();
                 sipUri.setMAddrParam(hop.getHost());
