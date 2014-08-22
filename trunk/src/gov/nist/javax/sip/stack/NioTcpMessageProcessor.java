@@ -145,6 +145,8 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
             	if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
             		logger.logDebug("Dead socketChannel" + socketChannel + " socket " + socketChannel.socket().getInetAddress() + ":"+socketChannel.socket().getPort());
             	selectionKey.cancel();
+            	// https://java.net/jira/browse/JSIP-475 remove the socket from the hashmap
+            	pendingData.remove(socketChannel);
             	return;
             }
             
@@ -162,6 +164,8 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
             	if(logger.isLoggingEnabled(LogWriter.TRACE_DEBUG))
             		logger.logDebug("Dead socketChannel" + socketChannel + " socket " + socketChannel.socket().getInetAddress() + ":"+socketChannel.socket().getPort());
             	selectionKey.cancel();
+            	// https://java.net/jira/browse/JSIP-475 remove the socket from the hashmap
+            	pendingData.remove(socketChannel);
             	return;
             }
           	
@@ -179,6 +183,9 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
 		            		logger.logDebug("Dead socketChannel" + socketChannel + " socket " + socketChannel.socket().getInetAddress() + ":"+socketChannel.socket().getPort() + " : error message " + e.getMessage());
 						nioTcpMessageChannel.close();
 						// Shall we perform a retry mechanism in case the remote host connection was closed due to a TCP RST ?
+						// https://java.net/jira/browse/JSIP-475 in the meanwhile remove the data from the hashmap
+						queue.remove(0); 
+						pendingData.remove(socketChannel);
 						return;
 					}
 
@@ -428,6 +435,17 @@ public class NioTcpMessageProcessor extends ConnectionOrientedMessageProcessor {
 
     }
 
+    // https://java.net/jira/browse/JSIP-475
+    @Override
+    protected synchronized void remove(
+    		ConnectionOrientedMessageChannel messageChannel) {
+    	if (logger.isLoggingEnabled(LogWriter.TRACE_DEBUG)) {
+            logger.logDebug(Thread.currentThread() + " removing " + ((NioTcpMessageChannel)messageChannel).getSocketChannel() + " from processor " + getIpAddress()+ ":" + getPort() + "/" + getTransport());
+        }
+    	pendingData.remove(((NioTcpMessageChannel)messageChannel).getSocketChannel());
+    	super.remove(messageChannel);
+    }
+    
     @Override
     public int getDefaultTargetPort() {
         return 5060;
