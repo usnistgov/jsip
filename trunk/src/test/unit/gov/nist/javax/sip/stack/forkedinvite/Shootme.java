@@ -1,6 +1,8 @@
 package test.unit.gov.nist.javax.sip.stack.forkedinvite;
 
 import gov.nist.javax.sip.SipStackImpl;
+import gov.nist.javax.sip.header.HeaderExt;
+import gov.nist.javax.sip.header.ims.PPreferredServiceHeader;
 
 import java.util.Hashtable;
 import java.util.Properties;
@@ -36,7 +38,10 @@ import javax.sip.message.Response;
 
 import junit.framework.TestCase;
 
+import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
+import org.apache.log4j.helpers.NullEnumeration;
 
 
 
@@ -64,6 +69,14 @@ public class Shootme   implements SipListener {
 
     private static Logger logger = Logger.getLogger(Shootme.class);
 
+    static {
+        if (logger.getAllAppenders().equals(NullEnumeration.getInstance())) {
+
+            logger.addAppender(new ConsoleAppender(new SimpleLayout()));
+
+        }
+    }
+    
     private boolean inviteSeen;
 
 
@@ -156,7 +169,7 @@ public class Shootme   implements SipListener {
         SipProvider sipProvider = (SipProvider) requestEvent.getSource();
         Request request = requestEvent.getRequest();
         try {
-            logger.info("shootme: got an Invite sending Trying");
+            logger.info("shootme: got an Invite "+ request +"sending Trying");
             // logger.info("shootme: " + request);
 
             ServerTransaction st = requestEvent.getServerTransaction();
@@ -168,6 +181,15 @@ public class Shootme   implements SipListener {
 
             logger.info("getNewServerTransaction : " + st);
 
+            // https://java.net/jira/browse/JSIP-476 Non regression test 
+            if(request.getContentLength().getContentLength() < 1) {
+            	throw new Exception("Content Length shouldn't be lower than zero, bad parsing occured along the way");
+            }
+            
+            String value = ((HeaderExt)request.getHeader(PPreferredServiceHeader.NAME)).getValue();
+            if(value == null || !value.equalsIgnoreCase(InviteTest.PREFERRED_SERVICE_VALUE)) {
+            	throw new Exception("Bad value " + value);
+            }
             String txId = ((ViaHeader)request.getHeader(ViaHeader.NAME)).getBranch();
             this.serverTxTable.put(txId, st);
 

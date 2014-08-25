@@ -46,7 +46,8 @@ public class PPreferredServiceParserTest extends ParserTestCase{
                                "P-Preferred-Service: urn:urn-7:3gpp-application.chatterboi.service2\n",
                                "P-Preferred-Service: urn:urn-7:3gpp-service.photoshare.collage.privacyenabled.service3\n",
                                "P-Preferred-Service: urn:urn-7:3gpp-application.calltracerservice\n",
-                               "P-Preferred-Service: urn:urn-7:3gpp-service.missedcallalertservice\n"};
+                               "P-Preferred-Service: urn:urn-7:3gpp-service.missedcallalertservice\n",
+                               "P-Preferred-Service: urn:urn-7:3gpp-service.ims.icsi.mmtel.gsma.ipcall\n"};
 
         super.testParser(PPreferredServiceParser.class, p_pref_serv);
 

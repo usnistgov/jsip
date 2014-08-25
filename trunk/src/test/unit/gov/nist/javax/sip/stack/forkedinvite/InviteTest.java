@@ -29,6 +29,7 @@ public class InviteTest extends TestCase {
 
     private static int forkCount = 2;
     
+    public static final String PREFERRED_SERVICE_VALUE="urn:urn-7:3gpp-service.ims.icsi.mmtel.gsma.ipcall"; 
    
 
     protected HashSet<Shootme> shootme = new HashSet<Shootme>();

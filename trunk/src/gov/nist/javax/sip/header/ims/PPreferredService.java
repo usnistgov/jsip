@@ -30,7 +30,7 @@ import gov.nist.javax.sip.header.SIPHeader;
 /**
  *
  * @author aayush.bhatnagar
- *
+ * @author jean.deruelle@gmail.com
  */
 public class PPreferredService extends SIPHeader implements PPreferredServiceHeader, SIPHeaderNamesIms, ExtensionHeader{
 
@@ -55,9 +55,7 @@ public class PPreferredService extends SIPHeader implements PPreferredServiceHea
             if(this.subServiceIds!=null)
             {
                 retval.append(ParameterNamesIms.SERVICE_ID_LABEL).append(".");
-
-            retval.append(this.getSubserviceIdentifiers());
-
+                retval.append(this.getSubserviceIdentifiers());
             }
 
             else if(this.subAppIds!=null)
@@ -77,7 +75,8 @@ public class PPreferredService extends SIPHeader implements PPreferredServiceHea
     public String getApplicationIdentifiers() {
         if(this.subAppIds.charAt(0)=='.')
         {
-            return this.subAppIds.substring(1);
+        	// https://java.net/jira/browse/JSIP-476 Adding trim to avoid parsing issues
+            return this.subAppIds.substring(1).trim();
         }
         return this.subAppIds;
     }
@@ -85,7 +84,8 @@ public class PPreferredService extends SIPHeader implements PPreferredServiceHea
     public String getSubserviceIdentifiers() {
         if(this.subServiceIds.charAt(0)=='.')
         {
-            return this.subServiceIds.substring(1);
+        	// https://java.net/jira/browse/JSIP-476 Adding trim to avoid parsing issues
+            return this.subServiceIds.substring(1).trim();
         }
         return this.subServiceIds;
     }
