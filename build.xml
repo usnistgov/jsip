@@ -151,7 +151,7 @@ c:/jakarta-ant/bin/ant all
 		  <available classname="java.lang.ProcessBuilder" property="jdk15.available" />
 
 		  <!-- JvB: New: also check for Java 7, for SCTP support -->
-		  <available classname="java.security.cert.CertificateRevokedException" property="jdk7.available"/>
+		  <available classname="com.sun.nio.sctp.MessageInfo" property="jdk7.available"/>
 	  </target>
 
     <!-- Create ${classes} -->
