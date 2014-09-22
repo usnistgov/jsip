@@ -875,26 +875,42 @@ c:/jakarta-ant/bin/ant all
               </exec>
               </target>
 
-		<target name="android-copy">
-	<echo>Copying source for android</echo>
-		<copy encoding="${source.encoding}" outputencoding="${source.encoding}" todir="src/android/com/telestax/core">
+	<target name="android-copy">
+		<echo>Copying source for android</echo>
+		<copy encoding="${source.encoding}" outputencoding="${source.encoding}" todir="src/android/gov/nist/android/core">
 			<fileset dir="src/gov/nist/core"/>
 		</copy>
-		<copy encoding="${source.encoding}" outputencoding="${source.encoding}" todir="src/android/com/telestax/core/net">
+		<copy encoding="${source.encoding}" outputencoding="${source.encoding}" todir="src/android/gov/nist/android/core/net">
 			<fileset dir="src/gov/nist/core/net"/>
 		</copy>
-		<copy encoding="${source.encoding}" outputencoding="${source.encoding}" todir="src/android/com/telestax/javax/sdp">
+		<copy encoding="${source.encoding}" outputencoding="${source.encoding}" todir="src/android/gov/nist/android/javax/sdp">
 			<fileset dir="src/gov/nist/javax/sdp"/>
 		</copy>
-		<copy encoding="${source.encoding}" outputencoding="${source.encoding}" todir="src/android/com/telestax/javax/sip">
+		<copy encoding="${source.encoding}" outputencoding="${source.encoding}" todir="src/android/gov/nist/android/javax/sip">
 			<fileset dir="src/gov/nist/javax/sip"/>
 		</copy>
 		<copy encoding="${source.encoding}" outputencoding="${source.encoding}" todir="src/android/javax">
 			<fileset dir="src/javax"/>
 		</copy>
-
 	</target>
-	<target name="android-replace">
+	
+	<target name="android-replace">	
+		<echo>Modifying source for android</echo>
+		<!--replace dir="src/android/" value="org.mobicents.javax" >
+			<replacetoken>gov.nist.javax</replacetoken>
+ 		</replace-->
+		<replace dir="src/android/" value="gov.nist.android">
+			<replacetoken>gov.nist</replacetoken>
+		</replace>
+		<replace dir="src/android/" value="javaxx.sip" >
+			<replacetoken>javax.sip</replacetoken>
+ 		</replace>
+		<replace dir="src/android/" value="javaxx.sdp" >
+			<replacetoken>javax.sdp</replacetoken>
+ 		</replace>
+ 	</target>
+ 
+	<!--target name="android-replace">
 	<echo>Modifying source for android</echo>
 		<replace dir="src/android/com/" value="com.telestax.core">
 			<replacetoken>gov.nist.core</replacetoken>
@@ -914,22 +930,23 @@ c:/jakarta-ant/bin/ant all
 		<replace dir="src/android/javax/" value="com.telestax.core">
 			<replacetoken>gov.nist.core</replacetoken>
 		</replace>
-	</target>
+	</target-->
 
 	<target name="android-jar-sip-stack" depends="check_java_version" if="jdk7.available">
-	<echo>Building SIP Library for android</echo>
+		<echo>Building SIP Library for android</echo>
+		<mkdir dir="${classes}/android/"/>	
 		<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" 
                 	  nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" 
                 		optimize="${javac.optimize}" srcdir="${srcroot}" 
                 		source="1.7" target="1.7" encoding="${source.encoding}"  
-                		includes="android/**/*.java," destdir="${classes}">
+                		includes="android/**/*.java," destdir="${classes}/android">
 			<classpath>
 				<pathelement location="${classes}" />
 				<pathelement location="${log4j_jar}" />
 			</classpath>
 		</javac>
-		<jar destfile="dist/android/android-sip-stack.jar" basedir="${classes}"  
-                	  includes="javax/**/*.class,com/telestax/**/*.class" />
+		<jar destfile="dist/android/android-sip-stack.jar" basedir="${classes}/android"  
+                	  includes="/**/*.class" />
 	</target>
 
 </project>
