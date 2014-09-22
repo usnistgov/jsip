@@ -145,6 +145,8 @@ c:/jakarta-ant/bin/ant all
         <delete file="./tracesviewer.jar" failonerror="false" />
         <delete dir='javadoc' quiet="true" failonerror="false" />
         <delete dir='javadoc-jain' quiet="true" failonerror="false" />
+        <delete dir='src/android' quiet="true" failonerror="false" />
+        <delete dir='android-javadoc' quiet="true" failonerror="false" />
         <delete dir="${dist}" quiet="true" failonerror="false" />
     </target>
     <target name="cleantars" >
@@ -877,76 +879,95 @@ c:/jakarta-ant/bin/ant all
 
 	<target name="android-copy">
 		<echo>Copying source for android</echo>
-		<copy encoding="${source.encoding}" outputencoding="${source.encoding}" todir="src/android/gov/nist/android/core">
-			<fileset dir="src/gov/nist/core"/>
+		<copy encoding="${source.encoding}" outputencoding="${source.encoding}"
+			todir="src/android/gov/nist">
+			<fileset dir="src/gov/nist" />
 		</copy>
-		<copy encoding="${source.encoding}" outputencoding="${source.encoding}" todir="src/android/gov/nist/android/core/net">
-			<fileset dir="src/gov/nist/core/net"/>
+		<copy encoding="${source.encoding}" outputencoding="${source.encoding}"
+			todir="src/android/gov/nist/javax/sdp">
+			<fileset dir="src/gov/nist/javax/sdp" />
 		</copy>
-		<copy encoding="${source.encoding}" outputencoding="${source.encoding}" todir="src/android/gov/nist/android/javax/sdp">
-			<fileset dir="src/gov/nist/javax/sdp"/>
+		<copy encoding="${source.encoding}" outputencoding="${source.encoding}"
+			todir="src/android/gov/nist/javax/sip">
+			<fileset dir="src/gov/nist/javax/sip" />
 		</copy>
-		<copy encoding="${source.encoding}" outputencoding="${source.encoding}" todir="src/android/gov/nist/android/javax/sip">
-			<fileset dir="src/gov/nist/javax/sip"/>
-		</copy>
-		<copy encoding="${source.encoding}" outputencoding="${source.encoding}" todir="src/android/javax">
-			<fileset dir="src/javax"/>
+		<copy encoding="${source.encoding}" outputencoding="${source.encoding}"
+			todir="src/android/javax">
+			<fileset dir="src/javax" />
 		</copy>
 	</target>
 	
-	<target name="android-replace">	
+	<target name="android-replace">
 		<echo>Modifying source for android</echo>
-		<!--replace dir="src/android/" value="org.mobicents.javax" >
-			<replacetoken>gov.nist.javax</replacetoken>
- 		</replace-->
-		<replace dir="src/android/" value="gov.nist.android">
-			<replacetoken>gov.nist</replacetoken>
-		</replace>
-		<replace dir="src/android/" value="javaxx.sip" >
-			<replacetoken>javax.sip</replacetoken>
- 		</replace>
-		<replace dir="src/android/" value="javaxx.sdp" >
-			<replacetoken>javax.sdp</replacetoken>
- 		</replace>
- 	</target>
- 
-	<!--target name="android-replace">
-	<echo>Modifying source for android</echo>
-		<replace dir="src/android/com/" value="com.telestax.core">
+		      <replace dir="src/android/" value="android.javax.sip">
+            <replacetoken>javax.sip</replacetoken>
+        </replace>
+        <replace dir="src/android/" value="android.javax.sdp">
+            <replacetoken>javax.sdp</replacetoken>
+        </replace>
+		<replace dir="src/android/" value="android.gov.nist.core">
 			<replacetoken>gov.nist.core</replacetoken>
 		</replace>
-		<replace dir="src/android/com/" value="com.telestax.core.net">
-			<replacetoken>gov.nist.core.net</replacetoken>
+		<replace dir="src/android/" value="android.gov.nist.javax.sdp">
+			<replacetoken>gov.nist.android.javax.sdp</replacetoken>
 		</replace>
-		<replace dir="src/android" value="com.telestax.javax.sdp">
-			<replacetoken>gov.nist.javax.sdp</replacetoken>
+		<replace dir="src/android/" value="android.gov.nist.javax.sip">
+			<replacetoken>gov.nist.android.javax.sip</replacetoken>
 		</replace>
-		<replace dir="src/android" value="com.telestax.javax.sip">
-			<replacetoken>gov.nist.javax.sip</replacetoken>
-		</replace>
-		<replace dir="src/android/javax/" value="com.telestax">
-			<replacetoken>gov.nist.javax</replacetoken>
-		</replace>
-		<replace dir="src/android/javax/" value="com.telestax.core">
-			<replacetoken>gov.nist.core</replacetoken>
-		</replace>
-	</target-->
+	</target>
 
-	<target name="android-jar-sip-stack" depends="check_java_version" if="jdk7.available">
+	<target name="android-jar-sip-stack" depends="check_java_version"
+		if="jdk7.available">
 		<echo>Building SIP Library for android</echo>
-		<mkdir dir="${classes}/android/"/>	
-		<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}" 
-                	  nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" 
-                		optimize="${javac.optimize}" srcdir="${srcroot}" 
-                		source="1.7" target="1.7" encoding="${source.encoding}"  
-                		includes="android/**/*.java," destdir="${classes}/android">
+		<javac debug="${javac.debug}" debuglevel="${javac.debuglevel}"
+			nowarn="${javac.nowarn}" deprecation="${javac.deprecation}" optimize="${javac.optimize}"
+			srcdir="${srcroot}" source="1.7" target="1.7" encoding="${source.encoding}"
+			includes="android/**/*.java," destdir="${classes}">
 			<classpath>
 				<pathelement location="${classes}" />
 				<pathelement location="${log4j_jar}" />
 			</classpath>
 		</javac>
-		<jar destfile="dist/android/android-sip-stack.jar" basedir="${classes}/android"  
-                	  includes="/**/*.class" />
+		<jar destfile="dist/android/android-sip-stack.jar" basedir="${classes}"
+			includes="javax/**/*.class,android/**/*.class" />
 	</target>
+
+	<target name="android-javadoc">
+		<mkdir dir="${root}/android-javadoc" />
+		<copy toDir="${root}/android-javadoc">
+			<fileset dir="src/android/javax/sip" includes="**/*.html" />
+		</copy>
+
+		<javadoc packagenames="android.*" sourcepath="${srcroot}"
+			overview="${docdir}/overview.html" destdir="android-javadoc" use="true"
+			splitindex="true" windowtitle="The JAIN-SIP-1.2 RI For the People !"
+			doctitle="NIST-SIP: The Reference Implementation for JAIN-SIP 1.2"
+			public="true" author="true" version="true" defaultexcludes="yes" encoding="${source.encoding}" charset="${source.encoding}" docencoding="${source.encoding}"
+			additionalparam="-breakiterator">
+			<classpath>
+				<pathelement location="${log4j_jar}" />
+				<pathelement location="${jain-sip-api-jar}" />
+			</classpath>
+			<link href="${j2se_api}" />
+			<header>
+                <![CDATA[
+                    <b> NIST-SIP: The Reference Implementation for JAIN-SIP 1.2 </b>
+                ]]>
+			</header>
+			<bottom>
+            <![CDATA[
+                    <font size="-1">
+            <a href="${href.nist.homepage}"> A product of the NIST/ITL Advanced Networking Technologies Division. </a>
+            <br>
+                <a href="${href.uncopyright}"> See conditions of use. </a>
+                <br>
+                    <a href="${href.mailto}">Submit a bug report or feature request. </a>
+                    <br>
+                    </font>
+                ]]>
+			</bottom>
+		</javadoc>
+	</target>
+
 
 </project>
