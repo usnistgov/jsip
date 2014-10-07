@@ -102,11 +102,14 @@ public class Reason
      *@param text -- string text to set.
      */
     public void setText(String text) throws ParseException {
-        // JvB: MUST be quoted
-        if ( text.charAt(0) != '"' ) {
-            text = Utils.getQuotedString(text);
-        }
-        this.parameters.set("text", text);
+    	// https://java.net/jira/browse/JSIP-479
+    	if(text != null && text.trim().length() > 0) {
+	        // JvB: MUST be quoted
+	        if ( text.charAt(0) != '"' ) {
+	            text = Utils.getQuotedString(text);
+	        }
+	        this.parameters.set("text", text);
+    	}
     }
 
     /** Get the text.
