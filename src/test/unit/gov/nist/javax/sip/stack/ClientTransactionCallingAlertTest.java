@@ -360,6 +360,9 @@ public class ClientTransactionCallingAlertTest extends TestCase {
                 request.addHeader(reasonHeader);
                 reasonHeader = headerFactory.createReasonHeader("Q.850", 16, "Terminated");
                 request.addHeader(reasonHeader);
+                // https://java.net/jira/browse/JSIP-479
+                reasonHeader = headerFactory.createReasonHeader("Q.777", 12, null);
+                request.addHeader(reasonHeader);
                 
                 ListIterator<Header> listIt = request.getHeaders(ReasonHeader.NAME);
                 int i = 0;
@@ -367,7 +370,7 @@ public class ClientTransactionCallingAlertTest extends TestCase {
                     listIt.next();
                     i++;
                 }
-                assertEquals(2, i);
+                assertEquals(3, i);
                 // non regression test for https://java.net/jira/browse/JSIP-467
                 request.setExpires(headerFactory.createExpiresHeader(3600000));
                 // Create the client transaction.
