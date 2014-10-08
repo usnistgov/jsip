@@ -62,6 +62,8 @@ public class WebSocketCodec {
 	private byte[] maskingKey = new byte[4];
 	private final boolean allowExtensions;
 	private final boolean maskedPayload;
+	private boolean closeOpcodeReceived;
+
 	
 	// THe payload inside the websocket frame starts at this index
 	private int payloadStartIndex = -1;
@@ -115,6 +117,13 @@ public class WebSocketCodec {
 		if(logger.isLoggingEnabled(LogLevels.TRACE_DEBUG)) {
 			logger.logDebug("Decoding WebSocket Frame opCode=" + frameOpcode);
 		}
+		
+		
+		if(frameOpcode == 8) {
+			//https://code.google.com/p/chromium/issues/detail?id=388243#c15
+			this.closeOpcodeReceived = true;
+		}
+
 
 		// MASK, PAYLOAD LEN 1
 		b = readNextByte();
@@ -208,15 +217,14 @@ public class WebSocketCodec {
 		// All done, we are ready to be called again
 		return plainTextBytes;
 	}
-
-
+	
 	protected static byte[] encode(byte[] msg, int rsv, boolean fin, boolean maskPayload) throws Exception {
+		return encode(msg, rsv, fin, maskPayload, OPCODE_TEXT);
+	}
 
+
+	protected static byte[] encode(byte[] msg, int rsv, boolean fin, boolean maskPayload, byte opcode) throws Exception {
 		ByteArrayOutputStream frame = new ByteArrayOutputStream();
-
-		byte opcode;
-		opcode = OPCODE_TEXT;
-
 
 		int length = msg.length;
 
@@ -300,5 +308,9 @@ public class WebSocketCodec {
 				protocolViolation("received non-continuation data frame while inside fragmented message");
 			}
 		}
+	}
+	
+	public boolean isCloseOpcodeReceived() {
+		return this.closeOpcodeReceived;
 	}
 }

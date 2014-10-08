@@ -37,6 +37,7 @@ import gov.nist.javax.sip.message.SIPRequest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.text.ParseException;
 
@@ -204,6 +205,16 @@ public class NioWebSocketMessageChannel extends NioTcpMessageChannel{
 			byte[] decodedMsg = null;
 			do {
 				decodedMsg = codec.decode(bios);
+				
+				// Chrome waits for us to close the socket when it sends a close opcode https://code.google.com/p/chromium/issues/detail?id=388243#c15
+				if(codec.isCloseOpcodeReceived()) {
+					
+					logger.logDebug("Websocket close, sending polite close response");
+					ByteBuffer byteBuff = ByteBuffer.wrap(new byte[]{(byte) 0x88,(byte)0x00});
+					socketChannel.write(byteBuff);// We must skip in the queue, don't use sendNonWebSocketMessage(new byte[]{(byte) 0x88,(byte)0x00}, false);
+					return;
+				}
+
 				if(decodedMsg == null) {
 					return; // the codec can't parse a full websocket frame, we will try again when have more data
 				}
