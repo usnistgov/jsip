@@ -914,6 +914,18 @@ c:/jakarta-ant/bin/ant all
 		<replace dir="src/android/" value="android.gov.nist.javax.sip">
 			<replacetoken>gov.nist.android.javax.sip</replacetoken>
 		</replace>
+		<replace dir="src/android/" value=".javax.sip">
+            <replacetoken>.android.javax.sip</replacetoken>
+        </replace>
+        <replace dir="src/android/javax/sip" value="&quot;javax.sip.message">
+            <replacetoken>"android.javax.sip.message</replacetoken>
+        </replace>
+        <replace dir="src/android/javax/sip" value="&quot;javax.sip.header">
+            <replacetoken>"android.javax.sip.header</replacetoken>
+        </replace>
+        <replace dir="src/android/javax/sip" value="&quot;javax.sip.address">
+            <replacetoken>"android.javax.sip.address</replacetoken>
+        </replace>
 	</target>
 
 	<target name="android-jar-sip-stack" depends="check_java_version"
